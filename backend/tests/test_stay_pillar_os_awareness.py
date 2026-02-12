@@ -27,7 +27,7 @@ class TestSTAYPillarDetection:
         """Boarding queries should route to STAY pillar"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "I need boarding for my dog when I travel",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-stay-boarding-001"
         })
         assert response.status_code == 200
@@ -42,7 +42,7 @@ class TestSTAYPillarDetection:
         """Daycare queries should route to STAY pillar"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Can you help me find daycare for Mojo while I work?",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-stay-daycare-001"
         })
         assert response.status_code == 200
@@ -56,7 +56,7 @@ class TestSTAYPillarDetection:
         """Pet-friendly hotel queries should route to STAY pillar"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Find a pet-friendly hotel for our trip to Goa",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-stay-hotel-001"
         })
         assert response.status_code == 200
@@ -70,7 +70,7 @@ class TestSTAYPillarDetection:
         """'Stay alone' queries should route to STAY pillar"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "How long can Mojo stay alone at home?",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-stay-alone-001"
         })
         assert response.status_code == 200
@@ -84,7 +84,7 @@ class TestSTAYPillarDetection:
         """Home setup/sleep queries should route to STAY pillar"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Where should my dog sleep at home?",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-stay-home-001"
         })
         assert response.status_code == 200
@@ -102,7 +102,7 @@ class TestSTAYContextGeneration:
         """stay_context should include temperament, vaccinations, social_comfort, health_flags"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "I need boarding for Mojo",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-stay-context-001"
         })
         assert response.status_code == 200
@@ -125,7 +125,7 @@ class TestSTAYContextGeneration:
         """stay_context should include pet's allergies (Mojo has chicken allergy)"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Help me find daycare for Mojo",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-stay-allergy-001"
         })
         assert response.status_code == 200
@@ -146,7 +146,7 @@ class TestSTAYPicksGeneration:
         """Boarding queries should generate boarding-related picks"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "I need to find boarding for my dog when I travel",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-stay-picks-001"
         })
         assert response.status_code == 200
@@ -167,7 +167,7 @@ class TestSTAYPicksGeneration:
         """Daycare queries should generate daycare-related picks"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Find daycare for Mojo while I work",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-stay-picks-002"
         })
         assert response.status_code == 200
@@ -187,7 +187,7 @@ class TestSTAYPicksGeneration:
         """Hotel queries should generate hotel search picks"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Find a pet-friendly hotel for vacation",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-stay-picks-003"
         })
         assert response.status_code == 200
@@ -207,7 +207,7 @@ class TestSTAYPicksGeneration:
         """Home setup queries should generate home layout picks"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Help me setup my home for my dog to stay alone",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-stay-picks-004"
         })
         assert response.status_code == 200
@@ -231,7 +231,7 @@ class TestConciergeAlwaysFlag:
         """Boarding picks should have concierge_always:true"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Find boarding for Mojo",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-concierge-001"
         })
         assert response.status_code == 200
@@ -250,7 +250,7 @@ class TestConciergeAlwaysFlag:
         """Hotel picks should have concierge_always:true"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Find a pet-friendly hotel for trip",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-concierge-002"
         })
         assert response.status_code == 200
@@ -273,7 +273,7 @@ class TestGooglePlacesFlag:
         """Hotel search picks should have uses_google_places:true"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Find a pet-friendly hotel for our trip",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-google-places-001"
         })
         assert response.status_code == 200
@@ -301,7 +301,7 @@ class TestConciergeHandoff:
         """Concierge handoff should be available for boarding queries"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Find boarding for my dog",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-handoff-001"
         })
         assert response.status_code == 200
@@ -319,7 +319,7 @@ class TestConciergeHandoff:
         """Concierge handoff should be available for daycare queries"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Help me find daycare",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-handoff-002"
         })
         assert response.status_code == 200
@@ -337,7 +337,7 @@ class TestConciergeHandoff:
         """Concierge handoff should be available for hotel queries"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Find pet-friendly hotel",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-handoff-003"
         })
         assert response.status_code == 200
@@ -359,7 +359,7 @@ class TestPicksUpdate:
         """picks_update should signal refresh for STAY pillar"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Find boarding for Mojo",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-picks-update-001"
         })
         assert response.status_code == 200
@@ -382,7 +382,7 @@ class TestNonSTAYRouting:
         """Birthday queries should route to CELEBRATE pillar"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Plan a birthday party for Mojo",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-non-stay-001"
         })
         assert response.status_code == 200
@@ -402,7 +402,7 @@ class TestNonSTAYRouting:
         """Meal plan queries should route to DINE pillar"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Create a meal plan for Mojo",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-non-stay-002"
         })
         assert response.status_code == 200
@@ -417,7 +417,7 @@ class TestNonSTAYRouting:
         """Grooming queries should route to CARE pillar"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Mojo needs grooming",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-non-stay-003"
         })
         assert response.status_code == 200
@@ -436,7 +436,7 @@ class TestSTAYPickCardFields:
         """Boarding picks should have title, why, cta, service_type, concierge_always"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "I need boarding for Mojo",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-card-001"
         })
         assert response.status_code == 200
@@ -464,7 +464,7 @@ class TestSafetyGatesForSTAY:
         """Safety gates should be present for STAY pillar queries"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Find boarding for Mojo",
-            "pet_id": TEST_PET_ID,
+            "selected_pet_id": TEST_PET_ID,
             "session_id": "test-safety-001"
         })
         assert response.status_code == 200
