@@ -219,5 +219,25 @@ curl -s -X POST "$API_URL/api/mira/chat" \
 ### Full Audit Document: `/app/memory/COMPREHENSIVE_ROADMAP_AUDIT.md`
 
 ---
-*Last Updated: February 12, 2026 10:35 UTC*
+*Last Updated: February 12, 2026 10:45 UTC*
 *Status: PRODUCTION READY (Core) | DOCTRINE COMPLIANCE: 68%*
+
+---
+
+## Recent Feature: Inline Concierge Card (Feb 12, 2026)
+
+### Implementation
+- Created `InlineConciergeCard.jsx` component
+- Integrated into `ChatMessage.jsx` for automatic display when Mira mentions concierge
+- Added pattern detection in `useChat.js` for `showConciergeCard` flag
+
+### How it works
+1. When Mira's response contains concierge-related phrases (e.g., "our human Concierge®", "loop in our", "concierge® to fine-tune")
+2. The InlineConciergeCard automatically appears below the message
+3. Card offers: WhatsApp, Chat, Email contact options
+4. "New Topic" button resets conversation
+
+### Files Modified
+- `/app/frontend/src/components/Mira/InlineConciergeCard.jsx` (NEW)
+- `/app/frontend/src/components/Mira/ChatMessage.jsx` (pattern detection + card rendering)
+- `/app/frontend/src/hooks/mira/useChat.js` (buildMiraMessage adds showConciergeCard flag)
