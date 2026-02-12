@@ -10394,6 +10394,7 @@ Give generic advice appropriate for any pet unless user provides specific detail
 {os_intelligence_instruction}
 {concierge_action_instruction}
 {another_pet_instruction}
+{soul_first_instruction}
 
 CURRENT USER MESSAGE: {user_message}
 
