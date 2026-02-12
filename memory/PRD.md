@@ -5,12 +5,39 @@ MIRA to function as a "Lifestyle OS" - context-aware, proactive, safe, OS-like b
 
 ## What's Implemented (Feb 12, 2026)
 
+### Profile-First Questioning (NEW ✅)
+
+**Core Rule Implemented:**
+Before Mira asks ANY question, she must:
+1. READ Pet Intelligence for the selected pet (Pet Soul, allergies, age, weight, diet, preferences)
+2. MARK which fields are required for this intent
+3. ASK ONLY for fields that are MISSING or MOMENT-SPECIFIC
+
+**Moment-Specific (May Ask):**
+- Date/time of event or service
+- Delivery vs pickup preference
+- Meals per day (human schedule constraint)
+- Guest count for parties
+- Travel dates and destinations
+
+**Already Known (Never Ask):**
+- Pet's age, weight, breed
+- Allergies and sensitivities
+- Diet type (kibble, wet, home-cooked)
+- Temperament and anxiety level
+- Vaccination status
+
+**Delivery Rule:**
+- If user provides complete intent (e.g., "home-cooked rotation, 3 meals/day") → DELIVER plan immediately
+- Maximum 2 clarifying questions before delivery
+- Default to 7-day rotation if duration not specified
+
 ### Pillar OS-Awareness Implementation Status
 
 | Pillar | Status | Context | Picks | Concierge | Google Places | Special Features |
 |--------|--------|---------|-------|-----------|---------------|------------------|
 | **CELEBRATE** | ✅ Done | celebrate_context | 8 picks | ✅ Always | - | Cake flow, allergy safety, birthday detection |
-| **DINE** | ✅ Done | dine_context | 6 picks | - | - | Nutrition, portions, diet transitions |
+| **DINE** | ✅ Done | dine_context | 6 picks | - | - | Nutrition, portions, diet transitions, profile-first |
 | **STAY** | ✅ Done | stay_context | 6 picks | ✅ Always | ✅ Hotels | Boarding, daycare, temperament matching |
 | **TRAVEL** | ✅ Done | travel_context | 7 picks | ✅ Always | ✅ Itinerary | Brachycephalic detection, documents |
 | CARE | Pending | - | - | - | - | - |
@@ -19,6 +46,11 @@ MIRA to function as a "Lifestyle OS" - context-aware, proactive, safe, OS-like b
 | LEARN | Pending | - | - | - | - | - |
 | EMERGENCY | Pending | - | - | - | - | - |
 
+### Pillar Isolation Rule (NEW ✅)
+- DINE pillar NEVER shows cake/birthday/celebration items
+- Cake enters ONLY if user says birthday/cake/party OR pillar switches to Celebrate
+- Temporal awareness may mention upcoming birthday contextually (OS intelligence), but celebrate_picks stays empty in DINE
+
 ### CELEBRATE → CAKE Flow (FIXED ✅)
 
 **Issues Fixed:**
@@ -26,18 +58,17 @@ MIRA to function as a "Lifestyle OS" - context-aware, proactive, safe, OS-like b
 2. ❌→✅ "Indies have adaptable digestion" claims blocked
 3. ❌→✅ "Sent to Concierge" → "Request Created ✓ I'm arranging this now"
 4. ❌→✅ Allergy safety gates applied to cake recommendations
+5. ❌→✅ Uses chicken allergy from profile (never asks "any allergies?")
 
 **Correct Flow:**
 ```
 User: "Birthday party for Mojo"
 → CELEBRATE pillar activated
-→ celebrate_picks: [Birthday Cake, Party Snacks, Bandana, Photographer, Party Setup, Grooming]
+→ Uses chicken allergy from profile silently
+→ celebrate_picks: [Birthday Cake (chicken-free), Party Snacks, Bandana, Photographer, Party Setup, Grooming]
 
 User: "Suggest cake options"
-→ Response shows 3 options IMMEDIATELY (no permission asking):
-  1. Savoury Chicken & Carrot Cake (or chicken-free if allergy)
-  2. Pumpkin & Peanut-Butter Cake
-  3. Mini Cake + Cupcake Trio
+→ Response shows 3 chicken-free options IMMEDIATELY (no permission asking)
 ```
 
 ### Key API Response Structure
