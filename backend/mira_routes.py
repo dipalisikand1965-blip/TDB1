@@ -296,6 +296,121 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
                         "text": diet_memory.get("summary", diet_memory.get("content", "")),
                         "date": diet_memory.get("created_at")
                     }
+            
+            # ═══════════════════════════════════════════════════════════════════════════
+            # STAY PILLAR OS-AWARENESS (per MIRA BIBLE)
+            # Generate stay-specific context for boarding, daycare, hotel stays
+            # ═══════════════════════════════════════════════════════════════════════════
+            elif pillar == "stay" or any(kw in user_lower for kw in ["boarding", "daycare", "hotel", "stay", "sitter", "alone", "sleep"]):
+                # Extract pet's stay-relevant information
+                pet_soul = pet.get("soul") or {}
+                temperament = pet.get("temperament") or pet_soul.get("temperament") or pet.get("personality")
+                anxiety_level = pet.get("anxiety_level") or pet_soul.get("anxiety_level")
+                social_comfort = pet.get("social_comfort") or pet_soul.get("social_comfort")  # good with dogs, people, etc.
+                vaccinations = pet.get("vaccinations") or []
+                health_flags = pet.get("health_flags") or pet.get("medical_conditions") or []
+                
+                # Build STAY-specific context
+                stay_context = {
+                    "temperament": temperament,
+                    "anxiety_level": anxiety_level,
+                    "social_comfort": social_comfort,
+                    "vaccinations": vaccinations,
+                    "health_flags": health_flags if health_flags else [],
+                    "allergies": allergies if allergies else [],
+                    "age_band": pet.get("age_band") or pet.get("life_stage"),
+                    "size": pet.get("size") or pet.get("weight_category")
+                }
+                
+                # STAY picks to suggest based on context
+                stay_picks = []
+                
+                # If asking about boarding
+                if any(kw in user_lower for kw in ["boarding", "board", "kennel", "overnight", "when i travel"]):
+                    stay_picks.append({
+                        "title": "Boarding Shortlist",
+                        "why": f"Matched to {pet.get('name', 'your pet')}'s temperament and vaccination status",
+                        "cta": "Find",
+                        "service_type": "boarding_search",
+                        "concierge_always": True
+                    })
+                    # If pet has anxiety, suggest in-home option
+                    if anxiety_level in ["high", "moderate"] or temperament in ["anxious", "nervous", "shy"]:
+                        stay_picks.append({
+                            "title": "In-Home Sitter Brief",
+                            "why": "Familiar environment may suit better given temperament",
+                            "cta": "Arrange",
+                            "service_type": "sitter_coordination",
+                            "concierge_always": True
+                        })
+                
+                # If asking about daycare
+                if any(kw in user_lower for kw in ["daycare", "day care", "daytime", "while i work"]):
+                    stay_picks.append({
+                        "title": "Daycare Shortlist",
+                        "why": f"Matched to {pet.get('name', 'your pet')}'s energy level and social comfort",
+                        "cta": "Find",
+                        "service_type": "daycare_search",
+                        "concierge_always": True
+                    })
+                
+                # If asking about hotel/travel stays
+                if any(kw in user_lower for kw in ["hotel", "pet-friendly", "travel", "vacation", "trip"]):
+                    stay_picks.append({
+                        "title": "Pet-Friendly Hotel Search",
+                        "why": "Policy verified, no surprises at check-in",
+                        "cta": "Find",
+                        "service_type": "hotel_search",
+                        "concierge_always": True,
+                        "uses_google_places": True  # Signal to use Google Places API
+                    })
+                
+                # If asking about home setup or alone time
+                if any(kw in user_lower for kw in ["alone", "home", "sleep", "crate", "bed", "setup"]):
+                    stay_picks.append({
+                        "title": "Home Stay Layout Plan",
+                        "why": "Zones, gates, balcony safety customized for your space",
+                        "cta": "Plan",
+                        "service_type": "home_setup",
+                        "concierge_always": True
+                    })
+                
+                # For senior dogs or dogs with health issues
+                if age_band in ["senior", "geriatric"] or health_flags:
+                    stay_picks.append({
+                        "title": "Comfort Corner Setup",
+                        "why": f"For {pet.get('name', 'your pet')}'s recovery or senior comfort",
+                        "cta": "Plan",
+                        "service_type": "comfort_setup",
+                        "concierge_always": True
+                    })
+                
+                os_context["stay_context"] = stay_context
+                os_context["stay_picks"] = stay_picks
+                os_context["picks_update"] = {
+                    "should_refresh": True,
+                    "pillar": "stay",
+                    "context": "accommodation"
+                }
+                
+                # Always include Concierge handoff for STAY
+                os_context["concierge_handoff"] = {
+                    "available": True,
+                    "reason": "Stay arrangements always require coordination",
+                    "cta": "Connect to Concierge"
+                }
+                
+                # Recall previous stay experiences
+                stay_memory = await actual_db.mira_memories.find_one(
+                    {"pet_id": pet_id, "memory_type": {"$in": ["boarding", "daycare", "hotel", "stay", "sitter"]}},
+                    {"_id": 0}
+                )
+                if stay_memory:
+                    os_context["memory_recall"] = {
+                        "type": "stay",
+                        "text": stay_memory.get("summary", stay_memory.get("content", "")),
+                        "date": stay_memory.get("created_at")
+                    }
                     
         except Exception as e:
             logger.debug(f"[OS CONTEXT] Memory recall error: {e}")
