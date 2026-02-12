@@ -72,16 +72,37 @@ MIRA OS is a **life-led pet concierge system** - an intelligent assistant that h
 - Intent: "looking for a cake" now returns `buy` (not `book`)
 - Confidence: Single synonym match capped at 0.92, emergency at 0.99
 
-### ✅ B3: Safety Gate (COMPLETE)
+### ✅ B3: Safety Gate (COMPLETE + FIXED)
 **Files created:**
 - `/app/backend/safety_gate.py` - Behavioural override layer
 - `/app/backend/tests/test_safety_gate.py` - 21 unit tests (ALL PASSING)
+
+**B3 Fix Applied:**
+- "gagging after eating" now returns `caution` (not emergency)
+- Added `choking_suspected` as a CAUTION tag with gating questions
+- Emergency choking only triggers with: "can't breathe", "blue tongue", "collapsed", etc.
+
+**Gating Questions for Escalation:**
+```json
+{
+  "choking_suspected": {
+    "questions": [
+      "Can your pet breathe at all? (even labored or noisy breathing)",
+      "Is their tongue or gums turning blue/purple?"
+    ],
+    "escalation_answers": {
+      "q1_no": "emergency",
+      "q2_yes": "emergency"
+    }
+  }
+}
+```
 
 **Safety Gate Behavior:**
 | Level | Behavior |
 |-------|----------|
 | `emergency` | Suppress ALL commerce, show ER vet CTA, first aid steps, emergency-red UI |
-| `caution` | Suppress shopping, allow education + vet booking, caution-yellow UI |
+| `caution` | Suppress shopping, allow education + vet booking, caution-yellow UI, gating questions |
 | `normal` | No restrictions |
 
 **Returns `safety_override` object:**
@@ -96,9 +117,41 @@ MIRA OS is a **life-led pet concierge system** - an intelligent assistant that h
   "emergency_vet_cta": "Call/Go to Nearest Emergency Vet Now",
   "first_aid_steps": ["Step 1", "Step 2", ...],
   "allowed_pick_types": ["emergency", "concierge"],
-  "ui_theme": "emergency-red"
+  "ui_theme": "emergency-red",
+  "gating_questions": ["..."],  // For caution tags needing escalation assessment
+  "escalation_info": {...}
 }
 ```
+
+### ✅ B4: Scoring Function (COMPLETE)
+**Files created:**
+- `/app/backend/picks_scorer.py` - Picks scoring and ranking engine
+
+**Scoring Formula:**
+```
+final_score = (base_score * tag_match_multiplier) - profile_penalty + recency_bonus
+
+Where:
+- base_score: From picks_catalogue (0-100)
+- tag_match_multiplier: 1.0 + (0.15 * num_matching_tags), capped at 1.5x
+- profile_penalty: 5 points per missing required field
+- recency_bonus: Up to 10 points based on last_service_date
+```
+
+**B4 Features:**
+1. **Safety gates respected** - Emergency filters to emergency-only picks
+2. **Intent gates** - Buy prioritizes products, Book prioritizes bookings
+3. **Profile penalty** - Missing required fields reduce score
+4. **Micro-question generation** - Prompts for missing profile data
+5. **Diversity rerank** - Ensures variety (booking/product + guide + concierge)
+
+**Example Scoring Results:**
+| Query | Intent | Top Pick | Score |
+|-------|--------|----------|-------|
+| "grooming for Mojo" | book | care_grooming_book | 92.0 |
+| "cake for Mojo" | buy | celebrate_cake_order | 92.0 |
+| "ate chocolate" | emergency | emergency_vet_now | 100 |
+| "vomiting twice" | caution | care_vomiting_vet | 97.75 |
 
 ---
 
