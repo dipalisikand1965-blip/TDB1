@@ -82,11 +82,24 @@ async def calculate_intelligence_score(db, pet_id: str) -> Dict:
         if not pet:
             return {"total_score": 0, "tier": "curious_pup", "error": "Pet not found"}
         
-        # Get conversation memories
+        # Get conversation memories from collection
         memories = await db.conversation_memories.find(
             {"pet_id": pet_id},
             {"_id": 0}
         ).to_list(100)
+        
+        # ALSO check inline conversation_memories in pet document (fallback)
+        inline_memories = pet.get("conversation_memories", [])
+        if inline_memories and len(inline_memories) > len(memories):
+            # Convert inline format to match expected format
+            for m in inline_memories:
+                memories.append({
+                    "category": m.get("topic", "general"),
+                    "signal_type": "conversation",
+                    "value": m.get("summary", ""),
+                    "created_at": m.get("created_at"),
+                    "confidence": 70
+                })
         
         # Get versioned traits
         traits = await db.pet_traits.find(
