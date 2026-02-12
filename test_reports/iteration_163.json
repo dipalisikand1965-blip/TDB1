@@ -1,0 +1,94 @@
+{
+  "summary": "Investigated and fixed /mira-demo page crash. Root cause: 6.8MB JavaScript bundle + direct imports of 9000+ line components (MiraDemoPage 3447 lines + MiraDemoBackupPage 5789 lines). Applied lazy loading fix, but crashes may persist due to Service Worker caching old bundle.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "critical": [
+      {
+        "component": "MiraDemoPage",
+        "issue": "Page crashes browser tab when loaded directly via URL due to 6.8MB bundle size",
+        "root_cause": "MiraDemoPage.jsx (3447 lines) + MiraDemoBackupPage.jsx (5789 lines) were directly imported instead of lazy loaded, causing memory pressure during JS parsing",
+        "priority": "HIGH"
+      }
+    ],
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Service Worker caching",
+        "issue": "Service Worker (tdc-pwa-v2) caches old bundle, causing crashes even after fix is deployed",
+        "affected_selectors": []
+      }
+    ],
+    "design_issues": []
+  },
+  "fix_applied": {
+    "file": "/app/frontend/src/App.js",
+    "change": "Changed MiraDemoPage, MiraDemoOriginalPage, and MiraDemoBackupPage from direct imports to lazy() imports",
+    "lines": "212-216",
+    "before": "import MiraDemoPage from './pages/MiraDemoPage'; import MiraDemoOriginalPage from './pages/MiraDemoOriginalPage'; import MiraDemoBackupPage from './pages/MiraDemoBackupPage';",
+    "after": "const MiraDemoPage = lazy(() => import('./pages/MiraDemoPage')); const MiraDemoOriginalPage = lazy(() => import('./pages/MiraDemoOriginalPage')); const MiraDemoBackupPage = lazy(() => import('./pages/MiraDemoBackupPage'));"
+  },
+  "additional_fix": {
+    "file": "/app/frontend/public/service-worker.js",
+    "change": "Incremented cache version from v2 to v3 to force old cache invalidation",
+    "line": 4
+  },
+  "test_results": {
+    "homepage": "PASS - Loads correctly",
+    "login_page_via_navigation": "PASS - Works when navigated from homepage",
+    "login_page_direct": "INTERMITTENT - May crash due to cached bundle",
+    "mira_demo_via_navigation": "PASS - Works after login",
+    "mira_demo_direct": "FAIL - Crashes due to cached 6.8MB bundle",
+    "shop_page": "PASS - Loads correctly"
+  },
+  "test_report_links": [],
+  "action_items": [
+    "CRITICAL: Users need to clear browser cache/Service Worker to get the fix",
+    "Consider splitting MiraDemoPage.jsx (3447 lines) into smaller chunks",
+    "Consider removing MiraDemoBackupPage.jsx (5789 lines) as it's a backup file not used in production",
+    "Consider implementing code splitting for Mira hooks and utilities",
+    "Bundle size (6.8MB) is too large - needs optimization",
+    "Add cache-busting to Service Worker or implement proper versioning"
+  ],
+  "critical_code_review_comments": [
+    "MiraDemoPage.jsx at 3447 lines should be split into smaller modules",
+    "MiraDemoBackupPage.jsx at 5789 lines is even larger and should be removed from production bundle",
+    "Total source code is 216,225 lines - extremely large codebase causing bundle bloat",
+    "DoggyServiceDesk.jsx at 6037 lines and Admin.jsx at 5435 lines also contribute to bundle size"
+  ],
+  "updated_files": [
+    "/app/frontend/src/App.js",
+    "/app/frontend/public/service-worker.js"
+  ],
+  "success_rate": {
+    "backend": "N/A - frontend only test",
+    "frontend": "60% - Pages work via navigation, but direct URL access crashes"
+  },
+  "test_credentials": {
+    "email": "dipali@clubconcierge.in",
+    "password": "test123"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "The lazy loading fix has been applied but Service Worker caching causes intermittent crashes. Test by: 1) Clear browser cache, 2) Navigate from homepage to /login then to /mira-demo (should work), 3) Direct URL load may still crash until SW cache is cleared. Bundle size of 6.8MB is the underlying issue.",
+  "rca_of_the_issue": {
+    "symptom": "Browser tab crashes with 'Target crashed' error when accessing /mira-demo, /mira-demo-original, or /login directly via URL",
+    "root_cause": "MiraDemoPage.jsx (3447 lines, ~142KB source) and MiraDemoBackupPage.jsx (5789 lines, ~220KB source) were directly imported instead of lazy loaded, causing the entire 6.8MB JavaScript bundle to be parsed on initial page load, which exceeds browser memory limits",
+    "reproduction_steps": [
+      "1. Navigate directly to https://mira-picks-demo.preview.emergentagent.com/mira-demo",
+      "2. Browser tab crashes before React renders",
+      "3. Console shows only 'Download React DevTools' and 'PWA: Service worker registered' before crash"
+    ],
+    "mitigation_applied": [
+      "Changed direct imports to lazy() imports in App.js",
+      "Incremented Service Worker cache version to force old cache invalidation"
+    ],
+    "remaining_issues": [
+      "Service Worker may still serve cached old bundle to returning users",
+      "Bundle size (6.8MB) is still too large and needs code splitting"
+    ]
+  }
+}
