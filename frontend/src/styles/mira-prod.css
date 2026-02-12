@@ -69,13 +69,13 @@
 }
 
 .mp-header-inner {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-xl);
-  padding: 0 var(--space-md);
+  padding: 0 var(--space-xl);
 }
 
 /* Mira Logo - Pink circle with sparkle - CENTERED */
