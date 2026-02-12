@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://mira-os-enhance.preview.emergentagent.com
+**Preview URL:** https://mira-kibble-flow.preview.emergentagent.com
 
 ---
 

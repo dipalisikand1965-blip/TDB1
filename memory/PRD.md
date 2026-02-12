@@ -95,4 +95,4 @@ The user wants MIRA to function as a "Lifestyle OS" rather than a simple chatbot
 
 ---
 *Last Updated: February 12, 2026*
-*Preview URL: https://mira-os-enhance.preview.emergentagent.com*
+*Preview URL: https://mira-kibble-flow.preview.emergentagent.com*

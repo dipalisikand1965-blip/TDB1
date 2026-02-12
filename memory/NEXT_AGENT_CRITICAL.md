@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://mira-os-enhance.preview.emergentagent.com
+https://mira-kibble-flow.preview.emergentagent.com
 
 ---
 
