@@ -7820,6 +7820,7 @@ Example: "I need treats for Mojo"
 {user_context}
 {pet_context}
 {known_fields_section}
+{conversation_memories}
 {pillar_context}
 {pillar_tone}
 
