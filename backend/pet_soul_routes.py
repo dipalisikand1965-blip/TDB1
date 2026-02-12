@@ -428,6 +428,66 @@ async def get_profile_progress(pet_id: str):
     }
 
 
+@pet_soul_router.get("/profile/{pet_id}/quick-questions")
+async def get_quick_questions(pet_id: str, limit: int = Query(default=3, le=5)):
+    """
+    Get the next N unanswered questions for quick prompts in Mira.
+    MAX 3 per session by default to prevent overwhelming the user.
+    Prioritizes high-weight questions from diverse folders.
+    """
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "doggy_soul_answers": 1, "name": 1})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    answers = pet.get("doggy_soul_answers", {})
+    pet_name = pet.get("name", "your pet")
+    
+    # Collect all unanswered questions with their folder info
+    unanswered = []
+    for folder_key in FOLDER_KEYS:
+        folder = DOGGY_SOUL_QUESTIONS[folder_key]
+        for q in folder["questions"]:
+            if q["id"] not in answers or answers[q["id"]] is None or answers[q["id"]] == "":
+                unanswered.append({
+                    "question_id": q["id"],
+                    "question": q["question"].replace("your dog", pet_name),
+                    "type": q["type"],
+                    "options": q.get("options", []),
+                    "weight": q.get("weight", 1),
+                    "folder": folder_key,
+                    "folder_name": folder["name"],
+                    "folder_icon": folder["icon"]
+                })
+    
+    # Sort by weight (highest first) to prioritize impactful questions
+    unanswered.sort(key=lambda x: x["weight"], reverse=True)
+    
+    # Ensure diversity: pick from different folders when possible
+    selected = []
+    folders_used = set()
+    
+    # First pass: one from each folder
+    for q in unanswered:
+        if q["folder"] not in folders_used and len(selected) < limit:
+            selected.append(q)
+            folders_used.add(q["folder"])
+    
+    # Second pass: fill remaining with highest weight questions
+    for q in unanswered:
+        if len(selected) >= limit:
+            break
+        if q not in selected:
+            selected.append(q)
+    
+    return {
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "questions": selected[:limit],
+        "total_unanswered": len(unanswered),
+        "current_score": calculate_overall_score(answers)
+    }
+
+
 @pet_soul_router.post("/profile/{pet_id}/answer")
 async def save_answer(pet_id: str, answer: DoggyAnswer):
     """Save a single answer and update scores"""
