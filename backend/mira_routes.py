@@ -7687,6 +7687,32 @@ async def mira_chat(
     intent = detect_intent(user_message)
     
     # ═══════════════════════════════════════════════════════════════════════════
+    # MIRA OS CONTEXT - Layer Activation, Temporal Awareness, Safety Gates
+    # This makes Mira behave like an OS, not just a chatbot
+    # ═══════════════════════════════════════════════════════════════════════════
+    os_context = {
+        "layer_activation": pillar,
+        "temporal_context": None,
+        "safety_gates": [],
+        "picks_update": {"should_refresh": False, "pillar": pillar},
+        "proactive_alerts": [],
+        "memory_recall": None
+    }
+    
+    try:
+        if request.selected_pet_id:
+            os_context = await get_mira_os_context(
+                pet_id=request.selected_pet_id,
+                pillar=pillar,
+                intent=intent,
+                user_message=user_message,
+                db=db
+            )
+            logger.info(f"[MIRA OS] Context: layer={os_context.get('layer_activation')}, temporal={os_context.get('temporal_context')}, alerts={len(os_context.get('proactive_alerts', []))}")
+    except Exception as os_err:
+        logger.warning(f"[MIRA OS] Context fetch error: {os_err}")
+    
+    # ═══════════════════════════════════════════════════════════════════════════
     # EDGE CASE: Detect when user is asking about SOMEONE ELSE'S pet
     # "gift for a friend's dog", "my neighbor's cat", "another dog"
     # In this case, we should NOT use the selected pet's context
