@@ -32,15 +32,19 @@ LOCKED_PILLARS = [
     "celebrate", "adopt", "advisory", "paperwork", "emergency", "farewell"
 ]
 
-# Intent keywords
+# Intent keywords - PRIORITY ORDERED
+# Buy is checked BEFORE book to avoid false positives on "looking for"
 INTENT_KEYWORDS = {
-    "buy": ["buy", "purchase", "order", "shop", "shopping", "get me", "where to buy", "recommend product", "best product", "which brand", "add to cart", "checkout", "delivery"],
-    "book": ["book", "booking", "schedule", "arrange", "set up", "appointment", "reserve", "find me a", "get me a", "need a", "looking for", "want to book", "can you book", "help me book", "coordinate", "organise", "organize", "plan", "near me"],
-    "learn": ["how to", "guide", "tips", "advice", "tell me about", "what is", "explain", "teach", "learn", "understand", "education", "information", "video", "watch"],
+    "emergency": ["emergency", "urgent", "help now", "immediately", "asap", "can't breathe", "ate poison", "bleeding", "collapsed", "seizure", "choking"],
+    "buy": ["buy", "purchase", "order", "shop", "shopping", "get me a", "where to buy", "recommend product", "best product", "which brand", "add to cart", "checkout", "delivery", "deliver", "price", "cost", "how much", "looking for a cake", "looking for cake", "need a cake", "need cake", "want a cake", "want cake", "looking for a treat", "looking for treat", "looking for food", "looking for toy"],
+    "book": ["book", "booking", "schedule", "arrange", "set up", "appointment", "reserve", "want to book", "can you book", "help me book", "coordinate", "organise", "organize", "book a baker", "custom cake", "schedule delivery", "plan party", "book grooming", "book vet", "book trainer", "book walker", "book boarding", "book daycare", "book sitter"],
+    "learn": ["how to", "guide", "tips", "advice", "tell me about", "what is", "explain", "teach", "learn", "understand", "education", "information", "video", "watch", "why does", "when should"],
     "plan": ["plan", "planning", "prepare", "get ready", "checklist", "list"],
     "track": ["track", "tracking", "monitor", "check", "status", "progress", "history"],
-    "emergency": ["emergency", "urgent", "help", "now", "immediately", "asap", "can't breathe", "ate poison", "bleeding", "collapsed", "seizure", "choking"]
 }
+
+# Generic phrases that should NOT trigger book intent by themselves
+GENERIC_PHRASES_NOT_BOOK = ["looking for", "need a", "find me", "get me", "want a"]
 
 
 @dataclass
