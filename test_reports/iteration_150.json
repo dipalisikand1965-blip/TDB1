@@ -1,0 +1,116 @@
+{
+  "summary": "CELEBRATE → CAKE flow testing complete. All 18 pytest tests passed (100%). Key features verified: CELEBRATE pillar detection, os_context.celebrate_context with allergies, os_context.celebrate_picks with 4 cake options (Birthday Cake, Savoury, Pumpkin, Mini), no permission loops, no 'Indies have adaptable digestion' claims, chicken allergy respected, birthday detection in temporal_context (Mojo's birthday Feb 14 - 2 days away), concierge_handoff available for CELEBRATE pillar.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "celebrate_pillar_detection": {
+      "birthday_query": "PASS - 'I want to plan a birthday party for my dog' routes to pillar='celebrate'",
+      "party_query": "PASS - 'Help me throw a pawty for Mojo' routes to pillar='celebrate'",
+      "cake_query": "PASS - 'I need a birthday cake for my dog' routes to pillar='celebrate'"
+    },
+    "celebrate_context_generation": {
+      "structure": "PASS - celebrate_context contains pet_name, allergies, diet_restrictions, birthday, temperament, preferences",
+      "pet_name": "PASS - celebrate_context.pet_name='Mojo'",
+      "allergies": "PASS - celebrate_context.allergies=['Chicken']"
+    },
+    "celebrate_picks_generation": {
+      "picks_present": "PASS - celebrate_picks array contains cake options",
+      "birthday_cake_pick": "PASS - service_type='birthday_cake' with 'Dog-safe cake for Mojo (avoiding Chicken)'",
+      "savoury_cake_option": "PASS - service_type='cake_option_savoury' with 'chicken-free version available'",
+      "pumpkin_cake_option": "PASS - service_type='cake_option_pumpkin'",
+      "mini_cake_option": "PASS - service_type='cake_option_mini'",
+      "concierge_always_flag": "PASS - All cake picks have concierge_always:true"
+    },
+    "no_permission_loop": {
+      "suggest_cake_options": "PASS - 'Suggest cake options' generates celebrate_picks immediately without asking permission again",
+      "show_cake_options": "PASS - 'Show me cake options' generates celebrate_picks immediately"
+    },
+    "no_indie_digestion_claims": {
+      "birthday_cake_response": "PASS - Response does NOT contain 'Indies have adaptable digestion' or similar forbidden phrases"
+    },
+    "chicken_allergy_respected": {
+      "safety_gates": "PASS - safety_gates=[{type:'allergy', items:['Chicken']}]",
+      "celebrate_context_allergies": "PASS - celebrate_context.allergies=['Chicken']",
+      "savoury_cake_note": "PASS - Savoury cake pick 'why' mentions 'chicken-free version available'",
+      "llm_response": "PASS - LLM response explicitly states 'avoid chicken completely' and lists 'chicken-free' options"
+    },
+    "birthday_detection_temporal_context": {
+      "temporal_context_present": "PASS - temporal_context detected for Mojo",
+      "birthday_type": "PASS - temporal_context.type='birthday_upcoming'",
+      "days_until": "PASS - temporal_context.days_until=2",
+      "date": "PASS - temporal_context.date='February 14'",
+      "message": "PASS - temporal_context.message='Birthday in 2 days!'"
+    },
+    "concierge_handoff_available": {
+      "birthday_party_query": "PASS - concierge_handoff.available=true",
+      "cake_order_query": "PASS - concierge_handoff.available=true",
+      "cta": "PASS - concierge_handoff.cta='Connect to Concierge'"
+    },
+    "picks_update_signal": {
+      "should_refresh": "PASS - picks_update.should_refresh=true",
+      "pillar": "PASS - picks_update.pillar='celebrate'",
+      "context": "PASS - picks_update.context='celebration'",
+      "secondary_pillars": "PASS - picks_update.secondary_pillars=['dine', 'services']"
+    },
+    "outcome_language": {
+      "concierge_confirmation": "PASS - Uses 'Request Created ✓' and 'I'm arranging this for {pet_name} now' instead of 'sent to Concierge'"
+    }
+  },
+  "api_verification": {
+    "endpoint_tested": "/api/mira/chat",
+    "test_pet_id": "pet-99a708f1722a",
+    "test_pet_name": "Mojo",
+    "test_pet_breed": "Indie",
+    "test_pet_allergy": "Chicken",
+    "test_pet_birthday": "2026-02-14"
+  },
+  "os_context_verified_fields": {
+    "layer_activation": "VERIFIED - returns pillar name ('celebrate' for birthday/party/cake queries)",
+    "celebrate_context": "VERIFIED - returns {pet_name, allergies, diet_restrictions, birthday, temperament, preferences}",
+    "celebrate_picks": "VERIFIED - returns 4 cake options with title, why, cta, service_type, concierge_always:true",
+    "concierge_handoff": "VERIFIED - returns {available: true, reason: 'Celebration arrangements require coordination', cta: 'Connect to Concierge'}",
+    "safety_gates": "VERIFIED - returns [{type: 'allergy', items: ['Chicken']}]",
+    "temporal_context": "VERIFIED - returns {type: 'birthday_upcoming', days_until: 2, date: 'February 14', message: 'Birthday in 2 days!'}",
+    "picks_update": "VERIFIED - returns {should_refresh: true, pillar: 'celebrate', context: 'celebration', secondary_pillars: ['dine', 'services']}"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_celebrate_cake_flow.py",
+    "/app/test_reports/pytest/pytest_celebrate_cake_flow.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "CELEBRATE pillar keywords correctly defined at lines 4859-4868 in mira_routes.py including 'cake', 'birthday cake', 'centrepiece'",
+    "get_mira_os_context() generates celebrate_context and celebrate_picks at lines 199-310",
+    "celebrate_picks include 4 cake options: birthday_cake, cake_option_savoury, cake_option_pumpkin, cake_option_mini",
+    "Savoury cake option correctly notes 'chicken-free version available' when allergy detected",
+    "concierge_handoff always available for CELEBRATE pillar at lines 303-308",
+    "CELEBRATE → CAKE flow rules documented at lines 8126-8200",
+    "Guardrails against 'Indies have adaptable digestion' claims at lines 8179-8180",
+    "Outcome language updated at line 3861: 'I'm arranging this for {pet_name} now' instead of 'sent to Concierge'"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_celebrate_cake_flow.py"
+  ],
+  "success_rate": {
+    "backend": "100% (18/18 tests passed)",
+    "frontend": "N/A - backend only testing requested"
+  },
+  "test_credentials": {
+    "pet_id": "pet-99a708f1722a",
+    "pet_name": "Mojo",
+    "pet_breed": "Indie",
+    "pet_allergy": "Chicken",
+    "pet_birthday": "2026-02-14"
+  },
+  "seed_data_creation": "None - used existing Mojo pet data",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "CELEBRATE → CAKE flow fully verified. Key test file: /app/backend/tests/test_celebrate_cake_flow.py. All requirements met: 1) CELEBRATE pillar detection for birthday/party/cake queries, 2) os_context.celebrate_context with allergies/preferences, 3) os_context.celebrate_picks with 4 cake options, 4) No permission loops - cake options shown immediately, 5) No 'Indies have adaptable digestion' claims, 6) Chicken allergy respected, 7) Birthday detection in temporal_context (Mojo Feb 14), 8) concierge_handoff available. Previous pillars (DINE, STAY, TRAVEL) tested in iteration_149.json still working. NOTE: API expects 'selected_pet_id' not 'pet_id' in chat request body."
+}
