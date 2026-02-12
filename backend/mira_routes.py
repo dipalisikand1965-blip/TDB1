@@ -7421,8 +7421,12 @@ async def update_pet_soul_travel_dining(
         except Exception as e:
             logger.warning(f"Could not store memory: {e}")
 
-def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar: str = None, selected_pet: Dict = None) -> str:
-    """Build the comprehensive Mira system prompt - The Doggy Company's Care-Led Intelligence"""
+def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar: str = None, selected_pet: Dict = None, conversation_memories: str = "") -> str:
+    """Build the comprehensive Mira system prompt - The Doggy Company's Care-Led Intelligence
+    
+    Args:
+        conversation_memories: Pre-formatted string of learned memories to inject into context
+    """
     
     # Import soul intelligence for known fields
     try:
