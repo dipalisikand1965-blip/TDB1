@@ -5,6 +5,24 @@ MIRA to function as a "Lifestyle OS" - context-aware, proactive, safe, OS-like b
 
 ## Core Doctrine
 See `/app/memory/MIRA_OS_DOCTRINE.md` for the foundational system behavior.
+See `/app/memory/PILLAR_ARCHITECTURE_DOCTRINE.md` for structural decisions.
+
+---
+
+## 🎯 Question Bank Coverage - 100/100 ✅ (Feb 12, 2026)
+
+### Architecture Decisions (LOCKED)
+| Topic | Decision |
+|-------|----------|
+| Grooming | Inside CARE (service, not pillar) |
+| Shop | NOT a pillar (inside Services execution layer) |
+| Pet Photography | Inside CELEBRATE (service, not pillar) |
+| YouTube | Allowed inside LEARN as supporting media only |
+
+### Key Implementation
+- **Priority overrides** for ambiguous keywords (trainer→LEARN, not travel)
+- **Word boundary checking** for short keywords (ola, cab, car, train)
+- **Context detection** for symptoms (signs/not agreeing→CARE)
 
 ---
 
