@@ -666,11 +666,13 @@ async def get_pet_score_state(pet_id: str):
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     
-    # Get answers
+    # Get answers and additional data
     answers = pet.get("doggy_soul_answers", {})
+    preferences = pet.get("preferences", {})
+    soul = pet.get("soul", {})
     
-    # Calculate score
-    score_data = calculate_pet_soul_score(answers)
+    # Calculate score with all available data
+    score_data = calculate_pet_soul_score(answers, preferences, soul)
     
     # Get next recommended question
     current_tier_key = score_data["tier"]["key"] if score_data["tier"] else None
