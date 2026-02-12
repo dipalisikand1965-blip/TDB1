@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://mira-pillar-scores.preview.emergentagent.com
+**Preview URL:** https://smart-picks-24.preview.emergentagent.com
 
 ---
 

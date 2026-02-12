@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://mira-pillar-scores.preview.emergentagent.com/mira-demo**
+**https://smart-picks-24.preview.emergentagent.com/mira-demo**
 
 ---
 

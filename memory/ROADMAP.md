@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://mira-pillar-scores.preview.emergentagent.com
+https://smart-picks-24.preview.emergentagent.com
 
 ---
 
