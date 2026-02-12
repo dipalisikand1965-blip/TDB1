@@ -2900,11 +2900,13 @@ async def chat_with_mira_legacy(request: ChatRequest):
                 
                 if pets:
                     user_pets = pets
-                    pet_soul_context = "\n\n🐾 **USER'S PET PROFILES (Use this information naturally in conversation)**:\n"
+                    pet_soul_context = "\n\n🐾 **PET SOUL DATA - USE THIS FIRST (NOT GENERIC BREED INFO)**:\n"
                     for pet in pets:
                         identity = pet.get("identity", {})
                         soul = pet.get("soul", {})
                         preferences = pet.get("preferences", {})
+                        doggy_soul = pet.get("doggy_soul_answers", {})
+                        enrichments = pet.get("soul_enrichments", {})
                         
                         pet_name = pet.get('name', 'Pet')
                         breed = identity.get('breed', pet.get('breed', 'Unknown'))
@@ -2915,19 +2917,19 @@ async def chat_with_mira_legacy(request: ChatRequest):
 - Age: {identity.get('age', pet.get('age', pet.get('age_years', 'Unknown')))} 
 - Weight: {identity.get('weight', pet.get('weight', 'Not specified'))}
 """
-                        # Add allergies (CRITICAL for recommendations)
+                        # Add allergies (CRITICAL for recommendations) - PUT FIRST
                         allergies = preferences.get('allergies', pet.get('allergies', []))
                         if allergies:
                             if isinstance(allergies, list) and allergies:
-                                pet_soul_context += f"- ⚠️ ALLERGIES: {', '.join(allergies)} - NEVER recommend products with these ingredients!\n"
+                                pet_soul_context += f"- ⚠️ ALLERGIES: {', '.join(allergies)} - NEVER recommend products with these!\n"
                             elif isinstance(allergies, str) and allergies and allergies.lower() != 'none':
-                                pet_soul_context += f"- ⚠️ ALLERGIES: {allergies} - NEVER recommend products with these ingredients!\n"
+                                pet_soul_context += f"- ⚠️ ALLERGIES: {allergies} - NEVER recommend products with these!\n"
                         
                         # Add preferences (for personalized recommendations)
                         if preferences:
                             fav_flavors = preferences.get('favorite_flavors', [])
                             if fav_flavors:
-                                pet_soul_context += f"- Favorite flavors: {', '.join(fav_flavors) if isinstance(fav_flavors, list) else fav_flavors}\n"
+                                pet_soul_context += f"- ❤️ LOVES: {', '.join(fav_flavors) if isinstance(fav_flavors, list) else fav_flavors}\n"
                             treat_texture = preferences.get('treat_texture') or preferences.get('texture_preference')
                             if treat_texture:
                                 pet_soul_context += f"- Prefers {treat_texture} treats\n"
@@ -2937,6 +2939,36 @@ async def chat_with_mira_legacy(request: ChatRequest):
                             activity = preferences.get('activity_level')
                             if activity:
                                 pet_soul_context += f"- Activity level: {activity}\n"
+                            flavor_profile = preferences.get('flavor_profile')
+                            if flavor_profile:
+                                pet_soul_context += f"- Flavor profile: {flavor_profile}\n"
+                        
+                        # Add doggy_soul_answers (enriched profile data)
+                        if doggy_soul:
+                            life_stage = doggy_soul.get('life_stage')
+                            if life_stage:
+                                pet_soul_context += f"- Life stage: {life_stage}\n"
+                            temperament = doggy_soul.get('temperament')
+                            if temperament:
+                                pet_soul_context += f"- Temperament: {temperament}\n"
+                            health_conditions = doggy_soul.get('health_conditions')
+                            if health_conditions:
+                                pet_soul_context += f"- Health considerations: {health_conditions}\n"
+                            separation_anxiety = doggy_soul.get('separation_anxiety')
+                            if separation_anxiety:
+                                pet_soul_context += f"- Separation anxiety: {separation_anxiety}\n"
+                        
+                        # Add enrichments (learned from conversations)
+                        if enrichments:
+                            anxiety_triggers = enrichments.get('anxiety_triggers', [])
+                            if anxiety_triggers:
+                                pet_soul_context += f"- Anxiety triggers: {', '.join(anxiety_triggers) if isinstance(anxiety_triggers, list) else anxiety_triggers}\n"
+                            dislikes = enrichments.get('dislikes', [])
+                            if dislikes and dislikes != anxiety_triggers:
+                                pet_soul_context += f"- Dislikes: {', '.join(dislikes) if isinstance(dislikes, list) else dislikes}\n"
+                            fav_treats = enrichments.get('favorite_treats', [])
+                            if fav_treats:
+                                pet_soul_context += f"- Favorite treats (learned): {', '.join(fav_treats) if isinstance(fav_treats, list) else fav_treats}\n"
                         
                         # Add personality (for engagement style)
                         if soul:
