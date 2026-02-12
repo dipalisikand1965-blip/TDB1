@@ -3856,9 +3856,10 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         
         if execution_type == "CONCIERGE" and ticket_id and is_user_concluding:
             pet_name = request.pet_context.get("name", "your pet") if request.pet_context else "your pet"
+            # Use outcome language per MIRA BIBLE - not "sent to Concierge"
             concierge_confirmation = {
-                "title": "Request Received! 🎉",
-                "message": f"Your Pet Concierge® has received your request for {pet_name}. They'll get back to you shortly with the best options.",
+                "title": "Request Created ✓",
+                "message": f"I'm arranging this for {pet_name} now — I'll confirm the details shortly.",
                 "ticket_id": ticket_id,
                 "show_banner": True
             }
