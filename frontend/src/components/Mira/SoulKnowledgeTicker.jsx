@@ -151,18 +151,21 @@ const SoulKnowledgeTicker = ({
         onMouseLeave={() => setIsPaused(false)}
         data-testid="soul-knowledge-ticker"
       >
-        {/* Soul Score Badge - Left side, always visible */}
+        {/* Soul Score Badge - Left side, always visible - LINKS TO MY PETS */}
         <div 
           className={`ticker-soul-badge ${isGlowing ? 'score-growing' : ''}`}
           onClick={() => {
             hapticFeedback.buttonTap();
-            setShowExpanded(!showExpanded);
+            // Navigate to My Pets page with this pet's tab open
+            navigate(`/my-pets?pet=${petId}`);
           }}
+          title={`View ${petName}'s full Soul Profile`}
           data-testid="soul-score-badge"
         >
           <Brain className="w-3.5 h-3.5" />
           <span className="score-value">{Math.round(displayScore)}%</span>
           <span className="score-label">SOUL</span>
+          <ExternalLink className="w-2.5 h-2.5 opacity-60" />
         </div>
         
         {/* Rolling Ticker Track */}
