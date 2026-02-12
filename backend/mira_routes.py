@@ -9816,6 +9816,7 @@ Use this weather information to advise the user on pet activities. Be specific a
             logger.info("[CONTEXT] Building prompt WITHOUT pet context (asking about another pet)")
         else:
             system_prompt = build_mira_system_prompt(user, pets, pillar, selected_pet)
+            logger.info(f"[CONTEXT] Building prompt WITH pet context: selected_pet={selected_pet.get('name') if selected_pet else None}, pets_count={len(pets) if pets else 0}")
         
         # Build conversation history
         history_text = ""
