@@ -770,7 +770,7 @@ const MiraDemoPage = () => {
   
   // WEATHER & INTERACTIVE FEATURES
   const [currentWeather, setCurrentWeather] = useState(null);
-  const [showFeatureShowcase, setShowFeatureShowcase] = useState(true);
+  // NOTE: showFeatureShowcase now comes from useMiraUI hook
   
   // Feature showcase items - What Mira can do
   const MIRA_FEATURES = [
