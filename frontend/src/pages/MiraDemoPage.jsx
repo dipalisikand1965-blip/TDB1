@@ -250,12 +250,12 @@ const MiraDemoPage = () => {
   // UNIFIED PICKS VAULT: Replaces the old vault with tabbed interface
   const [showUnifiedVault, setShowUnifiedVault] = useState(false);
   
-  // Core conversation state
+  // Core conversation state (query and isProcessing remain here, others moved to useConversation)
   const [query, setQuery] = useState('');
-  const [conversationHistory, setConversationHistory] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   
   // NOTE: Pet state (pet, setPet, allPets, setAllPets) now comes from usePet hook above
+  // NOTE: conversationHistory, conversationContext, quickReplies, etc. now come from useConversation hook
   
   // UI modals and helpers
   const [showHelpModal, setShowHelpModal] = useState(false);
