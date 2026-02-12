@@ -103,12 +103,12 @@ It is NOT:
 | B3 | Safety Gate | ✅ COMPLETE | 21 passing |
 | B4 | Scoring Function | ✅ COMPLETE | 29 passing |
 | B5 | Concierge Logic | ✅ COMPLETE | 41 passing |
+| B6 | API Integration | ✅ COMPLETE | Live in /api/mira/chat |
 
 ### ⏳ PENDING PHASES
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| B6 | API Integration (/api/mira/chat) | ⏳ PENDING |
 | B7 | Events Log + Analytics | ⏳ PENDING |
 | B8 | Scenario Testing + Tuning | ⏳ PENDING |
 
