@@ -4362,8 +4362,35 @@ PILLARS = {
     "stay": {
         "name": "Stay",
         "icon": "🏨",
-        "keywords": ["hotel", "stay", "boarding", "daycare", "accommodation", "resort", "pawcation", "vacation", "kennel", "pet sitter"],
-        "urgency_default": "medium"
+        "keywords": [
+            # Home base and sleeping (per MIRA BIBLE questionnaire)
+            "where to sleep", "sleeping spot", "bed", "crate", "crate training", "sleeping arrangements",
+            "home setup", "safe space", "comfort corner", "resting spot",
+            # Alone time
+            "alone", "left alone", "separation anxiety", "stay alone", "dog proof", "when I'm out",
+            # Boarding and daycare
+            "boarding", "daycare", "kennel", "pet hotel", "pet sitter", "house sitter",
+            "overnight stay", "where should he stay", "boarding facility", "dog boarding",
+            # Hotel and travel stays
+            "hotel", "pet-friendly hotel", "accommodation", "homestay", "resort", "pawcation",
+            "hotel room", "travel stay", "vacation stay",
+            # Multi-dog and safety
+            "multi-dog", "shared space", "balcony safety", "building rules", "neighbors",
+            # Climate and comfort
+            "hot weather", "cold weather", "monsoon", "temperature", "fan", "AC",
+            # Moving and renovation
+            "moving house", "new home", "renovation", "new place"
+        ],
+        "urgency_default": "medium",
+        # STAY Pillar Concierge Picks (per MIRA BIBLE)
+        "concierge_picks": [
+            {"title": "Boarding Shortlist", "cta": "Find", "service_type": "boarding_search", "why": "Matched to temperament + vaccination constraints"},
+            {"title": "In-Home Sitter Brief", "cta": "Arrange", "service_type": "sitter_coordination", "why": "Written instructions for your home"},
+            {"title": "Home Stay Layout Plan", "cta": "Plan", "service_type": "home_setup", "why": "Zones, gates, balcony safety"},
+            {"title": "Daycare vs Walker Decision", "cta": "Decide", "service_type": "daycare_decision", "why": "Right fit for your schedule"},
+            {"title": "Pet-Friendly Hotel Search", "cta": "Find", "service_type": "hotel_search", "why": "Policy verified, no surprises at check-in"},
+            {"title": "Comfort Corner Setup", "cta": "Plan", "service_type": "comfort_setup", "why": "For recovery or senior dogs"}
+        ]
     },
     "travel": {
         "name": "Travel",
