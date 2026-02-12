@@ -17957,17 +17957,19 @@ async def get_learn_guide_with_video(
     
     guide = LEARNING_GUIDES[topic_key]
     
-    # Get supporting video if pet_id provided
+    # Get supporting video (works with or without pet_id)
     video_data = None
-    if pet_id:
+    try:
         video_response = await get_learn_video_support(
-            pet_id=pet_id,
+            pet_id=pet_id or "generic",
             topic=guide.get("video_topic"),
             behavior=guide.get("behavior"),
             db=db
         )
         if video_response.get("has_video"):
             video_data = video_response.get("video")
+    except Exception as e:
+        logger.warning(f"[LEARN GUIDE] Video fetch error: {e}")
     
     return {
         "success": True,
