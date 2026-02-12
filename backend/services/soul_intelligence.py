@@ -220,24 +220,22 @@ def get_soul_completion_score(pet: Dict, conversation_memories: List[Dict] = Non
     
     # Aggregate all data sources
     doggy_soul = pet.get("doggy_soul_answers", {})
-    soul_data = pet.get("soul", {})
+    soul_data = pet.get("soul", {})  # Deep soul data (persona, love_language, etc.)
     preferences = pet.get("preferences", {})
     insights = pet.get("insights", {})
-    deep_soul = pet.get("deep_soul", {})
     
     # Combine all sources
     all_answers = {
         **doggy_soul, 
         **soul_data, 
         **preferences,
-        **deep_soul,
         **pet  # Top-level fields like breed, weight, birth_date
     }
     
     # Track data sources for transparency
     data_sources = {
         "soul_form": len([k for k in doggy_soul.keys() if doggy_soul.get(k)]),
-        "deep_soul": len([k for k in soul_data.keys() if soul_data.get(k)]),
+        "soul_deep": len([k for k in soul_data.keys() if soul_data.get(k)]),
         "preferences": len([k for k in preferences.keys() if preferences.get(k)]),
         "conversation": len(conversation_memories) if conversation_memories else 0
     }
