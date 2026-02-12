@@ -8755,11 +8755,12 @@ FOLLOW-UP CONCISENESS RULE:
             if any(kw in history_text.lower() for kw in nutrition_keywords):
                 is_nutrition_query = True
         
-        # If it's a nutrition query in "dine" pillar, switch to "fit" pillar and don't do restaurant handoff
+        # DINE PILLAR OS-AWARENESS: Nutrition queries should STAY in "dine" pillar
+        # (Previously this switched to "fit", but per MIRA BIBLE, DINE handles home nutrition)
+        # Only prevent restaurant handoff for nutrition queries
         if is_nutrition_query and pillar == "dine":
-            logger.info("[MIRA] Nutrition query detected in 'dine' pillar - switching to 'fit' pillar for advisory response")
-            pillar = "fit"
-            is_listing_pillar = False  # Don't trigger restaurant handoff
+            logger.info("[MIRA] Nutrition query in 'dine' pillar - keeping in dine for advisory response (no restaurant handoff)")
+            is_listing_pillar = False  # Don't trigger restaurant handoff for nutrition
         
         # Detect if we're in a booking/search loop
         loop_indicators = [
