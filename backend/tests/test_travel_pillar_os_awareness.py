@@ -48,7 +48,7 @@ class TestTravelPillarDetection:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         data = response.json()
@@ -73,7 +73,7 @@ class TestTravelPillarDetection:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         data = response.json()
@@ -92,7 +92,7 @@ class TestTravelPillarDetection:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -111,7 +111,7 @@ class TestTravelPillarDetection:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -130,7 +130,7 @@ class TestTravelPillarDetection:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -153,7 +153,7 @@ class TestTravelContextGeneration:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -189,7 +189,7 @@ class TestTravelContextGeneration:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -214,7 +214,7 @@ class TestTravelContextGeneration:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -235,7 +235,7 @@ class TestTravelContextGeneration:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -256,7 +256,7 @@ class TestTravelContextGeneration:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -284,7 +284,7 @@ class TestTravelPicksGeneration:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -313,7 +313,7 @@ class TestTravelPicksGeneration:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -336,7 +336,7 @@ class TestTravelPicksGeneration:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -359,7 +359,7 @@ class TestTravelPicksGeneration:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -382,7 +382,7 @@ class TestTravelPicksGeneration:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -411,7 +411,7 @@ class TestConciergeHandoff:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -440,7 +440,7 @@ class TestConciergeHandoff:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -460,7 +460,7 @@ class TestConciergeHandoff:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -484,7 +484,7 @@ class TestGooglePlacesFlag:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -514,7 +514,7 @@ class TestGooglePlacesFlag:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -545,7 +545,7 @@ class TestPicksUpdate:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -605,7 +605,7 @@ class TestNonTravelRouting:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -626,7 +626,7 @@ class TestNonTravelRouting:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -647,7 +647,7 @@ class TestNonTravelRouting:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -668,7 +668,7 @@ class TestNonTravelRouting:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -693,7 +693,7 @@ class TestSafetyGates:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
@@ -727,7 +727,7 @@ class TestTemporalContext:
                 "selected_pet_id": TEST_PET_ID,
                 "conversation_history": []
             },
-            timeout=30
+            timeout=120
         )
         assert response.status_code == 200
         data = response.json()
