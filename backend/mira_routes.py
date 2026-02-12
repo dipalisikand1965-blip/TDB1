@@ -9413,6 +9413,12 @@ async def mira_chat(
             pets = [selected_pet]
             logger.info(f"[PET LOAD] Loaded {selected_pet.get('name')} directly - Mira now knows this pet")
     
+    # FALLBACK: If no selected_pet but pet_context provided in request, use it
+    # This supports anonymous users or testing without database
+    if not selected_pet and request.pet_context:
+        selected_pet = request.pet_context
+        logger.info(f"[PET LOAD] Using pet_context from request: {selected_pet.get('name')}")
+    
     # ═══════════════════════════════════════════════════════════════════════════
     # CHECK FOR PERSONALIZED PICKS REQUEST FIRST
     # "Show me personalized picks for Mojo" should open the picks vault
