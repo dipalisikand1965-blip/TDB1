@@ -11982,15 +11982,14 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 "learn_context": os_context.get("learn_context"),  # Life stage, training history
                 "learn_picks": os_context.get("learn_picks", []),  # Picks for LEARN pillar
                 "concierge_handoff": os_context.get("concierge_handoff")  # Always available for CELEBRATE/STAY/TRAVEL/CARE
-            },
-            # ═══════════════════════════════════════════════════════════════════════════
-            # MIRA OS SOUL INTELLIGENCE - Dynamic questions, completion score
-            # Aggregates ALL data sources: soul form + preferences + conversation learnings
-            # ═══════════════════════════════════════════════════════════════════════════
-            "soul_intelligence": None  # Will be set below
+            }
         }
         
-        # Calculate soul intelligence separately to handle async properly
+        # ═══════════════════════════════════════════════════════════════════════════
+        # MIRA OS SOUL INTELLIGENCE - Dynamic questions, completion score
+        # Aggregates ALL data sources: soul form + preferences + conversation learnings
+        # ═══════════════════════════════════════════════════════════════════════════
+        soul_intelligence_data = None
         if SOUL_INTELLIGENCE_AVAILABLE and selected_pet:
             try:
                 # Get conversation memories for this pet
@@ -11998,18 +11997,21 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                     {"pet_id": selected_pet.get("id")}
                 ).to_list(100)
                 
-                response_data["soul_intelligence"] = {
+                soul_intelligence_data = {
                     "completion_score": get_soul_completion_score(selected_pet, conversation_memories=pet_conv_memories),
                     "unanswered_questions": get_relevant_unanswered_questions(selected_pet, pillar, user_message, limit=3),
                     "suggested_question": suggest_question_for_context(selected_pet, pillar, user_message)
                 }
+                logger.info(f"[SOUL INTELLIGENCE] Calculated for {selected_pet.get('name')}: {soul_intelligence_data.get('completion_score', {}).get('total_score')}%")
             except Exception as soul_err:
                 logger.warning(f"[SOUL INTELLIGENCE] Error calculating: {soul_err}")
-                response_data["soul_intelligence"] = {
+                soul_intelligence_data = {
                     "completion_score": {"total_score": 0},
                     "unanswered_questions": [],
                     "suggested_question": None
                 }
+        
+        response_data["soul_intelligence"] = soul_intelligence_data
         
         return response_data
         
