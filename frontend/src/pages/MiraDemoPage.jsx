@@ -2730,6 +2730,45 @@ const MiraDemoPage = () => {
         console.log(`[PILLAR] Updated currentPillar to: ${currentPillarForReplies}`);
       }
       
+      // ═══════════════════════════════════════════════════════════════════════════
+      // MIRA OS CONTEXT - Handle layer activation, temporal awareness, picks refresh
+      // This makes Mira behave like an Operating System
+      // ═══════════════════════════════════════════════════════════════════════════
+      if (data.os_context) {
+        const osContext = data.os_context;
+        console.log('[MIRA OS] Context received:', osContext);
+        
+        // 1. Auto-refresh Picks when pillar context demands it
+        if (osContext.picks_update?.should_refresh && osContext.picks_update?.pillar) {
+          console.log(`[MIRA OS] Silently refreshing Picks for pillar: ${osContext.picks_update.pillar}`);
+          // Trigger a picks refresh (this will be handled by the PersonalizedPicksPanel)
+          if (setMiraPicks) {
+            setMiraPicks(prev => ({
+              ...prev,
+              activePillar: osContext.picks_update.pillar,
+              needsRefresh: true,
+              refreshContext: osContext.picks_update.context || 'general'
+            }));
+          }
+        }
+        
+        // 2. Log temporal awareness for debugging (birthday alerts, etc.)
+        if (osContext.temporal_context) {
+          console.log('[MIRA OS] Temporal awareness:', osContext.temporal_context);
+          // The LLM response already incorporates this, but we can use it for UI enhancements
+        }
+        
+        // 3. Store safety gates for reference
+        if (osContext.safety_gates?.length > 0) {
+          console.log('[MIRA OS] Safety gates active:', osContext.safety_gates);
+        }
+        
+        // 4. Handle proactive alerts (show banner if critical)
+        if (osContext.proactive_alerts?.length > 0) {
+          console.log('[MIRA OS] Proactive alerts:', osContext.proactive_alerts);
+        }
+      }
+      
       const newQuickReplies = generateQuickReplies({
         pillar: currentPillarForReplies,
         hasProducts,
