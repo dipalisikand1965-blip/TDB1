@@ -296,4 +296,4 @@ Password: test123
 
 **Audit Status:** COMPLETE
 **Generated:** February 9, 2026
-**Preview URL:** https://pet-os-core.preview.emergentagent.com
+**Preview URL:** https://memory-os-demo.preview.emergentagent.com

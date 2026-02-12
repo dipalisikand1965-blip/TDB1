@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://pet-os-core.preview.emergentagent.com
+https://memory-os-demo.preview.emergentagent.com
 
 ---
 
