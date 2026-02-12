@@ -105,8 +105,12 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
     try:
         # 1. TEMPORAL AWARENESS - Check birthdays, appointments, due dates
         pet = await db.pets.find_one({"pet_id": pet_id}, {"_id": 0})
+        if not pet:
+            pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+        
         if pet:
-            birthday = pet.get("birthday") or pet.get("date_of_birth")
+            # Check multiple birthday field names
+            birthday = pet.get("birthday") or pet.get("date_of_birth") or pet.get("birth_date") or pet.get("birthDate")
             if birthday:
                 try:
                     from dateutil.parser import parse as parse_date
@@ -129,6 +133,7 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
                             "date": this_year_bday.strftime("%B %d"),
                             "message": f"Birthday in {days_until} days!" if days_until > 1 else "Birthday tomorrow!" if days_until == 1 else "Birthday today!"
                         }
+                        logger.info(f"[OS CONTEXT] Birthday detected: {days_until} days away")
                 except Exception as e:
                     logger.debug(f"[OS CONTEXT] Birthday parse error: {e}")
         
