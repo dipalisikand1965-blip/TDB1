@@ -608,10 +608,8 @@ const MiraDemoPage = () => {
   // ═══════════════════════════════════════════════════════════════════════════
   // NOTE: Vault state (showVault, activeVaultData, vaultUserMessage, miraPicks, 
   // showMiraTray) now comes from useVault hook above
+  // NOTE: showConciergeOptions now comes from useMiraUI hook
   // ═══════════════════════════════════════════════════════════════════════════
-  
-  // Unified C® button state (collapsed by default, expands to show WhatsApp/Chat/Email)
-  const [showConciergeOptions, setShowConciergeOptions] = useState(false);
   
   // E018 & E019: Proactive Notifications - Birthday/Health Reminders
   const [proactiveAlerts, setProactiveAlerts] = useState({
