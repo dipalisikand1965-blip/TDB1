@@ -6115,17 +6115,34 @@ def detect_pillar(message: str, current_pillar: str = None) -> str:
             return "emergency"
     
     # ═══════════════════════════════════════════════════════════════════════════
+    # PRIORITY OVERRIDES: Some keywords have unambiguous meaning
+    # These take precedence over general keyword matching
+    # ═══════════════════════════════════════════════════════════════════════════
+    
+    # "trainer" = LEARN (not travel's "train")
+    if "trainer" in message_lower:
+        return "learn"
+    
+    # "lost" in travel context (new city, trip) = TRAVEL
+    if "lost" in message_lower and any(w in message_lower for w in ["city", "trip", "travel", "new place"]):
+        return "travel"
+    
+    # Food not agreeing / signs food = CARE (symptom), not DINE
+    if any(phrase in message_lower for phrase in ["not agreeing", "signs that", "seems off", "something wrong"]):
+        return "care"
+    
+    # ═══════════════════════════════════════════════════════════════════════════
     # CRITICAL: Word boundary checking for short keywords (DO NOT REMOVE!)
     # Problem: "Lola needs a haircut" was detected as "travel" because "Lola" 
     # contains "ola" (Indian cab service). Same issue with "car" in "scare", etc.
-    # Solution: Use regex \b word boundaries for keywords <= 3 chars in this set.
+    # Solution: Use regex \b word boundaries for keywords <= 5 chars in this set.
     # Fix date: Feb 12, 2026 | Test: /app/backend/tests/test_mira_p0_fixes.py
     # ═══════════════════════════════════════════════════════════════════════════
     WORD_BOUNDARY_KEYWORDS = {"ola", "cab", "car", "fly", "air", "bus", "van", "pet", "sit", "mat", "bed", "eat", "toy", "train"}
     
     def keyword_matches(kw: str, text: str) -> bool:
         """Check if keyword matches with word boundary awareness for short words"""
-        if len(kw) <= 3 and kw in WORD_BOUNDARY_KEYWORDS:
+        if len(kw) <= 5 and kw in WORD_BOUNDARY_KEYWORDS:
             # Use word boundary for short keywords
             import re
             return bool(re.search(r'\b' + re.escape(kw) + r'\b', text))
