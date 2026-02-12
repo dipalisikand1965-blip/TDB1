@@ -5380,6 +5380,7 @@ PILLARS = {
             # Home base and sleeping (per MIRA BIBLE questionnaire)
             "where to sleep", "sleeping spot", "bed", "crate", "crate training", "sleeping arrangements",
             "home setup", "safe space", "comfort corner", "resting spot",
+            "sleep", "sleeping", "ideally sleep",
             # Alone time
             "alone", "left alone", "separation anxiety", "stay alone", "dog proof", "when I'm out",
             # Boarding and daycare
