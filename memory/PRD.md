@@ -3,9 +3,29 @@
 ## Original Problem Statement
 MIRA to function as a "Lifestyle OS" - context-aware, proactive, safe, OS-like behavior with dynamic picks. **MIRA is NOT a chatbot - she is a memory-driven Pet Operating System.**
 
-## Core Doctrine
-See `/app/memory/MIRA_OS_DOCTRINE.md` for the foundational system behavior.
-See `/app/memory/PILLAR_ARCHITECTURE_DOCTRINE.md` for structural decisions.
+## Core Doctrine Files
+| Document | Purpose |
+|----------|---------|
+| `/app/memory/MIRA_OS_14_PILLARS_BIBLE.md` | **THE DEFINITIVE REFERENCE** - 14 pillars, what's included/excluded, pillar test |
+| `/app/memory/PILLAR_ARCHITECTURE_DOCTRINE.md` | Structural decisions, what is NOT a pillar |
+| `/app/memory/PROFILE_FIRST_DOCTRINE.md` | Ask when profile incomplete, never assume from breed |
+| `/app/memory/CRITICAL_FIXES_DO_NOT_REVERT.md` | Protected bug fixes |
+
+---
+
+## 🧬 MIRA OS LIFE MODEL
+
+| Layer | Purpose |
+|-------|---------|
+| Who the pet is | MOJO / SOUL |
+| What matters now | TODAY |
+| What should happen | PICKS |
+| What gets done | SERVICES |
+| What patterns exist | INSIGHTS |
+| What the parent understands | LEARN |
+| When humans step in | CONCIERGE |
+
+> **Pillars operate invisibly underneath. Users don't navigate pillars - Mira infers them.**
 
 ---
 
