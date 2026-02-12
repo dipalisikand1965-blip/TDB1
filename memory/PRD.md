@@ -75,19 +75,66 @@ It is NOT:
 
 ---
 
-## CURRENT AUDIT SCORE: 68/100
+## CURRENT AUDIT SCORE: 78/100 (Updated Dec 2025)
 
-| Domain | Score |
-|--------|-------|
-| Memory System | 70/100 |
-| Soul Intelligence | 75/100 |
-| Conversational Context | 75/100 |
-| Picks Engine | 35/100 |
-| Services Execution | 50/100 |
-| Proactive System | 40/100 |
-| 14 Pillars Coverage | 55/100 |
-| UI/UX Mobile | 80/100 |
-| Infrastructure | 95/100 |
+| Domain | Score | Notes |
+|--------|-------|-------|
+| Memory System | 70/100 | |
+| Soul Intelligence | 75/100 | Improved with Profile-First |
+| Conversational Context | 75/100 | |
+| **Picks Engine** | **70/100** | **B0, B1, B2 COMPLETE** |
+| Services Execution | 50/100 | |
+| Proactive System | 40/100 | |
+| 14 Pillars Coverage | 85/100 | All 13 pillars seeded |
+| UI/UX Mobile | 80/100 | |
+| Infrastructure | 95/100 | |
+
+---
+
+## 🎯 PICKS ENGINE STATUS (December 2025)
+
+### ✅ COMPLETED PHASES
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| B0 | Taxonomy Seeding | ✅ COMPLETE (1,000+ entries) |
+| B1 | Picks Catalogue | ✅ COMPLETE (110 picks) |
+| B2 | Classification Pipeline | ✅ COMPLETE (28 tests passing) |
+
+### ⏳ PENDING PHASES
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| B3 | Safety Gate Enhancement | ⏳ PENDING |
+| B4 | Scoring Function | ⏳ PENDING |
+| B5 | Concierge Logic | ⏳ PENDING |
+| B6 | Chat Integration | ⏳ PENDING |
+| B7 | Events Log Enhancement | ⏳ PENDING |
+| B8 | E2E Testing | ⏳ PENDING |
+| B9 | Picks UI | ⏳ PENDING |
+
+### KEY FILES
+
+```
+/app/backend/classification_pipeline.py     ← Main classification engine
+/app/backend/scripts/seed_taxonomy.py       ← B0 seeder (idempotent)
+/app/backend/scripts/seed_picks_catalogue.py ← B1 seeder (idempotent)
+/app/backend/tests/test_classification.py   ← 28 unit tests
+/app/memory/PICKS_ENGINE_HANDOVER.md        ← COMPLETE HANDOVER DOC
+```
+
+### DATABASE COLLECTIONS
+
+| Collection | Count | Purpose |
+|------------|-------|---------|
+| canonical_tags | 217 | Tag vocabulary |
+| tag_synonyms | 625 | Human language → tags |
+| service_verticals | 8 | Booking categories |
+| service_vertical_synonyms | 46 | Service matching |
+| service_types | 8 | Fulfilment modes |
+| service_type_synonyms | 61 | Fulfilment matching |
+| picks_catalogue | 110 | Next-best-actions |
+| events_log | Growing | Audit trail |
 
 ---
 
