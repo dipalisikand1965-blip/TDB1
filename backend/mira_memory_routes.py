@@ -310,8 +310,8 @@ async def get_what_mira_knows(
     identity = pet.get("identity", {})
     enrichments = pet.get("soul_enrichments", {})
     
-    # Calculate soul score consistently
-    score_data = calculate_pet_soul_score(soul_answers)
+    # Calculate soul score consistently - now with cross-referenced data
+    score_data = calculate_pet_soul_score(soul_answers, preferences, soul)
     calculated_overall_score = score_data.get("total_score", 0)
     logger.info(f"[WHAT-MIRA-KNOWS] Calculated score using pet_score_logic: {calculated_overall_score}")
     
