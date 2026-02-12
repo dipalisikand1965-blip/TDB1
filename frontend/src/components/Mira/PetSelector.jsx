@@ -5,13 +5,17 @@
  * Shows pet avatar, name, breed, and soul score
  * Soul score is clickable - links to pet profile
  * 
+ * NEW: Includes Intelligence Indicator showing Mira's learned memories
+ * 
  * Extracted from MiraDemoPage.jsx - Stage 5 Refactoring
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PawPrint, Check, ExternalLink } from 'lucide-react';
+import { PawPrint, Check, ExternalLink, Brain, Sparkles } from 'lucide-react';
 import hapticFeedback from '../../utils/haptic';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 /**
  * PetSelector Component
@@ -31,6 +35,27 @@ const PetSelector = ({
   onSelectPet
 }) => {
   const navigate = useNavigate();
+  const [intelligenceData, setIntelligenceData] = useState(null);
+  const [showIntelligenceTooltip, setShowIntelligenceTooltip] = useState(false);
+  
+  // Fetch intelligence data for current pet
+  useEffect(() => {
+    if (!currentPet?.id) return;
+    
+    const fetchIntelligence = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/mira/pet-intelligence/${currentPet.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setIntelligenceData(data);
+        }
+      } catch (err) {
+        console.log('[PetSelector] Could not fetch intelligence:', err);
+      }
+    };
+    
+    fetchIntelligence();
+  }, [currentPet?.id]);
   
   const handleToggle = () => {
     if (onToggle) onToggle();
@@ -47,23 +72,121 @@ const PetSelector = ({
     navigate(`/my-pets?pet=${petId}`);
   };
   
+  // Calculate intelligence score
+  const intelligenceScore = intelligenceData?.stats?.total || 0;
+  const hasLearnings = intelligenceScore > 0;
+  
   return (
     <>
-      {/* Pet Badge Button */}
-      <button 
-        className="mp-pet-badge"
-        onClick={handleToggle}
-        data-testid="pet-selector-btn"
-      >
-        <div className="mp-pet-avatar">
-          {currentPet.photo ? (
-            <img src={currentPet.photo} alt={currentPet.name} />
-          ) : (
-            <PawPrint />
-          )}
-        </div>
-        <span className="mp-pet-name">{currentPet.name}</span>
-      </button>
+      {/* Pet Badge Button with Intelligence Indicator */}
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        {/* Intelligence Indicator - Shows when Mira has learned things */}
+        {hasLearnings && (
+          <div
+            onMouseEnter={() => setShowIntelligenceTooltip(true)}
+            onMouseLeave={() => setShowIntelligenceTooltip(false)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '4px 8px',
+              background: 'linear-gradient(135deg, rgba(168,85,247,0.2), rgba(244,114,182,0.2))',
+              border: '1px solid rgba(168,85,247,0.3)',
+              borderRadius: '12px',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              hapticFeedback.buttonTap();
+              navigate(`/my-pets?pet=${currentPet.id}&tab=intelligence`);
+            }}
+            data-testid="intelligence-indicator"
+          >
+            <Brain size={12} style={{ color: '#a855f7' }} />
+            <span style={{ 
+              fontSize: '10px', 
+              fontWeight: 600, 
+              color: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '2px'
+            }}>
+              {intelligenceScore}
+              <Sparkles size={8} style={{ color: '#fbbf24' }} />
+            </span>
+          </div>
+        )}
+        
+        {/* Intelligence Tooltip */}
+        {showIntelligenceTooltip && intelligenceData && (
+          <div style={{
+            position: 'absolute',
+            top: '100%',
+            right: 0,
+            marginTop: '8px',
+            padding: '12px',
+            background: 'linear-gradient(145deg, #1a1a2e, #16213e)',
+            border: '1px solid rgba(168,85,247,0.3)',
+            borderRadius: '12px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+            minWidth: '200px',
+            zIndex: 1000
+          }}>
+            <div style={{ 
+              fontSize: '11px', 
+              fontWeight: 600, 
+              color: 'white',
+              marginBottom: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}>
+              <Brain size={14} style={{ color: '#a855f7' }} />
+              {currentPet.name}'s Mind
+            </div>
+            <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', marginBottom: '8px' }}>
+              Mira has learned {intelligenceScore} things about {currentPet.name}
+            </div>
+            {intelligenceData.recent_learnings?.slice(0, 3).map((l, i) => (
+              <div key={i} style={{
+                fontSize: '10px',
+                color: 'rgba(255,255,255,0.8)',
+                padding: '4px 8px',
+                background: 'rgba(255,255,255,0.05)',
+                borderRadius: '6px',
+                marginBottom: '4px'
+              }}>
+                • {l.value}
+              </div>
+            ))}
+            <div style={{ 
+              fontSize: '9px', 
+              color: '#a855f7', 
+              marginTop: '8px',
+              textAlign: 'center'
+            }}>
+              Click to view full profile
+            </div>
+          </div>
+        )}
+        
+        {/* Pet Badge Button */}
+        <button 
+          className="mp-pet-badge"
+          onClick={handleToggle}
+          data-testid="pet-selector-btn"
+        >
+          <div className="mp-pet-avatar">
+            {currentPet.photo ? (
+              <img src={currentPet.photo} alt={currentPet.name} />
+            ) : (
+              <PawPrint />
+            )}
+          </div>
+          <span className="mp-pet-name">{currentPet.name}</span>
+        </button>
+      </div>
       
       {/* Pet Dropdown */}
       {isOpen && (
