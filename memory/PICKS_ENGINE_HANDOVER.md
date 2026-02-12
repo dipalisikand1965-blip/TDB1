@@ -303,7 +303,7 @@ emergency → HARD OVERRIDE to emergency pillar, suppress ALL commerce
 }
 ```
 
-### picks_catalogue (UPDATED SCHEMA)
+### picks_catalogue (UPDATED SCHEMA v2)
 ```json
 {
   "pick_id": "string (UNIQUE)",
@@ -316,15 +316,20 @@ emergency → HARD OVERRIDE to emergency pillar, suppress ALL commerce
   "reason_template_enhanced": "string (optional, requires full profile)",
   "constraints": {
     "species": ["dog", "cat"],
-    "age_stage": ["puppy", "adult", "senior", null],
+    "age_stages": ["puppy", "adult", "senior"],
     "exclude_health_flags": [],
     "required_profile_fields": [],
+    "required_booking_fields": ["array: city, start_date, end_date, etc."],
+    "optional_booking_fields": ["array: medications, pet_weight, etc."],
     "enhanced_reason_requires": ["array of fields for enhanced template"],
-    "if_allergies_present": "ask_question | null"
+    "if_allergies_present": "ask_question | null",
+    "if_brachycephalic": "show_warning | null"
   },
   "allergy_question": "string (optional, shown if allergies present)",
+  "brachycephalic_warning": "string (optional, shown for flat-faced breeds)",
   "service_vertical": "string (for booking picks)",
-  "service_modes": ["array: at_home, salon, clinic, online, pickup_drop, boarding_facility, daycare_center, field"],
+  "service_modes": ["array: at_home, salon, clinic, online, pickup_drop, boarding_facility, host_home_boarding, in_home_sitter, vet_boarding, field"],
+  "temporal_triggers": {"travel_window": true, "flight_date": true, "pickup_time": true},
   "base_score": "number (0-100)",
   "concierge_complexity": "low | medium | high",
   "safety_level": "normal | caution | emergency",
@@ -334,7 +339,12 @@ emergency → HARD OVERRIDE to emergency pillar, suppress ALL commerce
 }
 ```
 
-**NOTE:** `service_types` renamed to `service_modes` to avoid confusion with `service_verticals`.
+**NOTES:**
+- `service_types` renamed to `service_modes` to avoid confusion with `service_verticals`
+- `age_stage: null` standardized to `age_stages: ["puppy", "adult", "senior"]`
+- `required_booking_fields` triggers questions before booking CTA
+- `temporal_triggers` boost picks when time-bound intent detected
+- `if_brachycephalic` shows breed-specific warnings for flat-faced pets
 
 ### events_log
 ```json
