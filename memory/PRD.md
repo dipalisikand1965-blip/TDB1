@@ -40,10 +40,14 @@ It is NOT:
 
 | Priority | Document | Purpose |
 |----------|----------|---------|
+| **P0** | `/app/memory/PICKS_ENGINE_HANDOVER.md` | **START HERE - Complete handover for Picks Engine** |
 | **P0** | `/app/memory/AGENT_START_HERE.md` | Master onboarding doc |
 | **P0** | `/app/memory/MIRA_OS_14_PILLARS_BIBLE.md` | 14 pillars definitive reference |
 | **P0** | `/app/memory/PICKS_ENGINE_SPEC_v1.md` | **PICKS ENGINE COMPLETE SPEC** |
 | **P0** | `/app/memory/MOBILE_FIRST_GOLDEN_RULES.md` | UI/UX compliance rules |
+| **P0** | `/app/memory/seeds/B0_DRAFT_TAXONOMY_FOR_APPROVAL.md` | **B0 Taxonomy (COMPLETE)** |
+| **P0** | `/app/memory/seeds/B1_PICKS_CATALOGUE.md` | **B1 Picks Catalogue (COMPLETE)** |
+| **P0** | `/app/memory/seeds/B2_CLASSIFICATION_TESTS.md` | **B2 Classification Tests (COMPLETE)** |
 | **P1** | `/app/memory/MIRA_OS_AUDIT.md` | Current system audit (68/100) |
 | **P1** | `/app/memory/MIRA_OS_ROADMAP.md` | Enhancement roadmap |
 | **P1** | `/app/memory/seeds/CANONICAL_TAGS_SEED.md` | Canonical tags data |
