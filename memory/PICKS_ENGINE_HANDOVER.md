@@ -487,6 +487,7 @@ result["primary_pillar"] = "care"    # ✅ From locked 13
 #   - Suppress product picks
 #   - Allow education (guides)
 #   - Allow vet coordination
+#   - Show gating questions if tag requires escalation assessment
 ```
 
 ### 5. Services is NOT a pillar
@@ -507,6 +508,39 @@ result["primary_pillar"] = "shop"  # ❌ NOT A PILLAR
 # RIGHT
 # Shop is triggered by intent: buy/purchase/order
 # The pillar is still dine, care, celebrate, etc.
+```
+
+### 7. Use service_modes NOT service_types
+```python
+# WRONG
+pick["service_types"] = ["salon", "at_home"]  # ❌ Ambiguous name
+
+# RIGHT
+pick["service_modes"] = ["salon", "at_home"]  # ✅ Clear: how service is delivered
+pick["service_vertical"] = "grooming"          # ✅ Clear: what service is
+```
+
+### 8. Use degrade-safe reason templates
+```python
+# WRONG - Breaks if profile incomplete
+"reason_template": "{pet_name} is a {breed} with a {coat_type} coat..."
+
+# RIGHT - Works without profile, enhances with profile
+"reason_template": "Regular grooming keeps {pet_name} healthy...",
+"reason_template_enhanced": "{pet_name} is a {breed} with a {coat_type} coat...",
+"constraints": {
+    "enhanced_reason_requires": ["breed", "coat_type"]
+}
+```
+
+### 9. Don't exclude allergies - ask questions instead
+```python
+# WRONG - Blocks entire pick
+"exclude_health_flags": ["allergies"]
+
+# RIGHT - Routes to question
+"if_allergies_present": "ask_question",
+"allergy_question": "Does your pet have any ingredients to avoid?"
 ```
 
 ---
