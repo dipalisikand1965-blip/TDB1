@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://mira-message-bug.preview.emergentagent.com
+**Preview URL:** https://pet-memory-engine.preview.emergentagent.com
 
 ---
 
