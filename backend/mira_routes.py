@@ -8388,6 +8388,57 @@ IMPORTANT: When giving weather-based advice:
 - Suggest indoor alternatives if weather is bad
 """
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # MIRA OS INTELLIGENCE - Temporal awareness, safety gates, memory recall
+        # ═══════════════════════════════════════════════════════════════════════════
+        os_intelligence_instruction = ""
+        
+        # Temporal context (birthday, appointments, etc.)
+        temporal = os_context.get("temporal_context")
+        if temporal and temporal.get("type") == "birthday_upcoming":
+            days = temporal.get("days_until", 99)
+            date = temporal.get("date", "soon")
+            pet_name_for_temporal = selected_pet.get("name") if selected_pet else "their pet"
+            os_intelligence_instruction += f"""
+🎂 TEMPORAL AWARENESS (BIRTHDAY):
+{pet_name_for_temporal}'s birthday is {date} - {days} days away!
+- If user is planning a celebration, MENTION this: "I see {pet_name_for_temporal}'s birthday is coming up in {days} days!"
+- Show awareness of the timing - this makes Mira feel like she KNOWS the pet
+- Suggest appropriate timeline for preparations
+"""
+        
+        # Safety gates (allergies, health constraints)
+        safety_gates = os_context.get("safety_gates", [])
+        if safety_gates:
+            allergies = [g for g in safety_gates if g.get("type") == "allergy"]
+            health_flags = [g for g in safety_gates if g.get("type") == "health"]
+            
+            if allergies and allergies[0].get("items"):
+                allergy_items = ", ".join(allergies[0].get("items", [])[:3])
+                os_intelligence_instruction += f"""
+⚠️ SAFETY GATE (ALLERGIES):
+This pet has allergies to: {allergy_items}
+- ALWAYS mention you'll keep these in mind when suggesting food/treats
+- For birthday cakes: "I'll make sure the cake is safe for {pet_name}'s sensitivities"
+"""
+            
+            if health_flags and health_flags[0].get("items"):
+                health_items = ", ".join(health_flags[0].get("items", [])[:2])
+                os_intelligence_instruction += f"""
+⚠️ SAFETY GATE (HEALTH):
+Health considerations: {health_items}
+- Factor this into activity and food recommendations
+"""
+        
+        # Memory recall
+        memory_recall = os_context.get("memory_recall")
+        if memory_recall:
+            os_intelligence_instruction += f"""
+💭 MEMORY RECALL:
+You remember: "{memory_recall.get('text', '')}"
+- You can naturally reference this: "I remember {memory_recall.get('text', '')[:50]}..."
+"""
+        
         # Build pet names reference for prompt
         if is_asking_about_another_pet:
             pet_names_ref = "their friend's/someone else's pet (NOT the user's own pet)"
