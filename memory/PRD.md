@@ -127,22 +127,47 @@ See `/app/memory/MIRA_OS_DOCTRINE.md` for the foundational system behavior.
 
 ## Remaining Work
 
-### 🔴 P0 - COMPLETED
-- ~~Data Sync Issue~~ - FIXED Feb 12, 2026
+### 🟢 P0 - COMPLETED (Feb 12, 2026)
+- ~~Data Sync Issue~~ - FIXED
+- ~~Personalisation Hierarchy~~ - FIXED (was inverted, now pet-first)
+- ~~Versioned Storage~~ - IMPLEMENTED
+- ~~Intelligence Depth Score~~ - IMPLEMENTED
 
-### 🟡 P1 - Versioned Storage (Next Priority)
-- Temporal versioning for soul_answers
-- Trait confidence evolution
-- Behavioral shift detection
-- See: `/app/memory/VERSIONED_STORAGE_PLAN.md`
+### 🟡 P1 - Picks Engine Re-ranking (Next Priority)
+- Dynamic picks based on conversation context
+- Catalogue-first, concierge-always principle
+- Pillar-aware suggestions
 
-### 🟡 P2 - Intelligence Depth Score
-- Multi-factor scoring
-- 5-tier system (Curious Pup → Soulmate)
+### 🟡 P2 - Service/Purchase History
+- Track bookings and purchases
+- Learn from transaction patterns
+- Enable smart re-ordering
 
 ### 🔵 P3 - MiraDemoPage Refactor
 - 4,298 lines causing performance issues
 - Break into smaller components
+
+---
+
+## New APIs Added (Feb 12, 2026)
+
+### Intelligence Score
+```bash
+curl "$API_URL/api/mira/intelligence-score/{pet_id}"
+# Returns: total_score, tier, breakdown, suggestions
+```
+
+### Versioned Storage
+```bash
+# Store trait with confidence evolution
+POST /api/mira/versioned/store-trait?pet_id=xxx&trait_type=anxiety_trigger&trait_value=thunderstorms
+
+# Get all traits
+GET /api/mira/versioned/all-traits/{pet_id}
+
+# Detect behavioral shifts
+GET /api/mira/versioned/behavioral-shifts/{pet_id}
+```
 
 ---
 
@@ -153,6 +178,7 @@ All changes are in main codebase files:
 - No migration scripts needed
 - Uses existing collections
 - Memory extraction starts automatically
+- New versioned storage creates indexes automatically
 
 ### Verification Command
 ```bash
@@ -166,7 +192,7 @@ curl -s -X POST "$API_URL/api/mira/chat" \
 
 ## Comprehensive Roadmap Audit (Feb 12, 2026)
 
-### OVERALL SYSTEM SCORE: 58/100
+### OVERALL SYSTEM SCORE: 68/100 (up from 58)
 
 | Domain | Score | Gap |
 |--------|-------|-----|
