@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import { Phone, MessageSquare, Mail, Headphones } from 'lucide-react';
+import { Phone, MessageSquare, Mail, Headphones, RefreshCw } from 'lucide-react';
 
 /**
  * InlineConciergeCard Component
@@ -17,11 +17,13 @@ import { Phone, MessageSquare, Mail, Headphones } from 'lucide-react';
  * @param {Object} props.pet - Pet object { name, breed }
  * @param {Function} props.onChatHandoff - Called when chat option is clicked
  * @param {string} props.context - Optional context about why concierge is being offered
+ * @param {Function} props.onNewTopic - Called when New Topic is clicked
  */
 const InlineConciergeCard = ({ 
   pet = { name: 'your pet', breed: '' },
   onChatHandoff,
-  context = null
+  context = null,
+  onNewTopic
 }) => {
   const whatsappMessage = encodeURIComponent(
     `Hi, I need help with ${pet.name}${pet.breed ? ` (${pet.breed})` : ''}.`
@@ -41,45 +43,78 @@ const InlineConciergeCard = ({
         boxShadow: '0 4px 20px rgba(139, 92, 246, 0.15)'
       }}
     >
-      {/* Header */}
+      {/* Top Bar with New Topic */}
       <div 
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
+          justifyContent: 'space-between',
           marginBottom: '12px',
           paddingBottom: '12px',
           borderBottom: '1px solid rgba(139, 92, 246, 0.2)'
         }}
       >
-        <div 
-          style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          <Headphones size={16} color="white" />
-        </div>
-        <div>
-          <span 
-            style={{ 
-              color: '#10B981',
-              fontWeight: '700',
-              fontSize: '15px',
-              letterSpacing: '0.5px'
+        {/* Left: Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div 
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
           >
-            C° 
-          </span>
-          <span style={{ color: 'white', fontWeight: '600', fontSize: '15px' }}>
-            Concierge Help
-          </span>
+            <Headphones size={16} color="white" />
+          </div>
+          <div>
+            <span 
+              style={{ 
+                color: '#10B981',
+                fontWeight: '700',
+                fontSize: '15px',
+                letterSpacing: '0.5px'
+              }}
+            >
+              C° 
+            </span>
+            <span style={{ color: 'white', fontWeight: '600', fontSize: '15px' }}>
+              Concierge Help
+            </span>
+          </div>
         </div>
+        
+        {/* Right: New Topic Button */}
+        {onNewTopic && (
+          <button
+            onClick={onNewTopic}
+            data-testid="inline-concierge-new-topic"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 12px',
+              borderRadius: '20px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              color: 'rgba(255, 255, 255, 0.8)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: '500',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+            }}
+          >
+            <RefreshCw size={12} /> New Topic
+          </button>
+        )}
       </div>
       
       {/* Description */}
@@ -141,7 +176,7 @@ const InlineConciergeCard = ({
         
         {/* Chat Button */}
         <button 
-          onClick={onChatHandoff}
+          onClick={() => onChatHandoff?.()}
           data-testid="inline-concierge-chat"
           style={{
             display: 'flex',
