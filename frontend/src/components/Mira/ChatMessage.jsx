@@ -68,7 +68,12 @@ const shouldShowConciergeCard = (content) => {
     'concierge® has been notified',
     'concierge® will reach',
     'your pet concierge®',
-    "i've asked your pet concierge"
+    "i've asked your pet concierge",
+    // More patterns from actual responses
+    'our human concierge',
+    'loop in our',
+    'concierge® to fine',
+    'human concierge®'
   ];
   
   return conciergePatterns.some(pattern => lowerContent.includes(pattern));
