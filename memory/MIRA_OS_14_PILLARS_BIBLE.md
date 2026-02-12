@@ -210,18 +210,290 @@
 ### 1️⃣4️⃣ SERVICES
 **Execution and fulfilment layer.**
 
-⚠️ **This is NOT a life domain. This is how action happens.**
+⚠️ **This is NOT a life domain. This is NOT a pillar. This is how action happens.**
 
-✅ **Includes:**
-- Bookings
-- Sourcing
-- Scheduling
-- Subscriptions
-- Task management
-- Coordination
-- Fulfilment tracking
+---
 
-> Everything operational lives here.
+## ⚙️ SERVICES — EXHAUSTIVE SYSTEM DEFINITION
+
+### 1) What Services IS (core concept)
+
+Services is the **operational execution layer** of Mira OS.
+
+It is where **decisions become real-world action**.
+
+```
+Pillars decide what domain we are in.
+Picks decide what should be done.
+Services actually does it.
+```
+
+Services exists to:
+- Create tasks
+- Manage fulfilment
+- Track progress
+- Coordinate humans, vendors, logistics
+- Complete outcomes
+
+> **It is the system's "hands".**
+
+---
+
+### 2) What Services is NOT
+
+Services is NOT:
+- ❌ a lifestyle domain
+- ❌ a knowledge category
+- ❌ a topic classification
+- ❌ a user browsing area
+- ❌ a marketplace
+- ❌ a product catalogue
+- ❌ **a pillar**
+
+It does not represent **why** the user is acting.
+It represents **how** action is executed.
+
+---
+
+### 3) Relationship to Pillars (CRITICAL)
+
+**Every service originates from a pillar.**
+
+| Pillar | Service Example |
+|--------|-----------------|
+| Care | Arrange grooming appointment |
+| Dine | Create meal plan delivery |
+| Stay | Book boarding |
+| Travel | Arrange pet travel documents |
+| Celebrate | Plan birthday party |
+| Learn | Book trainer session |
+| Emergency | Arrange vet transport |
+| Paperwork | Obtain vaccination certificate |
+
+**One Services system serves all pillars.**
+Services is universal infrastructure.
+
+---
+
+### 4) When Services Activates
+
+Services activates when the user (or Mira) moves from:
+- 👉 thinking
+- 👉 exploring
+- 👉 deciding
+
+to:
+- 👉 **doing**
+
+**Trigger examples:**
+- User taps "Arrange"
+- User confirms plan
+- Mira creates task automatically
+- Reminder becomes due
+- Emergency action initiated
+
+---
+
+### 5) What Services Manages Internally
+
+Services manages **tasks**.
+
+A task is a structured execution object.
+
+**Every task has:**
+- `pet_id`
+- `originating_pillar`
+- `action_description`
+- `constraints`
+- `status_lifecycle`
+- `responsible_entity`
+- `timestamps`
+- `communication_history`
+
+---
+
+### 6) Task Lifecycle (MUST be implemented exactly)
+
+```
+draft
+requested
+awaiting_user
+in_progress
+confirmed
+completed
+cancelled
+```
+
+**Optional operational states:**
+- `vendor_contacted`
+- `scheduled`
+- `rescheduled`
+- `failed_attempt`
+- `escalated`
+
+---
+
+### 7) Service UX Flow
+
+User taps a Pick → enters Services.
+
+**Services screen shows:**
+1. **What we will arrange** - execution steps
+2. **What we need from you** - missing fields only
+3. **Confirm & Arrange** button
+
+**After confirmation:**
+- Task created
+- Status visible
+- Notification pipeline activated
+- User returns to chat
+
+---
+
+### 8) Types of Services (execution categories)
+
+**A) Arrangement Services** - Coordination required
+- Grooming appointment
+- Boarding reservation
+- Trainer booking
+- Photoshoot planning
+
+**B) Procurement Services** - Acquiring something
+- Special diet sourcing
+- Medication delivery
+- Equipment purchase assistance
+
+**C) Documentation Services** - Paperwork or compliance
+- Certificates
+- Registrations
+- Travel permits
+
+**D) Advisory Execution** - Human expertise coordination
+- Specialist consultation
+- Second opinion
+
+**E) Emergency Response** - Immediate action orchestration
+- Ambulance
+- Nearest vet routing
+- Urgent transport
+
+---
+
+### 9) Data Owned by Services
+
+Services owns:
+- `tasks`
+- `fulfilment_status`
+- `vendor_communication`
+- `scheduling_data`
+- `confirmation_timestamps`
+- `service_outcomes`
+
+**These outcomes feed back into memory and trait confidence.**
+
+---
+
+### 10) How Services Interacts with Other OS Layers
+
+| Layer | Interaction |
+|-------|-------------|
+| **Chat** | Initiates and monitors services |
+| **Picks** | Generate service entry points |
+| **Today** | Shows time-bound services |
+| **Notifications** | Report service updates |
+| **Insights** | Analyses service history patterns |
+
+---
+
+### 11) Service Outcomes Feed Memory (IMPORTANT)
+
+Service outcomes are **high-confidence behavioural evidence**.
+
+| Outcome | Memory Update |
+|---------|---------------|
+| Grooming completed successfully | Grooming cadence trait strengthened |
+| Boarding stress reported | Anxiety trait updated |
+| Meal plan rejected | Food preference adjusted |
+
+**Services is a primary memory enrichment engine.**
+
+---
+
+### 12) Service Creation Rules
+
+A service can be created:
+- ✔ by user tap
+- ✔ by Mira recommendation accepted
+- ✔ automatically when due item confirmed
+- ✔ emergency override
+
+**Never automatically without explicit user awareness.**
+
+---
+
+### 13) What Makes Services OS-Grade (not app-grade)
+
+OS-grade services are:
+- Persistent across sessions
+- Trackable lifecycle
+- Multi-step capable
+- Multi-pet capable
+- Vendor-agnostic
+- Outcome recorded
+- Memory updating
+- Notification driven
+- Interruption tolerant
+- Offline queueable
+
+---
+
+### 14) UI Structure of Services Surface
+
+**Services shows:**
+- Active tasks
+- Scheduled tasks
+- Completed tasks
+- Cancelled tasks
+- Task detail view
+
+**Each task detail contains:**
+- Originating pillar
+- Objective
+- Execution steps
+- Current status
+- Next action required
+
+---
+
+### 15) Why Services MUST Remain a Surface (Never a Pillar)
+
+Because pillars answer:
+> 👉 **what area of life?**
+
+Services answers:
+> 👉 **what action is happening?**
+
+**Mixing them collapses the OS architecture.**
+
+If Services becomes a pillar:
+- Classification breaks
+- Picks logic breaks
+- Memory attribution breaks
+- UI mental model breaks
+
+---
+
+### 16) One-Sentence Definition (for engineers)
+
+> **Services is the unified execution infrastructure that converts decisions from any pillar into tracked real-world outcomes through structured tasks and fulfilment workflows.**
+
+---
+
+### 17) Ultra-Short Version (for standup)
+
+> **Services is where things get done.**
+> **Pillars decide context.**
+> **Services executes action.**
 
 ---
 
