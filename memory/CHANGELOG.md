@@ -1,5 +1,40 @@
 # MIRA OS - CHANGELOG
 
+## [2025-12-XX] - Picks Engine B5 Concierge Logic Complete
+
+### Added
+
+**Concierge Logic Module** (`/app/backend/concierge_logic.py`)
+- Implements "always-on" concierge paradigm - never shown/hidden, only prominence shifts
+- Three prominence levels: PRIMARY, SECONDARY, QUIET
+- Mandatory PRIMARY triggers: safety, low confidence, time pressure, multi-step
+- Experience-level PRIMARY triggers: coordination value, pick complexity
+- Dynamic CTA text based on pillar and context
+- Commerce suppression for safety overrides
+
+**Test Suite** (`/app/backend/tests/test_concierge_logic.py`)
+- 41 unit tests covering all concierge scenarios
+- Tests for time pressure detection, multi-step detection, coordination value
+- Integration tests for grooming, cake, emergency scenarios
+
+### Key Concierge Logic Rules
+- `safety_level = emergency/caution` → PRIMARY + suppress commerce
+- `confidence < 0.65` → PRIMARY (ambiguity)
+- Time keywords (today/urgent/asap) → PRIMARY
+- Multiple service verticals → PRIMARY (multi-step)
+- Celebrate/Travel/Stay + booking intent → PRIMARY (coordination value)
+- `concierge_complexity = high` → PRIMARY
+- Simple guide requests → QUIET
+
+### Test Results
+- B2 Classification: 28 passing
+- B3 Safety Gate: 21 passing
+- B4 Scoring Logic: 29 passing
+- B5 Concierge Logic: 41 passing
+- **Total: 119 tests passing**
+
+---
+
 ## [2025-12-XX] - Picks Engine B4 Scoring Logic Complete
 
 ### Added
