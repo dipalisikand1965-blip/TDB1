@@ -11107,6 +11107,9 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 "picks_update": os_context.get("picks_update", {"should_refresh": pillar in ["celebrate", "travel", "care", "dine", "stay"], "pillar": pillar}),
                 "proactive_alerts": os_context.get("proactive_alerts", []),  # Urgent reminders
                 "memory_recall": os_context.get("memory_recall"),  # Relevant past memory
+                # CELEBRATE PILLAR SPECIFIC - Birthday, party, cake context
+                "celebrate_context": os_context.get("celebrate_context"),  # Pet name, allergies, preferences
+                "celebrate_picks": os_context.get("celebrate_picks", []),  # Concierge picks for CELEBRATE pillar
                 # DINE PILLAR SPECIFIC - Diet/nutrition context
                 "dine_context": os_context.get("dine_context"),  # Current diet, allergies, restrictions
                 "dine_picks": os_context.get("dine_picks", []),  # Concierge picks for DINE pillar
@@ -11116,7 +11119,7 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 # TRAVEL PILLAR SPECIFIC - Trips, transport, relocation context
                 "travel_context": os_context.get("travel_context"),  # Temperament, size, health flags, brachycephalic
                 "travel_picks": os_context.get("travel_picks", []),  # Concierge picks for TRAVEL pillar
-                "concierge_handoff": os_context.get("concierge_handoff")  # Always available for STAY/TRAVEL
+                "concierge_handoff": os_context.get("concierge_handoff")  # Always available for CELEBRATE/STAY/TRAVEL
             }
         }
         
