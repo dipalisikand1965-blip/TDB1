@@ -12105,6 +12105,50 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
         except Exception as ctx_err:
             logger.warning(f"[CONTEXT] Could not store context: {ctx_err}")
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # PICKS ENGINE (B6) - Next-Best-Action Recommendations
+        # Pipeline: classification → safety gate → pick scoring → concierge logic
+        # ═══════════════════════════════════════════════════════════════════════════
+        picks_engine_output = None
+        enable_picks_debug = request.debug if hasattr(request, 'debug') else False
+        
+        if PICKS_ENGINE_AVAILABLE:
+            try:
+                # Run the Picks Engine pipeline
+                picks_engine_output = await run_picks_engine(
+                    message=user_message,
+                    pet=selected_pet,
+                    session_id=session_id,
+                    debug=enable_picks_debug,
+                    max_picks=5
+                )
+                
+                logger.info(f"[PICKS ENGINE] Generated {len(picks_engine_output.picks)} picks, concierge={picks_engine_output.concierge.get('cta_prominence')}")
+                
+                # ═══════════════════════════════════════════════════════════════════
+                # SAFETY OVERRIDE ENFORCEMENT (Non-negotiables)
+                # Emergency: hard override, suppress commerce
+                # Caution: suppress shopping, allow education
+                # ═══════════════════════════════════════════════════════════════════
+                safety = picks_engine_output.safety_override
+                if safety.get("active"):
+                    safety_level = safety.get("level")
+                    
+                    if safety_level == "emergency":
+                        # Emergency: suppress all commerce, force concierge to primary
+                        logger.warning(f"[PICKS ENGINE] EMERGENCY OVERRIDE - suppressing commerce")
+                        products = []  # Clear product recommendations
+                        
+                    elif safety_level == "caution":
+                        # Caution: suppress shopping products, allow educational content
+                        logger.info(f"[PICKS ENGINE] CAUTION MODE - filtering products")
+                        # Filter to only educational/informational products
+                        products = [p for p in products if p.get("is_guide") or p.get("is_educational")]
+                
+            except Exception as picks_err:
+                logger.error(f"[PICKS ENGINE] Error running pipeline: {picks_err}")
+                picks_engine_output = None
+        
         response_data = {
             "response": response,
             "session_id": session_id,
