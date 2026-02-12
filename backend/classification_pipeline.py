@@ -242,27 +242,79 @@ class ClassificationPipeline:
         
         return safety_level
     
-    def _step3_intent_detection(self, text: str, safety_level: str) -> str:
-        """Step 3: Detect user intent."""
+    def _step3_intent_detection(self, text: str, safety_level: str, matched_tags: Dict) -> str:
+        """Step 3: Detect user intent with priority ordering."""
         normalized = self._normalize_text(text)
         
-        # Emergency safety level = emergency intent
+        # Emergency safety level = emergency intent (hard override)
         if safety_level == "emergency":
             return "emergency"
         
-        # Score each intent
-        intent_scores = {}
-        for intent, keywords in INTENT_KEYWORDS.items():
-            score = 0
-            for keyword in keywords:
-                if keyword in normalized:
-                    score += 1
-            intent_scores[intent] = score
+        # Check for explicit emergency keywords first
+        for keyword in INTENT_KEYWORDS["emergency"]:
+            if keyword in normalized:
+                return "emergency"
         
-        # Get highest scoring intent
-        if max(intent_scores.values()) > 0:
-            best_intent = max(intent_scores, key=intent_scores.get)
-            return best_intent
+        # Check for explicit book keywords (high confidence booking signals)
+        book_keywords = ["book", "booking", "schedule", "arrange", "appointment", "reserve", 
+                        "book a baker", "custom cake", "book grooming", "book vet", 
+                        "book trainer", "book walker", "book boarding", "book daycare"]
+        for keyword in book_keywords:
+            if keyword in normalized:
+                return "book"
+        
+        # Check for explicit buy keywords
+        buy_keywords = ["buy", "purchase", "order", "shop", "price", "cost", "how much", 
+                       "deliver", "delivery", "checkout", "add to cart"]
+        for keyword in buy_keywords:
+            if keyword in normalized:
+                return "buy"
+        
+        # Check for "looking for" + product-type tags (= buy intent)
+        product_tags = ["cakes", "treats", "toys", "food", "chews", "harnesses", "supplements_guidance"]
+        if any(phrase in normalized for phrase in ["looking for", "need a", "want a", "get me"]):
+            for tag in matched_tags:
+                if tag in product_tags:
+                    return "buy"
+        
+        # Check for "looking for" + service-type tags (= book intent)
+        service_tags = ["grooming", "boarding", "daycare", "pet_sitting", "vet_appointment", 
+                       "daily_walks", "trainer_class", "photo_shoot"]
+        if any(phrase in normalized for phrase in ["looking for", "need a", "want a", "find me"]):
+            for tag in matched_tags:
+                if tag in service_tags:
+                    return "book"
+        
+        # Check for learn intent
+        for keyword in INTENT_KEYWORDS["learn"]:
+            if keyword in normalized:
+                return "learn"
+        
+        # Check for plan intent
+        for keyword in INTENT_KEYWORDS["plan"]:
+            if keyword in normalized:
+                return "plan"
+        
+        # Check for track intent
+        for keyword in INTENT_KEYWORDS["track"]:
+            if keyword in normalized:
+                return "track"
+        
+        # Default: if we have tags but no clear intent, infer from pillar
+        if matched_tags:
+            pillars_in_tags = set(data["pillar"] for data in matched_tags.values())
+            
+            # Celebrate pillar + cake/treats = likely buy
+            if "celebrate" in pillars_in_tags:
+                for tag in matched_tags:
+                    if tag in ["cakes", "treats_box", "personalised_hamper", "toys_gifts"]:
+                        return "buy"
+            
+            # Dine pillar products = likely buy
+            if "dine" in pillars_in_tags:
+                for tag in matched_tags:
+                    if tag in ["treats", "chews", "subscription_food"]:
+                        return "buy"
         
         return "unknown"
     
