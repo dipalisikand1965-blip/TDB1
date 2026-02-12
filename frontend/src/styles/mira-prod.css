@@ -776,6 +776,46 @@
     width: 18px;
     height: 18px;
   }
+  
+  /* Mobile header adjustments */
+  .mp-header {
+    padding: var(--space-md) var(--space-sm);
+  }
+  
+  .mp-header-inner {
+    padding: 0;
+  }
+  
+  .mp-logo-title {
+    font-size: 20px;
+  }
+  
+  .mp-logo-subtitle {
+    font-size: 12px;
+  }
+  
+  .mp-logo-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .mp-logo-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .mp-pet-badge {
+    padding: 4px 12px 4px 4px;
+  }
+  
+  .mp-pet-avatar {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .mp-pet-name {
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 480px) {
