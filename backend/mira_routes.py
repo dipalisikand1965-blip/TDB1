@@ -4573,8 +4573,36 @@ PILLARS = {
     "travel": {
         "name": "Travel",
         "icon": "✈️",
-        "keywords": ["travel", "flight", "cab", "car", "transport", "relocate", "relocation", "train", "airport", "pickup", "drop", "road trip", "packing", "checklist"],
-        "urgency_default": "medium"
+        "keywords": [
+            # Core travel intent
+            "travel", "trip", "journey", "vacation", "holiday", "getaway",
+            # Transport modes
+            "flight", "fly", "airplane", "airline", "airport", "air travel",
+            "car", "drive", "road trip", "car travel", "car ride",
+            "train", "railway", "rail", "metro",
+            "cab", "taxi", "uber", "ola",
+            # Planning
+            "travel plan", "itinerary", "packing", "checklist", "travel kit",
+            "carrier", "crate", "travel crate", "carrier size",
+            # Logistics
+            "transport", "relocate", "relocation", "moving", "shifting",
+            "pickup", "drop", "airport pickup",
+            # Pet-specific travel
+            "pet-friendly", "pet travel", "can my dog travel", "should he travel",
+            "travel with dog", "travel with pet", "flying with dog",
+            # Documents
+            "travel documents", "pet passport", "airline policy", "travel rules"
+        ],
+        "urgency_default": "medium",
+        # TRAVEL Pillar Concierge Picks (per MIRA BIBLE)
+        "concierge_picks": [
+            {"title": "Travel Decision Support", "cta": "Decide", "service_type": "travel_decision", "why": "Should your pet travel or stay back?"},
+            {"title": "Carrier Sizing + Airline Policy", "cta": "Check", "service_type": "carrier_policy", "why": "Get the right carrier and verify policies"},
+            {"title": "Pet-Friendly Itinerary", "cta": "Plan", "service_type": "itinerary_planning", "why": "Rest blocks, pet-friendly stops"},
+            {"title": "Road Trip Schedule", "cta": "Plan", "service_type": "road_trip", "why": "Break schedule + restraint guidance"},
+            {"title": "Document Coordination", "cta": "Arrange", "service_type": "travel_documents", "why": "Vaccination, microchip, local rules"},
+            {"title": "Travel Kit Checklist", "cta": "Get", "service_type": "travel_kit", "why": "Everything you need packed"}
+        ]
     },
     "care": {
         "name": "Care",
