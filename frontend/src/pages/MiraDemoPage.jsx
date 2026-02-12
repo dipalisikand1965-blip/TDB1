@@ -1183,13 +1183,14 @@ const MiraDemoPage = () => {
         
         // Also fetch places, stats, and new E027-E034 features for ticker
         const placesCity = pet?.location?.city || pet?.city || userCity;
-        const [placesResponse, statsResponse, digestResponse, milestonesResponse, memoryResponse, reorderResponse] = await Promise.all([
+        const [placesResponse, statsResponse, digestResponse, milestonesResponse, memoryResponse, reorderResponse, quickQuestionsResponse] = await Promise.all([
           fetch(`${API_URL}/api/mira/places/${pet.id}?city=${encodeURIComponent(placesCity)}`),
           fetch(`${API_URL}/api/mira/personalization-stats/${pet.id}`),
           fetch(`${API_URL}/api/mira/daily-digest/${pet.id}`),
           fetch(`${API_URL}/api/mira/milestones/${pet.id}`),
           fetch(`${API_URL}/api/mira/memory-lane/${pet.id}`),
-          fetch(`${API_URL}/api/mira/reorder-suggestions/${pet.id}`)
+          fetch(`${API_URL}/api/mira/reorder-suggestions/${pet.id}`),
+          fetch(`${API_URL}/api/pet-soul/profile/${pet.id}/quick-questions?limit=3`)  // NEW: Quick Soul Questions
         ]);
         
         const placesData = placesResponse.ok ? await placesResponse.json() : { places: [] };
@@ -1198,12 +1199,18 @@ const MiraDemoPage = () => {
         const milestonesData = milestonesResponse.ok ? await milestonesResponse.json() : { milestones: [] };
         const memoryData = memoryResponse.ok ? await memoryResponse.json() : { memories: [] };
         const reorderData = reorderResponse.ok ? await reorderResponse.json() : { suggestions: [] };
+        const quickQuestionsData = quickQuestionsResponse.ok ? await quickQuestionsResponse.json() : { questions: [] };
         
         // Store new feature data
         setDailyDigest(digestData);
         setMilestones(milestonesData.milestones || []);
         setMemoryLane(memoryData.memories || []);
         setReorderSuggestions(reorderData.suggestions || []);
+        
+        // NEW: Store quick questions for this session (max 3)
+        if (quickQuestionsData.questions && sessionQuestionsAsked < MAX_QUESTIONS_PER_SESSION) {
+          setQuickQuestions(quickQuestionsData.questions.slice(0, MAX_QUESTIONS_PER_SESSION - sessionQuestionsAsked));
+        }
         
         // NEW: Store soul knowledge for the dynamic ticker
         setSoulKnowledge({
