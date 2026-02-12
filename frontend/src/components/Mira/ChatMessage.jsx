@@ -35,6 +35,7 @@ const shouldShowConciergeCard = (content) => {
   const conciergePatterns = [
     'connect you with your pet concierge',
     'connect you with your concierge',
+    'connect you with concierge',
     'connect with concierge',
     'reach your concierge',
     'concierge® to handle',
@@ -44,7 +45,15 @@ const shouldShowConciergeCard = (content) => {
     'would you like to speak with',
     'our live concierge',
     'concierge is on it',
-    'concierge® is joining'
+    'concierge® is joining',
+    'speak with your concierge',
+    'your concierge can help',
+    'reach out to concierge',
+    'concierge will',
+    'get our concierge',
+    'connect me with concierge',
+    'speak with a concierge',
+    'chat with concierge'
   ];
   
   return conciergePatterns.some(pattern => lowerContent.includes(pattern));
