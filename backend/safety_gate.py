@@ -181,7 +181,20 @@ class SafetyGate:
         else:
             override = self._create_normal_override()
         
-        classification_result["safety_override"] = override.to_dict()
+        override_dict = override.to_dict()
+        
+        # Add gating questions for caution tags that need escalation assessment
+        for tag in canonical_tags:
+            if tag in GATING_QUESTIONS:
+                override_dict["gating_questions"] = GATING_QUESTIONS[tag]["questions"]
+                override_dict["escalation_info"] = {
+                    "tag": tag,
+                    "escalation_triggers": GATING_QUESTIONS[tag].get("escalation_answers", {}),
+                    "escalation_message": GATING_QUESTIONS[tag].get("escalation_message", "")
+                }
+                break
+        
+        classification_result["safety_override"] = override_dict
         return classification_result
     
     def _create_emergency_override(self, canonical_tags: List[str]) -> SafetyOverride:
