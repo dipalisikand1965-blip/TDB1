@@ -358,7 +358,7 @@ def _check_upcoming_birthday(pet: Dict) -> Optional[Dict]:
                 "date": this_year_bday.strftime("%Y-%m-%d"),
                 "days_until": days_until
             }
-    except:
+    except Exception:
         pass
     
     return None
