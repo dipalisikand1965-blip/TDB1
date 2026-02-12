@@ -630,9 +630,27 @@ REACT_APP_BACKEND_URL=<from env file>
 2. **READ** `/app/memory/seeds/B0_DRAFT_TAXONOMY_FOR_APPROVAL.md`
 3. **READ** `/app/memory/seeds/B1_PICKS_CATALOGUE.md`
 4. **READ** `/app/memory/seeds/B2_CLASSIFICATION_TESTS.md`
-5. **RUN** `python -m pytest tests/test_classification.py -v` to verify tests pass
-6. **RUN** `python classification_pipeline.py` to see example output
-7. **THEN** proceed with B3 (Safety Gate Enhancement)
+5. **RUN** `python -m pytest tests/test_classification.py tests/test_safety_gate.py -v` to verify tests pass
+6. **RUN** `python picks_scorer.py` to see scoring example output
+7. **THEN** proceed with B5 (Concierge Logic)
+
+---
+
+## 16. PHASE B COMPLETE STATUS
+
+| Phase | Description | Status | Tests |
+|-------|-------------|--------|-------|
+| B0 | Taxonomy Seeding | ✅ COMPLETE | - |
+| B1 | Picks Catalogue | ✅ COMPLETE | - |
+| B2 | Classification Pipeline | ✅ COMPLETE | 28 passing |
+| B3 | Safety Gate | ✅ COMPLETE | 21 passing |
+| B4 | Scoring Function | ✅ COMPLETE | - |
+| B5 | Concierge Logic | ⏳ PENDING | - |
+| B6 | API Integration | ⏳ PENDING | - |
+| B7 | Events Log + Analytics | ⏳ PENDING | - |
+| B8 | Scenario Testing | ⏳ PENDING | - |
+
+**Total Unit Tests: 49 passing**
 
 ---
 
