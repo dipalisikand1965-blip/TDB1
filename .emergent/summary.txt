@@ -1,166 +1,152 @@
 <analysis>**original_problem_statement:**
-The user wants to build and stabilize the MIRA OS application. The initial focus was on a comprehensive study of the existing codebase to identify gaps and create a plan. The user provided an extremely detailed product requirements document (referred to as the MIRA BIBLE) outlining the entire OS architecture, expected chat flows, pillar-based intelligence, UI elements, and concierge services.
+The user reported that the Mira AI assistant was not remembering pet details from their profiles, specifically for the pet Mystique. This violated the core principle of Mira being a Pet Operating System that remembers everything about a pet, rather than a simple chatbot. The user provided a comprehensive document, MIRA OS CORE DOCTRINE, detailing the required memory-first architecture.
 
-Key requirements from the user's specification include:
-- **Pillar-based Intelligence**: Mira must automatically infer the user's intent from one of 14 pillars (e.g., DINE, CELEBRATE, CARE) on every turn.
-- **Dynamic 'Picks' Surface**: A panel that updates in real-time with product and service recommendations based on the active pillar and the pet's profile.
-- **OS Context Loop**: On every message, the backend must process pet intelligence and conversation context to generate an  object that drives the frontend experience (e.g., temporal alerts, safety gates, memory recall).
-- **Correct Chat Flow**: Mira should ask minimal, targeted questions and not ask for information it already has in the pet's profile.
-- **Specific UI/UX Elements**: A new header order (), a TODAY badge for urgent items, a notifications bell, and specific card designs for Catalogue Picks and Concierge Picks.
-- **Expanded Services**: Addition of services like Nutrition consult coordination, Diet transition plan setup, etc.
-
-The user has explicitly requested to first stabilize the application and implement the core intelligence for the pillars before changing the UI/UX and headers. The immediate next priority is to implement the Dine pillar OS-awareness.
+**PRODUCT REQUIREMENTS:**
+The full set of requirements is now codified in . The core tenets are:
+1.  **Memory-First System:** Mira is a memory system first, conversation second. All interactions must update a persistent, structured, and evolving intelligence profile for each pet.
+2.  **Permanent Intelligence Layer:** All answers from the Soul questionnaire (55+ questions) must be stored as versioned, structured data and mapped to a trait graph.
+3.  **Continuous Learning:** Every conversation, service booking, or purchase must be treated as new data to enrich the pet's profile automatically.
+4.  **Structured Memory Model:** Memory must exist in layers: Core Identity, Soul Intelligence, Behavioural Observations, Lifestyle Patterns, Service History, and more.
+5.  **Reason From Memory First:** Mira must retrieve a Pet Context Pack before generating any response and is forbidden from asking for information that already exists in memory.
+6.  **Dynamic Questioning:** To enrich the profile, Mira should dynamically suggest unanswered Soul questions to the user during conversations.
+7.  **Picks Engine:** Product/service suggestions () must be re-ranked on every conversational turn based on the active pillar, catalogue availability, and the pet's specific traits.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application consists of a Flask backend and a React frontend. The agent has completed a comprehensive analysis of the codebase.
-- The backend intelligence ( generation) is functional and robust, as verified via direct API testing. It correctly identifies pillars (e.g., Celebrate), uses pet profile data (allergies), and provides temporal context (upcoming birthday).
-- The Admin Panel is functional. A previously reported issue with modals not opening on the Members tab was investigated and found to be resolved; the modals in the current  component work correctly.
-- The main chat interface, , has confirmed stability issues and is prone to crashing, likely due to a memory leak associated with its large size (4247 lines).
-- Basic code to receive the  on the frontend has been added, but the UI does not yet render the alerts or other information contained within it.
+The application is a Flask backend with a React frontend. The agent has successfully fixed a critical bug preventing Mira from accessing a pet's full profile data (Soul answers, birthday, allergies). A new  was created to calculate profile completion scores and identify unanswered questions. The  endpoint has been updated to return this soul intelligence (completion score, suggested question) to the frontend. The user's detailed requirements have been saved to a critical new file: .
 
 **Last working item**:
-- **Last item agent was working:** The agent was engaged in a discussion with the user to prioritize the next steps after completing a full investigation of the application's state. The agent recommended focusing on implementing core intelligence features before undertaking a large frontend refactor. The user agreed and instructed the agent to proceed with implementing the Dine pillar OS-awareness.
+- **Last item agent was working:** The agent performed an initial implementation of the MIRA OS CORE DOCTRINE by enabling dynamic Soul question suggestions. This involved:
+    1.  Fixing the data loading logic in  to ensure the full pet profile is always used by the LLM.
+    2.  Creating  to calculate profile completeness and find unanswered questions.
+    3.  Modifying the  API response to include a  block with a completion score and a dynamically suggested question.
 - **Status:** USER VERIFICATION PENDING
-- **Agent Testing Done:** Y
-- **Which testing method agent to use?** both
+- **Agent Testing Done:** Y (via curl)
+- **Which testing method agent to use?** Frontend testing agent. The agent needs to verify that the new  block is rendered correctly in the UI, that the suggested questions are displayed to the user, and that answering them updates the pet's profile.
 - **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
-- **Issue 1:** Frontend Stability and Memory Leak (P0)
-
-**Issues Detail:**
-- **Issue 1:** Frontend Stability and Memory Leak
-  - **Description:** The main chat component, , is a massive 4247-line file. This is causing significant performance problems, leading to browser crashes during automated testing. This represents a critical risk to application stability for real users.
-  - **Attempted fixes:** No fix has been attempted. The agent and user discussed a full refactor (breaking the component into smaller modules, using a state management library like Zustand, virtualizing lists), but mutually agreed to postpone this large task in favor of delivering intelligence features first.
-  - **Next debug checklist:** The fix is not a simple debug but a planned refactoring effort.
-    - Analyze  to identify state, effects, and UI sections that can be extracted into separate, modular components.
-    - Plan the integration of a state management library (e.g., Zustand) to manage shared state.
-    - Implement  or a similar library for the chat message list to handle long conversations efficiently.
-    - Lazy-load heavy components like the Picks or Services overlays.
-  - **Why fix this issue and what will be achieved with the fix?** Fixing this will resolve the application's primary stability problem, prevent crashes, improve performance, and make the frontend codebase maintainable for future development.
+- **Issue 1: Data Discrepancy Between Production and Preview Environments (P0)**
+  - **Description:** This is a recurring, critical blocker. The preview database is out of sync with production. The user reports 55+ Soul questions answered for their pet Mystique, but the agent's environment only sees a fraction (e.g., 17). This severely hinders the testing and development of the memory-driven features.
+  - **Attempted fixes:** Manual, one-time data updates in the previous session. No permanent solution has been implemented.
+  - **Next debug checklist:**
+    - Investigate if an existing database sync script or mechanism exists.
+    - Check  or config files for a staging database with more recent data.
+    - Propose and build a script to sanitize and import specific pet data from production to the preview environment.
+  - **Why fix this issue and what will be achieved with the fix?** Without accurate and complete data, the core Pet Operating System features cannot be properly built or validated. Fixing this will unblock all future development on the memory architecture.
   - **Status:** NOT STARTED
   - **Is recurring issue?** Y
-  - **Should Test frontend/backend/both after fix?** frontend
-  - **Blocked on other issue:** None. Work was postponed by user decision.
+  - **Should Test frontend/backend/both after fix?** Both
+  - **Blocked on other issue:** None
+
+- **Issue 2:  Performance (P2)**
+  - **Description:** The file  is excessively large (4298 lines), causing the screenshot tool to crash and indicating poor frontend performance.
+  - **Attempted fixes:** None.
+  - **Next debug checklist:**
+    - Analyze the component and break it down into smaller, manageable sub-components.
+    - Identify any expensive computations or state updates that could be optimized.
+  - **Why fix this issue and what will be achieved with the fix?** Improves application stability, developer experience, and frontend performance.
+  - **Status:** NOT STARTED
+  - **Is recurring issue?** N
+  - **Should Test frontend/backend/both after fix?** Frontend
+  - **Blocked on other issue:** None
 
 **In progress Task List**:
-None.
+- **Task 1: Full MIRA OS CORE DOCTRINE Implementation (P0)**
+  - **Description:** This is the overarching task to transform Mira from a chatbot into a stateful, memory-driven Pet Operating System, as defined in .
+  - **Where to resume:** Begin implementing Phase 0: Non-negotiable foundations from the user's checklist. This requires significant backend and database work to create the new memory schema.
+  - **What will be achieved with this?** This will build the foundational architecture for the entire product vision, enabling true personalization and a persistent cognitive model for each pet.
+  - **Status:** IN PROGRESS
+  - **Should Test frontend/backend/both after fix?** Both
+  - **Blocked on something:** Heavily dependent on resolving the **Data Discrepancy (Issue 1)** for effective testing.
 
 **Upcoming and Future Tasks**
-**Upcoming Tasks:**
-- **Task 1 (P0): Implement 'Dine' Pillar OS-Awareness:**
-  - **Description**: As per user instruction, enhance the backend logic in  to correctly handle chat messages related to the Dine pillar. This involves implementing the correct chat flow (e.g., asking about kibble/wet/home-cooked), generating appropriate , and populating Dine specific Picks (e.g., Diet transition plan, Portioning setup).
-  - **File/Method**: 
-- **Task 2 (P1): Surface  Alerts and Information in the Frontend:**
-  - **Description**: The backend now sends  (temporal alerts, memory recall), but the frontend doesn't display it. Modify  to parse this object and render the information prominently in the UI. For example, display Birthday in 2 days! as a visible alert.
-  - **File/Method**: 
+The entire roadmap is defined in the user's Mira OS Implementation Checklist.
+- **Upcoming Tasks (P0):**
+  - **Implement Persistent Memory Store:** Implement the database schema changes outlined by the user, creating tables for  (versioned),  (with confidence), , and . This is the immediate next step for the backend.
+  - **Implement Soul Form Ingestion Pipeline (P1):** Build the logic to populate the new versioned  and  tables when a user completes the questionnaire.
+  - **Implement Chat-to-Memory Ingestion (P1):** Flesh out  to capture events from every user message, extract traits, and update the memory store with confidence scores.
 
-**Future Tasks:**
-- **Task 3 (P1): Implement New Header/OS Bar Architecture:**
-  - **Description**: Refactor the main navigation to match the user's specification: .
-- **Task 4 (P2): Implement OS-Awareness for All Remaining Pillars:**
-  - **Description**: Systematically implement the logic for the other 12 pillars (STAY, TRAVEL, CARE, etc.) as detailed in .
-- **Task 5 (P2): Add Missing Services:**
-  - **Description**: Add the new concierge services (e.g., Nutrition consult, Dental consult) to the backend and frontend.
-- **Task 6 (P2): Implement Missing OS Elements:**
-  - **Description**: Implement UI features like the TODAY badge with a count, the notifications bell, and the prominent pet selector.
-- **Task 7 (P3): Fix Chat Duplication Bug:**
-  - **Description**: Investigate and fix the bug where chat messages are sometimes duplicated in the conversation history on the frontend.
-  - **File/Method**: 
-- **Task 8 (P3): Refactor :**
-  - **Description**: Execute the planned refactoring of the main chat component to resolve the memory leak and improve maintainability.
+- **Future Tasks (P2):**
+  - Implement the Picks Engine (Catalogue-first, Concierge-always).
+  - Implement the Services Execution Layer for booking tasks.
+  - Build the Today alerts, notifications, and offline support features.
+  - Refactor  to improve performance.
 
 **Completed work in this session**
-- Conducted a comprehensive study of the entire codebase, including all memory files, frontend pages, and backend routes.
-- Verified that the backend's core intelligence layer () is working correctly for the Celebrate pillar via direct API tests ().
-- Investigated and confirmed that the Admin Panel modal issue (reported in previous test reports) is resolved. The  component's modal functions as expected.
-- Saved the user's detailed product specification into the repository at  for future reference.
-- Added initial frontend code in  to receive the  object from the backend API response.
-- Successfully executed the full testing agent suite, with all tests passing.
+- **Fixed Profile-First Questioning:** Resolved a critical bug where Mira failed to use the full pet profile (birthday, allergies, Soul data), especially for the pet Mystique.
+- **Implemented Dynamic Soul Question Suggestion:** Created  to calculate profile completion and suggest unanswered questions. The  endpoint now returns this data.
+- **Established MIRA OS Doctrine:** Stored the user's detailed architectural requirements in  and updated the core system prompt in  to reflect the Pet Operating System identity.
 
 **Earlier issues found/mentioned but not fixed**
-- **Issue 1:** Chat Duplication Bug
-  - **Debug checklist:** Review the state management logic for  in , specifically around where new messages (both user and AI) are appended to the state array. Check for race conditions or redundant state updates in  and the response handling logic.
-  - **Why to solve this issue and what will be achieved with this?** This is a functional bug that degrades the user experience by showing confusing, repeated messages. Fixing it will ensure the chat history is clean and accurate.
-  - **Should Test frontend/backend/both after fix:** frontend
-  - **Is recurring issue?** N
+- **Issue: Photo Not Updating on Profile Page:** This was reported in the previous session and is likely a symptom of the larger Data Discrepancy issue. It remains unresolved.
 
 **Known issue recurrence from previous fork**
-- **Issue recurrence in previous fork:** Frontend memory leak/crash on .
-- **Recurrence count:** 1
-- **Status:** NOT STARTED
-  Note: This issue was mentioned in the initial handoff and was confirmed during this session when the screenshot automation tool repeatedly crashed the page. The root cause is the monolithic  file. A fix (refactoring) has been intentionally postponed by the user.
+- The fundamental issue of Mira not correctly using a pet's profile data recurred in this session. The previous agent implemented Profile-First Questioning, but a bug prevented it from working for richly detailed profiles like Mystique. This session's work was a deeper, more comprehensive fix for that same underlying problem.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Frontend**: React.js
-- **Backend**: Python (Flask)
-- **Database**: PostgreSQL
-- **Architecture**: Monolithic React frontend with a single large component for the chat UI. RESTful API backend providing core business logic.
-- **Core Feature**: MIRA OS - a custom intelligence layer in the backend that analyzes chat context and pet profiles to provide a proactive, personalized user experience.
+- **Memory-Driven Architecture:** The new core principle. The system's state and intelligence are derived from a persistent, structured memory store, not just the immediate conversation context.
+- **Dynamic Prompt Engineering:** The system prompt is now heavily enriched with detailed, structured data fetched from the database just before the LLM call.
+- **Service-Oriented Logic:** The codebase is beginning to shift towards a more modular structure by extracting business logic into dedicated service files (, ).
 
 **key DB schema**
-- : {pet_id, user_id, name, breed, dob, allergies, health_flags, ...}
-- : {user_id, email, name, ...}
-- : {conversation_id, user_id, pet_id, ...}
-- : {message_id, conversation_id, sender, text, timestamp, ...}
+The user has provided a **target** database schema in  which must be implemented.
+- ****: Core pet info.
+- ****: **Versioned** answers to profile questions, with source and confidence.
+- ****: The derived knowledge layer, storing specific traits (e.g., ) with confidence scores and evidence.
+- ****: A log of every interaction (chat, service, purchase).
+- ****: The execution layer for services booked through Mira.
 
 **changes in tech stack**
-None in this session.
+No changes to the core stack. However, a major database schema migration will be required to implement the user's specified memory architecture.
 
 **All files of reference**
-- : The main, monolithic frontend component for the chat interface. It has known stability issues.
-- : The backend Flask route that handles all chat logic and  generation. This is where the Dine pillar logic will be added.
-- : The main component for the admin dashboard.
-- : The component that renders the Pet Parent Directory and its functional modal.
-- : A newly created file containing the user's detailed product requirements. **This is a critical document for all future work.**
+- : **(NEW & CRITICAL)** The user's complete specification for the Mira OS memory system. This is the new primary product and technical requirements document.
+- : Heavily modified to fix pet data loading bugs and integrate the new .
+- : **(NEW)** Contains logic for calculating profile completion and suggesting the next best question to ask.
+- : **(NEW)** A placeholder for future logic that will extract intelligence from user conversations.
+- : Updated to reinforce the Pet Operating System identity.
 
-**Areas that need refactoring**
-- : Urgently needs to be broken down into smaller, modular components and have its state management offloaded to a dedicated library (e.g., Zustand) to fix critical memory leak and stability issues.
+**Areas that need refactoring**:
+- : Identified as being extremely large (4298 lines) and causing performance issues.
+- : This remains a very large file. The user's proposed service-oriented architecture (, , ) provides a clear path for continued refactoring.
 
 **key api endpoints**
-- : The primary endpoint for sending and receiving chat messages. It accepts a pet ID and user message and returns an AI response along with the  object.
-- : Endpoint for admin user authentication.
+- : The response body has been significantly enhanced. It now includes a  object containing ,  (broken down by category), and a  string.
 
 **Critical Info for New Agent**
-- **PRIORITIZE INTELLIGENCE OVER REFACTORING:** The user has explicitly decided to postpone the critical frontend refactoring of . Your immediate priority is to implement the **Dine pillar OS-awareness** on the backend (). Do not start the frontend refactor unless instructed.
-- **FOLLOW THE BIBLE:** All development must adhere to the detailed specifications laid out in . This document is the source of truth for all features, chat flows, and UI architecture.
-- **BACKEND IS STABLE, FRONTEND IS FRAGILE:** The backend API and intelligence layer are working correctly. The frontend is unstable and prone to crashes. Be mindful of this when testing. Use direct API calls () to verify backend logic before touching the frontend.
-- **ADMIN MODAL IS NOT BROKEN:** Previous test reports indicated a broken modal in the admin panel. This has been investigated and is confirmed to be working. Do not spend time trying to fix it.
+- **You MUST read  first.** This file contains the complete product vision, technical architecture, implementation checklist, and QA suite from the user. All future work must align with this document. It is the new source of truth.
+- The **Data Discrepancy issue is the highest priority blocker.** You will not be able to accurately test the memory system without a reliable way to get complete pet profiles (like the user's Mystique profile with 55+ answers) into your preview environment. Prioritize resolving this.
+- The immediate next implementation task is to begin **Phase 0** of the user's checklist: building the persistent memory store with the specified versioned tables (, ). This is a significant backend database task.
 
 **documents and test reports created in this job**
 - 
--  (and subsequent test reports from the session)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** (Provides a duplicate, massive spec document again)
-2.  **Agent:** Acknowledges the spec has been saved.
-3.  **User:** Asks if the suggested frontend refactor is truly needed.
-4.  **Agent:** Recommends implementing core intelligence features (like the Dine pillar) first and postponing the large refactor. Presents this as Option A vs. Option B.
-5.  **User:** Agrees with the agent's recommendation. States to focus on OS awareness for Dine and other pillars, and that UI/header changes will come later.
-6.  **User:** (Provides the same massive spec document for a third time, reinforcing its importance).
-7.  **Status**: The user has clearly and repeatedly directed the next agent to focus on implementing the Dine pillar intelligence, following the provided specifications, and to hold off on UI changes for now. This is the immediate, confirmed task.
+- **User (multiple messages):** Provided a comprehensive, multi-part document detailing the MIRA OS CORE DOCTRINE. This specifies the required memory-first architecture, data schemas, ingestion rules, implementation phases, and a QA suite. The user has declared this as system doctrine level and the definitive guide for all future development. The core message is that Mira is a pet operating system, not a chatbot, and its memory must be persistent, structured, and continuously evolving.
+- **Pending Action:** The user has provided the full blueprint and is waiting for the agent to study it and begin implementation according to the provided phases.
 
 **Project Health Check:**
-- **Broken:** The main chat page () is unstable due to its monolithic nature and likely memory leaks, causing crashes in test automation.
-- **Mocked:** None.
+- **Broken:** True end-to-end testing is broken due to the unresolved database sync issue. The core memory functionality as envisioned by the user is non-existent and needs to be built from the ground up based on the new doctrine.
+- **Mocked:** The agent's fix for loading pet data in  tests mocks an authenticated session by loading the pet directly via ID.
 
 **3rd Party Integrations**
-- **OpenAI GPT-4 (or similar):** Used for chat responses and pillar classification on the backend. Uses Emergent LLM Key.
+- **LLM (Claude/GPT):** Used for generating Mira's conversational responses. No changes in this session.
 
 **Testing status**
-- **Testing agent used after significant changes:** YES
+- **Testing agent used after significant changes:** NO
 - **Troubleshoot agent used after agent stuck in loop:** NO
 - **Test files created:** None.
-- **Known regressions:** None introduced in this session.
+- **Known regressions:** None.
 
 **Credentials to test flow:**
-- **User:**  / 
-- **Admin:**  / 
+- **Admin:** , 
+- **Test User (Owner of Mystique):** 
 
 **What agent forgot to execute**
-The agent investigated the potential for a chat duplication bug in  but moved on to other tasks before implementing a fix. This bug remains in the backlog.</analysis>
+- The agent did not implement a permanent solution for the database synchronization issue, which was identified as a critical blocker in the previous handoff and remains the top technical debt.
+- The agent created a placeholder  but did not implement the actual conversation-to-memory extraction logic, which is a key part of the new doctrine (this is now part of the upcoming task list).</analysis>

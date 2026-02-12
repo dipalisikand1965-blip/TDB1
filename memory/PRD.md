@@ -93,7 +93,7 @@ All pillars now use complete profile data:
 ## Test Credentials
 - **Admin**: username: aditya, password: lola4304
 - **Test Pet**: Mystique (pet-3661ae55d2e2), Shih Tzu, Senior
-- **Preview URL**: https://dine-care-learn.preview.emergentagent.com
+- **Preview URL**: https://pet-os-core.preview.emergentagent.com
 
 ## Key Files
 - `/app/backend/mira_routes.py` - Main chat logic

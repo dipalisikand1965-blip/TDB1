@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://dine-care-learn.preview.emergentagent.com
+https://pet-os-core.preview.emergentagent.com
 
 ---
 
