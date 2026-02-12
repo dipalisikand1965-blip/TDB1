@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="27" skipped="0" tests="28" time="0.795" timestamp="2026-02-12T06:13:21.532392+00:00" hostname="agent-env-a9ae90e0-f721-4e00-8acd-ab4d344c0c71"><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTravelPillarDetection" name="test_flight_query_routes_to_travel" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:32: in test_flight_query_routes_to_travel
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTravelPillarDetection" name="test_road_trip_query_routes_to_travel" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:57: in test_road_trip_query_routes_to_travel
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTravelPillarDetection" name="test_travel_documents_query_routes_to_travel" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:76: in test_travel_documents_query_routes_to_travel
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTravelPillarDetection" name="test_relocation_query_routes_to_travel" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:95: in test_relocation_query_routes_to_travel
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTravelPillarDetection" name="test_vacation_query_routes_to_travel" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:114: in test_vacation_query_routes_to_travel
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTravelContextGeneration" name="test_travel_context_has_required_fields" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:137: in test_travel_context_has_required_fields
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTravelContextGeneration" name="test_mojo_is_not_brachycephalic" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:173: in test_mojo_is_not_brachycephalic
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTravelContextGeneration" name="test_travel_context_includes_vaccinations" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:198: in test_travel_context_includes_vaccinations
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTravelContextGeneration" name="test_travel_context_includes_health_flags" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:219: in test_travel_context_includes_health_flags
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTravelContextGeneration" name="test_travel_context_includes_allergies" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:240: in test_travel_context_includes_allergies
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTravelPicksGeneration" name="test_flight_query_generates_carrier_policy_pick" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:268: in test_flight_query_generates_carrier_policy_pick
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTravelPicksGeneration" name="test_road_trip_query_generates_road_trip_pick" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:297: in test_road_trip_query_generates_road_trip_pick
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTravelPicksGeneration" name="test_documents_query_generates_travel_documents_pick" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:320: in test_documents_query_generates_travel_documents_pick
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTravelPicksGeneration" name="test_itinerary_query_generates_itinerary_pick" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:343: in test_itinerary_query_generates_itinerary_pick
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTravelPicksGeneration" name="test_travel_picks_have_concierge_always_true" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:366: in test_travel_picks_have_concierge_always_true
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestConciergeHandoff" name="test_concierge_handoff_always_available_for_travel" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:395: in test_concierge_handoff_always_available_for_travel
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestConciergeHandoff" name="test_concierge_handoff_for_flight_query" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:424: in test_concierge_handoff_for_flight_query
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestConciergeHandoff" name="test_concierge_handoff_for_road_trip_query" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:444: in test_concierge_handoff_for_road_trip_query
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestGooglePlacesFlag" name="test_itinerary_pick_has_uses_google_places" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:468: in test_itinerary_pick_has_uses_google_places
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestGooglePlacesFlag" name="test_carrier_policy_pick_has_uses_google_places" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:498: in test_carrier_policy_pick_has_uses_google_places
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestPicksUpdate" name="test_travel_query_triggers_picks_update" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:529: in test_travel_query_triggers_picks_update
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestBrachycephalicDetection" name="test_brachycephalic_breeds_list" time="0.000" /><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestNonTravelRouting" name="test_birthday_query_routes_to_celebrate" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:589: in test_birthday_query_routes_to_celebrate
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestNonTravelRouting" name="test_meal_plan_query_routes_to_dine" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:610: in test_meal_plan_query_routes_to_dine
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestNonTravelRouting" name="test_boarding_query_routes_to_stay" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:631: in test_boarding_query_routes_to_stay
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestNonTravelRouting" name="test_grooming_query_routes_to_care" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:652: in test_grooming_query_routes_to_care
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestSafetyGates" name="test_safety_gates_include_allergies" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:677: in test_safety_gates_include_allergies
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase><testcase classname="backend.tests.test_travel_pillar_os_awareness.TestTemporalContext" name="test_temporal_context_for_birthday" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?">backend/tests/test_travel_pillar_os_awareness.py:711: in test_temporal_context_for_birthday
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/mira/chat': No scheme supplied. Perhaps you meant https:///api/mira/chat?</failure></testcase></testsuite></testsuites>
