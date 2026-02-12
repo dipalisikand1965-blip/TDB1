@@ -1,5 +1,47 @@
 # MIRA OS - CHANGELOG
 
+## [2026-02-12] - Soul-First Response Generation Complete
+
+### Added
+
+**Soul-First Logic Module** (`/app/backend/soul_first_logic.py`)
+- `SoulContextSummary` dataclass - extracts grooming-relevant fields from Pet Soul
+- `ResponseStrategy` - determines response approach: soul_first / breed_fallback / ask_questions
+- `extract_soul_data_from_response()` - parses user answers for coat_type, grooming_preference, anxiety_triggers
+- `write_soul_data_to_pet()` - saves extracted data back to pet profile
+- `build_soul_first_prompt_section()` - generates LLM prompt instructions
+
+**Profile-First Doctrine Enforcement**
+- Mira now speaks from Pet Soul memory FIRST, breed only as fallback
+- No breed-specific medical claims (like "brachycephalic heat sensitivity") unless confirmed in Soul
+- Personalized "because {pet_name}..." lines generated from Soul fields
+
+**Data Write-Back ("Ask, Store, Recommend")**
+- When user answers fallback questions, data is extracted and saved
+- Fields captured: coat_type, grooming_preference, grooming_anxiety_triggers, skin_flags, allergy_flags
+- Pet profile automatically enriched over conversations
+
+### Fallback Question Flow
+When Soul data is sparse, Mira asks 2-4 questions in order:
+1. Coat + goal: "What's {pet_name}'s coat like right now — short, long, matted?"
+2. Past experience: "Has they been groomed before? Any anxiety with dryers, clipping?"
+3. Health/sensitivity: "Any skin irritation, allergies, or recent discomfort?"
+4. Logistics: "Home visit or salon? Which city/area?"
+
+### Test Results
+- Unit Tests: 18 passing (`/app/backend/tests/test_soul_first_logic.py`)
+- Integration Tests: 10 passing (`/app/backend/tests/test_soul_first_integration.py`)
+- **Total: 28 tests passing**
+
+### Example Response (Before vs After)
+**BEFORE** (breed-first):
+> "Since Mystique is a Shih Tzu with brachycephalic breathing..."
+
+**AFTER** (soul-first):
+> "Mystique's profile shows she gets stressed with dryers and loud noise, so I'd recommend a quiet session with breaks and a low-heat dry."
+
+---
+
 ## [2025-12-XX] - Picks Engine B6 API Integration Complete
 
 ### Added
