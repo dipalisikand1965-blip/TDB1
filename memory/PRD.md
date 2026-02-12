@@ -40,11 +40,15 @@ Before Mira asks ANY question, she must:
 | **DINE** | ✅ Done | dine_context | 6 picks | - | - | Nutrition, portions, diet transitions, profile-first |
 | **STAY** | ✅ Done | stay_context | 6 picks | ✅ Always | ✅ Hotels | Boarding, daycare, temperament matching |
 | **TRAVEL** | ✅ Done | travel_context | 7 picks | ✅ Always | ✅ Itinerary | Brachycephalic detection, documents |
-| CARE | Pending | - | - | - | - | - |
-| ENJOY | Pending | - | - | - | - | - |
-| FIT | Partial | - | Basic | - | - | - |
-| LEARN | Pending | - | - | - | - | - |
-| EMERGENCY | Pending | - | - | - | - | - |
+| **CARE** | ✅ Done | care_context | 6 picks | ✅ Bookings | - | Grooming, vet, walker - uses handling_comfort |
+| **ENJOY** | ✅ Done | enjoy_context | 5 picks | - | ✅ Parks | Playdates, venues - uses behavior_with_dogs |
+| **LEARN** | ✅ Done | learn_context | 5 picks | ✅ Trainers | - | Training, behavior - uses food_motivation |
+| FIT | Partial | - | 4 picks | - | - | Walk routine, weight management |
+| PAPERWORK | Pending | - | - | - | - | Documents, certificates |
+| ADVISORY | Partial | - | Basic | - | - | General guidance |
+| EMERGENCY | Pending | - | - | - | - | Urgent care routing |
+| FAREWELL | Partial | - | Basic | - | - | Grief support |
+| ADOPT | Pending | - | - | - | - | Adoption flow |
 
 ### Pillar Isolation Rule (NEW ✅)
 - DINE pillar NEVER shows cake/birthday/celebration items
