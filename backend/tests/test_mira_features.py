@@ -12,7 +12,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://picks-chat-flow.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-message-bug.preview.emergentagent.com')
 
 class TestMiraFeatures:
     """Test Mira AI features"""

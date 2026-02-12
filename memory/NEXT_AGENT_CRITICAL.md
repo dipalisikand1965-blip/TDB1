@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://picks-chat-flow.preview.emergentagent.com
+https://mira-message-bug.preview.emergentagent.com
 
 ---
 

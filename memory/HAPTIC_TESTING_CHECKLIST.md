@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://picks-chat-flow.preview.emergentagent.com/mira-demo**
+**https://mira-message-bug.preview.emergentagent.com/mira-demo**
 
 ---
 
