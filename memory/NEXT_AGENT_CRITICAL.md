@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://demo-page-fix.preview.emergentagent.com
+https://doggy-data-seed.preview.emergentagent.com
 
 ---
 

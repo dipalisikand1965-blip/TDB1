@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://demo-page-fix.preview.emergentagent.com/mira-demo**
+**https://doggy-data-seed.preview.emergentagent.com/mira-demo**
 
 ---
 
