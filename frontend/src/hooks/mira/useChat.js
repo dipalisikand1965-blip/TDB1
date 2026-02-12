@@ -898,7 +898,17 @@ const checkConciergeCardTrigger = (content) => {
     'get our concierge',
     'connect me with concierge',
     'speak with a concierge',
-    'chat with concierge'
+    'chat with concierge',
+    // New patterns based on actual Mira responses
+    'to our concierge',
+    'passing this request to',
+    'request to our concierge',
+    'concierge® with all',
+    'starting the booking flow',
+    "they'll pick it up",
+    'taking action now',
+    'concierge® is taking',
+    'booking flow for you'
   ];
   
   return conciergePatterns.some(pattern => lowerContent.includes(pattern));
