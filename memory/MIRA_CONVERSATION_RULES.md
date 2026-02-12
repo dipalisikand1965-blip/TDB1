@@ -1,162 +1,196 @@
 # MIRA OS - Critical Conversation Rules
 
-## Document Purpose
-This document captures CRITICAL conversation rules that Mira MUST follow. These have been identified through user feedback and bugs. Any agent working on Mira OS MUST read and maintain these rules.
+> **⚠️ READ /app/memory/MIRA_OS_DOCTRINE.md FIRST**
+
+## Pre-Conversation Checklist (MANDATORY)
+
+Before Mira generates ANY response, the system must:
+
+1. ✅ Load Pet Context Pack (complete intelligence profile)
+2. ✅ Identify unanswered Soul questions
+3. ✅ Check for known data (NEVER ask for it)
+4. ✅ Apply safety gates (allergies, health)
+5. ✅ Determine active pillar
+6. ✅ Prepare to extract & store new intelligence
 
 ---
 
-## 1. TRAVEL CONVERSATIONS - ALWAYS ASK DESTINATION FIRST
+## Rule 1: NEVER Ask for Known Data
 
-### The Problem
-Users reported that Mira was pulling destination information (e.g., "Goa") from past conversations when the user never mentioned it in the CURRENT conversation. This is a critical bug.
+If this information exists in Pet Soul™, Mira MUST NOT ask:
+- Age, birthday, breed, weight, size
+- Allergies and sensitivities
+- Temperament and personality
+- Energy level
+- Diet type and food preferences
+- Health conditions
+- Separation anxiety level
+- Handling comfort
+- Travel preferences
+- Grooming preferences
+- Social behavior patterns
 
-### The Rule
-**NEVER assume destination from conversation history. ALWAYS ask WHERE the user is traveling to FIRST.**
-
-### Correct Flow
-```
-Step 1: Ask "Where are you planning to travel?"
-Step 2: Ask "When and how long?"
-Step 3: Ask "Driving or flying?"
-Step 4: Provide tailored advice
-```
-
-### Wrong Response (BUG):
-```
-User: "What should I consider when traveling with Buddy?"
-Mira: "Since you're going to Goa..." ← WRONG! User didn't mention Goa in THIS conversation
-```
-
-### Correct Response:
-```
-User: "What should I consider when traveling with Buddy?"
-Mira: "That's a great question! To give you the right advice for Buddy:
-**Where** are you planning to travel? Different destinations need different preparations."
-```
-
-### Travel vs Boarding Decision
-When user asks "should I travel with pet or board them?":
-- STILL ask destination first
-- The decision depends heavily on WHERE they're going
-- Don't give generic breed-based advice without knowing the destination
+**Asking for known data = System Failure**
 
 ---
 
-## 2. SESSION CONTEXT ISOLATION
+## Rule 2: Dynamic Soul Question Injection
 
-### The Rule
-Each new session should start FRESH. Do not pull specific details (like destinations, dates, preferences) from past sessions unless the user explicitly references them.
+When conversation naturally relates to an unanswered Soul question:
 
-### Exception
-Soul data (allergies, breed, age, name) CAN be referenced as this is persistent pet profile data.
-
----
-
-## 3. CLARIFYING QUESTIONS - STAY ON TOPIC
-
-### The Problem
-When users ask "tell me more" or "can you explain?", Mira was dumping generic breed information instead of explaining the CURRENT question's options.
-
-### The Rule
-"Tell me more" should explain the OPTIONS in the current question, then REPEAT the same question.
-
-### Wrong Response:
 ```
-Mira: "Active or cosy birthday?"
-User: "Tell me more"
-Mira: "Golden Retrievers are wonderful companions with a playful nature..." ← WRONG - generic breed dump
+Example: User asks about grooming
+→ System checks: "handling_comfort" answered?
+→ If NO: Mira naturally asks as part of conversation
+→ Answer stored immediately
+→ Used in same response
 ```
 
-### Correct Response:
+### Question Injection Flow
+1. Detect conversation topic
+2. Map to relevant Soul categories
+3. Check for unanswered questions in those categories
+4. Ask ONE unanswered question naturally in conversation
+5. Store answer with confidence score
+6. Update picks based on new data
+
+---
+
+## Rule 3: Memory Extraction (Every Turn)
+
+Every user message must be analyzed for:
+
+| Signal Type | Example | Storage |
+|-------------|---------|---------|
+| Preference | "He loves cheese" | preferences.favorite_treats |
+| Behavior | "She gets anxious with strangers" | behavior.stranger_reaction |
+| Health | "He's been scratching a lot" | health.observations |
+| Routine | "We walk at 7am every day" | lifestyle.walk_schedule |
+| Environment | "We live in an apartment" | environment.housing_type |
+| Rejection | "She didn't like the beef treats" | preferences.dislikes |
+| Concern | "I'm worried about her weight" | parent_concerns |
+
+---
+
+## Rule 4: Confidence Scoring
+
+Every trait must have a confidence score:
+
+| Source | Confidence |
+|--------|------------|
+| Soul form answer | 100% |
+| Explicit statement in chat | 90% |
+| Repeated mentions | 95% |
+| Single mention | 70% |
+| Inferred from context | 50% |
+| Breed default | 30% |
+
+Confidence increases with repetition.
+Contradictions flag for clarification.
+
+---
+
+## Rule 5: Profile-First Response Generation
+
+### Response Template
 ```
-Mira: "Active or cosy birthday?"
-User: "Tell me more"
-Mira: "Of course! Here's what each could look like for Buddy:
+1. Acknowledge (with profile knowledge)
+   "Since [Pet] is [trait from profile]..."
 
-**Active & Playful:**
-• Longer play session with favorite games
-• Simple nose-work puzzles
-• Shorter bursts if warm
+2. Apply safety gates
+   "Avoiding [allergy] as always..."
 
-**Cosy & Simple:**
-• A favourite walk or drive
-• Extra one-on-one time
-• Safe birthday treat and one new toy
+3. Personalize recommendation
+   "Given their [temperament/energy/preference]..."
 
-Given that, does active sound more like him, or cosy?"
+4. Offer action
+   One clear CTA
+
+5. Optional: Ask ONE unanswered question naturally
 ```
 
 ---
 
-## 4. PILLAR DETECTION
+## Rule 6: Picks Re-ranking (Every Turn)
 
-### The Problem
-Grooming requests were being tagged as "celebrate" pillar instead of "care" pillar.
+Picks must refresh based on:
+- Current message intent
+- Pet profile (allergies, preferences)
+- Active pillar
+- Service history (don't repeat recent)
+- Time context (birthday upcoming, etc.)
 
-### The Fix
-Added explicit keyword-to-pillar mapping:
-- grooming, groom, haircut, bath, nail trim, spa → "care"
-- birthday, party, cake → "celebrate"
-- boarding, hotel, daycare → "stay"
-- flight, trip → "travel"
-
-### Location in Code
-`/app/backend/mira_routes.py` - search for `service_pillar_map`
-
----
-
-## 5. DINING/STAY FLOW - GOOGLE PLACES
-
-### The Flow
-1. Detect dining/stay intent
-2. Confirm location (geo if available, otherwise ask city/area)
-3. Ask "Would you like me to list pet-friendly places?"
-4. Show up to 4 REAL results from Google Places API
-5. If no results → Concierge handoff
-
-### CRITICAL
-- NEVER fabricate place names
-- Only show places from Google Places API or verified database
-- If no places found, offer Concierge handoff
-
-### Location in Code
-- System prompt: `/app/backend/mira_routes.py` - search for "DINING FLOW"
-- Google Places: `/app/backend/services/google_places_service.py`
+### Ranking Weights
+1. Safety (filter out allergies) - MANDATORY
+2. Profile match (high confidence traits)
+3. Conversation relevance
+4. Pillar alignment
+5. Popularity/rating
+6. Price range (if mentioned)
 
 ---
 
-## 6. FORMATTING RULES
+## Rule 7: Temporal Intelligence
 
-### Chat Messages
-- **Bold** → Bright Pink (#F472B6) for emphasis
-- *Italic* → Purple (#A78BFA) for secondary emphasis
-- Use emojis for visual separation: 🍽️ 🏨 📍 ⭐
-- Place names, ratings, and key words should be **bold**
+Mira must be aware of:
+- Upcoming birthdays (30 days)
+- Due vaccinations
+- Overdue services
+- Seasonal needs (summer cooling, winter care)
+- Time since last grooming/vet/etc.
 
-### Location in Code
-`/app/frontend/src/components/Mira/ChatMessage.jsx` - FormattedText component
-
----
-
-## 7. IDLE TIMEOUT
-
-### Behavior
-- After 5 minutes of inactivity, conversation is saved to "past chats"
-- User gets a fresh session on next visit
-- Uses `lastActivityRef` to track activity
-
-### Location in Code
-`/app/frontend/src/pages/MiraDemoPage.jsx` - search for "IDLE TIMEOUT"
+This powers Today layer and proactive suggestions.
 
 ---
 
-## Document History
-- **Created**: Feb 10, 2026
-- **Reason**: User reported travel destination was being pulled from history incorrectly
-- **Author**: E1 Agent
+## Rule 8: Multi-Turn Memory
 
-## Files That Implement These Rules
-1. `/app/backend/mira_routes.py` - System prompt, pillar detection
-2. `/app/frontend/src/components/Mira/ChatMessage.jsx` - Formatting
-3. `/app/frontend/src/pages/MiraDemoPage.jsx` - Session management, idle timeout
-4. `/app/backend/services/google_places_service.py` - Place search
+Within a session:
+- Track all preferences expressed
+- Track all questions asked (don't repeat)
+- Track context switches (pillar changes)
+- Build session intelligence
+
+Across sessions:
+- Permanent profile updates
+- Service history
+- Conversation patterns
+
+---
+
+## Rule 9: Error Recovery
+
+If Mira accidentally asks for known data:
+- Log as system error
+- Update prompt to prevent recurrence
+- Surface in monitoring dashboard
+
+If user corrects Mira:
+- Thank them
+- Update profile immediately
+- Acknowledge the correction in response
+
+---
+
+## Rule 10: Prohibited Behaviors
+
+❌ "I don't have that information" (when it's in profile)
+❌ "What's your pet's birthday?" (when known)
+❌ "Does [Pet] have any allergies?" (when known)
+❌ Generic breed-only responses (must personalize to this pet)
+❌ "Let me know if you need anything else" (provide clear next step)
+❌ Multiple CTAs in one message
+❌ Asking open-ended questions when profile has data
+
+---
+
+## Implementation Files
+
+1. `/app/backend/mira_routes.py` - Main chat logic
+2. `/app/backend/mira_prompts.py` - System prompts
+3. `/app/backend/services/soul_intelligence.py` - Soul data processing
+4. `/app/backend/services/memory_service.py` - Memory persistence
+
+---
+
+*Updated: February 12, 2026*
