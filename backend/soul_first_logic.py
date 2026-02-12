@@ -580,12 +580,18 @@ def extract_soul_data_from_response(
     # ═══════════════════════════════════════════════════════════════════
     
     anxiety_patterns = {
-        "dryers": ["scared of dryer", "hates dryer", "dryer anxiety", "doesn't like dryer", "afraid of dryer"],
-        "clippers": ["scared of clippers", "hates clipping", "clipper anxiety", "nervous with clippers"],
-        "handling": ["doesn't like being held", "hates being touched", "handling issues", "nervous when handled"],
-        "strangers": ["nervous around strangers", "scared of new people", "doesn't like strangers"],
-        "loud sounds": ["scared of loud", "noise anxiety", "loud sounds", "noise sensitive"],
-        "water": ["hates water", "scared of water", "doesn't like baths", "bath anxiety"]
+        "dryers": ["scared of dryer", "hates dryer", "hates the dryer", "dryer anxiety", "doesn't like dryer", 
+                   "afraid of dryer", "dryer scared", "no dryer", "skip the dryer", "avoid dryer", "dryer frightens"],
+        "clippers": ["scared of clippers", "hates clipping", "hates clippers", "clipper anxiety", 
+                     "nervous with clippers", "afraid of clippers", "no clippers"],
+        "handling": ["doesn't like being held", "hates being touched", "handling issues", "nervous when handled",
+                     "sensitive to touch", "doesn't like touch"],
+        "strangers": ["nervous around strangers", "scared of new people", "doesn't like strangers", 
+                      "wary of strangers", "cautious with new"],
+        "loud sounds": ["scared of loud", "noise anxiety", "loud sounds", "noise sensitive", 
+                        "sensitive to noise", "hates loud"],
+        "water": ["hates water", "scared of water", "doesn't like baths", "bath anxiety", 
+                  "afraid of water", "hates baths"]
     }
     
     for trigger, patterns in anxiety_patterns.items():
