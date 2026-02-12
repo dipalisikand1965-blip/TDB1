@@ -279,32 +279,26 @@ Every classification MUST return:
 
 ## 7. WHAT NEEDS TO BE DONE NEXT
 
-### B3: Safety Gate Enhancement
-**Requirements:**
-- Implement hard override: emergency → show "Call/Go to nearest emergency vet now" + basic first-aid checklist
-- No products, no bookings, no shopping in emergency state
-- Concierge button only for: "We can help locate/route to nearest ER vet" (no medical advice)
-- Caution → suppress shopping, allow education + vet routing
-
-### B4: Scoring Function
+### B4: Scoring Function (NEXT)
 **Requirements:**
 - Score each pick based on:
-  - Tag match relevance
+  - Tag match relevance (how many tags match)
   - Profile completeness (more fields = higher score)
   - Recency (last_service_date)
   - Pet-specific constraints (allergies, age_stage)
 - Return ranked picks with scores
+- Higher base_score picks should rank higher when tags match equally
 
 ### B5: Concierge Logic
 **Requirements:**
 - Always keep one Concierge pick available when:
   - complexity is medium/high
-  - confidence is low
+  - confidence is low (<0.6)
   - no direct catalogue match
 
 ### B6: Integration into /api/mira/chat
 **Requirements:**
-- Wire classification pipeline into chat endpoint
+- Wire classification pipeline + safety gate into chat endpoint
 - Return picks alongside chat response
 - Update events_log with picks_shown
 
@@ -324,7 +318,8 @@ Every classification MUST return:
 ### B9: Picks UI
 **Requirements:**
 - Display picks in frontend
-- Handle emergency state UI
+- Handle emergency state UI (emergency-red theme)
+- Handle caution state UI (caution-yellow theme)
 - Show reason_template with pet data interpolated
 
 ---
