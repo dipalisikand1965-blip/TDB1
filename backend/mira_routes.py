@@ -17762,10 +17762,12 @@ async def get_learn_video_support(
         Single curated video with context
     """
     try:
-        from services.youtube_service import search_youtube_videos, get_breed_specific_topics
+        from services.youtube_service import search_youtube_videos
         
-        # Get pet context for personalized search
-        pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "breed": 1, "age_years": 1, "name": 1})
+        # Get pet context for personalized search (or use defaults for "generic")
+        pet = None
+        if pet_id and pet_id != "generic":
+            pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "breed": 1, "age_years": 1, "name": 1})
         if not pet:
             pet = {"breed": "dog", "age_years": 2, "name": "your pet"}
         
