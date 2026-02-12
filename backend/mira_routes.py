@@ -7487,11 +7487,140 @@ def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar:
             if separation_anxiety:
                 pet_context += f"- Separation anxiety: {separation_anxiety}\n"
             
+            # ═══════════════════════════════════════════════════════════════════
+            # COMPLETE PET SOUL DATA - ALL ANSWERS FROM QUESTIONNAIRE
+            # This is the CORE of Mira OS - we KNOW this pet completely
+            # ═══════════════════════════════════════════════════════════════════
+            
             # Personality from soul
             if soul:
                 persona = soul.get('persona')
                 if persona:
                     pet_context += f"- Personality type: {persona.replace('_', ' ').title()}\n"
+                special_move = soul.get('special_move')
+                if special_move:
+                    pet_context += f"- Special quirk: {special_move}\n"
+                human_job = soul.get('human_job')
+                if human_job:
+                    pet_context += f"- If human, would be: {human_job}\n"
+                love_language = soul.get('love_language')
+                if love_language:
+                    pet_context += f"- Love language: {love_language}\n"
+                personality_tag = soul.get('personality_tag')
+                if personality_tag:
+                    pet_context += f"- Personality tag: {personality_tag}\n"
+            
+            # General nature and behavior
+            general_nature = doggy_soul.get('general_nature')
+            if general_nature:
+                pet_context += f"- General nature: {general_nature}\n"
+            
+            describe_3_words = doggy_soul.get('describe_3_words')
+            if describe_3_words:
+                pet_context += f"- Described as: {describe_3_words}\n"
+            
+            # Reactions and comfort
+            stranger_reaction = doggy_soul.get('stranger_reaction')
+            if stranger_reaction:
+                pet_context += f"- Reaction to strangers: {stranger_reaction}\n"
+            
+            handling_comfort = doggy_soul.get('handling_comfort')
+            if handling_comfort:
+                pet_context += f"- Handling comfort: {handling_comfort}\n"
+            
+            loud_sounds = doggy_soul.get('loud_sounds')
+            if loud_sounds:
+                pet_context += f"- Reaction to loud sounds: {loud_sounds}\n"
+            
+            # Food motivation
+            food_motivation = doggy_soul.get('food_motivation')
+            if food_motivation:
+                pet_context += f"- Food motivation: {food_motivation}\n"
+            
+            # Social behavior
+            behavior_with_dogs = doggy_soul.get('behavior_with_dogs')
+            if behavior_with_dogs:
+                pet_context += f"- Behavior with other dogs: {behavior_with_dogs}\n"
+            
+            behavior_with_humans = doggy_soul.get('behavior_with_humans')
+            if behavior_with_humans:
+                pet_context += f"- Behavior with humans: {behavior_with_humans}\n"
+            
+            # Living situation
+            lives_with = doggy_soul.get('lives_with')
+            if lives_with:
+                lives_str = ', '.join(lives_with) if isinstance(lives_with, list) else lives_with
+                pet_context += f"- Lives with: {lives_str}\n"
+            
+            most_attached_to = doggy_soul.get('most_attached_to')
+            if most_attached_to:
+                pet_context += f"- Most attached to: {most_attached_to}\n"
+            
+            # Routine
+            walks_per_day = doggy_soul.get('walks_per_day')
+            if walks_per_day:
+                pet_context += f"- Walks per day: {walks_per_day}\n"
+            
+            energetic_time = doggy_soul.get('energetic_time')
+            if energetic_time:
+                pet_context += f"- Most energetic time: {energetic_time}\n"
+            
+            sleep_location = doggy_soul.get('sleep_location')
+            if sleep_location:
+                pet_context += f"- Sleeps: {sleep_location}\n"
+            
+            alone_comfort = doggy_soul.get('alone_comfort')
+            if alone_comfort:
+                pet_context += f"- Alone comfort: {alone_comfort}\n"
+            
+            # Travel
+            car_rides = doggy_soul.get('car_rides')
+            if car_rides:
+                pet_context += f"- Car rides: {car_rides}\n"
+            
+            usual_travel = doggy_soul.get('usual_travel')
+            if usual_travel:
+                pet_context += f"- Usual travel mode: {usual_travel}\n"
+            
+            hotel_experience = doggy_soul.get('hotel_experience')
+            if hotel_experience:
+                pet_context += f"- Hotel experience: {hotel_experience}\n"
+            
+            crate_trained = doggy_soul.get('crate_trained')
+            if crate_trained:
+                pet_context += f"- Crate trained: {crate_trained}\n"
+            
+            # Training and behavior
+            anxiety_triggers = doggy_soul.get('anxiety_triggers')
+            if anxiety_triggers:
+                triggers_str = ', '.join(anxiety_triggers) if isinstance(anxiety_triggers, list) else anxiety_triggers
+                pet_context += f"- Anxiety triggers: {triggers_str}\n"
+            
+            vet_comfort = doggy_soul.get('vet_comfort')
+            if vet_comfort:
+                pet_context += f"- Vet comfort: {vet_comfort}\n"
+            
+            grooming_style = doggy_soul.get('grooming_style')
+            if grooming_style:
+                pet_context += f"- Grooming style: {grooming_style}\n"
+            
+            # Preferences from preferences object
+            if preferences:
+                texture_pref = preferences.get('texture_preference')
+                if texture_pref:
+                    pet_context += f"- Texture preference: {texture_pref}\n"
+                
+                treat_size = preferences.get('treat_size')
+                if treat_size:
+                    pet_context += f"- Treat size: {treat_size}\n"
+                
+                flavor_profile = preferences.get('flavor_profile')
+                if flavor_profile:
+                    pet_context += f"- Flavor profile: {flavor_profile}\n"
+                
+                treat_texture = preferences.get('treat_texture')
+                if treat_texture:
+                    pet_context += f"- Treat texture: {treat_texture}\n"
             
             # 🧬 BREED-SPECIFIC HEALTH INTELLIGENCE
             breed_tips = get_breed_health_tips(breed)
