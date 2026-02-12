@@ -195,8 +195,119 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
         # 5. MEMORY RECALL - Check if we have relevant memories for this intent
         user_lower = user_message.lower()
         try:
-            # Check for birthday/celebration context and recall past celebrations
-            if pillar == "celebrate" or "birthday" in user_lower or "party" in user_lower:
+            # ═══════════════════════════════════════════════════════════════════════════
+            # CELEBRATE PILLAR OS-AWARENESS (per MIRA BIBLE)
+            # Generate celebration-specific context for birthdays, parties, milestones
+            # ═══════════════════════════════════════════════════════════════════════════
+            if pillar == "celebrate" or any(kw in user_lower for kw in ["birthday", "party", "celebration", "cake", "pawty"]):
+                # Build CELEBRATE-specific context
+                celebrate_context = {
+                    "pet_name": pet.get("name", "your pet"),
+                    "allergies": allergies if allergies else [],
+                    "diet_restrictions": diet_restrictions if diet_restrictions else [],
+                    "birthday": pet.get("dob") or pet.get("birthday"),
+                    "temperament": pet.get("temperament") or pet.get("personality"),
+                    "preferences": pet.get("preferences", {})
+                }
+                
+                # CELEBRATE picks to suggest based on context
+                celebrate_picks = []
+                
+                # If asking about cake
+                if any(kw in user_lower for kw in ["cake", "centrepiece", "birthday cake"]):
+                    celebrate_picks.append({
+                        "title": "Birthday Cake Arranged",
+                        "why": f"Dog-safe cake for {pet.get('name', 'your pet')}" + (f" (avoiding {', '.join(allergies[:2])})" if allergies else ""),
+                        "cta": "Arrange",
+                        "service_type": "birthday_cake",
+                        "concierge_always": True
+                    })
+                    # Add cake flavour options
+                    celebrate_picks.append({
+                        "title": "Savoury Chicken & Carrot Cake",
+                        "why": "Soft, high-reward, easy to slice" + (" - chicken-free version available" if "chicken" in str(allergies).lower() else ""),
+                        "cta": "Select",
+                        "service_type": "cake_option_savoury",
+                        "concierge_always": True
+                    })
+                    celebrate_picks.append({
+                        "title": "Pumpkin & Peanut-Butter Cake",
+                        "why": "Dog-safe, no sugar, great texture",
+                        "cta": "Select",
+                        "service_type": "cake_option_pumpkin",
+                        "concierge_always": True
+                    })
+                    celebrate_picks.append({
+                        "title": "Mini Cake + Cupcake Trio",
+                        "why": "Portion-control set, looks festive",
+                        "cta": "Select",
+                        "service_type": "cake_option_mini",
+                        "concierge_always": True
+                    })
+                
+                # If asking about party/birthday generally
+                if any(kw in user_lower for kw in ["party", "birthday", "celebration", "pawty"]):
+                    if not any(p.get("service_type") == "birthday_cake" for p in celebrate_picks):
+                        celebrate_picks.append({
+                            "title": "Birthday Cake Arranged",
+                            "why": f"Dog-safe cake matched to {pet.get('name', 'your pet')}'s preferences",
+                            "cta": "Arrange",
+                            "service_type": "birthday_cake",
+                            "concierge_always": True
+                        })
+                    celebrate_picks.append({
+                        "title": "Party Snack Platter",
+                        "why": "Dog-safe treats for guests and pet",
+                        "cta": "Arrange",
+                        "service_type": "party_snacks",
+                        "concierge_always": True
+                    })
+                    celebrate_picks.append({
+                        "title": "Birthday Bandana/Set",
+                        "why": "Photo-ready celebration kit",
+                        "cta": "Get",
+                        "service_type": "birthday_accessories",
+                        "concierge_always": True
+                    })
+                    celebrate_picks.append({
+                        "title": "Pet Photographer Booking",
+                        "why": "Capture the celebration moment",
+                        "cta": "Book",
+                        "service_type": "pet_photography",
+                        "concierge_always": True
+                    })
+                    celebrate_picks.append({
+                        "title": "Party Setup Coordination",
+                        "why": "Mini or medium party setup",
+                        "cta": "Arrange",
+                        "service_type": "party_setup",
+                        "concierge_always": True
+                    })
+                    celebrate_picks.append({
+                        "title": "Pre-Party Grooming",
+                        "why": "Look fresh for the photos",
+                        "cta": "Book",
+                        "service_type": "grooming_celebration",
+                        "concierge_always": True
+                    })
+                
+                os_context["celebrate_context"] = celebrate_context
+                os_context["celebrate_picks"] = celebrate_picks[:8]  # Max 8 picks
+                os_context["picks_update"] = {
+                    "should_refresh": True,
+                    "pillar": "celebrate",
+                    "context": "celebration",
+                    "secondary_pillars": ["dine", "services"]  # Secondary context
+                }
+                
+                # Always include Concierge handoff for CELEBRATE (cake, party setup)
+                os_context["concierge_handoff"] = {
+                    "available": True,
+                    "reason": "Celebration arrangements require coordination",
+                    "cta": "Connect to Concierge"
+                }
+                
+                # Recall past celebrations
                 memory = await actual_db.mira_memories.find_one(
                     {"pet_id": pet_id, "memory_type": {"$in": ["celebration", "birthday", "event"]}},
                     {"_id": 0}
