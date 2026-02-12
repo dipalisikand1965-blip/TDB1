@@ -598,13 +598,15 @@ def extract_soul_data_from_response(
         if any(p in message_lower for p in patterns):
             extracted.grooming_anxiety_triggers.append(trigger)
     
-    # General anxiety mentions
+    # General anxiety mentions - extract what they're anxious about
     if "anxiety" in message_lower or "nervous" in message_lower or "scared" in message_lower:
-        # Try to extract what they're anxious about
-        anxiety_match = re.search(r'(?:anxiety|nervous|scared|afraid)(?:\s+(?:of|with|about))?\s+(\w+(?:\s+\w+)?)', message_lower)
+        # Try to extract what they're anxious about (stop at 'but' or punctuation)
+        anxiety_match = re.search(r'(?:anxiety|nervous|scared|afraid)(?:\s+(?:of|with|about))?\s+(\w+)', message_lower)
         if anxiety_match:
             trigger = anxiety_match.group(1)
-            if trigger not in extracted.grooming_anxiety_triggers:
+            # Don't add if it's a stopword or already in list
+            stopwords = {"but", "the", "and", "she", "he", "it", "they", "with", "is", "was"}
+            if trigger not in extracted.grooming_anxiety_triggers and trigger not in stopwords:
                 extracted.grooming_anxiety_triggers.append(trigger)
     
     # Check for "no anxiety" or "fine with everything" - but be careful not to clear if "but" follows
