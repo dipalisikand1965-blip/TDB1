@@ -1,7 +1,7 @@
 // Service Worker for The Doggy Company PWA
 // Handles caching, offline functionality, and push notifications
 
-const CACHE_NAME = 'tdc-pwa-v2';
+const CACHE_NAME = 'tdc-pwa-v3';
 const urlsToCache = [
   '/',
   '/index.html',
