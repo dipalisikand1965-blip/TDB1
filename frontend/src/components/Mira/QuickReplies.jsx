@@ -17,13 +17,17 @@ import { Send, RefreshCw, HelpCircle, ChevronRight, Gift, Calendar, MapPin, Hear
 export const generateQuickReplies = (context) => {
   const { pillar, hasProducts, hasServices, intent, isAdvisory, petName = 'my pet' } = context;
   
-  // Default quick replies
+  // Default quick replies (fallback only)
   const defaultReplies = [
     { text: 'Tell me more', icon: ChevronRight, action: 'Tell me more about this' },
     { text: 'Send to Concierge', icon: Send, action: 'Send this to my Pet Concierge®', primary: true }
   ];
   
-  // Pillar-specific quick replies
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // MIRA OS PILLAR INTELLIGENCE - These ALWAYS take priority
+  // The pillar represents Mira's understanding of the user's intent
+  // Quick Replies MUST follow the pillar flow - this is the core OS behavior
+  // ═══════════════════════════════════════════════════════════════════════════════
   const pillarReplies = {
     celebrate: [
       { text: 'See party ideas', icon: Gift, action: `Show me birthday party ideas for ${petName}` },
@@ -59,19 +63,31 @@ export const generateQuickReplies = (context) => {
       { text: 'See more options', icon: ChevronRight, action: 'Show me more options' },
       { text: 'Why these picks?', icon: HelpCircle, action: 'Why did you recommend these?' },
       { text: 'Send to Concierge', icon: Send, action: 'Send these picks to my Pet Concierge®', primary: true }
+    ],
+    // General pillar - only used when no specific pillar detected
+    general: [
+      { text: 'Tell me more', icon: ChevronRight, action: 'Tell me more about this' },
+      { text: 'What else?', icon: HelpCircle, action: `What else can you help me with for ${petName}?` },
+      { text: 'Send to Concierge', icon: Send, action: 'Send this to my Pet Concierge®', primary: true }
     ]
   };
   
-  // If we have products/services, add product-specific replies
-  if (hasProducts || hasServices) {
-    return [
-      { text: 'See more options', icon: ChevronRight, action: 'Show me more options like these' },
-      { text: 'Why these?', icon: HelpCircle, action: 'Why did you recommend these for ' + petName + '?' },
-      { text: 'Send to Concierge', icon: Send, action: 'Send these picks to my Pet Concierge®', primary: true }
-    ];
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // PRIORITY ORDER (Mira OS Intelligence):
+  // 1. PILLAR INTELLIGENCE - If Mira detected a specific pillar, use it ALWAYS
+  // 2. Advisory mode - If giving advice without specific pillar
+  // 3. Default - Fallback only
+  // ═══════════════════════════════════════════════════════════════════════════════
+  
+  const normalizedPillar = pillar?.toLowerCase();
+  
+  // 1. PILLAR TAKES PRIORITY - This is the Mira OS brain
+  if (normalizedPillar && pillarReplies[normalizedPillar]) {
+    console.log(`[QUICK REPLIES] Using pillar intelligence: ${normalizedPillar}`);
+    return pillarReplies[normalizedPillar];
   }
   
-  // If it's advisory content (advice, not products)
+  // 2. Advisory mode (no specific pillar detected)
   if (isAdvisory) {
     return [
       { text: 'Refine this', icon: RefreshCw, action: 'Can you adjust this advice?' },
@@ -80,8 +96,8 @@ export const generateQuickReplies = (context) => {
     ];
   }
   
-  // Return pillar-specific or default
-  return pillarReplies[pillar?.toLowerCase()] || defaultReplies;
+  // 3. Fallback - only when nothing else matches
+  return defaultReplies;
 };
 
 const QuickReplies = ({ 
