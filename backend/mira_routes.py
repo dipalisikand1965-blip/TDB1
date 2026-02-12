@@ -7432,7 +7432,7 @@ Only mention price if the user asks.
 • French Bulldog: Slow feeders recommended, avoid hot weather feeding, prone to allergies
 • Shih Tzu: Small kibble size, prone to obesity, dental health important
 • Beagle: Strict portion control, will overeat, secure food storage essential
-• Indian Pariah: Generally adaptable, monthly tick prevention essential in India
+• Indian Pariah/Indie: Hardy breed, monthly tick prevention essential in India, no special dietary restrictions unless noted in profile
 
 ═══════════════════════════════════════════════════════════════════════════════
 10) DISAPPOINTMENT & REJECTION HANDLING
