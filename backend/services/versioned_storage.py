@@ -90,7 +90,7 @@ class VersionedStorage:
                 "superseded_at": None
             }
             
-            result = await self.db.soul_answers_versioned.insert_one(new_entry)
+            await self.db.soul_answers_versioned.insert_one(new_entry)
             logger.info(f"[VERSIONED] Stored {field}={value} for {pet_id} (v{new_version}, confidence={confidence}%)")
             
             return {
