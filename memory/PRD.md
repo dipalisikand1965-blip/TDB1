@@ -10,6 +10,32 @@ See `/app/memory/MIRA_OS_DOCTRINE.md` for the foundational system behavior.
 
 ## 🎯 OS Intelligence Status (Feb 12, 2026)
 
+### Inline Pet Concierge® Card: IMPLEMENTED ✅ (Feb 12, 2026)
+
+**Feature**: When Mira mentions connecting to concierge in chat, an inline "Pet Concierge®" card appears with contact options.
+
+**Implementation**:
+- `InlineConciergeCard.jsx` - Card component with WhatsApp, Chat, Email buttons
+- Text displays "Pet Concierge®" in pink color (#F472B6) with glow effect
+- Auto-detected via regex patterns in `shouldShowConciergeCard()` function
+- Triggered by 40+ concierge-related phrases in Mira's response
+
+### Text Formatting in Chat: VERIFIED ✅
+
+**Implementation**: `ChatMessage.jsx` uses `FormattedText` component with ReactMarkdown
+- Bold text: #F472B6 pink color with text-shadow
+- Lists (ul/ol): Proper indentation and spacing
+- Links: Blue color (#60A5FA) with underline
+
+### Soul Card with Pet Photo: IMPLEMENTED ✅ (Feb 12, 2026)
+
+**Feature**: Soul Knowledge Ticker expanded panel now shows pet photo with score overlay.
+
+**Implementation**:
+- `SoulKnowledgeTicker.jsx` now accepts `petPhoto` prop
+- Expanded panel shows circular pet photo with score overlay
+- Falls back to score circle if no photo available
+
 ### Photo Display Issue: FIXED ✅
 
 **Problem**: Pet photo was showing as yellow placeholder with paw print instead of actual photo.
