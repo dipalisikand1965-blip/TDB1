@@ -8461,6 +8461,7 @@ Give generic advice appropriate for any pet unless user provides specific detail
 {research_instruction}
 {nearby_places_instruction}
 {weather_instruction}
+{os_intelligence_instruction}
 {concierge_action_instruction}
 {another_pet_instruction}
 
