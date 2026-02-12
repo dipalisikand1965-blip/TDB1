@@ -75,6 +75,13 @@ const SoulKnowledgeTicker = ({
     }
   };
   
+  // Fetch knowledge when expanded panel opens
+  useEffect(() => {
+    if (showExpanded && !miraKnowledge && !loadingKnowledge) {
+      fetchMiraKnowledge();
+    }
+  }, [showExpanded]);
+  
   // Fetch knowledge items from backend - prioritize personal knowledge over places
   useEffect(() => {
     const fetchKnowledge = async () => {
