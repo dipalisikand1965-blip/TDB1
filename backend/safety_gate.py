@@ -129,7 +129,23 @@ CAUTION_MESSAGES = {
     "excessive_scratching": "Persistent scratching may indicate allergies or parasites. Consult a vet to identify the cause.",
     "eye_discharge": "Eye issues can worsen quickly. Consult a vet if discharge is colored, excessive, or accompanied by squinting.",
     "ear_pain": "Ear problems can be painful and lead to infection. Consult a vet for proper diagnosis and treatment.",
-    "temperature_risk": "Temperature extremes can be dangerous. Take precautions and monitor for signs of distress."
+    "temperature_risk": "Temperature extremes can be dangerous. Take precautions and monitor for signs of distress.",
+    "choking_suspected": "Your pet may have something stuck. Monitor closely and answer these questions to assess severity."
+}
+
+# Gating questions for escalation (caution -> emergency)
+GATING_QUESTIONS = {
+    "choking_suspected": {
+        "questions": [
+            "Can your pet breathe at all? (even labored or noisy breathing)",
+            "Is their tongue or gums turning blue/purple?"
+        ],
+        "escalation_answers": {
+            "q1_no": "emergency",  # Can't breathe at all -> emergency
+            "q2_yes": "emergency"  # Blue tongue/gums -> emergency
+        },
+        "escalation_message": "Based on your answers, this may be a choking emergency. Please rush to the nearest emergency vet immediately."
+    }
 }
 
 
