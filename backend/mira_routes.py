@@ -9787,19 +9787,30 @@ IMPORTANT: When giving weather-based advice:
         # MIRA OS INTELLIGENCE - Temporal awareness, safety gates, memory recall
         # ═══════════════════════════════════════════════════════════════════════════
         os_intelligence_instruction = ""
+        pet_name_for_prompt = selected_pet.get("name") if selected_pet else "their pet"
         
         # Temporal context (birthday, appointments, etc.)
         temporal = os_context.get("temporal_context")
         if temporal and temporal.get("type") == "birthday_upcoming":
             days = temporal.get("days_until", 99)
             date = temporal.get("date", "soon")
-            pet_name_for_temporal = selected_pet.get("name") if selected_pet else "their pet"
             os_intelligence_instruction += f"""
 🎂 TEMPORAL AWARENESS (BIRTHDAY):
-{pet_name_for_temporal}'s birthday is {date} - {days} days away!
-- If user is planning a celebration, MENTION this: "I see {pet_name_for_temporal}'s birthday is coming up in {days} days!"
+{pet_name_for_prompt}'s birthday is {date} - {days} days away!
+- If user is planning a celebration, MENTION this: "I see {pet_name_for_prompt}'s birthday is coming up in {days} days!"
 - Show awareness of the timing - this makes Mira feel like she KNOWS the pet
 - Suggest appropriate timeline for preparations
+"""
+        
+        # CELEBRATE context - includes birthday even if not upcoming
+        celebrate_ctx = os_context.get("celebrate_context", {})
+        if celebrate_ctx and celebrate_ctx.get("birthday"):
+            birthday_date = celebrate_ctx.get("birthday")
+            os_intelligence_instruction += f"""
+🎂 PET BIRTHDAY (FROM PROFILE):
+{pet_name_for_prompt}'s birthday is: **{birthday_date}**
+- If user asks "when is birthday" or similar, TELL THEM THIS DATE DIRECTLY
+- You HAVE this information in the profile - don't say you don't know
 """
         
         # Safety gates (allergies, health constraints)
