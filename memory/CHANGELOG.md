@@ -1,5 +1,47 @@
 # MIRA OS - CHANGELOG
 
+## [2025-12-XX] - Picks Engine B4 Scoring Logic Complete
+
+### Added
+
+**Scoring Logic Module** (`/app/backend/scoring_logic.py`)
+- Complete scoring and ranking engine for Picks
+- Profile-based boosts and penalties
+- Cross-pillar boost rules (Travel → Paperwork +15)
+- Brachycephalic breed detection and warnings
+- Degrade-safe reason template rendering
+- Booking field extraction (required/optional)
+
+**Enhanced Travel Picks** (`seed_picks_catalogue.py`)
+- `travel_air_guide`: Added `doc_requirements`, `warning_type`, `reason_template_enhanced`
+- `travel_airport_transfer`: Added `required_booking_fields`, `optional_booking_fields`, `service_modes`
+- Tuned `concierge_complexity`: guides=low, bookings=medium
+
+**New Schema Patterns**
+- `doc_requirements`: Links travel picks to paperwork (e.g., `["fit_to_fly", "vaccination_records"]`)
+- `warning_type`: Abstract warning lookup (e.g., `"air_travel_brachy"`)
+- `optional_booking_fields`: Non-blocking booking qualifiers
+- Cross-pillar boost rules for proactive suggestions
+
+**Test Suite** (`/app/backend/tests/test_scoring_logic.py`)
+- 29 new unit tests covering all scoring patterns
+- Tests for brachycephalic detection, Travel→Paperwork boost, booking fields, reason templates
+
+### Updated
+- `picks_catalogue` collection: 110 picks with enhanced schemas
+- PRD.md: Updated B4 status and schema patterns documentation
+
+### Test Results
+- B2 Classification: 28 passing
+- B3 Safety Gate: 21 passing  
+- B4 Scoring Logic: 29 passing
+- **Total: 78 tests passing**
+
+---
+
+
+# MIRA OS - CHANGELOG
+
 ## [2026-02-11] - Agent Audit & Verification Session
 
 ### Verified Working
