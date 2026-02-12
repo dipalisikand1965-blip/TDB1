@@ -207,6 +207,96 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
                         "text": memory.get("summary", memory.get("content", "")),
                         "date": memory.get("created_at")
                     }
+            
+            # ═══════════════════════════════════════════════════════════════════════════
+            # DINE PILLAR OS-AWARENESS (per MIRA BIBLE)
+            # Generate diet-specific context for everyday meal planning
+            # ═══════════════════════════════════════════════════════════════════════════
+            elif pillar == "dine" or any(kw in user_lower for kw in ["meal", "food", "diet", "kibble", "feed", "nutrition"]):
+                # Extract pet's diet information
+                pet_soul = pet.get("soul") or {}
+                current_diet = pet.get("diet_type") or pet_soul.get("diet_type") or pet.get("food_type")
+                preferences = pet.get("preferences") or {}
+                food_preferences = preferences.get("food") or pet_soul.get("food_preferences") or {}
+                
+                # Build DINE-specific context
+                dine_context = {
+                    "current_diet": current_diet,  # kibble, wet, home-cooked, raw
+                    "allergies": allergies if allergies else [],
+                    "diet_restrictions": diet_restrictions if diet_restrictions else [],
+                    "weight_status": pet.get("weight_status") or pet.get("body_condition"),
+                    "age_band": pet.get("age_band") or pet.get("life_stage"),
+                    "activity_level": pet.get("activity_level") or pet_soul.get("activity_level")
+                }
+                
+                # DINE picks to suggest based on context
+                dine_picks = []
+                
+                # If no diet info, suggest diet setup
+                if not current_diet:
+                    dine_picks.append({
+                        "title": "Diet Assessment",
+                        "why": f"Let's understand {pet.get('name', 'your pet')}'s current eating habits",
+                        "cta": "Start",
+                        "service_type": "diet_assessment"
+                    })
+                
+                # If transitioning food or asking about change
+                if any(kw in user_lower for kw in ["switch", "transition", "change", "new food"]):
+                    dine_picks.append({
+                        "title": "Diet Transition Plan (7-10 days)",
+                        "why": "Gradual transition prevents digestive upset",
+                        "cta": "Start",
+                        "service_type": "diet_transition"
+                    })
+                
+                # If asking about portions or how much
+                if any(kw in user_lower for kw in ["portion", "how much", "amount", "cups", "grams"]):
+                    dine_picks.append({
+                        "title": "Portioning & Schedule Setup",
+                        "why": f"Tailored to {pet.get('name', 'your pet')}'s weight and activity level",
+                        "cta": "Plan",
+                        "service_type": "portioning_setup"
+                    })
+                
+                # If treats mentioned
+                if any(kw in user_lower for kw in ["treat", "snack", "reward", "training treat"]):
+                    dine_picks.append({
+                        "title": "Treat Strategy",
+                        "why": "Balance training rewards with daily calorie needs",
+                        "cta": "Arrange",
+                        "service_type": "treat_strategy"
+                    })
+                
+                # Always offer nutrition consult if health concerns
+                if allergies or diet_restrictions:
+                    dine_picks.append({
+                        "title": "Nutrition Consult Coordination",
+                        "why": f"Expert guidance considering {pet.get('name', 'your pet')}'s sensitivities",
+                        "cta": "Book",
+                        "service_type": "nutrition_consult"
+                    })
+                
+                os_context["dine_context"] = dine_context
+                os_context["dine_picks"] = dine_picks
+                os_context["picks_update"] = {
+                    "should_refresh": True,
+                    "pillar": "dine",
+                    "context": "nutrition"
+                }
+                
+                # Recall previous diet conversations
+                diet_memory = await actual_db.mira_memories.find_one(
+                    {"pet_id": pet_id, "memory_type": {"$in": ["diet", "food", "nutrition", "meal"]}},
+                    {"_id": 0}
+                )
+                if diet_memory:
+                    os_context["memory_recall"] = {
+                        "type": "diet",
+                        "text": diet_memory.get("summary", diet_memory.get("content", "")),
+                        "date": diet_memory.get("created_at")
+                    }
+                    
         except Exception as e:
             logger.debug(f"[OS CONTEXT] Memory recall error: {e}")
     
