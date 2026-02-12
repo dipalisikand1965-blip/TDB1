@@ -107,11 +107,14 @@ def is_brachycephalic(breed: str) -> bool:
 
 def get_travel_warning(warning_type: str, pet_profile: PetProfile) -> Optional[str]:
     """Get warning message based on warning_type and profile."""
+    pet_name = pet_profile.pet_name or "your pet"
+    breed = pet_profile.breed or "this breed"
+    
     warnings_catalogue = {
         "air_travel_brachy": (
-            f"Important: {pet_profile.breed}s are brachycephalic (flat-faced) and may face "
-            "airline restrictions or health risks during air travel. Many airlines restrict or "
-            "ban these breeds. Consult your vet before booking."
+            f"Important: {pet_name} is a {breed}, which is brachycephalic (flat-faced). "
+            "Many airlines restrict or ban these breeds due to health risks during air travel. "
+            "Consult your vet before booking."
         ),
     }
     return warnings_catalogue.get(warning_type)
