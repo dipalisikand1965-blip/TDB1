@@ -183,15 +183,16 @@ const SoulKnowledgeTicker = ({
         onMouseLeave={() => setIsPaused(false)}
         data-testid="soul-knowledge-ticker"
       >
-        {/* Soul Score Badge - Left side, always visible - LINKS TO MY PETS */}
+        {/* Soul Score Badge - Left side, always visible - Opens "What Mira Knows" Card */}
         <div 
           className={`ticker-soul-badge ${isGlowing ? 'score-growing' : ''}`}
           onClick={() => {
             hapticFeedback.buttonTap();
-            // Navigate to My Pets page with this pet's tab open
-            navigate(`/my-pets?pet=${petId}`);
+            // Open "What Mira Knows" card first
+            setShowKnowledgeCard(true);
+            fetchMiraKnowledge();
           }}
-          title={`View ${petName}'s full Soul Profile`}
+          title={`What Mira knows about ${petName}`}
           data-testid="soul-score-badge"
         >
           <Brain className="w-3.5 h-3.5" />
