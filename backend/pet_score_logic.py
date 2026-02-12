@@ -384,9 +384,11 @@ SCORE_CATEGORIES = {
 
 # ==================== SCORE CALCULATION ====================
 
-def calculate_pet_soul_score(answers: Dict[str, Any]) -> Dict[str, Any]:
+def calculate_pet_soul_score(answers: Dict[str, Any], preferences: Dict[str, Any] = None, soul: Dict[str, Any] = None) -> Dict[str, Any]:
     """
     Calculate the Pet Soul Score from answers.
+    
+    Now also accepts preferences and soul data to cross-reference and fill gaps.
     
     Returns:
         {
@@ -400,6 +402,9 @@ def calculate_pet_soul_score(answers: Dict[str, Any]) -> Dict[str, Any]:
             "completion_by_category": {category: percentage}
         }
     """
+    preferences = preferences or {}
+    soul = soul or {}
+    
     # Alias mapping: old question IDs -> new question IDs
     # CRITICAL: Map all variations of field names to scoring question IDs
     QUESTION_ALIASES = {
@@ -469,6 +474,28 @@ def calculate_pet_soul_score(answers: Dict[str, Any]) -> Dict[str, Any]:
         'water_comfort': 'swimming_ability',
         'leash_behavior': 'leash_manners',
     }
+    
+    # PHASE 2: Cross-reference data from preferences and soul
+    # This fills gaps where data exists but in different locations
+    merged_answers = dict(answers)  # Start with soul answers
+    
+    # Pull from preferences
+    if preferences:
+        if preferences.get('treat_texture') and not merged_answers.get('treat_preference'):
+            merged_answers['treat_preference'] = preferences['treat_texture']
+        if preferences.get('activity_level') and not merged_answers.get('exercise_needs'):
+            merged_answers['exercise_needs'] = preferences['activity_level']
+        if preferences.get('favorite_flavors') and not merged_answers.get('favorite_protein'):
+            # Take first flavor as favorite protein hint
+            flavors = preferences.get('favorite_flavors', [])
+            if flavors:
+                merged_answers['favorite_protein'] = flavors[0] if isinstance(flavors, list) else flavors
+    
+    # Pull from soul (personality data)
+    if soul:
+        # If temperament not filled but persona exists, use it
+        if soul.get('persona') and not merged_answers.get('temperament'):
+            merged_answers['temperament'] = soul['persona']
     
     # Normalize answers by applying aliases
     normalized_answers = {}
