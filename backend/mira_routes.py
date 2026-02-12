@@ -99,7 +99,7 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
         "memory_recall": None
     }
     
-    if not db or not pet_id:
+    if db is None or not pet_id:
         return os_context
     
     try:
