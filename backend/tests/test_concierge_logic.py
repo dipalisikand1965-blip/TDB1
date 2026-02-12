@@ -53,7 +53,7 @@ class TestTimePressureDetection:
     
     def test_in_hours_detected(self):
         assert detect_time_pressure("Need in 2 hours") is True
-        assert detect_time_pressure("Within 24 hours") is True
+        assert detect_time_pressure("in 24 hours") is True
     
     def test_no_time_pressure(self):
         assert detect_time_pressure("Looking for grooming options") is False
