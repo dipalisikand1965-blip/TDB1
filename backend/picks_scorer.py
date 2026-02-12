@@ -258,8 +258,9 @@ class PicksScorer:
     ) -> Tuple[ScoredPick, List[str]]:
         """Score a single pick."""
         pick_tags = pick.get("canonical_tags", [])
-        required_fields = pick.get("constraints", {}).get("required_profile_fields", [])
-        reason_template = pick.get("reason_template", "")
+        constraints = pick.get("constraints", {})
+        required_fields = constraints.get("required_profile_fields", [])
+        enhanced_requires = constraints.get("enhanced_reason_requires", [])
         
         # Calculate tag match score
         matching_tags = [t for t in pick_tags if t in canonical_tags]
@@ -275,23 +276,38 @@ class PicksScorer:
             if not pet_profile.get(field):
                 missing_fields.append(field)
                 profile_penalty += 5
-                # Generate micro question
                 micro_q = self._generate_micro_question(field)
                 if micro_q:
                     micro_questions.append(micro_q)
+        
+        # Check for allergy question routing
+        if constraints.get("if_allergies_present") == "ask_question":
+            if pet_profile.get("allergies"):
+                # Has allergies - add the allergy question
+                allergy_q = pick.get("allergy_question")
+                if allergy_q:
+                    micro_questions.append(allergy_q)
         
         # Calculate recency bonus
         recency_bonus = 0
         last_service = pet_profile.get("last_service_date")
         if last_service and pick.get("pick_type") == "booking":
-            # Bonus for services that might be due
-            # (simplified - real implementation would check service type)
             recency_bonus = 5
         
         # Calculate final score
         base_score = pick.get("base_score", 50)
         final_score = (base_score * tag_match_score) - profile_penalty + recency_bonus
         final_score = max(0, min(100, final_score))  # Clamp to 0-100
+        
+        # Choose reason template (enhanced if profile has required fields)
+        reason_template = pick.get("reason_template", "")
+        enhanced_template = pick.get("reason_template_enhanced")
+        
+        if enhanced_template and enhanced_requires:
+            # Check if we have all fields for enhanced template
+            has_all_enhanced = all(pet_profile.get(f) for f in enhanced_requires)
+            if has_all_enhanced:
+                reason_template = enhanced_template
         
         # Interpolate reason template
         reason = self._interpolate_reason(reason_template, pet_profile)
