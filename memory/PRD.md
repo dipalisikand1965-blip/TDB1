@@ -49,6 +49,27 @@ Build and maintain the Mira AI Pet Companion feature with deep personalization.
 
 ## What's Been Implemented (Feb 12, 2026)
 
+### ✅ MIRA OS INTELLIGENCE (NEW!)
+- **Temporal Awareness**: Mira now knows when pet's birthday is approaching ("I see his birthday is in 2 days!")
+- **Safety Gating**: Automatically references pet allergies in food/treat recommendations
+- **Layer Activation**: Chat response includes `os_context` with pillar activation signals
+- **Picks Auto-Refresh**: Frontend receives signal to refresh Picks for active pillar
+- **Intelligent Framing**: Better questions ("play-date style gathering or family celebration?" vs "active or cosy?")
+
+### API Changes:
+- Chat endpoint now returns `os_context` object with:
+  - `layer_activation`: Current active pillar
+  - `temporal_context`: Birthday proximity, appointments, etc.
+  - `safety_gates`: Allergies, health constraints
+  - `picks_update`: Signal for frontend to refresh Picks
+  - `proactive_alerts`: Urgent reminders
+
+### Example OS-aware Response:
+```
+"I see Mojo's birthday is in 2 days (14 Feb), so we're planning for something quite soon.
+Since Mojo is allergic to chicken, I'll make sure any cake/treat ideas are completely chicken-free."
+```
+
 ### "WHAT MIRA KNOWS" PANEL - COMPLETE ✅
 
 **Design Matches User's Screenshot:**
