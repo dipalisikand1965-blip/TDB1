@@ -631,26 +631,66 @@ const SoulKnowledgeTicker = ({
           margin-bottom: 20px;
         }
         
+        .score-circle-container {
+          position: relative;
+          width: 120px;
+          height: 120px;
+          margin: 0 auto 12px;
+          border-radius: 50%;
+          border: 4px solid;
+          border-color: rgba(139, 92, 246, 0.6);
+          box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+          overflow: hidden;
+        }
+        
+        .score-circle-container.glowing {
+          animation: circleGlow 1.5s ease-out;
+        }
+        
+        .score-pet-photo {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        
+        .score-overlay {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding: 8px 4px;
+          background: linear-gradient(to top, rgba(139, 92, 246, 0.95), transparent);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        
+        .score-overlay .score-number {
+          font-size: 18px;
+          font-weight: 800;
+          color: white;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+        
+        .score-overlay .score-text {
+          font-size: 9px;
+          color: rgba(255, 255, 255, 0.9);
+          letter-spacing: 1px;
+        }
+        
         .score-circle {
           display: inline-flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          width: 100px;
-          height: 100px;
+          width: 100%;
+          height: 100%;
           background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.2));
-          border: 3px solid rgba(139, 92, 246, 0.5);
-          border-radius: 50%;
-          margin-bottom: 8px;
-        }
-        
-        .score-circle.glowing {
-          animation: circleGlow 1.5s ease-out;
         }
         
         @keyframes circleGlow {
-          0%, 100% { box-shadow: none; border-color: rgba(139, 92, 246, 0.5); }
-          50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.6); border-color: #8B5CF6; }
+          0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); border-color: rgba(139, 92, 246, 0.6); }
+          50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.7); border-color: #8B5CF6; }
         }
         
         .score-number {
