@@ -229,7 +229,7 @@ async def get_what_mira_knows(
     Returns formatted for display on My Pets page.
     """
     from mira_routes import get_user_from_token
-    from pet_soul_routes import calculate_overall_score, FOLDER_KEYS
+    from pet_score_logic import calculate_pet_soul_score
     
     user = await get_user_from_token(authorization)
     if not user:
@@ -245,11 +245,12 @@ async def get_what_mira_knows(
     
     pet_name = pet.get("name", "your pet")
     
-    # Calculate soul score consistently with pet-soul/profile endpoint
-    # IMPORTANT: Always recalculate to ensure consistency across all pages
+    # Calculate soul score consistently with pet-soul/profile endpoint in server.py
+    # IMPORTANT: Use pet_score_logic.calculate_pet_soul_score for consistency across all pages
     soul_answers = pet.get("doggy_soul_answers", {})
-    calculated_overall_score = calculate_overall_score(soul_answers)
-    logger.info(f"[WHAT-MIRA-KNOWS] Calculated score: {calculated_overall_score}, Stored score: {pet.get('overall_score', 0)}")
+    score_data = calculate_pet_soul_score(soul_answers)
+    calculated_overall_score = score_data.get("total_score", 0)
+    logger.info(f"[WHAT-MIRA-KNOWS] Calculated score using pet_score_logic: {calculated_overall_score}")
     
     # 1. BUILD SOUL KNOWLEDGE from doggy_soul_answers
     soul_knowledge = []
