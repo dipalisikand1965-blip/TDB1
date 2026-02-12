@@ -141,7 +141,8 @@ import MiraAI from "./components/MiraAI";
 // Critical Pages (loaded immediately - main user journey)
 import Home from "./pages/Home";
 // AboutPage already imported via lazy loading below
-import Login from "./pages/Login";
+// Login - Lazy loaded to reduce initial bundle size
+const Login = lazy(() => import("./pages/Login"));
 import Register from "./pages/Register";
 import ShopPage from "./pages/ShopPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
