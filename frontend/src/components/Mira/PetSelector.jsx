@@ -3,12 +3,15 @@
  * ====================================
  * Dropdown for switching between pets
  * Shows pet avatar, name, breed, and soul score
+ * Soul score is clickable - links to pet profile
  * 
  * Extracted from MiraDemoPage.jsx - Stage 5 Refactoring
  */
 
 import React from 'react';
-import { PawPrint, Check } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { PawPrint, Check, ExternalLink } from 'lucide-react';
+import hapticFeedback from '../../utils/haptic';
 
 /**
  * PetSelector Component
@@ -27,6 +30,7 @@ const PetSelector = ({
   onToggle,
   onSelectPet
 }) => {
+  const navigate = useNavigate();
   
   const handleToggle = () => {
     if (onToggle) onToggle();
@@ -34,6 +38,13 @@ const PetSelector = ({
   
   const handleSelectPet = (pet) => {
     if (onSelectPet) onSelectPet(pet);
+  };
+  
+  // Handle score click - navigate to pet profile
+  const handleScoreClick = (e, petId) => {
+    e.stopPropagation();
+    hapticFeedback.buttonTap();
+    navigate(`/my-pets?pet=${petId}`);
   };
   
   return (
@@ -90,28 +101,46 @@ const PetSelector = ({
                   fontSize: 12 
                 }}>
                   {p.breed}
-                  {/* Debug: Soul Score should show for scores > 10 */}
+                  {/* Soul Score - Clickable to pet profile */}
                   {Number(p.soulScore) > 10 ? (
-                    <span style={{ 
-                      background: 'linear-gradient(135deg, #f59e0b, #d97706)', 
-                      padding: '2px 6px', 
-                      borderRadius: '8px', 
-                      fontSize: '10px',
-                      fontWeight: '700',
-                      color: 'white'
-                    }}>
+                    <span 
+                      onClick={(e) => handleScoreClick(e, p.id)}
+                      style={{ 
+                        background: 'linear-gradient(135deg, #f59e0b, #d97706)', 
+                        padding: '2px 8px', 
+                        borderRadius: '8px', 
+                        fontSize: '10px',
+                        fontWeight: '700',
+                        color: 'white',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '3px',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => e.target.style.transform = 'scale(1.1)'}
+                      onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                      title={`View ${p.name}'s profile`}
+                      data-testid={`pet-score-${p.id}`}
+                    >
                       {p.soulScore}%
+                      <ExternalLink style={{ width: 8, height: 8, opacity: 0.7 }} />
                     </span>
                   ) : (
-                    <span style={{ 
-                      background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', 
-                      padding: '2px 6px', 
-                      borderRadius: '8px', 
-                      fontSize: '9px',
-                      fontWeight: '600',
-                      color: 'white',
-                      animation: 'pulse 2s infinite'
-                    }}>
+                    <span 
+                      onClick={(e) => handleScoreClick(e, p.id)}
+                      style={{ 
+                        background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', 
+                        padding: '2px 6px', 
+                        borderRadius: '8px', 
+                        fontSize: '9px',
+                        fontWeight: '600',
+                        color: 'white',
+                        cursor: 'pointer',
+                        animation: 'pulse 2s infinite'
+                      }}
+                      title={`Build ${p.name}'s soul profile`}
+                    >
                       ✨ New
                     </span>
                   )}
