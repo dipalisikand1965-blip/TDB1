@@ -482,6 +482,11 @@ def format_memories_for_llm(memories: List[Dict]) -> str:
     lines = ["## Learned from Conversations:"]
     for m in memories:
         conf = m.get("confidence", 50)
+        # Ensure confidence is an int for comparison
+        try:
+            conf = int(conf) if conf else 50
+        except (ValueError, TypeError):
+            conf = 50
         conf_label = "confirmed" if conf >= 85 else "observed" if conf >= 70 else "mentioned"
         lines.append(f"- {m['type']}: {m['value']} ({conf_label})")
     
