@@ -282,8 +282,8 @@ class ClassificationPipeline:
         
         # Check for "looking for" + service-type tags (= book intent)
         service_tags = ["grooming", "boarding", "daycare", "pet_sitting", "vet_appointment", 
-                       "daily_walks", "trainer_class", "photo_shoot"]
-        if any(phrase in normalized for phrase in ["looking for", "need a", "want a", "find me"]):
+                       "daily_walks", "trainer_class", "photo_shoot", "kennel"]
+        if any(phrase in normalized for phrase in ["looking for", "need a", "want a", "find me", "near me"]):
             for tag in matched_tags:
                 if tag in service_tags:
                     return "book"
