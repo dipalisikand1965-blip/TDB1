@@ -478,14 +478,14 @@ class ClassificationPipeline:
         # Step 2: Safety gate
         safety_level = self._step2_safety_gate(matched_tags)
         
-        # Step 3: Intent detection
-        intent = self._step3_intent_detection(message, safety_level)
+        # Step 3: Intent detection (now takes matched_tags for context)
+        intent = self._step3_intent_detection(message, safety_level, matched_tags)
         
         # Step 4: Pillar resolution
         primary_pillar = self._step4_pillar_resolution(matched_tags, safety_level)
         
-        # Calculate confidence
-        confidence = self._calculate_confidence(matched_tags, matched_synonyms)
+        # Calculate confidence (now takes safety_level for ceilings)
+        confidence = self._calculate_confidence(matched_tags, matched_synonyms, safety_level)
         
         # Get missing profile fields
         missing_profile_fields = self._get_missing_profile_fields(matched_tags)
