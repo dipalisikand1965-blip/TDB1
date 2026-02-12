@@ -268,9 +268,30 @@ const SoulKnowledgeTicker = ({
           </div>
           
           <div className="expanded-score">
-            <div className={`score-circle ${isGlowing ? 'glowing' : ''}`}>
-              <span className="score-number">{Math.round(displayScore)}%</span>
-              <span className="score-text">SOUL KNOWN</span>
+            {/* Pet Photo with Soul Score Ring */}
+            <div className={`score-circle-container ${isGlowing ? 'glowing' : ''}`}>
+              {petPhoto ? (
+                <img 
+                  src={petPhoto} 
+                  alt={petName}
+                  className="score-pet-photo"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = `https://api.dicebear.com/7.x/lorelei/svg?seed=${petName}&backgroundColor=ffdfbf`;
+                  }}
+                />
+              ) : (
+                <div className="score-circle">
+                  <span className="score-number">{Math.round(displayScore)}%</span>
+                  <span className="score-text">SOUL KNOWN</span>
+                </div>
+              )}
+              {petPhoto && (
+                <div className="score-overlay">
+                  <span className="score-number">{Math.round(displayScore)}%</span>
+                  <span className="score-text">SOUL</span>
+                </div>
+              )}
             </div>
             {displayScore < 50 && (
               <p className="score-hint">
