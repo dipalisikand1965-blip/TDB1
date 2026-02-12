@@ -11937,7 +11937,15 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 "learn_context": os_context.get("learn_context"),  # Life stage, training history
                 "learn_picks": os_context.get("learn_picks", []),  # Picks for LEARN pillar
                 "concierge_handoff": os_context.get("concierge_handoff")  # Always available for CELEBRATE/STAY/TRAVEL/CARE
-            }
+            },
+            # ═══════════════════════════════════════════════════════════════════════════
+            # MIRA OS SOUL INTELLIGENCE - Dynamic questions, completion score
+            # ═══════════════════════════════════════════════════════════════════════════
+            "soul_intelligence": {
+                "completion_score": get_soul_completion_score(selected_pet) if selected_pet else {"total_score": 0},
+                "unanswered_questions": get_relevant_unanswered_questions(selected_pet, pillar, user_message, limit=3) if selected_pet else [],
+                "suggested_question": suggest_question_for_context(selected_pet, pillar, user_message) if selected_pet else None
+            } if SOUL_INTELLIGENCE_AVAILABLE else None
         }
         
     except Exception as e:
