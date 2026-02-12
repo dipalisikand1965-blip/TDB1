@@ -412,6 +412,160 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
                         "text": stay_memory.get("summary", stay_memory.get("content", "")),
                         "date": stay_memory.get("created_at")
                     }
+            
+            # ═══════════════════════════════════════════════════════════════════════════
+            # TRAVEL PILLAR OS-AWARENESS (per MIRA BIBLE)
+            # Generate travel-specific context for trips, transport, relocation
+            # ═══════════════════════════════════════════════════════════════════════════
+            elif pillar == "travel" or any(kw in user_lower for kw in ["travel", "trip", "flight", "road trip", "fly", "relocate", "vacation"]):
+                # Extract pet's travel-relevant information
+                pet_soul = pet.get("soul") or {}
+                temperament = pet.get("temperament") or pet_soul.get("temperament") or pet.get("personality")
+                anxiety_level = pet.get("anxiety_level") or pet_soul.get("anxiety_level")
+                health_flags = pet.get("health_flags") or pet.get("medical_conditions") or []
+                vaccinations = pet.get("vaccinations") or []
+                size = pet.get("size") or pet.get("weight_category")
+                weight = pet.get("weight")
+                age_band = pet.get("age_band") or pet.get("life_stage")
+                breed = pet.get("breed") or ""
+                
+                # Build TRAVEL-specific context
+                travel_context = {
+                    "temperament": temperament,
+                    "anxiety_level": anxiety_level,
+                    "health_flags": health_flags if health_flags else [],
+                    "vaccinations": vaccinations,
+                    "allergies": allergies if allergies else [],
+                    "size": size,
+                    "weight": weight,
+                    "age_band": age_band,
+                    "breed": breed,
+                    # Travel-specific considerations
+                    "brachycephalic": any(b in breed.lower() for b in ["pug", "bulldog", "boxer", "shih tzu", "boston terrier", "pekingese"]) if breed else False,
+                    "senior": age_band in ["senior", "geriatric"] if age_band else False
+                }
+                
+                # TRAVEL picks to suggest based on context
+                travel_picks = []
+                
+                # If asking about whether to travel
+                if any(kw in user_lower for kw in ["should", "can my dog", "is it safe", "should he travel", "should i take"]):
+                    travel_picks.append({
+                        "title": "Travel Decision Support",
+                        "why": f"Evaluate if this trip is right for {pet.get('name', 'your pet')}",
+                        "cta": "Decide",
+                        "service_type": "travel_decision",
+                        "concierge_always": True
+                    })
+                
+                # If asking about flights
+                if any(kw in user_lower for kw in ["flight", "fly", "airplane", "airline", "air travel"]):
+                    travel_picks.append({
+                        "title": "Carrier Sizing + Airline Policy",
+                        "why": "Verify requirements before booking",
+                        "cta": "Check",
+                        "service_type": "carrier_policy",
+                        "concierge_always": True,
+                        "uses_google_places": True
+                    })
+                    # Special warning for brachycephalic breeds
+                    if travel_context.get("brachycephalic"):
+                        travel_picks.append({
+                            "title": "Brachycephalic Flight Safety Review",
+                            "why": f"Important: {breed} breeds have breathing restrictions on flights",
+                            "cta": "Review",
+                            "service_type": "brachy_flight_safety",
+                            "concierge_always": True,
+                            "priority": "high"
+                        })
+                
+                # If asking about road trips
+                if any(kw in user_lower for kw in ["road trip", "car", "drive", "car travel", "car ride"]):
+                    travel_picks.append({
+                        "title": "Road Trip Break Schedule",
+                        "why": "Rest stops, restraint selection, comfort tips",
+                        "cta": "Plan",
+                        "service_type": "road_trip",
+                        "concierge_always": True
+                    })
+                
+                # If asking about packing or what to bring
+                if any(kw in user_lower for kw in ["pack", "bring", "checklist", "what to take", "travel kit"]):
+                    travel_picks.append({
+                        "title": "Travel Kit Checklist",
+                        "why": f"Customized for {pet.get('name', 'your pet')}'s needs",
+                        "cta": "Get",
+                        "service_type": "travel_kit",
+                        "concierge_always": True
+                    })
+                
+                # If asking about documents or requirements
+                if any(kw in user_lower for kw in ["document", "vaccine", "certificate", "papers", "requirements", "rules"]):
+                    travel_picks.append({
+                        "title": "Document Coordination",
+                        "why": "Vaccination records, microchip, local regulations",
+                        "cta": "Arrange",
+                        "service_type": "travel_documents",
+                        "concierge_always": True
+                    })
+                
+                # If asking about itinerary or pet-friendly places
+                if any(kw in user_lower for kw in ["itinerary", "pet-friendly", "where to go", "places", "destination"]):
+                    travel_picks.append({
+                        "title": "Pet-Friendly Itinerary",
+                        "why": "Rest blocks, pet-friendly stops verified",
+                        "cta": "Plan",
+                        "service_type": "itinerary_planning",
+                        "concierge_always": True,
+                        "uses_google_places": True
+                    })
+                
+                # For seniors or dogs with health issues
+                if travel_context.get("senior") or health_flags:
+                    travel_picks.append({
+                        "title": "Special Needs Travel Plan",
+                        "why": f"Extra care considerations for {pet.get('name', 'your pet')}",
+                        "cta": "Plan",
+                        "service_type": "special_needs_travel",
+                        "concierge_always": True
+                    })
+                
+                # Default pick if no specific context
+                if not travel_picks:
+                    travel_picks.append({
+                        "title": "Travel Planning Support",
+                        "why": "We'll help you plan a smooth trip",
+                        "cta": "Start",
+                        "service_type": "travel_planning",
+                        "concierge_always": True
+                    })
+                
+                os_context["travel_context"] = travel_context
+                os_context["travel_picks"] = travel_picks
+                os_context["picks_update"] = {
+                    "should_refresh": True,
+                    "pillar": "travel",
+                    "context": "journey"
+                }
+                
+                # Always include Concierge handoff for TRAVEL
+                os_context["concierge_handoff"] = {
+                    "available": True,
+                    "reason": "Travel arrangements require coordination and verification",
+                    "cta": "Connect to Concierge"
+                }
+                
+                # Recall previous travel experiences
+                travel_memory = await actual_db.mira_memories.find_one(
+                    {"pet_id": pet_id, "memory_type": {"$in": ["travel", "trip", "flight", "road_trip", "vacation"]}},
+                    {"_id": 0}
+                )
+                if travel_memory:
+                    os_context["memory_recall"] = {
+                        "type": "travel",
+                        "text": travel_memory.get("summary", travel_memory.get("content", "")),
+                        "date": travel_memory.get("created_at")
+                    }
                     
         except Exception as e:
             logger.debug(f"[OS CONTEXT] Memory recall error: {e}")
