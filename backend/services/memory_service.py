@@ -40,9 +40,9 @@ EXTRACTION_PATTERNS = {
     
     # Behavior - Better trigger capture
     "behavior": [
-        (r"(?:gets?|becomes?)\s+(?:anxious|nervous|scared)\s+(?:when|around|during|with)\s+(thunderstorms?|fireworks?|strangers?|loud\s+(?:noises?|sounds?)|car\s+rides?|vet\s+visits?|alone|guests?)", "anxiety_trigger"),
+        (r"(?:gets?|becomes?)\s+(?:very\s+)?(?:anxious|nervous|scared)\s+(?:when|around|during|with|in)\s+(thunderstorms?|fireworks?|strangers?|loud\s+(?:noises?|sounds?)|car\s+rides?|vet\s+visits?|alone|guests?)", "anxiety_trigger"),
         (r"(?:is|has been|seems?)\s+(aggressive|reactive|friendly|calm|shy|nervous|anxious|playful|energetic|lazy)", "temperament"),
-        (r"(?:hates|doesn't\s+like)\s+(being\s+alone|strangers?|other\s+dogs?|cats?|loud\s+noises?|thunderstorms?)", "dislike"),
+        (r"(?:hates|doesn't\s+like)\s+(?:being\s+)?(?:left\s+)?(alone|strangers?|other\s+dogs?|cats?|loud\s+noises?|thunderstorms?)", "dislike"),
     ],
     
     # Health - Specific conditions
