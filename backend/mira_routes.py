@@ -7046,15 +7046,30 @@ def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar:
                 flavors = ', '.join(fav_flavors) if isinstance(fav_flavors, list) else fav_flavors
                 pet_context += f"- Favorite flavors: {flavors}\n"
             
-            fav_treats = preferences.get('favorite_treats', [])
+            fav_treats = doggy_soul.get('favorite_treats') or preferences.get('favorite_treats', [])
             if fav_treats:
                 treats = ', '.join(fav_treats) if isinstance(fav_treats, list) else fav_treats
                 pet_context += f"- Favorite treats: {treats}\n"
             
-            # Activity level
-            activity = preferences.get('activity_level')
-            if activity:
-                pet_context += f"- Activity level: {activity}\n"
+            # Energy/Activity level - check multiple sources
+            energy_level = doggy_soul.get('energy_level') or preferences.get('activity_level') or soul.get('activity_level')
+            if energy_level:
+                pet_context += f"- Energy level: {energy_level}\n"
+            
+            # Temperament
+            temperament = doggy_soul.get('temperament') or pet.get('temperament')
+            if temperament:
+                pet_context += f"- Temperament: {temperament}\n"
+            
+            # Health conditions
+            health_conditions = doggy_soul.get('health_conditions') or pet.get('health_conditions')
+            if health_conditions and health_conditions.lower() != 'none':
+                pet_context += f"- Health conditions: {health_conditions}\n"
+            
+            # Anxiety/Separation
+            separation_anxiety = doggy_soul.get('separation_anxiety')
+            if separation_anxiety:
+                pet_context += f"- Separation anxiety: {separation_anxiety}\n"
             
             # Personality from soul
             if soul:
