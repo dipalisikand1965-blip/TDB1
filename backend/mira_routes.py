@@ -5324,7 +5324,8 @@ PILLARS = {
             # Photography & Memories (CELEBRATE service per architecture)
             "photo", "photographer", "pet photography", "photo shoot", "photoshoot",
             "portrait", "professional photo", "capture", "keepsake", "memory",
-            "memorial", "remembrance", "tribute"
+            "memorial", "remembrance", "tribute",
+            "shoot", "professional shoot", "temperament shoot"
         ],
         "urgency_default": "medium",
         # CELEBRATE Pillar Concierge Picks (per MIRA BIBLE)
