@@ -222,6 +222,36 @@ const MiraDemoPage = () => {
     resetContextForPet
   } = useConversation(pet);
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // UI HOOK - Modal/Panel/Processing state management (Phase 2B Refactoring)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const {
+    showHelpModal,
+    setShowHelpModal,
+    showLearnModal,
+    setShowLearnModal,
+    showTopPicksPanel,
+    setShowTopPicksPanel,
+    showInsightsPanel,
+    setShowInsightsPanel,
+    showConciergePanel,
+    setShowConciergePanel,
+    showConciergeOptions,
+    setShowConciergeOptions,
+    showUnifiedVault,
+    setShowUnifiedVault,
+    isProcessing,
+    setIsProcessing,
+    isTyping,
+    setIsTyping,
+    showSkeleton,
+    setShowSkeleton,
+    miraMode,
+    setMiraMode,
+    showFeatureShowcase,
+    setShowFeatureShowcase
+  } = useMiraUI();
+  
   // State
   const [activeScenario, setActiveScenario] = useState(null);
   const [showScenarios, setShowScenarios] = useState(true);
@@ -245,17 +275,15 @@ const MiraDemoPage = () => {
   const [soulScoreUpdated, setSoulScoreUpdated] = useState(false);
   // SOUL FORM MODAL: Quick questions to enrich pet profile
   const [showSoulFormModal, setShowSoulFormModal] = useState(false);
-  // TOP PICKS PANEL: Personalized picks across all pillars
-  const [showTopPicksPanel, setShowTopPicksPanel] = useState(false);
-  // UNIFIED PICKS VAULT: Replaces the old vault with tabbed interface
-  const [showUnifiedVault, setShowUnifiedVault] = useState(false);
   
-  // Core conversation state (query and isProcessing remain here, others moved to useConversation)
+  // NOTE: showTopPicksPanel, showUnifiedVault, isProcessing now come from useMiraUI hook
+  
+  // Core conversation state (query remains here)
   const [query, setQuery] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
   
   // NOTE: Pet state (pet, setPet, allPets, setAllPets) now comes from usePet hook above
   // NOTE: conversationHistory, conversationContext, quickReplies, etc. now come from useConversation hook
+  // NOTE: UI modals/panels/processing states now come from useMiraUI hook
   
   // UI modals and helpers
   const [showHelpModal, setShowHelpModal] = useState(false);
