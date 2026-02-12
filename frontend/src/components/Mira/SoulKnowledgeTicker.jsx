@@ -10,13 +10,14 @@
  * - Soul Score grows dynamically with each interaction
  * - Rolling animation makes it feel alive and always learning
  * - Score badge LINKS to My Pets page for full soul profile
+ * - "What Mira Knows" card opens first on badge click
  * 
  * "Mira knows Mojo 67%" - and here's WHY she knows him
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ChevronRight, Brain, Heart, X, ExternalLink } from 'lucide-react';
+import { Sparkles, ChevronRight, Brain, Heart, X, ExternalLink, ArrowRight, Loader2 } from 'lucide-react';
 import hapticFeedback from '../../utils/haptic';
 
 // Category colors for visual distinction
