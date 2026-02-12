@@ -28,35 +28,6 @@ from pillar_resolver import get_resolver, PillarResolver
 # Import breed knowledge base
 from breed_knowledge import get_breed_knowledge, format_breed_context_for_llm
 
-# Import Soul Intelligence and Memory services - CORE OF MIRA OS
-try:
-    from services.soul_intelligence import (
-        get_unanswered_soul_questions,
-        get_relevant_unanswered_questions,
-        get_soul_completion_score,
-        suggest_question_for_context,
-        store_soul_answer
-    )
-    from services.memory_service import (
-        ConversationMemory,
-        get_pet_context_pack
-    )
-    SOUL_INTELLIGENCE_AVAILABLE = True
-    logger.info("[MIRA OS] Soul Intelligence and Memory services loaded")
-except ImportError as e:
-    SOUL_INTELLIGENCE_AVAILABLE = False
-    logger.warning(f"[MIRA OS] Soul Intelligence not available: {e}")
-    def get_unanswered_soul_questions(*args, **kwargs): return []
-    def get_relevant_unanswered_questions(*args, **kwargs): return []
-    def get_soul_completion_score(*args, **kwargs): return {"total_score": 0}
-    def suggest_question_for_context(*args, **kwargs): return None
-    async def store_soul_answer(*args, **kwargs): return False
-    class ConversationMemory:
-        def __init__(self, *args, **kwargs): pass
-        async def process_message(self, *args, **kwargs): return {}
-        async def commit_to_memory(self): return 0
-    async def get_pet_context_pack(*args, **kwargs): return {}
-
 # Import conversation intelligence for pronoun resolution and follow-up context
 try:
     from conversation_intelligence import (
