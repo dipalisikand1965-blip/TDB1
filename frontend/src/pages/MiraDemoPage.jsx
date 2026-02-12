@@ -724,7 +724,7 @@ const MiraDemoPage = () => {
   const [stepHistory, setStepHistory] = useState([]);  // Full history of Q&A
   
   // WEATHER & INTERACTIVE FEATURES
-  const [currentWeather, setCurrentWeather] = useState(null);
+  // NOTE: currentWeather now comes from useProactiveAlerts hook
   // NOTE: showFeatureShowcase now comes from useMiraUI hook
   
   // Feature showcase items - What Mira can do
