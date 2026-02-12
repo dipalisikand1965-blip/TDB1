@@ -17771,9 +17771,9 @@ async def get_learn_video_support(
         if not pet:
             pet = {"breed": "dog", "age_years": 2, "name": "your pet"}
         
-        breed = pet.get("breed", "dog").lower()
-        age_years = float(pet.get("age_years", 2))
-        pet_name = pet.get("name", "your pet")
+        breed = (pet.get("breed") or "dog").lower()
+        age_years = float(pet.get("age_years") or 2)
+        pet_name = pet.get("name") or "your pet"
         
         # Determine life stage for age-appropriate content
         if age_years < 1:
