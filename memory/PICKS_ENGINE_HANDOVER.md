@@ -497,7 +497,7 @@ python scripts/seed_picks_catalogue.py # B1
 
 ---
 
-## 11. EXAMPLE CLASSIFICATIONS
+## 11. EXAMPLE CLASSIFICATIONS (UPDATED)
 
 ### "looking for grooming for mojo"
 ```json
@@ -506,8 +506,13 @@ python scripts/seed_picks_catalogue.py # B1
   "canonical_tags": ["grooming"],
   "service_verticals": ["grooming"],
   "intent": "book",
-  "confidence": 1.0,
-  "safety_level": "normal"
+  "confidence": 0.92,
+  "safety_level": "normal",
+  "picks": [
+    {"pick_id": "care_grooming_book", "score": 92.0, "type": "booking"},
+    {"pick_id": "care_grooming_home", "score": 86.25, "type": "booking"},
+    {"pick_id": "care_coat_guide", "score": 60.0, "type": "guide"}
+  ]
 }
 ```
 
@@ -516,9 +521,14 @@ python scripts/seed_picks_catalogue.py # B1
 {
   "primary_pillar": "celebrate",
   "canonical_tags": ["cakes"],
-  "intent": "book",
-  "confidence": 0.95,
-  "safety_level": "normal"
+  "intent": "buy",
+  "confidence": 0.92,
+  "safety_level": "normal",
+  "picks": [
+    {"pick_id": "celebrate_cake_order", "score": 92.0, "type": "product"},
+    {"pick_id": "celebrate_birthday", "score": 80.0, "type": "guide"},
+    {"pick_id": "celebrate_photo_shoot", "score": 75.0, "type": "booking"}
+  ]
 }
 ```
 
@@ -528,8 +538,44 @@ python scripts/seed_picks_catalogue.py # B1
   "primary_pillar": "emergency",
   "canonical_tags": ["poison_ingestion"],
   "intent": "emergency",
-  "confidence": 1.0,
-  "safety_level": "emergency"
+  "confidence": 0.99,
+  "safety_level": "emergency",
+  "safety_override": {
+    "is_active": true,
+    "level": "emergency",
+    "suppress_products": true,
+    "emergency_vet_cta": "Call/Go to Nearest Emergency Vet Now",
+    "first_aid_steps": ["Do NOT induce vomiting...", "Note what was eaten...", "..."],
+    "ui_theme": "emergency-red"
+  },
+  "picks": [
+    {"pick_id": "emergency_vet_now", "score": 100, "type": "emergency"},
+    {"pick_id": "emergency_poison", "score": 100, "type": "emergency"}
+  ]
+}
+```
+
+### "gagging after eating" (FIXED - Now Caution)
+```json
+{
+  "primary_pillar": "care",
+  "canonical_tags": ["choking_suspected"],
+  "intent": "unknown",
+  "confidence": 0.85,
+  "safety_level": "caution",
+  "safety_override": {
+    "is_active": true,
+    "level": "caution",
+    "suppress_products": true,
+    "suppress_shop": true,
+    "show_caution_banner": true,
+    "caution_message": "Your pet may have something stuck. Monitor closely and answer these questions to assess severity.",
+    "gating_questions": [
+      "Can your pet breathe at all? (even labored or noisy breathing)",
+      "Is their tongue or gums turning blue/purple?"
+    ],
+    "ui_theme": "caution-yellow"
+  }
 }
 ```
 
