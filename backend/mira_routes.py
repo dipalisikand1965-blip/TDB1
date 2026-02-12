@@ -139,7 +139,21 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
         
         # 2. SAFETY GATES - Get allergies, health constraints
         if pet:
-            allergies = pet.get("allergies") or pet.get("known_allergies") or []
+            # Check multiple allergy field locations
+            allergies = (
+                pet.get("allergies") or 
+                pet.get("known_allergies") or 
+                (pet.get("preferences") or {}).get("allergies") or
+                (pet.get("health_vault") or {}).get("allergies") or
+                (pet.get("insights", {}).get("key_flags", {}).get("allergy_list")) or
+                []
+            )
+            
+            # Extract allergy items if it's a list of objects
+            if allergies and isinstance(allergies, list) and len(allergies) > 0:
+                if isinstance(allergies[0], dict):
+                    allergies = [a.get("allergen", a.get("name", "")) for a in allergies if a]
+            
             health_flags = pet.get("health_conditions") or pet.get("health_flags") or []
             diet_restrictions = pet.get("dietary_restrictions") or []
             
