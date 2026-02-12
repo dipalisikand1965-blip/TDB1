@@ -395,59 +395,8 @@ const SoulKnowledgeTicker = ({
           )}
         </div>
       )}
-                </h4>
-                <ul className="category-items">
-                  {categoryItems.map((item, i) => (
-                    <li 
-                      key={i} 
-                      className={`category-item ${CATEGORY_STYLES[category]?.bg || ''}`}
-                      onClick={() => handleItemClick(item)}
-                    >
-                      <span className="item-icon">{item.icon}</span>
-                      <span className="item-text">{item.text}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-          
-          {displayScore < 80 && (
-            <button 
-              className="expanded-grow-btn"
-              onClick={() => {
-                setShowExpanded(false);
-                onSoulQuestionClick?.();
-              }}
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Help Mira know {petName} better</span>
-            </button>
-          )}
-        </div>
-      )}
       
-      {/* WHAT MIRA KNOWS CARD - Beautiful overlay card */}
-      {showKnowledgeCard && (
-        <div 
-          className="mira-knowledge-overlay"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setShowKnowledgeCard(false);
-            }
-          }}
-          data-testid="mira-knowledge-overlay"
-        >
-          <div className="mira-knowledge-card">
-            {/* Header */}
-            <div className="knowledge-card-header">
-              <div className="knowledge-header-title">
-                <Sparkles className="w-5 h-5 text-pink-400" />
-                <span>What Mira Knows About {petName}</span>
-              </div>
-              <button 
-                className="knowledge-close-btn"
-                onClick={() => setShowKnowledgeCard(false)}
+      {/* Styles */}
               >
                 <X className="w-5 h-5" />
               </button>
