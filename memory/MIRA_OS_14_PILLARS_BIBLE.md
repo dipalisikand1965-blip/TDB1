@@ -497,6 +497,34 @@ If Services becomes a pillar:
 
 ---
 
+### 18) Current Schema (service_desk_tickets)
+
+```javascript
+{
+  "id": "TKT-XXXXXXXX",           // Unique ticket ID
+  "pet_id": "pet-xxx",            // Associated pet
+  "user_id": "user-xxx",          // Pet parent
+  "pillar": "care",               // Originating pillar
+  "type": "grooming_appointment", // Service type
+  "request_type": "arrange",      // arrange | procure | document | consult | emergency
+  "status": "open",               // draft | requested | awaiting_user | in_progress | confirmed | completed | cancelled
+  "priority": "medium",           // low | medium | high | urgent
+  "description": "...",           // What needs to be done
+  "constraints": {},              // Time, location, preferences
+  "vendor_id": null,              // Assigned vendor (if applicable)
+  "scheduled_at": null,           // When scheduled
+  "completed_at": null,           // When completed
+  "outcome": null,                // Result for memory enrichment
+  "created_at": "ISO8601",
+  "updated_at": "ISO8601",
+  "messages": []                  // Communication history
+}
+```
+
+**Note:** Schema is indicative. Existing `service_desk_tickets` collection already implements this pattern.
+
+---
+
 ## 🧭 HOW TO THINK ABOUT THIS STRUCTURE
 
 ```
