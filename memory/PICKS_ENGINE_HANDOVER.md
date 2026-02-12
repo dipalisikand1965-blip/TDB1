@@ -678,6 +678,8 @@ If something seems wrong:
 ---
 
 *Handover created: December 2025*
-*B0, B1, B2: COMPLETE*
-*B3-B9: PENDING*
+*Last updated: December 2025 (B4 complete)*
+*B0, B1, B2, B3, B4: COMPLETE*
+*B5, B6, B7, B8: PENDING*
 *Total entries seeded: 1,100+*
+*Total unit tests: 49 passing*
