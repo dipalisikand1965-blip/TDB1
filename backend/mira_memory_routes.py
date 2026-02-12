@@ -303,14 +303,19 @@ async def get_what_mira_knows(
     pet_name = pet.get("name", "your pet")
     pet_breed = pet.get("breed", "")
     
-    # Calculate soul score consistently with pet-soul/profile endpoint in server.py
-    # IMPORTANT: Use pet_score_logic.calculate_pet_soul_score for consistency across all pages
+    # Get all profile sections
     soul_answers = pet.get("doggy_soul_answers", {})
+    preferences = pet.get("preferences", {})
+    soul = pet.get("soul", {})
+    identity = pet.get("identity", {})
+    enrichments = pet.get("soul_enrichments", {})
+    
+    # Calculate soul score consistently
     score_data = calculate_pet_soul_score(soul_answers)
     calculated_overall_score = score_data.get("total_score", 0)
     logger.info(f"[WHAT-MIRA-KNOWS] Calculated score using pet_score_logic: {calculated_overall_score}")
     
-    # 1. BUILD SOUL KNOWLEDGE from doggy_soul_answers
+    # 1. BUILD SOUL KNOWLEDGE from ALL PROFILE SOURCES (Profile-First!)
     soul_knowledge = []
     
     # Always add soul score as first item
@@ -323,23 +328,106 @@ async def get_what_mira_knows(
         "priority": 10
     })
     
-    # Map important answers to human-readable knowledge
-    knowledge_mappings = [
-        ("general_nature", "🎭 Personality", lambda v: f"{pet_name} is generally {v.lower()}"),
-        ("food_allergies", "⚠️ Allergies", lambda v: f"Allergic to: {', '.join(v) if isinstance(v, list) else v}" if v and v != ["No"] else None),
-        ("separation_anxiety", "💔 Separation", lambda v: f"{'Has' if v in ['Moderate', 'Severe'] else 'Mild'} separation anxiety" if v != "No" else None),
-        ("behavior_with_dogs", "🐕 Social", lambda v: f"{pet_name} {v.lower()} other dogs"),
-        ("walks_per_day", "🚶 Exercise", lambda v: f"Needs {v} walk(s) per day"),
-        ("sleep_location", "😴 Sleep", lambda v: f"Sleeps in {v.lower()}"),
+    # PRIORITY 1: ALLERGIES - Critical info (from preferences.allergies)
+    allergies = preferences.get('allergies', []) or soul_answers.get('food_allergies', [])
+    if allergies and allergies not in [[], ["No"], "No", "None"]:
+        allergy_list = ', '.join(allergies) if isinstance(allergies, list) else allergies
+        soul_knowledge.append({
+            "category": "soul",
+            "icon": "⚠️",
+            "label": "Allergies",
+            "text": f"Allergic to: {allergy_list}",
+            "source": "soul_profile",
+            "priority": 9
+        })
+    
+    # PRIORITY 2: FAVORITE FLAVORS (from preferences.favorite_flavors)
+    fav_flavors = preferences.get('favorite_flavors', [])
+    if fav_flavors:
+        flavor_list = ', '.join(fav_flavors) if isinstance(fav_flavors, list) else fav_flavors
+        soul_knowledge.append({
+            "category": "soul",
+            "icon": "❤️",
+            "label": "Loves",
+            "text": f"Loves: {flavor_list}",
+            "source": "soul_profile",
+            "priority": 8
+        })
+    
+    # PRIORITY 3: PERSONALITY TAG (from soul.personality_tag - e.g., "Drama Queen")
+    personality_tag = soul.get('personality_tag') or soul.get('persona')
+    if personality_tag:
+        soul_knowledge.append({
+            "category": "soul",
+            "icon": "👑",
+            "label": "Personality",
+            "text": f"{pet_name} is \"{personality_tag}\"",
+            "source": "soul_profile",
+            "priority": 7
+        })
+    
+    # PRIORITY 4: TEMPERAMENT (from doggy_soul_answers.temperament)
+    temperament = soul_answers.get('temperament') or soul_answers.get('general_nature')
+    if temperament:
+        soul_knowledge.append({
+            "category": "soul",
+            "icon": "🎭",
+            "label": "Nature",
+            "text": f"{pet_name} is {temperament.lower() if isinstance(temperament, str) else ', '.join(temperament).lower()}",
+            "source": "soul_profile",
+            "priority": 6
+        })
+    
+    # PRIORITY 5: HEALTH CONDITIONS (from doggy_soul_answers.health_conditions)
+    health_conditions = soul_answers.get('health_conditions')
+    if health_conditions and health_conditions not in ["None", "No", []]:
+        soul_knowledge.append({
+            "category": "soul",
+            "icon": "🏥",
+            "label": "Health",
+            "text": f"Health: {health_conditions}",
+            "source": "soul_profile",
+            "priority": 6
+        })
+    
+    # PRIORITY 6: ANXIETY TRIGGERS (from soul_enrichments)
+    anxiety_triggers = enrichments.get('anxiety_triggers', [])
+    if anxiety_triggers:
+        triggers = ', '.join(anxiety_triggers) if isinstance(anxiety_triggers, list) else anxiety_triggers
+        soul_knowledge.append({
+            "category": "soul",
+            "icon": "😰",
+            "label": "Triggers",
+            "text": f"Gets scared of: {triggers}",
+            "source": "enrichment",
+            "priority": 5
+        })
+    
+    # PRIORITY 7: LIFE STAGE
+    life_stage = soul_answers.get('life_stage') or identity.get('age')
+    if life_stage:
+        soul_knowledge.append({
+            "category": "soul",
+            "icon": "📅",
+            "label": "Life Stage",
+            "text": f"Life stage: {life_stage}",
+            "source": "soul_profile",
+            "priority": 5
+        })
+    
+    # Additional soul answers mappings
+    additional_mappings = [
+        ("separation_anxiety", "💔 Separation", lambda v: f"{'Has' if v in ['Moderate', 'Severe'] else 'Mild'} separation anxiety" if v and v != "No" else None),
+        ("behavior_with_dogs", "🐕 Social", lambda v: f"{pet_name} {v.lower()} other dogs" if v else None),
+        ("walks_per_day", "🚶 Exercise", lambda v: f"Needs {v} walk(s) per day" if v else None),
+        ("sleep_location", "😴 Sleep", lambda v: f"Sleeps in {v.lower()}" if v else None),
         ("favorite_treats", "🦴 Treats", lambda v: f"Loves {', '.join(v[:3]) if isinstance(v, list) else v}" if v else None),
         ("sensitive_stomach", "🤢 Digestion", lambda v: "Has a sensitive stomach" if v in ["Yes", "Sometimes"] else None),
-        ("car_rides", "🚗 Travel", lambda v: f"{'Loves' if v == 'Loves them' else 'Gets anxious during' if v == 'Anxious' else 'Has motion sickness during' if v == 'Gets motion sickness' else 'Neutral about'} car rides"),
-        ("crate_trained", "🏠 Crate", lambda v: f"{'Is' if v == 'Yes' else 'Not'} crate trained"),
-        ("training_level", "🎓 Training", lambda v: f"Training level: {v}"),
-        ("loud_sounds", "🔊 Sounds", lambda v: f"{'Needs comfort during' if v in ['Very anxious', 'Needs comfort'] else 'Fine with'} loud sounds"),
+        ("car_rides", "🚗 Travel", lambda v: f"{'Loves' if v == 'Loves them' else 'Gets anxious during' if v == 'Anxious' else 'Has motion sickness during' if v == 'Gets motion sickness' else 'Neutral about'} car rides" if v else None),
+        ("loud_sounds", "🔊 Sounds", lambda v: f"{'Needs comfort during' if v in ['Very anxious', 'Needs comfort'] else 'Fine with'} loud sounds" if v else None),
     ]
     
-    for answer_key, icon_label, formatter in knowledge_mappings:
+    for answer_key, icon_label, formatter in additional_mappings:
         if answer_key in soul_answers and soul_answers[answer_key]:
             value = soul_answers[answer_key]
             formatted = formatter(value)
