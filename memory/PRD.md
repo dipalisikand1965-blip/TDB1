@@ -1,168 +1,98 @@
 # The Doggy Company - Mira AI Pet Companion
 
 ## Original Problem Statement
-Build and maintain the Mira AI Pet Companion feature with deep personalization.
+The user wants MIRA to function as a "Lifestyle OS" rather than a simple chatbot. Key principles from the MIRA BIBLE:
+- Context-aware (temporally, personally)
+- Proactive (anticipates needs)
+- Safe (respects allergies, health constraints)
+- OS-like behavior (picks update dynamically, layers activate based on conversation)
 
-**Mira is the SOUL of the dog** - She is the brain, the super mother who knows every single dog intimately. She never gives general stuff - she associates with breed, age, lifestyle, likes, dislikes, allergies and more to be the Pet Operating System.
+## Core Requirements
+1. **Pet Intelligence** - Use stored profile (age, allergies, health flags, behavior)
+2. **Live Conversation Context** - Infer active pillar, topic signals, risk level
+3. **Always-On Loop** - Classify pillar, generate picks, apply safety gates
+4. **Concierge Pick Cards** - "Arranged for [Pet]" language, actionable CTAs
 
-## THE MIRA BIBLE (Critical - Read /app/memory/MIRA_BIBLE.md)
+## What's Implemented
 
-> **Mira is NOT a chatbot, NOT a shop, NOT a dashboard.**
-> **Mira is a Lifestyle Operating System. Concierge is her hands.**
+### Backend Intelligence (VERIFIED ✅)
+- **OS Context Generation** (`mira_routes.py` lines 7740-7760)
+  - `layer_activation` - Active pillar detection
+  - `temporal_context` - Birthday detection, upcoming events
+  - `safety_gates` - Allergy extraction from pet profile
+  - `picks_update` - Signal for frontend to refresh picks
+  - `memory_recall` - Relevant past memories surfaced
 
-### Mira's Essence:
-- She remembers the birthday.
-- She knows Mojo's temperament.
-- She quietly updates Picks.
-- She shapes options clearly.
-- She asks only what she must.
+### Frontend OS Context Handling (IMPLEMENTED ✅)
+- **Temporal Alert Display** (`MiraDemoPage.jsx` lines 2755-2820)
+  - Creates proactive alerts for birthdays/events within 14 days
+  - Urgency levels: high (≤3 days), medium (≤7 days), low (≤14 days)
+- **Safety Gates Logging** - Active constraints tracked
+- **Proactive Alerts Integration** - Backend alerts merged with frontend state
+- **Memory Recall Display** - `activeMemoryContext` state for whispers
 
-### Core Principles:
-1. Everything is layered. Chat is always underneath.
-2. Each layer has one job (Mojo/Today/Picks/Services/Insights/Learn/Concierge)
-3. Mira asks as little as possible
-4. Catalogue-first, Concierge-always
-5. User never feels redirected - Mira expands, executes, returns
+### Admin Panel (VERIFIED ✅)
+- **Pet Parents Directory** - MemberDirectory component with 50+ members
+- **Member Profile Console** - 360° view modal with 10 tabs:
+  - Account, Membership, Pets & Soul, Health Vault, Tickets
+  - Orders, Paw Rewards, Memories, Activity, Notes
 
-## Test Credentials (IMPORTANT!)
-- **Member**: dipali@clubconcierge.in / test123
-- **Admin**: aditya / lola4304
+## Test Verification (Feb 12, 2026)
+| Feature | Status | Details |
+|---------|--------|---------|
+| OS Context in Chat API | ✅ PASS | Returns complete structure |
+| Temporal Context (Birthday) | ✅ PASS | Mojo's birthday Feb 14 detected as 2 days away |
+| Safety Gates (Allergies) | ✅ PASS | Chicken allergy in safety_gates |
+| Memory Recall | ✅ PASS | Past celebration memories surfaced |
+| Admin Pet Parents Tab | ✅ PASS | Loads 50 members |
+| Admin Member Modal | ✅ PASS | Opens with 10 tabs |
 
-## Core Architecture
+## Known Issues
+1. **Frontend Page Crash** (P1) - MiraDemoPage.jsx (4247 lines) causes memory issues during browser automation. Backend APIs work fine.
+2. **Chat Response Duplication** (P2) - Reported but not reproduced in testing
+
+## Architecture
 ```
 /app
-├── backend (Node.js/Express + FastAPI)
-│   ├── server.py - Main application
-│   ├── pet_soul_routes.py - Soul Score + Quick Questions API
-│   ├── mira_memory_routes.py - Memory + "What Mira Knows" API
-│   └── pet_score_logic.py - Soul Score calculation
-├── frontend (React)
-│   └── src/
-│       ├── components/Mira/
-│       │   ├── SoulKnowledgeTicker.jsx - Soul badge + "What Mira Knows" panel
-│       │   ├── PetSelector.jsx - Dropdown with clickable scores
-│       │   └── WelcomeHero.jsx - Pet hero image
-│       ├── pages/MiraDemoPage.jsx - Main Mira interface
-│       └── styles/mira-prod.css - Premium styling
-└── test_reports/
+├── backend/
+│   └── mira_routes.py         # OS Intelligence Layer, Chat API
+├── frontend/
+│   ├── pages/MiraDemoPage.jsx # Main Mira UI (4247 lines)
+│   └── components/admin/
+│       └── MemberDirectory.jsx # Pet Parent Directory
+└── memory/
+    ├── MIRA_BIBLE.md          # Source of truth for behavior
+    └── MIRA_OS_HEADER_ARCHITECTURE.md # New header spec
 ```
 
-## What's Been Implemented (Feb 12, 2026)
+## Upcoming Tasks (Priority Order)
 
-### ✅ MIRA OS INTELLIGENCE (NEW!)
-- **Temporal Awareness**: Mira now knows when pet's birthday is approaching ("I see his birthday is in 2 days!")
-- **Safety Gating**: Automatically references pet allergies in food/treat recommendations
-- **Layer Activation**: Chat response includes `os_context` with pillar activation signals
-- **Picks Auto-Refresh**: Frontend receives signal to refresh Picks for active pillar
-- **Intelligent Framing**: Better questions ("play-date style gathering or family celebration?" vs "active or cosy?")
-
-### API Changes:
-- Chat endpoint now returns `os_context` object with:
-  - `layer_activation`: Current active pillar
-  - `temporal_context`: Birthday proximity, appointments, etc.
-  - `safety_gates`: Allergies, health constraints
-  - `picks_update`: Signal for frontend to refresh Picks
-  - `proactive_alerts`: Urgent reminders
-
-### Example OS-aware Response:
-```
-"I see Mojo's birthday is in 2 days (14 Feb), so we're planning for something quite soon.
-Since Mojo is allergic to chicken, I'll make sure any cake/treat ideas are completely chicken-free."
-```
-
-### "WHAT MIRA KNOWS" PANEL - COMPLETE ✅
-
-**Design Matches User's Screenshot:**
-1. **Score Circle at Top** - Large circle showing percentage + "SOUL KNOWN" label
-2. **Action Buttons Row** - History, Soul Questions, Profile, Add Memory buttons
-3. **Two-Column Grid:**
-   - **SOUL Section (Purple)** - Soul Score percentage, personality traits, "Help Mira know better" CTA
-   - **BREED Section (Cyan/Teal)** - Pet breed name, exercise requirements, breed personality traits
-   - **MEMORY Section (Amber)** - Spans both columns, memory count, recent conversation memories
-4. **View Full Profile Button** - Navigates to `/my-pets?pet={petId}`
-
-**API Endpoint:**
-```
-GET /api/mira/memory/pet/{pet_id}/what-mira-knows
-
-Response:
-{
-  "pet_id": "pet-xxx",
-  "pet_name": "Mystique",
-  "pet_breed": "Shihtzu",
-  "overall_score": 24.5,
-  "soul_knowledge": [...],     // Soul profile items
-  "breed_knowledge": [...],    // Breed-specific traits
-  "memory_knowledge": [...],   // Conversation memories
-  "insights_knowledge": [...]  // AI insights
-}
-```
-
-**Breed-Specific Knowledge:**
-- Exercise requirements (e.g., "Shihtzus need 30-45 minutes daily exercise")
-- Personality traits (e.g., "Shihtzus are naturally affectionate")
-- Supports: Golden Retriever, Labrador, German Shepherd, Beagle, Bulldog, Poodle, Shihtzu, Yorkshire Terrier, Indie, Dachshund, Husky, Maltese
-
-### Previous Implementations
-- ✅ Soul Score consistency across all pages
-- ✅ Dropdown scores clickable → Navigate to pet profile
-- ✅ Z-index fix for ticker
-- ✅ Pet hero image 200px+ with glow
-- ✅ Score sync after answering questions
-- ✅ iOS Premium Experience (haptic feedback, spring animations)
-
-## API Endpoints
-
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/mira/memory/pet/{pet_id}/what-mira-knows` | GET | Full knowledge (Soul, Breed, Memory) |
-| `/api/pet-soul/profile/{pet_id}/quick-questions` | GET | Max 3 unanswered questions |
-| `/api/pet-soul/profile/{pet_id}/answer` | POST | Save soul answer |
-| `/api/mira/top-picks/{pet_name}` | GET | Personalized picks |
-| `/api/concierge/picks-request` | POST | Submit picks |
-
-## User Flow: Soul Score Interaction
-```
-1. User sees Soul Score badge (e.g., "63% SOUL") in ticker
-2. Click badge → "What Mira knows about [Pet]" panel opens
-3. Panel shows:
-   - Large score circle (63% SOUL KNOWN)
-   - Action buttons row (4 icons)
-   - SOUL section (purple) - Soul score, personality
-   - BREED section (cyan) - Breed name, exercise, traits
-   - MEMORY section (amber) - Memory count, recent conversations
-4. "View Full Profile" → Navigate to /my-pets?pet={petId}
-5. "Help Mira know better" → Opens soul questions
-```
-
-## Remaining Tasks
+### P0 - Critical
+- [ ] Implement "Dine" pillar OS-awareness (meal plan flow per MIRA BIBLE)
+- [ ] Fix frontend memory issues (consider code splitting MiraDemoPage)
 
 ### P1 - High Priority
-- [ ] Cross-session memory surfacing ("I remember...") in Mira conversations
-- [ ] Geolocation auto-detect with session persistence
-- [ ] Proactive birthday alerts enhancement
-- [ ] Shimmer loading effects
+- [ ] Surface proactive alerts prominently on main OS page
+- [ ] Add "I Remember..." memory recall whispers to chat
+- [ ] Implement new header architecture per MIRA_OS_HEADER_ARCHITECTURE.md
 
 ### P2 - Medium Priority
-- [ ] Confetti animation on successful pick confirmation
-- [ ] Score breakdown by pillar on My Pets page
-- [ ] Quick questions in chat area (currently in ticker)
+- [ ] Response streaming (SSE) for perceived speed
+- [ ] Voice-text synchronization improvements
+- [ ] "Try:" examples on welcome screen
+- [ ] Expand underdeveloped pillars (Fit 20%, Adopt 10%, Paperwork 30%)
 
-### P3 - Low Priority
-- [ ] Refactor MiraDemoPage.jsx (5600+ lines)
-- [ ] Performance optimization
-- [ ] Tinder-style swipe for picks
+## API Endpoints
+- `POST /api/mira/chat` - Main chat with os_context
+- `GET /api/admin/members/directory` - Pet parent directory
+- `GET /api/concierge/member/{email}/full-profile` - 360° member view
+- `GET /api/pets` - User's pets list
 
-### OS v2 Roadmap
-- Phase 2: Pillar Intelligence
-- Phase 3: Service Intelligence
-- Phase 4: Proactive Intelligence
-- Phase 5: Deep Personalization
-- Phase 6: Ecosystem Completion
+## Test Credentials
+- **Member**: dipali@clubconcierge.in / test123
+- **Admin**: aditya / lola4304
+- **Test Pet**: Mojo (pet-99a708f1722a), birthday Feb 14, chicken allergy
 
-## Key Design Principles
-1. **Mira is the Soul** - Knows everything intimately
-2. **Pet is the Hero** - Large avatar with glow
-3. **Personalization First** - Never generic
-4. **iOS Premium** - Apple quality
-5. **Score Visibility** - Always visible and linked
+---
+*Last Updated: February 12, 2026*
+*Preview URL: https://mira-os-enhance.preview.emergentagent.com*
