@@ -2462,14 +2462,35 @@ async def understand_with_llm(
         if breed_name:
             breed_context = format_breed_context_for_llm(breed_name)
         
+        # Check profile completeness - CRITICAL for OS behavior
+        sensitivities = pet_context.get('sensitivities', []) or []
+        allergies = pet_context.get('allergies', []) or []
+        health_conditions = pet_context.get('health_conditions', []) or []
+        preferences = pet_context.get('favorites', []) or []
+        
+        # Determine what's missing
+        missing_data = []
+        if not sensitivities and not allergies:
+            missing_data.append("allergies/sensitivities")
+        if not health_conditions:
+            missing_data.append("health conditions")
+        if not preferences:
+            missing_data.append("food preferences")
+        
+        profile_status = "COMPLETE" if not missing_data else f"INCOMPLETE - missing: {', '.join(missing_data)}"
+        
         pet_info = f"""
 PET CONTEXT:
 - Name: {pet_context.get('name', 'Your pet')}
 - Breed: {pet_context.get('breed', 'Unknown')}
 - Age: {pet_context.get('age', 'Unknown')}
 - Traits: {', '.join(pet_context.get('traits', []) or ['Not specified'])}
-- Sensitivities: {', '.join(pet_context.get('sensitivities', []) or ['None known'])}
-- Favorites: {', '.join(pet_context.get('favorites', []) or ['Not specified'])}
+- Sensitivities: {', '.join(sensitivities) or 'None known'}
+- Allergies: {', '.join(allergies) or 'None specified - ASK if relevant'}
+- Favorites: {', '.join(preferences) or 'Not specified'}
+- Profile Status: {profile_status}
+
+IMPORTANT: If profile is INCOMPLETE and you need allergy/health info to answer safely, ASK the parent - do NOT assume from breed.
 
 {breed_context}
 """
