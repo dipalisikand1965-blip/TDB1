@@ -11855,6 +11855,27 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
             logger.warning(f"[MEMORY] Could not store memory: {mem_err}")
         
         # ═══════════════════════════════════════════════════════════════════════════
+        # MIRA OS MEMORY EXTRACTION - Every interaction updates memory
+        # ═══════════════════════════════════════════════════════════════════════════
+        try:
+            if SOUL_INTELLIGENCE_AVAILABLE and selected_pet and user_message:
+                pet_name = selected_pet.get("name", "pet")
+                pet_id = selected_pet.get("id")
+                
+                # Create memory processor for this conversation
+                memory_processor = ConversationMemory(pet_id, pet_name, db)
+                
+                # Extract intelligence from user message
+                extraction_result = await memory_processor.process_message(user_message, pillar)
+                
+                # Commit extracted signals to memory (async, non-blocking)
+                if extraction_result.get("signals_extracted", 0) > 0:
+                    updates = await memory_processor.commit_to_memory()
+                    logger.info(f"[MIRA OS MEMORY] Extracted {extraction_result['signals_extracted']} signals, committed {updates} updates for {pet_name}")
+        except Exception as mem_extract_err:
+            logger.warning(f"[MIRA OS MEMORY] Could not extract memory: {mem_extract_err}")
+        
+        # ═══════════════════════════════════════════════════════════════════════════
         # STORE CONTEXT FOR INTELLIGENCE - Enable pronoun resolution in next message
         # ═══════════════════════════════════════════════════════════════════════════
         try:
