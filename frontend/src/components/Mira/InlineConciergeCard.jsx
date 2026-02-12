@@ -61,7 +61,7 @@ const InlineConciergeCard = ({
               width: '32px',
               height: '32px',
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+              background: 'linear-gradient(135deg, #F472B6 0%, #EC4899 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
@@ -72,16 +72,14 @@ const InlineConciergeCard = ({
           <div>
             <span 
               style={{ 
-                color: '#10B981',
+                color: '#F472B6',
                 fontWeight: '700',
                 fontSize: '15px',
-                letterSpacing: '0.5px'
+                letterSpacing: '0.5px',
+                textShadow: '0 0 10px rgba(244, 114, 182, 0.4)'
               }}
             >
-              C° 
-            </span>
-            <span style={{ color: 'white', fontWeight: '600', fontSize: '15px' }}>
-              Concierge Help
+              Pet Concierge®
             </span>
           </div>
         </div>
@@ -126,7 +124,7 @@ const InlineConciergeCard = ({
           lineHeight: '1.5'
         }}
       >
-        Your pet Concierge® can help with anything for <strong style={{ color: '#F472B6' }}>{pet.name}</strong>.
+        Your <span style={{ color: '#F472B6', fontWeight: '600' }}>Pet Concierge®</span> can help with anything for <strong style={{ color: '#F472B6' }}>{pet.name}</strong>.
         {context && (
           <span style={{ display: 'block', marginTop: '8px', color: 'rgba(255, 255, 255, 0.7)', fontSize: '13px' }}>
             {context}
