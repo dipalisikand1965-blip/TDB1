@@ -758,8 +758,30 @@ If something seems wrong:
 ---
 
 *Handover created: December 2025*
-*Last updated: December 2025 (B4 complete)*
+*Last updated: December 2025 (B4 patches applied)*
 *B0, B1, B2, B3, B4: COMPLETE*
 *B5, B6, B7, B8: PENDING*
 *Total entries seeded: 1,100+*
 *Total unit tests: 49 passing*
+
+---
+
+## APPENDIX: KEY PATCHES APPLIED
+
+### B4 Catalogue Hygiene Patches (December 2025)
+
+1. **service_types → service_modes**: Renamed in all 110 picks to avoid confusion
+2. **celebrate_birthday**: Removed `{age}` (derived), kept `{dob}` only
+3. **celebrate_cake_order**: Changed from allergy exclusion to question routing
+4. **pawty**: Added `party_planning` as canonical tag, `pawty` as synonym
+5. **Degrade-safe templates**: Added `reason_template_enhanced` + `enhanced_reason_requires` pattern
+6. **choking_suspected**: Added as CAUTION tag with gating questions (gagging ≠ emergency)
+
+### Tag Additions
+- `party_planning` (celebrate pillar)
+- `choking_suspected` (care pillar, caution level)
+
+### Synonym Additions
+- `pawty` → `party_planning`
+- `gagging` → `choking_suspected` (caution, not emergency)
+- `gagging after eating` → `choking_suspected`
