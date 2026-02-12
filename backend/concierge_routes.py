@@ -644,16 +644,22 @@ async def create_picks_request(payload: PicksRequestPayload):
     """
     Create a Concierge® request from Personalized Picks Panel.
     This is called when user confirms their picks selection in Mira.
+    
+    FLOW: Creates full service desk ticket + channel intake entry
+    following the unified signal flow for admin visibility.
     """
     db = get_db()
     import uuid
     
+    # Import central signal flow for unified ticket creation
+    from central_signal_flow import create_signal
+    
     request_id = f"picks-{uuid.uuid4().hex[:8]}"
-    ticket_id = f"TKT-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
     now = datetime.now(timezone.utc)
     
     # Build item summaries for the request
     item_summaries = []
+    item_names = []
     for item in payload.selected_items:
         item_summaries.append({
             "name": item.get("name"),
@@ -663,11 +669,11 @@ async def create_picks_request(payload: PicksRequestPayload):
             "price": item.get("price"),
             "category": item.get("category")
         })
+        item_names.append(item.get("name", "Unknown item"))
     
     # Create the picks request document
     picks_doc = {
         "id": request_id,
-        "ticket_id": ticket_id,
         "type": "personalized_picks",
         "pet_name": payload.pet_name,
         "items_count": len(payload.selected_items),
@@ -686,9 +692,56 @@ async def create_picks_request(payload: PicksRequestPayload):
         ]
     }
     
-    # Insert into database
+    # Insert into picks requests collection
     await db.concierge_picks_requests.insert_one(picks_doc)
     logger.info(f"[PICKS REQUEST] Created picks request {request_id} for {payload.pet_name} with {len(payload.selected_items)} items")
+    
+    # ═══════════════════════════════════════════════════════════════════════
+    # UNIFIED SIGNAL FLOW - Create Service Desk Ticket + Channel Intake
+    # This is the CRITICAL part that makes picks visible in admin dashboard
+    # ═══════════════════════════════════════════════════════════════════════
+    
+    # Determine pillar from first item or default to 'picks'
+    primary_pillar = payload.selected_items[0].get("pillar", "picks") if payload.selected_items else "picks"
+    
+    # Build description
+    items_summary = ", ".join(item_names[:3])
+    if len(item_names) > 3:
+        items_summary += f" (+{len(item_names) - 3} more)"
+    
+    description = f"Picks request for {payload.pet_name}: {items_summary}"
+    if payload.additional_notes:
+        description += f"\n\nNotes: {payload.additional_notes}"
+    
+    try:
+        signal_result = await create_signal(
+            pillar=primary_pillar,
+            action_type="picks_request",
+            title=f"Picks Request for {payload.pet_name}",
+            description=description,
+            pet_name=payload.pet_name,
+            urgency="medium",
+            source="mira_picks_panel",
+            linked_id=request_id,
+            extra_data={
+                "items": item_summaries,
+                "items_count": len(payload.selected_items),
+                "additional_notes": payload.additional_notes
+            }
+        )
+        
+        ticket_id = signal_result.get("ticket_id", request_id)
+        logger.info(f"[PICKS REQUEST] Created unified signal: ticket={ticket_id}, inbox={signal_result.get('inbox_id')}")
+        
+        # Update picks doc with ticket reference
+        await db.concierge_picks_requests.update_one(
+            {"id": request_id},
+            {"$set": {"ticket_id": ticket_id}}
+        )
+        
+    except Exception as e:
+        logger.error(f"[PICKS REQUEST] Failed to create unified signal: {e}")
+        ticket_id = request_id
     
     return {
         "success": True,
