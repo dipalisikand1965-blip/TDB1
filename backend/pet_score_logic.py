@@ -499,7 +499,7 @@ def calculate_pet_soul_score(answers: Dict[str, Any], preferences: Dict[str, Any
     
     # Normalize answers by applying aliases
     normalized_answers = {}
-    for key, value in answers.items():
+    for key, value in merged_answers.items():
         # Skip if empty
         if not value or value in ['', [], None, 'Unknown']:
             continue
