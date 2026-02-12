@@ -365,7 +365,7 @@ PICKS.extend([
         "title": "Flying with Your Pet",
         "cta": "Read Guide",
         "reason_template": "A clear guide to flying with {pet_name} — airlines, crates, prep, and what to expect.",
-        "reason_template_enhanced": "Flying with a {breed} like {pet_name} needs a little extra prep. Here's the complete guide.",
+        "reason_template_enhanced": "For {pet_name}, your {breed}, flying needs a little extra prep. Here's the complete guide.",
         "constraints": {
             "species": ["dog", "cat"],
             "age_stages": ["puppy", "adult", "senior"],
