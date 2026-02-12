@@ -3178,6 +3178,11 @@ async def search_real_products(
         sensitivities = safe_string_list(pet_context.get("sensitivities", []))
         favorites = safe_string_list(pet_context.get("favorites", []))
         
+        # Get products to avoid (marked as "didn't work" by parent)
+        products_to_avoid = pet_context.get("products_to_avoid", [])
+        avoided_product_ids = {p.get("product_id") for p in products_to_avoid if p.get("product_id")}
+        avoided_product_names = {p.get("product_name", "").lower() for p in products_to_avoid if p.get("product_name")}
+        
         scored_products = []
         for product in all_products:
             score = 0
@@ -3185,10 +3190,16 @@ async def search_real_products(
             skip = False
             
             # Safely extract product fields
+            product_id = product.get("id", product.get("_id", ""))
             product_name = safe_lower(product.get("name", ""))
             product_desc = safe_lower(product.get("description", ""))
             product_tags = safe_string_list(product.get("tags", []))
             product_flavors = safe_string_list(product.get("flavors", []))
+            
+            # FIRST: Check if product is in "products to avoid" list (parent feedback)
+            if str(product_id) in avoided_product_ids or product_name in avoided_product_names:
+                logger.debug(f"[PRODUCTS] Skipping '{product_name}' - marked as didn't work for {pet_name}")
+                continue
             
             # Check sensitivities (negative filter)
             for sens_lower in sensitivities:
