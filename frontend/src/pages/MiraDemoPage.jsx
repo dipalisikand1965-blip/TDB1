@@ -2752,20 +2752,71 @@ const MiraDemoPage = () => {
           }
         }
         
-        // 2. Log temporal awareness for debugging (birthday alerts, etc.)
+        // 2. TEMPORAL AWARENESS - Birthday alerts, upcoming events
+        // Surface prominently in proactive alerts
         if (osContext.temporal_context) {
           console.log('[MIRA OS] Temporal awareness:', osContext.temporal_context);
-          // The LLM response already incorporates this, but we can use it for UI enhancements
+          const { type, days_until, message } = osContext.temporal_context;
+          
+          // Add temporal alert to proactive alerts if it's time-sensitive
+          if (type && days_until !== undefined && days_until <= 14) {
+            const temporalAlert = {
+              id: `temporal_${type}_${Date.now()}`,
+              type: type === 'birthday' ? 'birthday' : 'health',
+              urgency: days_until <= 3 ? 'high' : days_until <= 7 ? 'medium' : 'low',
+              title: type === 'birthday' ? `${pet?.name}'s Birthday Coming Up!` : message,
+              message: message || `${days_until} days away`,
+              days_until: days_until,
+              pet_name: pet?.name
+            };
+            
+            setProactiveAlerts(prev => ({
+              ...prev,
+              smartAlerts: [temporalAlert, ...(prev.smartAlerts || []).filter(a => !a.id.startsWith('temporal_'))],
+              hasUrgent: days_until <= 3
+            }));
+          }
         }
         
-        // 3. Store safety gates for reference
+        // 3. SAFETY GATES - Allergies, health constraints
+        // Store for reference and surface if critical
         if (osContext.safety_gates?.length > 0) {
           console.log('[MIRA OS] Safety gates active:', osContext.safety_gates);
+          // Safety gates are already factored into picks/recommendations by backend
+          // But we can show a subtle indicator in the UI
         }
         
-        // 4. Handle proactive alerts (show banner if critical)
+        // 4. PROACTIVE ALERTS - Urgent reminders from backend
+        // Merge with existing alerts, prioritize critical ones
         if (osContext.proactive_alerts?.length > 0) {
           console.log('[MIRA OS] Proactive alerts:', osContext.proactive_alerts);
+          const newAlerts = osContext.proactive_alerts.map((alert, idx) => ({
+            id: `os_alert_${Date.now()}_${idx}`,
+            type: alert.type || 'health',
+            urgency: alert.urgency || 'high',
+            title: alert.title,
+            message: alert.message,
+            days_until: alert.days_until,
+            pet_name: alert.pet_name || pet?.name
+          }));
+          
+          setProactiveAlerts(prev => ({
+            ...prev,
+            smartAlerts: [...newAlerts, ...(prev.smartAlerts || []).filter(a => !a.id.startsWith('os_alert_'))],
+            criticalCount: newAlerts.filter(a => a.urgency === 'critical').length,
+            hasUrgent: newAlerts.some(a => a.urgency === 'critical' || a.urgency === 'high')
+          }));
+        }
+        
+        // 5. MEMORY RECALL - "I Remember..." whispers
+        // Surface relevant past memories in the UI
+        if (osContext.memory_recall) {
+          console.log('[MIRA OS] Memory recall:', osContext.memory_recall);
+          setActiveMemoryContext({
+            memory: osContext.memory_recall.memory,
+            relevance: osContext.memory_recall.relevance,
+            timestamp: new Date().toISOString()
+          });
         }
       }
       
