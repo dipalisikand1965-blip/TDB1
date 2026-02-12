@@ -3615,6 +3615,7 @@ const MiraDemoPage = () => {
         <SoulKnowledgeTicker
           petId={pet?.id}
           petName={pet?.name || 'your pet'}
+          petPhoto={pet?.photo}
           soulScore={pet?.soulScore || soulKnowledge.soulScore || 0}
           knowledgeItems={soulKnowledge.items.length > 0 ? soulKnowledge.items : tickerItems.map(t => ({
             icon: t.icon,
