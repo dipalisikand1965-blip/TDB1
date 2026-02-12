@@ -1,7 +1,7 @@
 """
 Mira OS - Pet Soul Seeding Script
 =================================
-Seeds realistic doggy soul answers for all pets in the system.
+Seeds realistic pets and doggy soul answers for all pets in the system.
 This ensures the Mira OS has real data to work with.
 
 Run with: python3 seed_pet_souls.py
@@ -11,16 +11,24 @@ import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 from datetime import datetime, timezone
 import os
+import uuid
 
 # MongoDB connection
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
 DB_NAME = os.environ.get("DB_NAME", "thedoggycompany")
 
+# User to associate pets with
+USER_EMAIL = "dipali@clubconcierge.in"
+
 # Realistic seed data for each pet
 PET_SOUL_SEEDS = {
     "Lola": {
+        "id": "pet-e6348b13c975",
         "breed": "Maltese",
-        "age": 5,
+        "species": "dog",
+        "age_years": 5,
+        "gender": "female",
+        "photo_url": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop",
         "answers": {
             # Identity & Temperament
             "describe_3_words": "Playful, Loving, Energetic",
@@ -75,8 +83,12 @@ PET_SOUL_SEEDS = {
         }
     },
     "Mystique": {
+        "id": "pet-mystique-001",
         "breed": "Shihtzu",
-        "age": 3,
+        "species": "dog",
+        "age_years": 3,
+        "gender": "female",
+        "photo_url": "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400&h=400&fit=crop",
         "answers": {
             "describe_3_words": "Curious, Sweet, Gentle",
             "general_nature": "Curious",
@@ -123,8 +135,12 @@ PET_SOUL_SEEDS = {
         }
     },
     "Bruno": {
+        "id": "pet-bruno-001",
         "breed": "Labrador",
-        "age": 2,
+        "species": "dog",
+        "age_years": 2,
+        "gender": "male",
+        "photo_url": "https://images.unsplash.com/photo-1561037404-61cd46aa615b?w=400&h=400&fit=crop",
         "answers": {
             "describe_3_words": "Energetic, Friendly, Goofy",
             "general_nature": "Highly energetic",
@@ -171,8 +187,12 @@ PET_SOUL_SEEDS = {
         }
     },
     "Luna": {
+        "id": "pet-luna-001",
         "breed": "Golden Retriever",
-        "age": 4,
+        "species": "dog",
+        "age_years": 4,
+        "gender": "female",
+        "photo_url": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=400&fit=crop",
         "answers": {
             "describe_3_words": "Gentle, Smart, Loyal",
             "general_nature": "Calm",
@@ -219,8 +239,12 @@ PET_SOUL_SEEDS = {
         }
     },
     "Buddy": {
+        "id": "pet-buddy-001",
         "breed": "Golden Retriever",
-        "age": 6,
+        "species": "dog",
+        "age_years": 6,
+        "gender": "male",
+        "photo_url": "https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=400&h=400&fit=crop",
         "answers": {
             "describe_3_words": "Wise, Calm, Affectionate",
             "general_nature": "Calm",
@@ -267,8 +291,12 @@ PET_SOUL_SEEDS = {
         }
     },
     "Meister": {
+        "id": "pet-meister-001",
         "breed": "Shih Tzu",
-        "age": 1,
+        "species": "dog",
+        "age_years": 1,
+        "gender": "male",
+        "photo_url": "https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?w=400&h=400&fit=crop",
         "answers": {
             "describe_3_words": "Playful, Mischievous, Adorable",
             "general_nature": "Playful",
