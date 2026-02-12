@@ -5941,6 +5941,7 @@ class MiraChatRequest(BaseModel):
     history: Optional[List[Dict[str, str]]] = []
     start_new_conversation: bool = False  # Flag to start fresh conversation
     previous_pillar: Optional[str] = None  # For cross-pillar context
+    debug: bool = False  # Enable Picks Engine debug output (matched_synonyms, tags, scores)
 
 class MiraPetContext(BaseModel):
     pet_id: str
