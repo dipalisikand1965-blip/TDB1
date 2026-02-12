@@ -124,7 +124,7 @@ User: "Suggest cake options"
 
 ## Test Credentials
 - **Test Pet**: Mojo (pet-99a708f1722a), Indie breed, chicken allergy, birthday Feb 14
-- **Preview URL**: https://mira-pillar-audit.preview.emergentagent.com
+- **Preview URL**: https://dine-care-learn.preview.emergentagent.com
 
 ---
 *Last Updated: February 12, 2026*
