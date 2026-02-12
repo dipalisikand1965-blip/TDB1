@@ -2143,14 +2143,15 @@ const MiraDemoPage = () => {
     hapticFeedback,
     notificationSounds,
     
-    // Helper Functions (from useChat)
-    fetchConversationMemory: async (petId) => fetchConversationMemory(API_URL, token, petId),
-    fetchMoodContext: async (petId) => fetchMoodContext(API_URL, token, petId),
-    saveConversationMemory: async (petId, context) => saveConversationMemory(API_URL, token, petId, context),
-    routeIntent: async (query, petId, miraMode) => routeIntent(API_URL, token, query, petId, miraMode),
-    fetchTrainingVideos: async (topic) => fetchTrainingVideos(API_URL, token, topic),
-    fetchTravelHotels: async (city) => fetchTravelHotels(API_URL, token, city),
-    fetchTravelAttractions: async (city, petType) => fetchTravelAttractions(API_URL, token, city, petType)
+    // Helper Functions (from useChat) - Pass original functions, hook has all needed state
+    fetchConversationMemory,
+    fetchMoodContext,
+    saveConversationMemory,
+    routeIntent,
+    createOrAttachTicket,
+    fetchTrainingVideos,
+    fetchTravelHotels,
+    fetchTravelAttractions
   });
   
   // OLD handleSubmit REMOVED - Now using useChatSubmit hook above
