@@ -5501,9 +5501,14 @@ PILLARS = {
     "fit": {
         "name": "Fit",
         "icon": "🏃",
-        "keywords": ["fitness", "weight", "exercise", "obesity", "overweight", "weight loss", "weight gain",
-                     "workout", "activity level", "energy", "lazy", "sedentary", "active dog",
-                     "walk routine", "daily walk", "swimming", "agility", "running"],
+        "keywords": [
+            "fitness", "weight", "exercise", "obesity", "overweight", "weight loss", "weight gain",
+            "workout", "activity level", "energy", "lazy", "sedentary", "active dog",
+            "walk routine", "daily walk", "swimming", "agility", "running",
+            # Added for better detection
+            "walks", "how many walks", "exercise routine", "physical activity",
+            "calories", "burn calories", "getting fat", "too heavy", "slim down"
+        ],
         "urgency_default": "low",
         # FIT Pillar Concierge Picks (per MIRA BIBLE)
         "concierge_picks": [
