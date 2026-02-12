@@ -332,48 +332,75 @@ Every classification MUST return:
 
 ## 7. WHAT NEEDS TO BE DONE NEXT
 
-### B4: Scoring Function (NEXT)
-**Requirements:**
-- Score each pick based on:
-  - Tag match relevance (how many tags match)
-  - Profile completeness (more fields = higher score)
-  - Recency (last_service_date)
-  - Pet-specific constraints (allergies, age_stage)
-- Return ranked picks with scores
-- Higher base_score picks should rank higher when tags match equally
+### PHASE B OVERVIEW (B0-B8)
+```
+B0 ✅ Taxonomy Seeding (canonical_tags, synonyms, service types)
+B1 ✅ Picks Catalogue (110 picks across 13 pillars)
+B2 ✅ Classification Pipeline (synonym match → safety → intent → pillar)
+B3 ✅ Safety Gate (emergency/caution override + first aid + gating questions)
+B4 ✅ Scoring Function (tag match, profile penalty, diversity rerank)
+B5 ⏳ Concierge Logic (when to show "Concierge® can coordinate")
+B6 ⏳ API Integration (wire into /api/mira/chat)
+B7 ⏳ Events Log + Analytics (shown/clicked/booked/suppressed)
+B8 ⏳ Scenario Testing + Tuning (50 real-world prompts, adjust weights)
+```
 
-### B5: Concierge Logic
+### B5: Concierge Logic (NEXT)
 **Requirements:**
-- Always keep one Concierge pick available when:
-  - complexity is medium/high
-  - confidence is low (<0.6)
-  - no direct catalogue match
+- Always show Concierge pick when:
+  - `concierge_complexity` is "medium" or "high"
+  - Classification `confidence` < 0.6
+  - No direct catalogue match found
+  - User explicitly asks for help coordinating
+- Concierge reasons:
+  - "This seems complex - Concierge® can coordinate multiple services"
+  - "Not sure exactly what you need? Concierge® can help clarify"
+  - "This requires coordination across providers"
 
 ### B6: Integration into /api/mira/chat
 **Requirements:**
-- Wire classification pipeline + safety gate into chat endpoint
-- Return picks alongside chat response
-- Update events_log with picks_shown
+- Wire `classify_with_safety()` + `score_picks()` into chat endpoint
+- Return picks alongside chat response:
+```json
+{
+  "message": "...",
+  "picks": {
+    "picks": [...],
+    "micro_questions": [...]
+  },
+  "safety_override": {...}
+}
+```
+- Update `events_log` with `picks_shown` array
 
-### B7: Events Log Enhancement
+### B7: Events Log + Analytics
 **Requirements:**
-- Track pick click-through rates
-- Log which picks were shown vs clicked
-- Enable A/B testing infrastructure
+- Track in `events_log`:
+  - `picks_shown`: Array of pick_ids shown to user
+  - `picks_clicked`: Array of pick_ids clicked
+  - `picks_booked`: Array of picks that led to booking
+  - `picks_suppressed`: Array of picks filtered by safety/intent
+  - `suppression_reason`: Why picks were suppressed
+- Enable analytics queries:
+  - Click-through rate per pick
+  - Conversion rate per pick_type
+  - Safety gate trigger frequency
+  - Most common missing profile fields
 
-### B8: Test 20+ Scenarios
+### B8: Scenario Testing + Tuning
 **Requirements:**
-- End-to-end tests for full flow
-- Test emergency overrides
-- Test caution suppression
-- Test personalization with profile data
-
-### B9: Picks UI
-**Requirements:**
-- Display picks in frontend
-- Handle emergency state UI (emergency-red theme)
-- Handle caution state UI (caution-yellow theme)
-- Show reason_template with pet data interpolated
+- Test 50 real-world prompts:
+  - Clean queries: "book grooming", "order cake"
+  - Messy queries: "groming for mojo", "bday cake"
+  - Hinglish: "vet appointment book karna hai"
+  - Emergencies: "ate chocolate", "not breathing"
+  - Caution: "vomiting", "limping", "gagging"
+- For each: verify pillar, intent, safety_level, top 3 picks
+- Adjust scoring weights if needed:
+  - Tag match multiplier (currently 0.15)
+  - Profile penalty (currently 5 per field)
+  - Base score distributions
+- Document edge cases and fixes
 
 ---
 
