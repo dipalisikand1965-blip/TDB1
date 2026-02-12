@@ -452,6 +452,7 @@ const SoulKnowledgeTicker = ({
           border-bottom: 1px solid rgba(139, 92, 246, 0.2);
           overflow: hidden;
           position: relative;
+          z-index: 100; /* Above navbar content but below modals */
         }
         
         .soul-knowledge-ticker.ticker-glowing {
