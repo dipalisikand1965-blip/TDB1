@@ -18,10 +18,37 @@ import {
   Navigation, Phone, Play, Calendar, ArrowRight
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import InlineConciergeCard from './InlineConciergeCard';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // UTILITY FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Check if message content mentions connecting to concierge
+ */
+const shouldShowConciergeCard = (content) => {
+  if (!content) return false;
+  const lowerContent = content.toLowerCase();
+  
+  // Patterns that indicate concierge handoff offer
+  const conciergePatterns = [
+    'connect you with your pet concierge',
+    'connect you with your concierge',
+    'connect with concierge',
+    'reach your concierge',
+    'concierge® to handle',
+    'concierge® team',
+    'i can connect you',
+    'shall i connect you',
+    'would you like to speak with',
+    'our live concierge',
+    'concierge is on it',
+    'concierge® is joining'
+  ];
+  
+  return conciergePatterns.some(pattern => lowerContent.includes(pattern));
+};
 
 
 /**
