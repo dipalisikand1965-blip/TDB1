@@ -18320,11 +18320,23 @@ async def get_pet_intelligence(pet_id: str, db=Depends(get_db)):
                 })
                 seen_values.add(content)
         
-        # Calculate growth (memories added in last 24h)
+        # Calculate growth (memories added in last 24h) - handle timezone-naive datetimes
         from datetime import datetime, timedelta, timezone
+        from dateutil.parser import parse as parse_date
         yesterday = datetime.now(timezone.utc) - timedelta(days=1)
-        recent_count = sum(1 for m in memories if m.get("timestamp") and 
-                         (m["timestamp"] > yesterday if isinstance(m["timestamp"], datetime) else True))
+        recent_count = 0
+        for m in memories:
+            ts = m.get("timestamp")
+            if ts:
+                try:
+                    if isinstance(ts, str):
+                        ts = parse_date(ts)
+                    if ts.tzinfo is None:
+                        ts = ts.replace(tzinfo=timezone.utc)
+                    if ts > yesterday:
+                        recent_count += 1
+                except Exception:
+                    recent_count += 1  # Assume recent if can't parse
         
         return {
             "success": True,
