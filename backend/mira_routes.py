@@ -6025,10 +6025,22 @@ def detect_pillar(message: str, current_pillar: str = None) -> str:
         if not grief_not_missing:
             return "emergency"
     
+    # Keywords that need word boundary checking (short words prone to false positives)
+    # e.g., "ola" in "Lola", "cab" in "vocabulary", "car" in "scare"
+    WORD_BOUNDARY_KEYWORDS = {"ola", "cab", "car", "fly", "air", "bus", "van", "pet", "sit", "mat", "bed", "eat"}
+    
+    def keyword_matches(kw: str, text: str) -> bool:
+        """Check if keyword matches with word boundary awareness for short words"""
+        if len(kw) <= 3 and kw in WORD_BOUNDARY_KEYWORDS:
+            # Use word boundary for short keywords
+            import re
+            return bool(re.search(r'\b' + re.escape(kw) + r'\b', text))
+        return kw in text
+    
     # Check each pillar's keywords
     pillar_scores = {}
     for pillar_id, pillar_data in PILLARS.items():
-        score = sum(1 for kw in pillar_data["keywords"] if kw in message_lower)
+        score = sum(1 for kw in pillar_data["keywords"] if keyword_matches(kw, message_lower))
         if score > 0:
             pillar_scores[pillar_id] = score
     
