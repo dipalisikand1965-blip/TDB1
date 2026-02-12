@@ -18264,3 +18264,87 @@ async def test_viator_api():
         return {"success": False, "error": str(e)}
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# PET INTELLIGENCE ENDPOINT - For Memory Intelligence Card
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/pet-intelligence/{pet_id}")
+async def get_pet_intelligence(pet_id: str, db=Depends(get_db)):
+    """
+    Get pet intelligence data for the Memory Intelligence Card.
+    Returns recent learnings, category stats, and growth metrics.
+    """
+    try:
+        # Get conversation memories
+        memories = await db.conversation_memories.find(
+            {"pet_id": pet_id},
+            {"_id": 0, "category": 1, "signal_type": 1, "value": 1, "confidence": 1, "timestamp": 1}
+        ).sort("timestamp", -1).limit(20).to_list(20)
+        
+        # Get mira_memories for longer-term data
+        mira_mems = await db.mira_memories.find(
+            {"pet_id": pet_id, "is_active": True},
+            {"_id": 0, "memory_type": 1, "content": 1, "confidence": 1, "created_at": 1}
+        ).sort("created_at", -1).limit(10).to_list(10)
+        
+        # Calculate category stats
+        category_counts = {}
+        for m in memories:
+            cat = m.get("category", "other")
+            category_counts[cat] = category_counts.get(cat, 0) + 1
+        
+        # Format recent learnings
+        recent_learnings = []
+        seen_values = set()
+        
+        for m in memories:
+            value = m.get("value", "")
+            if value and value not in seen_values and len(value) > 2:
+                recent_learnings.append({
+                    "category": m.get("category", "behavior"),
+                    "signal_type": m.get("signal_type", "observation"),
+                    "value": value,
+                    "confidence": m.get("confidence", 50)
+                })
+                seen_values.add(value)
+        
+        # Add mira_memories
+        for m in mira_mems:
+            content = m.get("content", "")
+            if content and content not in seen_values:
+                recent_learnings.append({
+                    "category": m.get("memory_type", "observation"),
+                    "signal_type": "memory",
+                    "value": content[:50],
+                    "confidence": m.get("confidence", 70)
+                })
+                seen_values.add(content)
+        
+        # Calculate growth (memories added in last 24h)
+        from datetime import datetime, timedelta, timezone
+        yesterday = datetime.now(timezone.utc) - timedelta(days=1)
+        recent_count = sum(1 for m in memories if m.get("timestamp") and 
+                         (m["timestamp"] > yesterday if isinstance(m["timestamp"], datetime) else True))
+        
+        return {
+            "success": True,
+            "pet_id": pet_id,
+            "recent_learnings": recent_learnings[:15],
+            "stats": {
+                "total": len(memories) + len(mira_mems),
+                "categories": category_counts
+            },
+            "growth_since_last_session": recent_count
+        }
+        
+    except Exception as e:
+        logger.error(f"[PET INTELLIGENCE] Error: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "recent_learnings": [],
+            "stats": {"total": 0, "categories": {}}
+        }
+
+
+
