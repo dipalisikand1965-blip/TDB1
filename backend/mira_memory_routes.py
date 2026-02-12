@@ -334,7 +334,7 @@ async def get_what_mira_knows(
     return {
         "pet_id": pet_id,
         "pet_name": pet_name,
-        "overall_score": pet.get("overall_score", 0),
+        "overall_score": calculated_overall_score,  # Use recalculated score for consistency
         "knowledge_count": len(all_knowledge),
         "soul_knowledge": soul_knowledge,
         "memory_knowledge": memory_knowledge,
