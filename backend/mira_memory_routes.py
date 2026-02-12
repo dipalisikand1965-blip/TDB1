@@ -239,8 +239,17 @@ async def get_pet_memories(
     total_count = 0
     for mtype, items in grouped.items():
         if items:
-            # Sort by created_at/timestamp descending
-            items.sort(key=lambda x: x.get("created_at") or "", reverse=True)
+            # Sort by created_at/timestamp descending (handle mixed types)
+            def get_sort_key(x):
+                val = x.get("created_at")
+                if val is None:
+                    return ""
+                if isinstance(val, str):
+                    return val
+                # datetime object - convert to ISO string
+                return val.isoformat() if hasattr(val, 'isoformat') else str(val)
+            
+            items.sort(key=get_sort_key, reverse=True)
             result[mtype] = {
                 "name": MEMORY_TYPES[mtype]["name"],
                 "icon": MEMORY_TYPES[mtype]["icon"],
