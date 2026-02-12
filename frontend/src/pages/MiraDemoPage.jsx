@@ -2227,13 +2227,8 @@ const MiraDemoPage = () => {
       if (data.ui_action?.type === 'open_picks_vault') {
         console.log('[UI ACTION] 🎁 Opening Personalized Picks Panel for:', data.ui_action.pet_name);
         
-        // Add Mira's response to chat
-        setConversationHistory(prev => [
-          ...prev,
-          { type: 'mira', content: data.response?.message || 'Here are your personalized picks!' }
-        ]);
-        
-        // Open the personalized picks panel (TopPicksPanel = PersonalizedPicksPanel)
+        // Open the personalized picks panel directly - NO intermediate message
+        // The only message shown will be the confirmation after user submits picks
         setShowTopPicksPanel(true);
         setIsProcessing(false);
         return; // Exit early - panel will handle the rest
