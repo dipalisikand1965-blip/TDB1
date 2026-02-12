@@ -130,10 +130,7 @@
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: all 0.2s;
-  position: absolute;
-  right: var(--space-xl);
-  top: 50%;
-  transform: translateY(-50%);
+  /* Removed absolute positioning - let flexbox in header handle it */
 }
 
 .mp-pet-badge:hover {
