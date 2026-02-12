@@ -588,10 +588,7 @@ const MiraDemoPage = () => {
     }
   }, [conversationHistory, detectConversationComplete]);
   
-  // FLOATING TOOLBAR - Clean conversation flow
-  // Insight & Concierge icons at top, expand on tap
-  const [showInsightsPanel, setShowInsightsPanel] = useState(false);
-  const [showConciergePanel, setShowConciergePanel] = useState(false);
+  // NOTE: showInsightsPanel, showConciergePanel now come from useMiraUI hook
   const [latestInsights, setLatestInsights] = useState([]); // Collected from all messages
   
   // ═══════════════════════════════════════════════════════════════════════════
