@@ -188,9 +188,8 @@ const SoulKnowledgeTicker = ({
           className={`ticker-soul-badge ${isGlowing ? 'score-growing' : ''}`}
           onClick={() => {
             hapticFeedback.buttonTap();
-            // Open "What Mira Knows" card first
-            setShowKnowledgeCard(true);
-            fetchMiraKnowledge();
+            // Open the ORIGINAL expanded view with Soul/Breed/Memory sections
+            setShowExpanded(true);
           }}
           title={`What Mira knows about ${petName}`}
           data-testid="soul-score-badge"
