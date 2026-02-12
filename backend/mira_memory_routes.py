@@ -153,6 +153,10 @@ async def get_pet_memories(
     """
     Get all memories for a specific pet - for display on pet profile page.
     Returns memories grouped by type with formatted display.
+    
+    Combines:
+    - mira_memories collection (explicit user statements)
+    - conversation_memories collection (auto-extracted from chat)
     """
     from mira_routes import get_user_from_token
     
@@ -166,8 +170,8 @@ async def get_pet_memories(
     # Get pet info
     pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "name": 1, "breed": 1})
     
-    # Get memories for this pet
-    query = {
+    # 1. Get memories from mira_memories collection
+    mira_query = {
         "member_id": member_id,
         "is_active": {"$ne": False},
         "$or": [
@@ -175,42 +179,86 @@ async def get_pet_memories(
             {"pet_name": pet.get("name") if pet else None}
         ]
     }
+    mira_memories = await db.mira_memories.find(mira_query, {"_id": 0}).sort("created_at", -1).to_list(100)
     
-    memories = await db.mira_memories.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    # 2. Get memories from conversation_memories collection (auto-extracted from chat)
+    conv_memories = await db.conversation_memories.find(
+        {"pet_id": pet_id},
+        {"_id": 0}
+    ).sort("timestamp", -1).to_list(100)
     
     # Group by type
     grouped = {mtype: [] for mtype in MEMORY_TYPES.keys()}
-    for memory in memories:
+    
+    # Add mira_memories
+    for memory in mira_memories:
         mtype = memory.get("memory_type", "general")
         if mtype in grouped:
-            # Format for display
             grouped[mtype].append({
                 "id": memory.get("memory_id"),
                 "content": memory.get("content"),
-                "source": memory.get("source"),
+                "source": memory.get("source", "user-stated"),
                 "confidence": memory.get("confidence"),
                 "created_at": memory.get("created_at"),
                 "is_critical": memory.get("is_critical", False),
                 "relevance_tags": memory.get("relevance_tags", [])
             })
     
+    # Add conversation_memories (map category to memory_type)
+    CATEGORY_TO_TYPE = {
+        "food_preference": "shopping",
+        "health": "health",
+        "behavior": "general",
+        "routine": "general",
+        "environment": "general",
+        "personality": "general",
+        "social": "general"
+    }
+    
+    for conv_mem in conv_memories:
+        category = conv_mem.get("category", "general")
+        mtype = CATEGORY_TO_TYPE.get(category, "general")
+        if mtype in grouped:
+            # Format the content nicely
+            signal_type = conv_mem.get("signal_type", "")
+            value = conv_mem.get("value", "")
+            content = f"{signal_type.replace('_', ' ').title()}: {value}" if signal_type else value
+            
+            grouped[mtype].append({
+                "id": conv_mem.get("id", f"conv-{conv_mem.get('timestamp', '')}"),
+                "content": content,
+                "source": "conversation",
+                "confidence": conv_mem.get("confidence", "medium"),
+                "created_at": conv_mem.get("timestamp"),
+                "is_critical": False,
+                "relevance_tags": [f"category:{category}", f"signal:{signal_type}"]
+            })
+    
     # Build response with type info
     result = {}
+    total_count = 0
     for mtype, items in grouped.items():
-        if items:  # Only include types with memories
+        if items:
+            # Sort by created_at/timestamp descending
+            items.sort(key=lambda x: x.get("created_at") or "", reverse=True)
             result[mtype] = {
                 "name": MEMORY_TYPES[mtype]["name"],
                 "icon": MEMORY_TYPES[mtype]["icon"],
                 "memories": items,
                 "count": len(items)
             }
+            total_count += len(items)
     
     return {
         "pet_id": pet_id,
         "pet_name": pet.get("name") if pet else None,
-        "total_memories": len(memories),
+        "total_memories": total_count,
         "by_type": result,
-        "memory_types": MEMORY_TYPES
+        "memory_types": MEMORY_TYPES,
+        "sources": {
+            "mira_memories": len(mira_memories),
+            "conversation_memories": len(conv_memories)
+        }
     }
 
 
