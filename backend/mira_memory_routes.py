@@ -214,6 +214,131 @@ async def get_pet_memories(
     }
 
 
+@router.get("/pet/{pet_id}/what-mira-knows")
+async def get_what_mira_knows(
+    pet_id: str,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get comprehensive "What Mira Knows" about a pet.
+    Combines:
+    - Soul profile data (personality, preferences, behaviors)
+    - Memories from conversations
+    - Inferred knowledge from interactions
+    
+    Returns formatted for display on My Pets page.
+    """
+    from mira_routes import get_user_from_token
+    
+    user = await get_user_from_token(authorization)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    member_id = user.get("email") or user.get("id")
+    db = get_db()
+    
+    # Get pet with full soul data
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    pet_name = pet.get("name", "your pet")
+    
+    # 1. BUILD SOUL KNOWLEDGE from doggy_soul_answers
+    soul_knowledge = []
+    soul_answers = pet.get("doggy_soul_answers", {})
+    
+    # Map important answers to human-readable knowledge
+    knowledge_mappings = [
+        ("general_nature", "🎭 Personality", lambda v: f"{pet_name} is generally {v.lower()}"),
+        ("food_allergies", "⚠️ Allergies", lambda v: f"Allergic to: {', '.join(v) if isinstance(v, list) else v}" if v and v != ["No"] else None),
+        ("separation_anxiety", "💔 Separation", lambda v: f"{'Has' if v in ['Moderate', 'Severe'] else 'Mild'} separation anxiety" if v != "No" else None),
+        ("behavior_with_dogs", "🐕 Social", lambda v: f"{pet_name} {v.lower()} other dogs"),
+        ("walks_per_day", "🚶 Exercise", lambda v: f"Needs {v} walk(s) per day"),
+        ("sleep_location", "😴 Sleep", lambda v: f"Sleeps in {v.lower()}"),
+        ("favorite_treats", "🦴 Treats", lambda v: f"Loves {', '.join(v[:3]) if isinstance(v, list) else v}" if v else None),
+        ("sensitive_stomach", "🤢 Digestion", lambda v: "Has a sensitive stomach" if v in ["Yes", "Sometimes"] else None),
+        ("car_rides", "🚗 Travel", lambda v: f"{'Loves' if v == 'Loves them' else 'Gets anxious during' if v == 'Anxious' else 'Has motion sickness during' if v == 'Gets motion sickness' else 'Neutral about'} car rides"),
+        ("crate_trained", "🏠 Crate", lambda v: f"{'Is' if v == 'Yes' else 'Not'} crate trained"),
+        ("training_level", "🎓 Training", lambda v: f"Training level: {v}"),
+        ("loud_sounds", "🔊 Sounds", lambda v: f"{'Needs comfort during' if v in ['Very anxious', 'Needs comfort'] else 'Fine with'} loud sounds"),
+    ]
+    
+    for answer_key, icon_label, formatter in knowledge_mappings:
+        if answer_key in soul_answers and soul_answers[answer_key]:
+            value = soul_answers[answer_key]
+            formatted = formatter(value)
+            if formatted:
+                soul_knowledge.append({
+                    "category": "soul",
+                    "icon": icon_label.split(" ")[0],
+                    "label": icon_label.split(" ", 1)[1],
+                    "text": formatted,
+                    "source": "soul_profile"
+                })
+    
+    # 2. GET MEMORIES from mira_memories collection
+    memories_query = {
+        "member_id": member_id,
+        "is_active": {"$ne": False},
+        "$or": [
+            {"pet_id": pet_id},
+            {"pet_name": pet_name}
+        ]
+    }
+    
+    memories = await db.mira_memories.find(memories_query, {"_id": 0}).sort("created_at", -1).to_list(50)
+    
+    memory_knowledge = []
+    for mem in memories:
+        memory_knowledge.append({
+            "category": mem.get("memory_type", "general"),
+            "icon": MEMORY_TYPES.get(mem.get("memory_type", "general"), {}).get("icon", "💬"),
+            "label": MEMORY_TYPES.get(mem.get("memory_type", "general"), {}).get("name", "General"),
+            "text": mem.get("content"),
+            "source": mem.get("source", "conversation"),
+            "created_at": mem.get("created_at"),
+            "memory_id": mem.get("memory_id")
+        })
+    
+    # 3. GET INSIGHTS from pet profile
+    insights_knowledge = []
+    insights = pet.get("insights", {})
+    
+    if insights.get("overall_summary"):
+        insights_knowledge.append({
+            "category": "summary",
+            "icon": "✨",
+            "label": "Summary",
+            "text": insights.get("overall_summary"),
+            "source": "ai_insight"
+        })
+    
+    for rec in insights.get("recommendations", [])[:3]:
+        insights_knowledge.append({
+            "category": "recommendation",
+            "icon": "💡",
+            "label": "Recommendation",
+            "text": rec,
+            "source": "ai_insight"
+        })
+    
+    # Combine all knowledge
+    all_knowledge = soul_knowledge + memory_knowledge + insights_knowledge
+    
+    return {
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "overall_score": pet.get("overall_score", 0),
+        "knowledge_count": len(all_knowledge),
+        "soul_knowledge": soul_knowledge,
+        "memory_knowledge": memory_knowledge,
+        "insights_knowledge": insights_knowledge,
+        "all_knowledge": all_knowledge,
+        "last_updated": pet.get("updated_at")
+    }
+
+
 @router.put("/me/{memory_id}")
 async def update_my_memory(
     memory_id: str,
