@@ -42,9 +42,13 @@ It is NOT:
 |----------|----------|---------|
 | **P0** | `/app/memory/AGENT_START_HERE.md` | Master onboarding doc |
 | **P0** | `/app/memory/MIRA_OS_14_PILLARS_BIBLE.md` | 14 pillars definitive reference |
+| **P0** | `/app/memory/PICKS_ENGINE_SPEC_v1.md` | **PICKS ENGINE COMPLETE SPEC** |
 | **P0** | `/app/memory/MOBILE_FIRST_GOLDEN_RULES.md` | UI/UX compliance rules |
 | **P1** | `/app/memory/MIRA_OS_AUDIT.md` | Current system audit (68/100) |
 | **P1** | `/app/memory/MIRA_OS_ROADMAP.md` | Enhancement roadmap |
+| **P1** | `/app/memory/seeds/CANONICAL_TAGS_SEED.md` | Canonical tags data |
+| **P1** | `/app/memory/seeds/TAG_SYNONYMS_SEED.md` | Tag synonyms mapping |
+| **P1** | `/app/memory/seeds/SERVICE_TYPES_SPEC.md` | Service types spec |
 | **P2** | `/app/memory/PILLAR_ARCHITECTURE_DOCTRINE.md` | Architecture decisions |
 | **P2** | `/app/memory/PROFILE_FIRST_DOCTRINE.md` | Profile-first doctrine |
 | **P2** | `/app/memory/CRITICAL_FIXES_DO_NOT_REVERT.md` | Protected bug fixes |
