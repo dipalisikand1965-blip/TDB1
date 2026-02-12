@@ -8,6 +8,29 @@ See `/app/memory/MIRA_OS_DOCTRINE.md` for the foundational system behavior.
 
 ---
 
+## 🎯 P0 Bug Fixes (Feb 12, 2026) ✅ COMPLETE
+
+### Issue 1: Intelligence Score Not Counting Conversation Memories
+**Problem**: Intelligence score was returning low values because it only checked the `conversation_memories` collection, not the inline `conversation_memories` array stored in the pet document.
+
+**Fix Applied** (`/app/backend/services/intelligence_score.py` lines 85-100):
+- Added fallback to check inline `pet.conversation_memories` when the collection is empty
+- Converts inline format to expected format for scoring
+- Result: Lola's score went from 5% to 10% with conversation_learning=5.5
+
+### Issue 2: Pillar Detection False Positives
+**Problem**: "Lola needs a haircut" was detected as `travel` because "Lola" contains "ola" (Indian cab service keyword).
+
+**Fix Applied** (`/app/backend/mira_routes.py` lines 6028-6038):
+- Added word boundary checking for short keywords prone to substring matches
+- Keywords in `WORD_BOUNDARY_KEYWORDS` set: ola, cab, car, fly, air, bus, van, pet, sit, mat, bed, eat
+- Uses regex `\b` word boundaries for matching
+- Result: "Lola needs a haircut" → `care`, "Book an Ola cab" → `travel`
+
+**Testing**: ALL 10 TESTS PASSED ✅ (see `/app/test_reports/iteration_161.json`)
+
+---
+
 ## 🎯 MiraDemoPage.jsx Refactoring Status (Feb 12, 2026)
 
 ### Phase 1: Extract handleSubmit ✅ COMPLETE
