@@ -280,6 +280,8 @@ emergency → HARD OVERRIDE to emergency pillar, suppress ALL commerce
   "priority": "low | medium | high | critical",
   "deprecated": "boolean",
   "replaced_by": "string (optional)",
+  "gating_questions": ["array (for caution tags needing escalation)"],
+  "escalation_triggers": ["array of keywords that upgrade to emergency"],
   "seed_version": "string",
   "source_doc_version": "string",
   "created_at": "datetime"
@@ -301,7 +303,7 @@ emergency → HARD OVERRIDE to emergency pillar, suppress ALL commerce
 }
 ```
 
-### picks_catalogue
+### picks_catalogue (UPDATED SCHEMA)
 ```json
 {
   "pick_id": "string (UNIQUE)",
@@ -310,15 +312,19 @@ emergency → HARD OVERRIDE to emergency pillar, suppress ALL commerce
   "pick_type": "guide | booking | product | checklist | concierge | emergency",
   "title": "string",
   "cta": "string",
-  "reason_template": "string with {pet_name}, {breed}, {age_stage}, etc.",
+  "reason_template": "string (degrade-safe, works without profile)",
+  "reason_template_enhanced": "string (optional, requires full profile)",
   "constraints": {
     "species": ["dog", "cat"],
     "age_stage": ["puppy", "adult", "senior", null],
     "exclude_health_flags": [],
-    "required_profile_fields": []
+    "required_profile_fields": [],
+    "enhanced_reason_requires": ["array of fields for enhanced template"],
+    "if_allergies_present": "ask_question | null"
   },
+  "allergy_question": "string (optional, shown if allergies present)",
   "service_vertical": "string (for booking picks)",
-  "service_types": ["array"],
+  "service_modes": ["array: at_home, salon, clinic, online, pickup_drop, boarding_facility, daycare_center, field"],
   "base_score": "number (0-100)",
   "concierge_complexity": "low | medium | high",
   "safety_level": "normal | caution | emergency",
@@ -327,6 +333,8 @@ emergency → HARD OVERRIDE to emergency pillar, suppress ALL commerce
   "created_at": "datetime"
 }
 ```
+
+**NOTE:** `service_types` renamed to `service_modes` to avoid confusion with `service_verticals`.
 
 ### events_log
 ```json
