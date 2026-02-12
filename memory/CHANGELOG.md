@@ -1,5 +1,49 @@
 # MIRA OS - CHANGELOG
 
+## [2025-12-XX] - Picks Engine B6 API Integration Complete
+
+### Added
+
+**Picks Engine Orchestrator** (`/app/backend/picks_engine.py`)
+- Full pipeline: classification → safety gate → scoring → concierge logic
+- Async/await support for seamless integration
+- Safety override enforcement (emergency/caution non-negotiables)
+- Debug mode with full classification trace
+
+**API Integration** (`/api/mira/chat`)
+- New response fields: `picks[]`, `concierge{}`, `safety_override{}`, `missing_profile_fields[]`
+- `debug: true` request flag shows matched_synonyms, tags, intent, top 10 picks with scores
+- Concierge always_on with prominence shifts based on context
+
+**Response Contract**
+```json
+{
+  "picks": [...],
+  "concierge": {"mode": "always_on", "cta_prominence": "primary|secondary|quiet", ...},
+  "safety_override": {"active": bool, "level": "emergency|caution|normal", ...},
+  "missing_profile_fields": ["breed", "city", ...],
+  "picks_debug": {...}  // only if debug=true
+}
+```
+
+### Safety Non-Negotiables (Enforced)
+- **Emergency**: Hard override, suppress commerce, show vet routing + first aid + Concierge PRIMARY
+- **Caution**: Suppress shopping, allow education + "contact vet" routing
+- **No Health pillar**: Symptoms route to Care (education + vet routing), never "diagnose"
+
+### Taxonomy Additions
+- Added `fly` and `fly to` synonyms for air_travel
+- Added `pug` as brachycephalic_breed for breed-specific warnings
+
+### Test Results
+- B2 Classification: 28 passing
+- B3 Safety Gate: 21 passing
+- B4 Scoring Logic: 29 passing
+- B5 Concierge Logic: 41 passing
+- **Total: 119 tests passing**
+
+---
+
 ## [2025-12-XX] - Picks Engine B5 Concierge Logic Complete
 
 ### Added
