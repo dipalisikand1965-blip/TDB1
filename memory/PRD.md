@@ -1,15 +1,53 @@
-# The Doggy Company - Mira AI Pet Companion
+# The Doggy Company - MIRA OS
+## Mobile-First Pet Life Operating System
 
-## Original Problem Statement
-MIRA to function as a "Lifestyle OS" - context-aware, proactive, safe, OS-like behavior with dynamic picks. **MIRA is NOT a chatbot - she is a memory-driven Pet Operating System.**
+---
 
-## Core Doctrine Files
-| Document | Purpose |
-|----------|---------|
-| `/app/memory/MIRA_OS_14_PILLARS_BIBLE.md` | **THE DEFINITIVE REFERENCE** - 14 pillars, what's included/excluded, pillar test |
-| `/app/memory/PILLAR_ARCHITECTURE_DOCTRINE.md` | Structural decisions, what is NOT a pillar |
-| `/app/memory/PROFILE_FIRST_DOCTRINE.md` | Ask when profile incomplete, never assume from breed |
-| `/app/memory/CRITICAL_FIXES_DO_NOT_REVERT.md` | Protected bug fixes |
+## ⚠️ CRITICAL: READ FIRST
+
+**ALL AGENTS MUST READ `/app/memory/AGENT_START_HERE.md` BEFORE ANY WORK**
+
+---
+
+## WHAT IS MIRA OS?
+
+**MIRA is a MOBILE-FIRST PET LIFE OPERATING SYSTEM.**
+
+It is:
+- An intelligent OS that runs a pet's entire life
+- Memory-driven, context-aware, proactive
+- Built for iOS and Android mobile devices FIRST
+
+It is NOT:
+- An e-commerce platform
+- A chatbot
+- A web-first application
+
+---
+
+## TEST CREDENTIALS
+
+| Role | Email/Username | Password |
+|------|----------------|----------|
+| **Test User** | dipali@clubconcierge.in | test123 |
+| **Admin** | aditya | lola4304 |
+
+**Preview URL:** https://mira-backend-audit.preview.emergentagent.com
+
+---
+
+## CORE DOCUMENTS (READ IN ORDER)
+
+| Priority | Document | Purpose |
+|----------|----------|---------|
+| **P0** | `/app/memory/AGENT_START_HERE.md` | Master onboarding doc |
+| **P0** | `/app/memory/MIRA_OS_14_PILLARS_BIBLE.md` | 14 pillars definitive reference |
+| **P0** | `/app/memory/MOBILE_FIRST_GOLDEN_RULES.md` | UI/UX compliance rules |
+| **P1** | `/app/memory/MIRA_OS_AUDIT.md` | Current system audit (68/100) |
+| **P1** | `/app/memory/MIRA_OS_ROADMAP.md` | Enhancement roadmap |
+| **P2** | `/app/memory/PILLAR_ARCHITECTURE_DOCTRINE.md` | Architecture decisions |
+| **P2** | `/app/memory/PROFILE_FIRST_DOCTRINE.md` | Profile-first doctrine |
+| **P2** | `/app/memory/CRITICAL_FIXES_DO_NOT_REVERT.md` | Protected bug fixes |
 
 ---
 
@@ -26,6 +64,22 @@ MIRA to function as a "Lifestyle OS" - context-aware, proactive, safe, OS-like b
 | When humans step in | CONCIERGE |
 
 > **Pillars operate invisibly underneath. Users don't navigate pillars - Mira infers them.**
+
+---
+
+## CURRENT AUDIT SCORE: 68/100
+
+| Domain | Score |
+|--------|-------|
+| Memory System | 60/100 |
+| Soul Intelligence | 75/100 |
+| Conversational Context | 75/100 |
+| Picks Engine | 35/100 |
+| Services Execution | 50/100 |
+| Proactive System | 40/100 |
+| 14 Pillars Coverage | 55/100 |
+| UI/UX Mobile | 80/100 |
+| Infrastructure | 95/100 |
 
 ---
 
