@@ -252,6 +252,17 @@ const MiraDemoPage = () => {
     setShowFeatureShowcase
   } = useMiraUI();
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // PROACTIVE ALERTS HOOK - Alerts, greetings, weather (Phase 2C Refactoring)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const {
+    proactiveAlerts,
+    setProactiveAlerts,
+    proactiveGreeting,
+    currentWeather,
+    setCurrentWeather
+  } = useProactiveAlerts(pet);
+  
   // State
   const [activeScenario, setActiveScenario] = useState(null);
   const [showScenarios, setShowScenarios] = useState(true);
@@ -277,6 +288,7 @@ const MiraDemoPage = () => {
   const [showSoulFormModal, setShowSoulFormModal] = useState(false);
   
   // NOTE: showTopPicksPanel, showUnifiedVault, isProcessing now come from useMiraUI hook
+  // NOTE: proactiveAlerts, proactiveGreeting, currentWeather now come from useProactiveAlerts hook
   
   // Core conversation state (query remains here)
   const [query, setQuery] = useState('');
