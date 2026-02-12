@@ -53,7 +53,22 @@ const shouldShowConciergeCard = (content) => {
     'get our concierge',
     'connect me with concierge',
     'speak with a concierge',
-    'chat with concierge'
+    'chat with concierge',
+    // Patterns based on actual Mira responses
+    'to our concierge',
+    'passing this request to',
+    'request to our concierge',
+    'concierge® with all',
+    'starting the booking flow',
+    "they'll pick it up",
+    'taking action now',
+    'concierge® is taking',
+    'booking flow for you',
+    'pet concierge® to help',
+    'concierge® has been notified',
+    'concierge® will reach',
+    'your pet concierge®',
+    "i've asked your pet concierge"
   ];
   
   return conciergePatterns.some(pattern => lowerContent.includes(pattern));
