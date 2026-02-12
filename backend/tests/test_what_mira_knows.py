@@ -5,7 +5,6 @@ This tests the expanded panel data that shows Soul/Breed/Memory sections
 import pytest
 import requests
 import os
-import json
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
@@ -29,10 +28,9 @@ class TestWhatMiraKnowsAPI:
         )
         if login_response.status_code == 200:
             data = login_response.json()
-            self.token = data.get('token')
+            # Token field is 'access_token' not 'token'
+            self.token = data.get('access_token')
             self.session.headers.update({'Authorization': f'Bearer {self.token}'})
-            # Get user pets to find Mystique (Shihtzu)
-            self.pets = data.get('user', {}).get('pets', [])
         else:
             pytest.skip("Authentication failed")
     
@@ -44,35 +42,31 @@ class TestWhatMiraKnowsAPI:
     
     def test_get_user_pets(self):
         """Test that we can get user pets"""
-        response = self.session.get(f"{BASE_URL}/api/pet-parents/me/pets")
+        response = self.session.get(f"{BASE_URL}/api/pets/my-pets")
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         data = response.json()
-        print(f"✓ Got {len(data)} pets for user")
-        assert len(data) > 0, "User should have at least one pet"
+        pets = data.get('pets', [])
+        print(f"✓ Got {len(pets)} pets for user")
+        assert len(pets) > 0, "User should have at least one pet"
         
         # Look for Mystique (Shihtzu)
         mystique = None
-        for pet in data:
-            if pet.get('name', '').lower() == 'mystique' or 'mystique' in pet.get('name', '').lower():
+        for pet in pets:
+            if pet.get('name', '').lower() == 'mystique':
                 mystique = pet
                 break
         
         if mystique:
             print(f"✓ Found Mystique: {mystique.get('id')}, breed: {mystique.get('breed')}")
         else:
-            print(f"  Available pets: {[p.get('name') for p in data]}")
+            print(f"  Available pets: {[p.get('name') for p in pets]}")
         
-        return data
+        return pets
     
     def test_what_mira_knows_api_returns_200(self):
         """Test that API returns 200 for valid pet"""
-        # First get user pets
-        pets_response = self.session.get(f"{BASE_URL}/api/pet-parents/me/pets")
-        if pets_response.status_code != 200 or not pets_response.json():
-            pytest.skip("No pets found for user")
-        
-        pet = pets_response.json()[0]
-        pet_id = pet.get('id')
+        # Use Mystique pet ID
+        pet_id = "pet-3661ae55d2e2"
         
         response = self.session.get(f"{BASE_URL}/api/mira/memory/pet/{pet_id}/what-mira-knows")
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -80,12 +74,7 @@ class TestWhatMiraKnowsAPI:
     
     def test_what_mira_knows_returns_soul_knowledge(self):
         """Test that API returns soul_knowledge array"""
-        pets_response = self.session.get(f"{BASE_URL}/api/pet-parents/me/pets")
-        if pets_response.status_code != 200 or not pets_response.json():
-            pytest.skip("No pets found")
-        
-        pet = pets_response.json()[0]
-        pet_id = pet.get('id')
+        pet_id = "pet-3661ae55d2e2"
         
         response = self.session.get(f"{BASE_URL}/api/mira/memory/pet/{pet_id}/what-mira-knows")
         assert response.status_code == 200
@@ -101,14 +90,7 @@ class TestWhatMiraKnowsAPI:
     
     def test_what_mira_knows_returns_breed_knowledge(self):
         """Test that API returns breed_knowledge array - CRITICAL FOR THIS FEATURE"""
-        pets_response = self.session.get(f"{BASE_URL}/api/pet-parents/me/pets")
-        if pets_response.status_code != 200 or not pets_response.json():
-            pytest.skip("No pets found")
-        
-        pet = pets_response.json()[0]
-        pet_id = pet.get('id')
-        pet_name = pet.get('name')
-        pet_breed = pet.get('breed')
+        pet_id = "pet-3661ae55d2e2"  # Mystique the Shihtzu
         
         response = self.session.get(f"{BASE_URL}/api/mira/memory/pet/{pet_id}/what-mira-knows")
         assert response.status_code == 200
@@ -117,21 +99,18 @@ class TestWhatMiraKnowsAPI:
         assert 'breed_knowledge' in data, "Response should contain breed_knowledge"
         assert isinstance(data['breed_knowledge'], list), "breed_knowledge should be a list"
         
-        print(f"✓ breed_knowledge for {pet_name} ({pet_breed}): {len(data['breed_knowledge'])} items")
+        print(f"✓ breed_knowledge for Mystique (Shihtzu): {len(data['breed_knowledge'])} items")
         
-        # If pet has a breed, breed_knowledge should have items
-        if pet_breed and len(pet_breed) > 0:
-            for item in data['breed_knowledge']:
-                print(f"  Breed item: {item.get('text', 'N/A')}")
+        # Verify we have breed knowledge items
+        assert len(data['breed_knowledge']) > 0, "Shihtzu should have breed knowledge"
+        
+        # Print breed knowledge details
+        for item in data['breed_knowledge']:
+            print(f"  Breed item: {item.get('text', 'N/A')}")
     
     def test_what_mira_knows_returns_memory_knowledge(self):
         """Test that API returns memory_knowledge array"""
-        pets_response = self.session.get(f"{BASE_URL}/api/pet-parents/me/pets")
-        if pets_response.status_code != 200 or not pets_response.json():
-            pytest.skip("No pets found")
-        
-        pet = pets_response.json()[0]
-        pet_id = pet.get('id')
+        pet_id = "pet-3661ae55d2e2"
         
         response = self.session.get(f"{BASE_URL}/api/mira/memory/pet/{pet_id}/what-mira-knows")
         assert response.status_code == 200
@@ -143,12 +122,7 @@ class TestWhatMiraKnowsAPI:
     
     def test_what_mira_knows_returns_overall_score(self):
         """Test that API returns overall_score"""
-        pets_response = self.session.get(f"{BASE_URL}/api/pet-parents/me/pets")
-        if pets_response.status_code != 200 or not pets_response.json():
-            pytest.skip("No pets found")
-        
-        pet = pets_response.json()[0]
-        pet_id = pet.get('id')
+        pet_id = "pet-3661ae55d2e2"
         
         response = self.session.get(f"{BASE_URL}/api/mira/memory/pet/{pet_id}/what-mira-knows")
         assert response.status_code == 200
@@ -160,61 +134,32 @@ class TestWhatMiraKnowsAPI:
     
     def test_what_mira_knows_returns_pet_breed(self):
         """Test that API returns pet_breed field"""
-        pets_response = self.session.get(f"{BASE_URL}/api/pet-parents/me/pets")
-        if pets_response.status_code != 200 or not pets_response.json():
-            pytest.skip("No pets found")
-        
-        pet = pets_response.json()[0]
-        pet_id = pet.get('id')
+        pet_id = "pet-3661ae55d2e2"
         
         response = self.session.get(f"{BASE_URL}/api/mira/memory/pet/{pet_id}/what-mira-knows")
         assert response.status_code == 200
         
         data = response.json()
         assert 'pet_breed' in data, "Response should contain pet_breed"
+        assert data['pet_breed'] == "Shihtzu", f"Expected Shihtzu, got {data['pet_breed']}"
         print(f"✓ pet_breed: {data['pet_breed']}")
     
-    def test_mystique_pet_breed_knowledge(self):
-        """Test specifically for Mystique (Shihtzu) breed knowledge"""
-        pets_response = self.session.get(f"{BASE_URL}/api/pet-parents/me/pets")
-        if pets_response.status_code != 200 or not pets_response.json():
-            pytest.skip("No pets found")
-        
-        pets = pets_response.json()
-        
-        # Try to find Mystique or any Shihtzu
-        mystique = None
-        shihtzu_pet = None
-        for pet in pets:
-            name = pet.get('name', '').lower()
-            breed = pet.get('breed', '').lower()
-            if 'mystique' in name:
-                mystique = pet
-                break
-            if 'shihtzu' in breed or 'shih tzu' in breed:
-                shihtzu_pet = pet
-        
-        test_pet = mystique or shihtzu_pet or pets[0]
-        pet_id = test_pet.get('id')
-        pet_name = test_pet.get('name')
-        pet_breed = test_pet.get('breed')
-        
-        print(f"Testing pet: {pet_name} ({pet_breed}) - ID: {pet_id}")
+    def test_mystique_full_response_structure(self):
+        """Test complete response structure for Mystique (Shihtzu)"""
+        pet_id = "pet-3661ae55d2e2"
         
         response = self.session.get(f"{BASE_URL}/api/mira/memory/pet/{pet_id}/what-mira-knows")
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
         
-        # Verify structure
-        assert 'soul_knowledge' in data
-        assert 'breed_knowledge' in data
-        assert 'memory_knowledge' in data
-        assert 'overall_score' in data
-        assert 'pet_name' in data
-        assert 'pet_breed' in data
+        # Verify all required fields
+        required_fields = ['pet_id', 'pet_name', 'pet_breed', 'overall_score', 
+                          'soul_knowledge', 'breed_knowledge', 'memory_knowledge']
+        for field in required_fields:
+            assert field in data, f"Missing required field: {field}"
         
-        print(f"✓ Full What Mira Knows response for {pet_name}:")
+        print(f"✓ Full What Mira Knows response for Mystique:")
         print(f"  - Pet Name: {data['pet_name']}")
         print(f"  - Pet Breed: {data['pet_breed']}")
         print(f"  - Overall Score: {data['overall_score']}%")
@@ -222,11 +167,11 @@ class TestWhatMiraKnowsAPI:
         print(f"  - Breed Knowledge: {len(data['breed_knowledge'])} items")
         print(f"  - Memory Knowledge: {len(data['memory_knowledge'])} items")
         
-        # Print breed knowledge details if available
-        if data['breed_knowledge']:
-            print("  - Breed Knowledge Details:")
-            for item in data['breed_knowledge'][:3]:
-                print(f"    * {item.get('icon', '')} {item.get('text', 'N/A')}")
+        # Verify breed knowledge has breed-specific traits for Shihtzu
+        breed_texts = [item.get('text', '') for item in data['breed_knowledge']]
+        assert any('Shihtzu' in text or 'Shih' in text for text in breed_texts), \
+            "Breed knowledge should mention Shihtzu"
+        print("✓ Breed knowledge contains Shihtzu-specific information")
 
 
 if __name__ == '__main__':
