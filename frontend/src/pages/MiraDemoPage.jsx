@@ -196,6 +196,32 @@ const MiraDemoPage = () => {
   // Ref for handleSubmit (needed for voice callback)
   const handleSubmitRef = useRef(null);
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // CONVERSATION HOOK - Conversation state management (Phase 2A Refactoring)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const {
+    conversationHistory,
+    setConversationHistory,
+    conversationContext,
+    setConversationContext,
+    conversationStage,
+    setConversationStage,
+    quickReplies,
+    setQuickReplies,
+    conversationComplete,
+    setConversationComplete,
+    showConversationEndBanner,
+    setShowConversationEndBanner,
+    showOlderMessages,
+    setShowOlderMessages,
+    clarifyingQuestionCount,
+    setClarifyingQuestionCount,
+    MAX_CLARIFYING_QUESTIONS,
+    VISIBLE_MESSAGE_COUNT,
+    detectConversationComplete,
+    resetContextForPet
+  } = useConversation(pet);
+  
   // State
   const [activeScenario, setActiveScenario] = useState(null);
   const [showScenarios, setShowScenarios] = useState(true);
