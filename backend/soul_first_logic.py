@@ -408,7 +408,7 @@ def determine_response_strategy(
         # Full fallback questions
         strategy.fallback_questions = get_fallback_questions(pet_name, intent, lite=False)
         
-        logger.info(f"[SOUL-FIRST] Strategy: ask_questions (no Soul data)")
+        logger.info("[SOUL-FIRST] Strategy: ask_questions (no Soul data)")
     
     return strategy
 
@@ -834,7 +834,7 @@ RESPONSE STRATEGY: BREED-FALLBACK + ASK QUESTIONS
 """
     
     else:
-        prompt += f"""
+        prompt += """
 ❌ NO SOUL DATA AVAILABLE
 
 RESPONSE STRATEGY: ASK QUESTIONS FIRST
@@ -845,7 +845,7 @@ RESPONSE STRATEGY: ASK QUESTIONS FIRST
     
     # Add fallback questions if needed
     if strategy.fallback_questions:
-        prompt += f"""
+        prompt += """
 FALLBACK QUESTIONS TO ASK (in this order):
 """
         for i, q in enumerate(strategy.fallback_questions, 1):
