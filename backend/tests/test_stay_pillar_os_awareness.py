@@ -83,7 +83,7 @@ class TestSTAYPillarDetection:
     def test_home_setup_query_routes_to_stay(self):
         """Home setup/sleep queries should route to STAY pillar"""
         response = requests.post(f"{BASE_URL}/api/mira/chat", json={
-            "message": "Where should my dog sleep at home?",
+            "message": "Help me setup a sleeping spot for Mojo at home",
             "selected_pet_id": TEST_PET_ID,
             "session_id": "test-stay-home-001"
         })
