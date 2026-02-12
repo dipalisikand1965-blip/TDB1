@@ -17731,6 +17731,252 @@ async def test_youtube_api():
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# LEARN PILLAR - CURATED VIDEO SUPPORT
+# Per MIRA OS Bible: Videos are supporting content, not the destination
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/learn/video-support/{pet_id}")
+async def get_learn_video_support(
+    pet_id: str,
+    topic: str = None,
+    behavior: str = None,
+    db=Depends(get_db)
+):
+    """
+    Get a single curated video to support a LEARN topic.
+    
+    This is NOT a video feed. This returns ONE relevant video as supporting content
+    for a training guide or behavior article.
+    
+    Per MIRA OS Bible:
+    - Videos are supporting media, not primary object
+    - Video supports understanding
+    - Video is never the destination
+    
+    Args:
+        pet_id: The pet's ID for context (breed, age)
+        topic: Training topic (e.g., "leash training", "recall", "potty training")
+        behavior: Specific behavior issue (e.g., "barking", "pulling", "jumping")
+    
+    Returns:
+        Single curated video with context
+    """
+    try:
+        from services.youtube_service import search_youtube_videos, get_breed_specific_topics
+        
+        # Get pet context for personalized search
+        pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "breed": 1, "age_years": 1, "name": 1})
+        if not pet:
+            pet = {"breed": "dog", "age_years": 2, "name": "your pet"}
+        
+        breed = pet.get("breed", "dog").lower()
+        age_years = float(pet.get("age_years", 2))
+        pet_name = pet.get("name", "your pet")
+        
+        # Determine life stage for age-appropriate content
+        if age_years < 1:
+            life_stage = "puppy"
+        elif age_years < 2:
+            life_stage = "adolescent"
+        elif age_years < 7:
+            life_stage = "adult"
+        else:
+            life_stage = "senior"
+        
+        # Build search query
+        search_parts = []
+        
+        if behavior:
+            # Behavior-specific search
+            behavior_map = {
+                "barking": f"stop dog barking training {life_stage}",
+                "pulling": f"leash pulling training {life_stage} dog",
+                "jumping": f"stop dog jumping on people training",
+                "biting": f"puppy bite inhibition training" if life_stage == "puppy" else "stop dog biting training",
+                "anxiety": f"dog separation anxiety training {life_stage}",
+                "reactivity": f"reactive dog training calm",
+                "recall": f"dog recall training {life_stage}",
+                "aggression": "dog aggression training professional"
+            }
+            search_parts.append(behavior_map.get(behavior.lower(), f"dog {behavior} training"))
+        
+        if topic:
+            # Topic-specific search
+            topic_map = {
+                "leash training": f"leash training {life_stage} dog",
+                "potty training": "potty training puppy schedule",
+                "crate training": f"crate training {life_stage} dog",
+                "obedience": f"basic obedience training {life_stage}",
+                "socialization": f"dog socialization {life_stage}",
+                "tricks": "dog trick training easy",
+                "agility": "dog agility training beginner"
+            }
+            search_parts.append(topic_map.get(topic.lower(), f"dog {topic} training"))
+        
+        # Add breed if known and specific
+        if breed and breed not in ["dog", "unknown", "mixed"]:
+            search_parts.append(f"{breed} training tips")
+        
+        # Default search if nothing specified
+        if not search_parts:
+            search_parts.append(f"{life_stage} dog training basics")
+        
+        # Search for ONE relevant video (curated, not a feed)
+        query = search_parts[0]  # Use the most specific query
+        videos = await search_youtube_videos(query, max_results=1, order="relevance")
+        
+        if not videos:
+            return {
+                "success": True,
+                "has_video": False,
+                "message": f"No curated video found for {topic or behavior or 'this topic'}",
+                "pet_name": pet_name,
+                "search_context": query
+            }
+        
+        video = videos[0]
+        
+        return {
+            "success": True,
+            "has_video": True,
+            "video": {
+                "id": video.get("video_id"),
+                "title": video.get("title"),
+                "thumbnail": video.get("thumbnail"),
+                "channel": video.get("channel_title"),
+                "url": f"https://www.youtube.com/watch?v={video.get('video_id')}",
+                "embed_url": f"https://www.youtube.com/embed/{video.get('video_id')}"
+            },
+            "context": {
+                "topic": topic,
+                "behavior": behavior,
+                "life_stage": life_stage,
+                "personalized_for": pet_name
+            },
+            "usage_note": "This video is supporting content for the training guide. It is not a content feed."
+        }
+        
+    except ImportError:
+        return {"success": False, "error": "YouTube service not available", "has_video": False}
+    except Exception as e:
+        logger.error(f"[LEARN VIDEO] Error: {e}")
+        return {"success": False, "error": str(e), "has_video": False}
+
+
+@router.get("/learn/guides/{topic}")
+async def get_learn_guide_with_video(
+    topic: str,
+    pet_id: str = None,
+    db=Depends(get_db)
+):
+    """
+    Get a structured learning guide for a topic, with optional curated video support.
+    
+    This is how LEARN pillar content should be structured:
+    1. Guide content (text, steps)
+    2. ONE supporting video (optional)
+    
+    Not: A video library or content feed
+    """
+    
+    # Pre-defined learning guides (can be expanded)
+    LEARNING_GUIDES = {
+        "leash_training": {
+            "title": "Leash Training Guide",
+            "pillar": "learn",
+            "difficulty": "beginner",
+            "time_estimate": "2-4 weeks",
+            "steps": [
+                {"step": 1, "title": "Introduce the leash", "content": "Let your dog sniff and investigate the leash in a calm environment."},
+                {"step": 2, "title": "Attach and reward", "content": "Clip the leash on and immediately give treats. Keep sessions short."},
+                {"step": 3, "title": "Indoor practice", "content": "Walk around indoors with the leash, rewarding loose leash walking."},
+                {"step": 4, "title": "Add distractions", "content": "Practice in the yard or quiet outdoor areas before busy streets."},
+                {"step": 5, "title": "Redirect pulling", "content": "When your dog pulls, stop walking. Resume only when the leash is loose."}
+            ],
+            "video_topic": "leash training",
+            "tips": ["Use high-value treats", "Keep sessions under 10 minutes", "End on a positive note"]
+        },
+        "potty_training": {
+            "title": "Potty Training Guide",
+            "pillar": "learn",
+            "difficulty": "beginner",
+            "time_estimate": "4-8 weeks",
+            "steps": [
+                {"step": 1, "title": "Establish a schedule", "content": "Take puppy out first thing in morning, after meals, after naps, and before bed."},
+                {"step": 2, "title": "Choose a spot", "content": "Always take your puppy to the same spot outside."},
+                {"step": 3, "title": "Use a cue word", "content": "Say 'go potty' when your puppy starts to eliminate."},
+                {"step": 4, "title": "Reward immediately", "content": "Give treats and praise RIGHT after they finish, not back inside."},
+                {"step": 5, "title": "Supervise indoors", "content": "Watch for sniffing, circling, or squatting - signs they need to go."}
+            ],
+            "video_topic": "potty training",
+            "tips": ["Never punish accidents", "Clean accidents with enzyme cleaner", "Crate training helps"]
+        },
+        "recall_training": {
+            "title": "Recall Training Guide",
+            "pillar": "learn",
+            "difficulty": "intermediate",
+            "time_estimate": "4-8 weeks",
+            "steps": [
+                {"step": 1, "title": "Choose your recall word", "content": "Pick a unique word like 'come' or 'here' and use it consistently."},
+                {"step": 2, "title": "Start indoors", "content": "Call your dog from short distances with high-value rewards."},
+                {"step": 3, "title": "Add distance", "content": "Gradually increase distance as your dog succeeds."},
+                {"step": 4, "title": "Practice with distractions", "content": "Add mild distractions, always rewarding successful recalls."},
+                {"step": 5, "title": "Long line practice", "content": "Use a long training lead outdoors before off-leash work."}
+            ],
+            "video_topic": "recall",
+            "tips": ["Never call to punish", "Make coming to you the best thing ever", "Practice daily"]
+        },
+        "barking": {
+            "title": "Barking Management Guide",
+            "pillar": "learn",
+            "difficulty": "intermediate",
+            "time_estimate": "2-6 weeks",
+            "steps": [
+                {"step": 1, "title": "Identify the trigger", "content": "Is it doorbell, strangers, other dogs, boredom, or attention-seeking?"},
+                {"step": 2, "title": "Remove or manage triggers", "content": "Use window film, white noise, or management to reduce exposure."},
+                {"step": 3, "title": "Teach 'quiet'", "content": "Wait for a pause in barking, mark and reward the silence."},
+                {"step": 4, "title": "Redirect the behavior", "content": "Give an incompatible behavior like 'go to your bed' when triggers occur."},
+                {"step": 5, "title": "Increase mental stimulation", "content": "A tired, mentally stimulated dog barks less."}
+            ],
+            "video_topic": "barking",
+            "behavior": "barking",
+            "tips": ["Never yell at barking (it sounds like you're joining in)", "Reward quiet moments", "Consider professional help for excessive barking"]
+        }
+    }
+    
+    # Normalize topic
+    topic_key = topic.lower().replace(" ", "_").replace("-", "_")
+    
+    if topic_key not in LEARNING_GUIDES:
+        return {
+            "success": False,
+            "error": f"Guide for '{topic}' not found",
+            "available_guides": list(LEARNING_GUIDES.keys())
+        }
+    
+    guide = LEARNING_GUIDES[topic_key]
+    
+    # Get supporting video if pet_id provided
+    video_data = None
+    if pet_id:
+        video_response = await get_learn_video_support(
+            pet_id=pet_id,
+            topic=guide.get("video_topic"),
+            behavior=guide.get("behavior"),
+            db=db
+        )
+        if video_response.get("has_video"):
+            video_data = video_response.get("video")
+    
+    return {
+        "success": True,
+        "guide": guide,
+        "supporting_video": video_data,
+        "usage_note": "Video is supporting content for this guide, not standalone content"
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # GOOGLE VISION API - Breed Detection from Photos
 # ═══════════════════════════════════════════════════════════════════════════════
 
