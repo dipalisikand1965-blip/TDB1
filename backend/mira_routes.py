@@ -5927,14 +5927,15 @@ async def load_pet_soul(pet_id: str) -> Dict:
         "name": pet.get("name"),
         "breed": identity.get("breed") or pet.get("breed"),
         "age": identity.get("age") or pet.get("age"),
-        "weight": identity.get("weight"),
+        "birth_date": pet.get("birth_date") or pet.get("birthday") or pet.get("dob"),
+        "weight": identity.get("weight") or pet.get("weight_kg"),
         "size": identity.get("size"),
         "gender": identity.get("gender") or pet.get("gender"),
         "photo_url": pet.get("photo_url"),
         "allergies": health.get("allergies", []) or preferences.get("allergies", []),
         "medical_conditions": health.get("medical_conditions", []),
         "dietary_restrictions": health.get("dietary_restrictions", []),
-        "favorite_treats": preferences.get("favorite_treats", []),
+        "favorite_treats": preferences.get("favorite_treats", []) or doggy_soul.get("favorite_treats"),
         "dislikes": preferences.get("dislikes", []),
         "anxiety_triggers": personality.get("anxiety_triggers", []),
         "behavior_with_dogs": personality.get("behavior_with_dogs") or doggy_soul.get("behavior_with_dogs"),
@@ -5944,11 +5945,23 @@ async def load_pet_soul(pet_id: str) -> Dict:
         "travel_style": travel.get("preferred_mode") or doggy_soul.get("usual_travel"),
         "crate_trained": travel.get("crate_trained") or doggy_soul.get("crate_trained"),
         "persona": soul_data.get("persona"),
+        # Energy and temperament from doggy_soul
+        "energy_level": doggy_soul.get("energy_level"),
+        "temperament": doggy_soul.get("temperament"),
+        "life_stage": doggy_soul.get("life_stage"),
+        "food_motivation": doggy_soul.get("food_motivation"),
+        "health_conditions": doggy_soul.get("health_conditions"),
+        "separation_anxiety": doggy_soul.get("separation_anxiety"),
+        "general_nature": doggy_soul.get("general_nature"),
+        # Food allergies from doggy_soul
+        "food_allergies": doggy_soul.get("food_allergies"),
         # Soul score
         "soul_score": round(soul_score, 1),
         "overall_score": round(soul_score, 1),
         # Doggy Soul answers (full)
-        "soul_answers": doggy_soul
+        "soul_answers": doggy_soul,
+        # Include the full doggy_soul_answers for system prompt
+        "doggy_soul_answers": doggy_soul
     }
     
     return {k: v for k, v in soul.items() if v is not None}  # Remove None values but keep 0
