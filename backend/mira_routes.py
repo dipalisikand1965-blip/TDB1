@@ -10649,7 +10649,11 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 "memory_recall": os_context.get("memory_recall"),  # Relevant past memory
                 # DINE PILLAR SPECIFIC - Diet/nutrition context
                 "dine_context": os_context.get("dine_context"),  # Current diet, allergies, restrictions
-                "dine_picks": os_context.get("dine_picks", [])  # Concierge picks for DINE pillar
+                "dine_picks": os_context.get("dine_picks", []),  # Concierge picks for DINE pillar
+                # STAY PILLAR SPECIFIC - Boarding, daycare, hotel context
+                "stay_context": os_context.get("stay_context"),  # Temperament, vaccinations, social comfort
+                "stay_picks": os_context.get("stay_picks", []),  # Concierge picks for STAY pillar
+                "concierge_handoff": os_context.get("concierge_handoff")  # Always available for STAY
             }
         }
         
