@@ -5317,10 +5317,14 @@ PILLARS = {
             # Milestones
             "milestone", "anniversary", "gotcha", "gotcha day", "adoption day", "pup-day",
             # Cake and food
-            "cake", "dog cake", "birthday cake", "treats", "party snacks", "centrepiece",
+            "cake", "dog cake", "birthday cake", "party snacks", "centrepiece",
             # Party elements
-            "gift", "balloon", "decoration", "party setup", "photo", "photographer",
-            "bandana", "birthday set", "candle"
+            "gift", "balloon", "decoration", "party setup",
+            "bandana", "birthday set", "candle",
+            # Photography & Memories (CELEBRATE service per architecture)
+            "photo", "photographer", "pet photography", "photo shoot", "photoshoot",
+            "portrait", "professional photo", "capture", "keepsake", "memory",
+            "memorial", "remembrance", "tribute"
         ],
         "urgency_default": "medium",
         # CELEBRATE Pillar Concierge Picks (per MIRA BIBLE)
@@ -5347,9 +5351,16 @@ PILLARS = {
             "breakfast", "dinner routine", "morning meal", "evening meal",
             # Single word triggers for food/nutrition
             "feed", "feeding", "food", "meals", "eat", "eating",
+            # Treats (shared with celebrate but primary is dine)
+            "treats", "treat", "snack", "snacks", "chew", "chews",
+            # Allergies and sensitivities (food context)
+            "allergy", "allergies", "allergic", "sensitive stomach", "food allergy",
+            "intolerance", "ingredient", "ingredients",
             # Dining Out (secondary)
             "restaurant", "dining out", "cafe", "brunch", "lunch", "dinner", "reservation",
-            "pet-friendly restaurant", "dine out", "pet cafe", "dog cafe", "cat cafe"
+            "pet-friendly restaurant", "dine out", "pet cafe", "dog cafe", "cat cafe",
+            # Shopping for food (routes to DINE per architecture - not SHOP)
+            "buy food", "order food", "get food", "food delivery"
         ],
         "urgency_default": "medium",
         # DINE Pillar Concierge Picks (per MIRA BIBLE)
