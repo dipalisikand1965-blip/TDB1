@@ -316,6 +316,130 @@ const SoulKnowledgeTicker = ({
         </div>
       )}
       
+      {/* WHAT MIRA KNOWS CARD - Beautiful overlay card */}
+      {showKnowledgeCard && (
+        <div 
+          className="mira-knowledge-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowKnowledgeCard(false);
+            }
+          }}
+          data-testid="mira-knowledge-overlay"
+        >
+          <div className="mira-knowledge-card">
+            {/* Header */}
+            <div className="knowledge-card-header">
+              <div className="knowledge-header-title">
+                <Sparkles className="w-5 h-5 text-pink-400" />
+                <span>What Mira Knows About {petName}</span>
+              </div>
+              <button 
+                className="knowledge-close-btn"
+                onClick={() => setShowKnowledgeCard(false)}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Score Circle */}
+            <div className="knowledge-score-section">
+              <div className="knowledge-score-circle">
+                <span className="knowledge-score-value">{Math.round(displayScore)}%</span>
+                <span className="knowledge-score-label">SOUL</span>
+              </div>
+              <p className="knowledge-score-subtitle">
+                Mira knows {petName} at {Math.round(displayScore)}% intimacy
+              </p>
+            </div>
+            
+            {/* Knowledge Content */}
+            <div className="knowledge-content">
+              {loadingKnowledge ? (
+                <div className="knowledge-loading">
+                  <Loader2 className="w-6 h-6 animate-spin text-purple-400" />
+                  <span>Loading {petName}'s soul...</span>
+                </div>
+              ) : miraKnowledge ? (
+                <>
+                  {/* Soul Knowledge */}
+                  {miraKnowledge.soul_knowledge?.length > 0 && (
+                    <div className="knowledge-section">
+                      <h4 className="knowledge-section-title">
+                        <Brain className="w-4 h-4" />
+                        Soul Profile
+                      </h4>
+                      <div className="knowledge-items-grid">
+                        {miraKnowledge.soul_knowledge.slice(0, 6).map((item, idx) => (
+                          <div key={idx} className="knowledge-item">
+                            <span className="knowledge-item-icon">{item.icon}</span>
+                            <span className="knowledge-item-text">{item.text}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Memories */}
+                  {miraKnowledge.memory_knowledge?.length > 0 && (
+                    <div className="knowledge-section">
+                      <h4 className="knowledge-section-title">
+                        <Heart className="w-4 h-4" />
+                        Memories
+                      </h4>
+                      <div className="knowledge-memories">
+                        {miraKnowledge.memory_knowledge.slice(0, 3).map((item, idx) => (
+                          <div key={idx} className="knowledge-memory-item">
+                            <span className="memory-icon">{item.icon}</span>
+                            <span className="memory-text">{item.text}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Empty state */}
+                  {(!miraKnowledge.soul_knowledge?.length && !miraKnowledge.memory_knowledge?.length) && (
+                    <div className="knowledge-empty">
+                      <p>Mira is just getting to know {petName}!</p>
+                      <p className="text-sm opacity-70">Chat with Mira to build memories.</p>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="knowledge-empty">
+                  <p>Start chatting with Mira to build {petName}'s knowledge profile!</p>
+                </div>
+              )}
+            </div>
+            
+            {/* Actions */}
+            <div className="knowledge-actions">
+              <button 
+                className="knowledge-action-btn secondary"
+                onClick={() => {
+                  setShowKnowledgeCard(false);
+                  onSoulQuestionClick?.();
+                }}
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Grow Soul</span>
+              </button>
+              <button 
+                className="knowledge-action-btn primary"
+                onClick={() => {
+                  hapticFeedback.buttonTap();
+                  navigate(`/my-pets?pet=${petId}`);
+                }}
+              >
+                <span>View Full Profile</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Styles */}
       <style jsx>{`
         .soul-knowledge-ticker {
