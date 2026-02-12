@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://memory-os-demo.preview.emergentagent.com
+https://pet-concierge-chat.preview.emergentagent.com
 
 ---
 

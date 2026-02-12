@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://memory-os-demo.preview.emergentagent.com
+https://pet-concierge-chat.preview.emergentagent.com
 
 ---
 

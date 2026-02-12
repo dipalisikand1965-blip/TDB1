@@ -121,7 +121,7 @@ See `/app/memory/MIRA_OS_DOCTRINE.md` for the foundational system behavior.
 - **Admin**: username=aditya, password=lola4304
 - **Test Pet**: Mystique (pet-3661ae55d2e2), Shih Tzu, Senior, 10kg
 - **Test User**: dipali@clubconcierge.in
-- **Preview URL**: https://memory-os-demo.preview.emergentagent.com
+- **Preview URL**: https://pet-concierge-chat.preview.emergentagent.com
 
 ---
 
