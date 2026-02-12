@@ -401,21 +401,73 @@ def calculate_pet_soul_score(answers: Dict[str, Any]) -> Dict[str, Any]:
         }
     """
     # Alias mapping: old question IDs -> new question IDs
+    # CRITICAL: Map all variations of field names to scoring question IDs
     QUESTION_ALIASES = {
+        # Temperament/Personality variations
         'general_nature': 'temperament',
         'describe_3_words': 'temperament',
+        'nature': 'temperament',
+        
+        # Social behavior
         'stranger_reaction': 'social_with_people',
-        'handling_comfort': 'touch_sensitivity',
+        'behavior_with_strangers': 'social_with_people',
+        'behavior_with_dogs': 'social_with_dogs',
+        'dog_friendly': 'social_with_dogs',
+        
+        # Comfort & Handling  
+        'handling_comfort': 'grooming_tolerance',  # Fixed: was touch_sensitivity
+        'grooming_comfort': 'grooming_tolerance',
+        'touch_sensitivity': 'grooming_tolerance',
+        
+        # Sounds & Anxiety
         'loud_sounds': 'noise_sensitivity',
-        'play_style': 'exercise_preferences',
-        'favorite_activity': 'exercise_preferences',
-        'fetch_interest': 'toy_preferences',
-        'preferred_treats': 'favorite_treats',
-        'water_comfort': 'swimming_ability',
-        'leash_behavior': 'leash_manners',
+        'sound_sensitivity': 'noise_sensitivity',
+        'thunder_anxiety': 'noise_sensitivity',
+        
+        # Alone time / Separation
+        'separation_anxiety': 'alone_time_comfort',  # Added: critical mapping!
+        'alone_comfort': 'alone_time_comfort',
+        'home_alone': 'alone_time_comfort',
+        
+        # Exercise & Activity
+        'play_style': 'exercise_needs',
+        'favorite_activity': 'exercise_needs',
+        'activity_level': 'exercise_needs',
+        'walks_per_day': 'exercise_needs',
+        'exercise_preferences': 'exercise_needs',
+        
+        # Toys
+        'fetch_interest': 'favorite_toy_type',
+        'toy_preferences': 'favorite_toy_type',
+        
+        # Food & Treats
+        'preferred_treats': 'treat_preference',
+        'treat_texture': 'treat_preference',  # From preferences
+        'favorite_treats': 'treat_preference',
+        'favorite_flavors': 'favorite_protein',  # From preferences
+        
+        # Travel
+        'car_rides': 'car_comfort',
+        'car_anxiety': 'car_comfort',
+        'travel_comfort': 'travel_readiness',
+        
+        # Life stage
         'dob': 'life_stage',
         'birth_date': 'life_stage',
         'age': 'life_stage',
+        'age_years': 'life_stage',
+        
+        # Training
+        'training_status': 'training_level',
+        'obedience_level': 'training_level',
+        
+        # Vet
+        'vet_anxiety': 'vet_comfort',
+        'vet_behavior': 'vet_comfort',
+        
+        # Water
+        'water_comfort': 'swimming_ability',
+        'leash_behavior': 'leash_manners',
     }
     
     # Normalize answers by applying aliases
