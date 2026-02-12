@@ -411,14 +411,16 @@ async def get_what_mira_knows(
         })
     
     # Combine all knowledge
-    all_knowledge = soul_knowledge + memory_knowledge + insights_knowledge
+    all_knowledge = soul_knowledge + breed_knowledge + memory_knowledge + insights_knowledge
     
     return {
         "pet_id": pet_id,
         "pet_name": pet_name,
+        "pet_breed": pet_breed,
         "overall_score": calculated_overall_score,  # Use recalculated score for consistency
         "knowledge_count": len(all_knowledge),
         "soul_knowledge": soul_knowledge,
+        "breed_knowledge": breed_knowledge,
         "memory_knowledge": memory_knowledge,
         "insights_knowledge": insights_knowledge,
         "all_knowledge": all_knowledge,
