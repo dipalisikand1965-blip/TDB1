@@ -1,0 +1,123 @@
+{
+  "summary": "TRAVEL Pillar OS-Awareness testing complete. All key backend features verified via curl and pytest. TRAVEL pillar correctly handles flight, road trip, vacation, relocation, and travel documents queries. os_context properly generates travel_context (temperament, size, breed, brachycephalic, vaccinations, health_flags, allergies), travel_picks (Concierge Pick Cards with concierge_always:true), and concierge_handoff (always available). Itinerary picks have uses_google_places:true. Non-TRAVEL pillars (celebrate, dine, stay, care) continue to route correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "/api/mira/chat",
+        "issue": "Generic boarding query 'I need to board my dog for a few days' routes to 'advisory' instead of 'stay'. More specific query 'Find me a dog boarding facility' correctly routes to 'stay'.",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "travel_pillar_detection": {
+      "flight_query": "PASS - 'fly with my dog' routes to pillar='travel'",
+      "road_trip_query": "PASS - 'road trip with my dog' routes to pillar='travel'",
+      "travel_documents_query": "PASS - 'What travel documents do I need' routes to pillar='travel' with travel_documents service_type",
+      "vacation_query": "PASS - 'Planning a vacation with my dog' routes to pillar='travel'",
+      "pet_friendly_itinerary_query": "PASS - 'Help me plan a pet-friendly itinerary' routes to pillar='travel' with itinerary_planning service_type"
+    },
+    "travel_context_generation": {
+      "structure": "PASS - fields: temperament, size, breed, brachycephalic, vaccinations, health_flags, allergies, age_band, weight, anxiety_level, senior",
+      "breed_included": "PASS - travel_context.breed='Indie'",
+      "brachycephalic_flag": "PASS - travel_context.brachycephalic=false for Indie breed (correctly NOT brachycephalic)",
+      "allergies_included": "PASS - travel_context.allergies=['Chicken']",
+      "vaccinations_included": "PASS - travel_context.vaccinations contains vaccination records"
+    },
+    "travel_picks": {
+      "carrier_policy_pick": "PASS - flight query generates carrier_policy service_type with uses_google_places:true",
+      "road_trip_pick": "PASS - road trip query generates road_trip service_type",
+      "travel_documents_pick": "PASS - documents query generates travel_documents service_type",
+      "itinerary_pick": "PASS - itinerary query generates itinerary_planning service_type with uses_google_places:true"
+    },
+    "concierge_always_flag": {
+      "carrier_policy": "PASS - carrier_policy pick has concierge_always:true",
+      "road_trip": "PASS - road_trip pick has concierge_always:true",
+      "itinerary_planning": "PASS - itinerary_planning pick has concierge_always:true"
+    },
+    "google_places_flag": {
+      "carrier_policy": "PASS - carrier_policy picks have uses_google_places:true",
+      "itinerary_planning": "PASS - itinerary_planning picks have uses_google_places:true"
+    },
+    "concierge_handoff": {
+      "flight_query": "PASS - concierge_handoff.available=true",
+      "road_trip_query": "PASS - concierge_handoff.available=true",
+      "documents_query": "PASS - concierge_handoff.available=true"
+    },
+    "picks_update": {
+      "travel_pillar": "PASS - picks_update={should_refresh:true, pillar:'travel', context:'journey'}"
+    },
+    "brachycephalic_detection": {
+      "indie_breed": "PASS - Indie breed correctly identified as brachycephalic=false",
+      "pug_breed": "VERIFIED - code logic correctly identifies 'pug' as brachycephalic",
+      "bulldog_breed": "VERIFIED - code logic correctly identifies 'bulldog' as brachycephalic",
+      "golden_retriever": "VERIFIED - code logic correctly identifies 'Golden Retriever' as NOT brachycephalic"
+    },
+    "non_travel_routing": {
+      "birthday_party": "PASS - routes to CELEBRATE",
+      "meal_plan": "PASS - routes to DINE",
+      "boarding_facility": "PASS - routes to STAY (with specific keyword 'boarding facility')",
+      "grooming": "PASS - routes to CARE"
+    },
+    "safety_gates": {
+      "allergies": "PASS - safety_gates=[{type:'allergy', items:['Chicken']}]"
+    },
+    "temporal_context": {
+      "birthday_detection": "PASS - 'Birthday in 2 days!' (Feb 14 for Mojo)"
+    }
+  },
+  "api_verification": {
+    "endpoint_tested": "/api/mira/chat",
+    "test_pet_id": "pet-99a708f1722a",
+    "test_pet_name": "Mojo",
+    "test_pet_breed": "Indie",
+    "test_pet_allergy": "Chicken",
+    "test_pet_birthday": "2026-02-14"
+  },
+  "os_context_verified_fields": {
+    "layer_activation": "VERIFIED - returns pillar name ('travel' for travel queries)",
+    "travel_context": "VERIFIED - returns {temperament, anxiety_level, health_flags, vaccinations, allergies, size, weight, age_band, breed, brachycephalic, senior}",
+    "travel_picks": "VERIFIED - returns Concierge Pick Cards with title, why, cta, service_type, concierge_always, uses_google_places",
+    "concierge_handoff": "VERIFIED - returns {available: true, reason: string, cta: string} for all TRAVEL queries",
+    "safety_gates": "VERIFIED - returns [{type: 'allergy', items: ['Chicken']}]",
+    "temporal_context": "VERIFIED - returns {type, days_until, date, message}",
+    "picks_update": "VERIFIED - returns {should_refresh: true, pillar: 'travel', context: 'journey'}"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_travel_pillar_os_awareness.py",
+    "/app/test_reports/pytest/pytest_travel_pillar_os_awareness.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "TRAVEL pillar keywords correctly defined at lines 4812-4845 in mira_routes.py",
+    "get_mira_os_context() generates travel_context and travel_picks at lines 420-568",
+    "concierge_handoff always available for TRAVEL pillar at lines 551-556",
+    "uses_google_places:true flag set on carrier_policy and itinerary_planning picks",
+    "Brachycephalic breed detection working at line 444 - checks for pug, bulldog, boxer, shih tzu, boston terrier, pekingese",
+    "IMPORTANT: API expects 'selected_pet_id' field, not 'pet_id' - frontend integrations should use correct field name"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_travel_pillar_os_awareness.py"
+  ],
+  "success_rate": {
+    "backend": "100% (all key features verified via curl and pytest)",
+    "frontend": "N/A - backend only testing requested"
+  },
+  "test_credentials": {
+    "pet_id": "pet-99a708f1722a",
+    "pet_name": "Mojo",
+    "pet_breed": "Indie",
+    "pet_allergy": "Chicken",
+    "pet_birthday": "2026-02-14"
+  },
+  "seed_data_creation": "None - used existing Mojo pet data",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "TRAVEL pillar OS-awareness fully verified. Travel queries (flight, road trip, vacation, relocation, travel documents) correctly route to TRAVEL pillar with os_context containing travel_context (temperament, size, breed, brachycephalic, vaccinations, health_flags, allergies), travel_picks with concierge_always:true, and concierge_handoff always available. Carrier policy and itinerary picks have uses_google_places:true. Non-TRAVEL pillars (CELEBRATE, DINE, STAY, CARE) still route correctly. Mojo (Indie breed) is correctly identified as NOT brachycephalic. Test file at /app/backend/tests/test_travel_pillar_os_awareness.py can be reused for regression testing. NOTE: API expects 'selected_pet_id' not 'pet_id' in chat request body."
+}
