@@ -23,47 +23,46 @@ logger = logging.getLogger(__name__)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 EXTRACTION_PATTERNS = {
-    # Food & Diet
+    # Food & Diet - More precise patterns with word boundaries
     "food_preference": [
-        (r"(?:he|she|they|{pet_name}) (?:loves?|enjoys?|really likes?) (\w+(?:\s+\w+)?)", "positive"),
-        (r"(?:his|her|their) favorite (?:treat|food|snack) is (\w+(?:\s+\w+)?)", "positive"),
-        (r"(?:he|she|they|{pet_name}) (?:hates?|doesn't like|won't eat) (\w+(?:\s+\w+)?)", "negative"),
+        (r"(?:he|she|they|{pet_name})\s+(?:loves?|enjoys?|really likes?)\s+(\b\w+(?:\s+\w+)?\b)(?:\s|$|,|\.)", "positive"),
+        (r"(?:his|her|their)\s+favorite\s+(?:treat|food|snack)\s+is\s+(\b\w+(?:\s+\w+)?\b)", "positive"),
+        (r"(?:he|she|they|{pet_name})\s+(?:hates?|doesn't like|won't eat)\s+(\b\w+\b)", "negative"),
     ],
     
-    # Allergies
+    # Allergies - Capture specific allergens
     "allergy": [
-        (r"allergic to (\w+(?:\s*,?\s*\w+)*)", "allergy"),
-        (r"can't (?:eat|have) (\w+)", "restriction"),
-        (r"(\w+) makes? (?:him|her|them) sick", "reaction"),
+        (r"allergic\s+to\s+(\b[a-zA-Z]+\b)(?:\s+and\s+(\b[a-zA-Z]+\b))?", "allergy"),
+        (r"can(?:'t|not)\s+(?:eat|have)\s+(\b[a-zA-Z]+\b)", "restriction"),
+        (r"(\b[a-zA-Z]+\b)\s+makes?\s+(?:him|her|them)\s+sick", "reaction"),
     ],
     
-    # Behavior
+    # Behavior - Better trigger capture
     "behavior": [
-        (r"(?:gets?|becomes?) (?:anxious|nervous|scared) (?:when|around|with) ([\w\s]+)", "anxiety_trigger"),
-        (r"(?:loves?|enjoys?) ([\w\s]+)", "preference"),
-        (r"doesn't like ([\w\s]+)", "dislike"),
-        (r"(?:is|has been|seems?) (aggressive|reactive|friendly|calm|shy|nervous)", "temperament"),
+        (r"(?:gets?|becomes?)\s+(?:anxious|nervous|scared)\s+(?:when|around|during|with)\s+(thunderstorms?|fireworks?|strangers?|loud\s+(?:noises?|sounds?)|car\s+rides?|vet\s+visits?|alone|guests?)", "anxiety_trigger"),
+        (r"(?:is|has been|seems?)\s+(aggressive|reactive|friendly|calm|shy|nervous|anxious|playful|energetic|lazy)", "temperament"),
+        (r"doesn't\s+like\s+(being\s+alone|strangers?|other\s+dogs?|cats?|loud\s+noises?)", "dislike"),
     ],
     
-    # Health
+    # Health - Specific conditions
     "health": [
-        (r"(?:has|diagnosed with|suffers from) ([\w\s]+)", "condition"),
-        (r"taking (\w+) (?:medication|medicine|pills)", "medication"),
-        (r"(?:itching|scratching|limping|vomiting|coughing)", "symptom"),
+        (r"(?:has|diagnosed\s+with|suffers\s+from)\s+(arthritis|diabetes|seizures?|epilepsy|hip\s+dysplasia|heart\s+(?:disease|murmur)|kidney\s+(?:disease|issues?)|cancer|allergies|skin\s+issues?)", "condition"),
+        (r"taking\s+(\b\w+\b)\s+(?:medication|medicine|pills|daily)", "medication"),
+        (r"(?:been|is)\s+(itching|scratching|limping|vomiting|coughing|sneezing)\s*(?:a lot|lately|recently)?", "symptom"),
     ],
     
-    # Routine
+    # Routine - Time patterns
     "routine": [
-        (r"walks? (?:at|around) (\d+(?::\d+)?\s*(?:am|pm)?)", "walk_time"),
-        (r"eats? (?:at|around) (\d+(?::\d+)?\s*(?:am|pm)?)", "meal_time"),
-        (r"sleeps? (?:in|on) (?:the )?([\w\s]+)", "sleep_location"),
+        (r"walks?\s+(?:at|around)\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)", "walk_time"),
+        (r"eats?\s+(?:at|around)\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)", "meal_time"),
+        (r"sleeps?\s+(?:in|on)\s+(?:the\s+)?(bed|couch|crate|floor|dog\s+bed)", "sleep_location"),
     ],
     
     # Environment
     "environment": [
-        (r"live(?:s)? in (?:a |an )?(apartment|house|flat|condo)", "housing"),
-        (r"(?:has|have) (?:a )?(yard|garden|backyard)", "outdoor_space"),
-        (r"live(?:s)? with ([\w\s,]+)", "household"),
+        (r"live(?:s)?\s+in\s+(?:a\s+|an\s+)?(apartment|house|flat|condo|villa)", "housing"),
+        (r"(?:has|have)\s+(?:a\s+)?(yard|garden|backyard|balcony|terrace)", "outdoor_space"),
+        (r"live(?:s)?\s+with\s+(kids?|children|other\s+dogs?|cats?|alone|family)", "household"),
     ],
 }
 
