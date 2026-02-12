@@ -7526,8 +7526,12 @@ def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar:
             
             # Health conditions
             health_conditions = doggy_soul.get('health_conditions') or pet.get('health_conditions')
-            if health_conditions and health_conditions.lower() != 'none':
-                pet_context += f"- Health conditions: {health_conditions}\n"
+            # Handle both string and list formats
+            if health_conditions:
+                if isinstance(health_conditions, list):
+                    health_conditions = ', '.join(health_conditions)
+                if health_conditions.lower() != 'none':
+                    pet_context += f"- Health conditions: {health_conditions}\n"
             
             # Anxiety/Separation
             separation_anxiety = doggy_soul.get('separation_anxiety')
