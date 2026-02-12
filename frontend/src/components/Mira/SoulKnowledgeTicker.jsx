@@ -706,6 +706,106 @@ const SoulKnowledgeTicker = ({
           filter: brightness(1.2);
         }
         
+        /* Section-specific styles */
+        .soul-section .category-items {
+          gap: 8px;
+        }
+        
+        .soul-item {
+          background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.1));
+          border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        
+        .soul-item.help-item {
+          background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(139, 92, 246, 0.2));
+          border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+        
+        .breed-section {
+          background: rgba(6, 182, 212, 0.05);
+        }
+        
+        .breed-item {
+          background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(6, 182, 212, 0.1));
+          border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+        
+        .memory-section {
+          grid-column: span 2;
+        }
+        
+        @media (max-width: 480px) {
+          .memory-section {
+            grid-column: span 1;
+          }
+        }
+        
+        .memory-item {
+          background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
+          border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        /* Action buttons row */
+        .expanded-actions-row {
+          display: flex;
+          justify-content: center;
+          gap: 12px;
+          margin-bottom: 20px;
+        }
+        
+        .action-icon-btn {
+          width: 44px;
+          height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 12px;
+          color: white;
+          font-size: 16px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        
+        .action-icon-btn:hover {
+          background: rgba(139, 92, 246, 0.3);
+          border-color: rgba(139, 92, 246, 0.5);
+        }
+        
+        /* Loading state */
+        .expanded-loading {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+          padding: 30px;
+          color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* View Full Profile button */
+        .expanded-view-profile-btn {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 12px;
+          background: rgba(139, 92, 246, 0.2);
+          border: 1px solid rgba(139, 92, 246, 0.3);
+          border-radius: 12px;
+          color: #C4B5FD;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          margin-bottom: 12px;
+          transition: all 0.2s ease;
+        }
+        
+        .expanded-view-profile-btn:hover {
+          background: rgba(139, 92, 246, 0.3);
+        }
+        
         .expanded-grow-btn {
           width: 100%;
           display: flex;
