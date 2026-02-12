@@ -7403,9 +7403,16 @@ def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar:
     known_fields_section = ""
     pet_names_for_greeting = []
     
-    if pets and len(pets) > 0:
-        pet_context = "\n\n🐾 PET SOUL™ PROFILES (PRIMARY TRUTH):\n"
-        for pet in pets:
+    # Use selected_pet if available (has enriched soul data), otherwise use pets list
+    pets_to_process = []
+    if selected_pet:
+        pets_to_process = [selected_pet]  # Prioritize selected pet with full soul data
+    elif pets and len(pets) > 0:
+        pets_to_process = pets
+    
+    if pets_to_process:
+        pet_context = "\n\n🐾 PET SOUL™ PROFILES (PRIMARY TRUTH - YOU KNOW THIS PET COMPLETELY):\n"
+        for pet in pets_to_process:
             identity = pet.get('identity') or {}
             soul = pet.get('soul') or {}
             preferences = pet.get('preferences') or {}
