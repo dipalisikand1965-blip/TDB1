@@ -32,7 +32,7 @@ It is NOT:
 | **Test User** | dipali@clubconcierge.in | test123 |
 | **Admin** | aditya | lola4304 |
 
-**Preview URL:** https://smart-picks-24.preview.emergentagent.com
+**Preview URL:** https://picks-engine.preview.emergentagent.com
 
 ---
 
@@ -445,7 +445,7 @@ It is NOT:
 - **Admin**: username=aditya, password=lola4304
 - **Test Pet**: Mystique (pet-3661ae55d2e2), Shih Tzu, Senior, 10kg
 - **Test User**: dipali@clubconcierge.in
-- **Preview URL**: https://smart-picks-24.preview.emergentagent.com
+- **Preview URL**: https://picks-engine.preview.emergentagent.com
 
 ---
 

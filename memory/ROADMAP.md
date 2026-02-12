@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://smart-picks-24.preview.emergentagent.com
+https://picks-engine.preview.emergentagent.com
 
 ---
 

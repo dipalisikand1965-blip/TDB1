@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://smart-picks-24.preview.emergentagent.com
+https://picks-engine.preview.emergentagent.com
 
 ---
 
