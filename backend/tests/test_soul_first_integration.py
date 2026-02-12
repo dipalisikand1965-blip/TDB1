@@ -33,7 +33,8 @@ class TestSoulFirstIntegration:
             json={"email": TEST_EMAIL, "password": TEST_PASSWORD}
         )
         if response.status_code == 200:
-            return response.json().get("token")
+            data = response.json()
+            return data.get("token") or data.get("access_token")
         pytest.skip(f"Authentication failed: {response.status_code}")
     
     @pytest.fixture(scope="class")
@@ -350,7 +351,8 @@ class TestSoulDataWriteBack:
             json={"email": TEST_EMAIL, "password": TEST_PASSWORD}
         )
         if response.status_code == 200:
-            return response.json().get("token")
+            data = response.json()
+            return data.get("token") or data.get("access_token")
         pytest.skip(f"Authentication failed: {response.status_code}")
     
     @pytest.fixture(scope="class")
@@ -450,7 +452,8 @@ class TestSoulFirstResponseStrategy:
             json={"email": TEST_EMAIL, "password": TEST_PASSWORD}
         )
         if response.status_code == 200:
-            return response.json().get("token")
+            data = response.json()
+            return data.get("token") or data.get("access_token")
         pytest.skip(f"Authentication failed: {response.status_code}")
     
     @pytest.fixture(scope="class")
