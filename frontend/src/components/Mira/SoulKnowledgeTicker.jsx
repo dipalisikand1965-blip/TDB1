@@ -34,6 +34,7 @@ const CATEGORY_STYLES = {
 const SoulKnowledgeTicker = ({
   petId,
   petName = 'your pet',
+  petPhoto = null,
   soulScore = 0,
   knowledgeItems = [],
   onSoulQuestionClick,
