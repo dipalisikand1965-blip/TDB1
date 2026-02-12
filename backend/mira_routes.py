@@ -6115,7 +6115,7 @@ def detect_pillar(message: str, current_pillar: str = None) -> str:
     # Solution: Use regex \b word boundaries for keywords <= 3 chars in this set.
     # Fix date: Feb 12, 2026 | Test: /app/backend/tests/test_mira_p0_fixes.py
     # ═══════════════════════════════════════════════════════════════════════════
-    WORD_BOUNDARY_KEYWORDS = {"ola", "cab", "car", "fly", "air", "bus", "van", "pet", "sit", "mat", "bed", "eat", "toy"}
+    WORD_BOUNDARY_KEYWORDS = {"ola", "cab", "car", "fly", "air", "bus", "van", "pet", "sit", "mat", "bed", "eat", "toy", "train"}
     
     def keyword_matches(kw: str, text: str) -> bool:
         """Check if keyword matches with word boundary awareness for short words"""
