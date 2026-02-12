@@ -83,7 +83,7 @@ def build_soul_context_summary(pet: Dict) -> SoulContextSummary:
     
     # Extract from various sources in the pet object
     doggy_soul = pet.get("doggy_soul_answers", {}) or {}
-    soul_data = pet.get("soul", {}) or {}
+    soul_data = pet.get("soul", {}) or {}  # Used for personality data
     preferences = pet.get("preferences", {}) or {}
     health = pet.get("health", {}) or {}
     identity = pet.get("identity", {}) or {}
