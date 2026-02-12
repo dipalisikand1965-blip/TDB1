@@ -5414,7 +5414,7 @@ PILLARS = {
             # Core travel intent
             "travel", "trip", "journey", "vacation", "holiday", "getaway",
             # Transport modes
-            "flight", "fly", "airplane", "airline", "airport", "air travel",
+            "flight", "fly", "flying", "airplane", "airline", "airport", "air travel",
             "car", "drive", "road trip", "car travel", "car ride",
             "train", "railway", "rail", "metro",
             "cab", "taxi", "uber", "ola",
