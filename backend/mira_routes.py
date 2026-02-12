@@ -79,7 +79,9 @@ try:
     )
     from services.memory_service import (
         ConversationMemory,
-        get_pet_context_pack
+        get_pet_context_pack,
+        get_relevant_memories_for_context,
+        format_memories_for_llm
     )
     SOUL_INTELLIGENCE_AVAILABLE = True
     logger.info("[MIRA OS] Soul Intelligence and Memory services loaded")
@@ -96,6 +98,8 @@ except ImportError as e:
         async def process_message(self, *args, **kwargs): return {}
         async def commit_to_memory(self): return 0
     async def get_pet_context_pack(*args, **kwargs): return {}
+    async def get_relevant_memories_for_context(*args, **kwargs): return []
+    def format_memories_for_llm(*args, **kwargs): return ""
 
 router = APIRouter(prefix="/api/mira", tags=["mira"])
 security_bearer = HTTPBearer(auto_error=False)
