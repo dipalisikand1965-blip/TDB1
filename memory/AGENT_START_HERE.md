@@ -143,9 +143,14 @@ These are how a pet LIVES across its lifetime:
 | Priority | File | Purpose |
 |----------|------|---------|
 | P0 | `/app/memory/MIRA_OS_14_PILLARS_BIBLE.md` | Definitive pillar reference |
+| P0 | `/app/memory/PICKS_ENGINE_SPEC_v1.md` | **PICKS ENGINE COMPLETE SPEC** |
 | P0 | `/app/memory/PRD.md` | Product requirements |
+| P0 | `/app/memory/MOBILE_FIRST_GOLDEN_RULES.md` | UI/UX compliance rules |
 | P1 | `/app/memory/MIRA_OS_ROADMAP.md` | Enhancement roadmap |
 | P1 | `/app/memory/MIRA_OS_AUDIT.md` | Current system audit |
+| P1 | `/app/memory/seeds/CANONICAL_TAGS_SEED.md` | Canonical tags data |
+| P1 | `/app/memory/seeds/TAG_SYNONYMS_SEED.md` | Tag synonyms mapping |
+| P1 | `/app/memory/seeds/SERVICE_TYPES_SPEC.md` | Service types spec |
 | P2 | `/app/backend/server.py` | Core backend logic |
 | P2 | `/app/backend/mira_routes.py` | Chat & pillar detection |
 
