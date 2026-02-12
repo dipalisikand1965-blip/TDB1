@@ -1,0 +1,67 @@
+{
+  "summary": "P0 Bug Fixes VERIFIED: All 10 tests passed. Intelligence Score now correctly includes inline conversation_memories (conversation_learning=5.5 > 0). Pillar Detection now correctly uses word boundary checking - 'Lola needs a haircut' returns 'care' (not 'travel'), 'Book an Ola cab' returns 'travel' correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "intelligence_score_tests": {
+      "test_intelligence_score_returns_valid_score": "PASS - total_score=10 (numeric, not N/A)",
+      "test_intelligence_score_includes_conversation_memories": "PASS - conversation_learning=5.5 (>0)",
+      "test_intelligence_score_has_valid_tier": "PASS - tier='curious_pup'"
+    },
+    "pillar_detection_tests": {
+      "test_lola_haircut_returns_care_not_travel": "PASS - 'Lola needs a haircut' → pillar='care' (NOT 'travel')",
+      "test_buy_dog_food_returns_dine": "PASS - 'Buy dog food' → pillar='dine'",
+      "test_plan_birthday_party_returns_celebrate": "PASS - 'Plan Lola birthday party' → pillar='celebrate'",
+      "test_book_ola_cab_returns_travel": "PASS - 'Book an Ola cab' → pillar='travel'",
+      "test_vocabulary_not_match_cab": "PASS - 'vocabulary' query → NOT 'travel'"
+    },
+    "word_boundary_edge_cases": {
+      "test_scare_not_match_car": "PASS - 'scare' in message → NOT 'travel'",
+      "test_car_trip_matches_travel": "PASS - 'car trip' → pillar='travel'"
+    }
+  },
+  "verified_fixes": {
+    "intelligence_score_inline_memories": {
+      "fix_location": "/app/backend/services/intelligence_score.py lines 85-100",
+      "description": "Added inline conversation_memories fallback from pet document",
+      "verification": "conversation_learning=5.5, conversation_signals=3 for pet-e6348b13c975"
+    },
+    "pillar_detection_word_boundary": {
+      "fix_location": "/app/backend/mira_routes.py lines 6028-6038",
+      "description": "Added word boundary checking for short keywords (ola, cab, car, fly, etc.)",
+      "verification": "'Lola' no longer matches 'ola' keyword, but standalone 'Ola' does"
+    }
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_mira_p0_fixes.py",
+    "/app/test_reports/pytest/pytest_mira_p0_fixes.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Intelligence score inline memories fix is well-implemented - converts inline format to match expected format",
+    "Word boundary checking uses regex with \\b for short keywords in WORD_BOUNDARY_KEYWORDS set"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_mira_p0_fixes.py"
+  ],
+  "success_rate": {
+    "backend": "100%",
+    "frontend": "N/A (backend-only test)"
+  },
+  "test_credentials": {
+    "email": "dipali@clubconcierge.in",
+    "password": "test123",
+    "test_pet_id": "pet-e6348b13c975"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "P0 bug fixes verified. Intelligence score now includes inline conversation_memories (line 91-102 in intelligence_score.py). Pillar detection uses word boundary checking for short keywords like 'ola', 'cab', 'car' (lines 6028-6038 in mira_routes.py)."
+}
