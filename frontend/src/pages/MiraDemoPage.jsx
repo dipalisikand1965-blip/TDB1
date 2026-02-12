@@ -2072,10 +2072,6 @@ const MiraDemoPage = () => {
     // Ticket State
     currentTicket,
     setCurrentTicket,
-    createOrAttachTicket: async (ticketData) => {
-      // Using the API helper from useChat
-      return await createOrAttachTicket(API_URL, token, ticketData, currentTicket);
-    },
     syncToServiceDesk,
     
     // Step State (Anti-loop)
