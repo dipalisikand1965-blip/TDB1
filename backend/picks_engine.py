@@ -33,7 +33,6 @@ sys.path.insert(0, os.path.dirname(__file__))
 from backend.classification_pipeline import (
     ClassificationPipeline,
     ClassificationResult as ClassificationOutput,
-    get_db as get_classification_db
 )
 from backend.scoring_logic import (
     score_pick,
