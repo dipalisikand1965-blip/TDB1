@@ -4744,8 +4744,27 @@ PILLARS = {
     "celebrate": {
         "name": "Celebrate",
         "icon": "🎂",
-        "keywords": ["birthday", "cake", "celebration", "celebrate", "party", "treats", "milestone", "anniversary", "gotcha", "gotcha day", "adoption day", "pup-day", "pawty", "gift", "balloon", "decoration"],
-        "urgency_default": "medium"
+        "keywords": [
+            # Core celebration
+            "birthday", "party", "celebration", "celebrate", "pawty",
+            # Milestones
+            "milestone", "anniversary", "gotcha", "gotcha day", "adoption day", "pup-day",
+            # Cake and food
+            "cake", "dog cake", "birthday cake", "treats", "party snacks", "centrepiece",
+            # Party elements
+            "gift", "balloon", "decoration", "party setup", "photo", "photographer",
+            "bandana", "birthday set", "candle"
+        ],
+        "urgency_default": "medium",
+        # CELEBRATE Pillar Concierge Picks (per MIRA BIBLE)
+        "concierge_picks": [
+            {"title": "Birthday Cake Arranged", "cta": "Arrange", "service_type": "birthday_cake", "why": "Dog-safe cake matched to preferences"},
+            {"title": "Party Snack Platter", "cta": "Arrange", "service_type": "party_snacks", "why": "Dog-safe treats for the celebration"},
+            {"title": "Birthday Bandana/Set", "cta": "Get", "service_type": "birthday_accessories", "why": "Photo-ready celebration kit"},
+            {"title": "Pet Photographer Booking", "cta": "Book", "service_type": "pet_photography", "why": "Capture the celebration"},
+            {"title": "Party Setup Coordination", "cta": "Arrange", "service_type": "party_setup", "why": "Mini or medium setup"},
+            {"title": "Pre-Party Grooming", "cta": "Book", "service_type": "grooming_celebration", "why": "Look fresh for the photos"}
+        ]
     },
     "dine": {
         "name": "Dine",
