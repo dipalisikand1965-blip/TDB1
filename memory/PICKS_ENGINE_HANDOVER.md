@@ -777,11 +777,101 @@ If something seems wrong:
 5. **Degrade-safe templates**: Added `reason_template_enhanced` + `enhanced_reason_requires` pattern
 6. **choking_suspected**: Added as CAUTION tag with gating questions (gagging ≠ emergency)
 
+### B4 Patch v2 - Stay & Travel Fixes (December 2025)
+
+7. **boarding tag**: Added `boarding` as canonical tag, `kennel` demoted to synonym
+8. **age_stage → age_stages**: Standardized to array format across all picks
+9. **required_booking_fields**: New pattern for booking picks to collect info before CTA
+10. **temporal_triggers**: New pattern to boost picks when time-bound intent detected
+11. **brachycephalic_warning**: Breed-specific safety warnings for flat-faced pets
+
 ### Tag Additions
 - `party_planning` (celebrate pillar)
 - `choking_suspected` (care pillar, caution level)
+- `boarding` (stay pillar) - with synonyms: kennel, dog hotel, pet hostel, etc.
 
 ### Synonym Additions
 - `pawty` → `party_planning`
 - `gagging` → `choking_suspected` (caution, not emergency)
-- `gagging after eating` → `choking_suspected`
+- `kennel`, `dog hotel`, `pet resort`, `board my dog` → `boarding`
+
+### New Constraint Patterns
+
+**For Booking Picks:**
+```json
+{
+  "constraints": {
+    "species": ["dog", "cat"],
+    "age_stages": ["puppy", "adult", "senior"],
+    "exclude_health_flags": [],
+    "required_booking_fields": ["city", "start_date", "end_date"],
+    "optional_booking_fields": ["pet_weight", "medications"],
+    "enhanced_reason_requires": ["energy_level", "temperament"]
+  },
+  "temporal_triggers": {"travel_window": true}
+}
+```
+
+**For Breed-Aware Picks:**
+```json
+{
+  "constraints": {
+    "if_brachycephalic": "show_warning"
+  },
+  "brachycephalic_warning": "Note: Flat-faced breeds have additional restrictions..."
+}
+```
+
+### Example Final-Form Picks
+
+**stay_boarding_book:**
+```json
+{
+  "pick_id": "stay_boarding_book",
+  "pillar": "stay",
+  "pick_type": "booking",
+  "canonical_tags": ["boarding"],
+  "base_score": 85,
+  "title": "Book Boarding",
+  "cta": "Find Boarding",
+  "reason_template": "{pet_name} can stay comfortably at a trusted boarding option while you're away.",
+  "reason_template_enhanced": "I'll shortlist boarding options that suit {pet_name}'s {energy_level} energy level and {temperament} temperament.",
+  "constraints": {
+    "species": ["dog", "cat"],
+    "age_stages": ["puppy", "adult", "senior"],
+    "required_booking_fields": ["city", "start_date", "end_date"],
+    "optional_booking_fields": ["pet_weight", "medications", "separation_anxiety"],
+    "enhanced_reason_requires": ["energy_level", "temperament"]
+  },
+  "service_vertical": "boarding",
+  "service_modes": ["boarding_facility", "host_home_boarding", "in_home_sitter", "vet_boarding"],
+  "temporal_triggers": {"travel_window": true},
+  "concierge_complexity": "medium"
+}
+```
+
+**travel_airport_transfer:**
+```json
+{
+  "pick_id": "travel_airport_transfer",
+  "pillar": "travel",
+  "pick_type": "booking",
+  "canonical_tags": ["airport_transfer"],
+  "base_score": 85,
+  "title": "Airport Transfer",
+  "cta": "Book Transfer",
+  "reason_template": "Stress-free airport transport for {pet_name} - we'll handle the journey.",
+  "reason_template_enhanced": "I'll arrange airport transport for {pet_name} from {city} with proper crate and comfort stops.",
+  "constraints": {
+    "species": ["dog", "cat"],
+    "age_stages": ["puppy", "adult", "senior"],
+    "required_booking_fields": ["city", "airport", "flight_date"],
+    "optional_booking_fields": ["flight_number", "crate_size", "pickup_time"],
+    "enhanced_reason_requires": ["city"]
+  },
+  "service_vertical": "transport",
+  "service_modes": ["pickup_drop"],
+  "temporal_triggers": {"flight_date": true},
+  "concierge_complexity": "medium"
+}
+```
