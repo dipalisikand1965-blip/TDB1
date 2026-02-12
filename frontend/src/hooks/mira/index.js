@@ -10,6 +10,7 @@
  * - Session management
  * - Chat helpers (input preprocessing, mode detection, step detection, API helpers)
  * - Streaming chat (SSE response streaming)
+ * - Chat submission (main chat flow logic)
  */
 
 export { default as useVoice } from './useVoice';
@@ -17,6 +18,7 @@ export { default as usePet, DEMO_PET, ALL_DEMO_PETS } from './usePet';
 export { default as useVault } from './useVault';
 export { default as useSession } from './useSession';
 export { default as useStreamingChat } from './useStreamingChat';
+export { default as useChatSubmit } from './useChatSubmit';
 export { 
   default as useChat,
   // Detection helpers
