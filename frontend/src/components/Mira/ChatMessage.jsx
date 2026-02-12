@@ -1031,6 +1031,9 @@ const MiraMessageBody = ({
 }) => {
   const { mainText, questionText } = splitMessageWithQuestion(msg.content);
   
+  // Check if message mentions concierge handoff
+  const showInlineConcierge = shouldShowConciergeCard(msg.content) || msg.showConciergeCard;
+  
   return (
     <div className="mp-card-body">
       {/* Main Message Text */}
@@ -1045,6 +1048,15 @@ const MiraMessageBody = ({
             <FormattedText>{questionText}</FormattedText>
           </div>
         </div>
+      )}
+      
+      {/* Inline Concierge Help Card - shows when Mira mentions connecting to concierge */}
+      {showInlineConcierge && (
+        <InlineConciergeCard 
+          pet={pet}
+          onChatHandoff={onEngageConcierge}
+          context={msg.conciergeContext}
+        />
       )}
       
       {/* Products Grid */}
