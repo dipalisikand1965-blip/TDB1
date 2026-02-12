@@ -401,3 +401,87 @@ def _get_unanswered_fields(pet: Dict) -> List[str]:
             unanswered.append(field)
     
     return unanswered
+
+
+
+async def get_relevant_memories_for_context(db, pet_id: str, pillar: str = None, limit: int = 10) -> List[Dict]:
+    """
+    Get relevant memories for inclusion in LLM context.
+    Prioritizes high-confidence signals and recent observations.
+    """
+    if not pet_id or not db:
+        return []
+    
+    try:
+        # Build query - prioritize by confidence and recency
+        query = {"pet_id": pet_id}
+        if pillar:
+            # Get memories relevant to current pillar
+            pillar_categories = {
+                "dine": ["food_preference", "allergy", "health"],
+                "stay": ["behavior", "routine", "environment"],
+                "travel": ["behavior", "routine"],
+                "care": ["health", "behavior"],
+                "celebrate": ["food_preference", "allergy"],
+            }
+            relevant_cats = pillar_categories.get(pillar, [])
+            if relevant_cats:
+                query["category"] = {"$in": relevant_cats}
+        
+        # Get from conversation_memories collection
+        memories = await db.conversation_memories.find(
+            query,
+            {"_id": 0}
+        ).sort([("confidence", -1), ("timestamp", -1)]).limit(limit).to_list(limit)
+        
+        # Also get from mira_memories for longer-term signals
+        mira_mems = await db.mira_memories.find(
+            {"pet_id": pet_id, "is_active": True},
+            {"_id": 0}
+        ).sort("created_at", -1).limit(5).to_list(5)
+        
+        # Format for LLM context
+        formatted = []
+        seen_values = set()
+        
+        for m in memories:
+            value = m.get("value", "")
+            if value and value not in seen_values:
+                formatted.append({
+                    "type": f"{m.get('category', 'observation')}/{m.get('signal_type', 'general')}",
+                    "value": value,
+                    "confidence": m.get("confidence", 50),
+                    "source": "conversation"
+                })
+                seen_values.add(value)
+        
+        for m in mira_mems:
+            content = m.get("content", "")
+            if content and content not in seen_values:
+                formatted.append({
+                    "type": m.get("memory_type", "observation"),
+                    "value": content,
+                    "confidence": m.get("confidence", 70),
+                    "source": "memory"
+                })
+                seen_values.add(content)
+        
+        return formatted
+        
+    except Exception as e:
+        logger.error(f"[MEMORY] Error getting relevant memories: {e}")
+        return []
+
+
+def format_memories_for_llm(memories: List[Dict]) -> str:
+    """Format memories into a string for LLM context injection."""
+    if not memories:
+        return ""
+    
+    lines = ["## Learned from Conversations:"]
+    for m in memories:
+        conf = m.get("confidence", 50)
+        conf_label = "confirmed" if conf >= 85 else "observed" if conf >= 70 else "mentioned"
+        lines.append(f"- {m['type']}: {m['value']} ({conf_label})")
+    
+    return "\n".join(lines)
