@@ -7753,7 +7753,7 @@ async def mira_chat(
                 pillar=pillar,
                 intent=intent,
                 user_message=user_message,
-                db=db
+                db=get_db
             )
             logger.info(f"[MIRA OS] Context: layer={os_context.get('layer_activation')}, temporal={os_context.get('temporal_context')}, alerts={len(os_context.get('proactive_alerts', []))}")
     except Exception as os_err:
