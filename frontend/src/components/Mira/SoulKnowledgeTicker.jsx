@@ -404,10 +404,6 @@ const SoulKnowledgeTicker = ({
       )}
       
       {/* Styles */}
-      <style>{`
-      )}
-      
-      {/* Styles */}
       <style jsx>{`
         .soul-knowledge-ticker {
           display: flex;
