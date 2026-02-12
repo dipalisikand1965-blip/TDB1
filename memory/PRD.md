@@ -10,7 +10,21 @@ See `/app/memory/MIRA_OS_DOCTRINE.md` for the foundational system behavior.
 
 ## 🎯 OS Intelligence Status (Feb 12, 2026)
 
-### Data Sync Issue: RESOLVED ✅
+### Photo Display Issue: FIXED ✅
+
+**Problem**: Pet photo was showing as yellow placeholder with paw print instead of actual photo.
+
+**Root Cause**: Two bugs in MiraDemoPage.jsx:
+1. Line 1132: Used `p.photo` instead of `p.photo_url` when formatting pets from `/api/pets/my-pets`
+2. Line 1473: Missing `photo` property when setting pet from individual pet fetch
+
+**Fix Applied (Feb 12, 2026)**:
+- Line 1132: Changed `photo: p.photo || null` → `photo: p.photo_url ? \`${API_URL}${p.photo_url}\` : null`
+- Line 1478: Added `photo: p.photo_url ? \`${API_URL}${p.photo_url}\` : null` to setPet call
+
+---
+
+## Data Sync Issue: RESOLVED ✅
 
 **Problem**: Only 17/41 data points were being used for intelligence scoring.
 
