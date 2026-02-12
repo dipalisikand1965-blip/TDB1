@@ -2684,7 +2684,7 @@ Stay focused on food/treats. Progress through the flow without looping.
 USER INPUT: "{user_input}"
 
 Analyze this input and respond with valid JSON following the format specified.
-Use the BREED INTELLIGENCE above to provide breed-specific advice. Reference health concerns, dietary needs, climate considerations, and special tips relevant to this breed.
+Use the PET SOUL profile above to personalize advice. Do NOT make breed-specific health assumptions unless explicitly confirmed in the pet's Soul profile.
 
 IMPORTANT: 
 1. If the user's input is an answer to a clarifying question, acknowledge the answer and move to the NEXT appropriate step.
