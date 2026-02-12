@@ -103,7 +103,7 @@ except ImportError as e:
 
 # Import Picks Engine (B6) - Next-Best-Action recommendations
 try:
-    from backend.picks_engine import run_picks_engine, PicksEngineOutput
+    from picks_engine import run_picks_engine, PicksEngineOutput
     PICKS_ENGINE_AVAILABLE = True
     logger.info("[MIRA OS] Picks Engine loaded")
 except ImportError as e:
