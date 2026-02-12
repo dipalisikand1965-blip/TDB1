@@ -1229,5 +1229,6 @@ export {
   TravelAttractions,
   ServiceCards,
   ExperienceCards,
-  DynamicConciergeRequest
+  DynamicConciergeRequest,
+  InlineConciergeCard
 };
