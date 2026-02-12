@@ -451,7 +451,7 @@ DOGGY_SOUL_QUESTIONS = {
 
 
 async def seed_pet_souls():
-    """Seed all pet souls with realistic data"""
+    """Seed all pets with realistic data - creates pets if they don't exist"""
     print("=" * 60)
     print("MIRA OS - PET SOUL SEEDING")
     print("=" * 60)
@@ -459,25 +459,80 @@ async def seed_pet_souls():
     client = AsyncIOMotorClient(MONGO_URL)
     db = client[DB_NAME]
     
-    # Get all pets
-    pets_cursor = db.pets.find({}, {"_id": 0, "id": 1, "name": 1})
-    pets = await pets_cursor.to_list(length=100)
-    
-    print(f"\nFound {len(pets)} pets in database")
-    
     seeded_count = 0
     
-    for pet in pets:
-        pet_id = pet.get("id")
-        pet_name = pet.get("name")
+    # Create/Update each pet
+    for pet_name, seed_data in PET_SOUL_SEEDS.items():
+        pet_id = seed_data["id"]
+        answers = seed_data["answers"]
         
-        if pet_name in PET_SOUL_SEEDS:
-            seed_data = PET_SOUL_SEEDS[pet_name]
-            answers = seed_data["answers"]
+        # Calculate scores
+        folder_scores = {}
+        for folder_key, folder_data in DOGGY_SOUL_QUESTIONS.items():
+            folder_scores[folder_key] = calculate_folder_score(answers, folder_data["questions"])
+        
+        overall_score = calculate_overall_score(answers, DOGGY_SOUL_QUESTIONS)
+        
+        # Build full pet document
+        pet_doc = {
+            "id": pet_id,
+            "name": pet_name,
+            "breed": seed_data.get("breed", "Mixed"),
+            "species": seed_data.get("species", "dog"),
+            "age_years": seed_data.get("age_years", 3),
+            "gender": seed_data.get("gender", "unknown"),
+            "photo_url": seed_data.get("photo_url"),
+            "owner_email": USER_EMAIL,
+            "parent_email": USER_EMAIL,
+            "member_email": USER_EMAIL,
             
-            # Calculate scores
-            folder_scores = {}
-            for folder_key, folder_data in DOGGY_SOUL_QUESTIONS.items():
+            # Soul data
+            "doggy_soul_answers": answers,
+            "soul_score": overall_score,
+            "folder_scores": folder_scores,
+            
+            # Derived traits for AI
+            "personality_traits": [answers.get("describe_3_words", "").replace(", ", ",").split(",")[0] if answers.get("describe_3_words") else "Friendly"],
+            "allergies": answers.get("food_allergies", []) if answers.get("food_allergies", ["No"]) != ["No"] else [],
+            "favorite_treats": answers.get("favorite_treats", []),
+            "separation_anxiety": answers.get("separation_anxiety", "None"),
+            "training_level": answers.get("training_level", "Unknown"),
+            "diet_type": answers.get("diet_type", "Mixed"),
+            
+            # Celebration preferences for proactive alerts
+            "celebration_preferences": answers.get("celebration_preferences", []),
+            "dream_life": answers.get("dream_life", ""),
+            
+            # Metadata
+            "soul_seeded_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Upsert (create or update)
+        result = await db.pets.update_one(
+            {"id": pet_id},
+            {"$set": pet_doc},
+            upsert=True
+        )
+        
+        if result.upserted_id:
+            print(f"  ✅ CREATED {pet_name} ({seed_data['breed']}): Soul Score = {overall_score}%")
+        else:
+            print(f"  🔄 UPDATED {pet_name} ({seed_data['breed']}): Soul Score = {overall_score}%")
+        seeded_count += 1
+    
+    print(f"\n{'=' * 60}")
+    print(f"SEEDING COMPLETE: {seeded_count} pets seeded")
+    print(f"{'=' * 60}")
+    
+    # Verify
+    print("\n📊 VERIFICATION:")
+    async for pet in db.pets.find({}, {"_id": 0, "name": 1, "breed": 1, "soul_score": 1}):
+        print(f"  • {pet.get('name')} ({pet.get('breed')}): {pet.get('soul_score', 0)}%")
+    
+    client.close()
+    print("\n✅ Done!")
                 folder_scores[folder_key] = calculate_folder_score(answers, folder_data["questions"])
             
             overall_score = calculate_overall_score(answers, DOGGY_SOUL_QUESTIONS)
