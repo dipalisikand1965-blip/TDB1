@@ -7635,6 +7635,10 @@ def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar:
                 pet_context += f"\n  📋 BREED-SPECIFIC CARE TIPS FOR {pet_name} ({breed}):\n"
                 pet_context += breed_tips
     
+    # Log the pet context for debugging
+    if pet_context:
+        logger.info(f"[PET CONTEXT] Built {len(pet_context)} chars for pets: {[p.get('name') for p in pets_to_process]}")
+    
     # KNOWN FIELDS section for selected pet
     if selected_pet:
         known_fields_section = format_known_fields_for_prompt(selected_pet)
