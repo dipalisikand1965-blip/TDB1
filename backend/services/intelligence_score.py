@@ -82,13 +82,19 @@ async def calculate_intelligence_score(db, pet_id: str) -> Dict:
         if not pet:
             return {"total_score": 0, "tier": "curious_pup", "error": "Pet not found"}
         
-        # Get conversation memories from collection
+        # ═══════════════════════════════════════════════════════════════════════
+        # CRITICAL: Conversation memories exist in TWO places (do not remove either!)
+        # 1. conversation_memories COLLECTION - structured extraction pipeline
+        # 2. pet.conversation_memories ARRAY - inline storage from chat endpoint
+        # Both must be checked for accurate intelligence scoring.
+        # Fix date: Feb 12, 2026 | Issue: Score was too low, missing inline data
+        # ═══════════════════════════════════════════════════════════════════════
         memories = await db.conversation_memories.find(
             {"pet_id": pet_id},
             {"_id": 0}
         ).to_list(100)
         
-        # ALSO check inline conversation_memories in pet document (fallback)
+        # Fallback: Also check inline conversation_memories in pet document
         inline_memories = pet.get("conversation_memories", [])
         if inline_memories and len(inline_memories) > len(memories):
             # Convert inline format to match expected format

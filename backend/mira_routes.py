@@ -6025,8 +6025,13 @@ def detect_pillar(message: str, current_pillar: str = None) -> str:
         if not grief_not_missing:
             return "emergency"
     
-    # Keywords that need word boundary checking (short words prone to false positives)
-    # e.g., "ola" in "Lola", "cab" in "vocabulary", "car" in "scare"
+    # ═══════════════════════════════════════════════════════════════════════════
+    # CRITICAL: Word boundary checking for short keywords (DO NOT REMOVE!)
+    # Problem: "Lola needs a haircut" was detected as "travel" because "Lola" 
+    # contains "ola" (Indian cab service). Same issue with "car" in "scare", etc.
+    # Solution: Use regex \b word boundaries for keywords <= 3 chars in this set.
+    # Fix date: Feb 12, 2026 | Test: /app/backend/tests/test_mira_p0_fixes.py
+    # ═══════════════════════════════════════════════════════════════════════════
     WORD_BOUNDARY_KEYWORDS = {"ola", "cab", "car", "fly", "air", "bus", "van", "pet", "sit", "mat", "bed", "eat"}
     
     def keyword_matches(kw: str, text: str) -> bool:
