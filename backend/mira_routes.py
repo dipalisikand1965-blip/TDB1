@@ -15960,7 +15960,7 @@ async def send_tip_card_to_concierge(request: SendTipCardRequest):
             "notification_id": signal_result.get("notification_id"),
             "inbox_id": signal_result.get("inbox_id"),
             "tip_card": tip_card_data,
-            "message": "Your Pet Concierge® will get back to you shortly"
+            "message": "I'm arranging this now — I'll confirm shortly"
         }
         
     except Exception as e:
@@ -16278,7 +16278,7 @@ async def send_picks_to_concierge(request: SendPicksRequest):
             "notification_id": signal_result.get("notification_id"),
             "inbox_id": signal_result.get("inbox_id"),
             "picked_count": picked_count,
-            "message": "Your Pet Concierge® will get back to you shortly"
+            "message": "I'm arranging this now — I'll confirm shortly"
         }
         
     except Exception as e:
@@ -16513,7 +16513,7 @@ async def send_vault_to_concierge(request: UnifiedVaultRequest):
             "ticket_id": signal_result.get("ticket_id"),
             "notification_id": signal_result.get("notification_id"),
             "inbox_id": signal_result.get("inbox_id"),
-            "message": "Your Pet Concierge® will get back to you shortly"
+            "message": "I'm arranging this now — I'll confirm shortly"
         }
         
     except Exception as e:
