@@ -4169,7 +4169,7 @@ const MiraDemoPage = () => {
             onVaultSent={(result) => {
               console.log('[VAULT] Sent to Concierge:', result);
               if (result.success) {
-                setMessages(prev => [...prev, {
+                setConversationHistory(prev => [...prev, {
                   type: 'mira',
                   content: `✨ Your picks have been sent to your Pet Concierge®! They'll get back to you shortly.`,
                   timestamp: new Date().toISOString(),
