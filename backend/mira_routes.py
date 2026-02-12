@@ -4342,6 +4342,8 @@ PILLARS = {
             "treat budget", "treat strategy", "hydration", "water intake",
             "pantry", "staples", "refill", "food refill", "subscription food",
             "breakfast", "dinner routine", "morning meal", "evening meal",
+            # Single word triggers for food/nutrition
+            "feed", "feeding", "food", "meals", "eat", "eating",
             # Dining Out (secondary)
             "restaurant", "dining out", "cafe", "brunch", "lunch", "dinner", "reservation",
             "pet-friendly restaurant", "dine out", "pet cafe", "dog cafe", "cat cafe"
