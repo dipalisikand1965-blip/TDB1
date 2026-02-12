@@ -493,48 +493,7 @@ const MiraDemoPage = () => {
     localStorage.setItem(SESSION_TIMEOUT_KEY, now.toString());
   }, []);
   
-  // CONVERSATION FLOW DETECTION - Track when Mira has provided assistance
-  const [conversationComplete, setConversationComplete] = useState(false);
-  const [showConversationEndBanner, setShowConversationEndBanner] = useState(false);
-  
-  // Detect if conversation is "complete" (Mira has provided assistance)
-  // A complete flow = User asked → Mira responded with products/action → User acknowledged
-  const detectConversationComplete = useCallback((history) => {
-    if (history.length < 4) return false; // Need at least 4 messages (2 exchanges)
-    
-    const lastMessages = history.slice(-6);
-    const miraMessages = lastMessages.filter(m => m.type === 'mira');
-    const userMessages = lastMessages.filter(m => m.type === 'user');
-    
-    const hasMiraWithProducts = miraMessages.some(m => 
-      m.showProducts || m.data?.response?.products?.length > 0
-    );
-    const hasMiraWithAction = miraMessages.some(m =>
-      m.showConcierge || m.data?.nearby_places || m.data?.training_videos
-    );
-    
-    // Only mark complete if user EXPLICITLY confirms (not just "ok" or "thanks")
-    // These are explicit confirmation phrases
-    if ((hasMiraWithProducts || hasMiraWithAction) && userMessages.length > 0) {
-      const lastUserMsg = userMessages[userMessages.length - 1];
-      const userText = (lastUserMsg?.content || '').toLowerCase();
-      
-      // Strong confirmation phrases - user is clearly done
-      const strongConfirmations = [
-        'send to concierge', 'book this', 'book it', "let's do it", "lets do it",
-        'go ahead', 'proceed', 'confirm', 'finalize', 'order this', 'order it',
-        "i'll take", "i want this", 'perfect thanks', 'that\'s all', 'thats all',
-        'done for now', 'all set', 'sounds good book', 'yes book', 'yes please book'
-      ];
-      
-      const isStrongConfirmation = strongConfirmations.some(p => userText.includes(p));
-      
-      // Only complete on strong confirmation, not casual acknowledgments
-      return isStrongConfirmation;
-    }
-    
-    return false;
-  }, []);
+  // NOTE: conversationComplete, showConversationEndBanner, detectConversationComplete now come from useConversation hook
   
   // Archive conversation helper
   const archiveCurrentConversation = useCallback((reason = 'manual') => {
