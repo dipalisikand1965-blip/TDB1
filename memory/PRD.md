@@ -75,7 +75,7 @@ It is NOT:
 
 | Domain | Score |
 |--------|-------|
-| Memory System | 60/100 |
+| Memory System | 70/100 |
 | Soul Intelligence | 75/100 |
 | Conversational Context | 75/100 |
 | Picks Engine | 35/100 |
@@ -84,6 +84,25 @@ It is NOT:
 | 14 Pillars Coverage | 55/100 |
 | UI/UX Mobile | 80/100 |
 | Infrastructure | 95/100 |
+
+---
+
+## 🎯 Memory Endpoint Fix ✅ COMPLETE (Feb 12, 2026)
+
+### Problem
+- `/api/mira/memory/pet/{pet_id}` only queried `mira_memories` collection (1 record)
+- `conversation_memories` collection (11 records) was ignored
+- Memories tab showed incomplete data
+
+### Solution
+- Updated endpoint to **combine both sources**:
+  - `mira_memories` - Explicit user statements ("Mira, remember...")
+  - `conversation_memories` - Auto-extracted from chat
+- Added `sources` field to response showing counts from each
+- Fixed datetime/string sorting issue
+
+### Result
+- Mystique: 1 mira_memory + 11 conversation_memories = **12 total memories displayed**
 
 ---
 
