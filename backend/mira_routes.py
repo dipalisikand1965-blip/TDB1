@@ -4247,8 +4247,17 @@ PILLARS = {
     "fit": {
         "name": "Fit",
         "icon": "🏃",
-        "keywords": ["fitness", "weight", "exercise", "diet", "nutrition", "obesity", "meal plan", "food plan", "feeding schedule", "what to feed", "home cooked", "homemade food", "kibble", "wet food", "raw diet", "overweight", "portion", "how much to feed"],
-        "urgency_default": "low"
+        "keywords": ["fitness", "weight", "exercise", "obesity", "overweight", "weight loss", "weight gain",
+                     "workout", "activity level", "energy", "lazy", "sedentary", "active dog",
+                     "walk routine", "daily walk", "swimming", "agility", "running"],
+        "urgency_default": "low",
+        # FIT Pillar Concierge Picks (per MIRA BIBLE)
+        "concierge_picks": [
+            {"title": "Walk Routine by Energy Level", "cta": "Plan", "service_type": "walk_routine"},
+            {"title": "Weight Management Rhythm Plan", "cta": "Start", "service_type": "weight_management"},
+            {"title": "Mobility-Friendly Play Plan", "cta": "Plan", "service_type": "mobility_plan"},
+            {"title": "Physio Referral Coordination", "cta": "Book", "service_type": "physio_referral"}
+        ]
     },
     "learn": {
         "name": "Learn",
