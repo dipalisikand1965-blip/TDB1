@@ -29,6 +29,26 @@ MIRA to function as a "Lifestyle OS" - context-aware, proactive, safe, OS-like b
 
 ---
 
+## 🎯 YouTube Integration for LEARN Pillar ✅ COMPLETE (Feb 12, 2026)
+
+### Implementation Details
+- **Fixed field name mismatch** in `get_learn_video_support()` function
+  - Changed `video.get("video_id")` → `video.get("id")`
+  - Changed `video.get("channel_title")` → `video.get("channel")`
+- **Made video loading work without pet_id** - now returns videos even without specific pet context
+- **Fixed null handling** for `age_years` field with proper fallbacks
+
+### API Endpoints Working
+- `GET /api/mira/learn/guides/{topic}` - Returns guide + supporting video
+- `GET /api/mira/youtube/videos` - Search YouTube videos
+- `GET /api/mira/youtube/by-topic?topic=X` - Topic-specific videos
+- `GET /api/mira/youtube/test` - API health check
+
+### Available Guides with Videos
+- `potty_training`, `leash_training`, `recall_training`, `barking`
+
+---
+
 ## 🎯 Question Bank Coverage - 100/100 ✅ (Feb 12, 2026)
 
 ### Architecture Decisions (LOCKED)
