@@ -214,9 +214,12 @@ emergency → HARD OVERRIDE to emergency pillar, suppress ALL commerce
 ### Code (UNDERSTAND BEFORE MODIFYING)
 ```
 /app/backend/classification_pipeline.py              ← B2 classification engine
+/app/backend/safety_gate.py                          ← B3 safety gate + first aid + gating questions
+/app/backend/picks_scorer.py                         ← B4 scoring + ranking + diversity
 /app/backend/scripts/seed_taxonomy.py                ← B0 seeder
 /app/backend/scripts/seed_picks_catalogue.py         ← B1 seeder
-/app/backend/tests/test_classification.py            ← Unit tests
+/app/backend/tests/test_classification.py            ← B2 unit tests (28 passing)
+/app/backend/tests/test_safety_gate.py               ← B3 unit tests (21 passing)
 /app/backend/server.py                               ← Main FastAPI server
 ```
 
