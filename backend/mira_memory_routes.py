@@ -252,7 +252,6 @@ async def get_what_mira_knows(
     
     # 1. BUILD SOUL KNOWLEDGE from doggy_soul_answers
     soul_knowledge = []
-    soul_answers = pet.get("doggy_soul_answers", {})
     
     # Map important answers to human-readable knowledge
     knowledge_mappings = [
