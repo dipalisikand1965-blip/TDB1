@@ -10898,7 +10898,10 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 # STAY PILLAR SPECIFIC - Boarding, daycare, hotel context
                 "stay_context": os_context.get("stay_context"),  # Temperament, vaccinations, social comfort
                 "stay_picks": os_context.get("stay_picks", []),  # Concierge picks for STAY pillar
-                "concierge_handoff": os_context.get("concierge_handoff")  # Always available for STAY
+                # TRAVEL PILLAR SPECIFIC - Trips, transport, relocation context
+                "travel_context": os_context.get("travel_context"),  # Temperament, size, health flags, brachycephalic
+                "travel_picks": os_context.get("travel_picks", []),  # Concierge picks for TRAVEL pillar
+                "concierge_handoff": os_context.get("concierge_handoff")  # Always available for STAY/TRAVEL
             }
         }
         
