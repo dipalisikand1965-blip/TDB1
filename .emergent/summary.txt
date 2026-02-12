@@ -1,112 +1,50 @@
 <analysis>**original_problem_statement:**
-The user's initial request involved a full audit and fixing of the MIRA OS, focusing on P0 backend bugs, improving question-answering accuracy, and establishing a formal architectural Bible for the system. This evolved into a detailed, collaborative design phase for a new Picks Engine – a taxonomy-driven system for generating contextual, next-best-action recommendations. During this process, the user also identified that Mira's chat memories were not being displayed correctly on the frontend and requested a comprehensive set of documentation and seed data to be stored for future agent continuity. The core goal is to build a mobile-first, intelligent pet operating system, not a simple chat or e-commerce app.
+The user's initial request involved a full audit and fixing of the MIRA OS, focusing on P0 backend bugs, improving question-answering accuracy, and establishing a formal architectural Bible for the system. This evolved into a detailed, collaborative design phase for a new Picks Engine – a taxonomy-driven system for generating contextual, next-best-action recommendations. The user also identified that Mira's chat memories were not being displayed correctly, requested a fix for a critical frontend crash, and then pivoted to a deep audit and improvement of the pet personalization and Soul Score logic. Most recently, the user requested a master roadmap to track the overall project status. The core goal is to build a mobile-first, intelligent, life-led pet concierge OS.
 
 **PRODUCT REQUIREMENTS:**
-MIRA OS must be a stable, intelligent, life-led concierge system adhering to a strict, taxonomy-driven architecture. All features, especially the Picks Engine, must be data-driven, safety-gated, and personalized based on the pet's profile and temporal context. The system must capture user intent accurately and translate it into actionable suggestions (Picks). The UI/UX must be 100% compliant with golden rules for perfect rendering on mobile devices.
+MIRA OS must be a stable, intelligent, life-led concierge system adhering to a strict, taxonomy-driven architecture. The Profile-First Doctrine is paramount: the system must always prioritize a pet's specific, known data (allergies, preferences, personality) over generic breed information. The Picks Engine must be data-driven, safety-gated, and personalized. The UI/UX must be 100% compliant with golden rules for perfect rendering on mobile devices. A scoring system must quantify personalization to drive progress toward a 100/100 intelligence score.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The backend is significantly more robust. Core P0 bugs from previous sessions are resolved. The YouTube integration for the LEARN pillar is now fully functional. A major bug preventing chat memories from being displayed on the frontend has been fixed; the relevant API endpoint now correctly queries and combines data from two separate MongoDB collections ( and ).
-
-Most significantly, a comprehensive set of architectural documents and seed data files for the new Picks Engine has been created and stored in the  directory. This includes the master specification, an audit of the current system, an enhancement roadmap, and CSV files for seeding the new taxonomy collections.
+The application is now in a much more stable state. A critical, session-blocking frontend crash on the  and login pages has been **resolved** by implementing lazy loading for large components. The core personalization logic has been significantly improved:
+1.  **Chat AI:** The  endpoint now correctly prioritizes the specific pet's profile (allergies, preferences) over generic breed info, adhering to the Profile-First Doctrine.
+2.  **What Mira Knows UI:** The  endpoint was enhanced to return all critical profile data, ensuring the UI card reflects the pet's complete profile.
+3.  **Soul Score Logic:** The pet intelligence scoring system in  was audited and enhanced. By mapping data aliases and pulling from more data sources (, ), Mystique's score was increased from 48% to 64.3%.
+A master roadmap document has been created at .
 
 **Last working item**:
--   **Last item agent was working:** The agent finalized the creation of exhaustive memory documents for future agents, per the user's request. This involved saving multiple versions of the Picks Engine specification and all associated seed data CSV files to the  directory and creating a master  file to guide the next agent.
--   **Status:** COMPLETED
--   **Agent Testing Done:** Y (Verified file creation via =
-=5.0.0
-Admin
-COMPLETE_ARCHITECTURE.md
-Confirm
-DATA_ARCHITECTURE.md
-Dine
-INTELLIGENCE_SCORECARD.md
-LIVE_SCORECARD.md
-MASTERPIECE_AUDIT.md
-Member
-Notification
-README.md
-SESSION_SUMMARY_LAST_HOUR.md
-STATUS_REPORT.md
-Send
-Service
-TOMORROW_SUMMARY.md
-Ticket
-VISION_STATUS.md
-audit
-auth_testing.md
-backend
-backups
-bundles_catalog.csv
-check_db.py
-check_variants.py
-clean_block.txt
-confirm
-design_guidelines.json
-frontend
-iOS_Haptic_Audit.md
-meili_data
-memory
-page_audit.md
-pet_friendly_restaurants.csv
-pet_friendly_stays.csv
-products_catalog.csv
-products_complete.csv
-products_export.csv
-products_latest.csv
-products_with_pillars.csv
-restaurants_complete.csv
-restaurants_export.csv
-scripts
-services_catalog.csv
-services_export.csv
-services_latest.csv
-services_with_pillars.csv
-suggest
-test_product_match.py
-test_reports
-test_result.md
-tests
-uploads
-yarn.lock)
--   **Which testing method agent to use?** NA
+-   **Last item agent was working:** The agent had just presented the master roadmap to the user. The user's immediate follow-up question was to see the individual scores for each pillar that contributes to the overall Soul Score.
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** backend testing agent
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
 
--   **Issue 1: Frontend Crashing on Mira Demo Page (P0)**
-    -   **Description:** While attempting to verify original UI bugs, the agent discovered that the main  page crashes or becomes unresponsive after login. The backend chat API was confirmed to be working correctly via , isolating this as a critical frontend bug.
-    -   **Attempted fixes:** The agent tried taking screenshots to debug but the page crashed.
+-   **Issue 1: Display Individual Pillar Scores (P0)**
+    -   **Description:** The user has asked to see the score breakdown for each pillar (e.g., Nutrition, Safety & Health, Lifestyle) that makes up the total Soul Score.
     -   **Next debug checklist:**
-        1.  Use the  to load the  page.
-        2.  Instruct the testing agent to check the browser's developer console for JavaScript errors (e.g., infinite loops, state management issues).
-        3.  Inspect , which is the likely source of the error.
-    -   **Why fix this issue and what will be achieved with the fix?** The main user-facing interface of the application is broken. Fixing this is a blocker for any further UI development or verification.
+        1.  Examine  and the  function.
+        2.  This function already calculates scores per category. The task is to modify the API endpoint that returns the score (likely ) to include this pillar-by-pillar breakdown in its JSON response.
+        3.  Use  to test the endpoint and verify the new data is present.
+    -   **Why fix this issue and what will be achieved with the fix?** This provides the user with granular visibility into the personalization system's performance, fulfilling their direct request.
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Frontend
+    -   **Should Test frontend/backend/both after fix?** Backend
     -   **Blocked on other issue:** None
 
 **In progress Task List**:
-
--   **Task 1: Implement Picks Engine v1 - Phase 0 (P0)**
-    -   **Description:** Begin the implementation of the new Picks Engine based on the user-approved architecture. This is the user's highest priority feature.
-    -   **Where to resume:** Start with Phase 0:
-        1.  Create a script or use bash commands to read the seed data from the CSV files located in .
-        2.  Establish connections to the MongoDB database.
-        3.  Create the new, required collections: , , , , and .
-        4.  Populate these new collections with the data from the seed files.
-    -   **What will be achieved with this?** This will build the foundational data taxonomy, which is the cornerstone of the entire Picks Engine.
-    -   **Status:** NOT STARTED
-    -   **Should Test frontend/backend/both after fix?** Backend (verify collections and data exist).
-    -   **Blocked on something:** None.
+*None.*
 
 **Upcoming and Future Tasks**
 
 -   **Upcoming Tasks:**
+    -   **P0: Implement Picks Engine v1 - Phase 0:** Begin the implementation of the new Picks Engine. This is the highest priority feature.
+        -   **Action:** Create a script to read seed data from  and populate new MongoDB collections: , , , , and .
     -   **P1: Implement Picks Engine v1 (Phases 1-9):** After seeding the data, continue building the Picks Engine: classification pipeline, safety gate, scoring function, and integration into the  response.
-    -   **P2: UI Bug Verification:** Once the frontend crash is fixed, formally test and close out the original UI bugs (broken markdown, missing pet photo) using the frontend testing agent.
+    -   **P2: UI Bug Verification:** Now that the frontend is unblocked, formally test and close out the original UI bugs (broken markdown, missing pet photo) using the frontend testing agent.
+
 -   **Future Tasks:**
     -   Complete the remaining frontend refactoring of  (Phases 2D-5).
     -   Build the Picks UI on the frontend to display the new data.
@@ -117,103 +55,94 @@ yarn.lock)
     -   Consolidate the  and  collections into a single source of truth.
 
 **Completed work in this session**
--   **Fixed Chat Memory Display Bug:** Modified the  endpoint in  to correctly query and combine results from both  and , resolving the issue where chat memories were not displayed.
--   **Fixed YouTube Integration:** Repaired the logic in  for the LEARN pillar, ensuring the  field is now correctly populated with a YouTube video URL from the  service.
--   **Created Comprehensive Agent Memory & Documentation:**
-    -   Authored and stored a master  guide.
-    -   Created and saved a system audit, enhancement roadmap, and the full Picks Engine specification ( and seed  files) in the  directory.
--   **Defined Picks Engine Architecture:** Collaborated with the user to finalize a detailed, taxonomy-driven architecture for the Picks Engine v1.
+-   **Fixed Critical Frontend Crash (RESOLVED):** Diagnosed and fixed a major bug causing  and other pages to crash. Implemented lazy loading in  for large components (, , , etc.), resolving the issue.
+-   **Fixed Profile-First Doctrine Violation in Chat (RESOLVED):** Enhanced the system prompt and context-building logic in  to force the LLM to use the pet's specific profile data (allergies, preferences) before resorting to generic breed information.
+-   **Enhanced What Mira Knows Card (RESOLVED):** Modified the  endpoint in  to include critical data like allergies, favorite flavors, and personality traits from the pet's profile.
+-   **Audited & Improved Pet Soul Score (RESOLVED):**
+    -   Refactored  to recognize data aliases and pull information from more sources (, ).
+    -   Boosted Mystique's soul score from 48% to 64.3% and promoted her tier from Soul Seeker to Soul Explorer.
+-   **Created Master Roadmap:** Analyzed all memory documents and created  to provide a centralized view of project progress, per user request.
 
 **Earlier issues found/mentioned but not fixed**
--   The original UI bugs (broken markdown, missing pet photo) are still pending verification because the frontend is now crashing, which is a more severe, blocking issue.
+-   **Issue 1: Original UI Bugs (Markdown, Pet Photo)**
+    -   **Debug checklist:** Now that the frontend is stable, use the frontend testing agent to load , interact with the chat, and verify if markdown renders correctly and the pet photo is displayed.
+    -   **Why to solve this issue and what will be achieved with this?** These are long-standing UI polish issues that can now finally be addressed and closed.
+    -   **Should Test frontend/backend/both after fix:** Frontend
+    -   **Is recurring issue?** Y
 
 **Known issue recurrence from previous fork**
--   **Issue recurrence in previous fork:** UI bugs (markdown, pet photo).
+-   **Issue recurrence in previous fork:** UI bugs (markdown rendering, pet photo display).
 -   **Recurrence count:** 3+
--   **Status:** BLOCKED by the new frontend crash.
+-   **Status:** NOT STARTED (but now unblocked).
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Picks Engine:** A taxonomy-driven system for generating contextual next best actions. It relies on new DB collections: , , , and a scoring algorithm. This is a departure from simple keyword matching.
--   **Safety Gating:** A critical first step in the Picks Engine pipeline to detect  or  states and override normal behavior, preventing harmful recommendations.
--   **Taxonomy-Driven Architecture:** The approved design to move system logic from hardcoded keywords to a structured, queryable set of database collections that act as the source of truth for routing and classification.
--   **Memory Consolidation:** A pattern used to fix the memory bug, where two different data sources (, ) are merged at the API layer to provide a unified view to the frontend.
+-   **Lazy Loading:** Implemented in React using  and  to split large components into separate chunks, preventing browser crashes from large initial bundle sizes.
+-   **Profile-First Doctrine:** A core principle reinforced in the chat system prompt in , mandating the use of specific pet profile data over generic breed information.
+-   **Data-Driven Scoring:** The pet soul score is now calculated by merging data from multiple sources (, , ) and using alias mapping () for a more accurate representation of personalization.
 
 **key DB schema**
--   ****: Confirmed as the correct storage for auto-extracted chat memories.
--   ****: A separate collection for explicit memories.
--   **, , , , **: These are the **new collections** that need to be created and seeded to support the Picks Engine.
+-   ****: Contains the core profile, including nested  (allergies, flavors) and  (personality) objects, which are now used in scoring.
+-   ****: Still a primary source for Q&A-based scoring.
+-   **(Pending)** , , , , : These collections for the Picks Engine are defined but **have not yet been created or seeded.**
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--   **/app/memory/AGENT_START_HERE.md**: **CRITICAL READ.** This is the new master document that guides the agent on what has been discussed and what needs to be done. It references all other important documents.
--   **/app/memory/specs/Mira_OS_Taxonomy_Routing_Picks_Spec_v1_2_Master.docx**: The definitive specification for the Picks Engine architecture.
--   **/app/memory/seed_data/**: This directory contains all the CSV files required for Phase 0 of the Picks Engine implementation.
--   **/app/backend/mira_memory_routes.py**: Contains the endpoint that was recently fixed to combine memory sources.
--   **/app/frontend/src/pages/MiraDemoPage/MiraDemoPage.jsx**: This file is the likely source of the frontend crash.
+-   **/app/memory/MASTER_ROADMAP_STATUS.md**: The latest summary of the project's status.
+-   **/app/memory/MIRA_OS_PERSONALIZATION_AUDIT.md**: Details the audit and fixes for the soul score.
+-   **/app/backend/pet_score_logic.py**: The logic for calculating the pet soul score.
+-   **/app/frontend/src/App.js**: The main router, now implementing lazy loading.
+-   **/app/backend/server.py**: Contains the main chat logic and system prompt.
 
 **Areas that need refactoring**:
--   The existence of two memory collections (, ) should eventually be consolidated into a single collection to reduce complexity. The current API fix is a temporary bridge.
--    remains a very large (3400+ lines) and fragile component that is now causing a critical application failure.
+-    remains a very large (3400+ lines) component. While lazy loading prevents it from crashing the app, it should be broken down into smaller, more manageable components for future maintainability.
 
 **key api endpoints**
--   : **(FIXED)** Now combines data from  and .
--   : The main endpoint where the new Picks Engine will be integrated.
--   : **(FIXED)** Now correctly includes a  URL.
+-   : **(IMPROVED)** Now adheres to the Profile-First Doctrine.
+-   : **(IMPROVED)** Now returns comprehensive profile data including allergies and preferences.
+-   : **(IMPROVED)** Calculation is more accurate. Needs to be updated to show pillar scores.
 
 **Critical Info for New Agent**
--   **START HERE:** Your first action MUST be to read **/app/memory/AGENT_START_HERE.md**. It is the master guide and references all the new architectural documents and seed data for the Picks Engine. Do not proceed without understanding its contents.
--   **TWO P0 TASKS:** You have two parallel P0 priorities:
-    1.  **Backend:** Begin implementing the **Picks Engine**, starting with Phase 0 (seeding the new database collections from the provided CSV files). This is the user's primary feature request.
-    2.  **Frontend:** Investigate and fix the **crashing  page**. This is a blocker for all UI work.
--   **USE THE TAXONOMY:** The future of MIRA OS is taxonomy-driven. All new classification and routing logic must be built using the new collections (, , etc.), not the old hardcoded keywords in .
--   **MEMORY FIX IS DONE:** The issue where chat memories were not displaying has been resolved at the API level. Do not re-investigate this. Focus on the frontend crash and the Picks Engine.
+-   **Your immediate task is to address the user's request: what is the score of every pillar too.** You need to modify the pet score API endpoint to return the score breakdown for each category (Nutrition, Safety, etc.).
+-   **The frontend crash is FIXED.** The application is stable. Do not re-investigate the crash. You can proceed with UI-related tasks.
+-   **The next P0 feature is the Picks Engine.** Once you fulfill the user's request for pillar scores, you should propose starting Phase 0 of the Picks Engine: seeding the database from the CSV files in .
+-   **Follow the roadmap.** The user wants to track progress against the master plan. Refer to .
 
 **documents and test reports created in this job**
--   
--   
--   
--   
--   
--   
--   
--   
--   
--    (Updated)
+-   /app/memory/MIRA_OS_PERSONALIZATION_AUDIT.md
+-   /app/memory/MASTER_ROADMAP_STATUS.md
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Asked to also store the earlier v1 spec doc. **Status: COMPLETED.**
-2.  **User:** Confirmed the agent should proceed with fixing the memory endpoint (Option 1) and provided the green light and all seed files to start the Picks Engine implementation (Phase 0). **Status: PENDING (Picks Engine work).**
-3.  **User:** Asked to check if Mira's chats are being stored correctly in Mystique's memories. **Status: COMPLETED (Investigated and fixed).**
-4.  **User:** Asked the agent to discuss the proposed Picks Engine architecture based on an uploaded doc. **Status: COMPLETED.**
-5.  **User:** Provided detailed feedback and corrections on the agent's proposed Picks Engine architecture, clarifying the use of canonical tags, service types, and the implementation order. **Status: COMPLETED.**
-6.  **User:** Responded to the agent's detailed plan for the Picks Engine, providing a v1 spec document and clarifying non-negotiable requirements like safety gating and taxonomy-driven matching. **Status: COMPLETED.**
-7.  **User:** Asked for a detailed explanation of what the Picks Engine will do. **Status: COMPLETED.**
-8.  **User:** Asked for a comprehensive audit, roadmap, and for all architectural discussions to be stored as memory for future agents. Defined the project as a mobile-first pet OS. **Status: COMPLETED (Audit and docs created).**
-9.  **User:** Requested all pillar detection keywords be exported to a CSV. **Status: COMPLETED (in previous job).**
-10. **User:** Clarified that the Unified Service Flow was already working and should not be modified. **Status: COMPLETED.**
+1.  **User:** what is the score of every pillar too. **Status: PENDING.**
+2.  **User:** qt the beginning of every conversation and end before an agent is about to finish they have to indicate where we are on on our entire roadmap of development. Please list that right now and lets start ( study the full memory and our doctirnes and bilble ). **Status: COMPLETED.**
+3.  **User:** Before we begin ccan we audit thepersonalisation and intelligence and score this and let us put all in the right order to do to get to 100/100. **Status: COMPLETED (Audit done, score improved).**
+4.  **User:** is this updted on what i know about Mystique card on the mira-demo pet card which is on this tab. **Status: COMPLETED (Investigated and fixed the backing API).**
+5.  **User:** again we are tlling breed first and not Mystique. can you check we have a 61% soul filled !!! **Status: COMPLETED (Investigated and fixed chat logic).**
+6.  **User:** Can you first tell me why you’re recommending certain products – what about Mystique makes them a good fit. **Status: This was the user's example of the Profile-First bug, which is now fixed.**
+7.  **User:** Frontend crash first (unblocks UI testing) and are you logged in to /mira-demo with the test creentials. **Status: COMPLETED (Frontend crash is fixed).**
 
 **Project Health Check:**
--   **Broken:** The primary frontend page () is crashing after login, blocking all UI interaction and testing.
+-   **Broken:** None. The critical frontend crash has been resolved.
 -   **Mocked:** None.
 
 **3rd Party Integrations**
--   **LLM (Claude/GPT):** Used for the core chat functionality. Slated to be a fallback option in the new, more deterministic classification pipeline.
--   **YouTube:** The integration is complete and functional for the LEARN pillar.
+-   **LLM (Claude/GPT):** Used for core chat functionality.
+-   **YouTube:** Integration is functional for the LEARN pillar.
 
 **Testing status**
--   **Testing agent used after significant changes:** NO
+-   **Testing agent used after significant changes:** YES (To initially diagnose the frontend crash).
 -   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** None in this session.
--   **Known regressions:** The  page is now crashing, which is a major regression.
+-   **Test files created:** None.
+-   **Known regressions:** The frontend crash was a regression that has now been fixed.
 
 **Credentials to test flow:**
--   **Test User:**  / 
--   **Admin:**  / 
+-   **Test User:**  /  (used for pet Mystique)
+-   **Admin:**  /  (used for pet Lola)
 
 **What agent forgot to execute**
--   The agent did not run the regression tests () after making backend changes. While the changes were in a different area (), it's a good practice to run existing tests to ensure no regressions were introduced.</analysis>
+-   The P0 task to seed the Picks Engine database has been repeatedly postponed due to the user redirecting focus to higher-priority bugs (frontend crash, personalization logic). This task remains the most important unstarted feature.
+-   The original UI bugs (markdown, pet photo) have not been verified yet, although they are now unblocked.</analysis>

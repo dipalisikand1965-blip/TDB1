@@ -296,4 +296,4 @@ Password: test123
 
 **Audit Status:** COMPLETE
 **Generated:** February 9, 2026
-**Preview URL:** https://mira-picks-demo.preview.emergentagent.com
+**Preview URL:** https://mira-pillar-scores.preview.emergentagent.com
