@@ -2035,9 +2035,126 @@ const MiraDemoPage = () => {
 
   // NOTE: Voice control functions (stopSpeaking, speak as speakWithMira) now come from useVoice hook
 
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // CHAT SUBMIT HOOK - Extracted from MiraDemoPage.jsx (Phase 1 Refactor)
+  // Main chat flow: user input → API call → response processing
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const { handleSubmit } = useChatSubmit({
+    // API Config
+    API_URL,
+    token,
+    sessionId,
+    
+    // User & Pet
+    user,
+    pet,
+    setPet,
+    userCity,
+    
+    // Query State
+    query,
+    setQuery,
+    
+    // Conversation State
+    conversationHistory,
+    setConversationHistory,
+    conversationContext,
+    setConversationContext,
+    conversationStage,
+    setConversationStage,
+    
+    // Processing State
+    setIsProcessing,
+    setShowSkeleton,
+    setIsTyping,
+    setMiraMode,
+    
+    // Ticket State
+    currentTicket,
+    setCurrentTicket,
+    createOrAttachTicket: async (ticketData) => {
+      // Using the API helper from useChat
+      return await createOrAttachTicket(API_URL, token, ticketData, currentTicket);
+    },
+    syncToServiceDesk,
+    
+    // Step State (Anti-loop)
+    currentStep,
+    setCurrentStep,
+    completedSteps,
+    setCompletedSteps,
+    stepHistory,
+    completeStep,
+    isAskingForMoreInfo,
+    clarifyingQuestionCount,
+    setClarifyingQuestionCount,
+    MAX_CLARIFYING_QUESTIONS,
+    
+    // Quick Replies
+    setQuickReplies,
+    extractQuickReplies,
+    
+    // Picks State
+    miraPicks,
+    setMiraPicks,
+    setActiveVaultData,
+    setVaultUserMessage,
+    setShowVault,
+    setShowTopPicksPanel,
+    setShowInsightsPanel,
+    
+    // Context Tracking
+    lastShownProducts,
+    setLastShownProducts,
+    lastSearchContext,
+    setLastSearchContext,
+    
+    // Memory State
+    setActiveMemoryContext,
+    
+    // Soul Score
+    setSoulScoreUpdated,
+    
+    // Proactive Alerts
+    setProactiveAlerts,
+    
+    // Conversation End
+    setShowConversationEndBanner,
+    setConversationComplete,
+    
+    // Concierge
+    setConciergeConfirmation,
+    setShowConciergePanel,
+    
+    // Training Videos
+    setHasNewVideos,
+    setNewVideosCount,
+    
+    // Pillar
+    setPillar,
+    
+    // Voice
+    voiceEnabled,
+    voiceTimeoutRef,
+    speakWithMira,
+    stopSpeaking,
+    
+    // Haptic & Sound
+    hapticFeedback,
+    notificationSounds,
+    
+    // Helper Functions (from useChat)
+    fetchConversationMemory: async (petId) => fetchConversationMemory(API_URL, token, petId),
+    fetchMoodContext: async (petId) => fetchMoodContext(API_URL, token, petId),
+    saveConversationMemory: async (petId, context) => saveConversationMemory(API_URL, token, petId, context),
+    routeIntent: async (query, petId, miraMode) => routeIntent(API_URL, token, query, petId, miraMode),
+    fetchTrainingVideos: async (topic) => fetchTrainingVideos(API_URL, token, topic),
+    fetchTravelHotels: async (city) => fetchTravelHotels(API_URL, token, city),
+    fetchTravelAttractions: async (city, petType) => fetchTravelAttractions(API_URL, token, city, petType)
+  });
   
-  // Handle submit - MIRA DOCTRINE: Let Mira's intelligence decide what to show
-  const handleSubmit = useCallback(async (e, voiceQuery = null) => {
+  // OLD handleSubmit REMOVED - Now using useChatSubmit hook above
+  // ═══════════════════════════════════════════════════════════════════════════════
     if (e) e.preventDefault();
     
     let inputQuery = voiceQuery || query;
