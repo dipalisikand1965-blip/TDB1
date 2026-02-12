@@ -833,36 +833,76 @@ export const buildMiraMessage = ({
   inComfortMode = false,
   miraStepId = null,
   isNewClarifyingQuestion = false
-}) => ({
-  type: 'mira',
-  content,
-  data: {
-    ...data,
-    nearby_places: data?.nearby_places,
-    weather: data?.weather,
-    response: {
-      ...data?.response,
-      products: shouldShowProducts ? data?.response?.products : [],
-      suggest_concierge: true, // Concierge can do ANYTHING
-      detected_services: detectedServices,
-      detected_experiences: detectedExperiences,
-      services_from_db: data?.response?.services || []
-    }
-  },
-  quickReplies,
-  // WORLD CLASS UX: Don't auto-show - use tray instead
-  showProducts: false,
-  showServices: false,
-  showExperiences: false,
-  detectedServices: [],
-  detectedExperiences: [],
-  dynamicConciergeRequest: null,
-  conciergeIsLive,
-  inComfortMode,
-  stepId: miraStepId,
-  isClarifyingQuestion: isNewClarifyingQuestion,
-  timestamp: new Date()
-});
+}) => {
+  // Check if content mentions connecting to concierge
+  const shouldShowConciergeCard = content && checkConciergeCardTrigger(content);
+  
+  return {
+    type: 'mira',
+    content,
+    data: {
+      ...data,
+      nearby_places: data?.nearby_places,
+      weather: data?.weather,
+      response: {
+        ...data?.response,
+        products: shouldShowProducts ? data?.response?.products : [],
+        suggest_concierge: true, // Concierge can do ANYTHING
+        detected_services: detectedServices,
+        detected_experiences: detectedExperiences,
+        services_from_db: data?.response?.services || []
+      }
+    },
+    quickReplies,
+    // WORLD CLASS UX: Don't auto-show - use tray instead
+    showProducts: false,
+    showServices: false,
+    showExperiences: false,
+    detectedServices: [],
+    detectedExperiences: [],
+    dynamicConciergeRequest: null,
+    showConciergeCard: shouldShowConciergeCard, // NEW: Triggers inline concierge card
+    conciergeIsLive,
+    inComfortMode,
+    stepId: miraStepId,
+    isClarifyingQuestion: isNewClarifyingQuestion,
+    timestamp: new Date()
+  };
+};
+
+/**
+ * Check if message content should trigger inline concierge card
+ */
+const checkConciergeCardTrigger = (content) => {
+  if (!content) return false;
+  const lowerContent = content.toLowerCase();
+  
+  const conciergePatterns = [
+    'connect you with your pet concierge',
+    'connect you with your concierge',
+    'connect you with concierge',
+    'connect with concierge',
+    'reach your concierge',
+    'concierge® to handle',
+    'concierge® team',
+    'i can connect you',
+    'shall i connect you',
+    'would you like to speak with',
+    'our live concierge',
+    'concierge is on it',
+    'concierge® is joining',
+    'speak with your concierge',
+    'your concierge can help',
+    'reach out to concierge',
+    'concierge will',
+    'get our concierge',
+    'connect me with concierge',
+    'speak with a concierge',
+    'chat with concierge'
+  ];
+  
+  return conciergePatterns.some(pattern => lowerContent.includes(pattern));
+};
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // EXPORTS
