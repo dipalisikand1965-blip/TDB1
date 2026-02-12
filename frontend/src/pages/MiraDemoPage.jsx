@@ -3532,6 +3532,7 @@ const MiraDemoPage = () => {
             priority: 5
           }))}
           apiUrl={API_URL}
+          token={token}
           onSoulQuestionClick={() => {
             // Navigate to soul questions page
             hapticFeedback.buttonTap();
