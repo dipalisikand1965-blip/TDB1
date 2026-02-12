@@ -10306,6 +10306,85 @@ Ask clarifying questions about the OTHER pet (breed, size, age, etc.) since you 
 Give generic advice appropriate for any pet unless user provides specific details about the friend's/other pet.
 """
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # SOUL-FIRST RESPONSE GENERATION (Profile-First Doctrine Enforcement)
+        # Core Rule: Mira must speak from Pet Soul memory first, breed as fallback
+        # ═══════════════════════════════════════════════════════════════════════════
+        soul_first_instruction = ""
+        soul_context_summary = None
+        response_strategy = None
+        
+        # Check if this is a grooming/care related query
+        grooming_care_keywords = ["groom", "grooming", "haircut", "bath", "nail", "trim", "brush", "coat", "fur", "shampoo", "wash", "spa"]
+        is_grooming_query = any(kw in user_message.lower() for kw in grooming_care_keywords)
+        
+        if SOUL_FIRST_AVAILABLE and selected_pet and is_grooming_query and not is_asking_about_another_pet:
+            try:
+                # Process Soul-First context
+                intent_for_soul = "grooming" if is_grooming_query else "care"
+                soul_context_summary, response_strategy, soul_first_instruction = process_soul_first_context(
+                    selected_pet, 
+                    intent=intent_for_soul
+                )
+                
+                if soul_context_summary:
+                    logger.info(f"[SOUL-FIRST] Context built for {soul_context_summary.pet_name}: "
+                               f"{soul_context_summary.grooming_relevant_count} relevant fields, "
+                               f"strategy={response_strategy.strategy if response_strategy else 'none'}")
+            except Exception as soul_err:
+                logger.warning(f"[SOUL-FIRST] Error processing Soul context: {soul_err}")
+                soul_first_instruction = ""
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # DATA WRITE-BACK: Check if user is answering fallback questions
+        # Extract Soul data from their response and save to profile
+        # ═══════════════════════════════════════════════════════════════════════════
+        if SOUL_FIRST_AVAILABLE and selected_pet and request.history:
+            try:
+                # Check if previous message asked fallback questions
+                last_mira_message = None
+                for msg in reversed(request.history):
+                    if msg.get("role") == "assistant":
+                        last_mira_message = msg.get("content", "")
+                        break
+                
+                # Detect if Mira asked grooming-related questions
+                fallback_indicators = [
+                    "coat like right now",
+                    "looking for a full groom",
+                    "been groomed before",
+                    "dryer/clipping anxiety",
+                    "home visit or salon",
+                    "skin irritation",
+                    "quick check"
+                ]
+                
+                if last_mira_message and any(ind in last_mira_message.lower() for ind in fallback_indicators):
+                    # User is answering fallback questions - extract and save
+                    pet_id = selected_pet.get("id")
+                    pet_name_for_extract = selected_pet.get("name", "pet")
+                    
+                    extracted_data = extract_soul_data_from_response(user_message, pet_name_for_extract)
+                    
+                    if extracted_data and (extracted_data.coat_type or extracted_data.grooming_preference or 
+                                           extracted_data.grooming_anxiety_triggers or extracted_data.skin_flags):
+                        # Write back to pet profile
+                        db_for_update = get_db()
+                        write_success = await write_soul_data_to_pet(db_for_update, pet_id, extracted_data)
+                        
+                        if write_success:
+                            logger.info(f"[SOUL-FIRST] Wrote extracted data to {pet_name_for_extract}'s Soul")
+                            # Reload pet with updated data
+                            selected_pet = await load_pet_soul(pet_id)
+                            # Re-process Soul context with new data
+                            if selected_pet:
+                                soul_context_summary, response_strategy, soul_first_instruction = process_soul_first_context(
+                                    selected_pet, 
+                                    intent="grooming"
+                                )
+            except Exception as extract_err:
+                logger.warning(f"[SOUL-FIRST] Error in data extraction/write-back: {extract_err}")
+        
         full_prompt = f"""{history_text}
 {cross_pillar_note}
 {relationship_memory_prompt}
