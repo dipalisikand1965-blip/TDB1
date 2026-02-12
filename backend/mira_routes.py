@@ -12215,7 +12215,29 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 "learn_context": os_context.get("learn_context"),  # Life stage, training history
                 "learn_picks": os_context.get("learn_picks", []),  # Picks for LEARN pillar
                 "concierge_handoff": os_context.get("concierge_handoff")  # Always available for CELEBRATE/STAY/TRAVEL/CARE
-            }
+            },
+            # ═══════════════════════════════════════════════════════════════════════════
+            # PICKS ENGINE (B6) - Taxonomy-driven next-best-actions
+            # Response contract: picks[], concierge{}, safety_override{}, missing_profile_fields[]
+            # ═══════════════════════════════════════════════════════════════════════════
+            "picks": picks_engine_output.picks if picks_engine_output else [],
+            "concierge": picks_engine_output.concierge if picks_engine_output else {
+                "mode": "always_on",
+                "cta_prominence": "quiet",
+                "reason": "always_available",
+                "cta": "Concierge® can help",
+                "suppress_commerce": False
+            },
+            "safety_override": picks_engine_output.safety_override if picks_engine_output else {
+                "active": False,
+                "level": "normal",
+                "suppress_commerce": False,
+                "suppress_shopping": False,
+                "allow_education": True
+            },
+            "missing_profile_fields": picks_engine_output.missing_profile_fields if picks_engine_output else [],
+            # Debug info (only included if request.debug=True)
+            "picks_debug": picks_engine_output.debug if (picks_engine_output and picks_engine_output.debug) else None
         }
         
         # ═══════════════════════════════════════════════════════════════════════════
