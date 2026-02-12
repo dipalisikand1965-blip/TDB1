@@ -9176,6 +9176,15 @@ async def mira_chat(
             # Auto-select if only one pet
             selected_pet = await load_pet_soul(pets[0].get("id") or pets[0].get("name"))
     
+    # FALLBACK: If no user auth but we have pet_id, load pet directly
+    # This is critical for Mira to know the pet even without authentication
+    if not selected_pet and request.selected_pet_id:
+        logger.info(f"[PET LOAD] No auth/pets found, loading pet directly by ID: {request.selected_pet_id}")
+        selected_pet = await load_pet_soul(request.selected_pet_id)
+        if selected_pet:
+            pets = [selected_pet]
+            logger.info(f"[PET LOAD] Loaded {selected_pet.get('name')} directly - Mira now knows this pet")
+    
     # ═══════════════════════════════════════════════════════════════════════════
     # CHECK FOR PERSONALIZED PICKS REQUEST FIRST
     # "Show me personalized picks for Mojo" should open the picks vault
