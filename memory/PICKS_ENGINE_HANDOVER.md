@@ -123,7 +123,7 @@ MIRA OS is a **life-led pet concierge system** - an intelligent assistant that h
 }
 ```
 
-### ✅ B4: Scoring Function (COMPLETE)
+### ✅ B4: Scoring Function (COMPLETE + PATCHED)
 **Files created:**
 - `/app/backend/picks_scorer.py` - Picks scoring and ranking engine
 
@@ -144,6 +144,44 @@ Where:
 3. **Profile penalty** - Missing required fields reduce score
 4. **Micro-question generation** - Prompts for missing profile data
 5. **Diversity rerank** - Ensures variety (booking/product + guide + concierge)
+6. **Degrade-safe templates** - Basic reason when profile incomplete, enhanced when complete
+7. **Allergy question routing** - Asks question instead of blocking picks
+
+**B4 Patches Applied:**
+| Fix | Before | After |
+|-----|--------|-------|
+| Field naming | `service_types` (ambiguous) | `service_modes` (clear) |
+| celebrate_birthday | `{age}` derived variable | Removed, uses `{dob}` only |
+| celebrate_cake_order | `exclude_health_flags: ["allergies"]` | `if_allergies_present: "ask_question"` |
+| pawty tag | Non-standard | Mapped to `party_planning` canonical tag |
+| care_grooming_book | Required `breed` for broken template | Degrade-safe + `enhanced_reason_requires` |
+| stay_boarding_book | Required `energy_level` | Degrade-safe + `enhanced_reason_requires` |
+
+**Pick Schema (Updated):**
+```json
+{
+  "pick_id": "stay_boarding_book",
+  "pillar": "stay",
+  "pick_type": "booking",
+  "canonical_tags": ["kennel"],
+  "base_score": 85,
+  "title": "Book Boarding",
+  "cta": "Find Boarding",
+  "reason_template": "{pet_name} will be comfortable at a trusted boarding facility while you're away.",
+  "reason_template_enhanced": "{pet_name} will be comfortable at a boarding facility that matches their {energy_level} energy level and {temperament} temperament.",
+  "constraints": {
+    "species": ["dog", "cat"],
+    "age_stage": null,
+    "exclude_health_flags": [],
+    "required_profile_fields": [],
+    "enhanced_reason_requires": ["energy_level", "temperament"]
+  },
+  "service_vertical": "boarding",
+  "service_modes": ["boarding_facility"],
+  "concierge_complexity": "medium",
+  "safety_level": "normal"
+}
+```
 
 **Example Scoring Results:**
 | Query | Intent | Top Pick | Score |
