@@ -101,6 +101,25 @@ except ImportError as e:
     async def get_relevant_memories_for_context(*args, **kwargs): return []
     def format_memories_for_llm(*args, **kwargs): return ""
 
+# Import Picks Engine (B6) - Next-Best-Action recommendations
+try:
+    from backend.picks_engine import run_picks_engine, PicksEngineOutput
+    PICKS_ENGINE_AVAILABLE = True
+    logger.info("[MIRA OS] Picks Engine loaded")
+except ImportError as e:
+    PICKS_ENGINE_AVAILABLE = False
+    logger.warning(f"[MIRA OS] Picks Engine not available: {e}")
+    async def run_picks_engine(*args, **kwargs):
+        return {"picks": [], "concierge": {"mode": "always_on", "cta_prominence": "quiet"}, "safety_override": {"active": False}, "missing_profile_fields": []}
+    class PicksEngineOutput:
+        picks = []
+        concierge = {}
+        safety_override = {}
+        missing_profile_fields = []
+        pillar = ""
+        intent = ""
+        debug = None
+
 router = APIRouter(prefix="/api/mira", tags=["mira"])
 security_bearer = HTTPBearer(auto_error=False)
 
