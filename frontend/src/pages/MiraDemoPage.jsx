@@ -746,15 +746,7 @@ const MiraDemoPage = () => {
   const [reorderSuggestions, setReorderSuggestions] = useState([]);
   
   // NOTE: Session state (sessionId, sessionRecovered) now comes from useSession hook above
-  
-  // Conversation stage tracking
-  // Stage: 'initial' | 'clarifying' | 'concierge_engaged'
-  const [conversationStage, setConversationStage] = useState('initial');
-  
-  // CLARIFYING QUESTION COUNTER - Limit to 4 before auto-transition
-  // This prevents endless clarification loops
-  const [clarifyingQuestionCount, setClarifyingQuestionCount] = useState(0);
-  const MAX_CLARIFYING_QUESTIONS = 4;  // After 4 questions, auto-transition to transaction
+  // NOTE: conversationStage, clarifyingQuestionCount, MAX_CLARIFYING_QUESTIONS now come from useConversation hook
   
   // Step tracking - ANTI-LOOP SYSTEM
   // Tracks which steps (questions) have been asked and answered
