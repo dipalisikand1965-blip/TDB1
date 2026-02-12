@@ -199,12 +199,15 @@ class ClassificationPipeline:
                 tag = token.replace(" ", "_")
                 tag_data = self.canonical_tags[tag]
                 if tag not in matched_tags:
+                    # Direct tag match gets 0.95, not 1.0 (unless emergency)
+                    is_emergency = tag_data.get("is_emergency", False)
+                    conf = 0.98 if is_emergency else 0.90
                     matched_tags[tag] = {
                         "tag": tag,
                         "pillar": tag_data["pillar"],
-                        "confidence": 1.0,
+                        "confidence": conf,
                         "synonym": token,
-                        "protected": tag_data.get("is_emergency", False)
+                        "protected": is_emergency
                     }
         
         # Match service verticals
