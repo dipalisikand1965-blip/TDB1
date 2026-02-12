@@ -40,6 +40,7 @@ const SoulKnowledgeTicker = ({
   apiUrl,
   className = ''
 }) => {
+  const navigate = useNavigate();
   const [items, setItems] = useState(knowledgeItems);
   const [displayScore, setDisplayScore] = useState(soulScore);
   const [isGlowing, setIsGlowing] = useState(false);
