@@ -677,6 +677,290 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
                         "text": travel_memory.get("summary", travel_memory.get("content", "")),
                         "date": travel_memory.get("created_at")
                     }
+            
+            # ═══════════════════════════════════════════════════════════════════════════
+            # CARE PILLAR OS-AWARENESS (per MIRA BIBLE)
+            # Generate care-specific context for grooming, vet, daily care
+            # ═══════════════════════════════════════════════════════════════════════════
+            elif pillar == "care" or any(kw in user_lower for kw in ["grooming", "groom", "vet", "vaccine", "bath", "haircut", "nail", "walker", "walking"]):
+                # Extract pet's care-relevant information from profile
+                pet_soul = pet.get("soul") or {}
+                doggy_soul = pet.get("doggy_soul_answers") or {}
+                
+                # Handling and temperament data
+                handling_comfort = doggy_soul.get("handling_comfort") or pet.get("handling_sensitivity")
+                temperament = doggy_soul.get("temperament") or pet.get("temperament") or pet_soul.get("temperament")
+                anxiety_triggers = doggy_soul.get("anxiety_triggers") or pet.get("anxiety_triggers") or []
+                loud_sounds_reaction = doggy_soul.get("loud_sounds")
+                stranger_reaction = doggy_soul.get("stranger_reaction")
+                
+                # Physical attributes
+                coat_type = doggy_soul.get("coat_type") or pet.get("coat_type")
+                size = pet.get("size") or doggy_soul.get("size")
+                breed = pet.get("breed") or ""
+                weight = pet.get("weight") or doggy_soul.get("weight")
+                life_stage = doggy_soul.get("life_stage") or pet.get("life_stage")
+                
+                # Health data
+                health_conditions = doggy_soul.get("health_conditions") or pet.get("health_conditions")
+                vaccinations = pet.get("vaccinations") or []
+                last_vet_visit = pet.get("last_vet_visit")
+                
+                # Energy and activity
+                energy_level = doggy_soul.get("energy_level") or pet.get("energy_level")
+                
+                # Build CARE-specific context
+                care_context = {
+                    "handling_comfort": handling_comfort,
+                    "temperament": temperament,
+                    "anxiety_triggers": anxiety_triggers if isinstance(anxiety_triggers, list) else [],
+                    "loud_sounds_reaction": loud_sounds_reaction,
+                    "stranger_reaction": stranger_reaction,
+                    "coat_type": coat_type,
+                    "size": size,
+                    "breed": breed,
+                    "weight": weight,
+                    "life_stage": life_stage,
+                    "health_conditions": health_conditions,
+                    "vaccinations": vaccinations,
+                    "energy_level": energy_level,
+                    "allergies": allergies if allergies else [],
+                    # Derived flags
+                    "senior": life_stage in ["senior", "geriatric"] if life_stage else False,
+                    "anxious_with_handling": handling_comfort in ["uncomfortable", "anxious", "fearful"] if handling_comfort else False,
+                    "double_coat": breed.lower() in ["husky", "golden retriever", "german shepherd", "samoyed", "malamute", "chow"] if breed else False
+                }
+                
+                # CARE picks to suggest based on context
+                care_picks = []
+                
+                # Grooming intents
+                if any(kw in user_lower for kw in ["grooming", "groom", "haircut", "trim", "bath", "nail", "ear clean"]):
+                    # Consider handling comfort when suggesting grooming
+                    if care_context.get("anxious_with_handling"):
+                        care_picks.append({
+                            "title": "Gentle Grooming Session",
+                            "why": f"Matched to {pet.get('name', 'your pet')}'s handling comfort level",
+                            "cta": "Book",
+                            "service_type": "gentle_grooming",
+                            "concierge_always": True,
+                            "profile_used": ["handling_comfort"]
+                        })
+                    else:
+                        care_picks.append({
+                            "title": "Grooming Session Booking",
+                            "why": f"Full groom matched to coat type",
+                            "cta": "Book",
+                            "service_type": "grooming_booking",
+                            "concierge_always": True
+                        })
+                    
+                    care_picks.append({
+                        "title": "At-Home Grooming Guide",
+                        "why": "Step-by-step based on coat type",
+                        "cta": "Get",
+                        "service_type": "grooming_guide"
+                    })
+                
+                # Vet and health intents
+                if any(kw in user_lower for kw in ["vet", "vaccine", "checkup", "doctor", "medical", "health"]):
+                    care_picks.append({
+                        "title": "Vet Visit Coordination",
+                        "why": "We'll handle scheduling + reminders",
+                        "cta": "Book",
+                        "service_type": "vet_coordination",
+                        "concierge_always": True
+                    })
+                    care_picks.append({
+                        "title": "Vaccination Schedule",
+                        "why": "Never miss a booster again",
+                        "cta": "Plan",
+                        "service_type": "vaccination_schedule"
+                    })
+                
+                # Walker/sitting intents
+                if any(kw in user_lower for kw in ["walker", "walking", "walk", "sitting", "pet sitter"]):
+                    care_picks.append({
+                        "title": "Daily Walker Search",
+                        "why": f"Matched to {energy_level or 'activity'} level",
+                        "cta": "Find",
+                        "service_type": "walker_search",
+                        "concierge_always": True,
+                        "profile_used": ["energy_level"]
+                    })
+                    care_picks.append({
+                        "title": "Pet Sitter Coordination",
+                        "why": "Written brief with all pet intel",
+                        "cta": "Arrange",
+                        "service_type": "sitter_coordination",
+                        "concierge_always": True
+                    })
+                
+                # Default pick if no specific context
+                if not care_picks:
+                    care_picks.append({
+                        "title": "Care Needs Assessment",
+                        "why": f"Let's find the right care for {pet.get('name', 'your pet')}",
+                        "cta": "Start",
+                        "service_type": "care_assessment"
+                    })
+                
+                os_context["care_context"] = care_context
+                os_context["care_picks"] = care_picks
+                os_context["picks_update"] = {
+                    "should_refresh": True,
+                    "pillar": "care",
+                    "context": "care"
+                }
+                
+                # Include Concierge handoff for grooming/vet bookings
+                if any(kw in user_lower for kw in ["book", "schedule", "find", "need a"]):
+                    os_context["concierge_handoff"] = {
+                        "available": True,
+                        "reason": "Care services require coordination",
+                        "cta": "Connect to Concierge"
+                    }
+            
+            # ═══════════════════════════════════════════════════════════════════════════
+            # ENJOY PILLAR OS-AWARENESS
+            # Generate context for activities, outings, playdates
+            # ═══════════════════════════════════════════════════════════════════════════
+            elif pillar == "enjoy" or any(kw in user_lower for kw in ["park", "playdate", "activity", "fun", "outing", "meetup"]):
+                pet_soul = pet.get("soul") or {}
+                doggy_soul = pet.get("doggy_soul_answers") or {}
+                
+                # Social and activity data
+                behavior_with_dogs = doggy_soul.get("behavior_with_dogs") or pet.get("behavior_with_dogs")
+                energy_level = doggy_soul.get("energy_level") or pet.get("energy_level")
+                temperament = doggy_soul.get("temperament") or pet.get("temperament")
+                anxiety_triggers = doggy_soul.get("anxiety_triggers") or []
+                
+                enjoy_context = {
+                    "behavior_with_dogs": behavior_with_dogs,
+                    "energy_level": energy_level,
+                    "temperament": temperament,
+                    "anxiety_triggers": anxiety_triggers,
+                    "size": pet.get("size"),
+                    "breed": pet.get("breed"),
+                    # Derived
+                    "good_with_dogs": behavior_with_dogs in ["friendly", "playful", "social"] if behavior_with_dogs else None,
+                    "high_energy": energy_level in ["high", "very high", "high energy"] if energy_level else None
+                }
+                
+                enjoy_picks = []
+                
+                if any(kw in user_lower for kw in ["park", "dog park", "where can i"]):
+                    enjoy_picks.append({
+                        "title": "Local Dog Park Guide",
+                        "why": "Safe parks near you with ratings",
+                        "cta": "Find",
+                        "service_type": "park_guide",
+                        "uses_google_places": True
+                    })
+                
+                if any(kw in user_lower for kw in ["playdate", "play date", "other dogs", "socialize"]):
+                    enjoy_picks.append({
+                        "title": "Playdate Coordination",
+                        "why": f"Matched to {pet.get('name', 'your pet')}'s temperament",
+                        "cta": "Arrange",
+                        "service_type": "playdate_setup",
+                        "profile_used": ["behavior_with_dogs", "temperament"]
+                    })
+                
+                if any(kw in user_lower for kw in ["cafe", "restaurant", "pet friendly", "pet-friendly"]):
+                    enjoy_picks.append({
+                        "title": "Pet-Friendly Venue Search",
+                        "why": "Verified venues that welcome dogs",
+                        "cta": "Find",
+                        "service_type": "venue_search",
+                        "uses_google_places": True
+                    })
+                
+                if not enjoy_picks:
+                    enjoy_picks.append({
+                        "title": "Activity Ideas for " + pet.get("name", "Your Pet"),
+                        "why": f"Matched to {energy_level or 'activity'} level",
+                        "cta": "Get",
+                        "service_type": "activity_ideas"
+                    })
+                
+                os_context["enjoy_context"] = enjoy_context
+                os_context["enjoy_picks"] = enjoy_picks
+            
+            # ═══════════════════════════════════════════════════════════════════════════
+            # LEARN PILLAR OS-AWARENESS
+            # Generate context for training, behavior, commands
+            # ═══════════════════════════════════════════════════════════════════════════
+            elif pillar == "learn" or any(kw in user_lower for kw in ["training", "trainer", "barking", "biting", "pulling", "command", "teach"]):
+                pet_soul = pet.get("soul") or {}
+                doggy_soul = pet.get("doggy_soul_answers") or {}
+                
+                # Training-relevant data
+                life_stage = doggy_soul.get("life_stage") or pet.get("life_stage")
+                temperament = doggy_soul.get("temperament") or pet.get("temperament")
+                energy_level = doggy_soul.get("energy_level") or pet.get("energy_level")
+                food_motivation = doggy_soul.get("food_motivation")
+                behavior_concerns = doggy_soul.get("behavior_concerns") or pet.get("behavior_concerns")
+                
+                learn_context = {
+                    "life_stage": life_stage,
+                    "temperament": temperament,
+                    "energy_level": energy_level,
+                    "food_motivation": food_motivation,
+                    "behavior_concerns": behavior_concerns,
+                    "breed": pet.get("breed"),
+                    # Derived
+                    "is_puppy": life_stage in ["puppy", "young"] if life_stage else False,
+                    "high_food_motivation": food_motivation in ["very food motivated", "high", "loves treats"] if food_motivation else None
+                }
+                
+                learn_picks = []
+                
+                # Puppy training
+                if learn_context.get("is_puppy") or "puppy" in user_lower:
+                    learn_picks.append({
+                        "title": "Puppy Training Plan",
+                        "why": "Age-appropriate milestones for " + pet.get("name", "your puppy"),
+                        "cta": "Plan",
+                        "service_type": "puppy_plan"
+                    })
+                
+                # Behavior issues
+                if any(kw in user_lower for kw in ["barking", "biting", "aggressive", "reactive", "anxiety", "pulling"]):
+                    learn_picks.append({
+                        "title": "Behavior Assessment",
+                        "why": "Professional evaluation first",
+                        "cta": "Book",
+                        "service_type": "behavior_assessment",
+                        "concierge_always": True
+                    })
+                    learn_picks.append({
+                        "title": "Trainer Search by Need",
+                        "why": "Matched to behavior + training style",
+                        "cta": "Find",
+                        "service_type": "trainer_search",
+                        "concierge_always": True
+                    })
+                
+                # General training
+                if any(kw in user_lower for kw in ["command", "teach", "train", "obedience"]):
+                    learn_picks.append({
+                        "title": "At-Home Training Guide",
+                        "why": "Step-by-step for basic commands",
+                        "cta": "Get",
+                        "service_type": "training_guide"
+                    })
+                
+                if not learn_picks:
+                    learn_picks.append({
+                        "title": "Training Needs Assessment",
+                        "why": f"Find the right approach for {pet.get('name', 'your pet')}",
+                        "cta": "Start",
+                        "service_type": "training_assessment"
+                    })
+                
+                os_context["learn_context"] = learn_context
+                os_context["learn_picks"] = learn_picks
                     
         except Exception as e:
             logger.debug(f"[OS CONTEXT] Memory recall error: {e}")
