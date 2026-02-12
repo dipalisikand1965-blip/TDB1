@@ -14,8 +14,20 @@ import requests
 import os
 import time
 
-# Get BASE_URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+# Get BASE_URL from frontend .env
+def get_base_url():
+    """Read BASE_URL from frontend .env file"""
+    env_path = "/app/frontend/.env"
+    try:
+        with open(env_path, 'r') as f:
+            for line in f:
+                if line.startswith('REACT_APP_BACKEND_URL='):
+                    return line.strip().split('=', 1)[1].rstrip('/')
+    except Exception:
+        pass
+    return "https://mira-kibble-flow.preview.emergentagent.com"
+
+BASE_URL = get_base_url()
 
 # Test pet credentials
 TEST_PET_ID = "pet-99a708f1722a"  # Mojo - Indie breed
