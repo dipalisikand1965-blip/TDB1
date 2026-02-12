@@ -5525,11 +5525,14 @@ PILLARS = {
             # Training types
             "learn", "training", "course", "class", "puppy class", "puppy training",
             "obedience", "basic obedience", "advanced training",
+            # Trainer (explicitly - NOT to be confused with travel)
+            "trainer", "dog trainer", "pet trainer", "find trainer", "need trainer",
+            "choose trainer", "hire trainer", "training session",
             # Specific behaviors
-            "behaviour", "behavior", "barking", "excessive barking", "whining", "howling",
-            "biting", "nipping", "mouthing", "jumping", "pulling", "leash pulling",
+            "behaviour", "behavior", "barking", "barks", "excessive barking", "whining", "howling",
+            "biting", "nipping", "mouthing", "jumping", "pulling", "pulls", "leash pulling",
             # Commands
-            "teach", "command", "trick", "sit", "stay", "come", "heel", "down", "leave it",
+            "teach", "command", "trick", "stay", "come", "heel", "down", "leave it",
             "recall", "drop it", "place",
             # Anxiety and behavior issues
             "separation anxiety", "fearful", "reactive", "aggression", "resource guarding",
@@ -5544,7 +5547,8 @@ PILLARS = {
             {"title": "Puppy Training Plan", "cta": "Plan", "service_type": "puppy_plan", "why": "Age-appropriate milestones"},
             {"title": "Behavior Assessment", "cta": "Book", "service_type": "behavior_assessment", "why": "Professional evaluation first"},
             {"title": "At-Home Training Guide", "cta": "Get", "service_type": "training_guide", "why": "Step-by-step for basic commands"},
-            {"title": "Socialization Plan", "cta": "Plan", "service_type": "socialization_plan", "why": "Safe exposure schedule"}
+            {"title": "Socialization Plan", "cta": "Plan", "service_type": "socialization_plan", "why": "Safe exposure schedule"},
+            {"title": "Training Video Guide", "cta": "Watch", "service_type": "training_video", "why": "Curated video for this behavior"}
         ]
     },
     "paperwork": {
