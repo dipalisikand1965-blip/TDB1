@@ -697,6 +697,11 @@ const MiraDemoPage = () => {
     encourageCompletion: false
   });
   
+  // QUICK SOUL QUESTIONS - Dynamic questions for this session (max 3)
+  const [quickQuestions, setQuickQuestions] = useState([]);
+  const [sessionQuestionsAsked, setSessionQuestionsAsked] = useState(0);
+  const MAX_QUESTIONS_PER_SESSION = 3;
+  
   // E027: DAILY DIGEST
   const [dailyDigest, setDailyDigest] = useState(null);
   
