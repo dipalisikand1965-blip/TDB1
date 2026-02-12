@@ -5014,14 +5014,60 @@ PILLARS = {
     "care": {
         "name": "Care",
         "icon": "💊",
-        "keywords": ["grooming", "vet", "veterinary", "health", "wellness", "vaccine", "checkup", "sitting", "walking", "daycare", "medical", "groom", "haircut", "bath", "nail trim"],
-        "urgency_default": "medium"
+        "keywords": [
+            # Grooming
+            "grooming", "groom", "haircut", "trim", "bath", "bathing", "nail trim", "nail cut",
+            "ear cleaning", "deshedding", "matted", "mat removal", "coat care", "brushing",
+            "smelly", "stinky", "needs a bath", "groomer",
+            # Vet and Health
+            "vet", "veterinary", "veterinarian", "checkup", "check up", "check-up", "wellness",
+            "vaccination", "vaccine", "booster", "deworming", "flea", "tick", "tick prevention",
+            "health check", "annual checkup", "health record", "medical record",
+            # Symptoms and concerns (non-emergency)
+            "itching", "scratching", "rash", "skin issue", "hair loss", "shedding",
+            "ear infection", "ear issue", "eye issue", "dental", "teeth", "breath", "bad breath",
+            "limping", "lameness", "stiff", "mobility", "joint pain",
+            # Daily care
+            "sitting", "pet sitting", "walker", "walking", "daily walk", "dog walker",
+            "routine care", "daily routine", "care routine",
+            # Medication
+            "medication", "medicine", "supplements", "vitamins", "prescription"
+        ],
+        "urgency_default": "medium",
+        # CARE Pillar Concierge Picks (per MIRA BIBLE)
+        "concierge_picks": [
+            {"title": "Grooming Session Booking", "cta": "Book", "service_type": "grooming_booking", "why": "Matched to coat type + handling comfort"},
+            {"title": "At-Home Grooming Guide", "cta": "Get", "service_type": "grooming_guide", "why": "Step-by-step based on coat type"},
+            {"title": "Vet Visit Coordination", "cta": "Book", "service_type": "vet_coordination", "why": "We'll handle scheduling + reminders"},
+            {"title": "Vaccination Schedule Setup", "cta": "Plan", "service_type": "vaccination_schedule", "why": "Never miss a booster again"},
+            {"title": "Daily Walker Search", "cta": "Find", "service_type": "walker_search", "why": "Matched to energy level + route preferences"},
+            {"title": "Pet Sitter Coordination", "cta": "Arrange", "service_type": "sitter_coordination", "why": "Written brief with all pet intel"}
+        ]
     },
     "enjoy": {
         "name": "Enjoy",
         "icon": "🎾",
-        "keywords": ["event", "meetup", "trail", "hike", "experience", "activity", "fun", "play", "park", "beach", "outdoor"],
-        "urgency_default": "low"
+        "keywords": [
+            # Activities
+            "event", "meetup", "meet up", "playdate", "play date", "dog park",
+            "trail", "hike", "hiking", "experience", "activity", "fun", "play",
+            "park", "beach", "outdoor", "outing", "weekend plan",
+            # Social
+            "socialize", "socializing", "other dogs", "dog friends", "playgroup",
+            # Entertainment
+            "games", "toys", "new toy", "puzzle toy", "enrichment", "mental stimulation",
+            # Locations
+            "pet friendly", "pet-friendly", "dog friendly", "where can I take"
+        ],
+        "urgency_default": "low",
+        # ENJOY Pillar Concierge Picks
+        "concierge_picks": [
+            {"title": "Local Dog Park Guide", "cta": "Find", "service_type": "park_guide", "why": "Safe parks near you with ratings"},
+            {"title": "Pet-Friendly Venue Search", "cta": "Find", "service_type": "venue_search", "why": "Cafes, restaurants, malls"},
+            {"title": "Playdate Coordination", "cta": "Arrange", "service_type": "playdate_setup", "why": "Based on temperament match"},
+            {"title": "Weekend Activity Ideas", "cta": "Get", "service_type": "activity_ideas", "why": "Matched to energy + season"},
+            {"title": "Enrichment Toy Recommendations", "cta": "Shop", "service_type": "toy_recommendations", "why": "Based on play style"}
+        ]
     },
     "fit": {
         "name": "Fit",
