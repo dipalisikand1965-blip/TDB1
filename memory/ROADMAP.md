@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://mira-backend-audit.preview.emergentagent.com
+https://mira-picks-demo.preview.emergentagent.com
 
 ---
 
