@@ -111,6 +111,7 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
         if pet:
             # Check multiple birthday field names
             birthday = pet.get("birthday") or pet.get("date_of_birth") or pet.get("birth_date") or pet.get("birthDate")
+            logger.info(f"[OS CONTEXT] Pet found: {pet.get('name')}, birthday field value: {birthday}")
             if birthday:
                 try:
                     from dateutil.parser import parse as parse_date
