@@ -167,13 +167,13 @@ def convert_classification_to_scoring_input(
 ) -> ClassificationResult:
     """Convert classification pipeline output to scoring logic input."""
     return ClassificationResult(
-        primary_pillar=classification.pillar,
-        secondary_pillars=classification.secondary_pillars or [],
+        primary_pillar=classification.primary_pillar,
+        secondary_pillars=[],  # ClassificationResult doesn't have this field
         canonical_tags=classification.canonical_tags or [],
         intent=classification.intent,
         confidence=classification.confidence,
         safety_level=classification.safety_level,
-        temporal_triggers=classification.temporal_triggers or {}
+        temporal_triggers={}  # Not in ClassificationResult
     )
 
 
@@ -184,7 +184,7 @@ def convert_classification_to_concierge_input(
 ) -> ClassificationContext:
     """Convert classification pipeline output to concierge logic input."""
     return ClassificationContext(
-        primary_pillar=classification.pillar,
+        primary_pillar=classification.primary_pillar,
         safety_level=classification.safety_level,
         confidence=classification.confidence,
         service_verticals=service_verticals,
