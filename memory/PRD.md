@@ -95,31 +95,33 @@ It is NOT:
 
 ### ✅ COMPLETED PHASES
 
-| Phase | Description | Status |
-|-------|-------------|--------|
-| B0 | Taxonomy Seeding | ✅ COMPLETE (1,000+ entries) |
-| B1 | Picks Catalogue | ✅ COMPLETE (110 picks) |
-| B2 | Classification Pipeline | ✅ COMPLETE (28 tests passing) |
+| Phase | Description | Status | Tests |
+|-------|-------------|--------|-------|
+| B0 | Taxonomy Seeding | ✅ COMPLETE | - |
+| B1 | Picks Catalogue | ✅ COMPLETE | - |
+| B2 | Classification Pipeline | ✅ COMPLETE | 28 passing |
+| B3 | Safety Gate | ✅ COMPLETE | 21 passing |
+| B4 | Scoring Function | ✅ COMPLETE | - |
 
 ### ⏳ PENDING PHASES
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| B3 | Safety Gate Enhancement | ⏳ PENDING |
-| B4 | Scoring Function | ⏳ PENDING |
 | B5 | Concierge Logic | ⏳ PENDING |
-| B6 | Chat Integration | ⏳ PENDING |
-| B7 | Events Log Enhancement | ⏳ PENDING |
-| B8 | E2E Testing | ⏳ PENDING |
-| B9 | Picks UI | ⏳ PENDING |
+| B6 | API Integration (/api/mira/chat) | ⏳ PENDING |
+| B7 | Events Log + Analytics | ⏳ PENDING |
+| B8 | Scenario Testing + Tuning | ⏳ PENDING |
 
 ### KEY FILES
 
 ```
-/app/backend/classification_pipeline.py     ← Main classification engine
+/app/backend/classification_pipeline.py     ← B2 classification engine
+/app/backend/safety_gate.py                 ← B3 safety gate + first aid
+/app/backend/picks_scorer.py                ← B4 scoring + ranking
 /app/backend/scripts/seed_taxonomy.py       ← B0 seeder (idempotent)
 /app/backend/scripts/seed_picks_catalogue.py ← B1 seeder (idempotent)
 /app/backend/tests/test_classification.py   ← 28 unit tests
+/app/backend/tests/test_safety_gate.py      ← 21 unit tests
 /app/memory/PICKS_ENGINE_HANDOVER.md        ← COMPLETE HANDOVER DOC
 ```
 
@@ -127,8 +129,8 @@ It is NOT:
 
 | Collection | Count | Purpose |
 |------------|-------|---------|
-| canonical_tags | 217 | Tag vocabulary |
-| tag_synonyms | 625 | Human language → tags |
+| canonical_tags | 218 | Tag vocabulary |
+| tag_synonyms | 630+ | Human language → tags |
 | service_verticals | 8 | Booking categories |
 | service_vertical_synonyms | 46 | Service matching |
 | service_types | 8 | Fulfilment modes |
