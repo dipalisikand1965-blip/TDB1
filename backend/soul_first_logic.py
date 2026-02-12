@@ -298,7 +298,7 @@ def build_soul_context_summary(pet: Dict) -> SoulContextSummary:
 @dataclass
 class ResponseStrategy:
     """Determines how Mira should respond based on Soul data availability."""
-    strategy: str  # "soul_first", "breed_fallback", "ask_questions"
+    strategy: str = "ask_questions"  # "soul_first", "breed_fallback", "ask_questions"
     soul_lines: List[str] = field(default_factory=list)  # Lines to include from Soul
     fallback_questions: List[str] = field(default_factory=list)  # Questions to ask
     breed_context: Optional[str] = None  # Breed info if needed as fallback
