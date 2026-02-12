@@ -52,7 +52,7 @@ MIRA OS is a **life-led pet concierge system** - an intelligent assistant that h
 
 **Seed script:** `/app/backend/scripts/seed_picks_catalogue.py` (IDEMPOTENT)
 
-### ✅ B2: Classification Pipeline (COMPLETE)
+### ✅ B2: Classification Pipeline (COMPLETE + FIXED)
 **Files created:**
 - `/app/backend/classification_pipeline.py` - Main classification engine
 - `/app/backend/tests/test_classification.py` - 28 unit tests (ALL PASSING)
@@ -67,6 +67,38 @@ MIRA OS is a **life-led pet concierge system** - an intelligent assistant that h
 3. Intent detection (buy vs book vs learn)
 4. Pillar resolution
 5. LLM fallback only if confidence < 0.6 OR no tags found
+
+**B2 Fixes Applied:**
+- Intent: "looking for a cake" now returns `buy` (not `book`)
+- Confidence: Single synonym match capped at 0.92, emergency at 0.99
+
+### ✅ B3: Safety Gate (COMPLETE)
+**Files created:**
+- `/app/backend/safety_gate.py` - Behavioural override layer
+- `/app/backend/tests/test_safety_gate.py` - 21 unit tests (ALL PASSING)
+
+**Safety Gate Behavior:**
+| Level | Behavior |
+|-------|----------|
+| `emergency` | Suppress ALL commerce, show ER vet CTA, first aid steps, emergency-red UI |
+| `caution` | Suppress shopping, allow education + vet booking, caution-yellow UI |
+| `normal` | No restrictions |
+
+**Returns `safety_override` object:**
+```json
+{
+  "is_active": true,
+  "level": "emergency",
+  "suppress_products": true,
+  "suppress_bookings": true,
+  "suppress_shop": true,
+  "show_emergency_banner": true,
+  "emergency_vet_cta": "Call/Go to Nearest Emergency Vet Now",
+  "first_aid_steps": ["Step 1", "Step 2", ...],
+  "allowed_pick_types": ["emergency", "concierge"],
+  "ui_theme": "emergency-red"
+}
+```
 
 ---
 
