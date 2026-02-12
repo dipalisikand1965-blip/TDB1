@@ -249,6 +249,7 @@ async def get_what_mira_knows(
     # IMPORTANT: Always recalculate to ensure consistency across all pages
     soul_answers = pet.get("doggy_soul_answers", {})
     calculated_overall_score = calculate_overall_score(soul_answers)
+    logger.info(f"[WHAT-MIRA-KNOWS] Calculated score: {calculated_overall_score}, Stored score: {pet.get('overall_score', 0)}")
     
     # 1. BUILD SOUL KNOWLEDGE from doggy_soul_answers
     soul_knowledge = []
