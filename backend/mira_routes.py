@@ -311,6 +311,7 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
                 health_flags = pet.get("health_flags") or pet.get("medical_conditions") or []
                 
                 # Build STAY-specific context
+                age_band = pet.get("age_band") or pet.get("life_stage")
                 stay_context = {
                     "temperament": temperament,
                     "anxiety_level": anxiety_level,
@@ -318,7 +319,7 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
                     "vaccinations": vaccinations,
                     "health_flags": health_flags if health_flags else [],
                     "allergies": allergies if allergies else [],
-                    "age_band": pet.get("age_band") or pet.get("life_stage"),
+                    "age_band": age_band,
                     "size": pet.get("size") or pet.get("weight_category")
                 }
                 
