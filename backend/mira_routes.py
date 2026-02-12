@@ -5445,23 +5445,27 @@ PILLARS = {
         "name": "Care",
         "icon": "💊",
         "keywords": [
-            # Grooming
+            # Grooming (CARE service per architecture)
             "grooming", "groom", "haircut", "trim", "bath", "bathing", "nail trim", "nail cut",
             "ear cleaning", "deshedding", "matted", "mat removal", "coat care", "brushing",
             "smelly", "stinky", "needs a bath", "groomer",
+            "nails", "nail", "brush", "coat", "fur", "shedding",
             # Vet and Health
             "vet", "veterinary", "veterinarian", "checkup", "check up", "check-up", "wellness",
             "vaccination", "vaccine", "booster", "deworming", "flea", "tick", "tick prevention",
             "health check", "annual checkup", "health record", "medical record",
             # Symptoms and concerns (non-emergency)
-            "itching", "scratching", "rash", "skin issue", "hair loss", "shedding",
+            "itching", "scratching", "rash", "skin issue", "hair loss",
             "ear infection", "ear issue", "eye issue", "dental", "teeth", "breath", "bad breath",
             "limping", "lameness", "stiff", "mobility", "joint pain",
+            "seems off", "not himself", "not herself", "something wrong",
             # Daily care
             "sitting", "pet sitting", "walker", "walking", "daily walk", "dog walker",
             "routine care", "daily routine", "care routine",
             # Medication
-            "medication", "medicine", "supplements", "vitamins", "prescription"
+            "medication", "medicine", "supplements", "vitamins", "prescription",
+            # Tracking and monitoring
+            "track", "monitor", "watch for", "catch early", "signs"
         ],
         "urgency_default": "medium",
         # CARE Pillar Concierge Picks (per MIRA BIBLE)
