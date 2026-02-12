@@ -18425,3 +18425,189 @@ async def get_pet_intelligence(pet_id: str, db=Depends(get_db)):
 
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# INTELLIGENCE DEPTH SCORE - TRUE MEASURE OF HOW WELL MIRA KNOWS A PET
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/intelligence-score/{pet_id}")
+async def get_intelligence_score_endpoint(pet_id: str, db=Depends(get_db)):
+    """
+    Calculate comprehensive intelligence depth score.
+    
+    This is the TRUE measure of how well Mira knows a pet.
+    NOT just form completion - considers:
+    - Completeness of knowledge
+    - Behavioural understanding depth
+    - Confidence levels
+    - Observation richness
+    - Recency of interactions
+    """
+    try:
+        from services.intelligence_score import calculate_intelligence_score
+        score = await calculate_intelligence_score(db, pet_id)
+        return score
+    except ImportError as e:
+        logger.warning(f"[INTELLIGENCE SCORE] Service not available: {e}")
+        return {"error": "Intelligence score service not available", "total_score": 0}
+    except Exception as e:
+        logger.error(f"[INTELLIGENCE SCORE] Error: {e}")
+        return {"error": str(e), "total_score": 0}
+
+
+@router.get("/intelligence-breakdown/{pet_id}")
+async def get_intelligence_breakdown_endpoint(pet_id: str, db=Depends(get_db)):
+    """
+    Get detailed intelligence breakdown by domain.
+    Shows what Mira knows in each intelligence domain.
+    """
+    try:
+        from services.intelligence_score import get_intelligence_breakdown
+        breakdown = await get_intelligence_breakdown(db, pet_id)
+        return breakdown
+    except ImportError as e:
+        logger.warning(f"[INTELLIGENCE BREAKDOWN] Service not available: {e}")
+        return {"error": "Intelligence breakdown service not available"}
+    except Exception as e:
+        logger.error(f"[INTELLIGENCE BREAKDOWN] Error: {e}")
+        return {"error": str(e)}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# VERSIONED STORAGE - TEMPORAL SOUL DATA WITH CONFIDENCE EVOLUTION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.post("/versioned/store-soul-answer")
+async def store_versioned_soul_answer(
+    pet_id: str,
+    field: str,
+    value: str,
+    source: str = "conversation",
+    confidence: int = 70,
+    db=Depends(get_db)
+):
+    """
+    Store a soul answer with versioning.
+    All answers are versioned - nothing is ever overwritten.
+    """
+    try:
+        from services.versioned_storage import VersionedStorage
+        storage = VersionedStorage(db)
+        result = await storage.store_soul_answer(
+            pet_id=pet_id,
+            field=field,
+            value=value,
+            source=source,
+            confidence=confidence
+        )
+        return result
+    except ImportError as e:
+        return {"success": False, "error": "Versioned storage service not available"}
+    except Exception as e:
+        logger.error(f"[VERSIONED STORE] Error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@router.post("/versioned/store-trait")
+async def store_versioned_trait(
+    pet_id: str,
+    trait_type: str,
+    trait_value: str,
+    confidence: int = 70,
+    evidence_text: str = None,
+    source: str = "conversation",
+    db=Depends(get_db)
+):
+    """
+    Store or update a derived trait with confidence evolution.
+    Confidence increases with repeated observations.
+    """
+    try:
+        from services.versioned_storage import VersionedStorage
+        storage = VersionedStorage(db)
+        result = await storage.store_trait(
+            pet_id=pet_id,
+            trait_type=trait_type,
+            trait_value=trait_value,
+            confidence=confidence,
+            evidence_text=evidence_text,
+            source=source
+        )
+        return result
+    except ImportError as e:
+        return {"success": False, "error": "Versioned storage service not available"}
+    except Exception as e:
+        logger.error(f"[VERSIONED TRAIT] Error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@router.get("/versioned/behavioral-shifts/{pet_id}")
+async def get_behavioral_shifts(pet_id: str, db=Depends(get_db)):
+    """
+    Detect behavioral shifts over time.
+    Example: "was social, now avoids dogs"
+    """
+    try:
+        from services.versioned_storage import VersionedStorage
+        storage = VersionedStorage(db)
+        shifts = await storage.detect_behavioral_shifts(pet_id)
+        return {"pet_id": pet_id, "shifts": shifts}
+    except ImportError as e:
+        return {"pet_id": pet_id, "shifts": [], "error": "Service not available"}
+    except Exception as e:
+        logger.error(f"[BEHAVIORAL SHIFTS] Error: {e}")
+        return {"pet_id": pet_id, "shifts": [], "error": str(e)}
+
+
+@router.get("/versioned/version-history/{pet_id}/{field}")
+async def get_version_history(pet_id: str, field: str, db=Depends(get_db)):
+    """
+    Get complete version history for a soul field.
+    Shows how the answer has evolved over time.
+    """
+    try:
+        from services.versioned_storage import VersionedStorage
+        storage = VersionedStorage(db)
+        history = await storage.get_version_history(pet_id, field)
+        return {"pet_id": pet_id, "field": field, "history": history}
+    except ImportError as e:
+        return {"pet_id": pet_id, "field": field, "history": [], "error": "Service not available"}
+    except Exception as e:
+        logger.error(f"[VERSION HISTORY] Error: {e}")
+        return {"pet_id": pet_id, "field": field, "history": [], "error": str(e)}
+
+
+@router.get("/versioned/all-traits/{pet_id}")
+async def get_all_traits(pet_id: str, min_confidence: int = 50, db=Depends(get_db)):
+    """
+    Get all traits for a pet above minimum confidence threshold.
+    """
+    try:
+        from services.versioned_storage import VersionedStorage
+        storage = VersionedStorage(db)
+        traits = await storage.get_all_traits(pet_id, min_confidence)
+        return {"pet_id": pet_id, "traits": traits}
+    except ImportError as e:
+        return {"pet_id": pet_id, "traits": [], "error": "Service not available"}
+    except Exception as e:
+        logger.error(f"[ALL TRAITS] Error: {e}")
+        return {"pet_id": pet_id, "traits": [], "error": str(e)}
+
+
+@router.post("/versioned/migrate/{pet_id}")
+async def migrate_pet_to_versioned_storage(pet_id: str, db=Depends(get_db)):
+    """
+    Migrate existing soul data to versioned storage.
+    Should be run once per pet.
+    """
+    try:
+        from services.versioned_storage import migrate_existing_soul_data
+        result = await migrate_existing_soul_data(db, pet_id)
+        return result
+    except ImportError as e:
+        return {"success": False, "error": "Migration service not available"}
+    except Exception as e:
+        logger.error(f"[MIGRATE] Error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+
