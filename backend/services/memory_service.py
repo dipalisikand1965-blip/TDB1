@@ -410,7 +410,7 @@ async def get_relevant_memories_for_context(db, pet_id: str, pillar: str = None,
     Get relevant memories for inclusion in LLM context.
     Prioritizes high-confidence signals and recent observations.
     """
-    if not pet_id or not db:
+    if not pet_id or db is None:
         return []
     
     try:
