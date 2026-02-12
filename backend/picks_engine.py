@@ -333,7 +333,9 @@ async def run_picks_engine(
     # ═══════════════════════════════════════════════════════════════════════════
     logger.info(f"[PICKS ENGINE] Step 1: Classification for message: {message[:50]}...")
     
-    classification = await classify_message(message, db)
+    # Create classifier and run classification
+    classifier = ClassificationPipeline(db)
+    classification = classifier.classify(message)
     
     if debug:
         debug_info["classification"] = {
