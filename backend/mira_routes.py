@@ -10501,7 +10501,10 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 "safety_gates": os_context.get("safety_gates", []),  # Allergies, health constraints
                 "picks_update": os_context.get("picks_update", {"should_refresh": pillar in ["celebrate", "travel", "care", "dine", "stay"], "pillar": pillar}),
                 "proactive_alerts": os_context.get("proactive_alerts", []),  # Urgent reminders
-                "memory_recall": os_context.get("memory_recall")  # Relevant past memory
+                "memory_recall": os_context.get("memory_recall"),  # Relevant past memory
+                # DINE PILLAR SPECIFIC - Diet/nutrition context
+                "dine_context": os_context.get("dine_context"),  # Current diet, allergies, restrictions
+                "dine_picks": os_context.get("dine_picks", [])  # Concierge picks for DINE pillar
             }
         }
         
