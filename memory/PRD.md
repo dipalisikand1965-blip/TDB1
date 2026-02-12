@@ -129,14 +129,24 @@ It is NOT:
 
 | Collection | Count | Purpose |
 |------------|-------|---------|
-| canonical_tags | 218 | Tag vocabulary |
-| tag_synonyms | 630+ | Human language → tags |
+| canonical_tags | 220+ | Tag vocabulary (boarding, party_planning, choking_suspected added) |
+| tag_synonyms | 640+ | Human language → tags (kennel→boarding, pawty→party_planning) |
 | service_verticals | 8 | Booking categories |
 | service_vertical_synonyms | 46 | Service matching |
 | service_types | 8 | Fulfilment modes |
 | service_type_synonyms | 61 | Fulfilment matching |
-| picks_catalogue | 110 | Next-best-actions |
+| picks_catalogue | 110 | Next-best-actions (with booking fields, temporal triggers) |
 | events_log | Growing | Audit trail |
+
+### KEY SCHEMA PATTERNS
+
+| Pattern | Purpose | Example |
+|---------|---------|---------|
+| `reason_template_enhanced` | Richer copy when profile complete | Uses `{breed}`, `{energy_level}` |
+| `required_booking_fields` | Questions before booking CTA | `["city", "start_date", "end_date"]` |
+| `temporal_triggers` | Boost picks on time-bound intent | `{"travel_window": true}` |
+| `if_brachycephalic` | Breed-specific safety warnings | For pugs, bulldogs, persians |
+| `if_allergies_present` | Question routing (not exclusion) | `"ask_question"` |
 
 ---
 
