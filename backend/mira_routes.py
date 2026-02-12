@@ -72,6 +72,153 @@ router = APIRouter(prefix="/api/mira", tags=["mira"])
 security_bearer = HTTPBearer(auto_error=False)
 
 # ============================================
+# MIRA OS LAYER INTELLIGENCE
+# ============================================
+# This makes Mira behave like an Operating System, not a chatbot
+# - Layer Activation: Silently switches context
+# - Temporal Awareness: Checks dates/proximity
+# - Safety Gating: Validates allergies, constraints
+# - Picks Auto-Update: Returns signals for frontend
+
+async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_message: str, db) -> dict:
+    """
+    MIRA OS INTELLIGENCE
+    Returns OS-level context for smarter responses:
+    - layer_activation: Which layer should activate
+    - temporal_context: Date/time relevant info (birthday proximity, etc)
+    - safety_gates: Allergies, health constraints
+    - picks_update: Signal to refresh picks with pillar context
+    - proactive_alerts: Any urgent reminders
+    """
+    os_context = {
+        "layer_activation": pillar,
+        "temporal_context": None,
+        "safety_gates": [],
+        "picks_update": {"should_refresh": False, "pillar": pillar},
+        "proactive_alerts": [],
+        "memory_recall": None
+    }
+    
+    if not db or not pet_id:
+        return os_context
+    
+    try:
+        # 1. TEMPORAL AWARENESS - Check birthdays, appointments, due dates
+        pet = await db.pets.find_one({"pet_id": pet_id}, {"_id": 0})
+        if pet:
+            birthday = pet.get("birthday") or pet.get("date_of_birth")
+            if birthday:
+                try:
+                    from dateutil.parser import parse as parse_date
+                    from datetime import datetime, timedelta
+                    
+                    bday = parse_date(birthday) if isinstance(birthday, str) else birthday
+                    today = datetime.now()
+                    
+                    # Calculate this year's birthday
+                    this_year_bday = bday.replace(year=today.year)
+                    if this_year_bday < today:
+                        this_year_bday = this_year_bday.replace(year=today.year + 1)
+                    
+                    days_until = (this_year_bday - today).days
+                    
+                    if days_until <= 30:
+                        os_context["temporal_context"] = {
+                            "type": "birthday_upcoming",
+                            "days_until": days_until,
+                            "date": this_year_bday.strftime("%B %d"),
+                            "message": f"Birthday in {days_until} days!" if days_until > 1 else "Birthday tomorrow!" if days_until == 1 else "Birthday today!"
+                        }
+                except Exception as e:
+                    logger.debug(f"[OS CONTEXT] Birthday parse error: {e}")
+        
+        # 2. SAFETY GATES - Get allergies, health constraints
+        if pet:
+            allergies = pet.get("allergies") or pet.get("known_allergies") or []
+            health_flags = pet.get("health_conditions") or pet.get("health_flags") or []
+            diet_restrictions = pet.get("dietary_restrictions") or []
+            
+            safety_gates = []
+            if allergies:
+                safety_gates.append({"type": "allergy", "items": allergies if isinstance(allergies, list) else [allergies]})
+            if health_flags:
+                safety_gates.append({"type": "health", "items": health_flags if isinstance(health_flags, list) else [health_flags]})
+            if diet_restrictions:
+                safety_gates.append({"type": "diet", "items": diet_restrictions if isinstance(diet_restrictions, list) else [diet_restrictions]})
+            
+            os_context["safety_gates"] = safety_gates
+        
+        # 3. PICKS UPDATE - Signal frontend to refresh picks for pillar
+        if pillar in ["celebrate", "travel", "care", "dine", "stay"]:
+            os_context["picks_update"] = {
+                "should_refresh": True,
+                "pillar": pillar,
+                "context": intent
+            }
+        
+        # 4. PROACTIVE ALERTS - Fetch any urgent reminders
+        try:
+            from mira_proactive import get_proactive_alerts
+            alerts_data = await get_proactive_alerts(pet_id, pet.get("name", "pet"), db)
+            critical_alerts = [a for a in alerts_data.get("alerts", []) if a.get("urgency") in ["critical", "high"]]
+            os_context["proactive_alerts"] = critical_alerts[:2]  # Max 2 urgent alerts
+        except Exception as e:
+            logger.debug(f"[OS CONTEXT] Proactive alerts error: {e}")
+        
+        # 5. MEMORY RECALL - Check if we have relevant memories for this intent
+        user_lower = user_message.lower()
+        try:
+            # Check for birthday/celebration context and recall past celebrations
+            if pillar == "celebrate" or "birthday" in user_lower or "party" in user_lower:
+                memory = await db.mira_memories.find_one(
+                    {"pet_id": pet_id, "memory_type": {"$in": ["celebration", "birthday", "event"]}},
+                    {"_id": 0}
+                )
+                if memory:
+                    os_context["memory_recall"] = {
+                        "type": "celebration",
+                        "text": memory.get("summary", memory.get("content", "")),
+                        "date": memory.get("created_at")
+                    }
+        except Exception as e:
+            logger.debug(f"[OS CONTEXT] Memory recall error: {e}")
+    
+    except Exception as e:
+        logger.warning(f"[OS CONTEXT] Error building context: {e}")
+    
+    return os_context
+
+
+def format_os_aware_response(base_response: str, os_context: dict, pet_name: str, pillar: str) -> str:
+    """
+    Enhance Mira's response with OS intelligence.
+    Adds temporal awareness, safety checks, and smart framing.
+    """
+    enhanced = base_response
+    
+    # 1. Inject temporal awareness
+    temporal = os_context.get("temporal_context")
+    if temporal and temporal.get("type") == "birthday_upcoming":
+        days = temporal.get("days_until", 99)
+        if days <= 7 and "birthday" not in base_response.lower():
+            # Naturally weave in the birthday awareness
+            birthday_note = f"\n\n*I see {pet_name}'s birthday is {temporal.get('message', 'coming up soon').lower()}*"
+            enhanced = enhanced.rstrip() + birthday_note
+    
+    # 2. Reference safety gates when relevant
+    safety_gates = os_context.get("safety_gates", [])
+    allergies = [g for g in safety_gates if g.get("type") == "allergy"]
+    if allergies and pillar in ["celebrate", "dine", "shop"]:
+        allergy_items = allergies[0].get("items", [])
+        if allergy_items and any(word in base_response.lower() for word in ["cake", "treat", "food", "meal"]):
+            if not any(item.lower() in base_response.lower() for item in allergy_items):
+                # Allergy not mentioned but should be
+                allergy_note = f"\n\n*I'll make sure everything is safe for {pet_name}'s sensitivities ({', '.join(allergy_items[:2])}).*"
+                enhanced = enhanced.rstrip() + allergy_note
+    
+    return enhanced
+
+# ============================================
 # MIRA OS - UNDERSTANDING LAYER
 # ============================================
 
