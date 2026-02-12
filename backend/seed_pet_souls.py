@@ -533,31 +533,10 @@ async def seed_pet_souls():
     
     client.close()
     print("\n✅ Done!")
-                folder_scores[folder_key] = calculate_folder_score(answers, folder_data["questions"])
-            
-            overall_score = calculate_overall_score(answers, DOGGY_SOUL_QUESTIONS)
-            
-            # Update pet with soul data
-            update_data = {
-                "doggy_soul_answers": answers,
-                "soul_score": overall_score,
-                "folder_scores": folder_scores,
-                "soul_seeded_at": datetime.now(timezone.utc).isoformat(),
-                "soul_seeded": True
-            }
-            
-            result = await db.pets.update_one(
-                {"id": pet_id},
-                {"$set": update_data}
-            )
-            
-            if result.modified_count > 0:
-                print(f"  ✅ {pet_name}: Soul Score = {overall_score}%")
-                seeded_count += 1
-            else:
-                print(f"  ⚠️ {pet_name}: No changes made")
-        else:
-            print(f"  ⏭️ {pet_name}: No seed data available")
+
+
+if __name__ == "__main__":
+    asyncio.run(seed_pet_souls())
     
     print(f"\n{'=' * 60}")
     print(f"SEEDING COMPLETE: {seeded_count}/{len(pets)} pets updated")
