@@ -5,7 +5,7 @@ MIRA to function as a "Lifestyle OS" - context-aware, proactive, safe, OS-like b
 
 ## What's Implemented (Feb 12, 2026)
 
-### Profile-First Questioning (NEW ✅)
+### Profile-First Questioning (VERIFIED ✅)
 
 **Core Rule Implemented:**
 Before Mira asks ANY question, she must:
@@ -50,12 +50,12 @@ Before Mira asks ANY question, she must:
 | FAREWELL | Partial | - | Basic | - | - | Grief support |
 | ADOPT | Pending | - | - | - | - | Adoption flow |
 
-### Pillar Isolation Rule (NEW ✅)
+### Pillar Isolation Rule (VERIFIED ✅)
 - DINE pillar NEVER shows cake/birthday/celebration items
 - Cake enters ONLY if user says birthday/cake/party OR pillar switches to Celebrate
 - Temporal awareness may mention upcoming birthday contextually (OS intelligence), but celebrate_picks stays empty in DINE
 
-### CELEBRATE → CAKE Flow (FIXED ✅)
+### CELEBRATE → CAKE Flow (VERIFIED ✅)
 
 **Issues Fixed:**
 1. ❌→✅ Permission loops removed ("Would you like me to suggest?" → shows options immediately)
@@ -63,17 +63,6 @@ Before Mira asks ANY question, she must:
 3. ❌→✅ "Sent to Concierge" → "Request Created ✓ I'm arranging this now"
 4. ❌→✅ Allergy safety gates applied to cake recommendations
 5. ❌→✅ Uses chicken allergy from profile (never asks "any allergies?")
-
-**Correct Flow:**
-```
-User: "Birthday party for Mojo"
-→ CELEBRATE pillar activated
-→ Uses chicken allergy from profile silently
-→ celebrate_picks: [Birthday Cake (chicken-free), Party Snacks, Bandana, Photographer, Party Setup, Grooming]
-
-User: "Suggest cake options"
-→ Response shows 3 chicken-free options IMMEDIATELY (no permission asking)
-```
 
 ### Key API Response Structure
 ```json
@@ -86,16 +75,15 @@ User: "Suggest cake options"
     "celebrate_context": {"pet_name": "Mojo", "allergies": ["Chicken"]},
     "celebrate_picks": [
       {"title": "Birthday Cake Arranged", "why": "Dog-safe (avoiding Chicken)", "cta": "Arrange"},
-      {"title": "Savoury Chicken & Carrot Cake", "why": "chicken-free version available", "cta": "Select"},
-      {"title": "Pumpkin & Peanut-Butter Cake", "cta": "Select"},
-      {"title": "Mini Cake + Cupcake Trio", "cta": "Select"}
+      {"title": "Savoury Chicken & Carrot Cake", "why": "chicken-free version available", "cta": "Select"}
     ],
     "concierge_handoff": {"available": true, "cta": "Connect to Concierge"}
   }
 }
 ```
 
-### Testing Summary
+### Testing Summary (Feb 12, 2026)
+- **Profile-First Questioning**: 11/11 tests passed (iteration_151.json)
 - **CELEBRATE/CAKE flow**: 18/18 tests passed (iteration_150.json)
 - **TRAVEL pillar**: All tests passed (iteration_149.json)
 - **STAY pillar**: All tests passed (iteration_148.json)
@@ -114,17 +102,23 @@ User: "Suggest cake options"
 ## Upcoming Tasks
 
 ### P1 - High Priority
-- [ ] Implement CARE pillar OS-awareness (grooming, vet, health)
-- [ ] Implement ENJOY pillar OS-awareness (activities, play)
 - [ ] Surface os_context alerts prominently in frontend
+- [ ] Refactor MiraDemoPage.jsx (4298 lines - causing performance issues)
 
 ### P2 - Medium Priority
-- [ ] Implement remaining pillars (LEARN, EMERGENCY, FAREWELL, etc.)
-- [ ] Fix frontend memory issues (MiraDemoPage.jsx - 4247 lines)
+- [ ] Implement remaining pillars (EMERGENCY, FAREWELL, ADOPT, PAPERWORK)
+- [ ] Data sync solution between preview/production environments
 
 ## Test Credentials
+- **Admin**: username: aditya, password: lola4304
+- **Test User**: dipali@clubconcierge.in
 - **Test Pet**: Mojo (pet-99a708f1722a), Indie breed, chicken allergy, birthday Feb 14
 - **Preview URL**: https://dine-care-learn.preview.emergentagent.com
+
+## Key Files
+- `/app/backend/mira_routes.py` - Main Mira chat logic + Profile-First rules
+- `/app/memory/MIRA_BIBLE.md` - Core doctrine
+- `/app/memory/MIRA_CONVERSATION_RULES.md` - Conversation rules
 
 ---
 *Last Updated: February 12, 2026*
