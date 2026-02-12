@@ -244,6 +244,7 @@ async def get_what_mira_knows(
         raise HTTPException(status_code=404, detail="Pet not found")
     
     pet_name = pet.get("name", "your pet")
+    pet_breed = pet.get("breed", "")
     
     # Calculate soul score consistently with pet-soul/profile endpoint in server.py
     # IMPORTANT: Use pet_score_logic.calculate_pet_soul_score for consistency across all pages
@@ -254,6 +255,16 @@ async def get_what_mira_knows(
     
     # 1. BUILD SOUL KNOWLEDGE from doggy_soul_answers
     soul_knowledge = []
+    
+    # Always add soul score as first item
+    soul_knowledge.append({
+        "category": "soul",
+        "icon": "💜",
+        "label": "Soul Score",
+        "text": f"Soul Score: {round(calculated_overall_score)}%",
+        "source": "soul_profile",
+        "priority": 10
+    })
     
     # Map important answers to human-readable knowledge
     knowledge_mappings = [
@@ -284,7 +295,76 @@ async def get_what_mira_knows(
                     "source": "soul_profile"
                 })
     
-    # 2. GET MEMORIES from mira_memories collection
+    # 2. BUILD BREED KNOWLEDGE - breed-specific info
+    breed_knowledge = []
+    
+    if pet_breed:
+        # Basic breed info
+        breed_knowledge.append({
+            "category": "breed",
+            "icon": "🐕",
+            "label": "Breed",
+            "text": f"{pet_name} the {pet_breed}",
+            "source": "pet_profile"
+        })
+        
+        # Breed-specific exercise requirements (common breeds)
+        breed_exercise = {
+            "Golden Retriever": "60-120 minutes daily exercise",
+            "Labrador": "60-120 minutes daily exercise",
+            "German Shepherd": "60-90 minutes daily exercise",
+            "Beagle": "60-90 minutes daily exercise",
+            "Bulldog": "20-40 minutes daily exercise",
+            "Poodle": "60-90 minutes daily exercise",
+            "Shihtzu": "30-45 minutes daily exercise",
+            "Shih Tzu": "30-45 minutes daily exercise",
+            "Yorkshire Terrier": "30-60 minutes daily exercise",
+            "Indie": "45-90 minutes daily exercise",
+            "Dachshund": "30-60 minutes daily exercise",
+            "Husky": "90-120 minutes daily exercise",
+            "Maltese": "30-45 minutes daily exercise",
+        }
+        
+        breed_traits = {
+            "Golden Retriever": "naturally friendly and devoted",
+            "Labrador": "outgoing and high-spirited",
+            "German Shepherd": "loyal and courageous",
+            "Beagle": "curious and merry",
+            "Bulldog": "calm and courageous",
+            "Poodle": "intelligent and active",
+            "Shihtzu": "naturally affectionate",
+            "Shih Tzu": "naturally affectionate",
+            "Yorkshire Terrier": "feisty and brave",
+            "Indie": "adaptable and loyal",
+            "Dachshund": "curious and friendly",
+            "Husky": "outgoing and mischievous",
+            "Maltese": "gentle and playful",
+        }
+        
+        # Find matching breed (case-insensitive partial match)
+        for breed_key, exercise in breed_exercise.items():
+            if breed_key.lower() in pet_breed.lower() or pet_breed.lower() in breed_key.lower():
+                breed_knowledge.append({
+                    "category": "breed",
+                    "icon": "🏃",
+                    "label": "Exercise",
+                    "text": f"{breed_key}s need {exercise}",
+                    "source": "breed_info"
+                })
+                break
+        
+        for breed_key, trait in breed_traits.items():
+            if breed_key.lower() in pet_breed.lower() or pet_breed.lower() in breed_key.lower():
+                breed_knowledge.append({
+                    "category": "breed",
+                    "icon": "💫",
+                    "label": "Personality",
+                    "text": f"{breed_key}s are {trait}",
+                    "source": "breed_info"
+                })
+                break
+    
+    # 3. GET MEMORIES from mira_memories collection
     memories_query = {
         "member_id": member_id,
         "is_active": {"$ne": False},
