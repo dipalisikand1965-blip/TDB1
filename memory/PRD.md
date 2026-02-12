@@ -118,13 +118,15 @@ It is NOT:
 /app/backend/classification_pipeline.py     ← B2 classification engine
 /app/backend/safety_gate.py                 ← B3 safety gate + first aid
 /app/backend/scoring_logic.py               ← B4 scoring + ranking
-/app/backend/concierge_logic.py             ← B5 concierge prominence (NEW)
+/app/backend/concierge_logic.py             ← B5 concierge prominence
+/app/backend/picks_engine.py                ← B6 orchestrator (NEW)
 /app/backend/scripts/seed_taxonomy.py       ← B0 seeder (idempotent)
 /app/backend/scripts/seed_picks_catalogue.py ← B1 seeder (idempotent, ENHANCED)
 /app/backend/tests/test_classification.py   ← 28 unit tests
 /app/backend/tests/test_safety_gate.py      ← 21 unit tests
 /app/backend/tests/test_scoring_logic.py    ← 29 unit tests
-/app/backend/tests/test_concierge_logic.py  ← 41 unit tests (NEW)
+/app/backend/tests/test_concierge_logic.py  ← 41 unit tests
+/app/backend/mira_routes.py                 ← /api/mira/chat (B6 integrated)
 /app/memory/PICKS_ENGINE_HANDOVER.md        ← COMPLETE HANDOVER DOC
 ```
 
