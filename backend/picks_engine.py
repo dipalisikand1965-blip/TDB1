@@ -339,17 +339,17 @@ async def run_picks_engine(
     
     if debug:
         debug_info["classification"] = {
-            "pillar": classification.pillar,
+            "pillar": classification.primary_pillar,
             "canonical_tags": classification.canonical_tags,
             "matched_synonyms": classification.matched_synonyms,
             "intent": classification.intent,
             "confidence": classification.confidence,
             "safety_level": classification.safety_level,
             "service_verticals": classification.service_verticals,
-            "secondary_pillars": classification.secondary_pillars,
+            "secondary_pillars": [],  # ClassificationResult doesn't have this field
         }
     
-    output.pillar = classification.pillar
+    output.pillar = classification.primary_pillar
     output.intent = classification.intent or ""
     
     # ═══════════════════════════════════════════════════════════════════════════
