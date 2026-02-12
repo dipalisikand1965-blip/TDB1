@@ -285,9 +285,7 @@ const MiraDemoPage = () => {
   // NOTE: conversationHistory, conversationContext, quickReplies, etc. now come from useConversation hook
   // NOTE: UI modals/panels/processing states now come from useMiraUI hook
   
-  // UI modals and helpers
-  const [showHelpModal, setShowHelpModal] = useState(false);
-  const [showLearnModal, setShowLearnModal] = useState(false);
+  // UI helpers (not moved to hook - specific to learn feature)
   const [learnVideos, setLearnVideos] = useState([]);
   const [learnLoading, setLearnLoading] = useState(false);
   const [learnCategory, setLearnCategory] = useState('recommended');
@@ -295,14 +293,8 @@ const MiraDemoPage = () => {
   const [newVideosCount, setNewVideosCount] = useState(0);
   const [activeDockItem, setActiveDockItem] = useState(null);
   
-  // MIRA ENGINE MODES - Visible to user like ChatGPT's "Thinking"
-  // /Instant - Quick, lightweight replies
-  // /Thinking - Deep reasoning for PLAN, BOOK, EXECUTE, ADVISE
-  // /Comfort - Grief, loss, emotional support
-  // /Emergency - Vet-first urgent moments
-  const [miraMode, setMiraMode] = useState('ready'); // ready, instant, thinking, comfort, emergency
+  // NOTE: showHelpModal, showLearnModal, miraMode, isTyping now come from useMiraUI hook
   const [typingText, setTypingText] = useState(''); // For typing animation
-  const [isTyping, setIsTyping] = useState(false);
   
   // NOTE: Voice state (voiceEnabled, isSpeaking, audioRef) now comes from useVoice hook above
   // Refs for voice timing (still needed for handleSubmit)
