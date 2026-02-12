@@ -355,12 +355,34 @@ PICKS.extend([
 # ==================== TRAVEL (10 picks) ====================
 
 PICKS.extend([
-    create_pick(
-        "travel_air_guide", "travel", ["air_travel"], "guide",
-        "Flying with Your Pet", "Read Guide",
-        "Complete guide to flying with {pet_name} - from choosing airlines to preparing for the flight.",
-        base_score=85, concierge_complexity="medium"
-    ),
+    # travel_air_guide - Guide + Docs (ENHANCED per user spec)
+    {
+        "pick_id": "travel_air_guide",
+        "pillar": "travel",
+        "pick_type": "guide",
+        "canonical_tags": ["air_travel"],
+        "base_score": 85,
+        "title": "Flying with Your Pet",
+        "cta": "Read Guide",
+        "reason_template": "A clear guide to flying with {pet_name} — airlines, crates, prep, and what to expect.",
+        "reason_template_enhanced": "Flying with a {breed} like {pet_name} needs a little extra prep. Here's the complete guide.",
+        "constraints": {
+            "species": ["dog", "cat"],
+            "age_stages": ["puppy", "adult", "senior"],
+            "exclude_health_flags": [],
+            "enhanced_reason_requires": ["breed"],
+            "if_brachycephalic": "show_warning"
+        },
+        "warning_type": "air_travel_brachy",
+        "doc_requirements": ["fit_to_fly", "vaccination_records", "microchip_certificate"],
+        "temporal_triggers": {"travel_date": True},
+        "concierge_complexity": "low",
+        "safety_level": "normal",
+        "active": True,
+        "seed_version": SEED_VERSION,
+        "source_doc_version": SOURCE_DOC_VERSION,
+        "created_at": get_timestamp(),
+    },
     create_pick(
         "travel_car_guide", "travel", ["car_travel"], "guide",
         "Road Trip Guide", "Get Tips",
@@ -374,13 +396,35 @@ PICKS.extend([
         service_vertical="transport", service_types=["pickup_drop"],
         base_score=80, concierge_complexity="low"
     ),
-    create_pick(
-        "travel_airport_transfer", "travel", ["airport_transfer"], "booking",
-        "Airport Transfer", "Book Transfer",
-        "Stress-free airport transport for {pet_name} - we'll handle the journey so you don't have to.",
-        service_vertical="transport", service_types=["pickup_drop"],
-        base_score=85, concierge_complexity="medium"
-    ),
+    # travel_airport_transfer - Booking (ENHANCED per user spec)
+    {
+        "pick_id": "travel_airport_transfer",
+        "pillar": "travel",
+        "pick_type": "booking",
+        "canonical_tags": ["airport_transfer"],
+        "base_score": 85,
+        "title": "Airport Transfer",
+        "cta": "Book Transfer",
+        "reason_template": "Pet-safe airport transport for {pet_name} — calm handling, comfort stops if needed.",
+        "reason_template_enhanced": "I'll arrange airport transport for {pet_name} from {city}, with the right crate guidance and timing.",
+        "constraints": {
+            "species": ["dog", "cat"],
+            "age_stages": ["puppy", "adult", "senior"],
+            "exclude_health_flags": [],
+            "required_booking_fields": ["city", "airport", "transfer_date", "pickup_or_drop"],
+            "optional_booking_fields": ["flight_number", "pet_weight", "crate_size", "pickup_time"],
+            "enhanced_reason_requires": ["city"]
+        },
+        "service_vertical": "transport",
+        "service_modes": ["pickup_drop"],
+        "temporal_triggers": {"travel_date": True},
+        "concierge_complexity": "medium",
+        "safety_level": "normal",
+        "active": True,
+        "seed_version": SEED_VERSION,
+        "source_doc_version": SOURCE_DOC_VERSION,
+        "created_at": get_timestamp(),
+    },
     create_pick(
         "travel_fit_to_fly", "travel", ["fit_to_fly"], "guide",
         "Fit-to-Fly Requirements", "Learn More",
