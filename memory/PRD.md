@@ -12,6 +12,7 @@ The user wants MIRA to function as a "Lifestyle OS" rather than a simple chatbot
 2. **Live Conversation Context** - Infer active pillar, topic signals, risk level
 3. **Always-On Loop** - Classify pillar, generate picks, apply safety gates
 4. **Concierge Pick Cards** - "Arranged for [Pet]" language, actionable CTAs
+5. **Connect to Concierge** - Always available for coordination-heavy pillars
 
 ## What's Implemented
 
@@ -24,101 +25,129 @@ The user wants MIRA to function as a "Lifestyle OS" rather than a simple chatbot
   - `memory_recall` - Relevant past memories surfaced
 
 ### DINE Pillar OS-Awareness (IMPLEMENTED ✅ Feb 12, 2026)
-- **Pillar Keywords Updated**: Added home nutrition keywords (meal plan, diet, kibble, wet food, portion, feeding schedule, etc.)
+- **Pillar Keywords Updated**: Added home nutrition keywords
 - **DINE Context Generation**: Returns pet's diet info, allergies, restrictions
-- **DINE Picks Generation**: Generates Concierge Pick Cards:
-  - Diet Transition Plan (7-10 days)
-  - Portioning & Feeding Schedule Setup
-  - Treat Strategy
-  - Hydration Routine
-  - Nutrition Consult Coordination
-  - Pantry Reset & Refill Cadence
-- **Correct Chat Flow**: Mira asks 2-3 targeted questions (diet type, restrictions) per MIRA BIBLE
-- **Safety Gates**: Allergies automatically applied to DINE recommendations
+- **DINE Picks Generation**: Diet Transition, Portioning, Treat Strategy, etc.
+- **Correct Chat Flow**: Asks 2-3 targeted questions per MIRA BIBLE
+
+### STAY Pillar OS-Awareness (IMPLEMENTED ✅ Feb 12, 2026)
+- **Pillar Keywords Updated**: Boarding, daycare, hotel, alone time, home setup, etc.
+- **STAY Context Generation**: Returns temperament, vaccinations, social comfort, health flags
+- **STAY Picks Generation**: Concierge Pick Cards with `concierge_always: true`:
+  - Boarding Shortlist (matched to temperament + vaccinations)
+  - In-Home Sitter Brief (for anxious dogs)
+  - Home Stay Layout Plan (zones, gates, safety)
+  - Daycare Shortlist (energy + social comfort matched)
+  - Pet-Friendly Hotel Search (`uses_google_places: true`)
+  - Comfort Corner Setup (seniors, recovery)
+- **Concierge Handoff**: Always available for STAY (`concierge_handoff.available: true`)
+- **Google Places Integration**: Hotel searches signal `uses_google_places: true`
 
 ### Frontend OS Context Handling (IMPLEMENTED ✅)
-- **Temporal Alert Display** (`MiraDemoPage.jsx`)
-  - Creates proactive alerts for birthdays/events within 14 days
-  - Urgency levels: high (≤3 days), medium (≤7 days), low (≤14 days)
-- **Safety Gates Logging** - Active constraints tracked
-- **Proactive Alerts Integration** - Backend alerts merged with frontend state
-- **Memory Recall Display** - `activeMemoryContext` state for whispers
+- Temporal Alert Display
+- Safety Gates Logging
+- Proactive Alerts Integration
+- Memory Recall Display
 
 ### Admin Panel (VERIFIED ✅)
-- **Pet Parents Directory** - MemberDirectory component with 50+ members
-- **Member Profile Console** - 360° view modal with 10 tabs
+- Pet Parents Directory
+- Member Profile Console with 10 tabs
 
 ## Test Verification (Feb 12, 2026)
 
-### DINE Pillar Tests
-| Query | Expected Pillar | Result | Picks Generated |
-|-------|-----------------|--------|-----------------|
-| "Create meal plan for everyday meals" | dine | ✅ PASS | Diet Assessment, Nutrition Consult |
-| "How much should I feed my dog?" | dine | ✅ PASS | Portioning Setup |
-| "Switch dog to new food" | dine | ✅ PASS | Diet Transition Plan |
-| "Kibble or wet food?" | dine | ✅ PASS | Diet Assessment |
-| "Pet-friendly restaurant nearby" | dine | ✅ PASS | (Dining out flow) |
+### STAY Pillar Tests
+| Query | Pillar | Picks Generated | Concierge |
+|-------|--------|-----------------|-----------|
+| "Find pet-friendly boarding" | stay | Boarding Shortlist, Hotel Search | ✅ Available |
+| "Pet-friendly hotel in Mumbai" | stay | Hotel Search (uses_google_places) | ✅ Available |
+| "Can dog stay alone at home?" | stay | Home Stay Layout Plan | ✅ Available |
+| "Daycare options" | stay | Daycare Shortlist | ✅ Available |
 
-### Core OS Context Tests
-| Feature | Status | Details |
-|---------|--------|---------|
-| OS Context in Chat API | ✅ PASS | Returns complete structure |
-| Temporal Context (Birthday) | ✅ PASS | Mojo's birthday Feb 14 detected |
-| Safety Gates (Allergies) | ✅ PASS | Chicken allergy in safety_gates |
-| Memory Recall | ✅ PASS | Past celebration memories surfaced |
-| DINE Context | ✅ PASS | Pet diet info + allergies |
-| DINE Picks | ✅ PASS | Concierge Pick Cards generated |
+### DINE Pillar Tests
+| Query | Pillar | Picks Generated |
+|-------|--------|-----------------|
+| "Create meal plan" | dine | Diet Assessment, Nutrition Consult |
+| "How much to feed?" | dine | Portioning Setup |
+| "Switch to new food" | dine | Diet Transition Plan |
+
+### Non-Affected Pillars
+| Query | Expected | Result |
+|-------|----------|--------|
+| "Birthday party" | celebrate | ✅ PASS |
+| "Grooming appointment" | care | ✅ PASS |
 
 ## Known Issues
-1. **Frontend Page Crash** (P1) - MiraDemoPage.jsx (4247 lines) causes memory issues during browser automation. Backend APIs work fine.
-2. **Chat Response Duplication** (P2) - Reported but not reproduced in testing
+1. **Frontend Page Crash** (P1) - MiraDemoPage.jsx (4247 lines) causes memory issues
+2. **Chat Response Duplication** (P2) - Reported but not reproduced
 
 ## Architecture
 ```
 /app
 ├── backend/
-│   └── mira_routes.py         # OS Intelligence Layer, Chat API
-│       - get_mira_os_context() # Generates OS context including DINE
-│       - detect_pillar()       # Pillar detection with DINE keywords
-│       - PILLARS dict          # All 14 pillars with keywords
+│   └── mira_routes.py         # OS Intelligence Layer
+│       - get_mira_os_context() # Generates pillar-specific context
+│       - PILLARS dict          # All 14+ pillars with keywords
+│       - DINE context/picks    # Home nutrition support
+│       - STAY context/picks    # Boarding/daycare/hotel support
+│       - concierge_handoff     # Always available for STAY
 ├── frontend/
-│   ├── pages/MiraDemoPage.jsx # Main Mira UI (4247 lines)
-│   └── components/admin/
-│       └── MemberDirectory.jsx # Pet Parent Directory
+│   └── pages/MiraDemoPage.jsx # Main Mira UI
 └── memory/
-    ├── MIRA_BIBLE.md          # Source of truth for behavior
     └── PRD.md                 # This file
 ```
+
+## Pillar-to-Pillar Mapping (per MIRA BIBLE Questionnaire)
+
+The questionnaire document defines 20 pillars with detailed question flows:
+1. CELEBRATE - Birthdays, festivals, micro-celebrations
+2. DINE - Core food decisions, portions, allergies, treats
+3. STAY - Home base, boarding, daycare, hotels
+4. TRAVEL - Trips, transport, relocation
+5. CARE - Health, wellness, vet coordination
+6. ENJOY - Play, activities, socializing
+7. FIT - Exercise, weight management
+8. LEARN - Training, behavior
+9. EMERGENCY - Crisis handling
+10. FAREWELL - End of life support
+11. ADOPT - New pet guidance
+12. ADVISORY - Expert coordination
+13. PAPERWORK - Records, documents
+14. SHOP - Product curation
+15. DOG WALKING - Walking services
+16. PET PHOTOGRAPHY - Photo sessions
+17. GROOMING - Grooming services
+18. TRAINING - Professional trainers
+19. BOARDING - Overnight stays (detailed)
+20. DAYCARE - Daytime care (detailed)
 
 ## Upcoming Tasks (Priority Order)
 
 ### P0 - Critical
-- [x] ~~Implement "Dine" pillar OS-awareness (meal plan flow per MIRA BIBLE)~~ ✅ DONE
-- [ ] Fix frontend memory issues (consider code splitting MiraDemoPage)
+- [x] ~~Implement "Dine" pillar OS-awareness~~ ✅ DONE
+- [x] ~~Implement "Stay" pillar OS-awareness with Concierge~~ ✅ DONE
+- [ ] Fix frontend memory issues (code splitting MiraDemoPage)
 
 ### P1 - High Priority
+- [ ] Implement TRAVEL pillar OS-awareness
+- [ ] Implement CARE pillar OS-awareness
 - [ ] Surface proactive alerts prominently on main OS page
-- [ ] Add "I Remember..." memory recall whispers to chat
-- [ ] Implement new header architecture per MIRA_OS_HEADER_ARCHITECTURE.md
+- [ ] Implement new header architecture
 
 ### P2 - Medium Priority
-- [ ] Response streaming (SSE) for perceived speed
-- [ ] Voice-text synchronization improvements
-- [ ] "Try:" examples on welcome screen
-- [ ] Expand underdeveloped pillars (Fit 20%, Adopt 10%, Paperwork 30%)
-- [ ] Implement OS-awareness for remaining pillars (STAY, TRAVEL, CARE, etc.)
+- [ ] Implement OS-awareness for remaining pillars
+- [ ] Response streaming (SSE)
+- [ ] Voice-text synchronization
 
 ### Future
-- [ ] Add remaining Concierge services (Nutrition consult, Dental consult)
-- [ ] Implement "TODAY" badge with count
+- [ ] Add all Concierge services from questionnaire
+- [ ] Implement "TODAY" badge
 - [ ] Notifications bell
-- [ ] Prominent pet selector
 
 ## API Endpoints
-- `POST /api/mira/chat` - Main chat with os_context (includes dine_context, dine_picks)
-- `GET /api/admin/members/directory` - Pet parent directory
-- `GET /api/concierge/member/{email}/full-profile` - 360° member view
-- `GET /api/pets` - User's pets list
+- `POST /api/mira/chat` - Main chat with os_context
+  - Returns: pillar, os_context (layer_activation, temporal_context, safety_gates)
+  - DINE: dine_context, dine_picks
+  - STAY: stay_context, stay_picks, concierge_handoff, uses_google_places
 
 ## Test Credentials
 - **Member**: dipali@clubconcierge.in / test123
