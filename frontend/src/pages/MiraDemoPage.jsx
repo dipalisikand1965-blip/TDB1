@@ -92,7 +92,7 @@ import {
 // ═══════════════════════════════════════════════════════════════════════════════
 import { 
   useVoice, usePet, useVault, useSession, DEMO_PET, ALL_DEMO_PETS,
-  useChatSubmit,
+  useChatSubmit, useConversation,
   detectMiraMode, preprocessInput, detectStepId, extractCityFromQuery,
   detectContextTopic, hasTrainingIntent, extractTrainingTopic,
   shouldFetchTravelData, isMeaningfulTopic, isCelebrationQuery, MEANINGFUL_TOPICS,
