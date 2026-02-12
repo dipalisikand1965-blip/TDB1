@@ -960,6 +960,121 @@ const MyPets = () => {
                         </div>
                       </Card>
                     )}
+                    
+                    {/* WHAT MIRA KNOWS - Memories and Soul Knowledge */}
+                    <Card 
+                      className="mt-4 p-4 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200 cursor-pointer hover:shadow-md transition-shadow"
+                      onClick={() => toggleKnowledge(pet.id)}
+                      data-testid={`mira-knows-${pet.id}`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                            <Sparkles className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-gray-900">What Mira Knows About {pet.name}</h4>
+                            <p className="text-sm text-gray-600">
+                              {miraKnowledge[pet.id]?.knowledge_count || Object.keys(pet.doggy_soul_answers || {}).length} insights collected
+                            </p>
+                          </div>
+                        </div>
+                        {expandedKnowledge[pet.id] ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+                      </div>
+                      
+                      {expandedKnowledge[pet.id] && (
+                        <div className="mt-4 pt-4 border-t border-purple-200" onClick={(e) => e.stopPropagation()}>
+                          {loadingKnowledge[pet.id] ? (
+                            <div className="flex items-center justify-center py-4">
+                              <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+                              <span className="ml-2 text-gray-600">Loading Mira's knowledge...</span>
+                            </div>
+                          ) : miraKnowledge[pet.id] ? (
+                            <div className="space-y-4">
+                              {/* Soul Knowledge */}
+                              {miraKnowledge[pet.id].soul_knowledge?.length > 0 && (
+                                <div>
+                                  <h5 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                    <Brain className="w-4 h-4 text-purple-600" />
+                                    Soul Profile
+                                  </h5>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    {miraKnowledge[pet.id].soul_knowledge.map((item, idx) => (
+                                      <div key={idx} className="p-3 bg-white/60 rounded-lg flex items-start gap-2">
+                                        <span className="text-lg">{item.icon}</span>
+                                        <span className="text-sm text-gray-700">{item.text}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Memories */}
+                              {miraKnowledge[pet.id].memory_knowledge?.length > 0 && (
+                                <div>
+                                  <h5 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                    <MessageCircle className="w-4 h-4 text-amber-600" />
+                                    Memories from Conversations
+                                  </h5>
+                                  <div className="space-y-2">
+                                    {miraKnowledge[pet.id].memory_knowledge.slice(0, 5).map((item, idx) => (
+                                      <div key={idx} className="p-3 bg-white/60 rounded-lg flex items-start gap-2">
+                                        <span>{item.icon}</span>
+                                        <div>
+                                          <span className="text-sm text-gray-700">{item.text}</span>
+                                          <p className="text-xs text-gray-500 mt-1">{item.label} • {new Date(item.created_at).toLocaleDateString()}</p>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Insights */}
+                              {miraKnowledge[pet.id].insights_knowledge?.length > 0 && (
+                                <div>
+                                  <h5 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                    <Sparkles className="w-4 h-4 text-pink-600" />
+                                    AI Insights
+                                  </h5>
+                                  <div className="space-y-2">
+                                    {miraKnowledge[pet.id].insights_knowledge.map((item, idx) => (
+                                      <div key={idx} className="p-3 bg-white/60 rounded-lg flex items-start gap-2">
+                                        <span>{item.icon}</span>
+                                        <span className="text-sm text-gray-700">{item.text}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* No knowledge yet */}
+                              {(!miraKnowledge[pet.id].soul_knowledge?.length && 
+                                !miraKnowledge[pet.id].memory_knowledge?.length) && (
+                                <div className="text-center py-4">
+                                  <p className="text-gray-600">Mira is still learning about {pet.name}.</p>
+                                  <Link to="/mira-demo">
+                                    <Button variant="outline" className="mt-2">
+                                      Chat with Mira to build knowledge →
+                                    </Button>
+                                  </Link>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="text-center py-4">
+                              <p className="text-gray-600">Start chatting with Mira to build {pet.name}'s knowledge profile!</p>
+                              <Link to="/mira-demo">
+                                <Button variant="outline" className="mt-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none">
+                                  <Sparkles className="w-4 h-4 mr-2" />
+                                  Chat with Mira
+                                </Button>
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </Card>
                   </div>
                   
                   {/* ALL PILLARS SECTION - Show all 14 pillars */}
