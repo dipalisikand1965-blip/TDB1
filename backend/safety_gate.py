@@ -224,16 +224,20 @@ class SafetyGate:
         
         # Get caution message for the specific symptom
         caution_msg = None
+        gating_questions = None
+        
         for tag in canonical_tags:
             if tag in CAUTION_MESSAGES:
                 caution_msg = CAUTION_MESSAGES[tag]
+            if tag in GATING_QUESTIONS:
+                gating_questions = GATING_QUESTIONS[tag]
                 break
         
         # Default caution message
         if not caution_msg:
             caution_msg = "This may need veterinary attention. Monitor symptoms and consult a vet if concerned."
         
-        return SafetyOverride(
+        override = SafetyOverride(
             is_active=True,
             level="caution",
             suppress_products=True,  # No shopping pushes
@@ -247,6 +251,14 @@ class SafetyGate:
             allowed_pick_types=["guide", "booking", "checklist", "concierge"],  # Education + vet routing
             ui_theme="caution-yellow"
         )
+        
+        # Add gating questions if present
+        if gating_questions:
+            override_dict = override.to_dict()
+            override_dict["gating_questions"] = gating_questions
+            return override  # Return original, will add to dict in apply()
+        
+        return override
     
     def _create_normal_override(self) -> SafetyOverride:
         """Create normal override - no restrictions."""
