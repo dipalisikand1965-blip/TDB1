@@ -607,8 +607,16 @@ def extract_soul_data_from_response(
             if trigger not in extracted.grooming_anxiety_triggers:
                 extracted.grooming_anxiety_triggers.append(trigger)
     
-    # Check for "no anxiety" or "fine with everything"
-    if any(p in message_lower for p in ["no anxiety", "fine with", "no issues", "comfortable", "no problems"]):
+    # Check for "no anxiety" or "fine with everything" - but be careful not to clear if "but" follows
+    # "fine with grooming but hates dryer" should NOT clear triggers
+    clear_patterns = ["no anxiety", "no issues with grooming", "fine with everything", "comfortable with everything", "no problems with grooming"]
+    should_clear = any(p in message_lower for p in clear_patterns)
+    
+    # Don't clear if there's a "but" indicating exceptions
+    if should_clear and " but " in message_lower:
+        should_clear = False
+    
+    if should_clear:
         extracted.grooming_anxiety_triggers = []  # Clear - pet is comfortable
     
     # ═══════════════════════════════════════════════════════════════════
