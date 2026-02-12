@@ -281,14 +281,7 @@ const MiraDemoPage = () => {
   const voiceTimeoutRef = useRef(null);
   // NOTE: skipVoiceOnNextResponseRef REMOVED - now using skipNextVoice() from useVoice hook
   
-  // CONVERSATION HISTORY - Collapsible older messages
-  const [showOlderMessages, setShowOlderMessages] = useState(false);
-  const VISIBLE_MESSAGE_COUNT = 4; // Show last 4 messages (2 pairs of user+mira)
-  
-  // CONVERSATION INTELLIGENCE - Context retention for follow-ups
-  const [conversationContext, setConversationContext] = useState(() => 
-    conversationIntelligence.createConversationContext(pet)
-  );
+  // NOTE: showOlderMessages, VISIBLE_MESSAGE_COUNT, conversationContext now come from useConversation hook
   
   // GEOLOCATION - Get user's actual location for weather/nearby
   const [userGeoLocation, setUserGeoLocation] = useState(null);
