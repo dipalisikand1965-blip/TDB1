@@ -11,14 +11,19 @@
 
 import { useCallback, useRef } from 'react';
 import conversationIntelligence from '../../utils/conversationIntelligence';
+import { correctSpelling } from '../../utils/spellCorrect';
+import { triggerCelebrationConfetti } from '../../utils/confetti';
+import { generateQuickReplies } from '../../components/Mira/QuickReplies';
 import {
-  correctSpelling,
+  isConciergeLive,
+  generateConciergeRequest,
+  detectServiceIntent,
+  getComfortModeServices,
+  detectExperienceIntent
+} from '../../utils/miraConstants';
+import {
   detectMiraMode,
   isComfortMode,
-  getComfortModeServices,
-  detectServiceIntent,
-  detectExperienceIntent,
-  generateConciergeRequest,
   buildMiraMessage,
   detectStepId,
   isMeaningfulTopic,
@@ -28,12 +33,9 @@ import {
   extractCityFromQuery,
   shouldFetchTravelData,
   isCelebrationQuery,
-  triggerCelebrationConfetti,
   calculateVoiceDelay,
   createTopicShiftIndicator,
-  createErrorMessage,
-  generateQuickReplies,
-  isConciergeLive
+  createErrorMessage
 } from './useChat';
 
 /**
