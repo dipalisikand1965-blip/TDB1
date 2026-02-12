@@ -120,6 +120,31 @@ except ImportError as e:
         intent = ""
         debug = None
 
+# Import Soul-First Response Generation Logic
+try:
+    from soul_first_logic import (
+        build_soul_context_summary,
+        determine_response_strategy,
+        process_soul_first_context,
+        extract_soul_data_from_response,
+        write_soul_data_to_pet,
+        format_fallback_response,
+        SoulContextSummary,
+        ResponseStrategy,
+        ExtractedSoulData
+    )
+    SOUL_FIRST_AVAILABLE = True
+    logger.info("[MIRA OS] Soul-First Logic loaded")
+except ImportError as e:
+    SOUL_FIRST_AVAILABLE = False
+    logger.warning(f"[MIRA OS] Soul-First Logic not available: {e}")
+    def process_soul_first_context(*args, **kwargs):
+        return None, None, ""
+    def extract_soul_data_from_response(*args, **kwargs):
+        return None
+    async def write_soul_data_to_pet(*args, **kwargs):
+        return False
+
 router = APIRouter(prefix="/api/mira", tags=["mira"])
 security_bearer = HTTPBearer(auto_error=False)
 
