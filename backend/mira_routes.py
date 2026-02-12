@@ -7401,6 +7401,11 @@ def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar:
             pet_context += f"\n{pet_name} - {breed}\n"
             pet_context += f"- Species: {pet.get('species', 'dog')}, Gender: {pet.get('gender', 'unknown')}\n"
             
+            # Birthday (IMPORTANT - for celebration planning)
+            birthday = pet.get('birth_date') or pet.get('birthday') or pet.get('dob') or pet.get('date_of_birth')
+            if birthday:
+                pet_context += f"- 🎂 Birthday: {birthday}\n"
+            
             # Age/Life stage - check multiple sources
             life_stage = doggy_soul.get('life_stage') or identity.get('life_stage')
             age = identity.get('age') or pet.get('age') or pet.get('age_years')
