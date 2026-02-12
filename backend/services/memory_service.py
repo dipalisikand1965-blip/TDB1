@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 EXTRACTION_PATTERNS = {
     # Food & Diet - More precise patterns with word boundaries
+    # NOTE: Use {{}} to escape braces for regex quantifiers when using .format()
     "food_preference": [
         (r"(?:he|she|they|{pet_name})\s+(?:loves?|enjoys?|really likes?)\s+(\b\w+(?:\s+\w+)?\b)(?:\s|$|,|\.)", "positive"),
         (r"(?:his|her|their)\s+favorite\s+(?:treat|food|snack)\s+is\s+(\b\w+(?:\s+\w+)?\b)", "positive"),
@@ -41,7 +42,7 @@ EXTRACTION_PATTERNS = {
     "behavior": [
         (r"(?:gets?|becomes?)\s+(?:anxious|nervous|scared)\s+(?:when|around|during|with)\s+(thunderstorms?|fireworks?|strangers?|loud\s+(?:noises?|sounds?)|car\s+rides?|vet\s+visits?|alone|guests?)", "anxiety_trigger"),
         (r"(?:is|has been|seems?)\s+(aggressive|reactive|friendly|calm|shy|nervous|anxious|playful|energetic|lazy)", "temperament"),
-        (r"doesn't\s+like\s+(being\s+alone|strangers?|other\s+dogs?|cats?|loud\s+noises?)", "dislike"),
+        (r"(?:hates|doesn't\s+like)\s+(being\s+alone|strangers?|other\s+dogs?|cats?|loud\s+noises?|thunderstorms?)", "dislike"),
     ],
     
     # Health - Specific conditions
@@ -51,10 +52,10 @@ EXTRACTION_PATTERNS = {
         (r"(?:been|is)\s+(itching|scratching|limping|vomiting|coughing|sneezing)\s*(?:a lot|lately|recently)?", "symptom"),
     ],
     
-    # Routine - Time patterns
+    # Routine - Time patterns (escaped braces for quantifiers)
     "routine": [
-        (r"walks?\s+(?:at|around)\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)", "walk_time"),
-        (r"eats?\s+(?:at|around)\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)", "meal_time"),
+        (r"walks?\s+(?:at|around)\s+(\d{{1,2}}(?::\d{{2}})?\s*(?:am|pm)?)", "walk_time"),
+        (r"eats?\s+(?:at|around)\s+(\d{{1,2}}(?::\d{{2}})?\s*(?:am|pm)?)", "meal_time"),
         (r"sleeps?\s+(?:in|on)\s+(?:the\s+)?(bed|couch|crate|floor|dog\s+bed)", "sleep_location"),
     ],
     
