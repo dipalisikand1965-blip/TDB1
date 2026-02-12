@@ -103,29 +103,36 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
         return os_context
     
     try:
+        # Get the db if it's callable
+        if callable(db):
+            actual_db = db()
+        else:
+            actual_db = db
+            
         # 1. TEMPORAL AWARENESS - Check birthdays, appointments, due dates
-        pet = await db.pets.find_one({"pet_id": pet_id}, {"_id": 0})
+        # Try both field names for pet lookup
+        pet = await actual_db.pets.find_one({"id": pet_id}, {"_id": 0})
         if not pet:
-            pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+            pet = await actual_db.pets.find_one({"pet_id": pet_id}, {"_id": 0})
         
         if pet:
             # Check multiple birthday field names
-            birthday = pet.get("birthday") or pet.get("date_of_birth") or pet.get("birth_date") or pet.get("birthDate")
+            birthday = pet.get("birth_date") or pet.get("birthday") or pet.get("date_of_birth") or pet.get("birthDate")
             logger.info(f"[OS CONTEXT] Pet found: {pet.get('name')}, birthday field value: {birthday}")
             if birthday:
                 try:
                     from dateutil.parser import parse as parse_date
                     from datetime import datetime, timedelta
                     
-                    bday = parse_date(birthday) if isinstance(birthday, str) else birthday
+                    bday = parse_date(str(birthday)) if isinstance(birthday, str) else birthday
                     today = datetime.now()
                     
                     # Calculate this year's birthday
                     this_year_bday = bday.replace(year=today.year)
-                    if this_year_bday < today:
+                    if this_year_bday.date() < today.date():
                         this_year_bday = this_year_bday.replace(year=today.year + 1)
                     
-                    days_until = (this_year_bday - today).days
+                    days_until = (this_year_bday.date() - today.date()).days
                     
                     if days_until <= 30:
                         os_context["temporal_context"] = {
@@ -136,10 +143,9 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
                         }
                         logger.info(f"[OS CONTEXT] Birthday detected: {days_until} days away")
                 except Exception as e:
-                    logger.debug(f"[OS CONTEXT] Birthday parse error: {e}")
+                    logger.warning(f"[OS CONTEXT] Birthday parse error: {e}")
         
-        # 2. SAFETY GATES - Get allergies, health constraints
-        if pet:
+            # 2. SAFETY GATES - Get allergies, health constraints
             # Check multiple allergy field locations
             allergies = (
                 pet.get("allergies") or 
@@ -179,9 +185,10 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
         # 4. PROACTIVE ALERTS - Fetch any urgent reminders
         try:
             from mira_proactive import get_proactive_alerts
-            alerts_data = await get_proactive_alerts(pet_id, pet.get("name", "pet"), db)
-            critical_alerts = [a for a in alerts_data.get("alerts", []) if a.get("urgency") in ["critical", "high"]]
-            os_context["proactive_alerts"] = critical_alerts[:2]  # Max 2 urgent alerts
+            if pet:
+                alerts_data = await get_proactive_alerts(pet_id, pet.get("name", "pet"), actual_db)
+                critical_alerts = [a for a in alerts_data.get("alerts", []) if a.get("urgency") in ["critical", "high"]]
+                os_context["proactive_alerts"] = critical_alerts[:2]  # Max 2 urgent alerts
         except Exception as e:
             logger.debug(f"[OS CONTEXT] Proactive alerts error: {e}")
         
@@ -190,7 +197,7 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
         try:
             # Check for birthday/celebration context and recall past celebrations
             if pillar == "celebrate" or "birthday" in user_lower or "party" in user_lower:
-                memory = await db.mira_memories.find_one(
+                memory = await actual_db.mira_memories.find_one(
                     {"pet_id": pet_id, "memory_type": {"$in": ["celebration", "birthday", "event"]}},
                     {"_id": 0}
                 )
