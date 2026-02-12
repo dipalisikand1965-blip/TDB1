@@ -621,65 +621,8 @@ const MiraDemoPage = () => {
   // NOTE: Vault state (showVault, activeVaultData, vaultUserMessage, miraPicks, 
   // showMiraTray) now comes from useVault hook above
   // NOTE: showConciergeOptions now comes from useMiraUI hook
+  // NOTE: proactiveAlerts, proactiveGreeting, currentWeather now come from useProactiveAlerts hook
   // ═══════════════════════════════════════════════════════════════════════════
-  
-  // E018 & E019: Proactive Notifications - Birthday/Health Reminders
-  const [proactiveAlerts, setProactiveAlerts] = useState({
-    celebrations: [],
-    healthReminders: [],
-    hasUrgent: false
-  });
-  
-  // Proactive Greeting - Time-based and context-aware
-  const [proactiveGreeting, setProactiveGreeting] = useState(null);
-  
-  // Generate proactive greeting based on time and pet context
-  useEffect(() => {
-    if (!pet?.name) return;
-    
-    const hour = new Date().getHours();
-    let greeting = '';
-    let icon = '';
-    let hasAlert = false;
-    
-    // Time-based greeting
-    if (hour >= 5 && hour < 12) {
-      greeting = `Good morning! How's ${pet.name} today?`;
-      icon = '🌅';
-    } else if (hour >= 12 && hour < 17) {
-      greeting = `Good afternoon! What can I help with for ${pet.name}?`;
-      icon = '☀️';
-    } else if (hour >= 17 && hour < 21) {
-      greeting = `Good evening! How was ${pet.name}'s day?`;
-      icon = '🌆';
-    } else {
-      greeting = `Hello! ${pet.name} keeping you up? 😄`;
-      icon = '🌙';
-    }
-    
-    // Check for upcoming celebrations
-    if (proactiveAlerts.celebrations.length > 0) {
-      const upcoming = proactiveAlerts.celebrations.find(c => c.is_upcoming);
-      if (upcoming) {
-        greeting = `${upcoming.event} is coming up! Let's plan something special for ${pet.name}! 🎉`;
-        icon = '🎂';
-        hasAlert = true;
-      }
-    }
-    
-    // Check for health reminders
-    if (proactiveAlerts.healthReminders.some(r => r.needs_attention)) {
-      const urgent = proactiveAlerts.healthReminders.find(r => r.needs_attention);
-      if (urgent && !hasAlert) {
-        const reminderTitle = urgent.title || urgent.name || 'health checkup';
-        greeting = `Reminder: ${reminderTitle} for ${pet.name}. Shall I help schedule?`;
-        icon = '💊';
-        hasAlert = true;
-      }
-    }
-    
-    setProactiveGreeting({ text: greeting, icon, hasAlert });
-  }, [pet?.name, proactiveAlerts]);
   
   // HEALTH VAULT - Track completeness and prompt for missing data
   const [healthVault, setHealthVault] = useState({
