@@ -580,11 +580,7 @@ const MiraDemoPage = () => {
   // ═══════════════════════════════════════════════════════════════════════════
   const [conciergeConfirmation, setConciergeConfirmation] = useState(null);
   
-  // ═══════════════════════════════════════════════════════════════════════════
-  // QUICK REPLIES - Contextual suggestions after Mira's response
-  // Golden Standard: 3-4 buttons after every advisory response
-  // ═══════════════════════════════════════════════════════════════════════════
-  const [quickReplies, setQuickReplies] = useState([]);
+  // NOTE: quickReplies now comes from useConversation hook
   
   // ═══════════════════════════════════════════════════════════════════════════
   // HANDOFF SUMMARY - Shows summary BEFORE sending to Concierge®
