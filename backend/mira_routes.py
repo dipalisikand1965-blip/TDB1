@@ -9856,13 +9856,28 @@ Use this weather information to advise the user on pet activities. Be specific a
                 "error": "llm_config"
             }
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # MIRA OS: GET CONVERSATION MEMORIES FOR CONTEXT
+        # Per doctrine: Mira must reason from memory first
+        # ═══════════════════════════════════════════════════════════════════════════
+        conversation_memories_text = ""
+        if SOUL_INTELLIGENCE_AVAILABLE and selected_pet:
+            try:
+                pet_id = selected_pet.get("id")
+                memories = await get_relevant_memories_for_context(db, pet_id, pillar, limit=10)
+                if memories:
+                    conversation_memories_text = format_memories_for_llm(memories)
+                    logger.info(f"[MIRA OS] Injected {len(memories)} memories into context for {selected_pet.get('name')}")
+            except Exception as mem_err:
+                logger.warning(f"[MIRA OS] Could not fetch memories: {mem_err}")
+        
         # Build system prompt - SKIP pet context if asking about another pet
         if is_asking_about_another_pet:
             # Don't pass pet context when asking about someone else's pet
-            system_prompt = build_mira_system_prompt(user, None, pillar, None)
+            system_prompt = build_mira_system_prompt(user, None, pillar, None, "")
             logger.info("[CONTEXT] Building prompt WITHOUT pet context (asking about another pet)")
         else:
-            system_prompt = build_mira_system_prompt(user, pets, pillar, selected_pet)
+            system_prompt = build_mira_system_prompt(user, pets, pillar, selected_pet, conversation_memories_text)
             logger.info(f"[CONTEXT] Building prompt WITH pet context: selected_pet={selected_pet.get('name') if selected_pet else None}, pets_count={len(pets) if pets else 0}")
         
         # Build conversation history
