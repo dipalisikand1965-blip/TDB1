@@ -11987,17 +11987,31 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
             # MIRA OS SOUL INTELLIGENCE - Dynamic questions, completion score
             # Aggregates ALL data sources: soul form + preferences + conversation learnings
             # ═══════════════════════════════════════════════════════════════════════════
-            "soul_intelligence": {
-                "completion_score": get_soul_completion_score(
-                    selected_pet, 
-                    conversation_memories=await db.conversation_memories.find(
-                        {"pet_id": selected_pet.get("id")}
-                    ).to_list(100) if selected_pet else []
-                ) if selected_pet else {"total_score": 0},
-                "unanswered_questions": get_relevant_unanswered_questions(selected_pet, pillar, user_message, limit=3) if selected_pet else [],
-                "suggested_question": suggest_question_for_context(selected_pet, pillar, user_message) if selected_pet else None
-            } if SOUL_INTELLIGENCE_AVAILABLE else None
+            "soul_intelligence": None  # Will be set below
         }
+        
+        # Calculate soul intelligence separately to handle async properly
+        if SOUL_INTELLIGENCE_AVAILABLE and selected_pet:
+            try:
+                # Get conversation memories for this pet
+                pet_conv_memories = await db.conversation_memories.find(
+                    {"pet_id": selected_pet.get("id")}
+                ).to_list(100)
+                
+                response_data["soul_intelligence"] = {
+                    "completion_score": get_soul_completion_score(selected_pet, conversation_memories=pet_conv_memories),
+                    "unanswered_questions": get_relevant_unanswered_questions(selected_pet, pillar, user_message, limit=3),
+                    "suggested_question": suggest_question_for_context(selected_pet, pillar, user_message)
+                }
+            except Exception as soul_err:
+                logger.warning(f"[SOUL INTELLIGENCE] Error calculating: {soul_err}")
+                response_data["soul_intelligence"] = {
+                    "completion_score": {"total_score": 0},
+                    "unanswered_questions": [],
+                    "suggested_question": None
+                }
+        
+        return response_data
         
     except Exception as e:
         logger.error(f"Mira chat error: {e}", exc_info=True)
