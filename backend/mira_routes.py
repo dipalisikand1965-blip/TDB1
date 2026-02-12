@@ -11689,7 +11689,7 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 "layer_activation": os_context.get("layer_activation", pillar),
                 "temporal_context": os_context.get("temporal_context"),  # Birthday proximity, etc.
                 "safety_gates": os_context.get("safety_gates", []),  # Allergies, health constraints
-                "picks_update": os_context.get("picks_update", {"should_refresh": pillar in ["celebrate", "travel", "care", "dine", "stay"], "pillar": pillar}),
+                "picks_update": os_context.get("picks_update", {"should_refresh": pillar in ["celebrate", "travel", "care", "dine", "stay", "enjoy", "learn"], "pillar": pillar}),
                 "proactive_alerts": os_context.get("proactive_alerts", []),  # Urgent reminders
                 "memory_recall": os_context.get("memory_recall"),  # Relevant past memory
                 # CELEBRATE PILLAR SPECIFIC - Birthday, party, cake context
@@ -11704,7 +11704,16 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 # TRAVEL PILLAR SPECIFIC - Trips, transport, relocation context
                 "travel_context": os_context.get("travel_context"),  # Temperament, size, health flags, brachycephalic
                 "travel_picks": os_context.get("travel_picks", []),  # Concierge picks for TRAVEL pillar
-                "concierge_handoff": os_context.get("concierge_handoff")  # Always available for CELEBRATE/STAY/TRAVEL
+                # CARE PILLAR SPECIFIC - Grooming, vet, daily care context
+                "care_context": os_context.get("care_context"),  # Handling comfort, coat type, health
+                "care_picks": os_context.get("care_picks", []),  # Concierge picks for CARE pillar
+                # ENJOY PILLAR SPECIFIC - Activities, outings, playdates
+                "enjoy_context": os_context.get("enjoy_context"),  # Social comfort, energy level
+                "enjoy_picks": os_context.get("enjoy_picks", []),  # Picks for ENJOY pillar
+                # LEARN PILLAR SPECIFIC - Training, behavior, commands
+                "learn_context": os_context.get("learn_context"),  # Life stage, training history
+                "learn_picks": os_context.get("learn_picks", []),  # Picks for LEARN pillar
+                "concierge_handoff": os_context.get("concierge_handoff")  # Always available for CELEBRATE/STAY/TRAVEL/CARE
             }
         }
         
