@@ -1104,7 +1104,13 @@ const MiraDemoPage = () => {
                 if (typeof raw === 'string') return raw.split(',').map(s => s.trim()).filter(Boolean);
                 return [];
               })(),
-              photo: p.photo_url ? `${API_URL}${p.photo_url}` : null
+              photo: p.photo_url ? `${API_URL}${p.photo_url}` : null,
+              // Include full data for MOJO modal
+              doggy_soul_answers: p.doggy_soul_answers || {},
+              preferences: p.preferences || {},
+              soul: p.soul || {},
+              health_vault: p.health_vault || {},
+              overall_score: p.overall_score || 0
             }));
             console.log('[PETS-MY-PETS] Setting allPets with scores:', formattedPets.map(p => ({name: p.name, soulScore: p.soulScore})));
             setAllPets(formattedPets);
