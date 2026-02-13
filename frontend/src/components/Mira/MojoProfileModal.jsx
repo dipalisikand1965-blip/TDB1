@@ -1132,12 +1132,12 @@ const MojoProfileModal = ({
     setEditingSection(null);
   }, []);
   
-  // Save edited data to backend
+  // Save edited data to backend (called by auto-save from editors)
   const handleSaveSection = useCallback(async (sectionId, data) => {
     if (!pet?.id || !apiUrl) return;
     
-    setSaving(true);
-    console.log('[MOJO] Saving section:', sectionId, data);
+    // Don't show toast during auto-save, let the editor's indicator handle it
+    console.log('[MOJO] Auto-saving section:', sectionId, data);
     
     try {
       const headers = { 'Content-Type': 'application/json' };
@@ -1155,7 +1155,7 @@ const MojoProfileModal = ({
       }
       
       const result = await response.json();
-      console.log('[MOJO] Save result:', result);
+      console.log('[MOJO] Auto-save result:', result);
       
       // Update local state with new data
       setFullPetData(prev => ({
@@ -1171,24 +1171,21 @@ const MojoProfileModal = ({
         setComputedSoulScore(Math.round(result.overall_score));
       }
       
-      // Show success toast
-      setSaveToast({ type: 'success', message: 'Saved!' });
-      setTimeout(() => setSaveToast(null), 2000);
-      
-      // Exit edit mode
-      setEditingSection(null);
-      
-      // Refresh full data to get updated scores
-      fetchFullPetData();
+      // Don't exit edit mode or show toast - let the editor handle this
+      // The auto-save indicator in the editor shows the status
       
     } catch (err) {
-      console.error('[MOJO] Save error:', err);
-      setSaveToast({ type: 'error', message: 'Failed to save' });
-      setTimeout(() => setSaveToast(null), 3000);
-    } finally {
-      setSaving(false);
+      console.error('[MOJO] Auto-save error:', err);
+      throw err; // Re-throw so the auto-save hook can show error state
     }
   }, [pet?.id, apiUrl, token]);
+  
+  // Handle "Done" button click - close editor and refresh data
+  const handleDoneEditing = useCallback(() => {
+    setEditingSection(null);
+    // Refresh data to get latest scores
+    fetchFullPetData();
+  }, []);
   
   // Handle add/edit click for a section (legacy - navigates away)
   const handleAddClick = useCallback((sectionId) => {
