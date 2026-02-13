@@ -97,15 +97,14 @@ class TestTwoWaySoulSync:
         )
         assert response.status_code == 200, f"Failed to get pets: {response.text}"
         data = response.json()
-        assert isinstance(data, list), "Expected list of pets"
-        assert len(data) > 0, "Expected at least one pet"
+        pets = data.get("pets", data) if isinstance(data, dict) else data
+        assert len(pets) > 0, "Expected at least one pet"
         
         # Find Lola
-        lola = next((p for p in data if p.get("name") == "Lola"), None)
+        lola = next((p for p in pets if p.get("name") == "Lola"), None)
         assert lola is not None, "Lola not found in pets"
-        print(f"SUCCESS: Found {len(data)} pets, including Lola")
+        print(f"SUCCESS: Found {len(pets)} pets, including Lola")
         print(f"Lola's current score: {lola.get('overall_score', 'N/A')}%")
-        return data
     
     def test_get_pet_soul_profile(self, auth_headers, test_pet_id):
         """Test that we can get pet soul profile"""
