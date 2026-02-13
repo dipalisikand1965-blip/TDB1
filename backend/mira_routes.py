@@ -11188,6 +11188,32 @@ FOLLOW-UP CONCISENESS RULE:
         # Check if response contains a question (more generic detection)
         response_has_question = "?" in response
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # CONVERSATION STATE TRACKING: Save state when asking clarifying questions
+        # This ensures continuity when user responds to follow-up questions
+        # ═══════════════════════════════════════════════════════════════════════════
+        if is_nutrition_query and response_has_question:
+            # Check if we're asking about dietary needs/allergies
+            dietary_question_indicators = ["allerg", "sensitiv", "dietary", "health condition", "restriction", "special diet", "specific need"]
+            is_asking_dietary = any(ind in response.lower() for ind in dietary_question_indicators)
+            
+            if is_asking_dietary:
+                try:
+                    from mira_session_persistence import update_conversation_state
+                    await update_conversation_state(session_id, {
+                        "original_intent": "meal_plan",
+                        "awaiting_response": "dietary_needs",
+                        "pending_action": "generate_meal_plan",
+                        "context_data": {
+                            "pet_name": pet_name,
+                            "pillar": pillar,
+                            "query": user_message
+                        }
+                    })
+                    logger.info(f"[CONV STATE] Saved meal_plan state, awaiting dietary_needs for {pet_name}")
+                except Exception as state_err:
+                    logger.warning(f"[CONV STATE] Could not save state: {state_err}")
+        
         # Count questions in conversation history to detect loop
         question_count = sum(1 for msg in (request.history or []) if msg.get("role") == "assistant" and "?" in msg.get("content", ""))
         is_stuck_in_loop = question_count >= 3 and response_has_question
