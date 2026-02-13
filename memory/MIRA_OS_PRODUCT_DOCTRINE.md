@@ -342,7 +342,7 @@ Meaning:
 
 ## 12. One Sentence Summary
 
-> **Mira OS is an identity-first intelligence system that knows every pet deeply, guides decisions, and orchestrates their entire life.**
+> **Mira OS is an identity-first intelligence system that knows every pet deeply, guides decisions through personal interactions, and orchestrates their entire life.**
 
 ---
 
