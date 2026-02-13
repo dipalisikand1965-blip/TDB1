@@ -285,6 +285,9 @@ const MiraDemoPage = () => {
   const [soulScoreUpdated, setSoulScoreUpdated] = useState(false);
   // SOUL FORM MODAL: Quick questions to enrich pet profile
   const [showSoulFormModal, setShowSoulFormModal] = useState(false);
+  // MOJO PROFILE MODAL: Pet Identity Layer - The Pet Operating System Core
+  const [showMojoModal, setShowMojoModal] = useState(false);
+  const [mojoDeepLink, setMojoDeepLink] = useState(null); // 'soul' to auto-scroll to soul section
   
   // NOTE: showTopPicksPanel, showUnifiedVault, isProcessing now come from useMiraUI hook
   // NOTE: proactiveAlerts, proactiveGreeting, currentWeather now come from useProactiveAlerts hook
