@@ -574,7 +574,11 @@ const MiraOSPage = () => {
                   pet={pet}
                   token={token}
                   proactiveGreeting={null}
-                  proactiveAlerts={proactiveAlerts}
+                  proactiveAlerts={{
+                    ...proactiveAlerts,
+                    celebrations: proactiveAlerts.celebrations || [],
+                    healthReminders: proactiveAlerts.healthReminders || []
+                  }}
                   onQuickReply={handleQuickReply}
                   onShowSoulForm={() => setShowSoulFormModal(true)}
                   onShowTopPicks={() => setShowTopPicksPanel(true)}
