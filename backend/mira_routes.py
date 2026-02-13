@@ -9876,8 +9876,6 @@ async def mira_chat(
     # If user mentioned a location, log it for the search
     if user_mentioned_location:
         logger.info(f"[LOCATION] User specified location: {user_mentioned_location}")
-            "tip_card": None
-        }
     
     # If user mentioned a location, store it for the search
     if user_mentioned_location:
