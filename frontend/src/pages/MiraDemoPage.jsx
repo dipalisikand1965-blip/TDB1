@@ -1615,6 +1615,21 @@ const MiraDemoPage = () => {
     
     const quickReplies = [];
     
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ALLERGY CHECK (SAFETY - HIGHEST PRIORITY)
+    // When Mira asks about allergies, ONLY show allergy-related chips
+    // Do NOT show meal plan options until allergies are confirmed
+    // ═══════════════════════════════════════════════════════════════════════════
+    if (messageLower.includes('allerg') && 
+        (messageLower.includes('food') || messageLower.includes('sensitivit') || 
+         messageLower.includes('does') || messageLower.includes('have any'))) {
+      return [
+        { text: 'Yes, has allergies', value: 'Yes, my pet has food allergies.' },
+        { text: 'No known allergies', value: 'No, no known food allergies.' },
+        { text: 'Not sure', value: "I'm not sure, need to check with my vet." }
+      ];
+    }
+    
     // === CONCIERGE FLOW ===
     // If user asks for concierge help
     if (messageLower.includes('concierge') || messageLower.includes('would you like the')) {
