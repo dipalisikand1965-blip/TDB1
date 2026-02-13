@@ -157,7 +157,12 @@ const MiraOSPage = () => {
   
   // Pet data states
   const [soulKnowledge, setSoulKnowledge] = useState({ items: [], soulScore: 0 });
-  const [proactiveAlerts, setProactiveAlerts] = useState({ smartAlerts: [], criticalCount: 0 });
+  const [proactiveAlerts, setProactiveAlerts] = useState({ 
+    smartAlerts: [], 
+    criticalCount: 0,
+    celebrations: [],
+    healthReminders: []
+  });
   const [miraPicks, setMiraPicks] = useState({ products: [], services: [], tipCard: null, hasNew: false });
   
   // Other states
