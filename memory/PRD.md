@@ -187,7 +187,7 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 ## Test Credentials
 - **User:** `dipali@clubconcierge.in` / `test123`
 - **Admin:** `aditya` / `lola4304`
-- **Test Pets:** Lola (34%), Mystique (72%), Bruno (29%), Luna (88%), Buddy (0%), Meister (23%), TestScoring (100%)
+- **Test Pets:** Lola (44%), Mystique (72%), Bruno (29%), Luna (88%), Buddy (41%), Meister (23%), TestScoring (100%)
 
 ---
 
