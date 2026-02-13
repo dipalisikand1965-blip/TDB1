@@ -116,6 +116,8 @@ DOGGY_SOUL_QUESTIONS = {
         "description": "How they learn and respond",
         "questions": [
             {"id": "training_level", "question": "Is your dog trained?", "type": "select", "options": ["Fully trained", "Partially trained", "Not trained"], "weight": 3},
+            {"id": "motivation_type", "question": "What motivates your dog during training?", "type": "select", "options": ["Treats/food", "Praise and attention", "Toys/play", "A mix of everything"], "weight": 3, "canonical_id": "motivation_type"},
+            {"id": "behavior_issues", "question": "Does your dog have any behavioral issues?", "type": "multi_select", "options": ["None", "Excessive barking", "Jumping on people", "Pulling on leash", "Resource guarding", "Aggression", "Fear-based issues", "Destructive behavior"], "weight": 4, "canonical_id": "behavior_issues"},
             {"id": "training_response", "question": "How does your dog respond best to training?", "type": "select", "options": ["Treats", "Praise", "Toys", "Play"], "weight": 3},
             {"id": "leash_behavior", "question": "Does your dog pull on the leash?", "type": "select", "options": ["Always", "Sometimes", "Rarely"], "weight": 2},
             {"id": "barking", "question": "Does your dog bark often?", "type": "select", "options": ["Yes", "Occasionally", "Rarely"], "weight": 2},
