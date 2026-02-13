@@ -11,7 +11,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Check, ChevronRight, Trophy, Gift } from 'lucide-react';
 import { API_URL } from '../../utils/api';
-import { toast } from 'sonner';
+import { toast } from '../../hooks/use-toast';
 
 // The 3 quick questions to show in the modal
 const QUICK_SOUL_QUESTIONS = [
