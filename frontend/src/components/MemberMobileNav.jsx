@@ -187,17 +187,23 @@ const MemberMobileNav = () => {
       {/* Overlay */}
       {isOpen && (
         <div 
-          className="md:hidden fixed inset-0 bg-black/40 z-[9997] backdrop-blur-sm"
+          className="fixed inset-0 bg-black/40 z-[9997] backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            setIsOpen(false);
+          }}
+          style={{ touchAction: 'manipulation' }}
           data-testid="member-nav-overlay"
         />
       )}
 
       {/* Slide-out Navigation Drawer */}
       <div 
-        className={`md:hidden fixed left-0 top-0 bottom-0 z-[9998] bg-white shadow-2xl transition-all duration-300 ease-in-out overflow-y-auto ${
+        className={`fixed left-0 top-0 bottom-0 z-[9998] bg-white shadow-2xl transition-all duration-300 ease-in-out overflow-y-auto ${
           isOpen ? 'translate-x-0 w-72' : '-translate-x-full w-0'
         }`}
+        style={{ WebkitOverflowScrolling: 'touch' }}
         data-testid="member-nav-drawer"
       >
         {/* Header */}
