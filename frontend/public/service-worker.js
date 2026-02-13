@@ -1,74 +1,81 @@
-// Service Worker for The Doggy Company PWA
-// Handles caching, offline functionality, and push notifications
+// Service Worker for The Doggy Company PWA - v5 FORCE REFRESH
+// This version aggressively clears all caches and forces reload
 
-const CACHE_NAME = 'tdc-pwa-v4'; // Updated to force cache refresh
+const CACHE_NAME = 'tdc-pwa-v5';
+
+// ONLY cache these essential files - NO JS/CSS chunks
 const urlsToCache = [
-  '/',
-  '/index.html',
   '/manifest.json',
   '/logo-new.png',
   '/favicon.ico'
 ];
 
-// Badge count tracking
-let badgeCount = 0;
-
-// Install event - cache core assets and skip waiting
+// Install - skip waiting immediately
 self.addEventListener('install', (event) => {
-  console.log('PWA: Installing new service worker v4');
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('PWA: Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
-  // Force immediate activation
+  console.log('PWA v5: Installing - will clear all old caches');
   self.skipWaiting();
 });
 
-// Activate event - cleanup old caches
+// Activate - AGGRESSIVELY clear ALL caches and reload all pages
 self.addEventListener('activate', (event) => {
+  console.log('PWA v5: Activating - clearing ALL caches');
+  
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('PWA: Deleting old cache:', cacheName);
+    Promise.all([
+      // Delete ALL caches, not just old ones
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            console.log('PWA v5: Deleting cache:', cacheName);
             return caches.delete(cacheName);
-          }
-        })
-      );
+          })
+        );
+      }),
+      // Claim all clients
+      self.clients.claim()
+    ]).then(() => {
+      // Force reload ALL controlled pages
+      return self.clients.matchAll({ type: 'window' }).then((clients) => {
+        console.log('PWA v5: Reloading', clients.length, 'pages');
+        clients.forEach((client) => {
+          client.postMessage({ type: 'FORCE_RELOAD' });
+        });
+      });
     })
   );
-  self.clients.claim();
 });
 
-// Fetch event - network first, fallback to cache
-// IMPORTANT: Skip caching chunk files to avoid version mismatches
+// Fetch - NETWORK ONLY for HTML/JS/CSS, no caching of app files
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  
   // Skip non-GET requests
-  if (event.request.method !== 'GET') {
+  if (event.request.method !== 'GET') return;
+  
+  // Skip API calls
+  if (url.pathname.startsWith('/api/')) return;
+  
+  // NEVER cache HTML, JS, CSS - always go to network
+  if (url.pathname.endsWith('.html') ||
+      url.pathname.endsWith('.js') ||
+      url.pathname.endsWith('.css') ||
+      url.pathname.includes('.chunk.') ||
+      url.pathname.includes('/static/') ||
+      url.pathname === '/' ||
+      url.pathname === '/index.html') {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        // Only if network fails, try cache as last resort
+        return caches.match(event.request);
+      })
+    );
     return;
   }
   
-  // Skip API calls - always go to network
-  if (event.request.url.includes('/api/')) {
-    return;
-  }
-  
-  // Skip chunk files - they have unique hashes and shouldn't be cached by SW
-  // This prevents CSS chunk loading errors after deployments
-  if (event.request.url.includes('.chunk.') || 
-      event.request.url.includes('/static/css/') || 
-      event.request.url.includes('/static/js/')) {
-    return fetch(event.request);
-  }
-  
+  // For other assets (images, fonts), use network-first
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Cache successful responses for non-chunk files only
         if (response.status === 200) {
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -77,164 +84,13 @@ self.addEventListener('fetch', (event) => {
         }
         return response;
       })
-      .catch(() => {
-        // Network failed - try cache
-        return caches.match(event.request);
-      })
+      .catch(() => caches.match(event.request))
   );
 });
 
-// Update app badge count
-async function updateBadge(count) {
-  badgeCount = count;
-  
-  if ('setAppBadge' in navigator) {
-    try {
-      if (count > 0) {
-        await navigator.setAppBadge(count);
-        console.log('PWA: Badge set to', count);
-      } else {
-        await navigator.clearAppBadge();
-        console.log('PWA: Badge cleared');
-      }
-    } catch (error) {
-      console.error('PWA: Badge update failed:', error);
-    }
-  }
-}
-
-// Push notification handler - Enhanced for Soul Whisper and more
-self.addEventListener('push', (event) => {
-  console.log('PWA: Push notification received');
-  
-  let notificationData = {
-    title: 'The Doggy Company',
-    body: 'New notification',
-    icon: '/logo-new.png',
-    badge: '/logo-new.png',
-    vibrate: [100, 50, 100],
-    data: {
-      dateOfArrival: Date.now(),
-      url: '/'
-    },
-    requireInteraction: false
-  };
-  
-  // Parse push data if available
-  if (event.data) {
-    try {
-      const pushData = event.data.json();
-      notificationData = {
-        ...notificationData,
-        title: pushData.title || notificationData.title,
-        body: pushData.body || notificationData.body,
-        icon: pushData.icon || notificationData.icon,
-        badge: pushData.badge || notificationData.badge,
-        tag: pushData.tag || undefined,
-        data: {
-          ...notificationData.data,
-          ...pushData.data,
-          url: pushData.data?.url || '/'
-        },
-        requireInteraction: pushData.requireInteraction || false,
-        silent: pushData.silent || false,
-        actions: pushData.actions || []
-      };
-      
-      // Update badge count if provided
-      if (pushData.badgeCount !== undefined) {
-        updateBadge(pushData.badgeCount);
-      } else {
-        // Increment badge count for new notification
-        updateBadge(badgeCount + 1);
-      }
-    } catch (e) {
-      // If not JSON, use text
-      notificationData.body = event.data.text();
-      updateBadge(badgeCount + 1);
-    }
-  }
-  
-  // Show notification
-  event.waitUntil(
-    self.registration.showNotification(notificationData.title, notificationData)
-  );
-});
-
-// Notification click handler - Navigate to relevant page
-self.addEventListener('notificationclick', (event) => {
-  console.log('PWA: Notification clicked', event.notification.tag);
-  
-  event.notification.close();
-  
-  // Decrement badge count when notification is clicked
-  if (badgeCount > 0) {
-    updateBadge(badgeCount - 1);
-  }
-  
-  // Get the URL to open
-  const urlToOpen = event.notification.data?.url || '/';
-  
-  // Handle action button clicks
-  if (event.action) {
-    console.log('PWA: Action clicked:', event.action);
-    // Handle specific actions here
-    if (event.action === 'view') {
-      // Already handled by urlToOpen
-    } else if (event.action === 'dismiss') {
-      return; // Just close the notification
-    }
-  }
-  
-  // Focus existing window or open new one
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true })
-      .then((clientList) => {
-        // Check if there's already a window open
-        for (const client of clientList) {
-          if (client.url.includes(self.location.origin) && 'focus' in client) {
-            client.navigate(urlToOpen);
-            return client.focus();
-          }
-        }
-        // Open new window if none found
-        if (clients.openWindow) {
-          return clients.openWindow(urlToOpen);
-        }
-      })
-  );
-});
-
-// Notification close handler (for analytics if needed)
-self.addEventListener('notificationclose', (event) => {
-  console.log('PWA: Notification dismissed', event.notification.tag);
-  // Optionally decrement badge on dismiss too
-});
-
-// Message handler for badge updates from the app
+// Message handler
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SET_BADGE') {
-    updateBadge(event.data.count);
-  } else if (event.data && event.data.type === 'CLEAR_BADGE') {
-    updateBadge(0);
-  } else if (event.data && event.data.type === 'GET_BADGE') {
-    // Send current badge count back
-    event.source.postMessage({ type: 'BADGE_COUNT', count: badgeCount });
-  } else if (event.data && event.data.type === 'SKIP_WAITING') {
-    // Force the waiting service worker to become active
-    console.log('PWA: Skip waiting requested, activating new service worker');
+  if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
-  }
-});
-
-// Background sync handler (for offline actions)
-self.addEventListener('sync', (event) => {
-  console.log('PWA: Background sync triggered', event.tag);
-  
-  if (event.tag === 'sync-pending-actions') {
-    event.waitUntil(
-      // Sync any pending offline actions
-      Promise.resolve()
-    );
   }
 });
