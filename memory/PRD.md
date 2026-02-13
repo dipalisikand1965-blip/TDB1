@@ -105,74 +105,20 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 
 ---
 
-## 🔴 CRITICAL: NEXT AGENT INSTRUCTIONS
+## 🔴 NEXT AGENT INSTRUCTIONS
 
-### Task: Connect ALL MOJO Data to the Pet Identity Layer
+### Task: Port Missing Features from Backup Page
 
-**The user's vision:**
-> "MOJO is the pet's passport - their whole DNA. Mira is his soul, Concierge® is his hands."
+**Now that MOJO data integration is complete, the next phase is:**
 
-**Data Sources to Connect:**
+1. **Weather Card Integration** - Port the weather widget from `MiraDemoBackupPage.jsx` to the TODAY tab
+2. **"Why for {Pet}" Badges** - Show personalization reasons on recommendations
+3. **Health Vault Progress** - Visual indicator of health records completion
+4. **MOJO Modal Phase 2** - Add "drill-in" editing for each of the 11 sections
 
-1. **Pet Profile Data** - `/api/pets/{pet_id}` or `/api/pets/my-pets`
-```json
-{
-  "id": "pet-99a708f1722a",
-  "name": "Lola",
-  "breed": "Maltese",
-  "photo_url": "/api/pet-photo/pet-xxx",
-  "overall_score": 34.0,
-  "doggy_soul_answers": {
-    "temperament": "playful",
-    "energy_level": "high",
-    "food_allergies": ["chicken"],
-    ...
-  }
-}
-```
-
-2. **Member Profile** - `/api/member/profile?user_email=dipali@clubconcierge.in`
-```json
-{
-  "id": "xxx",
-  "email": "dipali@clubconcierge.in",
-  "membership_tier": "Gold",
-  "paw_points": 1670,
-  "badges": [...],
-  "pets": [...]
-}
-```
-
-3. **Pet Soul Details** - Study `/pet/{pet_id}` page structure at `https://thedoggycompany.in/pet/pet-99a708f1722a`
-
-4. **Dashboard Data** - Study `https://thedoggycompany.in/dashboard` for:
-   - Membership card design
-   - Paw points display
-   - Badges earned
-   - Soul Journey progress
-
-**What MOJO Must Show:**
-- REAL pet photos (handle `/api/pet-photo/pet-xxx` URLs)
-- REAL soul scores (from `overall_score`)
-- REAL membership tier (Gold, Silver, Platinum)
-- REAL paw points balance
-- REAL badges earned
-- REAL soul answers (temperament, energy, allergies, etc.)
-- Health vault completion %
-- Documents uploaded
-- Life timeline events
-
-**Study These Files:**
-- `/app/frontend/src/pages/MemberDashboard.jsx` - How dashboard fetches member data
-- `/app/frontend/src/pages/MiraDemoBackupPage.jsx` - Missing personalization features to port
-- `/app/backend/member_rewards_routes.py` - Rewards/badges endpoints
-- `/app/backend/mira_memory_routes.py` - Pet knowledge endpoints
-
-**MOJO Modal Component to Update:**
-`/app/frontend/src/components/Mira/MojoProfileModal.jsx`
-- Currently uses placeholder/calculated data
-- Needs to fetch REAL data from APIs
-- Pass `apiUrl` and `token` properly
+**Files to Study:**
+- `/app/frontend/src/pages/MiraDemoBackupPage.jsx` - Source of missing features
+- `/app/frontend/src/components/Mira/PetOSNavigation.jsx` - Add weather to TODAY tab
 
 ---
 
