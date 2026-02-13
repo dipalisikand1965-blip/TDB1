@@ -1127,9 +1127,11 @@ const MojoProfileModal = ({
     }
   }, [expandedSections]);
   
-  // Cancel editing
+  // Cancel/Done editing - closes the editor
   const handleCancelEdit = useCallback(() => {
     setEditingSection(null);
+    // Refresh data to get latest scores after editing
+    fetchFullPetData();
   }, []);
   
   // Save edited data to backend (called by auto-save from editors)
