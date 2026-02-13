@@ -139,9 +139,9 @@ const SoulFormModal = ({
               // Show toast for each new badge
               achievementData.new_achievements.forEach((badge, idx) => {
                 setTimeout(() => {
-                  toast.success(`🏆 Badge Unlocked: ${formatBadgeName(badge)}`, {
+                  toast({
+                    title: `🏆 Badge Unlocked: ${formatBadgeName(badge)}`,
                     description: getBadgeDescription(badge),
-                    duration: 5000,
                   });
                 }, idx * 1000);
               });
