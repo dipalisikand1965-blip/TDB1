@@ -375,20 +375,29 @@ EMERGENCY_SUPPRESSION = {
 def count_ui_questions_answered(doggy_soul_answers: Dict) -> int:
     """
     Count how many UI questions have been answered.
-    Only counts non-empty values for fields in UI_QUESTION_IDS.
+    Counts non-empty values for fields in UI_QUESTION_IDS OR their aliases.
     Used for badge threshold checks.
     """
     if not doggy_soul_answers:
         return 0
     
-    count = 0
-    for field in UI_QUESTION_IDS:
-        value = doggy_soul_answers.get(field)
-        # Count if value exists and is non-empty
-        if value is not None and value != "" and value != []:
-            count += 1
+    # Track which canonical fields have been answered
+    answered_canonical = set()
     
-    return count
+    for field, value in doggy_soul_answers.items():
+        # Skip empty values
+        if value is None or value == "" or value == []:
+            continue
+        
+        # Check if field is a direct UI question ID
+        if field in UI_QUESTION_IDS:
+            answered_canonical.add(field)
+        # Check if field is an alias
+        elif field in UI_TO_CANONICAL_ALIAS:
+            canonical = UI_TO_CANONICAL_ALIAS[field]
+            answered_canonical.add(canonical)
+    
+    return len(answered_canonical)
 
 
 def get_eligible_badges(questions_answered: int, credited_badges: List[str]) -> List[str]:
