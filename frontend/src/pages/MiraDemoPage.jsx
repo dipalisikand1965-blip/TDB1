@@ -2873,7 +2873,44 @@ const MiraDemoPage = () => {
         </div>
       </header>
       
-      {/* NAVIGATION DOCK - Extracted to NavigationDock component */}
+      {/* PET OS NAVIGATION - The 7 Layer OS Navigation Bar */}
+      {/* MOJO = Identity | TODAY = Time | PICKS = Intelligence | SERVICES = Action | INSIGHTS = Pattern | LEARN = Knowledge | CONCIERGE = Human */}
+      <PetOSNavigation
+        currentPet={pet}
+        allPets={allPets}
+        soulScore={pet?.soulScore || soulKnowledge.soulScore || 0}
+        healthScore={calculateHealthScore(pet)}
+        activeTab={activeOSTab}
+        onTabChange={(tabId) => {
+          setActiveOSTab(tabId);
+          // Handle tab-specific actions
+          if (tabId === 'mojo') {
+            setShowMojoModal(true);
+          } else if (tabId === 'picks') {
+            setShowTopPicksPanel(true);
+          } else if (tabId === 'insights') {
+            setShowInsightsPanel(true);
+          } else if (tabId === 'learn') {
+            setShowLearnModal(true);
+            fetchLearnVideos('recommended');
+          } else if (tabId === 'concierge') {
+            setShowConciergePanel(true);
+          }
+        }}
+        onPetClick={() => {
+          // Open MOJO Profile Modal when pet avatar is clicked
+          setShowMojoModal(true);
+          setMojoDeepLink(null);
+        }}
+        onSwitchPet={switchPet}
+        badges={{
+          picks: conversationPicks.length > 0 ? conversationPicks.length : null,
+          services: null, // TODO: Connect to pending services count
+          insights: null, // TODO: Connect to new insights count
+        }}
+      />
+      
+      {/* NAVIGATION DOCK - Extracted to NavigationDock component (Legacy - keeping for backward compatibility) */}
       <NavigationDock
         inputRef={inputRef}
         onShowHelp={() => setShowHelpModal(true)}
