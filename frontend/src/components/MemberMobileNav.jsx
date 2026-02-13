@@ -45,9 +45,10 @@ const MemberMobileNav = () => {
   const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password', '/agent'];
   const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path));
   
-  // Listen for global event to open sidebar (from MobileNavBar "My Pet" button)
+  // Listen for global event to open sidebar (from MobileNavBar "My Pet" button or Navbar hamburger)
   useEffect(() => {
-    const handleOpenSidebar = () => {
+    const handleOpenSidebar = (e) => {
+      console.log('[MemberMobileNav] openPetSidebar event received');
       setIsOpen(true);
     };
     
