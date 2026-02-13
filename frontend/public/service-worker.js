@@ -220,6 +220,10 @@ self.addEventListener('message', (event) => {
   } else if (event.data && event.data.type === 'GET_BADGE') {
     // Send current badge count back
     event.source.postMessage({ type: 'BADGE_COUNT', count: badgeCount });
+  } else if (event.data && event.data.type === 'SKIP_WAITING') {
+    // Force the waiting service worker to become active
+    console.log('PWA: Skip waiting requested, activating new service worker');
+    self.skipWaiting();
   }
 });
 
