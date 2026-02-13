@@ -4518,7 +4518,10 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 user_city = request.pet_context.get("location", {}).get("city") if isinstance(request.pet_context.get("location"), dict) else None
                 user_city = user_city or request.pet_context.get("city")
             
-            INDIAN_CITIES = ["mumbai", "delhi", "bangalore", "bengaluru", "pune", "hyderabad", "chennai", "kolkata", "gurgaon", "noida", "goa", "jaipur"]
+            INDIAN_CITIES = ["mumbai", "delhi", "bangalore", "bengaluru", "pune", "hyderabad", "chennai", "kolkata", "gurgaon", "noida", "goa", "jaipur",
+                             "koramangala", "indiranagar", "whitefield", "hsr", "btm", "jayanagar", "jp nagar", "electronic city", "marathahalli", "sarjapur",
+                             "bandra", "andheri", "powai", "juhu", "worli", "malad", "borivali", "kurla", "dadar",
+                             "vijayawada", "visakhapatnam", "vizag", "coimbatore", "kochi", "trivandrum", "ahmedabad", "surat", "vadodara"]
             for city in INDIAN_CITIES:
                 if city in user_input_lower:
                     user_city = city.title()
