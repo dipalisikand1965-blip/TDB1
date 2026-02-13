@@ -19,8 +19,14 @@ import ProactiveAlertsBanner from './ProactiveAlertsBanner';
 const WeatherCardInline = ({ weather, petName, onAskMira }) => {
   if (!weather) return null;
   
-  const { city, temp, humidity, condition, pet_advisory } = weather;
-  const safetyLevel = pet_advisory?.safety_level || 'unknown';
+  // Handle nested API response structure
+  const city = weather.city || 'Your city';
+  const currentWeather = weather.current_weather || {};
+  const temp = currentWeather.temperature || currentWeather.temp || 0;
+  const humidity = currentWeather.humidity || 0;
+  const condition = currentWeather.condition || currentWeather.description || 'Clear';
+  const petAdvisory = weather.pet_advisory || {};
+  const safetyLevel = petAdvisory.safety_level || 'unknown';
   const isSafe = safetyLevel.toLowerCase() === 'safe';
   const isCaution = safetyLevel.toLowerCase() === 'caution';
   
