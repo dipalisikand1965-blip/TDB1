@@ -91,26 +91,41 @@ It is NOT:
 
 ---
 
-## 🎯 SOUL-FIRST RESPONSE GENERATION (Feb 2026) ✅ COMPLETE
+## 🎯 SOUL-FIRST RESPONSE GENERATION (Feb 2026) ✅ COMPLETE + EXPANDED
 
 ### Core Doctrine
 **Mira must speak from Pet Soul memory FIRST, breed only as fallback.**
+
+### Universal Data Capture ("Ask, Store, Recommend")
+**Every user message is analyzed for Soul data - not just after questions!**
+
+#### Data Categories Captured:
+- **Allergies**: chicken, wheat, beef, dairy, grain, etc.
+- **Diet Preferences**: dry food, wet food, raw, home-cooked, mixed
+- **Favorite Treats**: extracted from natural conversation
+- **Health Conditions**: arthritis, diabetes, epilepsy, obesity, etc.
+- **Vaccination Status**: up to date, needs update
+- **Behavioral Traits**: energy level (high/medium/low), temperament (calm/anxious/playful)
+- **Behavior with Dogs/People**: friendly, reactive, fearful
+- **Grooming Data**: coat type, preferences, anxiety triggers
+- **Location**: city for service recommendations
 
 ### Implementation
 - `soul_context_summary` built before LLM response (coat_type, grooming_history, anxiety_triggers, etc.)
 - If >= 2 grooming-relevant fields → generate "because {pet_name}..." lines
 - If breed known but Soul sparse → ask fallback questions (coat+goal, past experience, health, logistics)
-- **Data Write-Back**: User answers are extracted and saved to pet profile
+- **Data Write-Back**: User answers are extracted and saved to pet profile AUTOMATICALLY
 
 ### Key Files
 ```
-/app/backend/soul_first_logic.py              ← Soul-First module (NEW)
-/app/backend/tests/test_soul_first_logic.py   ← 18 unit tests
-/app/backend/tests/test_soul_first_integration.py ← 10 integration tests
+/app/backend/soul_first_logic.py              ← Soul-First module (EXPANDED Feb 13 2026)
+/app/backend/tests/test_soul_first_logic.py   ← Unit tests
+/app/backend/tests/test_soul_first_mira_chat.py ← Integration tests (12 tests)
 ```
 
 ### Test Results
-- **28 tests passing** (18 unit + 10 integration)
+- **12 API tests passing** (allergy extraction, diet, health, behavior)
+- **4 unit tests passing** (pattern matching)
 - Profile-First Doctrine verified
 
 ---
