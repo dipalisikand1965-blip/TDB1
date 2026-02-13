@@ -194,6 +194,42 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 
 ---
 
+## 🧠 CRITICAL: TWO-WAY MEMORY-SOUL CONNECTION
+
+### NEXT AGENT MUST VERIFY THIS IS WORKING
+
+The Pet OS has a TWO-WAY data flow between Mira's Memory and Pet Soul:
+
+**Direction 1: Soul → Mira (Mira reads Pet Soul)**
+- When Mira responds, she reads `pets.doggy_soul_answers`
+- Uses `soul_first_logic.py` to build pet context
+- Personalizes all responses based on soul data
+
+**Direction 2: Mira → Soul (Conversations update Pet Soul)** 
+- When user tells Mira "Lola is allergic to chicken"
+- Mira extracts: allergy = "chicken"
+- Saves to: `pets.doggy_soul_answers.food_allergies`
+- Also saves to: `mira_memories` collection
+
+### Backend Files for Memory System
+```
+/app/backend/
+├── mira_memory.py           # Core memory storage (4 types: event, health, shopping, general)
+├── mira_memory_routes.py    # Memory API endpoints
+├── soul_first_logic.py      # Builds pet context for Mira's responses
+└── mira_session_persistence.py # Session management
+```
+
+### Memory Types
+| Type | Icon | Description | Updates Soul? |
+|------|------|-------------|---------------|
+| event | 🗓️ | Birthdays, trips, milestones | No |
+| health | 🏥 | Allergies, conditions, vet visits | YES |
+| shopping | 🛒 | Product preferences | Partial |
+| general | 💬 | Life context | No |
+
+---
+
 ## Missing Features to Port from Backup Page
 
 From `/app/frontend/src/pages/MiraDemoBackupPage.jsx`:
