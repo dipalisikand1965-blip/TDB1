@@ -9577,57 +9577,107 @@ async def mira_chat(
     ]
     is_confirmation = any(phrase in user_msg_lower for phrase in confirmation_phrases)
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # GUARDRAIL: "New Topic" handling - reset but DON'T invent a topic
+    # ═══════════════════════════════════════════════════════════════════════════
+    if "new topic" in user_msg_lower:
+        logger.info(f"[NEW TOPIC] User requested topic reset for {pet_name}")
+        # Clear conversation state
+        try:
+            from mira_session_persistence import update_conversation_state
+            await update_conversation_state(session_id, {
+                "original_intent": None,
+                "awaiting_response": None,
+                "pending_action": None,
+                "context_data": {}
+            })
+        except:
+            pass
+        
+        return {
+            "success": True,
+            "response": f"Of course — what would you like to do for {pet_name} now?",
+            "session_id": session_id,
+            "pillar": None,  # Reset pillar
+            "intent": "topic_reset",
+            "follow_ups": [
+                {"text": "Continue with meal plan", "type": "action"},
+                {"text": "Something else", "type": "action"}
+            ],
+            "products": [],
+            "services": []
+        }
+    
     # If we were awaiting a response and user confirmed/answered, continue the original flow
     if awaiting and is_confirmation and original_intent:
         logger.info(f"[CONV CONTINUITY] User confirmed: '{user_message}' for pending intent: {original_intent}")
         
-        # MEAL PLAN FLOW - User confirmed no special dietary needs
+        # MEAL PLAN FLOW - User said "no specific needs" but we still need diet type + weight
         if original_intent == "meal_plan" and awaiting in ["dietary_needs", "health_conditions"]:
-            # User said "no specific needs" - CONTINUE with meal plan
-            logger.info(f"[MEAL PLAN] User confirmed no dietary needs, generating meal plan for {pet_name}")
+            logger.info(f"[MEAL PLAN] User confirmed no dietary needs, now ask diet type + weight")
             
-            # Clear the awaiting state
-            conversation_state["awaiting_response"] = None
+            # Update state - now awaiting diet type + weight
+            try:
+                from mira_session_persistence import update_conversation_state
+                await update_conversation_state(session_id, {
+                    "original_intent": "meal_plan",
+                    "awaiting_response": "diet_type_and_weight",
+                    "pending_action": "generate_meal_plan",
+                    "context_data": {"pet_name": pet_name}
+                })
+            except Exception as e:
+                logger.warning(f"[CONV STATE] Could not update state: {e}")
             
-            # Generate meal plan response
-            breed = selected_pet.get("breed", "dog") if selected_pet else "dog"
-            energy_level = selected_pet.get("energy_level") or selected_pet.get("doggy_soul_answers", {}).get("energy_level") if selected_pet else None
+            # Still in DINE pillar - ask only high-signal questions
+            meal_plan_response = f"""Perfect — then we'll keep it clean, balanced, and easy to follow.
+
+Just to finalise the plan:
+
+• Are you doing **home-cooked** or **kibble-based** most days?
+• What's {pet_name}'s approx **weight** (or size class: small / medium / large)?
+
+Once you confirm, I'll give you:
+• daily portions (by weight)
+• protein + carb + veg structure
+• safe treat rules
+• a simple transition guide if you're changing anything"""
             
-            energy_note = ""
-            if energy_level:
-                if "high" in str(energy_level).lower():
-                    energy_note = " Given her high energy, she may need slightly larger portions."
-                elif "low" in str(energy_level).lower():
-                    energy_note = " Since she's lower energy, be mindful of portions to avoid weight gain."
+            return {
+                "success": True,
+                "response": meal_plan_response,
+                "session_id": session_id,
+                "pillar": "dine",  # STAY IN DINE - Topic lock
+                "intent": "meal_plan_awaiting_details",
+                "awaiting": "diet_type_and_weight",
+                "follow_ups": [
+                    {"text": "Home-cooked, medium size", "type": "action"},
+                    {"text": "Kibble-based, large breed", "type": "action"},
+                    {"text": "Mixed diet", "type": "action"}
+                ],
+                "products": [],
+                # Auto-update Picks panel for DINE
+                "picks": {
+                    "type": "dine_meal_plan",
+                    "title": f"Nutrition Picks for {pet_name}",
+                    "items": [
+                        {"name": "Balanced Adult Food Options", "category": "nutrition"},
+                        {"name": "Healthy Treat Options", "category": "treats"},
+                        {"name": "Slow Feeder / Lick Mat", "category": "feeding"},
+                        {"name": "Hydration Support", "category": "wellness"}
+                    ]
+                },
+                # Auto-update Services panel
+                "services": [
+                    {"id": "nutrition_consult", "name": "Arrange Nutrition Consult", "type": "concierge"},
+                    {"id": "build_meal_plan", "name": "Build Meal Plan", "type": "execution"}
+                ]
+            }
+        
+        # MEAL PLAN FLOW - User provided diet type + weight, NOW generate the plan
+        if original_intent == "meal_plan" and awaiting == "diet_type_and_weight":
+            logger.info(f"[MEAL PLAN] User provided diet details, generating final plan for {pet_name}")
             
-            meal_plan_response = f"""Great, thanks for confirming that {pet_name} doesn't have any specific dietary restrictions! 
-
-Here's a **balanced daily meal plan** for {pet_name}:
-
-**🌅 Morning Meal (7-8 AM)**
-- High-quality protein (chicken, fish, or lamb) - about 40% of the meal
-- Complex carbs (brown rice, sweet potato) - about 30%
-- Vegetables (carrots, green beans, pumpkin) - about 20%
-- Healthy fats (fish oil or coconut oil) - a small drizzle
-
-**🌙 Evening Meal (6-7 PM)**
-- Similar composition, can rotate protein source
-- Add probiotics 2-3 times a week for gut health{energy_note}
-
-**💧 Hydration**
-- Fresh water available at all times
-- Consider adding bone broth 1-2x weekly
-
-**🦴 Treats (max 10% of daily intake)**
-- Single-ingredient treats like freeze-dried liver
-- Carrot sticks or apple slices as healthy alternatives
-
-Would you like me to:
-• Recommend specific brands?
-• Create a weekly rotation schedule?
-• Calculate exact portions based on {pet_name}'s weight?"""
-            
-            # Save updated conversation state
+            # Clear state
             try:
                 from mira_session_persistence import update_conversation_state
                 await update_conversation_state(session_id, {
@@ -9636,24 +9686,69 @@ Would you like me to:
                     "pending_action": None,
                     "context_data": {}
                 })
-            except Exception as e:
-                logger.warning(f"[CONV STATE] Could not update state: {e}")
+            except:
+                pass
+            
+            # Parse diet type and weight from message
+            is_home_cooked = any(w in user_msg_lower for w in ["home", "cooked", "homemade", "fresh"])
+            is_kibble = any(w in user_msg_lower for w in ["kibble", "dry", "commercial"])
+            size_class = "medium"
+            if any(w in user_msg_lower for w in ["small", "toy", "mini"]):
+                size_class = "small"
+            elif any(w in user_msg_lower for w in ["large", "big", "giant"]):
+                size_class = "large"
+            
+            diet_type = "home-cooked" if is_home_cooked else ("kibble-based" if is_kibble else "mixed")
+            
+            meal_plan_response = f"""Here's {pet_name}'s personalized **{diet_type} meal plan** ({size_class} breed):
+
+**🌅 Morning Meal**
+• Protein: {'Boiled chicken/fish (100-150g)' if is_home_cooked else 'High-quality kibble (1-1.5 cups)'}
+• Carbs: {'Brown rice or sweet potato (50-75g)' if is_home_cooked else 'Already in kibble'}
+• Veggies: Steamed carrots, beans, pumpkin (30-50g)
+
+**🌙 Evening Meal**
+• Similar structure, rotate protein source
+• Add probiotics 2-3x weekly for gut health
+
+**💧 Hydration**
+• Fresh water always available
+• Bone broth 1-2x weekly (unsalted)
+
+**🦴 Treats (max 10% of daily intake)**
+• Single-ingredient: freeze-dried liver, dehydrated fish
+• Fresh: carrot sticks, apple slices (no seeds)
+
+**⚠️ Avoid**
+• Onion, garlic, grapes, chocolate, xylitol
+• Excessive salt or spices
+
+If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everything."""
             
             return {
                 "success": True,
                 "response": meal_plan_response,
                 "session_id": session_id,
-                "pillar": "care",
+                "pillar": "dine",  # STAY IN DINE
                 "intent": "meal_plan_complete",
                 "follow_ups": [
-                    {"text": "Recommend brands", "type": "action"},
-                    {"text": "Calculate portions", "type": "action"},
-                    {"text": "Weekly rotation", "type": "action"}
+                    {"text": "Weekly rotation schedule", "type": "action"},
+                    {"text": "Calculate exact portions", "type": "action"},
+                    {"text": "Recommend brands", "type": "action"}
                 ],
                 "products": [],
+                "picks": {
+                    "type": "dine_meal_plan",
+                    "title": f"Nutrition Picks for {pet_name}",
+                    "items": [
+                        {"name": f"Balanced {size_class}-breed food", "category": "nutrition"},
+                        {"name": "Healthy treat options", "category": "treats"},
+                        {"name": "Slow feeder / lick mat", "category": "feeding"}
+                    ]
+                },
                 "services": [
-                    {"name": "Nutrition Consultation", "type": "concierge"},
-                    {"name": "Custom Meal Plan", "type": "concierge"}
+                    {"id": "nutrition_consult", "name": "Arrange Nutrition Consult", "type": "concierge"},
+                    {"id": "weekly_plan", "name": "Build Weekly Rotation", "type": "execution"}
                 ]
             }
     
