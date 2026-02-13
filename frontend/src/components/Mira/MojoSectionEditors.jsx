@@ -603,7 +603,7 @@ export const PreferencesProfileEditor = memo(({ pet, onSave, onCancel, saving })
   );
 });
 
-// Timeline Event Editor (Add new event)
+// Timeline Event Editor (Add new event) - With Auto-Save
 export const TimelineEventEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     title: '',
@@ -612,19 +612,22 @@ export const TimelineEventEditor = memo(({ pet, onSave, onCancel, saving }) => {
     notes: '',
   });
   
-  const handleSave = () => {
-    // Save as timeline event in doggy_soul_answers
+  // Custom save handler for timeline (adds to array rather than replacing)
+  const handleTimelineSave = useCallback(async (eventData) => {
     const existingTimeline = pet?.doggy_soul_answers?.timeline_events || [];
     const newEvent = {
       id: Date.now().toString(),
-      ...data,
+      ...eventData,
       created_at: new Date().toISOString()
     };
-    onSave({ timeline_events: [...existingTimeline, newEvent] });
-  };
+    await onSave({ timeline_events: [...existingTimeline, newEvent] });
+  }, [pet, onSave]);
+  
+  // Use auto-save hook
+  const saveStatus = useAutoSave(data, handleTimelineSave, 2000);
   
   return (
-    <EditorWrapper title="Timeline Event" onSave={handleSave} onCancel={onCancel} saving={saving}>
+    <EditorWrapper title="Timeline Event" onCancel={onCancel} saveStatus={saveStatus}>
       <TextField 
         label="Event Title" 
         value={data.title}
@@ -653,7 +656,7 @@ export const TimelineEventEditor = memo(({ pet, onSave, onCancel, saving }) => {
   );
 });
 
-// Basic Details Editor (Photo, name, breed, etc)
+// Basic Details Editor (Photo, name, breed, etc) - With Auto-Save
 export const BasicDetailsEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     name: pet?.name || '',
@@ -664,10 +667,11 @@ export const BasicDetailsEditor = memo(({ pet, onSave, onCancel, saving }) => {
     dob: pet?.dob || pet?.doggy_soul_answers?.dob || '',
   });
   
-  const handleSave = () => onSave(data);
+  // Use auto-save hook
+  const saveStatus = useAutoSave(data, onSave, 1500);
   
   return (
-    <EditorWrapper title="Basic Details" onSave={handleSave} onCancel={onCancel} saving={saving}>
+    <EditorWrapper title="Basic Details" onCancel={onCancel} saveStatus={saveStatus}>
       <TextField 
         label="Name" 
         value={data.name}
