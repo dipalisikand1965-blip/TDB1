@@ -430,7 +430,7 @@ export const DietProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   );
 });
 
-// Behaviour & Training Editor
+// Behaviour & Training Editor - With Auto-Save
 export const BehaviourProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     training_level: pet?.doggy_soul_answers?.training_level || '',
@@ -439,10 +439,11 @@ export const BehaviourProfileEditor = memo(({ pet, onSave, onCancel, saving }) =
     behavioral_issues: pet?.doggy_soul_answers?.behavioral_issues || [],
   });
   
-  const handleSave = () => onSave(data);
+  // Use auto-save hook
+  const saveStatus = useAutoSave(data, onSave, 1500);
   
   return (
-    <EditorWrapper title="Behaviour & Training" onSave={handleSave} onCancel={onCancel} saving={saving}>
+    <EditorWrapper title="Behaviour & Training" onCancel={onCancel} saveStatus={saveStatus}>
       <SelectField 
         label="Training Level" 
         value={data.training_level} 
@@ -473,7 +474,7 @@ export const BehaviourProfileEditor = memo(({ pet, onSave, onCancel, saving }) =
   );
 });
 
-// Grooming & Care Editor
+// Grooming & Care Editor - With Auto-Save
 export const GroomingProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     coat_type: pet?.doggy_soul_answers?.coat_type || '',
@@ -482,10 +483,11 @@ export const GroomingProfileEditor = memo(({ pet, onSave, onCancel, saving }) =>
     bath_frequency: pet?.doggy_soul_answers?.bath_frequency || '',
   });
   
-  const handleSave = () => onSave(data);
+  // Use auto-save hook
+  const saveStatus = useAutoSave(data, onSave, 1500);
   
   return (
-    <EditorWrapper title="Grooming & Care" onSave={handleSave} onCancel={onCancel} saving={saving}>
+    <EditorWrapper title="Grooming & Care" onCancel={onCancel} saveStatus={saveStatus}>
       <SelectField 
         label="Coat Type" 
         value={data.coat_type} 
