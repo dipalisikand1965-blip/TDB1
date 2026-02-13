@@ -9750,23 +9750,49 @@ async def mira_chat(
             logger.error(f"[ALLERGY] Failed to save allergies: {e}")
     
     # ═══════════════════════════════════════════════════════════════════════════
-    # CONVERSATIONAL PLACE SEARCH FLOW
+    # MIRA OS CONVERSATIONAL PLACE SEARCH - Pet-First, Context-Aware, Memory-Driven
     # ═══════════════════════════════════════════════════════════════════════════
-    # Not a chatbot dump - structured conversation:
-    # 1. Establish intent
-    # 2. Ask 3-4 specific questions
-    # 3. Understand the need
-    # 4. Offer solution specific to the dog
-    # 5. If multi-pet, ask which pet(s)
-    # 6. Show recommendations with Concierge option
+    # DOCTRINE:
+    # 1. Anchor in the pet (name, temperament, energy level)
+    # 2. Use what we already know (don't ask for info we have)
+    # 3. Max 2 clarifying questions - only ask what's MISSING
+    # 4. Always offer execution/action at the end
+    # 5. Show curated options based on pet personality, NOT generic listings
     # ═══════════════════════════════════════════════════════════════════════════
     
-    # Detect if user is asking for location-based places
+    # Extract pet context for personalization
+    pet_name = selected_pet.get("name", "your furry friend") if selected_pet else "your furry friend"
+    pet_energy = selected_pet.get("energy_level") or selected_pet.get("doggy_soul_answers", {}).get("energy_level") if selected_pet else None
+    pet_temperament = selected_pet.get("temperament") or selected_pet.get("doggy_soul_answers", {}).get("temperament") if selected_pet else None
+    pet_behavior_with_dogs = selected_pet.get("behavior_with_dogs") or selected_pet.get("doggy_soul_answers", {}).get("behavior_with_dogs") if selected_pet else None
+    pet_anxiety = selected_pet.get("separation_anxiety") or selected_pet.get("doggy_soul_answers", {}).get("separation_anxiety") if selected_pet else None
+    pet_general_nature = selected_pet.get("general_nature") or selected_pet.get("doggy_soul_answers", {}).get("general_nature") if selected_pet else None
+    
+    # Build pet context summary for conversational anchoring
+    pet_traits_summary = []
+    if pet_energy:
+        pet_traits_summary.append(f"{pet_energy.lower()} energy" if isinstance(pet_energy, str) else "energetic")
+    if pet_temperament:
+        pet_traits_summary.append(pet_temperament.lower() if isinstance(pet_temperament, str) else "")
+    if pet_general_nature:
+        pet_traits_summary.append(pet_general_nature.lower() if isinstance(pet_general_nature, str) else "")
+    pet_traits_text = ", ".join([t for t in pet_traits_summary if t][:2])  # Max 2 traits
+    
+    # Get known location from pet context if available
+    known_location = None
+    if request.pet_context:
+        loc = request.pet_context.get("location")
+        if isinstance(loc, dict):
+            known_location = loc.get("city") or loc.get("area")
+        elif isinstance(loc, str):
+            known_location = loc
+    
+    # Detect place search keywords
     PLACE_SEARCH_KEYWORDS = {
-        "restaurant": ["restaurant", "restaurants", "cafe", "cafes", "coffee", "dine out", "dining", "eat out", "brunch", "lunch spot", "dinner place", "lunch", "dinner", "breakfast"],
+        "restaurant": ["restaurant", "restaurants", "cafe", "cafes", "coffee", "dine out", "dining", "eat out", "brunch", "lunch spot", "dinner place", "lunch", "dinner", "breakfast", "outing", "eat somewhere"],
         "hotel": ["hotel", "hotels", "stay", "stays", "accommodation", "pet-friendly stay", "resort", "booking", "staycation"],
         "vet": ["vet", "veterinary", "veterinarian", "animal hospital", "pet doctor", "emergency vet", "clinic"],
-        "park": ["dog park", "park for dogs", "off-leash", "pet park"],
+        "park": ["dog park", "park for dogs", "off-leash", "pet park", "play area"],
         "groomer": ["groomer", "grooming", "pet spa", "dog salon", "bath", "haircut"],
         "pet_store": ["pet store", "pet shop", "dog store"]
     }
@@ -9778,10 +9804,10 @@ async def mira_chat(
             break
     
     # Check if this is a location-based search request
-    search_trigger_words = ["find", "looking for", "recommend", "suggest", "where", "any", "show me", "search", "nearby", "near me", "around", "best", "want", "need", "take"]
+    search_trigger_words = ["find", "looking for", "recommend", "suggest", "where", "any", "show me", "search", "nearby", "near me", "around", "best", "want", "need", "take", "go"]
     is_search_request = detected_place_search and any(word in user_msg_lower for word in search_trigger_words)
     
-    # Indian cities and areas for detection
+    # Indian cities and areas for detection in user message
     INDIAN_CITIES = ["mumbai", "delhi", "bangalore", "bengaluru", "pune", "hyderabad", "chennai", 
                      "kolkata", "gurgaon", "gurugram", "noida", "goa", "jaipur", "ahmedabad", 
                      "koramangala", "indiranagar", "whitefield", "hsr", "btm", "jayanagar", "jp nagar",
@@ -9802,87 +9828,113 @@ async def mira_chat(
                 user_mentioned_location = "Gurgaon"
             break
     
-    pet_name = selected_pet.get("name", "your furry friend") if selected_pet else "your furry friend"
+    # Determine effective location (user-mentioned > known from context)
+    effective_location = user_mentioned_location or known_location
     
-    # STEP 1: If user is searching for places but hasn't specified location, ASK ONE QUESTION
-    if is_search_request and not user_mentioned_location:
-        place_intros = {
-            "restaurant": f"I'd love to help find a great spot for you and {pet_name} to dine! 🍽️",
-            "hotel": f"Planning a trip with {pet_name}? Exciting! 🏨",
-            "vet": f"I'll help you find a good vet for {pet_name}. 🏥",
-            "groomer": f"Time for {pet_name} to get pampered! ✨",
-            "park": f"Let's find a great place for {pet_name} to play! 🌳",
-            "pet_store": f"Shopping trip for {pet_name}! 🛍️"
-        }
-        
-        intro = place_intros.get(detected_place_search, f"Let me help find something perfect for {pet_name}!")
-        
-        return {
-            "success": True,
-            "response": f"{intro}\n\nWhich **city and area** should I look in?",
-            "session_id": session_id,
-            "pillar": pillar or "dine",
-            "intent": "place_search_step1",
-            "awaiting": "location",
-            "place_search_type": detected_place_search,
-            "follow_ups": [
-                {"text": "Koramangala, Bangalore", "type": "location"},
-                {"text": "Indiranagar, Bangalore", "type": "location"},
-                {"text": "Bandra, Mumbai", "type": "location"}
-            ],
-            "products": [],
-            "nearby_places": None
-        }
+    # ═══════════════════════════════════════════════════════════════════════════
+    # MIRA OS FLOW: Acknowledge → Use Pet Context → Ask ONLY Missing Info → Act
+    # ═══════════════════════════════════════════════════════════════════════════
     
-    # STEP 2: User gave location - ask ONE more question (timing)
-    if user_mentioned_location and detected_place_search:
-        # Check if they also mentioned timing
-        time_words = ["today", "tomorrow", "weekend", "this week", "now", "later", "planning", "tonight", "morning"]
-        mentioned_time = any(tw in user_msg_lower for tw in time_words)
+    if is_search_request:
+        # Build pet-anchored acknowledgment
+        if pet_traits_text:
+            pet_anchor = f"That sounds lovely — an outing with {pet_name}.\n\nBased on what I know about {'her' if selected_pet and selected_pet.get('gender', '').lower() == 'female' else 'him'} — {pet_traits_text} — I'll look for spaces that suit {'her' if selected_pet and selected_pet.get('gender', '').lower() == 'female' else 'his'} comfort."
+        else:
+            pet_anchor = f"That sounds lovely — an outing with {pet_name}."
         
-        if not mentioned_time:
+        # Determine what questions to ask (MAX 2, only what's missing)
+        missing_info = []
+        
+        # If we have location, don't ask for it
+        if not effective_location:
+            missing_info.append("location")
+        
+        # For restaurants/cafes, ask seating preference
+        if detected_place_search in ["restaurant", "hotel"]:
+            seating_preference = None  # We don't have this yet
+            if not seating_preference:
+                missing_info.append("seating")
+        
+        # If we have everything or just seating missing, ask only that
+        if not missing_info:
+            # We have all info - skip to showing results (will be handled by Google Places later)
+            pass
+        elif missing_info == ["seating"]:
+            # Only seating is missing - ask ONE question
             return {
                 "success": True,
-                "response": f"Got it - **{user_mentioned_location}** for {pet_name}! 🐾\n\nIs this for **today**, or are you planning ahead?",
+                "response": f"{pet_anchor}\n\nJust one quick detail:\n\n• **Indoor café** or **outdoor seating** preferred?",
                 "session_id": session_id,
                 "pillar": pillar or "dine",
-                "intent": "place_search_step2",
-                "awaiting": "timing",
-                "confirmed_location": user_mentioned_location,
+                "intent": "place_search_ask_seating",
+                "awaiting": "seating_preference",
                 "place_search_type": detected_place_search,
+                "confirmed_location": effective_location,
+                "pet_context_used": {
+                    "name": pet_name,
+                    "energy": pet_energy,
+                    "temperament": pet_temperament
+                },
                 "follow_ups": [
-                    {"text": "Today", "type": "timing"},
-                    {"text": "This weekend", "type": "timing"},
-                    {"text": "Just browsing", "type": "timing"}
+                    {"text": "Outdoor seating", "type": "seating"},
+                    {"text": "Indoor is fine", "type": "seating"},
+                    {"text": "Either works", "type": "seating"}
                 ],
                 "products": [],
                 "nearby_places": None
             }
-        
-        # STEP 3: User gave location AND timing - NOW offer to show options
-        return {
-            "success": True,
-            "response": f"Perfect! Let me find the best options in **{user_mentioned_location}** for you and {pet_name}. 🔍\n\nReady to see my top picks?",
-            "session_id": session_id,
-            "pillar": pillar or "dine",
-            "intent": "place_search_step3",
-            "awaiting": "confirmation",
-            "confirmed_location": user_mentioned_location,
-            "place_search_type": detected_place_search,
-            "follow_ups": [
-                {"text": f"Yes, show me options", "type": "confirm_search"},
-                {"text": "Any specific requirements?", "type": "preferences"},
-                {"text": "Different area", "type": "change_location"}
-            ],
-            "products": [],
-            "nearby_places": None
-        }
+        elif missing_info == ["location"]:
+            # Only location is missing
+            return {
+                "success": True,
+                "response": f"{pet_anchor}\n\nWhich **area** would you like me to search in?",
+                "session_id": session_id,
+                "pillar": pillar or "dine",
+                "intent": "place_search_ask_location",
+                "awaiting": "location",
+                "place_search_type": detected_place_search,
+                "pet_context_used": {
+                    "name": pet_name,
+                    "energy": pet_energy,
+                    "temperament": pet_temperament
+                },
+                "follow_ups": [
+                    {"text": "Koramangala, Bangalore", "type": "location"},
+                    {"text": "Indiranagar, Bangalore", "type": "location"},
+                    {"text": "Bandra, Mumbai", "type": "location"},
+                    {"text": "Use my current location", "type": "location"}
+                ],
+                "products": [],
+                "nearby_places": None
+            }
+        else:
+            # Both missing - ask both in ONE message (max 2 questions)
+            return {
+                "success": True,
+                "response": f"{pet_anchor}\n\nBefore I suggest places:\n\n• Which **area** should I search?\n• **Indoor** or **outdoor** seating preferred?",
+                "session_id": session_id,
+                "pillar": pillar or "dine",
+                "intent": "place_search_ask_details",
+                "awaiting": "location_and_seating",
+                "place_search_type": detected_place_search,
+                "pet_context_used": {
+                    "name": pet_name,
+                    "energy": pet_energy,
+                    "temperament": pet_temperament
+                },
+                "follow_ups": [
+                    {"text": "Outdoor in Koramangala", "type": "location_seating"},
+                    {"text": "Anywhere nearby, outdoor", "type": "location_seating"},
+                    {"text": "Indoor cafe, Indiranagar", "type": "location_seating"}
+                ],
+                "products": [],
+                "nearby_places": None
+            }
     
-    # STEP 4: Handle explicit confirmation to show places
-    confirm_phrases = ["yes, show", "show me options", "yes show", "show options", "show me", "ready to see", "yes please", "let's see"]
-    if any(phrase in user_msg_lower for phrase in confirm_phrases):
-        # Now actually search - but we need to know the location from context
-        # For now, let the LLM handle this as it can maintain context better
+    # Handle seating preference response (when user answers seating question)
+    seating_keywords = ["outdoor", "outside", "patio", "garden", "terrace", "alfresco", "indoor", "inside", "ac", "air-conditioned", "either", "both", "any"]
+    if any(word in user_msg_lower for word in seating_keywords) and not detected_place_search:
+        # User is answering a previous seating question - this will flow to Google Places search
         pass
     
     # ═══════════════════════════════════════════════════════════════════════════
