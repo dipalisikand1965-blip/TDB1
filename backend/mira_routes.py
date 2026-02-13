@@ -10014,29 +10014,6 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
                     {"id": "set_refill", "name": "Set Refill Cadence", "type": "execution"}
                 ]
             }
-                "session_id": session_id,
-                "pillar": "dine",  # STAY IN DINE
-                "intent": "meal_plan_complete",
-                "follow_ups": [
-                    {"text": "Weekly rotation schedule", "type": "action"},
-                    {"text": "Calculate exact portions", "type": "action"},
-                    {"text": "Recommend brands", "type": "action"}
-                ],
-                "products": [],
-                "picks": {
-                    "type": "dine_meal_plan",
-                    "title": f"Nutrition Picks for {pet_name}",
-                    "items": [
-                        {"name": f"Balanced {size_class}-breed food", "category": "nutrition"},
-                        {"name": "Healthy treat options", "category": "treats"},
-                        {"name": "Slow feeder / lick mat", "category": "feeding"}
-                    ]
-                },
-                "services": [
-                    {"id": "nutrition_consult", "name": "Arrange Nutrition Consult", "type": "concierge"},
-                    {"id": "weekly_plan", "name": "Build Weekly Rotation", "type": "execution"}
-                ]
-            }
     
     # ═══════════════════════════════════════════════════════════════════════════
     # CHECK FOR PERSONALIZED PICKS REQUEST FIRST
