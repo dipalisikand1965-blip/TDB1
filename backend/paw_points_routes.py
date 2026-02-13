@@ -526,18 +526,28 @@ async def get_ways_to_earn():
     return {"ways_to_earn": ways}
 
 
-# Achievement definitions with point values
+# Import canonical member logic config
+from member_logic_config import (
+    BADGE_DEFINITIONS,
+    BADGE_QUESTION_THRESHOLDS,
+    PAW_POINTS_RULES,
+    UI_QUESTION_IDS,
+    count_ui_questions_answered,
+    get_eligible_badges,
+    calculate_order_points,
+    get_service_booking_points
+)
+
+# Achievement definitions - now using BADGE_DEFINITIONS from config
+# Badges are triggered by QUESTION COUNT, not percentage
 ACHIEVEMENT_POINTS = {
-    "soul_starter": {"name": "Soul Starter", "points": 50, "type": "questions", "threshold": 1},
-    "soul_seeker": {"name": "Soul Seeker", "points": 100, "type": "percentage", "threshold": 25},
-    "soul_explorer": {"name": "Soul Explorer", "points": 250, "type": "percentage", "threshold": 50},
-    "soul_guardian": {"name": "Soul Guardian", "points": 500, "type": "percentage", "threshold": 75},
-    "soul_master": {"name": "Soul Master", "points": 1000, "type": "percentage", "threshold": 100},
-    "first_order": {"name": "First Paw-chase", "points": 100, "type": "orders", "threshold": 1},
-    "photo_uploaded": {"name": "Picture Paw-fect", "points": 50, "type": "photo", "threshold": 1},
-    "multi_pet": {"name": "Pack Leader", "points": 200, "type": "pets", "threshold": 2},
-    "mira_chat": {"name": "Mira's Friend", "points": 75, "type": "mira", "threshold": 1},
-    "celebration_planned": {"name": "Party Planner", "points": 150, "type": "celebration", "threshold": 1},
+    badge_id: {
+        "name": badge["name"],
+        "points": badge["points_reward"],
+        "type": badge["type"],
+        "threshold": badge["threshold"]
+    }
+    for badge_id, badge in BADGE_DEFINITIONS.items()
 }
 
 
