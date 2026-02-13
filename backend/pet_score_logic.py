@@ -529,6 +529,7 @@ def get_next_recommended_question(answers: Dict[str, Any], current_tier: str = N
     1. Highest weight unanswered questions first
     2. Questions appropriate for current tier
     """
+    answers = answers or {}
     unanswered = []
     
     for question_id, config in PET_SCORE_RULES.items():
