@@ -387,9 +387,17 @@ SCORE_CATEGORIES = {
 
 def calculate_pet_soul_score(answers: Dict[str, Any], preferences: Dict[str, Any] = None, soul: Dict[str, Any] = None) -> Dict[str, Any]:
     """
-    Calculate the Pet Soul Score from answers.
+    Calculate the Pet Soul Score from answers using canonical field mapping.
     
-    Now also accepts preferences and soul data to cross-reference and fill gaps.
+    This function:
+    1. Canonicalizes all input fields to standard scoring field names
+    2. Calculates weighted score (total weight = exactly 100)
+    3. Returns detailed breakdown by category
+    
+    Args:
+        answers: The doggy_soul_answers dict (can use UI or canonical field names)
+        preferences: Optional pet.preferences dict for additional data
+        soul: Optional pet.soul dict for additional data
     
     Returns:
         {
@@ -400,124 +408,22 @@ def calculate_pet_soul_score(answers: Dict[str, Any], preferences: Dict[str, Any
             "tier": tier_info,
             "next_tier": next_tier_info or None,
             "missing_high_impact": [question_ids],
-            "completion_by_category": {category: percentage}
         }
     """
+    from canonical_answers import canonicalize_answers, get_scoring_answers, CANONICAL_SCORING_FIELDS
+    
     preferences = preferences or {}
     soul = soul or {}
     
-    # Alias mapping: old question IDs -> new question IDs
-    # CRITICAL: Map all variations of field names to scoring question IDs
-    QUESTION_ALIASES = {
-        # Temperament/Personality variations
-        'general_nature': 'temperament',
-        'describe_3_words': 'temperament',
-        'nature': 'temperament',
-        
-        # Social behavior
-        'stranger_reaction': 'social_with_people',
-        'behavior_with_strangers': 'social_with_people',
-        'behavior_with_dogs': 'social_with_dogs',
-        'dog_friendly': 'social_with_dogs',
-        
-        # Comfort & Handling  
-        'handling_comfort': 'grooming_tolerance',  # Fixed: was touch_sensitivity
-        'grooming_comfort': 'grooming_tolerance',
-        'touch_sensitivity': 'grooming_tolerance',
-        
-        # Sounds & Anxiety
-        'loud_sounds': 'noise_sensitivity',
-        'sound_sensitivity': 'noise_sensitivity',
-        'thunder_anxiety': 'noise_sensitivity',
-        
-        # Alone time / Separation
-        'separation_anxiety': 'alone_time_comfort',  # Added: critical mapping!
-        'alone_comfort': 'alone_time_comfort',
-        'home_alone': 'alone_time_comfort',
-        
-        # Exercise & Activity
-        'play_style': 'exercise_needs',
-        'favorite_activity': 'exercise_needs',
-        'activity_level': 'exercise_needs',
-        'walks_per_day': 'exercise_needs',
-        'exercise_preferences': 'exercise_needs',
-        
-        # Toys
-        'fetch_interest': 'favorite_toy_type',
-        'toy_preferences': 'favorite_toy_type',
-        
-        # Food & Treats
-        'preferred_treats': 'treat_preference',
-        'treat_texture': 'treat_preference',  # From preferences
-        'favorite_treats': 'treat_preference',
-        'favorite_flavors': 'favorite_protein',  # From preferences
-        
-        # Travel
-        'car_rides': 'car_comfort',
-        'car_anxiety': 'car_comfort',
-        'travel_comfort': 'travel_readiness',
-        
-        # Life stage
-        'dob': 'life_stage',
-        'birth_date': 'life_stage',
-        'age': 'life_stage',
-        'age_years': 'life_stage',
-        
-        # Training
-        'training_status': 'training_level',
-        'obedience_level': 'training_level',
-        
-        # Vet
-        'vet_anxiety': 'vet_comfort',
-        'vet_behavior': 'vet_comfort',
-        
-        # Water
-        'water_comfort': 'swimming_ability',
-        'leash_behavior': 'leash_manners',
-    }
+    # Step 1: Canonicalize all answers to standard field names
+    canonical = canonicalize_answers(answers, preferences, soul)
     
-    # PHASE 2: Cross-reference data from preferences and soul
-    # This fills gaps where data exists but in different locations
-    merged_answers = dict(answers)  # Start with soul answers
+    # Step 2: Extract only scoring-relevant fields
+    scoring_answers = get_scoring_answers(canonical)
     
-    # Pull from preferences
-    if preferences:
-        if preferences.get('treat_texture') and not merged_answers.get('treat_preference'):
-            merged_answers['treat_preference'] = preferences['treat_texture']
-        if preferences.get('activity_level') and not merged_answers.get('exercise_needs'):
-            merged_answers['exercise_needs'] = preferences['activity_level']
-        if preferences.get('favorite_flavors') and not merged_answers.get('favorite_protein'):
-            # Take first flavor as favorite protein hint
-            flavors = preferences.get('favorite_flavors', [])
-            if flavors:
-                merged_answers['favorite_protein'] = flavors[0] if isinstance(flavors, list) else flavors
-    
-    # Pull from soul (personality data)
-    if soul:
-        # If temperament not filled but persona exists, use it
-        if soul.get('persona') and not merged_answers.get('temperament'):
-            merged_answers['temperament'] = soul['persona']
-    
-    # Normalize answers by applying aliases
-    normalized_answers = {}
-    for key, value in merged_answers.items():
-        # Skip if empty
-        if not value or value in ['', [], None, 'Unknown']:
-            continue
-        
-        # Use alias if exists, otherwise use original key
-        normalized_key = QUESTION_ALIASES.get(key, key)
-        
-        # If key already has a value, don't overwrite with alias
-        if normalized_key not in normalized_answers:
-            normalized_answers[normalized_key] = value
-        
-        # Also keep original key if it's in the scoring rules
-        if key in PET_SCORE_RULES:
-            normalized_answers[key] = value
-    
+    # Step 3: Calculate score
     total_earned = 0
-    total_possible = 0
+    total_possible = 100  # FIXED at exactly 100
     category_earned = {cat: 0 for cat in SCORE_CATEGORIES}
     category_possible = {cat: 0 for cat in SCORE_CATEGORIES}
     answered_questions = []
@@ -530,12 +436,11 @@ def calculate_pet_soul_score(answers: Dict[str, Any], preferences: Dict[str, Any
         # Skip bonus questions (weight = 0) from total
         if weight == 0:
             continue
-            
-        total_possible += weight
+        
         category_possible[category] = category_possible.get(category, 0) + weight
         
-        # Check if answered (using normalized answers)
-        answer = normalized_answers.get(question_id)
+        # Check if answered (using canonicalized answers)
+        answer = scoring_answers.get(question_id)
         is_answered = answer is not None and answer != "" and answer != []
         
         if is_answered:
@@ -554,7 +459,7 @@ def calculate_pet_soul_score(answers: Dict[str, Any], preferences: Dict[str, Any
                     "category": category
                 })
     
-    # Calculate percentage score
+    # Calculate percentage score (total_possible is always 100)
     total_score = round((total_earned / total_possible) * 100, 1) if total_possible > 0 else 0
     
     # Calculate category scores
@@ -592,6 +497,30 @@ def calculate_pet_soul_score(answers: Dict[str, Any], preferences: Dict[str, Any
     
     # Sort missing high impact by weight
     missing_high_impact.sort(key=lambda x: x["weight"], reverse=True)
+    
+    return {
+        "total_score": total_score,
+        "total_earned": total_earned,
+        "total_possible": total_possible,
+        "category_scores": category_scores,
+        "answered_count": len(answered_questions),
+        "total_questions": len([q for q in PET_SCORE_RULES.values() if q["weight"] > 0]),
+        "tier": {
+            "key": current_tier_key,
+            "name": current_tier.get("name", "Unknown") if current_tier else "Unknown",
+            "emoji": current_tier.get("emoji", "🐾") if current_tier else "🐾",
+            "color": current_tier.get("color", "gray") if current_tier else "gray",
+            "min_score": current_tier.get("min_score", 0) if current_tier else 0,
+            "max_score": current_tier.get("max_score", 100) if current_tier else 100
+        },
+        "next_tier": {
+            "key": next_tier_key,
+            "name": next_tier.get("name", ""),
+            "min_score": next_tier.get("min_score", 0),
+            "points_needed": max(0, next_tier.get("min_score", 0) - total_score) if next_tier else 0
+        } if next_tier else None,
+        "missing_high_impact": missing_high_impact[:5],  # Top 5 most impactful
+    }
     
     return {
         "total_score": total_score,
