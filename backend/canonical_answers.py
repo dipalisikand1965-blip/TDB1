@@ -415,6 +415,8 @@ def calculate_soul_score(canonical_answers: Dict[str, Any]) -> Dict[str, Any]:
     """
     Calculate Soul Score from canonicalized answers.
     
+    NOTE: This function expects RAW answers and will canonicalize them internally.
+    
     Returns:
         {
             "total_score": 0-100,
@@ -425,7 +427,9 @@ def calculate_soul_score(canonical_answers: Dict[str, Any]) -> Dict[str, Any]:
             "tier": {...}
         }
     """
-    scoring = get_scoring_answers(canonical_answers)
+    # First canonicalize the answers
+    canonical = canonicalize_answers(canonical_answers)
+    scoring = get_scoring_answers(canonical)
     
     # Calculate total and per-category scores
     total_earned = 0
