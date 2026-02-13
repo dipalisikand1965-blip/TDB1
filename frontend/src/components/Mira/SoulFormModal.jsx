@@ -133,11 +133,11 @@ const SoulFormModal = ({
             const achievementData = await achievementResponse.json();
             
             // Check for newly credited achievements
-            if (achievementData.newly_credited && achievementData.newly_credited.length > 0) {
-              setNewBadges(achievementData.newly_credited);
+            if (achievementData.new_achievements && achievementData.new_achievements.length > 0) {
+              setNewBadges(achievementData.new_achievements);
               
               // Show toast for each new badge
-              achievementData.newly_credited.forEach((badge, idx) => {
+              achievementData.new_achievements.forEach((badge, idx) => {
                 setTimeout(() => {
                   toast.success(`🏆 Badge Unlocked: ${formatBadgeName(badge)}`, {
                     description: getBadgeDescription(badge),
@@ -145,6 +145,11 @@ const SoulFormModal = ({
                   });
                 }, idx * 1000);
               });
+            }
+            
+            // Add points earned from achievements to total
+            if (achievementData.points_earned) {
+              setPawPointsEarned(prev => prev + achievementData.points_earned);
             }
           }
         } catch (achievementError) {
