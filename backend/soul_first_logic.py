@@ -421,23 +421,82 @@ def get_fallback_questions(pet_name: str, intent: str = "grooming", lite: bool =
     """
     Get fallback questions when Soul data is missing.
     
+    CRITICAL: These questions must be answered BEFORE recommendations.
+    Mira should WAIT for answers, not jump ahead to options.
+    
     Order (per user spec):
-    1. Coat + goal
-    2. Past experience
-    3. Health/sensitivity gate (non-medical)
-    4. Logistics
+    1. Safety-critical info first (allergies, health)
+    2. Preferences/lifestyle
+    3. Logistics
     
     Args:
         pet_name: Pet's name
-        intent: Current intent
+        intent: Current intent (grooming, diet, health, care)
         lite: If True, return only 2 questions
         
     Returns:
-        List of questions to ask
+        List of questions to ask (must be answered before proceeding)
     """
     questions = []
     
-    if intent == "grooming" or intent == "care":
+    if intent == "diet":
+        # ═══════════════════════════════════════════════════════════════════
+        # DIET INTENT - ALLERGY SAFETY IS PARAMOUNT
+        # MUST ask about allergies FIRST, WAIT for answer before meal plan
+        # ═══════════════════════════════════════════════════════════════════
+        
+        # 1. SAFETY-CRITICAL: Allergies (always ask first)
+        questions.append(
+            f"First, does {pet_name} have any food allergies or sensitivities I should avoid? (chicken, beef, grains, dairy, or none that you know of)"
+        )
+        
+        if not lite:
+            # 2. Current diet baseline
+            questions.append(
+                f"What does {pet_name} currently eat — dry kibble, wet food, home-cooked, raw, or a mix?"
+            )
+            
+            # 3. Lifestyle/preference
+            questions.append(
+                "Would you prefer a simple consistent routine or varied rotation for meals?"
+            )
+            
+            # 4. Health considerations
+            questions.append(
+                "Any health conditions I should factor in — weight management, sensitive stomach, or specific vet advice?"
+            )
+    
+    elif intent == "health":
+        # ═══════════════════════════════════════════════════════════════════
+        # HEALTH INTENT - No assumptions, gather facts first
+        # ═══════════════════════════════════════════════════════════════════
+        
+        # 1. Primary concern
+        questions.append(
+            f"What health concern or question do you have about {pet_name}?"
+        )
+        
+        if not lite:
+            # 2. Existing conditions
+            questions.append(
+                f"Does {pet_name} have any existing health conditions I should know about?"
+            )
+            
+            # 3. Current medications
+            questions.append(
+                "Is {pet_name} on any medications or supplements currently?"
+            )
+            
+            # 4. Last vet visit
+            questions.append(
+                "When was {pet_name}'s last vet checkup?"
+            )
+    
+    elif intent == "grooming" or intent == "care":
+        # ═══════════════════════════════════════════════════════════════════
+        # GROOMING/CARE INTENT
+        # ═══════════════════════════════════════════════════════════════════
+        
         # 1. Coat + goal
         questions.append(
             f"What's {pet_name}'s coat like right now — short, long, matted, shedding?"
@@ -461,6 +520,12 @@ def get_fallback_questions(pet_name: str, intent: str = "grooming", lite: bool =
             questions.append(
                 "Home visit or salon? Which city/area?"
             )
+    
+    else:
+        # Generic fallback for unknown intent
+        questions.append(
+            f"What would you like to know about or arrange for {pet_name}?"
+        )
     
     return questions[:4] if not lite else questions[:2]
 
