@@ -35,10 +35,11 @@ def set_pet_score_db(database):
 
 
 # ==================== WEIGHTED QUESTION CONFIGURATION ====================
-# Total points: 100 (distributed across all questions based on importance)
+# Total points: EXACTLY 100 (distributed across all questions based on importance)
+# IMPORTANT: This must always sum to exactly 100 for proper percentage calculation
 
 PET_SCORE_RULES = {
-    # ============ SAFETY & HEALTH (35 points total) ============
+    # ============ SAFETY & HEALTH (36 points total) ============
     # These are critical for personalized recommendations
     "food_allergies": {
         "weight": 10,
@@ -81,7 +82,7 @@ PET_SCORE_RULES = {
         "tier_required": None,
     },
     "noise_sensitivity": {
-        "weight": 3,
+        "weight": 4,  # +1 to reach 100 total
         "category": "safety",
         "label": "Noise Sensitivity",
         "icon": "🔊",
