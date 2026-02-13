@@ -9873,13 +9873,86 @@ async def mira_chat(
             "nearby_places": None  # Don't show places until questions are answered
         }
     
-    # If user mentioned a location, log it for the search
-    if user_mentioned_location:
-        logger.info(f"[LOCATION] User specified location: {user_mentioned_location}")
-    
-    # If user mentioned a location, store it for the search
-    if user_mentioned_location:
-        logger.info(f"[LOCATION] User specified location: {user_mentioned_location}")
+    # If user mentioned a location, trigger Google Places search immediately
+    if user_mentioned_location and detected_place_search:
+        logger.info(f"[LOCATION] Triggering place search for {detected_place_search} in {user_mentioned_location}")
+        
+        # Map search type to Google Places type
+        places_type_map = {
+            "restaurant": "restaurant",
+            "hotel": "lodging",
+            "vet": "veterinary_care",
+            "park": "park",
+            "groomer": "pet_store",
+            "pet_store": "pet_store"
+        }
+        
+        google_type = places_type_map.get(detected_place_search, "restaurant")
+        pet_name = selected_pet.get("name", "your pet") if selected_pet else "your pet"
+        
+        try:
+            from services.google_places_service import search_pet_friendly_places
+            
+            places_result = await search_pet_friendly_places(
+                city=user_mentioned_location,
+                place_type=google_type,
+                limit=5
+            )
+            
+            if places_result and len(places_result) > 0:
+                type_labels = {
+                    "restaurant": "pet-friendly restaurants and cafés",
+                    "hotel": "pet-friendly stays",
+                    "vet": "veterinary clinics",
+                    "park": "dog parks",
+                    "groomer": "pet groomers",
+                    "pet_store": "pet stores"
+                }
+                type_label = type_labels.get(detected_place_search, "places")
+                
+                response_text = f"Here are some **{type_label}** in **{user_mentioned_location}** that I'd recommend for you and {pet_name}! 🐾\n\n"
+                response_text += "Tap any place to select it, and if these don't quite fit what you're looking for, just hit **Send to Concierge** and our team will personally curate options for you."
+                
+                return {
+                    "success": True,
+                    "response": response_text,
+                    "session_id": session_id,
+                    "pillar": pillar or "dine",
+                    "intent": "place_recommendations",
+                    "conversation_stage": "showing_results",
+                    "nearby_places": {
+                        "type": detected_place_search + "s",
+                        "city": user_mentioned_location,
+                        "places": places_result,
+                        "source": "google_places"
+                    },
+                    "show_concierge_option": True,
+                    "follow_ups": [
+                        {"text": "Send to Concierge", "type": "concierge"},
+                        {"text": "Show more options", "type": "action"},
+                        {"text": "Different area", "type": "navigate"}
+                    ],
+                    "products": [],
+                    "tip_card": None
+                }
+            else:
+                # No results from Google Places - offer concierge
+                response_text = f"I couldn't find many {type_labels.get(detected_place_search, 'places')} in {user_mentioned_location} right now. But don't worry - our **Pet Concierge** team knows the hidden gems! They can personally curate options for you and {pet_name}. Would you like me to connect you?"
+                return {
+                    "success": True,
+                    "response": response_text,
+                    "session_id": session_id,
+                    "pillar": pillar or "dine",
+                    "show_concierge_card": True,
+                    "follow_ups": [
+                        {"text": "Yes, connect me to Concierge", "type": "concierge"},
+                        {"text": "Try a different area", "type": "navigate"}
+                    ],
+                    "products": []
+                }
+        except Exception as e:
+            logger.error(f"[PLACES] Google Places search failed: {e}")
+            # Fall through to regular flow if search fails
     
     # ═══════════════════════════════════════════════════════════════════════════
     # MIRA OS CONTEXT - Layer Activation, Temporal Awareness, Safety Gates
