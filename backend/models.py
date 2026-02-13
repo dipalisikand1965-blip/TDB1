@@ -3,7 +3,7 @@ Pydantic Models for The Doggy Company API
 Extracted from server.py for better organization
 """
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Dict
 from datetime import datetime, timezone
 import uuid
 
