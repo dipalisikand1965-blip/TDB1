@@ -1,87 +1,180 @@
 <analysis>**original_problem_statement:**
-The user's initial request involved a full audit and fixing of the MIRA OS, focusing on P0 backend bugs, improving question-answering accuracy, and establishing a formal architectural Bible for the system. This evolved into a detailed, collaborative design phase for a new Picks Engine. The user also identified that Mira's chat memories were not being displayed correctly, requested a fix for a critical frontend crash, and then pivoted to a deep audit and improvement of the pet personalization and Soul Score logic.
+The user's initial request was for a comprehensive audit and bug-fixing of the MIRA OS. This evolved into a deep investigation of the Pet Soul and Soul Score systems. The user discovered inconsistencies between the questions presented in the UI and the questions used to calculate the Soul Score, leading to inaccurate scores.
 
-The user's most recent requests are:
-1.  **P0 Conversation Flow Bug:** Mira must ask clarifying questions (e.g., about allergies), wait for the user's response, and only then proceed with recommendations. The current flow was providing meal plan options before getting an answer about allergies.
-2.  **P0 Full System Audit:** The user requested a complete and thorough audit of the application, covering:
-    *   Day 0 onboarding: what data is captured (mandatory vs. optional).
-    *   Data storage: where data is written (Pet Profile vs. Pet Soul).
-    *   Minimal profile requirements for Mira to function.
-    *   The 8 OS sections: their structure, data collection, and write-back behavior (updating Pet Soul, events\_log, Soul Score, etc.).
-3.  **P1 Ticketing System:** The user defined a new feature for a comprehensive user intent and ticketing flow: .
-4.  **iOS Mobile Crash:** The user had previously reported that the  page was crashing on iOS devices.
+The current, primary task is to permanently fix the Pet Soul question system based on the user's detailed instructions.
 
 **PRODUCT REQUIREMENTS:**
-MIRA OS must be a stable, intelligent, life-led concierge system. The **Profile-First Doctrine** is paramount: the system must always prioritize a pet's specific, known data (Pet Soul). A key conversational requirement is that Mira must operate as a state machine: ask a clarifying question, wait for an answer, store the answer, and then proceed. The UI/UX must be mobile-first and fully functional on iOS.
+1.  **Single Source of Truth:** There must be ONE canonical set of scoring fields (26 compulsory fields).
+2.  **UI/Scoring Alignment:** The Pet Soul UI must be updated to include questions for all 26 canonical scoring fields.
+3.  **Alias Mapping:** A strict alias mapping layer must translate UI question IDs to their canonical scoring field names.
+4.  **Score Normalization:** The scoring weights must be normalized to total exactly 100.
+5.  **Data Integrity:** All systems (UI, Scoring Engine, Mira's Soul-First context) must read from and write to a single canonical object ().
+6.  **Soul-First Behavior:** Mira must use Pet Soul answers first. If a required field is missing, Mira should ask a quick question to fill the gap rather than using a fallback (like breed).
+7.  **Data Migration:** An idempotent backfill/migration process must be created to copy answers from old UI-specific fields to the new canonical fields.
+8.  **Testing:** Unit tests must prove that answering the UI questions can achieve a 100% score without hacks.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The backend features an expanded Soul-First logic in  that now handles data extraction and write-back for various topics like diet and health, not just grooming. The frontend  contains logic to dynamically generate quick reply buttons based on the content of the AI's message. A comprehensive audit of the system's architecture and data flow has been conducted and documented in .
+A new Canonical Answer System has been implemented on the backend. This includes a central mapping file () that defines the 26 scoring fields, their weights (normalized to 100), and aliases from the UI questions. The score calculation logic () and Mira's context-building logic () have been refactored to use this new canonical system. A comprehensive test suite () with 23 passing tests has been created to validate this backend logic. Extensive documentation on the entire system architecture () and question lists () was also created.
 
 **Last working item**:
--   **Last item agent was working:** The agent fixed a critical P0 conversation flow bug. When Mira asked about allergies, the UI was incorrectly showing meal plan options (Simple daily plan, Varied weekly rotation) before the user could answer. The agent identified that these options were being dynamically extracted from the LLM's response by the frontend. The fix involved modifying the  function in  to first check for an allergy question and, if found, return only relevant quick replies (Yes, has allergies, No known allergies), thus enforcing the correct conversational sequence.
--   **Status:** USER VERIFICATION PENDING
--   **Agent Testing Done:** Y (Verified via screenshot which shows the correct, contextual quick replies being displayed).
--   **Which testing method agent to use?** The user needs to manually test the conversation flow on the  page to confirm the fix.
+-   **Last item agent was working:** The agent completed the backend implementation of the Canonical Answer System. This involved creating the mapping logic, refactoring the scoring and context-building functions to use it, normalizing scoring weights to 100, and writing a full suite of unit tests.
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** Y (Extensive backend unit tests and API  checks were performed and passed).
+-   **Which testing method agent to use?** The next steps involve frontend changes. The agent should use  to verify the new UI questions are present and  to test the end-to-end flow of answering these new questions. Backend testing should continue with ============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-9.0.2, pluggy-1.6.0
+rootdir: /app
+plugins: anyio-4.12.0
+collected 2731 items / 5 errors
+
+==================================== ERRORS ====================================
+_____ ERROR collecting backend/tests/test_admin_household_review_routes.py _____
+backend/tests/test_admin_household_review_routes.py:19: in <module>
+    raise ValueError("REACT_APP_BACKEND_URL environment variable not set")
+E   ValueError: REACT_APP_BACKEND_URL environment variable not set
+_______ ERROR collecting backend/tests/test_admin_products_pet_photo.py ________
+backend/tests/test_admin_products_pet_photo.py:18: in <module>
+    raise ValueError("REACT_APP_BACKEND_URL environment variable is required")
+E   ValueError: REACT_APP_BACKEND_URL environment variable is required
+______ ERROR collecting backend/tests/test_iteration_194_cross_pillar.py _______
+backend/tests/test_iteration_194_cross_pillar.py:20: in <module>
+    raise ValueError("REACT_APP_BACKEND_URL environment variable not set")
+E   ValueError: REACT_APP_BACKEND_URL environment variable not set
+________ ERROR collecting backend/tests/test_iteration_199_bug_fixes.py ________
+backend/tests/test_iteration_199_bug_fixes.py:22: in <module>
+    raise ValueError("REACT_APP_BACKEND_URL environment variable not set")
+E   ValueError: REACT_APP_BACKEND_URL environment variable not set
+_________ ERROR collecting backend/tests/test_mira_celebrate_pillar.py _________
+backend/tests/test_mira_celebrate_pillar.py:18: in <module>
+    assert BASE_URL, "REACT_APP_BACKEND_URL must be set"
+E   AssertionError: REACT_APP_BACKEND_URL must be set
+E   assert ''
+=============================== warnings summary ===============================
+../root/.venv/lib/python3.11/site-packages/starlette/formparsers.py:12
+  /root/.venv/lib/python3.11/site-packages/starlette/formparsers.py:12: PendingDeprecationWarning: Please use `import python_multipart` instead.
+    import multipart
+
+../root/.venv/lib/python3.11/site-packages/passlib/utils/__init__.py:854
+  /root/.venv/lib/python3.11/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+backend/channel_intake.py:716
+  /app/backend/tests/../channel_intake.py:716: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class WhatsAppMessage(BaseModel):
+
+backend/mira_service_desk.py:74
+  /app/backend/tests/../mira_service_desk.py:74: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    @validator('age_years', pre=True, always=True)
+
+backend/mira_service_desk.py:62
+  /app/backend/tests/../mira_service_desk.py:62: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class PetContext(BaseModel):
+
+backend/server.py:15814
+  /app/backend/server.py:15814: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+../root/.venv/lib/python3.11/site-packages/fastapi/applications.py:4495
+../root/.venv/lib/python3.11/site-packages/fastapi/applications.py:4495
+  /root/.venv/lib/python3.11/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+backend/server.py:17363
+  /app/backend/server.py:17363: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("shutdown")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR backend/tests/test_admin_household_review_routes.py - ValueError: REACT...
+ERROR backend/tests/test_admin_products_pet_photo.py - ValueError: REACT_APP_...
+ERROR backend/tests/test_iteration_194_cross_pillar.py - ValueError: REACT_AP...
+ERROR backend/tests/test_iteration_199_bug_fixes.py - ValueError: REACT_APP_B...
+ERROR backend/tests/test_mira_celebrate_pillar.py - AssertionError: REACT_APP...
+!!!!!!!!!!!!!!!!!!! Interrupted: 5 errors during collection !!!!!!!!!!!!!!!!!!!!
+======================== 9 warnings, 5 errors in 15.74s ========================.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
 
--   **Issue 1: Present System Audit to User (P0 - CRITICAL)**
-    -   **Description:** The agent performed a comprehensive system audit as requested by the user and saved the results to . The user is now asking how to access this audit. The immediate next step is to present this document's contents to the user.
-    -   **Status:** IN PROGRESS
-    -   **Next step:** Read the file  and present its contents to the user in a clear, readable format.
+-   **Issue 1: Implement UI Changes for Canonical Questions (P0 - CRITICAL)**
+    -   **Description:** The user has identified ~14 required scoring fields that are missing a corresponding question in the Pet Soul UI. These questions must be added to the frontend to allow users to achieve a 100% soul score.
+    -   **Attempted fixes:** None. This is a new task.
+    -   **Next debug checklist:**
+        1.  Identify the correct frontend component responsible for rendering the Pet Soul questions (likely within  or a related component).
+        2.  Using the user's list, add the missing questions to the UI. Ensure they are mapped to the correct canonical IDs.
+        3.  The list of missing questions to add is: , , , , , , , , , , , , , , .
+    -   **Why fix this issue and what will be achieved with the fix?** Without these UI questions, it's impossible for a user to complete their pet's profile and achieve a 100% score, defeating the purpose of the canonicalization effort.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Both. Frontend to verify UI, Backend to confirm data saves correctly.
 
--   **Issue 2: Verify Conversation Flow Fix (P0 - CRITICAL)**
-    -   **Description:** The agent fixed the conversational flow where Mira was not waiting for user input. The user needs to be informed of the fix and asked to verify it.
-    -   **Status:** USER VERIFICATION PENDING
-    -   **Next step:** After presenting the audit, explain the fix made in  and ask the user to test the allergy conversation flow.
+-   **Issue 2: API Endpoints returning errors (P2)**
+    -   **Description:** During live testing, several non-critical API endpoints were found to be faulty.
+        -   Dashboard API returns minimal data.
+        -    API returns 405 Method Not Allowed.
+        -    API returns empty for a valid user query.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
 
--   **Issue 3: iOS/Mobile Crash on  (P1 - VERIFICATION NEEDED)**
-    -   **Description:** The user initially reported an oops crash screen on iOS. However, extensive testing by the agent (Playwright, testing agent) showed the page loading correctly. The user's last message included ios is loading on preview, which suggests the issue may be resolved.
-    -   **Status:** USER VERIFICATION PENDING
-    -   **Next step:** Ask the user for a clear confirmation if the  page is now consistently loading without crashing on their mobile devices.
-
--   **Issue 4: Original UI Bugs (Markdown, Pet Photo) (P2)**
-    -   **Description:** Long-standing UI polish issues where markdown in chat responses was not rendering correctly and the pet photo was missing.
+-   **Issue 3: Long-standing UI Bugs (Markdown, Pet Photo) (P2)**
+    -   **Description:** Markdown in chat responses is not rendering correctly, and the pet photo is sometimes missing.
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** Y
 
 **In progress Task List**:
 
--   **Task 1: Full System Audit Documentation**
-    -   **Where to resume:** The audit has been performed and the results are in . The task is to deliver this information to the user.
-    -   **What will be achieved with this?** It will provide the user with the requested deep understanding of the system's architecture and data flow, establishing a shared source of truth.
+-   **Task 1: Complete the Pet Soul System Alignment (P0)**
+    -   **Where to resume:** The backend is mostly complete. The next step is to implement the frontend changes (Issue 1) and then the remaining backend tasks (backfill logic, quick question behavior).
+    -   **What will be achieved with this?** A fully aligned, robust, and test-proven Pet Soul system that accurately captures pet data and uses it to drive the Soul Score and Mira's conversations.
     -   **Status:** IN PROGRESS
     -   **Blocked on something:** No.
 
 **Upcoming and Future Tasks**
 
 -   **Upcoming Tasks:**
-    -   **P1: Implement User Intent/Ticketing Flow:** Build the new feature defined by the user: . This will require significant backend and frontend work.
-    -   **P1: UI - Build Picks Display:** Implement the frontend components in  to render the , , and  data.
-    -   **P1: Implement Picks Engine - Phase B7 (Events Log & Analytics):** Expand the  to capture pick interactions for analytics.
-    -   **P2: Implement Picks Engine - Phase B8 (Scenario Testing):** Perform end-to-end testing of the picks engine using the prepared test prompts.
+    -   **P0: Implement Backfill/Migration Logic:** Create an idempotent function that finds  using the old UI-based keys and copies them to the new canonical keys.
+    -   **P0: Implement Mira's Quick Question Behavior:** Modify the Mira chat logic () so that if a required soul field is missing from the context, Mira's response becomes a question to ask the user for that specific piece of information.
+    -   **P1: Implement User Intent/Ticketing Flow:** A major feature for a comprehensive user intent and ticketing system.
 
 -   **Future Tasks:**
-    -   Build the Today UI for time-bound alerts.
-    -   Refactor the large  component.
+    -   Refactor the large  and  files.
     -   Build the full UI for the Services, Insights, Learn, and Concierge sections.
+    -   Build the UI to display , , and  data.
     -   Implement A/B testing infrastructure for the Picks Engine.
 
 **Completed work in this session**
--   **Fixed P0 Conversation Flow Bug:** Corrected the conversational flow by modifying the  function in  to ensure Mira waits for user input on allergies before suggesting meal plans.
--   **Conducted Full System Audit:** Performed a comprehensive audit of the onboarding flow, data models (Pet Soul), and the 8 OS sections, documenting the findings in .
--   **Expanded Soul-First Logic:** Enhanced  and  to enable data extraction and write-back for a broader range of topics, including diet, allergies, and health conditions.
--   **Verified Mobile Page Load:** Confirmed via testing agent and manual checks that the  page loads correctly in a mobile viewport, addressing user reports of a crash.
+-   **System-Wide Deep Dive & Documentation:**
+    -   Performed a comprehensive analysis of the entire MIRA OS, from onboarding to the 14 pillars.
+    -   Created  (650+ lines) detailing the full architecture.
+    -   Created  documenting all questions.
+-   **Identified & Proved Core Scoring Bug:**
+    -   Discovered the root cause of score inaccuracies: two misaligned question systems ( vs. ).
+    -   Manually achieved a 100% score for a test pet to prove the hypothesis and identify all data gaps.
+-   **Implemented Canonical Answer System (Backend):**
+    -   Created  as the single source of truth for 26 scoring fields, weights, and UI aliases.
+    -   Refactored  to use the canonical system and normalized scoring weights to exactly 100.
+    -   Refactored  to ensure Mira's context is built from canonical data.
+    -   Wrote a full test suite () with 23 passing unit tests to validate the new logic.
+-   **Updated Project Documentation:** Updated  with the new canonical system architecture.
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Original UI Bugs (Markdown, Pet Photo)**
-    -   **Debug checklist:** Use the frontend testing agent to load , interact with the chat, and verify if markdown renders correctly and the pet photo is displayed.
-    -   **Why to solve this issue and what will be achieved with this?** These are long-standing UI polish issues that can now finally be addressed and closed.
-    -   **Should Test frontend/backend/both after fix:** Frontend
-    -   **Is recurring issue?** Y
+-   See All Pending/In progress Issue list. The API endpoint issues and long-standing UI bugs were identified but not prioritized over the critical Soul Score work.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** UI bugs (markdown rendering, pet photo display).
@@ -92,55 +185,55 @@ The backend features an expanded Soul-First logic in  that now handles data extr
 
 
 **Key Technical Concepts**
--   **Frontend-driven Quick Replies:** A key finding was that some quick reply buttons are not sent from the backend API but are dynamically extracted from the LLM's text response by the  frontend function. The conversation flow was fixed by modifying this frontend logic.
--   **Conversational State Machine:** The implemented fix enforces a conversational state, where the UI presents different options based on the context of the AI's question (e.g., asking about allergies vs. meal plans), preventing premature recommendations.
--   **Codebase Auditing for Documentation:** The agent performed a manual audit by reading numerous files across the codebase to synthesize a high-level architectural document () as requested by the user.
+-   **Canonical Data Model:** The central concept is using a single, authoritative data structure () as the source of truth for pet data. A strict mapping layer () reconciles data from the UI with this canonical model.
+-   **Test-Driven Development:** A comprehensive test suite was created for the new backend logic, ensuring its correctness before full integration. This approach should be continued.
+-   **Idempotent Data Migration:** The user has requested a backfill script that can be run multiple times without creating duplicate data or errors.
+-   **Dynamic Conversational Logic:** The quick question feature requires the chat AI to dynamically alter its behavior based on missing data points in the pet's profile.
 
 **key DB schema**
--   No schema changes were made. The existing  collection in the  document is updated by the .
+-   No schema changes. The work standardizes data within the existing  object.
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--   **/app/frontend/src/pages/MiraDemoPage/MiraDemoPage.jsx**: Modified the  function to fix the P0 conversation flow bug.
--   **/app/backend/soul_first_logic.py**: Expanded to handle more data types (diet, health, allergies).
--   **/app/backend/routes/mira_routes.py**: Updated to integrate the expanded .
--   **/app/memory/MIRA_OS_AUDIT.md**: New file created to hold the results of the comprehensive system audit.
--   **/app/memory/PRD.md**: Updated with the latest progress.
-
-**Areas that need refactoring**:
--   : This component remains excessively large (over 3000 lines) and is a high-priority candidate for refactoring into smaller, manageable components.
--   : This file is also very large and should be broken down.
+-   ****: The new single source of truth for scoring fields and aliases.
+-   ****: The refactored scoring engine.
+-   ****: The refactored logic for building Mira's context.
+-   ****: Unit tests for the canonical system.
+-   **** (or similar): The likely location for the required frontend UI changes (adding questions).
 
 **key api endpoints**
--   : This endpoint's behavior was improved via enhancements to the  and the frontend rendering of its response.
+-   : The endpoint for saving soul answers. It now implicitly uses the canonicalization logic.
+-   : The endpoint to get the calculated soul score. It now uses the refactored logic.
+-   : The main chat endpoint. It needs to be modified to implement the quick question logic.
 
 **Critical Info for New Agent**
--   **Your immediate P0 task is to address the user's latest message.** They are asking how to access the audit you performed. You MUST read  and present its contents to the user.
--   After delivering the audit, you need to explain the conversation flow fix you implemented and ask the user to verify it. This is the second P0 item.
--   Seek clarification on the status of the iOS crash. The user's message ios is loading on preview is ambiguous; confirm if the crash is fully resolved.
--   Acknowledge the new P1 task for a ticketing system and place it in the upcoming plan, to be started after the P0 issues are closed.
+-   **Your primary directive is the user's last message (repeated twice).** This is a detailed specification for finishing the Pet Soul system. Do not deviate.
+-   The backend foundation for the canonical system is complete and tested. Your first major task is to **build the missing UI questions on the frontend**.
+-   After the UI is done, you must implement the two remaining backend pieces: the **idempotent data migration** script and the **quick question conversational logic** for Mira.
+-   The user is highly technical and detail-oriented. Ensure all parts of their request are met, especially the  point total, the exact alias mapping, and the creation of unit tests.
 
 **documents and test reports created in this job**
--   /app/memory/MIRA_OS_AUDIT.md
+-   /app/memory/COMPLETE_SYSTEM_BIBLE.md
+-   /app/memory/COMPLETE_QUESTIONS_LIST.md
 -   /app/memory/PRD.md
--   /app/test_reports/iteration_2.json
+-   /app/backend/tests/test_canonical_answers.py
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User (initial report):**  page is not opening on iOS/mobile (oops screen).
-2.  **User:** The conversation flow is wrong. Mira recommends before waiting for an answer on allergies and doesn't store the information.
-3.  **User:** Requests a full, absolute, and thorough audit of the entire system from onboarding to the 8 OS sections and data write behavior.
-4.  **User:** Asks what fields are captured on onboarding, which are mandatory, where data is written, the minimal profile for Mira, and how the 8 OS sections work.
-5.  **Agent:** Completes the audit and fixes the conversation flow bug.
-6.  **User (latest message):** ios is loading on preview - this suggests the mobile crash might be resolved.
-7.  **User:** Re-emphasizes the conversation flow bug: mira has to wait for pet parent to reply to allergy before going to next step.
-8.  **User:** Defines a new P1 task for a comprehensive ticketing flow.
-9.  **User:** Asks for a thorough understanding of everything created, referencing the dashboard and pet profile pages.
-10. **User (pending question):** how do i acess the audit you have ust made. This is the most critical pending question.
+1.  **User:** Asks for a list of all onboarding and 8-pillar questions. (Completed)
+2.  **User:** Reports that a travel question is not saving. (Investigated)
+3.  **Agent:** Determines the backend saves correctly, suspects a frontend issue. (Completed)
+4.  **User:** Asks agent to check the Travel Anxiety tab and answer all questions to get a 100% score. (Completed)
+5.  **Agent:** Investigates and finds two separate, misaligned question systems are the root cause of scoring issues. (Completed)
+6.  **Agent:** Manually answers all *required* scoring questions for a test pet, achieving a 100% score and proving the issue. (Completed)
+7.  **User:** yes pleae - Asks agent to display the full system documentation in the chat. (Completed)
+8.  **User:** option 2 - Asks agent to run live tests to verify system flows. (Completed)
+9.  **User:** Asks for onboarding questions and all 8 pillar questions again, and for the agent to check the unsaved travel question. (Re-investigated and confirmed)
+10. **User (PENDING):** Provides a detailed, multi-point set of instructions to permanently fix the Pet Soul system by creating a canonical data model, adding missing UI questions, fixing aliases, normalizing weights, and ensuring Mira is Soul-first. This is the current, active task.
 
 **Project Health Check:**
--   **Broken:** The core conversational logic was broken but has a pending fix.
+-   **Broken:** The data flow from the UI to the Soul Score calculation was fundamentally broken. The backend part of the fix is complete, but the frontend part is missing, so the end-to-end flow is still broken.
 -   **Mocked:** None.
 
 **3rd Party Integrations**
@@ -148,14 +241,102 @@ The backend features an expanded Soul-First logic in  that now handles data extr
 -   **YouTube:** Integration exists for the LEARN pillar.
 
 **Testing status**
--   **Testing agent used after significant changes:** YES. The agent used  which confirmed the backend logic for data extraction was working and that the frontend page loads successfully on a mobile viewport.
+-   **Testing agent used after significant changes:** NO (Agent self-tested with ============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-9.0.2, pluggy-1.6.0
+rootdir: /app
+plugins: anyio-4.12.0
+collected 2731 items / 5 errors
+
+==================================== ERRORS ====================================
+_____ ERROR collecting backend/tests/test_admin_household_review_routes.py _____
+backend/tests/test_admin_household_review_routes.py:19: in <module>
+    raise ValueError("REACT_APP_BACKEND_URL environment variable not set")
+E   ValueError: REACT_APP_BACKEND_URL environment variable not set
+_______ ERROR collecting backend/tests/test_admin_products_pet_photo.py ________
+backend/tests/test_admin_products_pet_photo.py:18: in <module>
+    raise ValueError("REACT_APP_BACKEND_URL environment variable is required")
+E   ValueError: REACT_APP_BACKEND_URL environment variable is required
+______ ERROR collecting backend/tests/test_iteration_194_cross_pillar.py _______
+backend/tests/test_iteration_194_cross_pillar.py:20: in <module>
+    raise ValueError("REACT_APP_BACKEND_URL environment variable not set")
+E   ValueError: REACT_APP_BACKEND_URL environment variable not set
+________ ERROR collecting backend/tests/test_iteration_199_bug_fixes.py ________
+backend/tests/test_iteration_199_bug_fixes.py:22: in <module>
+    raise ValueError("REACT_APP_BACKEND_URL environment variable not set")
+E   ValueError: REACT_APP_BACKEND_URL environment variable not set
+_________ ERROR collecting backend/tests/test_mira_celebrate_pillar.py _________
+backend/tests/test_mira_celebrate_pillar.py:18: in <module>
+    assert BASE_URL, "REACT_APP_BACKEND_URL must be set"
+E   AssertionError: REACT_APP_BACKEND_URL must be set
+E   assert ''
+=============================== warnings summary ===============================
+../root/.venv/lib/python3.11/site-packages/starlette/formparsers.py:12
+  /root/.venv/lib/python3.11/site-packages/starlette/formparsers.py:12: PendingDeprecationWarning: Please use `import python_multipart` instead.
+    import multipart
+
+../root/.venv/lib/python3.11/site-packages/passlib/utils/__init__.py:854
+  /root/.venv/lib/python3.11/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+backend/channel_intake.py:716
+  /app/backend/tests/../channel_intake.py:716: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class WhatsAppMessage(BaseModel):
+
+backend/mira_service_desk.py:74
+  /app/backend/tests/../mira_service_desk.py:74: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    @validator('age_years', pre=True, always=True)
+
+backend/mira_service_desk.py:62
+  /app/backend/tests/../mira_service_desk.py:62: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class PetContext(BaseModel):
+
+backend/server.py:15814
+  /app/backend/server.py:15814: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+../root/.venv/lib/python3.11/site-packages/fastapi/applications.py:4495
+../root/.venv/lib/python3.11/site-packages/fastapi/applications.py:4495
+  /root/.venv/lib/python3.11/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+backend/server.py:17363
+  /app/backend/server.py:17363: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("shutdown")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR backend/tests/test_admin_household_review_routes.py - ValueError: REACT...
+ERROR backend/tests/test_admin_products_pet_photo.py - ValueError: REACT_APP_...
+ERROR backend/tests/test_iteration_194_cross_pillar.py - ValueError: REACT_AP...
+ERROR backend/tests/test_iteration_199_bug_fixes.py - ValueError: REACT_APP_B...
+ERROR backend/tests/test_mira_celebrate_pillar.py - AssertionError: REACT_APP...
+!!!!!!!!!!!!!!!!!!! Interrupted: 5 errors during collection !!!!!!!!!!!!!!!!!!!!
+======================== 9 warnings, 5 errors in 12.30s ======================== and ).
 -   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** None in this session.
--   **Known regressions:** None.
+-   **Test files created:** []
+-   **Known regressions:** None from this session's work.
 
 **Credentials to test flow:**
 -   **Test User:**  / 
 -   **Admin:**  / 
 
 **What agent forgot to execute**
--   The agent completed the system audit and documented it in  but did not present the findings to the user before the session ended. The user is now explicitly asking for this information.</analysis>
+The previous agent successfully implemented the backend portion of the user's request. However, the work is incomplete. The following key deliverables from the user's latest request were not started:
+1.  **Adding the ~14 missing questions to the frontend UI.**
+2.  **Creating the idempotent backfill/migration script** for existing data.
+3.  **Implementing the quick question behavior** in Mira's chat logic.</analysis>

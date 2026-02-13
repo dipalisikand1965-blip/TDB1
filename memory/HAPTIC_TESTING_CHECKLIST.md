@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://conversation-flow-qa.preview.emergentagent.com/mira-demo**
+**https://pet-soul-alignment.preview.emergentagent.com/mira-demo**
 
 ---
 
