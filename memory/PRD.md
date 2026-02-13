@@ -443,7 +443,7 @@ From `/app/frontend/src/pages/MiraDemoBackupPage.jsx`:
 ---
 
 ## Preview URL
-**Working:** https://dog-os-platform.preview.emergentagent.com/mira-demo
+**Working:** https://mira-os-identity.preview.emergentagent.com/mira-demo
 
 ---
 

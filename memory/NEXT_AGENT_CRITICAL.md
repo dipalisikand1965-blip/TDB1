@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://dog-os-platform.preview.emergentagent.com
+https://mira-os-identity.preview.emergentagent.com
 
 ---
 
