@@ -1,5 +1,11 @@
 # The Doggy Company - Product Requirements Document
 
+---
+## ⚠️ NEW AGENT? READ THIS FIRST:
+## `/app/memory/ULTIMATE_SYSTEM_BIBLE.md`
+## Contains ALL credentials, doctrines, architecture, and 50+ days of context
+---
+
 ## Original Problem Statement
 Build a comprehensive Pet Life Operating System platform for The Doggy Company, featuring AI-powered pet care assistant (Mira), gamification elements, and a modern 7-tab header navigation system.
 
