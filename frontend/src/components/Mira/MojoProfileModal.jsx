@@ -539,6 +539,7 @@ const MojoProfileModal = ({
   badges = [],
   apiUrl,
   token,
+  userEmail, // Added: Required for member profile API
   onSwitchPet,
   onEditSection,
   onSoulQuestionClick,
@@ -552,13 +553,15 @@ const MojoProfileModal = ({
   const [fullPetData, setFullPetData] = useState(null);
   const [membershipData, setMembershipData] = useState(membership);
   const [badgesData, setBadgesData] = useState(badges);
+  const [personalizationStats, setPersonalizationStats] = useState(null);
+  const [computedSoulScore, setComputedSoulScore] = useState(soulScore);
   
   // Fetch full pet data on open
   useEffect(() => {
     if (isOpen && pet?.id && apiUrl) {
       fetchFullPetData();
     }
-  }, [isOpen, pet?.id]);
+  }, [isOpen, pet?.id, apiUrl]);
   
   // Deep link to soul section
   useEffect(() => {
@@ -572,40 +575,134 @@ const MojoProfileModal = ({
     }
   }, [isOpen, deepLinkSection]);
   
-  // Fetch complete pet profile data
+  // Fetch complete pet profile data from all endpoints
   const fetchFullPetData = async () => {
     if (!pet?.id || !apiUrl) return;
     
     setLoading(true);
+    console.log('[MOJO] Fetching complete pet profile data for:', pet.name);
+    
     try {
       const headers = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
       
-      // Fetch pet data
-      const petResponse = await fetch(`${apiUrl}/api/pets/${pet.id}`, { headers });
-      if (petResponse.ok) {
-        const data = await petResponse.json();
-        setFullPetData(data);
-      }
+      // Parallel fetch from multiple endpoints for complete data
+      const [petResponse, statsResponse, memberResponse] = await Promise.all([
+        // 1. Full pet profile with doggy_soul_answers
+        fetch(`${apiUrl}/api/pets/${pet.id}`, { headers }).catch(() => null),
+        
+        // 2. Personalization stats (soul score, knowledge items)
+        fetch(`${apiUrl}/api/mira/personalization-stats/${pet.id}`, { headers }).catch(() => null),
+        
+        // 3. Member profile with membership tier, paw points, badges
+        // Note: This endpoint requires user_email query param
+        userEmail 
+          ? fetch(`${apiUrl}/api/member/profile?user_email=${encodeURIComponent(userEmail)}`, { headers }).catch(() => null)
+          : fetch(`${apiUrl}/api/member/profile`, { headers }).catch(() => null)
+      ]);
       
-      // Fetch membership data if not provided
-      if (!membership) {
-        try {
-          const memberResponse = await fetch(`${apiUrl}/api/member/profile`, { headers });
-          if (memberResponse.ok) {
-            const memberData = await memberResponse.json();
-            setMembershipData(memberData.membership || memberData);
-            setBadgesData(memberData.badges || []);
-          }
-        } catch (e) {
-          console.debug('[MOJO] Membership data not available');
+      // Process pet data
+      if (petResponse?.ok) {
+        const petData = await petResponse.json();
+        console.log('[MOJO] Pet data loaded:', petData.name, 'Score:', petData.overall_score);
+        setFullPetData(petData);
+        
+        // Use actual soul score from API
+        if (petData.overall_score !== undefined) {
+          setComputedSoulScore(Math.round(petData.overall_score));
         }
       }
+      
+      // Process personalization stats
+      if (statsResponse?.ok) {
+        const statsData = await statsResponse.json();
+        console.log('[MOJO] Personalization stats loaded:', statsData.soul_score);
+        setPersonalizationStats(statsData);
+        
+        // Override soul score from personalization stats if available
+        if (statsData.soul_score !== undefined) {
+          setComputedSoulScore(Math.round(statsData.soul_score));
+        }
+      }
+      
+      // Process member profile data
+      if (memberResponse?.ok) {
+        const memberData = await memberResponse.json();
+        console.log('[MOJO] Member data loaded:', memberData.membership_tier, 'Pets:', memberData.pets?.length);
+        
+        // Extract membership info
+        const membershipInfo = {
+          tier: memberData.membership_tier || 'Member',
+          paw_points: memberData.paw_points || 0,
+          member_since: memberData.created_at 
+            ? new Date(memberData.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+            : null,
+          expires: memberData.membership_expires,
+          next_tier: getNextTier(memberData.membership_tier),
+          points_to_next: calculatePointsToNextTier(memberData.paw_points, memberData.membership_tier)
+        };
+        setMembershipData(membershipInfo);
+        
+        // Extract badges from member data
+        if (memberData.badges && Array.isArray(memberData.badges)) {
+          setBadgesData(memberData.badges);
+        }
+        
+        // Find matching pet in member data for enhanced info
+        const memberPet = memberData.pets?.find(p => 
+          p.name?.toLowerCase() === pet.name?.toLowerCase()
+        );
+        if (memberPet) {
+          console.log('[MOJO] Found pet in member data with enhanced info');
+          // Merge any additional data from member profile
+          setFullPetData(prev => ({
+            ...prev,
+            ...memberPet,
+            // Preserve doggy_soul_answers from the original pet data
+            doggy_soul_answers: prev?.doggy_soul_answers || {},
+            // Add soul traits from member data
+            soul_traits: memberPet.soul_traits || prev?.soul_traits,
+            sensitivities: memberPet.sensitivities || prev?.sensitivities || [],
+            favorites: memberPet.favorites || prev?.favorites || []
+          }));
+          
+          // Use soul score from member pet data if available
+          if (memberPet.soul_score !== undefined) {
+            setComputedSoulScore(Math.round(memberPet.soul_score));
+          }
+        }
+      }
+      
     } catch (err) {
       console.error('[MOJO] Error fetching pet data:', err);
     } finally {
       setLoading(false);
     }
+  };
+  
+  // Helper: Calculate next membership tier
+  const getNextTier = (currentTier) => {
+    const tiers = ['member', 'pawsome', 'gold', 'platinum'];
+    const currentIndex = tiers.indexOf((currentTier || '').toLowerCase());
+    if (currentIndex >= 0 && currentIndex < tiers.length - 1) {
+      return tiers[currentIndex + 1].charAt(0).toUpperCase() + tiers[currentIndex + 1].slice(1);
+    }
+    return null;
+  };
+  
+  // Helper: Calculate points needed for next tier
+  const calculatePointsToNextTier = (currentPoints, currentTier) => {
+    const tierThresholds = {
+      'member': 500,
+      'pawsome': 1500,
+      'gold': 5000,
+      'platinum': null // Top tier
+    };
+    const nextThreshold = tierThresholds[(currentTier || '').toLowerCase()];
+    if (nextThreshold && currentPoints < nextThreshold) {
+      return nextThreshold - currentPoints;
+    }
+    return null;
   };
   
   // Toggle section expansion
