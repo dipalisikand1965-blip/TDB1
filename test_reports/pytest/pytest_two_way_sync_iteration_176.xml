@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="16" failures="0" skipped="0" tests="16" time="1.586" timestamp="2026-02-13T17:17:46.571328+00:00" hostname="agent-env-bb7b5389-5b1a-4136-b172-3120a9bd318b"><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestTwoWaySyncAuth" name="test_login_successful" time="0.296"><error message="failed on setup with &quot;AssertionError: Login failed: {&quot;detail&quot;:&quot;Not Found&quot;}&#10;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:35: in auth_token
+    assert response.status_code == 200, f"Login failed: {response.text}"
+E   AssertionError: Login failed: {"detail":"Not Found"}
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestTwoWaySoulSync" name="test_get_member_pets" time="0.178"><error message="failed on setup with &quot;AssertionError: Login failed: {&quot;detail&quot;:&quot;Not Found&quot;}&#10;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:69: in auth_token
+    assert response.status_code == 200, f"Login failed: {response.text}"
+E   AssertionError: Login failed: {"detail":"Not Found"}
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestTwoWaySoulSync" name="test_get_pet_soul_profile" time="0.000"><error message="failed on setup with &quot;AssertionError: Login failed: {&quot;detail&quot;:&quot;Not Found&quot;}&#10;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:69: in auth_token
+    assert response.status_code == 200, f"Login failed: {response.text}"
+E   AssertionError: Login failed: {"detail":"Not Found"}
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestTwoWaySoulSync" name="test_get_initial_soul_score" time="0.000"><error message="failed on setup with &quot;AssertionError: Login failed: {&quot;detail&quot;:&quot;Not Found&quot;}&#10;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:69: in auth_token
+    assert response.status_code == 200, f"Login failed: {response.text}"
+E   AssertionError: Login failed: {"detail":"Not Found"}
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestTwoWaySoulSync" name="test_chat_message_with_allergy_data" time="0.000"><error message="failed on setup with &quot;AssertionError: Login failed: {&quot;detail&quot;:&quot;Not Found&quot;}&#10;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:69: in auth_token
+    assert response.status_code == 200, f"Login failed: {response.text}"
+E   AssertionError: Login failed: {"detail":"Not Found"}
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestTwoWaySoulSync" name="test_chat_message_with_behavior_data" time="0.000"><error message="failed on setup with &quot;AssertionError: Login failed: {&quot;detail&quot;:&quot;Not Found&quot;}&#10;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:69: in auth_token
+    assert response.status_code == 200, f"Login failed: {response.text}"
+E   AssertionError: Login failed: {"detail":"Not Found"}
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestTwoWaySoulSync" name="test_verify_soul_data_updated" time="0.000"><error message="failed on setup with &quot;AssertionError: Login failed: {&quot;detail&quot;:&quot;Not Found&quot;}&#10;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:69: in auth_token
+    assert response.status_code == 200, f"Login failed: {response.text}"
+E   AssertionError: Login failed: {"detail":"Not Found"}
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestSoulScoreRecalculation" name="test_bulk_answers_api" time="0.120"><error message="failed on setup with &quot;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:238: in auth_token
+    assert response.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestSoulScoreRecalculation" name="test_sync_achievements_api" time="0.000"><error message="failed on setup with &quot;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:238: in auth_token
+    assert response.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestSoulScoreRecalculation" name="test_paw_points_balance" time="0.000"><error message="failed on setup with &quot;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:238: in auth_token
+    assert response.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestDashboardSoulScores" name="test_all_pets_have_scores" time="0.170"><error message="failed on setup with &quot;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:315: in auth_token
+    assert response.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestDashboardSoulScores" name="test_lola_soul_score" time="0.000"><error message="failed on setup with &quot;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:315: in auth_token
+    assert response.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestDashboardSoulScores" name="test_mystique_soul_score" time="0.000"><error message="failed on setup with &quot;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:315: in auth_token
+    assert response.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestMojoProfileModal" name="test_get_pet_full_profile" time="0.143"><error message="failed on setup with &quot;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:397: in auth_token
+    assert response.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestWeatherCard" name="test_weather_api" time="0.175"><error message="failed on setup with &quot;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:448: in auth_token
+    assert response.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase><testcase classname="backend.tests.test_two_way_memory_soul_sync.TestProactiveAlerts" name="test_alerts_api" time="0.318"><error message="failed on setup with &quot;assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code&quot;">backend/tests/test_two_way_memory_soul_sync.py:498: in auth_token
+    assert response.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</error></testcase></testsuite></testsuites>
