@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://soul-score-audit-1.preview.emergentagent.com/mira-demo**
+**https://paw-points-check.preview.emergentagent.com/mira-demo**
 
 ---
 

@@ -1,89 +1,91 @@
 <analysis>**original_problem_statement:**
-The user's initial request was for a comprehensive audit and bug-fixing of the MIRA OS, focusing on the Pet Soul and Soul Score systems. The core issue was a misalignment between UI questions and the backend scoring engine, causing inaccurate scores. This was addressed by creating a Canonical Answer System on the backend.
-
-A new requirement was added during the session: to update the pet onboarding flow with a specific list of mandatory and optional fields, and to consolidate the two different onboarding pages into a single source of truth.
+The user wants to align the application's gamification and rewards system with a detailed specification called the MEMBER LOGIC CARD. This involves ensuring that Badges, Soul Score, Paw Points, and Rewards are triggered and stored correctly according to a single source of truth.
 
 **PRODUCT REQUIREMENTS:**
-1.  **Single Source of Truth:** One canonical set of 26 compulsory scoring fields.
-2.  **UI/Scoring Alignment:** The Pet Soul UI and onboarding must capture all required data for the canonical fields.
-3.  **Alias Mapping:** A strict alias layer must map UI question IDs to canonical scoring field names.
-4.  **Data Integrity:** All systems must use a single canonical object ().
-5.  **Soul-First Behavior:** Mira must use Pet Soul answers first. If a required field is missing, Mira should ask a quick question to fill the gap.
-6.  **Data Migration:** An idempotent backfill/migration process must copy answers from old UI-specific fields to the new canonical fields.
-7.  **Onboarding Update:** The pet registration form must include new mandatory fields: Pet Name, Breed, Gender, Birth/Gotcha Date, Food Allergies, Health Flags, Temperament, and Grooming Tolerance.
-8.  **Onboarding Refactor:** Consolidate the two onboarding pages ( and ) into one.
-9.  **Testing:** Unit tests must prove that answering the UI questions can achieve a 100% score.
+1.  **Badge Logic:** Badges must be triggered by the *number of soul questions answered*, not a percentage score.
+    -   : 5 questions
+    -   : 10 questions
+    -   : 15 questions
+    -   : 20 questions
+2.  **Paw Points Logic:** The earning rules must be strictly implemented.
+    -   **10 points** for each new Soul question answered.
+    -   **500 points** for a referral.
+    -   **5%** of order value for product purchases.
+    -   All point transactions must be logged in  before the user's balance is updated.
+3.  **Emergency Suppression:** In a chat-detected emergency (e.g., my dog ate chocolate), the UI must suppress all commerce-related elements like shop CTAs, reward nudges, and picks.
+4.  **Single Source of Truth:** All logic must be driven by a central configuration. A clean mapping layer must exist between the UI questions and the canonical scoring fields.
+5.  **End-to-End Verification:** The user requires UI-level proof (screen recordings) that these systems work as expected on iOS Safari, Android Chrome, and Desktop Chrome.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The backend Canonical Answer System is fully implemented and tested. This includes the central mapping file (), and the refactored scoring logic (). The UI question bank ( in ) has been updated to include all 15 previously missing questions, making them available to the frontend. An idempotent data migration script () has been created but not yet executed.
+The backend has been refactored to align with the MEMBER LOGIC CARD. A central configuration file, , now defines the rules for badges and paw points. The relevant backend routes (, , ) have been updated to use this new configuration. This includes logic for question-count-based badges, updated paw point rewards, and emergency suppression in the Mira chat.
 
-The active pet onboarding page () has been updated with the new required fields, and the backend pet creation model () was modified to accept this data. The old, unused onboarding page () still exists.
+A comprehensive suite of 41 unit tests has been created in  to validate this new logic, and all tests are passing. A mapping document, , has been created to clarify the relationship between UI questions and the backend canonical data model. Alias mapping has been enhanced to correctly count questions from legacy data.
 
 **Last working item**:
--   **Last item agent was working:** Implementing the user's request to add new mandatory and optional fields to the pet onboarding flow. This involved updating the correct frontend component () after discovering a duplicate, unused onboarding page, and modifying the backend  model to accept the new data.
--   **Status:** USER VERIFICATION PENDING
--   **Agent Testing Done:** Y (Verified UI changes with screenshots and confirmed backend server was running.)
--   **Which testing method agent to use?**  to perform a full, end-to-end test of the new pet registration flow, from filling out the form to verifying the data is saved correctly in the database.
+-   **Last item agent was working:** The previous agent had just finished implementing the backend logic changes and unit tests for the MEMBER LOGIC CARD specification. The user's most recent request is to perform comprehensive end-to-end UI verification for these changes.
+-   **Status:** NOT STARTED
+-   **Agent Testing Done:** N (Only backend unit tests were performed. The requested UI verification has not been started.)
+-   **Which testing method agent to use?** . The user has specifically requested screen recordings across three different platforms (iOS Safari, Android Chrome, Desktop Chrome) to validate the UI behavior. The testing agent is required to execute the verification scripts on these different device viewports.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
 
--   **Issue 1: Consolidate Onboarding Pages (P0)**
-    -   **Description:** The user requested a single onboarding page. The agent found and updated  but an old, unused page  still exists, causing confusion.
-    -   **Next debug checklist:**
-        1.  Confirm  is no longer used by any route.
-        2.  Delete .
-        3.  Ensure all onboarding-related routes in  or  point exclusively to .
-    -   **Why fix this issue and what will be achieved with the fix?** To eliminate technical debt and future confusion, aligning with the user's request for a single source of truth for onboarding.
+-   **Issue 1: End-to-End UI Verification (P0)**
+    -   **Description:** The user requires visual proof that the new member logic (badges, points, emergency suppression) works correctly in the UI across multiple devices. The backend implementation is complete, but it has not been verified from the user's perspective.
+    -   **Next debug checklist:** Execute the three verification scripts provided by the user (see Upcoming Tasks). Use the  to capture screen recordings for iOS, Android, and Desktop. Document any discrepancies between expected and actual behavior.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a mandatory validation step to confirm that the complex backend logic translates into the correct user experience, which is the user's primary concern.
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Frontend.
 
--   **Issue 2: Non-critical API Endpoint Errors (P2)**
-    -   **Description:** From previous sessions, several non-critical APIs were faulty: Dashboard API returns minimal data,  API returns 405,  API returns empty.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** N
-
--   **Issue 3: Long-standing UI Bugs (Markdown, Pet Photo) (P2)**
-    -   **Description:** Markdown in chat responses doesn't render correctly, and the pet photo is sometimes missing.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** Y
-
 **In progress Task List**:
 
--   **Task 1: Complete the Pet Soul System Alignment (P0)**
-    -   **Where to resume:** The backend data model and frontend UI questions are aligned. The next steps are to execute the data migration script and implement Mira's Quick Question behavior.
-    -   **What will be achieved with this?** A fully robust and aligned Pet Soul system that accurately captures data and uses it to drive the Soul Score and Mira's conversations.
-    -   **Status:** IN PROGRESS
+-   **Task 1: Finalize Member Logic Implementation (P0)**
+    -   **Where to resume:** The backend code and unit tests are complete. The next step is to begin the user-requested UI verification.
+    -   **What will be achieved with this?** Full confirmation that the application's badge, points, and rewards systems are fully aligned with the user's specification, both on the backend and frontend.
+    -   **Status:** USER VERIFICATION PENDING
+    -   **Should Test frontend/backend/both after fix?** Frontend.
     -   **Blocked on something:** No.
 
 **Upcoming and Future Tasks**
 
 -   **Upcoming Tasks:**
-    -   **P0: Execute Data Migration Script:** Run  to backfill existing pet data into the new canonical fields. This is a critical step requested by the user.
-    -   **P0: Implement Mira's Quick Question Behavior:** Modify the Mira chat logic () so that if a required soul field is missing from context, Mira's response becomes a question to the user for that specific piece of information.
-    -   **P1: Full Onboarding Flow Test:** Conduct an end-to-end test of the newly updated onboarding flow.
+    -   **P0: Execute Verification Script A (Emergency Suppression):**
+        -   Trigger: Send an emergency message like my dog ate chocolate to Mira chat.
+        -   Expected: The UI must hide all shop CTAs and reward nudges. The API response should contain an emergency flag.
+    -   **P0: Execute Verification Script B (Paw Points Awarding):**
+        -   Trigger: Place a test order.
+        -   Expected: The user should receive 100 points (for the first order) + 5% of the order value. The  must show the transaction, and the user's point balance should be updated.
+    -   **P0: Execute Verification Script C (Soul Points & Badges):**
+        -   Trigger: Answer soul questions incrementally.
+        -   Expected: A badge () should be awarded after 5 questions. The user should receive 10 paw points for each new question answered. Verify that badges are not awarded multiple times on refresh.
+    -   **P1: Implement Picks UI:** Build the UI for , , and .
 
 -   **Future Tasks:**
+    -   Implement B7 analytics.
+    -   Implement B8 scenario testing.
     -   Refactor the large  and  files.
     -   Build the full UI for the Services, Insights, Learn, and Concierge sections.
-    -   Implement a User Intent/Ticketing Flow.
-    -   Implement A/B testing infrastructure for the Picks Engine.
 
 **Completed work in this session**
--   **Aligned UI Question Bank:** Added 15 missing questions to  in  to match the canonical system.
--   **Synchronized Scoring Weights:** Corrected  to use the exact fields and weights from the canonical source of truth ().
--   **Created Data Migration Script:** Built an idempotent script at  to migrate old data.
--   **Enhanced Backend Tests:** Added 2 new tests to  to verify that answering all UI questions now achieves a 100% score.
--   **Updated Pet Onboarding Flow:**
-    -   Modified  to include new mandatory fields (Temperament, Grooming Tolerance, etc.).
-    -   Updated the backend  model in  to accept the new onboarding fields.
--   **Updated Documentation:** Updated  and  with the latest changes.
+-   **Centralized Member Logic:** Created  as the single source of truth for all badge, points, and reward rules.
+-   **Aligned Badge Logic:** Updated the system to award soul badges based on the *number of questions answered* (5, 10, 15, 20) instead of a percentage score.
+-   **Aligned Paw Points Logic:**
+    -   Implemented the 10 points per soul question rule.
+    -   Set the referral bonus to 500 points.
+    -   Ensured the logic for 5% of order value is in place.
+-   **Implemented Emergency Suppression:** Added logic to  to detect emergencies and suppress commerce-related content.
+-   **Created Comprehensive Unit Tests:** Added a new test file  with 41 tests covering all new business rules, all of which are passing.
+-   **Improved Alias Mapping:** Enhanced the logic to correctly count questions answered using legacy field names, ensuring backward compatibility for badge calculation.
+-   **Consolidated Onboarding:** Deleted the duplicate  file.
+-   **Executed Data Migration:** Successfully ran the  script.
+-   **Fixed Backend Bugs:** Resolved several  errors in  and , and fixed a bug in the admin members API.
 
 **Earlier issues found/mentioned but not fixed**
--   The non-critical API endpoint errors and long-standing UI bugs (markdown, pet photo) were identified in the initial handoff but were correctly deprioritized in favor of the critical Soul Score and Onboarding tasks.
+-   **Non-critical API Endpoint Errors (P2):** Dashboard API returns minimal data,  API returns 405,  API returns empty.
+-   **Long-standing UI Bugs (P2):** Markdown in chat responses doesn't render correctly, and the pet photo is sometimes missing.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** UI bugs (markdown rendering, pet photo display).
@@ -94,72 +96,78 @@ The active pet onboarding page () has been updated with the new required fields,
 
 
 **Key Technical Concepts**
--   **Canonical Data Model:** Using  as the single source of truth for pet data, with an  to reconcile UI data.
--   **Idempotent Data Migration:** The backfill script is designed to be safely re-runnable.
--   **Dynamic Conversational Logic:** The pending quick question feature requires the chat AI to alter its behavior based on missing data.
--   **Component-based Frontend:** The agent correctly identified and modified the active React component () while flagging a duplicate for removal.
+-   **Centralized Business Logic:** Using a dedicated Python file () to manage all gamification rules, making the system easier to maintain and update.
+-   **Test-Driven Development (TDD):** Creating a comprehensive unit test suite to validate complex business rules before and after implementation.
+-   **Idempotency:** Ensuring that operations like awarding badges can be run multiple times without creating duplicate entries.
+-   **Alias-based Data Mapping:** Using a dictionary to map various historical UI field names to a single canonical field, ensuring old data contributes correctly to new logic.
 
 **key DB schema**
--   No schema changes. The work standardizes data within the existing  object and adds more fields during pet creation.
+-   **users:**  (Array of strings),  (Number),  (Number)
+-   **pets:**  (Object),  (Number),  (String)
+-   **paw_points_ledger:** Collection to log every point transaction (earn/redeem).
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--   : New migration script (needs to be executed).
--   : Updated with all UI questions.
--   : Source of truth for scoring.
--   : Pet creation model updated.
--   : The active, updated onboarding page.
--   : The file to modify for the quick question logic.
--   : Unused onboarding page that should be deleted.
+-   : The new single source of truth for member logic.
+-   : The new unit tests for the member logic.
+-   : The new documentation for UI-to-canonical field mapping.
+-   : Modified to use the new config for badges and points.
+-   : Modified to award points when a soul question is answered.
+-   : Modified to implement emergency suppression.
 
 **Areas that need refactoring**:
--   The duplicate onboarding page () should be deleted to prevent future confusion and reduce technical debt.
+-   The  file is over 3000 lines and is a candidate for being broken down into smaller components.
+-   The  file is very large and could be split into smaller, more focused modules.
 
 **key api endpoints**
--   : Saves soul answers (uses canonicalization).
--   : Gets the calculated soul score.
--   : Main chat endpoint (needs modification for quick question logic).
--   : Pet creation endpoint (updated to handle new onboarding fields).
--   : Returns all available UI questions.
+-   : Triggers badge and point calculations for a user.
+-   : Saves soul answers and now triggers paw point rewards.
+-   : Main chat endpoint, now with emergency suppression logic.
+-   : Admin endpoint to view user data (was fixed).
 
 **Critical Info for New Agent**
--   Your first priority is to address the user's last message and the pending P0 tasks.
--   **Execute the migration script:** Run . This is a crucial step to align existing data.
--   **Implement Quick Question logic:** This is the last major piece of the Pet Soul system fix. Modify .
--   **Test the onboarding flow:** The UI is built, but an end-to-end test is needed to confirm a new pet can be created with all the new required fields.
--   **Cleanup the duplicate onboarding page:** Address the user's concern by deleting .
+Your immediate and sole focus is to perform the end-to-end UI verification requested by the user. Do not proceed to any other task until this is complete.
+
+1.  **Familiarize yourself with the 3 Verification Scripts:** Understand the trigger, expected outcome, and data points to check for (A) Emergency Suppression, (B) Paw Points Awarding, and (C) Soul Question Badges.
+2.  **Use the :** This is necessary to capture screen recordings on the three required platforms: iOS Safari, Android Chrome, and Desktop Chrome.
+3.  **Produce Deliverables:** Your output must match the user's request:
+    -   A Pass/Fail checklist for the 3 scripts.
+    -   The screen recordings from each device.
+    -   A clear bug report for any failures, including steps, expected vs. actual results, and screenshots.
+4.  **Confirm Source of Truth:** Be prepared to confirm that  is the only file driving this logic and that no other systems are interfering.
 
 **documents and test reports created in this job**
--   /app/scripts/backfill_canonical_answers.py
--   /app/memory/PRD.md (updated)
--   /app/memory/COMPLETE_QUESTIONS_LIST.md (updated)
+-   /app/backend/member_logic_config.py
+-   /app/backend/tests/test_member_logic.py
+-   /app/memory/UI_CANONICAL_MAPPING.md
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User (Chat 144):** Provided a detailed list of mandatory and optional fields for the pet onboarding flow (Pet Name, Breed, Gender, etc.) and stated that they should be compulsory to fill.
-2.  **User (Chat 241):** Asked to ensure there is only one onboarding page (the truth page). Confirmed that the agent should proceed with running the data migration, implementing the Quick Question behavior, and testing the full onboarding flow.
+1.  **User:** Provided a detailed MEMBER LOGIC CARD specification for Badges, Soul Score, Paw Points, and Rewards. (COMPLETED)
+2.  **User:** Confirmed the logic card is the source of truth and requested implementation of all discrepancies. (COMPLETED)
+3.  **User:** Requested alignment of badge triggers to question counts, updates to paw point rules, and confirmation of emergency suppression. (COMPLETED)
+4.  **User:** Requested a deliverable of a single mapping table and unit tests to prove the new logic. (COMPLETED)
+5.  **User:** Acknowledged the 41/41 passing unit tests and immediately requested end-to-end UI verification. (PENDING)
+6.  **User (Latest):** Provided explicit instructions for the UI verification, including 3 live scripts to run, 3 platforms to test on (iOS, Android, Desktop), and the required deliverables (checklist, screen recordings, bug reports). This is the current active task. (PENDING)
 
 **Project Health Check:**
--   **Broken:** The end-to-end flow is still incomplete. The data for existing pets has not been migrated to the new canonical system, and Mira's quick question behavior is not implemented.
+-   **Broken:** The end-to-end user flow for the new member logic is unverified. While the backend is unit-tested, its behavior in the live UI is unknown and considered broken until the user's verification scripts are passed.
 -   **Mocked:** None.
 
 **3rd Party Integrations**
--   **LLM (Claude/GPT):** Used for core chat functionality.
+-   **LLM (Claude/GPT):** Used for core Mira chat functionality.
 -   **YouTube:** Integration exists for the LEARN pillar.
 
 **Testing status**
--   **Testing agent used after significant changes:** NO
+-   **Testing agent used after significant changes:** YES (for previous onboarding work, but needs to be used again for the current verification task).
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** []
--   **Test files updated:** []
--   **Known regressions:** None from this session's work.
+-   **Known regressions:** None known, but the purpose of the pending UI test is to find any.
 
 **Credentials to test flow:**
 -   **Test User:**  / 
 -   **Admin:**  / 
 
 **What agent forgot to execute**
--   **Execute the data migration script:** The script  was created but not run.
--   **Implement Quick Question behavior:** This core requirement from the user's specification has not been started.
--   **Remove the duplicate onboarding file:** The agent correctly identified the active onboarding page but did not clean up the old, unused one ().</analysis>
+-   The previous agent completed all backend implementation and unit testing but did not begin the user's explicit and final request for comprehensive, multi-platform UI verification.</analysis>
