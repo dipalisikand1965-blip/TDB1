@@ -106,26 +106,55 @@ const OPTIONS = {
   dislikes: ['Baths', 'Nail trimming', 'Loud noises', 'Being alone', 'Grooming', 'Strangers', 'Other dogs'],
 };
 
-// Base Editor Wrapper Component
-const EditorWrapper = memo(({ title, onSave, onCancel, saving, children }) => (
+// Auto-save status indicator component
+const AutoSaveIndicator = memo(({ status }) => {
+  if (status === 'idle') return null;
+  
+  return (
+    <div className={`auto-save-indicator ${status}`}>
+      {status === 'pending' && (
+        <>
+          <div className="auto-save-dot pending" />
+          <span>Unsaved changes</span>
+        </>
+      )}
+      {status === 'saving' && (
+        <>
+          <Loader2 className="w-3 h-3 animate-spin" />
+          <span>Saving...</span>
+        </>
+      )}
+      {status === 'saved' && (
+        <>
+          <Check className="w-3 h-3" />
+          <span>Saved</span>
+        </>
+      )}
+      {status === 'error' && (
+        <>
+          <AlertCircle className="w-3 h-3" />
+          <span>Save failed</span>
+        </>
+      )}
+    </div>
+  );
+});
+
+// Base Editor Wrapper Component - Now with auto-save indicator
+const EditorWrapper = memo(({ title, onCancel, saveStatus, children }) => (
   <div className="mojo-editor-wrapper">
     <div className="editor-header">
       <span className="editor-title">Edit {title}</span>
       <div className="editor-actions">
+        <AutoSaveIndicator status={saveStatus} />
         <button 
           className="editor-cancel-btn"
           onClick={onCancel}
-          disabled={saving}
+          title="Done editing"
+          data-testid="editor-done-btn"
         >
-          <X className="w-4 h-4" />
-        </button>
-        <button 
-          className="editor-save-btn"
-          onClick={onSave}
-          disabled={saving}
-        >
-          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          <span>{saving ? 'Saving...' : 'Save'}</span>
+          <Check className="w-4 h-4" />
+          <span>Done</span>
         </button>
       </div>
     </div>
