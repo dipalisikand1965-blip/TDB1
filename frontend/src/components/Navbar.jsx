@@ -629,12 +629,14 @@ const Navbar = () => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                console.log('[Navbar] Hamburger clicked, dispatching openPetSidebar');
                 // On mobile, open the Paw Sidebar navigation
                 window.dispatchEvent(new CustomEvent('openPetSidebar'));
               }}
               onTouchEnd={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                console.log('[Navbar] Hamburger touchEnd, dispatching openPetSidebar');
                 // iOS needs touchend handler for reliable clicks
                 window.dispatchEvent(new CustomEvent('openPetSidebar'));
               }}
