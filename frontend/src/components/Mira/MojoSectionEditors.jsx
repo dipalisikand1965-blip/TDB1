@@ -22,6 +22,13 @@ const useAutoSave = (data, onSave, delay = 1500) => {
   const timeoutRef = useRef(null);
   const initialDataRef = useRef(null);
   const hasChangedRef = useRef(false);
+  // Store onSave in a ref to avoid stale closure and dependency issues
+  const onSaveRef = useRef(onSave);
+  
+  // Keep onSave ref updated
+  useEffect(() => {
+    onSaveRef.current = onSave;
+  }, [onSave]);
   
   // Store initial data on first render
   useEffect(() => {
@@ -52,7 +59,8 @@ const useAutoSave = (data, onSave, delay = 1500) => {
       timeoutRef.current = setTimeout(async () => {
         setSaveStatus('saving');
         try {
-          await onSave(data);
+          // Use ref to get latest onSave function
+          await onSaveRef.current(data);
           setSaveStatus('saved');
           initialDataRef.current = currentData; // Update baseline after successful save
           // Reset to idle after showing "saved" briefly
@@ -64,12 +72,20 @@ const useAutoSave = (data, onSave, delay = 1500) => {
       }, delay);
     }
     
+    // Only clear timeout on data change, not on every render
+    return () => {
+      // Don't clear timeout here - let it run
+    };
+  }, [data, delay]); // Removed onSave from dependencies since we use ref
+  
+  // Cleanup on unmount only
+  useEffect(() => {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [data, onSave, delay]);
+  }, []);
   
   return saveStatus;
 };
