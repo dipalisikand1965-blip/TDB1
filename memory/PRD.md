@@ -431,7 +431,7 @@ From `/app/frontend/src/pages/MiraDemoBackupPage.jsx`:
 ---
 
 ## Preview URL
-**Working:** https://pet-soul-sync.preview.emergentagent.com/mira-demo
+**Working:** https://dog-os-platform.preview.emergentagent.com/mira-demo
 
 ---
 
