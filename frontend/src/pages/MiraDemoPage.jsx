@@ -2932,7 +2932,9 @@ const MiraDemoPage = () => {
         }}
         onSwitchPet={switchPet}
         badges={{
-          picks: conversationPicks.length > 0 ? conversationPicks.length : null,
+          picks: (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) > 0 
+            ? (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) 
+            : null,
           services: null, // TODO: Connect to pending services count
           insights: null, // TODO: Connect to new insights count
         }}
