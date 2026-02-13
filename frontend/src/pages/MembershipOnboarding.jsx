@@ -374,7 +374,14 @@ const MembershipOnboarding = () => {
             weight_unit: pet.weight_unit,
             is_neutered: pet.is_neutered,
             species: 'dog',
-            celebrations: pet.celebrations || [] // Include selected celebrations
+            celebrations: pet.celebrations || [], // Include selected celebrations
+            // Soul answers saved to doggy_soul_answers for canonical scoring
+            doggy_soul_answers: {
+              food_allergies: pet.food_allergies,
+              health_conditions: pet.health_conditions,
+              temperament: pet.temperament,
+              grooming_tolerance: pet.grooming_tolerance,
+            }
           })),
           plan_type: planType,
           pet_count: petsData.length
