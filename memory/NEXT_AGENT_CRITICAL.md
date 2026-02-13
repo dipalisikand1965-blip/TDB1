@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://picks-engine.preview.emergentagent.com
+https://soul-score-audit.preview.emergentagent.com
 
 ---
 
