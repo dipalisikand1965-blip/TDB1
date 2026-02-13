@@ -196,7 +196,14 @@ const PetSelector = ({
               <PawPrint />
             )}
           </div>
-          <span className="mp-pet-name">{currentPet.name}</span>
+          <span 
+            className="mp-pet-name"
+            onClick={handlePetNameClick}
+            style={{ cursor: 'pointer' }}
+            title={`View ${currentPet.name}'s profile`}
+          >
+            {currentPet.name}
+          </span>
         </button>
       </div>
       
