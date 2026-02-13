@@ -100,21 +100,23 @@ const CELEBRATION_PILLARS = [
   { id: 'shop', icon: Star, name: 'Shop', description: 'Premium products', color: 'from-rose-500 to-pink-500' },
 ];
 
-// Empty pet template
+// Empty pet template - includes all required onboarding fields
 const createEmptyPet = (index = 0) => ({
   id: Date.now() + index,
   name: '',
   breed: '',
-  age: '',
-  birthday: '',
   gender: '',
+  birthday: '',        // birth_date or gotcha_date (required: at least one)
+  gotchaDate: '',
+  weight: '',          // optional
+  isNeutered: '',      // optional (yes/no/not_sure)
   photo: null,
   photoPreview: null,
-  traits: [],
-  dietaryNeeds: '',
-  healthNotes: '',
-  favoriteTreat: '',
-  favoriteActivity: '',
+  // Core Soul Fields (required for scoring)
+  foodAllergies: '',   // Required: "None" is acceptable
+  healthConditions: '',// Required: "None" is acceptable  
+  temperament: '',     // Required: from TEMPERAMENT_OPTIONS
+  groomingTolerance: '',// Required: from GROOMING_TOLERANCE_OPTIONS
 });
 
 const PetSoulOnboard = () => {
