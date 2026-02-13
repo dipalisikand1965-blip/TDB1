@@ -188,14 +188,23 @@ const getMissingItems = (sectionId, data) => {
 };
 
 // Pet Snapshot Component (Always Visible Header)
-const PetSnapshot = memo(({ pet, soulScore, membership, onEditClick, onSwitchPet }) => {
-  const petPhoto = pet?.photo || pet?.pet_photo;
+const PetSnapshot = memo(({ pet, soulScore, membership, onEditClick, onSwitchPet, apiUrl }) => {
+  // Handle various photo URL formats
+  let petPhoto = pet?.photo || pet?.pet_photo || pet?.photo_url;
+  
+  // Handle relative URLs (e.g., /api/pet-photo/pet-xxx)
+  if (petPhoto && petPhoto.startsWith('/api/')) {
+    petPhoto = `${apiUrl}${petPhoto}`;
+  } else if (petPhoto && !petPhoto.startsWith('http') && !petPhoto.startsWith('data:')) {
+    petPhoto = `${apiUrl}${petPhoto}`;
+  }
+  
   const petName = pet?.name || 'Pet';
   const breed = pet?.breed || 'Unknown breed';
-  const age = pet?.age || '';
+  const age = pet?.age || pet?.age_years ? `${pet?.age_years || pet?.age} years` : '';
   const gender = pet?.gender || '';
   const weight = pet?.doggy_soul_answers?.weight || pet?.weight || '';
-  const city = pet?.city || pet?.doggy_soul_answers?.city || '';
+  const city = pet?.city || pet?.doggy_soul_answers?.city || pet?.location?.city || '';
   
   return (
     <div className="mojo-snapshot" data-testid="mojo-pet-snapshot">
