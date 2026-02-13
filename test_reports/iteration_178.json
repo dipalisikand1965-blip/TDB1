@@ -1,0 +1,70 @@
+{
+  "summary": "Tested MOJO Profile Modal auto-save feature implementation. Found and fixed a critical bug where auto-save wasn't triggering due to callback reference instability in useAutoSave hook.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "MojoSectionEditors - useAutoSave hook",
+        "issue": "Auto-save was not triggering API calls due to onSave callback being recreated on each render, causing the timeout cleanup to run before auto-save could complete",
+        "selector": ".auto-save-indicator",
+        "priority": "HIGH",
+        "status": "FIXED - Modified useAutoSave to use useRef for onSave callback"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "MOJO Modal Edit Mode",
+        "issues": [
+          "Auto-save indicator shows 'Unsaved changes' but then disappears after timeout without showing 'Saving...' or 'Saved' states"
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/frontend/src/components/Mira/MojoSectionEditors.jsx"
+  ],
+  "action_items": [
+    "Verify the useAutoSave fix by testing the full auto-save flow after the fix is deployed",
+    "The fix applied: Changed useAutoSave hook to store onSave in a ref (onSaveRef) and removed onSave from useEffect dependencies to prevent cleanup from canceling the timeout"
+  ],
+  "critical_code_review_comments": [
+    "useAutoSave hook had onSave in its dependency array but onSave was passed as inline arrow function (data) => handleSaveSection(section.id, data) which gets recreated on every render",
+    "This caused the cleanup function to clear the timeout before the 1.5s debounce could complete",
+    "Fix: Use useRef for onSave callback and only depend on [data, delay] in the effect"
+  ],
+  "updated_files": [
+    "/app/frontend/src/components/Mira/MojoSectionEditors.jsx"
+  ],
+  "success_rate": {
+    "backend": "100%",
+    "frontend": "Partial - Auto-save UI appears but was not triggering API due to bug (now fixed)"
+  },
+  "seed_data_creation": "",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Auto-save feature had a bug where changes weren't being saved. The useAutoSave hook in MojoSectionEditors.jsx was fixed to use useRef for the onSave callback. After fix is deployed, need to verify: 1) Change a field in edit mode, 2) See 'Unsaved changes' indicator, 3) Wait 1.5+ seconds, 4) See 'Saving...' then 'Saved' indicators, 5) Verify API call to /answers/bulk was made. Test credentials: dipali@clubconcierge.in / test123. Pet ID: pet-99a708f1722a",
+  "features_tested": [
+    "MOJO Modal opens from pet avatar - WORKING",
+    "Drill-in editing opens inline editor with dropdowns - WORKING",
+    "Auto-save indicator shows 'Unsaved changes' on change - WORKING",
+    "Auto-save triggers API call after 1.5s - NOT WORKING (bug found and fixed)",
+    "Done button visible and clickable - WORKING",
+    "Backend /api/pet-soul/profile/{pet_id}/answers/bulk - WORKING"
+  ],
+  "bug_rca": {
+    "issue": "Auto-save not triggering API calls despite showing 'Unsaved changes' indicator",
+    "root_cause": "In useAutoSave hook (MojoSectionEditors.jsx), the onSave callback was included in useEffect dependencies. Since onSave was passed as inline arrow function from parent component, it was recreated on every render, causing the cleanup function to clear the pending timeout before the 1.5s debounce completed.",
+    "reproduction_steps": [
+      "1. Open MOJO Modal from /mira-demo page",
+      "2. Click Edit button on Soul Profile section",
+      "3. Change any dropdown value (e.g., temperament)",
+      "4. Observe 'Unsaved changes' indicator appears",
+      "5. Wait - indicator disappears without showing 'Saving...' or making API call"
+    ],
+    "fix_applied": "Modified useAutoSave hook to: 1) Store onSave in useRef (onSaveRef), 2) Update ref when onSave changes, 3) Use onSaveRef.current in the setTimeout callback, 4) Remove onSave from useEffect dependencies to prevent cleanup running on callback recreation"
+  }
+}
