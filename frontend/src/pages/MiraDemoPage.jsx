@@ -118,6 +118,34 @@ import '../styles/mira-prod.css';
 // Alias for backward compatibility
 const ALL_PETS = ALL_DEMO_PETS;
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// UTILITY: Calculate health score from pet data
+// Used by PetOSNavigation to show health indicator on pet avatar
+// ═══════════════════════════════════════════════════════════════════════════════
+const calculateHealthScore = (pet) => {
+  if (!pet) return 0;
+  
+  const soulAnswers = pet.doggy_soul_answers || {};
+  const preferences = pet.preferences || {};
+  
+  // Health fields to check
+  const healthFields = [
+    soulAnswers.food_allergies || preferences.allergies,
+    soulAnswers.weight,
+    soulAnswers.spayed_neutered,
+    soulAnswers.vaccination_status,
+  ];
+  
+  const filled = healthFields.filter(f => {
+    if (!f) return false;
+    if (Array.isArray(f)) return f.length > 0;
+    if (typeof f === 'string') return f !== '' && f !== 'Unknown';
+    return true;
+  }).length;
+  
+  return Math.round((filled / healthFields.length) * 100);
+};
+
 const MiraDemoPage = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
