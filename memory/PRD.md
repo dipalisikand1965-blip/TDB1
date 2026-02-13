@@ -16,7 +16,10 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 - [ ] **Header Shell Integration** - Refactor `/mira-demo` page with 7-tab navigation
   - Use "dual placement" strategy for component migration
   - Map components from `NavigationDock` and `FloatingActionBar` to new tabs
-  - **BLOCKED** on production CDN issue
+- [ ] **Port Missing Features from Backup Page** - Migrate personalization features from `MiraDemoBackupPage.jsx`:
+  - Weather Card integration
+  - Health Vault Progress indicator  
+  - "Why for {Pet}" badges on recommendations
 
 ### P2 - Medium Priority
 - [ ] Render API data in new tabs (`picks[]`, `concierge{}`, `safety_override{}`)
