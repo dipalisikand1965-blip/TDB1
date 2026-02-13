@@ -9744,6 +9744,82 @@ async def mira_chat(
             logger.error(f"[ALLERGY] Failed to save allergies: {e}")
     
     # ═══════════════════════════════════════════════════════════════════════════
+    # LOCATION-BASED SEARCH FLOW - Ask for location before showing results
+    # Handles: restaurants, cafes, hotels, stays, vets, parks, groomers
+    # User specifies WHERE they want results, not just their current location
+    # ═══════════════════════════════════════════════════════════════════════════
+    
+    # Detect if user is asking for location-based places
+    PLACE_SEARCH_KEYWORDS = {
+        "restaurant": ["restaurant", "restaurants", "cafe", "cafes", "coffee", "dine out", "dining", "eat out", "brunch", "lunch spot", "dinner place"],
+        "hotel": ["hotel", "hotels", "stay", "stays", "accommodation", "pet-friendly stay", "resort", "booking"],
+        "vet": ["vet", "veterinary", "veterinarian", "animal hospital", "pet doctor", "emergency vet"],
+        "park": ["dog park", "park for dogs", "off-leash", "pet park"],
+        "groomer": ["groomer", "grooming", "pet spa", "dog salon"],
+        "pet_store": ["pet store", "pet shop", "dog store"]
+    }
+    
+    detected_place_search = None
+    for place_type, keywords in PLACE_SEARCH_KEYWORDS.items():
+        if any(kw in user_msg_lower for kw in keywords):
+            detected_place_search = place_type
+            break
+    
+    # Check if this is a location-based search request
+    search_trigger_words = ["find", "looking for", "recommend", "suggest", "where", "any", "show me", "search", "nearby", "near me", "around", "best"]
+    is_search_request = detected_place_search and any(word in user_msg_lower for word in search_trigger_words)
+    
+    # Indian cities for detection
+    INDIAN_CITIES = ["mumbai", "delhi", "bangalore", "bengaluru", "pune", "hyderabad", "chennai", 
+                     "kolkata", "gurgaon", "gurugram", "noida", "goa", "jaipur", "ahmedabad", 
+                     "koramangala", "indiranagar", "whitefield", "hsr", "btm", "jayanagar",
+                     "bandra", "andheri", "powai", "juhu", "worli", "malad", "borivali",
+                     "vijayawada", "visakhapatnam", "vizag", "coimbatore", "kochi", "trivandrum"]
+    
+    # Check if user mentioned a specific location in their message
+    user_mentioned_location = None
+    for city in INDIAN_CITIES:
+        if city in user_msg_lower:
+            user_mentioned_location = city.title()
+            if city == "bengaluru":
+                user_mentioned_location = "Bangalore"
+            break
+    
+    # If user is searching for places but hasn't specified location, ASK them
+    if is_search_request and not user_mentioned_location:
+        place_type_display = {
+            "restaurant": "pet-friendly restaurants or cafes",
+            "hotel": "pet-friendly hotels or stays", 
+            "vet": "veterinary clinics",
+            "park": "dog parks",
+            "groomer": "pet groomers",
+            "pet_store": "pet stores"
+        }.get(detected_place_search, "places")
+        
+        return {
+            "success": True,
+            "response": f"I'd love to help you find {place_type_display}! 🐾\n\nWhich **city and area** would you like me to search in? For example: 'Koramangala, Bangalore' or 'Bandra, Mumbai'",
+            "session_id": session_id,
+            "pillar": pillar or "dine",
+            "intent": "location_query",
+            "awaiting_location": True,
+            "place_search_type": detected_place_search,
+            "follow_ups": [
+                {"text": "Koramangala, Bangalore", "type": "location"},
+                {"text": "Indiranagar, Bangalore", "type": "location"},
+                {"text": "Bandra, Mumbai", "type": "location"},
+                {"text": "Use my current location", "type": "location"}
+            ],
+            "products": [],
+            "places": [],  # Don't show places until location is confirmed
+            "tip_card": None
+        }
+    
+    # If user mentioned a location, store it for the search
+    if user_mentioned_location:
+        logger.info(f"[LOCATION] User specified location: {user_mentioned_location}")
+    
+    # ═══════════════════════════════════════════════════════════════════════════
     # MIRA OS CONTEXT - Layer Activation, Temporal Awareness, Safety Gates
     # This makes Mira behave like an OS, not just a chatbot
     # ═══════════════════════════════════════════════════════════════════════════
