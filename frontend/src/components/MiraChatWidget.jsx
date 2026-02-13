@@ -1024,8 +1024,16 @@ const MiraChatWidget = ({
           });
         }
         
-        // Add ticket info if created
-        if (data.service_desk_ticket_id || data.concierge_action?.action_needed) {
+        // Handle service confirmation card (uniform service handoff flow)
+        if (data.service_confirmation) {
+          toast.success(`Service Request Confirmed!`, {
+            description: data.service_confirmation.message || 'Your concierge will get back to you shortly.',
+            duration: 5000
+          });
+        }
+        
+        // Add ticket info if created (only if no service_confirmation to avoid duplicate messages)
+        if ((data.service_desk_ticket_id || data.concierge_action?.action_needed) && !data.service_confirmation) {
           const ticketId = data.service_desk_ticket_id || data.ticket_id;
           displayContent += `\n\n📋 **Request #${ticketId}** created!`;
           toast.success(`Request #${ticketId} created!`, {
@@ -1040,7 +1048,8 @@ const MiraChatWidget = ({
           products: data.products,
           ticketId: data.ticket_id,
           kitAssembly: data.kit_assembly,
-          handoff: data.handoff
+          handoff: data.handoff,
+          serviceConfirmation: data.service_confirmation
         }]);
         
         if (voiceEnabled) {
