@@ -11,9 +11,83 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Crown, History, PawPrint, Heart, Sparkles, 
-  ChevronRight, Shield 
+  ChevronRight, Shield, Sun, Cloud, CloudRain, Thermometer, AlertTriangle, CheckCircle
 } from 'lucide-react';
 import ProactiveAlertsBanner from './ProactiveAlertsBanner';
+
+// Inline Weather Card Component for WelcomeHero
+const WeatherCardInline = ({ weather, petName, onAskMira }) => {
+  if (!weather) return null;
+  
+  const { city, temp, humidity, condition, pet_advisory } = weather;
+  const safetyLevel = pet_advisory?.safety_level || 'unknown';
+  const isSafe = safetyLevel.toLowerCase() === 'safe';
+  const isCaution = safetyLevel.toLowerCase() === 'caution';
+  
+  // Weather icon
+  const WeatherIcon = () => {
+    const cond = (condition || '').toLowerCase();
+    if (cond.includes('rain')) return <CloudRain className="w-5 h-5" />;
+    if (cond.includes('cloud')) return <Cloud className="w-5 h-5" />;
+    return <Sun className="w-5 h-5" />;
+  };
+  
+  // Safety colors
+  const safetyColors = isSafe 
+    ? { bg: 'rgba(34, 197, 94, 0.15)', border: 'rgba(34, 197, 94, 0.3)', text: '#22C55E' }
+    : isCaution 
+    ? { bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.3)', text: '#F59E0B' }
+    : { bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.3)', text: '#EF4444' };
+  
+  return (
+    <div 
+      className="weather-card-inline"
+      style={{
+        background: safetyColors.bg,
+        border: `1px solid ${safetyColors.border}`,
+        borderRadius: '16px',
+        padding: '12px 16px',
+        marginTop: '12px',
+        cursor: 'pointer'
+      }}
+      onClick={() => onAskMira?.(`Is it safe to walk ${petName} right now?`)}
+      data-testid="weather-card-inline"
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ color: safetyColors.text }}>
+            <WeatherIcon />
+          </div>
+          <div>
+            <div style={{ color: 'white', fontWeight: '600', fontSize: '15px' }}>
+              {Math.round(temp || 0)}°C • {city || 'Your city'}
+            </div>
+            <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px', marginTop: '2px' }}>
+              {isSafe ? `Great day to walk ${petName}!` : isCaution ? `Be careful with ${petName} outside` : `Keep ${petName} indoors`}
+            </div>
+          </div>
+        </div>
+        <div 
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            padding: '4px 10px',
+            borderRadius: '20px',
+            background: 'rgba(255,255,255,0.1)',
+            color: safetyColors.text,
+            fontSize: '11px',
+            fontWeight: '600',
+            textTransform: 'uppercase'
+          }}
+        >
+          {isSafe ? <CheckCircle className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
+          {safetyLevel}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 /**
  * WelcomeHero Component
