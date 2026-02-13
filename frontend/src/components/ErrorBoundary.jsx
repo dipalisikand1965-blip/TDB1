@@ -4,6 +4,8 @@ import React from 'react';
  * Error Boundary Component
  * Catches JavaScript errors anywhere in the child component tree
  * and displays a fallback UI instead of crashing the whole app
+ * 
+ * Special handling for ChunkLoadError - automatically reloads to get fresh assets
  */
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -23,7 +25,67 @@ class ErrorBoundary extends React.Component {
     console.error('Error stack:', error?.stack);
     console.error('Component stack:', errorInfo?.componentStack);
     this.setState({ errorInfo });
+    
+    // AUTO-RELOAD for ChunkLoadError (CSS/JS chunk loading failures after deployment)
+    // This happens when users have stale cached HTML that references old chunk files
+    const isChunkError = 
+      error?.name === 'ChunkLoadError' ||
+      error?.message?.includes('Loading chunk') ||
+      error?.message?.includes('Loading CSS chunk') ||
+      error?.message?.includes('chunk') && error?.message?.includes('failed');
+    
+    if (isChunkError) {
+      console.log('ChunkLoadError detected - clearing caches and reloading...');
+      this.handleChunkLoadError();
+    }
   }
+  
+  // Handle chunk load errors by clearing caches and forcing reload
+  handleChunkLoadError = async () => {
+    const CHUNK_RELOAD_KEY = 'tdc_chunk_reload_attempted';
+    const lastAttempt = sessionStorage.getItem(CHUNK_RELOAD_KEY);
+    const now = Date.now();
+    
+    // Prevent infinite reload loop - only attempt once per session (or once per 30 seconds)
+    if (lastAttempt && (now - parseInt(lastAttempt)) < 30000) {
+      console.log('ChunkLoadError: Already attempted reload recently, showing error UI');
+      return;
+    }
+    
+    sessionStorage.setItem(CHUNK_RELOAD_KEY, now.toString());
+    
+    try {
+      // Unregister all service workers
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const registration of registrations) {
+          await registration.unregister();
+          console.log('Unregistered service worker');
+        }
+      }
+      
+      // Clear all caches
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        for (const cacheName of cacheNames) {
+          await caches.delete(cacheName);
+          console.log('Deleted cache:', cacheName);
+        }
+      }
+      
+      // Clear version tracking
+      localStorage.removeItem('tdc_app_version');
+      localStorage.removeItem('tdc_last_version_check');
+      
+      // Force hard reload
+      console.log('Forcing hard reload...');
+      window.location.reload(true);
+    } catch (e) {
+      console.error('Error during chunk error recovery:', e);
+      // Fallback: just reload
+      window.location.reload(true);
+    }
+  };
 
   handleRetry = () => {
     this.setState({ hasError: false, error: null, errorInfo: null });
