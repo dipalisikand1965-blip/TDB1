@@ -326,7 +326,7 @@ class TestDashboardSoulScores:
     def test_all_pets_have_scores(self, auth_headers):
         """Verify all pets have soul scores"""
         response = requests.get(
-            f"{BASE_URL}/api/member/pets",
+            f"{BASE_URL}/api/pets",
             headers=auth_headers,
             timeout=30
         )
