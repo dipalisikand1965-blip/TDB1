@@ -32,7 +32,8 @@ const PetSelector = ({
   allPets = [],
   isOpen = false,
   onToggle,
-  onSelectPet
+  onSelectPet,
+  onPetNameClick // NEW: Opens MOJO Profile Modal when pet name is clicked
 }) => {
   const navigate = useNavigate();
   const [intelligenceData, setIntelligenceData] = useState(null);
@@ -63,6 +64,17 @@ const PetSelector = ({
   
   const handleSelectPet = (pet) => {
     if (onSelectPet) onSelectPet(pet);
+  };
+  
+  // Handle pet name click - opens MOJO Profile Modal
+  const handlePetNameClick = (e) => {
+    e.stopPropagation();
+    hapticFeedback.buttonTap();
+    if (onPetNameClick) {
+      onPetNameClick();
+    } else {
+      navigate(`/my-pets?pet=${currentPet?.id}`);
+    }
   };
   
   // Handle score click - navigate to pet profile
