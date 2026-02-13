@@ -994,13 +994,13 @@ const MojoProfileModal = ({
         // Extract membership info
         const membershipInfo = {
           tier: memberData.membership_tier || 'Member',
-          paw_points: memberData.paw_points || 0,
+          paw_points: memberData.loyalty_points || memberData.paw_points || 0,
           member_since: memberData.created_at 
             ? new Date(memberData.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
             : null,
           expires: memberData.membership_expires,
           next_tier: getNextTier(memberData.membership_tier),
-          points_to_next: calculatePointsToNextTier(memberData.paw_points, memberData.membership_tier)
+          points_to_next: calculatePointsToNextTier(memberData.loyalty_points || memberData.paw_points || 0, memberData.membership_tier)
         };
         setMembershipData(membershipInfo);
         
