@@ -38,9 +38,11 @@ DOGGY_SOUL_QUESTIONS = {
             {"id": "describe_3_words", "question": "How would you describe your dog in three words?", "type": "text", "weight": 3},
             {"id": "general_nature", "question": "Is your dog generally:", "type": "select", "options": ["Calm", "Curious", "Playful", "Shy", "Guarded", "Fearful", "Highly energetic"], "weight": 4},
             {"id": "stranger_reaction", "question": "How does your dog usually react to strangers?", "type": "select", "options": ["Friendly", "Cautious", "Indifferent", "Nervous", "Protective"], "weight": 3},
+            {"id": "social_with_people", "question": "How comfortable is your dog with new people?", "type": "select", "options": ["Very social - loves everyone", "Friendly after warming up", "Selective - only certain people", "Shy with most people", "Anxious around strangers"], "weight": 4, "canonical_id": "social_with_people"},
             {"id": "loud_sounds", "question": "How does your dog react to loud sounds (thunder, fireworks, traffic)?", "type": "select", "options": ["Completely fine", "Mildly anxious", "Very anxious", "Needs comfort"], "weight": 4},
             {"id": "social_preference", "question": "Does your dog prefer:", "type": "select", "options": ["Being around people", "Being around other dogs", "Being mostly with you", "Being mostly independent"], "weight": 3},
             {"id": "handling_comfort", "question": "Is your dog comfortable being handled (paws, ears, mouth)?", "type": "select", "options": ["Very comfortable", "Sometimes uncomfortable", "Highly sensitive"], "weight": 3},
+            {"id": "life_stage", "question": "What life stage is your dog in?", "type": "select", "options": ["Puppy (0-1 year)", "Young adult (1-3 years)", "Adult (3-7 years)", "Senior (7+ years)"], "weight": 5, "canonical_id": "life_stage"},
         ]
     },
     "family_pack": {
