@@ -656,7 +656,8 @@ async def sync_achievement_points(authorization: str = Header(None)):
             "new_achievements": new_credits,
             "points_earned": total_new_points,
             "new_balance": new_balance,
-            "message": f"🎉 You earned {total_new_points} Paw Points from {len(new_credits)} achievement(s)!"
+            "questions_answered": questions_answered,
+            "message": f"Earned {total_new_points} Paw Points from {len(new_credits)} achievement(s)!"
         }
     
     return {
@@ -664,6 +665,7 @@ async def sync_achievement_points(authorization: str = Header(None)):
         "new_achievements": [],
         "points_earned": 0,
         "current_balance": current_balance,
+        "questions_answered": questions_answered,
         "message": "No new achievements to credit"
     }
 
