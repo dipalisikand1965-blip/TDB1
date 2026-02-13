@@ -581,15 +581,17 @@ async def sync_achievement_points(authorization: str = Header(None)):
     mira_count = await database.mira_conversations.count_documents({"user_email": email})
     
     # Calculate questions answered using canonical count (UI question IDs only)
-    primary_pet = pets[0] if pets else None
+    # Check ALL pets and take the maximum questions answered
     questions_answered = 0
     has_photo = False
     
-    if primary_pet:
-        answers = primary_pet.get("doggy_soul_answers", {}) or {}
-        # Use canonical count function - counts only UI question IDs
-        questions_answered = count_ui_questions_answered(answers)
-        has_photo = bool(primary_pet.get("photo_url"))
+    for pet in pets:
+        answers = pet.get("doggy_soul_answers", {}) or {}
+        # Use canonical count function - counts only UI question IDs + aliases
+        pet_questions = count_ui_questions_answered(answers)
+        questions_answered = max(questions_answered, pet_questions)
+        if pet.get("photo_url"):
+            has_photo = True
     
     # Check and credit new achievements
     new_credits = []
