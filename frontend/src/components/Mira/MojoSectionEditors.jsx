@@ -738,51 +738,80 @@ export const editorStyles = `
   
   .editor-actions {
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  /* Auto-save indicator styles */
+  .auto-save-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    animation: fadeIn 0.2s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .auto-save-indicator.pending {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.1);
+  }
+  
+  .auto-save-indicator.saving {
+    color: #a78bfa;
+    background: rgba(139, 92, 246, 0.1);
+  }
+  
+  .auto-save-indicator.saved {
+    color: #34d399;
+    background: rgba(52, 211, 153, 0.1);
+  }
+  
+  .auto-save-indicator.error {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.1);
+  }
+  
+  .auto-save-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  
+  .auto-save-dot.pending {
+    background: #fbbf24;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
   }
   
   .editor-cancel-btn {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    color: #9ca3af;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .editor-cancel-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-  }
-  
-  .editor-save-btn {
     display: flex;
     align-items: center;
     gap: 6px;
     padding: 6px 14px;
     border-radius: 8px;
-    background: linear-gradient(135deg, #8B5CF6, #7C3AED);
-    color: white;
-    border: none;
+    background: rgba(52, 211, 153, 0.1);
+    color: #34d399;
+    border: 1px solid rgba(52, 211, 153, 0.3);
     cursor: pointer;
     font-size: 13px;
     font-weight: 500;
     transition: all 0.2s;
   }
   
-  .editor-save-btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-  }
-  
-  .editor-save-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+  .editor-cancel-btn:hover {
+    background: rgba(52, 211, 153, 0.2);
+    border-color: #34d399;
   }
   
   .editor-content {
