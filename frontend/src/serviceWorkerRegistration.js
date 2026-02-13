@@ -1,35 +1,20 @@
-// Service Worker Registration - Clean version
+// Service worker DISABLED to prevent caching issues
+// PWA features disabled for reliability
 
-export function register(config) {
+export function register() {
+  // Unregister any existing service workers
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      const swUrl = `${process.env.PUBLIC_URL || ''}/service-worker.js`;
-      
-      navigator.serviceWorker.register(swUrl)
-        .then((registration) => {
-          console.log('PWA: Registered');
-          registration.onupdatefound = () => {
-            const worker = registration.installing;
-            if (!worker) return;
-            worker.onstatechange = () => {
-              if (worker.state === 'installed' && navigator.serviceWorker.controller) {
-                console.log('PWA: Update available');
-                if (config?.onUpdate) config.onUpdate(registration);
-              }
-            };
-          };
-        })
-        .catch(err => console.error('PWA: Registration failed', err));
-      
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        window.location.reload();
-      });
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      regs.forEach(reg => reg.unregister());
     });
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => caches.delete(name));
+      });
+    }
   }
 }
 
 export function unregister() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.ready.then(reg => reg.unregister());
-  }
+  register(); // Same thing - just unregister
 }
