@@ -580,17 +580,15 @@ async def sync_achievement_points(authorization: str = Header(None)):
     # Get user's Mira sessions
     mira_count = await database.mira_conversations.count_documents({"user_email": email})
     
-    # Calculate soul score from primary pet
+    # Calculate questions answered using canonical count (UI question IDs only)
     primary_pet = pets[0] if pets else None
-    soul_score = 0
     questions_answered = 0
     has_photo = False
     
     if primary_pet:
-        answers = primary_pet.get("doggy_soul_answers", {})
-        questions_answered = len(answers)
-        # Calculate score (simple percentage)
-        soul_score = min(100, int((questions_answered / 59) * 100))
+        answers = primary_pet.get("doggy_soul_answers", {}) or {}
+        # Use canonical count function - counts only UI question IDs
+        questions_answered = count_ui_questions_answered(answers)
         has_photo = bool(primary_pet.get("photo_url"))
     
     # Check and credit new achievements
@@ -599,22 +597,19 @@ async def sync_achievement_points(authorization: str = Header(None)):
     
     for ach_id, ach_data in ACHIEVEMENT_POINTS.items():
         if ach_id in credited:
-            continue  # Already credited
+            continue  # Already credited (idempotent)
         
         # Check if achievement is unlocked
         unlocked = False
         
+        # BADGES: Question-count based triggers (not percentage)
         if ach_data["type"] == "questions" and questions_answered >= ach_data["threshold"]:
-            unlocked = True
-        elif ach_data["type"] == "percentage" and soul_score >= ach_data["threshold"]:
             unlocked = True
         elif ach_data["type"] == "orders" and orders_count >= ach_data["threshold"]:
             unlocked = True
         elif ach_data["type"] == "pets" and len(pets) >= ach_data["threshold"]:
             unlocked = True
         elif ach_data["type"] == "photo" and has_photo:
-            unlocked = True
-        elif ach_data["type"] == "mira" and mira_count >= ach_data["threshold"]:
             unlocked = True
         elif ach_data["type"] == "celebration" and celebrations_count >= ach_data["threshold"]:
             unlocked = True
