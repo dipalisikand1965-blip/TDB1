@@ -25,7 +25,7 @@ class TestTwoWaySyncAuth:
     def auth_token(self):
         """Get authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/member/login",
+            f"{BASE_URL}/api/auth/login",
             json={
                 "email": "dipali@clubconcierge.in",
                 "password": "test123"
@@ -59,7 +59,7 @@ class TestTwoWaySoulSync:
     def auth_token(self):
         """Get authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/member/login",
+            f"{BASE_URL}/api/auth/login",
             json={
                 "email": "dipali@clubconcierge.in",
                 "password": "test123"
@@ -228,7 +228,7 @@ class TestSoulScoreRecalculation:
     def auth_token(self):
         """Get authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/member/login",
+            f"{BASE_URL}/api/auth/login",
             json={
                 "email": "dipali@clubconcierge.in",
                 "password": "test123"
@@ -305,7 +305,7 @@ class TestDashboardSoulScores:
     def auth_token(self):
         """Get authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/member/login",
+            f"{BASE_URL}/api/auth/login",
             json={
                 "email": "dipali@clubconcierge.in",
                 "password": "test123"
@@ -387,7 +387,7 @@ class TestMojoProfileModal:
     def auth_token(self):
         """Get authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/member/login",
+            f"{BASE_URL}/api/auth/login",
             json={
                 "email": "dipali@clubconcierge.in",
                 "password": "test123"
@@ -438,7 +438,7 @@ class TestWeatherCard:
     def auth_token(self):
         """Get authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/member/login",
+            f"{BASE_URL}/api/auth/login",
             json={
                 "email": "dipali@clubconcierge.in",
                 "password": "test123"
@@ -488,7 +488,7 @@ class TestProactiveAlerts:
     def auth_token(self):
         """Get authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/member/login",
+            f"{BASE_URL}/api/auth/login",
             json={
                 "email": "dipali@clubconcierge.in",
                 "password": "test123"
