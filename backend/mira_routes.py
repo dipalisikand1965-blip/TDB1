@@ -9608,15 +9608,97 @@ async def mira_chat(
             "services": []
         }
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # MEAL PLAN INTENT DETECTION - Before general flow
+    # Lead with diet type + weight, NOT allergies
+    # ═══════════════════════════════════════════════════════════════════════════
+    meal_plan_keywords = ["meal plan", "food plan", "diet plan", "feeding plan", "nutrition plan", 
+                          "healthy meal", "daily meal", "what should i feed", "what to feed"]
+    is_meal_plan_request = any(kw in user_msg_lower for kw in meal_plan_keywords)
+    
+    # Check if this is a sensitive stomach/allergy-first request (only then ask allergies first)
+    allergy_first_triggers = ["sensitive stomach", "itching", "allergies", "hypoallergenic", 
+                              "gi issues", "digestive", "throwing up", "vomiting", "diarrhea"]
+    is_allergy_first = any(trigger in user_msg_lower for trigger in allergy_first_triggers)
+    
+    # Check if we have allergy data in memory
+    has_allergy_data = selected_pet and (
+        selected_pet.get("food_allergies") or 
+        selected_pet.get("doggy_soul_answers", {}).get("food_allergies")
+    )
+    known_allergies = None
+    if has_allergy_data:
+        allergies = selected_pet.get("food_allergies") or selected_pet.get("doggy_soul_answers", {}).get("food_allergies")
+        if isinstance(allergies, list) and allergies:
+            known_allergies = ", ".join(allergies)
+        elif isinstance(allergies, str) and allergies:
+            known_allergies = allergies
+    
+    # GOLD FLOW: New meal plan request - ask diet type + weight first
+    if is_meal_plan_request and not awaiting:
+        logger.info(f"[MEAL PLAN] New request for {pet_name}, asking diet type + weight first")
+        
+        # Set conversation state
+        try:
+            from mira_session_persistence import update_conversation_state
+            await update_conversation_state(session_id, {
+                "original_intent": "meal_plan",
+                "awaiting_response": "diet_type_and_weight",
+                "pending_action": "generate_meal_plan",
+                "context_data": {"pet_name": pet_name, "known_allergies": known_allergies}
+            })
+        except Exception as e:
+            logger.warning(f"[CONV STATE] Could not save state: {e}")
+        
+        # Build response - allergies mentioned only as one-liner at end (unless allergy-first trigger)
+        allergy_line = ""
+        if known_allergies:
+            allergy_line = f"\n\n*I already have {pet_name}'s allergies on file ({known_allergies}) — I'll filter around those.*"
+        else:
+            allergy_line = f"\n\nIf {pet_name} has any allergies or sensitivities, tell me and I'll filter everything."
+        
+        meal_plan_intro = f"""Absolutely. Two quick inputs so I get portions and ingredients right:
+
+• **Home-cooked**, **kibble-based**, or a **mix**?
+• {pet_name}'s approx **weight** (or size: small / medium / large)?{allergy_line}"""
+        
+        return {
+            "success": True,
+            "response": meal_plan_intro,
+            "session_id": session_id,
+            "pillar": "dine",
+            "intent": "meal_plan_start",
+            "awaiting": "diet_type_and_weight",
+            "follow_ups": [
+                {"text": "Home-cooked, medium", "type": "action"},
+                {"text": "Kibble, large breed", "type": "action"},
+                {"text": "Mix of both", "type": "action"}
+            ],
+            "products": [],
+            "picks": {
+                "type": "dine_meal_plan",
+                "title": f"Nutrition Picks for {pet_name}",
+                "items": [
+                    {"name": "Home-cooked meal framework", "category": "structure"},
+                    {"name": "Hydration support", "category": "wellness"},
+                    {"name": "Healthy treat options", "category": "treats"}
+                ]
+            },
+            "services": [
+                {"id": "build_meal_plan", "name": "Build Meal Plan", "type": "execution"},
+                {"id": "nutrition_consult", "name": "Arrange Nutrition Consult", "type": "concierge"}
+            ]
+        }
+    
     # If we were awaiting a response and user confirmed/answered, continue the original flow
     if awaiting and is_confirmation and original_intent:
         logger.info(f"[CONV CONTINUITY] User confirmed: '{user_message}' for pending intent: {original_intent}")
         
-        # MEAL PLAN FLOW - User said "no specific needs" but we still need diet type + weight
+        # MEAL PLAN FLOW - User said "no specific needs" - re-ask diet type + weight
         if original_intent == "meal_plan" and awaiting in ["dietary_needs", "health_conditions"]:
-            logger.info(f"[MEAL PLAN] User confirmed no dietary needs, now ask diet type + weight")
+            logger.info(f"[MEAL PLAN] User confirmed no dietary needs, re-ask diet type + weight")
             
-            # Update state - now awaiting diet type + weight
+            # Update state
             try:
                 from mira_session_persistence import update_conversation_state
                 await update_conversation_state(session_id, {
@@ -9628,25 +9710,22 @@ async def mira_chat(
             except Exception as e:
                 logger.warning(f"[CONV STATE] Could not update state: {e}")
             
-            # Still in DINE pillar - ask only high-signal questions
-            meal_plan_response = f"""Perfect — then we'll keep it clean, balanced, and easy to follow.
+            meal_plan_response = f"""Perfect — we'll keep it clean and balanced.
 
-Just to finalise the plan:
-
-• Are you doing **home-cooked** or **kibble-based** most days?
-• What's {pet_name}'s approx **weight** (or size class: small / medium / large)?
+• **Home-cooked** or **kibble-based** most days?
+• Approx **weight** / size?
 
 Once you confirm, I'll give you:
-• daily portions (by weight)
-• protein + carb + veg structure
-• safe treat rules
-• a simple transition guide if you're changing anything"""
+• daily structure (protein + carb + veg)
+• portion ranges by size
+• treat rules + safe snack ideas
+• a simple 7–10 day transition guide (if changing anything)"""
             
             return {
                 "success": True,
                 "response": meal_plan_response,
                 "session_id": session_id,
-                "pillar": "dine",  # STAY IN DINE - Topic lock
+                "pillar": "dine",
                 "intent": "meal_plan_awaiting_details",
                 "awaiting": "diet_type_and_weight",
                 "follow_ups": [
@@ -9655,25 +9734,22 @@ Once you confirm, I'll give you:
                     {"text": "Mixed diet", "type": "action"}
                 ],
                 "products": [],
-                # Auto-update Picks panel for DINE
                 "picks": {
                     "type": "dine_meal_plan",
                     "title": f"Nutrition Picks for {pet_name}",
                     "items": [
                         {"name": "Balanced Adult Food Options", "category": "nutrition"},
                         {"name": "Healthy Treat Options", "category": "treats"},
-                        {"name": "Slow Feeder / Lick Mat", "category": "feeding"},
                         {"name": "Hydration Support", "category": "wellness"}
                     ]
                 },
-                # Auto-update Services panel
                 "services": [
-                    {"id": "nutrition_consult", "name": "Arrange Nutrition Consult", "type": "concierge"},
-                    {"id": "build_meal_plan", "name": "Build Meal Plan", "type": "execution"}
+                    {"id": "build_meal_plan", "name": "Build Meal Plan", "type": "execution"},
+                    {"id": "nutrition_consult", "name": "Arrange Nutrition Consult", "type": "concierge"}
                 ]
             }
         
-        # MEAL PLAN FLOW - User provided diet type + weight, NOW generate the plan
+        # MEAL PLAN FLOW - User provided diet type + weight, NOW generate the plan with HARD GATE SAFETY
         if original_intent == "meal_plan" and awaiting == "diet_type_and_weight":
             logger.info(f"[MEAL PLAN] User provided diet details, generating final plan for {pet_name}")
             
@@ -9692,42 +9768,111 @@ Once you confirm, I'll give you:
             # Parse diet type and weight from message
             is_home_cooked = any(w in user_msg_lower for w in ["home", "cooked", "homemade", "fresh"])
             is_kibble = any(w in user_msg_lower for w in ["kibble", "dry", "commercial"])
+            is_mix = any(w in user_msg_lower for w in ["mix", "both", "combination"])
+            
             size_class = "medium"
+            portion_guide = "1–1.5 cups kibble OR 200–300g home-cooked per meal"
             if any(w in user_msg_lower for w in ["small", "toy", "mini"]):
                 size_class = "small"
+                portion_guide = "0.5–0.75 cups kibble OR 100–150g home-cooked per meal"
             elif any(w in user_msg_lower for w in ["large", "big", "giant"]):
                 size_class = "large"
+                portion_guide = "2–3 cups kibble OR 350–500g home-cooked per meal"
             
-            diet_type = "home-cooked" if is_home_cooked else ("kibble-based" if is_kibble else "mixed")
+            diet_type = "home-cooked" if is_home_cooked else ("kibble-based" if is_kibble else ("mixed" if is_mix else "balanced"))
             
-            meal_plan_response = f"""Here's {pet_name}'s personalized **{diet_type} meal plan** ({size_class} breed):
-
+            # ═══════════════════════════════════════════════════════════════════════════
+            # HARD GATE SAFETY FILTER - Every meal plan output MUST include these
+            # ═══════════════════════════════════════════════════════════════════════════
+            
+            # Get known allergies from context
+            known_allergies_text = ""
+            ctx_allergies = context_data.get("known_allergies") if context_data else None
+            if ctx_allergies:
+                known_allergies_text = f"\n*Filtering out: {ctx_allergies}*\n"
+            
+            meal_plan_response = f"""Here's {pet_name}'s **{diet_type} meal plan** ({size_class} size):
+{known_allergies_text}
 **🌅 Morning Meal**
-• Protein: {'Boiled chicken/fish (100-150g)' if is_home_cooked else 'High-quality kibble (1-1.5 cups)'}
-• Carbs: {'Brown rice or sweet potato (50-75g)' if is_home_cooked else 'Already in kibble'}
-• Veggies: Steamed carrots, beans, pumpkin (30-50g)
+• Protein (40%): {'Boiled chicken, fish, or egg (100-150g)' if is_home_cooked else 'Quality kibble with named meat as #1 ingredient'}
+• Carbs (30%): {'Brown rice, sweet potato, or oats' if is_home_cooked else 'Included in kibble'}
+• Veggies (20%): Steamed carrots, green beans, pumpkin
+• Fats (10%): {'Coconut oil or fish oil drizzle' if is_home_cooked else 'Already balanced in kibble'}
 
 **🌙 Evening Meal**
-• Similar structure, rotate protein source
-• Add probiotics 2-3x weekly for gut health
+• Same structure, rotate protein (chicken → fish → lamb)
+• Probiotics 2–3x weekly for gut health
 
-**💧 Hydration**
-• Fresh water always available
-• Bone broth 1-2x weekly (unsalted)
+**📏 Portions ({size_class})**
+• {portion_guide}
+• Adjust based on activity level and weight changes
 
-**🦴 Treats (max 10% of daily intake)**
-• Single-ingredient: freeze-dried liver, dehydrated fish
-• Fresh: carrot sticks, apple slices (no seeds)
+---
 
-**⚠️ Avoid**
-• Onion, garlic, grapes, chocolate, xylitol
-• Excessive salt or spices
+**✅ SAFE INGREDIENTS**
+Proteins: chicken, turkey, fish (boneless), lamb, eggs
+Carbs: rice, sweet potato, oats, quinoa
+Veggies: carrots, green beans, pumpkin, spinach, cucumber
+Fruits: apple (no seeds), banana, blueberries, watermelon
+
+**⛔ AVOID LIST**
+• Toxic: chocolate, grapes, raisins, onion, garlic, xylitol, macadamia
+• Risky: cooked bones, raw pork, excessive salt/spices, avocado
+
+**🦴 TREAT BUDGET**
+• Max 10% of daily calories
+• Safe options: freeze-dried liver, carrot sticks, apple slices, plain rice cakes
+
+**🔄 TRANSITION GUIDE (if changing diet)**
+• Days 1–3: 75% old food + 25% new
+• Days 4–6: 50% old + 50% new
+• Days 7–9: 25% old + 75% new
+• Day 10+: 100% new food
+• Watch for loose stools — slow down if needed
+
+---
 
 If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everything."""
+            
+            # Check for fast-eater trait for slow feeder recommendation
+            has_fast_eater = selected_pet and (
+                "fast" in str(selected_pet.get("eating_speed", "")).lower() or
+                "gulps" in str(selected_pet.get("doggy_soul_answers", {}).get("eating_habits", "")).lower()
+            )
+            
+            # Build picks based on traits
+            picks_items = [
+                {"name": f"{diet_type.title()} meal framework", "category": "structure"},
+                {"name": "Hydration support", "category": "wellness"},
+                {"name": "Healthy treat options", "category": "treats"},
+                {"name": "Treat budget tracker", "category": "tools"}
+            ]
+            if has_fast_eater:
+                picks_items.append({"name": "Slow feeder / lick mat", "category": "feeding"})
             
             return {
                 "success": True,
                 "response": meal_plan_response,
+                "session_id": session_id,
+                "pillar": "dine",
+                "intent": "meal_plan_complete",
+                "follow_ups": [
+                    {"text": "Build 7-day rotation", "type": "action"},
+                    {"text": "Calculate exact portions", "type": "action"},
+                    {"text": "Recommend brands", "type": "action"}
+                ],
+                "products": [],
+                "picks": {
+                    "type": "dine_meal_plan",
+                    "title": f"Nutrition Picks for {pet_name}",
+                    "items": picks_items
+                },
+                "services": [
+                    {"id": "build_meal_plan", "name": "Build Weekly Rotation", "type": "execution"},
+                    {"id": "nutrition_consult", "name": "Arrange Nutrition Consult", "type": "concierge"},
+                    {"id": "set_refill", "name": "Set Refill Cadence", "type": "execution"}
+                ]
+            }
                 "session_id": session_id,
                 "pillar": "dine",  # STAY IN DINE
                 "intent": "meal_plan_complete",
