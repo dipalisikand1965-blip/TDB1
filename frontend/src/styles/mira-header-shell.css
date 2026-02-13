@@ -212,7 +212,8 @@
   }
   
   .header-tab {
-    padding: 6px 12px;
+    padding: 8px 14px;
+    min-height: 44px; /* Keep 44px for mobile touch targets */
   }
   
   .header-tab-label {
@@ -222,6 +223,16 @@
   .header-tab-icon {
     width: 16px;
     height: 16px;
+  }
+  
+  /* Ensure no hover-only interactions on mobile */
+  .header-tab:hover {
+    transform: none;
+  }
+  
+  .header-tab:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.15);
   }
 }
 
