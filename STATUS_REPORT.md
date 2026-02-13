@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://reload-fix-7.preview.emergentagent.com
+**Preview URL:** https://luna-chat-fix.preview.emergentagent.com
 
 ---
 

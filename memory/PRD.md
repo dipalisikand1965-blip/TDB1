@@ -8,7 +8,7 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 ### P0 - Critical 
 - [x] **Production Deployment Fix** - Service worker disabled, ErrorBoundary handles chunk errors
   - ⚠️ **BLOCKED**: CDN cache purge needed from Emergent support
-  - **Working URL**: https://reload-fix-7.preview.emergentagent.com
+  - **Working URL**: https://luna-chat-fix.preview.emergentagent.com
 
 ### P1 - High Priority
 - [ ] **Header Shell Integration** - Refactor `/mira-demo` page with 7-tab navigation
@@ -100,4 +100,4 @@ Mira: [Shows pet-friendly restaurants in Koramangala]
 
 ## Known Issues
 - **CDN Caching**: Production domain serving stale CSS chunks - needs Emergent CDN purge
-- **Preview URL works**: https://reload-fix-7.preview.emergentagent.com
+- **Preview URL works**: https://luna-chat-fix.preview.emergentagent.com

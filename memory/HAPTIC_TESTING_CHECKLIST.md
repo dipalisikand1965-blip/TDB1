@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://reload-fix-7.preview.emergentagent.com/mira-demo**
+**https://luna-chat-fix.preview.emergentagent.com/mira-demo**
 
 ---
 
