@@ -1,5 +1,5 @@
-// Service Worker Registration for PWA
-// This enables offline capabilities and app installation
+// Service Worker Registration - Aggressive update checking
+// Forces immediate update and reload when new version detected
 
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
@@ -9,24 +9,9 @@ const isLocalhost = Boolean(
 
 export function register(config) {
   if ('serviceWorker' in navigator) {
-    const publicUrl = new URL(process.env.PUBLIC_URL || '', window.location.href);
-    if (publicUrl.origin !== window.location.origin) {
-      return;
-    }
-
     window.addEventListener('load', () => {
       const swUrl = `${process.env.PUBLIC_URL || ''}/service-worker.js`;
-
-      if (isLocalhost) {
-        // Running on localhost - check if SW exists
-        checkValidServiceWorker(swUrl, config);
-        navigator.serviceWorker.ready.then(() => {
-          console.log('PWA: Service worker ready (localhost mode)');
-        });
-      } else {
-        // Production - register service worker
-        registerValidSW(swUrl, config);
-      }
+      registerValidSW(swUrl, config);
     });
   }
 }
@@ -37,20 +22,29 @@ function registerValidSW(swUrl, config) {
     .then((registration) => {
       console.log('PWA: Service worker registered');
       
+      // Check for updates immediately and every 60 seconds
+      registration.update();
+      setInterval(() => registration.update(), 60000);
+      
       registration.onupdatefound = () => {
         const installingWorker = registration.installing;
-        if (installingWorker == null) {
-          return;
-        }
+        if (!installingWorker) return;
+        
         installingWorker.onstatechange = () => {
           if (installingWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {
-              console.log('PWA: New content available; please refresh.');
+              console.log('PWA: New version detected - forcing update');
+              
+              // Tell the waiting worker to take over immediately
+              if (registration.waiting) {
+                registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+              }
+              
               if (config && config.onUpdate) {
                 config.onUpdate(registration);
               }
             } else {
-              console.log('PWA: Content is cached for offline use.');
+              console.log('PWA: Content cached for offline use');
               if (config && config.onSuccess) {
                 config.onSuccess(registration);
               }
@@ -60,42 +54,44 @@ function registerValidSW(swUrl, config) {
       };
     })
     .catch((error) => {
-      console.error('PWA: Error during service worker registration:', error);
+      console.error('PWA: Registration failed:', error);
     });
-}
 
-function checkValidServiceWorker(swUrl, config) {
-  fetch(swUrl, {
-    headers: { 'Service-Worker': 'script' },
-  })
-    .then((response) => {
-      const contentType = response.headers.get('content-type');
-      if (
-        response.status === 404 ||
-        (contentType != null && contentType.indexOf('javascript') === -1)
-      ) {
-        navigator.serviceWorker.ready.then((registration) => {
-          registration.unregister().then(() => {
-            window.location.reload();
-          });
-        });
-      } else {
-        registerValidSW(swUrl, config);
-      }
-    })
-    .catch(() => {
-      console.log('PWA: No internet connection found. App is running in offline mode.');
-    });
+  // Listen for the controlling service worker changing
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    console.log('PWA: Controller changed - reloading page');
+    window.location.reload();
+  });
+  
+  // Listen for messages from service worker
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'FORCE_RELOAD') {
+      console.log('PWA: Force reload requested by service worker');
+      window.location.reload();
+    }
+  });
 }
 
 export function unregister() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.ready
-      .then((registration) => {
-        registration.unregister();
-      })
-      .catch((error) => {
-        console.error(error.message);
-      });
+    navigator.serviceWorker.ready.then((registration) => {
+      registration.unregister();
+    });
+  }
+}
+
+// Force unregister all service workers and clear caches
+export async function forceCleanup() {
+  if ('serviceWorker' in navigator) {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    for (const reg of registrations) {
+      await reg.unregister();
+    }
+  }
+  if ('caches' in window) {
+    const names = await caches.keys();
+    for (const name of names) {
+      await caches.delete(name);
+    }
   }
 }
