@@ -108,8 +108,6 @@ import {
 
 // Import the production-style CSS (matches thedoggycompany.in)
 import '../styles/mira-prod.css';
-// iOS Premium Experience - Apple App Store Quality
-import '../styles/ios-premium.css';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // NOTE: DEMO_PET and ALL_DEMO_PETS are now imported from '../hooks/mira'
