@@ -516,7 +516,7 @@ export const GroomingProfileEditor = memo(({ pet, onSave, onCancel, saving }) =>
   );
 });
 
-// Routine Tracker Editor
+// Routine Tracker Editor - With Auto-Save
 export const RoutineProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     walk_frequency: pet?.doggy_soul_answers?.walk_frequency || '',
@@ -525,10 +525,11 @@ export const RoutineProfileEditor = memo(({ pet, onSave, onCancel, saving }) => 
     daily_routine: pet?.doggy_soul_answers?.daily_routine || '',
   });
   
-  const handleSave = () => onSave(data);
+  // Use auto-save hook
+  const saveStatus = useAutoSave(data, onSave, 1500);
   
   return (
-    <EditorWrapper title="Routine Tracker" onSave={handleSave} onCancel={onCancel} saving={saving}>
+    <EditorWrapper title="Routine Tracker" onCancel={onCancel} saveStatus={saveStatus}>
       <SelectField 
         label="Walk Frequency" 
         value={data.walk_frequency} 
@@ -557,7 +558,7 @@ export const RoutineProfileEditor = memo(({ pet, onSave, onCancel, saving }) => 
   );
 });
 
-// Preferences & Constraints Editor
+// Preferences & Constraints Editor - With Auto-Save
 export const PreferencesProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     likes: pet?.doggy_soul_answers?.likes || [],
@@ -566,10 +567,11 @@ export const PreferencesProfileEditor = memo(({ pet, onSave, onCancel, saving })
     special_needs: pet?.doggy_soul_answers?.special_needs || [],
   });
   
-  const handleSave = () => onSave(data);
+  // Use auto-save hook
+  const saveStatus = useAutoSave(data, onSave, 1500);
   
   return (
-    <EditorWrapper title="Preferences & Constraints" onSave={handleSave} onCancel={onCancel} saving={saving}>
+    <EditorWrapper title="Preferences & Constraints" onCancel={onCancel} saveStatus={saveStatus}>
       <SelectField 
         label="Likes" 
         value={data.likes} 
