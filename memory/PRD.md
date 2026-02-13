@@ -26,38 +26,51 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 
 ### 2026-02-13 (Latest Session)
 
-#### 1. Allergy Capture Flow
+#### 1. MIRA OS Conversational Flow Refactor (P0) ✅
+Completely refactored the place search conversation to follow Mira OS doctrine:
+
+**Mira OS Doctrine Implemented:**
+- **Pet-first**: Anchors all conversations with pet name + traits
+- **Context-aware**: Doesn't ask for info already known (e.g., location from pet_context)
+- **Memory-driven**: Uses pet's temperament, energy level in responses
+- **Max 2 questions rule**: Only asks what's MISSING
+- **Execution-ready**: Always offers action options at end
+
+**Flow Example:**
+```
+User: "I want to take Mojo out for lunch"
+Mira: "That sounds lovely — an outing with Mojo.
+       Based on what I know about him — high energy, playful and friendly — 
+       I'll look for spaces that suit his comfort.
+       Just one quick detail: Indoor café or outdoor seating preferred?"
+
+User: "Outdoor please"
+Mira: "Here are a few places that would suit Mojo's comfort.
+       I can:
+       • check availability
+       • arrange a table
+       • confirm pet policies
+       Which would you like me to arrange for Mojo?"
+       [Shows 4 Google Places results with PlacesWithConcierge component]
+```
+
+**Pronoun System:**
+- Female pet (gender: "female") → she/her
+- Male pet (gender: "male") → he/his  
+- Unknown gender → they/their
+
+**Test Results:** 11/11 tests passed (iteration_171.json)
+
+#### 2. Allergy Capture Flow (Previous)
 - When user clicks "Yes, has allergies" → Mira asks for specific allergies
 - Quick-select chips: Chicken, Beef, Grains/Wheat, Dairy, Multiple
 - Saves to `doggy_soul_answers.food_allergies` in Pet Soul as a list
-- Fixed bug: `'list' object has no attribute 'split'` when allergies stored as list
 - File: `/app/backend/mira_routes.py` (lines 9622-9744)
-
-#### 2. Location-Based Search Flow
-- **Before**: Mira would show results from wrong location (e.g., Vijayawada from IP) while asking for location
-- **After**: Mira asks "Which city and area?" FIRST before showing any results
-- User specifies location → THEN Google Places API is called
-- Added support for areas: Koramangala, Indiranagar, Whitefield, HSR, BTM, Bandra, Andheri, Powai, etc.
-- File: `/app/backend/mira_routes.py` (lines 9746-9815)
-
-**Flow:**
-```
-User: "Find me a restaurant"
-Mira: "Which city and area would you like me to search in?"
-[Chips: Koramangala, Indiranagar, Bandra, Use my location]
-
-User: "Koramangala"
-Mira: [Shows pet-friendly restaurants in Koramangala]
-```
 
 #### 3. Production Deployment Fix
 - Disabled service worker completely
 - ErrorBoundary clears cache and reloads on chunk errors
-- Version checker for future deployments
-- Files modified:
-  - `/app/frontend/src/serviceWorkerRegistration.js`
-  - `/app/frontend/src/components/ErrorBoundary.jsx`
-  - `/app/frontend/public/index.html`
+- ⚠️ **Still BLOCKED**: CDN cache purge needed from Emergent support
 
 ### Previous Sessions
 - Member Logic E2E Verification completed
