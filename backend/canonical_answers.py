@@ -287,6 +287,7 @@ def canonicalize_answers(
         - All non-scoring fields (preserved for Mira)
         - _meta: metadata about the canonicalization
     """
+    raw_answers = raw_answers or {}
     preferences = preferences or {}
     soul = soul or {}
     
