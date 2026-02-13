@@ -1,6 +1,11 @@
 # THE DOGGY COMPANY - COMPLETE QUESTION LIST
 ## All Questions from Onboarding & Pet Soul (8 Pillars)
 
+**IMPORTANT**: This document now uses the Canonical Answer System.
+- See `/app/memory/CANONICAL_ANSWER_SYSTEM.md` for full technical details
+- UI questions (35) map to Canonical scoring fields (26)
+- Non-scoring fields are preserved for Mira context
+
 ---
 
 ## PART 1: ONBOARDING QUESTIONS (4 Steps)
