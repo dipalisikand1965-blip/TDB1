@@ -1105,27 +1105,36 @@ async def write_soul_data_to_pet(
             update_doc
         )
         
-        if result.modified_count > 0:
-            logger.info(f"[SOUL-FIRST] ✅ Updated Soul for pet {pet_id}")
-            logger.info(f"[SOUL-FIRST] Categories enriched: {extracted.data_categories}")
-            logger.info(f"[SOUL-FIRST] Fields updated: {list(update_doc['$set'].keys())}")
-            return True
-        else:
+        update_success = result.modified_count > 0
+        
+        if not update_success:
             # Try upsert in case the pet document doesn't exist or id field doesn't match
             result2 = await db.pets.update_one(
                 {"_id": pet_id},  # Try with _id
                 update_doc
             )
-            if result2.modified_count > 0:
-                logger.info(f"[SOUL-FIRST] ✅ Updated Soul via _id for pet {pet_id}")
-                return True
+            update_success = result2.modified_count > 0
+        
+        if update_success:
+            logger.info(f"[SOUL-FIRST] ✅ Updated Soul for pet {pet_id}")
+            logger.info(f"[SOUL-FIRST] Categories enriched: {extracted.data_categories}")
+            logger.info(f"[SOUL-FIRST] Fields updated: {list(update_doc['$set'].keys())}")
             
+            # ═══════════════════════════════════════════════════════════════════
+            # CRITICAL: Recalculate Soul Score after data update
+            # This completes the Two-Way Sync: Mira Conversation → Pet Soul → Score
+            # ═══════════════════════════════════════════════════════════════════
+            try:
+                await recalculate_pet_soul_score(db, pet_id)
+            except Exception as score_err:
+                logger.warning(f"[SOUL-FIRST] Score recalculation failed: {score_err}")
+            
+            return True
+        else:
             logger.warning(f"[SOUL-FIRST] No update made for pet {pet_id} - pet may not exist")
             return False
     
     except Exception as e:
-        logger.error(f"[SOUL-FIRST] Error writing Soul data: {e}")
-        return False
         logger.error(f"[SOUL-FIRST] Error writing Soul data: {e}")
         return False
 
