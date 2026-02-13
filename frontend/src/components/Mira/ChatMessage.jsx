@@ -457,93 +457,36 @@ const ProductsGrid = ({ msg, pet, hapticFeedback }) => {
 };
 
 /**
- * NearbyPlaces - Displays nearby pet-friendly places
+ * NearbyPlaces - Displays nearby pet-friendly places with Concierge option
+ * Uses the new PlacesWithConcierge component for better UX
  */
-const NearbyPlaces = ({ msg }) => {
+const NearbyPlaces = ({ msg, pet, onSendToConcierge }) => {
   if (!msg.data?.nearby_places?.places?.length) return null;
   
   const places = msg.data.nearby_places;
   const placeType = places.type;
+  const petName = pet?.name || 'your pet';
   
-  const getPlaceIcon = (type) => {
-    const icons = {
-      vet_clinics: '🏥',
-      restaurants: '🍽️',
-      dog_parks: '🌳',
-      stays: '🏨',
-      pet_stores: '🛍️'
-    };
-    return icons[type] || '📍';
-  };
-  
-  const getPlaceTitle = (type) => {
-    const titles = {
-      vet_clinics: '🏥 Nearby Vet Clinics',
-      restaurants: '🍽️ Pet-Friendly Restaurants',
-      dog_parks: '🌳 Dog Parks',
-      stays: '🏨 Pet-Friendly Stays',
-      pet_stores: '🛍️ Pet Stores'
-    };
-    return titles[type] || '📍 Nearby Places';
+  // Handler for concierge submission
+  const handleConciergeSubmit = (conciergeData) => {
+    if (onSendToConcierge) {
+      onSendToConcierge({
+        ...conciergeData,
+        petName,
+        requestType: placeType
+      });
+    }
   };
   
   return (
-    <div className="nearby-places-section" data-testid="nearby-places">
-      <div className="nearby-places-title">
-        <MapPin size={14} />
-        <span>
-          {getPlaceTitle(placeType)}
-          {places.city && ` in ${places.city}`}
-        </span>
-      </div>
-      
-      {places.places.slice(0, 3).map((place, pIdx) => (
-        <div key={pIdx} className="nearby-place-card" data-testid={`place-card-${pIdx}`}>
-          <div className={`place-icon ${place.is_emergency || place.is_24_hours ? 'emergency' : ''}`}>
-            {getPlaceIcon(placeType)}
-          </div>
-          <div className="place-info">
-            <div className="place-name">{place.name}</div>
-            <div className="place-details">
-              {place.rating && (
-                <span className="place-rating">
-                  <Star size={10} fill="#f59e0b" /> {place.rating}
-                </span>
-              )}
-              {place.is_24_hours && (
-                <span className="place-badge emergency-badge">24/7</span>
-              )}
-              {place.is_open_now === true && (
-                <span className="place-badge">Open Now</span>
-              )}
-              {place.area && <span>{place.area}</span>}
-            </div>
-          </div>
-          {place.phone && (
-            <a 
-              href={`tel:${place.phone}`} 
-              className="place-phone"
-              onClick={(e) => e.stopPropagation()}
-              data-testid={`call-place-${pIdx}`}
-            >
-              <Phone size={12} /> Call
-            </a>
-          )}
-        </div>
-      ))}
-      
-      {places.places[0] && (
-        <a 
-          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(places.places[0].name + ' ' + (places.places[0].address || places.city))}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="directions-btn"
-          data-testid="get-directions-btn"
-        >
-          <Navigation size={14} /> Get Directions to {places.places[0].name?.split(' ').slice(0, 2).join(' ')}
-        </a>
-      )}
-    </div>
+    <PlacesWithConcierge
+      places={places.places}
+      placeType={placeType}
+      location={places.city || ''}
+      petName={petName}
+      petId={pet?.id}
+      onSendToConcierge={handleConciergeSubmit}
+    />
   );
 };
 
