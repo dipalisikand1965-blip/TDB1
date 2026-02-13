@@ -9771,10 +9771,14 @@ async def mira_chat(
     # Build pet context summary for conversational anchoring
     pet_traits_summary = []
     if pet_energy:
-        pet_traits_summary.append(f"{pet_energy.lower()} energy" if isinstance(pet_energy, str) else "energetic")
+        energy_str = pet_energy.lower() if isinstance(pet_energy, str) else "energetic"
+        # Avoid duplication like "high energy energy" - check if "energy" is already in the string
+        if "energy" not in energy_str:
+            energy_str = f"{energy_str} energy"
+        pet_traits_summary.append(energy_str)
     if pet_temperament:
         pet_traits_summary.append(pet_temperament.lower() if isinstance(pet_temperament, str) else "")
-    if pet_general_nature:
+    if pet_general_nature and pet_general_nature != pet_temperament:  # Avoid duplicate if same as temperament
         pet_traits_summary.append(pet_general_nature.lower() if isinstance(pet_general_nature, str) else "")
     pet_traits_text = ", ".join([t for t in pet_traits_summary if t][:2])  # Max 2 traits
     
