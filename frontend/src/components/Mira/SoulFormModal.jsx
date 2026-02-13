@@ -59,6 +59,8 @@ const SoulFormModal = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [newScore, setNewScore] = useState(null);
+  const [pawPointsEarned, setPawPointsEarned] = useState(0);
+  const [newBadges, setNewBadges] = useState([]);
   
   // Reset state when modal opens
   useEffect(() => {
@@ -67,6 +69,8 @@ const SoulFormModal = ({
       setAnswers({});
       setIsComplete(false);
       setNewScore(null);
+      setPawPointsEarned(0);
+      setNewBadges([]);
     }
   }, [isOpen]);
   
