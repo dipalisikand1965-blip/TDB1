@@ -872,7 +872,10 @@ async def write_soul_data_to_pet(
     Write extracted Soul data back to the pet's profile.
     
     This implements the "Ask, Store, Recommend" pattern:
-    After user answers fallback questions, save to Soul.
+    After user answers ANY question, save relevant data to Soul.
+    
+    The pet's profile becomes richer with every interaction,
+    enabling Mira to give increasingly personalized advice.
     
     Args:
         db: Database connection
@@ -885,10 +888,19 @@ async def write_soul_data_to_pet(
     if not pet_id or not extracted:
         return False
     
+    # Check if we actually have data to write
+    if not extracted.data_categories:
+        return False
+    
     # Build update document
     update_fields = {}
     doggy_soul_updates = {}
+    health_updates = {}
+    preferences_updates = {}
     
+    # ═══════════════════════════════════════════════════════════════════
+    # GROOMING DATA
+    # ═══════════════════════════════════════════════════════════════════
     if extracted.coat_type:
         doggy_soul_updates["coat_type"] = extracted.coat_type
     
@@ -897,43 +909,124 @@ async def write_soul_data_to_pet(
     
     if extracted.grooming_preference:
         doggy_soul_updates["grooming_preference"] = extracted.grooming_preference
-        update_fields["grooming_preference"] = extracted.grooming_preference
+        preferences_updates["grooming_preference"] = extracted.grooming_preference
     
     if extracted.grooming_anxiety_triggers:
-        # Merge with existing triggers
         doggy_soul_updates["grooming_anxiety_triggers"] = extracted.grooming_anxiety_triggers
+        doggy_soul_updates["anxiety_triggers"] = extracted.grooming_anxiety_triggers
     
     if extracted.skin_flags:
         doggy_soul_updates["skin_flags"] = extracted.skin_flags
-    
-    if extracted.allergy_flags:
-        # Merge with existing allergies
-        doggy_soul_updates["food_allergies"] = ", ".join(extracted.allergy_flags)
     
     if extracted.last_groom_date:
         doggy_soul_updates["last_groom_date"] = extracted.last_groom_date
         update_fields["last_groom_date"] = extracted.last_groom_date
     
+    # ═══════════════════════════════════════════════════════════════════
+    # ALLERGY & DIET DATA (NEW)
+    # ═══════════════════════════════════════════════════════════════════
+    if extracted.food_allergies:
+        # Don't store "none_confirmed" as an allergen
+        actual_allergies = [a for a in extracted.food_allergies if a != "none_confirmed"]
+        if actual_allergies:
+            doggy_soul_updates["food_allergies"] = ", ".join(actual_allergies)
+            health_updates["allergies"] = actual_allergies
+            update_fields["known_allergies"] = actual_allergies
+        elif "none_confirmed" in extracted.food_allergies:
+            doggy_soul_updates["food_allergies"] = "none_confirmed"
+            doggy_soul_updates["allergies_confirmed_date"] = datetime.now(timezone.utc).isoformat()
+    
+    if extracted.allergy_flags:
+        if not extracted.food_allergies:  # Fallback for legacy allergy extraction
+            doggy_soul_updates["food_allergies"] = ", ".join(extracted.allergy_flags)
+    
+    if extracted.dietary_preferences:
+        doggy_soul_updates["dietary_preference"] = extracted.dietary_preferences
+        preferences_updates["diet_type"] = extracted.dietary_preferences
+    
+    if extracted.favorite_treats:
+        doggy_soul_updates["favorite_treats"] = extracted.favorite_treats
+        preferences_updates["favorite_treats"] = extracted.favorite_treats
+    
+    if extracted.food_sensitivities:
+        doggy_soul_updates["food_sensitivities"] = extracted.food_sensitivities
+    
+    # ═══════════════════════════════════════════════════════════════════
+    # HEALTH DATA (NEW)
+    # ═══════════════════════════════════════════════════════════════════
+    if extracted.health_conditions:
+        doggy_soul_updates["health_conditions"] = ", ".join(extracted.health_conditions)
+        health_updates["conditions"] = extracted.health_conditions
+        update_fields["health_flags"] = extracted.health_conditions
+    
+    if extracted.vaccination_status:
+        doggy_soul_updates["vaccination_status"] = extracted.vaccination_status
+        health_updates["vaccination_status"] = extracted.vaccination_status
+    
+    if extracted.last_vet_visit:
+        doggy_soul_updates["last_vet_visit"] = extracted.last_vet_visit
+        health_updates["last_vet_visit"] = extracted.last_vet_visit
+    
+    if extracted.medications:
+        doggy_soul_updates["medications"] = extracted.medications
+        health_updates["medications"] = extracted.medications
+    
+    # ═══════════════════════════════════════════════════════════════════
+    # BEHAVIOR DATA (NEW)
+    # ═══════════════════════════════════════════════════════════════════
+    if extracted.energy_level:
+        doggy_soul_updates["energy_level"] = extracted.energy_level
+        update_fields["energy_level"] = extracted.energy_level
+    
+    if extracted.temperament:
+        doggy_soul_updates["temperament"] = extracted.temperament
+        update_fields["temperament"] = extracted.temperament
+    
+    if extracted.behavior_with_dogs:
+        doggy_soul_updates["behavior_with_dogs"] = extracted.behavior_with_dogs
+    
+    if extracted.behavior_with_people:
+        doggy_soul_updates["behavior_with_people"] = extracted.behavior_with_people
+    
+    # ═══════════════════════════════════════════════════════════════════
+    # LOCATION DATA
+    # ═══════════════════════════════════════════════════════════════════
     if extracted.city:
         update_fields["city"] = extracted.city
     
-    if not update_fields and not doggy_soul_updates:
+    # Check if we have anything to update
+    if not update_fields and not doggy_soul_updates and not health_updates and not preferences_updates:
         return False
     
     try:
-        # Update pet document
+        # Build the complete update document
         update_doc = {"$set": {}}
         
-        if update_fields:
-            for k, v in update_fields.items():
-                update_doc["$set"][k] = v
+        # Top-level fields
+        for k, v in update_fields.items():
+            update_doc["$set"][k] = v
         
-        if doggy_soul_updates:
-            for k, v in doggy_soul_updates.items():
-                update_doc["$set"][f"doggy_soul_answers.{k}"] = v
+        # Doggy Soul answers (nested)
+        for k, v in doggy_soul_updates.items():
+            update_doc["$set"][f"doggy_soul_answers.{k}"] = v
         
+        # Health data (nested)
+        for k, v in health_updates.items():
+            update_doc["$set"][f"health.{k}"] = v
+        
+        # Preferences (nested)
+        for k, v in preferences_updates.items():
+            update_doc["$set"][f"preferences.{k}"] = v
+        
+        # Metadata
         update_doc["$set"]["updated_at"] = datetime.now(timezone.utc).isoformat()
-        update_doc["$set"]["soul_updated_by"] = "mira_fallback_questions"
+        update_doc["$set"]["soul_updated_by"] = "mira_conversation"
+        update_doc["$set"]["soul_last_enriched"] = datetime.now(timezone.utc).isoformat()
+        
+        # Track what categories were updated for analytics
+        update_doc["$addToSet"] = {
+            "soul_enrichment_categories": {"$each": extracted.data_categories}
+        }
         
         result = await db.pets.update_one(
             {"id": pet_id},
@@ -941,13 +1034,26 @@ async def write_soul_data_to_pet(
         )
         
         if result.modified_count > 0:
-            logger.info(f"[SOUL-FIRST] Updated Soul for pet {pet_id}: {list(update_doc['$set'].keys())}")
+            logger.info(f"[SOUL-FIRST] ✅ Updated Soul for pet {pet_id}")
+            logger.info(f"[SOUL-FIRST] Categories enriched: {extracted.data_categories}")
+            logger.info(f"[SOUL-FIRST] Fields updated: {list(update_doc['$set'].keys())}")
             return True
         else:
-            logger.warning(f"[SOUL-FIRST] No update made for pet {pet_id}")
+            # Try upsert in case the pet document doesn't exist or id field doesn't match
+            result2 = await db.pets.update_one(
+                {"_id": pet_id},  # Try with _id
+                update_doc
+            )
+            if result2.modified_count > 0:
+                logger.info(f"[SOUL-FIRST] ✅ Updated Soul via _id for pet {pet_id}")
+                return True
+            
+            logger.warning(f"[SOUL-FIRST] No update made for pet {pet_id} - pet may not exist")
             return False
     
     except Exception as e:
+        logger.error(f"[SOUL-FIRST] Error writing Soul data: {e}")
+        return False
         logger.error(f"[SOUL-FIRST] Error writing Soul data: {e}")
         return False
 
