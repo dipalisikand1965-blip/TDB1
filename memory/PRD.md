@@ -75,12 +75,12 @@ It is NOT:
 
 ---
 
-## CURRENT AUDIT SCORE: 82/100 (Updated Feb 2026)
+## CURRENT AUDIT SCORE: 85/100 (Updated Feb 2026)
 
 | Domain | Score | Notes |
 |--------|-------|-------|
 | Memory System | 70/100 | |
-| **Soul Intelligence** | **85/100** | **Soul-First Response Generation COMPLETE** |
+| **Soul Intelligence** | **90/100** | **Soul-First + Canonical Answer System COMPLETE** |
 | Conversational Context | 75/100 | |
 | **Picks Engine** | **75/100** | **B0-B6 COMPLETE, B7/B8 pending** |
 | Services Execution | 50/100 | |
@@ -88,6 +88,56 @@ It is NOT:
 | 14 Pillars Coverage | 85/100 | All 13 pillars seeded |
 | UI/UX Mobile | 80/100 | |
 | Infrastructure | 95/100 | |
+
+---
+
+## 🧬 CANONICAL ANSWER SYSTEM (Feb 2026) ✅ COMPLETE
+
+### Overview
+The Pet Soul system now uses a **canonical answer system** that:
+- Maps 35 UI questions → 26 canonical scoring fields
+- Weights sum to **exactly 100** (non-negotiable)
+- Preserves non-scoring fields for Mira context
+- Single source of truth: `pets.doggy_soul_answers`
+
+### Key Files
+| File | Purpose |
+|------|---------|
+| `/app/backend/canonical_answers.py` | Core canonicalization logic |
+| `/app/backend/pet_score_logic.py` | Score calculation (weights=100) |
+| `/app/backend/tests/test_canonical_answers.py` | 23 unit tests |
+| `/app/memory/CANONICAL_ANSWER_SYSTEM.md` | Full documentation |
+
+### Architecture
+```
+UI (35 questions) → canonicalize_answers() → pets.doggy_soul_answers
+                                                    │
+                    ┌───────────────────────────────┴────────────────────────────┐
+                    │                                                            │
+           get_scoring_answers()                                     get_mira_context()
+           (26 canonical fields)                                   (scoring + non-scoring)
+                    │                                                            │
+           calculate_soul_score()                                  Mira Soul-First Logic
+           (weights = exactly 100)                                  (build_soul_context_summary)
+```
+
+### Scoring Weights (100 Total)
+| Category | Points |
+|----------|--------|
+| Safety & Health | 36 |
+| Personality | 25 |
+| Lifestyle | 20 |
+| Nutrition | 9 |
+| Training | 5 |
+| Relationships | 5 |
+| **TOTAL** | **100** |
+
+### Non-Scoring Fields (Mira Context)
+These are saved but don't affect score:
+- `travel_anxiety` - Mira uses for trip planning
+- `dream_life` - Mira uses for personalization
+- `celebration_preferences` - Event planning
+- `sensitive_stomach` - Food recommendations
 
 ---
 
