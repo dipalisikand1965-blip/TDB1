@@ -2806,6 +2806,11 @@ const MiraDemoPage = () => {
           }))}
           apiUrl={API_URL}
           token={token}
+          onSoulBadgeClick={(deepLink) => {
+            // Open MOJO Profile Modal - Pet Identity Layer
+            setMojoDeepLink(deepLink);
+            setShowMojoModal(true);
+          }}
           onSoulQuestionClick={() => {
             // Navigate to soul questions page
             hapticFeedback.buttonTap();
