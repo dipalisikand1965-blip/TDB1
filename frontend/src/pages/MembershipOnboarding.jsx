@@ -94,9 +94,31 @@ const MembershipOnboarding = () => {
       is_neutered: null,
       photo_url: '',
       photo_preview: null,  // For local preview before upload
-      celebrations: [] // Array of selected celebration types for this pet
+      celebrations: [], // Array of selected celebration types for this pet
+      // Core Soul Fields (required for scoring)
+      food_allergies: '',   // Required: "None" is acceptable
+      health_conditions: '',// Required: "None" is acceptable  
+      temperament: '',     // Required
+      grooming_tolerance: '',// Required
     }))
   );
+  
+  // Temperament options
+  const TEMPERAMENT_OPTIONS = [
+    { value: 'calm', label: 'Calm' },
+    { value: 'playful', label: 'Playful' },
+    { value: 'shy', label: 'Shy' },
+    { value: 'guarded', label: 'Guarded' },
+    { value: 'anxious', label: 'Anxious' },
+    { value: 'highly_energetic', label: 'Highly Energetic' },
+  ];
+
+  // Grooming tolerance options
+  const GROOMING_TOLERANCE_OPTIONS = [
+    { value: 'fine', label: 'Fine - No issues' },
+    { value: 'sensitive', label: 'Sensitive - Needs gentle handling' },
+    { value: 'very_sensitive', label: 'Very Sensitive - Gets anxious' },
+  ];
   
   // Available celebration types
   const CELEBRATION_TYPES = [
