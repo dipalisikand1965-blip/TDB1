@@ -10385,52 +10385,46 @@ Give generic advice appropriate for any pet unless user provides specific detail
                 soul_first_instruction = ""
         
         # ═══════════════════════════════════════════════════════════════════════════
-        # DATA WRITE-BACK: Check if user is answering fallback questions
-        # Extract Soul data from their response and save to profile
+        # UNIVERSAL DATA WRITE-BACK: Extract Soul data from EVERY user message
+        # This is the "Ask, Store, Recommend" doctrine - Mira learns from EVERY interaction
         # ═══════════════════════════════════════════════════════════════════════════
-        if SOUL_FIRST_AVAILABLE and selected_pet and request.history:
+        if SOUL_FIRST_AVAILABLE and selected_pet:
             try:
-                # Check if previous message asked fallback questions
-                last_mira_message = None
-                for msg in reversed(request.history):
-                    if msg.get("role") == "assistant":
-                        last_mira_message = msg.get("content", "")
-                        break
+                pet_id = selected_pet.get("id")
+                pet_name_for_extract = selected_pet.get("name", "pet")
                 
-                # Detect if Mira asked grooming-related questions
-                fallback_indicators = [
-                    "coat like right now",
-                    "looking for a full groom",
-                    "been groomed before",
-                    "dryer/clipping anxiety",
-                    "home visit or salon",
-                    "skin irritation",
-                    "quick check"
-                ]
+                # ALWAYS extract data from user messages - not just after questions
+                # This captures allergies, preferences, health info mentioned naturally
+                extracted_data = extract_soul_data_from_response(user_message, pet_name_for_extract)
                 
-                if last_mira_message and any(ind in last_mira_message.lower() for ind in fallback_indicators):
-                    # User is answering fallback questions - extract and save
-                    pet_id = selected_pet.get("id")
-                    pet_name_for_extract = selected_pet.get("name", "pet")
+                # Check if we extracted meaningful data
+                has_meaningful_data = (
+                    extracted_data and 
+                    extracted_data.data_categories and 
+                    len(extracted_data.data_categories) > 0
+                )
+                
+                if has_meaningful_data:
+                    logger.info(f"[SOUL-FIRST] Extracted data categories: {extracted_data.data_categories}")
                     
-                    extracted_data = extract_soul_data_from_response(user_message, pet_name_for_extract)
+                    # Write back to pet profile
+                    db_for_update = get_db()
+                    write_success = await write_soul_data_to_pet(db_for_update, pet_id, extracted_data)
                     
-                    if extracted_data and (extracted_data.coat_type or extracted_data.grooming_preference or 
-                                           extracted_data.grooming_anxiety_triggers or extracted_data.skin_flags):
-                        # Write back to pet profile
-                        db_for_update = get_db()
-                        write_success = await write_soul_data_to_pet(db_for_update, pet_id, extracted_data)
+                    if write_success:
+                        logger.info(f"[SOUL-FIRST] ✅ Successfully wrote data to {pet_name_for_extract}'s Soul")
                         
-                        if write_success:
-                            logger.info(f"[SOUL-FIRST] Wrote extracted data to {pet_name_for_extract}'s Soul")
-                            # Reload pet with updated data
-                            selected_pet = await load_pet_soul(pet_id)
-                            # Re-process Soul context with new data
-                            if selected_pet:
-                                soul_context_summary, response_strategy, soul_first_instruction = process_soul_first_context(
-                                    selected_pet, 
-                                    intent="grooming"
-                                )
+                        # Reload pet with updated data
+                        selected_pet = await load_pet_soul(pet_id)
+                        
+                        # Re-process Soul context with new data if it was a care/grooming query
+                        if selected_pet and is_grooming_query:
+                            soul_context_summary, response_strategy, soul_first_instruction = process_soul_first_context(
+                                selected_pet, 
+                                intent="grooming"
+                            )
+                    else:
+                        logger.debug(f"[SOUL-FIRST] No changes written for {pet_name_for_extract}")
             except Exception as extract_err:
                 logger.warning(f"[SOUL-FIRST] Error in data extraction/write-back: {extract_err}")
         
