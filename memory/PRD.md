@@ -8,7 +8,7 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 ### P0 - Critical 
 - [x] **Production Deployment Fix** - Service worker disabled, ErrorBoundary handles chunk errors
   - ⚠️ **BLOCKED**: CDN cache purge needed from Emergent support
-  - **Working URL**: https://mira-concierge-4.preview.emergentagent.com
+  - **Working URL**: https://mira-css-fix.preview.emergentagent.com
 
 ### P1 - High Priority
 - [ ] **Header Shell Integration** - Refactor `/mira-demo` page with 7-tab navigation
@@ -140,4 +140,4 @@ Mira: "Here are a few places that would suit Mojo's comfort.
 
 ## Known Issues
 - **CDN Caching**: Production domain serving stale CSS chunks - needs Emergent CDN purge
-- **Preview URL works**: https://mira-concierge-4.preview.emergentagent.com
+- **Preview URL works**: https://mira-css-fix.preview.emergentagent.com
