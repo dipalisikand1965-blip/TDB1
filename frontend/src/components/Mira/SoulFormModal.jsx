@@ -5,11 +5,13 @@
  * to answer 3 quick questions to enrich their pet's Soul profile.
  * 
  * Updates the pet's doggy_soul_answers and recalculates Soul Score.
+ * Now also syncs achievements and awards badges/paw points!
  */
 
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, Check, ChevronRight } from 'lucide-react';
+import { X, Sparkles, Check, ChevronRight, Trophy, Gift } from 'lucide-react';
 import { API_URL } from '../../utils/api';
+import { toast } from 'sonner';
 
 // The 3 quick questions to show in the modal
 const QUICK_SOUL_QUESTIONS = [
