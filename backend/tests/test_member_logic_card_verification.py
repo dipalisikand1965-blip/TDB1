@@ -35,7 +35,7 @@ class TestSetup:
             json={"email": TEST_USER_EMAIL, "password": TEST_USER_PASSWORD}
         )
         if response.status_code == 200:
-            return response.json().get("token")
+            return response.json().get("access_token")
         pytest.skip(f"Authentication failed: {response.text}")
     
     def test_api_health(self):
@@ -52,7 +52,7 @@ class TestSetup:
         )
         assert response.status_code == 200
         data = response.json()
-        assert "token" in data
+        assert "access_token" in data
         print(f"Login successful, user: {data.get('user', {}).get('email')}")
 
 
@@ -73,7 +73,7 @@ class TestScriptA_EmergencySuppression:
             json={"email": TEST_USER_EMAIL, "password": TEST_USER_PASSWORD}
         )
         if response.status_code == 200:
-            return response.json().get("token")
+            return response.json().get("access_token")
         pytest.skip("Authentication failed")
     
     @pytest.fixture(scope="class")
@@ -248,7 +248,7 @@ class TestScriptB_PawPointsAwarding:
             json={"email": TEST_USER_EMAIL, "password": TEST_USER_PASSWORD}
         )
         if response.status_code == 200:
-            return response.json().get("token")
+            return response.json().get("access_token")
         pytest.skip("Authentication failed")
     
     def test_get_paw_points_balance(self, auth_token):
@@ -350,7 +350,7 @@ class TestScriptC_SoulQuestionsAndBadges:
             json={"email": TEST_USER_EMAIL, "password": TEST_USER_PASSWORD}
         )
         if response.status_code == 200:
-            return response.json().get("token")
+            return response.json().get("access_token")
         pytest.skip("Authentication failed")
     
     @pytest.fixture(scope="class")
