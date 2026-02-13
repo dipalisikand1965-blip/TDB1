@@ -45,6 +45,7 @@ self.addEventListener('activate', (event) => {
 });
 
 // Fetch event - network first, fallback to cache
+// IMPORTANT: Skip caching chunk files to avoid version mismatches
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') {
@@ -56,10 +57,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
+  // Skip chunk files - they have unique hashes and shouldn't be cached by SW
+  // This prevents CSS chunk loading errors after deployments
+  if (event.request.url.includes('.chunk.') || 
+      event.request.url.includes('/static/css/') || 
+      event.request.url.includes('/static/js/')) {
+    return fetch(event.request);
+  }
+  
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Cache successful responses
+        // Cache successful responses for non-chunk files only
         if (response.status === 200) {
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
