@@ -124,10 +124,13 @@ DOGGY_SOUL_QUESTIONS = {
         ]
     },
     "long_horizon": {
-        "name": "Long Horizon",
+        "name": "Long Horizon (Health)",
         "icon": "🌅",
-        "description": "Your dreams and hopes for them",
+        "description": "Health, vet comfort, grooming and dreams",
         "questions": [
+            {"id": "health_conditions", "question": "Does your dog have any health conditions?", "type": "multi_select", "options": ["None", "Arthritis", "Diabetes", "Heart condition", "Skin allergies", "Hip dysplasia", "Eye problems", "Other chronic condition"], "weight": 5, "canonical_id": "health_conditions"},
+            {"id": "vet_comfort", "question": "How comfortable is your dog at the vet?", "type": "select", "options": ["Very comfortable - no issues", "Slightly nervous but manageable", "Anxious - needs extra handling", "Very stressed - requires sedation"], "weight": 5, "canonical_id": "vet_comfort"},
+            {"id": "grooming_tolerance", "question": "How does your dog handle grooming?", "type": "select", "options": ["Loves it", "Tolerates it well", "Gets anxious", "Very difficult"], "weight": 4, "canonical_id": "grooming_tolerance"},
             {"id": "main_wish", "question": "What do you want most for your dog?", "type": "multi_select", "options": ["Good health", "More training", "More travel experiences", "More social time with other dogs"], "weight": 2},
             {"id": "help_needed", "question": "Would you like help with:", "type": "multi_select", "options": ["Behaviour training", "Travel planning", "Grooming routines", "Diet planning"], "weight": 2},
             {"id": "dream_life", "question": "In one sentence, what kind of life do you want your dog to have?", "type": "text", "weight": 3},
