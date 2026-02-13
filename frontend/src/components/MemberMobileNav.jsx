@@ -227,7 +227,7 @@ const MemberMobileNav = () => {
         </div>
 
         {/* Navigation Sections */}
-        <div className="p-4 space-y-4 pb-24">
+        <div className="p-4 space-y-4 pb-24" style={{ paddingBottom: 'calc(96px + env(safe-area-inset-bottom, 0px))' }}>
           {navSections.map((section) => (
             <div 
               key={section.title} 
@@ -244,9 +244,14 @@ const MemberMobileNav = () => {
                     <button
                       key={item.path}
                       onClick={() => handleNavigate(item.path)}
+                      onTouchEnd={(e) => {
+                        e.preventDefault();
+                        handleNavigate(item.path);
+                      }}
                       className={`w-full flex items-center gap-4 p-4 min-h-[52px] rounded-xl text-left transition-all touch-manipulation active:scale-95 ${
                         getColorClasses(section.color, isActive)
                       }`}
+                      style={{ WebkitTapHighlightColor: 'transparent' }}
                       data-testid={`mobile-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                     >
                       <Icon className="w-5 h-5 flex-shrink-0" />
