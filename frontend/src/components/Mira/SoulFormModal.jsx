@@ -113,11 +113,49 @@ const SoulFormModal = ({
         const data = await response.json();
         const calculatedScore = data.scores?.overall || pet.soulScore + 15;
         setNewScore(calculatedScore);
+        
+        // Track paw points earned from answering questions
+        if (data.paw_points_awarded) {
+          setPawPointsEarned(data.paw_points_awarded);
+        }
+        
+        // Now sync achievements to check for new badges
+        try {
+          const achievementResponse = await fetch(`${API_URL}/api/paw-points/sync-achievements`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          
+          if (achievementResponse.ok) {
+            const achievementData = await achievementResponse.json();
+            
+            // Check for newly credited achievements
+            if (achievementData.newly_credited && achievementData.newly_credited.length > 0) {
+              setNewBadges(achievementData.newly_credited);
+              
+              // Show toast for each new badge
+              achievementData.newly_credited.forEach((badge, idx) => {
+                setTimeout(() => {
+                  toast.success(`🏆 Badge Unlocked: ${formatBadgeName(badge)}`, {
+                    description: getBadgeDescription(badge),
+                    duration: 5000,
+                  });
+                }, idx * 1000);
+              });
+            }
+          }
+        } catch (achievementError) {
+          console.warn('[SoulFormModal] Achievement sync failed:', achievementError);
+        }
+        
         setIsComplete(true);
         
         // Notify parent to refresh pet data
         if (onSoulUpdated) {
-          onSoulUpdated(calculatedScore, allAnswers);
+          onSoulUpdated(calculatedScore, allAnswers, pawPointsEarned);
         }
       } else {
         console.error('[SoulFormModal] Failed to submit answers');
@@ -130,6 +168,36 @@ const SoulFormModal = ({
     } finally {
       setIsSubmitting(false);
     }
+  };
+  
+  // Helper to format badge names nicely
+  const formatBadgeName = (badge) => {
+    const names = {
+      'soul_starter': 'Soul Starter',
+      'soul_seeker': 'Soul Seeker', 
+      'soul_explorer': 'Soul Explorer',
+      'soul_guardian': 'Soul Guardian',
+      'curious_pup_tier': 'Curious Pup',
+      'soul_seeker_tier': 'Soul Seeker',
+      'kindred_spirit_tier': 'Kindred Spirit',
+      'pack_leader_tier': 'Pack Leader'
+    };
+    return names[badge] || badge.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  };
+  
+  // Helper to get badge descriptions
+  const getBadgeDescription = (badge) => {
+    const descriptions = {
+      'soul_starter': 'Answered 5 soul questions! Mira is starting to know your pet.',
+      'soul_seeker': 'Answered 10 soul questions! Deeper understanding unlocked.',
+      'soul_explorer': 'Answered 15 soul questions! Your pet\'s personality shines through.',
+      'soul_guardian': 'Answered 20+ soul questions! You truly know your pet.',
+      'curious_pup_tier': 'Reached 0-24% Soul Score - The journey begins!',
+      'soul_seeker_tier': 'Reached 25-49% Soul Score - Mira remembers your pet!',
+      'kindred_spirit_tier': 'Reached 50-74% Soul Score - Smart safety alerts unlocked!',
+      'pack_leader_tier': 'Reached 75%+ Soul Score - VIP concierge experience!'
+    };
+    return descriptions[badge] || 'New achievement unlocked!';
   };
   
   // Format question with pet name
