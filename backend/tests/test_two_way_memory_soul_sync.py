@@ -330,7 +330,8 @@ class TestDashboardSoulScores:
             timeout=30
         )
         assert response.status_code == 200
-        pets = response.json()
+        data = response.json()
+        pets = data.get("pets", data) if isinstance(data, dict) else data
         
         for pet in pets:
             pet_name = pet.get("name", "Unknown")
