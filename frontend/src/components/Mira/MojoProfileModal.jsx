@@ -951,6 +951,11 @@ const MojoProfileModal = ({
   const [personalizationStats, setPersonalizationStats] = useState(null);
   const [computedSoulScore, setComputedSoulScore] = useState(soulScore);
   
+  // Inline editing state
+  const [editingSection, setEditingSection] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [saveToast, setSaveToast] = useState(null);
+  
   // Fetch full pet data on open
   useEffect(() => {
     if (isOpen && pet?.id && apiUrl) {
