@@ -18,6 +18,9 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 - [x] **Multi-Pet Switching** - Tested - switching pets updates entire OS
 - [x] **Dynamic MOJO System (2026-02-13)** - Soul Score, Badges, Paw Points update in real-time
 - [x] **Two-Way Memory-Soul Sync (2026-02-13)** - Chat conversations update Pet Soul automatically
+- [x] **MOJO Auto-Save (2026-02-13)** - Changes auto-save after 1.5s debounce, no manual save needed
+- [x] **MOJO Vision Audit (2026-02-13)** - Scored at 72% against Product Doctrine
+- [x] **Handover Document v2 (2026-02-13)** - Complete handover with all credentials
 
 ### P1 - High Priority
 - [x] **✅ COMPLETED: Connect ALL MOJO Data (2026-02-13)** - Pet data now fully integrated:
@@ -46,11 +49,19 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
     - `/app/frontend/src/components/Mira/MojoSectionEditors.jsx` - 9 inline editor components
   - **Files Modified:**
     - `/app/frontend/src/components/Mira/MojoProfileModal.jsx` - Added edit mode state and handlers
+- [x] **✅ COMPLETED: Auto-Save Feature (2026-02-13)**
+  - Added `useAutoSave` custom hook with debounce
+  - All 9 editors now auto-save after 1.5s of inactivity
+  - Status indicator shows: pending → saving → saved
+  - "Done" button replaces Save/Cancel buttons
 
 ### P1 - NEXT PRIORITY
-- [ ] **OS Tab Content** - Populate content for PICKS, SERVICES, INSIGHTS, LEARN tabs
+- [ ] **Build TODAY Tab** - Time-based reminders from MOJO data
+- [ ] **Add Confidence Scores** - Show data source on derived traits
+- [ ] **Document Upload in MOJO** - In-modal file upload
 
 ### P2 - Medium Priority
+- [ ] **OS Tab Content** - Populate content for PICKS, SERVICES, INSIGHTS, LEARN tabs
 - [ ] Render API data in new tabs (picks[], concierge{}, safety_override{})
 - [ ] Mobile UX verification (iOS Safari, Android Chrome)
 
