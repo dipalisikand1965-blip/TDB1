@@ -60,7 +60,12 @@ const PetAvatarRing = memo(({
   };
   
   const s = sizes[size];
-  const petPhoto = pet?.photo || pet?.pet_photo;
+  // Handle different photo field names and relative URLs
+  let petPhoto = pet?.photo || pet?.pet_photo || pet?.photo_url;
+  // If it's a relative URL, prepend the API base URL
+  if (petPhoto && petPhoto.startsWith('/api/')) {
+    petPhoto = `${window.location.origin}${petPhoto}`;
+  }
   const petName = pet?.name || 'Pet';
   
   // Calculate ring gradient based on soul score
