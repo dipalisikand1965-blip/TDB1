@@ -101,6 +101,9 @@ DOGGY_SOUL_QUESTIONS = {
         "icon": "🍖",
         "description": "Food personality and preferences",
         "questions": [
+            {"id": "food_motivation", "question": "How food-motivated is your dog?", "type": "select", "options": ["Very - will do anything for food", "Moderately food motivated", "Somewhat interested", "Not very food motivated"], "weight": 3, "canonical_id": "food_motivation"},
+            {"id": "favorite_protein", "question": "What is your dog's favorite protein?", "type": "select", "options": ["Chicken", "Beef", "Lamb", "Fish", "Pork", "Vegetarian/Plant-based", "No preference"], "weight": 3, "canonical_id": "favorite_protein"},
+            {"id": "treat_preference", "question": "What type of treats does your dog prefer?", "type": "select", "options": ["Soft/chewy treats", "Crunchy treats", "Freeze-dried", "Fresh/real meat", "Dental chews", "Fruits/vegetables"], "weight": 3, "canonical_id": "treat_preference"},
             {"id": "diet_type", "question": "Is your dog's diet:", "type": "select", "options": ["Vegetarian", "Non-vegetarian", "Mixed"], "weight": 4},
             {"id": "food_allergies", "question": "Does your dog have any food allergies?", "type": "multi_select", "options": ["No", "Chicken", "Beef", "Grains", "Dairy", "Other"], "weight": 5},
             {"id": "favorite_treats", "question": "What treats does your dog love most?", "type": "multi_select", "options": ["Biscuits", "Jerky", "Cakes", "Homemade food", "Fresh fruits"], "weight": 3},
