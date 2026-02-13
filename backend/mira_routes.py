@@ -10358,19 +10358,39 @@ Give generic advice appropriate for any pet unless user provides specific detail
         # ═══════════════════════════════════════════════════════════════════════════
         # SOUL-FIRST RESPONSE GENERATION (Profile-First Doctrine Enforcement)
         # Core Rule: Mira must speak from Pet Soul memory first, breed as fallback
+        # Expanded to handle grooming, diet, health, and care queries
         # ═══════════════════════════════════════════════════════════════════════════
         soul_first_instruction = ""
         soul_context_summary = None
         response_strategy = None
         
-        # Check if this is a grooming/care related query
-        grooming_care_keywords = ["groom", "grooming", "haircut", "bath", "nail", "trim", "brush", "coat", "fur", "shampoo", "wash", "spa"]
-        is_grooming_query = any(kw in user_message.lower() for kw in grooming_care_keywords)
+        # Check if this is a query that needs personalization from Pet Soul
+        grooming_keywords = ["groom", "grooming", "haircut", "bath", "nail", "trim", "brush", "coat", "fur", "shampoo", "wash", "spa"]
+        diet_keywords = ["food", "diet", "eat", "meal", "feed", "treat", "nutrition", "allerg", "sensitive"]
+        health_keywords = ["health", "vet", "vaccine", "sick", "medicine", "medication", "checkup"]
+        care_keywords = ["care", "walk", "exercise", "play", "training", "behavior"]
         
-        if SOUL_FIRST_AVAILABLE and selected_pet and is_grooming_query and not is_asking_about_another_pet:
+        user_lower = user_message.lower()
+        is_grooming_query = any(kw in user_lower for kw in grooming_keywords)
+        is_diet_query = any(kw in user_lower for kw in diet_keywords)
+        is_health_query = any(kw in user_lower for kw in health_keywords)
+        is_care_query = any(kw in user_lower for kw in care_keywords)
+        
+        # Soul-First applies to any personalized query
+        needs_soul_first = is_grooming_query or is_diet_query or is_health_query or is_care_query
+        
+        if SOUL_FIRST_AVAILABLE and selected_pet and needs_soul_first and not is_asking_about_another_pet:
             try:
-                # Process Soul-First context
-                intent_for_soul = "grooming" if is_grooming_query else "care"
+                # Determine intent for Soul context
+                if is_grooming_query:
+                    intent_for_soul = "grooming"
+                elif is_diet_query:
+                    intent_for_soul = "diet"
+                elif is_health_query:
+                    intent_for_soul = "health"
+                else:
+                    intent_for_soul = "care"
+                
                 soul_context_summary, response_strategy, soul_first_instruction = process_soul_first_context(
                     selected_pet, 
                     intent=intent_for_soul
@@ -10379,7 +10399,8 @@ Give generic advice appropriate for any pet unless user provides specific detail
                 if soul_context_summary:
                     logger.info(f"[SOUL-FIRST] Context built for {soul_context_summary.pet_name}: "
                                f"{soul_context_summary.grooming_relevant_count} relevant fields, "
-                               f"strategy={response_strategy.strategy if response_strategy else 'none'}")
+                               f"strategy={response_strategy.strategy if response_strategy else 'none'}, "
+                               f"intent={intent_for_soul}")
             except Exception as soul_err:
                 logger.warning(f"[SOUL-FIRST] Error processing Soul context: {soul_err}")
                 soul_first_instruction = ""
