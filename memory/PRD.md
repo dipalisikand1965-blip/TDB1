@@ -11,6 +11,11 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
   - **Root Cause**: `ios-premium.css` imported non-existent Google Fonts (SF Pro - Apple proprietary)
   - **Files Fixed**: `MiraDemoPage.jsx`, `MiraOSPage.jsx`
   - **Working URL**: https://mira-css-fix.preview.emergentagent.com
+- [x] **MOJO Profile Modal - Phase 1 (2026-02-13)** - Pet Identity Layer (Pet OS Core)
+  - **Entry Points**: "78% SOUL" badge and pet name both open MOJO modal
+  - **Features**: Pet Snapshot, Soul Profile (default expanded), Health Profile, Diet & Food, Behaviour & Training, Grooming & Care, Routine Tracker, Documents Vault, Life Timeline, Preferences & Constraints, Membership & Rewards
+  - **Files Created**: `/app/frontend/src/components/Mira/MojoProfileModal.jsx`
+  - **Files Modified**: `MiraDemoPage.jsx`, `SoulKnowledgeTicker.jsx`, `PetSelector.jsx`
 
 ### P1 - High Priority
 - [ ] **Header Shell Integration** - Refactor `/mira-demo` page with 7-tab navigation
@@ -20,6 +25,10 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
   - Weather Card integration
   - Health Vault Progress indicator  
   - "Why for {Pet}" badges on recommendations
+- [ ] **MOJO Modal Phase 2** - Complete remaining sections:
+  - Connect real membership/rewards data from backend
+  - Add edit functionality for each section
+  - Implement proactive questions engine
 
 ### P2 - Medium Priority
 - [ ] Render API data in new tabs (`picks[]`, `concierge{}`, `safety_override{}`)
