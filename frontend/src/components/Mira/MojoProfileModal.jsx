@@ -1194,23 +1194,15 @@ const MojoProfileModal = ({
                       onAddClick={handleAddClick}
                     >
                       {/* Section-specific content */}
-                      {section.id === 'soul' && (
-                        <SoulProfileContent pet={petData} />
-                      )}
-                      {section.id === 'health' && (
-                        <HealthProfileContent pet={petData} />
-                      )}
-                      {/* Other sections show generic placeholder for now */}
-                      {!['soul', 'health'].includes(section.id) && (
-                        <div className="section-placeholder">
-                          <p className="text-gray-400 text-sm">
-                            {completeness > 0 
-                              ? `${completeness}% complete - Tap "Add" to improve`
-                              : 'No data yet - Tap "Add" to start'
-                            }
-                          </p>
-                        </div>
-                      )}
+                      {section.id === 'soul' && <SoulProfileContent pet={petData} />}
+                      {section.id === 'health' && <HealthProfileContent pet={petData} />}
+                      {section.id === 'diet' && <DietProfileContent pet={petData} />}
+                      {section.id === 'behaviour' && <BehaviourProfileContent pet={petData} />}
+                      {section.id === 'grooming' && <GroomingProfileContent pet={petData} />}
+                      {section.id === 'routine' && <RoutineProfileContent pet={petData} />}
+                      {section.id === 'documents' && <DocumentsProfileContent pet={petData} />}
+                      {section.id === 'timeline' && <TimelineProfileContent pet={petData} />}
+                      {section.id === 'preferences' && <PreferencesProfileContent pet={petData} />}
                     </SectionRow>
                   </div>
                 );
