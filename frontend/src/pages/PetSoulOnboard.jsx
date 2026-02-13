@@ -82,12 +82,6 @@ const GROOMING_TOLERANCE_OPTIONS = [
   { value: 'very_sensitive', label: 'Very Sensitive - Gets anxious' },
 ];
 
-// Personality traits
-const PERSONALITY_TRAITS = [
-  'Playful', 'Calm', 'Energetic', 'Shy', 'Friendly', 'Protective',
-  'Curious', 'Lazy', 'Food-lover', 'Cuddly', 'Independent', 'Social'
-];
-
 // Celebration Pillars (services they can explore)
 const CELEBRATION_PILLARS = [
   { id: 'dine', icon: Gift, name: 'Dine', description: 'Gourmet treats & cakes', color: 'from-orange-500 to-amber-500' },
