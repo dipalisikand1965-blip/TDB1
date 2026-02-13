@@ -320,6 +320,8 @@ class PetProfileCreate(BaseModel):
     whatsapp_reminders: bool = Field(default=True)
     email_reminders: bool = Field(default=True)
     source: Optional[str] = Field(default="direct", description="Where the pet was created")
+    # Soul answers from onboarding - canonical fields
+    doggy_soul_answers: Optional[Dict[str, Any]] = Field(default=None, description="Soul answers in canonical format")
 
 
 class PetProfileUpdate(BaseModel):
