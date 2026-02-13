@@ -355,14 +355,25 @@ const PetSoulOnboard = () => {
           body: JSON.stringify({
             name: pet.name,
             breed: pet.breed,
-            age: pet.age,
-            birthday: pet.birthday,
             gender: pet.gender,
-            traits: pet.traits,
-            dietary_needs: pet.dietaryNeeds,
-            health_notes: pet.healthNotes,
-            favorite_treat: pet.favoriteTreat,
-            favorite_activity: pet.favoriteActivity,
+            birth_date: pet.birthday,
+            gotcha_date: pet.gotchaDate,
+            weight: pet.weight ? parseFloat(pet.weight) : null,
+            // Health & Soul data saved to doggy_soul_answers
+            doggy_soul_answers: {
+              food_allergies: pet.foodAllergies,
+              health_conditions: pet.healthConditions,
+              temperament: pet.temperament,
+              grooming_tolerance: pet.groomingTolerance,
+            },
+            // Also save to preferences for backward compatibility
+            preferences: {
+              allergies: pet.foodAllergies === 'None' ? [] : [pet.foodAllergies],
+            },
+            health: {
+              spayed_neutered: pet.isNeutered || null,
+              medical_conditions: pet.healthConditions === 'None' ? null : pet.healthConditions,
+            },
           }),
         });
       }
