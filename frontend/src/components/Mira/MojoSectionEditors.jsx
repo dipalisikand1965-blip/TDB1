@@ -274,7 +274,7 @@ const TagsField = memo(({ label, value, onChange, suggestions = [] }) => {
 
 // ========== SECTION EDITORS ==========
 
-// Soul Profile Editor
+// Soul Profile Editor - With Auto-Save
 export const SoulProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     temperament: pet?.doggy_soul_answers?.temperament || '',
@@ -285,10 +285,11 @@ export const SoulProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
     social_with_people: pet?.doggy_soul_answers?.social_with_people || '',
   });
   
-  const handleSave = () => onSave(data);
+  // Use auto-save hook
+  const saveStatus = useAutoSave(data, onSave, 1500);
   
   return (
-    <EditorWrapper title="Soul Profile" onSave={handleSave} onCancel={onCancel} saving={saving}>
+    <EditorWrapper title="Soul Profile" onCancel={onCancel} saveStatus={saveStatus}>
       <SelectField 
         label="Temperament" 
         value={data.temperament} 
