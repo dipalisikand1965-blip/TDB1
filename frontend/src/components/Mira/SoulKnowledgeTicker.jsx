@@ -192,13 +192,17 @@ const SoulKnowledgeTicker = ({
         onMouseLeave={() => setIsPaused(false)}
         data-testid="soul-knowledge-ticker"
       >
-        {/* Soul Score Badge - Left side, always visible - Opens "What Mira Knows" Card */}
+        {/* Soul Score Badge - Left side, always visible - Opens MOJO Profile Modal */}
         <div 
           className={`ticker-soul-badge ${isGlowing ? 'score-growing' : ''}`}
           onClick={() => {
             hapticFeedback.buttonTap();
-            // Open the ORIGINAL expanded view with Soul/Breed/Memory sections
-            setShowExpanded(true);
+            // If MOJO modal handler provided, use it; otherwise fallback to expanded view
+            if (onSoulBadgeClick) {
+              onSoulBadgeClick('soul'); // Deep link to soul section
+            } else {
+              setShowExpanded(true);
+            }
           }}
           title={`What Mira knows about ${petName}`}
           data-testid="soul-score-badge"
