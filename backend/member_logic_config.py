@@ -365,7 +365,9 @@ def get_service_booking_points(pillar: str) -> int:
 
 def is_emergency_suppressed(safety_level: str) -> bool:
     """Check if commerce/rewards should be suppressed."""
-    return safety_level and safety_level.lower() == "emergency"
+    if not safety_level:
+        return False
+    return safety_level.lower() == "emergency"
 
 
 def get_tier_for_score(score_percent: float) -> Dict:
