@@ -236,8 +236,8 @@ UI_TO_CANONICAL_MAP = {
     # ─────────────────────────────────────────────────────────────
     "vet_anxiety": "vet_comfort",
     "vet_behavior": "vet_comfort",
-    "water_comfort": "swimming_ability",  # Maps to non-existent, will be ignored
-    "leash_manners": "behavior_issues",  # Contributes to behavior_issues
+    # Note: Removed water_comfort→swimming_ability (non-existent scoring field)
+    # leash_behavior is already in NON_SCORING_FIELDS
 }
 
 
