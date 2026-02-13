@@ -139,8 +139,9 @@ NON_SCORING_FIELDS = {
 # ============================================================================
 # UI → CANONICAL FIELD MAPPING
 # ============================================================================
-# Maps UI question IDs (35) to canonical scoring field IDs (26)
+# Maps UI question IDs to canonical scoring field IDs (26)
 # Multiple UI fields can map to one canonical field
+# NEW questions added in UI use the exact canonical field names where possible
 
 UI_TO_CANONICAL_MAP = {
     # ─────────────────────────────────────────────────────────────
@@ -155,6 +156,7 @@ UI_TO_CANONICAL_MAP = {
     # ─────────────────────────────────────────────────────────────
     "stranger_reaction": "social_with_people",
     "behavior_with_strangers": "social_with_people",
+    # social_with_people is now a direct canonical field (UI uses exact name)
     "behavior_with_dogs": "social_with_dogs",
     "dog_friendly": "social_with_dogs",
     
@@ -164,6 +166,7 @@ UI_TO_CANONICAL_MAP = {
     "handling_comfort": "grooming_tolerance",
     "grooming_comfort": "grooming_tolerance",
     "touch_sensitivity": "grooming_tolerance",
+    # grooming_tolerance is now a direct canonical field (UI uses exact name)
     
     # ─────────────────────────────────────────────────────────────
     # SOUNDS & ANXIETY
@@ -187,6 +190,7 @@ UI_TO_CANONICAL_MAP = {
     "activity_level": "exercise_needs",
     "walks_per_day": "exercise_needs",  # Also saved as non-scoring
     "exercise_preferences": "exercise_needs",
+    # exercise_needs is now a direct canonical field (UI uses exact name)
     
     # ─────────────────────────────────────────────────────────────
     # TRAVEL
@@ -203,12 +207,14 @@ UI_TO_CANONICAL_MAP = {
     "treat_texture": "treat_preference",
     "favorite_treats": "treat_preference",  # Also saved as non-scoring
     "favorite_flavors": "favorite_protein",
+    # food_motivation, favorite_protein, treat_preference are now direct canonical fields
     
     # ─────────────────────────────────────────────────────────────
     # ROUTINE
     # ─────────────────────────────────────────────────────────────
     "energetic_time": "morning_routine",  # Also saved as non-scoring
     "space_preference": "favorite_spot",  # Also saved as non-scoring
+    # morning_routine, feeding_times, favorite_spot are now direct canonical fields
     
     # ─────────────────────────────────────────────────────────────
     # LIFE STAGE
@@ -217,6 +223,7 @@ UI_TO_CANONICAL_MAP = {
     "birth_date": "life_stage",
     "age": "life_stage",
     "age_years": "life_stage",
+    # life_stage is now a direct canonical field (UI uses exact name)
     
     # ─────────────────────────────────────────────────────────────
     # TRAINING
@@ -224,20 +231,23 @@ UI_TO_CANONICAL_MAP = {
     "training_status": "training_level",
     "obedience_level": "training_level",
     "training_response": "motivation_type",  # Also saved as non-scoring
+    # motivation_type is now a direct canonical field (UI uses exact name)
+    # behavior_issues is now a direct canonical field (UI uses exact name)
     
     # ─────────────────────────────────────────────────────────────
     # RELATIONSHIPS
     # ─────────────────────────────────────────────────────────────
     "most_attached_to": "primary_bond",  # Also saved as non-scoring
     "lives_with": "other_pets",  # Also saved as non-scoring (contains kids info too)
+    # kids_at_home and other_pets are now direct canonical fields
     
     # ─────────────────────────────────────────────────────────────
-    # OTHER
+    # HEALTH / VET
     # ─────────────────────────────────────────────────────────────
     "vet_anxiety": "vet_comfort",
     "vet_behavior": "vet_comfort",
-    # Note: Removed water_comfort→swimming_ability (non-existent scoring field)
-    # leash_behavior is already in NON_SCORING_FIELDS
+    "medical_conditions": "health_conditions",
+    # vet_comfort, grooming_tolerance, health_conditions are now direct canonical fields
 }
 
 
