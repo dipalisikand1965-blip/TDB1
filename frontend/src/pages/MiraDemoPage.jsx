@@ -289,6 +289,8 @@ const MiraDemoPage = () => {
   // MOJO PROFILE MODAL: Pet Identity Layer - The Pet Operating System Core
   const [showMojoModal, setShowMojoModal] = useState(false);
   const [mojoDeepLink, setMojoDeepLink] = useState(null); // 'soul' to auto-scroll to soul section
+  // PET OS NAVIGATION: Active tab state for the 7-layer OS navigation
+  const [activeOSTab, setActiveOSTab] = useState('today'); // Default to TODAY layer
   
   // NOTE: showTopPicksPanel, showUnifiedVault, isProcessing now come from useMiraUI hook
   // NOTE: proactiveAlerts, proactiveGreeting, currentWeather now come from useProactiveAlerts hook
