@@ -1229,6 +1229,98 @@ const MembershipOnboarding = () => {
                           ))}
                         </div>
                       </div>
+
+                      {/* Health & Soul Section Divider */}
+                      <div className="border-t border-slate-700 pt-4 mt-4">
+                        <p className="text-pink-400 text-sm font-semibold mb-3 flex items-center gap-2">
+                          <Heart className="w-4 h-4" />
+                          Health & Personality (helps Mira personalize)
+                        </p>
+                      </div>
+
+                      {/* Food Allergies - Required */}
+                      <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                          Food Allergies/Restrictions *
+                        </label>
+                        <select
+                          value={pet.food_allergies}
+                          onChange={(e) => updatePetData(idx, 'food_allergies', e.target.value)}
+                          className={`w-full px-3 py-2 bg-slate-800/50 border rounded-md text-white focus:border-pink-500 ${petErrors[idx]?.food_allergies ? 'border-red-500' : 'border-slate-700'}`}
+                          data-testid={`pet-${idx}-allergies`}
+                        >
+                          <option value="">Select</option>
+                          <option value="None">None</option>
+                          <option value="Chicken">Chicken</option>
+                          <option value="Beef">Beef</option>
+                          <option value="Grains">Grains</option>
+                          <option value="Dairy">Dairy</option>
+                          <option value="Other">Other</option>
+                        </select>
+                        {petErrors[idx]?.food_allergies && <p className="text-red-400 text-xs mt-1">{petErrors[idx].food_allergies}</p>}
+                      </div>
+
+                      {/* Health Conditions - Required */}
+                      <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                          Health Conditions *
+                        </label>
+                        <select
+                          value={pet.health_conditions}
+                          onChange={(e) => updatePetData(idx, 'health_conditions', e.target.value)}
+                          className={`w-full px-3 py-2 bg-slate-800/50 border rounded-md text-white focus:border-pink-500 ${petErrors[idx]?.health_conditions ? 'border-red-500' : 'border-slate-700'}`}
+                          data-testid={`pet-${idx}-health`}
+                        >
+                          <option value="">Select</option>
+                          <option value="None">None</option>
+                          <option value="Arthritis">Arthritis</option>
+                          <option value="Diabetes">Diabetes</option>
+                          <option value="Heart condition">Heart condition</option>
+                          <option value="Skin allergies">Skin allergies</option>
+                          <option value="Hip dysplasia">Hip dysplasia</option>
+                          <option value="Eye problems">Eye problems</option>
+                          <option value="Other">Other</option>
+                        </select>
+                        {petErrors[idx]?.health_conditions && <p className="text-red-400 text-xs mt-1">{petErrors[idx].health_conditions}</p>}
+                      </div>
+
+                      {/* Temperament - Required */}
+                      <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                          Temperament *
+                        </label>
+                        <select
+                          value={pet.temperament}
+                          onChange={(e) => updatePetData(idx, 'temperament', e.target.value)}
+                          className={`w-full px-3 py-2 bg-slate-800/50 border rounded-md text-white focus:border-pink-500 ${petErrors[idx]?.temperament ? 'border-red-500' : 'border-slate-700'}`}
+                          data-testid={`pet-${idx}-temperament`}
+                        >
+                          <option value="">Select temperament</option>
+                          {TEMPERAMENT_OPTIONS.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                          ))}
+                        </select>
+                        {petErrors[idx]?.temperament && <p className="text-red-400 text-xs mt-1">{petErrors[idx].temperament}</p>}
+                      </div>
+
+                      {/* Grooming Tolerance - Required */}
+                      <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                          Grooming Tolerance *
+                        </label>
+                        <select
+                          value={pet.grooming_tolerance}
+                          onChange={(e) => updatePetData(idx, 'grooming_tolerance', e.target.value)}
+                          className={`w-full px-3 py-2 bg-slate-800/50 border rounded-md text-white focus:border-pink-500 ${petErrors[idx]?.grooming_tolerance ? 'border-red-500' : 'border-slate-700'}`}
+                          data-testid={`pet-${idx}-grooming`}
+                        >
+                          <option value="">Select</option>
+                          {GROOMING_TOLERANCE_OPTIONS.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                          ))}
+                        </select>
+                        {petErrors[idx]?.grooming_tolerance && <p className="text-red-400 text-xs mt-1">{petErrors[idx].grooming_tolerance}</p>}
+                      </div>
                     </div>
                   </div>
                 ))}
