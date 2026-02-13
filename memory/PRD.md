@@ -128,8 +128,19 @@ The Pet Soul system now uses a **canonical answer system** that:
 | `/app/backend/pet_soul_routes.py` | UI questions bank (51 questions) |
 | `/app/backend/pet_soul_config.py` | Scoring weights config (aligned to 100) |
 | `/app/backend/tests/test_canonical_answers.py` | 25 unit tests |
-| `/app/backend/scripts/backfill_canonical_answers.py` | Idempotent migration script |
+| `/app/backend/scripts/backfill_canonical_answers.py` | Idempotent migration script (✅ EXECUTED Feb 13 2026) |
+| `/app/frontend/src/pages/MembershipOnboarding.jsx` | **SINGLE onboarding page** |
 | `/app/frontend/src/components/PetSoulAnswers.jsx` | Frontend display (aligned) |
+
+### Data Migration Status (Feb 13, 2026) ✅ COMPLETE
+- **40/40 pets migrated** to canonical answer fields
+- All UI field names mapped to canonical scoring fields
+- Migration marker `_canonical_migration_v1` added to all pets
+
+### Onboarding Consolidation ✅ COMPLETE
+- **DELETED:** `/app/frontend/src/pages/PetSoulOnboard.jsx` (duplicate)
+- **Single truth page:** `/app/frontend/src/pages/MembershipOnboarding.jsx`
+- Routes `/join` and `/pet-soul-onboard` both point to MembershipOnboarding
 
 ### Architecture
 ```
