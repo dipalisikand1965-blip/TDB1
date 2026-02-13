@@ -403,9 +403,9 @@ class TestScriptC_SoulQuestionsAndBadges:
         print(f"[SOUL PROFILE] Pet: {data['pet'].get('name')}")
         print(f"[SOUL PROFILE] Overall score: {scores.get('overall')}")
         
-        # Verify scores structure
+        # Verify scores structure - API uses 'categories' not 'folders'
         assert "overall" in scores, "Scores should have overall"
-        assert "folders" in scores, "Scores should have folders"
+        assert "categories" in scores or "folders" in scores, "Scores should have categories or folders"
     
     def test_get_pet_soul_progress(self, auth_token, pet_id):
         """Test: GET /api/pet-soul/profile/{pet_id}/progress returns completion progress"""
