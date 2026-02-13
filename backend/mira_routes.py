@@ -9870,7 +9870,7 @@ async def mira_chat(
             "confirmed_location": user_mentioned_location,
             "place_search_type": detected_place_search,
             "follow_ups": [
-                {"text": f"Yes, show me options for {pet_name}", "type": "confirm_search"},
+                {"text": f"Yes, show me options", "type": "confirm_search"},
                 {"text": "Any specific requirements?", "type": "preferences"},
                 {"text": "Different area", "type": "change_location"}
             ],
