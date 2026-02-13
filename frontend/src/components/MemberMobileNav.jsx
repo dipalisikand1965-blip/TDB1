@@ -47,13 +47,23 @@ const MemberMobileNav = () => {
   
   // Listen for global event to open sidebar (from MobileNavBar "My Pet" button or Navbar hamburger)
   useEffect(() => {
-    const handleOpenSidebar = (e) => {
-      console.log('[MemberMobileNav] openPetSidebar event received');
+    const handleOpenSidebar = () => {
+      console.log('[MemberMobileNav] openPetSidebar event received, setting isOpen=true');
       setIsOpen(true);
     };
     
+    // Add listener
     window.addEventListener('openPetSidebar', handleOpenSidebar);
-    return () => window.removeEventListener('openPetSidebar', handleOpenSidebar);
+    
+    // Also expose a global function for debugging
+    window.__openMemberMobileNav = () => setIsOpen(true);
+    window.__closeMemberMobileNav = () => setIsOpen(false);
+    
+    return () => {
+      window.removeEventListener('openPetSidebar', handleOpenSidebar);
+      delete window.__openMemberMobileNav;
+      delete window.__closeMemberMobileNav;
+    };
   }, []);
   
   // Close sidebar on route change
