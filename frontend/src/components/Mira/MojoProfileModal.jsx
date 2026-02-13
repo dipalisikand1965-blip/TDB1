@@ -1430,6 +1430,18 @@ const MojoProfileModal = ({
             )}
           </div>
         )}
+        
+        {/* Save Toast */}
+        {saveToast && (
+          <div className={`mojo-save-toast ${saveToast.type}`}>
+            {saveToast.type === 'success' ? (
+              <Check className="w-4 h-4" />
+            ) : (
+              <AlertCircle className="w-4 h-4" />
+            )}
+            <span>{saveToast.message}</span>
+          </div>
+        )}
       </div>
       
       {/* Styles */}
