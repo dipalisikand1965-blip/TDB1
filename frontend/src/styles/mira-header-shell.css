@@ -1,0 +1,267 @@
+/**
+ * mira-header-shell.css
+ * 
+ * Styles for MIRA OS Header Shell Navigation
+ * Mobile-first horizontal chips/tabs
+ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   HEADER SHELL CONTAINER
+   ═══════════════════════════════════════════════════════════════════ */
+
+.mira-header-shell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: linear-gradient(180deg, rgba(15, 10, 25, 0.95) 0%, rgba(15, 10, 25, 0.85) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 60px; /* Below main header */
+  z-index: 90;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TABS CONTAINER - Horizontal scrollable
+   ═══════════════════════════════════════════════════════════════════ */
+
+.header-tabs-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  flex: 1;
+  padding: 4px 0;
+}
+
+.header-tabs-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   INDIVIDUAL TAB - Pill/Chip Style
+   ═══════════════════════════════════════════════════════════════════ */
+
+.header-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--tab-bg, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.header-tab:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.header-tab:active {
+  transform: translateY(0);
+}
+
+.header-tab-active {
+  background: var(--tab-bg, rgba(244, 114, 182, 0.15)) !important;
+  border-color: var(--tab-color, #F472B6) !important;
+  box-shadow: 0 0 12px rgba(244, 114, 182, 0.2);
+}
+
+/* Tab Icon */
+.header-tab-icon {
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.header-tab:hover .header-tab-icon {
+  transform: scale(1.1);
+}
+
+.header-tab-active .header-tab-icon {
+  filter: drop-shadow(0 0 4px var(--tab-color));
+}
+
+/* Tab Label */
+.header-tab-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  transition: color 0.2s ease;
+}
+
+.header-tab-active .header-tab-label {
+  color: var(--tab-color, #F472B6);
+  font-weight: 600;
+}
+
+/* Tab Badge (notification count) */
+.header-tab-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #EF4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 9px;
+  padding: 0 5px;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SCROLL BUTTONS (Desktop Only)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.header-scroll-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.header-scroll-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+@media (min-width: 768px) {
+  .header-scroll-btn {
+    display: flex;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TAB CONTENT AREA
+   ═══════════════════════════════════════════════════════════════════ */
+
+.tab-content {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dimension wrapper for debugging */
+.dimension-wrapper {
+  position: relative;
+}
+
+/* Debug mode - show dimension labels */
+.debug-mode .dimension-wrapper::before {
+  content: attr(data-dimension) " • " attr(data-component);
+  position: absolute;
+  top: -16px;
+  left: 0;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2px 6px;
+  border-radius: 4px;
+  z-index: 100;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOBILE OPTIMIZATIONS
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  .mira-header-shell {
+    padding: 6px 8px;
+  }
+  
+  .header-tab {
+    padding: 6px 12px;
+  }
+  
+  .header-tab-label {
+    font-size: 12px;
+  }
+  
+  .header-tab-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TAB-SPECIFIC CONTENT STYLING
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Mojo tab - Pet context */
+.tab-content-mojo {
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(244, 114, 182, 0.05) 0%, transparent 50%);
+}
+
+/* Today tab - Time-bound */
+.tab-content-today {
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.05) 0%, transparent 50%);
+}
+
+/* Picks tab - Intelligence */
+.tab-content-picks {
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.05) 0%, transparent 50%);
+}
+
+/* Services tab - Execution (main chat) */
+.tab-content-services {
+  /* No extra padding - chat has its own layout */
+}
+
+/* Insights tab - Patterns */
+.tab-content-insights {
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.05) 0%, transparent 50%);
+}
+
+/* Learn tab - Knowledge */
+.tab-content-learn {
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.05) 0%, transparent 50%);
+}
+
+/* Concierge tab - Human */
+.tab-content-concierge {
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
+}
