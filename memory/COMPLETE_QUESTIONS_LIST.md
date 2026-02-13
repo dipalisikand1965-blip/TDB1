@@ -3,8 +3,42 @@
 
 **IMPORTANT**: This document now uses the Canonical Answer System.
 - See `/app/memory/CANONICAL_ANSWER_SYSTEM.md` for full technical details
-- UI questions (35) map to Canonical scoring fields (26)
+- UI questions (51) map to Canonical scoring fields (26)
 - Non-scoring fields are preserved for Mira context
+- **Answering all 26 scoring questions yields EXACTLY 100%**
+
+---
+
+## CANONICAL SCORING FIELDS (26 Total = 100 Points)
+
+| Field | Weight | Category | UI Question Available |
+|-------|--------|----------|----------------------|
+| food_allergies | 10 | safety | ✅ |
+| health_conditions | 8 | safety | ✅ |
+| vet_comfort | 5 | safety | ✅ NEW |
+| life_stage | 5 | safety | ✅ NEW |
+| grooming_tolerance | 4 | safety | ✅ NEW |
+| noise_sensitivity | 4 | safety | ✅ |
+| temperament | 8 | personality | ✅ |
+| energy_level | 6 | personality | ✅ |
+| social_with_dogs | 4 | personality | ✅ |
+| social_with_people | 4 | personality | ✅ NEW |
+| behavior_issues | 3 | personality | ✅ NEW |
+| alone_time_comfort | 5 | lifestyle | ✅ |
+| car_comfort | 4 | lifestyle | ✅ |
+| travel_readiness | 3 | lifestyle | ✅ |
+| favorite_spot | 2 | lifestyle | ✅ NEW |
+| morning_routine | 2 | lifestyle | ✅ NEW |
+| exercise_needs | 2 | lifestyle | ✅ NEW |
+| feeding_times | 2 | lifestyle | ✅ NEW |
+| favorite_protein | 3 | nutrition | ✅ NEW |
+| food_motivation | 3 | nutrition | ✅ NEW |
+| treat_preference | 3 | nutrition | ✅ NEW |
+| training_level | 3 | training | ✅ |
+| motivation_type | 2 | training | ✅ NEW |
+| primary_bond | 2 | relationships | ✅ |
+| other_pets | 2 | relationships | ✅ NEW |
+| kids_at_home | 1 | relationships | ✅ NEW |
 
 ---
 
