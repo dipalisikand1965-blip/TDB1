@@ -3444,6 +3444,7 @@ const MiraDemoPage = () => {
             soulScore={pet?.soulScore || soulKnowledge.soulScore || 0}
             apiUrl={API_URL}
             token={token}
+            userEmail={user?.email}
             deepLinkSection={mojoDeepLink}
             onSwitchPet={() => {
               // Open pet selector dropdown
