@@ -551,8 +551,8 @@ async def save_bulk_answers(pet_id: str, answers: Dict[str, Any]):
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     
-    # Merge with existing answers
-    existing_answers = pet.get("doggy_soul_answers", {})
+    # Merge with existing answers (handle None case)
+    existing_answers = pet.get("doggy_soul_answers") or {}
     existing_answers.update(answers)
     
     # Calculate new scores
