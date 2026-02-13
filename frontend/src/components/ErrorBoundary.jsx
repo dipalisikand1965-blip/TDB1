@@ -27,24 +27,58 @@ class ErrorBoundary extends React.Component {
     this.setState({ errorInfo });
     
     // AUTO-RELOAD for ChunkLoadError (CSS/JS chunk loading failures after deployment)
-    // This happens when users have stale cached HTML that references old chunk files
     const isChunkError = 
       error?.name === 'ChunkLoadError' ||
       error?.message?.includes('Loading chunk') ||
       error?.message?.includes('Loading CSS chunk') ||
-      error?.message?.includes('chunk') && error?.message?.includes('failed');
+      (error?.message?.includes('chunk') && error?.message?.includes('failed'));
     
     if (isChunkError) {
-      console.log('ChunkLoadError detected - clearing caches and reloading...');
-      this.handleChunkLoadError();
+      console.log('ChunkLoadError detected - will show update UI');
+      // Don't auto-reload, let user click the button (which clears cache properly)
     }
   }
   
   // Handle chunk load errors by clearing caches and forcing reload
   handleChunkLoadError = async () => {
-    const CHUNK_RELOAD_KEY = 'tdc_chunk_reload_attempted';
-    const lastAttempt = sessionStorage.getItem(CHUNK_RELOAD_KEY);
-    const now = Date.now();
+    // No loop prevention - always try
+    console.log('Clearing all caches...');
+    
+    try {
+      // Clear sessionStorage
+      sessionStorage.clear();
+      
+      // Unregister all service workers
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (const reg of regs) {
+          await reg.unregister();
+          console.log('Unregistered SW');
+        }
+      }
+      
+      // Clear all caches
+      if ('caches' in window) {
+        const names = await caches.keys();
+        for (const name of names) {
+          await caches.delete(name);
+          console.log('Deleted cache:', name);
+        }
+      }
+      
+      // Clear localStorage version
+      localStorage.removeItem('tdc_app_version');
+      localStorage.removeItem('tdc_last_version_check');
+      
+    } catch (e) {
+      console.error('Cache clear error:', e);
+    }
+    
+    // FORCE fresh load with cache-busting URL
+    const freshUrl = window.location.origin + window.location.pathname + '?v=' + Date.now();
+    console.log('Redirecting to:', freshUrl);
+    window.location.replace(freshUrl);
+  };
     
     // Prevent infinite reload loop - only attempt once per session (or once per 30 seconds)
     if (lastAttempt && (now - parseInt(lastAttempt)) < 30000) {
