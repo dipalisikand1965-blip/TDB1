@@ -102,6 +102,17 @@ a.btn,
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   -webkit-user-select: none;
+  cursor: pointer;
+}
+
+/* iOS click delay fix - must be on clickable elements */
+@supports (-webkit-touch-callout: none) {
+  button,
+  [role="button"],
+  a {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
 }
 
 /* Make all form elements tappable */
@@ -116,6 +127,15 @@ a.btn,
   [role="button"]:not(.compact) {
     min-height: 44px;
     min-width: 44px;
+  }
+  
+  /* Hamburger menu should be easily tappable */
+  [data-testid="navbar-mobile-menu-btn"] {
+    min-height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
