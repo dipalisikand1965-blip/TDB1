@@ -52,7 +52,8 @@ def test_pets(auth_token):
 def female_pet(test_pets):
     """Get a female pet for pronoun testing"""
     for pet in test_pets:
-        if pet.get("gender", "").lower() == "female":
+        gender = pet.get("gender")
+        if gender and gender.lower() == "female":
             return pet
     pytest.skip("No female pet found for testing")
 
@@ -61,7 +62,8 @@ def female_pet(test_pets):
 def male_pet(test_pets):
     """Get a male pet for pronoun testing"""
     for pet in test_pets:
-        if pet.get("gender", "").lower() == "male":
+        gender = pet.get("gender")
+        if gender and gender.lower() == "male":
             return pet
     pytest.skip("No male pet found for testing")
 
