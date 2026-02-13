@@ -58,7 +58,7 @@ import { FormattedText, TypedText } from '../components/Mira/TextComponents';
 import { triggerCelebrationConfetti } from '../utils/confetti';
 import PetOSNavigation from '../components/Mira/PetOSNavigation';
 import WeatherCard from '../components/Mira/WeatherCard';
-import WhyForPetBadge, { generateWhyForPet } from '../components/Mira/WhyForPetBadge';
+import WhyForPetBadge from '../components/Mira/WhyForPetBadge';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LAZY LOADED COMPONENTS (Performance Optimization)
