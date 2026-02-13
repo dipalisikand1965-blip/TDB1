@@ -1294,6 +1294,7 @@ const MojoProfileModal = ({
                 const completeness = calculateSectionCompleteness(section.id, petData);
                 const missingItems = getMissingItems(section.id, petData);
                 const isExpanded = expandedSections.includes(section.id);
+                const isEditing = editingSection === section.id;
                 
                 return (
                   <div 
@@ -1305,19 +1306,99 @@ const MojoProfileModal = ({
                       completeness={completeness}
                       missingItems={missingItems}
                       isExpanded={isExpanded}
+                      isEditing={isEditing}
                       onToggle={toggleSection}
                       onAddClick={handleAddClick}
+                      onEditClick={handleEditSectionClick}
                     >
-                      {/* Section-specific content */}
-                      {section.id === 'soul' && <SoulProfileContent pet={petData} />}
-                      {section.id === 'health' && <HealthProfileContent pet={petData} />}
-                      {section.id === 'diet' && <DietProfileContent pet={petData} />}
-                      {section.id === 'behaviour' && <BehaviourProfileContent pet={petData} />}
-                      {section.id === 'grooming' && <GroomingProfileContent pet={petData} />}
-                      {section.id === 'routine' && <RoutineProfileContent pet={petData} />}
-                      {section.id === 'documents' && <DocumentsProfileContent pet={petData} />}
-                      {section.id === 'timeline' && <TimelineProfileContent pet={petData} />}
-                      {section.id === 'preferences' && <PreferencesProfileContent pet={petData} />}
+                      {/* Show Editor when editing, otherwise show content */}
+                      {isEditing ? (
+                        <>
+                          {section.id === 'soul' && (
+                            <SoulProfileEditor 
+                              pet={petData} 
+                              onSave={(data) => handleSaveSection(section.id, data)}
+                              onCancel={handleCancelEdit}
+                              saving={saving}
+                            />
+                          )}
+                          {section.id === 'health' && (
+                            <HealthProfileEditor 
+                              pet={petData} 
+                              onSave={(data) => handleSaveSection(section.id, data)}
+                              onCancel={handleCancelEdit}
+                              saving={saving}
+                            />
+                          )}
+                          {section.id === 'diet' && (
+                            <DietProfileEditor 
+                              pet={petData} 
+                              onSave={(data) => handleSaveSection(section.id, data)}
+                              onCancel={handleCancelEdit}
+                              saving={saving}
+                            />
+                          )}
+                          {section.id === 'behaviour' && (
+                            <BehaviourProfileEditor 
+                              pet={petData} 
+                              onSave={(data) => handleSaveSection(section.id, data)}
+                              onCancel={handleCancelEdit}
+                              saving={saving}
+                            />
+                          )}
+                          {section.id === 'grooming' && (
+                            <GroomingProfileEditor 
+                              pet={petData} 
+                              onSave={(data) => handleSaveSection(section.id, data)}
+                              onCancel={handleCancelEdit}
+                              saving={saving}
+                            />
+                          )}
+                          {section.id === 'routine' && (
+                            <RoutineProfileEditor 
+                              pet={petData} 
+                              onSave={(data) => handleSaveSection(section.id, data)}
+                              onCancel={handleCancelEdit}
+                              saving={saving}
+                            />
+                          )}
+                          {section.id === 'timeline' && (
+                            <TimelineEventEditor 
+                              pet={petData} 
+                              onSave={(data) => handleSaveSection(section.id, data)}
+                              onCancel={handleCancelEdit}
+                              saving={saving}
+                            />
+                          )}
+                          {section.id === 'preferences' && (
+                            <PreferencesProfileEditor 
+                              pet={petData} 
+                              onSave={(data) => handleSaveSection(section.id, data)}
+                              onCancel={handleCancelEdit}
+                              saving={saving}
+                            />
+                          )}
+                          {section.id === 'documents' && (
+                            <div className="mojo-editor-placeholder">
+                              <p>Document upload coming soon</p>
+                              <button className="text-purple-400 underline" onClick={handleCancelEdit}>Cancel</button>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {/* Section-specific content */}
+                          {section.id === 'soul' && <SoulProfileContent pet={petData} />}
+                          {section.id === 'health' && <HealthProfileContent pet={petData} />}
+                          {section.id === 'diet' && <DietProfileContent pet={petData} />}
+                          {section.id === 'behaviour' && <BehaviourProfileContent pet={petData} />}
+                          {section.id === 'grooming' && <GroomingProfileContent pet={petData} />}
+                          {section.id === 'routine' && <RoutineProfileContent pet={petData} />}
+                          {section.id === 'documents' && <DocumentsProfileContent pet={petData} />}
+                          {section.id === 'timeline' && <TimelineProfileContent pet={petData} />}
+                          {section.id === 'preferences' && <PreferencesProfileContent pet={petData} />}
+                        </>
+                      )}
                     </SectionRow>
                   </div>
                 );
