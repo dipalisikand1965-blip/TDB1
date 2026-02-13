@@ -11296,6 +11296,48 @@ FOLLOW-UP CONCISENESS RULE:
             if any(kw in history_text.lower() for kw in nutrition_keywords):
                 is_nutrition_query = True
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # GUARDRAIL: Memory Phrasing Rule
+        # Never say "From what I know..." unless traits exist with confidence
+        # Never say "no specified allergies" - say "If X has allergies, tell me and I'll filter"
+        # ═══════════════════════════════════════════════════════════════════════════
+        memory_hallucination_phrases = [
+            "from what i know",
+            "based on what i know",
+            "no specified allergies",
+            "no known allergies",
+            "no allergies specified",
+            "no specified sensitivities",
+            "no dietary restrictions specified"
+        ]
+        
+        response_lower = response.lower()
+        for phrase in memory_hallucination_phrases:
+            if phrase in response_lower:
+                # Check if we actually have the data to back this up
+                has_allergy_data = selected_pet and (
+                    selected_pet.get("food_allergies") or 
+                    selected_pet.get("doggy_soul_answers", {}).get("food_allergies")
+                )
+                has_trait_data = selected_pet and (
+                    selected_pet.get("temperament") or 
+                    selected_pet.get("doggy_soul_answers", {}).get("temperament") or
+                    selected_pet.get("energy_level") or
+                    selected_pet.get("doggy_soul_answers", {}).get("energy_level")
+                )
+                
+                if "allerg" in phrase and not has_allergy_data:
+                    # Replace with safe phrasing
+                    response = response.replace("no specified allergies", f"If {pet_name} has any allergies or sensitivities, tell me and I'll filter everything")
+                    response = response.replace("no known allergies", f"If {pet_name} has any allergies, let me know")
+                    logger.info(f"[GUARDRAIL] Replaced allergy hallucination phrase")
+                
+                if ("from what i know" in phrase or "based on what i know" in phrase) and not has_trait_data:
+                    # Remove the hallucinated memory claim
+                    response = response.replace("From what I know about", f"For")
+                    response = response.replace("Based on what I know about", f"For")
+                    logger.info(f"[GUARDRAIL] Replaced memory hallucination phrase")
+        
         # DINE PILLAR OS-AWARENESS: Nutrition queries should STAY in "dine" pillar
         # (Previously this switched to "fit", but per MIRA BIBLE, DINE handles home nutrition)
         # Only prevent restaurant handoff for nutrition queries
