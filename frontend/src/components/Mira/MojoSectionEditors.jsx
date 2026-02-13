@@ -331,7 +331,7 @@ export const SoulProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   );
 });
 
-// Health Profile Editor
+// Health Profile Editor - With Auto-Save
 export const HealthProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     weight: pet?.doggy_soul_answers?.weight || '',
@@ -341,10 +341,11 @@ export const HealthProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
     medical_conditions: pet?.doggy_soul_answers?.medical_conditions || [],
   });
   
-  const handleSave = () => onSave(data);
+  // Use auto-save hook
+  const saveStatus = useAutoSave(data, onSave, 1500);
   
   return (
-    <EditorWrapper title="Health Profile" onSave={handleSave} onCancel={onCancel} saving={saving}>
+    <EditorWrapper title="Health Profile" onCancel={onCancel} saveStatus={saveStatus}>
       <TextField 
         label="Weight" 
         value={data.weight}
