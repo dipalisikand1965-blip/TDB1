@@ -1,41 +1,35 @@
-// Service Worker Registration - UNREGISTER MODE
-// This version unregisters all service workers to fix caching issues
+// Service Worker Registration - Clean version
 
 export function register(config) {
-  // First, unregister all existing service workers
-  unregisterAll().then(() => {
-    // Don't register a new one - we're going SW-free for now
-    console.log('PWA: All service workers unregistered');
-    if (config && config.onSuccess) {
-      config.onSuccess();
-    }
-  });
-}
-
-async function unregisterAll() {
   if ('serviceWorker' in navigator) {
-    try {
-      // Get all registrations
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      console.log('PWA: Found', registrations.length, 'service workers to unregister');
+    window.addEventListener('load', () => {
+      const swUrl = `${process.env.PUBLIC_URL || ''}/service-worker.js`;
       
-      // Unregister all
-      await Promise.all(registrations.map(reg => reg.unregister()));
+      navigator.serviceWorker.register(swUrl)
+        .then((registration) => {
+          console.log('PWA: Registered');
+          registration.onupdatefound = () => {
+            const worker = registration.installing;
+            if (!worker) return;
+            worker.onstatechange = () => {
+              if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('PWA: Update available');
+                if (config?.onUpdate) config.onUpdate(registration);
+              }
+            };
+          };
+        })
+        .catch(err => console.error('PWA: Registration failed', err));
       
-      // Clear all caches
-      if ('caches' in window) {
-        const names = await caches.keys();
-        console.log('PWA: Clearing', names.length, 'caches');
-        await Promise.all(names.map(name => caches.delete(name)));
-      }
-      
-      console.log('PWA: Cleanup complete');
-    } catch (error) {
-      console.error('PWA: Cleanup error:', error);
-    }
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
+      });
+    });
   }
 }
 
 export function unregister() {
-  unregisterAll();
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(reg => reg.unregister());
+  }
 }
