@@ -9683,8 +9683,14 @@ async def mira_chat(
     allergy_pattern = re.search(r"allergic to (.+?)(?:\.|,|$)", user_msg_lower)
     if allergy_pattern:
         extracted = allergy_pattern.group(1).strip()
-        if extracted and extracted not in mentioned_allergies:
-            mentioned_allergies.append(extracted)
+        # Extract individual items if comma-separated
+        for item in extracted.replace(" and ", ", ").split(","):
+            item = item.strip()
+            if item and item not in mentioned_allergies:
+                mentioned_allergies.append(item)
+    
+    # Deduplicate
+    mentioned_allergies = list(dict.fromkeys(mentioned_allergies))
     
     # Check for "multiple allergies" response
     if "multiple" in user_msg_lower and "allerg" in user_msg_lower:
