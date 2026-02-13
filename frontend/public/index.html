@@ -377,56 +377,6 @@
     </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
-        
-        <!-- CRITICAL: Inline chunk error recovery - runs before any bundles load -->
-        <script>
-        (function() {
-          var RELOAD_KEY = 'tdc_force_reload';
-          var now = Date.now();
-          var lastReload = sessionStorage.getItem(RELOAD_KEY);
-          
-          // Prevent infinite loop - only reload once per 60 seconds
-          if (lastReload && (now - parseInt(lastReload)) < 60000) {
-            console.log('Chunk recovery: Already reloaded recently, skipping');
-            return;
-          }
-          
-          // Listen for ANY resource load errors
-          window.addEventListener('error', function(e) {
-            var src = e.target && (e.target.src || e.target.href || '');
-            var isChunk = src.indexOf('.chunk.') > -1 || src.indexOf('/static/') > -1;
-            var isResource = e.target && (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK');
-            
-            if (isResource && isChunk) {
-              console.log('Chunk load failed:', src);
-              console.log('Clearing caches and forcing reload...');
-              
-              sessionStorage.setItem(RELOAD_KEY, now.toString());
-              
-              // Clear caches
-              if ('caches' in window) {
-                caches.keys().then(function(names) {
-                  names.forEach(function(name) { caches.delete(name); });
-                }).then(function() {
-                  // Unregister service workers
-                  if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.getRegistrations().then(function(regs) {
-                      regs.forEach(function(reg) { reg.unregister(); });
-                    }).then(function() {
-                      window.location.reload(true);
-                    });
-                  } else {
-                    window.location.reload(true);
-                  }
-                });
-              } else {
-                window.location.reload(true);
-              }
-            }
-          }, true); // Use capture phase to catch early
-        })();
-        </script>
-        
         <div id="root"></div>
         <!--
       This HTML file is a template.
