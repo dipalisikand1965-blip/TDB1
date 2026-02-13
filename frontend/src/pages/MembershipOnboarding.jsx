@@ -256,7 +256,12 @@ const MembershipOnboarding = () => {
       const petErr = {};
       if (!pet.name.trim()) petErr.name = 'Pet name is required';
       if (!pet.breed.trim()) petErr.breed = 'Breed is required';
+      if (!pet.gender) petErr.gender = 'Gender is required';
       if (!pet.birth_date && !pet.gotcha_date) petErr.dates = 'Please provide birth date or gotcha day';
+      if (!pet.food_allergies) petErr.food_allergies = 'Please select food allergies (or None)';
+      if (!pet.health_conditions) petErr.health_conditions = 'Please select health conditions (or None)';
+      if (!pet.temperament) petErr.temperament = 'Please select temperament';
+      if (!pet.grooming_tolerance) petErr.grooming_tolerance = 'Please select grooming tolerance';
       return petErr;
     });
     
