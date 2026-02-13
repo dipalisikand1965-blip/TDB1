@@ -24,12 +24,17 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
   - Fetches from `/api/mira/personalization-stats/{pet_id}` for soul scores
   - All 11 MOJO sections display real data with calculated completion percentages
   - Multi-pet switching tested and working
-- [ ] **Port Missing Features from Backup Page** (`MiraDemoBackupPage.jsx`):
-  - Weather Card integration
-  - Health Vault Progress indicator  
-  - "Why for {Pet}" badges on recommendations
-  - Concierge® Whisper on products
+- [x] **✅ COMPLETED: Weather Card (2026-02-13)** - Shows pet walk safety:
+  - Displays temperature, city, humidity
+  - Safety level badge (SAFE/CAUTION/UNSAFE)
+  - Pet-specific advisory message
+  - Integrated into WelcomeHero component
+- [x] **✅ COMPLETED: "Why for Pet" Badges (2026-02-13)** - Enhanced personalization reasons:
+  - Shows WHY products are recommended for specific pets
+  - Considers allergies, breed, age, sensitivities
+  - Updated `generateWhyForPet` in ChatMessage.jsx and miraConstants.js
 - [ ] **MOJO Modal Phase 2** - Edit functionality for each section (drill-in editing)
+- [ ] **OS Tab Content** - Populate content for PICKS, SERVICES, INSIGHTS, LEARN tabs
 
 ### P2 - Medium Priority
 - [ ] Render API data in new tabs (picks[], concierge{}, safety_override{})
