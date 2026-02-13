@@ -86,14 +86,17 @@ MODALS/PANELS (overlay):
 |-----------------|--------|-------|
 | **PersonalizedPicksPanel** | MOVE HERE | Full picks list |
 | **UnifiedPicksVault** | MOVE HERE | Conversation picks |
+| **VaultManager** | MOVE HERE | Vault data display |
+| **MiraTray** | MOVE HERE | Quick action tray |
 | **QuickReplies** | DUAL PLACE | Also show in Services tab |
-| **MiraTray** | MOVE HERE | Quick action suggestions |
+| **Picks Curated Banner** (Gift icon) | MOVE HERE | "Mira's Picks" inline banner |
 
 **Picks Tab Content:**
 - Top personalized picks for pet
 - Recent conversation picks
 - "Recommended for {pet}" section
 - Tip cards from Mira
+- Vault manager for saved picks
 
 ---
 
