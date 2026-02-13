@@ -126,6 +126,31 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 - `/app/frontend/src/components/Mira/SoulKnowledgeTicker.jsx` - Added `onSoulBadgeClick` prop
 - `/app/frontend/src/components/Mira/PetSelector.jsx` - Added `onPetNameClick` prop
 
+### 5. Two-Way Memory-Soul Sync ✅ (NEW - 2026-02-13)
+**Enhanced:** `/app/backend/soul_first_logic.py`
+
+**Implementation:**
+- Added `recalculate_pet_soul_score()` function (line 1141) that:
+  - Fetches pet's current `doggy_soul_answers`
+  - Calculates weighted folder scores matching the question bank
+  - Updates `overall_score`, `folder_scores`, and timestamps
+- Modified `write_soul_data_to_pet()` to call `recalculate_pet_soul_score()` after data write
+- Chat endpoint in `mira_routes.py` (lines 11414-11455) extracts data from EVERY user message
+
+**Data Extraction Patterns:**
+- Food allergies: "allergic to", "can't eat", "sensitive to", "no chicken/beef/etc."
+- Diet preferences: "kibble", "wet food", "raw", "home cooked"
+- Health conditions: "arthritis", "diabetes", "hip dysplasia", etc.
+- Behaviors: "anxious", "calm", "playful", "reactive", etc.
+- Grooming: "long coat", "short hair", "home grooming", "salon"
+- Location: Indian cities (Mumbai, Delhi, Bangalore, etc.)
+
+**Tested & Verified:**
+- Lola's score increased: 34% → 44% after chat message "allergic to chicken and beef"
+- Data written to: `pets.doggy_soul_answers.food_allergies = ["chicken", "beef"]`
+- Enrichment logged: `pets.enrichment_history` with source, confidence, timestamp
+- Achievement toast appeared: "Soul Seeker - Lola has reached 25% Soul completion"
+
 ---
 
 ## 🔴 NEXT AGENT INSTRUCTIONS
