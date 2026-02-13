@@ -9987,7 +9987,7 @@ async def mira_chat(
                     if pet_temperament:
                         pet_trait_mention = f"Given {pet_name}'s {pet_temperament.lower() if isinstance(pet_temperament, str) else ''} nature, "
                     elif pet_energy:
-                        pet_trait_mention = f"For {pet_name} with {'her' if selected_pet and selected_pet.get('gender', '').lower() == 'female' else 'his'} {pet_energy.lower() if isinstance(pet_energy, str) else ''} energy, "
+                        pet_trait_mention = f"For {pet_name} with {pronoun_possessive} {pet_energy.lower() if isinstance(pet_energy, str) else ''} energy, "
                     
                     # Build curated response (NOT a list dump)
                     intro = f"Here are a few places that would suit {pet_name}'s comfort."
