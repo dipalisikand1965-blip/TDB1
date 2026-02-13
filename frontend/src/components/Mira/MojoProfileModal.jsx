@@ -926,9 +926,12 @@ const MojoProfileModal = ({
   
   // Deep link to soul section
   useEffect(() => {
-    if (isOpen && deepLinkSection === 'soul' && soulSectionRef.current) {
+    if (isOpen && deepLinkSection === 'soul') {
       setTimeout(() => {
-        soulSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Check ref inside timeout to avoid null reference error
+        if (soulSectionRef.current) {
+          soulSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
         if (!expandedSections.includes('soul')) {
           setExpandedSections(prev => [...prev, 'soul']);
         }
