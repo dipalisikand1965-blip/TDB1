@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://paw-points-live.preview.emergentagent.com
+https://pet-soul-sync.preview.emergentagent.com
 
 ---
 

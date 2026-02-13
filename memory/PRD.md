@@ -397,7 +397,7 @@ From `/app/frontend/src/pages/MiraDemoBackupPage.jsx`:
 ---
 
 ## Preview URL
-**Working:** https://paw-points-live.preview.emergentagent.com/mira-demo
+**Working:** https://pet-soul-sync.preview.emergentagent.com/mira-demo
 
 ---
 
