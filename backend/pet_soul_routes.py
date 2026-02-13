@@ -78,6 +78,7 @@ DOGGY_SOUL_QUESTIONS = {
         "icon": "🏠",
         "description": "What makes them feel safe and happy",
         "questions": [
+            {"id": "favorite_spot", "question": "Where is your dog's favorite spot at home?", "type": "select", "options": ["On the couch/sofa", "Their own bed", "Sunny window spot", "Near family members", "Under furniture", "Outdoors/garden"], "weight": 3, "canonical_id": "favorite_spot"},
             {"id": "favorite_item", "question": "Does your dog have a favourite item?", "type": "select", "options": ["Toy", "Blanket", "Bed", "None"], "weight": 2},
             {"id": "space_preference", "question": "Does your dog prefer:", "type": "select", "options": ["Quiet spaces", "Busy spaces", "Outdoor time", "Indoor time"], "weight": 3},
             {"id": "crate_trained", "question": "Is your dog crate-trained?", "type": "select", "options": ["Yes", "No", "In training"], "weight": 4},
