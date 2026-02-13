@@ -111,6 +111,8 @@ MODALS/PANELS (overlay):
 | **ServiceRequestModal** | TRIGGER FROM HERE | Service forms |
 | **ConciergeConfirmation** | KEEP HERE | Booking confirmations |
 | **ScrollToBottomButton** | KEEP HERE | Scroll control |
+| **Toggle History Button** | KEEP HERE | Show/hide older messages |
+| **Picks Curated Banner** | KEEP HERE (inline) | Shows during chat when picks available |
 
 **Services Tab Content:**
 - Full chat interface (unchanged)
