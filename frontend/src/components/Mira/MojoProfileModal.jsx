@@ -805,10 +805,11 @@ const MojoProfileModal = ({
             {/* Pet Snapshot (Always Visible) */}
             <PetSnapshot 
               pet={petData}
-              soulScore={soulScore}
+              soulScore={computedSoulScore}
               membership={membershipData}
               onEditClick={handleAddClick}
               onSwitchPet={onSwitchPet}
+              apiUrl={apiUrl}
             />
             
             {/* Profile Sections (Accordion) */}
