@@ -521,25 +521,6 @@ def calculate_pet_soul_score(answers: Dict[str, Any], preferences: Dict[str, Any
         } if next_tier else None,
         "missing_high_impact": missing_high_impact[:5],  # Top 5 most impactful
     }
-    
-    return {
-        "total_score": total_score,
-        "total_earned": total_earned,
-        "total_possible": total_possible,
-        "category_scores": category_scores,
-        "answered_count": len(answered_questions),
-        "total_questions": len([q for q, c in PET_SCORE_RULES.items() if c["weight"] > 0]),
-        "tier": {
-            "key": current_tier_key,
-            **current_tier
-        } if current_tier else None,
-        "next_tier": {
-            "key": next_tier_key,
-            "points_needed": next_tier["min_score"] - total_score if next_tier else 0,
-            **next_tier
-        } if next_tier else None,
-        "missing_high_impact": missing_high_impact[:5],  # Top 5 most impactful
-    }
 
 
 def get_next_recommended_question(answers: Dict[str, Any], current_tier: str = None) -> Optional[Dict]:
