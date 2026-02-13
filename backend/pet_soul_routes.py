@@ -553,6 +553,14 @@ async def save_bulk_answers(pet_id: str, answers: Dict[str, Any]):
     
     # Merge with existing answers (handle None case)
     existing_answers = pet.get("doggy_soul_answers") or {}
+    
+    # Track NEW answers only (for paw points - no re-award on edits)
+    new_answer_count = 0
+    for key, value in answers.items():
+        if key not in existing_answers or existing_answers.get(key) in [None, "", []]:
+            if value is not None and value != "" and value != []:
+                new_answer_count += 1
+    
     existing_answers.update(answers)
     
     # Calculate new scores
@@ -571,6 +579,44 @@ async def save_bulk_answers(pet_id: str, answers: Dict[str, Any]):
         "updated_at": datetime.now(timezone.utc).isoformat()
     }})
     
+    # Award Paw Points for NEW soul questions (10 points each)
+    if new_answer_count > 0:
+        try:
+            owner_email = pet.get("owner_email")
+            if owner_email:
+                from member_logic_config import PAW_POINTS_RULES
+                points_per_question = PAW_POINTS_RULES["soul_question_answered"]["points"]
+                total_points = new_answer_count * points_per_question
+                
+                user = await db.users.find_one({"email": owner_email})
+                if user:
+                    current_balance = user.get("loyalty_points", 0)
+                    new_balance = current_balance + total_points
+                    lifetime = user.get("lifetime_points_earned", current_balance)
+                    
+                    # LEDGER FIRST
+                    await db.paw_points_ledger.insert_one({
+                        "user_email": owner_email,
+                        "amount": total_points,
+                        "balance_after": new_balance,
+                        "reason": f"Soul questions answered: {new_answer_count} x {points_per_question} pts",
+                        "source": "soul",
+                        "reference_id": pet_id,
+                        "created_at": datetime.now(timezone.utc)
+                    })
+                    
+                    # THEN UPDATE BALANCE
+                    await db.users.update_one(
+                        {"email": owner_email},
+                        {"$set": {
+                            "loyalty_points": new_balance,
+                            "lifetime_points_earned": lifetime + total_points
+                        }}
+                    )
+                    logger.info(f"Awarded {total_points} paw points to {owner_email} for {new_answer_count} new soul questions")
+        except Exception as e:
+            logger.error(f"Failed to award soul question points: {e}")
+    
     # Auto-create ticket for Command Center
     try:
         from ticket_auto_creation import on_pet_soul_updated
@@ -583,6 +629,8 @@ async def save_bulk_answers(pet_id: str, answers: Dict[str, Any]):
     return {
         "success": True,
         "answers_saved": len(answers),
+        "new_answers": new_answer_count,
+        "points_earned": new_answer_count * 10 if new_answer_count > 0 else 0,
         "scores": {
             "overall": overall_score,
             "folders": folder_scores
