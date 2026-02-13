@@ -380,7 +380,7 @@ export const HealthProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   );
 });
 
-// Diet & Food Editor
+// Diet & Food Editor - With Auto-Save
 export const DietProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     diet_type: pet?.doggy_soul_answers?.diet_type || '',
@@ -390,10 +390,11 @@ export const DietProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
     food_brand: pet?.doggy_soul_answers?.food_brand || '',
   });
   
-  const handleSave = () => onSave(data);
+  // Use auto-save hook
+  const saveStatus = useAutoSave(data, onSave, 1500);
   
   return (
-    <EditorWrapper title="Diet & Food" onSave={handleSave} onCancel={onCancel} saving={saving}>
+    <EditorWrapper title="Diet & Food" onCancel={onCancel} saveStatus={saveStatus}>
       <SelectField 
         label="Diet Type" 
         value={data.diet_type} 
