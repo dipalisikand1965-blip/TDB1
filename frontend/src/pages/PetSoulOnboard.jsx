@@ -184,14 +184,6 @@ const PetSoulOnboard = () => {
     }
   };
 
-  const handleTraitToggle = (trait) => {
-    const currentTraits = activePet.traits || [];
-    const newTraits = currentTraits.includes(trait) 
-      ? currentTraits.filter(t => t !== trait)
-      : [...currentTraits, trait].slice(0, 4);
-    handlePetChange('traits', newTraits);
-  };
-
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
