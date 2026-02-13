@@ -51,6 +51,8 @@ DOGGY_SOUL_QUESTIONS = {
         "description": "Their social world and relationships",
         "questions": [
             {"id": "lives_with", "question": "Does your dog live with:", "type": "multi_select", "options": ["Adults only", "Children", "Other dogs", "Other pets (cats, birds, etc.)"], "weight": 3},
+            {"id": "kids_at_home", "question": "Are there children in your household?", "type": "select", "options": ["Yes, young children (0-5)", "Yes, older children (6-12)", "Yes, teenagers", "No children"], "weight": 3, "canonical_id": "kids_at_home"},
+            {"id": "other_pets", "question": "Do you have other pets at home?", "type": "select", "options": ["Yes, other dogs", "Yes, cats", "Yes, other animals", "Multiple pets", "No other pets"], "weight": 3, "canonical_id": "other_pets"},
             {"id": "behavior_with_dogs", "question": "How does your dog behave with other dogs?", "type": "select", "options": ["Loves all dogs", "Selective friends", "Nervous", "Reactive"], "weight": 4},
             {"id": "most_attached_to", "question": "Who is your dog most attached to in the family?", "type": "select", "options": ["Me", "Partner", "Children", "Everyone equally"], "weight": 2},
             {"id": "attention_seeking", "question": "Does your dog like being the centre of attention?", "type": "select", "options": ["Yes", "Sometimes", "No"], "weight": 2},
