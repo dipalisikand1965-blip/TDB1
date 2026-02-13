@@ -2317,6 +2317,82 @@ const MojoProfileModal = ({
           transform: scale(1.02);
           box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
         }
+        
+        /* Save Toast */
+        .mojo-save-toast {
+          position: absolute;
+          bottom: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 20px;
+          border-radius: 24px;
+          font-size: 14px;
+          font-weight: 500;
+          animation: toastSlideUp 0.3s ease-out;
+          z-index: 100;
+        }
+        
+        .mojo-save-toast.success {
+          background: linear-gradient(135deg, #059669, #10B981);
+          color: white;
+        }
+        
+        .mojo-save-toast.error {
+          background: linear-gradient(135deg, #DC2626, #EF4444);
+          color: white;
+        }
+        
+        @keyframes toastSlideUp {
+          from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+          to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        
+        /* Section Actions Row */
+        .section-actions-row {
+          display: flex;
+          gap: 8px;
+          margin-top: 12px;
+          padding-top: 12px;
+          border-top: 1px solid rgba(139, 92, 246, 0.1);
+        }
+        
+        .section-edit-btn {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 14px;
+          border-radius: 8px;
+          background: rgba(139, 92, 246, 0.1);
+          border: 1px solid rgba(139, 92, 246, 0.2);
+          color: #a78bfa;
+          font-size: 13px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .section-edit-btn:hover {
+          background: rgba(139, 92, 246, 0.2);
+          border-color: rgba(139, 92, 246, 0.4);
+        }
+        
+        /* Editing state */
+        .mojo-section.editing .section-header {
+          border-color: #8B5CF6;
+        }
+        
+        /* Editor placeholder for documents */
+        .mojo-editor-placeholder {
+          padding: 20px;
+          text-align: center;
+          color: #9CA3AF;
+        }
+        
+        /* Editor Styles (from MojoSectionEditors) */
+        ${editorStyles}
       `}</style>
     </div>
   );
