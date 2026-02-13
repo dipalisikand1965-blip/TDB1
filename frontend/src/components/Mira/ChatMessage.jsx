@@ -185,17 +185,89 @@ const getPillarIcon = (pillar) => {
 };
 
 /**
- * Generate "Why for Pet" text
+ * Generate "Why for Pet" text - ENHANCED PERSONALIZATION
+ * Shows the user WHY a product is recommended for their pet
  */
 const generateWhyForPet = (product, pet) => {
+  // If product already has a why_for_pet, use it
   if (product.why_for_pet) return product.why_for_pet;
-  const reasons = [
-    `Perfect for ${pet.breed || 'your pet'}`,
-    `Great for ${pet.name}'s lifestyle`,
-    `Recommended for ${pet.name}`,
-    `Curated for ${pet.name}`
-  ];
-  return reasons[Math.floor(Math.random() * reasons.length)];
+  
+  const productName = (product.name || '').toLowerCase();
+  const petName = pet.name || 'your pet';
+  const breed = (pet.breed || '').toLowerCase();
+  const sensitivities = pet.sensitivities || [];
+  const doggyAnswers = pet.doggy_soul_answers || {};
+  
+  // Priority 1: Check for allergies/sensitivities
+  if (sensitivities.some(s => s.toLowerCase().includes('chicken'))) {
+    if (!productName.includes('chicken')) {
+      return `Chicken-free for ${petName}'s sensitivity`;
+    }
+  }
+  
+  if (sensitivities.some(s => s.toLowerCase().includes('grain'))) {
+    if (productName.includes('grain-free') || productName.includes('grain free')) {
+      return `Grain-free for ${petName}'s needs`;
+    }
+  }
+  
+  // Priority 2: Breed-specific recommendations
+  if (breed.includes('golden') || breed.includes('retriever')) {
+    if (productName.includes('hip') || productName.includes('joint')) {
+      return `Great for ${petName}'s breed joint health`;
+    }
+  }
+  
+  if (breed.includes('shih tzu') || breed.includes('maltese') || breed.includes('poodle')) {
+    if (productName.includes('eye') || productName.includes('tear')) {
+      return `Perfect for ${petName}'s eye care needs`;
+    }
+    if (productName.includes('groom') || productName.includes('coat')) {
+      return `Ideal for ${petName}'s beautiful coat`;
+    }
+  }
+  
+  if (breed.includes('labrador') || breed.includes('beagle')) {
+    if (productName.includes('weight') || productName.includes('diet') || productName.includes('lite')) {
+      return `Helps maintain ${petName}'s healthy weight`;
+    }
+  }
+  
+  // Priority 3: Age-specific
+  const age = doggyAnswers.age || pet.age_years;
+  if (age && (parseInt(age) >= 7 || (typeof age === 'string' && age.includes('senior')))) {
+    if (productName.includes('senior') || productName.includes('mature') || productName.includes('joint')) {
+      return `Formulated for ${petName}'s golden years`;
+    }
+  }
+  
+  // Priority 4: Product category fallbacks
+  if (productName.includes('treat') || productName.includes('snack') || productName.includes('biscuit')) {
+    return `A tasty reward ${petName} will love`;
+  }
+  
+  if (productName.includes('shampoo') || productName.includes('brush') || productName.includes('groom')) {
+    return `Keeps ${petName} looking beautiful`;
+  }
+  
+  if (productName.includes('food') || productName.includes('kibble') || productName.includes('meal')) {
+    return `Nutrition tailored for ${petName}`;
+  }
+  
+  if (productName.includes('toy') || productName.includes('ball') || productName.includes('chew')) {
+    return `Perfect for ${petName}'s playtime`;
+  }
+  
+  if (productName.includes('bed') || productName.includes('crate') || productName.includes('blanket')) {
+    return `Cozy comfort for ${petName}`;
+  }
+  
+  // Default personalized message based on breed
+  if (breed) {
+    return `Perfect for ${breed.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}s`;
+  }
+  
+  return `Selected for ${petName}'s profile`;
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
