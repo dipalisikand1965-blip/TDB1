@@ -892,7 +892,13 @@ const MiraDemoPage = () => {
                 ],
                 sensitivities: sensitivities,
                 favorites: p.preferences?.favorite_flavors || [],
-                personality: p.soul?.persona || 'friendly'
+                personality: p.soul?.persona || 'friendly',
+                // Include full data for MOJO modal
+                doggy_soul_answers: p.doggy_soul_answers || {},
+                preferences: p.preferences || {},
+                soul: p.soul || {},
+                health_vault: p.health_vault || {},
+                overall_score: p.overall_score || 0
               };
             });
             
