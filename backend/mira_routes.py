@@ -225,7 +225,10 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
             # 2. SAFETY GATES - Get allergies, health constraints
             # Check multiple allergy field locations
             doggy_soul_allergies = pet.get("doggy_soul_answers", {}).get("food_allergies", "")
-            if isinstance(doggy_soul_allergies, str) and doggy_soul_allergies:
+            if isinstance(doggy_soul_allergies, list):
+                # Already a list, use as is
+                pass
+            elif isinstance(doggy_soul_allergies, str) and doggy_soul_allergies:
                 doggy_soul_allergies = [a.strip() for a in doggy_soul_allergies.split(",") if a.strip()]
             else:
                 doggy_soul_allergies = []
