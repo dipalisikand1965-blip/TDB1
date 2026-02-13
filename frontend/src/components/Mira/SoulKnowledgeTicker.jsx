@@ -39,6 +39,7 @@ const SoulKnowledgeTicker = ({
   knowledgeItems = [],
   onSoulQuestionClick,
   onKnowledgeItemClick,
+  onSoulBadgeClick, // NEW: Opens MOJO Profile Modal
   apiUrl,
   token,  // Auth token for fetching knowledge
   className = ''
