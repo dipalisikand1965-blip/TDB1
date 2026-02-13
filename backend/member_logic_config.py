@@ -271,9 +271,73 @@ CANONICAL_SCORING_FIELDS: Set[str] = {
 }
 
 # Alias mapping: UI field → Canonical field (for any naming differences)
+# This maps legacy/alternate field names to canonical scoring fields
 UI_TO_CANONICAL_ALIAS: Dict[str, str] = {
-    # Add aliases here if UI uses different names than canonical
-    # Example: "dog_allergies": "food_allergies"
+    # Health aliases
+    "health_allergies": "food_allergies",
+    "diet_allergies": "food_allergies",
+    "allergies": "food_allergies",
+    "health_chronic_conditions": "health_conditions",
+    "chronic_conditions": "health_conditions",
+    "health_conditions_list": "health_conditions",
+    "vet_anxiety": "vet_comfort",
+    "vet_behavior": "vet_comfort",
+    "age_category": "life_stage",
+    "life_stage_category": "life_stage",
+    "grooming_behavior": "grooming_tolerance",
+    "grooming_comfort": "grooming_tolerance",
+    "noise_reaction": "noise_sensitivity",
+    "sound_sensitivity": "noise_sensitivity",
+    
+    # Personality aliases
+    "behavior_temperament": "temperament",
+    "personality": "temperament",
+    "activity_level": "energy_level",
+    "health_exercise_level": "energy_level",
+    "dog_sociability": "social_with_dogs",
+    "dog_friendly": "social_with_dogs",
+    "people_sociability": "social_with_people",
+    "stranger_friendly": "social_with_people",
+    "behavior_issues_list": "behavior_issues",
+    "behavioral_concerns": "behavior_issues",
+    
+    # Lifestyle aliases
+    "separation_anxiety": "alone_time_comfort",
+    "alone_comfort": "alone_time_comfort",
+    "car_travel": "car_comfort",
+    "vehicle_comfort": "car_comfort",
+    "travel_experience": "travel_readiness",
+    "travel_comfort": "travel_readiness",
+    "preferred_spot": "favorite_spot",
+    "resting_spot": "favorite_spot",
+    "wake_routine": "morning_routine",
+    "daily_routine": "morning_routine",
+    "exercise_routine": "exercise_needs",
+    "activity_needs": "exercise_needs",
+    "sleep_habits": "sleep_preferences",
+    "sleep_location": "sleep_preferences",
+    
+    # Nutrition aliases
+    "diet_feeding_schedule": "feeding_times",
+    "meal_times": "feeding_times",
+    "diet_preferences": "favorite_protein",
+    "protein_preference": "favorite_protein",
+    "treat_motivation": "food_motivation",
+    "food_drive": "food_motivation",
+    
+    # Training aliases
+    "behavior_training_level": "training_level",
+    "obedience_level": "training_level",
+    "reward_type": "motivation_type",
+    "training_motivation": "motivation_type",
+    
+    # Relationship aliases
+    "bonded_to": "primary_bond",
+    "primary_caregiver": "primary_bond",
+    "other_animals": "other_pets",
+    "household_pets": "other_pets",
+    "children": "kids_at_home",
+    "kids_in_home": "kids_at_home",
 }
 
 
