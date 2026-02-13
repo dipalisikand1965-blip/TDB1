@@ -11396,6 +11396,23 @@ FOLLOW-UP CONCISENESS RULE:
         question_count = sum(1 for msg in (request.history or []) if msg.get("role") == "assistant" and "?" in msg.get("content", ""))
         is_stuck_in_loop = question_count >= 3 and response_has_question
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # GUARDRAIL: Topic Lock - Cannot switch pillars unless user explicitly asks
+        # If Active Pillar = Dine, cannot jump to Celebrate unless user mentions it
+        # ═══════════════════════════════════════════════════════════════════════════
+        celebration_keywords = ["birthday", "celebrate", "celebration", "party", "anniversary", "gotcha day", "adoption day"]
+        user_mentioned_celebration = any(kw in user_msg_lower for kw in celebration_keywords)
+        
+        # Check if response is trying to switch to celebration topic
+        response_mentions_celebration = any(kw in response.lower() for kw in celebration_keywords)
+        
+        # Topic lock violation: Response mentions celebration but user didn't ask for it
+        if response_mentions_celebration and not user_mentioned_celebration and pillar in ["dine", "care", "fit"]:
+            logger.warning(f"[TOPIC LOCK] Blocked pillar switch from {pillar} to celebrate - user didn't ask for it")
+            # Strip celebration content and stay on topic
+            if original_intent == "meal_plan":
+                response = f"Let's continue with {pet_name}'s meal plan. Just to finalize:\n\n• **Home-cooked** or **kibble-based** most days?\n• What's {pet_name}'s approx **weight** (or size class)?\n\nOnce you confirm, I'll build the full plan."
+        
         # Check if user has already provided key details - AFFIRMATIVE CONFIRMATIONS
         affirmative_confirmations = ["yes", "yes please", "yeah", "yep", "ok", "okay", "go ahead", "proceed", "do it", "confirmed", "that works", "sounds good"]
         user_is_confirming = any(user_message.lower().strip().startswith(kw) or user_message.lower().strip() == kw for kw in affirmative_confirmations)
