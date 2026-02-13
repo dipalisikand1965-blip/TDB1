@@ -1140,6 +1140,124 @@ async def write_soul_data_to_pet(
 
 
 # ============================================================================
+# SCORE RECALCULATION - Two-Way Sync Completion
+# ============================================================================
+
+async def recalculate_pet_soul_score(db, pet_id: str) -> dict:
+    """
+    Recalculate the pet's Soul Score after data enrichment from Mira conversations.
+    
+    This completes the Two-Way Sync:
+    1. User talks to Mira
+    2. Mira extracts soul data from conversation
+    3. Data written to pets.doggy_soul_answers
+    4. THIS FUNCTION: Recalculate overall_score
+    5. UI updates automatically
+    
+    Args:
+        db: Database connection
+        pet_id: Pet ID to recalculate
+        
+    Returns:
+        Dict with old_score, new_score, and score_delta
+    """
+    try:
+        # Fetch current pet data
+        pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+        if not pet:
+            pet = await db.pets.find_one({"_id": pet_id}, {"_id": 0})
+        
+        if not pet:
+            logger.warning(f"[SOUL-SCORE] Pet not found for recalculation: {pet_id}")
+            return {"success": False, "error": "Pet not found"}
+        
+        old_score = pet.get("overall_score", 0)
+        answers = pet.get("doggy_soul_answers", {})
+        
+        # Import folder structure for score calculation
+        # These weights match the pet_soul_routes.py question bank
+        FOLDER_WEIGHTS = {
+            "identity_personality": {
+                "general_nature": 5, "energy_level": 4, "temperament": 3, 
+                "emotional_expression": 3, "independence_level": 2
+            },
+            "social_world": {
+                "behavior_with_dogs": 5, "behavior_with_people": 4, "social_comfort": 3,
+                "separation_anxiety": 4, "favorite_humans": 2, "play_style": 3
+            },
+            "adventure_outdoors": {
+                "activity_level": 4, "favorite_activities": 3, "walk_preference": 3,
+                "off_leash_reliability": 4, "water_comfort": 3, "car_rides": 4
+            },
+            "rest_routines": {
+                "sleep_position": 2, "sleep_location": 3, "sleep_duration": 2,
+                "crate_trained": 4, "bedtime_routine": 2, "nap_schedule": 2
+            },
+            "taste_treat_world": {
+                "food_motivation": 3, "favorite_protein": 3, "treat_preference": 3,
+                "diet_type": 4, "food_allergies": 5, "favorite_treats": 3, "sensitive_stomach": 4
+            },
+            "training_behaviour": {
+                "training_level": 3, "motivation_type": 3, "behavior_issues": 4,
+                "training_response": 3, "leash_behavior": 2, "barking": 2
+            },
+            "long_horizon": {
+                "health_conditions": 5, "vet_comfort": 5, "grooming_tolerance": 4,
+                "main_wish": 2, "help_needed": 2, "dream_life": 3, "celebration_preferences": 3
+            }
+        }
+        
+        total_weight = 0
+        answered_weight = 0
+        folder_scores = {}
+        
+        for folder_key, questions in FOLDER_WEIGHTS.items():
+            folder_total = sum(questions.values())
+            folder_answered = 0
+            
+            for q_id, weight in questions.items():
+                total_weight += weight
+                if q_id in answers and answers[q_id] is not None and answers[q_id] != "":
+                    answered_weight += weight
+                    folder_answered += weight
+            
+            folder_scores[folder_key] = round((folder_answered / folder_total) * 100, 1) if folder_total > 0 else 0
+        
+        # Calculate new overall score
+        new_score = round((answered_weight / total_weight) * 100, 1) if total_weight > 0 else 0
+        score_delta = round(new_score - old_score, 1)
+        
+        # Update the pet record with new score
+        await db.pets.update_one(
+            {"id": pet_id},
+            {
+                "$set": {
+                    "overall_score": new_score,
+                    "folder_scores": folder_scores,
+                    "score_last_calculated": datetime.now(timezone.utc).isoformat(),
+                    "score_source": "mira_conversation_enrichment"
+                }
+            }
+        )
+        
+        logger.info(f"[SOUL-SCORE] ✅ Recalculated score for {pet.get('name', pet_id)}: {old_score}% → {new_score}% (Δ{score_delta}%)")
+        
+        return {
+            "success": True,
+            "pet_id": pet_id,
+            "pet_name": pet.get("name", ""),
+            "old_score": old_score,
+            "new_score": new_score,
+            "score_delta": score_delta,
+            "folder_scores": folder_scores
+        }
+        
+    except Exception as e:
+        logger.error(f"[SOUL-SCORE] Error recalculating score: {e}")
+        return {"success": False, "error": str(e)}
+
+
+# ============================================================================
 # MAIN SOUL-FIRST PROMPT BUILDER
 # ============================================================================
 
