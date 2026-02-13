@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import InlineConciergeCard from './InlineConciergeCard';
+import PlacesWithConcierge from './PlacesWithConcierge';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // UTILITY FUNCTIONS
