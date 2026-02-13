@@ -9609,6 +9609,147 @@ async def mira_chat(
         }
     
     # ═══════════════════════════════════════════════════════════════════════════
+    # UNIFORM SERVICE HANDOFF FLOW - When user triggers a service action
+    # This handles clicks on service buttons like "Arrange Table", "Build Meal Plan"
+    # Response: Show confirmation card, create ticket, hand off to concierge
+    # ═══════════════════════════════════════════════════════════════════════════
+    
+    # Service trigger patterns - exact matches for button clicks and typed requests
+    service_triggers = {
+        "arrange_table": {
+            "patterns": ["arrange table", "arrange a table", "book table", "book a table", "reserve table", "reserve a table"],
+            "display_name": "Table Reservation",
+            "category": "dine",
+            "icon": "calendar"
+        },
+        "check_availability": {
+            "patterns": ["check availability", "check the availability", "is it available"],
+            "display_name": "Availability Check",
+            "category": "dine",
+            "icon": "clock"
+        },
+        "confirm_policy": {
+            "patterns": ["confirm pet policy", "confirm policy", "check pet policy", "verify pet policy"],
+            "display_name": "Pet Policy Verification",
+            "category": "dine",
+            "icon": "shield"
+        },
+        "build_meal_plan": {
+            "patterns": ["build meal plan", "build weekly rotation", "create meal plan", "make meal plan"],
+            "display_name": "Custom Meal Plan",
+            "category": "dine",
+            "icon": "utensils"
+        },
+        "nutrition_consult": {
+            "patterns": ["arrange nutrition consult", "nutrition consult", "nutritionist", "diet consultation"],
+            "display_name": "Nutrition Consultation",
+            "category": "care",
+            "icon": "stethoscope"
+        },
+        "grooming_booking": {
+            "patterns": ["book grooming", "arrange grooming", "grooming appointment", "schedule grooming"],
+            "display_name": "Grooming Appointment",
+            "category": "care",
+            "icon": "scissors"
+        },
+        "vet_booking": {
+            "patterns": ["book vet", "arrange vet", "vet appointment", "schedule vet", "vet visit"],
+            "display_name": "Vet Appointment",
+            "category": "care",
+            "icon": "heart-pulse"
+        },
+        "boarding_booking": {
+            "patterns": ["book boarding", "arrange boarding", "find boarding", "pet sitting", "dog sitting"],
+            "display_name": "Boarding Arrangement",
+            "category": "stay",
+            "icon": "home"
+        },
+        "travel_planning": {
+            "patterns": ["plan travel", "arrange travel", "travel with pet", "pet travel"],
+            "display_name": "Travel Planning",
+            "category": "travel",
+            "icon": "plane"
+        }
+    }
+    
+    # Check if user message matches a service trigger
+    triggered_service = None
+    for service_id, config in service_triggers.items():
+        if any(pattern in user_msg_lower for pattern in config["patterns"]):
+            triggered_service = {
+                "id": service_id,
+                **config
+            }
+            break
+    
+    if triggered_service:
+        logger.info(f"[SERVICE HANDOFF] Triggered: {triggered_service['id']} for {pet_name}")
+        
+        # Create service ticket
+        now = datetime.now(timezone.utc).isoformat()
+        ticket_id = f"SVC-{int(datetime.now().timestamp())}"
+        
+        try:
+            service_ticket = {
+                "ticket_id": ticket_id,
+                "service_id": triggered_service["id"],
+                "service_name": triggered_service["display_name"],
+                "category": triggered_service["category"],
+                "pet_id": selected_pet.get("id") if selected_pet else None,
+                "pet_name": pet_name,
+                "member_email": user.get("email") if user else None,
+                "member_name": user.get("name") if user else "Guest",
+                "original_request": user_message,
+                "session_id": session_id,
+                "status": "pending",
+                "source": "mira_service_handoff",
+                "created_at": now,
+                "updated_at": now
+            }
+            
+            if db:
+                await db.concierge_tasks.insert_one(service_ticket)
+                logger.info(f"[SERVICE HANDOFF] Ticket created: {ticket_id}")
+        except Exception as ticket_err:
+            logger.error(f"[SERVICE HANDOFF] Ticket creation failed: {ticket_err}")
+        
+        # Build confirmation response
+        confirmation_response = f"""Got it! I've sent this to your **Concierge®** team.
+
+**Service Requested:** {triggered_service['display_name']}
+**For:** {pet_name}
+**Reference:** #{ticket_id}
+
+Your concierge has received your request and will get back to you shortly via WhatsApp or email.
+
+Is there anything else I can help you with while you wait?"""
+        
+        return {
+            "success": True,
+            "response": confirmation_response,
+            "session_id": session_id,
+            "pillar": triggered_service["category"],
+            "intent": "service_handoff_confirmed",
+            "service_desk_ticket_id": ticket_id,
+            # Service confirmation card data
+            "service_confirmation": {
+                "ticket_id": ticket_id,
+                "service_name": triggered_service["display_name"],
+                "service_id": triggered_service["id"],
+                "pet_name": pet_name,
+                "status": "pending",
+                "icon": triggered_service["icon"],
+                "message": "Your concierge has received your request and will get back to you."
+            },
+            "follow_ups": [
+                {"text": "Check another place", "type": "action"},
+                {"text": "Something else", "type": "action"}
+            ],
+            "products": [],
+            "services": []
+        }
+    
+    # ═══════════════════════════════════════════════════════════════════════════
     # MEAL PLAN INTENT DETECTION - Before general flow
     # Lead with diet type + weight, NOT allergies
     # ═══════════════════════════════════════════════════════════════════════════
