@@ -1,7 +1,7 @@
 // Service Worker for The Doggy Company PWA
 // Handles caching, offline functionality, and push notifications
 
-const CACHE_NAME = 'tdc-pwa-v3';
+const CACHE_NAME = 'tdc-pwa-v4'; // Updated to force cache refresh
 const urlsToCache = [
   '/',
   '/index.html',
@@ -13,8 +13,9 @@ const urlsToCache = [
 // Badge count tracking
 let badgeCount = 0;
 
-// Install event - cache core assets
+// Install event - cache core assets and skip waiting
 self.addEventListener('install', (event) => {
+  console.log('PWA: Installing new service worker v4');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -22,6 +23,7 @@ self.addEventListener('install', (event) => {
         return cache.addAll(urlsToCache);
       })
   );
+  // Force immediate activation
   self.skipWaiting();
 });
 
