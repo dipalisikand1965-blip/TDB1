@@ -18,7 +18,7 @@ import {
   ShoppingBag, PawPrint, Bot, History, Plus, Check, Search,
   ThumbsUp, ThumbsDown, X, Phone, Mail, MessageSquare, AlertCircle,
   Star, Crown, Gift, Volume2, VolumeX, Wand2, ArrowRight, ExternalLink, Shield,
-  Award, RefreshCw, MapPin, Navigation, Play
+  Award, RefreshCw, MapPin, Navigation, Play, TrendingUp, BookOpen, Users
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../utils/api';
