@@ -1698,6 +1698,23 @@ const MiraDemoPage = () => {
       ];
     }
     
+    // ═══════════════════════════════════════════════════════════════════════════
+    // MEAL PLAN STYLE (ONLY after allergies confirmed - NOT when asking about allergies)
+    // ═══════════════════════════════════════════════════════════════════════════
+    // "simple and consistent" OR "varied rotation" - asking about meal plan style
+    if ((messageLower.includes('simple') && messageLower.includes('consistent')) ||
+        (messageLower.includes('varied') && messageLower.includes('rotation')) ||
+        (messageLower.includes('simple routine') || messageLower.includes('rotation plan'))) {
+      // Make sure we're NOT still asking about allergies
+      if (!messageLower.includes('allerg')) {
+        return [
+          { text: 'Simple daily plan', value: 'I prefer a simple and consistent daily routine.' },
+          { text: 'Varied rotation', value: 'I\'d like a varied weekly rotation.' },
+          { text: 'Not sure', value: 'I\'m not sure, what would you recommend?' }
+        ];
+      }
+    }
+    
     // Food type: "dry food, wet food, or open to either?"
     if (messageLower.includes('dry food') || messageLower.includes('wet food') || messageLower.includes('kibble')) {
       return [
