@@ -1117,7 +1117,80 @@ const MojoProfileModal = ({
     );
   }, []);
   
-  // Handle add/edit click for a section
+  // Handle inline edit click
+  const handleEditSectionClick = useCallback((sectionId) => {
+    hapticFeedback.buttonTap();
+    setEditingSection(sectionId);
+    // Ensure section is expanded when editing
+    if (!expandedSections.includes(sectionId)) {
+      setExpandedSections(prev => [...prev, sectionId]);
+    }
+  }, [expandedSections]);
+  
+  // Cancel editing
+  const handleCancelEdit = useCallback(() => {
+    setEditingSection(null);
+  }, []);
+  
+  // Save edited data to backend
+  const handleSaveSection = useCallback(async (sectionId, data) => {
+    if (!pet?.id || !apiUrl) return;
+    
+    setSaving(true);
+    console.log('[MOJO] Saving section:', sectionId, data);
+    
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      
+      // Call the bulk answers endpoint
+      const response = await fetch(`${apiUrl}/api/pet-soul/profile/${pet.id}/answers/bulk`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to save');
+      }
+      
+      const result = await response.json();
+      console.log('[MOJO] Save result:', result);
+      
+      // Update local state with new data
+      setFullPetData(prev => ({
+        ...prev,
+        doggy_soul_answers: {
+          ...(prev?.doggy_soul_answers || {}),
+          ...data
+        }
+      }));
+      
+      // Update soul score if returned
+      if (result.overall_score !== undefined) {
+        setComputedSoulScore(Math.round(result.overall_score));
+      }
+      
+      // Show success toast
+      setSaveToast({ type: 'success', message: 'Saved!' });
+      setTimeout(() => setSaveToast(null), 2000);
+      
+      // Exit edit mode
+      setEditingSection(null);
+      
+      // Refresh full data to get updated scores
+      fetchFullPetData();
+      
+    } catch (err) {
+      console.error('[MOJO] Save error:', err);
+      setSaveToast({ type: 'error', message: 'Failed to save' });
+      setTimeout(() => setSaveToast(null), 3000);
+    } finally {
+      setSaving(false);
+    }
+  }, [pet?.id, apiUrl, token]);
+  
+  // Handle add/edit click for a section (legacy - navigates away)
   const handleAddClick = useCallback((sectionId) => {
     hapticFeedback.buttonTap();
     if (onEditSection) {
