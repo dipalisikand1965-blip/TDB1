@@ -229,7 +229,7 @@ useSession: sessionId, setSessionId, sessionRecovered, setSessionRecovered
 
 - **Email**: `dipali@clubconcierge.in`
 - **Password**: `lola4304`
-- **Preview URL**: `https://pet-identity-layer.preview.emergentagent.com`
+- **Preview URL**: `https://paw-points-live.preview.emergentagent.com`
 
 ---
 

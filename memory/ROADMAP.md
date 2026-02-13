@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://pet-identity-layer.preview.emergentagent.com
+https://paw-points-live.preview.emergentagent.com
 
 ---
 

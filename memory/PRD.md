@@ -344,7 +344,7 @@ From `/app/frontend/src/pages/MiraDemoBackupPage.jsx`:
 ---
 
 ## Preview URL
-**Working:** https://pet-identity-layer.preview.emergentagent.com/mira-demo
+**Working:** https://paw-points-live.preview.emergentagent.com/mira-demo
 
 ---
 
