@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 
 // All possible questions organized by pillar
+// ALIGNED WITH canonical_answers.py - includes all 26 canonical scoring fields
 const SOUL_QUESTIONS = {
   identity_temperament: {
     name: 'Identity & Temperament',
@@ -25,15 +26,17 @@ const SOUL_QUESTIONS = {
       { id: 'name', label: "Pet's Name", question: "What is your pet's name?", tooltip: "Your pet's full name as you call them" },
       { id: 'breed', label: 'Breed', question: "What breed is your pet?", tooltip: "Pure breed or mix - helps us understand typical traits" },
       { id: 'dob', label: 'Date of Birth', question: "When was your pet born?", format: 'date', tooltip: "Exact date or approximate - helps track milestones" },
-      { id: 'age', label: 'Age', question: "How old is your pet?", tooltip: "In years and months if known" },
+      { id: 'life_stage', label: 'Life Stage', question: "What life stage is your pet in?", tooltip: "Puppy, adult, or senior - affects care recommendations", scoring: true },
       { id: 'gender', label: 'Gender', question: "Is your pet male or female?", tooltip: "Biological sex of your pet" },
       { id: 'weight', label: 'Weight', question: "How much does your pet weigh?", tooltip: "Current weight in kg - important for food/medicine dosing" },
       { id: 'size', label: 'Size', question: "What size is your pet? (Small/Medium/Large)", tooltip: "Small (<10kg), Medium (10-25kg), Large (25kg+)" },
-      { id: 'general_nature', label: 'Temperament', question: "Is your pet generally calm or energetic?", tooltip: "Overall energy level throughout the day" },
+      { id: 'temperament', label: 'Temperament', question: "What is your pet's general temperament?", tooltip: "Calm, energetic, playful, shy, etc.", scoring: true },
+      { id: 'energy_level', label: 'Energy Level', question: "What is your pet's typical energy level?", tooltip: "Low, moderate, or high energy", scoring: true },
       { id: 'describe_3_words', label: 'Personality', question: "Describe your pet in 3 words", tooltip: "E.g., playful, loyal, curious - what makes them unique?" },
+      { id: 'social_with_people', label: 'Social with People', question: "How comfortable is your pet with new people?", tooltip: "Very social, friendly after warming up, shy, or anxious?", scoring: true },
       { id: 'stranger_reaction', label: 'Stranger Reaction', question: "How does your pet react to strangers?", tooltip: "Friendly, shy, barks, hides, or cautious?" },
       { id: 'handling_comfort', label: 'Handling Comfort', question: "Is your pet comfortable being handled (paws, ears, mouth)?", tooltip: "Important for grooming and vet visits" },
-      { id: 'loud_sounds', label: 'Sound Sensitivity', question: "How does your pet react to loud sounds (thunder, fireworks)?", tooltip: "Stays calm, hides, trembles, or needs comfort?" },
+      { id: 'noise_sensitivity', label: 'Noise Sensitivity', question: "How does your pet react to loud sounds (thunder, fireworks)?", tooltip: "Stays calm, hides, trembles, or needs comfort?", scoring: true },
     ]
   },
   family_pack: {
@@ -41,12 +44,12 @@ const SOUL_QUESTIONS = {
     icon: Users,
     color: 'blue',
     questions: [
-      { id: 'most_attached_to', label: 'Most Attached To', question: "Who is your pet most attached to in the family?", tooltip: "Their favorite human - who they follow around most" },
-      { id: 'behavior_with_dogs', label: 'With Other Dogs', question: "How does your pet behave around other dogs?", tooltip: "Friendly, shy, reactive, selective, playful, or ignores them" },
-      { id: 'behavior_with_humans', label: 'With People', question: "How does your pet behave with people?", tooltip: "Loves everyone, shy with strangers, protective, cautious" },
-      { id: 'other_pets', label: 'Other Pets at Home', question: "Are there other pets in the household?", tooltip: "Dogs, cats, birds - and how they get along" },
-      { id: 'kids_at_home', label: 'Kids at Home', question: "Are there children in the household?", tooltip: "Helps us understand family dynamics and pet's comfort with kids" },
-      { id: 'primary_caretaker', label: 'Primary Caretaker', question: "Who is the primary caretaker?", tooltip: "Who feeds, walks, and spends most time with your pet" },
+      { id: 'primary_bond', label: 'Primary Bond', question: "Who is your pet most attached to in the family?", tooltip: "Their favorite human - who they follow around most", scoring: true },
+      { id: 'social_with_dogs', label: 'Social with Dogs', question: "How does your pet behave around other dogs?", tooltip: "Friendly, shy, reactive, selective, playful, or ignores them", scoring: true },
+      { id: 'other_pets', label: 'Other Pets', question: "Do you have other pets at home?", tooltip: "Dogs, cats, birds - and how they get along", scoring: true },
+      { id: 'kids_at_home', label: 'Kids at Home', question: "Are there children in the household?", tooltip: "Helps us understand family dynamics and pet's comfort with kids", scoring: true },
+      { id: 'lives_with', label: 'Lives With', question: "Who does your pet live with?", tooltip: "Adults, children, other pets" },
+      { id: 'attention_seeking', label: 'Attention Seeking', question: "Does your dog like being the centre of attention?", tooltip: "Yes, sometimes, or no" },
     ]
   },
   rhythm_routine: {
@@ -54,13 +57,14 @@ const SOUL_QUESTIONS = {
     icon: Clock,
     color: 'green',
     questions: [
+      { id: 'morning_routine', label: 'Morning Routine', question: "What does your pet's morning typically look like?", tooltip: "Early riser, slow starter, breakfast first, or morning walk priority?", scoring: true },
+      { id: 'feeding_times', label: 'Feeding Times', question: "When do you typically feed your pet?", tooltip: "Once, twice, three times a day, or free feeding?", scoring: true },
+      { id: 'exercise_needs', label: 'Exercise Needs', question: "How much daily exercise does your pet need?", tooltip: "Light (15-30 mins), moderate (30-60 mins), or active (1+ hours)?", scoring: true },
       { id: 'walks_per_day', label: 'Daily Walks', question: "How many walks per day does your pet need?", tooltip: "1-2 short, 2-3 medium, or 3+ long walks" },
       { id: 'energetic_time', label: 'Most Active Time', question: "When is your pet most active/energetic?", tooltip: "Morning zoomies? Evening energy burst? Or consistent all day?" },
-      { id: 'sleep_schedule', label: 'Sleep Schedule', question: "What is your pet's sleep schedule?", tooltip: "Early riser, night owl, or sleeps most of the day?" },
-      { id: 'feeding_times', label: 'Feeding Times', question: "When do you feed your pet?", tooltip: "E.g., 8am and 6pm, or free feeding throughout day" },
-      { id: 'separation_anxiety', label: 'Separation Comfort', question: "Does your pet get anxious when left alone?", tooltip: "Signs: barking, destruction, accidents, pacing when you leave" },
-      { id: 'alone_comfort', label: 'Alone Comfort', question: "Is your pet used to being left alone during the day?", tooltip: "How many hours can they stay alone comfortably?" },
-      { id: 'potty_schedule', label: 'Potty Schedule', question: "What is your pet's potty routine?", tooltip: "First thing in morning, after meals, before bed, etc." },
+      { id: 'sleep_location', label: 'Sleep Schedule', question: "Where does your pet usually sleep?", tooltip: "Your bed, their own bed, crate, or sofa/floor?" },
+      { id: 'alone_time_comfort', label: 'Alone Time Comfort', question: "Is your pet comfortable being left alone?", tooltip: "How many hours can they stay alone comfortably?", scoring: true },
+      { id: 'separation_anxiety', label: 'Separation Anxiety', question: "Does your pet have separation anxiety?", tooltip: "Signs: barking, destruction, accidents, pacing when you leave" },
     ]
   },
   home_comforts: {
@@ -68,11 +72,10 @@ const SOUL_QUESTIONS = {
     icon: Home,
     color: 'amber',
     questions: [
+      { id: 'favorite_spot', label: 'Favorite Spot', question: "Where is your pet's favorite spot at home?", tooltip: "Couch, their bed, sunny window, near family, or outdoors?", scoring: true },
       { id: 'space_preference', label: 'Space Preference', question: "Does your pet prefer quiet or busy spaces?", tooltip: "Some pets love action, others need calm quiet corners" },
-      { id: 'sleeping_spot', label: 'Sleeping Spot', question: "Where does your pet like to sleep?", tooltip: "Bed with you, own bed, crate, couch, or floor?" },
       { id: 'crate_trained', label: 'Crate Trained', question: "Is your pet crate/carrier trained?", tooltip: "Important for travel, vet visits, and boarding" },
-      { id: 'favorite_spot', label: 'Favorite Spot', question: "What is your pet's favorite spot at home?", tooltip: "Sunny window, under the table, next to you on couch?" },
-      { id: 'allowed_on_furniture', label: 'Furniture Access', question: "Is your pet allowed on furniture?", tooltip: "Couch, bed, chairs - helps with boarding/stay expectations" },
+      { id: 'favorite_item', label: 'Favorite Item', question: "Does your dog have a favourite item?", tooltip: "Toy, blanket, bed, or none" },
       { id: 'outdoor_access', label: 'Outdoor Access', question: "Does your pet have outdoor/garden access?", tooltip: "Backyard, balcony, terrace, or strictly indoor?" },
     ]
   },
@@ -81,11 +84,10 @@ const SOUL_QUESTIONS = {
     icon: Plane,
     color: 'sky',
     questions: [
-      { id: 'car_rides', label: 'Car Rides', question: "How does your pet handle car rides?", tooltip: "Loves it, tolerates it, gets anxious, or motion sick?" },
-      { id: 'travel_style', label: 'Travel Preference', question: "How does your pet prefer to travel?", tooltip: "In carrier, loose in car, on lap, looking out window?" },
+      { id: 'car_comfort', label: 'Car Comfort', question: "How does your pet handle car rides?", tooltip: "Loves it, tolerates it, gets anxious, or motion sick?", scoring: true },
+      { id: 'travel_readiness', label: 'Travel Readiness', question: "How travel-ready is your pet?", tooltip: "Loves adventures, needs preparation, or prefers staying home?", scoring: true },
+      { id: 'car_rides', label: 'Car Rides', question: "Does your dog like car rides?", tooltip: "Loves them, neutral, anxious, or gets motion sickness?" },
       { id: 'hotel_experience', label: 'Boarding Experience', question: "Has your pet stayed at a hotel/boarding before?", tooltip: "Helps us know if they're used to new environments" },
-      { id: 'motion_sickness', label: 'Motion Sickness', question: "Does your pet get motion sick?", tooltip: "Signs: drooling, nausea, vomiting during travel" },
-      { id: 'flight_experience', label: 'Flight Experience', question: "Has your pet traveled by flight?", tooltip: "Cabin or cargo experience - domestic or international?" },
       { id: 'travel_anxiety', label: 'Travel Anxiety', question: "Does your pet get anxious during travel?", tooltip: "Panting, whining, shaking, or restless during journeys?" },
     ]
   },
@@ -94,14 +96,13 @@ const SOUL_QUESTIONS = {
     icon: Utensils,
     color: 'orange',
     questions: [
-      { id: 'food_allergies', label: 'Food Allergies', question: "Does your pet have any food allergies?", isArray: true, tooltip: "Common: chicken, beef, grains, dairy, eggs" },
+      { id: 'food_allergies', label: 'Food Allergies', question: "Does your pet have any food allergies?", isArray: true, tooltip: "Common: chicken, beef, grains, dairy, eggs", scoring: true },
+      { id: 'food_motivation', label: 'Food Motivation', question: "How food-motivated is your pet?", tooltip: "Very motivated, moderately, or not interested?", scoring: true },
+      { id: 'favorite_protein', label: 'Favorite Protein', question: "What is your pet's favorite protein?", tooltip: "Chicken, beef, lamb, fish, or plant-based?", scoring: true },
+      { id: 'treat_preference', label: 'Treat Preference', question: "What type of treats does your pet prefer?", tooltip: "Soft/chewy, crunchy, freeze-dried, or fresh?", scoring: true },
       { id: 'favorite_treats', label: 'Favorite Treats', question: "What are your pet's favorite treats?", isArray: true, tooltip: "What makes their tail wag? Cheese, chicken, biscuits?" },
-      { id: 'dislikes', label: 'Food Dislikes', question: "What foods does your pet dislike?", isArray: true, tooltip: "Foods they turn their nose up at or refuse to eat" },
       { id: 'diet_type', label: 'Diet Type', question: "What type of diet is your pet on?", tooltip: "Kibble, wet food, raw, home-cooked, or mixed diet?" },
-      { id: 'food_brand', label: 'Food Brand', question: "What food brand do you use?", tooltip: "Helps us maintain consistency during stays and daycare" },
       { id: 'sensitive_stomach', label: 'Stomach Sensitivity', question: "Does your pet have a sensitive stomach?", tooltip: "Prone to upset stomach, loose stools, or vomiting?" },
-      { id: 'prefers_grain_free', label: 'Grain-Free', question: "Does your pet need grain-free food?", tooltip: "Some pets have grain sensitivities or allergies" },
-      { id: 'dietary_restrictions', label: 'Dietary Restrictions', question: "Any dietary restrictions to note?", tooltip: "Weight management, prescription diet, limited ingredient?" },
     ]
   },
   training_behaviour: {
@@ -109,12 +110,12 @@ const SOUL_QUESTIONS = {
     icon: GraduationCap,
     color: 'indigo',
     questions: [
-      { id: 'training_level', label: 'Training Level', question: "What is your pet's training level?", tooltip: "Basic (sit, stay) to Advanced (off-leash, multiple tricks)" },
-      { id: 'commands_known', label: 'Commands Known', question: "What commands does your pet know?", isArray: true, tooltip: "List commands like sit, stay, come, heel, down, paw, leave it" },
+      { id: 'training_level', label: 'Training Level', question: "What is your pet's training level?", tooltip: "Basic (sit, stay) to Advanced (off-leash, multiple tricks)", scoring: true },
+      { id: 'motivation_type', label: 'Motivation Type', question: "What motivates your pet during training?", tooltip: "Treats/food, praise, toys, or a mix?", scoring: true },
+      { id: 'behavior_issues', label: 'Behavior Issues', question: "Does your pet have any behavioral issues?", isArray: true, tooltip: "Barking, jumping, pulling, resource guarding, etc.", scoring: true },
+      { id: 'training_response', label: 'Training Response', question: "How does your dog respond best to training?", tooltip: "Treats, praise, toys, or play?" },
       { id: 'leash_behavior', label: 'Leash Behavior', question: "How does your pet behave on a leash?", tooltip: "Pulls hard, walks calmly, reactive to other dogs, or loose leash?" },
-      { id: 'recall', label: 'Recall', question: "Does your pet come when called?", tooltip: "Recall = coming back when you call their name. Critical for safety!" },
-      { id: 'problematic_behaviors', label: 'Behavioral Issues', question: "Any behavioral issues to work on?", isArray: true, tooltip: "E.g., jumping on guests, excessive barking, counter surfing, chewing" },
-      { id: 'anxiety_triggers', label: 'Anxiety Triggers', question: "What triggers anxiety in your pet?", isArray: true, tooltip: "Thunderstorms, fireworks, strangers, vet visits, being alone?" },
+      { id: 'barking', label: 'Barking', question: "Does your dog bark often?", tooltip: "Yes, occasionally, or rarely?" },
     ]
   },
   long_horizon: {
@@ -122,14 +123,14 @@ const SOUL_QUESTIONS = {
     icon: Heart,
     color: 'rose',
     questions: [
+      { id: 'health_conditions', label: 'Health Conditions', question: "Does your pet have any health conditions?", isArray: true, tooltip: "Diabetes, arthritis, allergies, heart conditions, etc.", scoring: true },
+      { id: 'vet_comfort', label: 'Vet Comfort', question: "How comfortable is your pet at the vet?", tooltip: "Very comfortable, slightly nervous, anxious, or very stressed?", scoring: true },
+      { id: 'grooming_tolerance', label: 'Grooming Tolerance', question: "How does your pet handle grooming?", tooltip: "Loves it, tolerates it, gets anxious, or very difficult?", scoring: true },
       { id: 'medical_conditions', label: 'Medical Conditions', question: "Does your pet have any medical conditions?", isArray: true, tooltip: "Diabetes, arthritis, allergies, heart conditions, etc." },
       { id: 'medications', label: 'Medications', question: "Is your pet on any medications?", isArray: true, tooltip: "Include dosage and frequency if possible" },
       { id: 'vet_name', label: 'Veterinarian', question: "Who is your pet's veterinarian?", tooltip: "Clinic name and doctor for emergency contact" },
-      { id: 'last_vet_visit', label: 'Last Vet Visit', question: "When was the last vet visit?", format: 'date', tooltip: "Regular checkups recommended every 6-12 months" },
       { id: 'vaccination_status', label: 'Vaccination Status', question: "Is your pet up to date on vaccinations?", tooltip: "Rabies, DHPP, Bordetella - required for many services" },
       { id: 'spayed_neutered', label: 'Spayed/Neutered', question: "Is your pet spayed/neutered?", tooltip: "Important for boarding and daycare placements" },
-      { id: 'insurance', label: 'Pet Insurance', question: "Does your pet have insurance?", tooltip: "Company name and policy if applicable" },
-      { id: 'special_needs', label: 'Special Needs', question: "Any special care needs to note?", tooltip: "Mobility issues, vision/hearing loss, anxiety support, etc." },
     ]
   }
 };
