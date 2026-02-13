@@ -3910,7 +3910,15 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         # EMOTIONAL modes never show products
         no_products_ever = mira_mode in ["COMFORT", "EMERGENCY"]
         
-        logger.info(f"[MIRA MODE] Detected: {mira_mode} | First turn: {is_first_turn} | Clarify only: {clarify_only}")
+        # ═══════════════════════════════════════════════════════════════════════════
+        # EMERGENCY SUPPRESSION (Member Logic Card requirement)
+        # When in EMERGENCY mode, suppress ALL commerce/rewards
+        # ═══════════════════════════════════════════════════════════════════════════
+        suppress_commerce = mira_mode == "EMERGENCY"
+        if suppress_commerce:
+            logger.info("[EMERGENCY] Commerce/rewards SUPPRESSED - safety first")
+        
+        logger.info(f"[MIRA MODE] Detected: {mira_mode} | First turn: {is_first_turn} | Clarify only: {clarify_only} | Commerce suppressed: {suppress_commerce}")
         
         # ═══════════════════════════════════════════════════════════════════════════
         # TOPIC SHIFT DETECTION - Detect when conversation changes topic
