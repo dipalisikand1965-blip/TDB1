@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://pet-soul-alignment.preview.emergentagent.com
+https://soul-score-audit-1.preview.emergentagent.com
 
 ---
 

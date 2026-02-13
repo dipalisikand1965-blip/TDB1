@@ -70,7 +70,7 @@ xl: 32px - Major divisions
 | **Test User** | dipali@clubconcierge.in | test123 |
 | **Admin** | aditya | lola4304 |
 
-**Preview URL:** https://pet-soul-alignment.preview.emergentagent.com
+**Preview URL:** https://soul-score-audit-1.preview.emergentagent.com
 
 ---
 
