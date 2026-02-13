@@ -281,6 +281,34 @@ const SoulFormModal = ({
                 </div>
               )}
               
+              {/* Show Paw Points Earned */}
+              {pawPointsEarned > 0 && (
+                <div className="mb-4 flex items-center justify-center gap-2 text-amber-400">
+                  <Gift size={20} />
+                  <span className="font-semibold">+{pawPointsEarned} Paw Points Earned!</span>
+                </div>
+              )}
+              
+              {/* Show New Badges */}
+              {newBadges.length > 0 && (
+                <div className="mb-4 p-3 bg-purple-500/20 rounded-xl border border-purple-500/30">
+                  <div className="flex items-center justify-center gap-2 text-purple-300 mb-2">
+                    <Trophy size={18} />
+                    <span className="font-medium text-sm">New Badge{newBadges.length > 1 ? 's' : ''} Unlocked!</span>
+                  </div>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {newBadges.map((badge, idx) => (
+                      <span 
+                        key={idx}
+                        className="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-medium rounded-full"
+                      >
+                        {formatBadgeName(badge)}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
               <p className="text-white/80 mb-6">
                 Mira now knows {pet.name} even better! 
                 <br />
