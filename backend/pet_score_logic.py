@@ -192,7 +192,7 @@ PET_SCORE_RULES = {
         "tier_required": "soul_explorer",
     },
     
-    # ============ FOOD & NUTRITION (10 points total) ============
+    # ============ FOOD & NUTRITION (9 points total) ============
     "favorite_protein": {
         "weight": 3,
         "category": "nutrition",
@@ -210,7 +210,7 @@ PET_SCORE_RULES = {
         "tier_required": "soul_seeker",
     },
     "treat_preference": {
-        "weight": 2,
+        "weight": 3,  # +1 to reach 100 total
         "category": "nutrition",
         "label": "Treat Preference",
         "icon": "🦴",
