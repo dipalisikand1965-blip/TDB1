@@ -87,13 +87,30 @@ class ErrorBoundary extends React.Component {
     }
   };
 
-  handleRetry = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
-    window.location.reload();
+  handleRetry = async () => {
+    // Clear everything before reload
+    try {
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (const reg of regs) await reg.unregister();
+      }
+      if ('caches' in window) {
+        const names = await caches.keys();
+        for (const name of names) await caches.delete(name);
+      }
+      sessionStorage.clear();
+      localStorage.removeItem('tdc_app_version');
+    } catch (e) {}
+    
+    // Force reload with cache bypass
+    window.location.href = window.location.href.split('?')[0] + '?_=' + Date.now();
   };
 
   render() {
     if (this.state.hasError) {
+      // Check if it's a chunk error
+      const isChunkError = this.state.error?.message?.includes('chunk');
+      
       return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
@@ -102,16 +119,20 @@ class ErrorBoundary extends React.Component {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Oops! Something went wrong</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              {isChunkError ? 'New Update Available!' : 'Oops! Something went wrong'}
+            </h2>
             <p className="text-gray-600 mb-6">
-              We're sorry, but something unexpected happened. Please try refreshing the page.
+              {isChunkError 
+                ? 'A new version is available. Click below to update.'
+                : 'We\'re sorry, but something unexpected happened. Please try refreshing the page.'}
             </p>
             <div className="space-y-3">
               <button
                 onClick={this.handleRetry}
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
               >
-                Refresh Page
+                {isChunkError ? 'Update Now' : 'Refresh Page'}
               </button>
               <button
                 onClick={() => window.location.href = '/'}
