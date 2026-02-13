@@ -454,6 +454,358 @@ const HealthProfileContent = memo(({ pet }) => {
   );
 });
 
+// Diet & Food Content Component
+const DietProfileContent = memo(({ pet }) => {
+  const soulAnswers = pet?.doggy_soul_answers || {};
+  const preferences = pet?.preferences || {};
+  
+  const items = [];
+  
+  // Diet type
+  const dietType = soulAnswers.diet_type || soulAnswers.food_type || preferences.diet_type;
+  if (dietType) items.push({ label: 'Diet Type', value: dietType, icon: '🍽️' });
+  
+  // Feeding schedule
+  const feedingSchedule = soulAnswers.feeding_schedule || preferences.feeding_schedule;
+  if (feedingSchedule) items.push({ label: 'Feeding Schedule', value: feedingSchedule, icon: '⏰' });
+  
+  // Favorite flavors
+  const flavors = preferences.favorite_flavors || soulAnswers.favorite_flavors;
+  if (flavors && (Array.isArray(flavors) ? flavors.length > 0 : flavors)) {
+    items.push({ 
+      label: 'Favorite Flavors', 
+      value: Array.isArray(flavors) ? flavors.join(', ') : flavors, 
+      icon: '❤️' 
+    });
+  }
+  
+  // Treat preferences
+  const treats = soulAnswers.treat_preferences || preferences.favorite_treats;
+  if (treats) {
+    items.push({ 
+      label: 'Treats', 
+      value: Array.isArray(treats) ? treats.join(', ') : treats, 
+      icon: '🦴' 
+    });
+  }
+  
+  return (
+    <div className="diet-profile-content">
+      {items.length > 0 ? (
+        <div className="diet-items-list">
+          {items.map((item, i) => (
+            <div key={i} className="diet-item">
+              <span className="diet-icon">{item.icon}</span>
+              <span className="diet-label">{item.label}</span>
+              <span className="diet-value">{item.value}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="diet-empty-state">
+          <Apple className="w-8 h-8 text-orange-400 mb-2" />
+          <p>No diet information added yet</p>
+          <p className="text-xs text-gray-400 mt-1">Add diet preferences for personalized food recommendations</p>
+        </div>
+      )}
+    </div>
+  );
+});
+
+// Behaviour & Training Content Component
+const BehaviourProfileContent = memo(({ pet }) => {
+  const soulAnswers = pet?.doggy_soul_answers || {};
+  
+  const items = [];
+  
+  if (soulAnswers.training_level) items.push({ label: 'Training Level', value: soulAnswers.training_level, icon: '🎓' });
+  if (soulAnswers.commands_known) {
+    const commands = Array.isArray(soulAnswers.commands_known) 
+      ? soulAnswers.commands_known.join(', ') 
+      : soulAnswers.commands_known;
+    items.push({ label: 'Commands Known', value: commands, icon: '✋' });
+  }
+  if (soulAnswers.leash_behavior) items.push({ label: 'Leash Behavior', value: soulAnswers.leash_behavior, icon: '🔗' });
+  if (soulAnswers.behavioral_issues) {
+    const issues = Array.isArray(soulAnswers.behavioral_issues) 
+      ? soulAnswers.behavioral_issues.join(', ') 
+      : soulAnswers.behavioral_issues;
+    if (issues && issues.toLowerCase() !== 'none') {
+      items.push({ label: 'Working On', value: issues, icon: '🎯' });
+    }
+  }
+  
+  return (
+    <div className="behaviour-profile-content">
+      {items.length > 0 ? (
+        <div className="behaviour-items-list">
+          {items.map((item, i) => (
+            <div key={i} className="behaviour-item">
+              <span className="behaviour-icon">{item.icon}</span>
+              <span className="behaviour-label">{item.label}</span>
+              <span className="behaviour-value">{item.value}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="behaviour-empty-state">
+          <GraduationCap className="w-8 h-8 text-blue-400 mb-2" />
+          <p>No training information added yet</p>
+          <p className="text-xs text-gray-400 mt-1">Add training details for better activity recommendations</p>
+        </div>
+      )}
+    </div>
+  );
+});
+
+// Grooming & Care Content Component
+const GroomingProfileContent = memo(({ pet }) => {
+  const soulAnswers = pet?.doggy_soul_answers || {};
+  
+  const items = [];
+  
+  if (soulAnswers.coat_type) items.push({ label: 'Coat Type', value: soulAnswers.coat_type, icon: '✨' });
+  if (soulAnswers.grooming_frequency) items.push({ label: 'Grooming Schedule', value: soulAnswers.grooming_frequency, icon: '📅' });
+  if (soulAnswers.skin_sensitivity) items.push({ label: 'Skin Sensitivity', value: soulAnswers.skin_sensitivity, icon: '🧴' });
+  if (soulAnswers.bath_frequency) items.push({ label: 'Bath Frequency', value: soulAnswers.bath_frequency, icon: '🛁' });
+  
+  return (
+    <div className="grooming-profile-content">
+      {items.length > 0 ? (
+        <div className="grooming-items-list">
+          {items.map((item, i) => (
+            <div key={i} className="grooming-item">
+              <span className="grooming-icon">{item.icon}</span>
+              <span className="grooming-label">{item.label}</span>
+              <span className="grooming-value">{item.value}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grooming-empty-state">
+          <Scissors className="w-8 h-8 text-pink-400 mb-2" />
+          <p>No grooming information added yet</p>
+          <p className="text-xs text-gray-400 mt-1">Add grooming details for spa and care recommendations</p>
+        </div>
+      )}
+    </div>
+  );
+});
+
+// Routine Tracker Content Component
+const RoutineProfileContent = memo(({ pet }) => {
+  const soulAnswers = pet?.doggy_soul_answers || {};
+  
+  const items = [];
+  
+  if (soulAnswers.walk_frequency) items.push({ label: 'Walk Schedule', value: soulAnswers.walk_frequency, icon: '🚶' });
+  if (soulAnswers.exercise_needs) items.push({ label: 'Exercise Needs', value: soulAnswers.exercise_needs, icon: '🏃' });
+  if (soulAnswers.sleep_pattern) items.push({ label: 'Sleep Pattern', value: soulAnswers.sleep_pattern, icon: '😴' });
+  if (soulAnswers.daily_routine) items.push({ label: 'Daily Routine', value: soulAnswers.daily_routine, icon: '📋' });
+  
+  return (
+    <div className="routine-profile-content">
+      {items.length > 0 ? (
+        <div className="routine-items-list">
+          {items.map((item, i) => (
+            <div key={i} className="routine-item">
+              <span className="routine-icon">{item.icon}</span>
+              <span className="routine-label">{item.label}</span>
+              <span className="routine-value">{item.value}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="routine-empty-state">
+          <Calendar className="w-8 h-8 text-green-400 mb-2" />
+          <p>No routine information added yet</p>
+          <p className="text-xs text-gray-400 mt-1">Track walks, meals, and activities for better insights</p>
+        </div>
+      )}
+    </div>
+  );
+});
+
+// Documents Vault Content Component  
+const DocumentsProfileContent = memo(({ pet }) => {
+  const documents = pet?.documents || [];
+  const healthVault = pet?.health_vault || {};
+  
+  // Combine documents from various sources
+  const allDocs = [
+    ...documents,
+    ...(healthVault.vaccination_records || []).map(v => ({ type: 'vaccination', name: v.name || 'Vaccination', date: v.date })),
+    ...(healthVault.medical_records || []).map(m => ({ type: 'medical', name: m.name || 'Medical Record', date: m.date })),
+  ];
+  
+  return (
+    <div className="documents-profile-content">
+      {allDocs.length > 0 ? (
+        <div className="documents-list">
+          {allDocs.slice(0, 5).map((doc, i) => (
+            <div key={i} className="document-item">
+              <span className="document-icon">
+                {doc.type === 'vaccination' ? '💉' : doc.type === 'medical' ? '🏥' : '📄'}
+              </span>
+              <span className="document-name">{doc.name}</span>
+              {doc.date && (
+                <span className="document-date">
+                  {new Date(doc.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                </span>
+              )}
+            </div>
+          ))}
+          {allDocs.length > 5 && (
+            <div className="documents-more">+{allDocs.length - 5} more documents</div>
+          )}
+        </div>
+      ) : (
+        <div className="documents-empty-state">
+          <FileText className="w-8 h-8 text-cyan-400 mb-2" />
+          <p>No documents uploaded yet</p>
+          <p className="text-xs text-gray-400 mt-1">Store vaccination records, insurance, and prescriptions</p>
+        </div>
+      )}
+    </div>
+  );
+});
+
+// Life Timeline Content Component
+const TimelineProfileContent = memo(({ pet }) => {
+  const timeline = pet?.timeline || pet?.life_events || [];
+  const birthday = pet?.birthday || pet?.dob || pet?.doggy_soul_answers?.dob;
+  
+  // Create timeline items including birthday
+  const timelineItems = [];
+  if (birthday) {
+    timelineItems.push({
+      icon: '🎂',
+      title: `${pet?.name}'s Birthday`,
+      date: birthday,
+      type: 'birthday'
+    });
+  }
+  
+  // Add other timeline events
+  timeline.forEach(event => {
+    timelineItems.push({
+      icon: event.icon || '📍',
+      title: event.title || event.name,
+      date: event.date,
+      type: event.type || 'event'
+    });
+  });
+  
+  // Sort by date (most recent first)
+  timelineItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+  return (
+    <div className="timeline-profile-content">
+      {timelineItems.length > 0 ? (
+        <div className="timeline-list">
+          {timelineItems.slice(0, 5).map((item, i) => (
+            <div key={i} className="timeline-item">
+              <span className="timeline-icon">{item.icon}</span>
+              <div className="timeline-details">
+                <span className="timeline-title">{item.title}</span>
+                {item.date && (
+                  <span className="timeline-date">
+                    {new Date(item.date).toLocaleDateString('en-US', { 
+                      month: 'short', 
+                      day: 'numeric',
+                      year: 'numeric' 
+                    })}
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="timeline-empty-state">
+          <Clock className="w-8 h-8 text-amber-400 mb-2" />
+          <p>No timeline events yet</p>
+          <p className="text-xs text-gray-400 mt-1">Add milestones, adoption day, and memorable moments</p>
+        </div>
+      )}
+    </div>
+  );
+});
+
+// Preferences & Constraints Content Component
+const PreferencesProfileContent = memo(({ pet }) => {
+  const soulAnswers = pet?.doggy_soul_answers || {};
+  const preferences = pet?.preferences || {};
+  
+  const items = [];
+  
+  // Likes
+  const likes = soulAnswers.likes || preferences.likes;
+  if (likes) {
+    items.push({ 
+      label: 'Likes', 
+      value: Array.isArray(likes) ? likes.join(', ') : likes, 
+      icon: '💚',
+      type: 'positive'
+    });
+  }
+  
+  // Dislikes
+  const dislikes = soulAnswers.dislikes || preferences.dislikes;
+  if (dislikes) {
+    items.push({ 
+      label: 'Dislikes', 
+      value: Array.isArray(dislikes) ? dislikes.join(', ') : dislikes, 
+      icon: '🚫',
+      type: 'negative'
+    });
+  }
+  
+  // Fear triggers
+  const fears = soulAnswers.fear_triggers || preferences.fear_triggers;
+  if (fears) {
+    items.push({ 
+      label: 'Fear Triggers', 
+      value: Array.isArray(fears) ? fears.join(', ') : fears, 
+      icon: '⚡',
+      type: 'warning'
+    });
+  }
+  
+  // Special needs
+  const specialNeeds = soulAnswers.special_needs || preferences.special_needs;
+  if (specialNeeds) {
+    items.push({ 
+      label: 'Special Needs', 
+      value: Array.isArray(specialNeeds) ? specialNeeds.join(', ') : specialNeeds, 
+      icon: '💜',
+      type: 'special'
+    });
+  }
+  
+  return (
+    <div className="preferences-profile-content">
+      {items.length > 0 ? (
+        <div className="preferences-list">
+          {items.map((item, i) => (
+            <div key={i} className={`preferences-item ${item.type}`}>
+              <span className="preferences-icon">{item.icon}</span>
+              <span className="preferences-label">{item.label}</span>
+              <span className="preferences-value">{item.value}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="preferences-empty-state">
+          <Settings className="w-8 h-8 text-gray-400 mb-2" />
+          <p>No preferences added yet</p>
+          <p className="text-xs text-gray-400 mt-1">Add likes, dislikes, and constraints for personalized experiences</p>
+        </div>
+      )}
+    </div>
+  );
+});
+
 // Membership & Rewards Component
 const MembershipRewards = memo(({ membership, badges, onViewRewards }) => {
   const hasMembership = membership && (membership.tier || membership.paw_points !== undefined);
