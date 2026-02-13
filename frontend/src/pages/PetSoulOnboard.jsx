@@ -247,11 +247,53 @@ const PetSoulOnboard = () => {
     
     // Step 2: Plan Selection - no validation needed
     
-    // Step 3: Pet Details
+    // Step 3: Pet Details - All required fields
     if (step === 3) {
-      const validPet = pets.some(pet => pet.name.trim() && pet.breed);
+      // Check at least one pet with all required fields
+      const incompletePets = pets.filter(pet => {
+        const hasName = pet.name.trim();
+        const hasBreed = pet.breed;
+        const hasGender = pet.gender;
+        const hasDate = pet.birthday || pet.gotchaDate;
+        const hasFoodAllergies = pet.foodAllergies; // "None" is acceptable
+        const hasHealthConditions = pet.healthConditions; // "None" is acceptable
+        const hasTemperament = pet.temperament;
+        const hasGroomingTolerance = pet.groomingTolerance;
+        
+        return hasName && (!hasBreed || !hasGender || !hasDate || !hasFoodAllergies || !hasHealthConditions || !hasTemperament || !hasGroomingTolerance);
+      });
+      
+      const validPet = pets.some(pet => {
+        return pet.name.trim() && 
+               pet.breed && 
+               pet.gender && 
+               (pet.birthday || pet.gotchaDate) &&
+               pet.foodAllergies &&
+               pet.healthConditions &&
+               pet.temperament &&
+               pet.groomingTolerance;
+      });
+      
       if (!validPet) {
-        setError('Please enter at least one pet with name and breed');
+        // Provide specific error message
+        const firstPet = pets[0];
+        if (!firstPet.name.trim()) {
+          setError("Please enter your pet's name");
+        } else if (!firstPet.breed) {
+          setError("Please select your pet's breed");
+        } else if (!firstPet.gender) {
+          setError("Please select your pet's gender");
+        } else if (!firstPet.birthday && !firstPet.gotchaDate) {
+          setError("Please enter birth date or gotcha date");
+        } else if (!firstPet.foodAllergies) {
+          setError("Please select food allergies (or 'None')");
+        } else if (!firstPet.healthConditions) {
+          setError("Please select health conditions (or 'None')");
+        } else if (!firstPet.temperament) {
+          setError("Please select your pet's temperament");
+        } else if (!firstPet.groomingTolerance) {
+          setError("Please select grooming tolerance");
+        }
         return false;
       }
     }
