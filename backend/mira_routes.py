@@ -9802,67 +9802,28 @@ async def mira_chat(
                 user_mentioned_location = "Gurgaon"
             break
     
-    pet_name = selected_pet.get("name", "your pet") if selected_pet else "your pet"
+    pet_name = selected_pet.get("name", "your furry friend") if selected_pet else "your furry friend"
     
-    # STEP 1: If user is searching for places but hasn't specified location, START the conversation
+    # STEP 1: If user is searching for places but hasn't specified location, ASK ONE QUESTION
     if is_search_request and not user_mentioned_location:
-        place_type_questions = {
-            "restaurant": {
-                "intro": f"I'd love to help find the perfect spot for you and {pet_name} to dine! 🍽️",
-                "questions": [
-                    f"1️⃣ Which **city and area** would you like to go? (e.g., Koramangala, Indiranagar)",
-                    f"2️⃣ Is this for **today** or planning ahead?",
-                    f"3️⃣ Any preference - **outdoor seating**, rooftop, or cafe-style?"
-                ]
-            },
-            "hotel": {
-                "intro": f"Planning a trip with {pet_name}? Let me help find pet-friendly stays! 🏨",
-                "questions": [
-                    "1️⃣ Which **city** are you looking to stay in?",
-                    "2️⃣ What are your **travel dates** (approximately)?",
-                    f"3️⃣ Any special needs for {pet_name} - large dog rooms, garden access?"
-                ]
-            },
-            "vet": {
-                "intro": f"I'll help you find a good vet for {pet_name}. 🏥",
-                "questions": [
-                    "1️⃣ Which **area** should I search in?",
-                    "2️⃣ Is this **routine checkup** or something urgent?",
-                    "3️⃣ Any specialization needed - dental, orthopedic, skin?"
-                ]
-            },
-            "groomer": {
-                "intro": f"Time for {pet_name} to get pampered! 🛁",
-                "questions": [
-                    "1️⃣ Which **area** would be convenient?",
-                    f"2️⃣ What does {pet_name} need - full grooming, just a bath, or nail trim?",
-                    "3️⃣ Any preference for salon-style or home visit?"
-                ]
-            },
-            "park": {
-                "intro": f"Let's find a great place for {pet_name} to play! 🌳",
-                "questions": [
-                    "1️⃣ Which **area** are you looking in?",
-                    "2️⃣ Do you prefer **off-leash** parks or regular ones?",
-                    f"3️⃣ Any concerns - is {pet_name} good with other dogs?"
-                ]
-            }
+        place_intros = {
+            "restaurant": f"I'd love to help find a great spot for you and {pet_name} to dine! 🍽️",
+            "hotel": f"Planning a trip with {pet_name}? Exciting! 🏨",
+            "vet": f"I'll help you find a good vet for {pet_name}. 🏥",
+            "groomer": f"Time for {pet_name} to get pampered! ✨",
+            "park": f"Let's find a great place for {pet_name} to play! 🌳",
+            "pet_store": f"Shopping trip for {pet_name}! 🛍️"
         }
         
-        config = place_type_questions.get(detected_place_search, {
-            "intro": f"I'll help find the best options for {pet_name}! 📍",
-            "questions": ["1️⃣ Which **city and area** should I search in?"]
-        })
-        
-        response_text = f"{config['intro']}\n\nTo give you the best recommendations, a few quick questions:\n\n" + "\n".join(config['questions'])
+        intro = place_intros.get(detected_place_search, f"Let me help find something perfect for {pet_name}!")
         
         return {
             "success": True,
-            "response": response_text,
+            "response": f"{intro}\n\nWhich **city and area** should I look in?",
             "session_id": session_id,
             "pillar": pillar or "dine",
-            "intent": "place_search_conversation",
-            "conversation_stage": "gathering_requirements",
+            "intent": "place_search_step1",
+            "awaiting": "location",
             "place_search_type": detected_place_search,
             "follow_ups": [
                 {"text": "Koramangala, Bangalore", "type": "location"},
@@ -9870,110 +9831,59 @@ async def mira_chat(
                 {"text": "Bandra, Mumbai", "type": "location"}
             ],
             "products": [],
-            "nearby_places": None  # Don't show places until questions are answered
+            "nearby_places": None
         }
     
-    # If user mentioned a location, trigger Google Places search immediately
+    # STEP 2: User gave location - ask ONE more question (timing)
     if user_mentioned_location and detected_place_search:
-        logger.info(f"[LOCATION] Triggering place search for {detected_place_search} in {user_mentioned_location}")
+        # Check if they also mentioned timing
+        time_words = ["today", "tomorrow", "weekend", "this week", "now", "later", "planning", "tonight", "morning"]
+        mentioned_time = any(tw in user_msg_lower for tw in time_words)
         
-        pet_name = selected_pet.get("name", "your pet") if selected_pet else "your pet"
+        if not mentioned_time:
+            return {
+                "success": True,
+                "response": f"Got it - **{user_mentioned_location}** for {pet_name}! 🐾\n\nIs this for **today**, or are you planning ahead?",
+                "session_id": session_id,
+                "pillar": pillar or "dine",
+                "intent": "place_search_step2",
+                "awaiting": "timing",
+                "confirmed_location": user_mentioned_location,
+                "place_search_type": detected_place_search,
+                "follow_ups": [
+                    {"text": "Today", "type": "timing"},
+                    {"text": "This weekend", "type": "timing"},
+                    {"text": "Just browsing", "type": "timing"}
+                ],
+                "products": [],
+                "nearby_places": None
+            }
         
-        try:
-            # Use the appropriate search function based on type
-            places_result = []
-            
-            if detected_place_search == "restaurant":
-                from services.google_places_service import search_pet_friendly_restaurants
-                places_result = await search_pet_friendly_restaurants(city=user_mentioned_location, max_results=5)
-            elif detected_place_search == "hotel":
-                from services.google_places_service import search_pet_friendly_hotels
-                places_result = await search_pet_friendly_hotels(city=user_mentioned_location, max_results=5)
-            elif detected_place_search == "vet":
-                from services.google_places_service import search_nearby_places_google, geocode_city
-                coords = await geocode_city(user_mentioned_location)
-                if coords:
-                    places_result = await search_nearby_places_google(
-                        latitude=coords["latitude"],
-                        longitude=coords["longitude"],
-                        place_type="veterinary_care",
-                        radius_meters=5000,
-                        max_results=5
-                    )
-            elif detected_place_search == "park":
-                from services.google_places_service import search_dog_parks_worldwide
-                places_result = await search_dog_parks_worldwide(city=user_mentioned_location, max_results=5)
-            elif detected_place_search == "groomer":
-                from services.google_places_service import search_pet_groomers_in_city
-                places_result = await search_pet_groomers_in_city(city=user_mentioned_location, max_results=5)
-            elif detected_place_search == "pet_store":
-                from services.google_places_service import search_pet_stores_in_city
-                places_result = await search_pet_stores_in_city(city=user_mentioned_location, max_results=5)
-            
-            if places_result and len(places_result) > 0:
-                type_labels = {
-                    "restaurant": "pet-friendly restaurants and cafés",
-                    "hotel": "pet-friendly stays",
-                    "vet": "veterinary clinics",
-                    "park": "dog parks",
-                    "groomer": "pet groomers",
-                    "pet_store": "pet stores"
-                }
-                type_label = type_labels.get(detected_place_search, "places")
-                
-                response_text = f"Here are some **{type_label}** in **{user_mentioned_location}** that I'd recommend for you and {pet_name}! 🐾\n\n"
-                response_text += "Tap any place to select it, and if these don't quite fit what you're looking for, just hit **Send to Concierge** and our team will personally curate options for you."
-                
-                return {
-                    "success": True,
-                    "response": response_text,
-                    "session_id": session_id,
-                    "pillar": pillar or "dine",
-                    "intent": "place_recommendations",
-                    "conversation_stage": "showing_results",
-                    "nearby_places": {
-                        "type": detected_place_search + "s",
-                        "city": user_mentioned_location,
-                        "places": places_result,
-                        "source": "google_places"
-                    },
-                    "show_concierge_option": True,
-                    "follow_ups": [
-                        {"text": "Send to Concierge", "type": "concierge"},
-                        {"text": "Show more options", "type": "action"},
-                        {"text": "Different area", "type": "navigate"}
-                    ],
-                    "products": [],
-                    "tip_card": None
-                }
-            else:
-                # No results from Google Places - offer concierge
-                type_labels = {
-                    "restaurant": "pet-friendly restaurants",
-                    "hotel": "pet-friendly stays",
-                    "vet": "veterinary clinics",
-                    "park": "dog parks",
-                    "groomer": "pet groomers",
-                    "pet_store": "pet stores"
-                }
-                response_text = f"I couldn't find many {type_labels.get(detected_place_search, 'places')} in {user_mentioned_location} right now. But don't worry - our **Pet Concierge** team knows the hidden gems! They can personally curate options for you and {pet_name}. Would you like me to connect you?"
-                return {
-                    "success": True,
-                    "response": response_text,
-                    "session_id": session_id,
-                    "pillar": pillar or "dine",
-                    "show_concierge_card": True,
-                    "follow_ups": [
-                        {"text": "Yes, connect me to Concierge", "type": "concierge"},
-                        {"text": "Try a different area", "type": "navigate"}
-                    ],
-                    "products": []
-                }
-        except Exception as e:
-            logger.error(f"[PLACES] Google Places search failed: {e}")
-            import traceback
-            traceback.print_exc()
-            # Fall through to regular flow if search fails
+        # STEP 3: User gave location AND timing - NOW offer to show options
+        return {
+            "success": True,
+            "response": f"Perfect! Let me find the best options in **{user_mentioned_location}** for you and {pet_name}. 🔍\n\nReady to see my top picks?",
+            "session_id": session_id,
+            "pillar": pillar or "dine",
+            "intent": "place_search_step3",
+            "awaiting": "confirmation",
+            "confirmed_location": user_mentioned_location,
+            "place_search_type": detected_place_search,
+            "follow_ups": [
+                {"text": f"Yes, show me options for {pet_name}", "type": "confirm_search"},
+                {"text": "Any specific requirements?", "type": "preferences"},
+                {"text": "Different area", "type": "change_location"}
+            ],
+            "products": [],
+            "nearby_places": None
+        }
+    
+    # STEP 4: Handle explicit confirmation to show places
+    confirm_phrases = ["yes, show", "show me options", "yes show", "show options", "show me", "ready to see", "yes please", "let's see"]
+    if any(phrase in user_msg_lower for phrase in confirm_phrases):
+        # Now actually search - but we need to know the location from context
+        # For now, let the LLM handle this as it can maintain context better
+        pass
     
     # ═══════════════════════════════════════════════════════════════════════════
     # MIRA OS CONTEXT - Layer Activation, Temporal Awareness, Safety Gates
