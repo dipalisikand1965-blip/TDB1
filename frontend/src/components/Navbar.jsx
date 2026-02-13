@@ -629,16 +629,26 @@ const Navbar = () => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('[Navbar] Hamburger clicked, dispatching openPetSidebar');
-                // On mobile, open the Paw Sidebar navigation
+                console.log('[Navbar] Hamburger clicked');
+                // Try both methods - event and direct function call
                 window.dispatchEvent(new CustomEvent('openPetSidebar'));
+                // Fallback: direct function call
+                if (typeof window.__openMemberMobileNav === 'function') {
+                  window.__openMemberMobileNav();
+                }
+              }}
+              onTouchStart={(e) => {
+                // iOS Safari needs touchstart for immediate feedback
+                e.currentTarget.classList.add('bg-white/20');
               }}
               onTouchEnd={(e) => {
                 e.preventDefault();
-                e.stopPropagation();
-                console.log('[Navbar] Hamburger touchEnd, dispatching openPetSidebar');
-                // iOS needs touchend handler for reliable clicks
+                e.currentTarget.classList.remove('bg-white/20');
+                console.log('[Navbar] Hamburger touchEnd');
                 window.dispatchEvent(new CustomEvent('openPetSidebar'));
+                if (typeof window.__openMemberMobileNav === 'function') {
+                  window.__openMemberMobileNav();
+                }
               }}
               className="p-2 hover:bg-white/10 rounded-lg active:bg-white/20 touch-manipulation"
               style={{ 
