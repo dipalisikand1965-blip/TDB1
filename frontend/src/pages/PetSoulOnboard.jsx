@@ -56,12 +56,30 @@ const PLANS = {
   },
 };
 
-// Breed suggestions
+// Breed suggestions - includes Indie and Mixed options prominently
 const DOG_BREEDS = [
+  'Indie', 'Mixed Breed', "Don't Know",
   'Labrador Retriever', 'Golden Retriever', 'German Shepherd', 'Beagle', 
   'Poodle', 'Bulldog', 'Rottweiler', 'Boxer', 'Dachshund', 'Shih Tzu',
   'Pug', 'Pomeranian', 'Husky', 'Doberman', 'Great Dane', 'Cocker Spaniel',
-  'Indian Pariah', 'Indie', 'Mixed Breed', 'Other'
+  'Indian Pariah', 'Other'
+];
+
+// Temperament options - from canonical scoring
+const TEMPERAMENT_OPTIONS = [
+  { value: 'calm', label: 'Calm' },
+  { value: 'playful', label: 'Playful' },
+  { value: 'shy', label: 'Shy' },
+  { value: 'guarded', label: 'Guarded' },
+  { value: 'anxious', label: 'Anxious' },
+  { value: 'highly_energetic', label: 'Highly Energetic' },
+];
+
+// Grooming tolerance options
+const GROOMING_TOLERANCE_OPTIONS = [
+  { value: 'fine', label: 'Fine - No issues' },
+  { value: 'sensitive', label: 'Sensitive - Needs gentle handling' },
+  { value: 'very_sensitive', label: 'Very Sensitive - Gets anxious' },
 ];
 
 // Personality traits
