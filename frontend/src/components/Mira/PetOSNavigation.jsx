@@ -37,7 +37,7 @@ const OS_LAYERS = [
   { id: 'services', label: 'SERVICES', icon: Briefcase, description: 'Action Layer' },
   { id: 'insights', label: 'INSIGHTS', icon: BarChart3, description: 'Pattern Layer' },
   { id: 'learn', label: 'LEARN', icon: GraduationCap, description: 'Knowledge Layer' },
-  { id: 'concierge', label: 'CONCIERGE', icon: Users, description: 'Human Layer' },
+  { id: 'concierge', label: 'CONCIERGE®', icon: Users, description: 'Human Layer' },
 ];
 
 /**
