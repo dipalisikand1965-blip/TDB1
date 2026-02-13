@@ -9931,11 +9931,125 @@ async def mira_chat(
                 "nearby_places": None
             }
     
-    # Handle seating preference response (when user answers seating question)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # MIRA OS: Handle location/seating response → Show CURATED results with ACTION
+    # When user provides location OR answers seating question, show personalized picks
+    # ═══════════════════════════════════════════════════════════════════════════
+    
     seating_keywords = ["outdoor", "outside", "patio", "garden", "terrace", "alfresco", "indoor", "inside", "ac", "air-conditioned", "either", "both", "any"]
-    if any(word in user_msg_lower for word in seating_keywords) and not detected_place_search:
-        # User is answering a previous seating question - this will flow to Google Places search
-        pass
+    user_provided_seating = any(word in user_msg_lower for word in seating_keywords)
+    
+    # Detect if this is a location response (user just gave us a location after we asked)
+    # This happens when user_mentioned_location is set but no search keywords triggered
+    is_location_response = user_mentioned_location and not detected_place_search
+    
+    # Detect combined response like "Outdoor in Koramangala"
+    is_combined_response = user_mentioned_location and user_provided_seating
+    
+    # If user provided location or seating (answering our question), fetch and show results
+    if is_location_response or is_combined_response or (user_provided_seating and not detected_place_search):
+        # Determine the location to search
+        search_location = user_mentioned_location or known_location
+        
+        if search_location:
+            # Determine seating preference for personalization
+            seating_pref = "outdoor" if any(w in user_msg_lower for w in ["outdoor", "outside", "patio", "garden", "terrace"]) else "indoor" if any(w in user_msg_lower for w in ["indoor", "inside", "ac"]) else "either"
+            
+            # Fetch places from Google Places API
+            try:
+                from services.google_places_service import search_pet_friendly_restaurants, search_pet_friendly_hotels, search_vets_in_city, search_dog_parks_in_city
+                
+                # Default to restaurant if no place type detected (most common for outings)
+                place_type_to_search = "restaurant"  # TODO: Get from session context if available
+                
+                places = []
+                if place_type_to_search == "restaurant":
+                    places = await search_pet_friendly_restaurants(search_location, max_results=4)
+                elif place_type_to_search == "hotel":
+                    places = await search_pet_friendly_hotels(search_location, max_results=4)
+                elif place_type_to_search == "vet":
+                    places = await search_vets_in_city(search_location, max_results=4)
+                elif place_type_to_search == "park":
+                    places = await search_dog_parks_in_city(search_location, max_results=4)
+                
+                if places and len(places) > 0:
+                    # Build personalized response based on pet traits
+                    pet_trait_mention = ""
+                    if pet_temperament:
+                        pet_trait_mention = f"Given {pet_name}'s {pet_temperament.lower() if isinstance(pet_temperament, str) else ''} nature, "
+                    elif pet_energy:
+                        pet_trait_mention = f"For {pet_name} with {'her' if selected_pet and selected_pet.get('gender', '').lower() == 'female' else 'his'} {pet_energy.lower() if isinstance(pet_energy, str) else ''} energy, "
+                    
+                    # Build curated response (NOT a list dump)
+                    intro = f"Here are a few places that would suit {pet_name}'s comfort."
+                    
+                    # Format places for display
+                    formatted_places = []
+                    for p in places[:4]:
+                        formatted_places.append({
+                            "name": p.get("name"),
+                            "rating": p.get("rating"),
+                            "user_ratings_total": p.get("user_ratings_total"),
+                            "address": p.get("address"),
+                            "phone": p.get("phone"),
+                            "is_open_now": p.get("is_open_now"),
+                            "place_id": p.get("place_id"),
+                            "types": p.get("types", [])
+                        })
+                    
+                    # Build action options (execution layer - always offer action)
+                    action_text = f"\n\nI can:\n• check availability\n• arrange a table\n• confirm pet policies with the café\n\nWhich would you like me to arrange for {pet_name}?"
+                    
+                    return {
+                        "success": True,
+                        "response": f"{intro}{action_text}",
+                        "session_id": session_id,
+                        "pillar": pillar or "dine",
+                        "intent": "place_results_with_action",
+                        "nearby_places": {
+                            "type": place_type_to_search,
+                            "places": formatted_places,
+                            "city": search_location,
+                            "source": "google_places",
+                            "seating_preference": seating_pref,
+                            "pet_context": {
+                                "name": pet_name,
+                                "temperament": pet_temperament,
+                                "energy": pet_energy
+                            }
+                        },
+                        "execution_options": [
+                            {"text": "Check availability", "type": "concierge_action", "action": "check_availability"},
+                            {"text": "Arrange a table", "type": "concierge_action", "action": "arrange_table"},
+                            {"text": "Different area", "type": "change", "action": "new_search"}
+                        ],
+                        "follow_ups": [
+                            {"text": f"Arrange a visit to the first one", "type": "action"},
+                            {"text": "I need different options", "type": "refine"},
+                            {"text": "Send to Concierge", "type": "handoff"}
+                        ],
+                        "products": [],
+                        "tip_card": None
+                    }
+                else:
+                    # No places found - offer Concierge handoff
+                    return {
+                        "success": True,
+                        "response": f"I couldn't find verified pet-friendly places in **{search_location}**.\n\nWould you like me to connect you with your **Concierge**? They can call ahead and confirm pet policies for any place you're interested in.",
+                        "session_id": session_id,
+                        "pillar": pillar or "dine",
+                        "intent": "no_results_concierge_offer",
+                        "follow_ups": [
+                            {"text": "Yes, connect me to Concierge", "type": "handoff"},
+                            {"text": "Try a different area", "type": "refine"},
+                            {"text": "Never mind", "type": "cancel"}
+                        ],
+                        "products": [],
+                        "nearby_places": None
+                    }
+            except Exception as places_err:
+                logger.error(f"[PLACE SEARCH] Error fetching places: {places_err}")
+                # Graceful fallback - continue to LLM
     
     # ═══════════════════════════════════════════════════════════════════════════
     # MIRA OS CONTEXT - Layer Activation, Temporal Awareness, Safety Gates
