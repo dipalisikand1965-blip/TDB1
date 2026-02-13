@@ -626,11 +626,23 @@ const Navbar = () => {
           <div className="flex sm:hidden items-center justify-between h-14">
             {/* Left: Hamburger Menu - Opens Paw Sidebar on mobile */}
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 // On mobile, open the Paw Sidebar navigation
                 window.dispatchEvent(new CustomEvent('openPetSidebar'));
               }}
-              className="p-2 hover:bg-white/10 rounded-lg"
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // iOS needs touchend handler for reliable clicks
+                window.dispatchEvent(new CustomEvent('openPetSidebar'));
+              }}
+              className="p-2 hover:bg-white/10 rounded-lg active:bg-white/20 touch-manipulation"
+              style={{ 
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation'
+              }}
               data-testid="navbar-mobile-menu-btn"
               aria-label="Open navigation menu"
             >
