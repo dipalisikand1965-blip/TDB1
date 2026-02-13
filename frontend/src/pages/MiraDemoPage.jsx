@@ -3355,6 +3355,44 @@ const MiraDemoPage = () => {
         </Suspense>
       )}
       
+      {/* MOJO PROFILE MODAL - Pet Identity Layer (Pet Operating System Core) */}
+      {showMojoModal && (
+        <Suspense fallback={<LazyFallback />}>
+          <MojoProfileModal
+            isOpen={showMojoModal}
+            onClose={() => {
+              setShowMojoModal(false);
+              setMojoDeepLink(null);
+            }}
+            pet={pet}
+            allPets={allPets}
+            soulScore={pet?.soulScore || soulKnowledge.soulScore || 0}
+            apiUrl={API_URL}
+            token={token}
+            deepLinkSection={mojoDeepLink}
+            onSwitchPet={() => {
+              // Open pet selector dropdown
+              setShowMojoModal(false);
+              // Could trigger pet selector here if needed
+            }}
+            onEditSection={(sectionId) => {
+              if (sectionId === 'soul' || sectionId === 'details') {
+                setShowMojoModal(false);
+                setShowSoulFormModal(true);
+              } else {
+                // Navigate to my-pets page with section focus
+                setShowMojoModal(false);
+                navigate(`/my-pets?pet=${pet?.id}&section=${sectionId}`);
+              }
+            }}
+            onSoulQuestionClick={() => {
+              setShowMojoModal(false);
+              setShowSoulFormModal(true);
+            }}
+          />
+        </Suspense>
+      )}
+      
       {/* SOUL FORM MODAL - Lazy loaded */}
       {showSoulFormModal && (
         <Suspense fallback={<LazyFallback />}>
