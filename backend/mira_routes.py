@@ -9750,18 +9750,24 @@ async def mira_chat(
             logger.error(f"[ALLERGY] Failed to save allergies: {e}")
     
     # ═══════════════════════════════════════════════════════════════════════════
-    # LOCATION-BASED SEARCH FLOW - Ask for location before showing results
-    # Handles: restaurants, cafes, hotels, stays, vets, parks, groomers
-    # User specifies WHERE they want results, not just their current location
+    # CONVERSATIONAL PLACE SEARCH FLOW
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Not a chatbot dump - structured conversation:
+    # 1. Establish intent
+    # 2. Ask 3-4 specific questions
+    # 3. Understand the need
+    # 4. Offer solution specific to the dog
+    # 5. If multi-pet, ask which pet(s)
+    # 6. Show recommendations with Concierge option
     # ═══════════════════════════════════════════════════════════════════════════
     
     # Detect if user is asking for location-based places
     PLACE_SEARCH_KEYWORDS = {
-        "restaurant": ["restaurant", "restaurants", "cafe", "cafes", "coffee", "dine out", "dining", "eat out", "brunch", "lunch spot", "dinner place"],
-        "hotel": ["hotel", "hotels", "stay", "stays", "accommodation", "pet-friendly stay", "resort", "booking"],
-        "vet": ["vet", "veterinary", "veterinarian", "animal hospital", "pet doctor", "emergency vet"],
+        "restaurant": ["restaurant", "restaurants", "cafe", "cafes", "coffee", "dine out", "dining", "eat out", "brunch", "lunch spot", "dinner place", "lunch", "dinner", "breakfast"],
+        "hotel": ["hotel", "hotels", "stay", "stays", "accommodation", "pet-friendly stay", "resort", "booking", "staycation"],
+        "vet": ["vet", "veterinary", "veterinarian", "animal hospital", "pet doctor", "emergency vet", "clinic"],
         "park": ["dog park", "park for dogs", "off-leash", "pet park"],
-        "groomer": ["groomer", "grooming", "pet spa", "dog salon"],
+        "groomer": ["groomer", "grooming", "pet spa", "dog salon", "bath", "haircut"],
         "pet_store": ["pet store", "pet shop", "dog store"]
     }
     
@@ -9772,15 +9778,18 @@ async def mira_chat(
             break
     
     # Check if this is a location-based search request
-    search_trigger_words = ["find", "looking for", "recommend", "suggest", "where", "any", "show me", "search", "nearby", "near me", "around", "best"]
+    search_trigger_words = ["find", "looking for", "recommend", "suggest", "where", "any", "show me", "search", "nearby", "near me", "around", "best", "want", "need", "take"]
     is_search_request = detected_place_search and any(word in user_msg_lower for word in search_trigger_words)
     
-    # Indian cities for detection
+    # Indian cities and areas for detection
     INDIAN_CITIES = ["mumbai", "delhi", "bangalore", "bengaluru", "pune", "hyderabad", "chennai", 
                      "kolkata", "gurgaon", "gurugram", "noida", "goa", "jaipur", "ahmedabad", 
-                     "koramangala", "indiranagar", "whitefield", "hsr", "btm", "jayanagar",
-                     "bandra", "andheri", "powai", "juhu", "worli", "malad", "borivali",
-                     "vijayawada", "visakhapatnam", "vizag", "coimbatore", "kochi", "trivandrum"]
+                     "koramangala", "indiranagar", "whitefield", "hsr", "btm", "jayanagar", "jp nagar",
+                     "marathahalli", "sarjapur", "electronic city", "hebbal", "yelahanka", "malleshwaram",
+                     "bandra", "andheri", "powai", "juhu", "worli", "malad", "borivali", "kurla", "dadar",
+                     "lower parel", "goregaon", "kandivali", "thane", "navi mumbai", "vashi",
+                     "vijayawada", "visakhapatnam", "vizag", "coimbatore", "kochi", "trivandrum",
+                     "connaught place", "khan market", "hauz khas", "greater kailash", "defence colony"]
     
     # Check if user mentioned a specific location in their message
     user_mentioned_location = None
@@ -9789,35 +9798,84 @@ async def mira_chat(
             user_mentioned_location = city.title()
             if city == "bengaluru":
                 user_mentioned_location = "Bangalore"
+            elif city == "gurugram":
+                user_mentioned_location = "Gurgaon"
             break
     
-    # If user is searching for places but hasn't specified location, ASK them
+    pet_name = selected_pet.get("name", "your pet") if selected_pet else "your pet"
+    
+    # STEP 1: If user is searching for places but hasn't specified location, START the conversation
     if is_search_request and not user_mentioned_location:
-        place_type_display = {
-            "restaurant": "pet-friendly restaurants or cafes",
-            "hotel": "pet-friendly hotels or stays", 
-            "vet": "veterinary clinics",
-            "park": "dog parks",
-            "groomer": "pet groomers",
-            "pet_store": "pet stores"
-        }.get(detected_place_search, "places")
+        place_type_questions = {
+            "restaurant": {
+                "intro": f"I'd love to help find the perfect spot for you and {pet_name} to dine! 🍽️",
+                "questions": [
+                    f"1️⃣ Which **city and area** would you like to go? (e.g., Koramangala, Indiranagar)",
+                    f"2️⃣ Is this for **today** or planning ahead?",
+                    f"3️⃣ Any preference - **outdoor seating**, rooftop, or cafe-style?"
+                ]
+            },
+            "hotel": {
+                "intro": f"Planning a trip with {pet_name}? Let me help find pet-friendly stays! 🏨",
+                "questions": [
+                    "1️⃣ Which **city** are you looking to stay in?",
+                    "2️⃣ What are your **travel dates** (approximately)?",
+                    f"3️⃣ Any special needs for {pet_name} - large dog rooms, garden access?"
+                ]
+            },
+            "vet": {
+                "intro": f"I'll help you find a good vet for {pet_name}. 🏥",
+                "questions": [
+                    "1️⃣ Which **area** should I search in?",
+                    "2️⃣ Is this **routine checkup** or something urgent?",
+                    "3️⃣ Any specialization needed - dental, orthopedic, skin?"
+                ]
+            },
+            "groomer": {
+                "intro": f"Time for {pet_name} to get pampered! 🛁",
+                "questions": [
+                    "1️⃣ Which **area** would be convenient?",
+                    f"2️⃣ What does {pet_name} need - full grooming, just a bath, or nail trim?",
+                    "3️⃣ Any preference for salon-style or home visit?"
+                ]
+            },
+            "park": {
+                "intro": f"Let's find a great place for {pet_name} to play! 🌳",
+                "questions": [
+                    "1️⃣ Which **area** are you looking in?",
+                    "2️⃣ Do you prefer **off-leash** parks or regular ones?",
+                    f"3️⃣ Any concerns - is {pet_name} good with other dogs?"
+                ]
+            }
+        }
+        
+        config = place_type_questions.get(detected_place_search, {
+            "intro": f"I'll help find the best options for {pet_name}! 📍",
+            "questions": ["1️⃣ Which **city and area** should I search in?"]
+        })
+        
+        response_text = f"{config['intro']}\n\nTo give you the best recommendations, a few quick questions:\n\n" + "\n".join(config['questions'])
         
         return {
             "success": True,
-            "response": f"I'd love to help you find {place_type_display}! 🐾\n\nWhich **city and area** would you like me to search in? For example: 'Koramangala, Bangalore' or 'Bandra, Mumbai'",
+            "response": response_text,
             "session_id": session_id,
             "pillar": pillar or "dine",
-            "intent": "location_query",
-            "awaiting_location": True,
+            "intent": "place_search_conversation",
+            "conversation_stage": "gathering_requirements",
             "place_search_type": detected_place_search,
             "follow_ups": [
                 {"text": "Koramangala, Bangalore", "type": "location"},
                 {"text": "Indiranagar, Bangalore", "type": "location"},
-                {"text": "Bandra, Mumbai", "type": "location"},
-                {"text": "Use my current location", "type": "location"}
+                {"text": "Bandra, Mumbai", "type": "location"}
             ],
             "products": [],
-            "places": [],  # Don't show places until location is confirmed
+            "nearby_places": None  # Don't show places until questions are answered
+        }
+    
+    # If user mentioned a location, log it for the search
+    if user_mentioned_location:
+        logger.info(f"[LOCATION] User specified location: {user_mentioned_location}")
             "tip_card": None
         }
     
