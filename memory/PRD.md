@@ -106,10 +106,44 @@ Mira: "Here are a few places that would suit Mojo's comfort.
 - Saves to `doggy_soul_answers.food_allergies` in Pet Soul as a list
 - File: `/app/backend/mira_routes.py` (lines 9622-9744)
 
-#### 3. Production Deployment Fix
+#### 3. MOJO Profile Modal - Pet Identity Layer (2026-02-13 Latest)
+The Pet Operating System Core - single source of truth about the pet.
+
+**Architecture:**
+- **Entry Points**: Both "78% SOUL" badge and pet name open the modal
+- **Soul badge deep-links**: Auto-scrolls to Soul Profile section
+- **Pet name opens**: Full MOJO view from top
+
+**Sections (Accordion Layout):**
+| Section | Default State | Purpose |
+|---------|--------------|---------|
+| Pet Snapshot | Always Visible | Identity card - photo, name, breed, age, membership |
+| Soul Profile | Expanded | 55-question personality vault (temperament, energy, social) |
+| Health Profile | Collapsed | Allergies, weight, vaccinations, vet info |
+| Diet & Food | Collapsed | Diet type, feeding schedule, favorites |
+| Behaviour & Training | Collapsed | Training level, commands, leash behavior |
+| Grooming & Care | Collapsed | Coat type, grooming schedule, skin sensitivity |
+| Routine Tracker | Collapsed | Walk frequency, sleep pattern, daily habits |
+| Documents Vault | Collapsed | Vaccination certificates, insurance, prescriptions |
+| Life Timeline | Collapsed | Milestones, events, service history |
+| Preferences & Constraints | Collapsed | Likes, dislikes, fear triggers, special needs |
+| Membership & Rewards | Bottom Section | Tier, paw points, badges |
+
+**Mobile UX Rules:**
+- Full-screen modal sheet on mobile (not side panel)
+- iOS: Edge swipe back, safe-area padding, haptics
+- Android: Material-style, system back works
+- Tap targets ≥ 44x44px
+- Drill-in for editing (don't edit inline)
+
+**Files:**
+- Component: `/app/frontend/src/components/Mira/MojoProfileModal.jsx`
+- Integration: `MiraDemoPage.jsx`, `SoulKnowledgeTicker.jsx`, `PetSelector.jsx`
+
+#### 4. Production Deployment Fix
 - Disabled service worker completely
 - ErrorBoundary clears cache and reloads on chunk errors
-- ⚠️ **Still BLOCKED**: CDN cache purge needed from Emergent support
+- ✅ **RESOLVED**: CSS chunk loading fix applied
 
 ### Previous Sessions
 - Member Logic E2E Verification completed
