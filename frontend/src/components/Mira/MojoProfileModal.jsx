@@ -1759,6 +1759,161 @@ const MojoProfileModal = ({
           color: #FCA5A5;
         }
         
+        /* Generic Section Content Styles (Diet, Behaviour, Grooming, Routine, Preferences) */
+        .diet-profile-content,
+        .behaviour-profile-content,
+        .grooming-profile-content,
+        .routine-profile-content,
+        .preferences-profile-content,
+        .documents-profile-content,
+        .timeline-profile-content {
+          padding: 8px 0;
+        }
+        
+        .diet-items-list,
+        .behaviour-items-list,
+        .grooming-items-list,
+        .routine-items-list,
+        .preferences-list,
+        .documents-list,
+        .timeline-list {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        
+        .diet-item,
+        .behaviour-item,
+        .grooming-item,
+        .routine-item,
+        .preferences-item,
+        .document-item,
+        .timeline-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px;
+          background: rgba(139, 92, 246, 0.05);
+          border-radius: 12px;
+          border: 1px solid rgba(139, 92, 246, 0.1);
+        }
+        
+        .diet-icon,
+        .behaviour-icon,
+        .grooming-icon,
+        .routine-icon,
+        .preferences-icon,
+        .document-icon,
+        .timeline-icon {
+          font-size: 18px;
+          flex-shrink: 0;
+        }
+        
+        .diet-label,
+        .behaviour-label,
+        .grooming-label,
+        .routine-label,
+        .preferences-label,
+        .document-name,
+        .timeline-title {
+          font-size: 12px;
+          color: #9CA3AF;
+          min-width: 100px;
+        }
+        
+        .diet-value,
+        .behaviour-value,
+        .grooming-value,
+        .routine-value,
+        .preferences-value {
+          font-size: 14px;
+          color: white;
+          font-weight: 500;
+          flex: 1;
+          text-align: right;
+        }
+        
+        /* Preferences specific colors */
+        .preferences-item.positive {
+          background: rgba(34, 197, 94, 0.1);
+          border-color: rgba(34, 197, 94, 0.2);
+        }
+        
+        .preferences-item.negative {
+          background: rgba(239, 68, 68, 0.1);
+          border-color: rgba(239, 68, 68, 0.2);
+        }
+        
+        .preferences-item.warning {
+          background: rgba(245, 158, 11, 0.1);
+          border-color: rgba(245, 158, 11, 0.2);
+        }
+        
+        .preferences-item.special {
+          background: rgba(168, 85, 247, 0.1);
+          border-color: rgba(168, 85, 247, 0.2);
+        }
+        
+        /* Timeline specific */
+        .timeline-details {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+        }
+        
+        .timeline-title {
+          font-size: 14px;
+          color: white;
+          font-weight: 500;
+          min-width: auto;
+        }
+        
+        .timeline-date {
+          font-size: 11px;
+          color: #9CA3AF;
+          margin-top: 2px;
+        }
+        
+        /* Documents specific */
+        .document-item {
+          justify-content: flex-start;
+        }
+        
+        .document-name {
+          flex: 1;
+          font-size: 14px;
+          color: white;
+          min-width: auto;
+        }
+        
+        .document-date {
+          font-size: 11px;
+          color: #9CA3AF;
+        }
+        
+        .documents-more {
+          text-align: center;
+          font-size: 12px;
+          color: #a78bfa;
+          padding: 8px;
+        }
+        
+        /* Empty states for all sections */
+        .diet-empty-state,
+        .behaviour-empty-state,
+        .grooming-empty-state,
+        .routine-empty-state,
+        .preferences-empty-state,
+        .documents-empty-state,
+        .timeline-empty-state {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 24px;
+          text-align: center;
+          color: #a78bfa;
+        }
+        
         /* Membership Section */
         .membership-section {
           margin: 16px;
