@@ -94,7 +94,7 @@ class TestScriptA_EmergencySuppression:
         response = requests.post(
             f"{BASE_URL}/api/mira/chat",
             json={
-                "input": "my dog ate chocolate",
+                "message": "my dog ate chocolate",
                 "pet_context": pet_context,
                 "conversation_history": []
             },
@@ -139,7 +139,7 @@ class TestScriptA_EmergencySuppression:
         response = requests.post(
             f"{BASE_URL}/api/mira/chat",
             json={
-                "input": "my dog is gagging after eating something",
+                "message": "my dog is gagging after eating something",
                 "pet_context": pet_context,
                 "conversation_history": []
             },
@@ -173,7 +173,7 @@ class TestScriptA_EmergencySuppression:
         response = requests.post(
             f"{BASE_URL}/api/mira/chat",
             json={
-                "input": "my dog is choking and can't breathe",
+                "message": "my dog is choking and can't breathe",
                 "pet_context": pet_context,
                 "conversation_history": []
             },
@@ -209,7 +209,7 @@ class TestScriptA_EmergencySuppression:
         response = requests.post(
             f"{BASE_URL}/api/mira/chat",
             json={
-                "input": "my dog is vomiting blood please help",
+                "message": "my dog is vomiting blood please help",
                 "pet_context": pet_context,
                 "conversation_history": []
             },
