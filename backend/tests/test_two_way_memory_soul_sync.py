@@ -91,7 +91,7 @@ class TestTwoWaySoulSync:
     def test_get_member_pets(self, auth_headers):
         """Test that we can get member pets"""
         response = requests.get(
-            f"{BASE_URL}/api/member/pets",
+            f"{BASE_URL}/api/pets",
             headers=auth_headers,
             timeout=30
         )
