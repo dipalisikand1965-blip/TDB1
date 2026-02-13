@@ -1566,6 +1566,38 @@ const MiraChatWidget = ({
                         </p>
                       </div>
                     )}
+                    
+                    {/* Service Confirmation Card - Uniform Service Handoff Flow */}
+                    {msg.serviceConfirmation && (
+                      <div className="mt-3 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-200 shadow-sm">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-xl">✅</span>
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm font-bold text-emerald-800 mb-1">
+                              Service Request Confirmed
+                            </p>
+                            <p className="text-xs text-emerald-700 mb-2">
+                              {msg.serviceConfirmation.message || 'Your concierge has received your request and will get back to you.'}
+                            </p>
+                            <div className="flex flex-wrap gap-2 text-xs">
+                              <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full font-medium">
+                                {msg.serviceConfirmation.service_name}
+                              </span>
+                              {msg.serviceConfirmation.pet_name && (
+                                <span className="px-2 py-1 bg-white text-emerald-700 rounded-full">
+                                  🐕 {msg.serviceConfirmation.pet_name}
+                                </span>
+                              )}
+                              <span className="px-2 py-1 bg-emerald-700 text-white rounded-full font-mono">
+                                #{msg.serviceConfirmation.ticket_id}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
