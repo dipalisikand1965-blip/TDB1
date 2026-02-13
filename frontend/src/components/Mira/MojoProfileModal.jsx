@@ -407,13 +407,6 @@ const SectionRow = memo(({
           </div>
         </div>
       )}
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add {missingItems[0] || 'more info'}</span>
-            </button>
-          )}
-        </div>
-      )}
     </div>
   );
 });
