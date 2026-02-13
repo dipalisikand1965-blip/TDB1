@@ -318,7 +318,13 @@ const MembershipOnboarding = () => {
       weight: '',
       weight_unit: 'kg',
       is_neutered: null,
-      photo_url: ''
+      photo_url: '',
+      photo_preview: null,
+      celebrations: [],
+      food_allergies: '',
+      health_conditions: '',
+      temperament: '',
+      grooming_tolerance: '',
     }]);
     setActivePetTab(petsData.length);
   };
