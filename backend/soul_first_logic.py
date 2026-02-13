@@ -509,14 +509,38 @@ Quick check: {q_text}"""
 @dataclass
 class ExtractedSoulData:
     """Data extracted from user's answer to write back to Soul."""
+    # Grooming-related
     coat_type: Optional[str] = None
     coat_length: Optional[str] = None
     grooming_preference: Optional[str] = None  # home/salon
     grooming_anxiety_triggers: List[str] = field(default_factory=list)
     skin_flags: List[str] = field(default_factory=list)
-    allergy_flags: List[str] = field(default_factory=list)
     last_groom_date: Optional[str] = None
+    
+    # Allergy & Diet (NEW - expanded coverage)
+    allergy_flags: List[str] = field(default_factory=list)
+    food_allergies: List[str] = field(default_factory=list)
+    dietary_preferences: Optional[str] = None  # wet/dry/raw/home-cooked
+    favorite_treats: List[str] = field(default_factory=list)
+    food_sensitivities: List[str] = field(default_factory=list)
+    
+    # Health & Medical (NEW)
+    health_conditions: List[str] = field(default_factory=list)
+    vaccination_status: Optional[str] = None
+    last_vet_visit: Optional[str] = None
+    medications: List[str] = field(default_factory=list)
+    
+    # Behavior & Personality (NEW)
+    energy_level: Optional[str] = None  # low/medium/high
+    temperament: Optional[str] = None  # calm/playful/anxious
+    behavior_with_dogs: Optional[str] = None  # friendly/reactive/fearful
+    behavior_with_people: Optional[str] = None
+    
+    # Location & Logistics
     city: Optional[str] = None
+    
+    # Flag indicating what type of data was extracted
+    data_categories: List[str] = field(default_factory=list)
 
 
 def extract_soul_data_from_response(
