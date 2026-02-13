@@ -9877,27 +9877,38 @@ async def mira_chat(
     if user_mentioned_location and detected_place_search:
         logger.info(f"[LOCATION] Triggering place search for {detected_place_search} in {user_mentioned_location}")
         
-        # Map search type to Google Places type
-        places_type_map = {
-            "restaurant": "restaurant",
-            "hotel": "lodging",
-            "vet": "veterinary_care",
-            "park": "park",
-            "groomer": "pet_store",
-            "pet_store": "pet_store"
-        }
-        
-        google_type = places_type_map.get(detected_place_search, "restaurant")
         pet_name = selected_pet.get("name", "your pet") if selected_pet else "your pet"
         
         try:
-            from services.google_places_service import search_pet_friendly_places
+            # Use the appropriate search function based on type
+            places_result = []
             
-            places_result = await search_pet_friendly_places(
-                city=user_mentioned_location,
-                place_type=google_type,
-                limit=5
-            )
+            if detected_place_search == "restaurant":
+                from services.google_places_service import search_pet_friendly_restaurants
+                places_result = await search_pet_friendly_restaurants(city=user_mentioned_location, max_results=5)
+            elif detected_place_search == "hotel":
+                from services.google_places_service import search_pet_friendly_hotels
+                places_result = await search_pet_friendly_hotels(city=user_mentioned_location, max_results=5)
+            elif detected_place_search == "vet":
+                from services.google_places_service import search_nearby_places_google, geocode_city
+                coords = await geocode_city(user_mentioned_location)
+                if coords:
+                    places_result = await search_nearby_places_google(
+                        latitude=coords["latitude"],
+                        longitude=coords["longitude"],
+                        place_type="veterinary_care",
+                        radius_meters=5000,
+                        max_results=5
+                    )
+            elif detected_place_search == "park":
+                from services.google_places_service import search_dog_parks_worldwide
+                places_result = await search_dog_parks_worldwide(city=user_mentioned_location, max_results=5)
+            elif detected_place_search == "groomer":
+                from services.google_places_service import search_pet_groomers_in_city
+                places_result = await search_pet_groomers_in_city(city=user_mentioned_location, max_results=5)
+            elif detected_place_search == "pet_store":
+                from services.google_places_service import search_pet_stores_in_city
+                places_result = await search_pet_stores_in_city(city=user_mentioned_location, max_results=5)
             
             if places_result and len(places_result) > 0:
                 type_labels = {
@@ -9937,6 +9948,14 @@ async def mira_chat(
                 }
             else:
                 # No results from Google Places - offer concierge
+                type_labels = {
+                    "restaurant": "pet-friendly restaurants",
+                    "hotel": "pet-friendly stays",
+                    "vet": "veterinary clinics",
+                    "park": "dog parks",
+                    "groomer": "pet groomers",
+                    "pet_store": "pet stores"
+                }
                 response_text = f"I couldn't find many {type_labels.get(detected_place_search, 'places')} in {user_mentioned_location} right now. But don't worry - our **Pet Concierge** team knows the hidden gems! They can personally curate options for you and {pet_name}. Would you like me to connect you?"
                 return {
                     "success": True,
@@ -9952,6 +9971,8 @@ async def mira_chat(
                 }
         except Exception as e:
             logger.error(f"[PLACES] Google Places search failed: {e}")
+            import traceback
+            traceback.print_exc()
             # Fall through to regular flow if search fails
     
     # ═══════════════════════════════════════════════════════════════════════════
