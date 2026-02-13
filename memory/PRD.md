@@ -181,16 +181,158 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 
 From `/app/frontend/src/pages/MiraDemoBackupPage.jsx`:
 
-1. **Weather Card** - Shows current weather + "Is it safe to walk {Pet}?"
-2. **MIRA Features Grid** - "What can Mira help with?" feature showcase
+1. **Weather Card** - ✅ COMPLETED (2026-02-13)
+2. **"Why for {Pet}" Badge** - ✅ COMPLETED (2026-02-13)
 3. **Health Vault Progress** - "Complete {Pet}'s Health Vault - X% complete"
 4. **Vaccine/Vet Reminders** - Inline alerts for overdue items
 5. **Daily Digest** - Daily summary of pet info
 6. **Milestones** - Pet achievement milestones
 7. **Memory Lane** - Historical pet memories
 8. **Reorder Suggestions** - "Time to reorder X?" prompts
-9. **"Why for {Pet}" Badge** - Per-product personalization on tiles
-10. **Concierge® Whisper** - Curator notes on products
+9. **Concierge® Whisper** - Curator notes on products
+10. **MIRA Features Grid** - "What can Mira help with?" feature showcase
+
+---
+
+## 🔴 COMPREHENSIVE PRODUCT BIBLE FOR NEXT AGENT
+
+### THE DOGGY COMPANY - Pet Life Operating System
+
+**Philosophy - MOJO MUST COME ALIVE:**
+- **MOJO** = Pet's Passport/DNA - Single source of truth. Lives dynamically through EVERY interaction
+- **Mira** = Pet's Soul - AI that knows the pet intimately, learns with each conversation
+- **Concierge®** = Pet's Hands - Human execution layer for services
+
+**Login Credentials:**
+- Test User: `dipali@clubconcierge.in` / `test123` (7 pets: Lola, Mystique, Bruno, Luna, Buddy, Meister, TestScoring)
+- Admin: `/admin` - username: `aditya` / password: `lola4304`
+
+### ADMIN PANEL CAPABILITIES (TDB Admin at /admin)
+
+**COMMAND CENTER:**
+- Dashboard, Service Desk, Unified Inbox, Finance, Pillar Queues
+
+**MEMBERS & PETS:**
+- Pet Parents, Pet Profiles, Membership, Loyalty, Engagement, Celebrations
+
+**COMMERCE:**
+- Orders, Fulfilment, Product Box, Service Box, Collections, Pricing, Autoship, Abandoned, Discounts
+
+**14 PILLARS (Service Categories):**
+- Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt, Shop
+
+**MIRA & AI:**
+- Mira Chats, Memory, Kit Assembly, Communications, Reminders
+
+**MARKETING:**
+- Campaigns, Occasion Boxes, Proactive, Push
+
+**ANALYTICS:**
+- Live MIS, Reports, Analytics, Reviews, Pawmeter, Site Status
+
+**CONTENT:**
+- Blog, Testimonials, FAQs, About, CMS, Landing Page
+
+**CONFIG:**
+- Agents, Customers, Concierge XP, Tags, Breeds, Custom Cakes, Streaties, Franchise
+
+### MOBILE/iOS/ANDROID SPECS
+
+**iOS CSS file:** `/app/frontend/src/styles/ios-premium.css`
+- Uses iOS system colors, safe areas, native iOS feel
+- Note: SF Pro fonts were removed (proprietary) - replaced with system fonts
+
+**Mobile Responsive CSS:** 
+- `/app/frontend/src/styles/mira-prod.css` - Production styles
+- `/app/frontend/src/styles/mira-10x.css` - iOS Safe Areas
+
+**Key Mobile Considerations:**
+- All components must work with `env(safe-area-inset-*)` for notched devices
+- Bottom navigation must account for home indicator
+- Touch targets minimum 44x44px
+- Smooth animations using `transform` not `width/height`
+
+### KEY API ENDPOINTS
+
+| Endpoint | Purpose |
+|----------|---------|
+| `/api/pets` | Get all pets for user |
+| `/api/pets/{pet_id}` | Get single pet with doggy_soul_answers |
+| `/api/pets/my-pets` | Get user's pets (alternate) |
+| `/api/mira/personalization-stats/{pet_id}` | Soul score, knowledge items |
+| `/api/member/profile?user_email=X` | Membership, paw points, badges |
+| `/api/mira/weather/pet-activity?city=X` | Weather + pet walk safety |
+| `/api/mira/chat` | Mira AI chat endpoint |
+| `/api/pet-soul/quick-questions/{pet_id}` | Proactive soul questions |
+| `/api/member/badges` | User's earned badges |
+
+### FILE STRUCTURE - KEY FILES
+
+**Frontend Components (76 pages, 40+ Mira components):**
+```
+/app/frontend/src/
+├── pages/
+│   ├── MiraDemoPage.jsx (3500+ lines - Main page)
+│   ├── MiraDemoBackupPage.jsx (Source for missing features)
+│   ├── MemberDashboard.jsx
+│   └── MyPets.jsx
+├── components/Mira/
+│   ├── PetOSNavigation.jsx (NEW - 7 OS tabs)
+│   ├── MojoProfileModal.jsx (NEW - Pet Passport 1800+ lines)
+│   ├── WeatherCard.jsx (NEW - Walk safety)
+│   ├── WhyForPetBadge.jsx (NEW - Personalization reasons)
+│   ├── ChatMessage.jsx
+│   ├── WelcomeHero.jsx (Has inline WeatherCard)
+│   └── SoulKnowledgeTicker.jsx
+├── hooks/mira/
+│   ├── usePet.js
+│   ├── useProactiveAlerts.js
+│   └── index.js
+└── utils/
+    └── miraConstants.js (Has generateWhyForPet)
+```
+
+**Backend (176 Python files):**
+```
+/app/backend/
+├── server.py (Main FastAPI app)
+├── mira_routes.py (Mira AI endpoints)
+├── member_rewards_routes.py
+├── pet_routes.py
+├── soul_intelligence.py
+└── ... (many more)
+```
+
+### MOJO - THE 11 SECTIONS
+
+1. **Soul Profile** - Temperament, energy, personality (from doggy_soul_answers)
+2. **Health Profile** - Allergies, weight, conditions
+3. **Diet & Food** - Diet type, feeding schedule, treats
+4. **Behaviour & Training** - Training level, commands, leash behavior
+5. **Grooming & Care** - Coat type, grooming frequency
+6. **Routine Tracker** - Walk schedule, exercise, sleep
+7. **Documents Vault** - Vaccination records, medical records
+8. **Life Timeline** - Birthday, milestones, memories
+9. **Preferences** - Likes, dislikes, fears, special needs
+10. **Membership & Rewards** - Tier, paw points, badges
+11. **Basic Details** - Name, breed, age, location
+
+### NEXT AGENT CRITICAL TASKS
+
+1. **Make MOJO Come ALIVE** - Every Mira interaction should potentially update MOJO data
+2. **MOJO Phase 2 - Drill-in Editing** - Each section expands to edit form
+3. **OS Tab Content** - Populate PICKS, SERVICES, INSIGHTS, LEARN with relevant content
+4. **Health Vault Progress** - Show completion % of health records
+5. **Concierge® Whisper** - Show curator notes on products
+
+### BEFORE STARTING - UNDERSTAND THE BUILD
+
+1. Read this PRD.md completely
+2. Scan `/admin` as aditya/lola4304 to see all capabilities
+3. Login as test user and explore `/mira-demo` 
+4. Open MOJO modal (click pet avatar) to see all 11 sections
+5. Try Weather Card and product recommendations
+6. Check multi-pet switching (Luna has highest 88% soul score!)
 
 ---
 
