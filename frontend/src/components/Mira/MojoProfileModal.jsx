@@ -873,7 +873,7 @@ const MojoProfileModal = ({
             />
             
             {/* Proactive Questions CTA */}
-            {soulScore < 80 && (
+            {computedSoulScore < 80 && (
               <button 
                 className="mojo-grow-soul-btn"
                 onClick={() => {
@@ -884,7 +884,7 @@ const MojoProfileModal = ({
                 data-testid="grow-soul-btn"
               >
                 <Sparkles className="w-5 h-5" />
-                <span>Help Mira know {pet?.name || 'your pet'} better</span>
+                <span>Help Mira know {petData?.name || 'your pet'} better</span>
                 <ChevronRight className="w-5 h-5" />
               </button>
             )}
