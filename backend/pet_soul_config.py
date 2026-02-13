@@ -2,9 +2,10 @@
 Pet Soul Score Configuration
 ===========================
 This module defines the weighted scoring system for Pet Soul.
+ALIGNED WITH canonical_answers.py - Single Source of Truth
 
 Total Points: 100
-Total Questions: 27
+Total Questions: 26 (matching CANONICAL_SCORING_FIELDS)
 
 Scoring Philosophy:
 - Health and safety questions weighted higher
@@ -14,102 +15,85 @@ Scoring Philosophy:
 """
 
 # Question weights by pillar (total: 100 points)
+# ALIGNED WITH CANONICAL_SCORING_FIELDS from canonical_answers.py
 PET_SOUL_QUESTIONS = {
-    # Identity & Temperament (10 points, 2 questions)
-    "identity_temperament": {
-        "name": "Identity & Temperament",
-        "icon": "🧬",
-        "total_points": 10,
+    # Safety & Health (36 points, 6 questions)
+    "safety_health": {
+        "name": "Safety & Health",
+        "icon": "🩺",
+        "total_points": 36,
         "questions": {
-            "temperament": {"label": "Temperament", "points": 5, "required_level": "core"},
-            "energy_level": {"label": "Energy Level", "points": 5, "required_level": "core"}
-        }
-    },
-    
-    # Family & Pack (15 points, 5 questions)
-    "family_pack": {
-        "name": "Family & Pack",
-        "icon": "👨‍👩‍👧‍👦",
-        "total_points": 15,
-        "questions": {
-            "social_with_dogs": {"label": "Social with Dogs", "points": 3, "required_level": "important"},
-            "social_with_people": {"label": "Social with People", "points": 3, "required_level": "important"},
-            "primary_bond": {"label": "Most Attached To", "points": 3, "required_level": "important"},
-            "other_pets": {"label": "Other Pets", "points": 3, "required_level": "important"},
-            "kids_at_home": {"label": "Kids at Home", "points": 3, "required_level": "important"}
-        }
-    },
-    
-    # Rhythm & Routine (12 points, 3 questions)
-    "rhythm_routine": {
-        "name": "Rhythm & Routine",
-        "icon": "⏰",
-        "total_points": 12,
-        "questions": {
-            "morning_routine": {"label": "Morning Routine", "points": 4, "required_level": "important"},
-            "feeding_times": {"label": "Feeding Schedule", "points": 4, "required_level": "core"},
-            "exercise_needs": {"label": "Exercise Needs", "points": 4, "required_level": "important"}
-        }
-    },
-    
-    # Home Comforts (11 points, 3 questions)
-    "home_comforts": {
-        "name": "Home Comforts",
-        "icon": "🏡",
-        "total_points": 11,
-        "questions": {
-            "favorite_spot": {"label": "Favorite Spot", "points": 2, "required_level": "advanced"},
-            "alone_time_comfort": {"label": "Alone Time", "points": 5, "required_level": "important"},
+            "food_allergies": {"label": "Food Allergies", "points": 10, "required_level": "core"},
+            "health_conditions": {"label": "Health Conditions", "points": 8, "required_level": "core"},
+            "vet_comfort": {"label": "Vet Comfort", "points": 5, "required_level": "important"},
+            "life_stage": {"label": "Life Stage", "points": 5, "required_level": "core"},
+            "grooming_tolerance": {"label": "Grooming Tolerance", "points": 4, "required_level": "important"},
             "noise_sensitivity": {"label": "Noise Sensitivity", "points": 4, "required_level": "important"}
         }
     },
     
-    # Travel Style (8 points, 2 questions)
-    "travel_style": {
-        "name": "Travel Style",
-        "icon": "🚗",
-        "total_points": 8,
+    # Personality & Temperament (25 points, 5 questions)
+    "personality_temperament": {
+        "name": "Personality & Temperament",
+        "icon": "🧬",
+        "total_points": 25,
         "questions": {
-            "car_comfort": {"label": "Car Rides", "points": 4, "required_level": "important"},
-            "travel_readiness": {"label": "Travel Readiness", "points": 4, "required_level": "important"}
+            "temperament": {"label": "Temperament", "points": 8, "required_level": "core"},
+            "energy_level": {"label": "Energy Level", "points": 6, "required_level": "core"},
+            "social_with_dogs": {"label": "Social with Dogs", "points": 4, "required_level": "important"},
+            "social_with_people": {"label": "Social with People", "points": 4, "required_level": "important"},
+            "behavior_issues": {"label": "Behavior Issues", "points": 3, "required_level": "important"}
         }
     },
     
-    # Taste & Treat (14 points, 4 questions)
-    "taste_treat": {
-        "name": "Taste & Treat",
-        "icon": "🍽",
-        "total_points": 14,
+    # Lifestyle & Preferences (20 points, 7 questions)
+    "lifestyle_preferences": {
+        "name": "Lifestyle & Preferences",
+        "icon": "🏠",
+        "total_points": 20,
         "questions": {
-            "food_motivation": {"label": "Food Motivation", "points": 3, "required_level": "important"},
+            "alone_time_comfort": {"label": "Alone Time Comfort", "points": 5, "required_level": "important"},
+            "car_comfort": {"label": "Car Comfort", "points": 4, "required_level": "important"},
+            "travel_readiness": {"label": "Travel Readiness", "points": 3, "required_level": "important"},
+            "favorite_spot": {"label": "Favorite Spot", "points": 2, "required_level": "advanced"},
+            "morning_routine": {"label": "Morning Routine", "points": 2, "required_level": "advanced"},
+            "exercise_needs": {"label": "Exercise Needs", "points": 2, "required_level": "important"},
+            "feeding_times": {"label": "Feeding Times", "points": 2, "required_level": "core"}
+        }
+    },
+    
+    # Nutrition (9 points, 3 questions)
+    "nutrition": {
+        "name": "Nutrition",
+        "icon": "🍖",
+        "total_points": 9,
+        "questions": {
             "favorite_protein": {"label": "Favorite Protein", "points": 3, "required_level": "important"},
-            "treat_preference": {"label": "Treat Preference", "points": 3, "required_level": "advanced"},
-            "food_allergies": {"label": "Food Allergies", "points": 5, "required_level": "core"}  # Safety - weighted higher
+            "food_motivation": {"label": "Food Motivation", "points": 3, "required_level": "important"},
+            "treat_preference": {"label": "Treat Preference", "points": 3, "required_level": "advanced"}
         }
     },
     
-    # Training & Behaviour (12 points, 3 questions)
-    "training_behaviour": {
-        "name": "Training & Behaviour",
+    # Training (5 points, 2 questions)
+    "training": {
+        "name": "Training",
         "icon": "🎓",
-        "total_points": 12,
+        "total_points": 5,
         "questions": {
-            "training_level": {"label": "Training Level", "points": 4, "required_level": "important"},
-            "motivation_type": {"label": "Training Motivation", "points": 4, "required_level": "important"},
-            "behavior_issues": {"label": "Behavior Issues", "points": 4, "required_level": "important"}
+            "training_level": {"label": "Training Level", "points": 3, "required_level": "important"},
+            "motivation_type": {"label": "Motivation Type", "points": 2, "required_level": "important"}
         }
     },
     
-    # Long Horizon - Health (15 points, 4 questions)
-    "long_horizon": {
-        "name": "Long Horizon (Health)",
-        "icon": "🩺",
-        "total_points": 15,
+    # Relationships (5 points, 3 questions)
+    "relationships": {
+        "name": "Relationships",
+        "icon": "👨‍👩‍👧‍👦",
+        "total_points": 5,
         "questions": {
-            "health_conditions": {"label": "Health Conditions", "points": 5, "required_level": "core"},  # Safety - weighted higher
-            "vet_comfort": {"label": "Vet Comfort", "points": 4, "required_level": "important"},
-            "grooming_tolerance": {"label": "Grooming Tolerance", "points": 3, "required_level": "important"},
-            "life_stage": {"label": "Life Stage", "points": 3, "required_level": "core"}
+            "primary_bond": {"label": "Primary Bond", "points": 2, "required_level": "important"},
+            "other_pets": {"label": "Other Pets", "points": 2, "required_level": "important"},
+            "kids_at_home": {"label": "Kids at Home", "points": 1, "required_level": "important"}
         }
     }
 }
