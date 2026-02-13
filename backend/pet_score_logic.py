@@ -342,42 +342,42 @@ SCORE_CATEGORIES = {
         "name": "Safety & Health",
         "icon": "🛡️",
         "color": "red",
-        "max_points": 35,
+        "max_points": 36,  # Updated: 10+8+5+5+4+4=36
         "description": "Critical information for keeping your pet safe"
     },
     "personality": {
         "name": "Personality",
         "icon": "🎭",
         "color": "purple",
-        "max_points": 25,
+        "max_points": 25,  # 8+6+4+4+3=25
         "description": "Understanding their unique character"
     },
     "lifestyle": {
         "name": "Lifestyle",
         "icon": "🏠",
         "color": "blue",
-        "max_points": 20,
+        "max_points": 20,  # 5+4+3+2+2+2+2=20
         "description": "Daily routines and preferences"
     },
     "nutrition": {
         "name": "Nutrition",
         "icon": "🍖",
         "color": "orange",
-        "max_points": 10,
+        "max_points": 9,  # Updated: 3+3+3=9
         "description": "Food preferences and needs"
     },
     "training": {
         "name": "Training",
         "icon": "🎓",
         "color": "green",
-        "max_points": 5,
+        "max_points": 5,  # 3+2=5
         "description": "Learning style and capabilities"
     },
     "relationships": {
         "name": "Relationships",
         "icon": "❤️",
         "color": "pink",
-        "max_points": 5,
+        "max_points": 5,  # 2+2+1=5
         "description": "Family and social connections"
     },
 }
