@@ -207,14 +207,19 @@ const MemberMobileNav = () => {
         data-testid="member-nav-drawer"
       >
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-teal-600 to-teal-700 p-4 flex items-center justify-between">
+        <div className="sticky top-0 bg-gradient-to-r from-teal-600 to-teal-700 p-4 flex items-center justify-between safe-area-inset-top">
           <span className="font-bold text-white flex items-center gap-2">
             <PawPrint className="w-5 h-5" />
             Quick Nav
           </span>
           <button
             onClick={() => setIsOpen(false)}
-            className="p-1.5 hover:bg-white/20 rounded-lg text-white transition-colors"
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              setIsOpen(false);
+            }}
+            className="p-1.5 hover:bg-white/20 rounded-lg text-white transition-colors touch-manipulation active:bg-white/30"
+            style={{ WebkitTapHighlightColor: 'transparent' }}
             data-testid="member-nav-close"
           >
             <X className="w-5 h-5" />
