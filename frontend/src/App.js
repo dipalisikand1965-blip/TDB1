@@ -215,6 +215,8 @@ const MiraDemoPage = lazy(() => import("./pages/MiraDemoPage"));
 const MiraDemoOriginalPage = lazy(() => import("./pages/MiraDemoOriginalPage"));
 // MiraDemoBackupPage - UNTOUCHED BACKUP for comparison during refactoring
 const MiraDemoBackupPage = lazy(() => import("./pages/MiraDemoBackupPage"));
+// MiraOSPage - New Header Shell navigation page
+const MiraOSPage = lazy(() => import("./pages/MiraOSPage"));
 const ConciergeDashboard = lazy(() => import("./pages/ConciergeDashboard"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const CollectionPage = lazy(() => import("./pages/CollectionPage"));
