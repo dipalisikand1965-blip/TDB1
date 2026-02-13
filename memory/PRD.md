@@ -92,22 +92,44 @@ It is NOT:
 
 ---
 
-## 🧬 CANONICAL ANSWER SYSTEM (Feb 2026) ✅ COMPLETE
+## 🧬 CANONICAL ANSWER SYSTEM (Feb 2026) ✅ COMPLETE + UI ALIGNED
 
 ### Overview
 The Pet Soul system now uses a **canonical answer system** that:
-- Maps 35 UI questions → 26 canonical scoring fields
+- Maps 51 UI questions → 26 canonical scoring fields
 - Weights sum to **exactly 100** (non-negotiable)
 - Preserves non-scoring fields for Mira context
 - Single source of truth: `pets.doggy_soul_answers`
+
+### UI Questions Now Include ALL 26 Scoring Fields ✅
+| New Question | Canonical Field | Weight |
+|--------------|-----------------|--------|
+| Life Stage | `life_stage` | 5 |
+| Social with People | `social_with_people` | 4 |
+| Kids at Home | `kids_at_home` | 1 |
+| Other Pets | `other_pets` | 2 |
+| Morning Routine | `morning_routine` | 2 |
+| Feeding Times | `feeding_times` | 2 |
+| Exercise Needs | `exercise_needs` | 2 |
+| Favorite Spot | `favorite_spot` | 2 |
+| Food Motivation | `food_motivation` | 3 |
+| Favorite Protein | `favorite_protein` | 3 |
+| Treat Preference | `treat_preference` | 3 |
+| Motivation Type | `motivation_type` | 2 |
+| Behavior Issues | `behavior_issues` | 3 |
+| Health Conditions | `health_conditions` | 8 |
+| Vet Comfort | `vet_comfort` | 5 |
+| Grooming Tolerance | `grooming_tolerance` | 4 |
 
 ### Key Files
 | File | Purpose |
 |------|---------|
 | `/app/backend/canonical_answers.py` | Core canonicalization logic |
-| `/app/backend/pet_score_logic.py` | Score calculation (weights=100) |
-| `/app/backend/tests/test_canonical_answers.py` | 23 unit tests |
-| `/app/memory/CANONICAL_ANSWER_SYSTEM.md` | Full documentation |
+| `/app/backend/pet_soul_routes.py` | UI questions bank (51 questions) |
+| `/app/backend/pet_soul_config.py` | Scoring weights config (aligned to 100) |
+| `/app/backend/tests/test_canonical_answers.py` | 25 unit tests |
+| `/app/backend/scripts/backfill_canonical_answers.py` | Idempotent migration script |
+| `/app/frontend/src/components/PetSoulAnswers.jsx` | Frontend display (aligned) |
 
 ### Architecture
 ```
