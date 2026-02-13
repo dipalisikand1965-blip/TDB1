@@ -10152,6 +10152,47 @@ Would you like me to:
                                 "energy": pet_energy
                             }
                         },
+                        # ═══════════════════════════════════════════════════════════
+                        # MIRA OS: Auto-update Picks and Services panels
+                        # Every café query refreshes these automatically
+                        # ═══════════════════════════════════════════════════════════
+                        "picks": {
+                            "type": "personalized_places",
+                            "title": f"Picks for {pet_name}",
+                            "items": [
+                                {
+                                    "id": p.get("place_id"),
+                                    "name": p.get("name"),
+                                    "subtitle": f"⭐ {p.get('rating', 'N/A')} • Pet-friendly {place_type_to_search}",
+                                    "category": place_type_to_search,
+                                    "match_reason": f"Matched to {pet_name}'s temperament"
+                                } for p in formatted_places[:4]
+                            ],
+                            "refresh_trigger": "place_search"
+                        },
+                        "services": [
+                            {
+                                "id": "arrange_table",
+                                "name": "Arrange Table",
+                                "description": f"Reserve a pet-friendly spot for {pet_name}",
+                                "type": "concierge_action",
+                                "icon": "calendar"
+                            },
+                            {
+                                "id": "confirm_policy",
+                                "name": "Confirm Pet Policy",
+                                "description": "We'll call ahead to verify pet rules",
+                                "type": "concierge_action",
+                                "icon": "phone"
+                            },
+                            {
+                                "id": "plan_route",
+                                "name": "Plan Pet-Friendly Route",
+                                "description": "Get directions with pet comfort in mind",
+                                "type": "travel_assist",
+                                "icon": "map"
+                            }
+                        ],
                         "execution_options": [
                             {"text": "Check availability", "type": "concierge_action", "action": "check_availability"},
                             {"text": "Arrange a table", "type": "concierge_action", "action": "arrange_table"},
