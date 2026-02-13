@@ -82,9 +82,16 @@ async def get_all_customers(username: str = Depends(verify_admin)):
             })
             user_emails.add(email)  # Prevent dupes if multiples
             
-    # Combine and sort
+    # Combine and sort (handle mixed datetime/string types)
     all_customers = users + guests
-    all_customers.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    def get_sort_key(x):
+        created = x.get("created_at", "")
+        if created is None:
+            return ""
+        if hasattr(created, 'isoformat'):
+            return created.isoformat()
+        return str(created)
+    all_customers.sort(key=get_sort_key, reverse=True)
     
     # Stats - Support both new and legacy tier names
     total = len(all_customers)
