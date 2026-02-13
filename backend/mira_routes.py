@@ -9553,6 +9553,110 @@ async def mira_chat(
         selected_pet = request.pet_context
         logger.info(f"[PET LOAD] Using pet_context from request: {selected_pet.get('name')}")
     
+    pet_name = selected_pet.get("name", "your furry friend") if selected_pet else "your furry friend"
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # CONVERSATION CONTINUITY - Handle pending flows from previous turn
+    # If we're awaiting a response, check if user answered and continue the flow
+    # ═══════════════════════════════════════════════════════════════════════════
+    
+    awaiting = conversation_state.get("awaiting_response")
+    original_intent = conversation_state.get("original_intent")
+    pending_action = conversation_state.get("pending_action")
+    context_data = conversation_state.get("context_data", {})
+    
+    # Check if user is answering a clarifying question
+    user_msg_lower = user_message.lower()
+    
+    # Detect "confirmation" responses (e.g., "No specific needs", "That's fine", "Yes", etc.)
+    confirmation_phrases = [
+        "no specific", "no particular", "nothing specific", "none", "no allergies",
+        "no restrictions", "that's fine", "that's it", "no thanks", "no need",
+        "sounds good", "perfect", "great", "yes", "okay", "ok", "sure", "go ahead",
+        "confirmed", "correct", "right", "exactly", "that's right"
+    ]
+    is_confirmation = any(phrase in user_msg_lower for phrase in confirmation_phrases)
+    
+    # If we were awaiting a response and user confirmed/answered, continue the original flow
+    if awaiting and is_confirmation and original_intent:
+        logger.info(f"[CONV CONTINUITY] User confirmed: '{user_message}' for pending intent: {original_intent}")
+        
+        # MEAL PLAN FLOW - User confirmed no special dietary needs
+        if original_intent == "meal_plan" and awaiting in ["dietary_needs", "health_conditions"]:
+            # User said "no specific needs" - CONTINUE with meal plan
+            logger.info(f"[MEAL PLAN] User confirmed no dietary needs, generating meal plan for {pet_name}")
+            
+            # Clear the awaiting state
+            conversation_state["awaiting_response"] = None
+            
+            # Generate meal plan response
+            breed = selected_pet.get("breed", "dog") if selected_pet else "dog"
+            energy_level = selected_pet.get("energy_level") or selected_pet.get("doggy_soul_answers", {}).get("energy_level") if selected_pet else None
+            
+            energy_note = ""
+            if energy_level:
+                if "high" in str(energy_level).lower():
+                    energy_note = " Given her high energy, she may need slightly larger portions."
+                elif "low" in str(energy_level).lower():
+                    energy_note = " Since she's lower energy, be mindful of portions to avoid weight gain."
+            
+            meal_plan_response = f"""Great, thanks for confirming that {pet_name} doesn't have any specific dietary restrictions! 
+
+Here's a **balanced daily meal plan** for {pet_name}:
+
+**🌅 Morning Meal (7-8 AM)**
+- High-quality protein (chicken, fish, or lamb) - about 40% of the meal
+- Complex carbs (brown rice, sweet potato) - about 30%
+- Vegetables (carrots, green beans, pumpkin) - about 20%
+- Healthy fats (fish oil or coconut oil) - a small drizzle
+
+**🌙 Evening Meal (6-7 PM)**
+- Similar composition, can rotate protein source
+- Add probiotics 2-3 times a week for gut health{energy_note}
+
+**💧 Hydration**
+- Fresh water available at all times
+- Consider adding bone broth 1-2x weekly
+
+**🦴 Treats (max 10% of daily intake)**
+- Single-ingredient treats like freeze-dried liver
+- Carrot sticks or apple slices as healthy alternatives
+
+Would you like me to:
+• Recommend specific brands?
+• Create a weekly rotation schedule?
+• Calculate exact portions based on {pet_name}'s weight?"""
+            
+            # Save updated conversation state
+            try:
+                from mira_session_persistence import update_conversation_state
+                await update_conversation_state(session_id, {
+                    "original_intent": None,
+                    "awaiting_response": None,
+                    "pending_action": None,
+                    "context_data": {}
+                })
+            except Exception as e:
+                logger.warning(f"[CONV STATE] Could not update state: {e}")
+            
+            return {
+                "success": True,
+                "response": meal_plan_response,
+                "session_id": session_id,
+                "pillar": "care",
+                "intent": "meal_plan_complete",
+                "follow_ups": [
+                    {"text": "Recommend brands", "type": "action"},
+                    {"text": "Calculate portions", "type": "action"},
+                    {"text": "Weekly rotation", "type": "action"}
+                ],
+                "products": [],
+                "services": [
+                    {"name": "Nutrition Consultation", "type": "concierge"},
+                    {"name": "Custom Meal Plan", "type": "concierge"}
+                ]
+            }
+    
     # ═══════════════════════════════════════════════════════════════════════════
     # CHECK FOR PERSONALIZED PICKS REQUEST FIRST
     # "Show me personalized picks for Mojo" should open the picks vault
