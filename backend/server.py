@@ -11195,6 +11195,41 @@ async def delete_pet_profile(pet_id: str):
     return {"message": "Pet profile deleted"}
 
 
+@api_router.get("/pets/{pet_id}/soul")
+async def get_pet_soul(pet_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Get Pet Soul data - answers, score, tier, and journey progress.
+    
+    Used by: PillarContext, MiraChatWidget, CelebratePage
+    """
+    pet = await db.pets.find_one(
+        {"id": pet_id}, 
+        {"_id": 0, "doggy_soul_answers": 1, "overall_score": 1, "score_tier": 1, "name": 1, "breed": 1}
+    )
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    soul_answers = pet.get("doggy_soul_answers", {})
+    
+    # Calculate score using weighted system
+    score_data = calculate_pet_soul_score(soul_answers)
+    
+    return {
+        "success": True,
+        "pet_id": pet_id,
+        "pet_name": pet.get("name", "Pet"),
+        "breed": pet.get("breed", "Unknown"),
+        "soul_answers": soul_answers,
+        "overall_score": score_data.get("total_score", 0),
+        "score_tier": score_data.get("tier", {}).get("key", "newcomer"),
+        "tier_info": score_data.get("tier", {}),
+        "answered_count": score_data.get("answered_count", 0),
+        "total_questions": score_data.get("total_questions", 20),
+        "completeness": score_data.get("completeness_pct", 0),
+        "category_scores": score_data.get("category_scores", {})
+    }
+
+
 @api_router.post("/pets/{pet_id}/soul-answer")
 async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dict = Depends(get_current_user)):
     """
