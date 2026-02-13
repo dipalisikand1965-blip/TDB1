@@ -72,6 +72,7 @@ const HealthVaultWizard = lazy(() => import('../components/Mira/HealthVaultWizar
 const TestScenariosPanel = lazy(() => import('../components/Mira/TestScenariosPanel'));
 const HandoffSummary = lazy(() => import('../components/Mira/HandoffSummary'));
 const SoulFormModal = lazy(() => import('../components/Mira/SoulFormModal'));
+const MojoProfileModal = lazy(() => import('../components/Mira/MojoProfileModal'));
 
 // Simple loading fallback for lazy components
 const LazyFallback = () => <div className="p-4 text-center text-gray-400">Loading...</div>;
