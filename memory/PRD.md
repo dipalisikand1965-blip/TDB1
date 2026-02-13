@@ -40,6 +40,7 @@ It is NOT:
 
 | Priority | Document | Purpose |
 |----------|----------|---------|
+| **P0** | `/app/memory/CANONICAL_ANSWER_SYSTEM.md` | **NEW: Canonical Answer System (Feb 2026)** |
 | **P0** | `/app/memory/PICKS_ENGINE_HANDOVER.md` | **START HERE - Complete handover for Picks Engine** |
 | **P0** | `/app/memory/AGENT_START_HERE.md` | Master onboarding doc |
 | **P0** | `/app/memory/MIRA_OS_14_PILLARS_BIBLE.md` | 14 pillars definitive reference |
