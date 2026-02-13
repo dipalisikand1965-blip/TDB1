@@ -321,6 +321,8 @@ const SectionRow = memo(({
   isExpanded, 
   onToggle, 
   onAddClick,
+  onEditClick,
+  isEditing,
   children 
 }) => {
   const colors = SECTION_COLORS[section.color];
@@ -328,7 +330,7 @@ const SectionRow = memo(({
   
   return (
     <div 
-      className={`mojo-section ${isExpanded ? 'expanded' : ''}`}
+      className={`mojo-section ${isExpanded ? 'expanded' : ''} ${isEditing ? 'editing' : ''}`}
       data-testid={`mojo-section-${section.id}`}
     >
       {/* Section Header (Always Visible) */}
@@ -372,12 +374,39 @@ const SectionRow = memo(({
         <div className="section-content">
           {children}
           
-          {/* Add CTA if incomplete */}
-          {completeness < 100 && (
+          {/* Action buttons row */}
+          <div className="section-actions-row">
+            {/* Edit button - always show when expanded */}
             <button 
-              className="section-add-btn"
-              onClick={() => onAddClick?.(section.id)}
-              data-testid={`add-${section.id}-btn`}
+              className="section-edit-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                hapticFeedback.buttonTap();
+                onEditClick?.(section.id);
+              }}
+              data-testid={`edit-${section.id}-btn`}
+            >
+              <Pencil className="w-4 h-4" />
+              <span>Edit</span>
+            </button>
+            
+            {/* Add CTA if incomplete */}
+            {completeness < 100 && (
+              <button 
+                className="section-add-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddClick?.(section.id);
+                }}
+                data-testid={`add-${section.id}-btn`}
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add {missingItems[0] || 'more info'}</span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
             >
               <Plus className="w-4 h-4" />
               <span>Add {missingItems[0] || 'more info'}</span>
