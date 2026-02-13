@@ -1459,7 +1459,14 @@ const MiraDemoPage = () => {
               photo: p.photo_url ? `${API_URL}${p.photo_url}` : null,
               traits: ensureArray(p.doggy_soul_answers?.describe_3_words, ['Loving']),
               sensitivities: ensureArray(p.doggy_soul_answers?.health_conditions),
-              favorites: ensureArray(p.doggy_soul_answers?.favorite_treats)
+              favorites: ensureArray(p.doggy_soul_answers?.favorite_treats),
+              // Include full data for MOJO modal
+              soulScore: Math.round(p.overall_score || 0),
+              doggy_soul_answers: p.doggy_soul_answers || {},
+              preferences: p.preferences || {},
+              soul: p.soul || {},
+              health_vault: p.health_vault || {},
+              overall_score: p.overall_score || 0
             });
           }
         }
