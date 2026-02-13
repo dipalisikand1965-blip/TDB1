@@ -126,8 +126,10 @@ Mira: "Here are a few places that would suit Mojo's comfort.
 ```
 /app/backend/
 ├── mira_routes.py 
-│   ├── Allergy capture flow (lines 9622-9744)
-│   └── Location confirmation flow (lines 9746-9815)
+│   ├── Uniform Service Handoff Flow (lines 9610-9750) **NEW**
+│   ├── Allergy capture flow (lines 9750-9880)
+│   └── Location/Place search flow (lines 9880-10500)
+├── mira_concierge_handoff.py (Concierge task management)
 ├── soul_intelligence.py (save_soul_enrichment function)
 └── services/google_places_service.py
 ```
