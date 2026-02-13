@@ -548,10 +548,17 @@ def extract_soul_data_from_response(
     pet_name: str
 ) -> ExtractedSoulData:
     """
-    Extract Soul data from user's response to fallback questions.
+    Extract Soul data from user's response to ANY question Mira asks.
     
-    This parses natural language answers and extracts structured data
-    to write back to the pet's Soul profile.
+    This is the UNIVERSAL extraction function - it captures:
+    - Allergies & food sensitivities
+    - Dietary preferences
+    - Health conditions & medications
+    - Behavioral traits
+    - Grooming preferences
+    - And more...
+    
+    The "Ask, Store, Recommend" doctrine means EVERY answer should be captured.
     
     Args:
         user_message: User's response
@@ -564,7 +571,167 @@ def extract_soul_data_from_response(
     message_lower = user_message.lower()
     
     # ═══════════════════════════════════════════════════════════════════
-    # COAT TYPE EXTRACTION
+    # ALLERGY & FOOD SENSITIVITY EXTRACTION (HIGHEST PRIORITY - SAFETY)
+    # ═══════════════════════════════════════════════════════════════════
+    
+    # Common food allergens for pets
+    common_allergens = [
+        "chicken", "beef", "lamb", "pork", "fish", "salmon", "duck", "turkey",
+        "wheat", "corn", "soy", "dairy", "eggs", "gluten", "grain",
+        "rice", "potato", "sweet potato", "peanut", "peanut butter"
+    ]
+    
+    # Patterns indicating allergies
+    allergy_patterns = [
+        r"allergic\s+to\s+(.+?)(?:\s*[,.]|\s+and\s+|$)",
+        r"allergy\s+to\s+(.+?)(?:\s*[,.]|\s+and\s+|$)",
+        r"can'?t\s+(?:eat|have|tolerate)\s+(.+?)(?:\s*[,.]|\s+and\s+|$)",
+        r"sensitive\s+to\s+(.+?)(?:\s*[,.]|\s+and\s+|$)",
+        r"(?:avoid|avoiding)\s+(.+?)(?:\s*[,.]|\s+and\s+|$)",
+        r"no\s+(.+?)\s+(?:please|for\s+him|for\s+her)",
+    ]
+    
+    for pattern in allergy_patterns:
+        matches = re.findall(pattern, message_lower)
+        for match in matches:
+            # Clean up the allergen
+            allergen = match.strip().rstrip('.,!?')
+            if allergen and len(allergen) < 50:  # Sanity check
+                extracted.food_allergies.append(allergen)
+                extracted.allergy_flags.append(allergen)
+                extracted.data_categories.append("allergy")
+    
+    # Direct mention of allergens
+    for allergen in common_allergens:
+        if allergen in message_lower:
+            # Check if it's in a negative context
+            negative_context = [
+                f"no {allergen}", f"not {allergen}", f"allergic to {allergen}",
+                f"can't have {allergen}", f"avoid {allergen}", f"sensitive to {allergen}",
+                f"without {allergen}", f"{allergen} allergy", f"{allergen} free"
+            ]
+            if any(ctx in message_lower for ctx in negative_context):
+                if allergen not in extracted.food_allergies:
+                    extracted.food_allergies.append(allergen)
+                    extracted.data_categories.append("allergy")
+    
+    # Check for "no allergies" - important to know they're allergy-free
+    if any(p in message_lower for p in ["no allergies", "no known allergies", "not allergic", "no food allergies"]):
+        extracted.food_allergies = ["none_confirmed"]
+        extracted.data_categories.append("allergy_clear")
+    
+    # ═══════════════════════════════════════════════════════════════════
+    # DIETARY PREFERENCE EXTRACTION
+    # ═══════════════════════════════════════════════════════════════════
+    
+    diet_patterns = {
+        "dry_food": ["kibble", "dry food", "dry kibble", "crunchy food"],
+        "wet_food": ["wet food", "canned food", "canned", "pate", "gravy"],
+        "raw": ["raw diet", "raw food", "barf diet", "raw meat", "raw feeding"],
+        "home_cooked": ["home cooked", "homemade", "cook for", "fresh food", "fresh diet"],
+        "mixed": ["mix of", "combination", "both wet and dry", "variety"]
+    }
+    
+    for diet_type, patterns in diet_patterns.items():
+        if any(p in message_lower for p in patterns):
+            extracted.dietary_preferences = diet_type
+            extracted.data_categories.append("diet")
+            break
+    
+    # Favorite treats extraction
+    treat_patterns = [
+        r"loves?\s+(.+?)\s+treats",
+        r"favorite\s+treat\s+is\s+(.+?)(?:\s*[,.]|$)",
+        r"goes\s+crazy\s+for\s+(.+?)(?:\s*[,.]|$)",
+        r"can'?t\s+resist\s+(.+?)(?:\s*[,.]|$)",
+    ]
+    
+    for pattern in treat_patterns:
+        matches = re.findall(pattern, message_lower)
+        for match in matches:
+            treat = match.strip().rstrip('.,!?')
+            if treat and len(treat) < 30:
+                extracted.favorite_treats.append(treat)
+                extracted.data_categories.append("diet")
+    
+    # ═══════════════════════════════════════════════════════════════════
+    # HEALTH CONDITIONS EXTRACTION
+    # ═══════════════════════════════════════════════════════════════════
+    
+    health_conditions_list = [
+        "arthritis", "diabetes", "heart condition", "hip dysplasia", "seizures",
+        "epilepsy", "cancer", "kidney disease", "liver disease", "thyroid",
+        "cushings", "addisons", "pancreatitis", "ibd", "colitis",
+        "eye problems", "ear infections", "dental issues", "obesity", "overweight"
+    ]
+    
+    for condition in health_conditions_list:
+        if condition in message_lower:
+            extracted.health_conditions.append(condition)
+            extracted.data_categories.append("health")
+    
+    # General health mentions
+    health_patterns = [
+        r"has\s+(.+?)\s+(?:condition|disease|problem|issue)",
+        r"diagnosed\s+with\s+(.+?)(?:\s*[,.]|$)",
+        r"suffers\s+from\s+(.+?)(?:\s*[,.]|$)",
+    ]
+    
+    for pattern in health_patterns:
+        matches = re.findall(pattern, message_lower)
+        for match in matches:
+            condition = match.strip().rstrip('.,!?')
+            if condition and len(condition) < 50:
+                extracted.health_conditions.append(condition)
+                extracted.data_categories.append("health")
+    
+    # Vaccination status
+    if any(p in message_lower for p in ["fully vaccinated", "all vaccines", "up to date on shots", "vaccinations current"]):
+        extracted.vaccination_status = "up_to_date"
+        extracted.data_categories.append("health")
+    elif any(p in message_lower for p in ["due for vaccines", "need vaccines", "overdue", "not vaccinated"]):
+        extracted.vaccination_status = "needs_update"
+        extracted.data_categories.append("health")
+    
+    # ═══════════════════════════════════════════════════════════════════
+    # BEHAVIOR & PERSONALITY EXTRACTION
+    # ═══════════════════════════════════════════════════════════════════
+    
+    # Energy level
+    if any(p in message_lower for p in ["high energy", "very active", "hyperactive", "never stops", "always running"]):
+        extracted.energy_level = "high"
+        extracted.data_categories.append("behavior")
+    elif any(p in message_lower for p in ["low energy", "lazy", "couch potato", "sleeps a lot", "calm"]):
+        extracted.energy_level = "low"
+        extracted.data_categories.append("behavior")
+    elif any(p in message_lower for p in ["moderate energy", "balanced", "normal energy"]):
+        extracted.energy_level = "medium"
+        extracted.data_categories.append("behavior")
+    
+    # Temperament
+    if any(p in message_lower for p in ["anxious", "nervous", "fearful", "scared easily", "timid"]):
+        extracted.temperament = "anxious"
+        extracted.data_categories.append("behavior")
+    elif any(p in message_lower for p in ["calm", "relaxed", "chill", "laid back", "easygoing"]):
+        extracted.temperament = "calm"
+        extracted.data_categories.append("behavior")
+    elif any(p in message_lower for p in ["playful", "energetic", "bouncy", "loves to play", "playful spirit"]):
+        extracted.temperament = "playful"
+        extracted.data_categories.append("behavior")
+    
+    # Behavior with other dogs
+    if any(p in message_lower for p in ["friendly with dogs", "loves dogs", "good with dogs", "plays well with dogs"]):
+        extracted.behavior_with_dogs = "friendly"
+        extracted.data_categories.append("behavior")
+    elif any(p in message_lower for p in ["reactive", "barks at dogs", "lunges at dogs", "not good with dogs"]):
+        extracted.behavior_with_dogs = "reactive"
+        extracted.data_categories.append("behavior")
+    elif any(p in message_lower for p in ["scared of dogs", "fearful of dogs", "avoids dogs"]):
+        extracted.behavior_with_dogs = "fearful"
+        extracted.data_categories.append("behavior")
+    
+    # ═══════════════════════════════════════════════════════════════════
+    # COAT TYPE EXTRACTION (Original grooming logic)
     # ═══════════════════════════════════════════════════════════════════
     
     coat_patterns = {
@@ -580,12 +747,14 @@ def extract_soul_data_from_response(
     for coat_type, patterns in coat_patterns.items():
         if any(p in message_lower for p in patterns):
             extracted.coat_type = coat_type
+            extracted.data_categories.append("grooming")
             break
     
-    # Also check simple mentions
+    # Simple coat mention
     simple_coat = re.search(r'\b(short|long|medium|matted|curly|wiry)\b', message_lower)
     if simple_coat and not extracted.coat_type:
         extracted.coat_type = simple_coat.group(1)
+        extracted.data_categories.append("grooming")
     
     # ═══════════════════════════════════════════════════════════════════
     # GROOMING PREFERENCE EXTRACTION (home vs salon)
@@ -596,8 +765,10 @@ def extract_soul_data_from_response(
     
     if any(p in message_lower for p in home_patterns):
         extracted.grooming_preference = "home"
+        extracted.data_categories.append("grooming")
     elif any(p in message_lower for p in salon_patterns):
         extracted.grooming_preference = "salon"
+        extracted.data_categories.append("grooming")
     
     # ═══════════════════════════════════════════════════════════════════
     # ANXIETY TRIGGERS EXTRACTION
@@ -615,62 +786,41 @@ def extract_soul_data_from_response(
         "loud sounds": ["scared of loud", "noise anxiety", "loud sounds", "noise sensitive", 
                         "sensitive to noise", "hates loud"],
         "water": ["hates water", "scared of water", "doesn't like baths", "bath anxiety", 
-                  "afraid of water", "hates baths"]
+                  "afraid of water", "hates baths"],
+        "vet": ["scared of vet", "vet anxiety", "hates the vet", "nervous at vet"],
+        "car": ["car sick", "hates car rides", "motion sickness", "scared in car"]
     }
     
     for trigger, patterns in anxiety_patterns.items():
         if any(p in message_lower for p in patterns):
             extracted.grooming_anxiety_triggers.append(trigger)
+            extracted.data_categories.append("anxiety")
     
-    # General anxiety mentions - extract what they're anxious about
-    if "anxiety" in message_lower or "nervous" in message_lower or "scared" in message_lower:
-        # Try to extract what they're anxious about (stop at 'but' or punctuation)
-        anxiety_match = re.search(r'(?:anxiety|nervous|scared|afraid)(?:\s+(?:of|with|about))?\s+(\w+)', message_lower)
-        if anxiety_match:
-            trigger = anxiety_match.group(1)
-            # Don't add if it's a stopword or already in list
-            stopwords = {"but", "the", "and", "she", "he", "it", "they", "with", "is", "was"}
-            if trigger not in extracted.grooming_anxiety_triggers and trigger not in stopwords:
-                extracted.grooming_anxiety_triggers.append(trigger)
-    
-    # Check for "no anxiety" or "fine with everything" - but be careful not to clear if "but" follows
-    # "fine with grooming but hates dryer" should NOT clear triggers
-    clear_patterns = ["no anxiety", "no issues with grooming", "fine with everything", "comfortable with everything", "no problems with grooming"]
+    # Check for "no anxiety" - important to know they're comfortable
+    clear_patterns = ["no anxiety", "no issues", "fine with everything", "comfortable with everything", "no problems"]
     should_clear = any(p in message_lower for p in clear_patterns)
     
-    # Don't clear if there's a "but" indicating exceptions
-    if should_clear and " but " in message_lower:
-        should_clear = False
-    
-    if should_clear:
-        extracted.grooming_anxiety_triggers = []  # Clear - pet is comfortable
+    if should_clear and " but " not in message_lower:
+        extracted.grooming_anxiety_triggers = []
     
     # ═══════════════════════════════════════════════════════════════════
-    # SKIN/ALLERGY FLAGS EXTRACTION
+    # SKIN FLAGS EXTRACTION
     # ═══════════════════════════════════════════════════════════════════
     
-    skin_patterns = ["skin irritation", "skin issue", "rash", "itchy", "scratching", "hot spots", "dermatitis", "eczema"]
+    skin_patterns = ["skin irritation", "skin issue", "rash", "itchy", "scratching", "hot spots", "dermatitis", "eczema", "dry skin", "flaky skin"]
     for pattern in skin_patterns:
         if pattern in message_lower:
             extracted.skin_flags.append(pattern)
-    
-    allergy_patterns = ["allergic to", "allergy to", "allergies", "sensitive to"]
-    for pattern in allergy_patterns:
-        if pattern in message_lower:
-            # Try to extract what they're allergic to
-            allergy_match = re.search(rf'{pattern}\s+(\w+(?:\s+\w+)?)', message_lower)
-            if allergy_match:
-                extracted.allergy_flags.append(allergy_match.group(1))
+            extracted.data_categories.append("skin")
     
     # ═══════════════════════════════════════════════════════════════════
     # GROOMING HISTORY EXTRACTION
     # ═══════════════════════════════════════════════════════════════════
     
-    # Check for "never groomed" or "first time"
     if any(p in message_lower for p in ["never groomed", "first time", "never been groomed", "first groom"]):
         extracted.last_groom_date = "never"
+        extracted.data_categories.append("grooming")
     
-    # Check for time-based mentions
     time_patterns = [
         (r'(\d+)\s*(?:weeks?|wks?)\s*ago', 'weeks'),
         (r'(\d+)\s*(?:months?|mos?)\s*ago', 'months'),
@@ -685,6 +835,7 @@ def extract_soul_data_from_response(
                 extracted.last_groom_date = "recently"
             else:
                 extracted.last_groom_date = f"{match.group(1)} {unit} ago"
+            extracted.data_categories.append("grooming")
             break
     
     # ═══════════════════════════════════════════════════════════════════
@@ -700,9 +851,14 @@ def extract_soul_data_from_response(
     for city in indian_cities:
         if city in message_lower:
             extracted.city = city.title()
+            extracted.data_categories.append("location")
             break
     
-    logger.info(f"[SOUL-FIRST] Extracted data: coat={extracted.coat_type}, pref={extracted.grooming_preference}, triggers={extracted.grooming_anxiety_triggers}")
+    # Deduplicate categories
+    extracted.data_categories = list(set(extracted.data_categories))
+    
+    logger.info(f"[SOUL-FIRST] Extracted data categories: {extracted.data_categories}")
+    logger.info(f"[SOUL-FIRST] Allergies: {extracted.food_allergies}, Health: {extracted.health_conditions}, Behavior: {extracted.temperament}/{extracted.energy_level}")
     
     return extracted
 
