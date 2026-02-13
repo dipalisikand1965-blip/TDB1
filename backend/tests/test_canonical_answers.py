@@ -298,6 +298,87 @@ class TestUIToCanonicalMapping:
             assert valid, f"UI field {ui_field} maps to unknown canonical field {canonical_field}"
 
 
+class TestNewCanonicalQuestions:
+    """Test the new canonical questions added for 100% score achievement"""
+    
+    def test_new_direct_canonical_fields(self):
+        """New UI questions using direct canonical field names should work"""
+        # These are the NEW questions added to the UI that use canonical IDs directly
+        new_direct_fields = {
+            "social_with_people": "Very social - loves everyone",
+            "life_stage": "Adult (3-7 years)",
+            "kids_at_home": "No children",
+            "other_pets": "No other pets",
+            "morning_routine": "Early riser, ready to go",
+            "feeding_times": "Twice a day (morning & evening)",
+            "exercise_needs": "Moderate (30-60 mins)",
+            "favorite_spot": "On the couch/sofa",
+            "food_motivation": "Very - will do anything for food",
+            "favorite_protein": "Chicken",
+            "treat_preference": "Soft/chewy treats",
+            "motivation_type": "Treats/food",
+            "behavior_issues": "None",
+            "health_conditions": "None",
+            "vet_comfort": "Very comfortable - no issues",
+            "grooming_tolerance": "Loves it",
+        }
+        
+        result = calculate_soul_score(new_direct_fields)
+        
+        # These 16 fields should all be recognized as scoring fields
+        assert result["answered_count"] >= 16, f"Expected at least 16 answered, got {result['answered_count']}"
+    
+    def test_answering_all_ui_questions_gives_100_percent(self):
+        """Answering all 26 UI questions should yield exactly 100% score"""
+        # Simulate answering all UI questions with their canonical IDs
+        all_ui_answers = {
+            # Safety & Health (36 points)
+            "food_allergies": "No",
+            "health_conditions": "None",
+            "vet_comfort": "Very comfortable - no issues",
+            "life_stage": "Adult (3-7 years)",
+            "grooming_tolerance": "Loves it",
+            "noise_sensitivity": "Completely fine",
+            
+            # Personality & Temperament (25 points)
+            "temperament": "Calm",
+            "energy_level": "Moderate",
+            "social_with_dogs": "Loves all dogs",
+            "social_with_people": "Very social - loves everyone",
+            "behavior_issues": "None",
+            
+            # Lifestyle & Preferences (20 points)
+            "alone_time_comfort": "Yes, comfortably",
+            "car_comfort": "Loves them",
+            "travel_readiness": "Ready to travel",
+            "favorite_spot": "On the couch/sofa",
+            "morning_routine": "Early riser, ready to go",
+            "exercise_needs": "Moderate (30-60 mins)",
+            "feeding_times": "Twice a day (morning & evening)",
+            
+            # Nutrition (9 points)
+            "favorite_protein": "Chicken",
+            "food_motivation": "Very - will do anything for food",
+            "treat_preference": "Soft/chewy treats",
+            
+            # Training (5 points)
+            "training_level": "Fully trained",
+            "motivation_type": "Treats/food",
+            
+            # Relationships (5 points)
+            "primary_bond": "Me",
+            "other_pets": "No other pets",
+            "kids_at_home": "No children",
+        }
+        
+        result = calculate_soul_score(all_ui_answers)
+        
+        assert result["total_score"] == 100.0, f"Expected 100%, got {result['total_score']}%"
+        assert result["answered_count"] == 26, f"Expected 26 answers, got {result['answered_count']}"
+        assert result["tier"]["key"] == "soul_master", f"Expected soul_master tier, got {result['tier']['key']}"
+        assert len(result["missing_high_impact"]) == 0, "Should have no missing high-impact fields"
+
+
 # Run tests
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
