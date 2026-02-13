@@ -63,6 +63,9 @@ DOGGY_SOUL_QUESTIONS = {
         "icon": "⏰",
         "description": "Daily life patterns and habits",
         "questions": [
+            {"id": "morning_routine", "question": "What does your dog's morning typically look like?", "type": "select", "options": ["Early riser, ready to go", "Slow starter, needs time to wake", "Excited for breakfast first", "Morning walk is priority"], "weight": 4, "canonical_id": "morning_routine"},
+            {"id": "feeding_times", "question": "When do you typically feed your dog?", "type": "select", "options": ["Once a day", "Twice a day (morning & evening)", "Three times a day", "Free feeding / grazing"], "weight": 4, "canonical_id": "feeding_times"},
+            {"id": "exercise_needs", "question": "How much daily exercise does your dog need?", "type": "select", "options": ["Light (15-30 mins)", "Moderate (30-60 mins)", "Active (1-2 hours)", "Very active (2+ hours)"], "weight": 4, "canonical_id": "exercise_needs"},
             {"id": "walks_per_day", "question": "How many walks does your dog need per day?", "type": "select", "options": ["1", "2", "3+"], "weight": 3},
             {"id": "energetic_time", "question": "What time of day is your dog most energetic?", "type": "select", "options": ["Morning", "Afternoon", "Evening", "Night"], "weight": 2},
             {"id": "sleep_location", "question": "Where does your dog usually sleep?", "type": "select", "options": ["Your bed", "Their own bed", "Crate", "Sofa / floor"], "weight": 2},
