@@ -9613,6 +9613,131 @@ async def mira_chat(
     intent = detect_intent(user_message)
     
     # ═══════════════════════════════════════════════════════════════════════════
+    # ALLERGY CAPTURE FLOW - Save allergies to Pet Soul when user confirms
+    # This handles the "Yes, has allergies" → "What allergies?" → Save flow
+    # ═══════════════════════════════════════════════════════════════════════════
+    user_msg_lower = user_message.lower()
+    pet_name = selected_pet.get("name", "your pet") if selected_pet else "your pet"
+    
+    # Check if user just confirmed they have allergies (from chip click)
+    if selected_pet and any(phrase in user_msg_lower for phrase in [
+        "yes, my pet has food allergies",
+        "yes, has allergies", 
+        "has food allergies",
+        "yes she has allergies",
+        "yes he has allergies"
+    ]):
+        # Ask for specific allergies - return immediately with follow-up question
+        return {
+            "success": True,
+            "response": f"Got it! To keep {pet_name} safe, could you tell me what specifically {pet_name} is allergic to? Common ones include chicken, beef, grains, dairy, or fish.",
+            "session_id": session_id,
+            "pillar": pillar or "care",
+            "intent": "allergy_capture",
+            "ui_action": {
+                "type": "allergy_input",
+                "pet_id": selected_pet.get("id"),
+                "awaiting_allergy_details": True
+            },
+            "follow_ups": [
+                {"text": "Chicken", "type": "allergy"},
+                {"text": "Beef", "type": "allergy"},
+                {"text": "Grains/Wheat", "type": "allergy"},
+                {"text": "Dairy", "type": "allergy"},
+                {"text": "Multiple allergies", "type": "allergy"}
+            ],
+            "products": [],
+            "tip_card": None
+        }
+    
+    # Check if user confirmed NO allergies
+    if selected_pet and any(phrase in user_msg_lower for phrase in [
+        "no known food allergies",
+        "no known allergies",
+        "no allergies",
+        "doesn't have allergies",
+        "no food allergies"
+    ]):
+        # Save "none" to pet soul
+        try:
+            from soul_intelligence import save_soul_enrichment
+            await save_soul_enrichment(selected_pet.get("id"), [{
+                "field": "food_allergies",
+                "value": "none",
+                "confidence": "high",
+                "source": "user-confirmed",
+                "raw_text": user_message
+            }])
+            logger.info(f"[ALLERGY] Saved 'no allergies' for {pet_name}")
+        except Exception as e:
+            logger.warning(f"[ALLERGY] Failed to save no-allergy status: {e}")
+        
+        # Continue with original flow - don't return early
+    
+    # Check if user is providing specific allergies (after being asked)
+    allergy_keywords = ["chicken", "beef", "grains", "grain", "wheat", "dairy", "fish", "lamb", "pork", "egg", "soy", "corn", "gluten"]
+    mentioned_allergies = [a for a in allergy_keywords if a in user_msg_lower]
+    
+    # Also check for "allergic to X" pattern
+    import re
+    allergy_pattern = re.search(r"allergic to (.+?)(?:\.|,|$)", user_msg_lower)
+    if allergy_pattern:
+        extracted = allergy_pattern.group(1).strip()
+        if extracted and extracted not in mentioned_allergies:
+            mentioned_allergies.append(extracted)
+    
+    # Check for "multiple allergies" response
+    if "multiple" in user_msg_lower and "allerg" in user_msg_lower:
+        return {
+            "success": True,
+            "response": f"I understand {pet_name} has multiple sensitivities. Could you list them for me? For example: 'chicken and grains' or 'beef, dairy, and wheat'. This helps me remember and keep {pet_name} safe!",
+            "session_id": session_id,
+            "pillar": pillar or "care",
+            "intent": "allergy_capture",
+            "follow_ups": [],
+            "products": [],
+            "tip_card": None
+        }
+    
+    # If allergies were mentioned, save them to Pet Soul
+    if selected_pet and mentioned_allergies and len(mentioned_allergies) > 0:
+        try:
+            from soul_intelligence import save_soul_enrichment
+            await save_soul_enrichment(selected_pet.get("id"), [{
+                "field": "food_allergies",
+                "value": mentioned_allergies,
+                "confidence": "high",
+                "source": "user-stated",
+                "raw_text": user_message
+            }])
+            logger.info(f"[ALLERGY] ✅ Saved allergies for {pet_name}: {mentioned_allergies}")
+            
+            # Confirm to user and continue conversation
+            allergy_list = ", ".join(mentioned_allergies)
+            return {
+                "success": True,
+                "response": f"Thanks! I've noted that {pet_name} is sensitive to **{allergy_list}**. I'll always keep this in mind when suggesting food, treats, or meals. 💜\n\nIs there anything else you'd like help with?",
+                "session_id": session_id,
+                "pillar": pillar or "care",
+                "intent": "allergy_saved",
+                "soul_updated": True,
+                "updated_fields": ["food_allergies"],
+                "follow_ups": [
+                    {"text": "Create a meal plan", "type": "action"},
+                    {"text": "Show safe treats", "type": "explore"},
+                    {"text": "Back to my question", "type": "navigate"}
+                ],
+                "products": [],
+                "tip_card": {
+                    "title": "Allergy Saved! ✅",
+                    "content": f"{pet_name}'s food sensitivities have been added to their Pet Soul profile.",
+                    "type": "success"
+                }
+            }
+        except Exception as e:
+            logger.error(f"[ALLERGY] Failed to save allergies: {e}")
+    
+    # ═══════════════════════════════════════════════════════════════════════════
     # MIRA OS CONTEXT - Layer Activation, Temporal Awareness, Safety Gates
     # This makes Mira behave like an OS, not just a chatbot
     # ═══════════════════════════════════════════════════════════════════════════
