@@ -3,13 +3,76 @@
  * 
  * Inline edit forms for each MOJO section.
  * Allows drill-in editing without leaving the modal.
+ * 
+ * AUTO-SAVE FEATURE:
+ * - Changes are automatically saved after 1.5s of inactivity
+ * - No manual "Save" button required
+ * - Subtle indicator shows saving/saved status
  */
 
-import React, { useState, useCallback, memo } from 'react';
+import React, { useState, useCallback, useEffect, useRef, memo } from 'react';
 import { 
   Save, X, Plus, Trash2, Check, Loader2,
-  Calendar, Upload, AlertCircle
+  Calendar, Upload, AlertCircle, CloudUpload
 } from 'lucide-react';
+
+// Custom hook for debounced auto-save
+const useAutoSave = (data, onSave, delay = 1500) => {
+  const [saveStatus, setSaveStatus] = useState('idle'); // idle, saving, saved, error
+  const timeoutRef = useRef(null);
+  const initialDataRef = useRef(null);
+  const hasChangedRef = useRef(false);
+  
+  // Store initial data on first render
+  useEffect(() => {
+    if (initialDataRef.current === null) {
+      initialDataRef.current = JSON.stringify(data);
+    }
+  }, []);
+  
+  // Check if data has changed from initial
+  useEffect(() => {
+    const currentData = JSON.stringify(data);
+    const hasChanged = currentData !== initialDataRef.current;
+    
+    if (hasChanged && !hasChangedRef.current) {
+      hasChangedRef.current = true;
+    }
+    
+    // Only trigger auto-save if data has actually changed
+    if (hasChanged && hasChangedRef.current) {
+      setSaveStatus('pending');
+      
+      // Clear existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      
+      // Set new timeout for auto-save
+      timeoutRef.current = setTimeout(async () => {
+        setSaveStatus('saving');
+        try {
+          await onSave(data);
+          setSaveStatus('saved');
+          initialDataRef.current = currentData; // Update baseline after successful save
+          // Reset to idle after showing "saved" briefly
+          setTimeout(() => setSaveStatus('idle'), 1500);
+        } catch (err) {
+          setSaveStatus('error');
+          setTimeout(() => setSaveStatus('idle'), 2000);
+        }
+      }, delay);
+    }
+    
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [data, onSave, delay]);
+  
+  return saveStatus;
+};
 
 // Predefined options for dropdowns
 const OPTIONS = {
