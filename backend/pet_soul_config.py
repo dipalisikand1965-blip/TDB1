@@ -52,16 +52,15 @@ PET_SOUL_QUESTIONS = {
         }
     },
     
-    # Home Comforts (14 points, 4 questions)
+    # Home Comforts (11 points, 3 questions)
     "home_comforts": {
         "name": "Home Comforts",
         "icon": "🏡",
-        "total_points": 14,
+        "total_points": 11,
         "questions": {
-            "favorite_spot": {"label": "Favorite Spot", "points": 3, "required_level": "advanced"},
-            "alone_time_comfort": {"label": "Alone Time", "points": 4, "required_level": "important"},
-            "noise_sensitivity": {"label": "Noise Sensitivity", "points": 4, "required_level": "important"},
-            "favorite_toy_type": {"label": "Favorite Toys", "points": 3, "required_level": "advanced"}
+            "favorite_spot": {"label": "Favorite Spot", "points": 2, "required_level": "advanced"},
+            "alone_time_comfort": {"label": "Alone Time", "points": 5, "required_level": "important"},
+            "noise_sensitivity": {"label": "Noise Sensitivity", "points": 4, "required_level": "important"}
         }
     },
     
