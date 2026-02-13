@@ -3,195 +3,248 @@
 ## Original Problem Statement
 Build a comprehensive Pet Life Operating System platform for The Doggy Company, featuring AI-powered pet care assistant (Mira), gamification elements, and a modern 7-tab header navigation system.
 
+**Philosophy:**
+- **MOJO** = The Pet's Passport / DNA - Single source of truth about the pet
+- **Mira** = The Pet's Soul - AI intelligence that knows the pet
+- **Concierge®** = The Pet's Hands - Human execution layer
+
 ## Core Requirements
 
-### P0 - Critical 
+### P0 - Critical (ALL COMPLETED ✅)
 - [x] **Production Deployment Fix** - Service worker disabled, ErrorBoundary handles chunk errors
-- [x] **CSS Chunk Loading Fix (2026-02-13)** - Removed problematic `ios-premium.css` import that was causing CSS chunk load failures on production
-  - **Root Cause**: `ios-premium.css` imported non-existent Google Fonts (SF Pro - Apple proprietary)
-  - **Files Fixed**: `MiraDemoPage.jsx`, `MiraOSPage.jsx`
-  - **Working URL**: https://mira-css-fix.preview.emergentagent.com
-- [x] **MOJO Profile Modal - Phase 1 (2026-02-13)** - Pet Identity Layer (Pet OS Core)
-  - **Entry Points**: Pet avatar in OS navigation AND "78% SOUL" badge both open MOJO modal
-  - **Features**: Pet Snapshot, Soul Profile (default expanded), Health Profile, Diet & Food, Behaviour & Training, Grooming & Care, Routine Tracker, Documents Vault, Life Timeline, Preferences & Constraints, Membership & Rewards
-  - **Files Created**: `/app/frontend/src/components/Mira/MojoProfileModal.jsx`
-  - **Files Modified**: `MiraDemoPage.jsx`, `SoulKnowledgeTicker.jsx`, `PetSelector.jsx`
-- [x] **Pet OS Navigation Bar (2026-02-13)** - 7-Layer OS Navigation ✅ TESTED
-  - **Implemented ALL 7 OS Layers**: MOJO | TODAY | PICKS | SERVICES | INSIGHTS | LEARN | CONCIERGE
-  - **Beautiful Pet Avatar Tab**: Concentric rings, health indicator badge, soul score badge, multi-pet dropdown
-  - **Multi-Pet Switching**: Tested - switching from Lola to Luna updates entire OS (reminders, chat context)
-  - **Real Data Connected**: Soul scores from `/api/pets/my-pets` (15% Lola, 88% Luna, etc.)
-  - **Files Created**: `/app/frontend/src/components/Mira/PetOSNavigation.jsx`
-  - **Files Modified**: `MiraDemoPage.jsx`
+- [x] **CSS Chunk Loading Fix (2026-02-13)** - Removed `ios-premium.css` import causing chunk failures
+- [x] **MOJO Profile Modal - Phase 1** - Pet Identity Layer with 11 sections
+- [x] **Pet OS Navigation Bar** - 7-Layer OS Navigation with beautiful pet avatar
+- [x] **Multi-Pet Switching** - Tested - switching pets updates entire OS
 
-### P1 - High Priority
-- [x] **Real Pet Data Connected** - Using `/api/pets/my-pets` for pet list with photos, breeds, soul scores
-- [ ] **Connect Membership/Rewards** - Fetch from `/api/member/profile?user_email=X` for tier, paw points, badges
-- [ ] **Port Missing Features from Backup Page** - Migrate personalization features from `MiraDemoBackupPage.jsx`:
+### P1 - High Priority (NEXT AGENT TASK)
+- [ ] **🔴 CRITICAL: Connect ALL MOJO Data** - The pet's complete DNA must appear:
+  - Fetch from `/api/member/profile?user_email=X` for membership, paw points, badges
+  - Fetch from `/api/pets/{pet_id}` for complete pet data
+  - Connect to `/dashboard` and `/pet/{pet_id}` data sources
+  - MOJO grows with every Mira interaction, onboarding, quick questions
+- [ ] **Port Missing Features from Backup Page** (`MiraDemoBackupPage.jsx`):
   - Weather Card integration
   - Health Vault Progress indicator  
   - "Why for {Pet}" badges on recommendations
-- [ ] **MOJO Modal Phase 2** - Complete remaining sections:
-  - Connect real membership/rewards data from backend
-  - Add edit functionality for each section
-  - Implement proactive questions engine
+  - Concierge® Whisper on products
+- [ ] **MOJO Modal Phase 2** - Edit functionality for each section
 
 ### P2 - Medium Priority
-- [ ] Render API data in new tabs (`picks[]`, `concierge{}`, `safety_override{}`)
+- [ ] Render API data in new tabs (picks[], concierge{}, safety_override{})
 - [ ] Mobile UX verification (iOS Safari, Android Chrome)
-- [ ] Fix markdown rendering in chat responses
-- [ ] Fix pet photo display bug
 
-## Completed Work
+---
 
-### 2026-02-13 (Latest Session)
+## 🎯 SESSION WORK COMPLETED (2026-02-13)
 
-#### 1. Uniform Service Handoff Flow (P0) ✅ **NEW**
-Implemented the execution-ready pillar of Mira OS - when user triggers a service action, the system now:
-
-**Implementation:**
-- Detects service triggers: "arrange table", "book grooming", "nutrition consult", "book vet", "book boarding", "travel planning"
-- Creates ticket in `concierge_tasks` collection with `source: mira_service_handoff`
-- Returns `service_confirmation` object with ticket_id, service_name, status, icon, message
-- Frontend shows confirmation card (emerald/teal gradient) with service details
-- Toast notification: "Service Request Confirmed!"
-
-**Service Triggers:**
-| Trigger | Service Name | Category |
-|---------|-------------|----------|
-| arrange a table | Table Reservation | dine |
-| book grooming | Grooming Appointment | care |
-| nutrition consult | Nutrition Consultation | care |
-| book vet | Vet Appointment | care |
-| book boarding | Boarding Arrangement | stay |
-
+### 1. CSS Chunk Loading Fix ✅
+**Problem:** `/mira-demo` page broken on production with "CSS chunk failed to load" error
+**Root Cause:** `ios-premium.css` imported non-existent Google Fonts (SF Pro - Apple proprietary)
+**Solution:** Removed `ios-premium.css` import from `MiraDemoPage.jsx` and `MiraOSPage.jsx`
 **Files Modified:**
-- Backend: `/app/backend/mira_routes.py` (lines 9610-9750)
-- Frontend: `/app/frontend/src/components/MiraChatWidget.jsx` (lines 1028-1052, 1571-1600)
+- `/app/frontend/src/pages/MiraDemoPage.jsx` (line 112)
+- `/app/frontend/src/pages/MiraOSPage.jsx` (line 91)
 
-**Test Results:** 10/10 backend tests passed (iteration_172.json)
+### 2. Pet OS Navigation Bar ✅
+**Created:** `/app/frontend/src/components/Mira/PetOSNavigation.jsx` (500+ lines)
 
-#### 2. MIRA OS Conversational Flow Refactor (P0) ✅
-Completely refactored the place search conversation to follow Mira OS doctrine:
-
-**Mira OS Doctrine Implemented:**
-- **Pet-first**: Anchors all conversations with pet name + traits
-- **Context-aware**: Doesn't ask for info already known (e.g., location from pet_context)
-- **Memory-driven**: Uses pet's temperament, energy level in responses
-- **Max 2 questions rule**: Only asks what's MISSING
-- **Execution-ready**: Always offers action options at end
-
-**Flow Example:**
+**7 OS Layers Implemented:**
 ```
-User: "I want to take Mojo out for lunch"
-Mira: "That sounds lovely — an outing with Mojo.
-       Based on what I know about him — high energy, playful and friendly — 
-       I'll look for spaces that suit his comfort.
-       Just one quick detail: Indoor café or outdoor seating preferred?"
-
-User: "Outdoor please"
-Mira: "Here are a few places that would suit Mojo's comfort.
-       I can:
-       • check availability
-       • arrange a table
-       • confirm pet policies
-       Which would you like me to arrange for Mojo?"
-       [Shows 4 Google Places results with PlacesWithConcierge component]
+[ 🐕 Lola 15% ] | TODAY | PICKS | SERVICES | INSIGHTS | LEARN | CONCIERGE®
+   (MOJO)
 ```
 
-**Pronoun System:**
-- Female pet (gender: "female") → she/her
-- Male pet (gender: "male") → he/his  
-- Unknown gender → they/their
+**Pet Avatar Design Features:**
+- Beautiful circular design with concentric purple rings
+- Health indicator badge (red heart - top left)
+- Soul score badge (orange - bottom) showing X% SOUL
+- Multi-pet dropdown for switching between pets
+- Click opens MOJO Profile Modal
 
-**Test Results:** 11/11 tests passed (iteration_171.json)
+**Multi-Pet Switching Tested:**
+- Switched from Lola → Luna
+- Entire OS updated: reminders, chat context, "For Luna" section
+- **"MOJO feeds all other layers"** - confirmed working
 
-#### 2. Allergy Capture Flow (Previous)
-- When user clicks "Yes, has allergies" → Mira asks for specific allergies
-- Quick-select chips: Chicken, Beef, Grains/Wheat, Dairy, Multiple
-- Saves to `doggy_soul_answers.food_allergies` in Pet Soul as a list
-- File: `/app/backend/mira_routes.py` (lines 9622-9744)
+### 3. MOJO Profile Modal ✅
+**Created:** `/app/frontend/src/components/Mira/MojoProfileModal.jsx` (800+ lines)
 
-#### 3. MOJO Profile Modal - Pet Identity Layer (2026-02-13 Latest)
-The Pet Operating System Core - single source of truth about the pet.
+**Entry Points:**
+1. Click pet avatar in OS navigation → Opens MOJO modal
+2. Click "78% SOUL" badge in ticker → Opens MOJO modal (deep-links to Soul section)
 
-**Architecture:**
-- **Entry Points**: Both "78% SOUL" badge and pet name open the modal
-- **Soul badge deep-links**: Auto-scrolls to Soul Profile section
-- **Pet name opens**: Full MOJO view from top
-
-**Sections (Accordion Layout):**
+**11 Sections (Accordion Layout):**
 | Section | Default State | Purpose |
 |---------|--------------|---------|
-| Pet Snapshot | Always Visible | Identity card - photo, name, breed, age, membership |
-| Soul Profile | Expanded | 55-question personality vault (temperament, energy, social) |
-| Health Profile | Collapsed | Allergies, weight, vaccinations, vet info |
-| Diet & Food | Collapsed | Diet type, feeding schedule, favorites |
-| Behaviour & Training | Collapsed | Training level, commands, leash behavior |
-| Grooming & Care | Collapsed | Coat type, grooming schedule, skin sensitivity |
-| Routine Tracker | Collapsed | Walk frequency, sleep pattern, daily habits |
-| Documents Vault | Collapsed | Vaccination certificates, insurance, prescriptions |
-| Life Timeline | Collapsed | Milestones, events, service history |
-| Preferences & Constraints | Collapsed | Likes, dislikes, fear triggers, special needs |
-| Membership & Rewards | Bottom Section | Tier, paw points, badges |
+| Pet Snapshot | Always Visible | Photo, name, breed, age, soul ring, membership |
+| Soul Profile | Expanded | 55-question personality vault |
+| Health Profile | Collapsed | Allergies, weight, vaccinations |
+| Diet & Food | Collapsed | Diet type, feeding schedule |
+| Behaviour & Training | Collapsed | Training level, commands |
+| Grooming & Care | Collapsed | Coat type, grooming schedule |
+| Routine Tracker | Collapsed | Walk frequency, sleep pattern |
+| Documents Vault | Collapsed | Certificates, insurance |
+| Life Timeline | Collapsed | Milestones, events |
+| Preferences & Constraints | Collapsed | Likes, dislikes, fear triggers |
+| Membership & Rewards | Bottom | Tier, paw points, badges |
 
-**Mobile UX Rules:**
-- Full-screen modal sheet on mobile (not side panel)
-- iOS: Edge swipe back, safe-area padding, haptics
-- Android: Material-style, system back works
-- Tap targets ≥ 44x44px
-- Drill-in for editing (don't edit inline)
+**Files Modified:**
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - Integration, state management
+- `/app/frontend/src/components/Mira/SoulKnowledgeTicker.jsx` - Added `onSoulBadgeClick` prop
+- `/app/frontend/src/components/Mira/PetSelector.jsx` - Added `onPetNameClick` prop
 
-**Files:**
-- Component: `/app/frontend/src/components/Mira/MojoProfileModal.jsx`
-- Integration: `MiraDemoPage.jsx`, `SoulKnowledgeTicker.jsx`, `PetSelector.jsx`
+---
 
-#### 4. Production Deployment Fix
-- Disabled service worker completely
-- ErrorBoundary clears cache and reloads on chunk errors
-- ✅ **RESOLVED**: CSS chunk loading fix applied
+## 🔴 CRITICAL: NEXT AGENT INSTRUCTIONS
 
-### Previous Sessions
-- Member Logic E2E Verification completed
-- Header Shell prototype created at `/mira-os`
-- Fixed corrupted `.gitignore` file
-- Added `GET /api/pets/{pet_id}/soul` endpoint
+### Task: Connect ALL MOJO Data to the Pet Identity Layer
+
+**The user's vision:**
+> "MOJO is the pet's passport - their whole DNA. Mira is his soul, Concierge® is his hands."
+
+**Data Sources to Connect:**
+
+1. **Pet Profile Data** - `/api/pets/{pet_id}` or `/api/pets/my-pets`
+```json
+{
+  "id": "pet-99a708f1722a",
+  "name": "Lola",
+  "breed": "Maltese",
+  "photo_url": "/api/pet-photo/pet-xxx",
+  "overall_score": 34.0,
+  "doggy_soul_answers": {
+    "temperament": "playful",
+    "energy_level": "high",
+    "food_allergies": ["chicken"],
+    ...
+  }
+}
+```
+
+2. **Member Profile** - `/api/member/profile?user_email=dipali@clubconcierge.in`
+```json
+{
+  "id": "xxx",
+  "email": "dipali@clubconcierge.in",
+  "membership_tier": "Gold",
+  "paw_points": 1670,
+  "badges": [...],
+  "pets": [...]
+}
+```
+
+3. **Pet Soul Details** - Study `/pet/{pet_id}` page structure at `https://thedoggycompany.in/pet/pet-99a708f1722a`
+
+4. **Dashboard Data** - Study `https://thedoggycompany.in/dashboard` for:
+   - Membership card design
+   - Paw points display
+   - Badges earned
+   - Soul Journey progress
+
+**What MOJO Must Show:**
+- REAL pet photos (handle `/api/pet-photo/pet-xxx` URLs)
+- REAL soul scores (from `overall_score`)
+- REAL membership tier (Gold, Silver, Platinum)
+- REAL paw points balance
+- REAL badges earned
+- REAL soul answers (temperament, energy, allergies, etc.)
+- Health vault completion %
+- Documents uploaded
+- Life timeline events
+
+**Study These Files:**
+- `/app/frontend/src/pages/MemberDashboard.jsx` - How dashboard fetches member data
+- `/app/frontend/src/pages/MiraDemoBackupPage.jsx` - Missing personalization features to port
+- `/app/backend/member_rewards_routes.py` - Rewards/badges endpoints
+- `/app/backend/mira_memory_routes.py` - Pet knowledge endpoints
+
+**MOJO Modal Component to Update:**
+`/app/frontend/src/components/Mira/MojoProfileModal.jsx`
+- Currently uses placeholder/calculated data
+- Needs to fetch REAL data from APIs
+- Pass `apiUrl` and `token` properly
+
+---
+
+## API Endpoints Reference
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/auth/login` | POST | Login, returns `access_token` |
+| `/api/pets/my-pets` | GET | List all user's pets with soul scores |
+| `/api/pets/{pet_id}` | GET | Single pet full profile |
+| `/api/member/profile?user_email=X` | GET | Membership, paw points, badges |
+| `/api/mira/pet/{pet_id}/what-mira-knows` | GET | Soul knowledge items |
+| `/api/mira/personalization-stats/{pet_id}` | GET | Soul score details |
+| `/api/pet-photo/{pet_id}` | GET | Pet photo (returns image) |
+
+---
+
+## Test Credentials
+- **User:** `dipali@clubconcierge.in` / `test123`
+- **Admin:** `aditya` / `lola4304`
+- **Test Pets:** Lola (34%), Mystique (72%), Bruno (29%), Luna (88%), Buddy (0%), Meister (23%), TestScoring (100%)
+
+---
 
 ## Architecture
 
-### Frontend
+### Frontend Files (Key)
 ```
-/app/frontend/
-├── public/
-│   ├── meta.json (version manifest)
-│   └── service-worker.js
-├── src/
-│   ├── components/
-│   │   ├── mira/
-│   │   │   └── HeaderShell.jsx (7-tab header)
-│   │   └── ErrorBoundary.jsx (chunk error handling)
-│   ├── pages/
-│   │   ├── MiraDemoPage.jsx
-│   │   └── MiraOS/MiraOSPage.jsx (Prototype)
-│   └── serviceWorkerRegistration.js (DISABLED)
+/app/frontend/src/
+├── components/Mira/
+│   ├── PetOSNavigation.jsx     # NEW: 7-layer OS navigation bar
+│   ├── MojoProfileModal.jsx    # NEW: Pet Identity Layer modal
+│   ├── SoulKnowledgeTicker.jsx # Modified: onSoulBadgeClick prop
+│   ├── PetSelector.jsx         # Modified: onPetNameClick prop
+│   └── MiraChatWidget.jsx      # Chat widget with service handoff
+├── pages/
+│   ├── MiraDemoPage.jsx        # Main demo page with OS navigation
+│   ├── MiraDemoBackupPage.jsx  # BACKUP - has missing features to port
+│   └── MemberDashboard.jsx     # Reference for member data fetching
 ```
 
-### Backend
+### Backend Files (Key)
 ```
 /app/backend/
-├── mira_routes.py 
-│   ├── Uniform Service Handoff Flow (lines 9610-9750) **NEW**
-│   ├── Allergy capture flow (lines 9750-9880)
-│   └── Location/Place search flow (lines 9880-10500)
-├── mira_concierge_handoff.py (Concierge task management)
-├── soul_intelligence.py (save_soul_enrichment function)
-└── services/google_places_service.py
+├── mira_routes.py              # Main Mira chat API (20,000+ lines)
+├── mira_memory_routes.py       # Pet knowledge, what-mira-knows
+├── member_rewards_routes.py    # Membership, paw points, badges
+├── adopt_routes.py             # Pet CRUD operations
+└── auth_routes.py              # Authentication, user data
 ```
 
-## Test Credentials
-- User: `dipali@clubconcierge.in` / `test123`
-- Admin: `aditya` / `lola4304`
+---
+
+## Missing Features to Port from Backup Page
+
+From `/app/frontend/src/pages/MiraDemoBackupPage.jsx`:
+
+1. **Weather Card** - Shows current weather + "Is it safe to walk {Pet}?"
+2. **MIRA Features Grid** - "What can Mira help with?" feature showcase
+3. **Health Vault Progress** - "Complete {Pet}'s Health Vault - X% complete"
+4. **Vaccine/Vet Reminders** - Inline alerts for overdue items
+5. **Daily Digest** - Daily summary of pet info
+6. **Milestones** - Pet achievement milestones
+7. **Memory Lane** - Historical pet memories
+8. **Reorder Suggestions** - "Time to reorder X?" prompts
+9. **"Why for {Pet}" Badge** - Per-product personalization on tiles
+10. **Concierge® Whisper** - Curator notes on products
+
+---
 
 ## Known Issues
-- **CDN Caching**: Production domain serving stale CSS chunks - needs Emergent CDN purge
-- **Preview URL works**: https://mira-css-fix.preview.emergentagent.com
+- Pet photos may use relative URLs (`/api/pet-photo/pet-xxx`) - need to prepend base URL
+- Some pets have no photo - fallback to dicebear avatar
+- Membership data requires `user_email` query param
+
+---
+
+## Preview URL
+**Working:** https://mira-css-fix.preview.emergentagent.com/mira-demo
+
+---
+
+## User's Key Quote
+> "MOJO = Identity Layer. Mira is his soul, Concierge® is his hands. MOJO feeds all other layers. The pet's whole DNA is there."
