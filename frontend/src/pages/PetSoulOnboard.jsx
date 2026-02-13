@@ -816,7 +816,7 @@ const PetSoulOnboard = () => {
 
           {/* Active Pet Form */}
           <div className="space-y-4 p-5 bg-slate-800/50 rounded-2xl border border-slate-600">
-            {/* Pet Photo */}
+            {/* Pet Photo - Optional */}
             <div className="flex justify-center mb-4">
               <label className="cursor-pointer group">
                 <div className={`w-28 h-28 rounded-full border-2 border-dashed ${activePet.photoPreview ? 'border-amber-500' : 'border-slate-500'} flex items-center justify-center overflow-hidden transition-all group-hover:border-amber-400`}>
@@ -834,7 +834,7 @@ const PetSoulOnboard = () => {
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
-              {/* Pet Name */}
+              {/* Pet Name - Required */}
               <div className="sm:col-span-2">
                 <Label className="text-slate-200 font-medium">Name *</Label>
                 <Input
@@ -846,7 +846,7 @@ const PetSoulOnboard = () => {
                 />
               </div>
 
-              {/* Breed */}
+              {/* Breed - Required (accepts Indie, Mixed, Don't Know) */}
               <div>
                 <Label className="text-slate-200 font-medium">Breed *</Label>
                 <select
@@ -862,9 +862,9 @@ const PetSoulOnboard = () => {
                 </select>
               </div>
 
-              {/* Gender */}
+              {/* Gender - Required */}
               <div>
-                <Label className="text-slate-200 font-medium">Gender</Label>
+                <Label className="text-slate-200 font-medium">Gender *</Label>
                 <div className="flex gap-2">
                   {['Male', 'Female'].map(g => (
                     <button
@@ -884,21 +884,9 @@ const PetSoulOnboard = () => {
                 </div>
               </div>
 
-              {/* Age */}
+              {/* Birth Date - Required (or Gotcha Date) */}
               <div>
-                <Label className="text-slate-200 font-medium">Age</Label>
-                <Input
-                  data-testid="pet-age-input"
-                  value={activePet.age}
-                  onChange={(e) => handlePetChange('age', e.target.value)}
-                  placeholder="e.g., 2 years"
-                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus:border-amber-500"
-                />
-              </div>
-
-              {/* Birthday */}
-              <div>
-                <Label className="text-slate-200 font-medium">Birthday</Label>
+                <Label className="text-slate-200 font-medium">Birth Date *</Label>
                 <Input
                   data-testid="pet-birthday-input"
                   type="date"
@@ -907,50 +895,129 @@ const PetSoulOnboard = () => {
                   className="bg-slate-700 border-slate-600 text-white focus:border-amber-500"
                 />
               </div>
-            </div>
 
-            {/* Personality Traits */}
-            <div>
-              <Label className="text-slate-200 font-medium mb-3 block">Personality (pick up to 4)</Label>
-              <div className="flex flex-wrap gap-2">
-                {PERSONALITY_TRAITS.map(trait => (
-                  <button
-                    key={trait}
-                    type="button"
-                    onClick={() => handleTraitToggle(trait)}
-                    className={`px-3 py-1.5 rounded-full text-sm transition-all font-medium ${
-                      (activePet.traits || []).includes(trait)
-                        ? 'bg-amber-500 text-white'
-                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                    }`}
-                  >
-                    {trait}
-                  </button>
-                ))}
+              {/* Gotcha Date - Alternative to Birth Date */}
+              <div>
+                <Label className="text-slate-200 font-medium">Gotcha Date {!activePet.birthday && '*'}</Label>
+                <Input
+                  data-testid="pet-gotcha-date-input"
+                  type="date"
+                  value={activePet.gotchaDate}
+                  onChange={(e) => handlePetChange('gotchaDate', e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white focus:border-amber-500"
+                />
+                <p className="text-xs text-slate-400 mt-1">Adoption anniversary</p>
+              </div>
+
+              {/* Weight - Optional */}
+              <div>
+                <Label className="text-slate-200 font-medium">Weight (kg)</Label>
+                <Input
+                  data-testid="pet-weight-input"
+                  type="number"
+                  value={activePet.weight}
+                  onChange={(e) => handlePetChange('weight', e.target.value)}
+                  placeholder="e.g., 15"
+                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus:border-amber-500"
+                />
+              </div>
+
+              {/* Neutered/Spayed - Optional */}
+              <div>
+                <Label className="text-slate-200 font-medium">Neutered/Spayed</Label>
+                <select
+                  data-testid="pet-neutered-select"
+                  value={activePet.isNeutered}
+                  onChange={(e) => handlePetChange('isNeutered', e.target.value)}
+                  className="w-full h-10 px-3 rounded-md bg-slate-700 border border-slate-600 text-white focus:border-amber-500 focus:outline-none"
+                >
+                  <option value="" className="bg-slate-800">Select</option>
+                  <option value="yes" className="bg-slate-800">Yes</option>
+                  <option value="no" className="bg-slate-800">No</option>
+                  <option value="not_sure" className="bg-slate-800">Not Sure</option>
+                </select>
               </div>
             </div>
 
-            {/* Favorites */}
+            {/* Divider */}
+            <div className="border-t border-slate-600 my-4 pt-4">
+              <p className="text-amber-400 text-sm font-semibold mb-3 flex items-center gap-2">
+                <Stethoscope className="w-4 h-4" />
+                Health & Personality (helps Mira personalize)
+              </p>
+            </div>
+
             <div className="grid sm:grid-cols-2 gap-4">
+              {/* Food Allergies - Required ("None" acceptable) */}
               <div>
-                <Label className="text-slate-200 font-medium">Favorite Treat</Label>
-                <Input
-                  data-testid="pet-treat-input"
-                  value={activePet.favoriteTreat}
-                  onChange={(e) => handlePetChange('favoriteTreat', e.target.value)}
-                  placeholder="e.g., Peanut butter"
-                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus:border-amber-500"
-                />
+                <Label className="text-slate-200 font-medium">Food Allergies/Restrictions *</Label>
+                <select
+                  data-testid="pet-allergies-select"
+                  value={activePet.foodAllergies}
+                  onChange={(e) => handlePetChange('foodAllergies', e.target.value)}
+                  className="w-full h-10 px-3 rounded-md bg-slate-700 border border-slate-600 text-white focus:border-amber-500 focus:outline-none"
+                >
+                  <option value="" className="bg-slate-800">Select</option>
+                  <option value="None" className="bg-slate-800">None</option>
+                  <option value="Chicken" className="bg-slate-800">Chicken</option>
+                  <option value="Beef" className="bg-slate-800">Beef</option>
+                  <option value="Grains" className="bg-slate-800">Grains</option>
+                  <option value="Dairy" className="bg-slate-800">Dairy</option>
+                  <option value="Other" className="bg-slate-800">Other</option>
+                </select>
               </div>
+
+              {/* Health Conditions - Required ("None" acceptable) */}
               <div>
-                <Label className="text-slate-200 font-medium">Favorite Activity</Label>
-                <Input
-                  data-testid="pet-activity-input"
-                  value={activePet.favoriteActivity}
-                  onChange={(e) => handlePetChange('favoriteActivity', e.target.value)}
-                  placeholder="e.g., Beach walks"
-                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus:border-amber-500"
-                />
+                <Label className="text-slate-200 font-medium">Health Conditions *</Label>
+                <select
+                  data-testid="pet-health-select"
+                  value={activePet.healthConditions}
+                  onChange={(e) => handlePetChange('healthConditions', e.target.value)}
+                  className="w-full h-10 px-3 rounded-md bg-slate-700 border border-slate-600 text-white focus:border-amber-500 focus:outline-none"
+                >
+                  <option value="" className="bg-slate-800">Select</option>
+                  <option value="None" className="bg-slate-800">None</option>
+                  <option value="Arthritis" className="bg-slate-800">Arthritis</option>
+                  <option value="Diabetes" className="bg-slate-800">Diabetes</option>
+                  <option value="Heart condition" className="bg-slate-800">Heart condition</option>
+                  <option value="Skin allergies" className="bg-slate-800">Skin allergies</option>
+                  <option value="Hip dysplasia" className="bg-slate-800">Hip dysplasia</option>
+                  <option value="Eye problems" className="bg-slate-800">Eye problems</option>
+                  <option value="Other" className="bg-slate-800">Other</option>
+                </select>
+              </div>
+
+              {/* Temperament - Required */}
+              <div>
+                <Label className="text-slate-200 font-medium">Temperament *</Label>
+                <select
+                  data-testid="pet-temperament-select"
+                  value={activePet.temperament}
+                  onChange={(e) => handlePetChange('temperament', e.target.value)}
+                  className="w-full h-10 px-3 rounded-md bg-slate-700 border border-slate-600 text-white focus:border-amber-500 focus:outline-none"
+                >
+                  <option value="" className="bg-slate-800">Select temperament</option>
+                  {TEMPERAMENT_OPTIONS.map(opt => (
+                    <option key={opt.value} value={opt.value} className="bg-slate-800">{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Grooming Tolerance - Required */}
+              <div>
+                <Label className="text-slate-200 font-medium">Grooming Tolerance *</Label>
+                <select
+                  data-testid="pet-grooming-select"
+                  value={activePet.groomingTolerance}
+                  onChange={(e) => handlePetChange('groomingTolerance', e.target.value)}
+                  className="w-full h-10 px-3 rounded-md bg-slate-700 border border-slate-600 text-white focus:border-amber-500 focus:outline-none"
+                >
+                  <option value="" className="bg-slate-800">Select</option>
+                  {GROOMING_TOLERANCE_OPTIONS.map(opt => (
+                    <option key={opt.value} value={opt.value} className="bg-slate-800">{opt.label}</option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
