@@ -9835,6 +9835,11 @@ async def mira_chat(
     # Determine effective location (user-mentioned > known from context)
     effective_location = user_mentioned_location or known_location
     
+    # Determine pet pronouns based on gender (default to "their" if unknown)
+    pet_gender = selected_pet.get("gender", "").lower() if selected_pet else ""
+    pronoun_subject = "she" if pet_gender == "female" else ("he" if pet_gender == "male" else "they")
+    pronoun_possessive = "her" if pet_gender == "female" else ("his" if pet_gender == "male" else "their")
+    
     # ═══════════════════════════════════════════════════════════════════════════
     # MIRA OS FLOW: Acknowledge → Use Pet Context → Ask ONLY Missing Info → Act
     # ═══════════════════════════════════════════════════════════════════════════
@@ -9842,7 +9847,7 @@ async def mira_chat(
     if is_search_request:
         # Build pet-anchored acknowledgment
         if pet_traits_text:
-            pet_anchor = f"That sounds lovely — an outing with {pet_name}.\n\nBased on what I know about {'her' if selected_pet and selected_pet.get('gender', '').lower() == 'female' else 'him'} — {pet_traits_text} — I'll look for spaces that suit {'her' if selected_pet and selected_pet.get('gender', '').lower() == 'female' else 'his'} comfort."
+            pet_anchor = f"That sounds lovely — an outing with {pet_name}.\n\nBased on what I know about {pronoun_possessive.lower() if pronoun_possessive != 'their' else 'them'} — {pet_traits_text} — I'll look for spaces that suit {pronoun_possessive} comfort."
         else:
             pet_anchor = f"That sounds lovely — an outing with {pet_name}."
         
