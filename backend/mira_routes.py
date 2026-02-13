@@ -9467,6 +9467,27 @@ async def mira_chat(
     user_message = request.message.strip()
     
     # ═══════════════════════════════════════════════════════════════════════════
+    # CONVERSATION STATE - Track original intent across turns
+    # This prevents context loss when user responds to clarifying questions
+    # ═══════════════════════════════════════════════════════════════════════════
+    conversation_state = {
+        "original_intent": None,
+        "awaiting_response": None,
+        "pending_action": None,
+        "context_data": {}
+    }
+    
+    # Load existing conversation state from session
+    try:
+        from mira_session_persistence import get_session
+        existing_session = await get_session(session_id)
+        if existing_session and existing_session.get("conversation_state"):
+            conversation_state = existing_session.get("conversation_state")
+            logger.info(f"[CONV STATE] Loaded state: intent={conversation_state.get('original_intent')}, awaiting={conversation_state.get('awaiting_response')}")
+    except Exception as state_err:
+        logger.warning(f"[CONV STATE] Could not load state: {state_err}")
+    
+    # ═══════════════════════════════════════════════════════════════════════════
     # MIRA INTELLIGENCE - Process query for pronouns, follow-ups, multi-intent
     # ═══════════════════════════════════════════════════════════════════════════
     try:
