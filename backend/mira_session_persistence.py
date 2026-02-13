@@ -324,6 +324,43 @@ async def get_full_session_context(session_id: str) -> Dict:
     }
 
 
+async def update_conversation_state(session_id: str, state: Dict) -> bool:
+    """
+    Update the full conversation state for multi-turn flow continuity.
+    
+    State structure:
+    {
+        "original_intent": str,     # What user originally asked (e.g., "meal_plan")
+        "awaiting_response": str,   # What we're waiting for (e.g., "dietary_needs")
+        "pending_action": str,      # Next action to take when user responds
+        "context_data": dict        # Any additional context needed
+    }
+    """
+    db = get_db()
+    if db is None:
+        logger.warning("[CONV STATE] Database not available")
+        return False
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    try:
+        result = await db.mira_sessions.update_one(
+            {"session_id": session_id},
+            {
+                "$set": {
+                    "conversation_state": state,
+                    "updated_at": now
+                }
+            },
+            upsert=True
+        )
+        logger.info(f"[CONV STATE] Updated state for {session_id}: intent={state.get('original_intent')}, awaiting={state.get('awaiting_response')}")
+        return True
+    except Exception as e:
+        logger.error(f"[CONV STATE] Failed to update: {e}")
+        return False
+
+
 # ============== API ROUTES ==============
 
 @router.post("/create")
