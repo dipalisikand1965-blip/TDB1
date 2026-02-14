@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -13,7 +13,11 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { login, initiateGoogleLogin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+  
+  // Get the return path from location state (set by ProtectedRoute) or default to /mira-demo
+  const from = location.state?.from || '/mira-demo';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +28,8 @@ const Login = () => {
         title: "Welcome back!",
         description: "Successfully logged in.",
       });
-      navigate('/dashboard');
+      // Navigate back to the page user was trying to access, or to Mira OS
+      navigate(from, { replace: true });
     } catch (error) {
       toast({
         variant: "destructive",
