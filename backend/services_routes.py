@@ -376,18 +376,41 @@ async def get_watchlist(
     all_tickets.extend(mira_tickets)
     
     # Query 2: tickets (Service Desk tickets with option cards)
-    # Also includes options_ready status
-    extended_statuses = list(set(TODAY_WATCHLIST_STATUSES + ["options_ready", "new", "in_progress"]))
+    # Prioritize options_ready and other awaiting user statuses
+    awaiting_statuses = ["options_ready", "clarification_needed", "approval_pending", "payment_pending"]
+    active_statuses = ["new", "in_progress", "scheduled", "shipped"]
+    all_status_list = awaiting_statuses + active_statuses
+    
     ticket_query = {
         "member.email": user_email,
-        "status": {"$in": extended_statuses}
+        "status": {"$in": all_status_list}
     }
     
-    tickets_cursor2 = db.tickets.find(ticket_query, {"_id": 0}).sort([
-        ("status", 1),
-        ("updated_at", -1)
-    ]).limit(10)
-    sd_tickets = await tickets_cursor2.to_list(10)
+    # Use aggregation to sort awaiting statuses first
+    pipeline = [
+        {"$match": ticket_query},
+        {"$addFields": {
+            "sort_priority": {
+                "$switch": {
+                    "branches": [
+                        {"case": {"$eq": ["$status", "options_ready"]}, "then": 0},
+                        {"case": {"$eq": ["$status", "clarification_needed"]}, "then": 1},
+                        {"case": {"$eq": ["$status", "approval_pending"]}, "then": 2},
+                        {"case": {"$eq": ["$status", "payment_pending"]}, "then": 3},
+                        {"case": {"$eq": ["$status", "in_progress"]}, "then": 4},
+                        {"case": {"$eq": ["$status", "scheduled"]}, "then": 5},
+                        {"case": {"$eq": ["$status", "shipped"]}, "then": 6},
+                    ],
+                    "default": 10
+                }
+            }
+        }},
+        {"$sort": {"sort_priority": 1, "updated_at": -1}},
+        {"$limit": 15},
+        {"$project": {"_id": 0, "sort_priority": 0}}
+    ]
+    
+    sd_tickets = await db.tickets.aggregate(pipeline).to_list(15)
     
     # Transform SD tickets to watchlist format
     for t in sd_tickets:
