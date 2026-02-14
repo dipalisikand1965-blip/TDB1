@@ -187,6 +187,78 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
     setSendingReply(false);
   };
 
+  // Handle sending option cards
+  const handleSendOptions = async () => {
+    if (!selectedTicket || !optionsQuestion.trim()) return;
+    
+    // Filter out empty options
+    const validOptions = optionsList.filter(opt => opt.title.trim());
+    if (validOptions.length < 2) {
+      alert('Please add at least 2 options');
+      return;
+    }
+    
+    setSendingOptions(true);
+    try {
+      await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/options/send`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticket_id: selectedTicket.ticket_id,
+          question: optionsQuestion,
+          options: validOptions.map(opt => ({
+            id: opt.id,
+            title: opt.title.trim(),
+            description: opt.description.trim() || null,
+            price: opt.price.trim() || null
+          })),
+          notify_channels: notifyChannels,
+          allow_custom: true
+        })
+      });
+      
+      // Reset and close modal
+      setShowOptionsModal(false);
+      setOptionsQuestion('');
+      setOptionsList([
+        { id: 'A', title: '', description: '', price: '' },
+        { id: 'B', title: '', description: '', price: '' }
+      ]);
+      setNotifyChannels(['in_app']);
+      
+      // Refresh ticket
+      await fetchTicketDetails(selectedTicket.ticket_id);
+    } catch (err) {
+      console.error('Error sending options:', err);
+      alert('Failed to send options');
+    }
+    setSendingOptions(false);
+  };
+  
+  // Add option to list
+  const addOption = () => {
+    const nextId = String.fromCharCode(65 + optionsList.length); // A, B, C, D, E
+    if (optionsList.length < 5) {
+      setOptionsList([...optionsList, { id: nextId, title: '', description: '', price: '' }]);
+    }
+  };
+  
+  // Remove option from list
+  const removeOption = (index) => {
+    if (optionsList.length > 2) {
+      const newList = optionsList.filter((_, i) => i !== index);
+      // Re-index options
+      setOptionsList(newList.map((opt, i) => ({ ...opt, id: String.fromCharCode(65 + i) })));
+    }
+  };
+  
+  // Update option
+  const updateOption = (index, field, value) => {
+    const newList = [...optionsList];
+    newList[index][field] = value;
+    setOptionsList(newList);
+  };
+
   // Handle status change
   const handleStatusChange = async (newStatus) => {
     if (!selectedTicket) return;
