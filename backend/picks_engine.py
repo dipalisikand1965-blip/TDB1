@@ -298,6 +298,10 @@ def convert_scored_pick_to_dict(scored: ScoredPick) -> Dict:
         "service_modes": scored.service_modes,
         "doc_requirements": scored.doc_requirements,
         "booking_fields": scored.booking_fields,
+        # New fields for enhanced pick cards
+        "what_we_arrange": getattr(scored, 'what_we_arrange', None),
+        "what_we_need": getattr(scored, 'what_we_need', None),
+        "includes": getattr(scored, 'includes', None),
     }
 
 
