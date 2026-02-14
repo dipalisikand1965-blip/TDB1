@@ -1722,7 +1722,7 @@ const MojoProfileModal = ({
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h2 className="mojo-title">MOJO</h2>
+          <h2 className="mojo-title">{petData?.name || 'MOJO'}</h2>
           <button 
             className="mojo-edit-btn"
             onClick={() => handleAddClick('details')}
