@@ -398,29 +398,7 @@ const WelcomeHero = ({
           <span>What can Mira help with?</span>
         </div>
         
-        {/* Weather Card */}
-        {currentWeather && (
-          <div 
-            className={`weather-card weather-${currentWeather.pet_advisory?.safety_level || 'good'}`}
-            onClick={() => handleQuickReply(`Is it a good day to take ${pet.name} for a walk?`)}
-            data-testid="weather-card"
-          >
-            <div className="weather-card-icon">
-              {currentWeather.pet_advisory?.safety_level === 'danger' ? '🔥' :
-               currentWeather.pet_advisory?.safety_level === 'warning' ? '⚠️' :
-               currentWeather.pet_advisory?.safety_level === 'caution' ? '☀️' : '✨'}
-            </div>
-            <div className="weather-card-content">
-              <div className="weather-card-title">
-                {currentWeather.current_weather?.temperature}°C in {currentWeather.city}
-              </div>
-              <div className="weather-card-subtitle">
-                {currentWeather.pet_advisory?.walk_message}
-              </div>
-            </div>
-            <ChevronRight className="weather-card-arrow" />
-          </div>
-        )}
+        {/* Weather Card removed - now only shown in TODAY panel */}
         
         {/* Feature Grid */}
         <div className="feature-grid">
