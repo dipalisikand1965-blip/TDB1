@@ -1018,6 +1018,39 @@ const PersonalizedPicksPanel = ({
             </div>
           </div>
           
+          {/* "Why these picks" expandable panel */}
+          <AnimatePresence>
+            {showWhyPicks && enginePillar && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden border-b border-purple-500/20"
+              >
+                <div className="px-4 py-3 bg-purple-900/20 text-xs text-gray-300 space-y-2">
+                  <p className="flex items-start gap-2">
+                    <Sparkles className="w-3.5 h-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
+                    <span>
+                      Based on your conversation about <strong className="text-purple-300">{enginePillar}</strong>, 
+                      Mira selected picks that match {pet?.name}'s profile, safety requirements, and your preferences.
+                    </span>
+                  </p>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <span className="px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded-full text-[10px]">
+                      Pet profile matched
+                    </span>
+                    <span className="px-2 py-0.5 bg-green-500/20 text-green-300 rounded-full text-[10px]">
+                      Safety checked
+                    </span>
+                    <span className="px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded-full text-[10px]">
+                      Ranked by relevance
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
           {/* Content */}
           <div 
             className="overflow-y-auto px-4 py-4"
