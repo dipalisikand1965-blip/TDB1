@@ -66,6 +66,20 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
   - File: `/app/frontend/src/components/Mira/MojoProfileModal.jsx` (Line 1725)
   - Changed from `<h2>MOJO</h2>` to `<h2>{petData?.name || 'MOJO'}</h2>`
   - Verified working via screenshot - header shows "Lola" when viewing Lola's profile
+- [x] **✅ NEW: Weight History Tracking (2026-02-14)** - Track pet weight over time
+  - File: `/app/frontend/src/components/Mira/MojoSectionEditors.jsx`
+  - Expandable section with add/remove entries, date picker, auto-save
+- [x] **✅ NEW: Next Vaccination Date (2026-02-14)** - Added to Health Vault editor
+
+### P1 - High Priority (COMPLETED ✅)
+- [x] **✅ NEW: TODAY Panel (2026-02-14)** - Complete Time Layer implementation
+  - File: `/app/frontend/src/components/Mira/TodayPanel.jsx`
+  - Weather alerts with temperature and safety badges (SAFE/CAUTION/DANGER)
+  - Birthday countdown (shows within 30 days of birthday)
+  - Urgent items stack (overdue vaccinations, checkups)
+  - Due soon cards (upcoming reminders based on pet data)
+  - Other pets summary section
+  - Integrated into MiraDemoPage with lazy loading
   - Traits now show confidence percentage (e.g., "85%") based on source
   - "🧠 MIRA LEARNED" badge shows when data was inferred from conversation
   - Metadata stored in `doggy_soul_meta` field in MongoDB
