@@ -9,16 +9,39 @@
 ## 5. `/app/memory/SYSTEM_AUDIT_REPORT.md` - ✅ FULL SYSTEM AUDIT COMPLETED (Feb 2026)
 ---
 
-## CURRENT SCORE: 92% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 8)
+## CURRENT SCORE: 92% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 9)
 
 | Layer | Score | Status |
 |-------|-------|--------|
 | **MOJO (14 components)** | **100%** | ✅ **COMPLETE** |
 | **TODAY** | 95% | ✅ Near-complete |
-| **PICKS** | **100%** | ✅ **COMPLETE** |
-| **SERVICES** | **60%** | 🔄 Foundation built |
+| **PICKS** | **100%** | ✅ **COMPLETE** - UI verified working |
+| **SERVICES** | **60%** | 🔄 Foundation built - UI accessible |
 | **LEARN** | 10% | Future |
 | **CONCIERGE** | 30% | Future |
+
+---
+
+## SESSION 9 ACCOMPLISHMENTS (Feb 14, 2026)
+
+### 1. CRITICAL BUG FIXED: Login Redirect ✅
+- **Issue:** After login on `/mira-demo`, users were redirected to `/dashboard` instead of back to `/mira-demo`
+- **Root Cause:** `Login.jsx` hardcoded `navigate('/dashboard')` after successful login
+- **Fix:** Updated `Login.jsx` to use `location.state?.from` (passed by ProtectedRoute) to redirect users back to their original destination
+- **File:** `/app/frontend/src/pages/Login.jsx` (lines 1-30)
+- **Impact:** This was blocking all access to the Pet OS UI - the `PetOSNavigation` was rendering correctly, but users couldn't see it because they were redirected away
+
+### 2. Frontend Verified Working ✅
+- **PetOSNavigation:** All 7 OS layer tabs visible (MOJO, TODAY, PICKS, SERVICES, INSIGHTS, LEARN, CONCIERGE®)
+- **PICKS Panel:** Products and services displaying correctly with personalized recommendations
+- **SERVICES Panel:** Service launchers (8 quick actions), empty state, notification icon all working
+- **Soul Knowledge Ticker:** Displaying pet facts at top of page
+- **Pet Avatar:** 63% SOUL score indicator visible
+
+### 3. Backend APIs Verified ✅
+- `POST /api/mira/os/understand-with-products` - Working, returns products + services
+- `GET /api/os/services/launchers` - Returns 8 service launchers
+- `GET /api/os/services/inbox` - Returns user tickets
 
 ---
 
