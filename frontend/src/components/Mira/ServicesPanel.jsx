@@ -238,7 +238,7 @@ const OrderCard = memo(({ order, onSelect }) => {
 const StatusTab = memo(({ label, count, isActive, onClick }) => (
   <button
     onClick={onClick}
-    className={`px-3 py-2 text-sm font-medium rounded-lg transition-all
+    className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all min-h-[44px] touch-manipulation
                 ${isActive 
                   ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' 
                   : 'text-slate-400 hover:text-white hover:bg-slate-700/50'}`}
