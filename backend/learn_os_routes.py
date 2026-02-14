@@ -1418,6 +1418,57 @@ async def dismiss_learn_nudge(
     }
 
 
+@router.post("/today-nudge/ack")
+async def acknowledge_learn_nudge(
+    item_id: str = Query(..., description="Learn item ID"),
+    pet_id: str = Query(..., description="Pet ID"),
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Acknowledge that a Learn nudge was actually displayed to the user.
+    This starts the 7-day cooldown timer.
+    
+    Called by frontend when LearnNudgeCard is rendered (not just fetched).
+    This fixes the race condition where StrictMode double-fetch caused premature cooldown.
+    """
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database unavailable")
+    
+    user = await get_user_from_token(authorization)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user_id = user.get("user_id")
+    now = datetime.now(timezone.utc)
+    
+    # Check if already acknowledged (prevent duplicate inserts)
+    existing = await db.today_nudge_log.find_one({
+        "user_id": user_id,
+        "pet_id": pet_id,
+        "item_id": item_id,
+        "nudge_type": "learn"
+    })
+    
+    if existing:
+        logger.info(f"[LEARN NUDGE] Nudge already acknowledged for item {item_id}, pet {pet_id}")
+        return {"success": True, "already_acked": True}
+    
+    # Log that the nudge was actually shown
+    await db.today_nudge_log.insert_one({
+        "user_id": user_id,
+        "pet_id": pet_id,
+        "nudge_type": "learn",
+        "item_id": item_id,
+        "shown_at": now,
+        "dismissed_at": None
+    })
+    
+    logger.info(f"[LEARN NUDGE] Acknowledged nudge for item {item_id}, pet {pet_id} - cooldown started")
+    
+    return {"success": True, "acknowledged": True}
+
+
 # ============================================
 # TODAY → LEARN DEEP LINKS
 # ============================================
