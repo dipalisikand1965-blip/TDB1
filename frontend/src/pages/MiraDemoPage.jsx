@@ -329,6 +329,8 @@ const MiraDemoPage = () => {
   const [showTodayPanel, setShowTodayPanel] = useState(false);
   // SERVICES PANEL: Execution Layer - Active requests and service launchers
   const [showServicesPanel, setShowServicesPanel] = useState(false);
+  // LEARN PANEL: Knowledge Layer - Curated guides and videos
+  const [showLearnPanel, setShowLearnPanel] = useState(false);
   // SERVICE REQUEST BUILDER: New request builder modal state
   const [requestBuilderState, setRequestBuilderState] = useState({ isOpen: false, service: null });
   
