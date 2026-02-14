@@ -83,4 +83,4 @@ const TestScenariosPanel = ({
 };
 
 export default TestScenariosPanel;
-export { TEST_SCENARIOS };
+export { getTestScenarios };
