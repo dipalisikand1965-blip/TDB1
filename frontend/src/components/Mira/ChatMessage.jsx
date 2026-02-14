@@ -961,29 +961,12 @@ const ExperienceCards = ({ msg, pet, onOpenServiceRequest }) => {
 };
 
 /**
- * DynamicConciergeRequest - For requests without direct match
+ * DynamicConciergeRequest - REMOVED: Concierge access now only via top bar
+ * Users tap the C° icon in header or the CONCIERGE® tab in navigation
  */
 const DynamicConciergeRequest = ({ msg, pet }) => {
-  if (!msg.dynamicConciergeRequest) return null;
-  
-  return (
-    <div className="mp-dynamic-request" data-testid="dynamic-concierge-request">
-      <p className="mp-dynamic-intro">
-        Let your pet Concierge® handle this for {pet.name}:
-      </p>
-      <div 
-        className="mp-dynamic-card"
-        style={{ '--request-color': msg.dynamicConciergeRequest.color }}
-      >
-        <span className="mp-dynamic-icon">{msg.dynamicConciergeRequest.icon}</span>
-        <div className="mp-dynamic-info">
-          <span className="mp-dynamic-label">{msg.dynamicConciergeRequest.label}</span>
-          <span className="mp-dynamic-desc">{msg.dynamicConciergeRequest.description}</span>
-        </div>
-        <span className="mp-dynamic-badge">Concierge® Request</span>
-      </div>
-    </div>
-  );
+  // ARCHITECTURE CHANGE: Removed to consolidate concierge entry points
+  return null;
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
