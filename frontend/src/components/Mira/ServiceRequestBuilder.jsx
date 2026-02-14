@@ -188,15 +188,6 @@ const ServiceRequestBuilder = ({
       };
     }
   }, [isOpen]);
-        setTimePreference('');
-        setUrgency('');
-        setLocation('');
-        setNotes('');
-        setError(null);
-        setSuccess(false);
-      }, 300);
-    }
-  }, [isOpen]);
 
   const togglePet = useCallback((petId) => {
     setSelectedPets(prev => 
