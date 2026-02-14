@@ -800,8 +800,26 @@ const TodayPanel = ({
   const handleRefresh = async () => {
     setIsRefreshing(true);
     setLastUpdated(new Date());
-    // Trigger re-fetch of tasks
-    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Re-fetch watchlist data
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      
+      const response = await fetch(
+        `${apiUrl}/api/os/services/watchlist?pet_id=${pet?.id}`,
+        { headers }
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        setWatchlist(data.watchlist || []);
+        setIsStale(data.stale || false);
+      }
+    } catch (err) {
+      console.log('[TODAY] Refresh failed:', err.message);
+    }
+    
     setIsRefreshing(false);
   };
   
