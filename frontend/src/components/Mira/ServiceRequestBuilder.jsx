@@ -141,7 +141,13 @@ const ServiceRequestBuilder = ({
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  const config = SERVICE_CONFIGS[service?.id] || SERVICE_CONFIGS.grooming;
+  // Extract service type - handle both direct service.id and LEARN context service.type
+  const serviceType = service?.id || service?.type || 'general';
+  const config = SERVICE_CONFIGS[serviceType] || SERVICE_CONFIGS.grooming;
+  
+  // Check if coming from LEARN layer
+  const hasLearnContext = service?.prefill?.learn_context?.source_layer === 'learn';
+  const learnContext = service?.prefill?.learn_context;
 
   // Initialize with current pet
   useEffect(() => {
