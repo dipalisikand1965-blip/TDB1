@@ -921,13 +921,21 @@ export const RoutineProfileEditor = memo(({ pet, onSave, onCancel, saving }) => 
   );
 });
 
-// Preferences & Constraints Editor - With Auto-Save
+// Preferences & Constraints Editor - With Auto-Save (ENHANCED for 100% MOJO)
 export const PreferencesProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     likes: pet?.doggy_soul_answers?.likes || [],
     dislikes: pet?.doggy_soul_answers?.dislikes || [],
     fear_triggers: pet?.doggy_soul_answers?.fear_triggers || [],
     special_needs: pet?.doggy_soul_answers?.special_needs || [],
+    handling_comfort: pet?.doggy_soul_answers?.handling_comfort || '',
+    carrier_comfort: pet?.doggy_soul_answers?.carrier_comfort || '',
+    sensitive_areas: pet?.doggy_soul_answers?.sensitive_areas || [],
+    comfort_items: pet?.doggy_soul_answers?.comfort_items || [],
+    calming_techniques: pet?.doggy_soul_answers?.calming_techniques || [],
+    care_constraints: pet?.doggy_soul_answers?.care_constraints || [],
+    service_restrictions: pet?.doggy_soul_answers?.service_restrictions || [],
+    parent_preferences: pet?.doggy_soul_answers?.parent_preferences || '',
   });
   
   // Use auto-save hook
@@ -935,20 +943,49 @@ export const PreferencesProfileEditor = memo(({ pet, onSave, onCancel, saving })
   
   return (
     <EditorWrapper title="Preferences & Constraints" onCancel={onCancel} saveStatus={saveStatus}>
+      <div className="editor-section-header">Likes & Dislikes</div>
       <SelectField 
-        label="Likes" 
+        label="Things They Love" 
         value={data.likes} 
         options={OPTIONS.likes}
         onChange={(v) => setData(prev => ({ ...prev, likes: v }))}
         multiple
       />
       <SelectField 
-        label="Dislikes" 
+        label="Things They Dislike" 
         value={data.dislikes} 
         options={OPTIONS.dislikes}
         onChange={(v) => setData(prev => ({ ...prev, dislikes: v }))}
         multiple
       />
+      <TagsField 
+        label="Comfort Items" 
+        value={data.comfort_items}
+        onChange={(v) => setData(prev => ({ ...prev, comfort_items: v }))}
+        suggestions={['Favorite toy', 'Blanket', 'Stuffed animal', 'Kong', 'Chew toy', 'T-shirt with owner scent']}
+      />
+      
+      <div className="editor-section-header">Handling & Comfort</div>
+      <SelectField 
+        label="Handling Comfort" 
+        value={data.handling_comfort} 
+        options={OPTIONS.handling_comfort}
+        onChange={(v) => setData(prev => ({ ...prev, handling_comfort: v }))}
+      />
+      <TagsField 
+        label="Sensitive Areas (Avoid touching)" 
+        value={data.sensitive_areas}
+        onChange={(v) => setData(prev => ({ ...prev, sensitive_areas: v }))}
+        suggestions={['Paws', 'Ears', 'Tail', 'Belly', 'Hind legs', 'Face', 'Mouth']}
+      />
+      <SelectField 
+        label="Carrier/Crate Comfort" 
+        value={data.carrier_comfort} 
+        options={OPTIONS.carrier_comfort}
+        onChange={(v) => setData(prev => ({ ...prev, carrier_comfort: v }))}
+      />
+      
+      <div className="editor-section-header">Fears & Anxiety</div>
       <SelectField 
         label="Fear Triggers" 
         value={data.fear_triggers} 
@@ -957,10 +994,36 @@ export const PreferencesProfileEditor = memo(({ pet, onSave, onCancel, saving })
         multiple
       />
       <TagsField 
+        label="Calming Techniques That Work" 
+        value={data.calming_techniques}
+        onChange={(v) => setData(prev => ({ ...prev, calming_techniques: v }))}
+        suggestions={['Thundershirt', 'Calming treats', 'Music', 'Crate as safe space', 'Distraction with treats', 'Pressure wrap', 'Pheromone diffuser']}
+      />
+      
+      <div className="editor-section-header">Care Requirements</div>
+      <TagsField 
         label="Special Needs" 
         value={data.special_needs}
         onChange={(v) => setData(prev => ({ ...prev, special_needs: v }))}
-        suggestions={['Mobility assistance', 'Visual impairment', 'Hearing impairment', 'Anxiety medication', 'Special diet']}
+        suggestions={['Mobility assistance', 'Visual impairment', 'Hearing impairment', 'Anxiety medication', 'Special diet', 'Frequent potty breaks']}
+      />
+      <TagsField 
+        label="Care Constraints (Things to avoid)" 
+        value={data.care_constraints}
+        onChange={(v) => setData(prev => ({ ...prev, care_constraints: v }))}
+        suggestions={['No male handlers', 'No loud environments', 'No group play', 'Needs individual attention', 'Cannot be crated', 'No off-leash']}
+      />
+      <TagsField 
+        label="Service Restrictions" 
+        value={data.service_restrictions}
+        onChange={(v) => setData(prev => ({ ...prev, service_restrictions: v }))}
+        suggestions={['No boarding', 'Day care only', 'Needs home environment', 'Cannot fly', 'Requires 1-on-1 grooming']}
+      />
+      <TextField 
+        label="Pet Parent Preferences" 
+        value={data.parent_preferences}
+        onChange={(v) => setData(prev => ({ ...prev, parent_preferences: v }))}
+        placeholder="Any specific preferences from the pet parent..."
       />
     </EditorWrapper>
   );
