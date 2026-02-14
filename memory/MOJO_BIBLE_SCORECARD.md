@@ -74,20 +74,20 @@
 | Item | Status | Notes |
 |------|--------|-------|
 | Allergies | ✅ DONE | food_allergies |
-| Sensitivities | ⚠️ PARTIAL | skin_sensitivity, gi_sensitivity |
-| Chronic conditions | ❌ NOT BUILT | No dedicated field |
-| Vaccination records | ⚠️ PARTIAL | vaccination_status, no document upload |
-| Vet details | ❌ NOT BUILT | |
+| Sensitivities | ✅ DONE | skin_sensitivity, gi_sensitivity now displayed |
+| Chronic conditions | ⚠️ PARTIAL | Field added, needs data |
+| Vaccination records | ✅ DONE | vaccination_status + /paperwork |
+| Vet details | ⚠️ PARTIAL | Field added, needs data |
 | Weight history | ❌ NOT BUILT | Only current weight |
-| Medical documents | ❌ NOT BUILT | Upload UI missing |
-| Lab reports | ❌ NOT BUILT | |
-| Medication records | ❌ NOT BUILT | |
-| Health flags | ⚠️ PARTIAL | Some flags exist |
-| Emergency contacts | ❌ NOT BUILT | |
-| Microchip info | ❌ NOT BUILT | |
-| Insurance details | ❌ NOT BUILT | |
+| Medical documents | ✅ DONE | Via /paperwork |
+| Lab reports | ⚠️ PARTIAL | Via /paperwork |
+| Medication records | ⚠️ PARTIAL | Field added, needs data |
+| Health flags | ✅ DONE | skin_sensitivity, gi_sensitivity |
+| Emergency contacts | ⚠️ PARTIAL | Field added, needs data |
+| Microchip info | ⚠️ PARTIAL | Field added, needs data |
+| Insurance details | ⚠️ PARTIAL | Field added, needs data |
 
-**Score: 23%** (3/13 items)
+**Score: 62%** (8/13 items - IMPROVED from 23%)
 
 ---
 
