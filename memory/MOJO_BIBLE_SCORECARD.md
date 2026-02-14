@@ -161,16 +161,16 @@
 ## 8. Environment Profile
 | Item | Status | Notes |
 |------|--------|-------|
-| City | ✅ DONE | city field |
-| Climate | ⚠️ PARTIAL | Derived from city |
-| Home type | ❌ NOT BUILT | |
-| Living space size | ❌ NOT BUILT | |
-| Family structure | ❌ NOT BUILT | |
-| Other pets | ❌ NOT BUILT | |
+| City | ✅ DONE | city field + display |
+| Climate | ⚠️ PARTIAL | Derived from city, field added |
+| Home type | ✅ DONE | Field added + display |
+| Living space size | ✅ DONE | Field added + display |
+| Family structure | ✅ DONE | Field added + display |
+| Other pets | ✅ DONE | Field added + display |
 | Seasonal risks | ⚠️ PARTIAL | Weather API integration |
-| Travel frequency | ❌ NOT BUILT | |
+| Travel frequency | ✅ DONE | Field added + display |
 
-**Score: 25%** (2/8 items)
+**Score: 81%** (6.5/8 items - IMPROVED from 25%)
 
 ---
 
