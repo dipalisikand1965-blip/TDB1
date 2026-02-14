@@ -505,29 +505,42 @@ const TodayPanel = ({
   
   useEffect(() => {
     const fetchLearnNudge = async () => {
-      if (!isOpen) return;
+      console.log('[TODAY] fetchLearnNudge called - isOpen:', isOpen, 'pet:', pet?.id, 'hasToken:', !!token);
+      
+      if (!isOpen) {
+        console.log('[TODAY] Skipping - panel not open');
+        return;
+      }
       
       // Skip for demo pets
       const isDemoPet = !pet?.id || pet.id === 'demo-pet' || pet.id === 'demo';
-      if (isDemoPet) return;
+      if (isDemoPet) {
+        console.log('[TODAY] Skipping - demo pet:', pet?.id);
+        return;
+      }
       
       try {
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
         
-        const response = await fetch(
-          `${apiUrl}/api/os/learn/today-nudge?pet_id=${pet.id}`,
-          { headers }
-        );
+        const url = `${apiUrl}/api/os/learn/today-nudge?pet_id=${pet.id}`;
+        console.log('[TODAY] Fetching learn nudge from:', url);
+        
+        const response = await fetch(url, { headers });
+        console.log('[TODAY] Learn nudge response status:', response.status);
         
         if (response.ok) {
           const data = await response.json();
+          console.log('[TODAY] Learn nudge response:', data);
           if (data.nudge) {
             console.log('[TODAY] Learn nudge received:', data.nudge.learn_item?.title);
             setLearnNudge(data.nudge);
           } else {
+            console.log('[TODAY] No nudge in response, reason:', data.reason);
             setLearnNudge(null);
           }
+        } else {
+          console.log('[TODAY] Learn nudge request failed:', response.status);
         }
       } catch (err) {
         console.log('[TODAY] Could not fetch learn nudge:', err.message);
