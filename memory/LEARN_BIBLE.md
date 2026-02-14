@@ -578,7 +578,7 @@ The wrapper around the video adapts safely:
 
 # IMPLEMENTATION STATUS
 
-## What's Built (Session 12)
+## What's Built (Session 12 - Updated)
 
 ### Backend Personalization Engine
 
@@ -586,25 +586,29 @@ The wrapper around the video adapts safely:
 
 #### 1) Pet Tag Derivation (`derive_pet_tags_from_profile()`)
 
-Extracts tags from the pet's profile for content matching:
+**Extracts life stage, explicit sensitivities, routines, behaviour signals (no inference).**
 
-| Source | Derived Tags |
-|--------|-------------|
-| Age < 1 year | `puppy` |
-| Age < 2 years | `puppy`, `adult` (transition) |
-| Age 2-7 years | `adult` |
-| Age ≥ 7 years | `senior` |
-| `doggy_soul_answers.noise_sensitivity` | `anxious` |
-| `doggy_soul_answers.separation_anxiety` | `anxious` |
-| `preferences.allergies` present | `allergies` |
-| `health_conditions` present | `health_issues` |
-| `energy_level = high` | `high_energy` |
-| `energy_level = low` | `low_energy` |
-| Always included | `all` (baseline) |
+Only uses explicit user-entered flags for anything health-adjacent.
 
-#### 2) Breed Tag Mapping (`BREED_TAG_MAP`)
+| Source | Derived Tags | Notes |
+|--------|-------------|-------|
+| Age < 1 year | `puppy` | Life stage |
+| Age < 2 years | `puppy`, `adult` | Transition period |
+| Age 2-7 years | `adult` | Life stage |
+| Age ≥ 7 years | `senior` | Life stage |
+| `doggy_soul_answers.noise_sensitivity = true` | `noise_sensitive` | **Explicit flag only** |
+| `doggy_soul_answers.separation_anxiety = true` | `anxious` | **Explicit flag only** |
+| `doggy_soul_answers.general_nature` in [anxious, nervous, shy] | `anxious` | User description |
+| `preferences.allergies` present | `food_sensitive` | **Renamed from "allergies"** |
+| `energy_level = high` | `high_energy` | Routine signal |
+| `energy_level = low` | `low_energy` | Routine signal |
+| Always included | `all` | Baseline |
 
-60+ breeds mapped to characteristics:
+**REMOVED:** `health_conditions` → `health_issues` tag (was inferring from medical data)
+
+#### 2) Breed-Informed Tag Mapping (`BREED_TAG_MAP`)
+
+60+ breeds mapped to grooming/travel/handling/comfort characteristics:
 
 | Breed Category | Example Breeds | Tags |
 |----------------|---------------|------|
@@ -617,6 +621,8 @@ Extracts tags from the pet's profile for content matching:
 | **Terriers** | Jack Russell, Scottie | `terrier`, `high_energy` |
 | **Herding** | Border Collie, Corgi | `herding`, `high_energy` |
 | **Indian** | Indie, Rajapalayam | `indian`, `short_coat` |
+
+**SAFETY RULE:** Breed tags ONLY influence grooming/travel/handling/comfort content. **NEVER health.**
 
 #### 3) Relevance Scoring (`calculate_relevance_score()`)
 
