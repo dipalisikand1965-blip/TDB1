@@ -4,12 +4,18 @@ LEARN OS Layer - API Routes
 Curated library of tiny guides + wrapped YouTube videos.
 Every item ends in: Do it myself | Let Mira do it | Ask Mira
 
+GOLDEN DOCTRINE: Pet First, Breed Second
+Every Learn item is personalized based on:
+1. Pet's life stage (puppy, adult, senior)
+2. Pet's specific conditions (anxious, allergies, health issues)
+3. Pet's breed characteristics (double_coat, brachy, floppy_ears, etc.)
+
 NOTE: This is SEPARATE from learn_routes.py (training programs/enrollments).
 This powers the LEARN OS tab - the curated content library.
 
 Endpoints (MVP):
 - GET /api/os/learn/topics - Get all topic chips
-- GET /api/os/learn/home - Get Learn home screen data
+- GET /api/os/learn/home - Get Learn home screen data (with pet personalization)
 - GET /api/os/learn/topic/{topic} - Content by topic (3 shelves)
 - GET /api/os/learn/item/{type}/{id} - Single guide/video detail
 - POST /api/os/learn/saved - Save/unsave items
@@ -18,12 +24,13 @@ Endpoints (MVP):
 """
 
 from fastapi import APIRouter, HTTPException, Header, Query
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Tuple
 from datetime import datetime, timezone
 import logging
 import uuid
 import os
 import jwt
+import re
 
 from learn_models import (
     LearnTopic, ContentType, RiskLevel,
