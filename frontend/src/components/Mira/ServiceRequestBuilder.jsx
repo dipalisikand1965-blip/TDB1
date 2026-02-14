@@ -251,7 +251,7 @@ const ServiceRequestBuilder = ({
       const deviceType = isMobile ? 'mobile' : 'desktop';
 
       const payload = {
-        service_type: service?.id || 'general',
+        service_type: serviceType,
         pet_ids: selectedPets,
         pet_names: petNames,
         title: selectedPreset || config.title?.replace('Book ', '') || service?.name,
@@ -264,9 +264,18 @@ const ServiceRequestBuilder = ({
           preferred_date: date,
           date_end: dateEnd,
           device_type: deviceType,
+          // Include LEARN context if present
+          ...(hasLearnContext && {
+            learn_context: {
+              source_layer: learnContext.source_layer,
+              source_item_id: learnContext.source_item?.id,
+              source_item_title: learnContext.source_item?.title,
+              source_item_type: learnContext.source_item?.type,
+            }
+          }),
         },
         pillar: service?.pillar || 'care',
-        source: 'services_tab',
+        source: hasLearnContext ? 'learn_layer' : 'services_tab',
       };
 
       const response = await fetch(`${API_BASE}/api/os/services/request`, {
