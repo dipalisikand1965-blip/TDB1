@@ -359,6 +359,12 @@ const ConciergeThreadPanel = ({
       setMessages(data.messages || []);
       setContextDrawer(data.context_drawer);
       
+      // Store linked ticket ID if available (from thread or context drawer)
+      const ticketId = data.thread?.ticket_id || data.context_drawer?.ticket?.id;
+      if (ticketId) {
+        setLinkedTicketId(ticketId);
+      }
+      
     } catch (err) {
       console.error('[ConciergeThread] Error:', err);
       setError(err.message);
