@@ -533,6 +533,7 @@ const SoulProfileContent = memo(({ pet, soulData }) => {
 // Health Profile Content Component
 const HealthProfileContent = memo(({ pet }) => {
   const soulAnswers = pet?.doggy_soul_answers || {};
+  const soulMeta = pet?.doggy_soul_meta || {};
   const preferences = pet?.preferences || {};
   
   const allergies = preferences.allergies || soulAnswers.food_allergies || [];
@@ -541,20 +542,41 @@ const HealthProfileContent = memo(({ pet }) => {
   
   const items = [];
   if (allergies && allergies.length > 0 && allergies[0] !== 'No') {
-    items.push({ label: 'Allergies', value: Array.isArray(allergies) ? allergies.join(', ') : allergies, icon: '⚠️', critical: true });
+    const meta = getTraitMetadata('food_allergies', soulAnswers, soulMeta);
+    items.push({ 
+      key: 'food_allergies',
+      label: 'Allergies', 
+      value: Array.isArray(allergies) ? allergies.join(', ') : allergies, 
+      icon: '⚠️', 
+      critical: true,
+      ...meta
+    });
   }
-  if (weight) items.push({ label: 'Weight', value: weight, icon: '⚖️' });
-  if (spayedNeutered) items.push({ label: 'Spayed/Neutered', value: spayedNeutered, icon: '✓' });
+  if (weight) {
+    const meta = getTraitMetadata('weight', soulAnswers, soulMeta);
+    items.push({ key: 'weight', label: 'Weight', value: weight, icon: '⚖️', ...meta });
+  }
+  if (spayedNeutered) {
+    const meta = getTraitMetadata('spayed_neutered', soulAnswers, soulMeta);
+    items.push({ key: 'spayed_neutered', label: 'Spayed/Neutered', value: spayedNeutered, icon: '✓', ...meta });
+  }
   
   return (
-    <div className="health-profile-content">
+    <div className="health-profile-content" data-testid="health-profile-content">
       {items.length > 0 ? (
         <div className="health-items-list">
           {items.map((item, i) => (
-            <div key={i} className={`health-item ${item.critical ? 'critical' : ''}`}>
+            <div key={i} className={`health-item ${item.critical ? 'critical' : ''}`} data-testid={`health-${item.key}`}>
               <span className="health-icon">{item.icon}</span>
               <span className="health-label">{item.label}</span>
-              <span className="health-value">{item.value}</span>
+              <div className="health-value-container">
+                <span className="health-value">{item.value}</span>
+                {item.isInferred && (
+                  <span className="trait-source-badge mira-learned small">
+                    <Brain className="w-2.5 h-2.5" />
+                  </span>
+                )}
+              </div>
             </div>
           ))}
         </div>
