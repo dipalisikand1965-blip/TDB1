@@ -780,6 +780,19 @@ const useChatSubmit = (config) => {
         if (picksEngineConcierge?.cta_prominence === 'primary') {
           console.log(`[PICKS ENGINE] Concierge CTA prominence: PRIMARY - reason: ${picksEngineConcierge.reason}`);
         }
+        
+        // ═══════════════════════════════════════════════════════════════════════════
+        // PICKS MICRO-DELIGHTS (Phase 1) - Sound, haptic, visual feedback
+        // Makes the OS feel alive and responsive
+        // ═══════════════════════════════════════════════════════════════════════════
+        const picksTabElement = document.querySelector('[data-testid="picks-tab"]');
+        onPicksRefresh({
+          pillar: data.pillar || 'care',
+          urgency: safetyOverride?.active ? safetyOverride.level : 'normal',
+          picksCount: picksEngineData.length,
+          tabElement: picksTabElement,
+          onBadgeUpdate: null // Badge handled by state
+        });
       }
       
       // QUICK REPLIES
