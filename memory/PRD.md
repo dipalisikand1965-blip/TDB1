@@ -482,7 +482,7 @@ From `/app/frontend/src/pages/MiraDemoBackupPage.jsx`:
 ---
 
 ## Preview URL
-**Working:** https://mira-os-roadmap.preview.emergentagent.com/mira-demo
+**Working:** https://soul-profile-1.preview.emergentagent.com/mira-demo
 
 ---
 
