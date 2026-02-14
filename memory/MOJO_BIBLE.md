@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-learn-ai.preview.emergentagent.com
+https://learn-action-hub.preview.emergentagent.com
 ```
 
 ---

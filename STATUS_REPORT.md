@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://mira-learn-ai.preview.emergentagent.com
+**Preview URL:** https://learn-action-hub.preview.emergentagent.com
 
 ---
 

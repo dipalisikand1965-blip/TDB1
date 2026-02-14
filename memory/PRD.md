@@ -302,7 +302,7 @@ Per user's architecture vision:
 
 ## Preview URL
 
-**Working:** https://mira-learn-ai.preview.emergentagent.com/mira-demo
+**Working:** https://learn-action-hub.preview.emergentagent.com/mira-demo
 
 ---
 
