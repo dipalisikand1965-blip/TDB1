@@ -223,17 +223,17 @@
 ## 11. Life Timeline (Memory Layer)
 | Item | Status | Notes |
 |------|--------|-------|
-| Birthday records | ⚠️ PARTIAL | DOB exists |
-| Milestones | ⚠️ PARTIAL | Basic timeline UI |
-| Past services | ❌ NOT BUILT | |
-| Past purchases | ❌ NOT BUILT | |
-| Key events | ⚠️ PARTIAL | Can add events |
-| Adoption date | ❌ NOT BUILT | |
-| Major life changes | ❌ NOT BUILT | |
-| Important memories | ❌ NOT BUILT | |
-| Feeds Insights | ❌ NOT BUILT | |
+| Birthday records | ✅ DONE | DOB field + birthday display |
+| Milestones | ✅ DONE | timeline_events with types |
+| Past services | ⚠️ PARTIAL | Can add via timeline editor |
+| Past purchases | ❌ NOT BUILT | Need order history integration |
+| Key events | ✅ DONE | TimelineEventEditor with event types |
+| Adoption date | ✅ DONE | adoption_date field in BasicDetailsEditor |
+| Major life changes | ✅ DONE | Can add as timeline events |
+| Important memories | ✅ DONE | Can add as timeline events with notes |
+| Feeds Insights | ⚠️ PARTIAL | Timeline data available |
 
-**Score: 22%** (2/9 items)
+**Score: 67%** (6/9 items - IMPROVED from 22%)
 
 ---
 
