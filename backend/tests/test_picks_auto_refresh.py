@@ -49,7 +49,8 @@ class TestPicksAutoRefresh:
                     headers={"Authorization": f"Bearer {self.token}"}
                 )
                 if pets_response.status_code == 200:
-                    pets = pets_response.json()
+                    pets_data = pets_response.json()
+                    pets = pets_data.get("pets", pets_data) if isinstance(pets_data, dict) else pets_data
                     if pets and len(pets) > 0:
                         pet = pets[0]
                         self.pet_id = pet.get("id") or pet.get("pet_id")
