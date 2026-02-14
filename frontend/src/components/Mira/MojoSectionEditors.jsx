@@ -382,32 +382,43 @@ export const SoulProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   );
 });
 
-// Health Profile Editor - With Auto-Save
+// Health Profile Editor - With Auto-Save (ENHANCED for 100% MOJO)
 export const HealthProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     weight: pet?.doggy_soul_answers?.weight || '',
+    size_class: pet?.doggy_soul_answers?.size_class || '',
     food_allergies: pet?.doggy_soul_answers?.food_allergies || [],
     spayed_neutered: pet?.doggy_soul_answers?.spayed_neutered || '',
     vaccination_status: pet?.doggy_soul_answers?.vaccination_status || '',
     medical_conditions: pet?.doggy_soul_answers?.medical_conditions || [],
+    current_medications: pet?.doggy_soul_answers?.current_medications || [],
+    vet_name: pet?.doggy_soul_answers?.vet_name || '',
+    vet_clinic: pet?.doggy_soul_answers?.vet_clinic || '',
+    vet_phone: pet?.doggy_soul_answers?.vet_phone || '',
+    microchip_number: pet?.doggy_soul_answers?.microchip_number || '',
+    insurance_provider: pet?.doggy_soul_answers?.insurance_provider || '',
+    insurance_status: pet?.doggy_soul_answers?.insurance_status || '',
+    emergency_contact: pet?.doggy_soul_answers?.emergency_contact || '',
+    last_vet_visit: pet?.doggy_soul_answers?.last_vet_visit || '',
   });
   
   // Use auto-save hook
   const saveStatus = useAutoSave(data, onSave, 1500);
   
   return (
-    <EditorWrapper title="Health Profile" onCancel={onCancel} saveStatus={saveStatus}>
+    <EditorWrapper title="Health Vault" onCancel={onCancel} saveStatus={saveStatus}>
+      <div className="editor-section-header">Basic Health</div>
       <TextField 
-        label="Weight" 
+        label="Current Weight" 
         value={data.weight}
         onChange={(v) => setData(prev => ({ ...prev, weight: v }))}
         placeholder="e.g., 12 kg or 25 lbs"
       />
-      <TagsField 
-        label="Allergies" 
-        value={data.food_allergies}
-        onChange={(v) => setData(prev => ({ ...prev, food_allergies: v }))}
-        suggestions={['Chicken', 'Beef', 'Wheat', 'Dairy', 'Soy', 'Corn', 'Eggs', 'Fish']}
+      <SelectField 
+        label="Size Class" 
+        value={data.size_class} 
+        options={OPTIONS.size_class}
+        onChange={(v) => setData(prev => ({ ...prev, size_class: v }))}
       />
       <SelectField 
         label="Spayed/Neutered" 
@@ -418,14 +429,80 @@ export const HealthProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
       <SelectField 
         label="Vaccination Status" 
         value={data.vaccination_status} 
-        options={['Up to date', 'Due soon', 'Overdue', 'Unknown']}
+        options={OPTIONS.vaccination_status}
         onChange={(v) => setData(prev => ({ ...prev, vaccination_status: v }))}
       />
+      <TextField 
+        label="Last Vet Visit" 
+        type="date"
+        value={data.last_vet_visit}
+        onChange={(v) => setData(prev => ({ ...prev, last_vet_visit: v }))}
+      />
+      
+      <div className="editor-section-header">Medical History</div>
       <TagsField 
-        label="Medical Conditions" 
+        label="Allergies & Sensitivities" 
+        value={data.food_allergies}
+        onChange={(v) => setData(prev => ({ ...prev, food_allergies: v }))}
+        suggestions={['Chicken', 'Beef', 'Wheat', 'Dairy', 'Soy', 'Corn', 'Eggs', 'Fish', 'Grass', 'Dust']}
+      />
+      <TagsField 
+        label="Chronic Conditions" 
         value={data.medical_conditions}
         onChange={(v) => setData(prev => ({ ...prev, medical_conditions: v }))}
-        suggestions={['Arthritis', 'Diabetes', 'Heart condition', 'Hip dysplasia', 'Epilepsy', 'Skin allergies']}
+        suggestions={['Arthritis', 'Diabetes', 'Heart condition', 'Hip dysplasia', 'Epilepsy', 'Skin allergies', 'Thyroid', 'Kidney disease']}
+      />
+      <TagsField 
+        label="Current Medications" 
+        value={data.current_medications}
+        onChange={(v) => setData(prev => ({ ...prev, current_medications: v }))}
+        suggestions={['Apoquel', 'Rimadyl', 'Galliprant', 'Insulin', 'Thyroid meds', 'Heart meds', 'Supplements']}
+      />
+      
+      <div className="editor-section-header">Vet & Emergency</div>
+      <TextField 
+        label="Vet's Name" 
+        value={data.vet_name}
+        onChange={(v) => setData(prev => ({ ...prev, vet_name: v }))}
+        placeholder="Dr. Smith"
+      />
+      <TextField 
+        label="Vet Clinic" 
+        value={data.vet_clinic}
+        onChange={(v) => setData(prev => ({ ...prev, vet_clinic: v }))}
+        placeholder="Happy Paws Clinic"
+      />
+      <TextField 
+        label="Vet Phone" 
+        value={data.vet_phone}
+        onChange={(v) => setData(prev => ({ ...prev, vet_phone: v }))}
+        placeholder="+91 98765 43210"
+      />
+      <TextField 
+        label="Emergency Contact" 
+        value={data.emergency_contact}
+        onChange={(v) => setData(prev => ({ ...prev, emergency_contact: v }))}
+        placeholder="Name & phone for emergencies"
+      />
+      
+      <div className="editor-section-header">Insurance & ID</div>
+      <TextField 
+        label="Microchip Number" 
+        value={data.microchip_number}
+        onChange={(v) => setData(prev => ({ ...prev, microchip_number: v }))}
+        placeholder="15-digit microchip ID"
+      />
+      <TextField 
+        label="Insurance Provider" 
+        value={data.insurance_provider}
+        onChange={(v) => setData(prev => ({ ...prev, insurance_provider: v }))}
+        placeholder="e.g., Bajaj Allianz Pet Insurance"
+      />
+      <SelectField 
+        label="Insurance Status" 
+        value={data.insurance_status} 
+        options={OPTIONS.insurance_status}
+        onChange={(v) => setData(prev => ({ ...prev, insurance_status: v }))}
       />
     </EditorWrapper>
   );
