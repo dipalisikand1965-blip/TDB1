@@ -316,16 +316,19 @@
 
 # PART 2: OTHER OS LAYERS SCORECARD
 
-## TODAY Layer (15%)
+## TODAY Layer (95%) ✅ COMPLETE
 | Component | Status |
 |-----------|--------|
-| Today Summary Header | ❌ NOT BUILT |
-| Urgent Stack | ❌ NOT BUILT |
-| Due Soon Cards | ❌ NOT BUILT |
-| Season + Environment Alerts | ⚠️ PARTIAL (Weather card only) |
-| Active Tasks Watchlist | ❌ NOT BUILT |
-| Documents + Compliance | ❌ NOT BUILT |
-| Other Pets alerts | ❌ NOT BUILT |
+| Today Summary Header | ✅ DONE - Count badge, refresh, timestamp |
+| Urgent Stack | ✅ DONE - Overdue vaccinations, checkups, emergency |
+| Due Soon Cards | ✅ DONE - Grooming, vet, parasite prevention |
+| Season + Environment Alerts | ✅ DONE - Heat, cold, tick season, fireworks |
+| Active Tasks Watchlist | ✅ DONE - Awaiting confirmation, scheduling |
+| Documents + Compliance | ✅ DONE - Expiring certificates, missing docs |
+| Other Pets alerts | ✅ DONE - Compact alerts for other household pets |
+| Empty State | ✅ DONE - "All caught up!" when no items |
+| Mobile Bottom Sheet | ✅ DONE - Responsive design with 48px touch targets |
+| iOS Support | ✅ DONE - Safe area insets, momentum scrolling |
 
 ---
 
