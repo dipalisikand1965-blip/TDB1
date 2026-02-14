@@ -9641,11 +9641,11 @@ async def mira_chat(
         except:
             pass
         
-        return {
+        return add_picks_to_response({
             "success": True,
             "response": f"Of course — what would you like to do for {pet_name} now?",
             "session_id": session_id,
-            "pillar": None,  # Reset pillar
+            "pillar": picks_response_data.get("pillar"),  # Use pillar from picks
             "intent": "topic_reset",
             "follow_ups": [
                 {"text": "Continue with meal plan", "type": "action"},
@@ -9653,7 +9653,7 @@ async def mira_chat(
             ],
             "products": [],
             "services": []
-        }
+        })
     
     # ═══════════════════════════════════════════════════════════════════════════
     # UNIFORM SERVICE HANDOFF FLOW - When user triggers a service action
