@@ -3576,6 +3576,37 @@ const MiraDemoPage = () => {
         />
       )}
       
+      {/* LEARN PANEL - Knowledge Layer (Curated Guides & Videos) */}
+      {showLearnPanel && (
+        <Suspense fallback={<LazyFallback />}>
+          <LearnPanel
+            isOpen={showLearnPanel}
+            onClose={() => setShowLearnPanel(false)}
+            pet={pet}
+            token={token}
+            onOpenServices={(serviceData) => {
+              // "Let Mira do it" - opens ServiceRequestBuilder with prefill
+              setShowLearnPanel(false);
+              setRequestBuilderState({ 
+                isOpen: true, 
+                service: {
+                  type: serviceData?.service_type || 'general',
+                  prefill: serviceData?.prefill || {},
+                  context: serviceData?.context || {}
+                }
+              });
+            }}
+            onOpenConcierge={(conciergeData) => {
+              // "Ask Mira" - opens Concierge with context
+              setShowLearnPanel(false);
+              setShowConciergePanel(true);
+              // TODO: Pass context to concierge
+              console.log('[LEARN] Opening concierge with context:', conciergeData);
+            }}
+          />
+        </Suspense>
+      )}
+      
       {/* SOUL FORM MODAL - Lazy loaded */}
       {showSoulFormModal && (
         <Suspense fallback={<LazyFallback />}>
