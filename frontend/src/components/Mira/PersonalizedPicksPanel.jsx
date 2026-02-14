@@ -1482,6 +1482,41 @@ const PersonalizedPicksPanel = ({
             />,
             document.body
           )}
+          
+          {/* ═══════════════════════════════════════════════════════════════════════════ */}
+          {/* 5-SECOND UNDO TOAST (Phase 3) */}
+          {/* Shows when user taps a pick, allows undo before task is created */}
+          {/* ═══════════════════════════════════════════════════════════════════════════ */}
+          <AnimatePresence>
+            {undoToast && (
+              <motion.div
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 100, opacity: 0 }}
+                className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full shadow-2xl shadow-purple-500/30"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                  <span className="text-white text-sm font-medium">
+                    Task created for {undoToast.pick?.name || undoToast.pick?.title}
+                  </span>
+                </div>
+                <button
+                  onClick={undoTaskCreation}
+                  className="px-3 py-1 bg-white/20 hover:bg-white/30 rounded-full text-white text-sm font-semibold transition-colors"
+                >
+                  Undo
+                </button>
+                {/* Progress bar */}
+                <motion.div 
+                  initial={{ width: '100%' }}
+                  animate={{ width: '0%' }}
+                  transition={{ duration: 5, ease: 'linear' }}
+                  className="absolute bottom-0 left-0 h-1 bg-white/40 rounded-full"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </motion.div>
     </AnimatePresence>
