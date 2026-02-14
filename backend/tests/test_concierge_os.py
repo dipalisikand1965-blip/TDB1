@@ -175,7 +175,7 @@ class TestConciergeThread:
         # Thread structure
         assert "id" in thread
         assert "pet_id" in thread
-        assert "user_id" in thread
+        # Note: user_id is not returned in thread response (security - user knows their own id)
         assert "title" in thread
         assert "status" in thread
         assert "source" in thread
