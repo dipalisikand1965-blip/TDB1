@@ -62,6 +62,10 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 - [x] **MOJO Vision Audit (2026-02-13)** - Scored at 72% against Product Doctrine
 - [x] **Handover Document v2 (2026-02-13)** - Complete handover with all credentials
 - [x] **✅ COMPLETED: Confidence Scores & "Mira Learned" Badges (2026-02-14)** - Intelligence visibility:
+- [x] **✅ FIXED: MOJO Modal Header Bug (2026-02-14)** - Header now shows pet's name dynamically instead of static "MOJO"
+  - File: `/app/frontend/src/components/Mira/MojoProfileModal.jsx` (Line 1725)
+  - Changed from `<h2>MOJO</h2>` to `<h2>{petData?.name || 'MOJO'}</h2>`
+  - Verified working via screenshot - header shows "Lola" when viewing Lola's profile
   - Traits now show confidence percentage (e.g., "85%") based on source
   - "🧠 MIRA LEARNED" badge shows when data was inferred from conversation
   - Metadata stored in `doggy_soul_meta` field in MongoDB
