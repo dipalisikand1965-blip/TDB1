@@ -28,6 +28,68 @@
 
 ## SESSION 17 ACCOMPLISHMENTS (Feb 14, 2026)
 
+### ARCHITECTURE CLEANUP: PICKS & CONCIERGE Consolidation ✅
+
+**User Feedback:**
+1. PICKS appeared in TWO places - in-chat ProductsGrid AND top bar PICKS tab
+2. In-chat picks were NOT context-aware (Goa query showed generic "Pet Health Monitor")
+3. CONCIERGE appeared in 5+ places - too many entry points
+4. Google Places API triggered too eagerly, before conversation developed
+
+**What Was Fixed:**
+
+#### A) PICKS Consolidated to Top Bar Only (`ChatMessage.jsx`)
+- **REMOVED** `ProductsGrid` component from chat messages
+- Chat is now cleaner and focused on conversation
+- Added subtle "View personalized picks for Lola" hint button
+- Clicking hint takes user to top bar PICKS panel
+- Keeps chat uncluttered while guiding users to curated picks
+
+#### B) Context-Aware PICKS Engine (`top_picks_routes.py`)
+- **NEW** `POST /api/mira/top-picks/context-aware` endpoint
+- Takes conversation context (topic, destination) as input
+- Returns picks relevant to the conversation:
+  - "Goa trip" → Travel carriers, beach gear, sun protection
+  - "Grooming" → Grooming supplies, shampoo, brushes
+  - "Birthday" → Party supplies, cake, treats
+- Added `CONTEXT_MAPPINGS` for 20+ travel destinations and activities
+- Concierge picks also context-aware (e.g., Pet-Friendly Hotel Booking for travel)
+
+#### C) CONCIERGE Consolidated to Top Bar (`ChatMessage.jsx`)
+- **REMOVED** "C° Need help? Tap here" full button from message headers
+- **REPLACED** with small circular **C°** icon (36px)
+- **REMOVED** `InlineConciergeCard` from message bodies
+- **REMOVED** `DynamicConciergeRequest` component
+- Single entry point: Top bar CONCIERGE® tab
+
+#### D) Google Places API Trigger Control (`mira_routes.py`)
+- **NEW** Explicit location request patterns required:
+  - "near me", "nearby", "find me a", "recommend one", "show me"
+- Implicit patterns ("need a", "looking for") now require conversation context
+- Must have at least 1 clarifying exchange before triggering Places API
+- Prevents premature API calls on first message
+
+#### E) Conversation Context Propagation (`useChatSubmit.js`, `useVault.js`)
+- Frontend now extracts travel destinations from user messages
+- Updates `miraPicks.conversationContext` with topic and destination
+- `PersonalizedPicksPanel` fetches context-aware picks when context is available
+- Real-time context detection for: Goa, Mumbai, Bangalore, Delhi, Himachal, Kerala, etc.
+
+**Files Modified:**
+- `/app/frontend/src/components/Mira/ChatMessage.jsx` - Removed ProductsGrid, consolidated concierge
+- `/app/frontend/src/styles/mira-prod.css` - Added C° icon and picks hint styles
+- `/app/frontend/src/components/Mira/PersonalizedPicksPanel.jsx` - Context-aware fetching
+- `/app/frontend/src/hooks/mira/useVault.js` - Added conversationContext state
+- `/app/frontend/src/hooks/mira/useChatSubmit.js` - Context extraction from messages
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - Pass conversationContext prop
+- `/app/backend/app/api/top_picks_routes.py` - NEW context-aware endpoint
+- `/app/backend/mira_routes.py` - Places API trigger control
+
+**Architecture Audit Document:**
+- `/app/memory/ARCHITECTURE_AUDIT_PICKS_CONCIERGE.md`
+
+---
+
 ### P0 CRITICAL BUG FIXES - Conversation Flow & UI Regression ✅
 **User-Reported Issues:**
 1. LLM skips clarifying questions and triggers APIs prematurely
