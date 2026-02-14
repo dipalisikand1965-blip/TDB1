@@ -507,7 +507,9 @@ async def get_learn_home(
     
     GOLDEN DOCTRINE: Pet First, Breed Second
     - If pet_id provided, creates a "For your pet" shelf with most relevant content
-    - Ranks content based on pet's life stage, conditions, and breed
+    - Ranks content based on pet's life stage, explicit sensitivities, behaviour signals
+    - Breed tags only influence grooming/travel/handling content, NEVER health
+    - Diversity filter prevents echo chamber (max 2 items per primary tag)
     """
     db = get_db()
     if db is None:
@@ -524,6 +526,9 @@ async def get_learn_home(
             {"item_id": 1}
         ).to_list(100)
         saved_ids = {s["item_id"] for s in saved_items}
+    
+    # Get user feedback for negative weighting
+    user_feedback = await get_user_feedback(db, user_id) if user_id else {}
     
     # ===== PERSONALIZATION: Fetch pet profile =====
     pet_profile = None
@@ -559,23 +564,33 @@ async def get_learn_home(
         {"_id": 0}
     ).to_list(50)
     
-    # Score and sort content by relevance
+    # Score and sort content by relevance (with safety rules)
     scored_content = []
     for guide in all_guides:
-        score = calculate_relevance_score(guide, pet_tags, breed_tags)
+        score, primary_tag = calculate_relevance_score(
+            guide, pet_tags, breed_tags, 
+            topic=guide.get("topic"),
+            user_feedback=user_feedback
+        )
         scored_content.append({
             "item": guide,
             "type": "guide",
             "score": score,
+            "primary_tag": primary_tag,
             "is_featured": guide.get("is_featured", False)
         })
     
     for video in all_videos:
-        score = calculate_relevance_score(video, pet_tags, breed_tags)
+        score, primary_tag = calculate_relevance_score(
+            video, pet_tags, breed_tags,
+            topic=video.get("topic"),
+            user_feedback=user_feedback
+        )
         scored_content.append({
             "item": video,
             "type": "video",
             "score": score,
+            "primary_tag": primary_tag,
             "is_featured": video.get("is_featured", False)
         })
     
@@ -588,15 +603,30 @@ async def get_learn_home(
     for_your_pet = []
     if pet_profile:
         # Get items with score >= 5 (at least one meaningful tag match)
-        personalized = [c for c in scored_content if c["score"] >= 5][:8]
-        for c in personalized:
-            for_your_pet.append(enrich_item_for_frontend(
-                c["item"], 
-                c["type"], 
-                c["item"].get("id") in saved_ids,
-                c["score"],
+        personalized_candidates = [c for c in scored_content if c["score"] >= 5]
+        
+        # Apply diversity filter (max 2 items with same primary tag)
+        for c in personalized_candidates:
+            c["item"]["_primary_tag"] = c["primary_tag"]
+        diverse_items = apply_diversity_filter(
+            [c["item"] for c in personalized_candidates], 
+            max_per_tag=2
+        )
+        
+        # Enrich for frontend (limit to 8)
+        for item in diverse_items[:8]:
+            item_score = next((c["score"] for c in personalized_candidates if c["item"].get("id") == item.get("id")), 0)
+            item_type = "video" if item.get("youtube_id") else "guide"
+            enriched = enrich_item_for_frontend(
+                item, 
+                item_type, 
+                item.get("id") in saved_ids,
+                item_score,
                 pet_name
-            ))
+            )
+            # Clean up internal field
+            enriched.pop("_primary_tag", None)
+            for_your_pet.append(enriched)
     
     # "Start here" shelf - Featured content, also personalized
     start_here = []
