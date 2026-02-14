@@ -3410,6 +3410,25 @@ const MiraDemoPage = () => {
         </div>
       </div>
       
+      {/* ═══════════════════════════════════════════════════════════════════
+          FLOATING VOICE INDICATOR - Glowing red when Mira is speaking
+          Shows user that voice is active, tap to stop
+      ═══════════════════════════════════════════════════════════════════ */}
+      {isSpeaking && (
+        <div 
+          className="mp-floating-voice-indicator"
+          onClick={stopSpeaking}
+          data-testid="floating-voice-indicator"
+        >
+          <div className="mp-voice-orb">
+            <Volume2 size={24} />
+            <span className="mp-voice-pulse-ring"></span>
+            <span className="mp-voice-pulse-ring mp-delay"></span>
+          </div>
+          <span className="mp-voice-label">Mira speaking... tap to stop</span>
+        </div>
+      )}
+      
       {/* Scroll to Bottom Button - Extracted to ScrollToBottomButton component */}
       <ScrollToBottomButton 
         visible={hasNewMessages && !isAtBottom}
