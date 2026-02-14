@@ -22,6 +22,7 @@
 | **P1 MOBILE** | **100%** | ✅ **COMPLETE** - iOS Safari + Android Chrome |
 | **LEARN** | **100%** | ✅ **COMPLETE** - Session 12: Full Integration |
 | **CONCIERGE** | **60%** | 🔄 **PHASE 1 COMPLETE** - Session 14: Home + Conversation |
+| **VOICE** | **90%** | ✅ TTS working, glowing red button added, floating indicator added |
 
 ---
 
@@ -56,6 +57,38 @@
 **Files Modified:**
 - `/app/backend/mira_routes.py` - Lines 1094-1140 (MIRA_OS_SYSTEM_PROMPT), Lines 2549-2615 (pet context)
 - `/app/backend/server.py` - Lines 3045-3090 (system_prompt)
+
+---
+
+### Voice Sync & UI Enhancement ✅
+**Goal:** Better voice sync when quick tabs are pressed, glowing red button
+
+**What was changed:**
+
+#### A) Glowing Red Voice Button (`mira-prod.css`)
+- When Mira is speaking, voice button pulses with red glow animation
+- Box shadow effect: `0 0 15px rgba(255, 59, 48, 0.6)`
+- Scale animation for prominence
+
+#### B) Floating Voice Indicator (`MiraDemoPage.jsx` + CSS)
+- Added floating orb that appears when Mira is speaking
+- Red glowing animation with expanding pulse rings
+- "Mira speaking... tap to stop" label
+- Positioned bottom-right, tappable to stop voice
+
+#### C) Voice Sync Fix (`MiraDemoPage.jsx`)
+- Updated `handleQuickReply` to NOT skip voice for quick tabs
+- Voice now works when user clicks Test Scenarios
+- Stops current voice before new action (prevents overlap)
+
+#### D) Dynamic Pet Name in Test Scenarios (`TestScenariosPanel.jsx`)
+- Test Scenarios now use active pet's name instead of hardcoded "Buddy"
+- Query: "What food is best for Lola?" (not "What food is best for Buddy?")
+
+**Files Modified:**
+- `/app/frontend/src/styles/mira-prod.css` - Voice button glow + floating indicator CSS
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - Floating voice indicator + handleQuickReply fix
+- `/app/frontend/src/components/Mira/TestScenariosPanel.jsx` - Dynamic pet name
 
 ---
 
