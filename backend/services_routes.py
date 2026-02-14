@@ -52,8 +52,8 @@ def get_db():
     """Get the database instance"""
     return _db
 
-# JWT Config
-SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "your-secret-key")
+# JWT Config - Match server.py
+SECRET_KEY = os.environ.get("JWT_SECRET", "tdb_super_secret_key_2025_woof")
 ALGORITHM = "HS256"
 
 
