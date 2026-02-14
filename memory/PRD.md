@@ -46,19 +46,48 @@
   - **Orders** → Available in SERVICES panel (already present)
   - **Past Chats** → Available in CONCIERGE "Recent Conversations" section
   - **Soul/Enhance Soul** → Available in MOJO tab (MojoProfileModal)
-  - **Insights** → Will be integrated into CONCIERGE learning flow
+  - **Insights** → Integrated into CONCIERGE learning flow (see below)
 
-#### C) Code Cleanup
-- Removed unused imports (NavigationDock, FloatingActionBar)
-- Updated comments to reflect new 6-layer architecture
-- Preserved all functionality - just moved to appropriate OS layers
+### P0 INSIGHTS Learning Feature ✅
+**Goal:** Learn about the pet from CONCIERGE conversations and enrich MOJO
+
+**What was built:**
+
+#### A) Insight Extraction Engine (`concierge_os_routes.py`)
+- **Pattern-based extraction** for 6 categories:
+  - `fears` - Things the pet is scared of
+  - `loves` - Things the pet loves/favorites
+  - `anxiety` - Anxiety triggers and conditions
+  - `behavior` - Behavioral patterns
+  - `preferences` - General preferences
+  - `health` - Allergies and sensitivities
+- **Auto-extraction** from:
+  - Thread creation (initial intent message)
+  - All follow-up messages
+
+#### B) New API Endpoints
+- `GET /api/os/concierge/insights/{pet_id}` - Get extracted insights for a pet
+- `POST /api/os/concierge/insights/{pet_id}/review` - Confirm or reject an insight
+
+#### C) Data Model
+- `conversation_insights` array on pet document:
+  - `id`, `category`, `content`, `source_thread_id`
+  - `status`: pending_review | confirmed | rejected
+  - `confidence`: 0.7 (rule-based)
+- `learned_facts` array for confirmed insights:
+  - `category`, `content`, `learned_from: "conversation"`
+  - `confirmed_at` timestamp
+
+#### Test Results
+- **Backend:** 100% - Insights extracted and stored correctly
+- **Workflow verified:**
+  1. User shares pet info in CONCIERGE conversation
+  2. System extracts insights (fears, loves, anxiety, etc.)
+  3. Admin/user reviews and confirms insights
+  4. Confirmed insights added to pet's MOJO profile
 
 **Files Modified:**
-- `/app/frontend/src/components/Mira/PetOSNavigation.jsx` - Removed INSIGHTS from OS_LAYERS
-- `/app/frontend/src/components/Mira/WelcomeHero.jsx` - Removed secondary action buttons
-- `/app/frontend/src/pages/MiraDemoPage.jsx` - Removed NavigationDock and FloatingActionBar
-
-**Test Status:** ✅ Visual verification complete - UI is cleaner with unified primary navigation
+- `/app/backend/routes/concierge_os_routes.py` - Added insight extraction and storage
 
 ---
 
