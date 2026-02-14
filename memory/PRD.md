@@ -129,7 +129,7 @@ Per user's architecture vision:
 
 ## Preview URL
 
-**Working:** https://services-inbox-hub.preview.emergentagent.com/mira-demo
+**Working:** https://services-inbox-v1.preview.emergentagent.com/mira-demo
 
 ---
 

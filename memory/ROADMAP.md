@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://services-inbox-hub.preview.emergentagent.com
+https://services-inbox-v1.preview.emergentagent.com
 
 ---
 
