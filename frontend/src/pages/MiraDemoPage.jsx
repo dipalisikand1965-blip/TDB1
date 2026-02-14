@@ -403,6 +403,42 @@ const MiraDemoPage = () => {
     };
   }, [isPageReady]);
   
+  // URL PARAMETER HANDLING: Handle deep links for tabs (e.g., ?tab=concierge)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    const threadParam = urlParams.get('thread');
+    
+    if (tabParam) {
+      // Map URL param to OS tab IDs
+      const tabMapping = {
+        'mojo': 'mojo',
+        'today': 'today', 
+        'picks': 'picks',
+        'learn': 'learn',
+        'concierge': 'concierge',
+        'services': 'services'
+      };
+      
+      const targetTab = tabMapping[tabParam.toLowerCase()];
+      if (targetTab) {
+        setActiveOSTab(targetTab);
+        
+        // If it's concierge tab and there's a thread param, open that thread
+        if (targetTab === 'concierge') {
+          setShowConciergeHome(true);
+          if (threadParam) {
+            // This will be picked up by ConciergeHomePanel to auto-open the thread
+            setConciergeThread(prev => ({ ...prev, threadId: threadParam }));
+          }
+        }
+      }
+      
+      // Clean up URL params after handling (optional - keeps URL clean)
+      // window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []); // Run once on mount
+  
   // Fetch user's geolocation AFTER page is ready (deferred for performance)
   useEffect(() => {
     if (!isPageReady) return;
