@@ -764,12 +764,19 @@ Score = (Pet Tag Matches × 10) + min(Breed Tag Matches × 5, 10) + ("all" tag �
 | Pet tag match | +10 each | None | Life stage, explicit sensitivities |
 | Breed tag match | +5 each | **MAX +10** | Grooming/travel/handling only |
 | "all" tag | +1 | None | Baseline for universal content |
-| "Not helpful" feedback | -15 | None | User explicitly marked unhelpful |
+| User feedback penalty | -15 | None | "Not helpful" marked by user |
 
 **SAFETY RULES:**
-1. **Health-adjacent topics ignore breed tags entirely** (`HEALTH_ADJACENT_TOPICS = {"health", "emergency", "medical", "vaccination", "vet"}`)
+
+1. **Health-adjacent topics ignore breed tags entirely.**
+   - `HEALTH_ADJACENT_TOPICS = {"health", "emergency", "medical", "vaccination", "vet"}`
+   - Health-adjacent topics never use breed tags, and never infer sensitivities. Only explicit user-entered signals + "all."
+
 2. **Breed tag contribution capped at +10** (prevents breed-dominance)
-3. **Negative weights for "Not helpful"** feedback
+
+3. **User feedback penalty is per user + per pet, not global.**
+   - One user's "Not helpful" doesn't poison the library for everyone.
+   - Stored in `learn_feedback` collection with `{user_id, pet_id, item_id, feedback}`
 
 #### 4) Diversity Filter (`apply_diversity_filter()`)
 
