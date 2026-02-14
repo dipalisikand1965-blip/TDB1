@@ -100,6 +100,14 @@ const calculateSectionCompleteness = (sectionId, data) => {
       const filled = soulFields.filter(f => soulAnswers[f] && soulAnswers[f] !== 'Unknown').length;
       return Math.round((filled / soulFields.length) * 100);
     }
+    case 'learned': {
+      // Learned facts from conversations
+      const factsCount = (data?.learned_facts || []).length;
+      if (factsCount >= 10) return 100;
+      if (factsCount >= 5) return 70;
+      if (factsCount >= 1) return 40;
+      return 0;
+    }
     case 'trait_graph': {
       // Trait graph completeness based on number of traits with meta data
       const metaCount = Object.keys(soulMeta).length;
