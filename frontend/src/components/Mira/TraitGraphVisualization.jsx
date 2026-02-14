@@ -140,8 +140,12 @@ const TraitGraphVisualization = memo(({ petId, petName, apiUrl, token, isOpen = 
 
   // Fetch trait graph stats
   const fetchStats = async () => {
-    if (!petId || !apiUrl) return;
+    if (!petId || !apiUrl) {
+      console.log('[TRAIT-GRAPH-VIZ] Missing petId or apiUrl:', { petId, apiUrl });
+      return;
+    }
     
+    console.log('[TRAIT-GRAPH-VIZ] Fetching stats for pet:', petId);
     setLoading(true);
     setError(null);
     
@@ -159,6 +163,7 @@ const TraitGraphVisualization = memo(({ petId, petName, apiUrl, token, isOpen = 
       }
       
       const data = await response.json();
+      console.log('[TRAIT-GRAPH-VIZ] Received stats:', data);
       setStats(data);
     } catch (err) {
       console.error('[TRAIT-GRAPH-VIZ] Error:', err);
@@ -169,7 +174,8 @@ const TraitGraphVisualization = memo(({ petId, petName, apiUrl, token, isOpen = 
   };
 
   useEffect(() => {
-    if (isOpen && petId) {
+    console.log('[TRAIT-GRAPH-VIZ] useEffect triggered:', { isOpen, petId, hasApiUrl: !!apiUrl });
+    if (isOpen && petId && apiUrl) {
       fetchStats();
     }
   }, [isOpen, petId, apiUrl]);
