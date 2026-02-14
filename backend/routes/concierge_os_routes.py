@@ -541,6 +541,9 @@ async def send_message(request: MessageSendRequest):
     """
     Send a message in a thread.
     This is used for user messages; concierge responses come from the admin side.
+    
+    INSIGHTS FEATURE: Automatically extracts pet information from messages
+    and stores them as "learned_from_conversation" insights.
     """
     if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
@@ -591,6 +594,14 @@ async def send_message(request: MessageSendRequest):
             "created_at": now,
             "read": False
         })
+        
+        # INSIGHTS FEATURE: Extract and store pet information from message
+        pet_id = thread.get("pet_id")
+        if pet_id:
+            extracted_insights = extract_pet_insights(request.content)
+            if extracted_insights:
+                await store_conversation_insights(db, pet_id, extracted_insights, request.thread_id, now)
+                logger.info(f"[INSIGHTS] Extracted {len(extracted_insights)} insights from conversation for pet {pet_id}")
         
         return {
             "success": True,
