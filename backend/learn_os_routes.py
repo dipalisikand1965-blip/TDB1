@@ -1110,3 +1110,412 @@ async def get_saved_items(
             "total": len(saved_items)
         }
     }
+
+
+
+# ============================================
+# LEARN → TODAY INTEGRATION
+# ============================================
+# 
+# Event Types: saved, completed, helpful, not_helpful
+# Collections:
+#   - learn_events: {user_id, pet_id, item_id, event_type, ts}
+#   - today_nudge_log: {user_id, pet_id, nudge_type, item_id, shown_at, dismissed_at}
+#
+# Anti-Spam Rules:
+#   1. Learn-nudge only if user completed/saved a Learn item
+#   2. The Learn item has a mapped next action (service_cta or ask_mira_suggestion)
+#   3. No other Learn-nudge shown in last 7 days for that pet
+#   4. Same Learn item hasn't nudged within 30 days
+#   5. Today already has < 1 other "soft" nudges on screen
+# ============================================
+
+
+@router.post("/event")
+async def record_learn_event(
+    item_id: str = Query(..., description="Learn item ID"),
+    item_type: str = Query(..., description="guide or video"),
+    event_type: str = Query(..., description="saved|completed|helpful|not_helpful"),
+    pet_id: Optional[str] = Query(None, description="Pet ID for context"),
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Record a user event on a Learn item.
+    
+    Events feed:
+    - LEARN → TODAY nudges (completed/saved → smart nudge within 7 days)
+    - User feedback scoring (helpful/not_helpful → relevance adjustment)
+    - Soul growth (explicit signals only)
+    
+    Event Types:
+    - saved: User saved the item to favorites
+    - completed: User finished reading/watching (>50% for videos)
+    - helpful: User marked as helpful
+    - not_helpful: User marked as not helpful
+    """
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database unavailable")
+    
+    user = await get_user_from_token(authorization)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user_id = user.get("user_id")
+    
+    # Validate event type
+    valid_events = ["saved", "completed", "helpful", "not_helpful"]
+    if event_type not in valid_events:
+        raise HTTPException(status_code=400, detail=f"Invalid event_type. Use one of: {valid_events}")
+    
+    # Store the event
+    event = {
+        "user_id": user_id,
+        "pet_id": pet_id,
+        "item_id": item_id,
+        "item_type": item_type,
+        "event_type": event_type,
+        "ts": datetime.now(timezone.utc)
+    }
+    
+    await db.learn_events.insert_one(event)
+    logger.info(f"[LEARN EVENT] {event_type} for {item_id} by user {user_id}, pet {pet_id}")
+    
+    # If not_helpful or helpful, also update the feedback collection for scoring
+    if event_type in ["helpful", "not_helpful"]:
+        await db.learn_feedback.update_one(
+            {"user_id": user_id, "pet_id": pet_id, "item_id": item_id},
+            {
+                "$set": {
+                    "feedback": event_type,
+                    "updated_at": datetime.now(timezone.utc)
+                }
+            },
+            upsert=True
+        )
+    
+    return {
+        "success": True,
+        "event_type": event_type,
+        "item_id": item_id
+    }
+
+
+# CTA mappings from Learn items → Service types
+# This determines what nudge action to show in TODAY
+LEARN_TO_SERVICE_MAP = {
+    # Grooming guides
+    "guide_brushing_coats": {"service_type": "grooming", "action_label": "Book grooming session"},
+    "guide_first_grooming": {"service_type": "grooming", "action_label": "Book first grooming"},
+    "guide_ear_cleaning": {"service_type": "grooming", "action_label": "Book ear cleaning"},
+    "guide_nail_trim": {"service_type": "grooming", "action_label": "Book nail trim"},
+    
+    # Behaviour guides
+    "guide_fireworks_anxiety": {"service_type": "calming_kit", "action_label": "Arrange calming kit"},
+    "guide_separation_anxiety": {"service_type": "trainer_consult", "action_label": "Book trainer consult"},
+    "guide_leash_training": {"service_type": "training", "action_label": "Book training session"},
+    
+    # Health guides
+    "guide_tick_protocol": {"service_type": "parasite_prevention", "action_label": "Order prevention"},
+    "guide_vaccination_basics": {"service_type": "vet_checkup", "action_label": "Schedule vaccination"},
+    "guide_emergency_signs": {"service_type": "vet_checkup", "action_label": "Book vet visit"},
+    
+    # Travel/Boarding guides
+    "guide_boarding_checklist": {"service_type": "boarding", "action_label": "Find boarding"},
+    "guide_travel_prep": {"service_type": "travel_kit", "action_label": "Get travel kit"},
+    
+    # Food guides
+    "guide_puppy_feeding": {"service_type": "food_consultation", "action_label": "Get food advice"},
+    "guide_food_transition": {"service_type": "food_delivery", "action_label": "Order food"},
+    
+    # Videos also map to services
+    "video_brushing_demo": {"service_type": "grooming", "action_label": "Book grooming"},
+    "video_leash_manners": {"service_type": "training", "action_label": "Book training"},
+    "video_fireworks_calm": {"service_type": "calming_kit", "action_label": "Arrange calming kit"},
+}
+
+
+@router.get("/today-nudge")
+async def get_learn_nudge_for_today(
+    pet_id: str = Query(..., description="Pet ID"),
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get a single Learn-based nudge for the TODAY panel.
+    
+    Anti-Spam Rules (all must be true):
+    1. User completed or saved a Learn item
+    2. The Learn item has a mapped next action (service_cta)
+    3. No other Learn-nudge shown in last 7 days for that pet
+    4. Same Learn item hasn't nudged within 30 days
+    5. Today already has < 1 other "soft" nudges on screen (checked by caller)
+    
+    Returns:
+    - null if no nudge eligible
+    - One LearnNudge object if eligible
+    """
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database unavailable")
+    
+    user = await get_user_from_token(authorization)
+    if not user:
+        return {"success": True, "nudge": None, "reason": "no_auth"}
+    
+    user_id = user.get("user_id")
+    
+    if not pet_id or pet_id in ["demo-pet", "demo"]:
+        return {"success": True, "nudge": None, "reason": "no_pet"}
+    
+    now = datetime.now(timezone.utc)
+    seven_days_ago = now - timedelta(days=7)
+    thirty_days_ago = now - timedelta(days=30)
+    
+    # Rule 3: Check if ANY Learn-nudge was shown in last 7 days for this pet
+    recent_nudge = await db.today_nudge_log.find_one({
+        "user_id": user_id,
+        "pet_id": pet_id,
+        "nudge_type": "learn",
+        "shown_at": {"$gte": seven_days_ago}
+    })
+    
+    if recent_nudge:
+        logger.info(f"[LEARN NUDGE] Skipped: Already showed nudge in last 7 days for pet {pet_id}")
+        return {"success": True, "nudge": None, "reason": "cooldown_active"}
+    
+    # Rule 1: Get completed/saved events from last 7 days
+    eligible_events = await db.learn_events.find({
+        "user_id": user_id,
+        "pet_id": pet_id,
+        "event_type": {"$in": ["completed", "saved"]},
+        "ts": {"$gte": seven_days_ago}
+    }).sort("ts", -1).to_list(20)
+    
+    if not eligible_events:
+        logger.info(f"[LEARN NUDGE] Skipped: No completed/saved events in last 7 days for pet {pet_id}")
+        return {"success": True, "nudge": None, "reason": "no_recent_activity"}
+    
+    # Rule 2 & 4: Find an item that has a service mapping AND hasn't nudged in 30 days
+    for event in eligible_events:
+        item_id = event.get("item_id")
+        item_type = event.get("item_type", "guide")
+        
+        # Check if this item has a service mapping
+        service_mapping = LEARN_TO_SERVICE_MAP.get(item_id)
+        if not service_mapping:
+            continue
+        
+        # Rule 4: Check if this specific item nudged in last 30 days
+        item_nudged_recently = await db.today_nudge_log.find_one({
+            "user_id": user_id,
+            "pet_id": pet_id,
+            "nudge_type": "learn",
+            "item_id": item_id,
+            "shown_at": {"$gte": thirty_days_ago}
+        })
+        
+        if item_nudged_recently:
+            continue  # Try next item
+        
+        # Fetch the Learn item details
+        collection = db.learn_guides if item_type == "guide" else db.learn_videos
+        item = await collection.find_one({"id": item_id}, {"_id": 0})
+        
+        if not item:
+            continue
+        
+        # Get pet name for context
+        pet = await db.pets.find_one({"id": pet_id}, {"name": 1, "_id": 0})
+        pet_name = pet.get("name", "your pet") if pet else "your pet"
+        
+        # Build the nudge
+        nudge = {
+            "id": f"learn_nudge_{item_id}_{int(now.timestamp())}",
+            "type": "learn_nudge",
+            "title": "Want me to handle this?",
+            "context_line": f"Since you completed {item.get('title')}...",
+            "learn_item": {
+                "id": item_id,
+                "type": item_type,
+                "title": item.get("title"),
+                "topic": item.get("topic")
+            },
+            "primary_cta": {
+                "label": service_mapping.get("action_label", "Let Mira do it"),
+                "service_type": service_mapping.get("service_type"),
+                "prefill": {
+                    "source_layer": "learn",
+                    "source_item_id": item_id,
+                    "source_item_title": item.get("title"),
+                    "pet_id": pet_id
+                }
+            },
+            "secondary_cta": {
+                "label": "Ask Mira",
+                "action": "open_concierge",
+                "context": {
+                    "source": "today_learn_nudge",
+                    "learn_item": {"id": item_id, "title": item.get("title")},
+                    "initialMessage": f"I've completed \"{item.get('title')}\". Can you help me with next steps for {pet_name}?"
+                }
+            },
+            "dismiss_action": "not_now",  # "Not now" → don't show again for 7 days
+            "pet_id": pet_id,
+            "pet_name": pet_name,
+            "event_ts": event.get("ts").isoformat() if event.get("ts") else None
+        }
+        
+        # Log that we're showing this nudge (pre-emptively)
+        await db.today_nudge_log.insert_one({
+            "user_id": user_id,
+            "pet_id": pet_id,
+            "nudge_type": "learn",
+            "item_id": item_id,
+            "shown_at": now,
+            "dismissed_at": None
+        })
+        
+        logger.info(f"[LEARN NUDGE] Showing nudge for item {item_id} to pet {pet_id}")
+        return {"success": True, "nudge": nudge}
+    
+    # No eligible items found
+    return {"success": True, "nudge": None, "reason": "no_actionable_items"}
+
+
+@router.post("/today-nudge/dismiss")
+async def dismiss_learn_nudge(
+    nudge_id: str = Query(..., description="Nudge ID to dismiss"),
+    item_id: str = Query(..., description="Learn item ID"),
+    pet_id: str = Query(..., description="Pet ID"),
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Dismiss a Learn nudge from TODAY.
+    "Not now" → don't show this item again for 7 days (already logged when shown).
+    Updates the dismissed_at timestamp.
+    """
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database unavailable")
+    
+    user = await get_user_from_token(authorization)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user_id = user.get("user_id")
+    
+    # Update the nudge log with dismissal timestamp
+    result = await db.today_nudge_log.update_one(
+        {
+            "user_id": user_id,
+            "pet_id": pet_id,
+            "item_id": item_id,
+            "nudge_type": "learn"
+        },
+        {"$set": {"dismissed_at": datetime.now(timezone.utc)}}
+    )
+    
+    logger.info(f"[LEARN NUDGE] Dismissed nudge for item {item_id}, pet {pet_id}")
+    
+    return {
+        "success": True,
+        "dismissed": result.modified_count > 0
+    }
+
+
+# ============================================
+# TODAY → LEARN DEEP LINKS
+# ============================================
+# 
+# Mapping from Today alert types to relevant Learn items
+# Used by TodayPanel to add "2-minute guide" links
+# ============================================
+
+TODAY_TO_LEARN_MAP = {
+    # Seasonal alerts → Learn guides
+    "tick_season": {
+        "item_type": "guide",
+        "item_id": "guide_tick_protocol",
+        "link_text": "2-minute guide"
+    },
+    "fireworks_prep": {
+        "item_type": "guide",
+        "item_id": "guide_fireworks_anxiety",
+        "link_text": "Prep routine"
+    },
+    "heat_advisory": {
+        "item_type": "guide",
+        "item_id": "guide_summer_safety",
+        "link_text": "Safety tips"
+    },
+    "cold_warning": {
+        "item_type": "guide",
+        "item_id": "guide_winter_care",
+        "link_text": "Winter tips"
+    },
+    
+    # Due soon alerts → Prep guides
+    "vacc_due": {
+        "item_type": "guide",
+        "item_id": "guide_vaccination_basics",
+        "link_text": "What to expect"
+    },
+    "groom_due": {
+        "item_type": "guide",
+        "item_id": "guide_first_grooming",
+        "link_text": "How to prep"
+    },
+    "checkup_due": {
+        "item_type": "guide",
+        "item_id": "guide_vet_visit_prep",
+        "link_text": "Prep checklist"
+    },
+    "parasite_due": {
+        "item_type": "guide",
+        "item_id": "guide_tick_protocol",
+        "link_text": "Prevention guide"
+    },
+    
+    # Urgent alerts → What to do now (only non-medical)
+    "groom_overdue": {
+        "item_type": "guide",
+        "item_id": "guide_brushing_coats",
+        "link_text": "DIY brushing"
+    },
+}
+
+
+@router.get("/deep-link-map")
+async def get_today_learn_deep_links():
+    """
+    Get the mapping of Today alert types to Learn items.
+    Used by TodayPanel to render deep-link buttons.
+    
+    Deep link format: /os?tab=learn&open={type}:{id}&pet_id={pet_id}&src=today:{today_card_id}
+    """
+    # Enrich with full item details
+    db = get_db()
+    enriched_map = {}
+    
+    for alert_type, mapping in TODAY_TO_LEARN_MAP.items():
+        item_id = mapping.get("item_id")
+        item_type = mapping.get("item_type", "guide")
+        
+        # Try to get item title from DB
+        if db:
+            collection = db.learn_guides if item_type == "guide" else db.learn_videos
+            item = await collection.find_one({"id": item_id}, {"title": 1, "_id": 0})
+            title = item.get("title") if item else None
+        else:
+            title = None
+        
+        enriched_map[alert_type] = {
+            **mapping,
+            "title": title,
+            "deep_link_template": f"/os?tab=learn&open={item_type}:{item_id}&pet_id={{pet_id}}&src=today:{alert_type}"
+        }
+    
+    return {
+        "success": True,
+        "map": enriched_map
+    }
