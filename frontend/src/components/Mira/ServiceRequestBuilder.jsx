@@ -168,6 +168,36 @@ const ServiceRequestBuilder = ({
     }
   }, [isOpen]);
 
+  // Lock body scroll when modal is open (iOS Safari fix)
+  useEffect(() => {
+    if (isOpen) {
+      // Store current scroll position
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      
+      return () => {
+        // Restore scroll position
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isOpen]);
+        setTimePreference('');
+        setUrgency('');
+        setLocation('');
+        setNotes('');
+        setError(null);
+        setSuccess(false);
+      }, 300);
+    }
+  }, [isOpen]);
+
   const togglePet = useCallback((petId) => {
     setSelectedPets(prev => 
       prev.includes(petId) 
