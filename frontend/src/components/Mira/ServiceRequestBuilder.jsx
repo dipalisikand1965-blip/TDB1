@@ -149,12 +149,33 @@ const ServiceRequestBuilder = ({
   const hasLearnContext = service?.prefill?.learn_context?.source_layer === 'learn';
   const learnContext = service?.prefill?.learn_context;
 
-  // Initialize with current pet
+  // Initialize with current pet and LEARN context prefill
   useEffect(() => {
     if (isOpen && currentPet) {
       setSelectedPets([currentPet.id || currentPet._id]);
     }
-  }, [isOpen, currentPet]);
+    
+    // Prefill from LEARN context if available
+    if (isOpen && hasLearnContext) {
+      // Prefill notes with LEARN context
+      const contextNote = learnContext?.context_note || '';
+      const sourceItem = learnContext?.source_item;
+      if (contextNote || sourceItem?.title) {
+        const prefillNote = contextNote || `Based on: ${sourceItem?.title || 'Guide'}`;
+        setNotes(prefillNote);
+      }
+      
+      // Prefill handling notes if available
+      if (service?.prefill?.handling_notes) {
+        setNotes(prev => prev ? `${prev}\n\nHandling notes: ${service.prefill.handling_notes}` : `Handling notes: ${service.prefill.handling_notes}`);
+      }
+      
+      // Prefill time preference from MOJO
+      if (service?.prefill?.preferred_time) {
+        setTimePreference(service.prefill.preferred_time);
+      }
+    }
+  }, [isOpen, currentPet, hasLearnContext, learnContext, service]);
 
   // Reset form when modal closes
   useEffect(() => {
