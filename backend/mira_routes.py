@@ -13421,11 +13421,13 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
         # ═══════════════════════════════════════════════════════════════════════════
         # PICKS ENGINE (B6) - Next-Best-Action Recommendations
         # Pipeline: classification → safety gate → pick scoring → concierge logic
+        # NOTE: Picks engine runs EARLY now (line ~9560) - reuse that result here
         # ═══════════════════════════════════════════════════════════════════════════
-        picks_engine_output = None
+        picks_engine_output = picks_engine_result  # Use the early result
         enable_picks_debug = request.debug if hasattr(request, 'debug') else False
         
-        if PICKS_ENGINE_AVAILABLE:
+        # Only run again if early result is missing
+        if not picks_engine_output and PICKS_ENGINE_AVAILABLE:
             try:
                 # Run the Picks Engine pipeline
                 picks_engine_output = await run_picks_engine(
@@ -13436,31 +13438,31 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                     max_picks=5
                 )
                 
-                logger.info(f"[PICKS ENGINE] Generated {len(picks_engine_output.picks)} picks, concierge={picks_engine_output.concierge.get('cta_prominence')}")
-                
-                # ═══════════════════════════════════════════════════════════════════
-                # SAFETY OVERRIDE ENFORCEMENT (Non-negotiables)
-                # Emergency: hard override, suppress commerce
-                # Caution: suppress shopping, allow education
-                # ═══════════════════════════════════════════════════════════════════
-                safety = picks_engine_output.safety_override
-                if safety.get("active"):
-                    safety_level = safety.get("level")
-                    
-                    if safety_level == "emergency":
-                        # Emergency: suppress all commerce, force concierge to primary
-                        logger.warning(f"[PICKS ENGINE] EMERGENCY OVERRIDE - suppressing commerce")
-                        products = []  # Clear product recommendations
-                        
-                    elif safety_level == "caution":
-                        # Caution: suppress shopping products, allow educational content
-                        logger.info(f"[PICKS ENGINE] CAUTION MODE - filtering products")
-                        # Filter to only educational/informational products
-                        products = [p for p in products if p.get("is_guide") or p.get("is_educational")]
-                
+                logger.info(f"[PICKS ENGINE] Late run: {len(picks_engine_output.picks)} picks, concierge={picks_engine_output.concierge.get('cta_prominence')}")
             except Exception as picks_err:
                 logger.error(f"[PICKS ENGINE] Error running pipeline: {picks_err}")
                 picks_engine_output = None
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # SAFETY OVERRIDE ENFORCEMENT (Non-negotiables)
+        # Emergency: hard override, suppress commerce
+        # Caution: suppress shopping, allow education
+        # ═══════════════════════════════════════════════════════════════════════════
+        if picks_engine_output:
+            safety = picks_engine_output.safety_override
+            if safety.get("active"):
+                safety_level = safety.get("level")
+                
+                if safety_level == "emergency":
+                    # Emergency: suppress all commerce, force concierge to primary
+                    logger.warning(f"[PICKS ENGINE] EMERGENCY OVERRIDE - suppressing commerce")
+                    products = []  # Clear product recommendations
+                    
+                elif safety_level == "caution":
+                    # Caution: suppress shopping products, allow educational content
+                    logger.info(f"[PICKS ENGINE] CAUTION MODE - filtering products")
+                    # Filter to only educational/informational products
+                    products = [p for p in products if p.get("is_guide") or p.get("is_educational")]
         
         response_data = {
             "response": response,
