@@ -68,6 +68,16 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiDraft, setAiDraft] = useState(null);
   
+  // Option Cards Modal
+  const [showOptionsModal, setShowOptionsModal] = useState(false);
+  const [optionsQuestion, setOptionsQuestion] = useState('');
+  const [optionsList, setOptionsList] = useState([
+    { id: 'A', title: '', description: '', price: '' },
+    { id: 'B', title: '', description: '', price: '' }
+  ]);
+  const [sendingOptions, setSendingOptions] = useState(false);
+  const [notifyChannels, setNotifyChannels] = useState(['in_app']);
+  
   // Layout
   const [isExpanded, setIsExpanded] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
