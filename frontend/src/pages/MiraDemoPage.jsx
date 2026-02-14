@@ -3690,7 +3690,6 @@ const MiraDemoPage = () => {
               // Per LEARN Bible: Concierge opener shows "I've read X. Help me with Y."
               console.log('[LEARN → CONCIERGE] Opening concierge with context:', conciergeData);
               setShowLearnPanel(false);
-              setShowConciergePanel(true);
               
               // Store the context for concierge to use
               // The concierge should show a pre-filled message
@@ -3704,6 +3703,9 @@ const MiraDemoPage = () => {
                   suggested_action: conciergeData.suggested_next_action
                 });
               }
+              
+              // Open the new Concierge Home Panel
+              setShowConciergeHome(true);
             }}
           />
         </Suspense>
