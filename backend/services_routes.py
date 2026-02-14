@@ -383,8 +383,12 @@ async def create_service_request(
     authorization: Optional[str] = Header(None)
 ):
     """
-    Create a new service request.
-    This is the single pipe entry point for all service requests.
+    UNIFIED SERVICE PIPELINE (HARDCODED):
+    User Request → Service Desk Ticket → Admin Notification → Member Notification 
+    → Pillar Request → Tickets → Channel Intakes
+    
+    Works for BOTH mobile and desktop.
+    This is the SINGLE PIPE for ALL service requests from ANY source.
     """
     user = await get_user_from_token_services(authorization)
     if not user:
@@ -403,20 +407,28 @@ async def create_service_request(
         }
     
     parent_id = user.get("id") or user.get("user_id")
+    user_email = user.get("email", "")
+    user_name = user.get("name", user.get("full_name", "Member"))
     now = datetime.now(timezone.utc)
     
-    # Generate ticket ID
+    # ═══════════════════════════════════════════════════════════════════════════
+    # STEP 1: Generate Service Desk Ticket ID
+    # ═══════════════════════════════════════════════════════════════════════════
     ticket_id = f"SVC-{now.strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
     
-    # Build ticket document
+    # ═══════════════════════════════════════════════════════════════════════════
+    # STEP 2: Build Service Desk Ticket Document
+    # ═══════════════════════════════════════════════════════════════════════════
     ticket_doc = {
         "ticket_id": ticket_id,
         "ticket_type": "service",
         "service_type": request.service_type,
         "status": CanonicalStatus.PLACED.value,
         
-        # Who
+        # Who (Member)
         "parent_id": parent_id,
+        "member_email": user_email,
+        "member_name": user_name,
         "pet_ids": request.pet_ids,
         "pet_names": request.pet_names,
         "pet_id": request.pet_ids[0] if request.pet_ids else None,
@@ -431,30 +443,130 @@ async def create_service_request(
         "preferred_time_window": request.preferred_time_window,
         "location": request.location,
         
-        # Metadata
+        # Pillar Classification
         "pillar": request.pillar or request.service_type,
+        
+        # Source Tracking (mobile/desktop/search/chat)
         "source": request.source,
+        "device_type": request.constraints.get("device_type", "unknown") if request.constraints else "unknown",
+        
+        # Timestamps
         "created_at": now.isoformat(),
         "updated_at": now.isoformat(),
+        
+        # Admin Assignment (null = unassigned, goes to pool)
+        "assigned_admin": None,
+        "admin_notified_at": None,
+        "member_notified_at": None,
+        
+        # Channel Intake Tracking
+        "channel_intake": {
+            "source": request.source,
+            "intake_time": now.isoformat(),
+            "pillar": request.pillar or request.service_type,
+        },
         
         # Timeline
         "timeline": [
             {
                 "status": "placed",
                 "timestamp": now.isoformat(),
-                "note": "Request submitted"
+                "note": "Request submitted",
+                "actor": "member"
             }
         ]
     }
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # STEP 3: Insert into mira_tickets (Service Desk Ticket)
+    # ═══════════════════════════════════════════════════════════════════════════
     await db.mira_tickets.insert_one(ticket_doc)
-    logger.info(f"[SERVICES] Created service request: {ticket_id} | Type: {request.service_type} | Pets: {request.pet_names}")
+    logger.info(f"[SERVICE DESK] Ticket created: {ticket_id} | Type: {request.service_type} | Member: {user_email} | Pets: {request.pet_names}")
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # STEP 4: Admin Notification (async - non-blocking)
+    # ═══════════════════════════════════════════════════════════════════════════
+    admin_notification = {
+        "type": "new_service_request",
+        "ticket_id": ticket_id,
+        "service_type": request.service_type,
+        "member_name": user_name,
+        "member_email": user_email,
+        "pet_names": request.pet_names,
+        "pillar": request.pillar or request.service_type,
+        "priority": "normal",
+        "created_at": now.isoformat(),
+        "read": False
+    }
+    await db.admin_notifications.insert_one(admin_notification)
+    
+    # Update ticket with admin notification timestamp
+    await db.mira_tickets.update_one(
+        {"ticket_id": ticket_id},
+        {"$set": {"admin_notified_at": now.isoformat()}}
+    )
+    logger.info(f"[ADMIN NOTIFY] Admin notified for ticket: {ticket_id}")
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # STEP 5: Member Notification (confirmation)
+    # ═══════════════════════════════════════════════════════════════════════════
+    member_notification = {
+        "type": "service_request_confirmation",
+        "ticket_id": ticket_id,
+        "user_id": parent_id,
+        "title": f"Request Received: {request.title or request.service_type}",
+        "message": f"Your {request.service_type} request for {', '.join(request.pet_names or ['your pet'])} has been received. Our concierge team will reach out shortly.",
+        "created_at": now.isoformat(),
+        "read": False
+    }
+    await db.notifications.insert_one(member_notification)
+    
+    # Update ticket with member notification timestamp
+    await db.mira_tickets.update_one(
+        {"ticket_id": ticket_id},
+        {"$set": {"member_notified_at": now.isoformat()}}
+    )
+    logger.info(f"[MEMBER NOTIFY] Member notified for ticket: {ticket_id}")
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # STEP 6: Pillar Request Logging (for analytics)
+    # ═══════════════════════════════════════════════════════════════════════════
+    pillar_request = {
+        "ticket_id": ticket_id,
+        "pillar": request.pillar or request.service_type,
+        "service_type": request.service_type,
+        "member_id": parent_id,
+        "pet_ids": request.pet_ids,
+        "source": request.source,
+        "created_at": now.isoformat()
+    }
+    await db.pillar_requests.insert_one(pillar_request)
+    logger.info(f"[PILLAR] Request logged: {ticket_id} | Pillar: {request.pillar or request.service_type}")
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # STEP 7: Channel Intake Record
+    # ═══════════════════════════════════════════════════════════════════════════
+    channel_intake = {
+        "ticket_id": ticket_id,
+        "channel": request.source or "services_tab",
+        "intake_time": now.isoformat(),
+        "member_id": parent_id,
+        "pillar": request.pillar or request.service_type,
+        "service_type": request.service_type,
+        "processed": True
+    }
+    await db.channel_intakes.insert_one(channel_intake)
+    logger.info(f"[CHANNEL INTAKE] Recorded: {ticket_id} | Channel: {request.source}")
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # RETURN: Complete ticket response
+    # ═══════════════════════════════════════════════════════════════════════════
     return {
         "success": True,
         "ticket_id": ticket_id,
         "status": "placed",
-        "message": f"Your {request.service_type} request has been submitted",
+        "message": f"Your {request.service_type} request has been submitted. Our concierge team has been notified.",
+        "pipeline_complete": True,
         "ticket": enrich_ticket_for_frontend({**ticket_doc, "_id": None})
     }
 
