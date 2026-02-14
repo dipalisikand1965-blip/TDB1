@@ -47,13 +47,13 @@ OPENWEATHER_API_KEY: 53f54942766320a15584e440644000e3
 
 ## Frontend Environment
 ```
-REACT_APP_BACKEND_URL: https://mira-pet-os.preview.emergentagent.com
+REACT_APP_BACKEND_URL: https://pet-soul-sync-1.preview.emergentagent.com
 REACT_APP_RAZORPAY_KEY_ID: rzp_test_1234567890abcdef
 ```
 
 ## Preview URL
 ```
-https://mira-pet-os.preview.emergentagent.com
+https://pet-soul-sync-1.preview.emergentagent.com
 ```
 
 ---

@@ -324,7 +324,7 @@ To reach 100%, implement:
 - **Mira OS:** `/mira-demo` ← THIS IS THE MAIN OS BUILD (NOT `/mira`)
 - **Admin Panel:** `/admin`
 - **Member Dashboard:** `/member-dashboard`
-- **Preview URL:** `https://mira-pet-os.preview.emergentagent.com`
+- **Preview URL:** `https://pet-soul-sync-1.preview.emergentagent.com`
 
 ---
 
@@ -568,7 +568,7 @@ From `/app/frontend/src/pages/MiraDemoBackupPage.jsx`:
 ---
 
 ## Preview URL
-**Working:** https://mira-pet-os.preview.emergentagent.com/mira-demo
+**Working:** https://pet-soul-sync-1.preview.emergentagent.com/mira-demo
 
 ---
 

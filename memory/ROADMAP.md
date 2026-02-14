@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://mira-pet-os.preview.emergentagent.com
+https://pet-soul-sync-1.preview.emergentagent.com
 
 ---
 
