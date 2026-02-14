@@ -40,7 +40,7 @@ class TestPicksAutoRefresh:
         
         if login_response.status_code == 200:
             data = login_response.json()
-            self.token = data.get("token")
+            self.token = data.get("access_token") or data.get("token")
             
             # Get user's pets
             if self.token:
