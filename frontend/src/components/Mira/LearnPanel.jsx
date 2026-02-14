@@ -599,6 +599,27 @@ const LearnPanel = ({
               }}>{homeData.saved_count}</span>
             )}
           </button>
+          
+          {/* Close Button */}
+          <button 
+            onClick={onClose}
+            data-testid="learn-close-btn"
+            aria-label="Close Learn"
+            style={{
+              width: '44px',
+              height: '44px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: 'none',
+              borderRadius: '12px',
+              color: 'white',
+              cursor: 'pointer'
+            }}
+          >
+            <X size={20} />
+          </button>
         </div>
       </div>
       
