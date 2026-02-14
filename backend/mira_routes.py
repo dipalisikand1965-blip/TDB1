@@ -3666,6 +3666,40 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         input_for_llm = enhanced_input if resolution_info.get("context_used") else request.input
         
         # ═══════════════════════════════════════════════════════════════════════════
+        # PICKS ENGINE (B6) - Run ONCE at the start for every message
+        # This ensures picks auto-refresh on every chat turn
+        # ═══════════════════════════════════════════════════════════════════════════
+        picks_engine_data = {
+            "picks": [],
+            "concierge": {"mode": "always_on", "cta_prominence": "quiet"},
+            "safety_override": {"active": False, "level": "normal"},
+            "missing_profile_fields": [],
+            "pillar": None
+        }
+        
+        if PICKS_ENGINE_AVAILABLE and request.pet_context:
+            try:
+                picks_result = await run_picks_engine(
+                    message=request.input,
+                    pet=request.pet_context,
+                    session_id=request.session_id,
+                    debug=False,
+                    max_picks=8
+                )
+                if picks_result:
+                    picks_engine_data = {
+                        "picks": picks_result.picks or [],
+                        "concierge": picks_result.concierge or {"mode": "always_on", "cta_prominence": "quiet"},
+                        "safety_override": picks_result.safety_override or {"active": False, "level": "normal"},
+                        "missing_profile_fields": picks_result.missing_profile_fields or [],
+                        "pillar": picks_result.pillar
+                    }
+                    if picks_result.picks:
+                        logger.info(f"[PICKS ENGINE] OS endpoint: {len(picks_result.picks)} picks for pillar={picks_result.pillar}")
+            except Exception as picks_err:
+                logger.warning(f"[PICKS ENGINE] OS endpoint error: {picks_err}")
+        
+        # ═══════════════════════════════════════════════════════════════════════════
         # CHECK FOR PERSONALIZED PICKS REQUEST - Opens the Picks Vault UI
         # "Show me personalized picks for Mojo" triggers the picks vault
         # ═══════════════════════════════════════════════════════════════════════════
