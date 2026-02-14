@@ -632,8 +632,18 @@ const LearnPanel = ({
         ) : view === 'home' ? (
           // Home View
           <>
-            {/* For Your Pet (if mojo exists) */}
-            {pet && homeData.start_here?.length > 0 && (
+            {/* For Your Pet - Personalized shelf (Pet First doctrine) */}
+            {homeData.for_your_pet?.length > 0 && (
+              <ContentShelf
+                title={`For ${homeData.pet_name || petName}`}
+                items={homeData.for_your_pet}
+                icon={Heart}
+                onItemClick={handleItemClick}
+              />
+            )}
+            
+            {/* Start Here - Featured content */}
+            {homeData.start_here?.length > 0 && (
               <ContentShelf
                 title="Start Here"
                 items={homeData.start_here}
