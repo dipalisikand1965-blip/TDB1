@@ -258,13 +258,14 @@ const OSLayerTab = memo(({
   layer, 
   isActive, 
   onClick, 
-  badge = null 
+  badge = null,
+  hasNew = false // For PICKS "new" sparkle animation
 }) => {
   const Icon = layer.icon;
   
   return (
     <button
-      className={`os-layer-tab ${isActive ? 'active' : ''}`}
+      className={`os-layer-tab ${isActive ? 'active' : ''} ${hasNew ? 'has-new-picks' : ''}`}
       onClick={() => {
         hapticFeedback.buttonTap();
         onClick(layer.id);
@@ -274,7 +275,14 @@ const OSLayerTab = memo(({
     >
       {Icon && <Icon className="tab-icon" />}
       <span className="tab-label">{layer.label}</span>
-      {badge && <span className="tab-badge">{badge}</span>}
+      {badge && (
+        <span className={`tab-badge ${hasNew ? 'badge-new' : ''}`}>
+          {hasNew ? '✨' : ''}{badge}
+        </span>
+      )}
+      {hasNew && layer.id === 'picks' && (
+        <span className="new-picks-indicator" />
+      )}
     </button>
   );
 });
