@@ -415,14 +415,16 @@ export const SoulProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   );
 });
 
-// Health Profile Editor - With Auto-Save (ENHANCED for 100% MOJO)
+// Health Profile Editor - With Auto-Save (ENHANCED for 100% MOJO + WEIGHT HISTORY)
 export const HealthProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     weight: pet?.doggy_soul_answers?.weight || '',
+    weight_history: pet?.doggy_soul_answers?.weight_history || [],
     size_class: pet?.doggy_soul_answers?.size_class || '',
     food_allergies: pet?.doggy_soul_answers?.food_allergies || [],
     spayed_neutered: pet?.doggy_soul_answers?.spayed_neutered || '',
     vaccination_status: pet?.doggy_soul_answers?.vaccination_status || '',
+    next_vaccination_date: pet?.doggy_soul_answers?.next_vaccination_date || '',
     medical_conditions: pet?.doggy_soul_answers?.medical_conditions || [],
     current_medications: pet?.doggy_soul_answers?.current_medications || [],
     vet_name: pet?.doggy_soul_answers?.vet_name || '',
@@ -435,24 +437,113 @@ export const HealthProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
     last_vet_visit: pet?.doggy_soul_answers?.last_vet_visit || '',
   });
   
+  const [showWeightHistory, setShowWeightHistory] = useState(false);
+  const [newWeightEntry, setNewWeightEntry] = useState({ weight: '', date: new Date().toISOString().split('T')[0] });
+  
   // Use auto-save hook
   const saveStatus = useAutoSave(data, onSave, 1500);
   
+  // Add weight to history
+  const addWeightEntry = () => {
+    if (!newWeightEntry.weight) return;
+    
+    const entry = {
+      weight: newWeightEntry.weight,
+      date: newWeightEntry.date,
+      timestamp: new Date().toISOString()
+    };
+    
+    const updatedHistory = [...(data.weight_history || []), entry].sort((a, b) => 
+      new Date(b.date) - new Date(a.date)
+    );
+    
+    setData(prev => ({
+      ...prev,
+      weight: newWeightEntry.weight, // Update current weight too
+      weight_history: updatedHistory
+    }));
+    
+    setNewWeightEntry({ weight: '', date: new Date().toISOString().split('T')[0] });
+  };
+  
+  // Remove weight entry
+  const removeWeightEntry = (index) => {
+    const updated = data.weight_history.filter((_, i) => i !== index);
+    setData(prev => ({ ...prev, weight_history: updated }));
+  };
+  
   return (
     <EditorWrapper title="Health Vault" onCancel={onCancel} saveStatus={saveStatus}>
-      <div className="editor-section-header">Basic Health</div>
+      <div className="editor-section-header">Weight Tracking</div>
       <TextField 
         label="Current Weight" 
         value={data.weight}
         onChange={(v) => setData(prev => ({ ...prev, weight: v }))}
         placeholder="e.g., 12 kg or 25 lbs"
       />
+      
+      {/* Weight History Section */}
+      <div className="weight-history-section">
+        <button 
+          type="button"
+          className="weight-history-toggle"
+          onClick={() => setShowWeightHistory(!showWeightHistory)}
+        >
+          <span>{showWeightHistory ? '▼' : '▶'} Weight History ({data.weight_history?.length || 0} entries)</span>
+        </button>
+        
+        {showWeightHistory && (
+          <div className="weight-history-content">
+            {/* Add new entry */}
+            <div className="weight-entry-form">
+              <input
+                type="text"
+                placeholder="Weight (e.g., 12.5 kg)"
+                value={newWeightEntry.weight}
+                onChange={(e) => setNewWeightEntry(prev => ({ ...prev, weight: e.target.value }))}
+                className="weight-input"
+              />
+              <input
+                type="date"
+                value={newWeightEntry.date}
+                onChange={(e) => setNewWeightEntry(prev => ({ ...prev, date: e.target.value }))}
+                className="date-input"
+              />
+              <button type="button" onClick={addWeightEntry} className="add-weight-btn">
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+            
+            {/* History list */}
+            {data.weight_history?.length > 0 ? (
+              <div className="weight-history-list">
+                {data.weight_history.slice(0, 10).map((entry, i) => (
+                  <div key={i} className="weight-history-item">
+                    <span className="weight-value">{entry.weight}</span>
+                    <span className="weight-date">
+                      {new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
+                    <button type="button" onClick={() => removeWeightEntry(i)} className="remove-weight-btn">
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="weight-history-empty">No weight history recorded yet. Track weight over time to monitor health trends.</p>
+            )}
+          </div>
+        )}
+      </div>
+      
       <SelectField 
         label="Size Class" 
         value={data.size_class} 
         options={OPTIONS.size_class}
         onChange={(v) => setData(prev => ({ ...prev, size_class: v }))}
       />
+      
+      <div className="editor-section-header">Vaccination & Checkups</div>
       <SelectField 
         label="Spayed/Neutered" 
         value={data.spayed_neutered} 
@@ -464,6 +555,12 @@ export const HealthProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
         value={data.vaccination_status} 
         options={OPTIONS.vaccination_status}
         onChange={(v) => setData(prev => ({ ...prev, vaccination_status: v }))}
+      />
+      <TextField 
+        label="Next Vaccination Date" 
+        type="date"
+        value={data.next_vaccination_date}
+        onChange={(v) => setData(prev => ({ ...prev, next_vaccination_date: v }))}
       />
       <TextField 
         label="Last Vet Visit" 
