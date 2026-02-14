@@ -543,13 +543,18 @@ async def get_learn_home(
 @router.get("/topic/{topic}")
 async def get_topic_content(
     topic: str,
+    pet_id: Optional[str] = Query(None, description="Pet ID for personalization"),
     authorization: Optional[str] = Header(None)
 ):
     """
     Get content for a specific topic, organized into 3 shelves:
-    1. Start here (featured items)
-    2. 2-minute guides
-    3. Watch & learn (videos)
+    1. For your pet (personalized, if pet_id provided)
+    2. Start here (featured items)
+    3. 2-minute guides
+    4. Watch & learn (videos)
+    
+    GOLDEN DOCTRINE: Pet First, Breed Second
+    All content is ranked by relevance to the pet's profile.
     """
     db = get_db()
     if db is None:
@@ -576,39 +581,90 @@ async def get_topic_content(
     
     topic_config = TOPIC_CONFIG.get(topic_enum, {})
     
+    # ===== PERSONALIZATION =====
+    pet_profile = None
+    pet_tags = ["all"]
+    breed_tags = []
+    pet_name = None
+    
+    if pet_id:
+        pet_profile = await fetch_pet_profile(db, pet_id)
+        if pet_profile:
+            pet_tags, breed_tags = derive_pet_tags_from_profile(pet_profile)
+            pet_name = pet_profile.get("name")
+    
     # Fetch guides for this topic (active only)
     guides = await db.learn_guides.find(
         {"topic": topic_lower, "is_active": True},
         {"_id": 0}
-    ).sort("sort_rank", 1).to_list(50)
+    ).to_list(50)
     
     # Fetch videos for this topic (active only)
     videos = await db.learn_videos.find(
         {"topic": topic_lower, "is_active": True},
         {"_id": 0}
-    ).sort("sort_rank", 1).to_list(30)
+    ).to_list(30)
+    
+    # Score all content
+    scored_guides = []
+    for guide in guides:
+        score = calculate_relevance_score(guide, pet_tags, breed_tags)
+        scored_guides.append({"item": guide, "score": score})
+    
+    scored_videos = []
+    for video in videos:
+        score = calculate_relevance_score(video, pet_tags, breed_tags)
+        scored_videos.append({"item": video, "score": score})
+    
+    # Sort by relevance then sort_rank
+    scored_guides.sort(key=lambda x: (-x["score"], x["item"].get("sort_rank", 100)))
+    scored_videos.sort(key=lambda x: (-x["score"], x["item"].get("sort_rank", 100)))
     
     # Build shelves
+    for_your_pet = []
     start_here = []
     two_min_guides = []
     watch_learn = []
     
-    for guide in guides:
-        enriched = enrich_item_for_frontend(guide, "guide", guide.get("id") in saved_ids)
+    # "For your pet" - Highly relevant items from this topic
+    if pet_profile:
+        personalized_guides = [g for g in scored_guides if g["score"] >= 5][:3]
+        personalized_videos = [v for v in scored_videos if v["score"] >= 5][:2]
+        
+        for g in personalized_guides:
+            for_your_pet.append(enrich_item_for_frontend(
+                g["item"], "guide", g["item"].get("id") in saved_ids, g["score"], pet_name
+            ))
+        for v in personalized_videos:
+            for_your_pet.append(enrich_item_for_frontend(
+                v["item"], "video", v["item"].get("id") in saved_ids, v["score"], pet_name
+            ))
+        # Sort by score
+        for_your_pet.sort(key=lambda x: -x.get("relevance_score", 0))
+    
+    # Start here (featured), guides, videos
+    for g in scored_guides:
+        guide = g["item"]
+        enriched = enrich_item_for_frontend(
+            guide, "guide", guide.get("id") in saved_ids, g["score"], pet_name
+        )
         if guide.get("is_featured"):
             start_here.append(enriched)
         else:
             two_min_guides.append(enriched)
     
-    for video in videos:
-        enriched = enrich_item_for_frontend(video, "video", video.get("id") in saved_ids)
+    for v in scored_videos:
+        video = v["item"]
+        enriched = enrich_item_for_frontend(
+            video, "video", video.get("id") in saved_ids, v["score"], pet_name
+        )
         if video.get("is_featured"):
             start_here.append(enriched)
         else:
             watch_learn.append(enriched)
     
-    # Sort start_here by sort_rank
-    start_here.sort(key=lambda x: x.get("sort_rank", 100))
+    # Sort start_here by score then sort_rank
+    start_here.sort(key=lambda x: (-x.get("relevance_score", 0), x.get("sort_rank", 100)))
     
     return {
         "success": True,
@@ -619,14 +675,20 @@ async def get_topic_content(
             "color": topic_config.get("color", "gray"),
         },
         "shelves": {
-            "start_here": start_here[:3],  # Max 3 per spec
+            "for_your_pet": for_your_pet[:5] if for_your_pet else None,  # NEW
+            "start_here": start_here[:3],
             "guides": two_min_guides,
             "videos": watch_learn
         },
         "counts": {
+            "for_your_pet": len(for_your_pet) if for_your_pet else 0,
             "start_here": min(len(start_here), 3),
             "guides": len(two_min_guides),
             "videos": len(watch_learn)
+        },
+        "pet_name": pet_name,
+        "personalization": {
+            "enabled": pet_profile is not None,
         }
     }
 
