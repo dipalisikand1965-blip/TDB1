@@ -12,7 +12,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://picks-auto-flow.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-picks-v2.preview.emergentagent.com').rstrip('/')
 
 class TestHealthAndBasics:
     """Basic health checks"""

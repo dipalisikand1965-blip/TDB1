@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://picks-auto-flow.preview.emergentagent.com/mira-demo**
+**https://mira-picks-v2.preview.emergentagent.com/mira-demo**
 
 ---
 

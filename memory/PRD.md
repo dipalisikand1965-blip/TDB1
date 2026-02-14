@@ -368,7 +368,7 @@ To reach 100%, implement:
 - **Mira OS:** `/mira-demo` ← THIS IS THE MAIN OS BUILD (NOT `/mira`)
 - **Admin Panel:** `/admin`
 - **Member Dashboard:** `/member-dashboard`
-- **Preview URL:** `https://picks-auto-flow.preview.emergentagent.com`
+- **Preview URL:** `https://mira-picks-v2.preview.emergentagent.com`
 
 ---
 
@@ -612,7 +612,7 @@ From `/app/frontend/src/pages/MiraDemoBackupPage.jsx`:
 ---
 
 ## Preview URL
-**Working:** https://picks-auto-flow.preview.emergentagent.com/mira-demo
+**Working:** https://mira-picks-v2.preview.emergentagent.com/mira-demo
 
 ---
 

@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://picks-auto-flow.preview.emergentagent.com
+https://mira-picks-v2.preview.emergentagent.com
 
 ---
 

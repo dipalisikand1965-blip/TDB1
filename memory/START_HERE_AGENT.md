@@ -36,7 +36,7 @@ Pass: lola4304
 
 ## Preview
 ```
-https://picks-auto-flow.preview.emergentagent.com
+https://mira-picks-v2.preview.emergentagent.com
 ```
 
 ---
@@ -116,7 +116,7 @@ sudo supervisorctl status
 tail -f /var/log/supervisor/backend.err.log
 
 # Test API
-curl https://picks-auto-flow.preview.emergentagent.com/api/health
+curl https://mira-picks-v2.preview.emergentagent.com/api/health
 ```
 
 ---
