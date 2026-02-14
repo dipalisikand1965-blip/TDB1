@@ -627,16 +627,29 @@ Only uses explicit user-entered flags for anything health-adjacent.
 #### 3) Relevance Scoring (`calculate_relevance_score()`)
 
 ```
-Score = (Pet Tag Matches × 10) + (Breed Tag Matches × 5) + ("all" tag × 1)
+Score = (Pet Tag Matches × 10) + min(Breed Tag Matches × 5, 10) + ("all" tag × 1) + (Feedback penalty)
 ```
 
-| Match Type | Points | Example |
-|-----------|--------|---------|
-| Pet tag match | +10 | Pet has `anxious`, guide has `anxious` → +10 |
-| Breed tag match | +5 | Pet breed = Maltese (`toy`), guide has `toy` → +5 |
-| "all" tag | +1 | Baseline for universal content |
+| Match Type | Points | Cap | Notes |
+|-----------|--------|-----|-------|
+| Pet tag match | +10 each | None | Life stage, explicit sensitivities |
+| Breed tag match | +5 each | **MAX +10** | Grooming/travel/handling only |
+| "all" tag | +1 | None | Baseline for universal content |
+| "Not helpful" feedback | -15 | None | User explicitly marked unhelpful |
 
-**Ranking Priority:** Pet First → Breed Second → Sort Rank
+**SAFETY RULES:**
+1. **Health-adjacent topics ignore breed tags entirely** (`HEALTH_ADJACENT_TOPICS = {"health", "emergency", "medical", "vaccination", "vet"}`)
+2. **Breed tag contribution capped at +10** (prevents breed-dominance)
+3. **Negative weights for "Not helpful"** feedback
+
+#### 4) Diversity Filter (`apply_diversity_filter()`)
+
+**Prevents echo chamber:** Max 2 items with the same primary tag in "For your pet" shelf.
+
+```python
+# Example: If user is tagged "anxious", prevent showing 5 anxiety guides in a row
+diverse_items = apply_diversity_filter(personalized_candidates, max_per_tag=2)
+```
 
 ### API Endpoints (Updated for Personalization)
 
@@ -647,12 +660,12 @@ Returns:
 {
   "success": true,
   "topics": [...],
-  "for_your_pet": [...],      // NEW: Personalized shelf (score ≥ 5)
+  "for_your_pet": [...],      // Personalized shelf (score ≥ 5, diversity filtered)
   "start_here": [...],
   "pet_name": "Lola",
   "personalization": {
     "enabled": true,
-    "pet_tags": ["anxious", "allergies", "all"],
+    "pet_tags": ["anxious", "food_sensitive", "all"],
     "breed_tags": ["toy", "long_coat"]
   }
 }
@@ -666,13 +679,16 @@ Returns:
   "success": true,
   "topic": {...},
   "shelves": {
-    "for_your_pet": [...],    // NEW: Personalized within topic
+    "for_your_pet": [...],    // Personalized within topic
     "start_here": [...],
     "guides": [...],
     "videos": [...]
   },
   "pet_name": "Lola",
-  "personalization": { "enabled": true }
+  "personalization": { 
+    "enabled": true,
+    "breed_tags_applied": false  // FALSE for health topics!
+  }
 }
 ```
 
