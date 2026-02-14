@@ -91,7 +91,7 @@ const LazyFallback = () => <div className="p-4 text-center text-gray-400">Loadin
 // ═══════════════════════════════════════════════════════════════════════════════
 import {
   DOCK_ITEMS, CONCIERGE_HOURS, isConciergeLive, generateConciergeRequest,
-  DOG_PLACEHOLDER_IMAGES, getPlaceholderImage, TEST_SCENARIOS,
+  DOG_PLACEHOLDER_IMAGES, getPlaceholderImage,
   SERVICE_CATEGORIES, detectServiceIntent,
   COMFORT_KEYWORDS, ACKNOWLEDGMENT_PHRASES, getComfortModeServices,
   EXPERIENCE_CATEGORIES, detectExperienceIntent, generateWhyForPet
