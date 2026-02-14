@@ -390,6 +390,13 @@ async def create_thread(request: ThreadCreateRequest):
             }
         )
         
+        # INSIGHTS FEATURE: Extract insights from the initial intent message
+        if request.pet_id:
+            extracted_insights = extract_pet_insights(request.intent)
+            if extracted_insights:
+                await store_conversation_insights(db, request.pet_id, extracted_insights, thread_id, now)
+                logger.info(f"[INSIGHTS] Extracted {len(extracted_insights)} insights from thread creation for pet {request.pet_id}")
+        
         return {
             "success": True,
             "thread": {
