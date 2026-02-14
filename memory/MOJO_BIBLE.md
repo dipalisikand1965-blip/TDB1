@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://services-inbox-v1.preview.emergentagent.com
+https://service-execution.preview.emergentagent.com
 ```
 
 ---

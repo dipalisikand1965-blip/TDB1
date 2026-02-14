@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://services-inbox-v1.preview.emergentagent.com
+https://service-execution.preview.emergentagent.com
 
 ---
 
