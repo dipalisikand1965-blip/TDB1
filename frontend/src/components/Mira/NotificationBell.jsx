@@ -60,8 +60,8 @@ const NotificationBell = ({ userEmail, className = '' }) => {
   // Mark notification as read
   const markAsRead = async (notificationId) => {
     try {
-      await fetch(`${API_URL}/api/mira/notifications/mark-read/${notificationId}`, {
-        method: 'POST'
+      await fetch(`${API_URL}/api/member/notifications/${notificationId}/read`, {
+        method: 'PUT'
       });
       setNotifications(prev => 
         prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
