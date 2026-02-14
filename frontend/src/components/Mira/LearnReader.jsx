@@ -392,10 +392,21 @@ const LearnReader = ({
       </div>
       
       {/* Scrollable Content */}
-      <div className="learn-reader-content">
+      <div className="learn-reader-content" style={{
+        flex: 1,
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        padding: '24px 16px'
+      }}>
         {/* Title & Risk Badge */}
-        <div className="learn-reader-title-section">
-          <h1>{item.title}</h1>
+        <div className="learn-reader-title-section" style={{ marginBottom: '24px' }}>
+          <h1 style={{
+            fontSize: '24px',
+            fontWeight: 700,
+            color: 'white',
+            margin: '0 0 8px 0',
+            lineHeight: 1.3
+          }}>{item.title}</h1>
           <RiskBadge />
         </div>
         
@@ -408,10 +419,23 @@ const LearnReader = ({
         
         {/* Channel info for videos */}
         {isVideo && item.channel_name && (
-          <div className="learn-reader-source">
+          <div className="learn-reader-source" style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginTop: '16px',
+            fontSize: '12px',
+            color: 'rgba(255, 255, 255, 0.5)'
+          }}>
             <span>Source: {item.channel_name}</span>
             {item.channel_trust_level && (
-              <span className="trust-badge">
+              <span className="trust-badge" style={{
+                fontSize: '11px',
+                background: 'rgba(34, 197, 94, 0.15)',
+                color: '#4ade80',
+                padding: '2px 8px',
+                borderRadius: '6px'
+              }}>
                 {item.channel_trust_level === 'vet' && '🩺 Verified Vet'}
                 {item.channel_trust_level === 'trainer' && '🎓 Certified Trainer'}
                 {item.channel_trust_level === 'org' && '🏛️ Trusted Organization'}
