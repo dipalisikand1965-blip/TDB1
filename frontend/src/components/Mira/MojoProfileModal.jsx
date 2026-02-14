@@ -462,17 +462,12 @@ const SoulProfileContent = memo(({ pet, soulData }) => {
   const soulMeta = pet?.doggy_soul_meta || {}; // Metadata for each answer
   const soul = pet?.soul || {};
   
-  // DEBUG: Log metadata
-  console.log('[SOUL] soulMeta:', soulMeta);
-  console.log('[SOUL] temperament meta:', soulMeta?.temperament);
-  
   // Extract personality traits with metadata
   const traits = [];
   
   const addTrait = (key, label, icon, value) => {
     if (value) {
       const meta = getTraitMetadata(key, soulAnswers, soulMeta);
-      console.log(`[SOUL] ${key} meta:`, meta);
       traits.push({ 
         key,
         label, 
