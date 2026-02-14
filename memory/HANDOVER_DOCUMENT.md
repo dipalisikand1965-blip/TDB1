@@ -267,13 +267,15 @@ Every service request should create:
 ## To Complete MOJO 100%
 1. **Life Timeline (67% → 100%)**: Integrate past services/purchases
 2. **Trait Graph service**: Service outcomes → MOJO feedback loop
-3. **Weight history**: Track weight over time (array)
+   - ✅ Weight history: COMPLETED (Feb 14, 2026)
 
-## To Build TODAY Tab
-1. Vaccination reminders from Health Vault
-2. Grooming cadence reminders
-3. Birthday countdown
-4. Active tasks watchlist
+## TODAY Tab Status - COMPLETED ✅
+- ✅ Weather alerts with safety badges (SAFE/CAUTION/DANGER)
+- ✅ Birthday countdown (shows within 30 days)
+- ✅ Vaccination reminders from Health Vault
+- ✅ Grooming cadence reminders
+- ✅ Other pets summary
+- ⚠️ Active tasks from service tickets (framework ready, needs API refinement)
 
 ## To Complete OS Loop
 1. PICKS auto-refresh after every chat turn
