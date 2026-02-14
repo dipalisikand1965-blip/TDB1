@@ -75,8 +75,8 @@ const NotificationBell = ({ userEmail, className = '' }) => {
   // Mark all as read
   const markAllRead = async () => {
     try {
-      await fetch(`${API_URL}/api/mira/notifications/mark-all-read/${userEmail}`, {
-        method: 'POST'
+      await fetch(`${API_URL}/api/member/notifications/mark-all-read/${encodeURIComponent(userEmail)}`, {
+        method: 'PUT'
       });
       setNotifications(prev => prev.map(n => ({ ...n, read: true })));
       setUnreadCount(0);
