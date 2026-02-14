@@ -13,7 +13,7 @@ import {
   ChevronRight, MoreVertical, Edit, Trash2, Star, Zap,
   Inbox, ArrowUp, PawPrint, ChevronDown, Sparkles, Wand2,
   Maximize2, Minimize2, PanelLeft, ArrowRight, FileText,
-  Image, File, Upload
+  Image, File, Upload, List
 } from 'lucide-react';
 
 // Category icons
