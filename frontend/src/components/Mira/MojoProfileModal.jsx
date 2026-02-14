@@ -1066,6 +1066,7 @@ const MojoProfileModal = ({
   
   // Fetch full pet data on open
   useEffect(() => {
+    console.log('[MOJO] useEffect check:', { isOpen, petId: pet?.id, apiUrl });
     if (isOpen && pet?.id && apiUrl) {
       fetchFullPetData();
     }
