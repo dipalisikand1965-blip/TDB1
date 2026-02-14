@@ -988,7 +988,7 @@ def is_pet_birthday_near(pet: dict) -> dict:
         
         if -7 <= days_until <= 14:
             return {"days_until": days_until, "boost": 40 if days_until <= 7 else 25}
-    except:
+    except (ValueError, TypeError):
         pass
     
     return None
