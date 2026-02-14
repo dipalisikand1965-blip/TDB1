@@ -436,9 +436,12 @@ const TodayPanel = ({
   token,
   onNavigate,
   onPetSwitch,
+  onTicketAction, // Handler for ticket quick actions
 }) => {
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [activeTasks, setActiveTasks] = useState([]);
+  const [watchlist, setWatchlist] = useState([]);
+  const [isStale, setIsStale] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   
   // ═══════════════════════════════════════════════════════════════════════════
