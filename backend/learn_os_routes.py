@@ -347,8 +347,14 @@ async def get_user_from_token(authorization: Optional[str] = None):
         return None
 
 
-def enrich_item_for_frontend(item: Dict, item_type: str, is_saved: bool = False) -> Dict:
-    """Add display info to a Learn item."""
+def enrich_item_for_frontend(
+    item: Dict, 
+    item_type: str, 
+    is_saved: bool = False,
+    relevance_score: int = 0,
+    pet_name: str = None
+) -> Dict:
+    """Add display info to a Learn item, including personalization."""
     topic_str = item.get("topic", "health")
     try:
         topic_enum = LearnTopic(topic_str)
@@ -356,7 +362,7 @@ def enrich_item_for_frontend(item: Dict, item_type: str, is_saved: bool = False)
     except (ValueError, KeyError):
         topic_config = {}
     
-    return {
+    enriched = {
         **item,
         "item_type": item_type,
         "is_saved": is_saved,
@@ -364,7 +370,17 @@ def enrich_item_for_frontend(item: Dict, item_type: str, is_saved: bool = False)
         "topic_icon": topic_config.get("icon", "book"),
         "topic_color": topic_config.get("color", "gray"),
         "time_display": f"{item.get('reading_time_sec', 90) // 60} min" if item_type == "guide" else f"{item.get('duration_sec', 180) // 60} min video",
+        "relevance_score": relevance_score,
     }
+    
+    # Add personalization badge if highly relevant
+    if relevance_score >= 10 and pet_name:
+        enriched["relevance_badge"] = f"For {pet_name}"
+        enriched["is_personalized"] = True
+    elif relevance_score >= 5:
+        enriched["is_personalized"] = True
+    
+    return enriched
 
 
 # ============================================
