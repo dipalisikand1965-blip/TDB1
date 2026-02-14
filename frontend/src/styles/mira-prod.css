@@ -605,6 +605,33 @@
   font-weight: 700;
 }
 
+/* Concierge Icon - Small circular C° badge (replaces old "Need help" button) */
+.mp-header-concierge-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(16, 185, 129, 0.25);
+  border: 2px solid rgba(16, 185, 129, 0.6);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mp-header-concierge-icon:hover {
+  background: rgba(16, 185, 129, 0.4);
+  border-color: #10b981;
+  transform: scale(1.1);
+}
+
+.mp-header-concierge-icon .mp-concierge-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: #10b981;
+  letter-spacing: -0.5px;
+}
+
 .mp-header-concierge-badge {
   background: rgba(139, 92, 246, 0.5);
   padding: 4px 12px;
