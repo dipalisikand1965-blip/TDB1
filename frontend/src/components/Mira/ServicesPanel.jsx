@@ -548,6 +548,17 @@ const ServicesPanel = ({
           </p>
         </div>
       )}
+      
+      {/* Ticket Detail Panel */}
+      {showTicketDetail && selectedTicket && (
+        <TicketDetailPanel
+          ticket={selectedTicket}
+          onClose={handleTicketDetailClose}
+          token={token}
+          onAction={handleTicketAction}
+          onRefresh={fetchData}
+        />
+      )}
     </div>
   );
 };
