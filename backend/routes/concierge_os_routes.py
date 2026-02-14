@@ -301,7 +301,7 @@ async def create_thread(request: ThreadCreateRequest):
     This is the single entry point for all concierge conversations.
     The thread may or may not be linked to a ticket depending on the intent.
     """
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     try:
@@ -432,7 +432,7 @@ async def get_thread(
     """
     Get thread detail with all messages and context.
     """
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     try:
@@ -542,7 +542,7 @@ async def send_message(request: MessageSendRequest):
     Send a message in a thread.
     This is used for user messages; concierge responses come from the admin side.
     """
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     try:
