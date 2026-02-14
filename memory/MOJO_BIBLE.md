@@ -1605,7 +1605,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-os-preview-2.preview.emergentagent.com
+https://mira-pet-system.preview.emergentagent.com
 ```
 
 ---
