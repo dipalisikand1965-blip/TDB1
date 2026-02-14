@@ -1664,7 +1664,8 @@ const MojoProfileModal = ({
             : null,
           expires: memberData.membership_expires,
           next_tier: getNextTier(memberData.membership_tier),
-          points_to_next: calculatePointsToNextTier(memberData.loyalty_points || memberData.paw_points || 0, memberData.membership_tier)
+          points_to_next: calculatePointsToNextTier(memberData.loyalty_points || memberData.paw_points || 0, memberData.membership_tier),
+          pet_pass_number: `TDC-${(memberData.id || '').slice(-6).toUpperCase()}`
         };
         setMembershipData(membershipInfo);
         
