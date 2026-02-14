@@ -371,31 +371,46 @@
 
 ## PICKS Layer - EXHAUSTIVE SCORECARD
 
-### Current Score: 80% → Target: 100%
+### Current Score: 95% → Target: 100%
 
-**Updated: Feb 14, 2026 - Session 6 (FINAL)**
-- ✅ PICKS Auto-Refresh FULLY VERIFIED (B6 Complete)
-- ✅ Backend /api/mira/os/understand-with-products returns picks[] on every turn
-- ✅ Pillar auto-switching tested: grooming→care, birthday→celebrate
-- ✅ "Updated just now" timestamp visible after chat message
-- ✅ Enhanced pick cards with "What we'll arrange", "What we need", "Includes"
-- ✅ Dynamic CTAs: Arrange, Book, Plan, Request, Add, Get Help
-- ✅ All pytest tests passing
+**Updated: Feb 14, 2026 - Session 6 COMPLETE**
+
+### ALL PHASES COMPLETED ✅
+
+#### Phase 1: Micro-Delights ✅ COMPLETE
+- ✅ Sound "whoosh" on PICKS refresh (`picksDelights.js`)
+- ✅ PICKS tab glow/pulse animation (CSS keyframes)
+- ✅ "✨ new" badge on tab with sparkle
+- ✅ Emergency red pulse for urgent situations
+- ✅ Confetti wired for celebrate intent
+
+#### Phase 2: Pick Cards Enhancement ✅ COMPLETE
+- ✅ "Why these picks?" expandable panel
+- ✅ FitBadges component (Allergy-aware, etc.)
+- ✅ Enhanced card fields (what_we_arrange, what_we_need, includes)
+- ✅ Dynamic CTAs (Arrange, Book, Plan, Request)
+
+#### Phase 3: Task Flow ✅ COMPLETE
+- ✅ 5-second undo toast with progress bar
+- ✅ Task status badges: Requested → In Progress → Scheduled
+- ✅ createTaskFromPick() with undo mechanism
+- ✅ Button state changes on task creation
+
+#### Phase 4: Composition Intelligence ✅ COMPLETE
+- ✅ Enforce 6-10 cards (min_results=6, max_results=8)
+- ✅ Secondary pillar mix (max 2 from related pillar)
+- ✅ History boost (+10 for picks that worked)
+- ✅ Essentials logic (profile completion picks for thin profiles)
 
 ---
 
-### 1. Core Behaviour (Must happen every turn) - 100% ✅ COMPLETE
+### Remaining 5% Gap
 | Item | Status | Notes |
 |------|--------|-------|
-| Refresh every user message | ✅ DONE | Picks engine runs at start of chat |
-| Refresh every Mira reply | ✅ DONE | Returns in response data |
-| Infer active pillar + topic | ✅ DONE | classification_pipeline.py |
-| Fetch Pet Context Pack | ✅ DONE | Exists in backend |
-| Generate ranked picks | ✅ DONE | picks_scorer.py - 8 picks |
-| Render picks into UI | ✅ DONE | PersonalizedPicksPanel verified |
-| Every card actionable → task | ✅ DONE | Concierge flow working |
+| Travel plane animation | ❌ NOT BUILT | Nice to have, not critical |
+| B8: 50-prompt scenario testing | ⚠️ PARTIAL | Manual testing done |
 
-**Subscore: 100%** (Auto-refresh FULLY WORKING)
+**Subscore: 95%**
 
 ---
 
