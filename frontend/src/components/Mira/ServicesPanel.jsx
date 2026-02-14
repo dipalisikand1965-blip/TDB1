@@ -264,7 +264,7 @@ const SectionHeader = memo(({ title, count, action, onAction }) => (
     {action && (
       <button 
         onClick={onAction}
-        className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
+        className="text-xs text-purple-400 hover:text-purple-300 transition-colors min-h-[44px] px-3 flex items-center touch-manipulation"
       >
         {action}
       </button>
