@@ -43,19 +43,19 @@
 |------|--------|-------|
 | Pet photo | ✅ DONE | Displayed in MojoProfileModal |
 | Name | ✅ DONE | |
-| Species | ⚠️ PARTIAL | Assumed "dog" - not stored |
+| Species | ✅ DONE | OPTIONS.species in editors |
 | Breed / type | ✅ DONE | |
 | Age / DOB / age band | ✅ DONE | |
-| Sex | ⚠️ PARTIAL | `gender` field exists but inconsistent |
+| Sex | ✅ DONE | `gender` field editable |
 | Neutered status | ✅ DONE | `spayed_neutered` in doggy_soul_answers |
 | Weight | ✅ DONE | |
-| Size class | ❌ NOT BUILT | No classification system |
+| Size class | ✅ DONE | OPTIONS.size_class in HealthProfileEditor |
 | Coat type | ✅ DONE | |
 | Location / city / climate | ✅ DONE | |
 | Member tier / rewards | ✅ DONE | |
 | Soul completeness score | ✅ DONE | Shows X% SOUL KNOWN |
 
-**Score: 77%** (10/13 items)
+**Score: 100%** (13/13 items)
 
 ---
 
