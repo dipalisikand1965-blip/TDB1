@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import Mira Premium styles including Learn OS */
+@import './styles/mira-premium.css';
+
 /* ============================================
    MOBILE PWA STABILITY - CRITICAL FOR SAFARI
    ============================================ */
