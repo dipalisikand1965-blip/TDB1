@@ -1959,6 +1959,71 @@ const MojoProfileModal = ({
           }
         }
         
+        /* Trait Card with Confidence */
+        .trait-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          margin-bottom: 4px;
+        }
+        
+        .trait-meta {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        
+        .trait-source-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
+          padding: 2px 6px;
+          border-radius: 6px;
+          font-size: 9px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.3px;
+        }
+        
+        .trait-source-badge.mira-learned {
+          background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.2));
+          color: #E879F9;
+          border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+        
+        .trait-source-badge.mira-learned svg {
+          color: #E879F9;
+        }
+        
+        .trait-confidence {
+          font-size: 10px;
+          font-weight: 600;
+          padding: 2px 5px;
+          border-radius: 4px;
+        }
+        
+        .trait-confidence.high {
+          background: rgba(34, 197, 94, 0.2);
+          color: #86EFAC;
+        }
+        
+        .trait-confidence.medium {
+          background: rgba(245, 158, 11, 0.2);
+          color: #FCD34D;
+        }
+        
+        .trait-confidence.low {
+          background: rgba(239, 68, 68, 0.2);
+          color: #FCA5A5;
+        }
+        
+        .trait-confidence-inline {
+          font-size: 11px;
+          color: #9CA3AF;
+          font-weight: 400;
+          margin-left: 4px;
+        }
+        
         .soul-trait-card {
           display: flex;
           flex-direction: column;
