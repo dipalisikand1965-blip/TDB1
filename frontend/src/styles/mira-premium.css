@@ -2287,7 +2287,7 @@ button, a, [role="button"], .clickable {
   right: 0;
   bottom: 0;
   background: linear-gradient(180deg, var(--mp-bg-start) 0%, var(--mp-bg-mid) 50%, var(--mp-bg-end) 100%);
-  z-index: 101;
+  z-index: 10000;
   display: flex;
   flex-direction: column;
 }
