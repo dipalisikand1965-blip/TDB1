@@ -897,6 +897,125 @@ const PersonalizedPicksPanel = ({
   const cataloguePicks = currentPillarData.picks || [];
   const conciergePicks = currentPillarData.concierge_picks || [];
   
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TASK CREATION WITH 5-SECOND UNDO (Phase 3)
+  // Tap pick → Task created → Show undo toast → After 5s, confirm task
+  // ═══════════════════════════════════════════════════════════════════════════
+  const createTaskFromPick = useCallback(async (pick, skipUndo = false) => {
+    const pickId = pick.id || pick.pick_id || pick.name;
+    
+    // If undo was not skipped, show the undo toast first
+    if (!skipUndo) {
+      // Clear any existing timeout
+      if (undoTimeoutRef.current) {
+        clearTimeout(undoTimeoutRef.current);
+      }
+      
+      // Show undo toast
+      setUndoToast({ pick, pickId });
+      
+      // Set task status to "requested"
+      setTaskStatuses(prev => ({ ...prev, [pickId]: 'requested' }));
+      
+      // Haptic feedback
+      hapticFeedback.pickSelect();
+      
+      // Start 5-second countdown
+      undoTimeoutRef.current = setTimeout(() => {
+        // After 5 seconds, actually create the task
+        confirmTaskCreation(pick);
+      }, 5000);
+      
+      return;
+    }
+    
+    // Skip undo - create task immediately
+    await confirmTaskCreation(pick);
+  }, []);
+  
+  const confirmTaskCreation = async (pick) => {
+    const pickId = pick.id || pick.pick_id || pick.name;
+    
+    // Clear undo toast
+    setUndoToast(null);
+    
+    // Update status to "in_progress"
+    setTaskStatuses(prev => ({ ...prev, [pickId]: 'in_progress' }));
+    
+    try {
+      // Create task via API
+      const response = await fetch(`${API_URL}/api/concierge/picks-request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          pet_name: pet?.name,
+          selected_items: [{
+            ...pick,
+            pick_type: pick.type || pick.pick_type || 'concierge',
+            pillar: activePillar,
+            addedAt: new Date().toISOString()
+          }],
+          additional_notes: '',
+          timestamp: new Date().toISOString(),
+          task_creation: true // Flag for backend to create task
+        })
+      });
+      
+      if (response.ok) {
+        // Update status to "scheduled"
+        setTaskStatuses(prev => ({ ...prev, [pickId]: 'scheduled' }));
+        
+        // Trigger celebration
+        hapticFeedback.success();
+        
+        // Notify parent
+        onSendSuccess?.({
+          count: 1,
+          petName: pet?.name,
+          items: [pick],
+          additionalNotes: '',
+          taskCreated: true
+        });
+      }
+    } catch (err) {
+      console.error('Error creating task:', err);
+      setTaskStatuses(prev => ({ ...prev, [pickId]: null }));
+      hapticFeedback.error();
+    }
+  };
+  
+  const undoTaskCreation = useCallback(() => {
+    if (undoTimeoutRef.current) {
+      clearTimeout(undoTimeoutRef.current);
+    }
+    
+    if (undoToast) {
+      const pickId = undoToast.pickId;
+      setTaskStatuses(prev => ({ ...prev, [pickId]: null }));
+      hapticFeedback.cancel();
+    }
+    
+    setUndoToast(null);
+  }, [undoToast]);
+  
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (undoTimeoutRef.current) {
+        clearTimeout(undoTimeoutRef.current);
+      }
+    };
+  }, []);
+  
+  // Get task status for a pick
+  const getTaskStatus = (pick) => {
+    const pickId = pick.id || pick.pick_id || pick.name;
+    return taskStatuses[pickId];
+  };
+  
   if (!isOpen) return null;
   
   return (
