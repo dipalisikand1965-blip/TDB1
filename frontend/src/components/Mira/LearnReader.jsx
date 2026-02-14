@@ -333,6 +333,25 @@ const LearnReader = ({
 }) => {
   const isVideo = item.item_type === 'video';
   
+  // Record a learn event (saved, completed, helpful, not_helpful)
+  // This feeds LEARN → TODAY nudge system
+  const recordLearnEvent = async (eventType) => {
+    if (!item?.id) return;
+    
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      
+      await fetch(
+        `${API_BASE}/api/os/learn/event?item_id=${item.id}&item_type=${item.item_type || 'guide'}&event_type=${eventType}&pet_id=${pet?.id || ''}`,
+        { method: 'POST', headers }
+      );
+      console.log(`[LEARN] Recorded event: ${eventType} for ${item.id}`);
+    } catch (err) {
+      console.log('[LEARN] Could not record event:', err.message);
+    }
+  };
+  
   // Handle "Let Mira do it" - opens ServiceRequestBuilder with prefill
   // Per LEARN Bible: One tap from Learn → ServiceRequestBuilder prefilled
   const handleLetMiraDoIt = (cta) => {
