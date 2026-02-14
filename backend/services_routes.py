@@ -148,7 +148,7 @@ async def get_service_launchers(
     db = get_db()
     
     # Try to get from service_catalog with is_featured flag
-    if db:
+    if db is not None:
         try:
             featured = await db.service_catalog.find(
                 {"is_active": True, "is_featured": True},
