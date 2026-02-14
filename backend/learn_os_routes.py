@@ -411,11 +411,15 @@ async def get_learn_topics():
 
 @router.get("/home")
 async def get_learn_home(
+    pet_id: Optional[str] = Query(None, description="Pet ID for personalization"),
     authorization: Optional[str] = Header(None)
 ):
     """
-    Get Learn home screen data.
-    Returns topics + featured content for quick display.
+    Get Learn home screen data with personalization.
+    
+    GOLDEN DOCTRINE: Pet First, Breed Second
+    - If pet_id provided, creates a "For your pet" shelf with most relevant content
+    - Ranks content based on pet's life stage, conditions, and breed
     """
     db = get_db()
     if db is None:
@@ -433,6 +437,19 @@ async def get_learn_home(
         ).to_list(100)
         saved_ids = {s["item_id"] for s in saved_items}
     
+    # ===== PERSONALIZATION: Fetch pet profile =====
+    pet_profile = None
+    pet_tags = ["all"]
+    breed_tags = []
+    pet_name = None
+    
+    if pet_id:
+        pet_profile = await fetch_pet_profile(db, pet_id)
+        if pet_profile:
+            pet_tags, breed_tags = derive_pet_tags_from_profile(pet_profile)
+            pet_name = pet_profile.get("name")
+            logger.info(f"[LEARN HOME] Personalizing for {pet_name}: pet_tags={pet_tags}, breed_tags={breed_tags}")
+    
     # Get topics
     topics = []
     for topic_enum, config in TOPIC_CONFIG.items():
@@ -443,32 +460,83 @@ async def get_learn_home(
             "color": config["color"],
         })
     
-    # Get featured/start here items (across all topics)
-    featured_guides = await db.learn_guides.find(
-        {"is_active": True, "is_featured": True},
+    # Get all active content for personalization scoring
+    all_guides = await db.learn_guides.find(
+        {"is_active": True},
         {"_id": 0}
-    ).sort("sort_rank", 1).limit(6).to_list(6)
+    ).to_list(100)
     
-    featured_videos = await db.learn_videos.find(
-        {"is_active": True, "is_featured": True},
+    all_videos = await db.learn_videos.find(
+        {"is_active": True},
         {"_id": 0}
-    ).sort("sort_rank", 1).limit(4).to_list(4)
+    ).to_list(50)
     
+    # Score and sort content by relevance
+    scored_content = []
+    for guide in all_guides:
+        score = calculate_relevance_score(guide, pet_tags, breed_tags)
+        scored_content.append({
+            "item": guide,
+            "type": "guide",
+            "score": score,
+            "is_featured": guide.get("is_featured", False)
+        })
+    
+    for video in all_videos:
+        score = calculate_relevance_score(video, pet_tags, breed_tags)
+        scored_content.append({
+            "item": video,
+            "type": "video",
+            "score": score,
+            "is_featured": video.get("is_featured", False)
+        })
+    
+    # Sort by relevance score (descending), then by sort_rank
+    scored_content.sort(key=lambda x: (-x["score"], x["item"].get("sort_rank", 100)))
+    
+    # ===== BUILD SHELVES =====
+    
+    # "For your pet" shelf - Top personalized content (only if pet provided)
+    for_your_pet = []
+    if pet_profile:
+        # Get items with score >= 5 (at least one meaningful tag match)
+        personalized = [c for c in scored_content if c["score"] >= 5][:8]
+        for c in personalized:
+            for_your_pet.append(enrich_item_for_frontend(
+                c["item"], 
+                c["type"], 
+                c["item"].get("id") in saved_ids,
+                c["score"],
+                pet_name
+            ))
+    
+    # "Start here" shelf - Featured content, also personalized
     start_here = []
-    for guide in featured_guides:
-        start_here.append(enrich_item_for_frontend(guide, "guide", guide.get("id") in saved_ids))
-    for video in featured_videos:
-        start_here.append(enrich_item_for_frontend(video, "video", video.get("id") in saved_ids))
+    featured_items = [c for c in scored_content if c["is_featured"]]
+    # Re-sort featured by relevance
+    featured_items.sort(key=lambda x: (-x["score"], x["item"].get("sort_rank", 100)))
     
-    # Sort by sort_rank and limit to 5
-    start_here.sort(key=lambda x: x.get("sort_rank", 100))
-    start_here = start_here[:5]
+    for c in featured_items[:5]:
+        start_here.append(enrich_item_for_frontend(
+            c["item"],
+            c["type"],
+            c["item"].get("id") in saved_ids,
+            c["score"],
+            pet_name
+        ))
     
     return {
         "success": True,
         "topics": topics,
+        "for_your_pet": for_your_pet,  # NEW: Personalized shelf
         "start_here": start_here,
-        "saved_count": len(saved_ids)
+        "saved_count": len(saved_ids),
+        "pet_name": pet_name,
+        "personalization": {
+            "enabled": pet_profile is not None,
+            "pet_tags": pet_tags if pet_profile else [],
+            "breed_tags": breed_tags if pet_profile else [],
+        }
     }
 
 
