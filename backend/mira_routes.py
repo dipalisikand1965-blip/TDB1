@@ -3676,7 +3676,10 @@ async def get_remembered_providers(
 
 
 @router.post("/os/understand-with-products")
-async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
+async def mira_os_understand_with_products(
+    request: MiraOSUnderstandRequest,
+    authorization: Optional[str] = Header(None)
+):
     """
     MIRA OS - Enhanced understanding endpoint with REAL products.
     1. Uses LLM to understand intent and extract entities
@@ -3688,6 +3691,9 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
     INTELLIGENCE: Resolves pronouns ("that one") and follow-up context ("cheaper ones").
     """
     try:
+        # Get user from authorization header for ticket creation
+        logged_in_user = await get_user_from_token(authorization)
+        
         # ============================================
         # SESSION PERSISTENCE - Load conversation from database
         # ============================================
