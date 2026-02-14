@@ -16,9 +16,9 @@
 ### Day 1: Auth & Session Fixes
 | Task | Status | Date | Agent | Notes |
 |------|--------|------|-------|-------|
-| Fix `/dashboard` redirect to login issue | ⏳ IN PROGRESS | Feb 14 | E1 | Investigating |
-| Debug AuthContext state persistence | 🔲 TODO | | | |
-| Test login → navigate → refresh flow | 🔲 TODO | | | |
+| Fix `/dashboard` redirect to login issue | ✅ DONE | Feb 14 | E1 | Wrapped in ProtectedRoute in App.js |
+| Debug AuthContext state persistence | ✅ DONE | Feb 14 | E1 | Already working correctly |
+| Test login → navigate → refresh flow | ⏳ TESTING | Feb 14 | E1 | Testing now |
 | Fix session token refresh logic | 🔲 TODO | | | |
 | Verify logout clears all state | 🔲 TODO | | | |
 
