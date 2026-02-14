@@ -35,6 +35,16 @@ except ImportError:
     async def notify_ticket_update(*args, **kwargs):
         return {"success": False, "reason": "push_not_available"}
 
+# Import Trait Graph service for MOJO updates on service completion
+# Per MOJO Bible Part 7 §4: "When tasks complete: update traits with high confidence"
+try:
+    from trait_graph_service import on_service_completed
+    TRAIT_GRAPH_AVAILABLE = True
+except ImportError:
+    TRAIT_GRAPH_AVAILABLE = False
+    async def on_service_completed(*args, **kwargs):
+        return {"success": False, "reason": "trait_graph_not_available"}
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/concierge", tags=["concierge"])
