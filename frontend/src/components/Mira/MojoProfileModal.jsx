@@ -54,11 +54,12 @@ import {
 // Section configuration with icons and labels
 const PROFILE_SECTIONS = [
   { id: 'soul', icon: Heart, label: 'Soul Profile', color: 'purple', defaultOpen: true },
-  { id: 'health', icon: Shield, label: 'Health Profile', color: 'red' },
+  { id: 'health', icon: Shield, label: 'Health Vault', color: 'red' },
   { id: 'diet', icon: Apple, label: 'Diet & Food', color: 'orange' },
   { id: 'behaviour', icon: GraduationCap, label: 'Behaviour & Training', color: 'blue' },
   { id: 'grooming', icon: Scissors, label: 'Grooming & Care', color: 'pink' },
   { id: 'routine', icon: Calendar, label: 'Routine Tracker', color: 'green' },
+  { id: 'environment', icon: Home, label: 'Environment', color: 'teal' },
   { id: 'documents', icon: FileText, label: 'Documents Vault', color: 'cyan' },
   { id: 'timeline', icon: Clock, label: 'Life Timeline', color: 'amber' },
   { id: 'preferences', icon: Settings, label: 'Preferences & Constraints', color: 'gray' },
