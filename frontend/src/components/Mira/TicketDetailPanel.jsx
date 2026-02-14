@@ -171,13 +171,18 @@ const TicketDetailPanel = ({
       // Notify parent
       onAction?.(action, result);
       onRefresh?.();
+      
+      // Close panel for terminal actions (cancel)
+      if (action === 'cancel') {
+        setTimeout(() => onClose?.(), 500);
+      }
     } catch (err) {
       console.error('[TICKET] Action error:', err);
       setError(err.message);
     } finally {
       setActionLoading(null);
     }
-  }, [ticketData?.ticket_id, token, onAction, onRefresh]);
+  }, [ticketData?.ticket_id, token, onAction, onRefresh, onClose]);
 
   // Get available actions based on status
   const getActions = useCallback(() => {
