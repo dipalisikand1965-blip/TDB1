@@ -728,14 +728,19 @@ const TodayPanel = ({
   
   useEffect(() => {
     const fetchWatchlist = async () => {
+      console.log('[TODAY] fetchWatchlist called - isOpen:', isOpen, 'apiUrl:', apiUrl, 'pet?.id:', pet?.id);
+      
       // Skip if not open or no apiUrl
-      if (!isOpen || !apiUrl) return;
+      if (!isOpen || !apiUrl) {
+        console.log('[TODAY] Skipping - isOpen:', isOpen, 'apiUrl:', apiUrl);
+        return;
+      }
       
       // Skip for demo pets - they don't have real tickets
       // Note: Real pet IDs are like 'pet-e6348b13c975', demo is exactly 'demo-pet' or 'demo'
       const isDemoPet = !pet?.id || pet.id === 'demo-pet' || pet.id === 'demo';
       if (isDemoPet) {
-        console.log('[TODAY] Skipping watchlist fetch for demo pet');
+        console.log('[TODAY] Skipping watchlist fetch for demo pet:', pet?.id);
         return;
       }
       
