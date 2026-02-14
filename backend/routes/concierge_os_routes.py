@@ -460,6 +460,7 @@ async def get_thread(
                 "status_chip": msg.get("status_chip"),
                 "attachments": msg.get("attachments"),
                 "type": msg.get("type", "text"),
+                "source": msg.get("source", "chat"),  # Track message origin (chat, service_desk, etc.)
                 "options_payload": msg.get("options_payload"),
                 "selected_option": msg.get("selected_option")
             })
