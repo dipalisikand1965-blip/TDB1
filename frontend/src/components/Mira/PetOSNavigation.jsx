@@ -29,13 +29,13 @@ import {
 } from 'lucide-react';
 import hapticFeedback from '../../utils/haptic';
 
-// OS Layer configuration
+// OS Layer configuration - Final primary nav: MOJO, TODAY, PICKS, SERVICES, LEARN, CONCIERGE
+// Note: INSIGHTS removed per user request - moved to CONCIERGE layer
 const OS_LAYERS = [
   { id: 'mojo', label: 'MOJO', icon: null, description: 'Identity Layer' }, // Pet avatar replaces icon
   { id: 'today', label: 'TODAY', icon: Calendar, description: 'Time Layer' },
   { id: 'picks', label: 'PICKS', icon: Sparkles, description: 'Intelligence Layer' },
   { id: 'services', label: 'SERVICES', icon: Briefcase, description: 'Action Layer' },
-  { id: 'insights', label: 'INSIGHTS', icon: BarChart3, description: 'Pattern Layer' },
   { id: 'learn', label: 'LEARN', icon: GraduationCap, description: 'Knowledge Layer' },
   { id: 'concierge', label: 'CONCIERGE®', icon: Users, description: 'Human Layer' },
 ];
