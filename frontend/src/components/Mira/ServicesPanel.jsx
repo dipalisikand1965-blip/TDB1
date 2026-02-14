@@ -1,0 +1,536 @@
+/**
+ * ServicesPanel.jsx
+ * 
+ * SERVICES = Execution Layer - "Where hands move"
+ * Per MOJO Bible Part 4: Turn intent into real outcomes via tasks.
+ * 
+ * Layout (Premium):
+ * - Top: Service Launchers (8 max visible, small grid)
+ * - Middle: "Awaiting You" shelf (always pinned - the killer UX)
+ * - Next: Active Requests (status tabs + smart grouping)
+ * - Bottom: Orders (only if there are orders - no empty modules)
+ * 
+ * UI/UX Laws:
+ * - Feels like a private office dashboard (no emojis)
+ * - Desktop: Two-column (inbox left, detail right)
+ * - Mobile: List → Detail page
+ * - Micro-delights only for state changes
+ */
+
+import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
+import { 
+  Scissors, GraduationCap, Home, Stethoscope, Footprints,
+  Camera, PartyPopper, Plane, ChevronRight, ChevronDown,
+  Clock, AlertCircle, CheckCircle, CreditCard, Calendar,
+  Package, Truck, X, Loader2, RefreshCw, MoreHorizontal,
+  HelpCircle, List, Edit, Inbox, CalendarCheck
+} from 'lucide-react';
+
+const API_BASE = process.env.REACT_APP_BACKEND_URL || '';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ICON MAPPING
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const ICON_MAP = {
+  scissors: Scissors,
+  'graduation-cap': GraduationCap,
+  home: Home,
+  stethoscope: Stethoscope,
+  footprints: Footprints,
+  camera: Camera,
+  'party-popper': PartyPopper,
+  plane: Plane,
+  'help-circle': HelpCircle,
+  list: List,
+  'check-circle': CheckCircle,
+  'credit-card': CreditCard,
+  loader: Loader2,
+  'calendar-check': CalendarCheck,
+  truck: Truck,
+  'package-check': Package,
+  check: CheckCircle,
+  x: X,
+  'alert-circle': AlertCircle,
+  edit: Edit,
+  inbox: Inbox,
+};
+
+const getIcon = (iconName) => ICON_MAP[iconName] || HelpCircle;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STATUS COLORS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const STATUS_COLORS = {
+  slate: { bg: 'bg-slate-500/20', text: 'text-slate-400', border: 'border-slate-500/30' },
+  blue: { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30' },
+  amber: { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30' },
+  purple: { bg: 'bg-purple-500/20', text: 'text-purple-400', border: 'border-purple-500/30' },
+  orange: { bg: 'bg-orange-500/20', text: 'text-orange-400', border: 'border-orange-500/30' },
+  rose: { bg: 'bg-rose-500/20', text: 'text-rose-400', border: 'border-rose-500/30' },
+  cyan: { bg: 'bg-cyan-500/20', text: 'text-cyan-400', border: 'border-cyan-500/30' },
+  green: { bg: 'bg-green-500/20', text: 'text-green-400', border: 'border-green-500/30' },
+  indigo: { bg: 'bg-indigo-500/20', text: 'text-indigo-400', border: 'border-indigo-500/30' },
+  emerald: { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/30' },
+  gray: { bg: 'bg-gray-500/20', text: 'text-gray-400', border: 'border-gray-500/30' },
+  red: { bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/30' },
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SUB-COMPONENTS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Service Launcher Card (small, clean)
+const LauncherCard = memo(({ service, onClick }) => {
+  const IconComponent = getIcon(service.icon);
+  
+  return (
+    <button
+      onClick={() => onClick(service)}
+      className="group flex flex-col items-center p-3 bg-slate-800/40 hover:bg-slate-700/50 
+                 rounded-xl border border-white/5 hover:border-purple-500/30 transition-all
+                 min-w-[80px]"
+      data-testid={`launcher-${service.id}`}
+    >
+      <div className="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center
+                      group-hover:bg-purple-500/20 transition-colors mb-2">
+        <IconComponent className="w-5 h-5 text-slate-300 group-hover:text-purple-400 transition-colors" />
+      </div>
+      <span className="text-xs text-slate-300 font-medium text-center leading-tight">
+        {service.name}
+      </span>
+    </button>
+  );
+});
+
+// Status Badge (clean, no emojis)
+const StatusBadge = memo(({ status, statusDisplay }) => {
+  const colors = STATUS_COLORS[statusDisplay?.color] || STATUS_COLORS.gray;
+  const IconComponent = getIcon(statusDisplay?.icon);
+  
+  return (
+    <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md ${colors.bg}`}>
+      <IconComponent className={`w-3.5 h-3.5 ${colors.text}`} />
+      <span className={`text-xs font-medium ${colors.text}`}>
+        {statusDisplay?.short || status}
+      </span>
+    </div>
+  );
+});
+
+// Awaiting You Card (highlighted, actionable)
+const AwaitingCard = memo(({ ticket, onAction, onSelect }) => {
+  const colors = STATUS_COLORS[ticket.status_display?.color] || STATUS_COLORS.amber;
+  const IconComponent = getIcon(ticket.status_display?.icon);
+  
+  const getActionButton = () => {
+    switch (ticket.status) {
+      case 'clarification_needed':
+        return { label: 'Provide Details', action: 'clarify' };
+      case 'options_ready':
+        return { label: 'Choose Option', action: 'select_option' };
+      case 'approval_pending':
+        return { label: 'Approve', action: 'approve_quote' };
+      case 'payment_pending':
+        return { label: 'Pay Now', action: 'complete_payment' };
+      default:
+        return { label: 'View', action: 'view' };
+    }
+  };
+  
+  const actionBtn = getActionButton();
+  
+  return (
+    <div 
+      className={`p-4 bg-slate-800/60 rounded-xl border ${colors.border} hover:border-purple-500/40 
+                  transition-all cursor-pointer group`}
+      onClick={() => onSelect(ticket)}
+      data-testid={`awaiting-card-${ticket.ticket_id}`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <IconComponent className={`w-4 h-4 ${colors.text} flex-shrink-0`} />
+            <h4 className="text-sm font-medium text-white truncate">
+              {ticket.title || ticket.service_type}
+            </h4>
+          </div>
+          <p className="text-xs text-slate-400 mb-2">
+            {ticket.pet_display} • {ticket.status_display?.description}
+          </p>
+        </div>
+        
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onAction(ticket, actionBtn.action);
+          }}
+          className={`px-3 py-1.5 ${colors.bg} ${colors.text} text-xs font-medium rounded-lg
+                      hover:opacity-80 transition-opacity flex-shrink-0`}
+        >
+          {actionBtn.label}
+        </button>
+      </div>
+    </div>
+  );
+});
+
+// Active Request Card (simple list item)
+const RequestCard = memo(({ ticket, onSelect }) => {
+  const colors = STATUS_COLORS[ticket.status_display?.color] || STATUS_COLORS.blue;
+  
+  return (
+    <div 
+      className="p-3 bg-slate-800/40 rounded-lg border border-white/5 hover:border-purple-500/20
+                 transition-all cursor-pointer group"
+      onClick={() => onSelect(ticket)}
+      data-testid={`request-card-${ticket.ticket_id}`}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <h4 className="text-sm text-white truncate">
+            {ticket.title || ticket.service_type}
+          </h4>
+          <p className="text-xs text-slate-500 truncate">
+            {ticket.pet_display}
+          </p>
+        </div>
+        <StatusBadge status={ticket.status} statusDisplay={ticket.status_display} />
+      </div>
+    </div>
+  );
+});
+
+// Order Card (with shipping info)
+const OrderCard = memo(({ order, onSelect }) => {
+  const colors = STATUS_COLORS[order.status_display?.color] || STATUS_COLORS.indigo;
+  const shipping = order.shipping || {};
+  
+  return (
+    <div 
+      className="p-3 bg-slate-800/40 rounded-lg border border-white/5 hover:border-indigo-500/20
+                 transition-all cursor-pointer"
+      onClick={() => onSelect(order)}
+      data-testid={`order-card-${order.ticket_id}`}
+    >
+      <div className="flex items-center justify-between gap-3 mb-2">
+        <h4 className="text-sm text-white truncate flex-1">
+          {order.title || 'Order'}
+        </h4>
+        <StatusBadge status={order.status} statusDisplay={order.status_display} />
+      </div>
+      
+      {shipping.eta && (
+        <p className="text-xs text-slate-400">
+          Arriving {shipping.eta}
+          {shipping.tracking_id && (
+            <span className="ml-2 text-indigo-400">{shipping.carrier}</span>
+          )}
+        </p>
+      )}
+    </div>
+  );
+});
+
+// Status Tab Button
+const StatusTab = memo(({ label, count, isActive, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`px-3 py-2 text-sm font-medium rounded-lg transition-all
+                ${isActive 
+                  ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' 
+                  : 'text-slate-400 hover:text-white hover:bg-slate-700/50'}`}
+  >
+    {label}
+    {count > 0 && (
+      <span className={`ml-1.5 text-xs ${isActive ? 'text-purple-300' : 'text-slate-500'}`}>
+        ({count})
+      </span>
+    )}
+  </button>
+));
+
+// Section Header
+const SectionHeader = memo(({ title, count, action, onAction }) => (
+  <div className="flex items-center justify-between mb-3">
+    <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+      {title}
+      {count > 0 && (
+        <span className="text-xs text-slate-500 font-normal">({count})</span>
+      )}
+    </h3>
+    {action && (
+      <button 
+        onClick={onAction}
+        className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
+      >
+        {action}
+      </button>
+    )}
+  </div>
+));
+
+// Empty State
+const EmptyState = memo(({ title, description }) => (
+  <div className="text-center py-8 text-slate-500">
+    <Inbox className="w-8 h-8 mx-auto mb-2 opacity-50" />
+    <p className="text-sm font-medium">{title}</p>
+    <p className="text-xs mt-1">{description}</p>
+  </div>
+));
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const ServicesPanel = ({ 
+  selectedPet = null,
+  token = null,
+  onClose = null,
+  onTicketSelect = null 
+}) => {
+  // State
+  const [launchers, setLaunchers] = useState([]);
+  const [inbox, setInbox] = useState({
+    awaiting_user: [],
+    active: [],
+    orders: [],
+    completed: [],
+    counts: { awaiting_user: 0, active: 0, orders: 0, total: 0 }
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [activeStatusTab, setActiveStatusTab] = useState('all');
+  const [showMoreLaunchers, setShowMoreLaunchers] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  
+  // Fetch data
+  const fetchData = useCallback(async () => {
+    if (!token) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      };
+      
+      // Fetch launchers and inbox in parallel
+      const [launchersRes, inboxRes] = await Promise.all([
+        fetch(`${API_BASE}/api/services/launchers`, { headers }),
+        fetch(`${API_BASE}/api/services/inbox${selectedPet?.id ? `?pet_id=${selectedPet.id}` : ''}`, { headers })
+      ]);
+      
+      if (launchersRes.ok) {
+        const launchersData = await launchersRes.json();
+        setLaunchers(launchersData.launchers || []);
+      }
+      
+      if (inboxRes.ok) {
+        const inboxData = await inboxRes.json();
+        setInbox(inboxData);
+      }
+    } catch (err) {
+      console.error('[SERVICES] Fetch error:', err);
+      setError('Failed to load services');
+    } finally {
+      setLoading(false);
+    }
+  }, [token, selectedPet?.id]);
+  
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+  
+  // Handlers
+  const handleLauncherClick = useCallback((service) => {
+    console.log('[SERVICES] Launcher clicked:', service.id);
+    // TODO: Open request builder modal
+  }, []);
+  
+  const handleAction = useCallback(async (ticket, action) => {
+    console.log('[SERVICES] Action:', action, 'Ticket:', ticket.ticket_id);
+    // TODO: Handle actions (confirm, approve, pay, etc.)
+  }, []);
+  
+  const handleTicketSelect = useCallback((ticket) => {
+    setSelectedTicket(ticket);
+    onTicketSelect?.(ticket);
+  }, [onTicketSelect]);
+  
+  // Filter active requests by status tab
+  const filteredActive = useMemo(() => {
+    if (activeStatusTab === 'all') return inbox.active;
+    return inbox.active.filter(t => t.status === activeStatusTab);
+  }, [inbox.active, activeStatusTab]);
+  
+  // Count by status for tabs
+  const statusCounts = useMemo(() => {
+    const counts = { all: inbox.active.length };
+    inbox.active.forEach(t => {
+      counts[t.status] = (counts[t.status] || 0) + 1;
+    });
+    return counts;
+  }, [inbox.active]);
+  
+  // Render
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-6 h-6 text-purple-400 animate-spin" />
+      </div>
+    );
+  }
+  
+  return (
+    <div className="services-panel h-full flex flex-col" data-testid="services-panel">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
+        <h2 className="text-lg font-semibold text-white">Services</h2>
+        <button 
+          onClick={fetchData}
+          className="p-2 text-slate-400 hover:text-white transition-colors"
+          title="Refresh"
+        >
+          <RefreshCw className="w-4 h-4" />
+        </button>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-4 space-y-6">
+          
+          {/* Service Launchers */}
+          <section>
+            <SectionHeader 
+              title="Quick Actions" 
+              action={launchers.length > 8 ? (showMoreLaunchers ? 'Show Less' : 'More') : null}
+              onAction={() => setShowMoreLaunchers(!showMoreLaunchers)}
+            />
+            <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
+              {(showMoreLaunchers ? launchers : launchers.slice(0, 8)).map(service => (
+                <LauncherCard 
+                  key={service.id} 
+                  service={service} 
+                  onClick={handleLauncherClick}
+                />
+              ))}
+            </div>
+          </section>
+          
+          {/* Awaiting You - THE KILLER SHELF */}
+          {inbox.awaiting_user.length > 0 && (
+            <section className="animate-in fade-in-50 duration-300">
+              <SectionHeader 
+                title="Awaiting You" 
+                count={inbox.awaiting_user.length}
+              />
+              <div className="space-y-2">
+                {inbox.awaiting_user.map(ticket => (
+                  <AwaitingCard
+                    key={ticket.ticket_id}
+                    ticket={ticket}
+                    onAction={handleAction}
+                    onSelect={handleTicketSelect}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+          
+          {/* Active Requests */}
+          {inbox.active.length > 0 && (
+            <section>
+              <SectionHeader title="Active Requests" count={inbox.active.length} />
+              
+              {/* Status Tabs */}
+              <div className="flex gap-2 mb-3 overflow-x-auto pb-1">
+                <StatusTab 
+                  label="All" 
+                  count={statusCounts.all}
+                  isActive={activeStatusTab === 'all'}
+                  onClick={() => setActiveStatusTab('all')}
+                />
+                {statusCounts.placed > 0 && (
+                  <StatusTab 
+                    label="Placed" 
+                    count={statusCounts.placed}
+                    isActive={activeStatusTab === 'placed'}
+                    onClick={() => setActiveStatusTab('placed')}
+                  />
+                )}
+                {statusCounts.in_progress > 0 && (
+                  <StatusTab 
+                    label="In Progress" 
+                    count={statusCounts.in_progress}
+                    isActive={activeStatusTab === 'in_progress'}
+                    onClick={() => setActiveStatusTab('in_progress')}
+                  />
+                )}
+                {statusCounts.scheduled > 0 && (
+                  <StatusTab 
+                    label="Scheduled" 
+                    count={statusCounts.scheduled}
+                    isActive={activeStatusTab === 'scheduled'}
+                    onClick={() => setActiveStatusTab('scheduled')}
+                  />
+                )}
+              </div>
+              
+              {/* Request List */}
+              <div className="space-y-2">
+                {filteredActive.map(ticket => (
+                  <RequestCard
+                    key={ticket.ticket_id}
+                    ticket={ticket}
+                    onSelect={handleTicketSelect}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+          
+          {/* Orders (only if there are orders) */}
+          {inbox.orders.length > 0 && (
+            <section>
+              <SectionHeader title="Orders" count={inbox.orders.length} />
+              <div className="space-y-2">
+                {inbox.orders.map(order => (
+                  <OrderCard
+                    key={order.ticket_id}
+                    order={order}
+                    onSelect={handleTicketSelect}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+          
+          {/* Empty State */}
+          {inbox.awaiting_user.length === 0 && 
+           inbox.active.length === 0 && 
+           inbox.orders.length === 0 && (
+            <EmptyState 
+              title="No active requests"
+              description="Start a service request using the quick actions above"
+            />
+          )}
+          
+        </div>
+      </div>
+      
+      {/* Stale Indicator (if data is old) */}
+      {inbox.stale && (
+        <div className="px-4 py-2 bg-amber-500/10 border-t border-amber-500/20 text-center">
+          <p className="text-xs text-amber-400">
+            Data may be outdated. <button onClick={fetchData} className="underline">Refresh</button>
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ServicesPanel;
