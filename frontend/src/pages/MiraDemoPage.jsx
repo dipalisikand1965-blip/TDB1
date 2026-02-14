@@ -3770,6 +3770,8 @@ const MiraDemoPage = () => {
             conciergeDecision={miraPicks.concierge}
             safetyOverride={miraPicks.safetyOverride}
             lastUpdated={miraPicks.lastUpdated}
+            // NEW: Conversation context for context-aware picks
+            conversationContext={miraPicks.conversationContext}
             onSendSuccess={(data) => {
               // Add confirmation message to chat (with deduplication)
               setConversationHistory(prev => {
@@ -3783,7 +3785,7 @@ const MiraDemoPage = () => {
                 
                 const confirmationMessage = {
                   type: 'mira',
-                  content: `✨ Your ${data.count} personalized pick${data.count > 1 ? 's' : ''} for ${data.petName} have been sent to your Concierge®! They're reviewing your selections now and will get back to you shortly to help arrange everything. Is there anything else I can help you with?`,
+                  content: `Your ${data.count} personalized pick${data.count > 1 ? 's' : ''} for ${data.petName} have been sent to your Concierge! They're reviewing your selections now and will get back to you shortly to help arrange everything. Is there anything else I can help you with?`,
                   timestamp: new Date().toISOString(),
                   metadata: {
                     type: 'picks_confirmation',
