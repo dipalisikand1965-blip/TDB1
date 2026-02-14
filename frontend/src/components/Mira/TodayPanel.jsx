@@ -1497,7 +1497,14 @@ const todayPanelStyles = `
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px 12px;
+  padding: 12px 16px;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
   min-height: 44px;
 }
 
