@@ -2947,6 +2947,8 @@ const MiraDemoPage = () => {
             setShowTopPicksPanel(true);
             // Clear "new" flag when picks panel is opened
             setMiraPicks(prev => ({ ...prev, hasNew: false }));
+          } else if (tabId === 'services') {
+            setShowServicesPanel(true);
           } else if (tabId === 'insights') {
             setShowInsightsPanel(true);
           } else if (tabId === 'learn') {
