@@ -1067,93 +1067,168 @@ const DocumentsProfileContent = memo(({ pet, apiUrl, token, onUploadClick }) => 
   );
 });
 
-// Life Timeline Content Component
-const TimelineProfileContent = memo(({ pet }) => {
-  // Merge all timeline sources
-  const timeline = [
-    ...(pet?.timeline || []),
-    ...(pet?.life_events || []),
-    ...(pet?.doggy_soul_answers?.timeline_events || [])
-  ];
-  const birthday = pet?.birthday || pet?.dob || pet?.doggy_soul_answers?.dob;
-  const adoptionDate = pet?.doggy_soul_answers?.adoption_date;
+// Life Timeline Content Component - Fetches aggregated timeline from API
+const TimelineProfileContent = memo(({ pet, apiUrl, token }) => {
+  const [timelineData, setTimelineData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
   
-  // Create timeline items including birthday
-  const timelineItems = [];
-  if (birthday) {
-    timelineItems.push({
-      icon: '🎂',
-      title: `${pet?.name}'s Birthday`,
-      date: birthday,
-      type: 'birthday'
+  // Fetch aggregated timeline from API
+  useEffect(() => {
+    const fetchTimeline = async () => {
+      if (!pet?.id) {
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        
+        const baseUrl = apiUrl || process.env.REACT_APP_BACKEND_URL || '';
+        const response = await fetch(
+          `${baseUrl}/api/pet-soul/profile/${pet.id}/life-timeline?limit=20`,
+          { headers }
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          setTimelineData(data);
+        }
+      } catch (err) {
+        console.log('[Timeline] Error fetching:', err);
+      }
+      setLoading(false);
+    };
+    
+    fetchTimeline();
+  }, [pet?.id, apiUrl, token]);
+  
+  // Fallback to local data if API fails
+  const getLocalTimeline = () => {
+    const items = [];
+    const soulAnswers = pet?.doggy_soul_answers || {};
+    
+    // Birthday
+    const birthday = pet?.birthday || pet?.dob || soulAnswers.dob;
+    if (birthday) {
+      items.push({
+        icon: '🎂',
+        title: `${pet?.name}'s Birthday`,
+        date: birthday,
+        type: 'birthday',
+        category: 'milestone'
+      });
+    }
+    
+    // Adoption
+    const adoption = soulAnswers.adoption_date || pet?.gotcha_date;
+    if (adoption) {
+      items.push({
+        icon: '🏠',
+        title: 'Joined the family',
+        date: adoption,
+        type: 'adoption',
+        category: 'milestone'
+      });
+    }
+    
+    // Manual events
+    const events = soulAnswers.timeline_events || pet?.life_events || [];
+    events.forEach(e => {
+      items.push({
+        icon: e.icon || '📍',
+        title: e.title || e.name,
+        date: e.date,
+        type: e.type || 'event',
+        category: 'milestone'
+      });
     });
-  }
-  
-  // Add adoption date if exists
-  if (adoptionDate) {
-    timelineItems.push({
-      icon: '🏠',
-      title: `Joined the family`,
-      date: adoptionDate,
-      type: 'adoption'
-    });
-  }
-  
-  // Add other timeline events with proper icons
-  const eventIcons = {
-    milestone: '🌟',
-    medical: '🏥',
-    adventure: '🎒',
-    training: '🎓',
-    birthday: '🎂',
-    adoption: '🏠',
-    grooming: '✨',
-    vaccination: '💉',
-    travel: '✈️',
-    achievement: '🏆',
-    other: '📍'
+    
+    return items.sort((a, b) => new Date(b.date) - new Date(a.date));
   };
   
-  timeline.forEach(event => {
-    timelineItems.push({
-      icon: eventIcons[event.type] || event.icon || '📍',
-      title: event.title || event.name,
-      date: event.date,
-      type: event.type || 'event',
-      notes: event.notes
-    });
-  });
+  const timelineItems = timelineData?.timeline || getLocalTimeline();
+  const displayItems = showAll ? timelineItems : timelineItems.slice(0, 5);
   
-  // Sort by date (most recent first)
-  timelineItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+  // Category badges
+  const categoryColors = {
+    milestone: 'bg-amber-500/20 text-amber-400',
+    purchase: 'bg-green-500/20 text-green-400',
+    service: 'bg-blue-500/20 text-blue-400',
+    health: 'bg-red-500/20 text-red-400',
+    care: 'bg-pink-500/20 text-pink-400'
+  };
+  
+  if (loading) {
+    return (
+      <div className="timeline-loading">
+        <Loader2 className="w-6 h-6 animate-spin text-amber-400" />
+        <span className="text-sm text-gray-400 mt-2">Loading timeline...</span>
+      </div>
+    );
+  }
   
   return (
-    <div className="timeline-profile-content">
-      {timelineItems.length > 0 ? (
-        <div className="timeline-list">
-          {timelineItems.slice(0, 5).map((item, i) => (
-            <div key={i} className="timeline-item">
-              <span className="timeline-icon">{item.icon}</span>
-              <div className="timeline-details">
-                <span className="timeline-title">{item.title}</span>
-                {item.date && (
-                  <span className="timeline-date">
-                    {new Date(item.date).toLocaleDateString('en-US', { 
-                      month: 'short', 
-                      day: 'numeric',
-                      year: 'numeric' 
-                    })}
+    <div className="timeline-profile-content" data-testid="life-timeline">
+      {/* Category summary badges */}
+      {timelineData?.categories && Object.keys(timelineData.categories).length > 0 && (
+        <div className="timeline-categories">
+          {Object.entries(timelineData.categories).map(([cat, count]) => (
+            <span key={cat} className={`timeline-category-badge ${categoryColors[cat] || 'bg-gray-500/20 text-gray-400'}`}>
+              {cat} ({count})
+            </span>
+          ))}
+        </div>
+      )}
+      
+      {displayItems.length > 0 ? (
+        <>
+          <div className="timeline-list">
+            {displayItems.map((item, i) => (
+              <div key={item.id || i} className="timeline-item" data-testid={`timeline-item-${item.type}`}>
+                <span className="timeline-icon">{item.icon}</span>
+                <div className="timeline-details">
+                  <span className="timeline-title">{item.title}</span>
+                  {item.description && (
+                    <span className="timeline-description">{item.description}</span>
+                  )}
+                  {item.date && (
+                    <span className="timeline-date">
+                      {new Date(item.date).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric' 
+                      })}
+                    </span>
+                  )}
+                </div>
+                {item.source && item.source !== 'profile' && (
+                  <span className={`timeline-source ${categoryColors[item.category] || ''}`}>
+                    {item.source === 'orders' ? '🛍️' : item.source === 'service_desk' ? '🔧' : ''}
                   </span>
                 )}
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+          
+          {/* Show more button */}
+          {timelineItems.length > 5 && (
+            <button 
+              className="timeline-show-more"
+              onClick={() => setShowAll(!showAll)}
+            >
+              {showAll ? 'Show less' : `Show ${timelineItems.length - 5} more`}
+              <ChevronDown className={`w-4 h-4 ml-1 transition-transform ${showAll ? 'rotate-180' : ''}`} />
+            </button>
+          )}
+        </>
       ) : (
         <div className="timeline-empty-state">
           <Clock className="w-8 h-8 text-amber-400 mb-2" />
           <p>No timeline events yet</p>
           <p className="text-xs text-gray-400 mt-1">Add milestones, adoption day, and memorable moments</p>
+          <p className="text-xs text-gray-500 mt-2">Orders and services will appear here automatically</p>
         </div>
       )}
     </div>
