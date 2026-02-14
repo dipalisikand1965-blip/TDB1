@@ -10468,7 +10468,7 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
                 ],
                 "products": [],
                 "nearby_places": None
-            }
+            })
     
     # ═══════════════════════════════════════════════════════════════════════════
     # MIRA OS: Handle location/seating response → Show CURATED results with ACTION
