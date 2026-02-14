@@ -2085,6 +2085,118 @@
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   FLOATING VOICE INDICATOR - Glowing red orb when Mira is speaking
+═══════════════════════════════════════════════════════════════════ */
+.mp-floating-voice-indicator {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 1000;
+  cursor: pointer;
+  animation: voice-indicator-entrance 0.3s ease-out;
+}
+
+@keyframes voice-indicator-entrance {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.mp-voice-orb {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff3b30, #ff5e57);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 
+    0 0 20px rgba(255, 59, 48, 0.6),
+    0 0 40px rgba(255, 59, 48, 0.4),
+    0 4px 15px rgba(0, 0, 0, 0.3);
+  animation: voice-orb-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes voice-orb-glow {
+  0%, 100% {
+    box-shadow: 
+      0 0 20px rgba(255, 59, 48, 0.6),
+      0 0 40px rgba(255, 59, 48, 0.4),
+      0 4px 15px rgba(0, 0, 0, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 
+      0 0 30px rgba(255, 59, 48, 0.8),
+      0 0 60px rgba(255, 59, 48, 0.6),
+      0 4px 20px rgba(0, 0, 0, 0.4);
+    transform: scale(1.05);
+  }
+}
+
+.mp-voice-pulse-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 59, 48, 0.6);
+  animation: voice-pulse-expand 1.5s ease-out infinite;
+}
+
+.mp-voice-pulse-ring.mp-delay {
+  animation-delay: 0.5s;
+}
+
+@keyframes voice-pulse-expand {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+.mp-voice-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.7);
+  padding: 4px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+}
+
+/* Mobile positioning */
+@media (max-width: 768px) {
+  .mp-floating-voice-indicator {
+    bottom: 90px;
+    right: 16px;
+  }
+  
+  .mp-voice-orb {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .mp-voice-label {
+    font-size: 10px;
+  }
+}
+
 /* Mic error state */
 .mp-btn-mic.error {
   background: rgba(239, 68, 68, 0.2);
