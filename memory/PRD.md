@@ -234,20 +234,24 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 
 ---
 
-## 🔴 NEXT AGENT INSTRUCTIONS
+## 🔴 NEXT AGENT INSTRUCTIONS (Updated Feb 14, 2026)
 
-### Task: Port Missing Features from Backup Page
+### P0 - MOJO 100% Task:
+1. **Verify all MOJO editor sections** save data correctly via `/api/pet-soul/profile/{pet_id}/answers/bulk`
+2. **Ensure backend update-pet endpoint** handles all new fields from the 9 editors
 
-**Now that MOJO data integration is complete, the next phase is:**
+### P1 - Documentation:
+1. **Update MOJO_BIBLE_SCORECARD.md** with new completion percentages
+2. **Create handover document** as requested
 
-1. **Weather Card Integration** - Port the weather widget from `MiraDemoBackupPage.jsx` to the TODAY tab
-2. **"Why for {Pet}" Badges** - Show personalization reasons on recommendations
-3. **Health Vault Progress** - Visual indicator of health records completion
-4. **MOJO Modal Phase 2** - Add "drill-in" editing for each of the 11 sections
+### P2 - Legacy Bugs:
+1. Fix `/api/orders` 405 error
+2. Fix markdown rendering bug in chat
 
-**Files to Study:**
-- `/app/frontend/src/pages/MiraDemoBackupPage.jsx` - Source of missing features
-- `/app/frontend/src/components/Mira/PetOSNavigation.jsx` - Add weather to TODAY tab
+### Files to Study:
+- `/app/frontend/src/components/Mira/MojoSectionEditors.jsx` - All 9 editor components
+- `/app/frontend/src/components/Mira/MojoProfileModal.jsx` - Main modal component
+- `/app/backend/routes/mira_routes.py` - Pet update logic
 
 ---
 
