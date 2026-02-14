@@ -517,17 +517,19 @@
 
 ---
 
-### PICKS OVERALL SCORE: 75% ✅ UPDATED
+### 9. Micro-Delights - 80% ✅ UPDATED
+| Item | Status | Notes |
+|------|--------|-------|
+| Confetti for Celebrate | ✅ DONE | Triggers on celebrate pillar |
+| Haptic feedback | ✅ DONE | haptic.js comprehensive |
+| Sound on PICKS refresh | ✅ DONE | picksDelights.js whoosh |
+| PICKS tab glow/pulse | ✅ DONE | CSS animation + JS trigger |
+| Badge "✨ new" | ✅ DONE | Shows count with sparkle |
+| Emergency red pulse | ✅ DONE | emergencyPulse() function |
+| Travel plane animation | ❌ NOT BUILT | Nice to have |
+| Card select "pop" | ✅ DONE | onPickSelect() animation |
 
-**Completed:**
-1. ✅ **P0: B6 - Wire auto-refresh** - DONE (+25%)
-2. ✅ **P0: Pillar switching** - DONE (+10%)
-
-**Remaining Priority Implementation Order:**
-1. 🟡 **P1: "Arranged-for" card template** = +5% overall
-2. 🟡 **P1: Timestamp + "Why these picks"** = +3% overall
-3. 🟢 **P2: 5-second undo toast** = +2% overall
-4. 🟢 **P2: History boost** = +2% overall
+**Subscore: 80%**
 
 ---
 
