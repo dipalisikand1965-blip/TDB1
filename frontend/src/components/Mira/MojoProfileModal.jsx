@@ -1116,6 +1116,7 @@ const MojoProfileModal = ({
       if (petResponse?.ok) {
         const petData = await petResponse.json();
         console.log('[MOJO] Pet data loaded:', petData.name, 'Score:', petData.overall_score);
+        console.log('[MOJO] doggy_soul_meta:', petData.doggy_soul_meta);
         setFullPetData(petData);
         
         // Use actual soul score from API
