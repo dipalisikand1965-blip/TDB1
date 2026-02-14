@@ -397,59 +397,246 @@ Surface time-sensitive items that need attention or are due soon. This is proact
 
 ---
 
-# PART 3: PICKS - INTELLIGENCE LAYER
+# PART 3: PICKS - INTELLIGENCE LAYER (EXHAUSTIVE SPEC)
 
-**Auto-updating recommendations each turn**
+**PICKS is Mira's real-time intelligence engine that converts conversation + pet memory into ranked next-best actions, mixing catalogue picks with arranged-for concierge picks, and it refreshes every single turn.**
 
-## Purpose:
-Convert conversation + Mojo memory into ranked "next best actions" and best-fit product/service picks.
+It's not a page. It's a living layer.
 
-## Inputs:
-- Pet Intelligence (from MOJO)
-- Live conversation intent (active pillar + topic)
-- Safety gates
-- Season/location (optional)
-- History/outcomes (what worked)
+---
 
-## Components under PICKS:
+## 1. Purpose
 
-### 1. Picks Header
-- "Picks for {Pet}"
-- "Updated just now"
-- Optional "Why these picks" micro-line (tap to expand)
+PICKS exists to do three things simultaneously:
+1. Show the best next step for what the user is talking about right now
+2. Pre-empt obvious needs (due soon, seasonal, behaviour-triggered) without nagging
+3. Turn intelligence into action: every card is tappable and becomes a task
 
-### 2. Primary Picks Stack (4-6)
-- Active pillar picks dominate
-- Always includes min 1 service card when applicable
+**If PICKS doesn't update every turn, Mira becomes a chat app. Not an OS.**
 
-### 3. Concierge Picks (gap fillers)
-- Brand-free structured cards when catalogue is missing
+---
 
-### 4. Starter Essentials (1-2 only if relevant)
-- Only when profile thin OR context supports it
-- Must not feel repetitive
+## 2. Inputs (every refresh uses these)
 
-### 5. Safety + Fit Badges (subtle)
-- "Allergy-aware"
-- "Toy-breed safe"
-- "Heat-safe"
+### A) Pet Intelligence (from MOJO)
+Hard constraints + personal fit:
+- age band, size/weight, coat type
+- allergies/sensitivities
+- health flags (non-diagnostic)
+- chew style / energy level / anxiety triggers
+- routine patterns
+- purchase + service history + outcomes (worked/didn't)
+- location/climate if known
 
-Never loud, never scary.
+### B) Live Conversation Context
+Derived every message:
+- active pillar (one of 14)
+- secondary pillar (optional)
+- topic signals (dental, ticks, cakes, travel carrier, boarding…)
+- urgency (normal vs urgent / emergency risk)
 
-### 6. One-tap Actions
-- "Arrange"
-- "Plan"
-- "Start"
-- "Request"
+### C) Safety Gates (global)
+- blocked items list
+- size/age choking rules
+- allergy exclusion rules
+- "no dosing / no sedation / no medical directives"
 
-Every card creates a task when tapped.
+### D) Season + Location (optional but powerful)
+- heat, rain, fireworks, ticks
+- local availability constraints (if you track)
 
-## What must NEVER happen:
-- Picks panel is empty
-- Picks don't switch when topic switches
-- Marketplace inventory vibe
-- Price shown unless known
-- Asking "want me to show options?" after user asked for options
+---
+
+## 3. Core Behaviour (must happen every turn)
+
+### Refresh Loop
+On every user message and every Mira reply:
+1. Infer active pillar + topic
+2. Fetch Pet Context Pack
+3. Generate ranked picks
+4. Render picks into UI
+5. Every card is actionable → creates/updates a task on tap
+
+### Non-negotiable Outcomes
+- PICKS is never empty
+- PICKS switches instantly when topic switches
+- PICKS includes services, not only products
+- PICKS shows catalogue-first, but never feels limited by catalog coverage
+
+---
+
+## 4. Pick Types (two types only)
+
+### A) Catalogue Pick Card
+Shown when there's a high-confidence match in dataset.
+
+**Displays:**
+- title, image, key fit line (why for pet)
+- availability/price only if stored
+- subtle fit badges (optional)
+
+**CTA:** Request / Arrange / Add / Plan (depending on category)
+
+### B) Concierge Pick Card (Arranged-for Card)
+Shown when:
+- catalogue has no match, OR
+- catalogue match exists but is weak, and the OS needs a better answer
+
+**Must NOT use the word "source".**
+
+Use:
+- Arranged for {Pet}
+- Prepared for {Pet}
+- Planned for {Pet}
+- Checked for {Pet}
+
+**Card Template:**
+- Title (generic, brand-free)
+- Why it fits (1 line personalised)
+- What's included (3–6 bullets)
+- What we need (1–2 fields max)
+- Safety note (1 line)
+- CTA: Arrange / Plan / Book / Start / Request
+
+Every concierge pick still creates a task.
+
+---
+
+## 5. Composition Rules (what the panel must contain)
+
+### Output Size
+6–10 cards per refresh
+
+### Required Mix
+- Top 4–6 = active pillar dominant
+- Minimum 1 service card when applicable
+- 1–2 essentials only when relevant (thin profile or context supports it)
+- If Emergency/Farewell: reduce products heavily, actions/services dominate
+
+### Ranking Rule (so it feels premium)
+1. Best fit to pet + safest
+2. Most relevant to active pillar + topic
+3. Most likely "next step" (actionable)
+4. Season/location boost
+5. History boost ("worked last time")
+
+---
+
+## 6. What counts as a "Service Card" inside PICKS
+
+Service cards are execution entry points, not education and not browsing.
+
+**Examples:**
+- Arrange grooming
+- Book vet coordination
+- Plan birthday setup
+- Find pet-friendly stay
+- Trainer matching
+- Diet transition setup
+- Document handling (vaccination / travel cert)
+- Emergency transport coordination
+
+Service cards live in PICKS as "next best action", but the actual workflow lives in SERVICES.
+
+---
+
+## 7. Task Behaviour (every card is actionable)
+
+When a user taps any card (catalogue or concierge pick):
+1. Create a task using your existing task object
+2. Auto-fill constraints from MOJO (allergies, location, behaviour flags, timing preferences)
+3. Set status:
+   - if no input needed → Requested
+   - if missing details → Draft / Awaiting user
+4. Return user to chat with a calm confirmation line
+
+**Undo:** 5-second undo toast after task creation.
+
+---
+
+## 8. Pillar Switching Logic (must be deterministic)
+
+PICKS switches based on what the user is discussing now.
+
+**Examples:**
+- "itching / ticks / grooming / dental" → Care picks
+- "cake / birthday / party" → Celebrate picks
+- "kibble / treats / meal plan" → Dine picks
+- "travel / flight / carrier" → Travel picks
+- "boarding / sitter / hotel" → Stay picks
+- "trainer / leash manners" → Learn picks
+- "vomiting / seizure / choking" → Emergency override
+
+If multiple topics in one message:
+- choose a primary pillar
+- allow secondary pillar cards (max 2)
+
+---
+
+## 9. UI Components Under PICKS (Exhaustive)
+
+### Picks Header
+- Picks for {Pet}
+- Updated just now
+- Optional: "Why these picks" (tap to expand)
+
+### Primary Picks Stack
+- 4–6 dominant cards
+- mixed product + service
+
+### Concierge Picks Section
+- appears when catalogue coverage is weak
+- visually distinct but elegant (no "missing inventory" vibe)
+
+### Starter Essentials (conditional)
+- only when relevant
+- must not repeat the same essentials every time
+
+### Fit Badges (subtle)
+- Allergy-aware
+- Small-mouth safe
+- Heat-safe
+- Anxiety-friendly
+
+Never loud.
+
+### One-tap Actions
+- Arrange / Plan / Start / Request / Book
+- No "want to see options?" when options are already being shown.
+
+### Empty-state Prevention
+- If no catalogue and concierge disabled, show "prepared actions" cards (services) anyway.
+
+---
+
+## 10. What must NEVER happen (hard failures)
+
+- PICKS panel is empty
+- PICKS doesn't switch when topic switches
+- Looks like marketplace inventory
+- Shows price upfront unless known
+- Asks "want me to show options" after user asked for options
+- Re-asks known pet details
+- Suggests risky items by default
+- Emergency message still shows shopping picks
+
+---
+
+## 11. How PICKS interacts with SERVICES
+
+- PICKS recommends and initiates
+- SERVICES executes and tracks
+
+Flow:
+1. Tap in PICKS → opens SERVICES task detail
+2. Confirm in SERVICES → returns to chat
+3. Task updates → refresh PICKS automatically
+
+---
+
+## PICKS Summary (for quick reference)
+
+PICKS is the always-on intelligence layer. It refreshes every chat turn using Pet Context Pack + active pillar intent + safety gates. It outputs 6–10 ranked cards: 4–6 active pillar dominant, at least 1 service card when applicable, and concierge arranged-for cards whenever catalogue coverage is weak. PICKS is never empty, never marketplace-like, and switches instantly when the user shifts topic. Any pick tap creates/updates a task and routes into SERVICES for execution, then returns seamlessly to chat.
 
 ---
 
