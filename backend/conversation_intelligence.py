@@ -733,9 +733,7 @@ def should_generate_tip_card(
         "prepare for", "getting ready for", "what do we need",
         "essentials for", "must-have", "prepare home"
     ]
-    # Note: Removed generic "checklist" and "things to buy" - too product-y
-    ]
-    if any(kw in full_context for kw in adoption_keywords):
+    if any(kw in input_lower for kw in adoption_keywords):
         return True, "new_pet_guide"
     
     # Privacy / Safety / Security tips
@@ -745,24 +743,25 @@ def should_generate_tip_card(
         "security", "location", "personal details", "watermark",
         "stranger danger", "safe to share", "should i share"
     ]
-    if any(kw in full_context for kw in privacy_safety_keywords):
+    if any(kw in input_lower for kw in privacy_safety_keywords):
         return True, "safety_tips"
     
     # Sleeping / Home tips
     home_keywords = [
-        "where should", "sleep", "sleeping arrangement", "bed", "crate",
+        "where should", "sleep", "sleeping arrangement",
         "separation anxiety", "home alone", "leaving alone"
     ]
-    if any(kw in full_context for kw in home_keywords):
+    # Note: Removed "bed" and "crate" - too product-focused
+    if any(kw in input_lower for kw in home_keywords):
         return True, "home_tips"
     
-    # Grooming tips
+    # Grooming tips - advisory questions only
     grooming_keywords = [
-        "groom", "grooming", "bath", "bathing", "brush", "brushing",
-        "nail trim", "nail cutting", "ear clean", "coat care", "shedding",
-        "how often to bathe", "how to brush"
+        "how often to bathe", "how to brush", "how often to groom",
+        "grooming routine", "coat care tips", "shedding tips"
     ]
-    if any(kw in full_context for kw in grooming_keywords):
+    # Note: Removed product-y words like "groom", "bath", "brush" that could mean shopping
+    if any(kw in input_lower for kw in grooming_keywords):
         return True, "grooming_routine"
     
     # Exercise / Activity tips
@@ -771,7 +770,7 @@ def should_generate_tip_card(
         "physical activity", "play time", "outdoor activities",
         "how much should", "how often should"
     ]
-    if any(kw in full_context for kw in exercise_keywords):
+    if any(kw in input_lower for kw in exercise_keywords):
         return True, "exercise_routine"
     
     # Bonding / Quality time tips
