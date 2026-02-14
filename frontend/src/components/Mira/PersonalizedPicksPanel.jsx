@@ -1333,6 +1333,20 @@ const PersonalizedPicksPanel = ({
                                   <span className="px-2 py-0.5 bg-pink-500/30 text-pink-300 text-xs rounded-full">
                                     Concierge Pick
                                   </span>
+                                  {/* Task Status Badge */}
+                                  {getTaskStatus(pick) && (
+                                    <span className={`px-2 py-0.5 text-xs rounded-full ${
+                                      getTaskStatus(pick) === 'scheduled' 
+                                        ? 'bg-green-500/30 text-green-300' 
+                                        : getTaskStatus(pick) === 'in_progress'
+                                        ? 'bg-blue-500/30 text-blue-300'
+                                        : 'bg-yellow-500/30 text-yellow-300'
+                                    }`}>
+                                      {getTaskStatus(pick) === 'scheduled' ? '✓ Scheduled' :
+                                       getTaskStatus(pick) === 'in_progress' ? 'In Progress' :
+                                       'Requested'}
+                                    </span>
+                                  )}
                                 </div>
                                 <h4 className="font-medium text-white text-sm truncate">{pick.name}</h4>
                                 {pick.spec_chip && (
@@ -1346,13 +1360,25 @@ const PersonalizedPicksPanel = ({
                                 )}
                               </div>
                               <div
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (!getTaskStatus(pick)) {
+                                    createTaskFromPick(pick);
+                                  }
+                                }}
                                 className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
-                                  isSelected(pick) 
+                                  getTaskStatus(pick) === 'scheduled'
+                                    ? 'bg-green-500 text-white cursor-default'
+                                    : getTaskStatus(pick)
+                                    ? 'bg-yellow-500 text-white cursor-wait'
+                                    : isSelected(pick) 
                                     ? 'bg-pink-500 text-white' 
-                                    : 'bg-purple-700 text-purple-300'
+                                    : 'bg-purple-700 text-purple-300 hover:bg-purple-600 cursor-pointer'
                                 }`}
                               >
-                                {isSelected(pick) ? <Check className="w-4 h-4" /> : <span className="text-lg">+</span>}
+                                {getTaskStatus(pick) === 'scheduled' ? <Check className="w-4 h-4" /> :
+                                 getTaskStatus(pick) ? <RefreshCw className="w-4 h-4 animate-spin" /> :
+                                 isSelected(pick) ? <Check className="w-4 h-4" /> : <span className="text-lg">+</span>}
                               </div>
                             </div>
                           </div>
