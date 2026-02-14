@@ -85,7 +85,7 @@ class TestGroomingClarifyingQuestions(TestAuthSetup):
     def test_grooming_query_asks_clarifying_question_first(self, authenticated_session, pet_context):
         """Grooming query should ask clarifying question, not show places immediately"""
         response = authenticated_session.post(f"{BASE_URL}/api/mira/os/understand-with-products", json={
-            "user_input": "i need a groomer",
+            "input": "i need a groomer",
             "pet_context": pet_context,
             "session_id": f"test_grooming_{datetime.now().strftime('%Y%m%d%H%M%S')}",
             "conversation_stage": "initial",
@@ -125,7 +125,7 @@ class TestGroomingClarifyingQuestions(TestAuthSetup):
     def test_grooming_explicit_location_skips_clarification(self, authenticated_session, pet_context):
         """When user explicitly asks 'near me', should search directly"""
         response = authenticated_session.post(f"{BASE_URL}/api/mira/os/understand-with-products", json={
-            "user_input": "find me a groomer near me",
+            "input": "find me a groomer near me",
             "pet_context": pet_context,
             "session_id": f"test_grooming_near_{datetime.now().strftime('%Y%m%d%H%M%S')}",
             "conversation_stage": "initial",
