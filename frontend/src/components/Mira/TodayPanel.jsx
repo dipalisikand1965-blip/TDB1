@@ -423,6 +423,58 @@ const EmptyState = memo(({ petName }) => (
 ));
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// LEARN NUDGE CARD - Smart nudge from LEARN layer
+// Shows when user completed/saved a Learn item that has a service action
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const LearnNudgeCard = memo(({ 
+  nudge, 
+  onPrimaryAction,
+  onSecondaryAction,
+  onDismiss 
+}) => {
+  if (!nudge) return null;
+  
+  return (
+    <div className="today-card learn-nudge" data-testid="learn-nudge-card">
+      <div className="card-icon-wrap learn-nudge-icon">
+        <BookOpen className="w-5 h-5" />
+      </div>
+      <div className="card-content">
+        <span className="card-title">{nudge.title}</span>
+        <span className="card-description learn-context">{nudge.context_line}</span>
+      </div>
+      <div className="learn-nudge-actions">
+        <button 
+          className="learn-nudge-primary"
+          onClick={() => onPrimaryAction?.(nudge)}
+          data-testid="learn-nudge-primary-btn"
+        >
+          {nudge.primary_cta?.label || 'Let Mira do it'}
+        </button>
+        <button 
+          className="learn-nudge-secondary"
+          onClick={() => onSecondaryAction?.(nudge)}
+          data-testid="learn-nudge-secondary-btn"
+        >
+          {nudge.secondary_cta?.label || 'Ask Mira'}
+        </button>
+        <button 
+          className="learn-nudge-dismiss"
+          onClick={() => onDismiss?.(nudge)}
+          aria-label="Not now"
+          data-testid="learn-nudge-dismiss-btn"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+});
+
+// Import BookOpen for LearnNudgeCard (already imported as part of lucide-react)
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════════
 
