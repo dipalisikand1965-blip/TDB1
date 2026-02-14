@@ -633,7 +633,7 @@ if __name__ == "__main__":
     
     scored = score_pick(test_pick_paperwork, travel_classification, profile)
     
-    print(f"\nTest: Travel -> Paperwork Boost")
+    print("\nTest: Travel -> Paperwork Boost")
     print(f"Pick: {scored.pick_id}")
     print(f"Base Score: {scored.base_score}")
     print(f"Boosts: {scored.boosts}")
@@ -665,9 +665,9 @@ if __name__ == "__main__":
     pug_profile = create_test_profile(pet_name="Pugsley", breed="Pug", city="Delhi")
     scored_pug = score_pick(test_pick_air, travel_classification, pug_profile)
     
-    print(f"\nTest: Brachycephalic Warning")
+    print("\nTest: Brachycephalic Warning")
     print(f"Pick: {scored_pug.pick_id}")
-    print(f"Breed: Pug (brachycephalic)")
+    print("Breed: Pug (brachycephalic)")
     print(f"Warnings: {scored_pug.warnings}")
     print(f"Doc Requirements: {scored_pug.doc_requirements}")
     
