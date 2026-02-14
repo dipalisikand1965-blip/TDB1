@@ -9,16 +9,42 @@
 ## 5. `/app/memory/SYSTEM_AUDIT_REPORT.md` - ✅ FULL SYSTEM AUDIT COMPLETED (Feb 2026)
 ---
 
-## CURRENT SCORE: 95% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 9)
+## CURRENT SCORE: 97% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 10)
 
 | Layer | Score | Status |
 |-------|-------|--------|
 | **MOJO (14 components)** | **100%** | ✅ **COMPLETE** |
-| **TODAY** | 95% | ✅ Near-complete |
+| **TODAY** | **100%** | ✅ **COMPLETE** - Watchlist integration done |
 | **PICKS** | **100%** | ✅ **COMPLETE** - UI verified working |
-| **SERVICES** | **95%** | ✅ **COMPLETE** - Execution loop working |
+| **SERVICES** | **100%** | ✅ **COMPLETE** - Execution loop + watchlist |
 | **LEARN** | 10% | Future |
 | **CONCIERGE** | 30% | Future |
+
+---
+
+## SESSION 10 ACCOMPLISHMENTS (Feb 14, 2026)
+
+### P0.2 TODAY Watchlist Integration ✅
+**Goal:** Today panel shows "in-motion" work from the ticket backbone.
+
+**Statuses included:**
+- `clarification_needed`, `options_ready`, `approval_pending`, `payment_pending` → "Awaiting You" section
+- `in_progress`, `scheduled`, `shipped` → "In Progress" section
+
+**Components Updated:**
+- **TodayPanel.jsx** - New watchlist sections
+  - `WatchlistTaskCard` - Displays ticket with status icon and one-tap action
+  - `fetchWatchlist` useEffect - Calls `/api/os/services/watchlist` endpoint
+  - "Awaiting You" section with quick action buttons (Reply, Choose, Approve, Pay)
+  - "In Progress" section with View button
+  - Stale indicator (orange pulsing icon) when data > 5 min old
+
+**Bug Fixed:**
+- Empty `apiUrl` was treated as falsy, preventing watchlist fetch (apiUrl is intentionally empty for relative paths)
+
+**Test Results:**
+- Backend: 100% - 14/14 tests passed
+- Frontend: 100% - All sections render correctly
 
 ---
 
