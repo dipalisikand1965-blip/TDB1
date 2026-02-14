@@ -84,6 +84,13 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
   - Frontend: `useChatSubmit.js` lines 715-782 processes picks from response
   - 8 pytest tests passing in `/app/backend/tests/test_picks_auto_refresh.py`
   - PICKS score: 45% → 75% (+30%)
+- [x] **✅ COMPLETED: Enhanced Pick Cards (2026-02-14)** - Full PICKS flow:
+  - Added `what_we_arrange`, `what_we_need`, `includes` fields to ScoredPick
+  - Updated PersonalizedPicksPanel to display enhanced fields
+  - Dynamic CTAs: Arrange, Book, Plan, Request, Add, Get Help
+  - "Updated just now" timestamp after each chat turn
+  - Verified via UI screenshots: pillar auto-switching works perfectly
+  - PICKS score: 75% → 80% (+5%)
 
 ### P1 - High Priority (COMPLETED ✅)
 - [x] **✅ TRAIT GRAPH VISUALIZATION (2026-02-14)** - Shows how Mira learns about pets
