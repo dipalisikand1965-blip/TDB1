@@ -18,16 +18,16 @@
 |------|--------|------|-------|-------|
 | Fix `/dashboard` redirect to login issue | ✅ DONE | Feb 14 | E1 | Wrapped in ProtectedRoute in App.js |
 | Debug AuthContext state persistence | ✅ DONE | Feb 14 | E1 | Already working correctly |
-| Test login → navigate → refresh flow | ⏳ TESTING | Feb 14 | E1 | Testing now |
-| Fix session token refresh logic | 🔲 TODO | | | |
-| Verify logout clears all state | 🔲 TODO | | | |
+| Test login → navigate → refresh flow | ✅ DONE | Feb 14 | E1 | Verified - session persists across nav & refresh |
+| Fix session token refresh logic | ✅ DONE | Feb 14 | E1 | Already implemented in AuthContext |
+| Verify logout clears all state | ✅ DONE | Feb 14 | E1 | Verified - redirects to login, blocks protected routes |
 
 **Day 1 Tests:**
-- [ ] Login with test user
-- [ ] Navigate to /dashboard - should NOT redirect
-- [ ] Refresh page - should stay logged in
-- [ ] Navigate across pillars - session persists
-- [ ] Logout and verify protected routes blocked
+- [x] Login with test user
+- [x] Navigate to /dashboard - works correctly
+- [x] Refresh page - stays logged in
+- [x] Navigate across pillars - session persists
+- [x] Logout and verify protected routes blocked
 
 ---
 
