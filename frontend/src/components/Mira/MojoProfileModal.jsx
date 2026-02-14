@@ -564,6 +564,75 @@ const HealthProfileContent = memo(({ pet }) => {
     items.push({ key: 'spayed_neutered', label: 'Spayed/Neutered', value: spayedNeutered, icon: '✓', ...meta });
   }
   
+  // Health Sensitivities
+  if (soulAnswers.skin_sensitivity) {
+    items.push({ key: 'skin_sensitivity', label: 'Skin Sensitivity', value: soulAnswers.skin_sensitivity, icon: '🧴' });
+  }
+  if (soulAnswers.gi_sensitivity) {
+    items.push({ key: 'gi_sensitivity', label: 'Digestive Sensitivity', value: soulAnswers.gi_sensitivity, icon: '🥗' });
+  }
+  
+  // Vaccination Status
+  if (soulAnswers.vaccination_status || healthVault.vaccination_status) {
+    items.push({ 
+      key: 'vaccination_status', 
+      label: 'Vaccinations', 
+      value: soulAnswers.vaccination_status || healthVault.vaccination_status, 
+      icon: '💉' 
+    });
+  }
+  
+  // Vet Details
+  if (healthVault.vet_name || healthVault.vet_clinic) {
+    items.push({ 
+      key: 'vet_details', 
+      label: 'Vet', 
+      value: healthVault.vet_name || healthVault.vet_clinic, 
+      icon: '👨‍⚕️' 
+    });
+  }
+  
+  // Chronic Conditions
+  if (healthVault.chronic_conditions && healthVault.chronic_conditions.length > 0) {
+    items.push({ 
+      key: 'chronic_conditions', 
+      label: 'Conditions', 
+      value: Array.isArray(healthVault.chronic_conditions) ? healthVault.chronic_conditions.join(', ') : healthVault.chronic_conditions, 
+      icon: '📋',
+      critical: true
+    });
+  }
+  
+  // Microchip
+  if (healthVault.microchip_number || soulAnswers.microchip_number) {
+    items.push({ 
+      key: 'microchip', 
+      label: 'Microchip', 
+      value: healthVault.microchip_number || soulAnswers.microchip_number, 
+      icon: '📡' 
+    });
+  }
+  
+  // Insurance
+  if (healthVault.insurance_provider) {
+    items.push({ 
+      key: 'insurance', 
+      label: 'Insurance', 
+      value: healthVault.insurance_provider, 
+      icon: '🛡️' 
+    });
+  }
+  
+  // Emergency Contact
+  if (healthVault.emergency_contact || pet?.emergency_contact) {
+    items.push({ 
+      key: 'emergency_contact', 
+      label: 'Emergency Contact', 
+      value: healthVault.emergency_contact || pet?.emergency_contact, 
+      icon: '🆘' 
+    });
+  }
+  
   return (
     <div className="health-profile-content" data-testid="health-profile-content">
       {items.length > 0 ? (
