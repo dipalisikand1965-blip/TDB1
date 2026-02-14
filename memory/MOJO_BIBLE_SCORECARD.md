@@ -10,21 +10,27 @@
 |----------|---------------|--------|-----|
 | **MOJO (14 Components)** | 100% | 100% | 0% |
 | **TODAY Layer** | 95% | 100% | 5% |
-| **PICKS Layer** | 75% | 100% | 25% |
+| **PICKS Layer** | 80% | 100% | 20% |
 | **SERVICES Layer** | 40% | 100% | 60% |
 | **LEARN Layer** | 10% | 100% | 90% |
 | **CONCIERGE Layer** | 30% | 100% | 70% |
 | **OS Operating Doctrine** | 55% | 100% | 45% |
 | **10 Absolute Rules** | 60% | 100% | 40% |
-| **OVERALL** | **78%** | 100% | **22%** |
+| **OVERALL** | **80%** | 100% | **20%** |
 
-**Changes this session (Feb 14, 2026 - Session 6):**
+**Changes this session (Feb 14, 2026 - Session 6 FINAL):**
 - ✅ **PICKS AUTO-REFRESH FULLY VERIFIED** (B6 Complete)
   - Backend /api/mira/os/understand-with-products now returns picks[] on every chat turn
-  - Pillar auto-switching tested and working (grooming→care, birthday→celebrate)
-  - All 8 pytest tests passed for picks engine integration
-  - Frontend hooks (useChatSubmit.js, useVault.js) correctly process picks
-- **PICKS Score: 60% → 75%** (+15%)
+  - Pillar auto-switching verified via UI: birthday→celebrate, grooming→care
+  - "Updated just now" timestamp displays after each chat
+- ✅ **Enhanced Pick Cards**
+  - Added `what_we_arrange`, `what_we_need`, `includes` fields to picks
+  - Dynamic CTAs: Arrange, Book, Plan, Request, Add, Get Help
+  - Updated PersonalizedPicksPanel to display new fields
+- ✅ **New Picks Added**
+  - Skin care picks: Skin Check, Flea Prevention, Sensitive Shampoo, Paw Wipes
+  - Celebrate picks: Birthday Cake, Party Setup, Photographer, Treat Box
+- **PICKS Score: 75% → 80%** (+5%)
 
 **Changes this session (Feb 14, 2026 - Session 4):**
 - ✅ **TRAIT GRAPH VISUALIZATION (100%)** - Frontend UI for displaying Mira's intelligence
