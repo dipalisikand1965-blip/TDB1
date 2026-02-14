@@ -2549,12 +2549,20 @@ const MojoProfileModal = ({
         .behaviour-value,
         .grooming-value,
         .routine-value,
+        .environment-value,
         .preferences-value {
           font-size: 14px;
           color: white;
           font-weight: 500;
           flex: 1;
           text-align: right;
+        }
+        
+        /* Environment specific */
+        .environment-empty-state {
+          text-align: center;
+          padding: 20px;
+          color: #9CA3AF;
         }
         
         /* Preferences specific colors */
