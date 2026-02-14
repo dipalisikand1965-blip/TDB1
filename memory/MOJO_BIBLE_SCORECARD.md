@@ -491,7 +491,7 @@
 
 ---
 
-### Backend Implementation Status - 80%
+### Backend Implementation Status - 85% ✅ UPDATED
 | Component | Status | Notes |
 |-----------|--------|-------|
 | B0: Taxonomy Seeding | ✅ DONE | 217 tags, 625 synonyms |
@@ -500,11 +500,11 @@
 | B3: Safety Gate | ✅ DONE | 21 tests passing |
 | B4: Scoring Function | ✅ DONE | Ranking + diversity |
 | B5: Concierge Logic | ⚠️ PARTIAL | Needs completion |
-| B6: API Integration | ❌ NOT BUILT | **CRITICAL GAP** |
+| B6: API Integration | ✅ DONE | **FULLY TESTED - 8 pytest tests passed** |
 | B7: Events Log | ⚠️ PARTIAL | Basic logging |
 | B8: Scenario Testing | ❌ NOT BUILT | Needs 50 prompts |
 
-**Backend Subscore: 65%**
+**Backend Subscore: 85%** (B6 Auto-Refresh COMPLETE)
 
 ---
 
