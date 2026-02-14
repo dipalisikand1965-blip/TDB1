@@ -503,9 +503,15 @@ const TodayPanel = ({
   // FETCH LEARN NUDGE FOR TODAY
   // ═══════════════════════════════════════════════════════════════════════════
   
+  // Use ref to prevent duplicate fetches from StrictMode double-mount
+  const learnNudgeFetchedRef = React.useRef(false);
+  
   useEffect(() => {
-    // Use a ref to track if we already fetched to avoid StrictMode double-fetch issues
-    let cancelled = false;
+    // Prevent duplicate fetches in StrictMode
+    if (learnNudgeFetchedRef.current) {
+      console.log('[TODAY] Learn nudge already fetched, skipping duplicate call');
+      return;
+    }
     
     const fetchLearnNudge = async () => {
       console.log('[TODAY] fetchLearnNudge called - isOpen:', isOpen, 'pet:', pet?.id, 'hasToken:', !!token);
@@ -522,6 +528,9 @@ const TodayPanel = ({
         return;
       }
       
+      // Mark as fetched to prevent duplicate calls
+      learnNudgeFetchedRef.current = true;
+      
       try {
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -530,13 +539,6 @@ const TodayPanel = ({
         console.log('[TODAY] Fetching learn nudge from:', url);
         
         const response = await fetch(url, { headers });
-        
-        // Don't update state if this fetch was cancelled
-        if (cancelled) {
-          console.log('[TODAY] Fetch cancelled, ignoring response');
-          return;
-        }
-        
         console.log('[TODAY] Learn nudge response status:', response.status);
         
         if (response.ok) {
@@ -547,29 +549,23 @@ const TodayPanel = ({
             setLearnNudge(data.nudge);
           } else {
             console.log('[TODAY] No nudge in response, reason:', data.reason);
-            // Only clear nudge if we don't already have one
-            // This prevents StrictMode double-fetch from clearing a valid nudge
-            setLearnNudge(prevNudge => {
-              if (prevNudge) {
-                console.log('[TODAY] Keeping existing nudge, ignoring null response');
-                return prevNudge;
-              }
-              return null;
-            });
+            setLearnNudge(null);
           }
         } else {
           console.log('[TODAY] Learn nudge request failed:', response.status);
         }
       } catch (err) {
         console.log('[TODAY] Could not fetch learn nudge:', err.message);
+        // Reset fetch flag on error to allow retry
+        learnNudgeFetchedRef.current = false;
       }
     };
     
     fetchLearnNudge();
     
-    // Cleanup - cancel this fetch if component unmounts or deps change
+    // Reset the ref when panel closes or pet changes
     return () => {
-      cancelled = true;
+      learnNudgeFetchedRef.current = false;
     };
   }, [isOpen, pet?.id, apiUrl, token]);
   
