@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://today-urgent-dash.preview.emergentagent.com
+https://mira-os.preview.emergentagent.com
 ```
 
 ---

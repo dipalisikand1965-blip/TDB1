@@ -525,7 +525,7 @@ Per user's architecture vision:
 
 ## Preview URL
 
-**Working:** https://today-urgent-dash.preview.emergentagent.com/mira-demo
+**Working:** https://mira-os.preview.emergentagent.com/mira-demo
 
 ---
 

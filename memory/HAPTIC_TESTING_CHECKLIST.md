@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://today-urgent-dash.preview.emergentagent.com/mira-demo**
+**https://mira-os.preview.emergentagent.com/mira-demo**
 
 ---
 

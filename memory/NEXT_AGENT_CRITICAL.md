@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://today-urgent-dash.preview.emergentagent.com
+https://mira-os.preview.emergentagent.com
 
 ---
 
