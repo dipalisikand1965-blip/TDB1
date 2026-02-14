@@ -265,13 +265,19 @@ const ServiceRequestBuilder = ({
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center" data-testid="request-builder-modal">
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center" 
+         data-testid="request-builder-modal"
+         style={{ touchAction: 'none' }}>
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
-      {/* Modal */}
-      <div className="relative w-full sm:max-w-lg max-h-[90vh] bg-slate-900 rounded-t-2xl sm:rounded-2xl
-                      border border-white/10 flex flex-col overflow-hidden animate-in slide-in-from-bottom duration-300">
+      {/* Modal - uses dvh for iOS Safari */}
+      <div className="relative w-full sm:max-w-lg bg-slate-900 rounded-t-2xl sm:rounded-2xl
+                      border border-white/10 flex flex-col overflow-hidden animate-in slide-in-from-bottom duration-300"
+           style={{ 
+             maxHeight: 'min(90vh, 90dvh)',
+             paddingBottom: 'env(safe-area-inset-bottom, 0px)'
+           }}>
         
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-white/5">
