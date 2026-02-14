@@ -35,7 +35,8 @@ class TestLearnTodayIntegration:
         })
         if response.status_code == 200:
             data = response.json()
-            return data.get("token")
+            # The API returns access_token, not token
+            return data.get("access_token") or data.get("token")
         pytest.skip(f"Authentication failed: {response.status_code}")
     
     @pytest.fixture
@@ -356,7 +357,8 @@ class TestLearnServiceMapping:
         })
         if response.status_code == 200:
             data = response.json()
-            return data.get("token")
+            # The API returns access_token, not token
+            return data.get("access_token") or data.get("token")
         pytest.skip(f"Authentication failed: {response.status_code}")
     
     @pytest.fixture
