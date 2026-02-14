@@ -27,7 +27,7 @@ import {
   Syringe, Scissors, Cake, FileText, CheckCircle, 
   Sun, Cloud, Thermometer, Heart, Shield, Activity,
   ChevronRight, X, Droplets, Wind, Zap, Package,
-  CloudRain, AlertOctagon, Dog, MapPin, RefreshCw
+  CloudRain, AlertOctagon, Dog, MapPin, RefreshCw, BookOpen
 } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════════════════════════
