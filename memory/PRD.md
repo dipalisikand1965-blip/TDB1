@@ -11,7 +11,7 @@
 ## 7. `/app/memory/SYSTEM_AUDIT_REPORT.md` - ✅ FULL SYSTEM AUDIT COMPLETED (Feb 2026)
 ---
 
-## CURRENT SCORE: 100% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 17)
+## CURRENT SCORE: 100% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 18)
 
 | Layer | Score | Status |
 |-------|-------|--------|
@@ -21,8 +21,64 @@
 | **SERVICES** | **100%** | ✅ **COMPLETE** - Execution loop + Orders integrated |
 | **P1 MOBILE** | **100%** | ✅ **COMPLETE** - iOS Safari + Android Chrome |
 | **LEARN** | **100%** | ✅ **COMPLETE** - Session 12: Full Integration |
-| **CONCIERGE** | **90%** | 🔄 **PHASE 2 IN PROGRESS** - Consolidated + Option Cards working |
+| **CONCIERGE** | **95%** | ✅ **TWO-WAY SYNC COMPLETE** - Admin replies now visible in user chat |
 | **VOICE** | **90%** | ✅ TTS working, glowing red button added, floating indicator added |
+
+---
+
+## SESSION 18 ACCOMPLISHMENTS (Feb 14, 2026)
+
+### P0: TWO-WAY COMMUNICATION FLOW ✅ COMPLETE
+
+**User Request:** "How does this become two-way from service desk?"
+
+**What Was Built:**
+When an admin replies to a ticket from the Service Desk, that reply now automatically:
+1. **Appears in the user's Concierge chat thread** - synced to `concierge_messages`
+2. **Updates thread status** to `awaiting_user` (indicating response received)
+3. **Creates a member notification** with direct link to Concierge tab
+4. **Links ticket to thread** for future syncs
+
+**Technical Implementation:**
+
+#### A) Backend: `ticket_routes.py` - Admin Reply Sync
+- Added TWO-WAY SYNC logic to `POST /api/tickets/{ticket_id}/reply`
+- Finds linked `concierge_thread` by:
+  1. Direct `ticket_id` match
+  2. `user_id` lookup
+  3. `member_email` lookup
+- Syncs admin reply to `concierge_messages` collection
+- Also syncs to `mira_conversations` (for Mira chat handoffs)
+- Updates thread `status`, `unread_count`, `last_message_at`
+- Creates member notification with `thread_id` for deep linking
+
+#### B) Frontend: `NotificationBell.jsx` - Click Handler
+- Updated click handler for `concierge_reply` notifications
+- Navigates to `/mira-demo?tab=concierge&thread={thread_id}`
+
+#### C) Frontend: `MiraDemoPage.jsx` - URL Parameter Handling
+- Added `useEffect` to read `?tab=` and `?thread=` URL params
+- Auto-opens Concierge tab when navigating from notification
+- Sets thread ID for auto-opening specific thread
+
+#### D) Backend: `concierge_os_routes.py` - Source Tracking
+- Added `source` field to message responses (`chat` vs `service_desk`)
+- Users can see which messages came from admin panel
+
+**Files Modified:**
+- `/app/backend/ticket_routes.py` - TWO-WAY SYNC in reply endpoint
+- `/app/frontend/src/components/Mira/NotificationBell.jsx` - concierge_reply click
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - URL param handling
+- `/app/backend/routes/concierge_os_routes.py` - source field in messages
+
+**API Test Results:**
+```
+Thread Messages (4):
+  [user] (chat) I need help booking a vet appointment...
+  [concierge] (chat) Hi! I'm here to help with Your pet...
+  [concierge] (service_desk) Great news! I found Happy Paws Veterinary Clinic...
+  [concierge] (service_desk) The appointment has been confirmed for 10:30 AM...
+```
 
 ---
 
