@@ -40,7 +40,9 @@ const useVault = () => {
     concierge: null,        // Concierge prominence decision
     safetyOverride: null,   // Emergency/caution state
     missingProfileFields: [], // For micro-questions
-    lastUpdated: null       // Timestamp for "Updated just now"
+    lastUpdated: null,      // Timestamp for "Updated just now"
+    // NEW: Conversation context for context-aware picks
+    conversationContext: null // { topic: "goa trip", destination: "Goa" }
   });
   
   // Mira Tray visibility (the floating picks indicator)
