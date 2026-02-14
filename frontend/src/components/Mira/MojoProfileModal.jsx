@@ -2957,15 +2957,19 @@ const MojoProfileModal = ({
         /* Membership Section */
         .membership-section {
           margin: 16px;
-          padding: 20px;
-          background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
+          padding: 16px;
+          background: transparent;
           border-radius: 20px;
-          border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        .membership-section.pet-life-pass {
+          padding: 0;
         }
         
         .membership-section.coming-soon {
           background: rgba(107, 114, 128, 0.1);
-          border-color: rgba(107, 114, 128, 0.2);
+          border: 1px solid rgba(107, 114, 128, 0.2);
+          padding: 20px;
         }
         
         .membership-header {
@@ -3003,88 +3007,200 @@ const MojoProfileModal = ({
           cursor: not-allowed;
         }
         
-        .membership-card {
+        /* ═══════════════════════════════════════════════════════════════
+           PET LIFE PASS CARD - Beautiful gradient card like dashboard
+           ═══════════════════════════════════════════════════════════════ */
+        .pet-pass-card {
+          position: relative;
+          border-radius: 20px;
+          overflow: hidden;
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+          margin: 16px;
+        }
+        
+        .pet-pass-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .pet-pass-card:active {
+          transform: translateY(0);
+        }
+        
+        .pass-card-pattern {
+          position: absolute;
+          inset: 0;
+          opacity: 0.15;
+          pointer-events: none;
+        }
+        
+        .pattern-circle {
+          position: absolute;
+          border-radius: 50%;
+          border: 4px solid white;
+        }
+        
+        .pattern-circle-1 {
+          top: -20px;
+          right: -20px;
+          width: 120px;
+          height: 120px;
+        }
+        
+        .pattern-circle-2 {
+          bottom: -10px;
+          left: -10px;
+          width: 80px;
+          height: 80px;
+        }
+        
+        .pass-card-content {
+          position: relative;
           padding: 20px;
-          border-radius: 16px;
-          background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.1));
-          border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-        
-        .membership-card.tier-gold {
-          background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(217, 119, 6, 0.15));
-        }
-        
-        .membership-card.tier-platinum {
-          background: linear-gradient(135deg, rgba(229, 231, 235, 0.2), rgba(156, 163, 175, 0.1));
-          border-color: rgba(229, 231, 235, 0.3);
-        }
-        
-        .membership-card-header {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          color: #FCD34D;
-        }
-        
-        .membership-tier {
-          font-size: 20px;
-          font-weight: 700;
-        }
-        
-        .membership-since {
-          font-size: 12px;
-          color: #9CA3AF;
-          margin-top: 4px;
-        }
-        
-        .membership-points-display {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          margin-top: 16px;
           color: white;
+        }
+        
+        .pass-card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 16px;
+        }
+        
+        .pass-brand {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        
+        .pass-logo {
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 800;
+          font-size: 14px;
+        }
+        
+        .pass-title {
+          font-weight: 700;
+          font-size: 16px;
+          letter-spacing: 0.5px;
+        }
+        
+        .pass-tier-badge {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding: 6px 12px;
+          border-radius: 20px;
+          background: rgba(255, 255, 255, 0.2);
+          font-size: 12px;
+          font-weight: 600;
+        }
+        
+        .tier-icon {
+          font-size: 14px;
+        }
+        
+        .pass-number-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 14px;
+          border-radius: 12px;
+          background: rgba(255, 255, 255, 0.2);
+          border: none;
+          color: white;
+          font-family: 'SF Mono', 'Menlo', monospace;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+        
+        .pass-number-btn:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .pass-number-btn:active {
+          background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .pass-points-section {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          margin-top: 20px;
+        }
+        
+        .points-info,
+        .points-worth {
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .points-label,
+        .worth-label {
+          font-size: 11px;
+          color: rgba(255, 255, 255, 0.7);
+          margin-bottom: 2px;
         }
         
         .points-value {
           font-size: 28px;
+          font-weight: 800;
+          line-height: 1;
+        }
+        
+        .worth-value {
+          font-size: 18px;
           font-weight: 700;
         }
         
-        .points-label {
-          font-size: 12px;
-          color: #9CA3AF;
-        }
-        
-        .membership-next-tier {
-          font-size: 12px;
-          color: #FCD34D;
-          margin-top: 8px;
-        }
-        
-        .membership-view-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 4px;
-          width: 100%;
+        .pass-progress {
           margin-top: 16px;
-          padding: 12px;
-          border-radius: 12px;
-          background: rgba(245, 158, 11, 0.2);
-          border: none;
-          color: #FCD34D;
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s;
         }
         
-        .membership-view-btn:hover {
-          background: rgba(245, 158, 11, 0.3);
+        .progress-text {
+          display: flex;
+          justify-content: space-between;
+          font-size: 11px;
+          color: rgba(255, 255, 255, 0.7);
+          margin-bottom: 6px;
         }
         
+        .progress-bar {
+          height: 6px;
+          border-radius: 3px;
+          background: rgba(255, 255, 255, 0.2);
+          overflow: hidden;
+        }
+        
+        .progress-fill {
+          height: 100%;
+          border-radius: 3px;
+          background: white;
+          transition: width 0.5s ease;
+        }
+        
+        .pass-card-footer {
+          margin-top: 14px;
+          text-align: center;
+        }
+        
+        .view-card-text {
+          font-size: 10px;
+          color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Membership Badges */
         .membership-badges {
-          margin-top: 20px;
+          margin: 20px 16px 0;
         }
         
         .badges-title {
@@ -3096,7 +3212,7 @@ const MojoProfileModal = ({
         
         .badges-grid {
           display: flex;
-          gap: 12px;
+          gap: 10px;
           flex-wrap: wrap;
         }
         
