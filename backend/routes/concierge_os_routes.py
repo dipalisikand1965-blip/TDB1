@@ -202,7 +202,7 @@ async def get_concierge_home(
     - active_requests: Tickets awaiting user action
     - recent_threads: Last 5 conversation threads
     """
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     try:
