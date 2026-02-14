@@ -720,6 +720,7 @@ const PersonalizedPicksPanel = ({
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showAllCatalogue, setShowAllCatalogue] = useState(false);
   const [showAllConcierge, setShowAllConcierge] = useState(false);
+  const [showWhyPicks, setShowWhyPicks] = useState(false);
   const [customRequest, setCustomRequest] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null); // For product detail modal (fallback)
   const [selectedConcierge, setSelectedConcierge] = useState(null); // For concierge detail modal (fallback)
