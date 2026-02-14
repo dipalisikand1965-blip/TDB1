@@ -5,11 +5,12 @@
 ## 1. **MIRA OS URL:** `/mira-demo` (NOT `/mira`)
 ## 2. **Test Credentials:** `dipali@clubconcierge.in` / `test123` | Admin: `aditya` / `lola4304`
 ## 3. `/app/memory/MOJO_BIBLE.md` - THE COMPLETE MOJO DEFINITION (28 Parts + OS Layers)
-## 4. `/app/memory/MOJO_BIBLE_SCORECARD.md` - Current Implementation Score (100% MOJO / 92% Overall)
-## 5. `/app/memory/SYSTEM_AUDIT_REPORT.md` - ✅ FULL SYSTEM AUDIT COMPLETED (Feb 2026)
+## 4. `/app/memory/LEARN_BIBLE.md` - THE COMPLETE LEARN LAYER SPECIFICATION
+## 5. `/app/memory/MOJO_BIBLE_SCORECARD.md` - Current Implementation Score
+## 6. `/app/memory/SYSTEM_AUDIT_REPORT.md` - ✅ FULL SYSTEM AUDIT COMPLETED (Feb 2026)
 ---
 
-## CURRENT SCORE: 100% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 10)
+## CURRENT SCORE: 100% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 11)
 
 | Layer | Score | Status |
 |-------|-------|--------|
@@ -18,8 +19,49 @@
 | **PICKS** | **100%** | ✅ **COMPLETE** - UI verified working |
 | **SERVICES** | **100%** | ✅ **COMPLETE** - Execution loop + watchlist |
 | **P1 MOBILE** | **100%** | ✅ **COMPLETE** - iOS Safari + Android Chrome |
-| **LEARN** | 10% | Future |
+| **LEARN** | **100%** | ✅ **COMPLETE** - Session 11 |
 | **CONCIERGE** | 30% | Future |
+
+---
+
+## SESSION 11 ACCOMPLISHMENTS (Feb 14, 2026)
+
+### P0 LEARN OS Layer ✅
+**Goal:** Build the LEARN knowledge layer - "Confusion → Clarity → Action in 2 minutes"
+
+**What was built:**
+
+#### Backend (learn_os_routes.py)
+- `GET /api/os/learn/home` - Home screen with topics + featured content
+- `GET /api/os/learn/topics` - 9 topic chips with icons/colors
+- `GET /api/os/learn/topic/{topic}` - Topic content in 3 shelves
+- `GET /api/os/learn/item/{type}/{id}` - Single guide/video detail
+- `GET /api/os/learn/search?q=` - Search across guides/videos
+- `POST /api/os/learn/saved` - Save/unsave items
+- `GET /api/os/learn/saved` - User's saved items
+
+#### Seed Content (learn_content_seeder.py)
+- **30 Tiny Guides** across: Health, Grooming, Food, Behaviour, Travel, Boarding, Seasonal
+- **20 Curated YouTube Videos** with "Mira Frame" wrapper
+- Trust gating: `risk_level`, `escalation_required`, `reviewed_by`, `last_reviewed_at`
+- India-relevant content (tick protocol, monsoon care, Diwali fireworks, etc.)
+
+#### Frontend (LearnPanel.jsx, LearnReader.jsx)
+- Full-screen panel with z-index 9999
+- Search bar + 9 topic chips (horizontal scroll)
+- 3 content shelves: Start Here, 2-Minute Guides, Watch & Learn
+- Content cards: icon, time badge, title, summary, topic label
+- **LearnReader** detail view:
+  - "Do this now" checklist (numbered steps)
+  - "Watch for" section
+  - "When to escalate" section
+  - **Sticky action bar**: "Let Mira do it" | "Ask Mira" | Save
+
+**Key Features:**
+- Every Learn item ends in ACTION (Service ticket or Concierge handoff)
+- Trust-gated content with risk levels
+- Tag-driven for personalization (pet_tags, breed_tags)
+- No live YouTube search - curated IDs only
 
 ---
 
