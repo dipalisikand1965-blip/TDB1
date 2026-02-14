@@ -430,7 +430,7 @@ def rank_picks(
         List of ScoredPick objects sorted by final_score descending
     """
     scored_picks = []
-    primary_pillar = classification.pillar
+    primary_pillar = classification.primary_pillar
     
     # Define secondary pillar mapping
     SECONDARY_PILLARS = {
