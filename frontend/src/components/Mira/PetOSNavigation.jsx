@@ -779,6 +779,52 @@ const PetOSNavigation = ({
             padding: 6px 8px;
           }
         }
+        
+        /* NEW PICKS Animation - Sparkle and Glow */
+        .os-layer-tab.has-new-picks {
+          animation: picksGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes picksGlow {
+          0%, 100% { 
+            box-shadow: 0 0 8px rgba(236, 72, 153, 0.4);
+          }
+          50% { 
+            box-shadow: 0 0 16px rgba(236, 72, 153, 0.7), 0 0 24px rgba(139, 92, 246, 0.4);
+          }
+        }
+        
+        .tab-badge.badge-new {
+          background: linear-gradient(135deg, #EC4899, #F472B6);
+          animation: badgePulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes badgePulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.1); }
+        }
+        
+        .new-picks-indicator {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #EC4899;
+          animation: newDot 1s ease-in-out infinite;
+        }
+        
+        @keyframes newDot {
+          0%, 100% { 
+            opacity: 1;
+            box-shadow: 0 0 4px #EC4899;
+          }
+          50% { 
+            opacity: 0.6;
+            box-shadow: 0 0 8px #EC4899, 0 0 12px #EC4899;
+          }
+        }
       `}</style>
     </nav>
   );
