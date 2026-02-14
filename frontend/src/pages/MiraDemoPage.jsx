@@ -3564,6 +3564,7 @@ const MiraDemoPage = () => {
       )}
       
       {/* PERSONALIZED PICKS PANEL - Beautiful pillar-wise picks */}
+      {/* NOW with Picks Engine B6 integration - auto-refresh on every turn */}
       {showTopPicksPanel && (
         <Suspense fallback={<LazyFallback />}>
           <PersonalizedPicksPanel
@@ -3571,6 +3572,12 @@ const MiraDemoPage = () => {
             onClose={() => setShowTopPicksPanel(false)}
             pet={pet}
             token={token}
+            // NEW: Engine picks props (B6)
+            enginePicks={miraPicks.enginePicks || []}
+            enginePillar={miraPicks.activePillar}
+            conciergeDecision={miraPicks.concierge}
+            safetyOverride={miraPicks.safetyOverride}
+            lastUpdated={miraPicks.lastUpdated}
             onSendSuccess={(data) => {
               // Add confirmation message to chat (with deduplication)
               setConversationHistory(prev => {
