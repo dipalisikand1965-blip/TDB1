@@ -32,6 +32,8 @@ import hapticFeedback from '../../utils/haptic';
  * @param {Function} props.onPhotoUpload - Called when photo is uploaded (receives file, uploadResponse)
  * @param {string} props.petId - Pet ID for photo uploads
  * @param {string} props.sessionId - Session ID for photo uploads
+ * @param {Function} props.onNewChat - Called when New Chat button is clicked
+ * @param {boolean} props.hasConversation - Whether there's an active conversation (shows New Chat button)
  */
 const ChatInputBar = ({
   inputRef,
@@ -50,7 +52,9 @@ const ChatInputBar = ({
   placeholder = 'Ask Mira anything...',
   onPhotoUpload,
   petId,
-  sessionId
+  sessionId,
+  onNewChat,
+  hasConversation = false
 }) => {
   const fileInputRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
