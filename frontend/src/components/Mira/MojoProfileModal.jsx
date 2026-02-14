@@ -853,6 +853,74 @@ const RoutineProfileContent = memo(({ pet }) => {
   );
 });
 
+// Environment Profile Content Component (NEW - per MOJO Bible)
+const EnvironmentProfileContent = memo(({ pet }) => {
+  const soulAnswers = pet?.doggy_soul_answers || {};
+  const preferences = pet?.preferences || {};
+  
+  const items = [];
+  
+  // City/Location
+  const city = pet?.city || soulAnswers.city || preferences.city;
+  if (city) items.push({ label: 'Location', value: city, icon: '📍' });
+  
+  // Climate (derived from city or explicit)
+  const climate = soulAnswers.climate || preferences.climate;
+  if (climate) items.push({ label: 'Climate', value: climate, icon: '🌡️' });
+  
+  // Home Type
+  const homeType = soulAnswers.home_type || preferences.home_type;
+  if (homeType) items.push({ label: 'Home Type', value: homeType, icon: '🏠' });
+  
+  // Living Space
+  const livingSpace = soulAnswers.living_space || preferences.living_space;
+  if (livingSpace) items.push({ label: 'Living Space', value: livingSpace, icon: '📐' });
+  
+  // Family Structure
+  const familyStructure = soulAnswers.family_structure || preferences.family_structure;
+  if (familyStructure) items.push({ label: 'Family', value: familyStructure, icon: '👨‍👩‍👧' });
+  
+  // Other Pets
+  const otherPets = soulAnswers.other_pets || preferences.other_pets;
+  if (otherPets) {
+    items.push({ 
+      label: 'Other Pets', 
+      value: Array.isArray(otherPets) ? otherPets.join(', ') : otherPets, 
+      icon: '🐾' 
+    });
+  }
+  
+  // Travel Frequency
+  const travelFreq = soulAnswers.travel_frequency || preferences.travel_frequency;
+  if (travelFreq) items.push({ label: 'Travel Frequency', value: travelFreq, icon: '✈️' });
+  
+  // Outdoor Access
+  const outdoorAccess = soulAnswers.outdoor_access || preferences.outdoor_access;
+  if (outdoorAccess) items.push({ label: 'Outdoor Access', value: outdoorAccess, icon: '🌳' });
+  
+  return (
+    <div className="environment-profile-content">
+      {items.length > 0 ? (
+        <div className="environment-items-list">
+          {items.map((item, i) => (
+            <div key={i} className="environment-item">
+              <span className="environment-icon">{item.icon}</span>
+              <span className="environment-label">{item.label}</span>
+              <span className="environment-value">{item.value}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="environment-empty-state">
+          <Home className="w-8 h-8 text-teal-400 mb-2" />
+          <p>No environment information added yet</p>
+          <p className="text-xs text-gray-400 mt-1">Add home, location, and living situation for personalized care</p>
+        </div>
+      )}
+    </div>
+  );
+});
+
 // Documents Vault Content Component  
 const DocumentsProfileContent = memo(({ pet, apiUrl, token, onUploadClick }) => {
   const [paperworkDocs, setPaperworkDocs] = useState([]);
