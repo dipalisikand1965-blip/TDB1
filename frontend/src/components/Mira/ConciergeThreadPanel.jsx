@@ -505,6 +505,27 @@ const ConciergeThreadPanel = ({
                   message={message}
                   showTimestamp={showTimestamps[message.id]}
                   onToggleTimestamp={() => toggleTimestamp(message.id)}
+                  onSelectOption={async (optionId) => {
+                    // Send option selection to backend
+                    try {
+                      const response = await fetch(`${API_URL}/api/tickets/${threadId}/options/respond`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          ticket_id: threadId,
+                          selected_option_id: optionId
+                        })
+                      });
+                      
+                      if (response.ok) {
+                        // Refresh messages to get updated state
+                        await fetchThread();
+                      }
+                    } catch (error) {
+                      console.error('Failed to select option:', error);
+                    }
+                  }}
+                  isRespondable={true}
                 />
               ))}
               <div ref={messagesEndRef} />
