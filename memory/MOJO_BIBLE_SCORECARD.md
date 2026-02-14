@@ -276,21 +276,31 @@
 
 ---
 
-## 13. Trait Graph (Internal Intelligence)
+## 13. Trait Graph (Internal Intelligence) ✅ COMPLETE
 | Item | Status | Notes |
 |------|--------|-------|
 | Stores: trait key | ✅ DONE | doggy_soul_answers keys |
 | Stores: confidence score | ✅ DONE | doggy_soul_meta.confidence |
-| Stores: evidence count | ❌ NOT BUILT | |
+| Stores: evidence count | ✅ DONE | doggy_soul_meta.evidence_count (NEW) |
 | Stores: timestamps | ✅ DONE | doggy_soul_meta.updated_at |
-| Stores: source priority | ✅ DONE | doggy_soul_meta.source |
-| Derived from soul answers | ✅ DONE | |
-| Derived from chat history | ✅ DONE | Two-way sync works |
-| Derived from service outcomes | ❌ NOT BUILT | |
-| Derived from purchases | ❌ NOT BUILT | |
-| Derived from behaviour observations | ❌ NOT BUILT | |
+| Stores: source priority | ✅ DONE | SOURCE_PRIORITY dict (100=direct, 90=service, 85=purchase) |
+| Derived from soul answers | ✅ DONE | Soul Form questionnaire |
+| Derived from chat history | ✅ DONE | Two-way sync via ingest-from-chat |
+| Derived from service outcomes | ✅ DONE | on_service_completed() hook (NEW) |
+| Derived from purchases | ✅ DONE | on_order_placed() hook (NEW) |
+| Derived from behaviour observations | ✅ DONE | update_trait_from_behaviour_observation() (NEW) |
 
-**Score: 60%** (6/10 items)
+**Score: 100%** (10/10 items - COMPLETE)
+
+**New Service File:** `/app/backend/trait_graph_service.py`
+**New API Endpoints:**
+- `GET /api/pet-soul/profile/{pet_id}/trait-graph` - Stats (sources, confidence, evidence)
+- `POST /api/pet-soul/profile/{pet_id}/trait-graph/service-outcome` - Manual service update
+- `POST /api/pet-soul/profile/{pet_id}/trait-graph/behaviour-observation` - Provider feedback
+
+**Integration Points:**
+- Concierge ticket resolution → Trait Graph update (concierge_routes.py)
+- Checkout payment verification → Trait Graph update (checkout_routes.py)
 
 ---
 
