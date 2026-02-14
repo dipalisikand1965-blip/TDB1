@@ -322,6 +322,8 @@ const MiraDemoPage = () => {
   const [mojoDeepLink, setMojoDeepLink] = useState(null); // 'soul' to auto-scroll to soul section
   // PET OS NAVIGATION: Active tab state for the 7-layer OS navigation
   const [activeOSTab, setActiveOSTab] = useState('today'); // Default to TODAY layer
+  // TODAY PANEL: Time-sensitive reminders and alerts
+  const [showTodayPanel, setShowTodayPanel] = useState(false);
   
   // NOTE: showTopPicksPanel, showUnifiedVault, isProcessing now come from useMiraUI hook
   // NOTE: proactiveAlerts, proactiveGreeting, currentWeather now come from useProactiveAlerts hook
