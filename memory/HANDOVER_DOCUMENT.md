@@ -12,7 +12,7 @@
 | **Mira OS** | `/mira-demo` (THE MAIN OS - NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` or `/my-pets` |
-| **Preview** | `https://concierge-2-0.preview.emergentagent.com` |
+| **Preview** | `https://admin-reply-loop.preview.emergentagent.com` |
 
 ## Test Credentials
 | Role | Email/Username | Password |

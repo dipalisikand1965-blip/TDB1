@@ -152,7 +152,7 @@ tip_card = {
 # 🔑 CREDENTIALS
 
 - **Emergent LLM Key**: `sk-emergent-cEb0eF956Fa6741A31`
-- **Preview URL**: `https://concierge-2-0.preview.emergentagent.com`
+- **Preview URL**: `https://admin-reply-loop.preview.emergentagent.com`
 
 ---
 
