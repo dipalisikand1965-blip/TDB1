@@ -167,8 +167,8 @@ const AwaitingCard = memo(({ ticket, onAction, onSelect }) => {
             e.stopPropagation();
             onAction(ticket, actionBtn.action);
           }}
-          className={`px-3 py-1.5 ${colors.bg} ${colors.text} text-xs font-medium rounded-lg
-                      hover:opacity-80 transition-opacity flex-shrink-0`}
+          className={`px-4 py-2.5 ${colors.bg} ${colors.text} text-xs font-medium rounded-lg
+                      hover:opacity-80 transition-opacity flex-shrink-0 min-h-[44px] touch-manipulation`}
         >
           {actionBtn.label}
         </button>
