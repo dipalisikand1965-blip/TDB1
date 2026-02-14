@@ -2970,7 +2970,8 @@ const MiraDemoPage = () => {
             // Open new LEARN OS Panel
             setShowLearnPanel(true);
           } else if (tabId === 'concierge') {
-            setShowConciergePanel(true);
+            // Open new CONCIERGE OS Home Panel
+            setShowConciergeHome(true);
           }
         }}
         onPetClick={() => {
