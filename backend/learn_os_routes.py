@@ -161,8 +161,13 @@ def derive_pet_tags_from_profile(pet_data: Dict) -> Tuple[List[str], List[str]]:
     """
     Golden Doctrine: Pet First, Breed Second
     
-    Derives pet_tags and breed_tags from a pet's profile.
-    Used to match content that's most relevant to this specific pet.
+    Extracts life stage, explicit sensitivities, routines, behaviour signals (no inference).
+    Only uses explicit user-entered flags for anything health-adjacent.
+    
+    SAFETY RULES:
+    - No medical inference
+    - Only explicit user signals
+    - Breed tags are for grooming/travel/handling/comfort ONLY
     
     Returns: (pet_tags, breed_tags)
     """
@@ -172,9 +177,9 @@ def derive_pet_tags_from_profile(pet_data: Dict) -> Tuple[List[str], List[str]]:
     if not pet_data:
         return ["all"], []
     
-    # ===== PET TAGS (Life stage, conditions, behaviors) =====
+    # ===== PET TAGS (Life stage, explicit sensitivities, behaviour signals) =====
     
-    # 1. Age-based tags
+    # 1. Age-based tags (life stage)
     age_years = None
     age_str = pet_data.get("age") or pet_data.get("age_display") or ""
     
@@ -205,41 +210,35 @@ def derive_pet_tags_from_profile(pet_data: Dict) -> Tuple[List[str], List[str]]:
         else:
             pet_tags.append("adult")
     
-    # 2. Health conditions and sensitivities
+    # 2. Explicit sensitivities (user-entered only, no inference)
     doggy_soul = pet_data.get("doggy_soul_answers") or {}
     preferences = pet_data.get("preferences") or {}
-    health_vault = pet_data.get("health_vault") or {}
     
-    # Check for allergies/sensitivities
-    allergies = (
+    # Check for explicitly flagged food sensitivities
+    explicit_sensitivities = (
         preferences.get("allergies") or 
         doggy_soul.get("food_allergies") or 
-        health_vault.get("allergies") or 
         pet_data.get("sensitivities") or
         []
     )
-    if allergies and allergies != "None":
-        pet_tags.append("allergies")
+    if explicit_sensitivities and explicit_sensitivities != "None":
+        pet_tags.append("food_sensitive")
     
-    # Check for anxiety markers
-    anxiety_indicators = [
-        doggy_soul.get("noise_sensitivity"),
-        doggy_soul.get("separation_anxiety"),
-        doggy_soul.get("general_nature", "").lower() in ["anxious", "nervous", "shy"],
-        "anxious" in str(doggy_soul.get("describe_3_words", "")).lower(),
-        "nervous" in str(doggy_soul.get("describe_3_words", "")).lower(),
-    ]
-    if any(anxiety_indicators):
+    # 3. Behaviour signals (explicitly entered by user)
+    # Noise sensitivity - only if user explicitly flagged
+    if doggy_soul.get("noise_sensitivity") is True:
+        pet_tags.append("noise_sensitive")
+    
+    # Separation anxiety - only if user explicitly flagged
+    if doggy_soul.get("separation_anxiety") is True:
         pet_tags.append("anxious")
     
-    # Check for health conditions
-    health_conditions = doggy_soul.get("health_conditions") or []
-    if isinstance(health_conditions, str):
-        health_conditions = [h.strip() for h in health_conditions.split(",") if h.strip()]
-    if health_conditions:
-        pet_tags.append("health_issues")
+    # General nature - only from explicit user description
+    nature = str(doggy_soul.get("general_nature", "")).lower()
+    if nature in ["anxious", "nervous", "shy"]:
+        pet_tags.append("anxious")
     
-    # 3. Activity level
+    # 4. Routine signals (activity level)
     energy_level = doggy_soul.get("energy_level") or preferences.get("energy_level") or ""
     if "high" in str(energy_level).lower():
         pet_tags.append("high_energy")
@@ -251,20 +250,21 @@ def derive_pet_tags_from_profile(pet_data: Dict) -> Tuple[List[str], List[str]]:
         pet_tags = ["all"]
     pet_tags.append("all")  # All items with "all" tag are always included
     
-    # ===== BREED TAGS =====
+    # ===== BREED TAGS (grooming/travel/handling/comfort ONLY) =====
+    # SAFETY: These tags NEVER influence health content ranking
     breed = (pet_data.get("breed") or "").lower().strip()
     
     # Look up breed in mapping
     if breed in BREED_TAG_MAP:
-        breed_tags = BREED_TAG_MAP[breed]
+        breed_tags = list(BREED_TAG_MAP[breed])  # Copy to avoid mutation
     else:
         # Try partial match
         for breed_key, tags in BREED_TAG_MAP.items():
             if breed_key in breed or breed in breed_key:
-                breed_tags = tags
+                breed_tags = list(tags)
                 break
     
-    # If no breed match found, try to infer from breed name
+    # If no breed match found, try to infer coat/size characteristics
     if not breed_tags:
         if any(term in breed for term in ["pug", "bulldog", "boxer", "shih"]):
             breed_tags.append("brachy")
@@ -277,7 +277,7 @@ def derive_pet_tags_from_profile(pet_data: Dict) -> Tuple[List[str], List[str]]:
         if any(term in breed for term in ["poodle", "doodle"]):
             breed_tags.append("curly_coat")
     
-    logger.info(f"[LEARN PERSONALIZATION] Pet: {pet_data.get('name', 'Unknown')}, Age: {age_years}, Pet Tags: {pet_tags}, Breed Tags: {breed_tags}")
+    logger.info(f"[LEARN] Pet: {pet_data.get('name', 'Unknown')}, Life stage tags: {[t for t in pet_tags if t in ['puppy','adult','senior']]}, Behaviour tags: {[t for t in pet_tags if t not in ['puppy','adult','senior','all']]}, Breed-informed tags: {breed_tags}")
     return list(set(pet_tags)), list(set(breed_tags))
 
 
