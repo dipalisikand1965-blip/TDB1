@@ -7,10 +7,11 @@
 ## 3. `/app/memory/ULTIMATE_SYSTEM_BIBLE.md` - Credentials, architecture, 50+ days context
 ---
 
-## CURRENT SCORE: 45% (Against MOJO Bible Vision)
+## CURRENT SCORE: 47% (Against MOJO Bible Vision)
 | Layer | Score | Key Gaps |
 |-------|-------|----------|
-| MOJO (14 components) | 58% | Documents upload, Health expansion, Environment |
+| MOJO (14 components) | 65% | Health expansion, Environment |
+| Documents Vault | 100% | ✅ DONE - Integrated with /paperwork |
 | TODAY | 15% | Not built (only weather card) |
 | PICKS | 45% | No auto-refresh on chat turn |
 | SERVICES | 40% | No outcomes->MOJO loop |
