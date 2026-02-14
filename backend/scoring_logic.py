@@ -179,8 +179,8 @@ def can_use_enhanced_reason(pick: Dict[str, Any], pet_profile: PetProfile) -> bo
         "dob": pet_profile.dob,
     }
     
-    for field in required_fields:
-        value = profile_dict.get(field)
+    for field_name in required_fields:
+        value = profile_dict.get(field_name)
         if not value or (isinstance(value, list) and len(value) == 0):
             return False
     
