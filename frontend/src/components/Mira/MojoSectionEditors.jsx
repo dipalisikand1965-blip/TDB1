@@ -325,7 +325,7 @@ const TagsField = memo(({ label, value, onChange, suggestions = [] }) => {
 
 // ========== SECTION EDITORS ==========
 
-// Soul Profile Editor - With Auto-Save
+// Soul Profile Editor - With Auto-Save (ENHANCED for 100% MOJO)
 export const SoulProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     temperament: pet?.doggy_soul_answers?.temperament || '',
@@ -334,6 +334,10 @@ export const SoulProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
     play_style: pet?.doggy_soul_answers?.play_style || [],
     social_with_dogs: pet?.doggy_soul_answers?.social_with_dogs || '',
     social_with_people: pet?.doggy_soul_answers?.social_with_people || '',
+    social_with_children: pet?.doggy_soul_answers?.social_with_children || '',
+    anxiety_level: pet?.doggy_soul_answers?.anxiety_level || '',
+    confidence_level: pet?.doggy_soul_answers?.confidence_level || '',
+    attention_needs: pet?.doggy_soul_answers?.attention_needs || '',
   });
   
   // Use auto-save hook
@@ -341,6 +345,7 @@ export const SoulProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   
   return (
     <EditorWrapper title="Soul Profile" onCancel={onCancel} saveStatus={saveStatus}>
+      <div className="editor-section-header">Personality</div>
       <SelectField 
         label="Temperament" 
         value={data.temperament} 
@@ -366,6 +371,8 @@ export const SoulProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
         onChange={(v) => setData(prev => ({ ...prev, play_style: v }))}
         multiple
       />
+      
+      <div className="editor-section-header">Social Profile</div>
       <SelectField 
         label="With Other Dogs" 
         value={data.social_with_dogs} 
@@ -377,6 +384,32 @@ export const SoulProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
         value={data.social_with_people} 
         options={OPTIONS.social_with_people}
         onChange={(v) => setData(prev => ({ ...prev, social_with_people: v }))}
+      />
+      <SelectField 
+        label="With Children" 
+        value={data.social_with_children} 
+        options={OPTIONS.social_with_children}
+        onChange={(v) => setData(prev => ({ ...prev, social_with_children: v }))}
+      />
+      
+      <div className="editor-section-header">Emotional Profile</div>
+      <SelectField 
+        label="Anxiety Level" 
+        value={data.anxiety_level} 
+        options={OPTIONS.anxiety_level}
+        onChange={(v) => setData(prev => ({ ...prev, anxiety_level: v }))}
+      />
+      <SelectField 
+        label="Confidence Level" 
+        value={data.confidence_level} 
+        options={['Very confident', 'Confident', 'Moderate', 'Somewhat shy', 'Very shy']}
+        onChange={(v) => setData(prev => ({ ...prev, confidence_level: v }))}
+      />
+      <SelectField 
+        label="Attention Needs" 
+        value={data.attention_needs} 
+        options={['Independent', 'Moderate', 'Needs regular attention', 'Very needy', 'Velcro dog']}
+        onChange={(v) => setData(prev => ({ ...prev, attention_needs: v }))}
       />
     </EditorWrapper>
   );
