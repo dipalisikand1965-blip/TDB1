@@ -16089,8 +16089,14 @@ async def get_personalization_stats(pet_id: str):
         return {"success": False, "stats": [], "knowledge_items": []}
     
     pet_name = pet.get("name", "your pet")
-    soul_score = pet.get("overall_score", 0)
     breed = pet.get("breed", "")
+    
+    # Calculate soul_score fresh using the weighted scoring system
+    # This ensures consistency across dashboard, MOJO modal, and all displays
+    from pet_score_logic import calculate_pet_soul_score
+    doggy_soul = pet.get("doggy_soul_answers") or {}
+    score_data = calculate_pet_soul_score(doggy_soul)
+    soul_score = score_data.get("total_score", 0)
     
     # Also fetch relationship memories for this pet
     memories = await db.mira_memories.find(
