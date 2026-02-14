@@ -425,11 +425,10 @@ async def get_watchlist(
     # Query 3: service_desk_tickets (auto-created from conversations)
     sdt_query = {
         "member.email": user_email,
-        "status": {"$in": extended_statuses}
+        "status": {"$in": all_status_list}
     }
     
     tickets_cursor3 = db.service_desk_tickets.find(sdt_query, {"_id": 0}).sort([
-        ("status", 1),
         ("updated_at", -1)
     ]).limit(10)
     conv_tickets = await tickets_cursor3.to_list(10)
