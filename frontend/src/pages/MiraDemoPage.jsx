@@ -2938,6 +2938,8 @@ const MiraDemoPage = () => {
           // Handle tab-specific actions
           if (tabId === 'mojo') {
             setShowMojoModal(true);
+          } else if (tabId === 'today') {
+            setShowTodayPanel(true);
           } else if (tabId === 'picks') {
             setShowTopPicksPanel(true);
           } else if (tabId === 'insights') {
