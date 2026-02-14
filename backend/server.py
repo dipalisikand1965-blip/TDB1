@@ -16305,6 +16305,12 @@ set_learn_os_db(db)
 app.include_router(learn_os_router)  # Learn at /api/os/learn/*
 logger.info("Learn OS Layer routes initialized")
 
+# Concierge OS Layer (Judgment + Execution + Accountability)
+from routes.concierge_os_routes import router as concierge_os_router, set_concierge_os_db
+set_concierge_os_db(db)
+app.include_router(concierge_os_router)  # Concierge at /api/os/concierge/*
+logger.info("Concierge OS Layer routes initialized")
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
