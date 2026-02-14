@@ -27,11 +27,12 @@ const NotificationBell = ({ userEmail, className = '' }) => {
     if (!userEmail) return;
     
     try {
-      const response = await fetch(`${API_URL}/api/mira/notifications/inbox/${userEmail}?limit=10`);
+      // Use member_notifications endpoint for user inbox
+      const response = await fetch(`${API_URL}/api/member/notifications?email=${encodeURIComponent(userEmail)}&limit=10`);
       if (response.ok) {
         const data = await response.json();
         setNotifications(data.notifications || []);
-        setUnreadCount(data.unread_count || 0);
+        setUnreadCount(data.unread || 0);
       }
     } catch (err) {
       console.log('Could not fetch notifications');
