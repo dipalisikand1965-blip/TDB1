@@ -465,7 +465,7 @@ async def get_thread(
             })
         
         # Also fetch option card messages from linked ticket (if any)
-        linked_ticket_id = thread.get("ticket_id")
+        linked_ticket_id = thread.get("ticket_id")  # This will be used later in the response
         if linked_ticket_id:
             # Try to find ticket in tickets collection
             ticket = await db.tickets.find_one({"ticket_id": linked_ticket_id})
