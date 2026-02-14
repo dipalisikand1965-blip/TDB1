@@ -58,6 +58,269 @@ ALGORITHM = "HS256"
 
 
 # ============================================
+# PET PERSONALIZATION - "Pet First, Breed Second"
+# ============================================
+
+# Breed to tag mapping (breed characteristics)
+BREED_TAG_MAP = {
+    # Brachycephalic breeds (flat-faced)
+    "pug": ["brachy", "toy", "short_coat"],
+    "bulldog": ["brachy", "short_coat"],
+    "french bulldog": ["brachy", "toy", "short_coat"],
+    "boston terrier": ["brachy", "toy", "short_coat"],
+    "boxer": ["brachy", "large"],
+    "shih tzu": ["brachy", "long_coat", "toy"],
+    "pekingese": ["brachy", "long_coat", "toy"],
+    "cavalier king charles": ["brachy", "floppy_ears", "long_coat"],
+    
+    # Double-coated breeds
+    "husky": ["double_coat", "large", "high_energy"],
+    "siberian husky": ["double_coat", "large", "high_energy"],
+    "golden retriever": ["double_coat", "golden", "floppy_ears", "large"],
+    "labrador": ["double_coat", "floppy_ears", "large"],
+    "labrador retriever": ["double_coat", "floppy_ears", "large"],
+    "german shepherd": ["double_coat", "gsd", "large"],
+    "gsd": ["double_coat", "gsd", "large"],
+    "samoyed": ["double_coat", "large"],
+    "chow chow": ["double_coat", "large"],
+    "akita": ["double_coat", "large"],
+    "malamute": ["double_coat", "giant"],
+    "pomeranian": ["double_coat", "toy"],
+    "spitz": ["double_coat"],
+    "indian spitz": ["double_coat"],
+    "corgi": ["double_coat", "herding"],
+    "border collie": ["double_coat", "herding", "high_energy"],
+    "australian shepherd": ["double_coat", "herding", "high_energy"],
+    
+    # Floppy-eared breeds
+    "beagle": ["floppy_ears", "hound"],
+    "basset hound": ["floppy_ears", "hound"],
+    "cocker spaniel": ["floppy_ears", "spaniel", "long_coat"],
+    "springer spaniel": ["floppy_ears", "spaniel"],
+    "bloodhound": ["floppy_ears", "hound", "giant"],
+    "dachshund": ["floppy_ears", "toy"],
+    
+    # Giant breeds
+    "great dane": ["giant", "short_coat"],
+    "saint bernard": ["giant", "double_coat"],
+    "bernese mountain dog": ["giant", "double_coat"],
+    "mastiff": ["giant", "short_coat"],
+    "newfoundland": ["giant", "double_coat"],
+    "irish wolfhound": ["giant"],
+    
+    # Toy breeds
+    "chihuahua": ["toy", "short_coat"],
+    "yorkshire terrier": ["toy", "long_coat", "terrier"],
+    "yorkie": ["toy", "long_coat", "terrier"],
+    "maltese": ["toy", "long_coat"],
+    "toy poodle": ["toy", "curly_coat"],
+    "miniature poodle": ["toy", "curly_coat"],
+    "papillon": ["toy", "long_coat"],
+    
+    # Curly-coated breeds
+    "poodle": ["curly_coat"],
+    "standard poodle": ["curly_coat", "large"],
+    "bichon frise": ["curly_coat", "toy"],
+    "cockapoo": ["curly_coat"],
+    "labradoodle": ["curly_coat", "large"],
+    "goldendoodle": ["curly_coat", "large"],
+    "portuguese water dog": ["curly_coat"],
+    
+    # Terriers
+    "jack russell": ["terrier", "high_energy"],
+    "jack russell terrier": ["terrier", "high_energy"],
+    "fox terrier": ["terrier", "high_energy"],
+    "scottish terrier": ["terrier"],
+    "west highland terrier": ["terrier"],
+    "westie": ["terrier"],
+    "bull terrier": ["terrier"],
+    "airedale": ["terrier", "large"],
+    
+    # Herding breeds
+    "sheltie": ["herding", "double_coat"],
+    "shetland sheepdog": ["herding", "double_coat"],
+    "collie": ["herding", "double_coat", "large"],
+    "belgian malinois": ["herding", "high_energy", "large"],
+    
+    # Indian breeds
+    "indie": ["indian", "short_coat"],
+    "indian pariah": ["indian", "short_coat"],
+    "rajapalayam": ["indian", "large", "short_coat"],
+    "mudhol hound": ["indian", "hound"],
+    "combai": ["indian", "large"],
+}
+
+
+def derive_pet_tags_from_profile(pet_data: Dict) -> Tuple[List[str], List[str]]:
+    """
+    Golden Doctrine: Pet First, Breed Second
+    
+    Derives pet_tags and breed_tags from a pet's profile.
+    Used to match content that's most relevant to this specific pet.
+    
+    Returns: (pet_tags, breed_tags)
+    """
+    pet_tags = []
+    breed_tags = []
+    
+    if not pet_data:
+        return ["all"], []
+    
+    # ===== PET TAGS (Life stage, conditions, behaviors) =====
+    
+    # 1. Age-based tags
+    age_years = None
+    age_str = pet_data.get("age") or pet_data.get("age_display") or ""
+    
+    # Try to extract age from different formats
+    if isinstance(age_str, (int, float)):
+        age_years = float(age_str)
+    elif isinstance(age_str, str):
+        # Match patterns like "3 years", "2.5 years", "1 year"
+        match = re.search(r'(\d+\.?\d*)\s*(?:years?|yrs?)?', age_str.lower())
+        if match:
+            age_years = float(match.group(1))
+    
+    # Also check age_years field directly
+    if age_years is None and pet_data.get("age_years"):
+        try:
+            age_years = float(pet_data.get("age_years"))
+        except (ValueError, TypeError):
+            pass
+    
+    if age_years is not None:
+        if age_years < 1:
+            pet_tags.append("puppy")
+        elif age_years < 2:
+            pet_tags.append("puppy")
+            pet_tags.append("adult")  # Transition period
+        elif age_years >= 7:
+            pet_tags.append("senior")
+        else:
+            pet_tags.append("adult")
+    
+    # 2. Health conditions and sensitivities
+    doggy_soul = pet_data.get("doggy_soul_answers") or {}
+    preferences = pet_data.get("preferences") or {}
+    health_vault = pet_data.get("health_vault") or {}
+    
+    # Check for allergies/sensitivities
+    allergies = (
+        preferences.get("allergies") or 
+        doggy_soul.get("food_allergies") or 
+        health_vault.get("allergies") or 
+        pet_data.get("sensitivities") or
+        []
+    )
+    if allergies and allergies != "None":
+        pet_tags.append("allergies")
+    
+    # Check for anxiety markers
+    anxiety_indicators = [
+        doggy_soul.get("noise_sensitivity"),
+        doggy_soul.get("separation_anxiety"),
+        doggy_soul.get("general_nature", "").lower() in ["anxious", "nervous", "shy"],
+        "anxious" in str(doggy_soul.get("describe_3_words", "")).lower(),
+        "nervous" in str(doggy_soul.get("describe_3_words", "")).lower(),
+    ]
+    if any(anxiety_indicators):
+        pet_tags.append("anxious")
+    
+    # Check for health conditions
+    health_conditions = doggy_soul.get("health_conditions") or []
+    if isinstance(health_conditions, str):
+        health_conditions = [h.strip() for h in health_conditions.split(",") if h.strip()]
+    if health_conditions:
+        pet_tags.append("health_issues")
+    
+    # 3. Activity level
+    energy_level = doggy_soul.get("energy_level") or preferences.get("energy_level") or ""
+    if "high" in str(energy_level).lower():
+        pet_tags.append("high_energy")
+    elif "low" in str(energy_level).lower():
+        pet_tags.append("low_energy")
+    
+    # Always include "all" as fallback
+    if not pet_tags:
+        pet_tags = ["all"]
+    pet_tags.append("all")  # All items with "all" tag are always included
+    
+    # ===== BREED TAGS =====
+    breed = (pet_data.get("breed") or "").lower().strip()
+    
+    # Look up breed in mapping
+    if breed in BREED_TAG_MAP:
+        breed_tags = BREED_TAG_MAP[breed]
+    else:
+        # Try partial match
+        for breed_key, tags in BREED_TAG_MAP.items():
+            if breed_key in breed or breed in breed_key:
+                breed_tags = tags
+                break
+    
+    # If no breed match found, try to infer from breed name
+    if not breed_tags:
+        if any(term in breed for term in ["pug", "bulldog", "boxer", "shih"]):
+            breed_tags.append("brachy")
+        if any(term in breed for term in ["retriever", "husky", "shepherd", "spitz"]):
+            breed_tags.append("double_coat")
+        if any(term in breed for term in ["spaniel", "beagle", "hound", "dachshund"]):
+            breed_tags.append("floppy_ears")
+        if any(term in breed for term in ["terrier"]):
+            breed_tags.append("terrier")
+        if any(term in breed for term in ["poodle", "doodle"]):
+            breed_tags.append("curly_coat")
+    
+    logger.info(f"[LEARN PERSONALIZATION] Pet: {pet_data.get('name', 'Unknown')}, Age: {age_years}, Pet Tags: {pet_tags}, Breed Tags: {breed_tags}")
+    return list(set(pet_tags)), list(set(breed_tags))
+
+
+def calculate_relevance_score(item: Dict, pet_tags: List[str], breed_tags: List[str]) -> int:
+    """
+    Calculate relevance score for a Learn item based on pet's tags.
+    Higher score = more relevant to this specific pet.
+    
+    Scoring:
+    - Pet tag match: +10 points each (e.g., puppy, senior, anxious)
+    - Breed tag match: +5 points each (e.g., double_coat, brachy)
+    - "all" tag: +1 point (baseline relevance)
+    """
+    score = 0
+    item_pet_tags = item.get("pet_tags") or []
+    item_breed_tags = item.get("breed_tags") or []
+    
+    # Pet tag matches (more important - "Pet First")
+    for tag in pet_tags:
+        if tag in item_pet_tags:
+            score += 10 if tag != "all" else 1
+    
+    # Breed tag matches ("Breed Second")
+    for tag in breed_tags:
+        if tag in item_breed_tags:
+            score += 5
+    
+    return score
+
+
+async def fetch_pet_profile(db, pet_id: str) -> Optional[Dict]:
+    """Fetch pet profile from database for personalization."""
+    if not pet_id or pet_id in ["demo-pet", "demo"]:
+        return None
+    
+    try:
+        pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+        if not pet:
+            # Try ObjectId match
+            from bson import ObjectId
+            if ObjectId.is_valid(pet_id):
+                pet = await db.pets.find_one({"_id": ObjectId(pet_id)}, {"_id": 0})
+        return pet
+    except Exception as e:
+        logger.warning(f"[LEARN] Could not fetch pet {pet_id}: {e}")
+        return None
+
+
+# ============================================
 # HELPER FUNCTIONS
 # ============================================
 
