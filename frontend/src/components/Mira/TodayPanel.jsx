@@ -504,6 +504,9 @@ const TodayPanel = ({
   // ═══════════════════════════════════════════════════════════════════════════
   
   useEffect(() => {
+    // Use a ref to track if we already fetched to avoid StrictMode double-fetch issues
+    let cancelled = false;
+    
     const fetchLearnNudge = async () => {
       console.log('[TODAY] fetchLearnNudge called - isOpen:', isOpen, 'pet:', pet?.id, 'hasToken:', !!token);
       
@@ -527,6 +530,13 @@ const TodayPanel = ({
         console.log('[TODAY] Fetching learn nudge from:', url);
         
         const response = await fetch(url, { headers });
+        
+        // Don't update state if this fetch was cancelled
+        if (cancelled) {
+          console.log('[TODAY] Fetch cancelled, ignoring response');
+          return;
+        }
+        
         console.log('[TODAY] Learn nudge response status:', response.status);
         
         if (response.ok) {
@@ -537,7 +547,15 @@ const TodayPanel = ({
             setLearnNudge(data.nudge);
           } else {
             console.log('[TODAY] No nudge in response, reason:', data.reason);
-            setLearnNudge(null);
+            // Only clear nudge if we don't already have one
+            // This prevents StrictMode double-fetch from clearing a valid nudge
+            setLearnNudge(prevNudge => {
+              if (prevNudge) {
+                console.log('[TODAY] Keeping existing nudge, ignoring null response');
+                return prevNudge;
+              }
+              return null;
+            });
           }
         } else {
           console.log('[TODAY] Learn nudge request failed:', response.status);
@@ -548,6 +566,11 @@ const TodayPanel = ({
     };
     
     fetchLearnNudge();
+    
+    // Cleanup - cancel this fetch if component unmounts or deps change
+    return () => {
+      cancelled = true;
+    };
   }, [isOpen, pet?.id, apiUrl, token]);
   
   // Handler for Learn nudge primary action (Let Mira do it → Services)
