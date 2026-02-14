@@ -76,6 +76,7 @@ const TestScenariosPanel = lazy(() => import('../components/Mira/TestScenariosPa
 const HandoffSummary = lazy(() => import('../components/Mira/HandoffSummary'));
 const SoulFormModal = lazy(() => import('../components/Mira/SoulFormModal'));
 const MojoProfileModal = lazy(() => import('../components/Mira/MojoProfileModal'));
+const TodayPanel = lazy(() => import('../components/Mira/TodayPanel'));
 
 // Simple loading fallback for lazy components
 const LazyFallback = () => <div className="p-4 text-center text-gray-400">Loading...</div>;
