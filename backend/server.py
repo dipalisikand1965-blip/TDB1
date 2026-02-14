@@ -11425,6 +11425,329 @@ async def update_pet_identity_alias(pet_id: str, identity_data: dict, current_us
     return {"message": "Identity updated", "updated_fields": list(update_fields.keys())}
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# LIFE TIMELINE API - Aggregates all timeline events for a pet
+# Per MOJO Bible: Timeline captures birthday, adoption, services, purchases, milestones
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@api_router.get("/pet-soul/profile/{pet_id}/life-timeline")
+async def get_pet_life_timeline(pet_id: str, limit: int = 50, current_user: dict = Depends(get_current_user_optional)):
+    """
+    Get aggregated Life Timeline for a pet.
+    
+    Combines events from multiple sources:
+    - Manual timeline events (doggy_soul_answers.timeline_events)
+    - Birthday & adoption dates
+    - Order history (purchases)
+    - Service tickets (grooming, vet, etc.)
+    - Chat milestones (significant conversations)
+    
+    Returns chronologically sorted timeline.
+    """
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    timeline_events = []
+    soul_answers = pet.get("doggy_soul_answers", {})
+    pet_name = pet.get("name", "Pet")
+    owner_id = pet.get("owner_id") or pet.get("user_id")
+    
+    # ─────────────────────────────────────────────────────────────────────────
+    # 1. BIRTHDAY
+    # ─────────────────────────────────────────────────────────────────────────
+    birthday = pet.get("birthday") or pet.get("dob") or soul_answers.get("dob")
+    if birthday:
+        try:
+            bday_date = datetime.fromisoformat(birthday.replace('Z', '+00:00')) if isinstance(birthday, str) else birthday
+            # Calculate age
+            today = datetime.now(timezone.utc)
+            age_years = (today - bday_date).days // 365
+            timeline_events.append({
+                "id": f"birthday-{pet_id}",
+                "type": "birthday",
+                "icon": "🎂",
+                "title": f"{pet_name} was born",
+                "description": f"Now {age_years} years old" if age_years > 0 else "Birthday",
+                "date": birthday,
+                "category": "milestone",
+                "source": "profile"
+            })
+        except:
+            pass
+    
+    # ─────────────────────────────────────────────────────────────────────────
+    # 2. ADOPTION / GOTCHA DAY
+    # ─────────────────────────────────────────────────────────────────────────
+    adoption_date = soul_answers.get("adoption_date") or pet.get("gotcha_date")
+    if adoption_date:
+        timeline_events.append({
+            "id": f"adoption-{pet_id}",
+            "type": "adoption",
+            "icon": "🏠",
+            "title": f"{pet_name} joined the family",
+            "description": "Gotcha Day",
+            "date": adoption_date,
+            "category": "milestone",
+            "source": "profile"
+        })
+    
+    # ─────────────────────────────────────────────────────────────────────────
+    # 3. MANUAL TIMELINE EVENTS (from doggy_soul_answers)
+    # ─────────────────────────────────────────────────────────────────────────
+    manual_events = soul_answers.get("timeline_events", []) or pet.get("life_events", []) or pet.get("timeline", [])
+    for event in manual_events:
+        if isinstance(event, dict):
+            timeline_events.append({
+                "id": event.get("id", f"manual-{len(timeline_events)}"),
+                "type": event.get("type", "event"),
+                "icon": event.get("icon", "📍"),
+                "title": event.get("title") or event.get("name", "Event"),
+                "description": event.get("notes") or event.get("description", ""),
+                "date": event.get("date"),
+                "category": "milestone",
+                "source": "manual"
+            })
+    
+    # ─────────────────────────────────────────────────────────────────────────
+    # 4. ORDERS / PURCHASES
+    # ─────────────────────────────────────────────────────────────────────────
+    if owner_id:
+        try:
+            # Find orders for this user that might be for this pet
+            orders = await db.orders.find({
+                "$or": [
+                    {"user_id": owner_id},
+                    {"customer_id": owner_id},
+                    {"pet_id": pet_id},
+                    {"for_pet": pet_id}
+                ],
+                "status": {"$in": ["completed", "delivered", "confirmed"]}
+            }).sort("created_at", -1).limit(20).to_list(20)
+            
+            for order in orders:
+                order_date = order.get("created_at") or order.get("order_date")
+                if order_date:
+                    # Format order summary
+                    items = order.get("items", [])
+                    item_count = len(items)
+                    first_item = items[0].get("name", "items") if items else "items"
+                    
+                    timeline_events.append({
+                        "id": f"order-{order.get('id', order.get('order_id', str(order.get('_id', ''))))}",
+                        "type": "purchase",
+                        "icon": "🛍️",
+                        "title": f"Order: {first_item}" + (f" + {item_count - 1} more" if item_count > 1 else ""),
+                        "description": f"₹{order.get('total', order.get('amount', 0)):,.0f}",
+                        "date": order_date if isinstance(order_date, str) else order_date.isoformat() if order_date else None,
+                        "category": "purchase",
+                        "source": "orders",
+                        "order_id": order.get("id") or order.get("order_id")
+                    })
+        except Exception as e:
+            logger.warning(f"Error fetching orders for timeline: {e}")
+    
+    # ─────────────────────────────────────────────────────────────────────────
+    # 5. SERVICE TICKETS (Grooming, Vet, Training, etc.)
+    # ─────────────────────────────────────────────────────────────────────────
+    if owner_id:
+        try:
+            tickets = await db.service_desk_tickets.find({
+                "$or": [
+                    {"user_id": owner_id},
+                    {"customer_id": owner_id},
+                    {"pet_id": pet_id},
+                    {"for_pet": pet_id}
+                ],
+                "status": {"$in": ["completed", "resolved", "closed"]}
+            }).sort("created_at", -1).limit(20).to_list(20)
+            
+            service_icons = {
+                "grooming": "✨",
+                "groom": "✨",
+                "vet": "🏥",
+                "veterinary": "🏥",
+                "vaccination": "💉",
+                "vaccine": "💉",
+                "training": "🎓",
+                "daycare": "🐕",
+                "boarding": "🏨",
+                "walking": "🦮",
+                "spa": "🧖",
+                "dental": "🦷"
+            }
+            
+            for ticket in tickets:
+                ticket_type = (ticket.get("service_type") or ticket.get("type") or ticket.get("subject", "")).lower()
+                icon = "🔧"
+                for key, val in service_icons.items():
+                    if key in ticket_type:
+                        icon = val
+                        break
+                
+                ticket_date = ticket.get("completed_at") or ticket.get("resolved_at") or ticket.get("created_at")
+                
+                timeline_events.append({
+                    "id": f"service-{ticket.get('id', ticket.get('ticket_id', str(ticket.get('_id', ''))))}",
+                    "type": "service",
+                    "icon": icon,
+                    "title": ticket.get("subject") or ticket.get("service_type") or "Service",
+                    "description": ticket.get("status", "Completed"),
+                    "date": ticket_date if isinstance(ticket_date, str) else ticket_date.isoformat() if ticket_date else None,
+                    "category": "service",
+                    "source": "service_desk",
+                    "ticket_id": ticket.get("id") or ticket.get("ticket_id")
+                })
+        except Exception as e:
+            logger.warning(f"Error fetching tickets for timeline: {e}")
+    
+    # ─────────────────────────────────────────────────────────────────────────
+    # 6. HEALTH MILESTONES (from soul answers)
+    # ─────────────────────────────────────────────────────────────────────────
+    # Last vet visit
+    last_vet = soul_answers.get("last_vet_visit")
+    if last_vet:
+        timeline_events.append({
+            "id": f"vet-visit-{pet_id}",
+            "type": "medical",
+            "icon": "🏥",
+            "title": "Vet Visit",
+            "description": "Regular checkup",
+            "date": last_vet,
+            "category": "health",
+            "source": "profile"
+        })
+    
+    # Last vaccination
+    next_vacc = soul_answers.get("next_vaccination_date")
+    if next_vacc:
+        # Calculate when last vaccination would have been (assuming annual)
+        try:
+            next_date = datetime.fromisoformat(next_vacc.replace('Z', '+00:00')) if isinstance(next_vacc, str) else next_vacc
+            last_vacc_date = next_date.replace(year=next_date.year - 1)
+            timeline_events.append({
+                "id": f"vaccination-{pet_id}",
+                "type": "vaccination",
+                "icon": "💉",
+                "title": "Vaccination",
+                "description": "Annual vaccination",
+                "date": last_vacc_date.isoformat(),
+                "category": "health",
+                "source": "calculated"
+            })
+        except:
+            pass
+    
+    # Last grooming
+    last_groom = soul_answers.get("last_grooming_date") or soul_answers.get("last_groom_date")
+    if last_groom:
+        timeline_events.append({
+            "id": f"groom-{pet_id}",
+            "type": "grooming",
+            "icon": "✨",
+            "title": "Grooming Session",
+            "description": soul_answers.get("grooming_frequency", "Regular grooming"),
+            "date": last_groom,
+            "category": "care",
+            "source": "profile"
+        })
+    
+    # Weight history entries
+    weight_history = soul_answers.get("weight", [])
+    if isinstance(weight_history, list):
+        for entry in weight_history[-5:]:  # Last 5 weight records
+            if isinstance(entry, dict) and entry.get("date"):
+                timeline_events.append({
+                    "id": f"weight-{entry.get('date')}",
+                    "type": "health_check",
+                    "icon": "⚖️",
+                    "title": "Weight Check",
+                    "description": f"{entry.get('weight', '')} kg",
+                    "date": entry.get("date"),
+                    "category": "health",
+                    "source": "profile"
+                })
+    
+    # ─────────────────────────────────────────────────────────────────────────
+    # 7. SORT & DEDUPLICATE
+    # ─────────────────────────────────────────────────────────────────────────
+    # Sort by date (most recent first)
+    def get_sort_date(event):
+        try:
+            date_str = event.get("date")
+            if not date_str:
+                return datetime.min
+            if isinstance(date_str, datetime):
+                return date_str
+            return datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+        except:
+            return datetime.min
+    
+    timeline_events.sort(key=get_sort_date, reverse=True)
+    
+    # Limit results
+    timeline_events = timeline_events[:limit]
+    
+    # Count by category
+    categories = {}
+    for event in timeline_events:
+        cat = event.get("category", "other")
+        categories[cat] = categories.get(cat, 0) + 1
+    
+    return {
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "total_events": len(timeline_events),
+        "categories": categories,
+        "timeline": timeline_events
+    }
+
+
+@api_router.post("/pet-soul/profile/{pet_id}/timeline-event")
+async def add_timeline_event(pet_id: str, event_data: dict, current_user: dict = Depends(get_current_user_optional)):
+    """Add a manual timeline event to a pet's life history."""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    # Create event
+    new_event = {
+        "id": str(uuid.uuid4()),
+        "type": event_data.get("type", "event"),
+        "icon": event_data.get("icon", "📍"),
+        "title": event_data.get("title", "Event"),
+        "notes": event_data.get("notes") or event_data.get("description", ""),
+        "date": event_data.get("date", get_utc_timestamp()),
+        "created_at": get_utc_timestamp()
+    }
+    
+    # Add to timeline_events array
+    await db.pets.update_one(
+        {"id": pet_id},
+        {
+            "$push": {"doggy_soul_answers.timeline_events": new_event},
+            "$set": {"updated_at": get_utc_timestamp()}
+        }
+    )
+    
+    return {"message": "Timeline event added", "event": new_event}
+
+
+@api_router.delete("/pet-soul/profile/{pet_id}/timeline-event/{event_id}")
+async def delete_timeline_event(pet_id: str, event_id: str, current_user: dict = Depends(get_current_user_optional)):
+    """Remove a manual timeline event."""
+    result = await db.pets.update_one(
+        {"id": pet_id},
+        {
+            "$pull": {"doggy_soul_answers.timeline_events": {"id": event_id}},
+            "$set": {"updated_at": get_utc_timestamp()}
+        }
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    return {"message": "Timeline event removed"}
 
 
 @api_router.patch("/pets/{pet_id}/soul-answers")
