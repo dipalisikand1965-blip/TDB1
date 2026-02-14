@@ -730,9 +730,9 @@ const TodayPanel = ({
     const fetchWatchlist = async () => {
       console.log('[TODAY] fetchWatchlist called - isOpen:', isOpen, 'apiUrl:', apiUrl, 'pet?.id:', pet?.id);
       
-      // Skip if not open or no apiUrl
-      if (!isOpen || !apiUrl) {
-        console.log('[TODAY] Skipping - isOpen:', isOpen, 'apiUrl:', apiUrl);
+      // Skip if not open - apiUrl can be empty string for relative paths
+      if (!isOpen) {
+        console.log('[TODAY] Skipping - panel not open');
         return;
       }
       
