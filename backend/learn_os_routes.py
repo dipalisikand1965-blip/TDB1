@@ -699,8 +699,8 @@ async def get_topic_content(
         ).to_list(100)
         saved_ids = {s["item_id"] for s in saved_items}
     
-    # Get user feedback for negative weighting
-    user_feedback = await get_user_feedback(db, user_id) if user_id else {}
+    # Get user feedback for user feedback penalty (per user + per pet)
+    user_feedback = await get_user_feedback(db, user_id, pet_id) if user_id else {}
     
     # Validate topic
     topic_lower = topic.lower()
