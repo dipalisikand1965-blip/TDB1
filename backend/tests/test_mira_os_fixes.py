@@ -153,7 +153,7 @@ class TestQuickRepliesInResponse(TestAuthSetup):
     def test_grooming_query_returns_quick_replies(self, authenticated_session, pet_context):
         """Grooming query should return quick_replies for user options"""
         response = authenticated_session.post(f"{BASE_URL}/api/mira/os/understand-with-products", json={
-            "user_input": "i need a groomer for my dog",
+            "input": "i need a groomer for my dog",
             "pet_context": pet_context,
             "session_id": f"test_quickreply_{datetime.now().strftime('%Y%m%d%H%M%S')}",
             "conversation_stage": "initial",
@@ -196,7 +196,7 @@ class TestLeashQueryNoMealPlanTipCard(TestAuthSetup):
     def test_leash_query_no_tip_card(self, authenticated_session, pet_context):
         """Leash query should NOT return a tip card - it's a product query"""
         response = authenticated_session.post(f"{BASE_URL}/api/mira/os/understand-with-products", json={
-            "user_input": "i need a leash for my dog",
+            "input": "i need a leash for my dog",
             "pet_context": pet_context,
             "session_id": f"test_leash_{datetime.now().strftime('%Y%m%d%H%M%S')}",
             "conversation_stage": "initial",
@@ -219,7 +219,7 @@ class TestLeashQueryNoMealPlanTipCard(TestAuthSetup):
     def test_leash_query_does_not_become_meal_plan(self, authenticated_session, pet_context):
         """Leash query should NEVER be categorized as meal_plan"""
         response = authenticated_session.post(f"{BASE_URL}/api/mira/os/understand-with-products", json={
-            "user_input": "i need a leash for my dog",
+            "input": "i need a leash for my dog",
             "pet_context": pet_context,
             "session_id": f"test_leash_meal_{datetime.now().strftime('%Y%m%d%H%M%S')}",
             "conversation_stage": "initial",
@@ -245,7 +245,7 @@ class TestLeashQueryNoMealPlanTipCard(TestAuthSetup):
     def test_collar_query_no_tip_card(self, authenticated_session, pet_context):
         """Similar product queries (collar) should NOT return tip card"""
         response = authenticated_session.post(f"{BASE_URL}/api/mira/os/understand-with-products", json={
-            "user_input": "show me some collars for dogs",
+            "input": "show me some collars for dogs",
             "pet_context": pet_context,
             "session_id": f"test_collar_{datetime.now().strftime('%Y%m%d%H%M%S')}",
             "conversation_stage": "initial",
@@ -273,7 +273,7 @@ class TestBoardingClarifyingQuestions(TestAuthSetup):
     def test_boarding_query_asks_clarifying_question(self, authenticated_session, pet_context):
         """Boarding query should ask clarifying question first"""
         response = authenticated_session.post(f"{BASE_URL}/api/mira/os/understand-with-products", json={
-            "user_input": "i need boarding for my dog",
+            "input": "i need boarding for my dog",
             "pet_context": pet_context,
             "session_id": f"test_boarding_{datetime.now().strftime('%Y%m%d%H%M%S')}",
             "conversation_stage": "initial",
@@ -312,7 +312,7 @@ class TestPetFirstDoctrine(TestAuthSetup):
     def test_meal_plan_mentions_pet_name(self, authenticated_session, pet_context):
         """Meal plan response should mention pet by name"""
         response = authenticated_session.post(f"{BASE_URL}/api/mira/os/understand-with-products", json={
-            "user_input": "what should I feed my dog?",
+            "input": "what should I feed my dog?",
             "pet_context": pet_context,
             "session_id": f"test_petfirst_{datetime.now().strftime('%Y%m%d%H%M%S')}",
             "conversation_stage": "initial",
