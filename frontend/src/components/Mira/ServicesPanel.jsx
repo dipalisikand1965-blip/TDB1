@@ -320,8 +320,8 @@ const ServicesPanel = ({
       
       // Fetch launchers and inbox in parallel
       const [launchersRes, inboxRes] = await Promise.all([
-        fetch(`${API_BASE}/api/services/launchers`, { headers }),
-        fetch(`${API_BASE}/api/services/inbox${selectedPet?.id ? `?pet_id=${selectedPet.id}` : ''}`, { headers })
+        fetch(`${API_BASE}/api/os/services/launchers`, { headers }),
+        fetch(`${API_BASE}/api/os/services/inbox${selectedPet?.id ? `?pet_id=${selectedPet.id}` : ''}`, { headers })
       ]);
       
       if (launchersRes.ok) {
