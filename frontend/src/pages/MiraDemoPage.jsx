@@ -328,6 +328,8 @@ const MiraDemoPage = () => {
   const [showTodayPanel, setShowTodayPanel] = useState(false);
   // SERVICES PANEL: Execution Layer - Active requests and service launchers
   const [showServicesPanel, setShowServicesPanel] = useState(false);
+  // SERVICE REQUEST BUILDER: New request builder modal state
+  const [requestBuilderState, setRequestBuilderState] = useState({ isOpen: false, service: null });
   
   // NOTE: showTopPicksPanel, showUnifiedVault, isProcessing now come from useMiraUI hook
   // NOTE: proactiveAlerts, proactiveGreeting, currentWeather now come from useProactiveAlerts hook
