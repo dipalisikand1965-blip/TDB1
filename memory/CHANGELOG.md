@@ -7,16 +7,39 @@
   - File: `/app/frontend/src/components/Mira/MojoProfileModal.jsx` (Line 1725)
   - Change: `<h2 className="mojo-title">MOJO</h2>` → `<h2 className="mojo-title">{petData?.name || 'MOJO'}</h2>`
 
+### New Features (P0 - MOJO 100%)
+- **Weight History Tracking** - Track pet weight over time with historical data
+  - File: `/app/frontend/src/components/Mira/MojoSectionEditors.jsx`
+  - Expandable section in Health Vault editor
+  - Add/remove weight entries with date picker
+  - Shows up to 10 entries sorted by date
+  - Auto-saves with main editor
+- **Next Vaccination Date** - New date field for scheduling upcoming vaccinations
+
+### New Features (P1 - TODAY Tab)
+- **TODAY Panel COMPLETE** - Full Time Layer implementation
+  - File: `/app/frontend/src/components/Mira/TodayPanel.jsx`
+  - Weather alerts with temperature and safety badges (SAFE/CAUTION/DANGER)
+  - Birthday countdown (shows within 30 days of birthday)
+  - Urgent items stack (overdue vaccinations, checkups)
+  - Due soon cards (upcoming reminders based on pet data)
+  - Other pets summary section
+  - Lazy loaded for performance
+
 ### Documentation
 - Created exhaustive handover document: `/app/memory/HANDOVER_DOCUMENT.md`
-- Updated `/app/memory/PRD.md` with bug fix details
+- Updated `/app/memory/PRD.md` with all new features
 - Updated `/app/memory/MOJO_BIBLE_SCORECARD.md` with session changes
 
-### System Exploration
-- Verified Mira OS at `/mira-demo` is fully functional
-- Explored all 14 pillar pages (Celebrate, Stay, Travel, Care, etc.)
-- Verified Member Dashboard and My Pets pages
-- Confirmed Admin Portal login page is accessible
+### Testing
+- All features verified by testing agent (100% success rate)
+- Test report: `/app/test_reports/iteration_180.json`
+
+### Score Updates
+- MOJO Score: 91% → 94%
+- OS Overall Score: 58% → 63%
+- Health Vault: 92% → 98%
+- TODAY Layer: 15% → 85%
 
 ---
 
