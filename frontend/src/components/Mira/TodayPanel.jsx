@@ -728,7 +728,16 @@ const TodayPanel = ({
   
   useEffect(() => {
     const fetchWatchlist = async () => {
-      if (!pet?.id || !apiUrl || !isOpen) return;
+      // Skip if not open, no apiUrl, or no valid pet
+      if (!isOpen || !apiUrl) return;
+      
+      // Skip for demo pets - they don't have real tickets
+      if (!pet?.id || pet.id === 'demo-pet' || pet.id === 'demo') {
+        console.log('[TODAY] Skipping watchlist fetch for demo pet');
+        return;
+      }
+      
+      console.log('[TODAY] Fetching watchlist for pet:', pet.id);
       
       try {
         const headers = { 'Content-Type': 'application/json' };
@@ -742,6 +751,7 @@ const TodayPanel = ({
         
         if (response.ok) {
           const data = await response.json();
+          console.log('[TODAY] Watchlist fetched:', data.count, 'items');
           
           // Set watchlist items directly from API (already enriched)
           setWatchlist(data.watchlist || []);
@@ -757,6 +767,8 @@ const TodayPanel = ({
             statusText: getStatusText(ticket.status)
           }));
           setActiveTasks(tasks);
+        } else {
+          console.log('[TODAY] Watchlist fetch failed:', response.status);
         }
       } catch (err) {
         console.log('[TODAY] Could not fetch watchlist:', err.message);
