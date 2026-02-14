@@ -609,25 +609,61 @@ def should_generate_tip_card(
     
     Returns:
         (should_generate, tip_card_type)
+    
+    IMPORTANT: Product/shopping queries should NOT generate tip cards.
+    The tip card type should be determined primarily by the CURRENT user input,
+    not by conversation history (to prevent leash being categorized as meal_plan).
     """
     input_lower = user_input.lower()
     
-    # Check conversation history for context
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # PRODUCT QUERIES - NEVER generate tip cards for shopping/product intents
+    # These are direct product requests, not advice-seeking
+    # ═══════════════════════════════════════════════════════════════════════════════
+    product_keywords = [
+        "leash", "collar", "harness", "toy", "toys", "bowl", "bed", "crate",
+        "carrier", "cage", "kennel", "clothes", "jacket", "sweater", "bandana",
+        "brush", "comb", "nail clipper", "shampoo", "conditioner", "wipes",
+        "poop bags", "treat pouch", "food bowl", "water bowl", "feeder",
+        "tag", "id tag", "microchip", "gps", "tracker", "camera", "monitor",
+        "gate", "fence", "ramp", "stairs", "mat", "pad", "blanket",
+        "buy", "purchase", "order", "get me", "find me", "show me", "looking for",
+        "where can i get", "where to buy", "recommend a", "suggest a", "best"
+    ]
+    
+    # If current input is clearly a product query, skip tip card
+    if any(kw in input_lower for kw in product_keywords):
+        logger.debug(f"[TIP_CARD] Skipping tip card for product query: {input_lower[:50]}")
+        return False, None
+    
+    # Check conversation history for context (but ONLY for advisory topics)
     history_text = " ".join([
         msg.get("content", "").lower() 
         for msg in (conversation_history or [])[-5:]
     ])
-    full_context = input_lower + " " + history_text
     
-    # Meal plan / Diet advisory
-    meal_keywords = [
-        "meal plan", "diet", "nutrition", "food plan", "feeding schedule",
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # TIP CARD DETECTION - Prioritize CURRENT input over history
+    # Only use history to detect CONTINUATION of advisory topics
+    # ═══════════════════════════════════════════════════════════════════════════════
+    
+    # Meal plan / Diet advisory - MUST be in CURRENT input
+    meal_keywords_strict = [
+        "meal plan", "diet plan", "nutrition plan", "food plan", "feeding schedule",
         "what to feed", "what should i feed", "home cooked", "homemade food",
-        "raw diet", "healthy food", "healthy meal", "protein", "proteins",
-        "portion", "how much to feed", "ingredients", "vegetables",
-        "breakfast", "lunch", "dinner", "snack", "eggs", "chicken", "carrots"
+        "raw diet", "healthy food", "healthy meal", "how much to feed"
     ]
-    if any(kw in full_context for kw in meal_keywords):
+    if any(kw in input_lower for kw in meal_keywords_strict):
+        return True, "meal_plan"
+    
+    # Allow broader meal keywords only if continuing a meal plan conversation
+    meal_continuation_keywords = [
+        "eggs", "chicken", "carrots", "vegetables", "protein", "proteins",
+        "breakfast", "lunch", "dinner", "snack", "portion", "ingredients"
+    ]
+    meal_context_keywords = ["meal", "diet", "feeding", "food plan", "nutrition"]
+    is_meal_context = any(kw in history_text for kw in meal_context_keywords)
+    if is_meal_context and any(kw in input_lower for kw in meal_continuation_keywords):
         return True, "meal_plan"
     
     # Travel tips
