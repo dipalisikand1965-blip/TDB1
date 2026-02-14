@@ -98,6 +98,10 @@ class ScoredPick:
     service_modes: List[str] = field(default_factory=list)
     doc_requirements: List[str] = field(default_factory=list)
     booking_fields: Dict[str, List[str]] = field(default_factory=dict)
+    # New fields for enhanced pick cards
+    what_we_arrange: Optional[str] = None
+    what_we_need: List[str] = field(default_factory=list)
+    includes: List[str] = field(default_factory=list)
 
 
 def is_brachycephalic(breed: str) -> bool:
