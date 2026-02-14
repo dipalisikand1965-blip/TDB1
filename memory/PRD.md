@@ -19,7 +19,7 @@
 | **PICKS** | **100%** | ✅ **COMPLETE** - UI verified working |
 | **SERVICES** | **100%** | ✅ **COMPLETE** - Execution loop + watchlist |
 | **P1 MOBILE** | **100%** | ✅ **COMPLETE** - iOS Safari + Android Chrome |
-| **LEARN** | **100%** | ✅ **COMPLETE** - Session 12: PERSONALIZATION DONE |
+| **LEARN** | **100%** | ✅ **COMPLETE** - Session 12: Full Integration |
 | **CONCIERGE** | 30% | Future |
 
 ---
@@ -27,43 +27,37 @@
 ## SESSION 12 ACCOMPLISHMENTS (Feb 14, 2026)
 
 ### P0 LEARN Personalization - "Pet First, Breed Second" ✅
-**Goal:** Implement personalization for LEARN layer following the golden doctrine: Pet First, Breed Second
+**Goal:** Implement personalization for LEARN layer following the golden doctrine
 
 **What was built:**
 
-#### Backend Personalization (learn_os_routes.py)
-- `derive_pet_tags_from_profile()` - Extracts pet tags from pet profile:
-  - **Life stage**: puppy (<2 years), adult (2-7 years), senior (7+ years)
-  - **Conditions**: anxious, allergies, health_issues, high_energy, low_energy
-- `BREED_TAG_MAP` - Comprehensive mapping of 60+ breeds to characteristics:
-  - brachy (flat-faced), double_coat, floppy_ears, curly_coat, toy, giant, terrier, herding
-- `calculate_relevance_score()` - Scoring algorithm:
-  - Pet tag match: +10 points
-  - Breed tag match: +5 points
-  - "all" tag: +1 point (baseline)
-- Updated `/api/os/learn/home` with `pet_id` parameter:
-  - Returns `for_your_pet` shelf with highest-relevance content
-  - Returns `personalization` object with enabled flag and tags
-- Updated `/api/os/learn/topic/{topic}` with `pet_id` parameter:
-  - Returns `for_your_pet` shelf within topic content
+#### Backend Safety Updates
+- Changed wording from "conditions" → "explicit sensitivities, routines, behaviour signals (no inference)"
+- Renamed `allergies` → `food_sensitive` tag (no medical language)
+- Removed `health_issues` tag (was inferring from medical data)
+- **Health-adjacent topics ignore breed tags entirely** (`HEALTH_ADJACENT_TOPICS`)
+- **Breed tag contribution capped at +10** (prevents breed-dominance)
+- **User feedback penalty is per user + per pet, not global** (-15 for "Not helpful")
+- **Diversity filter:** Max 2 items with same primary tag in "For your pet"
 
-#### Frontend Updates (LearnPanel.jsx)
-- Pass `pet.id` to API calls for personalization
-- Display "For {pet_name}" shelf at top of home and topic views
-- Add personalization badges to ContentCard:
-  - "For {pet_name}" badge on highly relevant cards (score >= 10)
-  - "Relevant" badge on moderately relevant cards (score >= 5)
-  - Purple highlight border on personalized cards
+#### P0 CTA Integrations
+- **"Let Mira do it" → Services:** One tap opens `ServiceRequestBuilder` with:
+  - `source_layer: "learn"`
+  - `source_item: {type, id, title}`
+  - `service_type` from CTA mapping
+  - `prefill` from MOJO + CTA
+  - `context_note` (what they read + what they're trying to do)
 
-**Test Results:**
-- Backend: 100% (12/12 tests passed)
-- Frontend: 100% - All personalization features verified
+- **"Ask Mira" → Concierge:** Opens with zero re-asking:
+  - `learn_item: {title, type, id}`
+  - `derived_tags_used` (pet tags only for health topics)
+  - `suggested_next_action`
+  - Pre-filled message: "I've read X. Help me with Y."
 
-**Verification:**
-- Pet "Lola" (Maltese with anxiety markers) correctly shows:
-  - Pet tags: `anxious`, `allergies`, `high_energy`, `all`
-  - Breed tags: `toy`, `long_coat`
-  - "For Lola" section with anxiety content first
+#### Documentation Updates
+- Added OS Layer Correlation Map to LEARN_BIBLE.md
+- Added P0 Integration specifications
+- Updated safety rules and feedback penalty documentation
 
 ---
 
