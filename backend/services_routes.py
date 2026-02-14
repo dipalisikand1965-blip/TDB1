@@ -88,6 +88,19 @@ class PreferenceSave(BaseModel):
     value: Any
 
 
+class UniversalIntentRequest(BaseModel):
+    """
+    Universal intent capture - used by search, chat, and any UI element.
+    This model accepts free-form intent and routes to the unified pipeline.
+    """
+    intent: str  # Free-form user intent (e.g., "grooming for Lola tomorrow")
+    pet_ids: Optional[List[str]] = None
+    pet_names: Optional[List[str]] = None
+    source: str = "search"  # search, chat, quick_action, voice
+    device_type: Optional[str] = None  # mobile, desktop
+    pillar_hint: Optional[str] = None  # Optional pillar classification hint
+
+
 # ============================================
 # HELPER FUNCTIONS
 # ============================================
