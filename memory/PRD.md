@@ -77,6 +77,7 @@
 - Options show title, description, price
 - Selected option highlighted with checkmark
 - Status indicator: "Tap an option to select" / "You selected: X"
+- Added `linkedTicketId` state to properly route option responses
 
 #### Frontend: Service Desk (`ServiceDeskWorkspace.jsx`)
 - New "Send Options" button in reply area
@@ -86,16 +87,27 @@
   - Notify channels: In-App, WhatsApp, Email
 - Options auto-update ticket to "Awaiting User" status
 
-#### Sync Points
-- Today watchlist: Shows "Awaiting you: Choose option"
-- Services tab: Ticket status updates to OPTIONS_READY
-- Concierge thread: Option cards rendered as tappable buttons
-- Admin notification: When user selects option
+#### Multi-Tab Data Sync (`services_routes.py`) ✅
+- Enhanced `/api/os/services/watchlist` endpoint
+- Now queries 3 collections: `mira_tickets`, `tickets`, `service_desk_tickets`
+- `options_ready` status prioritized (appears at top)
+- Uses MongoDB aggregation pipeline with custom sort priority
+- Awaiting reason extracted from `pending_options.question`
+
+#### Backend: Concierge Thread Integration (`concierge_os_routes.py`)
+- Updated `get_thread` endpoint to include `type` and `options_payload` fields
+- Fetches option_card messages from linked tickets
+- Returns `ticket_id` in thread response for proper option responses
 
 **Files Modified:**
 - `/app/backend/ticket_routes.py` - Option Cards API endpoints
-- `/app/frontend/src/components/Mira/ConciergeThreadPanel.jsx` - Option cards UI
+- `/app/backend/routes/concierge_os_routes.py` - Thread messages with option cards
+- `/app/backend/services_routes.py` - Multi-collection watchlist query
+- `/app/frontend/src/components/Mira/ConciergeThreadPanel.jsx` - Option cards UI + linkedTicketId
 - `/app/frontend/src/components/admin/ServiceDeskWorkspace.jsx` - Send Options modal
+
+**Test Coverage:**
+- `/app/backend/tests/test_option_cards.py` - 13 backend tests passing
 
 ---
 
