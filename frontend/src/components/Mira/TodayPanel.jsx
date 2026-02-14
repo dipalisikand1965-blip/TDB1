@@ -732,7 +732,9 @@ const TodayPanel = ({
       if (!isOpen || !apiUrl) return;
       
       // Skip for demo pets - they don't have real tickets
-      if (!pet?.id || pet.id === 'demo-pet' || pet.id === 'demo') {
+      // Note: Real pet IDs are like 'pet-e6348b13c975', demo is exactly 'demo-pet' or 'demo'
+      const isDemoPet = !pet?.id || pet.id === 'demo-pet' || pet.id === 'demo';
+      if (isDemoPet) {
         console.log('[TODAY] Skipping watchlist fetch for demo pet');
         return;
       }
@@ -743,12 +745,8 @@ const TodayPanel = ({
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
         
-        // Fetch watchlist - optionally filter by pet
-        // If pet filter returns empty, also try without pet filter to get all user's tickets
-        let url = `${apiUrl}/api/os/services/watchlist`;
-        if (pet?.id && !pet.id.startsWith('demo')) {
-          url += `?pet_id=${pet.id}`;
-        }
+        // Fetch watchlist with pet filter
+        const url = `${apiUrl}/api/os/services/watchlist?pet_id=${pet.id}`;
         
         const response = await fetch(url, { headers });
         
