@@ -490,7 +490,7 @@ async def update_trait_from_purchase(
                 "id": f"purchase-{now.strftime('%Y%m%d%H%M%S')}",
                 "type": "purchase",
                 "category": "purchase",
-                "title": f"Order placed",
+                "title": "Order placed",
                 "description": f"Ordered {len(items)} item(s)",
                 "date": now.isoformat(),
                 "source": "purchase_history",
