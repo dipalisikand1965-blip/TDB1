@@ -220,7 +220,7 @@
 
 | Date | Bug Description | Fix Applied | Fixed By |
 |------|-----------------|-------------|----------|
-| | | | |
+| Feb 14 | `/dashboard` redirected to login even when authenticated | Wrapped route in ProtectedRoute | E1 |
 
 ---
 
