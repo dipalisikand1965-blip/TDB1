@@ -201,6 +201,9 @@ const getMissingItems = (sectionId, data) => {
       if (!soulAnswers.energy_level) missing.push('energy level');
       if (!soulAnswers.play_style) missing.push('play style');
       break;
+    case 'learned':
+      // Learned facts grow from conversations - no missing items
+      break;
     case 'trait_graph':
       // Trait graph grows organically - no missing items, just encouragement
       break;
