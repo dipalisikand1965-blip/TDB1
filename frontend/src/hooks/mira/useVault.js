@@ -3,13 +3,15 @@
  * ==========================================
  * Handles:
  * - Mira Picks (products, services curated by Mira)
+ * - Engine Picks (from B6 Picks Engine - auto-refreshes every turn)
  * - Vault visibility and state
  * - Vault data management
  * 
  * Extracted from MiraDemoPage.jsx - Stage 2 Refactoring
+ * Updated: Feb 2026 - Added Picks Engine integration (B6)
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 /**
  * useVault Hook
@@ -23,11 +25,22 @@ const useVault = () => {
   const [vaultUserMessage, setVaultUserMessage] = useState('');
   
   // Mira Picks - Products/services curated by Mira for the user
+  // Now includes enginePicks from Picks Engine (B6)
   const [miraPicks, setMiraPicks] = useState({
+    // Legacy picks (from product search)
     products: [],
     services: [],
     context: '',
-    hasNew: false
+    hasNew: false,
+    // NEW: Picks Engine data (B6)
+    enginePicks: [],        // All picks from engine
+    engineProducts: [],     // Product-type picks
+    engineServices: [],     // Service-type picks (booking, guide, concierge)
+    activePillar: null,     // Current pillar from classification
+    concierge: null,        // Concierge prominence decision
+    safetyOverride: null,   // Emergency/caution state
+    missingProfileFields: [], // For micro-questions
+    lastUpdated: null       // Timestamp for "Updated just now"
   });
   
   // Mira Tray visibility (the floating picks indicator)
@@ -39,13 +52,22 @@ const useVault = () => {
       products: [],
       services: [],
       context: '',
-      hasNew: false
+      hasNew: false,
+      enginePicks: [],
+      engineProducts: [],
+      engineServices: [],
+      activePillar: null,
+      concierge: null,
+      safetyOverride: null,
+      missingProfileFields: [],
+      lastUpdated: null
     });
   }, []);
   
-  // Add new picks from Mira's response
+  // Add new picks from Mira's response (legacy)
   const updatePicks = useCallback((products = [], services = [], context = '') => {
     setMiraPicks(prev => ({
+      ...prev,
       products: products.length > 0 ? products : prev.products,
       services: services.length > 0 ? services : prev.services,
       context: context || prev.context,
@@ -72,15 +94,51 @@ const useVault = () => {
     setVaultUserMessage('');
   }, []);
   
-  // Check if there are any picks
+  // Check if there are any picks (includes engine picks)
   const hasPicks = useCallback(() => {
-    return (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) > 0;
+    const legacyCount = (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0);
+    const engineCount = miraPicks.enginePicks?.length || 0;
+    return legacyCount > 0 || engineCount > 0;
   }, [miraPicks]);
   
-  // Get total picks count
+  // Get total picks count (includes engine picks)
   const getPicksCount = useCallback(() => {
-    return (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0);
+    const legacyCount = (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0);
+    const engineCount = miraPicks.enginePicks?.length || 0;
+    // Prefer engine picks if available
+    return engineCount > 0 ? engineCount : legacyCount;
   }, [miraPicks]);
+  
+  // NEW: Get combined picks for display (engine picks take precedence)
+  const getCombinedPicks = useMemo(() => {
+    if (miraPicks.enginePicks?.length > 0) {
+      return miraPicks.enginePicks;
+    }
+    // Fallback to legacy picks
+    return [
+      ...(miraPicks.products || []).map(p => ({ ...p, type: 'product', source: 'legacy' })),
+      ...(miraPicks.services || []).map(s => ({ ...s, type: 'service', source: 'legacy' }))
+    ];
+  }, [miraPicks]);
+  
+  // NEW: Get "Updated just now" text
+  const getLastUpdatedText = useMemo(() => {
+    if (!miraPicks.lastUpdated) return null;
+    const diff = Date.now() - new Date(miraPicks.lastUpdated).getTime();
+    if (diff < 60000) return 'Updated just now';
+    if (diff < 300000) return 'Updated a few minutes ago';
+    return null;
+  }, [miraPicks.lastUpdated]);
+  
+  // NEW: Check if in safety mode
+  const isInSafetyMode = useMemo(() => {
+    return miraPicks.safetyOverride?.active || false;
+  }, [miraPicks.safetyOverride]);
+  
+  // NEW: Get safety level
+  const getSafetyLevel = useMemo(() => {
+    return miraPicks.safetyOverride?.level || 'normal';
+  }, [miraPicks.safetyOverride]);
   
   return {
     // Vault visibility
@@ -108,7 +166,13 @@ const useVault = () => {
     
     // Helpers
     hasPicks,
-    getPicksCount
+    getPicksCount,
+    
+    // NEW: Engine picks helpers
+    getCombinedPicks,
+    getLastUpdatedText,
+    isInSafetyMode,
+    getSafetyLevel
   };
 };
 
