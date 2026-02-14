@@ -1066,11 +1066,81 @@ const MojoProfileModal = ({
   
   // Fetch full pet data on open
   useEffect(() => {
-    console.log('[MOJO] useEffect check:', { isOpen, petId: pet?.id, apiUrl });
-    if (isOpen && pet?.id) {
-      fetchFullPetData();
+    const loadData = async () => {
+      if (!pet?.id) return;
+      
+      setLoading(true);
+      console.log('[MOJO] Fetching complete pet profile data for:', pet.name);
+      
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        
+        // Parallel fetch from multiple endpoints for complete data
+        const [petResponse, statsResponse, memberResponse] = await Promise.all([
+          // 1. Full pet profile with doggy_soul_answers
+          fetch(`${apiUrl}/api/pets/${pet.id}`, { headers }).catch(() => null),
+          
+          // 2. Personalization stats (soul score, knowledge items)
+          fetch(`${apiUrl}/api/mira/personalization-stats/${pet.id}`, { headers }).catch(() => null),
+          
+          // 3. Member profile with membership tier, paw points, badges
+          userEmail 
+            ? fetch(`${apiUrl}/api/member/profile?user_email=${encodeURIComponent(userEmail)}`, { headers }).catch(() => null)
+            : fetch(`${apiUrl}/api/member/profile`, { headers }).catch(() => null)
+        ]);
+        
+        // Process pet data
+        if (petResponse?.ok) {
+          const petData = await petResponse.json();
+          console.log('[MOJO] Pet data loaded:', petData.name, 'Score:', petData.overall_score);
+          console.log('[MOJO] doggy_soul_meta:', petData.doggy_soul_meta);
+          setFullPetData(petData);
+          
+          // Use actual soul score from API
+          if (petData.overall_score !== undefined) {
+            setComputedSoulScore(Math.round(petData.overall_score));
+          }
+        }
+        
+        // Process personalization stats
+        if (statsResponse?.ok) {
+          const statsData = await statsResponse.json();
+          console.log('[MOJO] Personalization stats loaded:', statsData.soul_score);
+          setPersonalizationStats(statsData);
+          
+          // Override soul score from personalization stats if available
+          if (statsData.soul_score !== undefined) {
+            setComputedSoulScore(Math.round(statsData.soul_score));
+          }
+        }
+        
+        // Process member profile
+        if (memberResponse?.ok) {
+          const memberData = await memberResponse.json();
+          console.log('[MOJO] Member profile loaded:', memberData.name);
+          setMembershipData({
+            tier: memberData.membership_tier,
+            expires: memberData.membership_expires,
+            points: memberData.loyalty_points || memberData.paw_points
+          });
+          
+          // Get badges from member profile
+          if (memberData.credited_achievements) {
+            setBadgesData(memberData.credited_achievements);
+          }
+        }
+      } catch (error) {
+        console.error('[MOJO] Error fetching pet data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (isOpen) {
+      loadData();
     }
-  }, [isOpen, pet?.id]);
+  }, [isOpen, pet?.id, apiUrl, token, userEmail]);
   
   // Deep link to soul section
   useEffect(() => {
