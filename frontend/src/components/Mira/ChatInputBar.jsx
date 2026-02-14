@@ -8,7 +8,7 @@
  */
 
 import React, { useRef, useState } from 'react';
-import { Send, Mic, MicOff, Volume2, VolumeX, X, Camera, ImagePlus, Loader2 } from 'lucide-react';
+import { Send, Mic, MicOff, Volume2, VolumeX, X, Camera, ImagePlus, Loader2, MessageSquarePlus } from 'lucide-react';
 import hapticFeedback from '../../utils/haptic';
 
 /**
