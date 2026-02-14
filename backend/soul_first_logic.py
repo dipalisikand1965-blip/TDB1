@@ -1081,6 +1081,12 @@ async def write_soul_data_to_pet(
         # Doggy Soul answers (nested)
         for k, v in doggy_soul_updates.items():
             update_doc["$set"][f"doggy_soul_answers.{k}"] = v
+            # Also store metadata showing this was learned from Mira
+            update_doc["$set"][f"doggy_soul_meta.{k}"] = {
+                "source": "mira",
+                "confidence": 85,  # Chat-inferred data is 85% confidence
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
         
         # Health data (nested)
         for k, v in health_updates.items():
