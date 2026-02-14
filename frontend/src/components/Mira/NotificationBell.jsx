@@ -60,7 +60,7 @@ const NotificationBell = ({ userEmail, className = '' }) => {
   // Mark notification as read
   const markAsRead = async (notificationId) => {
     try {
-      await fetch(`${API_URL}/api/member/notifications/${notificationId}/read`, {
+      await fetch(`${API_URL}/api/member/notifications/${notificationId}/mark-read`, {
         method: 'PUT'
       });
       setNotifications(prev => 
