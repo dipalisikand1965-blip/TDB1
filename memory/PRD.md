@@ -10,7 +10,7 @@
 ## 6. `/app/memory/SYSTEM_AUDIT_REPORT.md` - ✅ FULL SYSTEM AUDIT COMPLETED (Feb 2026)
 ---
 
-## CURRENT SCORE: 100% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 11)
+## CURRENT SCORE: 100% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 12)
 
 | Layer | Score | Status |
 |-------|-------|--------|
@@ -19,8 +19,51 @@
 | **PICKS** | **100%** | ✅ **COMPLETE** - UI verified working |
 | **SERVICES** | **100%** | ✅ **COMPLETE** - Execution loop + watchlist |
 | **P1 MOBILE** | **100%** | ✅ **COMPLETE** - iOS Safari + Android Chrome |
-| **LEARN** | **100%** | ✅ **COMPLETE** - Session 11 |
+| **LEARN** | **100%** | ✅ **COMPLETE** - Session 12: PERSONALIZATION DONE |
 | **CONCIERGE** | 30% | Future |
+
+---
+
+## SESSION 12 ACCOMPLISHMENTS (Feb 14, 2026)
+
+### P0 LEARN Personalization - "Pet First, Breed Second" ✅
+**Goal:** Implement personalization for LEARN layer following the golden doctrine: Pet First, Breed Second
+
+**What was built:**
+
+#### Backend Personalization (learn_os_routes.py)
+- `derive_pet_tags_from_profile()` - Extracts pet tags from pet profile:
+  - **Life stage**: puppy (<2 years), adult (2-7 years), senior (7+ years)
+  - **Conditions**: anxious, allergies, health_issues, high_energy, low_energy
+- `BREED_TAG_MAP` - Comprehensive mapping of 60+ breeds to characteristics:
+  - brachy (flat-faced), double_coat, floppy_ears, curly_coat, toy, giant, terrier, herding
+- `calculate_relevance_score()` - Scoring algorithm:
+  - Pet tag match: +10 points
+  - Breed tag match: +5 points
+  - "all" tag: +1 point (baseline)
+- Updated `/api/os/learn/home` with `pet_id` parameter:
+  - Returns `for_your_pet` shelf with highest-relevance content
+  - Returns `personalization` object with enabled flag and tags
+- Updated `/api/os/learn/topic/{topic}` with `pet_id` parameter:
+  - Returns `for_your_pet` shelf within topic content
+
+#### Frontend Updates (LearnPanel.jsx)
+- Pass `pet.id` to API calls for personalization
+- Display "For {pet_name}" shelf at top of home and topic views
+- Add personalization badges to ContentCard:
+  - "For {pet_name}" badge on highly relevant cards (score >= 10)
+  - "Relevant" badge on moderately relevant cards (score >= 5)
+  - Purple highlight border on personalized cards
+
+**Test Results:**
+- Backend: 100% (12/12 tests passed)
+- Frontend: 100% - All personalization features verified
+
+**Verification:**
+- Pet "Lola" (Maltese with anxiety markers) correctly shows:
+  - Pet tags: `anxious`, `allergies`, `high_energy`, `all`
+  - Breed tags: `toy`, `long_coat`
+  - "For Lola" section with anxiety content first
 
 ---
 
