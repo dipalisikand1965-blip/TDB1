@@ -1,5 +1,44 @@
 # CHANGELOG - Mira OS
 
+## February 14, 2026 - Session 4 (Current)
+
+### Trait Graph Service - COMPLETE (P0)
+- **NEW:** `/app/backend/trait_graph_service.py` - Full implementation per MOJO Bible Part 1 §13
+  - Service Outcomes → MOJO (grooming, vet, training, etc. update pet traits)
+  - Purchases → MOJO (food orders update flavor preferences)
+  - Behaviour Observations → MOJO (service provider feedback updates traits)
+  - Evidence count tracking for confidence building
+  - Timeline events auto-logged on service completion
+  
+- **Integration Points:**
+  - `concierge_routes.py` - Ticket resolution triggers trait update
+  - `checkout_routes.py` - Payment verification triggers trait update
+  - 3 new API endpoints:
+    - `GET /api/pet-soul/profile/{pet_id}/trait-graph` - Stats & analytics
+    - `POST /api/pet-soul/profile/{pet_id}/trait-graph/service-outcome`
+    - `POST /api/pet-soul/profile/{pet_id}/trait-graph/behaviour-observation`
+
+### Pet Life Pass - Connected to MOJO Modal
+- **FIXED:** MembershipRewards component rebuilt with beautiful Pet Life Pass card
+  - File: `/app/frontend/src/components/Mira/MojoProfileModal.jsx`
+  - Shows: TD logo, tier badge (Silver Star), pass number (TDC-XXXXXX)
+  - Loyalty points with ₹ worth calculation
+  - Progress bar to next tier
+  - Badges grid with 6 visible + more indicator
+
+### Soul Score Consistency - FIXED
+- **BUG FIX:** Soul scores now consistent across all pages
+  - `/api/pets` - Uses calculated score (not stale DB value)
+  - `/api/mira/personalization-stats` - Now calculates fresh using `calculate_pet_soul_score()`
+  - Dashboard, MOJO modal, pet pages - All show same score
+  - Lola: 63%, Mystique: 72% (verified consistent everywhere)
+
+### Testing
+- 26 backend tests PASSED for Trait Graph (iteration_183.json)
+- Frontend Pet Life Pass verified working (iteration_184.json)
+
+---
+
 ## February 14, 2026 - Session 3
 
 ### TODAY Panel - Full Implementation (P0)
