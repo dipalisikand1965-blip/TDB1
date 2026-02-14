@@ -107,7 +107,7 @@ async def get_user_from_token_services(authorization: Optional[str] = None):
             return None
         
         db = get_db()
-        if not db:
+        if db is None:
             return None
         user = await db.users.find_one({"email": user_email}, {"_id": 0, "password_hash": 0})
         if user:
@@ -188,7 +188,7 @@ async def get_services_inbox(
         raise HTTPException(status_code=401, detail="Authentication required")
     
     db = get_db()
-    if not db:
+    if db is None:
         return {"success": True, "awaiting_user": [], "active": [], "orders": [], "completed": []}
     
     parent_id = user.get("id") or user.get("user_id")
@@ -256,7 +256,7 @@ async def get_awaiting_user(
         raise HTTPException(status_code=401, detail="Authentication required")
     
     db = get_db()
-    if not db:
+    if db is None:
         return {"success": True, "tickets": [], "count": 0}
     
     parent_id = user.get("id") or user.get("user_id")
@@ -295,7 +295,7 @@ async def get_orders(
         raise HTTPException(status_code=401, detail="Authentication required")
     
     db = get_db()
-    if not db:
+    if db is None:
         return {"success": True, "orders": [], "count": 0}
     
     parent_id = user.get("id") or user.get("user_id")
@@ -338,7 +338,7 @@ async def get_watchlist(
         raise HTTPException(status_code=401, detail="Authentication required")
     
     db = get_db()
-    if not db:
+    if db is None:
         return {"success": True, "watchlist": [], "count": 0, "stale": False}
     
     parent_id = user.get("id") or user.get("user_id")
@@ -391,7 +391,7 @@ async def create_service_request(
         raise HTTPException(status_code=401, detail="Authentication required")
     
     db = get_db()
-    if not db:
+    if db is None:
         # Return mock for development
         mock_id = f"SVC-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
         return {
@@ -473,7 +473,7 @@ async def get_ticket_detail(
         raise HTTPException(status_code=401, detail="Authentication required")
     
     db = get_db()
-    if not db:
+    if db is None:
         raise HTTPException(status_code=503, detail="Database unavailable")
     
     parent_id = user.get("id") or user.get("user_id")
@@ -507,7 +507,7 @@ async def update_ticket(
         raise HTTPException(status_code=401, detail="Authentication required")
     
     db = get_db()
-    if not db:
+    if db is None:
         raise HTTPException(status_code=503, detail="Database unavailable")
     
     parent_id = user.get("id") or user.get("user_id")
@@ -603,7 +603,7 @@ async def save_preference(
         raise HTTPException(status_code=401, detail="Authentication required")
     
     db = get_db()
-    if not db:
+    if db is None:
         return {"success": True, "mock": True}
     
     parent_id = user.get("id") or user.get("user_id")
@@ -658,7 +658,7 @@ async def get_services_stats(
         return {"success": True, "stats": {"awaiting": 0, "active": 0, "completed": 0}}
     
     db = get_db()
-    if not db:
+    if db is None:
         return {"success": True, "stats": {"awaiting": 0, "active": 0, "completed": 0}}
     
     parent_id = user.get("id") or user.get("user_id")
