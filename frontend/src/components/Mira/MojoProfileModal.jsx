@@ -411,30 +411,111 @@ const SectionRow = memo(({
   );
 });
 
+// Helper: Get trait metadata (confidence + source)
+// Direct answers = 100% confidence, Chat-inferred = 75-90%, Pillar-derived = 85%
+const getTraitMetadata = (key, soulAnswers, soulMeta) => {
+  const meta = soulMeta?.[key] || {};
+  const source = meta.source || 'direct';
+  
+  // Calculate confidence based on source
+  let confidence = 100;
+  if (source === 'mira' || source === 'chat') {
+    confidence = meta.confidence || 85; // Chat-inferred: 75-90%
+  } else if (source.startsWith('pillar_')) {
+    confidence = meta.confidence || 90; // From pillar interactions
+  } else {
+    confidence = 100; // Direct answer = 100%
+  }
+  
+  return {
+    confidence,
+    source,
+    isInferred: source === 'mira' || source === 'chat',
+    timestamp: meta.captured_at || meta.updated_at
+  };
+};
+
+// Trait Badge Component - Shows confidence and source
+const TraitBadge = memo(({ confidence, isInferred }) => {
+  if (!isInferred && confidence === 100) return null;
+  
+  return (
+    <div className="trait-meta">
+      {isInferred && (
+        <span className="trait-source-badge mira-learned" title="Mira learned this from your conversations">
+          <Brain className="w-3 h-3" />
+          <span>Mira learned</span>
+        </span>
+      )}
+      {confidence < 100 && (
+        <span className={`trait-confidence ${confidence >= 85 ? 'high' : confidence >= 70 ? 'medium' : 'low'}`}>
+          {confidence}%
+        </span>
+      )}
+    </div>
+  );
+});
+
 // Soul Profile Content Component
 const SoulProfileContent = memo(({ pet, soulData }) => {
   const soulAnswers = pet?.doggy_soul_answers || {};
+  const soulMeta = pet?.doggy_soul_meta || {}; // Metadata for each answer
   const soul = pet?.soul || {};
   
-  // Extract personality traits
+  // Extract personality traits with metadata
   const traits = [];
-  if (soulAnswers.temperament) traits.push({ label: 'Temperament', value: soulAnswers.temperament, icon: '🎭' });
-  if (soulAnswers.general_nature) traits.push({ label: 'Nature', value: soulAnswers.general_nature, icon: '💫' });
-  if (soulAnswers.energy_level) traits.push({ label: 'Energy', value: soulAnswers.energy_level, icon: '⚡' });
-  if (soulAnswers.play_style) traits.push({ label: 'Play Style', value: soulAnswers.play_style, icon: '🎾' });
-  if (soulAnswers.social_with_dogs) traits.push({ label: 'With Dogs', value: soulAnswers.social_with_dogs, icon: '🐕' });
-  if (soulAnswers.social_with_people) traits.push({ label: 'With People', value: soulAnswers.social_with_people, icon: '👨‍👩‍👧' });
-  if (soul.personality_tag) traits.push({ label: 'Personality', value: soul.personality_tag, icon: '👑' });
+  
+  const addTrait = (key, label, icon, value) => {
+    if (value) {
+      const meta = getTraitMetadata(key, soulAnswers, soulMeta);
+      traits.push({ 
+        key,
+        label, 
+        value, 
+        icon,
+        confidence: meta.confidence,
+        source: meta.source,
+        isInferred: meta.isInferred
+      });
+    }
+  };
+  
+  addTrait('temperament', 'Temperament', '🎭', soulAnswers.temperament);
+  addTrait('general_nature', 'Nature', '💫', soulAnswers.general_nature);
+  addTrait('energy_level', 'Energy', '⚡', soulAnswers.energy_level);
+  addTrait('play_style', 'Play Style', '🎾', soulAnswers.play_style);
+  addTrait('social_with_dogs', 'With Dogs', '🐕', soulAnswers.social_with_dogs);
+  addTrait('social_with_people', 'With People', '👨‍👩‍👧', soulAnswers.social_with_people);
+  
+  if (soul.personality_tag) {
+    traits.push({ 
+      key: 'personality_tag',
+      label: 'Personality', 
+      value: soul.personality_tag, 
+      icon: '👑',
+      confidence: 100,
+      source: 'derived',
+      isInferred: false
+    });
+  }
   
   return (
-    <div className="soul-profile-content">
+    <div className="soul-profile-content" data-testid="soul-profile-content">
       {traits.length > 0 ? (
         <div className="soul-traits-grid">
           {traits.map((trait, i) => (
-            <div key={i} className="soul-trait-card">
-              <span className="trait-icon">{trait.icon}</span>
+            <div key={i} className="soul-trait-card" data-testid={`trait-${trait.key}`}>
+              <div className="trait-header">
+                <span className="trait-icon">{trait.icon}</span>
+                <TraitBadge confidence={trait.confidence} isInferred={trait.isInferred} />
+              </div>
               <span className="trait-label">{trait.label}</span>
-              <span className="trait-value">{Array.isArray(trait.value) ? trait.value.join(', ') : trait.value}</span>
+              <span className="trait-value">
+                {Array.isArray(trait.value) ? trait.value.join(', ') : trait.value}
+                {trait.confidence < 100 && (
+                  <span className="trait-confidence-inline">({trait.confidence}%)</span>
+                )}
+              </span>
             </div>
           ))}
         </div>
