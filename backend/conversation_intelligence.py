@@ -778,7 +778,7 @@ def should_generate_tip_card(
         "bonding", "bond with", "quality time", "spend time",
         "connection", "ritual", "daily ritual", "routine with"
     ]
-    if any(kw in full_context for kw in bonding_keywords):
+    if any(kw in input_lower for kw in bonding_keywords):
         return True, "bonding_ritual"
     
     return False, None
