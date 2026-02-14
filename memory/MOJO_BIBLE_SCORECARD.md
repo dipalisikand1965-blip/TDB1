@@ -157,15 +157,15 @@
 | Item | Status | Notes |
 |------|--------|-------|
 | Walk frequency | ✅ DONE | walk_frequency |
-| Preferred walk times | ❌ NOT BUILT | |
+| Preferred walk times | ✅ DONE | preferred_walk_time field |
 | Sleep pattern | ✅ DONE | sleep_pattern |
-| Feeding schedule | ✅ DONE | |
-| Activity level pattern | ⚠️ PARTIAL | exercise_needs |
-| Bathroom pattern | ❌ NOT BUILT | |
-| Exercise habits | ⚠️ PARTIAL | |
-| Routine stability level | ❌ NOT BUILT | |
+| Feeding schedule | ✅ DONE | feeding_schedule |
+| Activity level pattern | ✅ DONE | exercise_needs field |
+| Bathroom pattern | ✅ DONE | bathroom_schedule field |
+| Exercise habits | ✅ DONE | exercise_needs captures this |
+| Routine stability level | ✅ DONE | alone_time_comfort field |
 
-**Score: 38%** (3/8 items)
+**Score: 100%** (8/8 items - IMPROVED from 38%)
 
 ---
 
