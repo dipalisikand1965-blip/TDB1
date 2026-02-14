@@ -2958,12 +2958,15 @@ const MiraDemoPage = () => {
         }}
         onSwitchPet={switchPet}
         badges={{
-          picks: (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) > 0 
-            ? (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) 
-            : null,
+          picks: miraPicks.hasNew && miraPicks.enginePicks?.length > 0
+            ? miraPicks.enginePicks.length
+            : (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) > 0 
+              ? (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) 
+              : null,
           services: null, // TODO: Connect to pending services count
           insights: null, // TODO: Connect to new insights count
         }}
+        picksHasNew={miraPicks.hasNew}
       />
       
       {/* NAVIGATION DOCK - Extracted to NavigationDock component (Legacy - keeping for backward compatibility) */}
