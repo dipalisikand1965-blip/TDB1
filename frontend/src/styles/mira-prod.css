@@ -903,6 +903,43 @@
   padding: var(--space-lg);
 }
 
+/* Picks Hint Button - Subtle CTA to view PICKS tab */
+.mp-picks-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  margin-top: 16px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.1));
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+}
+
+.mp-picks-hint:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(236, 72, 153, 0.15));
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+.mp-picks-hint svg:first-child {
+  color: #a78bfa;
+}
+
+.mp-picks-hint span {
+  flex: 1;
+  text-align: left;
+}
+
+.mp-picks-hint svg:last-child {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+
 .mp-card-text {
   font-size: 15px;
   line-height: 1.7;
