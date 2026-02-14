@@ -1326,7 +1326,7 @@ const MiraDemoPage = () => {
     };
     
     fetchProactiveAlerts();
-  }, [pet.id]);
+  }, [pet.id, isLoadingPets]);
   
   // MULTI-PET: Switch to a different pet
   const switchPet = async (newPet) => {
