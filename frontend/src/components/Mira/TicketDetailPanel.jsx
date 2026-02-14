@@ -310,7 +310,7 @@ const TicketDetailPanel = ({
         <div className="flex items-center gap-3 p-4 border-b border-white/5">
           <button 
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+            className="p-2.5 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-white/5 min-w-[44px] min-h-[44px] flex items-center justify-center touch-manipulation"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -324,7 +324,7 @@ const TicketDetailPanel = ({
           </div>
           <button 
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+            className="p-2.5 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-white/5 min-w-[44px] min-h-[44px] flex items-center justify-center touch-manipulation"
           >
             <X className="w-5 h-5" />
           </button>
