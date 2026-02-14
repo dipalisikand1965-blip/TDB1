@@ -36,7 +36,7 @@ Pass: lola4304
 
 ## Preview
 ```
-https://mira-os-identity.preview.emergentagent.com
+https://mira-os-roadmap.preview.emergentagent.com
 ```
 
 ---
@@ -116,7 +116,7 @@ sudo supervisorctl status
 tail -f /var/log/supervisor/backend.err.log
 
 # Test API
-curl https://mira-os-identity.preview.emergentagent.com/api/health
+curl https://mira-os-roadmap.preview.emergentagent.com/api/health
 ```
 
 ---
