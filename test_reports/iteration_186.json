@@ -1,0 +1,92 @@
+{
+  "summary": "PICKS Auto-Refresh feature testing COMPLETE. All features working correctly: (1) Backend returns picks[] array in chat response, (2) Pillar auto-switching based on conversation intent - grooming queries return 'care' pillar, birthday queries return 'celebrate' pillar, (3) Frontend correctly processes picks from chat response and updates UI accordingly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_picks_auto_refresh.py",
+    "/app/test_reports/pytest/pytest_picks_auto_refresh.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "PICKS Engine integration at line 3665-3700 of mira_routes.py is correctly implemented - runs picks_engine on every chat turn",
+    "Response correctly includes: picks[], concierge{}, safety_override{}, missing_profile_fields[]",
+    "useChatSubmit.js (lines 715-782) correctly processes picks from data.picks and updates miraPicks state",
+    "PersonalizedPicksPanel.jsx correctly supports enginePillar prop for auto pillar switching",
+    "Pillar detection works for: grooming → care, birthday → celebrate, travel → travel"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_picks_auto_refresh.py"
+  ],
+  "success_rate": {
+    "backend": "100% - All 8 pytest tests passed",
+    "frontend": "100% - Picks auto-refresh and pillar switching verified via Playwright"
+  },
+  "test_credentials": {
+    "user": "dipali@clubconcierge.in",
+    "password": "test123"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "PICKS auto-refresh is fully functional. Test by logging in, navigating to /mira-demo, and sending a chat message. Console logs will show: [PICKS ENGINE] Received X picks for pillar: {pillar}. Grooming queries → care pillar, birthday queries → celebrate pillar, travel queries → travel pillar.",
+  "features_tested": {
+    "picks_auto_refresh": {
+      "status": "PASS",
+      "description": "Every chat message returns picks[] array in response",
+      "console_evidence": "[PICKS ENGINE] Received 8 picks for pillar: care"
+    },
+    "pillar_auto_switching": {
+      "status": "PASS",
+      "tests": [
+        {
+          "query": "I need grooming for my dog",
+          "expected_pillar": "care",
+          "actual_pillar": "care",
+          "console_evidence": "[PILLAR] Updated currentPillar to: care"
+        },
+        {
+          "query": "I want to plan a birthday party for my dog",
+          "expected_pillar": "celebrate",
+          "actual_pillar": "celebrate", 
+          "console_evidence": "[PILLAR] Updated currentPillar to: celebrate"
+        }
+      ]
+    },
+    "frontend_picks_panel": {
+      "status": "PASS",
+      "description": "PersonalizedPicksPanel receives enginePicks and enginePillar from chat response",
+      "implementation_verified": "useChatSubmit.js lines 715-782 processes picks correctly"
+    },
+    "response_structure": {
+      "status": "PASS",
+      "fields_verified": [
+        "picks (array)",
+        "concierge (object with mode, cta_prominence)",
+        "safety_override (object with active, level)",
+        "missing_profile_fields (array)",
+        "pillar (string)"
+      ]
+    }
+  },
+  "api_verification": {
+    "POST /api/mira/os/understand-with-products": {
+      "status": "PASS",
+      "picks_returned": true,
+      "pillar_auto_switch": true,
+      "response_time": "< 10s"
+    }
+  },
+  "pytest_results": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0,
+    "test_file": "/app/backend/tests/test_picks_auto_refresh.py"
+  }
+}
