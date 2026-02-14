@@ -182,6 +182,7 @@ const calculateSectionCompleteness = (sectionId, data) => {
 const getMissingItems = (sectionId, data) => {
   const soulAnswers = data?.doggy_soul_answers || {};
   const preferences = data?.preferences || {};
+  const soulMeta = data?.doggy_soul_meta || {};
   const missing = [];
   
   switch (sectionId) {
@@ -189,6 +190,9 @@ const getMissingItems = (sectionId, data) => {
       if (!soulAnswers.temperament && !soulAnswers.general_nature) missing.push('temperament');
       if (!soulAnswers.energy_level) missing.push('energy level');
       if (!soulAnswers.play_style) missing.push('play style');
+      break;
+    case 'trait_graph':
+      // Trait graph grows organically - no missing items, just encouragement
       break;
     case 'health':
       if (!soulAnswers.food_allergies && !preferences.allergies) missing.push('allergies');
