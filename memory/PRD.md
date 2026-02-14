@@ -26,6 +26,58 @@
 
 ---
 
+## SESSION 17 ACCOMPLISHMENTS (Feb 14, 2026)
+
+### P0 CRITICAL BUG FIXES - Conversation Flow & UI Regression ✅
+**User-Reported Issues:**
+1. LLM skips clarifying questions and triggers APIs prematurely
+2. Quick reply tabs missing from Mira's responses
+3. Request categorization bug - "leash" query saved as "Meal Plan"
+
+**What was fixed:**
+
+#### A) Hardcoded Conversation Flow (`mira_routes.py` Lines 4608-4666)
+- Added explicit service intents requiring clarification: grooming, boarding, trainer
+- Skip Places API for these intents until user provides explicit location preference
+- Only search for places when user says "near me", "find one", etc.
+- Documented conversation flow steps in LLM system prompt
+
+**Before:** User asks "I need a groomer" → Immediately searches Google Places
+**After:** User asks "I need a groomer" → Mira asks "Simple trim or full grooming?" → Then asks location
+
+#### B) Product Query Skip for Tip Cards (`conversation_intelligence.py` Lines 602-785)
+- Added `product_query_keywords` list (leash, collar, harness, toy, etc.)
+- Product queries now skip tip card generation entirely
+- Fixed tip type detection to use CURRENT input, not conversation history
+- Prevents "leash" from being categorized as "meal_plan" due to prior food conversation
+
+**Before:** User asks for "leash" after meal conversation → Tip Card: "Lola's Meal Plan"
+**After:** User asks for "leash" → No tip card, shows product recommendations
+
+#### C) Quick Replies in LLM Response (`mira_routes.py` Lines 2490-2510)
+- Added explicit instruction: "quick_replies MUST be included whenever you ask a question"
+- Provided examples: `["Simple trim", "Full grooming session", "Not sure yet"]`
+- Frontend already renders these as header tiles
+
+#### D) Fallback Tip Detection Fix (`mira_routes.py` Lines 5095-5145)
+- Added secondary product query check in fallback detection
+- Ensures shopping queries don't generate advisory tip cards
+- More conservative matching - requires explicit advisory keywords
+
+**Files Modified:**
+- `/app/backend/mira_routes.py` - Hardcoded conversation flow + LLM prompt
+- `/app/backend/conversation_intelligence.py` - Product query skip + tip detection fix
+
+**Test Results (All Passed):**
+- Grooming clarifying question: ✅
+- Grooming quick replies: ✅ `['Simple trim', 'Full grooming session', 'Not sure yet']`
+- Grooming no places initially: ✅
+- Boarding clarifying question: ✅
+- Leash no tip card: ✅
+- Pet First doctrine: ✅
+
+---
+
 ## SESSION 16 ACCOMPLISHMENTS (Feb 14, 2026)
 
 ### P0 "Pet First, Breed Second" Fix ✅
