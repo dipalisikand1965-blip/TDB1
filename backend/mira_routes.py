@@ -5161,6 +5161,17 @@ Would you like me to find vets or pet pharmacies near you, or shall I have your 
             response_data["response"]["tip_card"] = tip_card
             logger.info(f"[TIP CARD] Generated {tip_card_type} tip card for {pet_name} ({breed})")
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # ADD PICKS ENGINE DATA TO RESPONSE (B6 Auto-Refresh)
+        # This enables the frontend to receive fresh picks on every chat turn
+        # ═══════════════════════════════════════════════════════════════════════════
+        response_data["picks"] = picks_engine_data.get("picks", [])
+        response_data["concierge"] = picks_engine_data.get("concierge", {})
+        response_data["safety_override"] = picks_engine_data.get("safety_override", {})
+        response_data["missing_profile_fields"] = picks_engine_data.get("missing_profile_fields", [])
+        if picks_engine_data.get("pillar"):
+            response_data["pillar"] = picks_engine_data["pillar"]
+        
         return response_data
     except Exception as e:
         logger.error(f"Mira OS understand-with-products error: {e}")
