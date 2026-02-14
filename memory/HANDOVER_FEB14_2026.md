@@ -56,7 +56,50 @@
 
 ---
 
-## KEY FEATURES IMPLEMENTED
+## ARCHITECTURE OVERVIEW
+
+### Core Philosophy
+- **MOJO** = Pet's Passport/DNA (Single source of truth)
+- **Mira** = Pet's Soul (AI intelligence)
+- **Concierge®** = Pet's Hands (Human execution layer)
+
+### Frontend Structure
+```
+/app/frontend/src/
+├── pages/
+│   ├── MiraDemoPage.jsx     # Main OS entry point (/mira-demo)
+│   └── MemberDashboard.jsx  # Member profile page
+├── components/Mira/
+│   ├── MojoProfileModal.jsx      # Pet identity modal (1800+ lines)
+│   ├── MojoSectionEditors.jsx    # 10 inline editor components
+│   ├── PetOSNavigation.jsx       # 7-layer OS nav bar
+│   ├── SoulKnowledgeTicker.jsx   # Scrolling knowledge ticker
+│   ├── SoulFormModal.jsx         # Soul questionnaire
+│   └── MiraChatWidget.jsx        # AI chat interface
+```
+
+### Backend Structure
+```
+/app/backend/
+├── pet_soul_routes.py       # MOJO data CRUD
+├── mira_routes.py           # Main Mira chat API (20,000+ lines)
+├── soul_first_logic.py      # Soul score calculations
+├── unified_flow.py          # Service ticket flow
+└── server.py                # FastAPI app entry
+```
+
+### Key API Endpoints
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/auth/login` | POST | Returns `access_token` |
+| `/api/pets/my-pets` | GET | List all user's pets |
+| `/api/pets/{pet_id}` | GET | Full pet profile |
+| `/api/pet-soul/profile/{pet_id}/answers/bulk` | POST | Save MOJO data |
+| `/api/mira/personalization-stats/{pet_id}` | GET | Soul scores |
+
+---
+
+## KEY FEATURES
 
 ### 1. Auto-Save System
 - All 9 editors use `useAutoSave` hook
