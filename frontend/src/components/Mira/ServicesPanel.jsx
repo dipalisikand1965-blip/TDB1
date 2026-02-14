@@ -323,9 +323,10 @@ const ServicesPanel = ({
       };
       
       // Fetch launchers and inbox in parallel
+      // Note: Don't filter inbox by pet_id - show ALL tickets for user
       const [launchersRes, inboxRes] = await Promise.all([
         fetch(`${API_BASE}/api/os/services/launchers`, { headers }),
-        fetch(`${API_BASE}/api/os/services/inbox${selectedPet?.id ? `?pet_id=${selectedPet.id}` : ''}`, { headers })
+        fetch(`${API_BASE}/api/os/services/inbox`, { headers })
       ]);
       
       if (launchersRes.ok) {
@@ -343,7 +344,7 @@ const ServicesPanel = ({
     } finally {
       setLoading(false);
     }
-  }, [token, selectedPet?.id]);
+  }, [token]);
   
   useEffect(() => {
     fetchData();
