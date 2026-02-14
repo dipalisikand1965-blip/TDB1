@@ -193,6 +193,10 @@ const ServiceRequestBuilder = ({
         return pet?.name || 'Pet';
       });
 
+      // Detect device type for analytics
+      const isMobile = window.innerWidth < 768;
+      const deviceType = isMobile ? 'mobile' : 'desktop';
+
       const payload = {
         service_type: service?.id || 'general',
         pet_ids: selectedPets,
@@ -206,6 +210,7 @@ const ServiceRequestBuilder = ({
           urgency: urgency,
           preferred_date: date,
           date_end: dateEnd,
+          device_type: deviceType,
         },
         pillar: service?.pillar || 'care',
         source: 'services_tab',
