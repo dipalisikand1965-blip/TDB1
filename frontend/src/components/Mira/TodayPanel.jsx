@@ -809,14 +809,18 @@ const TodayPanel = ({
   // CALCULATE TOTAL COUNT
   // ═══════════════════════════════════════════════════════════════════════════
   
+  const awaitingYouCount = useMemo(() => {
+    return watchlist.filter(t => t.awaiting_user).length;
+  }, [watchlist]);
+  
   const totalCount = useMemo(() => {
     return todayData.urgent.length + 
            todayData.dueSoon.length + 
            todayData.environment.length +
            todayData.documents.length +
-           activeTasks.length +
+           watchlist.length +
            (todayData.birthday ? 1 : 0);
-  }, [todayData, activeTasks]);
+  }, [todayData, watchlist]);
   
   // ═══════════════════════════════════════════════════════════════════════════
   // RENDER
