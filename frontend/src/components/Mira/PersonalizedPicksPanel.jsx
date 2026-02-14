@@ -749,7 +749,7 @@ const PersonalizedPicksPanel = ({
     return null;
   };
   
-  // Fetch picks data
+  // Fetch picks data - now context-aware
   const fetchPicks = useCallback(async () => {
     if (!pet?.name) return;
     
@@ -757,7 +757,49 @@ const PersonalizedPicksPanel = ({
     setError(null);
     
     try {
-      const response = await fetch(`${API_URL}/api/mira/top-picks/${encodeURIComponent(pet.name)}`, {
+      let response;
+      
+      // If we have conversation context, use context-aware endpoint
+      if (conversationContext?.topic) {
+        console.log(`[PICKS] Fetching context-aware picks for: ${conversationContext.topic}`);
+        response = await fetch(`${API_URL}/api/mira/top-picks/context-aware`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { Authorization: `Bearer ${token}` })
+          },
+          body: JSON.stringify({
+            pet_id: pet.id || pet.name,
+            context: conversationContext.topic,
+            destination: conversationContext.destination,
+            limit: 12
+          })
+        });
+        
+        if (response.ok) {
+          const contextData = await response.json();
+          // Transform context-aware response to match existing format
+          const contextPillar = contextData.context?.matched_pillar || 'travel';
+          setPicksData({
+            pillars: {
+              [contextPillar]: {
+                picks: contextData.picks || [],
+                concierge_picks: contextData.concierge_picks || []
+              }
+            },
+            context: contextData.context
+          });
+          // Auto-switch to the matched pillar
+          if (contextPillar && contextPillar !== 'general') {
+            setActivePillar(contextPillar);
+          }
+          setLoading(false);
+          return;
+        }
+      }
+      
+      // Default: Fetch standard pillar-based picks
+      response = await fetch(`${API_URL}/api/mira/top-picks/${encodeURIComponent(pet.name)}`, {
         headers: {
           'Content-Type': 'application/json',
           ...(token && { Authorization: `Bearer ${token}` })
@@ -774,7 +816,7 @@ const PersonalizedPicksPanel = ({
     } finally {
       setLoading(false);
     }
-  }, [pet?.name, token]);
+  }, [pet?.name, pet?.id, token, conversationContext]);
   
   useEffect(() => {
     if (isOpen && pet?.name) {
