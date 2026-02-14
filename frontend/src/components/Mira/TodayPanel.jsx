@@ -1209,6 +1209,30 @@ const TodayPanel = ({
             )}
             
             {/* ─────────────────────────────────────────────────────────────────
+                LEARN NUDGE - Smart nudge from LEARN layer (max 1)
+                Shows when user completed/saved a Learn item with service action
+                Placement: After watchlist, before Documents
+            ───────────────────────────────────────────────────────────────── */}
+            {learnNudge && (
+              <section className="today-section learn-nudge-section" data-testid="learn-nudge-section">
+                <SectionHeader 
+                  icon={BookOpen} 
+                  title="Based on your learning" 
+                  count={1}
+                  iconColor="text-purple-400"
+                />
+                <div className="cards-stack">
+                  <LearnNudgeCard
+                    nudge={learnNudge}
+                    onPrimaryAction={handleLearnNudgePrimary}
+                    onSecondaryAction={handleLearnNudgeSecondary}
+                    onDismiss={handleLearnNudgeDismiss}
+                  />
+                </div>
+              </section>
+            )}
+            
+            {/* ─────────────────────────────────────────────────────────────────
                 DOCUMENTS + COMPLIANCE
             ───────────────────────────────────────────────────────────────── */}
             {todayData.documents.length > 0 && (
