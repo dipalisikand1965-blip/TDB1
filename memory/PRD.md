@@ -242,22 +242,26 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 
 ## 🔴 NEXT AGENT INSTRUCTIONS (Updated Feb 14, 2026)
 
-### P0 - MOJO 100% Task:
-1. **Verify all MOJO editor sections** save data correctly via `/api/pet-soul/profile/{pet_id}/answers/bulk`
-2. **Ensure backend update-pet endpoint** handles all new fields from the 9 editors
+### ⚠️ CRITICAL: READ THESE FILES FIRST
+1. `/app/memory/MOJO_BIBLE.md` - Complete MOJO definition (vision)
+2. `/app/memory/MOJO_BIBLE_SCORECARD.md` - Current scores (91% MOJO)
+3. `/app/memory/HANDOVER_FEB14_2026.md` - Full handover with credentials
 
-### P1 - Documentation:
-1. **Update MOJO_BIBLE_SCORECARD.md** with new completion percentages
-2. **Create handover document** as requested
+### MOJO Status: 91% Complete
+To reach 100%, implement:
+1. **Life Timeline (67% → 100%)**: Integrate past services/purchases from order history
+2. **Trait Graph service**: Service outcomes → MOJO feedback loop
+3. **Weight history**: Track weight over time (array)
 
-### P2 - Legacy Bugs:
-1. Fix `/api/orders` 405 error
-2. Fix markdown rendering bug in chat
+### Test Credentials
+- **User:** `dipali@clubconcierge.in` / `test123`
+- **Admin:** `/admin` with `aditya` / `lola4304`
+- **Mira OS URL:** `/mira-demo` (NOT `/mira`)
 
-### Files to Study:
-- `/app/frontend/src/components/Mira/MojoSectionEditors.jsx` - All 9 editor components
-- `/app/frontend/src/components/Mira/MojoProfileModal.jsx` - Main modal component
-- `/app/backend/routes/mira_routes.py` - Pet update logic
+### Files of Reference:
+- `/app/frontend/src/components/Mira/MojoSectionEditors.jsx` - All 10 editor components
+- `/app/frontend/src/components/Mira/MojoProfileModal.jsx` - Main modal (1800+ lines)
+- `/app/backend/pet_soul_routes.py` - Line 551: bulk answers endpoint
 
 ---
 
