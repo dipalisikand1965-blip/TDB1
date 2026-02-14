@@ -2052,6 +2052,113 @@ const todayPanelStyles = `
 .today-section.awaiting-section .today-section-header {
   margin-bottom: 8px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   LEARN NUDGE CARD - Smart nudge from LEARN layer
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.today-section.learn-nudge-section {
+  background: rgba(139, 92, 246, 0.05);
+  border-radius: 16px;
+  padding: 14px;
+  margin: -4px;
+}
+
+.today-card.learn-nudge {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(168, 85, 247, 0.12) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.today-card.learn-nudge:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.18) 0%, rgba(168, 85, 247, 0.18) 100%);
+  border-color: rgba(139, 92, 246, 0.35);
+}
+
+.learn-nudge-icon {
+  background: rgba(139, 92, 246, 0.2);
+  color: #A78BFA;
+}
+
+.card-description.learn-context {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+.learn-nudge-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.learn-nudge-primary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
+  border: none;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.learn-nudge-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.learn-nudge-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 44px;
+}
+
+.learn-nudge-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+.learn-nudge-dismiss {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.learn-nudge-dismiss:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+}
 `;
 
 // Export styles separately if needed
