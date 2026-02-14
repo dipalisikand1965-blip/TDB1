@@ -183,8 +183,18 @@ const NotificationBell = ({ userEmail, className = '' }) => {
                   onClick={() => {
                     if (!notification.read) markAsRead(notification.id);
                     // Handle notification click - navigate to relevant page
-                    if (notification.data?.url) {
-                      window.location.href = notification.data.url;
+                    // For concierge_reply notifications, go to Concierge tab
+                    if (notification.type === 'concierge_reply') {
+                      // Navigate to Mira Demo with Concierge tab open
+                      const url = new URL(window.location.href);
+                      url.pathname = '/mira-demo';
+                      url.searchParams.set('tab', 'concierge');
+                      if (notification.thread_id) {
+                        url.searchParams.set('thread', notification.thread_id);
+                      }
+                      window.location.href = url.toString();
+                    } else if (notification.data?.url || notification.link) {
+                      window.location.href = notification.data?.url || notification.link;
                     }
                   }}
                 >
