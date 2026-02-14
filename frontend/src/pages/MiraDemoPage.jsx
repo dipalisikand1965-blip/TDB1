@@ -3449,6 +3449,8 @@ const MiraDemoPage = () => {
           console.log('[MIRA] Photo uploaded:', file.name, uploadData);
           // Optionally trigger a message about the upload
         }}
+        onNewChat={startNewSession}
+        hasConversation={conversationHistory.length > 0}
       />
       
       {/* Sandbox Footer */}
