@@ -351,7 +351,7 @@ function MainLayout() {
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<MemberDashboard />} />
+          <Route path="/dashboard" element={<ProtectedRoute><MemberDashboard /></ProtectedRoute>} />
           
           {/* Member Password Reset - New Pages */}
           <Route path="/member/forgot-password" element={<MemberForgotPassword />} />
