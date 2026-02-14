@@ -425,7 +425,16 @@ async def get_watchlist(
                      "payment_pending": 3, "in_progress": 4, "scheduled": 5, "shipped": 6}
         return priorities.get(s, 10)
     
-    all_tickets.sort(key=lambda x: (status_priority(x.get("status", "")), x.get("updated_at", "") or ""), reverse=False)
+    def get_updated_at_str(t):
+        """Convert updated_at to string for comparison"""
+        val = t.get("updated_at", "")
+        if val is None:
+            return ""
+        if isinstance(val, datetime):
+            return val.isoformat()
+        return str(val)
+    
+    all_tickets.sort(key=lambda x: (status_priority(x.get("status", "")), get_updated_at_str(x)), reverse=False)
     all_tickets = all_tickets[:20]  # Limit final list
     
     enriched = [enrich_ticket_for_frontend(t) for t in all_tickets]
@@ -433,8 +442,9 @@ async def get_watchlist(
     # Check for stale data (older than 5 minutes without update)
     stale = False
     if all_tickets:
-        oldest_update = min(t.get("updated_at", "") for t in all_tickets if t.get("updated_at"))
-        if oldest_update:
+        updates = [get_updated_at_str(t) for t in all_tickets if get_updated_at_str(t)]
+        if updates:
+            oldest_update = min(updates)
             try:
                 oldest_dt = datetime.fromisoformat(oldest_update.replace("Z", "+00:00"))
                 stale = (datetime.now(timezone.utc) - oldest_dt) > timedelta(minutes=5)
