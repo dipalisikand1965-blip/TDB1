@@ -408,6 +408,9 @@ const LearnReader = ({
   // Handle "Ask Mira" - opens Concierge with context (zero re-asking)
   // Per LEARN Bible: Concierge opener shows "I've read X. Help me with Y."
   const handleAskMira = () => {
+    // Record "completed" event - they're seeking help based on this guide
+    recordLearnEvent('completed');
+    
     // Build derived tags (pet_tags only for now; breed tags only if non-health topic)
     const derivedTags = [];
     if (pet?.doggy_soul_answers?.noise_sensitivity) derivedTags.push('noise_sensitive');
