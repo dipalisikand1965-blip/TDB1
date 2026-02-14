@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://miro-audit.preview.emergentagent.com
+https://mira-os-preview-2.preview.emergentagent.com
 
 ---
 

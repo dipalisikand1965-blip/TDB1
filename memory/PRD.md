@@ -511,7 +511,7 @@ From `/app/frontend/src/pages/MiraDemoBackupPage.jsx`:
 ---
 
 ## Preview URL
-**Working:** https://miro-audit.preview.emergentagent.com/mira-demo
+**Working:** https://mira-os-preview-2.preview.emergentagent.com/mira-demo
 
 ---
 

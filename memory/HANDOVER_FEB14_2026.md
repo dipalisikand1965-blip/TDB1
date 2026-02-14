@@ -37,7 +37,7 @@ Basic Auth Password: lola4304
 
 ### Preview URL
 ```
-https://miro-audit.preview.emergentagent.com
+https://mira-os-preview-2.preview.emergentagent.com
 ```
 
 ### Backend Environment (/app/backend/.env)

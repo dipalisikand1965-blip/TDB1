@@ -229,7 +229,7 @@ useSession: sessionId, setSessionId, sessionRecovered, setSessionRecovered
 
 - **Email**: `dipali@clubconcierge.in`
 - **Password**: `lola4304`
-- **Preview URL**: `https://miro-audit.preview.emergentagent.com`
+- **Preview URL**: `https://mira-os-preview-2.preview.emergentagent.com`
 
 ---
 
