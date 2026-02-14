@@ -508,7 +508,7 @@ export const HealthProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   );
 });
 
-// Diet & Food Editor - With Auto-Save
+// Diet & Food Editor - With Auto-Save (ENHANCED for 100% MOJO)
 export const DietProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     diet_type: pet?.doggy_soul_answers?.diet_type || '',
@@ -516,6 +516,13 @@ export const DietProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
     favorite_flavors: pet?.doggy_soul_answers?.favorite_flavors || [],
     treat_preferences: pet?.doggy_soul_answers?.treat_preferences || [],
     food_brand: pet?.doggy_soul_answers?.food_brand || '',
+    portion_size: pet?.doggy_soul_answers?.portion_size || '',
+    appetite_level: pet?.doggy_soul_answers?.appetite_level || '',
+    digestive_health: pet?.doggy_soul_answers?.digestive_health || '',
+    foods_to_avoid: pet?.doggy_soul_answers?.foods_to_avoid || [],
+    water_intake: pet?.doggy_soul_answers?.water_intake || '',
+    food_motivation: pet?.doggy_soul_answers?.food_motivation || '',
+    successful_foods: pet?.doggy_soul_answers?.successful_foods || [],
   });
   
   // Use auto-save hook
@@ -523,24 +530,12 @@ export const DietProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   
   return (
     <EditorWrapper title="Diet & Food" onCancel={onCancel} saveStatus={saveStatus}>
+      <div className="editor-section-header">Current Diet</div>
       <SelectField 
         label="Diet Type" 
         value={data.diet_type} 
         options={OPTIONS.diet_type}
         onChange={(v) => setData(prev => ({ ...prev, diet_type: v }))}
-      />
-      <SelectField 
-        label="Feeding Schedule" 
-        value={data.feeding_schedule} 
-        options={OPTIONS.feeding_schedule}
-        onChange={(v) => setData(prev => ({ ...prev, feeding_schedule: v }))}
-      />
-      <SelectField 
-        label="Favorite Flavors" 
-        value={data.favorite_flavors} 
-        options={OPTIONS.favorite_flavors}
-        onChange={(v) => setData(prev => ({ ...prev, favorite_flavors: v }))}
-        multiple
       />
       <TextField 
         label="Current Food Brand" 
@@ -548,11 +543,72 @@ export const DietProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
         onChange={(v) => setData(prev => ({ ...prev, food_brand: v }))}
         placeholder="e.g., Royal Canin, Pedigree..."
       />
+      <SelectField 
+        label="Portion Size" 
+        value={data.portion_size} 
+        options={OPTIONS.portion_size}
+        onChange={(v) => setData(prev => ({ ...prev, portion_size: v }))}
+      />
+      <SelectField 
+        label="Feeding Schedule" 
+        value={data.feeding_schedule} 
+        options={OPTIONS.feeding_schedule}
+        onChange={(v) => setData(prev => ({ ...prev, feeding_schedule: v }))}
+      />
+      
+      <div className="editor-section-header">Preferences</div>
+      <SelectField 
+        label="Favorite Proteins" 
+        value={data.favorite_flavors} 
+        options={OPTIONS.favorite_flavors}
+        onChange={(v) => setData(prev => ({ ...prev, favorite_flavors: v }))}
+        multiple
+      />
       <TagsField 
         label="Treat Preferences" 
         value={data.treat_preferences}
         onChange={(v) => setData(prev => ({ ...prev, treat_preferences: v }))}
-        suggestions={['Dental chews', 'Training treats', 'Jerky', 'Biscuits', 'Freeze-dried', 'Natural chews']}
+        suggestions={['Dental chews', 'Training treats', 'Jerky', 'Biscuits', 'Freeze-dried', 'Natural chews', 'Fruits']}
+      />
+      <SelectField 
+        label="Food Motivation" 
+        value={data.food_motivation} 
+        options={['Very high - will do anything', 'Moderately food driven', 'Somewhat interested', 'Not very food motivated']}
+        onChange={(v) => setData(prev => ({ ...prev, food_motivation: v }))}
+      />
+      
+      <div className="editor-section-header">Digestive Health</div>
+      <SelectField 
+        label="Appetite Level" 
+        value={data.appetite_level} 
+        options={OPTIONS.appetite_level}
+        onChange={(v) => setData(prev => ({ ...prev, appetite_level: v }))}
+      />
+      <SelectField 
+        label="Digestive Health" 
+        value={data.digestive_health} 
+        options={OPTIONS.digestive_health}
+        onChange={(v) => setData(prev => ({ ...prev, digestive_health: v }))}
+      />
+      <TagsField 
+        label="Foods to Avoid" 
+        value={data.foods_to_avoid}
+        onChange={(v) => setData(prev => ({ ...prev, foods_to_avoid: v }))}
+        suggestions={['Chicken', 'Beef', 'Grains', 'Dairy', 'Rich foods', 'Fatty foods', 'Table scraps']}
+      />
+      <SelectField 
+        label="Water Intake" 
+        value={data.water_intake} 
+        options={['Normal', 'Drinks a lot', 'Needs encouragement', 'Monitored due to health']}
+        onChange={(v) => setData(prev => ({ ...prev, water_intake: v }))}
+      />
+      
+      <div className="editor-section-header">Diet History</div>
+      <TagsField 
+        label="Foods That Worked Well" 
+        value={data.successful_foods}
+        onChange={(v) => setData(prev => ({ ...prev, successful_foods: v }))}
+        suggestions={['Royal Canin', 'Hills Science', 'Orijen', 'Farmina', 'Home cooked rice & chicken', 'Raw diet']}
       />
     </EditorWrapper>
   );
