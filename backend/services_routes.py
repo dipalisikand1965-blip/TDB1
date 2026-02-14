@@ -97,11 +97,6 @@ async def get_user_from_token_services(authorization: Optional[str] = None):
     if not authorization:
         return None
     
-    import jwt
-    import os
-    SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "your-secret-key")
-    ALGORITHM = "HS256"
-    
     try:
         token = authorization.replace("Bearer ", "")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -112,6 +107,8 @@ async def get_user_from_token_services(authorization: Optional[str] = None):
             return None
         
         db = get_db()
+        if not db:
+            return None
         user = await db.users.find_one({"email": user_email}, {"_id": 0, "password_hash": 0})
         if user:
             user["user_id"] = user_id or user.get("id")
