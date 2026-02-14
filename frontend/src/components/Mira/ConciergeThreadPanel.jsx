@@ -40,10 +40,137 @@ const StatusChip = ({ status }) => {
 };
 
 /**
+ * Option Card Component - Tappable choices sent by concierge
+ */
+const OptionCardMessage = ({ message, onSelectOption, isRespondable }) => {
+  const [selectedId, setSelectedId] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const options = message.options_payload?.options || [];
+  const question = message.options_payload?.question || message.content;
+  const isPending = message.options_payload?.status === 'pending';
+  const selectedOption = message.options_payload?.selected_option;
+  
+  const handleSelect = async (optionId) => {
+    if (!isPending || !isRespondable || isSubmitting) return;
+    
+    setSelectedId(optionId);
+    setIsSubmitting(true);
+    
+    try {
+      await onSelectOption(optionId);
+    } catch (error) {
+      console.error('Failed to select option:', error);
+      setSelectedId(null);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  return (
+    <div className="flex flex-col items-start mb-4 max-w-[90%]">
+      {/* Question */}
+      <div className="bg-white/10 rounded-2xl rounded-tl-sm px-4 py-3 mb-2">
+        <p className="text-sm text-white font-medium">{question}</p>
+      </div>
+      
+      {/* Option Cards */}
+      <div className="w-full space-y-2 pl-2">
+        {options.map((opt) => {
+          const isSelected = selectedOption?.id === opt.id || selectedId === opt.id;
+          const isDisabled = !isPending || (selectedOption && selectedOption.id !== opt.id);
+          
+          return (
+            <button
+              key={opt.id}
+              onClick={() => handleSelect(opt.id)}
+              disabled={isDisabled || isSubmitting}
+              className={`w-full text-left p-3 rounded-xl border transition-all ${
+                isSelected
+                  ? 'bg-purple-500/30 border-purple-500/50 ring-2 ring-purple-500/30'
+                  : isDisabled
+                    ? 'bg-white/5 border-white/10 opacity-50'
+                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+              }`}
+              data-testid={`option-card-${opt.id}`}
+            >
+              <div className="flex items-start gap-3">
+                <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                  isSelected ? 'bg-purple-500 text-white' : 'bg-white/20 text-white/70'
+                }`}>
+                  {opt.id}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-white">{opt.title}</span>
+                    {opt.price && (
+                      <span className="text-xs text-purple-400 font-medium">{opt.price}</span>
+                    )}
+                  </div>
+                  {opt.description && (
+                    <p className="text-xs text-white/60 mt-1">{opt.description}</p>
+                  )}
+                </div>
+                {isSelected && (
+                  <span className="flex-shrink-0 text-purple-400">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </span>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+      
+      {/* Status indicator */}
+      {selectedOption && (
+        <div className="mt-2 pl-2 text-xs text-green-400">
+          ✓ You selected: {selectedOption.title}
+        </div>
+      )}
+      {isPending && !selectedOption && isRespondable && (
+        <div className="mt-2 pl-2 text-xs text-purple-400">
+          Tap an option to select
+        </div>
+      )}
+    </div>
+  );
+};
+
+/**
  * Message Bubble Component
  */
-const MessageBubble = ({ message, showTimestamp, onToggleTimestamp }) => {
-  const isUser = message.sender === 'user';
+const MessageBubble = ({ message, showTimestamp, onToggleTimestamp, onSelectOption, isRespondable }) => {
+  const isUser = message.sender === 'user' || message.sender === 'member';
+  
+  // Handle option card messages
+  if (message.type === 'option_cards' && message.options_payload) {
+    return (
+      <OptionCardMessage 
+        message={message} 
+        onSelectOption={onSelectOption}
+        isRespondable={isRespondable}
+      />
+    );
+  }
+  
+  // Handle option response messages
+  if (message.type === 'option_response') {
+    return (
+      <div className="flex flex-col items-end mb-3">
+        <div className="max-w-[85%] px-4 py-2.5 rounded-2xl bg-purple-500/30 text-white rounded-tr-sm">
+          <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+          {message.selected_option && (
+            <div className="mt-1 text-xs text-purple-300">
+              ✓ {message.selected_option.title}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
   
   // Format timestamp
   const formatTime = (ts) => {
