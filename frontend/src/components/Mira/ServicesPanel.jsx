@@ -91,7 +91,7 @@ const LauncherCard = memo(({ service, onClick }) => {
       onClick={() => onClick(service)}
       className="group flex flex-col items-center p-3 bg-slate-800/40 hover:bg-slate-700/50 
                  rounded-xl border border-white/5 hover:border-purple-500/30 transition-all
-                 min-w-[80px]"
+                 min-w-[80px] min-h-[80px] touch-manipulation"
       data-testid={`launcher-${service.id}`}
     >
       <div className="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center
