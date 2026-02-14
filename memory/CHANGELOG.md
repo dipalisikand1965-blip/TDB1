@@ -1,247 +1,55 @@
-# MIRA OS - CHANGELOG
+# CHANGELOG - Mira OS
 
-## [2026-02-12] - Soul-First Response Generation Complete
+## February 14, 2026 - Session 2
 
-### Added
+### Bug Fixes
+- **MOJO Modal Header Bug FIXED** - The MOJO Profile Modal header was displaying static text "MOJO" instead of the pet's name. Now shows the pet's name dynamically (e.g., "Lola", "Mystique").
+  - File: `/app/frontend/src/components/Mira/MojoProfileModal.jsx` (Line 1725)
+  - Change: `<h2 className="mojo-title">MOJO</h2>` → `<h2 className="mojo-title">{petData?.name || 'MOJO'}</h2>`
 
-**Soul-First Logic Module** (`/app/backend/soul_first_logic.py`)
-- `SoulContextSummary` dataclass - extracts grooming-relevant fields from Pet Soul
-- `ResponseStrategy` - determines response approach: soul_first / breed_fallback / ask_questions
-- `extract_soul_data_from_response()` - parses user answers for coat_type, grooming_preference, anxiety_triggers
-- `write_soul_data_to_pet()` - saves extracted data back to pet profile
-- `build_soul_first_prompt_section()` - generates LLM prompt instructions
+### Documentation
+- Created exhaustive handover document: `/app/memory/HANDOVER_DOCUMENT.md`
+- Updated `/app/memory/PRD.md` with bug fix details
+- Updated `/app/memory/MOJO_BIBLE_SCORECARD.md` with session changes
 
-**Profile-First Doctrine Enforcement**
-- Mira now speaks from Pet Soul memory FIRST, breed only as fallback
-- No breed-specific medical claims (like "brachycephalic heat sensitivity") unless confirmed in Soul
-- Personalized "because {pet_name}..." lines generated from Soul fields
-
-**Data Write-Back ("Ask, Store, Recommend")**
-- When user answers fallback questions, data is extracted and saved
-- Fields captured: coat_type, grooming_preference, grooming_anxiety_triggers, skin_flags, allergy_flags
-- Pet profile automatically enriched over conversations
-
-### Fallback Question Flow
-When Soul data is sparse, Mira asks 2-4 questions in order:
-1. Coat + goal: "What's {pet_name}'s coat like right now — short, long, matted?"
-2. Past experience: "Has they been groomed before? Any anxiety with dryers, clipping?"
-3. Health/sensitivity: "Any skin irritation, allergies, or recent discomfort?"
-4. Logistics: "Home visit or salon? Which city/area?"
-
-### Test Results
-- Unit Tests: 18 passing (`/app/backend/tests/test_soul_first_logic.py`)
-- Integration Tests: 10 passing (`/app/backend/tests/test_soul_first_integration.py`)
-- **Total: 28 tests passing**
-
-### Example Response (Before vs After)
-**BEFORE** (breed-first):
-> "Since Mystique is a Shih Tzu with brachycephalic breathing..."
-
-**AFTER** (soul-first):
-> "Mystique's profile shows she gets stressed with dryers and loud noise, so I'd recommend a quiet session with breaks and a low-heat dry."
+### System Exploration
+- Verified Mira OS at `/mira-demo` is fully functional
+- Explored all 14 pillar pages (Celebrate, Stay, Travel, Care, etc.)
+- Verified Member Dashboard and My Pets pages
+- Confirmed Admin Portal login page is accessible
 
 ---
 
-## [2025-12-XX] - Picks Engine B6 API Integration Complete
+## February 14, 2026 - Session 1
 
-### Added
+### MOJO Implementation (85% → 91%)
+- Pet Snapshot: 77% → 100%
+- Health Vault: 62% → 92%
+- Diet Profile: 50% → 90%
+- Behaviour Profile: 33% → 78%
+- Grooming Profile: 38% → 88%
+- Routine Profile: 38% → 100%
+- Preferences: 36% → 100%
+- Life Timeline: 22% → 67%
 
-**Picks Engine Orchestrator** (`/app/backend/picks_engine.py`)
-- Full pipeline: classification → safety gate → scoring → concierge logic
-- Async/await support for seamless integration
-- Safety override enforcement (emergency/caution non-negotiables)
-- Debug mode with full classification trace
-
-**API Integration** (`/api/mira/chat`)
-- New response fields: `picks[]`, `concierge{}`, `safety_override{}`, `missing_profile_fields[]`
-- `debug: true` request flag shows matched_synonyms, tags, intent, top 10 picks with scores
-- Concierge always_on with prominence shifts based on context
-
-**Response Contract**
-```json
-{
-  "picks": [...],
-  "concierge": {"mode": "always_on", "cta_prominence": "primary|secondary|quiet", ...},
-  "safety_override": {"active": bool, "level": "emergency|caution|normal", ...},
-  "missing_profile_fields": ["breed", "city", ...],
-  "picks_debug": {...}  // only if debug=true
-}
-```
-
-### Safety Non-Negotiables (Enforced)
-- **Emergency**: Hard override, suppress commerce, show vet routing + first aid + Concierge PRIMARY
-- **Caution**: Suppress shopping, allow education + "contact vet" routing
-- **No Health pillar**: Symptoms route to Care (education + vet routing), never "diagnose"
-
-### Taxonomy Additions
-- Added `fly` and `fly to` synonyms for air_travel
-- Added `pug` as brachycephalic_breed for breed-specific warnings
-
-### Test Results
-- B2 Classification: 28 passing
-- B3 Safety Gate: 21 passing
-- B4 Scoring Logic: 29 passing
-- B5 Concierge Logic: 41 passing
-- **Total: 119 tests passing**
+### Features
+- Auto-save verified working across all 9 editors
+- Backend API confirmed saving all fields correctly
 
 ---
 
-## [2025-12-XX] - Picks Engine B5 Concierge Logic Complete
+## February 13, 2026
 
-### Added
+### Major Features
+- Two-Way Memory-Soul Sync implemented
+- Auto-Save Feature with useAutoSave hook
+- Confidence Scores & "Mira Learned" Badges
+- Weather Card integration
 
-**Concierge Logic Module** (`/app/backend/concierge_logic.py`)
-- Implements "always-on" concierge paradigm - never shown/hidden, only prominence shifts
-- Three prominence levels: PRIMARY, SECONDARY, QUIET
-- Mandatory PRIMARY triggers: safety, low confidence, time pressure, multi-step
-- Experience-level PRIMARY triggers: coordination value, pick complexity
-- Dynamic CTA text based on pillar and context
-- Commerce suppression for safety overrides
-
-**Test Suite** (`/app/backend/tests/test_concierge_logic.py`)
-- 41 unit tests covering all concierge scenarios
-- Tests for time pressure detection, multi-step detection, coordination value
-- Integration tests for grooming, cake, emergency scenarios
-
-### Key Concierge Logic Rules
-- `safety_level = emergency/caution` → PRIMARY + suppress commerce
-- `confidence < 0.65` → PRIMARY (ambiguity)
-- Time keywords (today/urgent/asap) → PRIMARY
-- Multiple service verticals → PRIMARY (multi-step)
-- Celebrate/Travel/Stay + booking intent → PRIMARY (coordination value)
-- `concierge_complexity = high` → PRIMARY
-- Simple guide requests → QUIET
-
-### Test Results
-- B2 Classification: 28 passing
-- B3 Safety Gate: 21 passing
-- B4 Scoring Logic: 29 passing
-- B5 Concierge Logic: 41 passing
-- **Total: 119 tests passing**
+### Documentation
+- MOJO Audit Document created
+- Handover Document v2 created
 
 ---
 
-## [2025-12-XX] - Picks Engine B4 Scoring Logic Complete
-
-### Added
-
-**Scoring Logic Module** (`/app/backend/scoring_logic.py`)
-- Complete scoring and ranking engine for Picks
-- Profile-based boosts and penalties
-- Cross-pillar boost rules (Travel → Paperwork +15)
-- Brachycephalic breed detection and warnings
-- Degrade-safe reason template rendering
-- Booking field extraction (required/optional)
-
-**Enhanced Travel Picks** (`seed_picks_catalogue.py`)
-- `travel_air_guide`: Added `doc_requirements`, `warning_type`, `reason_template_enhanced`
-- `travel_airport_transfer`: Added `required_booking_fields`, `optional_booking_fields`, `service_modes`
-- Tuned `concierge_complexity`: guides=low, bookings=medium
-
-**New Schema Patterns**
-- `doc_requirements`: Links travel picks to paperwork (e.g., `["fit_to_fly", "vaccination_records"]`)
-- `warning_type`: Abstract warning lookup (e.g., `"air_travel_brachy"`)
-- `optional_booking_fields`: Non-blocking booking qualifiers
-- Cross-pillar boost rules for proactive suggestions
-
-**Test Suite** (`/app/backend/tests/test_scoring_logic.py`)
-- 29 new unit tests covering all scoring patterns
-- Tests for brachycephalic detection, Travel→Paperwork boost, booking fields, reason templates
-
-### Updated
-- `picks_catalogue` collection: 110 picks with enhanced schemas
-- PRD.md: Updated B4 status and schema patterns documentation
-
-### Test Results
-- B2 Classification: 28 passing
-- B3 Safety Gate: 21 passing  
-- B4 Scoring Logic: 29 passing
-- **Total: 78 tests passing**
-
----
-
-
-# MIRA OS - CHANGELOG
-
-## [2026-02-11] - Agent Audit & Verification Session
-
-### Verified Working
-- **Backend tip card type detection** working correctly:
-  - Scratching queries → "health_advice" with "Skin Care Tips" title
-  - Meal plan queries → "meal_plan" type  
-  - Senior diet queries → "meal_plan" type
-  - Tick prevention → "health_advice" with products
-- **Pet type filtering** - Cat products correctly returned for cat pet_type (62 cat products)
-- **Service request flow** - Creates tickets, admin notifications, channel intakes
-- **Pillar pages** - All loading correctly (Celebrate, Care, Shop, etc.)
-- **VaultManager** - Empty state fix verified
-- **Loading state** - Text visibility improved in CSS
-- **Admin panel** - Accessible with credentials
-
-### Database Stats
-- Unified products: 3,387 (Dog: 1,057 | Cat: 62 | Unspecified: 2,268)
-- Services: 2,406
-- Service desk tickets: 2,420
-- Admin notifications: 2,487
-- Channel intakes: 2,239
-
-### Known Issues
-1. **BLOCKER: Playwright crashes on /mira-demo** - 4035 line component causes memory issues
-2. **Cached tip cards** - Old tips in browser localStorage (backend fixed)
-3. **"For You" empty** - Shows no products when not logged in
-
----
-
-## [2026-02-10] - Major Intelligence & Soul Score Update
-
-### Added
-
-**Conversation Intelligence** (`/app/backend/conversation_intelligence.py`)
-- Pronoun resolution: "that one", "the first one", "book that"
-- Follow-up context: "cheaper ones", "show me more", "can I include eggs?"
-- 8 new tip card types: festival_safety, celebration_tips, new_pet_guide, home_tips
-
-**Soul Score Dynamic Glow** (`/app/frontend/src/styles/mira-prod.css`)
-- `soul-grow-pulse` animation - bursts when score increases
-- `soul-breathe` animation - constant subtle glow
-- `score-count` animation - number counts up
-
-**User Pets Endpoint** (`/app/backend/auth_routes.py`)
-- `GET /api/auth/pets` - Returns logged-in user's pets with soul scores and photos
-
-**Enhanced InsightsPanel** (`/app/frontend/src/components/Mira/InsightsPanel.jsx`)
-- Tip cards section with icons
-- Memory context section ("What I know about Pet")
-- Quick tips section
-
-**WhatsApp/Gupshup Integration** (`/app/backend/whatsapp_routes.py`)
-- Gupshup webhook handler
-- Gupshup send message endpoint
-- Auto-creates tickets from WhatsApp messages
-
-### Fixed
-
-**Pillar Detection**
-- "celebrate mojo" → celebrate (was: advisory)
-- "gotcha day" → celebrate (was: advisory)
-- "not eating 2 days" → emergency (was: advisory)
-- "limping badly" → emergency (was: advisory)
-- "teach to sit" → learn (was: advisory)
-- "diwali safety" → celebrate with festival_safety tip card
-
-**PlacesVault**
-- nearby_places (restaurants, cafes) now properly stored in miraPicks
-- PlacesVault renders when user asks about pet cafes/restaurants
-
-**HandoffSummary**
-- Now detects all 12 pillars correctly from conversation context
-
-### Test Results
-- 30/30 query tests passing (100%)
-- Backend tests: 13/13 passing
-- Soul Score API returning correct values
-
----
-
-## [Previous Sessions]
-See `/app/memory/PRD.md` for historical changes
+*Last Updated: February 14, 2026*
