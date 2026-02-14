@@ -497,6 +497,129 @@ const TraitBadge = memo(({ confidence, isInferred }) => {
   );
 });
 
+// Learned Facts Content Component - Shows what Mira learned from conversations
+const LearnedFactsContent = memo(({ pet }) => {
+  const learnedFacts = pet?.learned_facts || [];
+  const conversationInsights = pet?.conversation_insights || [];
+  
+  // Group facts by category
+  const groupedFacts = learnedFacts.reduce((acc, fact) => {
+    const cat = fact.category || 'other';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(fact);
+    return acc;
+  }, {});
+  
+  // Pending insights count
+  const pendingCount = conversationInsights.filter(i => i.status === 'pending_review').length;
+  
+  // Category icons and labels
+  const categoryConfig = {
+    fears: { icon: '😰', label: 'Fears & Anxieties', color: 'text-red-400' },
+    loves: { icon: '❤️', label: 'Loves & Favorites', color: 'text-pink-400' },
+    anxiety: { icon: '😟', label: 'Anxiety Triggers', color: 'text-amber-400' },
+    behavior: { icon: '🐕', label: 'Behaviors', color: 'text-blue-400' },
+    preferences: { icon: '⭐', label: 'Preferences', color: 'text-purple-400' },
+    health: { icon: '💊', label: 'Health Notes', color: 'text-green-400' },
+    other: { icon: '📝', label: 'Other', color: 'text-gray-400' }
+  };
+  
+  if (learnedFacts.length === 0) {
+    return (
+      <div className="mojo-section-empty" style={{ textAlign: 'center', padding: '24px 16px' }}>
+        <div style={{ 
+          width: 48, height: 48, margin: '0 auto 12px', 
+          background: 'rgba(16, 185, 129, 0.15)', 
+          borderRadius: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'center'
+        }}>
+          <Sparkles size={24} className="text-emerald-400" />
+        </div>
+        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 4 }}>
+          No learned facts yet
+        </p>
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
+          Chat with Concierge® to teach Mira about your pet!
+        </p>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="mojo-learned-facts" style={{ padding: '12px 0' }}>
+      {/* Pending Insights Alert */}
+      {pendingCount > 0 && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '8px 12px', marginBottom: 16,
+          background: 'rgba(16, 185, 129, 0.1)',
+          border: '1px solid rgba(16, 185, 129, 0.3)',
+          borderRadius: 8
+        }}>
+          <Sparkles size={16} className="text-emerald-400" />
+          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', flex: 1 }}>
+            {pendingCount} new insight{pendingCount > 1 ? 's' : ''} from conversations
+          </span>
+          <span style={{ 
+            fontSize: 11, color: 'rgba(16, 185, 129, 0.8)', 
+            background: 'rgba(16, 185, 129, 0.15)', 
+            padding: '2px 6px', borderRadius: 4 
+          }}>
+            Review in Admin
+          </span>
+        </div>
+      )}
+      
+      {/* Grouped Facts */}
+      {Object.entries(groupedFacts).map(([category, facts]) => {
+        const config = categoryConfig[category] || categoryConfig.other;
+        return (
+          <div key={category} style={{ marginBottom: 16 }}>
+            <div style={{ 
+              display: 'flex', alignItems: 'center', gap: 6, 
+              marginBottom: 8, paddingLeft: 4 
+            }}>
+              <span style={{ fontSize: 14 }}>{config.icon}</span>
+              <span className={config.color} style={{ fontSize: 12, fontWeight: 500 }}>
+                {config.label}
+              </span>
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {facts.map((fact, idx) => (
+                <span 
+                  key={fact.id || idx}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    padding: '6px 10px',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: 20,
+                    fontSize: 13,
+                    color: 'rgba(255,255,255,0.8)'
+                  }}
+                >
+                  {fact.content}
+                  <Check size={12} className="text-emerald-400" style={{ marginLeft: 2 }} />
+                </span>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+      
+      {/* Source Attribution */}
+      <div style={{ 
+        marginTop: 16, paddingTop: 12, 
+        borderTop: '1px solid rgba(255,255,255,0.05)',
+        fontSize: 11, color: 'rgba(255,255,255,0.4)'
+      }}>
+        <Sparkles size={10} style={{ display: 'inline', marginRight: 4 }} />
+        Learned from your conversations with Concierge®
+      </div>
+    </div>
+  );
+});
+
 // Soul Profile Content Component
 const SoulProfileContent = memo(({ pet, soulData }) => {
   const soulAnswers = pet?.doggy_soul_answers || {};
