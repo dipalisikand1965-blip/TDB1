@@ -1936,7 +1936,7 @@ const MojoProfileModal = ({
                           {section.id === 'routine' && <RoutineProfileContent pet={petData} />}
                           {section.id === 'environment' && <EnvironmentProfileContent pet={petData} />}
                           {section.id === 'documents' && <DocumentsProfileContent pet={petData} apiUrl={apiUrl} token={token} />}
-                          {section.id === 'timeline' && <TimelineProfileContent pet={petData} />}
+                          {section.id === 'timeline' && <TimelineProfileContent pet={petData} apiUrl={apiUrl} token={token} />}
                           {section.id === 'preferences' && <PreferencesProfileContent pet={petData} />}
                         </>
                       )}
