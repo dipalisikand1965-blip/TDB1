@@ -1759,13 +1759,38 @@ async def resolve_item(ticket_id: str, request: ResolveRequest):
         except Exception as e:
             logger.warning(f"Failed to send push notification: {e}")
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # TRAIT GRAPH UPDATE - Per MOJO Bible Part 7 §4
+    # "When tasks complete: update traits with high confidence"
+    # ═══════════════════════════════════════════════════════════════════════════
+    trait_graph_result = None
+    if TRAIT_GRAPH_AVAILABLE and item.get("pet_id"):
+        try:
+            trait_graph_result = await on_service_completed(db, {
+                "pet_id": item.get("pet_id"),
+                "type": item.get("type", item.get("pillar", "general")),
+                "outcome": {
+                    "resolution": request.resolution_notes,
+                    "resolved_by": request.agent_name,
+                    "resolved_at": now,
+                },
+                "notes": request.resolution_notes,
+            })
+            if trait_graph_result.get("success"):
+                logger.info(f"[TRAIT-GRAPH] ✅ MOJO updated from ticket resolution: {ticket_id}")
+            else:
+                logger.warning(f"[TRAIT-GRAPH] Could not update MOJO: {trait_graph_result}")
+        except Exception as e:
+            logger.warning(f"[TRAIT-GRAPH] Error updating MOJO from ticket: {e}")
+    
     return {
         "success": True,
         "message": "Resolved and member notified",
         "notification_sent": notification_sent,
         "send_via": request.send_via,
         "nps_survey_sent": nps_sent,
-        "push_notification": push_result
+        "push_notification": push_result,
+        "mojo_updated": trait_graph_result.get("success") if trait_graph_result else False
     }
 
 
