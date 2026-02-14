@@ -13,6 +13,7 @@ import { useCallback, useRef } from 'react';
 import conversationIntelligence from '../../utils/conversationIntelligence';
 import { correctSpelling } from '../../utils/spellCorrect';
 import { triggerCelebrationConfetti } from '../../utils/confetti';
+import { onPicksRefresh } from '../../utils/picksDelights';
 import { generateQuickReplies } from '../../components/Mira/QuickReplies';
 import {
   isConciergeLive,
