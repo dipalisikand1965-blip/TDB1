@@ -2458,6 +2458,72 @@ const MojoProfileModal = ({
           padding: 8px;
         }
         
+        /* Documents Extended Styles */
+        .documents-loading {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 24px;
+        }
+        
+        .documents-expiry-alert {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 14px;
+          background: rgba(245, 158, 11, 0.15);
+          border: 1px solid rgba(245, 158, 11, 0.3);
+          border-radius: 10px;
+          margin-bottom: 12px;
+          font-size: 12px;
+          color: #FCD34D;
+        }
+        
+        .document-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+        
+        .document-expiry {
+          font-size: 10px;
+          color: #9CA3AF;
+        }
+        
+        .document-expiry.expired {
+          color: #FCA5A5;
+        }
+        
+        .documents-upload-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          width: 100%;
+          margin-top: 12px;
+          padding: 12px;
+          border-radius: 12px;
+          background: rgba(34, 211, 238, 0.1);
+          border: 1px dashed rgba(34, 211, 238, 0.3);
+          color: #22D3EE;
+          font-size: 13px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .documents-upload-btn:hover {
+          background: rgba(34, 211, 238, 0.2);
+        }
+        
+        .documents-upload-btn.primary {
+          background: rgba(34, 211, 238, 0.2);
+          border-style: solid;
+          margin-top: 16px;
+        }
+        
         /* Empty states for all sections */
         .diet-empty-state,
         .behaviour-empty-state,
