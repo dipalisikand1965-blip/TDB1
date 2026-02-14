@@ -11,7 +11,7 @@
 ## 7. `/app/memory/SYSTEM_AUDIT_REPORT.md` - ✅ FULL SYSTEM AUDIT COMPLETED (Feb 2026)
 ---
 
-## CURRENT SCORE: 100% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 15)
+## CURRENT SCORE: 100% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 16)
 
 | Layer | Score | Status |
 |-------|-------|--------|
@@ -22,6 +22,61 @@
 | **P1 MOBILE** | **100%** | ✅ **COMPLETE** - iOS Safari + Android Chrome |
 | **LEARN** | **100%** | ✅ **COMPLETE** - Session 12: Full Integration |
 | **CONCIERGE** | **60%** | 🔄 **PHASE 1 COMPLETE** - Session 14: Home + Conversation |
+
+---
+
+## SESSION 16 ACCOMPLISHMENTS (Feb 14, 2026)
+
+### P0 "Pet First, Breed Second" Fix ✅
+**Goal:** Fix Mira's conversations to prioritize the individual pet over breed generalizations
+
+**What was changed:**
+
+#### A) MIRA_OS_SYSTEM_PROMPT Updated (`mira_routes.py`)
+- Added "GOLDEN DOCTRINE: PET FIRST, BREED SECOND" section at the very top
+- Explicit rules: NEVER lead with breed generalizations, ALWAYS start with pet's name
+- Wrong/Right examples for clarity
+- Breed info only allowed AFTER establishing individual pet context
+
+#### B) Pet Context Injection Updated (`mira_routes.py` - `understand_with_llm`)
+- Restructured pet context to show individual pet data FIRST
+- Breed context moved to "SECONDARY REFERENCE" section
+- Added explicit reminder: "Lead with {pet_name}'s individual profile"
+- Now includes `learned_facts` from CONCIERGE conversations
+
+#### C) Main Chat System Prompt Updated (`server.py`)
+- Added same "PET FIRST, BREED SECOND" golden doctrine
+- Updated examples to show correct vs wrong patterns
+- Reinforced that breed info is secondary/background only
+
+**Test Results:**
+- Before: "Golden Retrievers like Buddy are known for their friendly nature..."
+- After: "Buddy would love these! Since he enjoys peanut butter and I know he has a chicken allergy..."
+
+**Files Modified:**
+- `/app/backend/mira_routes.py` - Lines 1094-1140 (MIRA_OS_SYSTEM_PROMPT), Lines 2549-2615 (pet context)
+- `/app/backend/server.py` - Lines 3045-3090 (system_prompt)
+
+---
+
+### Feature Investigation: MiraDemoBackupPage.jsx ✅
+**Goal:** Identify valuable features from backup page for potential restoration
+
+**Findings:**
+
+#### Features Already Present in Current MiraDemoPage:
+1. **Voice Output (ElevenLabs)** - ✅ Already implemented via `useVoice` hook
+2. **MIRA_FEATURES (Quick Questions)** - ✅ Already present (Weather, Vet, Park, Cafe, Travel, Shop)
+3. **Soul Score & Traits** - ✅ Already showing in UI
+4. **Personalization Ticker** - ✅ Already present at top
+5. **Weather Card** - ✅ Already showing with CAUTION warnings
+6. **Test Scenarios** - ✅ Already present as modal
+
+#### Voice Integration Status:
+- TTS endpoint: `/api/tts/generate` - ✅ Working with ElevenLabs key
+- Voice personalities: default, celebration, health, comfort, urgent, adventure, caring, informative
+- Frontend: `useVoice` hook in `MiraDemoPage.jsx`
+- UI: Voice toggle button in `ChatInputBar.jsx`
 
 ---
 
