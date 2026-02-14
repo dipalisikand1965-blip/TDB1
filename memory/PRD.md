@@ -91,6 +91,22 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
   - "Updated just now" timestamp after each chat turn
   - Verified via UI screenshots: pillar auto-switching works perfectly
   - PICKS score: 75% → 80% (+5%)
+- [x] **✅ COMPLETED: PICKS Micro-Delights (2026-02-14)** - Phase 1:
+  - Sound "whoosh" on PICKS refresh (`/app/frontend/src/utils/picksDelights.js`)
+  - PICKS tab glow/pulse animation with CSS keyframes
+  - "✨ new" badge on tab with sparkle animation
+  - Emergency red pulse for urgent situations
+  - Confetti wired for celebrate intent
+- [x] **✅ COMPLETED: "Why these picks?" Panel (2026-02-14)** - Phase 2:
+  - Expandable panel showing: "Based on your conversation about {pillar}, Mira selected picks..."
+  - Badges: "Pet profile matched", "Safety checked", "Ranked by relevance"
+  - FitBadges component for Allergy-aware, Small-mouth safe, etc.
+- [x] **✅ COMPLETED: Task Creation Flow (2026-02-14)** - Phase 3:
+  - 5-second undo toast with progress bar: "Task created for {pick_name}" + [Undo]
+  - Task status badges: Requested → In Progress → Scheduled
+  - Button state changes (spinner, checkmark) on task creation
+  - `createTaskFromPick()` with undo mechanism in PersonalizedPicksPanel.jsx
+  - PICKS score: 80% → 90% (+10%)
 
 ### P1 - High Priority (COMPLETED ✅)
 - [x] **✅ TRAIT GRAPH VISUALIZATION (2026-02-14)** - Shows how Mira learns about pets
