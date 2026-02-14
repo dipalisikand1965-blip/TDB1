@@ -266,8 +266,14 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 
 ## Test Credentials
 - **User:** `dipali@clubconcierge.in` / `test123`
-- **Admin:** `aditya` / `lola4304`
-- **Test Pets:** Lola (44%), Mystique (72%), Bruno (29%), Luna (88%), Buddy (41%), Meister (23%), TestScoring (100%)
+- **Admin:** `aditya` / `lola4304` (access at `/admin`)
+- **Test Pets:** Lola (52%), Mystique (72%), Bruno (29%), Luna (88%), Buddy (41%), Meister (23%), TestScoring (100%)
+
+## ⚠️ CRITICAL: URL PATHS
+- **Mira OS:** `/mira-demo` ← THIS IS THE MAIN OS BUILD (NOT `/mira`)
+- **Admin Panel:** `/admin`
+- **Member Dashboard:** `/member-dashboard`
+- **Preview URL:** `https://mira-os-preview-2.preview.emergentagent.com`
 
 ---
 
