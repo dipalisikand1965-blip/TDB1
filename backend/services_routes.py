@@ -714,6 +714,98 @@ async def update_ticket(
     }
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# UNIVERSAL INTENT ENDPOINT
+# Captures intent from ANYWHERE (search, chat, voice, quick action)
+# Routes through the SAME unified pipeline
+# ═══════════════════════════════════════════════════════════════════════════════
+
+SERVICE_TYPE_MAPPING = {
+    "groom": "grooming",
+    "grooming": "grooming",
+    "bath": "grooming",
+    "haircut": "grooming",
+    "nail": "grooming",
+    "train": "training",
+    "training": "training",
+    "obedience": "training",
+    "board": "boarding",
+    "boarding": "boarding",
+    "stay": "boarding",
+    "overnight": "boarding",
+    "vet": "vet_visit",
+    "doctor": "vet_visit",
+    "checkup": "vet_visit",
+    "vaccination": "vet_visit",
+    "walk": "walking",
+    "walking": "walking",
+    "exercise": "walking",
+    "photo": "photography",
+    "photography": "photography",
+    "shoot": "photography",
+    "party": "party_setup",
+    "birthday": "party_setup",
+    "celebration": "party_setup",
+    "travel": "travel",
+    "transport": "travel",
+    "taxi": "travel",
+    "relocate": "travel",
+}
+
+def extract_service_type(intent: str) -> str:
+    """Extract service type from free-form intent."""
+    intent_lower = intent.lower()
+    for keyword, service_type in SERVICE_TYPE_MAPPING.items():
+        if keyword in intent_lower:
+            return service_type
+    return "general"
+
+
+@router.post("/intent")
+async def capture_universal_intent(
+    request: UniversalIntentRequest,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    UNIVERSAL INTENT CAPTURE - Single entry point for ALL service intents.
+    
+    Sources: search bar, chat input, voice command, quick action buttons
+    
+    Pipeline: Intent → Parse → Service Desk Ticket → Admin Notify → Member Notify → Channel Intake
+    
+    Works for BOTH mobile and desktop.
+    """
+    user = await get_user_from_token_services(authorization)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    db = get_db()
+    if db is None:
+        return {"success": True, "message": "Intent captured (mock)", "mock": True}
+    
+    # Extract service type from intent
+    service_type = extract_service_type(request.intent)
+    
+    # Build service request
+    service_request = ServiceRequestCreate(
+        service_type=service_type,
+        pet_ids=request.pet_ids or [],
+        pet_names=request.pet_names or [],
+        title=request.intent[:100],  # First 100 chars as title
+        description=request.intent,
+        source=request.source,
+        pillar=request.pillar_hint or service_type,
+        constraints={
+            "original_intent": request.intent,
+            "device_type": request.device_type,
+            "source": request.source
+        }
+    )
+    
+    # Route through the unified pipeline
+    return await create_service_request(service_request, authorization)
+
+
 @router.post("/preference")
 async def save_preference(
     pref: PreferenceSave,
