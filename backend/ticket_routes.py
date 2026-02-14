@@ -2067,13 +2067,22 @@ async def add_reply(ticket_id: str, reply: TicketReply):
         # 1. Find any concierge_thread linked to this ticket
         linked_thread = await db.concierge_threads.find_one({"ticket_id": ticket_id})
         
-        # 2. If not found by ticket_id, try to find by user_id and create linkage
-        if not linked_thread and user_id:
-            # Find the user's most recent active thread
-            linked_thread = await db.concierge_threads.find_one(
-                {"user_id": user_id, "status": {"$in": ["active", "awaiting_concierge"]}},
-                sort=[("last_message_at", -1)]
-            )
+        # 2. If not found by ticket_id, try to find by user_id or member_email
+        if not linked_thread:
+            # Try user_id first
+            if user_id:
+                linked_thread = await db.concierge_threads.find_one(
+                    {"user_id": user_id, "status": {"$in": ["active", "awaiting_concierge"]}},
+                    sort=[("last_message_at", -1)]
+                )
+            
+            # If still not found, try member_email (most tickets have this)
+            if not linked_thread and member_email:
+                linked_thread = await db.concierge_threads.find_one(
+                    {"user_id": member_email, "status": {"$in": ["active", "awaiting_concierge"]}},
+                    sort=[("last_message_at", -1)]
+                )
+            
             # Link this ticket to the thread for future syncs
             if linked_thread:
                 await db.concierge_threads.update_one(
