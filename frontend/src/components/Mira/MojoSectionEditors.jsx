@@ -1062,6 +1062,104 @@ export const PreferencesProfileEditor = memo(({ pet, onSave, onCancel, saving })
   );
 });
 
+// Environment Profile Editor - NEW for 100% MOJO
+export const EnvironmentProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
+  const [data, setData] = useState({
+    city: pet?.city || pet?.doggy_soul_answers?.city || '',
+    climate: pet?.doggy_soul_answers?.climate || '',
+    home_type: pet?.doggy_soul_answers?.home_type || '',
+    living_space: pet?.doggy_soul_answers?.living_space || '',
+    family_structure: pet?.doggy_soul_answers?.family_structure || '',
+    other_pets: pet?.doggy_soul_answers?.other_pets || '',
+    other_pets_details: pet?.doggy_soul_answers?.other_pets_details || '',
+    has_yard: pet?.doggy_soul_answers?.has_yard || '',
+    neighborhood_type: pet?.doggy_soul_answers?.neighborhood_type || '',
+    travel_frequency: pet?.doggy_soul_answers?.travel_frequency || '',
+    seasonal_concerns: pet?.doggy_soul_answers?.seasonal_concerns || [],
+  });
+  
+  // Use auto-save hook
+  const saveStatus = useAutoSave(data, onSave, 1500);
+  
+  return (
+    <EditorWrapper title="Environment" onCancel={onCancel} saveStatus={saveStatus}>
+      <div className="editor-section-header">Location</div>
+      <TextField 
+        label="City" 
+        value={data.city}
+        onChange={(v) => setData(prev => ({ ...prev, city: v }))}
+        placeholder="e.g., Mumbai, Bangalore"
+      />
+      <SelectField 
+        label="Climate" 
+        value={data.climate} 
+        options={OPTIONS.climate}
+        onChange={(v) => setData(prev => ({ ...prev, climate: v }))}
+      />
+      <SelectField 
+        label="Neighborhood Type" 
+        value={data.neighborhood_type} 
+        options={['Urban/City', 'Suburban', 'Rural/Countryside', 'Beach area', 'Hill station']}
+        onChange={(v) => setData(prev => ({ ...prev, neighborhood_type: v }))}
+      />
+      
+      <div className="editor-section-header">Home</div>
+      <SelectField 
+        label="Home Type" 
+        value={data.home_type} 
+        options={OPTIONS.home_type}
+        onChange={(v) => setData(prev => ({ ...prev, home_type: v }))}
+      />
+      <SelectField 
+        label="Living Space" 
+        value={data.living_space} 
+        options={OPTIONS.living_space}
+        onChange={(v) => setData(prev => ({ ...prev, living_space: v }))}
+      />
+      <SelectField 
+        label="Has Yard/Garden" 
+        value={data.has_yard} 
+        options={['Yes - large', 'Yes - small', 'Balcony only', 'No outdoor space']}
+        onChange={(v) => setData(prev => ({ ...prev, has_yard: v }))}
+      />
+      
+      <div className="editor-section-header">Household</div>
+      <SelectField 
+        label="Family Structure" 
+        value={data.family_structure} 
+        options={OPTIONS.family_structure}
+        onChange={(v) => setData(prev => ({ ...prev, family_structure: v }))}
+      />
+      <SelectField 
+        label="Other Pets" 
+        value={data.other_pets} 
+        options={['No other pets', 'One other dog', 'Multiple dogs', 'Cat(s)', 'Other animals', 'Multiple species']}
+        onChange={(v) => setData(prev => ({ ...prev, other_pets: v }))}
+      />
+      <TextField 
+        label="Other Pets Details" 
+        value={data.other_pets_details}
+        onChange={(v) => setData(prev => ({ ...prev, other_pets_details: v }))}
+        placeholder="Names, breeds, ages of other pets..."
+      />
+      
+      <div className="editor-section-header">Lifestyle</div>
+      <SelectField 
+        label="Travel Frequency" 
+        value={data.travel_frequency} 
+        options={OPTIONS.travel_frequency}
+        onChange={(v) => setData(prev => ({ ...prev, travel_frequency: v }))}
+      />
+      <TagsField 
+        label="Seasonal Concerns" 
+        value={data.seasonal_concerns}
+        onChange={(v) => setData(prev => ({ ...prev, seasonal_concerns: v }))}
+        suggestions={['Monsoon flooding', 'Summer heat', 'Winter cold', 'Pollution season', 'Fireworks (Diwali)', 'Tick season']}
+      />
+    </EditorWrapper>
+  );
+});
+
 // Timeline Event Editor (Add new event) - With Auto-Save
 export const TimelineEventEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
