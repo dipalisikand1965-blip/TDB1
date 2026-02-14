@@ -3075,7 +3075,7 @@ const MiraDemoPage = () => {
         </Suspense>
       )}
       
-      {/* CONCIERGE PANEL - Lazy loaded */}
+      {/* CONCIERGE PANEL - Lazy loaded (Legacy quick contact panel) */}
       {showConciergePanel && (
         <Suspense fallback={<LazyFallback />}>
           <ConciergePanel
@@ -3089,6 +3089,58 @@ const MiraDemoPage = () => {
             onChatHandoff={handleConciergeHandoff}
             // Pass LEARN context if coming from "Ask Mira"
             initialContext={pendingConciergeContext}
+          />
+        </Suspense>
+      )}
+      
+      {/* CONCIERGE HOME PANEL - New CONCIERGE OS Layer */}
+      {showConciergeHome && (
+        <Suspense fallback={<LazyFallback />}>
+          <ConciergeHomePanel
+            isOpen={showConciergeHome}
+            onClose={() => {
+              setShowConciergeHome(false);
+              setPendingConciergeContext(null);
+            }}
+            userId={user?.id || user?.email || 'guest'}
+            initialPetId={pet?.id}
+            initialContext={pendingConciergeContext}
+            onOpenThread={(thread, messages) => {
+              // Open thread detail panel
+              setConciergeThread({
+                isOpen: true,
+                threadId: thread.id,
+                thread: thread,
+                messages: messages || []
+              });
+            }}
+            onOpenTicket={(ticketId) => {
+              // Close concierge home and open ticket detail
+              setShowConciergeHome(false);
+              // TODO: Open ticket detail panel when implemented
+              console.log('[CONCIERGE] Open ticket:', ticketId);
+            }}
+          />
+        </Suspense>
+      )}
+      
+      {/* CONCIERGE THREAD PANEL - Conversation detail view */}
+      {conciergeThread.isOpen && (
+        <Suspense fallback={<LazyFallback />}>
+          <ConciergeThreadPanel
+            isOpen={conciergeThread.isOpen}
+            onClose={() => {
+              setConciergeThread({ isOpen: false, threadId: null, thread: null, messages: [] });
+            }}
+            onBack={() => {
+              // Go back to concierge home
+              setConciergeThread({ isOpen: false, threadId: null, thread: null, messages: [] });
+              setShowConciergeHome(true);
+            }}
+            userId={user?.id || user?.email || 'guest'}
+            threadId={conciergeThread.threadId}
+            initialThread={conciergeThread.thread}
+            initialMessages={conciergeThread.messages}
           />
         </Suspense>
       )}
