@@ -219,34 +219,84 @@ const StickyActionBar = memo(({
   // Get primary CTA if available
   const primaryCta = item.service_cta?.[0] || item.cta?.[0];
   
+  const actionBarStyle = {
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    display: 'flex',
+    gap: '8px',
+    padding: '12px 16px',
+    paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
+    background: 'rgba(0, 0, 0, 0.8)',
+    backdropFilter: 'blur(12px)',
+    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+    zIndex: 10001
+  };
+  
+  const primaryBtnStyle = {
+    flex: 2,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    padding: '14px 16px',
+    borderRadius: '12px',
+    fontSize: '14px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    border: 'none',
+    background: '#8b5cf6',
+    color: 'white'
+  };
+  
+  const secondaryBtnStyle = {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    padding: '14px 16px',
+    borderRadius: '12px',
+    fontSize: '14px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    background: 'rgba(255, 255, 255, 0.1)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+    color: 'white'
+  };
+  
+  const tertiaryBtnStyle = {
+    width: '48px',
+    flexShrink: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '14px',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    background: isSaved ? 'rgba(139, 92, 246, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+    border: isSaved ? '1px solid #8b5cf6' : '1px solid rgba(255, 255, 255, 0.2)',
+    color: isSaved ? '#a78bfa' : 'rgba(255, 255, 255, 0.7)'
+  };
+  
   return (
-    <div className="learn-action-bar" data-testid="learn-action-bar">
+    <div className="learn-action-bar" data-testid="learn-action-bar" style={actionBarStyle}>
       {/* Primary: Let Mira do it */}
-      {primaryCta ? (
-        <button 
-          className="action-btn action-primary"
-          onClick={() => onLetMiraDoIt(primaryCta)}
-          data-testid="action-let-mira"
-        >
-          <Briefcase size={18} />
-          <span>{primaryCta.label || "Let Mira do it"}</span>
-        </button>
-      ) : (
-        <button 
-          className="action-btn action-primary"
-          onClick={() => onLetMiraDoIt(null)}
-          data-testid="action-let-mira"
-        >
-          <Briefcase size={18} />
-          <span>Let Mira do it</span>
-        </button>
-      )}
+      <button 
+        onClick={() => onLetMiraDoIt(primaryCta)}
+        data-testid="action-let-mira"
+        style={primaryBtnStyle}
+      >
+        <Briefcase size={18} />
+        <span>{primaryCta?.label || "Let Mira do it"}</span>
+      </button>
       
       {/* Secondary: Ask Mira */}
       <button 
-        className="action-btn action-secondary"
         onClick={onAskMira}
         data-testid="action-ask-mira"
+        style={secondaryBtnStyle}
       >
         <MessageCircle size={18} />
         <span>Ask Mira</span>
@@ -254,12 +304,12 @@ const StickyActionBar = memo(({
       
       {/* Tertiary: Save */}
       <button 
-        className={`action-btn action-tertiary ${isSaved ? 'saved' : ''}`}
         onClick={onSave}
         data-testid="action-save"
+        style={tertiaryBtnStyle}
       >
         {isSaved ? (
-          <BookmarkCheck size={18} className="text-purple-400" />
+          <BookmarkCheck size={18} />
         ) : (
           <Bookmark size={18} />
         )}
