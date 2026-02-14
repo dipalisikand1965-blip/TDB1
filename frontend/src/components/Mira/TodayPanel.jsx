@@ -1171,6 +1171,23 @@ const todayPanelStyles = `
   flex-direction: column;
   animation: slideDown 200ms ease-out;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  /* iOS Safari safe area */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Mobile bottom sheet variant */
+@media (max-width: 640px) {
+  .today-panel-overlay {
+    padding-top: 0;
+    align-items: flex-end;
+  }
+  
+  .today-panel {
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    max-height: calc(85vh);
+    max-height: calc(85dvh);
+  }
 }
 
 @keyframes slideDown {
