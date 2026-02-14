@@ -5,167 +5,133 @@
 ## 1. **MIRA OS URL:** `/mira-demo` (NOT `/mira`)
 ## 2. **Test Credentials:** `dipali@clubconcierge.in` / `test123` | Admin: `aditya` / `lola4304`
 ## 3. `/app/memory/MOJO_BIBLE.md` - THE COMPLETE MOJO DEFINITION (28 Parts + OS Layers)
-## 4. `/app/memory/MOJO_BIBLE_SCORECARD.md` - Current Implementation Score (100% MOJO / 90% Overall)
+## 4. `/app/memory/MOJO_BIBLE_SCORECARD.md` - Current Implementation Score (100% MOJO / 92% Overall)
 ## 5. `/app/memory/SYSTEM_AUDIT_REPORT.md` - ✅ FULL SYSTEM AUDIT COMPLETED (Feb 2026)
 ---
 
-## CURRENT SCORE: 90% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 7)
+## CURRENT SCORE: 92% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 8)
+
 | Layer | Score | Status |
 |-------|-------|--------|
-| **MOJO (14 components)** | **100%** | ✅ **COMPLETE - All components working** |
-| **TODAY** | 95% | ✅ Full Time Layer per MOJO Bible |
-| **PICKS** | **100%** | ✅ **JUST COMPLETED SESSION 7** |
-| **SERVICES** | 40% | 🔴 Next Priority |
+| **MOJO (14 components)** | **100%** | ✅ **COMPLETE** |
+| **TODAY** | 95% | ✅ Near-complete |
+| **PICKS** | **100%** | ✅ **COMPLETE** |
+| **SERVICES** | **60%** | 🔄 Foundation built |
 | **LEARN** | 10% | Future |
 | **CONCIERGE** | 30% | Future |
 
-## ⚠️ CRITICAL: TWO-WAY MEMORY SYNC
-**Every conversation updates MOJO automatically!**
-- Code: `/app/backend/mira_routes.py` lines 11414-11455
-- Mira remembers EVERYTHING from conversations
-
 ---
 
-## PICKS LAYER - 100% COMPLETE ✅ (Feb 14, 2026)
+## SESSION 8 ACCOMPLISHMENTS (Feb 14, 2026)
 
-### All 4 Phases Verified Working:
-
-**Phase 1: Micro-Delights ✅**
-- Sound "whoosh" on PICKS refresh (`/app/frontend/src/utils/picksDelights.js`)
-- PICKS tab glow/pulse animation
-- Confetti for celebrate intent
-- Emergency red pulse for urgent
-
-**Phase 2: Card Enhancements ✅**
-- "Why these picks?" expandable panel
-- FitBadges component (Allergy-aware, Small-mouth safe, etc.)
-- Enhanced fields: what_we_arrange, what_we_need, includes
-
-**Phase 3: Task Flow ✅**
-- 5-second undo toast with progress bar
-- Task status badges: Requested → In Progress → Scheduled
-- createTaskFromPick() with undo mechanism
-
-**Phase 4: Composition Intelligence ✅ (Bug Fixed Session 7)**
-- Enforce 6-10 cards (returns exactly 8 picks)
-- Secondary pillar mix (max 2 from related pillar)
-- History boost (+10 for picks that worked)
-- Essentials logic (profile completion for thin profiles)
-
-**Bug Fix (Session 7):**
+### 1. PICKS Bug Fixed ✅
 - File: `/app/backend/scoring_logic.py` line 433
 - Changed: `classification.pillar` → `classification.primary_pillar`
-- Impact: This was causing 0 picks to be returned
+- Impact: Picks were returning 0 results due to attribute error
 
-**Test Results:**
+### 2. Unified Status Taxonomy ✅
+Created `/app/backend/ticket_status_system.py`:
 ```
-Grooming → care pillar: 8 picks (6 care + 2 dine)
-Birthday → celebrate pillar: 8 picks (6 celebrate + 2 dine)  
-Flight → travel pillar: 8 picks (6 travel + 2 stay)
+Canonical Statuses:
+- draft, placed
+- clarification_needed, options_ready, approval_pending, payment_pending (Awaiting You)
+- in_progress, scheduled
+- shipped, delivered (Orders)
+- completed, cancelled, unable (Terminal)
 ```
 
----
+### 3. Services API ✅
+Created `/app/backend/services_routes.py`:
+- `GET /api/os/services/launchers` - 8 featured services
+- `GET /api/os/services/inbox` - Tickets grouped by status
+- `GET /api/os/services/awaiting` - Awaiting You shelf
+- `GET /api/os/services/orders` - Orders with shipping
+- `GET /api/os/services/watchlist` - For TODAY integration
+- `POST /api/os/services/request` - Create request
+- `PATCH /api/os/services/ticket/{id}` - User actions
 
-## Original Problem Statement
-Build a comprehensive Pet Life Operating System platform for The Doggy Company, featuring AI-powered pet care assistant (Mira), gamification elements, and a modern 7-tab header navigation system.
-
-**Philosophy:**
-- **MOJO** = The Pet's Passport / DNA - Single source of truth about the pet
-- **Mira** = The Pet's Soul - AI intelligence that knows the pet
-- **Concierge®** = The Pet's Hands - Human execution layer
-
-## Core Requirements
-
-### P0 - Critical (ALL COMPLETED ✅)
-- [x] **Production Deployment Fix**
-- [x] **CSS Chunk Loading Fix**
-- [x] **MOJO Profile Modal - Phase 1**
-- [x] **Pet OS Navigation Bar**
-- [x] **Multi-Pet Switching**
-- [x] **Dynamic MOJO System**
-- [x] **Two-Way Memory-Soul Sync**
-- [x] **MOJO Auto-Save**
-- [x] **Confidence Scores & "Mira Learned" Badges**
-- [x] **PICKS Auto-Refresh (B6)**
-- [x] **Enhanced Pick Cards**
-- [x] **PICKS Micro-Delights**
-- [x] **"Why these picks?" Panel**
-- [x] **Task Creation Flow**
-- [x] **PICKS Composition Intelligence** (Bug Fixed Session 7)
-
-### P1 - High Priority (COMPLETED ✅)
-- [x] **TRAIT GRAPH VISUALIZATION**
-- [x] **Soul Score Consistency Fix**
-- [x] **Pet Life Pass Redesign**
-- [x] **TODAY Panel REBUILT**
+### 4. Services Panel UI ✅
+Created `/app/frontend/src/components/Mira/ServicesPanel.jsx`:
+- Service Launchers grid (8 services)
+- Awaiting You shelf (killer UX)
+- Active Requests with status tabs
+- Orders section
+- Clean, professional UI (icons, no emojis)
 
 ---
 
-## 🔴 NEXT PRIORITY: SERVICES TAB
+## SERVICES REMAINING WORK (40% gap)
 
-User Request: "Apply same UI/UX principles as PICKS to SERVICES tab layout"
-
-### SERVICES Layer Current State (40%):
-| Component | Status |
-|-----------|--------|
-| Service Launcher Cards | ⚠️ PARTIAL |
-| Task Inbox | ⚠️ PARTIAL (mira_tickets) |
-| Task Detail View | ⚠️ PARTIAL |
-| Multi-pet Tasks | ❌ NOT BUILT |
-| Orders + Tracking | ❌ NOT BUILT (API 405 error) |
-| Undo + Safety UI | ❌ NOT BUILT |
-
-### SERVICES Vision (from MOJO Bible):
-1. **Service Launcher Cards** - Action entry points (Grooming, Training, Boarding, etc.)
-2. **Task Inbox** - All active tasks grouped by status
-3. **Task Detail View** - "Arranged for {Pet}" with constraints
-4. **Multi-pet Tasks** - Pet selector inside task
-5. **Orders + Tracking** - My Orders, Shipped/Delivered, Subscriptions
-6. **Undo + Safety UI** - 5-second undo, calm error cards
+Per user's architecture vision:
+1. **Request Builder Modal** - Tap launcher → structured form
+2. **Full Ticket Detail View** - Mobile: list → detail page
+3. **User Action Flows** - Confirm date, approve quote, pay
+4. **Multi-pet Task UI** - Pet selector inside task
+5. **Preferences Capture** - "Save groomer?" on completion
+6. **Awaiting You Badge** - Notification dot on Services tab
+7. **TODAY Watchlist Integration** - Use `/api/os/services/watchlist`
 
 ---
 
-## Known Issues (P2)
-1. **Orders API Error:** `/api/orders` returns 405 Method Not Allowed
-2. **Markdown Rendering:** Markdown syntax in chat messages not rendered
+## TODAY REMAINING WORK (5% gap)
 
-## Test Credentials
-- **User:** `dipali@clubconcierge.in` / `test123`
-- **Admin:** `aditya` / `lola4304` (access at `/admin`)
-- **Test Pets:** Lola (63%), Mystique (72%), Bruno (29%), Luna (88%), Buddy (41%), Meister (23%), TestScoring (100%)
+1. **Active Tasks Watchlist enrichment:**
+   - "Awaiting your confirmation" - Use Services watchlist API
+   - "Concierge is scheduling" - Status display
+   - "Payment pending" - Status display
+   - "Order shipped" - Use shipping status
 
-## Preview URL
-**Working:** https://mira-picks-v2.preview.emergentagent.com/mira-demo
+2. **Stale/Offline indicator** - Show if data > 5 min old
 
 ---
 
 ## Architecture
 
-### Key Files Modified This Session:
-- `/app/backend/scoring_logic.py` - Fixed line 433 attribute error
-
-### PICKS Engine Files:
+### Key Files Added/Modified (Session 8):
 ```
 /app/backend/
-├── picks_engine.py          # Main orchestrator
-├── scoring_logic.py         # Ranking + composition rules (FIXED)
-├── classification_pipeline.py # Intent classification
-├── concierge_logic.py       # Concierge prominence
-└── safety_gate.py           # Emergency/caution handling
+├── ticket_status_system.py  # (NEW) Canonical status taxonomy
+├── services_routes.py        # (NEW) Services API at /api/os/services/*
+├── scoring_logic.py          # (FIXED) line 433 attribute error
+└── server.py                 # (MODIFIED) Added services_router
 
 /app/frontend/src/
 ├── components/Mira/
-│   ├── PersonalizedPicksPanel.jsx  # PICKS UI (1550 lines)
-│   └── ui/
-│       ├── UndoToast.jsx           # 5-second undo
-│       └── FitBadges.jsx           # Safety badges
-├── utils/
-│   └── picksDelights.js            # Sound + animations
-└── hooks/
-    └── useChatSubmit.js            # Chat + picks integration
+│   └── ServicesPanel.jsx     # (NEW) Services execution layer UI
+└── pages/
+    └── MiraDemoPage.jsx      # (MODIFIED) Added showServicesPanel
 ```
+
+### API Endpoints Summary:
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/os/services/launchers` | GET | 8 featured services |
+| `/api/os/services/inbox` | GET | All tickets grouped |
+| `/api/os/services/awaiting` | GET | Awaiting You |
+| `/api/os/services/orders` | GET | Orders with shipping |
+| `/api/os/services/watchlist` | GET | For TODAY panel |
+| `/api/os/services/request` | POST | Create request |
+| `/api/os/services/ticket/{id}` | GET/PATCH | Detail/actions |
 
 ---
 
-*PRD Updated: February 14, 2026 - Session 7*
-*PICKS Layer: 100% Complete*
+## Known Issues (P2)
+
+1. **Orders API Error:** `/api/orders` returns 405 Method Not Allowed
+2. **Markdown Rendering:** Markdown syntax in chat messages not rendered
+
+---
+
+## Test Credentials
+
+- **User:** `dipali@clubconcierge.in` / `test123`
+- **Admin:** `aditya` / `lola4304` (access at `/admin`)
+
+## Preview URL
+
+**Working:** https://mira-picks-v2.preview.emergentagent.com/mira-demo
+
+---
+
+*PRD Updated: February 14, 2026 - Session 8*
+*SERVICES Layer: 60% (Foundation built, UI/UX flows remaining)*
