@@ -188,7 +188,79 @@ const EnvironmentAlertCard = memo(({
   </div>
 ));
 
-// Task Card - For active requests
+// Watchlist Task Card - For active tickets from Services watchlist
+// Supports "Awaiting You" one-tap actions
+const WatchlistTaskCard = memo(({ 
+  ticket,
+  onAction,
+  onView 
+}) => {
+  const status = ticket.status;
+  const isAwaitingUser = ticket.awaiting_user;
+  const statusDisplay = ticket.status_display || {};
+  
+  const getStatusIcon = () => {
+    switch (status) {
+      case 'clarification_needed': return <AlertCircle className="w-4 h-4 text-amber-400" />;
+      case 'options_ready': return <CheckCircle className="w-4 h-4 text-purple-400" />;
+      case 'approval_pending': return <AlertTriangle className="w-4 h-4 text-orange-400" />;
+      case 'payment_pending': return <Zap className="w-4 h-4 text-rose-400" />;
+      case 'in_progress': return <Activity className="w-4 h-4 text-cyan-400" />;
+      case 'scheduled': return <Calendar className="w-4 h-4 text-green-400" />;
+      case 'shipped': return <Package className="w-4 h-4 text-indigo-400" />;
+      default: return <Bell className="w-4 h-4 text-gray-400" />;
+    }
+  };
+  
+  // Get one-tap action based on status
+  const getQuickAction = () => {
+    switch (status) {
+      case 'clarification_needed': return { label: 'Reply', action: 'clarify' };
+      case 'options_ready': return { label: 'Choose', action: 'select_option' };
+      case 'approval_pending': return { label: 'Approve', action: 'approve_quote' };
+      case 'payment_pending': return { label: 'Pay', action: 'complete_payment' };
+      default: return null;
+    }
+  };
+  
+  const quickAction = getQuickAction();
+  const petDisplay = ticket.pet_display || ticket.pet_names?.join(', ') || 'Your pet';
+  
+  return (
+    <div 
+      className={`today-card watchlist-task ${isAwaitingUser ? 'awaiting' : ''}`} 
+      data-testid="watchlist-task-card"
+    >
+      <div className="card-status-icon">
+        {getStatusIcon()}
+      </div>
+      <div className="card-content">
+        <span className="card-title">{ticket.title || ticket.service_type || 'Service Request'}</span>
+        <span className="card-pet">{petDisplay}</span>
+        <span className="card-status-text">{statusDisplay.label || status}</span>
+      </div>
+      {isAwaitingUser && quickAction ? (
+        <button 
+          className="card-quick-action-btn"
+          onClick={() => onAction?.(ticket, quickAction.action)}
+          data-testid="watchlist-quick-action"
+        >
+          {quickAction.label}
+        </button>
+      ) : (
+        <button 
+          className="card-view-btn" 
+          onClick={() => onView?.(ticket)}
+          data-testid="watchlist-view-btn"
+        >
+          View
+        </button>
+      )}
+    </div>
+  );
+});
+
+// Legacy Task Card - Kept for backward compatibility
 const TaskCard = memo(({ 
   icon: Icon,
   title, 
