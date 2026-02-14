@@ -4619,8 +4619,33 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                     detected_place_type = place_type
                     break
             
-            location_trigger_words = ["near", "nearby", "close", "around", "in my area", "where can", "recommend", "suggest", "find me", "looking for", "need a", "best"]
-            is_location_query = any(word in user_input_lower for word in location_trigger_words)
+            # ═══════════════════════════════════════════════════════════════════════════════
+            # PLACES API TRIGGER CONTROL - Only trigger when user EXPLICITLY asks
+            # Don't trigger on first message of a topic - let conversation develop first
+            # ═══════════════════════════════════════════════════════════════════════════════
+            
+            # EXPLICIT location request patterns - user is clearly asking for recommendations
+            explicit_location_patterns = [
+                "near me", "nearby", "close to me", "in my area", "around here",
+                "find me a", "find one", "find a", "where can i find", "where can i get",
+                "recommend one", "suggest one", "recommend a", "suggest a",
+                "show me", "tell me", "give me options", "list some",
+                "any good", "best place", "good place", "which place"
+            ]
+            is_explicit_location_request = any(pattern in user_input_lower for pattern in explicit_location_patterns)
+            
+            # IMPLICIT patterns - not enough to trigger Places API alone
+            # These require at least 1 conversation turn before triggering
+            location_hint_words = ["need a", "looking for", "want a"]
+            has_location_hint = any(word in user_input_lower for word in location_hint_words)
+            
+            # Check conversation depth - has there been at least 1 clarifying exchange?
+            has_conversation_context = request.step_history and len(request.step_history) > 0
+            
+            # Final decision: Trigger Places API only if:
+            # 1. User EXPLICITLY asks (explicit patterns), OR
+            # 2. User has hint words AND conversation has developed (at least 1 exchange)
+            is_location_query = is_explicit_location_request or (has_location_hint and has_conversation_context)
             
             # Weather detection
             WEATHER_KEYWORDS = ["weather", "walk", "outside", "outdoor", "hot", "cold", "rain", "sunny", "good day", "safe to go", "can i take"]
