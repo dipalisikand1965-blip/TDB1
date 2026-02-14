@@ -1067,10 +1067,10 @@ const MojoProfileModal = ({
   // Fetch full pet data on open
   useEffect(() => {
     console.log('[MOJO] useEffect check:', { isOpen, petId: pet?.id, apiUrl });
-    if (isOpen && pet?.id && apiUrl) {
+    if (isOpen && pet?.id) {
       fetchFullPetData();
     }
-  }, [isOpen, pet?.id, apiUrl]);
+  }, [isOpen, pet?.id]);
   
   // Deep link to soul section
   useEffect(() => {
