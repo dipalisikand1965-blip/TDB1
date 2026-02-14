@@ -2014,6 +2014,15 @@ const MojoProfileModal = ({
                         <>
                           {/* Section-specific content */}
                           {section.id === 'soul' && <SoulProfileContent pet={petData} />}
+                          {section.id === 'trait_graph' && (
+                            <TraitGraphVisualization 
+                              petId={pet?.id}
+                              petName={petData?.name}
+                              apiUrl={apiUrl}
+                              token={token}
+                              isOpen={isExpanded}
+                            />
+                          )}
                           {section.id === 'health' && <HealthProfileContent pet={petData} />}
                           {section.id === 'diet' && <DietProfileContent pet={petData} />}
                           {section.id === 'behaviour' && <BehaviourProfileContent pet={petData} />}
