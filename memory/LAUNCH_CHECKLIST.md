@@ -221,6 +221,7 @@
 | Date | Bug Description | Fix Applied | Fixed By |
 |------|-----------------|-------------|----------|
 | Feb 14 | `/dashboard` redirected to login even when authenticated | Wrapped route in ProtectedRoute | E1 |
+| Feb 14 | Pet race condition - API calls with demo-pet before real pet loads | Added isLoadingPets guard & fixed pattern matching | E1 |
 
 ---
 
