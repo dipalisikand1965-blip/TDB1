@@ -11750,6 +11750,122 @@ async def delete_timeline_event(pet_id: str, event_id: str, current_user: dict =
     return {"message": "Timeline event removed"}
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# TRAIT GRAPH API - Per MOJO Bible Part 1 §13
+# "The intelligence layer powering everything"
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@api_router.get("/pet-soul/profile/{pet_id}/trait-graph")
+async def get_trait_graph_stats(pet_id: str, current_user: dict = Depends(get_current_user_optional)):
+    """
+    Get Trait Graph statistics for a pet.
+    
+    Returns:
+        - Total traits tracked
+        - Traits by source (soul_form, chat, service, purchase)
+        - Average confidence
+        - Evidence counts
+    """
+    try:
+        from trait_graph_service import get_trait_graph_stats as get_stats
+        stats = await get_stats(db, pet_id)
+        return stats
+    except ImportError:
+        # Fallback if trait_graph_service not available
+        pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "doggy_soul_meta": 1, "name": 1})
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet not found")
+        
+        meta = pet.get("doggy_soul_meta", {})
+        stats = {
+            "total_traits": len(meta),
+            "by_source": {},
+            "avg_confidence": 0,
+            "total_evidence": 0,
+        }
+        
+        confidences = []
+        for field_key, field_meta in meta.items():
+            source = field_meta.get("source", "unknown")
+            stats["by_source"][source] = stats["by_source"].get(source, 0) + 1
+            confidence = field_meta.get("confidence", 50)
+            confidences.append(confidence)
+            stats["total_evidence"] += field_meta.get("evidence_count", 0)
+        
+        if confidences:
+            stats["avg_confidence"] = round(sum(confidences) / len(confidences), 1)
+        
+        return stats
+
+
+@api_router.post("/pet-soul/profile/{pet_id}/trait-graph/service-outcome")
+async def update_trait_from_service(
+    pet_id: str,
+    service_type: str = Body(...),
+    outcome: dict = Body(default={}),
+    notes: Optional[str] = Body(default=None),
+    current_user: dict = Depends(get_current_user_optional)
+):
+    """
+    Manually trigger trait graph update from a service outcome.
+    
+    Per MOJO Bible Part 7 §4:
+    "When tasks complete: update traits with high confidence"
+    
+    Args:
+        pet_id: Pet ID
+        service_type: Type of service (grooming, vet_visit, training, etc.)
+        outcome: Service outcome data
+        notes: Optional service notes
+    """
+    try:
+        from trait_graph_service import update_trait_from_service_outcome
+        result = await update_trait_from_service_outcome(
+            db=db,
+            pet_id=pet_id,
+            service_type=service_type,
+            service_outcome=outcome,
+            service_notes=notes
+        )
+        return result
+    except ImportError as e:
+        raise HTTPException(status_code=500, detail=f"Trait graph service not available: {e}")
+
+
+@api_router.post("/pet-soul/profile/{pet_id}/trait-graph/behaviour-observation")
+async def update_trait_from_observation(
+    pet_id: str,
+    observation_type: str = Body(...),
+    observation_data: dict = Body(...),
+    observer: str = Body(default="service_provider"),
+    current_user: dict = Depends(get_current_user_optional)
+):
+    """
+    Update traits from behaviour observations (service provider feedback).
+    
+    Example: Groomer notes "Very anxious with loud dryers"
+    → Updates grooming_anxiety_triggers, noise_sensitivity
+    
+    Args:
+        pet_id: Pet ID
+        observation_type: Type (grooming_feedback, training_feedback, etc.)
+        observation_data: Observation details
+        observer: Who made the observation
+    """
+    try:
+        from trait_graph_service import update_trait_from_behaviour_observation
+        result = await update_trait_from_behaviour_observation(
+            db=db,
+            pet_id=pet_id,
+            observation_type=observation_type,
+            observation_data=observation_data,
+            observer=observer
+        )
+        return result
+    except ImportError as e:
+        raise HTTPException(status_code=500, detail=f"Trait graph service not available: {e}")
+
+
 @api_router.patch("/pets/{pet_id}/soul-answers")
 async def patch_pet_soul_answers(pet_id: str, answers: dict):
     """PATCH endpoint to update multiple soul answers at once (used by UnifiedPetPage inline editing)"""
