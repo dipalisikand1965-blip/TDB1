@@ -205,6 +205,11 @@ const ExpandablePickCard = ({
               </span>
             </div>
           )}
+          
+          {/* Fit Badges - Subtle safety indicators */}
+          <div className="flex justify-center">
+            <FitBadges pick={pick} pet={{ name: petName }} />
+          </div>
         </div>
         
         {/* Button - ALWAYS visible, separate from scrollable content */}
