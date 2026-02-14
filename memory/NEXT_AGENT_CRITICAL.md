@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://service-execution.preview.emergentagent.com
+https://learn-pets-1.preview.emergentagent.com
 
 ---
 

@@ -223,7 +223,7 @@ Per user's architecture vision:
 
 ## Preview URL
 
-**Working:** https://service-execution.preview.emergentagent.com/mira-demo
+**Working:** https://learn-pets-1.preview.emergentagent.com/mira-demo
 
 ---
 

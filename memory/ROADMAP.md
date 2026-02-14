@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://service-execution.preview.emergentagent.com
+https://learn-pets-1.preview.emergentagent.com
 
 ---
 
