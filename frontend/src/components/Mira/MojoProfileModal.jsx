@@ -363,6 +363,7 @@ const SectionRow = memo(({
 }) => {
   const colors = SECTION_COLORS[section.color];
   const Icon = section.icon;
+  const isReadOnly = section.isSpecial || section.id === 'trait_graph'; // No edit for special sections
   
   return (
     <div 
@@ -410,37 +411,39 @@ const SectionRow = memo(({
         <div className="section-content">
           {children}
           
-          {/* Action buttons row */}
-          <div className="section-actions-row">
-            {/* Edit button - always show when expanded */}
-            <button 
-              className="section-edit-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                hapticFeedback.buttonTap();
-                onEditClick?.(section.id);
-              }}
-              data-testid={`edit-${section.id}-btn`}
-            >
-              <Pencil className="w-4 h-4" />
-              <span>Edit</span>
-            </button>
-            
-            {/* Add CTA if incomplete */}
-            {completeness < 100 && (
+          {/* Action buttons row - only show for editable sections */}
+          {!isReadOnly && (
+            <div className="section-actions-row">
+              {/* Edit button - always show when expanded */}
               <button 
-                className="section-add-btn"
+                className="section-edit-btn"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onAddClick?.(section.id);
+                  hapticFeedback.buttonTap();
+                  onEditClick?.(section.id);
                 }}
-                data-testid={`add-${section.id}-btn`}
+                data-testid={`edit-${section.id}-btn`}
               >
-                <Plus className="w-4 h-4" />
-                <span>Add {missingItems[0] || 'more info'}</span>
+                <Pencil className="w-4 h-4" />
+                <span>Edit</span>
               </button>
-            )}
-          </div>
+              
+              {/* Add CTA if incomplete */}
+              {completeness < 100 && (
+                <button 
+                  className="section-add-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddClick?.(section.id);
+                  }}
+                  data-testid={`add-${section.id}-btn`}
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add {missingItems[0] || 'more info'}</span>
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
