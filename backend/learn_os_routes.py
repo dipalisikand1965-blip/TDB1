@@ -392,19 +392,29 @@ async def fetch_pet_profile(db, pet_id: str) -> Optional[Dict]:
         return None
 
 
-async def get_user_feedback(db, user_id: str) -> Dict:
-    """Get user's feedback on Learn items (helpful/not_helpful)."""
+async def get_user_feedback(db, user_id: str, pet_id: str = None) -> Dict:
+    """
+    Get user's feedback on Learn items (helpful/not_helpful).
+    
+    SAFETY: Feedback is per user + per pet, not global.
+    One user's "Not helpful" doesn't poison the library for everyone.
+    """
     if not user_id:
         return {}
     
     try:
+        # Build query - filter by user and optionally by pet
+        query = {"user_id": user_id}
+        if pet_id:
+            query["pet_id"] = pet_id
+        
         feedback_docs = await db.learn_feedback.find(
-            {"user_id": user_id},
+            query,
             {"item_id": 1, "feedback": 1, "_id": 0}
         ).to_list(200)
         return {doc["item_id"]: doc["feedback"] for doc in feedback_docs}
     except Exception as e:
-        logger.warning(f"[LEARN] Could not fetch feedback for {user_id}: {e}")
+        logger.warning(f"[LEARN] Could not fetch feedback for user {user_id}, pet {pet_id}: {e}")
         return {}
 
 
