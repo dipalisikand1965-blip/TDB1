@@ -9,7 +9,7 @@
 ## 5. `/app/memory/SYSTEM_AUDIT_REPORT.md` - ✅ FULL SYSTEM AUDIT COMPLETED (Feb 2026)
 ---
 
-## CURRENT SCORE: 73% (Against MOJO Bible Vision) - Updated Feb 14, 2026
+## CURRENT SCORE: 78% (Against MOJO Bible Vision) - Updated Feb 14, 2026
 | Layer | Score | Status |
 |-------|-------|--------|
 | **MOJO (14 components)** | **100%** | ✅ **COMPLETE - All components working** |
@@ -28,7 +28,7 @@
 | **Trait Graph** | **100%** | ✅ **NEW - Service/Purchase → MOJO + UI Visualization** |
 | Soul Completion | 100% | ✅ Consistent scoring everywhere |
 | **TODAY** | 95% | ✅ Full Time Layer per MOJO Bible |
-| PICKS | 45% | ⚠️ No auto-refresh on chat turn |
+| **PICKS** | **75%** | ✅ **Auto-refresh on every chat turn! (B6 Complete)** |
 
 ## ⚠️ CRITICAL: TWO-WAY MEMORY SYNC
 **Every conversation updates MOJO automatically!**
