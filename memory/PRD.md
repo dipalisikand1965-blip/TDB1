@@ -306,7 +306,7 @@ To reach 100%, implement:
 - **Mira OS:** `/mira-demo` ← THIS IS THE MAIN OS BUILD (NOT `/mira`)
 - **Admin Panel:** `/admin`
 - **Member Dashboard:** `/member-dashboard`
-- **Preview URL:** `https://mira-pet-system.preview.emergentagent.com`
+- **Preview URL:** `https://mojo-identity-layer.preview.emergentagent.com`
 
 ---
 
@@ -550,7 +550,7 @@ From `/app/frontend/src/pages/MiraDemoBackupPage.jsx`:
 ---
 
 ## Preview URL
-**Working:** https://mira-pet-system.preview.emergentagent.com/mira-demo
+**Working:** https://mojo-identity-layer.preview.emergentagent.com/mira-demo
 
 ---
 

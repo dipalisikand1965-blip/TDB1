@@ -8,7 +8,7 @@ import requests
 import os
 import json
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-pet-system.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mojo-identity-layer.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 ADMIN_USERNAME = "aditya"

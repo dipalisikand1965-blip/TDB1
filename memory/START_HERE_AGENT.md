@@ -36,7 +36,7 @@ Pass: lola4304
 
 ## Preview
 ```
-https://mira-pet-system.preview.emergentagent.com
+https://mojo-identity-layer.preview.emergentagent.com
 ```
 
 ---
@@ -116,7 +116,7 @@ sudo supervisorctl status
 tail -f /var/log/supervisor/backend.err.log
 
 # Test API
-curl https://mira-pet-system.preview.emergentagent.com/api/health
+curl https://mojo-identity-layer.preview.emergentagent.com/api/health
 ```
 
 ---
