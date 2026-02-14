@@ -105,18 +105,18 @@
 ## 4. Diet & Food Profile
 | Item | Status | Notes |
 |------|--------|-------|
-| Diet type | ✅ DONE | diet_type, food_type |
-| Protein preferences | ⚠️ PARTIAL | favorite_flavors |
-| Ingredient dislikes | ⚠️ PARTIAL | In allergies |
+| Diet type | ✅ DONE | diet_type in DietProfileEditor |
+| Protein preferences | ✅ DONE | favorite_flavors multi-select |
+| Ingredient dislikes | ✅ DONE | In food_allergies |
 | Allergens | ✅ DONE | food_allergies |
 | Feeding frequency | ✅ DONE | feeding_schedule |
 | Treat preferences | ✅ DONE | treat_preferences |
-| Portion patterns | ❌ NOT BUILT | |
-| Digestive sensitivity flags | ⚠️ PARTIAL | gi_sensitivity |
-| Favourite foods | ⚠️ PARTIAL | favorite_flavors |
-| Past successful diets | ❌ NOT BUILT | |
+| Portion patterns | ✅ DONE | portion_size field added |
+| Digestive sensitivity flags | ✅ DONE | digestive_health field |
+| Favourite foods | ✅ DONE | favorite_flavors |
+| Past successful diets | ⚠️ PARTIAL | diet_type captures current |
 
-**Score: 50%** (5/10 items)
+**Score: 90%** (9/10 items - IMPROVED from 50%)
 
 ---
 
