@@ -10400,7 +10400,7 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
             pass
         elif missing_info == ["seating"]:
             # Only seating is missing - ask ONE question
-            return {
+            return add_picks_to_response({
                 "success": True,
                 "response": f"{pet_anchor}\n\nJust one quick detail:\n\n• **Indoor café** or **outdoor seating** preferred?",
                 "session_id": session_id,
@@ -10421,7 +10421,7 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
                 ],
                 "products": [],
                 "nearby_places": None
-            }
+            })
         elif missing_info == ["location"]:
             # Only location is missing
             return {
