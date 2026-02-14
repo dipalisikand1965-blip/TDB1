@@ -124,16 +124,16 @@
 | Item | Status | Notes |
 |------|--------|-------|
 | Training level | ✅ DONE | training_level |
-| Commands known | ✅ DONE | commands_known |
-| Behaviour challenges | ⚠️ PARTIAL | behavioral_issues |
-| Training history | ❌ NOT BUILT | |
-| Response style | ❌ NOT BUILT | |
-| Motivation type | ❌ NOT BUILT | |
-| Socialisation level | ⚠️ PARTIAL | social fields exist |
-| Behaviour incidents | ❌ NOT BUILT | |
+| Commands known | ✅ DONE | commands_known multi-select |
+| Behaviour challenges | ✅ DONE | behavioral_issues multi-select |
+| Training history | ⚠️ PARTIAL | Captured via commands_known |
+| Response style | ✅ DONE | response_to_correction field |
+| Motivation type | ✅ DONE | training_style field |
+| Socialisation level | ✅ DONE | social_with_dogs, social_with_people |
+| Behaviour incidents | ⚠️ PARTIAL | behavioral_issues captures current |
 | Progress notes | ❌ NOT BUILT | |
 
-**Score: 33%** (3/9 items)
+**Score: 78%** (7/9 items - IMPROVED from 33%)
 
 ---
 
