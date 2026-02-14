@@ -448,7 +448,7 @@ async def get_thread(
         if not thread:
             raise HTTPException(status_code=404, detail="Thread not found")
         
-        # Get messages
+        # Get messages from concierge_messages
         messages = []
         messages_cursor = db.concierge_messages.find({"thread_id": thread_id}).sort("timestamp", 1)
         async for msg in messages_cursor:
@@ -458,8 +458,39 @@ async def get_thread(
                 "content": msg.get("content"),
                 "timestamp": msg.get("timestamp"),
                 "status_chip": msg.get("status_chip"),
-                "attachments": msg.get("attachments")
+                "attachments": msg.get("attachments"),
+                "type": msg.get("type", "text"),
+                "options_payload": msg.get("options_payload"),
+                "selected_option": msg.get("selected_option")
             })
+        
+        # Also fetch option card messages from linked ticket (if any)
+        linked_ticket_id = thread.get("ticket_id")
+        if linked_ticket_id:
+            # Try to find ticket in tickets collection
+            ticket = await db.tickets.find_one({"ticket_id": linked_ticket_id})
+            if not ticket:
+                ticket = await db.service_desk_tickets.find_one({"ticket_id": linked_ticket_id})
+            
+            if ticket and ticket.get("messages"):
+                for tmsg in ticket.get("messages", []):
+                    # Only add option_cards and option_response messages
+                    if tmsg.get("type") in ["option_cards", "option_response"]:
+                        # Avoid duplicates by checking if already present
+                        if not any(m.get("id") == tmsg.get("id") for m in messages):
+                            messages.append({
+                                "id": tmsg.get("id"),
+                                "sender": tmsg.get("sender", "concierge"),
+                                "content": tmsg.get("content"),
+                                "timestamp": tmsg.get("timestamp"),
+                                "status_chip": tmsg.get("status_chip"),
+                                "type": tmsg.get("type"),
+                                "options_payload": tmsg.get("options_payload"),
+                                "selected_option": tmsg.get("selected_option")
+                            })
+                
+                # Re-sort messages by timestamp after merging
+                messages.sort(key=lambda x: x.get("timestamp", ""))
         
         # Get pet context for drawer
         pet_context = None
