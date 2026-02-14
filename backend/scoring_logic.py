@@ -401,26 +401,69 @@ def rank_picks(
     picks: List[Dict[str, Any]],
     classification: ClassificationResult,
     pet_profile: PetProfile,
-    max_results: int = 5,
-    include_filtered: bool = False
+    max_results: int = 8,
+    min_results: int = 6,
+    include_filtered: bool = False,
+    interaction_history: List[Dict] = None,
+    enable_secondary_pillar: bool = True
 ) -> List[ScoredPick]:
     """
     Score and rank all picks based on classification and profile.
+    
+    COMPOSITION RULES (Phase 4):
+    - Enforce 6-10 cards strictly
+    - Secondary pillar mix (max 2 cards from related pillar)
+    - History boost (picks that worked last time get +10)
+    - Essentials logic (show profile completion picks only if profile is thin)
     
     Args:
         picks: List of pick documents from picks_catalogue
         classification: Output from classification pipeline
         pet_profile: Pet profile data
-        max_results: Maximum number of picks to return
+        max_results: Maximum number of picks to return (default 8)
+        min_results: Minimum number of picks (default 6, fill with secondary pillar)
         include_filtered: If True, include picks with hard constraint violations
+        interaction_history: List of past interactions for history boost
+        enable_secondary_pillar: If True, include up to 2 picks from secondary pillar
     
     Returns:
         List of ScoredPick objects sorted by final_score descending
     """
     scored_picks = []
+    primary_pillar = classification.pillar
+    
+    # Define secondary pillar mapping
+    SECONDARY_PILLARS = {
+        'care': 'dine',
+        'dine': 'care',
+        'celebrate': 'dine',
+        'travel': 'stay',
+        'stay': 'travel',
+        'learn': 'care',
+        'fit': 'care',
+        'enjoy': 'celebrate',
+        'advisory': 'care',
+        'services': 'care'
+    }
+    secondary_pillar = SECONDARY_PILLARS.get(primary_pillar, 'care')
+    
+    # Build history lookup for boost
+    history_pick_ids = set()
+    if interaction_history:
+        for interaction in interaction_history:
+            if interaction.get('outcome') in ['completed', 'positive', 'purchased']:
+                pick_id = interaction.get('pick_id')
+                if pick_id:
+                    history_pick_ids.add(pick_id)
     
     for pick in picks:
         scored = score_pick(pick, classification, pet_profile)
+        
+        # HISTORY BOOST: +10 for picks that worked in the past
+        pick_id = pick.get('pick_id', '')
+        if pick_id in history_pick_ids:
+            scored.boosts['history_worked'] = 10.0
+            scored.final_score += 10.0
         
         # Filter out hard constraint violations unless explicitly requested
         if not include_filtered:
@@ -440,13 +483,48 @@ def rank_picks(
     
     if classification.safety_level == "emergency":
         # Emergency: only return emergency picks
-        return emergency_picks[:max_results]
+        result = emergency_picks[:max_results]
     elif classification.safety_level == "caution":
         # Caution: prioritize caution picks but include normal
-        return (caution_picks + normal_picks)[:max_results]
+        result = (caution_picks + normal_picks)[:max_results]
     else:
-        # Normal: standard ranking
-        return scored_picks[:max_results]
+        # Normal: standard ranking with composition rules
+        result = []
+        
+        # 1. Primary pillar picks (up to max_results - 2)
+        primary_picks = [p for p in scored_picks if p.pillar == primary_pillar]
+        result.extend(primary_picks[:max_results - 2])
+        
+        # 2. Secondary pillar mix (max 2 if enabled)
+        if enable_secondary_pillar and len(result) < max_results:
+            secondary_picks = [p for p in scored_picks if p.pillar == secondary_pillar and p not in result]
+            slots_remaining = min(2, max_results - len(result))
+            result.extend(secondary_picks[:slots_remaining])
+        
+        # 3. Fill remaining slots if below minimum
+        if len(result) < min_results:
+            # Add any picks not already included
+            other_picks = [p for p in scored_picks if p not in result]
+            slots_needed = min_results - len(result)
+            result.extend(other_picks[:slots_needed])
+    
+    # ESSENTIALS LOGIC: If profile is thin (<50% complete), add profile completion picks
+    profile_completeness = getattr(pet_profile, 'soul_completion', 100)
+    if profile_completeness < 50:
+        essentials_picks = [p for p in scored_picks if p.pick_type == 'profile_completion' and p not in result]
+        if essentials_picks and len(result) < max_results:
+            result.insert(0, essentials_picks[0])  # Add at the beginning
+    
+    # Ensure we have at least min_results
+    while len(result) < min_results and scored_picks:
+        for p in scored_picks:
+            if p not in result:
+                result.append(p)
+                break
+        else:
+            break  # No more picks to add
+    
+    return result[:max_results]
 
 
 def get_related_paperwork_picks(
