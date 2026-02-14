@@ -2033,6 +2033,7 @@ const MojoProfileModal = ({
                         <>
                           {/* Section-specific content */}
                           {section.id === 'soul' && <SoulProfileContent pet={petData} />}
+                          {section.id === 'learned' && <LearnedFactsContent pet={petData} />}
                           {section.id === 'trait_graph' && (
                             <TraitGraphVisualization 
                               petId={pet?.id}
