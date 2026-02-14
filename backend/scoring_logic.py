@@ -390,6 +390,10 @@ def score_pick(
         service_modes=pick.get("service_modes", []),
         doc_requirements=pick.get("doc_requirements", []),
         booking_fields=booking_fields,
+        # New enhanced fields
+        what_we_arrange=pick.get("what_we_arrange"),
+        what_we_need=pick.get("what_we_need", []),
+        includes=pick.get("includes", []),
     )
 
 
