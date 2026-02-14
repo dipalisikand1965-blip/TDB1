@@ -865,7 +865,7 @@ Per user's architecture vision:
 
 ## Preview URL
 
-**Working:** https://admin-reply-loop.preview.emergentagent.com/mira-demo
+**Working:** https://mira-websocket-hub.preview.emergentagent.com/mira-demo
 
 ---
 

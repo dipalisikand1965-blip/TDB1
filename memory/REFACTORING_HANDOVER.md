@@ -229,7 +229,7 @@ useSession: sessionId, setSessionId, sessionRecovered, setSessionRecovered
 
 - **Email**: `dipali@clubconcierge.in`
 - **Password**: `lola4304`
-- **Preview URL**: `https://admin-reply-loop.preview.emergentagent.com`
+- **Preview URL**: `https://mira-websocket-hub.preview.emergentagent.com`
 
 ---
 

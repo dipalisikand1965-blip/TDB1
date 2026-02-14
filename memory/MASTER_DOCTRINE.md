@@ -321,4 +321,4 @@ python3 -c "..." # See memory check script
 
 **REMEMBER: MIRA IS THE BRAIN. EVERYTHING SHE LEARNS MUST BE STORED.**
 
-Preview URL: https://admin-reply-loop.preview.emergentagent.com
+Preview URL: https://mira-websocket-hub.preview.emergentagent.com

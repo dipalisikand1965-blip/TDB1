@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://admin-reply-loop.preview.emergentagent.com/mira-demo**
+**https://mira-websocket-hub.preview.emergentagent.com/mira-demo**
 
 ---
 

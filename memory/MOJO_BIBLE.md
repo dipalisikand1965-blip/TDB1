@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://admin-reply-loop.preview.emergentagent.com
+https://mira-websocket-hub.preview.emergentagent.com
 ```
 
 ---

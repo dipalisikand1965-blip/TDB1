@@ -36,7 +36,7 @@ Pass: lola4304
 
 ## Preview
 ```
-https://admin-reply-loop.preview.emergentagent.com
+https://mira-websocket-hub.preview.emergentagent.com
 ```
 
 ---
@@ -116,7 +116,7 @@ sudo supervisorctl status
 tail -f /var/log/supervisor/backend.err.log
 
 # Test API
-curl https://admin-reply-loop.preview.emergentagent.com/api/health
+curl https://mira-websocket-hub.preview.emergentagent.com/api/health
 ```
 
 ---
