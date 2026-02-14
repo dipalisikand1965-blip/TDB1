@@ -346,6 +346,8 @@ class TestTicketStatusSystem:
     
     def test_today_watchlist_statuses_definition(self):
         """Test that TODAY_WATCHLIST_STATUSES includes expected statuses"""
+        import sys
+        sys.path.insert(0, '/app/backend')
         from ticket_status_system import TODAY_WATCHLIST_STATUSES, AWAITING_USER_STATUSES
         
         expected_statuses = [
@@ -365,6 +367,8 @@ class TestTicketStatusSystem:
     
     def test_awaiting_user_statuses(self):
         """Test AWAITING_USER_STATUSES are subset of watchlist statuses"""
+        import sys
+        sys.path.insert(0, '/app/backend')
         from ticket_status_system import TODAY_WATCHLIST_STATUSES, AWAITING_USER_STATUSES
         
         # All awaiting user statuses should be in watchlist
