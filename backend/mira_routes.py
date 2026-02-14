@@ -9771,7 +9771,7 @@ Your concierge has received your request and will get back to you shortly via Wh
 
 Is there anything else I can help you with while you wait?"""
         
-        return {
+        return add_picks_to_response({
             "success": True,
             "response": confirmation_response,
             "session_id": session_id,
@@ -9794,7 +9794,7 @@ Is there anything else I can help you with while you wait?"""
             ],
             "products": [],
             "services": []
-        }
+        })
     
     # ═══════════════════════════════════════════════════════════════════════════
     # MEAL PLAN INTENT DETECTION - Before general flow
