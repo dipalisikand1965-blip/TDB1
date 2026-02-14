@@ -14,6 +14,10 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
 import uuid
+import logging
+
+# Setup logger
+logger = logging.getLogger(__name__)
 
 # Create routers
 pet_soul_router = APIRouter(prefix="/pet-soul", tags=["Pet Soul"])
