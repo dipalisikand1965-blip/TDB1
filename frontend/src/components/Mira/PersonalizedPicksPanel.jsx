@@ -709,7 +709,9 @@ const PersonalizedPicksPanel = ({
   enginePillar = null,     // Auto-detected pillar from classification
   conciergeDecision = null, // Concierge prominence decision
   safetyOverride = null,   // Emergency/caution state
-  lastUpdated = null       // For "Updated just now"
+  lastUpdated = null,      // For "Updated just now"
+  // NEW: Conversation context for context-aware picks
+  conversationContext = null // { topic: "goa trip", destination: "Goa" }
 }) => {
   // Use engine pillar if provided, otherwise default to celebrate
   const [activePillar, setActivePillar] = useState(enginePillar || 'celebrate');
