@@ -432,7 +432,18 @@ const LearnPanel = ({
   }
   
   return (
-    <div className="learn-panel" data-testid="learn-panel">
+    <div className="learn-panel" data-testid="learn-panel" style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 9999,
+      background: 'linear-gradient(180deg, #1a1625 0%, #0f0d15 50%, #0a0810 100%)',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden'
+    }}>
       {/* Header */}
       <div className="learn-header">
         {view !== 'home' ? (
