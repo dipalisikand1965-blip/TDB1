@@ -765,3 +765,232 @@ async def create_urgent_ticket(request: ThreadCreateRequest, pet_name: str, time
     })
     
     return ticket_id
+
+
+
+# ============================================================================
+# INSIGHTS EXTRACTION - Learning from Conversations
+# ============================================================================
+
+import re
+
+# Patterns to extract pet information from conversation text
+INSIGHT_PATTERNS = {
+    "fears": [
+        r"(?:scared|afraid|terrified|frightened|fears?)\s+(?:of\s+)?(.+?)(?:\.|,|$|and|but)",
+        r"(?:hates?|doesn't like|can't stand)\s+(.+?)(?:\.|,|$|and|but)",
+    ],
+    "loves": [
+        r"(?:loves?|adores?|really likes?|favorite)\s+(.+?)(?:\.|,|$|and|but)",
+        r"(?:favorite\s+(?:thing|toy|food|treat|activity))\s+(?:is\s+)?(.+?)(?:\.|,|$)",
+    ],
+    "anxiety": [
+        r"(?:anxious|anxiety|nervous|worried)\s+(?:when|about|if)?\s*(.+?)(?:\.|,|$|and|but)",
+        r"(?:separation anxiety|gets anxious)\s+(?:when|if)?\s*(.+?)(?:\.|,|$)",
+    ],
+    "behavior": [
+        r"(?:always|usually|tends to)\s+(.+?)(?:\.|,|$|when|if)",
+        r"(?:sleeps?|eats?|plays?)\s+(?:best|well|only)\s+(?:when|with|in)?\s*(.+?)(?:\.|,|$)",
+    ],
+    "preferences": [
+        r"(?:prefers?|rather|likes? better)\s+(.+?)(?:\.|,|$|than|over)",
+        r"(?:favorite\s+\w+)\s+(?:is\s+)?(.+?)(?:\.|,|$)",
+    ],
+    "health": [
+        r"(?:allergic to|allergy to|can't eat)\s+(.+?)(?:\.|,|$|and|but)",
+        r"(?:sensitive to|reacts to)\s+(.+?)(?:\.|,|$|and|but)",
+    ],
+}
+
+def extract_pet_insights(text: str) -> List[Dict[str, Any]]:
+    """
+    Extract pet-related insights from conversation text.
+    Returns a list of insight objects with category, content, and confidence.
+    """
+    if not text:
+        return []
+    
+    insights = []
+    text_lower = text.lower()
+    
+    for category, patterns in INSIGHT_PATTERNS.items():
+        for pattern in patterns:
+            matches = re.findall(pattern, text_lower, re.IGNORECASE)
+            for match in matches:
+                # Clean up the match
+                insight_text = match.strip()
+                if len(insight_text) > 3 and len(insight_text) < 200:  # Filter out noise
+                    insights.append({
+                        "category": category,
+                        "content": insight_text,
+                        "original_text": text[:500],  # Keep context
+                        "confidence": 0.7  # Rule-based extraction
+                    })
+    
+    return insights
+
+
+async def store_conversation_insights(db, pet_id: str, insights: List[Dict], thread_id: str, timestamp: str):
+    """
+    Store extracted insights in the pet's profile under 'conversation_insights'.
+    These can be reviewed by the user or concierge before being promoted to the main profile.
+    """
+    if not insights:
+        return
+    
+    # Get existing pet
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        return
+    
+    # Get or create conversation_insights array
+    existing_insights = pet.get("conversation_insights", [])
+    
+    # Add new insights with metadata
+    for insight in insights:
+        insight_doc = {
+            "id": str(uuid.uuid4()),
+            "category": insight["category"],
+            "content": insight["content"],
+            "source_thread_id": thread_id,
+            "extracted_at": timestamp,
+            "confidence": insight.get("confidence", 0.7),
+            "status": "pending_review",  # pending_review, confirmed, rejected
+            "original_text": insight.get("original_text", "")[:200]
+        }
+        existing_insights.append(insight_doc)
+    
+    # Update pet with new insights
+    await db.pets.update_one(
+        {"id": pet_id},
+        {
+            "$set": {
+                "conversation_insights": existing_insights,
+                "conversation_insights_updated_at": timestamp
+            }
+        }
+    )
+    
+    logger.info(f"[INSIGHTS] Stored {len(insights)} insights for pet {pet_id}")
+
+
+@router.get("/insights/{pet_id}")
+async def get_pet_conversation_insights(
+    pet_id: str,
+    status: Optional[str] = Query(None, description="Filter by status: pending_review, confirmed, rejected")
+):
+    """
+    Get conversation insights for a pet.
+    These are facts learned about the pet from conversations.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        pet = await db.pets.find_one({"id": pet_id})
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet not found")
+        
+        insights = pet.get("conversation_insights", [])
+        
+        # Filter by status if provided
+        if status:
+            insights = [i for i in insights if i.get("status") == status]
+        
+        # Sort by most recent first
+        insights.sort(key=lambda x: x.get("extracted_at", ""), reverse=True)
+        
+        # Group by category
+        grouped = {}
+        for insight in insights:
+            cat = insight.get("category", "other")
+            if cat not in grouped:
+                grouped[cat] = []
+            grouped[cat].append(insight)
+        
+        return {
+            "success": True,
+            "pet_id": pet_id,
+            "pet_name": pet.get("name"),
+            "insights": insights,
+            "grouped_insights": grouped,
+            "total_count": len(insights),
+            "pending_count": len([i for i in insights if i.get("status") == "pending_review"])
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting insights: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/insights/{pet_id}/review")
+async def review_conversation_insight(
+    pet_id: str,
+    insight_id: str = Query(..., description="The insight ID to review"),
+    action: str = Query(..., description="Action: confirm or reject")
+):
+    """
+    Review a conversation insight - confirm to add to profile or reject to discard.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    if action not in ["confirm", "reject"]:
+        raise HTTPException(status_code=400, detail="Action must be 'confirm' or 'reject'")
+    
+    try:
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Find and update the insight
+        pet = await db.pets.find_one({"id": pet_id})
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet not found")
+        
+        insights = pet.get("conversation_insights", [])
+        insight_found = None
+        
+        for i, insight in enumerate(insights):
+            if insight.get("id") == insight_id:
+                insight_found = insight
+                insights[i]["status"] = "confirmed" if action == "confirm" else "rejected"
+                insights[i]["reviewed_at"] = now
+                break
+        
+        if not insight_found:
+            raise HTTPException(status_code=404, detail="Insight not found")
+        
+        # Update the pet document
+        await db.pets.update_one(
+            {"id": pet_id},
+            {"$set": {"conversation_insights": insights}}
+        )
+        
+        # If confirmed, also add to a separate "learned_facts" field that can be displayed in MOJO
+        if action == "confirm":
+            learned_facts = pet.get("learned_facts", [])
+            learned_facts.append({
+                "id": insight_id,
+                "category": insight_found["category"],
+                "content": insight_found["content"],
+                "learned_from": "conversation",
+                "confirmed_at": now
+            })
+            await db.pets.update_one(
+                {"id": pet_id},
+                {"$set": {"learned_facts": learned_facts}}
+            )
+        
+        return {
+            "success": True,
+            "insight_id": insight_id,
+            "action": action,
+            "message": f"Insight {'added to profile' if action == 'confirm' else 'rejected'}"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error reviewing insight: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
