@@ -394,13 +394,16 @@ const ConciergeHomePanel = ({
               {/* Input Section */}
               <div className="mb-6">
                 <label className="block text-sm text-white/60 mb-2">
-                  Tell Mira what you need
+                  Anything. Anytime. Anywhere.
                 </label>
+                <p className="text-xs text-white/40 mb-3">
+                  From grooming to travel, vet visits to birthday parties — your Concierge® handles it all.
+                </p>
                 <div className="relative">
                   <textarea
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="Describe what you need help with..."
+                    placeholder="What can we help with today?"
                     className="w-full p-4 pr-12 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 resize-none focus:outline-none focus:border-purple-500/50 transition-colors"
                     rows={3}
                     data-testid="concierge-input"
