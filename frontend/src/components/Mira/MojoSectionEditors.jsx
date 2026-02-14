@@ -92,34 +92,69 @@ const useAutoSave = (data, onSave, delay = 1500) => {
 
 // Predefined options for dropdowns
 const OPTIONS = {
+  // Soul Profile
   temperament: ['Calm', 'Playful', 'Energetic', 'Anxious', 'Friendly', 'Shy', 'Independent', 'Affectionate'],
   energy_level: ['Low', 'Medium', 'High', 'Very High'],
   play_style: ['Fetch', 'Tug', 'Chase', 'Wrestling', 'Independent play', 'Puzzle toys', 'Water play'],
   social_with_dogs: ['Very friendly', 'Friendly', 'Selective', 'Nervous', 'Reactive', 'Prefers humans'],
   social_with_people: ['Loves everyone', 'Friendly', 'Shy at first', 'Selective', 'Nervous with strangers'],
+  social_with_children: ['Great with kids', 'Good with supervision', 'Nervous around children', 'Not recommended', 'Unknown'],
   general_nature: ['Gentle', 'Protective', 'Curious', 'Laid-back', 'Alert', 'Mischievous'],
+  anxiety_level: ['None', 'Mild', 'Moderate', 'Severe'],
   
+  // Diet & Food
   diet_type: ['Dry kibble', 'Wet food', 'Raw diet', 'Home-cooked', 'Mixed', 'Prescription diet'],
   feeding_schedule: ['Once daily', 'Twice daily', 'Three times daily', 'Free feeding', 'Scheduled meals'],
   favorite_flavors: ['Chicken', 'Beef', 'Lamb', 'Fish', 'Duck', 'Turkey', 'Pork', 'Vegetarian'],
+  portion_size: ['Small', 'Medium', 'Large', 'Extra Large', 'As per vet recommendation'],
+  appetite_level: ['Picky eater', 'Normal', 'Always hungry', 'Varies'],
+  digestive_health: ['No issues', 'Occasional upset', 'Sensitive stomach', 'Requires special diet'],
   
+  // Behaviour & Training
   training_level: ['Beginner', 'Basic', 'Intermediate', 'Advanced', 'Professional'],
   commands_known: ['Sit', 'Stay', 'Come', 'Down', 'Heel', 'Leave it', 'Drop it', 'Shake', 'Roll over', 'Fetch'],
   leash_behavior: ['Perfect heel', 'Walks well', 'Pulls sometimes', 'Pulls a lot', 'Reactive on leash'],
   behavioral_issues: ['None', 'Separation anxiety', 'Barking', 'Jumping', 'Leash reactivity', 'Food guarding', 'Fear-based'],
+  training_style: ['Treat-motivated', 'Praise-motivated', 'Play-motivated', 'Clicker trained', 'Mixed'],
+  response_to_correction: ['Very responsive', 'Responds well', 'Needs patience', 'Sensitive', 'Stubborn'],
   
+  // Grooming & Care
   coat_type: ['Short', 'Medium', 'Long', 'Double coat', 'Wiry', 'Curly', 'Hairless'],
   grooming_frequency: ['Daily', 'Weekly', 'Bi-weekly', 'Monthly', 'As needed'],
   skin_sensitivity: ['Normal', 'Sensitive', 'Very sensitive', 'Allergies present'],
   bath_frequency: ['Weekly', 'Bi-weekly', 'Monthly', 'Every 2-3 months', 'As needed'],
+  shedding_level: ['Minimal', 'Low', 'Moderate', 'Heavy', 'Seasonal'],
+  nail_trim_frequency: ['Weekly', 'Bi-weekly', 'Monthly', 'Professional only', 'Self-wearing'],
+  ear_care_needs: ['No special care', 'Regular cleaning', 'Prone to infections', 'Requires vet attention'],
+  grooming_tolerance: ['Loves it', 'Tolerates well', 'Gets anxious', 'Needs muzzle', 'Sedation required'],
   
+  // Routine
   walk_frequency: ['Multiple times daily', 'Twice daily', 'Once daily', 'Few times a week'],
   exercise_needs: ['Low (short walks)', 'Moderate (30-60 min)', 'High (1-2 hours)', 'Very high (2+ hours)'],
   sleep_pattern: ['Sleeps through night', 'Light sleeper', 'Naps frequently', 'Night owl', 'Early riser'],
+  preferred_walk_time: ['Early morning', 'Mid-morning', 'Afternoon', 'Evening', 'Any time'],
+  bathroom_schedule: ['Very regular', 'Somewhat regular', 'Unpredictable', 'Needs frequent breaks'],
+  alone_time_comfort: ['Comfortable for hours', 'Ok for a few hours', 'Gets anxious', 'Cannot be left alone'],
   
+  // Preferences & Constraints
   fear_triggers: ['Thunder', 'Fireworks', 'Vacuum', 'Strangers', 'Other dogs', 'Loud noises', 'Car rides', 'Vet visits'],
   likes: ['Belly rubs', 'Treats', 'Car rides', 'Swimming', 'Fetch', 'Cuddles', 'Running', 'Other dogs'],
   dislikes: ['Baths', 'Nail trimming', 'Loud noises', 'Being alone', 'Grooming', 'Strangers', 'Other dogs'],
+  handling_comfort: ['Very comfortable', 'Mostly comfortable', 'Sensitive areas', 'Dislikes handling'],
+  carrier_comfort: ['Loves it', 'Tolerates', 'Anxious', 'Won\'t use'],
+  
+  // Environment
+  home_type: ['Apartment', 'House with yard', 'Farm/Rural', 'Condo', 'Other'],
+  living_space: ['Small', 'Medium', 'Large', 'Very spacious'],
+  family_structure: ['Single', 'Couple', 'Family with kids', 'Multi-generational', 'Roommates'],
+  climate: ['Hot & Humid', 'Hot & Dry', 'Temperate', 'Cold', 'Variable'],
+  travel_frequency: ['Rarely', 'Few times a year', 'Monthly', 'Frequently'],
+  
+  // Health
+  vaccination_status: ['Up to date', 'Due soon', 'Overdue', 'Unknown'],
+  insurance_status: ['Fully insured', 'Basic coverage', 'No insurance', 'Considering'],
+  size_class: ['Toy (<4kg)', 'Small (4-10kg)', 'Medium (10-25kg)', 'Large (25-45kg)', 'Giant (>45kg)'],
+  species: ['Dog', 'Cat', 'Bird', 'Rabbit', 'Other'],
 };
 
 // Auto-save status indicator component
