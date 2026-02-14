@@ -345,6 +345,7 @@ async def get_watchlist(
     """
     Get unified watchlist for TODAY panel.
     Pulls: Awaiting You + in_progress + payment_pending + scheduled + shipped
+    From all ticket collections: mira_tickets, tickets, service_desk_tickets
     """
     user = await get_user_from_token_services(authorization)
     if not user:
@@ -355,26 +356,84 @@ async def get_watchlist(
         return {"success": True, "watchlist": [], "count": 0, "stale": False}
     
     parent_id = user.get("id") or user.get("user_id")
+    user_email = user.get("email")
     
-    query = {
+    all_tickets = []
+    
+    # Query 1: mira_tickets (service requests from SERVICES tab)
+    mira_query = {
         "parent_id": parent_id,
         "status": {"$in": TODAY_WATCHLIST_STATUSES}
     }
     if pet_id:
-        query["$or"] = [{"pet_id": pet_id}, {"pet_ids": pet_id}]
+        mira_query["$or"] = [{"pet_id": pet_id}, {"pet_ids": pet_id}]
     
-    tickets_cursor = db.mira_tickets.find(query, {"_id": 0}).sort([
-        ("status", 1),  # Awaiting user first
+    tickets_cursor = db.mira_tickets.find(mira_query, {"_id": 0}).sort([
+        ("status", 1),
         ("updated_at", -1)
-    ]).limit(20)
-    tickets = await tickets_cursor.to_list(20)
+    ]).limit(15)
+    mira_tickets = await tickets_cursor.to_list(15)
+    all_tickets.extend(mira_tickets)
     
-    enriched = [enrich_ticket_for_frontend(t) for t in tickets]
+    # Query 2: tickets (Service Desk tickets with option cards)
+    # Also includes options_ready status
+    extended_statuses = list(set(TODAY_WATCHLIST_STATUSES + ["options_ready", "new", "in_progress"]))
+    ticket_query = {
+        "member.email": user_email,
+        "status": {"$in": extended_statuses}
+    }
+    
+    tickets_cursor2 = db.tickets.find(ticket_query, {"_id": 0}).sort([
+        ("status", 1),
+        ("updated_at", -1)
+    ]).limit(10)
+    sd_tickets = await tickets_cursor2.to_list(10)
+    
+    # Transform SD tickets to watchlist format
+    for t in sd_tickets:
+        if not any(x.get("ticket_id") == t.get("ticket_id") for x in all_tickets):
+            # Map to watchlist-friendly format
+            t["id"] = t.get("ticket_id")
+            t["title"] = t.get("description", "Service Request")[:50]
+            if t.get("pending_options"):
+                t["awaiting_reason"] = t["pending_options"].get("question", "Choose an option")
+            all_tickets.append(t)
+    
+    # Query 3: service_desk_tickets (auto-created from conversations)
+    sdt_query = {
+        "member.email": user_email,
+        "status": {"$in": extended_statuses}
+    }
+    
+    tickets_cursor3 = db.service_desk_tickets.find(sdt_query, {"_id": 0}).sort([
+        ("status", 1),
+        ("updated_at", -1)
+    ]).limit(10)
+    conv_tickets = await tickets_cursor3.to_list(10)
+    
+    for t in conv_tickets:
+        if not any(x.get("ticket_id") == t.get("ticket_id") for x in all_tickets):
+            t["id"] = t.get("ticket_id")
+            t["title"] = t.get("subject") or t.get("description", "Request")[:50]
+            if t.get("pending_options"):
+                t["awaiting_reason"] = t["pending_options"].get("question", "Choose an option")
+            all_tickets.append(t)
+    
+    # Sort combined results by status priority then updated_at
+    def status_priority(s):
+        priorities = {"options_ready": 0, "clarification_needed": 1, "approval_pending": 2, 
+                     "payment_pending": 3, "in_progress": 4, "scheduled": 5, "shipped": 6}
+        return priorities.get(s, 10)
+    
+    all_tickets.sort(key=lambda x: (status_priority(x.get("status", "")), x.get("updated_at", "") or ""), reverse=False)
+    all_tickets = all_tickets[:20]  # Limit final list
+    
+    enriched = [enrich_ticket_for_frontend(t) for t in all_tickets]
     
     # Check for stale data (older than 5 minutes without update)
     stale = False
-    if tickets:
-        oldest_update = min(t.get("updated_at", "") for t in tickets)
+    if all_tickets:
+        oldest_update = min(t.get("updated_at", "") for t in all_tickets if t.get("updated_at"))
         if oldest_update:
             try:
                 oldest_dt = datetime.fromisoformat(oldest_update.replace("Z", "+00:00"))
