@@ -77,6 +77,13 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
   - File: `/app/frontend/src/components/Mira/MojoSectionEditors.jsx`
   - Expandable section with add/remove entries, date picker, auto-save
 - [x] **✅ NEW: Next Vaccination Date (2026-02-14)** - Added to Health Vault editor
+- [x] **✅ COMPLETED: PICKS Auto-Refresh (B6) (2026-02-14)** - Critical P0 feature:
+  - Backend: `/app/backend/mira_routes.py` - Picks engine integrated into `/api/mira/os/understand-with-products`
+  - Every chat turn now returns `picks[]` array with 8 ranked, safety-gated picks
+  - Pillar auto-switching: grooming→care, birthday→celebrate, travel→travel
+  - Frontend: `useChatSubmit.js` lines 715-782 processes picks from response
+  - 8 pytest tests passing in `/app/backend/tests/test_picks_auto_refresh.py`
+  - PICKS score: 45% → 75% (+30%)
 
 ### P1 - High Priority (COMPLETED ✅)
 - [x] **✅ TRAIT GRAPH VISUALIZATION (2026-02-14)** - Shows how Mira learns about pets
