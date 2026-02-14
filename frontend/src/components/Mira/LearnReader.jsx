@@ -355,6 +355,9 @@ const LearnReader = ({
   // Handle "Let Mira do it" - opens ServiceRequestBuilder with prefill
   // Per LEARN Bible: One tap from Learn → ServiceRequestBuilder prefilled
   const handleLetMiraDoIt = (cta) => {
+    // Record "completed" event - they're taking action based on this guide
+    recordLearnEvent('completed');
+    
     // Get primary CTA service info
     const serviceType = cta?.service_type || cta?.service_id || item.service_cta?.[0]?.service_type || 'general';
     
