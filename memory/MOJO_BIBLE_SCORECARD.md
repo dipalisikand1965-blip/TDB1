@@ -357,13 +357,16 @@
 
 ## PICKS Layer - EXHAUSTIVE SCORECARD
 
-### Current Score: 75% → Target: 100%
+### Current Score: 80% → Target: 100%
 
-**Updated: Feb 14, 2026 - Session 6**
+**Updated: Feb 14, 2026 - Session 6 (FINAL)**
 - ✅ PICKS Auto-Refresh FULLY VERIFIED (B6 Complete)
 - ✅ Backend /api/mira/os/understand-with-products returns picks[] on every turn
 - ✅ Pillar auto-switching tested: grooming→care, birthday→celebrate
-- ✅ All 8 pytest tests passing
+- ✅ "Updated just now" timestamp visible after chat message
+- ✅ Enhanced pick cards with "What we'll arrange", "What we need", "Includes"
+- ✅ Dynamic CTAs: Arrange, Book, Plan, Request, Add, Get Help
+- ✅ All pytest tests passing
 
 ---
 
@@ -375,10 +378,10 @@
 | Infer active pillar + topic | ✅ DONE | classification_pipeline.py |
 | Fetch Pet Context Pack | ✅ DONE | Exists in backend |
 | Generate ranked picks | ✅ DONE | picks_scorer.py - 8 picks |
-| Render picks into UI | ✅ DONE | useVault.js + PersonalizedPicksPanel verified |
-| Every card actionable → task | ⚠️ PARTIAL | Concierge flow exists |
+| Render picks into UI | ✅ DONE | PersonalizedPicksPanel verified |
+| Every card actionable → task | ✅ DONE | Concierge flow working |
 
-**Subscore: 95%** (Auto-refresh FULLY TESTED - B6 complete)
+**Subscore: 100%** (Auto-refresh FULLY WORKING)
 
 ---
 
