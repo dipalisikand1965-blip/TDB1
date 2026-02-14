@@ -2713,6 +2713,61 @@ const MojoProfileModal = ({
           margin-top: 2px;
         }
         
+        .timeline-description {
+          font-size: 12px;
+          color: #6B7280;
+          margin-top: 2px;
+        }
+        
+        .timeline-categories {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin-bottom: 12px;
+        }
+        
+        .timeline-category-badge {
+          font-size: 10px;
+          font-weight: 500;
+          padding: 3px 8px;
+          border-radius: 6px;
+          text-transform: capitalize;
+        }
+        
+        .timeline-source {
+          font-size: 12px;
+          flex-shrink: 0;
+        }
+        
+        .timeline-show-more {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          margin-top: 12px;
+          padding: 10px;
+          border-radius: 10px;
+          background: rgba(245, 158, 11, 0.1);
+          border: 1px solid rgba(245, 158, 11, 0.2);
+          color: #FBBF24;
+          font-size: 12px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .timeline-show-more:hover {
+          background: rgba(245, 158, 11, 0.2);
+        }
+        
+        .timeline-loading {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 32px;
+        }
+        
         /* Documents specific */
         .document-item {
           justify-content: flex-start;
