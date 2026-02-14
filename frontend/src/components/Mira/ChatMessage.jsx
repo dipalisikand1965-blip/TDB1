@@ -386,12 +386,14 @@ const MiraMessageHeader = ({
       </div>
     )}
     
-    {/* Concierge Help Button */}
+    {/* Concierge Icon - Takes user to top bar CONCIERGE® */}
     <button 
-      className="mp-header-help"
+      className="mp-header-concierge-icon"
       onClick={() => { hapticFeedback?.buttonTap?.(); onShowConcierge(); }}
+      title="Concierge®"
+      data-testid="concierge-icon-btn"
     >
-      C° <span>Need help? Tap here</span> <ChevronRight size={12} />
+      <span className="mp-concierge-badge">C°</span>
     </button>
     
     {/* Insight Icon */}
@@ -442,118 +444,15 @@ const MiraMessageHeader = ({
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /**
- * ProductsGrid - Displays product recommendations
+ * ProductsGrid - REMOVED: Products now shown only in Top Bar PICKS panel
+ * This keeps chat clean and focused on conversation.
+ * Users see a subtle indicator to check their PICKS tab for recommendations.
  */
-const ProductsGrid = ({ msg, pet, hapticFeedback }) => {
-  if (!msg.showProducts || !msg.data?.response?.products?.length) return null;
-  
-  const pillar = msg.data?.response?.pillar || msg.data?.current_pillar;
-  
-  return (
-    <div className="mp-products mp-products-catalog" data-testid="products-catalog">
-      <div className="mp-products-catalog-header">
-        <div className="mp-products-catalog-left">
-          {pet.photo && (
-            <img 
-              src={pet.photo} 
-              alt={pet.name}
-              className="mp-products-pet-photo"
-            />
-          )}
-          <div>
-            <p className="mp-products-title">
-              <span className="pet-name">{pet.name}'s</span> Picks
-            </p>
-            {pillar && (
-              <span className="mp-products-pillar-badge">
-                <span className="mp-products-pillar-icon">{getPillarIcon(pillar)}</span>
-                {pillar.charAt(0).toUpperCase() + pillar.slice(1)}
-              </span>
-            )}
-          </div>
-        </div>
-        
-        {pillar && (
-          <a 
-            href={`/${pillar === 'shop' ? 'shop' : pillar}`}
-            className="mp-see-more-btn"
-            data-testid="see-more-btn"
-          >
-            See More <ArrowRight />
-          </a>
-        )}
-      </div>
-      
-      <div className="mp-products-grid">
-        {msg.data.response.products.slice(0, 4).map((product, pIdx) => (
-          <div key={pIdx} className="mp-product-tile" data-testid={`product-tile-${pIdx}`}>
-            {product.match_type && (
-              <span className={`mp-product-match-badge ${product.match_type}`}>
-                {product.match_type === 'breed' ? `🐕 ${pet.breed?.split(' ')[0] || 'Breed'} match` :
-                 product.match_type === 'pillar' ? '✨ Context match' :
-                 '✓ For ' + pet.name}
-              </span>
-            )}
-            
-            <div className="mp-product-img-wrapper">
-              <img 
-                src={product.image || product.images?.[0] || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop`} 
-                alt={product.name} 
-                className="mp-product-img"
-                loading="lazy"
-              />
-            </div>
-            <div className="mp-product-content">
-              <p className="mp-product-name">{product.name || product.suggestion}</p>
-              {product.price && <p className="mp-product-price">₹{product.price}</p>}
-              
-              <div className="mp-why-for-pet">
-                <span className="mp-why-icon">💡</span>
-                <span className="mp-why-text">
-                  {generateWhyForPet(product, pet)}
-                </span>
-              </div>
-              
-              {product.concierge_whisper && (
-                <div className="mp-concierge-whisper">
-                  <span className="mp-whisper-badge">C°</span>
-                  <span className="mp-whisper-text">{product.concierge_whisper}</span>
-                </div>
-              )}
-              
-              <button 
-                className="mp-product-add mp-send-concierge"
-                onClick={() => { 
-                  hapticFeedback?.productSelect?.(); 
-                  console.log(`[PICKS] Added ${product.name} to Concierge picks`);
-                }}
-                data-testid={`add-product-${pIdx}`}
-              >
-                <ShoppingBag /> Pick
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      {msg.data.response.products.length > 4 && (
-        <div style={{ textAlign: 'center', marginTop: '16px' }}>
-          <a 
-            href={`/${pillar || 'shop'}`}
-            className="mp-see-more-btn"
-            style={{ display: 'inline-flex' }}
-          >
-            View all {msg.data.response.products.length} products <ArrowRight />
-          </a>
-        </div>
-      )}
-      
-      <div className="mp-concierge-curation-message" data-testid="concierge-curation-msg">
-        <div className="curation-icon">C°</div>
-        <p>Your pet Concierge® will review these picks and curate something special for {pet.name}.</p>
-      </div>
-    </div>
-  );
+const ProductsGrid = ({ msg, pet, hapticFeedback, onShowPicks }) => {
+  // ARCHITECTURE CHANGE: No longer showing products inline in chat
+  // Products are curated in the PICKS layer (top bar) which is context-aware
+  // This prevents irrelevant generic picks from cluttering the conversation
+  return null;
 };
 
 /**
