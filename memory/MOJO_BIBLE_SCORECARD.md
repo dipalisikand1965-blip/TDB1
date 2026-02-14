@@ -142,14 +142,14 @@
 |------|--------|-------|
 | Coat type classification | ✅ DONE | coat_type |
 | Grooming cadence | ✅ DONE | grooming_frequency |
-| Shedding level | ❌ NOT BUILT | |
+| Shedding level | ✅ DONE | shedding_level field added |
 | Skin sensitivity | ✅ DONE | skin_sensitivity |
-| Bath tolerance | ⚠️ PARTIAL | bath_frequency |
-| Nail trim cadence | ❌ NOT BUILT | |
-| Ear care notes | ❌ NOT BUILT | |
-| Grooming history | ❌ NOT BUILT | |
+| Bath tolerance | ✅ DONE | bath_frequency + grooming_tolerance |
+| Nail trim cadence | ✅ DONE | nail_trim_frequency field |
+| Ear care notes | ✅ DONE | ear_care_needs field |
+| Grooming history | ⚠️ PARTIAL | Current preferences tracked |
 
-**Score: 38%** (3/8 items)
+**Score: 88%** (7/8 items - IMPROVED from 38%)
 
 ---
 
