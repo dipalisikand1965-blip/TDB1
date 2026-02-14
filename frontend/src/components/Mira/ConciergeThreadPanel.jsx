@@ -513,13 +513,16 @@ const ConciergeThreadPanel = ({
                   showTimestamp={showTimestamps[message.id]}
                   onToggleTimestamp={() => toggleTimestamp(message.id)}
                   onSelectOption={async (optionId) => {
+                    // Use linked ticket ID if available, otherwise fall back to threadId
+                    const ticketIdToUse = linkedTicketId || threadId;
+                    
                     // Send option selection to backend
                     try {
-                      const response = await fetch(`${API_URL}/api/tickets/${threadId}/options/respond`, {
+                      const response = await fetch(`${API_URL}/api/tickets/${ticketIdToUse}/options/respond`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                          ticket_id: threadId,
+                          ticket_id: ticketIdToUse,
                           selected_option_id: optionId
                         })
                       });
@@ -527,6 +530,9 @@ const ConciergeThreadPanel = ({
                       if (response.ok) {
                         // Refresh messages to get updated state
                         await fetchThread();
+                      } else {
+                        const errData = await response.json();
+                        console.error('Option selection failed:', errData);
                       }
                     } catch (error) {
                       console.error('Failed to select option:', error);
