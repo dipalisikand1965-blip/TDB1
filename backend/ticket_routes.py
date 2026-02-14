@@ -2075,6 +2075,309 @@ async def add_reply(ticket_id: str, reply: TicketReply):
     return {"success": True, "message": message}
 
 
+# ============== OPTION CARDS SYSTEM ==============
+# Admin sends options, user picks, preference captured → Soul Score +5
+
+class OptionCard(BaseModel):
+    """Single option in a choice set"""
+    id: str = Field(..., description="Unique option ID like 'A', 'B', 'C'")
+    title: str = Field(..., description="Option title")
+    description: Optional[str] = Field(None, description="Option description")
+    price: Optional[str] = Field(None, description="Price if applicable")
+    metadata: Optional[Dict[str, Any]] = Field(None, description="Extra data like provider_id, location")
+
+class SendOptionsRequest(BaseModel):
+    """Request to send option cards to user"""
+    ticket_id: str
+    question: str = Field(..., description="The question being asked, e.g., 'Choose your groomer'")
+    options: List[OptionCard] = Field(..., min_length=2, max_length=5)
+    notify_channels: List[str] = Field(default=["in_app"], description="Channels: in_app, whatsapp, email")
+    allow_custom: bool = Field(default=True, description="Allow user to type custom response")
+
+class OptionResponse(BaseModel):
+    """User's response to option cards"""
+    ticket_id: str
+    selected_option_id: str
+    custom_response: Optional[str] = None
+
+@router.post("/{ticket_id}/options/send")
+async def send_option_cards(ticket_id: str, request: SendOptionsRequest):
+    """
+    Admin sends option cards to user.
+    Updates ticket status to OPTIONS_READY and stores options in ticket.
+    Syncs to: Today watchlist, Services, Concierge thread.
+    Optionally notifies via WhatsApp/Email.
+    """
+    db = get_db()
+    
+    # Find ticket in either collection
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    collection = db.tickets
+    if not ticket:
+        ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id})
+        collection = db.service_desk_tickets
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Create options payload
+    options_payload = {
+        "id": f"OPT-{uuid.uuid4().hex[:8].upper()}",
+        "question": request.question,
+        "options": [opt.model_dump() for opt in request.options],
+        "allow_custom": request.allow_custom,
+        "sent_at": now,
+        "status": "pending",  # pending, selected, expired
+        "selected_option_id": None,
+        "selected_at": None
+    }
+    
+    # Create message for timeline
+    options_text = "\n".join([
+        f"[{opt.id}] {opt.title}" + (f" - {opt.price}" if opt.price else "")
+        for opt in request.options
+    ])
+    
+    message = {
+        "id": str(uuid.uuid4()),
+        "type": "option_cards",
+        "content": f"{request.question}\n\n{options_text}",
+        "sender": "concierge",
+        "channel": "in_app",
+        "timestamp": now,
+        "is_internal": False,
+        "options_payload": options_payload
+    }
+    
+    # Update ticket with options and status
+    await collection.update_one(
+        {"_id": ticket["_id"]},
+        {
+            "$push": {"messages": message},
+            "$set": {
+                "updated_at": now,
+                "status": "options_ready",
+                "awaiting_user": True,
+                "awaiting_reason": f"Choose: {request.question}",
+                "pending_options": options_payload,
+                "last_action": "Options sent - awaiting user choice"
+            }
+        }
+    )
+    
+    # Create in-app notification
+    member = ticket.get("member", {})
+    member_email = member.get("email") or ticket.get("member_email")
+    
+    if member_email:
+        notif = {
+            "id": f"MNOTIF-{uuid.uuid4().hex[:8].upper()}",
+            "user_email": member_email,
+            "type": "options_ready",
+            "title": "📋 Options Ready",
+            "message": request.question,
+            "ticket_id": ticket_id,
+            "link": f"/mira-demo?tab=concierge&ticket={ticket_id}",
+            "read": False,
+            "created_at": now,
+            "options_preview": [o.title for o in request.options[:3]]
+        }
+        await db.member_notifications.insert_one(notif)
+    
+    result = {
+        "success": True,
+        "options_id": options_payload["id"],
+        "status": "options_ready",
+        "channels_sent": ["in_app"]
+    }
+    
+    # Send via WhatsApp if requested
+    if "whatsapp" in request.notify_channels:
+        member_phone = member.get("phone") or member.get("whatsapp")
+        if member_phone:
+            import urllib.parse
+            options_list = "\n".join([f"*{opt.id}.* {opt.title}" for opt in request.options])
+            wa_msg = f"📋 *{request.question}*\n\n{options_list}\n\nReply with your choice (A, B, C...) or tap to open app"
+            wa_url = f"https://wa.me/{member_phone.replace('+', '')}?text={urllib.parse.quote(wa_msg)}"
+            result["whatsapp_url"] = wa_url
+            result["channels_sent"].append("whatsapp")
+    
+    # Send via Email if requested
+    if "email" in request.notify_channels and member_email:
+        resend_client = get_resend()
+        if resend_client:
+            try:
+                options_html = "".join([
+                    f'<div style="background:#f8f4f0;padding:12px;margin:8px 0;border-radius:8px;border-left:4px solid #9333ea;">'
+                    f'<strong>{opt.id}.</strong> {opt.title}'
+                    f'{f"<br><small>{opt.description}</small>" if opt.description else ""}'
+                    f'{f"<br><strong>{opt.price}</strong>" if opt.price else ""}'
+                    f'</div>'
+                    for opt in request.options
+                ])
+                
+                resend_client.Emails.send({
+                    "from": SENDER_EMAIL,
+                    "to": member_email,
+                    "subject": f"📋 {request.question} - Ticket {ticket_id[-6:]}",
+                    "html": f"""
+                        <div style="font-family:'Segoe UI',sans-serif;max-width:600px;margin:0 auto;">
+                            <div style="background:linear-gradient(135deg,#e91e63 0%,#9c27b0 100%);padding:20px;border-radius:16px 16px 0 0;">
+                                <h2 style="color:white;margin:0;">🐾 The Doggy Company</h2>
+                            </div>
+                            <div style="padding:24px;background:white;border-radius:0 0 16px 16px;">
+                                <h3 style="color:#333;">{request.question}</h3>
+                                {options_html}
+                                <p style="margin-top:20px;">
+                                    <a href="https://thedoggycompany.in/mira-demo?tab=concierge&ticket={ticket_id}" 
+                                       style="background:#9333ea;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;">
+                                        Choose in App
+                                    </a>
+                                </p>
+                                <p style="color:#666;font-size:12px;margin-top:20px;">
+                                    Or simply reply to this email with your choice (A, B, C...)
+                                </p>
+                            </div>
+                        </div>
+                    """
+                })
+                result["channels_sent"].append("email")
+            except Exception as e:
+                logger.error(f"Failed to send options email: {e}")
+    
+    return result
+
+
+@router.post("/{ticket_id}/options/respond")
+async def respond_to_options(ticket_id: str, response: OptionResponse):
+    """
+    User selects an option. Updates ticket, captures preference, increases Soul Score.
+    """
+    db = get_db()
+    
+    # Find ticket
+    ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+    collection = db.tickets
+    if not ticket:
+        ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id})
+        collection = db.service_desk_tickets
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    pending_options = ticket.get("pending_options")
+    if not pending_options or pending_options.get("status") != "pending":
+        raise HTTPException(status_code=400, detail="No pending options for this ticket")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Find selected option
+    selected_option = None
+    for opt in pending_options.get("options", []):
+        if opt.get("id") == response.selected_option_id:
+            selected_option = opt
+            break
+    
+    # Create user response message
+    response_content = f"Selected: {selected_option['title'] if selected_option else response.selected_option_id}"
+    if response.custom_response:
+        response_content += f"\nNote: {response.custom_response}"
+    
+    message = {
+        "id": str(uuid.uuid4()),
+        "type": "option_response",
+        "content": response_content,
+        "sender": "member",
+        "channel": "in_app",
+        "timestamp": now,
+        "selected_option": selected_option,
+        "custom_response": response.custom_response
+    }
+    
+    # Update pending options
+    pending_options["status"] = "selected"
+    pending_options["selected_option_id"] = response.selected_option_id
+    pending_options["selected_at"] = now
+    pending_options["selected_option"] = selected_option
+    
+    # Update ticket
+    await collection.update_one(
+        {"_id": ticket["_id"]},
+        {
+            "$push": {"messages": message},
+            "$set": {
+                "updated_at": now,
+                "status": "in_progress",
+                "awaiting_user": False,
+                "awaiting_reason": None,
+                "pending_options": pending_options,
+                "last_action": f"User selected: {selected_option['title'] if selected_option else response.selected_option_id}",
+                "has_new_member_message": True
+            }
+        }
+    )
+    
+    # Capture preference and increase Soul Score
+    member = ticket.get("member", {})
+    pet_id = ticket.get("pet_id") or ticket.get("pet", {}).get("id")
+    
+    if pet_id and selected_option:
+        try:
+            # Store preference
+            preference = {
+                "pet_id": pet_id,
+                "category": ticket.get("category", "general"),
+                "preference_type": pending_options.get("question", "").lower().replace(" ", "_"),
+                "value": selected_option.get("title"),
+                "metadata": selected_option.get("metadata", {}),
+                "source": "concierge_options",
+                "ticket_id": ticket_id,
+                "captured_at": now
+            }
+            await db.pet_preferences.insert_one(preference)
+            
+            # Increase Soul Score (+5 for preference capture)
+            await db.pets.update_one(
+                {"_id": ObjectId(pet_id) if len(str(pet_id)) == 24 else None} if pet_id else {"pet_id": pet_id},
+                {
+                    "$inc": {"soul.interaction_score": 5},
+                    "$push": {
+                        "soul.preference_events": {
+                            "type": "option_selected",
+                            "question": pending_options.get("question"),
+                            "selected": selected_option.get("title"),
+                            "points": 5,
+                            "timestamp": now
+                        }
+                    }
+                }
+            )
+            logger.info(f"Soul Score +5 for pet {pet_id} - option selected: {selected_option.get('title')}")
+        except Exception as e:
+            logger.error(f"Failed to capture preference: {e}")
+    
+    # Create admin notification
+    admin_notif = {
+        "id": f"ANOTIF-{uuid.uuid4().hex[:8].upper()}",
+        "type": "option_response",
+        "ticket_id": ticket_id,
+        "message": f"User selected: {selected_option['title'] if selected_option else response.selected_option_id}",
+        "created_at": now,
+        "read": False
+    }
+    await db.admin_notifications.insert_one(admin_notif)
+    
+    return {
+        "success": True,
+        "selected_option": selected_option,
+        "ticket_status": "in_progress",
+        "soul_score_increase": 5 if pet_id else 0,
+        "preference_captured": bool(pet_id and selected_option)
+    }
+
+
 # ============== MESSAGING ENDPOINT ==============
 
 class MessagingSendRequest(BaseModel):
