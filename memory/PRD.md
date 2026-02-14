@@ -17,11 +17,11 @@
 |-------|-------|--------|
 | **MOJO (14 components)** | **100%** | ✅ **COMPLETE** |
 | **TODAY** | **100%** | ✅ **COMPLETE** - Watchlist integration done |
-| **PICKS** | **100%** | ✅ **COMPLETE** - UI verified working |
+| **PICKS** | **100%** | ✅ **COMPLETE** - Context-aware + Top bar only |
 | **SERVICES** | **100%** | ✅ **COMPLETE** - Execution loop + Orders integrated |
 | **P1 MOBILE** | **100%** | ✅ **COMPLETE** - iOS Safari + Android Chrome |
 | **LEARN** | **100%** | ✅ **COMPLETE** - Session 12: Full Integration |
-| **CONCIERGE** | **85%** | 🔄 **PHASE 2 IN PROGRESS** - Option Cards + Data Sync complete |
+| **CONCIERGE** | **90%** | 🔄 **PHASE 2 IN PROGRESS** - Consolidated + Option Cards working |
 | **VOICE** | **90%** | ✅ TTS working, glowing red button added, floating indicator added |
 
 ---
