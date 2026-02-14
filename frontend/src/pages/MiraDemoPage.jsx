@@ -3495,6 +3495,25 @@ const MiraDemoPage = () => {
         </Suspense>
       )}
       
+      {/* TODAY PANEL - Time Layer (Reminders, Alerts, Due Items) */}
+      {showTodayPanel && (
+        <Suspense fallback={<LazyFallback />}>
+          <TodayPanel
+            isOpen={showTodayPanel}
+            onClose={() => setShowTodayPanel(false)}
+            pet={pet}
+            allPets={allPets}
+            weather={currentWeather}
+            apiUrl={API_URL}
+            token={token}
+            onNavigate={(path) => {
+              setShowTodayPanel(false);
+              navigate(path);
+            }}
+          />
+        </Suspense>
+      )}
+      
       {/* SOUL FORM MODAL - Lazy loaded */}
       {showSoulFormModal && (
         <Suspense fallback={<LazyFallback />}>
