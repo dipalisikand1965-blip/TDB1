@@ -129,6 +129,17 @@ const calculateSectionCompleteness = (sectionId, data) => {
       const filled = routineFields.filter(f => soulAnswers[f] && soulAnswers[f] !== 'Unknown').length;
       return Math.round((filled / routineFields.length) * 100);
     }
+    case 'environment': {
+      // Environment: city, home_type, living_space, family_structure, other_pets
+      const envFields = ['city', 'home_type', 'living_space', 'family_structure', 'other_pets', 'climate'];
+      const filled = envFields.filter(f => {
+        const val = data?.[f] || soulAnswers[f] || preferences[f];
+        return val && val !== 'Unknown' && val !== '' && (!Array.isArray(val) || val.length > 0);
+      }).length;
+      // Also check city from pet profile
+      const cityFilled = data?.city ? 1 : 0;
+      return Math.round(((filled + cityFilled) / (envFields.length + 1)) * 100);
+    }
     case 'documents': {
       // Documents: vaccination_records, insurance, prescriptions
       const docs = data?.documents || [];
