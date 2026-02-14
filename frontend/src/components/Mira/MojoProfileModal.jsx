@@ -46,6 +46,7 @@ import {
   GroomingProfileEditor,
   RoutineProfileEditor,
   PreferencesProfileEditor,
+  EnvironmentProfileEditor,
   TimelineEventEditor,
   BasicDetailsEditor,
   editorStyles
