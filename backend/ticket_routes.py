@@ -2114,7 +2114,30 @@ async def add_reply(ticket_id: str, reply: TicketReply):
             )
             logger.info(f"[TWO-WAY SYNC] Synced admin reply to concierge thread {thread_id}")
         
-        # 3. Create member notification
+        # 3. ALSO sync to mira_conversations if this ticket exists there
+        #    (for tickets that came from Mira chat handoff)
+        mira_conv = await db.mira_conversations.find_one({"ticket_id": ticket_id})
+        if mira_conv:
+            mira_message = {
+                "sender": "concierge",
+                "source": "Service_Desk",
+                "text": reply.message,
+                "timestamp": now,
+                "meta": {
+                    "type": "concierge_reply",
+                    "message_id": message_id
+                }
+            }
+            await db.mira_conversations.update_one(
+                {"ticket_id": ticket_id},
+                {
+                    "$push": {"conversation": mira_message},
+                    "$set": {"updated_at": now}
+                }
+            )
+            logger.info(f"[TWO-WAY SYNC] Synced admin reply to mira_conversations {ticket_id}")
+        
+        # 4. Create member notification
         if member_email:
             try:
                 member_notif = {
