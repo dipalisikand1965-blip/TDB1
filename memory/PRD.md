@@ -27,6 +27,12 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 - [x] **MOJO Auto-Save (2026-02-13)** - Changes auto-save after 1.5s debounce, no manual save needed
 - [x] **MOJO Vision Audit (2026-02-13)** - Scored at 72% against Product Doctrine
 - [x] **Handover Document v2 (2026-02-13)** - Complete handover with all credentials
+- [x] **✅ COMPLETED: Confidence Scores & "Mira Learned" Badges (2026-02-14)** - Intelligence visibility:
+  - Traits now show confidence percentage (e.g., "85%") based on source
+  - "🧠 MIRA LEARNED" badge shows when data was inferred from conversation
+  - Metadata stored in `doggy_soul_meta` field in MongoDB
+  - Backend: `soul_first_logic.py` and `pet_soul_routes.py` updated
+  - Frontend: `TraitBadge` component with gradient styling
 
 ### P1 - High Priority
 - [x] **✅ COMPLETED: Connect ALL MOJO Data (2026-02-13)** - Pet data now fully integrated:
