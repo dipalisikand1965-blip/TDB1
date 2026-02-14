@@ -982,12 +982,21 @@ const MiraMessageBody = ({
   miraMode = 'ready',
   hapticFeedback,
   onEngageConcierge,
-  onOpenServiceRequest
+  onOpenServiceRequest,
+  onShowPicks // NEW: Handler to open PICKS panel
 }) => {
   const { mainText, questionText } = splitMessageWithQuestion(msg.content);
   
   // REMOVED: InlineConciergeCard - Concierge is now only accessible via top bar
   // This keeps the chat clean and prevents multiple entry points
+  
+  // Check if message has context that warrants showing picks hint
+  const hasTravelContext = msg.data?.response?.detected_destination || 
+                           msg.data?.travel_info || 
+                           msg.data?.os_context?.picks_context;
+  const hasProductContext = msg.data?.response?.products?.length > 0 || 
+                            msg.data?.os_context?.picks_update?.should_refresh;
+  const shouldShowPicksHint = hasTravelContext || hasProductContext;
   
   return (
     <div className="mp-card-body">
@@ -1008,6 +1017,19 @@ const MiraMessageBody = ({
       {/* REMOVED: InlineConciergeCard - Users tap C° icon in header to reach Concierge */}
       
       {/* REMOVED: ProductsGrid - Picks now only in top bar PICKS panel */}
+      
+      {/* Picks Hint - Subtle indicator to check PICKS tab */}
+      {shouldShowPicksHint && onShowPicks && (
+        <button 
+          className="mp-picks-hint"
+          onClick={() => { hapticFeedback?.pickSelect?.(); onShowPicks(); }}
+          data-testid="picks-hint-btn"
+        >
+          <Gift size={14} />
+          <span>View personalized picks for {pet?.name || 'your pet'}</span>
+          <ChevronRight size={12} />
+        </button>
+      )}
       
       {/* Nearby Places */}
       <NearbyPlaces msg={msg} />
