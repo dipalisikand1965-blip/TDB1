@@ -556,7 +556,8 @@ async def get_thread(
                 "status": thread.get("status"),
                 "source": thread.get("source"),
                 "source_context": thread.get("source_context"),
-                "created_at": thread.get("created_at")
+                "created_at": thread.get("created_at"),
+                "ticket_id": linked_ticket_id  # Include linked ticket ID for option card responses
             },
             "messages": messages,
             "context_drawer": {
