@@ -244,20 +244,22 @@
 
 ---
 
-## 11. Life Timeline (Memory Layer)
+## 11. Life Timeline (Memory Layer) ✅ COMPLETE
 | Item | Status | Notes |
 |------|--------|-------|
 | Birthday records | ✅ DONE | DOB field + birthday display |
 | Milestones | ✅ DONE | timeline_events with types |
-| Past services | ⚠️ PARTIAL | Can add via timeline editor |
-| Past purchases | ❌ NOT BUILT | Need order history integration |
-| Key events | ✅ DONE | TimelineEventEditor with event types |
-| Adoption date | ✅ DONE | adoption_date field in BasicDetailsEditor |
-| Major life changes | ✅ DONE | Can add as timeline events |
-| Important memories | ✅ DONE | Can add as timeline events with notes |
-| Feeds Insights | ⚠️ PARTIAL | Timeline data available |
+| Past services | ✅ DONE | Auto-aggregated from service_desk_tickets |
+| Past purchases | ✅ DONE | Auto-aggregated from orders collection |
+| Key events | ✅ DONE | Vet visits, vaccinations, grooming |
+| Adoption date | ✅ DONE | adoption_date field |
+| Major life changes | ✅ DONE | Manual timeline events |
+| Important memories | ✅ DONE | Timeline events with notes |
+| Feeds Insights | ✅ DONE | Categories summary available |
+| Add/Delete events | ✅ DONE | CRUD APIs implemented |
 
-**Score: 67%** (6/9 items - IMPROVED from 22%)
+**Score: 100%** (10/10 items - COMPLETE)
+**API: `/api/pet-soul/profile/{pet_id}/life-timeline`**
 
 ---
 
