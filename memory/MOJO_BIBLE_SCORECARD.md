@@ -22,8 +22,23 @@
 - ✅ **FIXED: MOJO Modal Header Bug** - Header now shows pet's name dynamically instead of static "MOJO"
   - File: `/app/frontend/src/components/Mira/MojoProfileModal.jsx`
   - Changed: `<h2>MOJO</h2>` → `<h2>{petData?.name || 'MOJO'}</h2>`
+- ✅ **NEW: TODAY Panel (P1)** - Complete Time Layer implementation
+  - Weather alerts with temperature and safety badges
+  - Birthday countdown (shows within 30 days)
+  - Urgent items stack (overdue vaccinations, checkups)
+  - Due soon cards (upcoming reminders)
+  - Other pets summary section
+  - File: `/app/frontend/src/components/Mira/TodayPanel.jsx`
+- ✅ **NEW: Weight History Tracking (P0)** - Track weight over time
+  - Expandable section in Health Vault editor
+  - Add/remove weight entries with date picker
+  - Shows up to 10 entries sorted by date
+  - Auto-saves with main editor
+- ✅ **NEW: Next Vaccination Date (P0)** - Date field for upcoming vaccinations
 - ✅ Exhaustive handover document created: `/app/memory/HANDOVER_DOCUMENT.md`
-- ✅ System exploration completed (all pillar pages, dashboard, my-pets, admin)
+- ✅ Testing agent verified all features working (100% success rate)
+- Updated MOJO Score: 91% → 94% (Health Vault improvements)
+- Updated Overall Score: 58% → 63% (TODAY Panel complete)
 
 **Changes this session (Feb 14, 2026 - Session 1):**
 - ✅ Pet Snapshot: 77% -> 100% (species, size_class added)
