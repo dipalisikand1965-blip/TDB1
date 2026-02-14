@@ -614,13 +614,20 @@ export const DietProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   );
 });
 
-// Behaviour & Training Editor - With Auto-Save
+// Behaviour & Training Editor - With Auto-Save (ENHANCED for 100% MOJO)
 export const BehaviourProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     training_level: pet?.doggy_soul_answers?.training_level || '',
     commands_known: pet?.doggy_soul_answers?.commands_known || [],
     leash_behavior: pet?.doggy_soul_answers?.leash_behavior || '',
     behavioral_issues: pet?.doggy_soul_answers?.behavioral_issues || [],
+    training_style: pet?.doggy_soul_answers?.training_style || '',
+    response_to_correction: pet?.doggy_soul_answers?.response_to_correction || '',
+    socialization_level: pet?.doggy_soul_answers?.socialization_level || '',
+    training_history: pet?.doggy_soul_answers?.training_history || '',
+    behavior_notes: pet?.doggy_soul_answers?.behavior_notes || '',
+    working_on: pet?.doggy_soul_answers?.working_on || [],
+    training_goals: pet?.doggy_soul_answers?.training_goals || [],
   });
   
   // Use auto-save hook
@@ -628,6 +635,7 @@ export const BehaviourProfileEditor = memo(({ pet, onSave, onCancel, saving }) =
   
   return (
     <EditorWrapper title="Behaviour & Training" onCancel={onCancel} saveStatus={saveStatus}>
+      <div className="editor-section-header">Training Status</div>
       <SelectField 
         label="Training Level" 
         value={data.training_level} 
@@ -641,6 +649,28 @@ export const BehaviourProfileEditor = memo(({ pet, onSave, onCancel, saving }) =
         onChange={(v) => setData(prev => ({ ...prev, commands_known: v }))}
         multiple
       />
+      <TextField 
+        label="Training History" 
+        value={data.training_history}
+        onChange={(v) => setData(prev => ({ ...prev, training_history: v }))}
+        placeholder="e.g., Puppy class at 3 months, private trainer..."
+      />
+      
+      <div className="editor-section-header">Learning Style</div>
+      <SelectField 
+        label="Training Style" 
+        value={data.training_style} 
+        options={OPTIONS.training_style}
+        onChange={(v) => setData(prev => ({ ...prev, training_style: v }))}
+      />
+      <SelectField 
+        label="Response to Correction" 
+        value={data.response_to_correction} 
+        options={OPTIONS.response_to_correction}
+        onChange={(v) => setData(prev => ({ ...prev, response_to_correction: v }))}
+      />
+      
+      <div className="editor-section-header">Behaviour Profile</div>
       <SelectField 
         label="Leash Behavior" 
         value={data.leash_behavior} 
@@ -648,11 +678,37 @@ export const BehaviourProfileEditor = memo(({ pet, onSave, onCancel, saving }) =
         onChange={(v) => setData(prev => ({ ...prev, leash_behavior: v }))}
       />
       <SelectField 
-        label="Working On (Issues)" 
+        label="Socialization Level" 
+        value={data.socialization_level} 
+        options={['Highly social', 'Moderately social', 'Selective', 'Prefers solitude', 'In training']}
+        onChange={(v) => setData(prev => ({ ...prev, socialization_level: v }))}
+      />
+      <SelectField 
+        label="Behavioral Challenges" 
         value={data.behavioral_issues} 
         options={OPTIONS.behavioral_issues}
         onChange={(v) => setData(prev => ({ ...prev, behavioral_issues: v }))}
         multiple
+      />
+      
+      <div className="editor-section-header">Goals & Progress</div>
+      <TagsField 
+        label="Currently Working On" 
+        value={data.working_on}
+        onChange={(v) => setData(prev => ({ ...prev, working_on: v }))}
+        suggestions={['Recall', 'Loose leash walking', 'Reactivity', 'Separation anxiety', 'Barking', 'Jumping', 'Impulse control']}
+      />
+      <TagsField 
+        label="Training Goals" 
+        value={data.training_goals}
+        onChange={(v) => setData(prev => ({ ...prev, training_goals: v }))}
+        suggestions={['CGC certification', 'Therapy dog', 'Off-leash reliability', 'Dog sports', 'Better manners']}
+      />
+      <TextField 
+        label="Behaviour Notes" 
+        value={data.behavior_notes}
+        onChange={(v) => setData(prev => ({ ...prev, behavior_notes: v }))}
+        placeholder="Any important behaviour observations..."
       />
     </EditorWrapper>
   );
