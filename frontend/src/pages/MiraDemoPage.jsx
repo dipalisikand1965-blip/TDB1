@@ -333,6 +333,8 @@ const MiraDemoPage = () => {
   const [showLearnPanel, setShowLearnPanel] = useState(false);
   // SERVICE REQUEST BUILDER: New request builder modal state
   const [requestBuilderState, setRequestBuilderState] = useState({ isOpen: false, service: null });
+  // PENDING CONCIERGE CONTEXT: From LEARN "Ask Mira" flow
+  const [pendingConciergeContext, setPendingConciergeContext] = useState(null);
   
   // NOTE: showTopPicksPanel, showUnifiedVault, isProcessing now come from useMiraUI hook
   // NOTE: proactiveAlerts, proactiveGreeting, currentWeather now come from useProactiveAlerts hook
