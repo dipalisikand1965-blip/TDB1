@@ -3528,6 +3528,28 @@ const MiraDemoPage = () => {
         </Suspense>
       )}
       
+      {/* SERVICES PANEL - Execution Layer (Service Launchers, Task Inbox, Orders) */}
+      {showServicesPanel && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowServicesPanel(false);
+          }}
+        >
+          <div className="w-full max-w-2xl h-[80vh] bg-slate-900/95 rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+            <ServicesPanel
+              selectedPet={pet}
+              token={token}
+              onClose={() => setShowServicesPanel(false)}
+              onTicketSelect={(ticket) => {
+                console.log('[SERVICES] Ticket selected:', ticket);
+                // TODO: Open ticket detail view
+              }}
+            />
+          </div>
+        </div>
+      )}
+      
       {/* SOUL FORM MODAL - Lazy loaded */}
       {showSoulFormModal && (
         <Suspense fallback={<LazyFallback />}>
