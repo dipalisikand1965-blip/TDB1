@@ -2,10 +2,11 @@
 
 ---
 ## ⚠️ NEW AGENT? READ THIS FIRST:
-## 1. `/app/memory/SYSTEM_AUDIT_REPORT.md` - ✅ FULL SYSTEM AUDIT COMPLETED (Feb 2026)
-## 2. `/app/memory/MOJO_BIBLE.md` - THE COMPLETE MOJO DEFINITION (28 Parts + OS Layers)
-## 3. `/app/memory/MOJO_BIBLE_SCORECARD.md` - Current Implementation Score (52%)
-## 4. `/app/memory/HANDOVER_FEB14_2026.md` - Detailed handover with credentials
+## 1. **MIRA OS URL:** `/mira-demo` (NOT `/mira`)
+## 2. **Test Credentials:** `dipali@clubconcierge.in` / `test123` | Admin: `aditya` / `lola4304`
+## 3. `/app/memory/MOJO_BIBLE.md` - THE COMPLETE MOJO DEFINITION (28 Parts + OS Layers)
+## 4. `/app/memory/MOJO_BIBLE_SCORECARD.md` - Current Implementation Score (52%)
+## 5. `/app/memory/SYSTEM_AUDIT_REPORT.md` - ✅ FULL SYSTEM AUDIT COMPLETED (Feb 2026)
 ---
 
 ## CURRENT SCORE: 52% (Against MOJO Bible Vision)
