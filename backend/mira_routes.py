@@ -2498,6 +2498,12 @@ You must respond in valid JSON:
   "next_step": "Soft close or next action"
 }
 
+⚠️ CRITICAL: quick_replies MUST be included whenever you ask a question!
+When you ask a clarifying question, ALWAYS provide quick_replies with 2-3 short options.
+Example for grooming: ["Simple trim", "Full grooming session", "Not sure yet"]
+Example for location: ["Near my home", "Find me a groomer", "At home"]
+These appear as buttons below your message so the user can tap to respond easily.
+
 IMPORTANT: When user asks for "concierge" or "human help":
 - Set suggest_concierge: true
 - Set execution_type: "CONCIERGE"
