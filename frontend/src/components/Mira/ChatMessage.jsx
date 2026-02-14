@@ -83,72 +83,100 @@ const shouldShowConciergeCard = (content) => {
 
 /**
  * FormattedText - Renders markdown text with proper styling
+ * Cross-browser compatible (iOS Safari, Android Chrome, Desktop)
  */
 const FormattedText = ({ children, className = '' }) => {
   if (!children) return null;
+  
+  // Pre-process markdown for consistent rendering
+  const processMarkdown = (text) => {
+    if (typeof text !== 'string') return text;
+    
+    return text
+      // Ensure bullet points are on new lines
+      .replace(/([.:])(\s*)- /g, '$1\n\n- ')
+      .replace(/ - ([A-Z])/g, '\n\n- $1')
+      // Ensure numbered lists are on new lines
+      .replace(/([.:]\s*)(\d+)\.\s+/g, '$1\n\n$2. ')
+      // Ensure headers are on new lines
+      .replace(/\s*(#{1,3})\s*/g, '\n\n$1 ')
+      // Clean up multiple newlines
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  };
   
   return (
     <div className={`formatted-text ${className}`}>
       <ReactMarkdown
         components={{
-          p: ({ children }) => <p style={{ margin: '0 0 8px 0', lineHeight: '1.6' }}>{children}</p>,
+          p: ({ children }) => (
+            <p className="mb-2 last:mb-0 leading-relaxed text-white/95">
+              {children}
+            </p>
+          ),
           strong: ({ children }) => (
-            <strong style={{ 
-              color: '#F472B6', // Bright pink for emphasis
-              fontWeight: '600',
-              textShadow: '0 0 10px rgba(244, 114, 182, 0.3)'
-            }}>
+            <strong className="font-semibold text-pink-400">
               {children}
             </strong>
           ),
           em: ({ children }) => (
-            <em style={{ 
-              fontStyle: 'normal',
-              color: '#A78BFA', // Purple for secondary emphasis
-              fontWeight: '500'
-            }}>
+            <em className="not-italic font-medium text-purple-300">
               {children}
             </em>
           ),
-          ul: ({ children }) => <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>{children}</ul>,
-          ol: ({ children }) => <ol style={{ margin: '8px 0', paddingLeft: '20px' }}>{children}</ol>,
-          li: ({ children }) => <li style={{ marginBottom: '4px' }}>{children}</li>,
+          ul: ({ children }) => (
+            <ul className="formatted-list my-3 space-y-2 list-none pl-0">
+              {children}
+            </ul>
+          ),
+          ol: ({ children }) => (
+            <ol className="formatted-list formatted-list-numbered my-3 space-y-2 list-none pl-0">
+              {children}
+            </ol>
+          ),
+          li: ({ children }) => (
+            <li className="formatted-list-item relative pl-6 text-white/95 leading-relaxed">
+              {children}
+            </li>
+          ),
+          h1: ({ children }) => (
+            <h1 className="text-lg font-semibold mt-4 mb-2 text-white">
+              {children}
+            </h1>
+          ),
+          h2: ({ children }) => (
+            <h2 className="text-base font-semibold mt-3 mb-2 text-white">
+              {children}
+            </h2>
+          ),
+          h3: ({ children }) => (
+            <h3 className="text-sm font-semibold mt-3 mb-2 text-purple-300">
+              {children}
+            </h3>
+          ),
           a: ({ href, children }) => (
             <a 
               href={href} 
               target="_blank" 
               rel="noopener noreferrer"
-              style={{ 
-                color: '#60A5FA', // Blue for links
-                textDecoration: 'underline'
-              }}
+              className="text-blue-400 underline hover:text-blue-300"
             >
               {children}
             </a>
           ),
-          h3: ({ children }) => (
-            <h3 style={{
-              color: '#F472B6',
-              fontSize: '1rem',
-              fontWeight: '600',
-              margin: '12px 0 8px 0'
-            }}>
+          code: ({ children }) => (
+            <code className="bg-purple-900/50 px-1.5 py-0.5 rounded text-xs font-mono">
               {children}
-            </h3>
+            </code>
           ),
-          h4: ({ children }) => (
-            <h4 style={{
-              color: '#A78BFA',
-              fontSize: '0.9rem',
-              fontWeight: '600',
-              margin: '10px 0 6px 0'
-            }}>
+          blockquote: ({ children }) => (
+            <blockquote className="border-l-2 border-purple-400 pl-3 my-3 italic text-purple-200">
               {children}
-            </h4>
+            </blockquote>
           ),
         }}
       >
-        {children}
+        {processMarkdown(children)}
       </ReactMarkdown>
     </div>
   );
