@@ -1115,7 +1115,7 @@ export const TimelineEventEditor = memo(({ pet, onSave, onCancel, saving }) => {
   );
 });
 
-// Basic Details Editor (Photo, name, breed, etc) - With Auto-Save
+// Basic Details Editor (Photo, name, breed, etc) - With Auto-Save (ENHANCED for 100% MOJO)
 export const BasicDetailsEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     name: pet?.name || '',
@@ -1124,6 +1124,10 @@ export const BasicDetailsEditor = memo(({ pet, onSave, onCancel, saving }) => {
     gender: pet?.gender || pet?.doggy_soul_answers?.gender || '',
     city: pet?.city || pet?.doggy_soul_answers?.city || '',
     dob: pet?.dob || pet?.doggy_soul_answers?.dob || '',
+    species: pet?.species || pet?.doggy_soul_answers?.species || 'Dog',
+    size_class: pet?.doggy_soul_answers?.size_class || '',
+    color_markings: pet?.doggy_soul_answers?.color_markings || '',
+    adoption_date: pet?.doggy_soul_answers?.adoption_date || '',
   });
   
   // Use auto-save hook
@@ -1137,11 +1141,23 @@ export const BasicDetailsEditor = memo(({ pet, onSave, onCancel, saving }) => {
         onChange={(v) => setData(prev => ({ ...prev, name: v }))}
         placeholder="Pet's name"
       />
+      <SelectField 
+        label="Species" 
+        value={data.species} 
+        options={OPTIONS.species}
+        onChange={(v) => setData(prev => ({ ...prev, species: v }))}
+      />
       <TextField 
         label="Breed" 
         value={data.breed}
         onChange={(v) => setData(prev => ({ ...prev, breed: v }))}
         placeholder="e.g., Golden Retriever"
+      />
+      <SelectField 
+        label="Size Class" 
+        value={data.size_class} 
+        options={OPTIONS.size_class}
+        onChange={(v) => setData(prev => ({ ...prev, size_class: v }))}
       />
       <TextField 
         label="Birthday" 
@@ -1160,6 +1176,18 @@ export const BasicDetailsEditor = memo(({ pet, onSave, onCancel, saving }) => {
         value={data.city}
         onChange={(v) => setData(prev => ({ ...prev, city: v }))}
         placeholder="Where does your pet live?"
+      />
+      <TextField 
+        label="Color/Markings" 
+        value={data.color_markings}
+        onChange={(v) => setData(prev => ({ ...prev, color_markings: v }))}
+        placeholder="e.g., Golden with white chest"
+      />
+      <TextField 
+        label="Adoption/Gotcha Date" 
+        type="date"
+        value={data.adoption_date}
+        onChange={(v) => setData(prev => ({ ...prev, adoption_date: v }))}
       />
     </EditorWrapper>
   );
