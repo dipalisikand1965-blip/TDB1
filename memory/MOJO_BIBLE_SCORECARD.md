@@ -8,7 +8,7 @@
 
 | Category | Current Score | Target | Gap |
 |----------|---------------|--------|-----|
-| **MOJO (14 Components)** | 85% | 100% | 15% |
+| **MOJO (14 Components)** | 91% | 100% | 9% |
 | **TODAY Layer** | 15% | 100% | 85% |
 | **PICKS Layer** | 45% | 100% | 55% |
 | **SERVICES Layer** | 40% | 100% | 60% |
@@ -16,22 +16,24 @@
 | **CONCIERGE Layer** | 30% | 100% | 70% |
 | **OS Operating Doctrine** | 55% | 100% | 45% |
 | **10 Absolute Rules** | 60% | 100% | 40% |
-| **OVERALL** | **55%** | 100% | **45%** |
+| **OVERALL** | **58%** | 100% | **42%** |
 
 **Changes this session (Feb 14, 2026):**
-- ✅ Health Vault: 62% -> 92% (all fields now editable: vet details, medications, microchip, insurance, emergency contacts)
-- ✅ Diet Profile: 50% -> 80% (portion size, appetite level, digestive health added)
-- ✅ Behaviour Profile: 33% -> 70% (leash behavior, training style, response to correction added)
-- ✅ Grooming Profile: 38% -> 85% (shedding level, nail trim, ear care, grooming tolerance added)
-- ✅ Routine Profile: 40% -> 75% (exercise needs, bathroom schedule, alone time comfort added)
+- ✅ Pet Snapshot: 77% -> 100% (species, size_class added)
+- ✅ Health Vault: 62% -> 92% (all fields now editable)
+- ✅ Diet Profile: 50% -> 90% (portion size, appetite level added)
+- ✅ Behaviour Profile: 33% -> 78% (training style, response added)
+- ✅ Grooming Profile: 38% -> 88% (shedding, nail trim, ear care added)
+- ✅ Routine Profile: 38% -> 100% (all 8 fields complete)
+- ✅ Preferences: 36% -> 100% (handling, service restrictions, care constraints added)
+- ✅ Life Timeline: 22% -> 67% (adoption date, event types, timeline UI enhanced)
 - ✅ Auto-save verified working across all 9 editors
 - ✅ Backend API confirmed saving all fields correctly
-- Overall MOJO: 72% -> 85%
-- Overall Score: 52% -> 55%
+- Overall MOJO: 85% -> 91%
+- Overall Score: 55% -> 58%
 
 **Previous session changes:**
 - Documents Vault: 11% -> 100% (integrated with /paperwork)
-- Health Vault: 23% -> 62% (expanded fields)
 - Environment Profile: 25% -> 81% (NEW section added with all fields)
 
 ---
