@@ -347,16 +347,162 @@
 
 ---
 
-## PICKS Layer (45%)
-| Component | Status |
-|-----------|--------|
-| Picks Header | ✅ DONE |
-| Primary Picks Stack | ✅ DONE |
-| Concierge Picks | ⚠️ PARTIAL |
-| Safety + Fit Badges | ✅ DONE ("Why for Pet") |
-| One-tap Actions | ⚠️ PARTIAL |
-| Pillar-based switching | ⚠️ PARTIAL |
-| Never empty state | ⚠️ PARTIAL |
+## PICKS Layer - EXHAUSTIVE SCORECARD
+
+### Current Score: 45% → Target: 100%
+
+---
+
+### 1. Core Behaviour (Must happen every turn) - 0%
+| Item | Status | Notes |
+|------|--------|-------|
+| Refresh every user message | ❌ NOT BUILT | B6 - Critical gap |
+| Refresh every Mira reply | ❌ NOT BUILT | B6 - Critical gap |
+| Infer active pillar + topic | ✅ DONE | classification_pipeline.py |
+| Fetch Pet Context Pack | ✅ DONE | Exists in backend |
+| Generate ranked picks | ✅ DONE | picks_scorer.py |
+| Render picks into UI | ⚠️ PARTIAL | Static, not auto-refresh |
+| Every card actionable → task | ⚠️ PARTIAL | Concierge flow exists |
+
+**Subscore: 40%** (Critical: Auto-refresh NOT wired)
+
+---
+
+### 2. Pick Types - 60%
+| Item | Status | Notes |
+|------|--------|-------|
+| **Catalogue Pick Card** | | |
+| - title, image, fit line | ✅ DONE | PersonalizedPicksPanel |
+| - availability/price if stored | ✅ DONE | Shows when available |
+| - subtle fit badges | ⚠️ PARTIAL | Needs more badge types |
+| - CTA (Request/Arrange/Add/Plan) | ✅ DONE | Buttons exist |
+| **Concierge Pick Card** | | |
+| - Title (brand-free) | ✅ DONE | Generic titles |
+| - "Why it fits" (1 line) | ✅ DONE | why_it_fits field |
+| - "What's included" (3-6 bullets) | ✅ DONE | selection_rules |
+| - "What we need" (1-2 fields) | ⚠️ PARTIAL | questions field |
+| - Safety note | ✅ DONE | safety_note field |
+| - CTA | ✅ DONE | Request button |
+| - "Arranged for {Pet}" phrasing | ❌ NOT BUILT | Uses "source" |
+
+**Subscore: 75%**
+
+---
+
+### 3. Composition Rules - 50%
+| Item | Status | Notes |
+|------|--------|-------|
+| 6-10 cards per refresh | ⚠️ PARTIAL | Currently variable |
+| Top 4-6 = active pillar dominant | ⚠️ PARTIAL | Manual pillar tabs |
+| Min 1 service card when applicable | ✅ DONE | ConciergeServiceStrip |
+| 1-2 essentials only when relevant | ❌ NOT BUILT | No logic |
+| Emergency/Farewell: services dominate | ⚠️ PARTIAL | Safety gate exists |
+| Ranking: fit + safe + relevant | ✅ DONE | picks_scorer.py |
+| Season/location boost | ⚠️ PARTIAL | Seasonal logic exists |
+| History boost | ❌ NOT BUILT | No outcome tracking |
+
+**Subscore: 50%**
+
+---
+
+### 4. Task Behaviour - 40%
+| Item | Status | Notes |
+|------|--------|-------|
+| Tap → Create task | ⚠️ PARTIAL | Concierge flow |
+| Auto-fill constraints from MOJO | ⚠️ PARTIAL | Some fields |
+| Status: Requested vs Draft | ⚠️ PARTIAL | Ticket system |
+| Return to chat with confirmation | ⚠️ PARTIAL | Basic flow |
+| 5-second undo toast | ❌ NOT BUILT | Not implemented |
+
+**Subscore: 40%**
+
+---
+
+### 5. Pillar Switching Logic - 20%
+| Item | Status | Notes |
+|------|--------|-------|
+| Deterministic switching | ❌ NOT BUILT | Manual pillar tabs |
+| Care picks for grooming/dental | ⚠️ PARTIAL | Classification works |
+| Celebrate picks for birthday/cake | ⚠️ PARTIAL | Classification works |
+| Emergency override | ✅ DONE | Safety gate |
+| Primary + secondary pillar mix | ❌ NOT BUILT | Single pillar only |
+
+**Subscore: 30%**
+
+---
+
+### 6. UI Components - 60%
+| Item | Status | Notes |
+|------|--------|-------|
+| Picks Header ("Picks for {Pet}") | ✅ DONE | Shows pet name |
+| "Updated just now" timestamp | ❌ NOT BUILT | Missing |
+| "Why these picks" expandable | ❌ NOT BUILT | Missing |
+| Primary Picks Stack (4-6) | ✅ DONE | Grid layout |
+| Concierge Picks Section | ✅ DONE | Visually distinct |
+| Starter Essentials (conditional) | ❌ NOT BUILT | No logic |
+| Fit Badges (Allergy-aware, etc.) | ⚠️ PARTIAL | Basic only |
+| One-tap Actions | ✅ DONE | Buttons exist |
+| Empty-state prevention | ⚠️ PARTIAL | Can be empty |
+
+**Subscore: 55%**
+
+---
+
+### 7. NEVER Happen Rules - 50%
+| Rule | Compliance | Notes |
+|------|------------|-------|
+| PICKS panel is empty | ⚠️ CAN HAPPEN | No fallback |
+| PICKS doesn't switch when topic switches | ❌ FAILS | Manual tabs only |
+| Looks like marketplace inventory | ⚠️ PARTIAL | Improved but not perfect |
+| Shows price upfront unless known | ✅ COMPLIANT | Concierge cards hide price |
+| Asks "want options" after asked | ✅ COMPLIANT | Direct response |
+| Re-asks known pet details | ✅ COMPLIANT | Uses MOJO |
+| Suggests risky items by default | ✅ COMPLIANT | Safety gates |
+| Emergency shows shopping | ✅ COMPLIANT | Safety override |
+
+**Subscore: 65%**
+
+---
+
+### 8. PICKS ↔ SERVICES Interaction - 30%
+| Item | Status | Notes |
+|------|--------|-------|
+| PICKS recommends | ✅ DONE | Shows picks |
+| SERVICES executes | ⚠️ PARTIAL | Ticket system |
+| Tap in PICKS → SERVICES detail | ⚠️ PARTIAL | Opens modal |
+| Confirm → return to chat | ⚠️ PARTIAL | Basic flow |
+| Task updates → refresh PICKS | ❌ NOT BUILT | No auto-refresh |
+
+**Subscore: 40%**
+
+---
+
+### Backend Implementation Status - 80%
+| Component | Status | Notes |
+|-----------|--------|-------|
+| B0: Taxonomy Seeding | ✅ DONE | 217 tags, 625 synonyms |
+| B1: Picks Catalogue | ✅ DONE | 110 picks |
+| B2: Classification Pipeline | ✅ DONE | 28 tests passing |
+| B3: Safety Gate | ✅ DONE | 21 tests passing |
+| B4: Scoring Function | ✅ DONE | Ranking + diversity |
+| B5: Concierge Logic | ⚠️ PARTIAL | Needs completion |
+| B6: API Integration | ❌ NOT BUILT | **CRITICAL GAP** |
+| B7: Events Log | ⚠️ PARTIAL | Basic logging |
+| B8: Scenario Testing | ❌ NOT BUILT | Needs 50 prompts |
+
+**Backend Subscore: 65%**
+
+---
+
+### PICKS OVERALL SCORE: 45%
+
+**Priority Implementation Order:**
+1. 🔴 **P0: B6 - Wire auto-refresh** (0% → 100%) = +25% overall
+2. 🔴 **P0: Pillar switching** (20% → 100%) = +10% overall  
+3. 🟡 **P1: "Arranged-for" card template** = +5% overall
+4. 🟡 **P1: Timestamp + "Why these picks"** = +3% overall
+5. 🟢 **P2: 5-second undo toast** = +2% overall
+6. 🟢 **P2: History boost** = +2% overall
 
 ---
 
