@@ -868,6 +868,80 @@ Returns:
 
 ---
 
+## P0 INTEGRATIONS (CTA Implementation)
+
+### A) "Let Mira do it" → Services Prefill
+
+**Goal:** One tap from Learn → ServiceRequestBuilder prefilled.
+
+#### Payload to Pass (Minimum)
+
+```json
+{
+  "source_layer": "learn",
+  "source_item": {
+    "type": "guide|video",
+    "id": "guide-fireworks",
+    "title": "Fireworks & Loud Noise Anxiety"
+  },
+  "pet_id": "pet-lola123",
+  "service_type": "trainer_consult",  // from service_cta[0].service_id
+  "prefill": {
+    // Derived from MOJO + CTA mapping
+    "handling_notes": "Noise sensitive, anxious during storms",
+    "preferred_time": "morning"
+  },
+  "context_note": "User viewed: Fireworks & Loud Noise Anxiety. Wants help with: desensitization training"
+}
+```
+
+#### UX Rule
+
+- **If the CTA maps to a service:** Open `ServiceRequestBuilder` directly
+- **If it doesn't:** Open Concierge (`Ask Mira`) with context
+
+#### Implementation Location
+
+- Frontend: `LearnReader.jsx` → `handleLetMiraDoIt()`
+- Backend: Service ticket creation already supports `source_layer` and `context`
+
+---
+
+### B) "Ask Mira" → Concierge with Context
+
+**Goal:** Ask Mira always opens Concierge, but with zero re-asking.
+
+#### Payload to Pass
+
+```json
+{
+  "source_layer": "learn",
+  "pet_id": "pet-lola123",
+  "learn_item": {
+    "title": "Fireworks & Loud Noise Anxiety",
+    "type": "guide",
+    "id": "guide-fireworks"
+  },
+  "user_stuck_step": 3,  // Optional: if they tapped from a specific step
+  "derived_tags_used": ["anxious", "noise_sensitive"],  // pet_tags only; breed tags only if non-health topic
+  "suggested_next_action": "trainer_consult"  // Either service_id or "needs_judgment"
+}
+```
+
+#### UX Rule
+
+Concierge opener should show:
+> "I've read **Fireworks & Loud Noise Anxiety**. Help me with **[step 3 issue]**."
+
+(Auto-filled, user can edit before sending)
+
+#### Implementation Location
+
+- Frontend: `LearnReader.jsx` → `handleAskMira()`
+- Opens Concierge chat with pre-populated first message + hidden context
+
+---
+
 ## Test Results (Session 12)
 
 | Category | Result |
