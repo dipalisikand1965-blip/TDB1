@@ -369,6 +369,7 @@ const PetOSNavigation = ({
             isActive={activeTab === layer.id}
             onClick={onTabChange}
             badge={badges[layer.id]}
+            hasNew={layer.id === 'picks' && picksHasNew}
           />
         ))}
       </div>
