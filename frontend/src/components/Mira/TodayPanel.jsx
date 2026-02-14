@@ -1244,8 +1244,8 @@ const todayPanelStyles = `
 }
 
 .refresh-btn {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.05);
   border: none;
