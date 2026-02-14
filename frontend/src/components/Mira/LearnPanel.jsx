@@ -77,11 +77,31 @@ const ContentCard = memo(({ item, onClick, onSave }) => {
   const TopicIcon = TOPIC_ICONS[item.topic] || BookOpen;
   const colorClass = getTopicColor(item.topic_color || TOPIC_COLORS[item.topic]);
   
+  const handleClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('[LEARN CARD] Clicked:', item.title);
+    onClick(item);
+  };
+  
   return (
     <button
       className="learn-content-card"
-      onClick={() => onClick(item)}
+      onClick={handleClick}
       data-testid={`learn-card-${item.id}`}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '16px',
+        background: 'rgba(255, 255, 255, 0.08)',
+        border: '1px solid rgba(255, 255, 255, 0.12)',
+        borderRadius: '16px',
+        cursor: 'pointer',
+        textAlign: 'left',
+        width: '100%',
+        marginBottom: '8px'
+      }}
     >
       {/* Card Content */}
       <div className="learn-card-content">
