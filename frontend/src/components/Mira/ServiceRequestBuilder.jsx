@@ -339,7 +339,7 @@ const ServiceRequestBuilder = ({
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
-                  className="w-full bg-slate-800/60 border border-white/10 rounded-lg pl-10 pr-3 py-2.5 text-white
+                  className="w-full bg-slate-800/60 border border-white/10 rounded-lg pl-10 pr-3 py-2.5 text-white text-base
                              focus:border-purple-500/50 focus:outline-none transition-colors"
                   data-testid="date-input"
                 />
@@ -356,7 +356,7 @@ const ServiceRequestBuilder = ({
                     value={dateEnd}
                     onChange={(e) => setDateEnd(e.target.value)}
                     min={date || new Date().toISOString().split('T')[0]}
-                    className="w-full bg-slate-800/60 border border-white/10 rounded-lg pl-10 pr-3 py-2.5 text-white
+                    className="w-full bg-slate-800/60 border border-white/10 rounded-lg pl-10 pr-3 py-2.5 text-white text-base
                                focus:border-purple-500/50 focus:outline-none transition-colors"
                   />
                 </div>
@@ -371,7 +371,7 @@ const ServiceRequestBuilder = ({
               <select
                 value={timePreference}
                 onChange={(e) => setTimePreference(e.target.value)}
-                className="w-full bg-slate-800/60 border border-white/10 rounded-lg px-3 py-2.5 text-white
+                className="w-full bg-slate-800/60 border border-white/10 rounded-lg px-3 py-2.5 text-white text-base
                            focus:border-purple-500/50 focus:outline-none transition-colors appearance-none cursor-pointer"
                 data-testid="time-select"
               >
@@ -392,7 +392,7 @@ const ServiceRequestBuilder = ({
                 <select
                   value={urgency}
                   onChange={(e) => setUrgency(e.target.value)}
-                  className="w-full bg-slate-800/60 border border-white/10 rounded-lg px-3 py-2.5 text-white
+                  className="w-full bg-slate-800/60 border border-white/10 rounded-lg px-3 py-2.5 text-white text-base
                              focus:border-purple-500/50 focus:outline-none transition-colors appearance-none cursor-pointer"
                 >
                   <option value="" className="bg-slate-800">Select urgency</option>
@@ -417,7 +417,7 @@ const ServiceRequestBuilder = ({
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder={config.hasDestination ? 'e.g., Home to Airport' : 'e.g., Home visit, Salon, etc.'}
-                className="w-full bg-slate-800/60 border border-white/10 rounded-lg pl-10 pr-3 py-2.5 text-white
+                className="w-full bg-slate-800/60 border border-white/10 rounded-lg pl-10 pr-3 py-2.5 text-white text-base
                            placeholder:text-slate-500 focus:border-purple-500/50 focus:outline-none transition-colors"
                 data-testid="location-input"
               />
@@ -432,7 +432,7 @@ const ServiceRequestBuilder = ({
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any special requirements, allergies, or preferences..."
               rows={3}
-              className="w-full bg-slate-800/60 border border-white/10 rounded-lg px-3 py-2.5 text-white
+              className="w-full bg-slate-800/60 border border-white/10 rounded-lg px-3 py-2.5 text-white text-base
                          placeholder:text-slate-500 focus:border-purple-500/50 focus:outline-none transition-colors resize-none"
               data-testid="notes-input"
             />
