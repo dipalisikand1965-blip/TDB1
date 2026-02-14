@@ -187,16 +187,18 @@
 
 ## 9. Preferences & Constraints
 | Item | Status | Notes |
+## 10. Preferences & Constraints
+| Item | Status | Notes |
 |------|--------|-------|
-| Handling preferences | ❌ NOT BUILT | |
-| Food restrictions | ✅ DONE | allergies |
+| Handling preferences | ✅ DONE | handling_comfort field |
+| Food restrictions | ✅ DONE | allergies, food_allergies |
 | Behaviour triggers | ✅ DONE | fear_triggers, anxiety_triggers |
-| Care constraints | ❌ NOT BUILT | |
-| Parent preferences | ❌ NOT BUILT | |
-| Service restrictions | ❌ NOT BUILT | |
-| Comfort limits | ⚠️ PARTIAL | comfort_preferences |
+| Care constraints | ✅ DONE | care_constraints field |
+| Parent preferences | ✅ DONE | parent_preferences field |
+| Service restrictions | ✅ DONE | service_restrictions field |
+| Comfort limits | ✅ DONE | sensitive_areas, carrier_comfort |
 
-**Score: 36%** (2.5/7 items)
+**Score: 100%** (7/7 items - IMPROVED from 36%)
 
 ---
 
