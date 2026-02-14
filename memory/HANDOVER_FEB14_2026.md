@@ -124,20 +124,20 @@
 
 ---
 
-## REMAINING WORK (P1-P2)
+## REMAINING WORK TO 100% MOJO
 
-### P1 - High Priority
+### To reach 100%:
+1. **Life Timeline (67% → 100%)**: Integrate past services/purchases from order history
+2. **Trait Graph service**: Service outcomes → MOJO feedback loop
+3. **Weight history**: Track weight over time (array)
+
+### Other Priorities (P1-P2):
 - [ ] Build TODAY tab (vaccination reminders, birthday countdown)
 - [ ] PICKS auto-refresh after chat turn
-- [ ] Add weight history tracking
-
-### P2 - Medium Priority
 - [ ] Fix `/api/orders` 405 error
 - [ ] Fix markdown rendering in chat
-- [ ] Build Life Timeline (Memory Layer)
-- [ ] Build Trait Graph service
 
-### P3 - Future
+### Future (P3):
 - [ ] Build SERVICES layer
 - [ ] Build LEARN layer
 - [ ] Refactor mira_routes.py monolith
