@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://mira-picks-v2.preview.emergentagent.com
+https://services-inbox-hub.preview.emergentagent.com
 
 ---
 

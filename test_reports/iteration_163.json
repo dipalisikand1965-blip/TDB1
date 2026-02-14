@@ -78,7 +78,7 @@
     "symptom": "Browser tab crashes with 'Target crashed' error when accessing /mira-demo, /mira-demo-original, or /login directly via URL",
     "root_cause": "MiraDemoPage.jsx (3447 lines, ~142KB source) and MiraDemoBackupPage.jsx (5789 lines, ~220KB source) were directly imported instead of lazy loaded, causing the entire 6.8MB JavaScript bundle to be parsed on initial page load, which exceeds browser memory limits",
     "reproduction_steps": [
-      "1. Navigate directly to https://mira-picks-v2.preview.emergentagent.com/mira-demo",
+      "1. Navigate directly to https://services-inbox-hub.preview.emergentagent.com/mira-demo",
       "2. Browser tab crashes before React renders",
       "3. Console shows only 'Download React DevTools' and 'PWA: Service worker registered' before crash"
     ],
