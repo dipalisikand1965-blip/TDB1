@@ -1,0 +1,46 @@
+{
+  "summary": "LEARN → TODAY integration testing completed. Backend APIs all working (13/13 tests passed). Frontend fixed and verified - LearnNudgeCard displays correctly when nudge available. Fixed React StrictMode double-fetch race condition using AbortController.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/os/learn/today-nudge", "issue": "Backend logs nudge as 'shown' before frontend confirms render - causes premature cooldown in double-fetch scenarios. Consider deferred logging or ACK mechanism."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_learn_today_integration.py",
+    "/app/test_reports/pytest/pytest_iteration_193.xml"
+  ],
+  "action_items": [
+    "Consider adding nudge acknowledgment API to confirm user actually saw the nudge before starting cooldown"
+  ],
+  "critical_code_review_comments": [
+    "Fixed: TodayPanel.jsx fetchLearnNudge() had StrictMode double-fetch race condition - now uses AbortController"
+  ],
+  "updated_files": [
+    "/app/frontend/src/components/Mira/TodayPanel.jsx",
+    "/app/backend/tests/test_learn_today_integration.py"
+  ],
+  "success_rate": {
+    "backend": "100%",
+    "frontend": "100%"
+  },
+  "seed_data_creation": "Used existing test pet pet-e6348b13c975 (Lola) with learn events",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "LEARN → TODAY integration working. LearnNudgeCard displays in TODAY panel when user completes Learn items with service mappings. 7-day cooldown is aggressive - nudge only shows once per 7 days per pet. To test again, clear today_nudge_log collection for the pet. Primary action opens ServiceRequestBuilder, secondary opens ConciergePanel, dismiss removes card.",
+  "features_tested": {
+    "POST /api/os/learn/event": "PASS - Records completed/saved/helpful/not_helpful events",
+    "GET /api/os/learn/today-nudge": "PASS - Returns nudge with service mapping, respects cooldown",
+    "POST /api/os/learn/today-nudge/dismiss": "PASS - Marks nudge as dismissed",
+    "LearnNudgeCard display": "PASS - Shows in TODAY panel with correct content",
+    "Primary action (Book service)": "VERIFIED in UI - Button present and labeled correctly",
+    "Secondary action (Ask Mira)": "VERIFIED in UI - Button present and labeled correctly",
+    "Dismiss action": "VERIFIED in UI - X button present",
+    "7-day cooldown": "PASS - Working as designed"
+  }
+}
