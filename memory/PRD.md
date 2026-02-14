@@ -80,10 +80,12 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
   - Status indicator shows: pending → saving → saved
   - "Done" button replaces Save/Cancel buttons
 
-### P1 - NEXT PRIORITY
-- [ ] **Build TODAY Tab** - Time-based reminders from MOJO data
-- [ ] **Add Confidence Scores** - Show data source on derived traits
-- [ ] **Document Upload in MOJO** - In-modal file upload
+### P1 - NEXT PRIORITY (From MOJO Bible Scorecard)
+- [ ] **Document Upload UI in MOJO** - Critical gap (Documents Vault at 11%)
+- [ ] **Health Vault Expansion** - Add vet_details, chronic_conditions, medications, emergency_contacts
+- [ ] **Build TODAY Tab** - Vaccination reminders, grooming cadence, birthday countdown
+- [ ] **Environment Profile** - Add home_type, living_space, family_structure, other_pets
+- [x] ~~**Add Confidence Scores** - Show data source on derived traits~~ ✅ DONE (2026-02-14)
 
 ### P2 - Medium Priority
 - [ ] **OS Tab Content** - Populate content for PICKS, SERVICES, INSIGHTS, LEARN tabs
