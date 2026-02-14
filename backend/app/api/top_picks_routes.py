@@ -1479,13 +1479,16 @@ CONTEXT_MAPPINGS = {
     "walking": {"pillar": "enjoy", "tags": ["leash", "harness", "collar", "poop bags", "walking"]},
 }
 
-@router.post("/top-picks/context-aware")
-async def get_context_aware_picks(
-    pet_id: str,
-    context: str,
-    destination: Optional[str] = None,
+from pydantic import BaseModel
+
+class ContextAwarePicksRequest(BaseModel):
+    pet_id: str
+    context: str
+    destination: Optional[str] = None
     limit: int = 8
-):
+
+@router.post("/top-picks/context-aware")
+async def get_context_aware_picks(request: ContextAwarePicksRequest):
     """
     Get context-aware picks based on conversation topic.
     
@@ -1504,6 +1507,11 @@ async def get_context_aware_picks(
     global db
     if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    pet_id = request.pet_id
+    context = request.context
+    destination = request.destination
+    limit = request.limit
     
     # Get pet data
     pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
