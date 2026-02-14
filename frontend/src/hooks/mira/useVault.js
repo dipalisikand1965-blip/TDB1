@@ -62,8 +62,19 @@ const useVault = () => {
       concierge: null,
       safetyOverride: null,
       missingProfileFields: [],
-      lastUpdated: null
+      lastUpdated: null,
+      conversationContext: null
     });
+  }, []);
+  
+  // Update conversation context (for context-aware picks)
+  const updateConversationContext = useCallback((topic, destination = null) => {
+    console.log(`[PICKS] Updating conversation context: ${topic}${destination ? ` → ${destination}` : ''}`);
+    setMiraPicks(prev => ({
+      ...prev,
+      conversationContext: { topic, destination },
+      hasNew: true // Trigger refresh indicator
+    }));
   }, []);
   
   // Add new picks from Mira's response (legacy)
