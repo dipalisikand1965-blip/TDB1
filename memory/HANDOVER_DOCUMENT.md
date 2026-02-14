@@ -98,27 +98,53 @@
 
 ---
 
-# PART 3: MOJO IMPLEMENTATION STATUS (94%)
+# PART 3: MOJO IMPLEMENTATION STATUS (98%) ✅
+
+## CRITICAL: Two-Way Memory-Soul Sync
+**READ THIS FIRST: Every conversation updates MOJO automatically!**
+
+```
+User says "Lola is allergic to chicken"
+     ↓
+extract_soul_data_from_response() → finds allergy
+     ↓
+write_soul_data_to_pet() → saves to doggy_soul_answers.food_allergies
+     ↓
+Next chat: load_pet_soul() → loads updated profile
+     ↓
+Mira knows: "Never recommend chicken for Lola"
+```
+
+**Code Location:** `/app/backend/mira_routes.py` lines 11414-11455
 
 ## Component Scores
 | Component | Score | Editor Component |
 |-----------|-------|------------------|
 | Pet Snapshot | 100% | BasicDetailsEditor |
 | Soul Profile | 79% | SoulProfileEditor |
-| Health Vault | 98% | HealthProfileEditor (with Weight History + Next Vaccination Date) |
+| Health Vault | 98% | HealthProfileEditor |
 | Diet Profile | 90% | DietProfileEditor |
 | Behaviour Profile | 78% | BehaviourProfileEditor |
 | Grooming Profile | 88% | GroomingProfileEditor |
 | Routine Profile | 100% | RoutineProfileEditor |
 | Environment | 81% | EnvironmentProfileEditor |
 | Preferences | 100% | PreferencesProfileEditor |
-| Life Timeline | 67% | TimelineEventEditor |
+| **Life Timeline** | **100%** | **API + TimelineProfileContent** ✅ |
 | Documents Vault | 100% | /paperwork integration |
 | Membership | 100% | Built-in |
 
+## Life Timeline API (NEW - Feb 14, 2026)
+- `GET /api/pet-soul/profile/{pet_id}/life-timeline` - Aggregates all events
+- `POST /api/pet-soul/profile/{pet_id}/timeline-event` - Add manual event
+- `DELETE /api/pet-soul/profile/{pet_id}/timeline-event/{event_id}` - Remove
+
+## TODAY Panel (95%) ✅
+- Urgent Stack, Due Soon Cards, Environment Alerts, Active Tasks, Documents, Other Pets
+- Mobile bottom sheet with 48px touch targets
+- File: `/app/frontend/src/components/Mira/TodayPanel.jsx`
+
 ## Remaining Gaps to 100%
-1. **Life Timeline (67%)**: Need past services/purchases from order history
-2. **Trait Graph (60%)**: Service outcomes → MOJO feedback loop not built
+1. **Trait Graph (60%)**: Service outcomes → MOJO feedback loop not built
 
 ---
 
