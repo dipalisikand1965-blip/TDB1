@@ -1,6 +1,6 @@
 # MOJO BIBLE SCORECARD
 ## Current Implementation vs. Vision
-### Last Updated: February 14, 2026 (Session 7)
+### Last Updated: February 14, 2026 (Session 8)
 
 ---
 
@@ -11,12 +11,67 @@
 | **MOJO (14 Components)** | 100% | 100% | 0% |
 | **TODAY Layer** | 95% | 100% | 5% |
 | **PICKS Layer** | **100%** ✅ | 100% | **0%** |
-| **SERVICES Layer** | 40% | 100% | 60% |
+| **SERVICES Layer** | **60%** ↑ | 100% | **40%** |
 | **LEARN Layer** | 10% | 100% | 90% |
 | **CONCIERGE Layer** | 30% | 100% | 70% |
-| **OS Operating Doctrine** | 60% | 100% | 40% |
-| **10 Absolute Rules** | 65% | 100% | 35% |
-| **OVERALL** | **90%** | 100% | **10%** |
+| **OS Operating Doctrine** | 65% | 100% | 35% |
+| **10 Absolute Rules** | 70% | 100% | 30% |
+| **OVERALL** | **92%** | 100% | **8%** |
+
+---
+
+## SERVICES: ROAD TO 100% - IN PROGRESS
+
+### Session 8 Progress (Feb 14, 2026)
+
+**✅ COMPLETED:**
+1. **Unified Status Taxonomy** - Created `/app/backend/ticket_status_system.py`
+   - 13 canonical statuses: draft, placed, clarification_needed, options_ready, approval_pending, payment_pending, in_progress, scheduled, shipped, delivered, completed, cancelled, unable
+   - Legacy status mapping (old mira_tickets → canonical)
+   - Status display configuration with colors, icons, labels
+   - Helper functions: `map_legacy_status()`, `is_awaiting_user()`, `is_terminal()`
+
+2. **Services API Routes** - Created `/app/backend/services_routes.py`
+   - `GET /api/os/services/launchers` - Featured service launchers (8 max)
+   - `GET /api/os/services/inbox` - All tickets grouped by status
+   - `GET /api/os/services/awaiting` - "Awaiting You" tickets
+   - `GET /api/os/services/orders` - Order-type tickets with shipping
+   - `GET /api/os/services/watchlist` - For TODAY panel integration
+   - `POST /api/os/services/request` - Create service request
+   - `GET /api/os/services/ticket/{id}` - Ticket detail
+   - `PATCH /api/os/services/ticket/{id}` - User actions
+   - `POST /api/os/services/preference` - Save preferences on completion
+   - `GET /api/os/services/stats` - Dashboard stats
+
+3. **Services Panel Frontend** - Created `/app/frontend/src/components/Mira/ServicesPanel.jsx`
+   - Service Launchers grid (8 services)
+   - "Awaiting You" shelf (the killer UX)
+   - Active Requests with status tabs
+   - Orders section (only if orders exist)
+   - Empty state with guidance
+   - Clean, professional UI (no emojis - icons only)
+
+**🔄 REMAINING (40% gap):**
+- [ ] Request Builder Modal (tap launcher → form)
+- [ ] Full ticket detail view (mobile: list → detail)
+- [ ] User actions (confirm date, approve quote, pay)
+- [ ] Multi-pet task support in UI
+- [ ] Preferences capture on completion
+- [ ] "Awaiting You" notification dot on Services tab
+- [ ] TODAY watchlist integration
+
+### Components Status (Per MOJO Bible Part 4)
+
+| # | Component | Status | Notes |
+|---|-----------|--------|-------|
+| 1 | Service Launchers | ✅ **DONE** | 8 services in grid, static config |
+| 2 | Task Inbox | ✅ **DONE** | Grouped by status tabs |
+| 3 | Task Detail View | ⚠️ PARTIAL | Basic view, needs full implementation |
+| 4 | Multi-pet Tasks | ⚠️ PARTIAL | Backend supports, UI needs work |
+| 5 | Orders + Tracking | ✅ **DONE** | API ready, shipping sub-object |
+| 6 | Undo + Safety UI | ✅ **DONE** | From PICKS implementation |
+| 7 | Approvals & Payments | ⚠️ PARTIAL | API ready, UI flow needed |
+| 8 | Preferences Captured | ⚠️ PARTIAL | API ready, UI prompt needed |
 
 ## PICKS: ROAD TO 100% - COMPLETE ✅
 
