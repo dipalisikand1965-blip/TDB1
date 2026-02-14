@@ -56,6 +56,7 @@ import TraitGraphVisualization from './TraitGraphVisualization';
 // Section configuration with icons and labels
 const PROFILE_SECTIONS = [
   { id: 'soul', icon: Heart, label: 'Soul Profile', color: 'purple', defaultOpen: true },
+  { id: 'learned', icon: Sparkles, label: 'What Mira Learned', color: 'emerald', isSpecial: true },
   { id: 'trait_graph', icon: Brain, label: 'Mira\'s Intelligence', color: 'violet', isSpecial: true },
   { id: 'health', icon: Shield, label: 'Health Vault', color: 'red' },
   { id: 'diet', icon: Apple, label: 'Diet & Food', color: 'orange' },
