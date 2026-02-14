@@ -5105,29 +5105,48 @@ Would you like me to find vets or pet pharmacies near you, or shall I have your 
                                "skin", "allergy", "health", "vet", "doctor", "medicine", "sick", "symptom"]
             user_input_lower = request.input.lower() if request.input else ""
             
-            # Check both current input AND conversation history for advisory context
-            conversation_context = " ".join([
-                msg.get("content", "").lower() 
-                for msg in (request.conversation_history or [])[-3:]  # Last 3 messages
-            ])
-            full_context = user_input_lower + " " + conversation_context
+            # ═══════════════════════════════════════════════════════════════════════════════
+            # FIX: Skip tip cards for PRODUCT queries (leash, collar, toy, etc.)
+            # These should show products, not advisory tip cards
+            # ═══════════════════════════════════════════════════════════════════════════════
+            product_query_keywords = [
+                "leash", "collar", "harness", "toy", "toys", "bowl", "bed", "crate",
+                "carrier", "cage", "kennel", "clothes", "jacket", "sweater", "bandana",
+                "brush", "comb", "nail clipper", "shampoo", "conditioner", "wipes",
+                "poop bags", "treat pouch", "food bowl", "water bowl", "feeder",
+                "tag", "id tag", "gps", "tracker", "mat", "pad", "blanket",
+                "buy", "purchase", "order", "get me", "find me", "show me", "looking for",
+                "where can i get", "where to buy"
+            ]
+            is_product_query = any(kw in user_input_lower for kw in product_query_keywords)
             
-            is_seeking_advice = any(kw in full_context for kw in advisory_keywords)
-            
-            # Also detect food-related follow-ups for meal plan conversations
-            food_words = ["eggs", "chicken", "carrots", "vegetables", "rice", "meat", "fish", 
-                         "breakfast", "lunch", "dinner", "morning", "night", "feed", "eating"]
-            is_food_followup = any(word in user_input_lower for word in food_words) and \
-                              any(kw in conversation_context for kw in ["meal", "food", "diet", "feeding", "eat"])
-            
-            # IMPORTANT: If response has products, this is likely a SHOPPING intent, not advisory
-            # Don't generate tip cards for shopping queries even if conversation history has advisory keywords
-            has_products = len(response_data.get("response", {}).get("products", [])) > 0
-            shopping_keywords = ["buy", "purchase", "order", "get me", "find me", "show me", "cake", "treat", "toy", "food", "product"]
-            is_shopping_intent = has_products and (any(kw in user_input_lower for kw in shopping_keywords) or 
-                                                   len(user_input_lower.split()) <= 3)  # Short queries like "Cake" are shopping
-            
-            should_tip = is_advisory_response and (is_seeking_advice or is_food_followup) and not is_shopping_intent
+            # If this is a product query, do NOT generate tip cards
+            if is_product_query:
+                should_tip = False
+            else:
+                # Check both current input AND conversation history for advisory context
+                conversation_context = " ".join([
+                    msg.get("content", "").lower() 
+                    for msg in (request.conversation_history or [])[-3:]  # Last 3 messages
+                ])
+                full_context = user_input_lower + " " + conversation_context
+                
+                is_seeking_advice = any(kw in full_context for kw in advisory_keywords)
+                
+                # Also detect food-related follow-ups for meal plan conversations
+                food_words = ["eggs", "chicken", "carrots", "vegetables", "rice", "meat", "fish", 
+                             "breakfast", "lunch", "dinner", "morning", "night", "feed", "eating"]
+                is_food_followup = any(word in user_input_lower for word in food_words) and \
+                                  any(kw in conversation_context for kw in ["meal", "food", "diet", "feeding", "eat"])
+                
+                # IMPORTANT: If response has products, this is likely a SHOPPING intent, not advisory
+                # Don't generate tip cards for shopping queries even if conversation history has advisory keywords
+                has_products = len(response_data.get("response", {}).get("products", [])) > 0
+                shopping_keywords = ["buy", "purchase", "order", "get me", "find me", "show me", "cake", "treat", "toy", "food", "product"]
+                is_shopping_intent = has_products and (any(kw in user_input_lower for kw in shopping_keywords) or 
+                                                       len(user_input_lower.split()) <= 3)  # Short queries like "Cake" are shopping
+                
+                should_tip = is_advisory_response and (is_seeking_advice or is_food_followup) and not is_shopping_intent
             
             # Determine tip card type based on USER INPUT primarily (not Mira's response)
             # This prevents Mira's response words from influencing the tip type
