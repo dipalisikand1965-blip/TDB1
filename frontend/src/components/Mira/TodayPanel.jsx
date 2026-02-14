@@ -851,6 +851,12 @@ const TodayPanel = ({
               )}
             </div>
             <div className="header-right">
+              {/* Stale Indicator */}
+              {isStale && (
+                <span className="stale-indicator" data-testid="stale-indicator" title="Data may be outdated">
+                  <AlertCircle className="w-4 h-4" />
+                </span>
+              )}
               <button 
                 className="refresh-btn"
                 onClick={handleRefresh}
