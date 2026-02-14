@@ -2992,33 +2992,12 @@ const MiraDemoPage = () => {
         picksHasNew={miraPicks.hasNew}
       />
       
-      {/* NAVIGATION DOCK - Extracted to NavigationDock component (Legacy - keeping for backward compatibility) */}
-      <NavigationDock
-        inputRef={inputRef}
-        onShowHelp={() => setShowHelpModal(true)}
-        onShowLearn={() => { 
-          setShowLearnModal(true); 
-          fetchLearnVideos('recommended');
-          // Clear the notification when Learn is opened
-          setHasNewVideos(false);
-          setNewVideosCount(0);
-        }}
-        onShowSoul={() => setShowSoulFormModal(true)}
-        hasNewVideos={hasNewVideos}
-        newVideosCount={newVideosCount}
-      />
-      
-      {/* FLOATING ACTION BAR - Extracted to FloatingActionBar component */}
-      <FloatingActionBar
-        isVisible={conversationHistory.length > 0}
-        showPastChats={showPastChats}
-        showInsights={showInsightsPanel}
-        showConcierge={showConciergePanel}
-        onPastChatsClick={() => { loadPastChats(); setShowPastChats(true); }}
-        onInsightsClick={() => setShowInsightsPanel(!showInsightsPanel)}
-        onConciergeClick={() => setShowConciergePanel(!showConciergePanel)}
-        onNewChatClick={startNewSession}
-      />
+      {/* SECONDARY NAVIGATION REMOVED - All functions moved to primary OS layers:
+          - Orders → SERVICES
+          - Past Chats → CONCIERGE
+          - Soul/Enhance Soul → MOJO
+          - Insights → CONCIERGE
+      */}
       
       {/* INSIGHTS PANEL - Lazy loaded */}
       {showInsightsPanel && (
