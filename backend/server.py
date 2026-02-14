@@ -16294,7 +16294,8 @@ app.include_router(finance_router)  # Finance at /api/admin/finance/*
 logger.info("Finance & Reconciliation routes initialized")
 
 # Services Layer (MOJO OS Execution Layer)
-from services_routes import router as services_router
+from services_routes import router as services_router, set_database as set_services_db
+set_services_db(db)
 app.include_router(services_router)  # Services at /api/services/*
 logger.info("Services Layer routes initialized")
 
