@@ -1,6 +1,135 @@
 # LEARN OS Layer - Complete Specification
 
+## The One-Line Role
+
+**LEARN = understand + prepare (2-minute clarity)**
+
+LEARN works as the confidence layer that sits between identity (MOJO) and execution (SERVICES). It doesn't run separately. It borrows context from MOJO, routes action into SERVICES, shows up as nudges in TODAY, improves PICKs over time, and hands off to CONCIERGE when things are messy.
+
+### The One-Line Role Map
+
+| Layer | Role |
+|-------|------|
+| **MOJO** | who the pet is (defaults) |
+| **TODAY** | what matters now (urgency) |
+| **PICKS** | what to do next (curation) |
+| **SERVICES** | make it happen (tickets) |
+| **LEARN** | understand + prepare (2-minute clarity) |
+| **CONCIERGE** | judgment + negotiation + recovery (human) |
+
+### The Doctrine Line (Use This Verbatim)
+
+> **"MOJO decides what's relevant. LEARN builds confidence. SERVICES gets it done. TODAY keeps you on track. PICKS makes it delightful. CONCIERGE handles the hard parts."**
+
+---
+
+## OS Layer Correlation Map
+
+### 1) MOJO → LEARN (Personalisation)
+
+MOJO supplies the inputs that decide what LEARN shows first.
+
+**MOJO signals used by LEARN:**
+- Life stage (puppy/adult/senior)
+- Coat type / size band / breed tags (for grooming/handling)
+- Explicit sensitivities (anxiety, allergies, handling notes)
+- Routine + environment (society, travel frequency)
+- Documents (travel/boarding readiness)
+
+**Rule:** If MOJO knows it, LEARN doesn't ask again. It just adapts.
+
+### 2) LEARN → SERVICES (Action)
+
+Every Learn item ends with **"Let Mira do it"**.
+
+That button:
+- Opens `ServiceRequestBuilder`
+- Pre-fills from MOJO
+- Attaches the Learn context into the ticket:
+  - "User viewed: Boarding checklist"
+  - "Key constraints: anxious + prefers morning pickup"
+
+**This is the main conversion loop:** Learn reduces uncertainty, Services moves hands.
+
+### 3) TODAY ↔ LEARN (Nudges + Prevention)
+
+TODAY uses Learn as the "what to do" layer behind alerts.
+
+**TODAY → LEARN:**
+- Seasonal alert ("tick season") deep-links to the 2-minute guide
+- Due soon ("grooming due") links to prep guide
+
+**LEARN → TODAY:**
+- If a user saves/completes a guide, Today can show one relevant nudge within 7 days
+- Example: completed "fireworks routine" → Today shows "Want me to arrange calming kit delivery?"
+
+**Rule:** Today is not a content feed. Learn is where content lives.
+
+### 4) PICKS ↔ LEARN (Taste + Education)
+
+Picks is curation. Learn is capability.
+
+**PICKS → LEARN:**
+- Pick card can have a "Why this?" link to a Learn micro-guide
+- Example: "Calming chew" pick → "Safe chew rules in 90 seconds"
+
+**LEARN → PICKS:**
+- What the user saves/completes improves future Picks ranking:
+  - User keeps saving grooming content → grooming picks become more prominent
+  - User marks "not helpful" → stop showing that style
+
+**Rule:** Picks inspires; Learn explains; Services executes.
+
+### 5) CONCIERGE ↔ LEARN (Human Judgement + Safer Guidance)
+
+Learn handles the common case. Concierge handles complexity.
+
+**LEARN → CONCIERGE:**
+- Every Learn item has **"Ask Mira"**
+- It passes context so the concierge doesn't re-ask basics:
+  - The guide title
+  - What step the user is stuck on
+  - Pet profile tags
+
+**CONCIERGE → LEARN:**
+- If concierge sees repeated confusion, they can flag:
+  - "This needs a Tiny Guide"
+  - "Add an escalation block"
+  - "Update checklist"
+- This is how the library improves.
+
+### The Single Pipeline
+
+Everything still becomes a ticket when action is needed:
+
+```
+MOJO (defaults) → LEARN (clarity) → SERVICES (ticket) → ADMIN → updates 
+    → TODAY (watchlist) → outcome → MOJO/Soul grows → PICKS improves
+```
+
+### Three Real Flows
+
+**A) Grooming Due**
+1. Today: "Grooming due in 5 days" → Learn: "Prep for anxious grooming"
+2. "Let Mira do it": opens grooming request prefilled → Services: ticket
+3. Today: shows "Awaiting you: confirm slot"
+4. Completed: saves preferred groomer/time → improves Picks + future Learn relevance
+
+**B) Fireworks Season**
+1. Today: Fireworks alert → Learn: routine guide
+2. "Ask Mira": concierge plans a kit + quiet room + walk timing
+3. Services: ticket for calming kit delivery / trainer consult if needed
+
+**C) Boarding Planning**
+1. Picks: "Top home boarding option" → "Boarding checklist" (Learn)
+2. "Let Mira do it": Services ticket with doc requirements + pickup + trial night
+3. Today: watchlist tracks confirmations + schedule
+
+---
+
 ## What LEARN Is
+
+LEARN = a curated library of tiny, high-trust lessons that always end in one of three outcomes:
 
 LEARN = a curated library of tiny, high-trust lessons that always end in one of three outcomes:
 
