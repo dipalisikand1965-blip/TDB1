@@ -1189,7 +1189,8 @@ const MiraDemoPage = () => {
   // E018 & E019: Fetch proactive alerts when pet changes
   useEffect(() => {
     const fetchProactiveAlerts = async () => {
-      if (!pet.id || pet.id === 'demo') return;
+      // Guard: Skip if still loading pets or using demo pet
+      if (isLoadingPets || !pet.id || pet.id.startsWith('demo') || pet.id.startsWith('pet-')) return;
       
       try {
         // Fetch celebrations, health reminders, health vault status, weather, bundles, AND new proactive alerts
