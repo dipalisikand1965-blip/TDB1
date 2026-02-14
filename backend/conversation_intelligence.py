@@ -666,24 +666,27 @@ def should_generate_tip_card(
     if is_meal_context and any(kw in input_lower for kw in meal_continuation_keywords):
         return True, "meal_plan"
     
-    # Travel tips
+    # For remaining checks, use current input primarily
+    full_context = input_lower + " " + history_text
+    
+    # Travel tips - must be in current input
     travel_keywords = [
         "packing list", "what to pack", "travel checklist", "travel tips",
         "prepare for trip", "tips for traveling", "how to travel with"
     ]
-    if any(kw in full_context for kw in travel_keywords):
+    if any(kw in input_lower for kw in travel_keywords):
         return True, "travel_tips"
     
-    # Health advice
+    # Health advice - must be in current input
     health_keywords = [
         "health tips", "preventive care", "keep healthy", "wellness tips",
         "care routine", "daily care", "health advice", "allergies", "allergy",
         "what to avoid", "dangerous", "toxic", "household items"
     ]
-    if any(kw in full_context for kw in health_keywords):
+    if any(kw in input_lower for kw in health_keywords):
         return True, "health_advice"
     
-    # Training tips - expanded keywords
+    # Training tips - must be in current input (but allow "leash training" specifically)
     training_keywords = [
         "training tips", "how to train", "teach him", "teach her",
         "behavior tips", "stop barking", "stop biting", "potty training",
@@ -691,25 +694,26 @@ def should_generate_tip_card(
         "obedience", "basic commands", "leash training", "crate training",
         "barking at strangers", "aggressive", "jumping on people"
     ]
-    if any(kw in full_context for kw in training_keywords):
+    if any(kw in input_lower for kw in training_keywords):
         return True, "training_tips"
     
     # Calming / Anxiety tips - CHECK BEFORE festival (more specific)
     calming_keywords = [
         "calming", "calm", "soothe", "anxiety", "anxious", "scared", "stress",
         "nervous", "thunder", "loud noise", "afraid", "panic", "trembling",
-        "calming space", "safe space", "comfort", "comfort zone"
+        "calming space", "safe space", "comfort zone"
     ]
-    if any(kw in full_context for kw in calming_keywords):
+    # Note: Removed generic "comfort" to avoid false matches
+    if any(kw in input_lower for kw in calming_keywords):
         return True, "calming_tips"
     
     # Festival/Event safety tips
     festival_keywords = [
         "diwali", "holi", "christmas", "new year", "festival", "fireworks",
-        "crackers", "loud noise", "safely include", "safe celebration",
+        "crackers", "safely include", "safe celebration",
         "pet safe", "keep safe during"
     ]
-    if any(kw in full_context for kw in festival_keywords):
+    if any(kw in input_lower for kw in festival_keywords):
         return True, "festival_safety"
     
     # Celebration/Gotcha day tips
@@ -717,7 +721,7 @@ def should_generate_tip_card(
         "gotcha day", "gotcha", "adoption day", "how to celebrate",
         "what is gotcha", "celebrate adoption", "anniversary with pet"
     ]
-    if any(kw in full_context for kw in celebration_keywords):
+    if any(kw in input_lower for kw in celebration_keywords):
         return True, "celebration_tips"
     
     # New pet / Adoption / Preparation tips - EXPANDED
@@ -726,8 +730,10 @@ def should_generate_tip_card(
         "what do i need to know", "new dog owner", "just got a dog",
         "first time with", "puppy care", "kitten care",
         "before the dog arrives", "before bringing home", "set up at home",
-        "prepare for", "getting ready for", "what do we need", "checklist",
-        "things to buy", "essentials for", "must-have", "prepare home"
+        "prepare for", "getting ready for", "what do we need",
+        "essentials for", "must-have", "prepare home"
+    ]
+    # Note: Removed generic "checklist" and "things to buy" - too product-y
     ]
     if any(kw in full_context for kw in adoption_keywords):
         return True, "new_pet_guide"
