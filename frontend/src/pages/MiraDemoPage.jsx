@@ -3201,6 +3201,7 @@ const MiraDemoPage = () => {
             isOpen={showTestScenarios}
             onClose={() => setShowTestScenarios(false)}
             activeScenario={activeScenario}
+            petName={pet?.name || 'your pet'}
             onScenarioClick={(id, query) => {
               setActiveScenario(id);
               handleQuickReply(query);
