@@ -16134,7 +16134,7 @@ async def get_personalization_stats(pet_id: str):
     # ═══════════════════════════════════════════════════════════════════
     # DOGGY SOUL ANSWERS - Deep personalization data
     # ═══════════════════════════════════════════════════════════════════
-    doggy_soul = pet.get("doggy_soul_answers") or {}
+    # doggy_soul already defined above for score calculation
     
     # Favorite treats
     if doggy_soul.get("favorite_treats"):
