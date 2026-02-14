@@ -359,6 +359,54 @@ const ServiceRequestBuilder = ({
         {/* Form */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 space-y-5">
           
+          {/* LEARN Context Banner - Shows when coming from "Let Mira do it" */}
+          {hasLearnContext && learnContext?.source_item && (
+            <div 
+              className="learn-context-banner"
+              data-testid="service-learn-context"
+              style={{
+                background: 'rgba(139, 92, 246, 0.1)',
+                border: '1px solid rgba(139, 92, 246, 0.2)',
+                borderRadius: '10px',
+                padding: '12px',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '10px'
+              }}
+            >
+              <BookOpen className="w-4 h-4 text-purple-400 mt-0.5 flex-shrink-0" />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ 
+                  fontSize: '11px', 
+                  color: '#a78bfa', 
+                  margin: '0 0 4px 0',
+                  fontWeight: 500,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  Based on your reading
+                </p>
+                <p style={{ 
+                  fontSize: '13px', 
+                  color: 'white', 
+                  margin: 0,
+                  fontWeight: 500
+                }}>
+                  {learnContext.source_item.title}
+                </p>
+                {learnContext.context_note && (
+                  <p style={{ 
+                    fontSize: '12px', 
+                    color: 'rgba(255,255,255,0.6)', 
+                    margin: '4px 0 0 0'
+                  }}>
+                    {learnContext.context_note}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+          
           {/* Pet Selection */}
           <div>
             <label className="text-sm font-medium text-slate-300 mb-2 block">Which pet(s)?</label>
