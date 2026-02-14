@@ -566,7 +566,14 @@ const LearnPanel = ({
       )}
       
       {/* Content Area */}
-      <div className="learn-content-area">
+      <div className="learn-content-area" style={{
+        flex: 1,
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        padding: '0 16px 24px',
+        position: 'relative',
+        zIndex: 1
+      }}>
         {isLoading ? (
           <div className="learn-loading">
             <div className="learn-loading-spinner" />
