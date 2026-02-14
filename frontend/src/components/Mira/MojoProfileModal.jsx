@@ -1099,13 +1099,28 @@ const TimelineProfileContent = memo(({ pet }) => {
     });
   }
   
-  // Add other timeline events
+  // Add other timeline events with proper icons
+  const eventIcons = {
+    milestone: '🌟',
+    medical: '🏥',
+    adventure: '🎒',
+    training: '🎓',
+    birthday: '🎂',
+    adoption: '🏠',
+    grooming: '✨',
+    vaccination: '💉',
+    travel: '✈️',
+    achievement: '🏆',
+    other: '📍'
+  };
+  
   timeline.forEach(event => {
     timelineItems.push({
-      icon: event.icon || '📍',
+      icon: eventIcons[event.type] || event.icon || '📍',
       title: event.title || event.name,
       date: event.date,
-      type: event.type || 'event'
+      type: event.type || 'event',
+      notes: event.notes
     });
   });
   
