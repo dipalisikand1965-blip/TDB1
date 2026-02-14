@@ -728,7 +728,7 @@ const TodayPanel = ({
   
   useEffect(() => {
     const fetchWatchlist = async () => {
-      // Skip if not open, no apiUrl, or no valid pet
+      // Skip if not open or no apiUrl
       if (!isOpen || !apiUrl) return;
       
       // Skip for demo pets - they don't have real tickets
@@ -743,15 +743,18 @@ const TodayPanel = ({
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
         
-        // Use the unified watchlist endpoint from services_routes.py
-        const response = await fetch(
-          `${apiUrl}/api/os/services/watchlist?pet_id=${pet.id}`,
-          { headers }
-        );
+        // Fetch watchlist - optionally filter by pet
+        // If pet filter returns empty, also try without pet filter to get all user's tickets
+        let url = `${apiUrl}/api/os/services/watchlist`;
+        if (pet?.id && !pet.id.startsWith('demo')) {
+          url += `?pet_id=${pet.id}`;
+        }
+        
+        const response = await fetch(url, { headers });
         
         if (response.ok) {
           const data = await response.json();
-          console.log('[TODAY] Watchlist fetched:', data.count, 'items');
+          console.log('[TODAY] Watchlist fetched:', data.count, 'items for pet:', pet.id);
           
           // Set watchlist items directly from API (already enriched)
           setWatchlist(data.watchlist || []);
