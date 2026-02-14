@@ -37,7 +37,7 @@ from ticket_status_system import (
 )
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/services", tags=["services"])
+router = APIRouter(prefix="/api/os/services", tags=["services-os"])
 
 # Database connection (will be set from server.py)
 _db = None
