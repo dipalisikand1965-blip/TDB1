@@ -3542,15 +3542,35 @@ const MiraDemoPage = () => {
           <div className="w-full max-w-2xl h-[80vh] bg-slate-900/95 rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
             <ServicesPanel
               selectedPet={pet}
+              allPets={allPets}
               token={token}
               onClose={() => setShowServicesPanel(false)}
               onTicketSelect={(ticket) => {
                 console.log('[SERVICES] Ticket selected:', ticket);
-                // TODO: Open ticket detail view
+              }}
+              onOpenRequestBuilder={(service) => {
+                console.log('[SERVICES] Open request builder for:', service);
+                setRequestBuilderState({ isOpen: true, service });
               }}
             />
           </div>
         </div>
+      )}
+      
+      {/* SERVICE REQUEST BUILDER - New modal for creating service requests */}
+      {requestBuilderState.isOpen && (
+        <ServiceRequestBuilder
+          isOpen={requestBuilderState.isOpen}
+          service={requestBuilderState.service}
+          currentPet={pet}
+          allPets={allPets}
+          token={token}
+          onClose={() => setRequestBuilderState({ isOpen: false, service: null })}
+          onSuccess={(data) => {
+            console.log('[REQUEST BUILDER] Request created:', data);
+            // Refresh services panel if open
+          }}
+        />
       )}
       
       {/* SOUL FORM MODAL - Lazy loaded */}
