@@ -35,7 +35,7 @@ import {
   GraduationCap, Scissors, Calendar, FileText, Clock, Settings,
   Award, Sparkles, Camera, Edit2, RefreshCw, AlertCircle,
   User, MapPin, Cake, Scale, ArrowLeft, Loader2, Check,
-  Crown, Star, Gift, Wallet, Plus, Pencil
+  Crown, Star, Gift, Wallet, Plus, Pencil, Home
 } from 'lucide-react';
 import hapticFeedback from '../../utils/haptic';
 import {
