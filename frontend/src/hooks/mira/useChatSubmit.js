@@ -884,6 +884,50 @@ const useChatSubmit = (config) => {
             timestamp: new Date().toISOString()
           });
         }
+        
+        // 6. CONVERSATION CONTEXT FOR PICKS - Extract topic/destination for context-aware picks
+        if (osContext.conversation_context?.topic || osContext.picks_context) {
+          const picksContext = osContext.picks_context || osContext.conversation_context;
+          console.log('[MIRA OS] Picks context:', picksContext);
+          setMiraPicks(prev => ({
+            ...prev,
+            conversationContext: {
+              topic: picksContext.topic || picksContext.subject,
+              destination: picksContext.destination || picksContext.location
+            }
+          }));
+        }
+      }
+      
+      // ═══════════════════════════════════════════════════════════════════════════
+      // CONVERSATION CONTEXT EXTRACTION - For context-aware PICKS
+      // Detect travel destinations, activities, etc. from user message
+      // ═══════════════════════════════════════════════════════════════════════════
+      const travelDestinations = ['goa', 'mumbai', 'bangalore', 'delhi', 'himachal', 'manali', 'kerala', 'rajasthan', 'pondicherry', 'lonavala', 'ooty', 'shimla', 'darjeeling', 'udaipur', 'jaipur'];
+      const activityKeywords = ['beach', 'mountain', 'trip', 'vacation', 'hotel', 'travel', 'grooming', 'birthday', 'party', 'training'];
+      
+      const messageLower = (inputQuery || query || '').toLowerCase();
+      
+      // Check for destinations
+      const foundDestination = travelDestinations.find(dest => messageLower.includes(dest));
+      // Check for activities
+      const foundActivity = activityKeywords.find(act => messageLower.includes(act));
+      
+      if (foundDestination || foundActivity) {
+        const contextTopic = foundDestination 
+          ? `${foundActivity || 'trip'} to ${foundDestination}` 
+          : foundActivity;
+        
+        console.log(`[PICKS CONTEXT] Detected: ${contextTopic}${foundDestination ? ` (destination: ${foundDestination})` : ''}`);
+        
+        setMiraPicks(prev => ({
+          ...prev,
+          conversationContext: {
+            topic: contextTopic,
+            destination: foundDestination || null
+          },
+          hasNew: true
+        }));
       }
       
       const newQuickReplies = generateQuickReplies({
