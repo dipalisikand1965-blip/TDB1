@@ -60,6 +60,7 @@ import PetOSNavigation from '../components/Mira/PetOSNavigation';
 import WeatherCard from '../components/Mira/WeatherCard';
 import WhyForPetBadge from '../components/Mira/WhyForPetBadge';
 import ServicesPanel from '../components/Mira/ServicesPanel';
+import ServiceRequestBuilder from '../components/Mira/ServiceRequestBuilder';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LAZY LOADED COMPONENTS (Performance Optimization)
