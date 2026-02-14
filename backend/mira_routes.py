@@ -2575,14 +2575,15 @@ async def understand_with_llm(
             "concierge_reason": "API key not configured"
         }
     
-    # Build pet context string with breed intelligence
+    # Build pet context string - PET FIRST, BREED SECOND doctrine
     pet_info = ""
     breed_context = ""
     
     if pet_context:
         breed_name = pet_context.get('breed', '')
+        pet_name = pet_context.get('name', 'Your pet')
         
-        # Get breed-specific knowledge
+        # Get breed-specific knowledge (but use it SECONDARY, not primary)
         if breed_name:
             breed_context = format_breed_context_for_llm(breed_name)
         
@@ -2591,6 +2592,8 @@ async def understand_with_llm(
         allergies = pet_context.get('allergies', []) or []
         health_conditions = pet_context.get('health_conditions', []) or []
         preferences = pet_context.get('favorites', []) or []
+        traits = pet_context.get('traits', []) or []
+        learned_facts = pet_context.get('learned_facts', []) or []
         
         # Determine what's missing
         missing_data = []
@@ -2603,20 +2606,32 @@ async def understand_with_llm(
         
         profile_status = "COMPLETE" if not missing_data else f"INCOMPLETE - missing: {', '.join(missing_data)}"
         
+        # Build PET-FIRST context (individual pet data BEFORE breed data)
         pet_info = f"""
-PET CONTEXT:
-- Name: {pet_context.get('name', 'Your pet')}
-- Breed: {pet_context.get('breed', 'Unknown')}
-- Age: {pet_context.get('age', 'Unknown')}
-- Traits: {', '.join(pet_context.get('traits', []) or ['Not specified'])}
-- Sensitivities: {', '.join(sensitivities) or 'None known'}
-- Allergies: {', '.join(allergies) or 'None specified - ASK if relevant'}
-- Favorites: {', '.join(preferences) or 'Not specified'}
-- Profile Status: {profile_status}
+═══════════════════════════════════════════════════════════
+🐾 THIS PET (USE THIS FIRST - NOT BREED GENERALIZATIONS):
+═══════════════════════════════════════════════════════════
+Name: {pet_name}
+Age: {pet_context.get('age', 'Unknown')}
+What we KNOW about {pet_name} specifically:
+- Personality traits: {', '.join(traits) if traits else 'Still learning about them'}
+- Food sensitivities: {', '.join(sensitivities) if sensitivities else 'None known yet'}
+- Known allergies: {', '.join(allergies) if allergies else 'None specified'}
+- Favorites: {', '.join(preferences) if preferences else 'Still discovering'}
+- Learned facts: {', '.join([f.get('content', '') for f in learned_facts[:3]]) if learned_facts else 'None yet'}
+- Profile completeness: {profile_status}
 
-IMPORTANT: If profile is INCOMPLETE and you need allergy/health info to answer safely, ASK the parent - do NOT assume from breed.
+⚠️ CRITICAL RULE: Always talk about {pet_name} as an INDIVIDUAL first.
+DO NOT say "As a {breed_name}..." or "{breed_name}s are typically..."
+Instead say "From what I know about {pet_name}..." or "{pet_name} loves/prefers..."
 
-{breed_context}
+═══════════════════════════════════════════════════════════
+SECONDARY REFERENCE (Use ONLY when specifically relevant):
+═══════════════════════════════════════════════════════════
+Breed: {breed_name or 'Unknown'}
+{breed_context if breed_context else '(No breed-specific data)'}
+
+REMINDER: Breed info is BACKGROUND context only. Lead with {pet_name}'s individual profile above.
 """
     
     # Time context
