@@ -1559,11 +1559,12 @@ const MojoProfileModal = ({
         // Process member profile
         if (memberResponse?.ok) {
           const memberData = await memberResponse.json();
-          console.log('[MOJO] Member profile loaded:', memberData.name);
+          console.log('[MOJO] Member profile loaded:', memberData.name, 'Points:', memberData.loyalty_points);
           setMembershipData({
             tier: memberData.membership_tier,
             expires: memberData.membership_expires,
-            points: memberData.loyalty_points || memberData.paw_points
+            paw_points: memberData.loyalty_points || memberData.paw_points || 0,
+            pet_pass_number: `TDC-${(memberData.id || '').slice(-6).toUpperCase()}`
           });
           
           // Get badges from member profile
