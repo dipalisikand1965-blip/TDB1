@@ -3607,7 +3607,7 @@ const MiraDemoPage = () => {
               // Handler for LEARN nudge → ConciergePanel
               setShowTodayPanel(false);
               setPendingConciergeContext(context);
-              setShowConcierge(true);
+              setShowConciergeHome(true);
             }}
           />
         </Suspense>
