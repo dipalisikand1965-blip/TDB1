@@ -957,6 +957,17 @@ const PersonalizedPicksPanel = ({
                       </>
                     )}
                   </p>
+                  {/* Why these picks - expandable */}
+                  {enginePillar && (
+                    <button 
+                      onClick={() => setShowWhyPicks(!showWhyPicks)}
+                      className="mt-1 text-[10px] text-purple-300/70 hover:text-purple-300 flex items-center gap-1 transition-colors"
+                    >
+                      <Info className="w-2.5 h-2.5" />
+                      Why these picks?
+                      <ChevronDown className={`w-2.5 h-2.5 transition-transform ${showWhyPicks ? 'rotate-180' : ''}`} />
+                    </button>
+                  )}
                 </div>
               </div>
               
