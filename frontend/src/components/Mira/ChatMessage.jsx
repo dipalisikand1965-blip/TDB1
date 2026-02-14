@@ -1003,8 +1003,8 @@ const MiraMessageBody = ({
 }) => {
   const { mainText, questionText } = splitMessageWithQuestion(msg.content);
   
-  // Check if message mentions concierge handoff
-  const showInlineConcierge = shouldShowConciergeCard(msg.content) || msg.showConciergeCard;
+  // REMOVED: InlineConciergeCard - Concierge is now only accessible via top bar
+  // This keeps the chat clean and prevents multiple entry points
   
   return (
     <div className="mp-card-body">
@@ -1022,17 +1022,9 @@ const MiraMessageBody = ({
         </div>
       )}
       
-      {/* Inline Concierge Help Card - shows when Mira mentions connecting to concierge */}
-      {showInlineConcierge && (
-        <InlineConciergeCard 
-          pet={pet}
-          onChatHandoff={onEngageConcierge}
-          context={msg.conciergeContext}
-        />
-      )}
+      {/* REMOVED: InlineConciergeCard - Users tap C° icon in header to reach Concierge */}
       
-      {/* Products Grid */}
-      <ProductsGrid msg={msg} pet={pet} hapticFeedback={hapticFeedback} />
+      {/* REMOVED: ProductsGrid - Picks now only in top bar PICKS panel */}
       
       {/* Nearby Places */}
       <NearbyPlaces msg={msg} />
