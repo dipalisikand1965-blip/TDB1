@@ -72,6 +72,45 @@ async def get_current_user_from_token(authorization: str = Header(None)):
 
 # ==================== ORDERS API ====================
 
+@orders_router.get("/orders")
+async def get_orders(
+    limit: int = 50,
+    status: Optional[str] = None,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get orders - public endpoint for Services integration.
+    Returns orders for the authenticated user, or recent orders if admin.
+    """
+    if db is None:
+        return {"orders": [], "count": 0}
+    
+    query = {}
+    
+    # If authenticated, filter by user
+    if authorization and authorization.startswith("Bearer "):
+        try:
+            token = authorization.split(" ")[1]
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            email = payload.get("sub")
+            role = payload.get("role", "user")
+            
+            if email and role != "admin":
+                query["customer.email"] = email
+        except:
+            pass
+    
+    if status:
+        query["status"] = status
+    
+    try:
+        orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+        return {"orders": orders, "count": len(orders)}
+    except Exception as e:
+        logger.error(f"Error fetching orders: {e}")
+        return {"orders": [], "count": 0, "error": str(e)}
+
+
 @orders_router.get("/orders/my-orders")
 async def get_my_orders(current_user: dict = Depends(get_current_user_from_token)):
     """Get orders for the logged-in user"""
