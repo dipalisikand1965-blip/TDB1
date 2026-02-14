@@ -1456,8 +1456,8 @@ const todayPanelStyles = `
 }
 
 .card-chevron {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border-radius: 8px;
   background: transparent;
   border: none;
@@ -1482,7 +1482,10 @@ const todayPanelStyles = `
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 12px 12px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
   transition: color 0.2s;
 }
 
