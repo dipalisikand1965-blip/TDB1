@@ -177,11 +177,23 @@ const FamilyDashboard = ({
   };
 
   // Calculate Soul completeness for a pet
+  // FIXED: Use overall_score from API instead of counting answers
+  // This ensures consistency with MOJO modal and other displays
   const getSoulCompleteness = (pet) => {
+    // Prefer overall_score from API (most accurate)
+    if (pet.overall_score !== undefined && pet.overall_score !== null) {
+      return Math.round(pet.overall_score);
+    }
+    
+    // Fallback: calculate from doggy_soul_answers if no overall_score
     const soulAnswers = pet.doggy_soul_answers || {};
-    const totalQuestions = 10;
-    const answeredQuestions = Object.keys(soulAnswers).length;
-    return Math.round((answeredQuestions / totalQuestions) * 100);
+    const totalQuestions = 50; // Actual total questions per MOJO Bible
+    const answeredQuestions = Object.keys(soulAnswers).filter(k => 
+      soulAnswers[k] !== null && 
+      soulAnswers[k] !== '' && 
+      soulAnswers[k] !== undefined
+    ).length;
+    return Math.min(100, Math.round((answeredQuestions / totalQuestions) * 100));
   };
 
   // Get persona display
