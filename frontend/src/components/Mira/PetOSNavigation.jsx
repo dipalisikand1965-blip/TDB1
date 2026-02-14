@@ -3,12 +3,11 @@
  * ====================
  * The Pet Operating System Navigation Bar
  * 
- * 7 OS LAYERS:
+ * 6 OS LAYERS:
  * - MOJO = Identity Layer (Pet Profile - ALWAYS FIRST)
  * - TODAY = Time Layer
  * - PICKS = Intelligence Layer
  * - SERVICES = Action Layer
- * - INSIGHTS = Pattern Layer
  * - LEARN = Knowledge Layer
  * - CONCIERGE = Human Layer
  * 
