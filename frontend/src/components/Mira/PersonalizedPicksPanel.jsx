@@ -133,7 +133,7 @@ const ExpandablePickCard = ({
                 : 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:opacity-90'
             }`}
           >
-            {isSelected ? '✓ Added' : 'Request'}
+            {isSelected ? '✓ Added' : (pick.cta || 'Request')}
           </button>
         </div>
         
