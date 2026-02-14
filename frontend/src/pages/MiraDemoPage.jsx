@@ -2414,18 +2414,19 @@ const MiraDemoPage = () => {
   // Handle quick reply
   const handleQuickReply = useCallback((replyValue, skipVoice = false) => {
     // ═══════════════════════════════════════════════════════════════════
-    // VOICE SYNC FIX: Cancel any pending/playing voice before new action
-    // This prevents overlap when tiles are clicked rapidly
+    // VOICE SYNC: Cancel any CURRENT voice before new action
+    // But DON'T skip voice for the upcoming response - let Mira speak!
     // ═══════════════════════════════════════════════════════════════════
     if (voiceTimeoutRef.current) {
       clearTimeout(voiceTimeoutRef.current);
       voiceTimeoutRef.current = null;
     }
-    stopSpeaking();
+    stopSpeaking(); // Stop current voice, but don't skip next
     
-    // Mark that the next response should skip voice (tile was clicked)
-    // Using useVoice hook's skipNextVoice function
-    skipNextVoice();
+    // Only skip next voice if explicitly requested (not for quick tabs)
+    if (skipVoice) {
+      skipNextVoice();
+    }
     
     // HAPTIC: Chip tap
     hapticFeedback.chipTap();
