@@ -1590,6 +1590,7 @@ export default {
   GroomingProfileEditor,
   RoutineProfileEditor,
   PreferencesProfileEditor,
+  EnvironmentProfileEditor,
   TimelineEventEditor,
   BasicDetailsEditor,
   editorStyles
