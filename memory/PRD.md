@@ -42,6 +42,7 @@
 - **Removed NavigationDock component** from MiraDemoPage.jsx
 - **Removed FloatingActionBar component** from MiraDemoPage.jsx
 - **Removed "Enhance Soul" and "Past Chats" buttons** from WelcomeHero.jsx
+- **Removed duplicate weather card** from WelcomeHero (was showing in feature showcase)
 - Functions consolidated into primary OS layers:
   - **Orders** → Available in SERVICES panel (already present)
   - **Past Chats** → Available in CONCIERGE "Recent Conversations" section
@@ -86,8 +87,44 @@
   3. Admin/user reviews and confirms insights
   4. Confirmed insights added to pet's MOJO profile
 
+### P1 UI Fixes ✅
+**Goal:** Fix user-reported UI issues
+
+**What was fixed:**
+
+#### A) New Chat Button Added
+- Added `MessageSquarePlus` icon button to ChatInputBar
+- Shows when `hasConversation` is true
+- Calls `onNewChat` (startNewSession) to begin new conversation
+- Purple gradient styling with hover effects
+
+#### B) Close Buttons Added
+- **LearnPanel**: Added X close button next to saved button in header
+- All major panels now have consistent close functionality
+
+#### C) CONCIERGE Messaging Updated
+- Header now shows: **"Anything. Anytime. Anywhere."**
+- Subtext: *"From grooming to travel, vet visits to birthday parties — your Concierge® handles it all."*
+- Placeholder: "What can we help with today?"
+
+#### D) "What Mira Learned" Section in MOJO
+- **New section added to MojoProfileModal** showing learned facts from conversations
+- Groups facts by category (fears, loves, anxiety, behavior, preferences, health)
+- Shows pending insights count with "Review in Admin" badge
+- Displays source attribution: "Learned from your conversations with Concierge®"
+- Completeness calculation based on facts count
+
+#### E) Duplicate Weather Card Removed
+- Removed weather card from WelcomeHero feature showcase area
+- Weather now only shows in the info cards section (one instance)
+
 **Files Modified:**
 - `/app/backend/routes/concierge_os_routes.py` - Added insight extraction and storage
+- `/app/frontend/src/components/Mira/ChatInputBar.jsx` - Added New Chat button
+- `/app/frontend/src/components/Mira/LearnPanel.jsx` - Added close button
+- `/app/frontend/src/components/Mira/ConciergeHomePanel.jsx` - Updated messaging
+- `/app/frontend/src/components/Mira/MojoProfileModal.jsx` - Added LearnedFactsContent section
+- `/app/frontend/src/components/Mira/WelcomeHero.jsx` - Removed duplicate weather card
 
 ---
 
