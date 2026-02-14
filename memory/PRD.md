@@ -25,7 +25,7 @@
 | Life Timeline | 100% | ✅ API aggregates orders, tickets, health |
 | Membership | 100% | ✅ Pet Life Pass card in MOJO modal |
 | Documents Vault | 100% | ✅ Integrated with /paperwork |
-| **Trait Graph** | **100%** | ✅ **NEW - Service/Purchase → MOJO feedback loop** |
+| **Trait Graph** | **100%** | ✅ **NEW - Service/Purchase → MOJO + UI Visualization** |
 | Soul Completion | 100% | ✅ Consistent scoring everywhere |
 | **TODAY** | 95% | ✅ Full Time Layer per MOJO Bible |
 | PICKS | 45% | ⚠️ No auto-refresh on chat turn |
