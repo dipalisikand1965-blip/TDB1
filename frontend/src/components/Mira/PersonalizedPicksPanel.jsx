@@ -725,7 +725,10 @@ const PersonalizedPicksPanel = ({
   const [selectedProduct, setSelectedProduct] = useState(null); // For product detail modal (fallback)
   const [selectedConcierge, setSelectedConcierge] = useState(null); // For concierge detail modal (fallback)
   const [isSending, setIsSending] = useState(false); // Prevent double submission
+  const [undoToast, setUndoToast] = useState(null); // { item, timeout } for 5-second undo
+  const [taskStatuses, setTaskStatuses] = useState({}); // { pickId: 'scheduled' | 'in_progress' | 'requested' }
   const scrollRef = useRef(null);
+  const undoTimeoutRef = useRef(null);
   
   // AUTO PILLAR SWITCH: When enginePillar changes, switch to it
   useEffect(() => {
