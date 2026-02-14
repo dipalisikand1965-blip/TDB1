@@ -338,6 +338,11 @@ const MiraDemoPage = () => {
   // PENDING CONCIERGE CONTEXT: From LEARN "Ask Mira" flow
   const [pendingConciergeContext, setPendingConciergeContext] = useState(null);
   
+  // CONCIERGE HOME PANEL: New Concierge OS Layer home screen
+  const [showConciergeHome, setShowConciergeHome] = useState(false);
+  // CONCIERGE THREAD PANEL: Conversation detail view
+  const [conciergeThread, setConciergeThread] = useState({ isOpen: false, threadId: null, thread: null, messages: [] });
+  
   // NOTE: showTopPicksPanel, showUnifiedVault, isProcessing now come from useMiraUI hook
   // NOTE: proactiveAlerts, proactiveGreeting, currentWeather now come from useProactiveAlerts hook
   
