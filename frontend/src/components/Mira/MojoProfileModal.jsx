@@ -2478,11 +2478,12 @@ const MojoProfileModal = ({
           color: #FCA5A5;
         }
         
-        /* Generic Section Content Styles (Diet, Behaviour, Grooming, Routine, Preferences) */
+        /* Generic Section Content Styles (Diet, Behaviour, Grooming, Routine, Environment, Preferences) */
         .diet-profile-content,
         .behaviour-profile-content,
         .grooming-profile-content,
         .routine-profile-content,
+        .environment-profile-content,
         .preferences-profile-content,
         .documents-profile-content,
         .timeline-profile-content {
@@ -2493,6 +2494,7 @@ const MojoProfileModal = ({
         .behaviour-items-list,
         .grooming-items-list,
         .routine-items-list,
+        .environment-items-list,
         .preferences-list,
         .documents-list,
         .timeline-list {
@@ -2505,6 +2507,7 @@ const MojoProfileModal = ({
         .behaviour-item,
         .grooming-item,
         .routine-item,
+        .environment-item,
         .preferences-item,
         .document-item,
         .timeline-item {
@@ -2521,6 +2524,7 @@ const MojoProfileModal = ({
         .behaviour-icon,
         .grooming-icon,
         .routine-icon,
+        .environment-icon,
         .preferences-icon,
         .document-icon,
         .timeline-icon {
@@ -2532,6 +2536,7 @@ const MojoProfileModal = ({
         .behaviour-label,
         .grooming-label,
         .routine-label,
+        .environment-label,
         .preferences-label,
         .document-name,
         .timeline-title {
