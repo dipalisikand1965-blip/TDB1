@@ -19,8 +19,10 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
 import logging
 import uuid
+import os
+import jwt
 
-from database import get_db
+from motor.motor_asyncio import AsyncIOMotorClient
 from ticket_status_system import (
     CanonicalStatus,
     AWAITING_USER_STATUSES,
@@ -36,6 +38,23 @@ from ticket_status_system import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/services", tags=["services"])
+
+# Database connection (will be set from server.py)
+_db = None
+
+def set_database(database):
+    """Set the database instance from server.py"""
+    global _db
+    _db = database
+    logger.info("[SERVICES] Database connection set")
+
+def get_db():
+    """Get the database instance"""
+    return _db
+
+# JWT Config
+SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "your-secret-key")
+ALGORITHM = "HS256"
 
 
 # ============================================
