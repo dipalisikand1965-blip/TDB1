@@ -29,12 +29,12 @@ class TestAuthSetup:
     @pytest.fixture(scope="class")
     def auth_token(self):
         """Get authentication token"""
-        response = requests.post(f"{BASE_URL}/api/members/login", json={
+        response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
         if response.status_code == 200:
-            return response.json().get("token")
+            return response.json().get("access_token")
         pytest.skip(f"Authentication failed: {response.status_code}")
     
     @pytest.fixture(scope="class")
