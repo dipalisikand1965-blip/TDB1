@@ -147,7 +147,18 @@ const ExpandablePickCard = ({
               className="border-t border-pink-200/20 overflow-hidden"
             >
               <div className="p-4 space-y-3 bg-gray-900/50">
-                {pick.what_we_source && (
+                {/* What We'll Arrange - NEW */}
+                {pick.what_we_arrange && (
+                  <div>
+                    <h5 className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-1">
+                      What We'll Arrange
+                    </h5>
+                    <p className="text-sm text-gray-300">{pick.what_we_arrange}</p>
+                  </div>
+                )}
+                
+                {/* Legacy: What We Source */}
+                {!pick.what_we_arrange && pick.what_we_source && (
                   <div>
                     <h5 className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-1">
                       What We Source
@@ -156,7 +167,25 @@ const ExpandablePickCard = ({
                   </div>
                 )}
                 
-                {pick.selection_rules && pick.selection_rules.length > 0 && (
+                {/* What's Included - NEW format */}
+                {pick.includes && pick.includes.length > 0 && (
+                  <div>
+                    <h5 className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-2">
+                      What's Included
+                    </h5>
+                    <ul className="space-y-1">
+                      {pick.includes.slice(0, 6).map((item, i) => (
+                        <li key={i} className="text-xs text-gray-400 flex items-start gap-2">
+                          <Check className="w-3 h-3 text-green-400 flex-shrink-0 mt-0.5" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {/* Legacy: Selection Rules */}
+                {!pick.includes && pick.selection_rules && pick.selection_rules.length > 0 && (
                   <div>
                     <h5 className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-2">
                       What's Included
@@ -166,6 +195,23 @@ const ExpandablePickCard = ({
                         <li key={i} className="text-xs text-gray-400 flex items-start gap-2">
                           <Check className="w-3 h-3 text-green-400 flex-shrink-0 mt-0.5" />
                           <span>{rule}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {/* What We Need - NEW */}
+                {pick.what_we_need && pick.what_we_need.length > 0 && (
+                  <div>
+                    <h5 className="text-xs font-semibold text-amber-400 uppercase tracking-wide mb-2">
+                      What We Need From You
+                    </h5>
+                    <ul className="space-y-1">
+                      {pick.what_we_need.map((item, i) => (
+                        <li key={i} className="text-xs text-amber-300/80 flex items-start gap-2">
+                          <span className="w-3 h-3 flex-shrink-0 mt-0.5 text-amber-400">•</span>
+                          <span>{item}</span>
                         </li>
                       ))}
                     </ul>
