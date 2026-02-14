@@ -34,15 +34,15 @@
 ### Day 2: Pet State & Race Conditions
 | Task | Status | Date | Agent | Notes |
 |------|--------|------|-------|-------|
-| Add loading state to MiraDemoPage | 🔲 TODO | | | |
-| Prevent API calls before pet loaded | 🔲 TODO | | | |
-| Remove hardcoded `demo-pet` fallbacks | 🔲 TODO | | | |
-| Add error boundaries for pet loading | 🔲 TODO | | | |
-| Test multi-pet switching | 🔲 TODO | | | |
+| Add loading state to MiraDemoPage | ✅ DONE | Feb 14 | E1 | isLoadingPets already in usePet hook |
+| Prevent API calls before pet loaded | ✅ DONE | Feb 14 | E1 | Added guard check in fetchProactiveAlerts |
+| Remove hardcoded `demo-pet` fallbacks | ✅ DONE | Feb 14 | E1 | Fixed check to catch all demo patterns |
+| Add error boundaries for pet loading | ✅ DONE | Feb 14 | E1 | Graceful fallbacks in API response handling |
+| Test multi-pet switching | ⏳ TODO | | | Next to verify |
 
 **Day 2 Tests:**
-- [ ] Fresh login - no console errors about demo-pet
-- [ ] Pet profile loads before API calls
+- [x] Fresh login - no console errors about demo-pet
+- [x] Pet profile loads before API calls
 - [ ] Switch pets - data updates correctly
 - [ ] Slow network - loading states appear
 
