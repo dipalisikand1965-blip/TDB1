@@ -325,6 +325,8 @@ const MiraDemoPage = () => {
   const [activeOSTab, setActiveOSTab] = useState('today'); // Default to TODAY layer
   // TODAY PANEL: Time-sensitive reminders and alerts
   const [showTodayPanel, setShowTodayPanel] = useState(false);
+  // SERVICES PANEL: Execution Layer - Active requests and service launchers
+  const [showServicesPanel, setShowServicesPanel] = useState(false);
   
   // NOTE: showTopPicksPanel, showUnifiedVault, isProcessing now come from useMiraUI hook
   // NOTE: proactiveAlerts, proactiveGreeting, currentWeather now come from useProactiveAlerts hook
