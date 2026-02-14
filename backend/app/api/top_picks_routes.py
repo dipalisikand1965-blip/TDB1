@@ -1012,7 +1012,7 @@ def get_smart_badges(product: dict, pet: dict, pillar: str, purchase_history: li
             created = datetime.fromisoformat(str(created_at).replace('Z', '+00:00'))
             if (datetime.now() - created).days < 30:
                 badges.append("new")
-        except:
+        except (ValueError, TypeError):
             pass
     
     # Reorder badge (previously purchased)
