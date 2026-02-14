@@ -1089,6 +1089,16 @@ const TimelineProfileContent = memo(({ pet }) => {
     });
   }
   
+  // Add adoption date if exists
+  if (adoptionDate) {
+    timelineItems.push({
+      icon: '🏠',
+      title: `Joined the family`,
+      date: adoptionDate,
+      type: 'adoption'
+    });
+  }
+  
   // Add other timeline events
   timeline.forEach(event => {
     timelineItems.push({
