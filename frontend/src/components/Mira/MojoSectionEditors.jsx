@@ -1677,6 +1677,131 @@ export const editorStyles = `
     border-color: #8B5CF6;
     color: #a78bfa;
   }
+  
+  /* Weight History Styles */
+  .weight-history-section {
+    margin: 8px 0;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .weight-history-toggle {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(139, 92, 246, 0.1);
+    border: none;
+    color: #a78bfa;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+  }
+  
+  .weight-history-toggle:hover {
+    background: rgba(139, 92, 246, 0.15);
+  }
+  
+  .weight-history-content {
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.2);
+  }
+  
+  .weight-entry-form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  
+  .weight-input, .date-input {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    color: white;
+    font-size: 13px;
+  }
+  
+  .weight-input:focus, .date-input:focus {
+    outline: none;
+    border-color: #8B5CF6;
+  }
+  
+  .date-input {
+    max-width: 140px;
+  }
+  
+  .add-weight-btn {
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #8B5CF6;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .add-weight-btn:hover {
+    background: #9333EA;
+  }
+  
+  .weight-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .weight-history-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .weight-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    min-width: 70px;
+  }
+  
+  .weight-date {
+    flex: 1;
+    font-size: 12px;
+    color: #9ca3af;
+  }
+  
+  .remove-weight-btn {
+    padding: 4px;
+    background: rgba(239, 68, 68, 0.1);
+    border: none;
+    border-radius: 4px;
+    color: #EF4444;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: all 0.2s;
+  }
+  
+  .remove-weight-btn:hover {
+    opacity: 1;
+    background: rgba(239, 68, 68, 0.2);
+  }
+  
+  .weight-history-empty {
+    font-size: 12px;
+    color: #6b7280;
+    text-align: center;
+    padding: 12px;
+    margin: 0;
+  }
 `;
 
 export default {
