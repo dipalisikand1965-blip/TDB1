@@ -714,13 +714,21 @@ export const BehaviourProfileEditor = memo(({ pet, onSave, onCancel, saving }) =
   );
 });
 
-// Grooming & Care Editor - With Auto-Save
+// Grooming & Care Editor - With Auto-Save (ENHANCED for 100% MOJO)
 export const GroomingProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     coat_type: pet?.doggy_soul_answers?.coat_type || '',
     grooming_frequency: pet?.doggy_soul_answers?.grooming_frequency || '',
     skin_sensitivity: pet?.doggy_soul_answers?.skin_sensitivity || '',
     bath_frequency: pet?.doggy_soul_answers?.bath_frequency || '',
+    shedding_level: pet?.doggy_soul_answers?.shedding_level || '',
+    nail_trim_frequency: pet?.doggy_soul_answers?.nail_trim_frequency || '',
+    ear_care_needs: pet?.doggy_soul_answers?.ear_care_needs || '',
+    grooming_tolerance: pet?.doggy_soul_answers?.grooming_tolerance || '',
+    preferred_groomer: pet?.doggy_soul_answers?.preferred_groomer || '',
+    grooming_notes: pet?.doggy_soul_answers?.grooming_notes || '',
+    dental_care: pet?.doggy_soul_answers?.dental_care || '',
+    coat_products: pet?.doggy_soul_answers?.coat_products || [],
   });
   
   // Use auto-save hook
@@ -728,6 +736,7 @@ export const GroomingProfileEditor = memo(({ pet, onSave, onCancel, saving }) =>
   
   return (
     <EditorWrapper title="Grooming & Care" onCancel={onCancel} saveStatus={saveStatus}>
+      <div className="editor-section-header">Coat & Skin</div>
       <SelectField 
         label="Coat Type" 
         value={data.coat_type} 
@@ -735,10 +744,10 @@ export const GroomingProfileEditor = memo(({ pet, onSave, onCancel, saving }) =>
         onChange={(v) => setData(prev => ({ ...prev, coat_type: v }))}
       />
       <SelectField 
-        label="Grooming Frequency" 
-        value={data.grooming_frequency} 
-        options={OPTIONS.grooming_frequency}
-        onChange={(v) => setData(prev => ({ ...prev, grooming_frequency: v }))}
+        label="Shedding Level" 
+        value={data.shedding_level} 
+        options={OPTIONS.shedding_level}
+        onChange={(v) => setData(prev => ({ ...prev, shedding_level: v }))}
       />
       <SelectField 
         label="Skin Sensitivity" 
@@ -746,11 +755,63 @@ export const GroomingProfileEditor = memo(({ pet, onSave, onCancel, saving }) =>
         options={OPTIONS.skin_sensitivity}
         onChange={(v) => setData(prev => ({ ...prev, skin_sensitivity: v }))}
       />
+      <TagsField 
+        label="Coat Products Used" 
+        value={data.coat_products}
+        onChange={(v) => setData(prev => ({ ...prev, coat_products: v }))}
+        suggestions={['Oatmeal shampoo', 'Medicated shampoo', 'Conditioner', 'Detangler', 'Coat oil', 'Flea shampoo']}
+      />
+      
+      <div className="editor-section-header">Grooming Schedule</div>
+      <SelectField 
+        label="Grooming Frequency" 
+        value={data.grooming_frequency} 
+        options={OPTIONS.grooming_frequency}
+        onChange={(v) => setData(prev => ({ ...prev, grooming_frequency: v }))}
+      />
       <SelectField 
         label="Bath Frequency" 
         value={data.bath_frequency} 
         options={OPTIONS.bath_frequency}
         onChange={(v) => setData(prev => ({ ...prev, bath_frequency: v }))}
+      />
+      <SelectField 
+        label="Nail Trim Frequency" 
+        value={data.nail_trim_frequency} 
+        options={OPTIONS.nail_trim_frequency}
+        onChange={(v) => setData(prev => ({ ...prev, nail_trim_frequency: v }))}
+      />
+      <SelectField 
+        label="Ear Care Needs" 
+        value={data.ear_care_needs} 
+        options={OPTIONS.ear_care_needs}
+        onChange={(v) => setData(prev => ({ ...prev, ear_care_needs: v }))}
+      />
+      
+      <div className="editor-section-header">Grooming Experience</div>
+      <SelectField 
+        label="Grooming Tolerance" 
+        value={data.grooming_tolerance} 
+        options={OPTIONS.grooming_tolerance}
+        onChange={(v) => setData(prev => ({ ...prev, grooming_tolerance: v }))}
+      />
+      <SelectField 
+        label="Dental Care" 
+        value={data.dental_care} 
+        options={['Daily brushing', 'Weekly brushing', 'Dental chews only', 'Professional cleaning', 'None']}
+        onChange={(v) => setData(prev => ({ ...prev, dental_care: v }))}
+      />
+      <TextField 
+        label="Preferred Groomer/Salon" 
+        value={data.preferred_groomer}
+        onChange={(v) => setData(prev => ({ ...prev, preferred_groomer: v }))}
+        placeholder="e.g., Happy Paws Grooming"
+      />
+      <TextField 
+        label="Grooming Notes" 
+        value={data.grooming_notes}
+        onChange={(v) => setData(prev => ({ ...prev, grooming_notes: v }))}
+        placeholder="Any special grooming requirements..."
       />
     </EditorWrapper>
   );
