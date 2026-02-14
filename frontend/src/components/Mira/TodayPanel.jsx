@@ -1732,6 +1732,85 @@ const todayPanelStyles = `
     background: linear-gradient(180deg, #1a1a2e 0%, #16162a 100%);
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   STALE INDICATOR
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.stale-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(249, 115, 22, 0.15);
+  color: #FB923C;
+  animation: stale-pulse 2s ease-in-out infinite;
+}
+
+@keyframes stale-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   WATCHLIST TASK CARDS
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.today-card.watchlist-task {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.today-card.watchlist-task.awaiting {
+  background: rgba(244, 63, 94, 0.08);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+}
+
+.today-card.watchlist-task.awaiting:hover {
+  background: rgba(244, 63, 94, 0.12);
+  border-color: rgba(244, 63, 94, 0.3);
+}
+
+.card-quick-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #EC4899 0%, #F43F5E 100%);
+  border: none;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(244, 63, 94, 0.3);
+}
+
+.card-quick-action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.4);
+}
+
+.card-quick-action-btn:active {
+  transform: translateY(0);
+}
+
+/* Awaiting You Section styling */
+.today-section.awaiting-section {
+  background: rgba(244, 63, 94, 0.05);
+  border-radius: 16px;
+  padding: 14px;
+  margin: -4px;
+}
+
+.today-section.awaiting-section .today-section-header {
+  margin-bottom: 8px;
+}
 `;
 
 // Export styles separately if needed
