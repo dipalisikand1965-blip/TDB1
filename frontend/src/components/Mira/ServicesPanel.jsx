@@ -287,9 +287,11 @@ const EmptyState = memo(({ title, description }) => (
 
 const ServicesPanel = ({ 
   selectedPet = null,
+  allPets = [],
   token = null,
   onClose = null,
-  onTicketSelect = null 
+  onTicketSelect = null,
+  onOpenRequestBuilder = null,
 }) => {
   // State
   const [launchers, setLaunchers] = useState([]);
@@ -305,6 +307,7 @@ const ServicesPanel = ({
   const [activeStatusTab, setActiveStatusTab] = useState('all');
   const [showMoreLaunchers, setShowMoreLaunchers] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [showTicketDetail, setShowTicketDetail] = useState(false);
   
   // Fetch data
   const fetchData = useCallback(async () => {
@@ -349,18 +352,33 @@ const ServicesPanel = ({
   // Handlers
   const handleLauncherClick = useCallback((service) => {
     console.log('[SERVICES] Launcher clicked:', service.id);
-    // TODO: Open request builder modal
-  }, []);
+    // Call parent to open request builder modal
+    onOpenRequestBuilder?.(service);
+  }, [onOpenRequestBuilder]);
   
   const handleAction = useCallback(async (ticket, action) => {
     console.log('[SERVICES] Action:', action, 'Ticket:', ticket.ticket_id);
-    // TODO: Handle actions (confirm, approve, pay, etc.)
+    // Open ticket detail panel for action
+    setSelectedTicket(ticket);
+    setShowTicketDetail(true);
   }, []);
   
   const handleTicketSelect = useCallback((ticket) => {
     setSelectedTicket(ticket);
+    setShowTicketDetail(true);
     onTicketSelect?.(ticket);
   }, [onTicketSelect]);
+  
+  const handleTicketDetailClose = useCallback(() => {
+    setShowTicketDetail(false);
+    setSelectedTicket(null);
+  }, []);
+  
+  const handleTicketAction = useCallback((action, result) => {
+    console.log('[SERVICES] Ticket action completed:', action, result);
+    // Refresh inbox after action
+    fetchData();
+  }, [fetchData]);
   
   // Filter active requests by status tab
   const filteredActive = useMemo(() => {
