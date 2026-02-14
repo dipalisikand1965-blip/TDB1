@@ -1979,7 +1979,13 @@ async def update_ticket(ticket_id: str, update: TicketUpdate, username: str = De
 
 @router.post("/{ticket_id}/reply")
 async def add_reply(ticket_id: str, reply: TicketReply):
-    """Add a reply/message to a ticket - works with both collections"""
+    """
+    Add a reply/message to a ticket - works with both collections.
+    
+    TWO-WAY SYNC: If this ticket is linked to a Concierge thread,
+    the reply is ALSO synced to concierge_messages so the user sees
+    it in their Concierge chat panel.
+    """
     db = get_db()
     
     # Try tickets collection first
@@ -2008,6 +2014,7 @@ async def add_reply(ticket_id: str, reply: TicketReply):
         raise HTTPException(status_code=404, detail="Ticket not found")
     
     now = datetime.now(timezone.utc).isoformat()
+    message_id = str(uuid.uuid4())
     
     # Build attachments list
     attachment_list = []
@@ -2022,7 +2029,7 @@ async def add_reply(ticket_id: str, reply: TicketReply):
             })
     
     message = {
-        "id": str(uuid.uuid4()),
+        "id": message_id,
         "type": "internal_note" if reply.is_internal else "reply",
         "content": reply.message,
         "sender": "concierge",
@@ -2048,11 +2055,66 @@ async def add_reply(ticket_id: str, reply: TicketReply):
         }
     )
     
-    # Create member notification if not internal message
+    # Get member info for notifications and user_id for thread lookup
+    member_email = ticket.get("member_email") or ticket.get("customer_email") or ticket.get("member", {}).get("email")
+    member_name = ticket.get("member", {}).get("name") or ticket.get("member_name") or "Pet Parent"
+    user_id = ticket.get("user_id") or ticket.get("parent_id")
+    
+    # ============================================================
+    # TWO-WAY SYNC: Sync reply to Concierge thread if linked
+    # ============================================================
     if not reply.is_internal:
-        member_email = ticket.get("member_email") or ticket.get("customer_email") or ticket.get("member", {}).get("email")
-        member_name = ticket.get("member", {}).get("name") or ticket.get("member_name") or "Pet Parent"
+        # 1. Find any concierge_thread linked to this ticket
+        linked_thread = await db.concierge_threads.find_one({"ticket_id": ticket_id})
         
+        # 2. If not found by ticket_id, try to find by user_id and create linkage
+        if not linked_thread and user_id:
+            # Find the user's most recent active thread
+            linked_thread = await db.concierge_threads.find_one(
+                {"user_id": user_id, "status": {"$in": ["active", "awaiting_concierge"]}},
+                sort=[("last_message_at", -1)]
+            )
+            # Link this ticket to the thread for future syncs
+            if linked_thread:
+                await db.concierge_threads.update_one(
+                    {"id": linked_thread.get("id")},
+                    {"$set": {"ticket_id": ticket_id}}
+                )
+                logger.info(f"Linked ticket {ticket_id} to thread {linked_thread.get('id')}")
+        
+        if linked_thread:
+            thread_id = linked_thread.get("id")
+            
+            # Insert the concierge reply into concierge_messages
+            concierge_message = {
+                "id": message_id,
+                "thread_id": thread_id,
+                "sender": "concierge",
+                "content": reply.message,
+                "timestamp": now,
+                "status_chip": None,
+                "attachments": attachment_list,
+                "type": "reply",
+                "source": "service_desk"  # Mark that this came from admin panel
+            }
+            await db.concierge_messages.insert_one(concierge_message)
+            
+            # Update the thread's last_message and status
+            await db.concierge_threads.update_one(
+                {"id": thread_id},
+                {
+                    "$set": {
+                        "last_message_preview": reply.message[:100],
+                        "last_message_at": now,
+                        "status": "awaiting_user",  # Now waiting for user response
+                        "updated_at": now
+                    },
+                    "$inc": {"message_count": 1, "unread_count": 1}
+                }
+            )
+            logger.info(f"[TWO-WAY SYNC] Synced admin reply to concierge thread {thread_id}")
+        
+        # 3. Create member notification
         if member_email:
             try:
                 member_notif = {
@@ -2062,7 +2124,8 @@ async def add_reply(ticket_id: str, reply: TicketReply):
                     "title": "💬 Concierge Reply",
                     "message": f"{reply.message[:100]}{'...' if len(reply.message) > 100 else ''}",
                     "ticket_id": ticket_id,
-                    "link": f"/member?tab=requests",
+                    "thread_id": linked_thread.get("id") if linked_thread else None,
+                    "link": f"/mira-demo?tab=concierge",  # Direct to Concierge in Mira OS
                     "read": False,
                     "created_at": now,
                     "timestamp": now
