@@ -10,12 +10,17 @@
  * - Date/time preferences
  * - Notes
  * - Submit → creates ticket
+ * 
+ * LEARN Integration:
+ * - Accepts prefill data from LEARN layer "Let Mira do it" CTA
+ * - Shows context banner when coming from a Learn guide
+ * - Auto-fills notes with context from what user was reading
  */
 
 import React, { useState, useEffect, useCallback, memo } from 'react';
 import { 
   X, Calendar, MapPin, Clock, PawPrint,
-  Loader2, Check, ChevronDown, AlertCircle
+  Loader2, Check, ChevronDown, AlertCircle, BookOpen
 } from 'lucide-react';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL || '';
