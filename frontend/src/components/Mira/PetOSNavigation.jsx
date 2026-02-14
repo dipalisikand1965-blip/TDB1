@@ -25,7 +25,7 @@
 import React, { useState, useRef, useEffect, memo } from 'react';
 import { 
   ChevronDown, Heart, Calendar, Sparkles, Briefcase, 
-  BarChart3, GraduationCap, Users, Check
+  GraduationCap, Users, Check
 } from 'lucide-react';
 import hapticFeedback from '../../utils/haptic';
 
