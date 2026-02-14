@@ -329,6 +329,7 @@ const ConciergeThreadPanel = ({
   const [inputValue, setInputValue] = useState('');
   const [sending, setSending] = useState(false);
   const [showTimestamps, setShowTimestamps] = useState({});
+  const [linkedTicketId, setLinkedTicketId] = useState(null);
   
   // Refs
   const messagesEndRef = useRef(null);
