@@ -281,31 +281,97 @@ def derive_pet_tags_from_profile(pet_data: Dict) -> Tuple[List[str], List[str]]:
     return list(set(pet_tags)), list(set(breed_tags))
 
 
-def calculate_relevance_score(item: Dict, pet_tags: List[str], breed_tags: List[str]) -> int:
+# Topics where breed tags should NOT influence ranking (health-adjacent)
+HEALTH_ADJACENT_TOPICS = {"health", "emergency", "medical", "vaccination", "vet"}
+
+# Maximum contribution from breed tags (prevents breed-dominance)
+MAX_BREED_TAG_SCORE = 10
+
+
+def calculate_relevance_score(
+    item: Dict, 
+    pet_tags: List[str], 
+    breed_tags: List[str],
+    topic: str = None,
+    user_feedback: Dict = None
+) -> Tuple[int, str]:
     """
     Calculate relevance score for a Learn item based on pet's tags.
     Higher score = more relevant to this specific pet.
     
+    SAFETY RULES:
+    - If topic is health-adjacent, ignore breed_tags entirely
+    - Cap breed tag contribution at MAX_BREED_TAG_SCORE
+    - Apply negative weight if user marked "Not helpful"
+    
     Scoring:
     - Pet tag match: +10 points each (e.g., puppy, senior, anxious)
-    - Breed tag match: +5 points each (e.g., double_coat, brachy)
+    - Breed tag match: +5 points each, CAPPED at 10 total (grooming/travel/handling only)
     - "all" tag: +1 point (baseline relevance)
+    - "Not helpful" feedback: -15 points
+    
+    Returns: (score, primary_matched_tag)
     """
     score = 0
+    primary_tag = None
     item_pet_tags = item.get("pet_tags") or []
     item_breed_tags = item.get("breed_tags") or []
+    item_topic = topic or item.get("topic", "").lower()
     
     # Pet tag matches (more important - "Pet First")
     for tag in pet_tags:
         if tag in item_pet_tags:
-            score += 10 if tag != "all" else 1
+            if tag != "all":
+                score += 10
+                if primary_tag is None:
+                    primary_tag = tag  # Track primary matched tag for diversity
+            else:
+                score += 1
     
-    # Breed tag matches ("Breed Second")
-    for tag in breed_tags:
-        if tag in item_breed_tags:
-            score += 5
+    # Breed tag matches ("Breed Second") - with safety rules
+    # SAFETY: If topic is health-adjacent, ignore breed tags entirely
+    if item_topic not in HEALTH_ADJACENT_TOPICS:
+        breed_score = 0
+        for tag in breed_tags:
+            if tag in item_breed_tags:
+                breed_score += 5
+        # Cap breed tag contribution
+        score += min(breed_score, MAX_BREED_TAG_SCORE)
     
-    return score
+    # Apply negative weight for "Not helpful" feedback
+    if user_feedback:
+        item_id = item.get("id")
+        if item_id and user_feedback.get(item_id) == "not_helpful":
+            score -= 15
+    
+    return score, primary_tag
+
+
+def apply_diversity_filter(items: List[Dict], max_per_tag: int = 2) -> List[Dict]:
+    """
+    Diversity rule: Don't show more than max_per_tag items with the same primary tag.
+    Prevents "For your pet" from feeling like an echo chamber.
+    """
+    if not items:
+        return items
+    
+    tag_counts = Counter()
+    diverse_items = []
+    
+    for item in items:
+        primary_tag = item.get("_primary_tag")
+        
+        # Always include items without a primary tag
+        if not primary_tag:
+            diverse_items.append(item)
+            continue
+        
+        # Check if we've hit the limit for this tag
+        if tag_counts[primary_tag] < max_per_tag:
+            diverse_items.append(item)
+            tag_counts[primary_tag] += 1
+    
+    return diverse_items
 
 
 async def fetch_pet_profile(db, pet_id: str) -> Optional[Dict]:
@@ -324,6 +390,22 @@ async def fetch_pet_profile(db, pet_id: str) -> Optional[Dict]:
     except Exception as e:
         logger.warning(f"[LEARN] Could not fetch pet {pet_id}: {e}")
         return None
+
+
+async def get_user_feedback(db, user_id: str) -> Dict:
+    """Get user's feedback on Learn items (helpful/not_helpful)."""
+    if not user_id:
+        return {}
+    
+    try:
+        feedback_docs = await db.learn_feedback.find(
+            {"user_id": user_id},
+            {"item_id": 1, "feedback": 1, "_id": 0}
+        ).to_list(200)
+        return {doc["item_id"]: doc["feedback"] for doc in feedback_docs}
+    except Exception as e:
+        logger.warning(f"[LEARN] Could not fetch feedback for {user_id}: {e}")
+        return {}
 
 
 # ============================================
