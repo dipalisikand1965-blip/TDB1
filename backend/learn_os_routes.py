@@ -1502,7 +1502,7 @@ async def get_today_learn_deep_links():
         item_type = mapping.get("item_type", "guide")
         
         # Try to get item title from DB
-        if db:
+        if db is not None:
             collection = db.learn_guides if item_type == "guide" else db.learn_videos
             item = await collection.find_one({"id": item_id}, {"title": 1, "_id": 0})
             title = item.get("title") if item else None
