@@ -496,6 +496,7 @@ const TodayPanel = ({
         </div>
       </div>
     </div>
+    </>
   );
 };
 
