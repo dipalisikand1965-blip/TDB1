@@ -3538,6 +3538,17 @@ const MiraDemoPage = () => {
               setShowTodayPanel(false);
               switchPet(newPet);
             }}
+            onOpenServices={(serviceData) => {
+              // Handler for LEARN nudge → ServiceRequestBuilder
+              setShowTodayPanel(false);
+              setRequestBuilderState({ isOpen: true, service: serviceData });
+            }}
+            onOpenConcierge={(context) => {
+              // Handler for LEARN nudge → ConciergePanel
+              setShowTodayPanel(false);
+              setPendingConciergeContext(context);
+              setShowConcierge(true);
+            }}
           />
         </Suspense>
       )}
