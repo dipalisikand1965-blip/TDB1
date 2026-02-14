@@ -10,13 +10,28 @@
 |----------|---------------|--------|-----|
 | **MOJO (14 Components)** | 100% | 100% | 0% |
 | **TODAY Layer** | 95% | 100% | 5% |
-| **PICKS Layer** | 45% | 100% | 55% |
+| **PICKS Layer** | 60% | 100% | 40% |
 | **SERVICES Layer** | 40% | 100% | 60% |
 | **LEARN Layer** | 10% | 100% | 90% |
 | **CONCIERGE Layer** | 30% | 100% | 70% |
 | **OS Operating Doctrine** | 55% | 100% | 45% |
 | **10 Absolute Rules** | 60% | 100% | 40% |
-| **OVERALL** | **73%** | 100% | **27%** |
+| **OVERALL** | **75%** | 100% | **25%** |
+
+**Changes this session (Feb 14, 2026 - Session 5):**
+- ✅ **PICKS ENGINE AUTO-REFRESH (B6)** - Core behaviour now implemented
+  - Picks Engine runs at the START of every chat turn (before any handlers)
+  - Returns 8 ranked picks via `data.picks` in chat response
+  - Classification → Safety Gate → Scoring → Concierge Logic pipeline verified
+  - Early returns now include picks via `add_picks_to_response()` helper
+  - Frontend `useVault.js` updated to receive engine picks
+  - Frontend `PersonalizedPicksPanel.jsx` updated for:
+    - Auto pillar switching based on `enginePillar`
+    - "Updated just now" timestamp display
+    - Safety override banner (emergency/caution)
+    - Engine pillar indicator dot on tabs
+- ✅ **MOJO Bible Updated** - Added exhaustive PICKS spec (11 sections)
+- **PICKS Score: 45% → 60%** (+15%)
 
 **Changes this session (Feb 14, 2026 - Session 4):**
 - ✅ **TRAIT GRAPH VISUALIZATION (100%)** - Frontend UI for displaying Mira's intelligence
