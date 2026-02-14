@@ -665,14 +665,13 @@ async def get_topic_content(
     authorization: Optional[str] = Header(None)
 ):
     """
-    Get content for a specific topic, organized into 3 shelves:
-    1. For your pet (personalized, if pet_id provided)
-    2. Start here (featured items)
-    3. 2-minute guides
-    4. Watch & learn (videos)
+    Get content for a specific topic, organized into shelves.
     
     GOLDEN DOCTRINE: Pet First, Breed Second
-    All content is ranked by relevance to the pet's profile.
+    SAFETY RULES:
+    - If topic is health-adjacent, breed tags are IGNORED
+    - Diversity filter prevents echo chamber (max 2 items per primary tag)
+    - Only explicit user signals influence health content ranking
     """
     db = get_db()
     if db is None:
@@ -689,6 +688,9 @@ async def get_topic_content(
             {"item_id": 1}
         ).to_list(100)
         saved_ids = {s["item_id"] for s in saved_items}
+    
+    # Get user feedback for negative weighting
+    user_feedback = await get_user_feedback(db, user_id) if user_id else {}
     
     # Validate topic
     topic_lower = topic.lower()
@@ -723,16 +725,24 @@ async def get_topic_content(
         {"_id": 0}
     ).to_list(30)
     
-    # Score all content
+    # Score all content (with topic-aware safety rules)
     scored_guides = []
     for guide in guides:
-        score = calculate_relevance_score(guide, pet_tags, breed_tags)
-        scored_guides.append({"item": guide, "score": score})
+        score, primary_tag = calculate_relevance_score(
+            guide, pet_tags, breed_tags,
+            topic=topic_lower,
+            user_feedback=user_feedback
+        )
+        scored_guides.append({"item": guide, "score": score, "primary_tag": primary_tag})
     
     scored_videos = []
     for video in videos:
-        score = calculate_relevance_score(video, pet_tags, breed_tags)
-        scored_videos.append({"item": video, "score": score})
+        score, primary_tag = calculate_relevance_score(
+            video, pet_tags, breed_tags,
+            topic=topic_lower,
+            user_feedback=user_feedback
+        )
+        scored_videos.append({"item": video, "score": score, "primary_tag": primary_tag})
     
     # Sort by relevance then sort_rank
     scored_guides.sort(key=lambda x: (-x["score"], x["item"].get("sort_rank", 100)))
@@ -744,25 +754,41 @@ async def get_topic_content(
     two_min_guides = []
     watch_learn = []
     
-    # "For your pet" - Highly relevant items from this topic
+    # "For your pet" - Highly relevant items from this topic (with diversity filter)
     if pet_profile:
-        personalized_guides = [g for g in scored_guides if g["score"] >= 5][:3]
-        personalized_videos = [v for v in scored_videos if v["score"] >= 5][:2]
+        personalized_candidates = []
+        for g in scored_guides:
+            if g["score"] >= 5:
+                g["item"]["_primary_tag"] = g["primary_tag"]
+                personalized_candidates.append({"item": g["item"], "score": g["score"], "type": "guide"})
+        for v in scored_videos:
+            if v["score"] >= 5:
+                v["item"]["_primary_tag"] = v["primary_tag"]
+                personalized_candidates.append({"item": v["item"], "score": v["score"], "type": "video"})
         
-        for g in personalized_guides:
-            for_your_pet.append(enrich_item_for_frontend(
-                g["item"], "guide", g["item"].get("id") in saved_ids, g["score"], pet_name
-            ))
-        for v in personalized_videos:
-            for_your_pet.append(enrich_item_for_frontend(
-                v["item"], "video", v["item"].get("id") in saved_ids, v["score"], pet_name
-            ))
         # Sort by score
-        for_your_pet.sort(key=lambda x: -x.get("relevance_score", 0))
+        personalized_candidates.sort(key=lambda x: -x["score"])
+        
+        # Apply diversity filter
+        diverse_items = apply_diversity_filter(
+            [c["item"] for c in personalized_candidates],
+            max_per_tag=2
+        )
+        
+        # Enrich for frontend (limit to 5)
+        for item in diverse_items[:5]:
+            item_score = next((c["score"] for c in personalized_candidates if c["item"].get("id") == item.get("id")), 0)
+            item_type = "video" if item.get("youtube_id") else "guide"
+            enriched = enrich_item_for_frontend(
+                item, item_type, item.get("id") in saved_ids, item_score, pet_name
+            )
+            enriched.pop("_primary_tag", None)
+            for_your_pet.append(enriched)
     
     # Start here (featured), guides, videos
     for g in scored_guides:
         guide = g["item"]
+        guide.pop("_primary_tag", None)  # Clean up
         enriched = enrich_item_for_frontend(
             guide, "guide", guide.get("id") in saved_ids, g["score"], pet_name
         )
@@ -773,6 +799,7 @@ async def get_topic_content(
     
     for v in scored_videos:
         video = v["item"]
+        video.pop("_primary_tag", None)  # Clean up
         enriched = enrich_item_for_frontend(
             video, "video", video.get("id") in saved_ids, v["score"], pet_name
         )
@@ -793,7 +820,7 @@ async def get_topic_content(
             "color": topic_config.get("color", "gray"),
         },
         "shelves": {
-            "for_your_pet": for_your_pet[:5] if for_your_pet else None,  # NEW
+            "for_your_pet": for_your_pet if for_your_pet else None,
             "start_here": start_here[:3],
             "guides": two_min_guides,
             "videos": watch_learn
@@ -807,6 +834,7 @@ async def get_topic_content(
         "pet_name": pet_name,
         "personalization": {
             "enabled": pet_profile is not None,
+            "breed_tags_applied": topic_lower not in HEALTH_ADJACENT_TOPICS,
         }
     }
 
