@@ -708,9 +708,82 @@ const useChatSubmit = (config) => {
         console.log('[CONCIERGE CONFIRM] Service request banner shown:', data.concierge_confirmation.ticket_id);
       }
       
+      // ═══════════════════════════════════════════════════════════════════════════
+      // PICKS ENGINE AUTO-REFRESH (B6)
+      // Every chat turn receives picks from the picks engine
+      // These are taxonomy-driven, scored, and safety-gated picks
+      // ═══════════════════════════════════════════════════════════════════════════
+      const picksEngineData = data.picks; // Array from picks_engine.py
+      const picksEngineConcierge = data.concierge; // Concierge prominence decision
+      const safetyOverride = data.safety_override; // Emergency/caution mode
+      const missingProfileFields = data.missing_profile_fields || [];
+      
+      if (picksEngineData && Array.isArray(picksEngineData) && picksEngineData.length > 0) {
+        console.log(`[PICKS ENGINE] Received ${picksEngineData.length} picks for pillar: ${data.pillar || 'general'}`);
+        
+        // Transform picks engine format to frontend format
+        const enginePicks = picksEngineData.map(pick => ({
+          id: pick.pick_id,
+          name: pick.title,
+          type: pick.pick_type, // 'booking', 'product', 'guide', 'concierge', 'emergency'
+          pillar: pick.pillar,
+          cta: pick.cta,
+          reason: pick.reason, // Why this pick for this pet
+          score: pick.final_score,
+          service_vertical: pick.service_vertical,
+          service_modes: pick.service_modes,
+          concierge_complexity: pick.concierge_complexity,
+          safety_level: pick.safety_level,
+          booking_fields: pick.booking_fields,
+          doc_requirements: pick.doc_requirements,
+          warnings: pick.warnings,
+          // Mark as from engine for UI distinction
+          source: 'picks_engine'
+        }));
+        
+        // Separate into products (buy intent) vs services (book intent)
+        const engineProducts = enginePicks.filter(p => p.type === 'product');
+        const engineServices = enginePicks.filter(p => ['booking', 'concierge', 'emergency', 'guide'].includes(p.type));
+        
+        // Update miraPicks with engine-driven picks
+        setMiraPicks(prev => ({
+          ...prev,
+          // Engine picks take precedence when available
+          enginePicks: enginePicks,
+          engineProducts: engineProducts,
+          engineServices: engineServices,
+          // Auto-switch pillar based on classification
+          activePillar: data.pillar || prev.activePillar,
+          // Concierge decision
+          concierge: picksEngineConcierge,
+          // Safety state
+          safetyOverride: safetyOverride,
+          // Missing profile fields for micro-questions
+          missingProfileFields: missingProfileFields,
+          // Mark as fresh
+          hasNew: true,
+          lastUpdated: new Date().toISOString()
+        }));
+        
+        // Log safety override if active
+        if (safetyOverride?.active) {
+          console.log(`[PICKS ENGINE] Safety override ACTIVE: ${safetyOverride.level}`);
+          if (safetyOverride.level === 'emergency') {
+            hapticFeedback.error(); // Alert haptic for emergency
+          } else if (safetyOverride.level === 'caution') {
+            hapticFeedback.warning(); // Warning haptic for caution
+          }
+        }
+        
+        // Log concierge prominence
+        if (picksEngineConcierge?.cta_prominence === 'primary') {
+          console.log(`[PICKS ENGINE] Concierge CTA prominence: PRIMARY - reason: ${picksEngineConcierge.reason}`);
+        }
+      }
+      
       // QUICK REPLIES
-      const hasProducts = newProducts.length > 0;
-      const hasServices = newServices.length > 0;
+      const hasProducts = newProducts.length > 0 || (picksEngineData?.filter(p => p.pick_type === 'product').length > 0);
+      const hasServices = newServices.length > 0 || (picksEngineData?.filter(p => ['booking', 'concierge'].includes(p.pick_type)).length > 0);
       const isAdvisory = !hasProducts && !hasServices && miraResponseText.length > 100;
       const currentPillarForReplies = data.current_pillar || data.pillar || 'general';
       
