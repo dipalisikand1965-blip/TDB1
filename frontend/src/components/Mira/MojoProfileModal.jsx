@@ -2119,10 +2119,22 @@ const MojoProfileModal = ({
           min-width: 80px;
         }
         
+        .health-value-container {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          flex: 1;
+          justify-content: flex-end;
+        }
+        
         .health-value {
           font-size: 14px;
           color: white;
           font-weight: 500;
+        }
+        
+        .trait-source-badge.small {
+          padding: 2px 4px;
         }
         
         .health-empty-state {
