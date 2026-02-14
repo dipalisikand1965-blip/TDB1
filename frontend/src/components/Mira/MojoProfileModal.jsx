@@ -1309,16 +1309,50 @@ const PreferencesProfileContent = memo(({ pet }) => {
   );
 });
 
-// Membership & Rewards Component
-const MembershipRewards = memo(({ membership, badges, onViewRewards }) => {
+// Pet Life Pass Card - Membership & Rewards Component
+// Per MOJO Bible: "Membership & Rewards" must show the full Pet Life Pass
+const MembershipRewards = memo(({ membership, badges, petPassNumber, onViewRewards }) => {
+  const [copied, setCopied] = useState(false);
+  
   const hasMembership = membership && (membership.tier || membership.paw_points !== undefined);
+  
+  // Tier configurations matching the dashboard
+  const TIER_CONFIG = {
+    'bronze': { name: 'Bronze Pup', gradient: 'from-amber-600 via-amber-500 to-amber-700', icon: '🐾' },
+    'silver': { name: 'Silver Star', gradient: 'from-slate-400 via-slate-300 to-slate-500', icon: '⭐' },
+    'gold': { name: 'Gold Crown', gradient: 'from-yellow-500 via-amber-400 to-yellow-600', icon: '👑' },
+    'pawsome': { name: 'Silver Star', gradient: 'from-slate-400 via-slate-300 to-slate-500', icon: '⭐' },
+    'member': { name: 'Member', gradient: 'from-purple-500 via-purple-400 to-purple-600', icon: '🐕' },
+  };
+  
+  const tierKey = (membership?.tier || 'member').toLowerCase();
+  const tierConfig = TIER_CONFIG[tierKey] || TIER_CONFIG['member'];
+  const points = membership?.paw_points || membership?.points || 0;
+  const passNumber = petPassNumber || membership?.pet_pass_number || 'TDC-XXXXXX';
+  
+  // Calculate progress to next tier
+  const getNextTierInfo = () => {
+    if (tierKey === 'bronze' || tierKey === 'member') return { next: 'Silver Star', pointsNeeded: 1000 - points };
+    if (tierKey === 'silver' || tierKey === 'pawsome') return { next: 'Gold Crown', pointsNeeded: 5000 - points };
+    return null;
+  };
+  const nextTierInfo = getNextTierInfo();
+  const progressPercent = nextTierInfo 
+    ? Math.min(100, (points / (points + nextTierInfo.pointsNeeded)) * 100)
+    : 100;
+  
+  const copyPetPass = () => {
+    navigator.clipboard.writeText(passNumber);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
   
   if (!hasMembership) {
     return (
       <div className="membership-section coming-soon" data-testid="membership-section">
         <div className="membership-header">
           <Crown className="w-5 h-5 text-amber-400" />
-          <span className="membership-title">Membership & Rewards</span>
+          <span className="membership-title">Pet Life Pass</span>
         </div>
         <div className="membership-placeholder">
           <Gift className="w-8 h-8 text-gray-500 mb-2" />
@@ -1333,55 +1367,101 @@ const MembershipRewards = memo(({ membership, badges, onViewRewards }) => {
   }
   
   return (
-    <div className="membership-section" data-testid="membership-section">
-      <div className="membership-header">
-        <Crown className="w-5 h-5 text-amber-400" />
-        <span className="membership-title">Membership & Rewards</span>
+    <div className="membership-section pet-life-pass" data-testid="membership-section">
+      {/* Pet Life Pass Card - Matching Dashboard Design */}
+      <div 
+        className={`pet-pass-card bg-gradient-to-br ${tierConfig.gradient}`}
+        onClick={onViewRewards}
+        data-testid="pet-life-pass-card"
+      >
+        {/* Background Pattern */}
+        <div className="pass-card-pattern">
+          <div className="pattern-circle pattern-circle-1"></div>
+          <div className="pattern-circle pattern-circle-2"></div>
+        </div>
+        
+        {/* Card Content */}
+        <div className="pass-card-content">
+          {/* Header */}
+          <div className="pass-card-header">
+            <div className="pass-brand">
+              <div className="pass-logo">TD</div>
+              <span className="pass-title">Pet Life Pass</span>
+            </div>
+            <div className="pass-tier-badge">
+              <span className="tier-icon">{tierConfig.icon}</span>
+              <span className="tier-name">{tierConfig.name}</span>
+            </div>
+          </div>
+          
+          {/* Pass Number - Clickable */}
+          <button 
+            className="pass-number-btn"
+            onClick={(e) => { e.stopPropagation(); copyPetPass(); }}
+            data-testid="copy-pass-number"
+          >
+            <span className="pass-number">{passNumber}</span>
+            {copied ? (
+              <Check className="w-4 h-4 text-green-300" />
+            ) : (
+              <span className="copy-icon">📋</span>
+            )}
+          </button>
+          
+          {/* Points Section */}
+          <div className="pass-points-section">
+            <div className="points-info">
+              <span className="points-label">Loyalty Points</span>
+              <span className="points-value">{points.toLocaleString()}</span>
+            </div>
+            <div className="points-worth">
+              <span className="worth-label">Worth</span>
+              <span className="worth-value">₹{Math.round(points * 0.5)}</span>
+            </div>
+          </div>
+          
+          {/* Progress to Next Tier */}
+          {nextTierInfo && nextTierInfo.pointsNeeded > 0 && (
+            <div className="pass-progress">
+              <div className="progress-text">
+                <span>{nextTierInfo.pointsNeeded.toLocaleString()} points to {nextTierInfo.next}</span>
+                <span>{Math.round(progressPercent)}%</span>
+              </div>
+              <div className="progress-bar">
+                <div 
+                  className="progress-fill"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+            </div>
+          )}
+          
+          {/* View Full Card Link */}
+          <div className="pass-card-footer">
+            <span className="view-card-text">Click to view full card</span>
+          </div>
+        </div>
       </div>
       
-      {/* Membership Card */}
-      <div className={`membership-card tier-${(membership.tier || 'member').toLowerCase()}`}>
-        <div className="membership-card-header">
-          <Crown className="w-6 h-6" />
-          <span className="membership-tier">{membership.tier || 'Member'}</span>
-        </div>
-        {membership.member_since && (
-          <p className="membership-since">Member since {membership.member_since}</p>
-        )}
-        <div className="membership-points-display">
-          <Star className="w-5 h-5" />
-          <span className="points-value">{(membership.paw_points || 0).toLocaleString()}</span>
-          <span className="points-label">Paw Points</span>
-        </div>
-        {membership.next_tier && (
-          <p className="membership-next-tier">
-            {membership.points_to_next || 500} pts to {membership.next_tier}
-          </p>
-        )}
-        <button 
-          className="membership-view-btn"
-          onClick={onViewRewards}
-          data-testid="view-rewards-btn"
-        >
-          View Rewards
-          <ChevronRight className="w-4 h-4" />
-        </button>
-      </div>
-      
-      {/* Badges */}
+      {/* Badges Section */}
       {badges && badges.length > 0 && (
         <div className="membership-badges">
           <h4 className="badges-title">Badges Earned</h4>
           <div className="badges-grid">
-            {badges.slice(0, 4).map((badge, i) => (
-              <div key={i} className="badge-item" title={badge.description || badge.name}>
-                <span className="badge-icon">{badge.icon || '🏆'}</span>
-                <span className="badge-name">{badge.name}</span>
-              </div>
-            ))}
-            {badges.length > 4 && (
+            {badges.slice(0, 6).map((badge, i) => {
+              // Handle both string badges and object badges
+              const badgeName = typeof badge === 'string' ? badge : badge.name;
+              const badgeIcon = typeof badge === 'string' ? '🏆' : (badge.icon || '🏆');
+              return (
+                <div key={i} className="badge-item" title={badgeName}>
+                  <span className="badge-icon">{badgeIcon}</span>
+                  <span className="badge-name">{badgeName.replace(/_/g, ' ')}</span>
+                </div>
+              );
+            })}
+            {badges.length > 6 && (
               <div className="badge-item more">
-                <span className="badge-icon">+{badges.length - 4}</span>
+                <span className="badge-icon">+{badges.length - 6}</span>
                 <span className="badge-name">more</span>
               </div>
             )}
