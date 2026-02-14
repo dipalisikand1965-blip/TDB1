@@ -3072,9 +3072,15 @@ const MiraDemoPage = () => {
         <Suspense fallback={<LazyFallback />}>
           <ConciergePanel
             isOpen={showConciergePanel}
-            onClose={() => setShowConciergePanel(false)}
+            onClose={() => {
+              setShowConciergePanel(false);
+              // Clear pending context when closing
+              setPendingConciergeContext(null);
+            }}
             pet={pet}
             onChatHandoff={handleConciergeHandoff}
+            // Pass LEARN context if coming from "Ask Mira"
+            initialContext={pendingConciergeContext}
           />
         </Suspense>
       )}
