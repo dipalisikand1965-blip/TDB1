@@ -1,6 +1,6 @@
 # 🎯 MOJO IMPLEMENTATION SCORECARD
 ## Visual Status: Green ✅ | Yellow ⚠️ | Red 🔴
-### Overall Score: 72%
+### Overall Score: 82% (↑ from 72%)
 
 ---
 
@@ -27,11 +27,11 @@
 | Feature | Status | Score | What's Missing |
 |---------|--------|-------|----------------|
 | Traits Display (temperament, energy) | ✅ GREEN | 100% | - |
-| Confidence Scores on Traits | 🔴 RED | 0% | Show % confidence + data source |
-| "Inferred from chat" indicator | 🔴 RED | 0% | Badge showing trait was learned from Mira |
-| Data Source Transparency | 🔴 RED | 0% | "Direct answer" vs "Mira learned" |
+| Confidence Scores on Traits | ✅ GREEN | 100% | Shows 85% for chat-inferred, 100% for direct |
+| "Mira Learned" badge | ✅ GREEN | 100% | Purple badge appears on inferred traits |
+| Data Source Transparency | ✅ GREEN | 100% | `doggy_soul_meta` stores source + confidence |
 
-**Subtotal: 25%** 🔴
+**Subtotal: 100%** ✅ (↑ from 25%)
 
 ---
 
