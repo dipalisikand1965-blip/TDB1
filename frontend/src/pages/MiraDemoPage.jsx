@@ -3510,6 +3510,10 @@ const MiraDemoPage = () => {
               setShowTodayPanel(false);
               navigate(path);
             }}
+            onPetSwitch={(newPet) => {
+              setShowTodayPanel(false);
+              switchPet(newPet);
+            }}
           />
         </Suspense>
       )}
