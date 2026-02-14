@@ -140,8 +140,10 @@ const TraitGraphVisualization = memo(({ petId, petName, apiUrl, token, isOpen = 
 
   // Fetch trait graph stats
   const fetchStats = async () => {
-    if (!petId || !apiUrl) {
-      console.log('[TRAIT-GRAPH-VIZ] Missing petId or apiUrl:', { petId, apiUrl });
+    const baseUrl = apiUrl || process.env.REACT_APP_BACKEND_URL || '';
+    
+    if (!petId || !baseUrl) {
+      console.log('[TRAIT-GRAPH-VIZ] Missing petId or apiUrl:', { petId, apiUrl: baseUrl });
       return;
     }
     
@@ -154,7 +156,7 @@ const TraitGraphVisualization = memo(({ petId, petName, apiUrl, token, isOpen = 
       if (token) headers['Authorization'] = `Bearer ${token}`;
       
       const response = await fetch(
-        `${apiUrl}/api/pet-soul/profile/${petId}/trait-graph`,
+        `${baseUrl}/api/pet-soul/profile/${petId}/trait-graph`,
         { headers }
       );
       
@@ -174,8 +176,9 @@ const TraitGraphVisualization = memo(({ petId, petName, apiUrl, token, isOpen = 
   };
 
   useEffect(() => {
-    console.log('[TRAIT-GRAPH-VIZ] useEffect triggered:', { isOpen, petId, hasApiUrl: !!apiUrl });
-    if (isOpen && petId && apiUrl) {
+    const baseUrl = apiUrl || process.env.REACT_APP_BACKEND_URL || '';
+    console.log('[TRAIT-GRAPH-VIZ] useEffect triggered:', { isOpen, petId, hasApiUrl: !!baseUrl });
+    if (isOpen && petId) {
       fetchStats();
     }
   }, [isOpen, petId, apiUrl]);
