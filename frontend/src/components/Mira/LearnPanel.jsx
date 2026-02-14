@@ -432,6 +432,25 @@ const LearnPanel = ({
         }
         // Refresh home data to update save counts
         fetchHomeData();
+        
+        // Record learn event for TODAY nudge system
+        if (action === 'save') {
+          try {
+            await fetch(
+              `${API_BASE}/api/os/learn/event?item_id=${item.id}&item_type=${item.item_type || 'guide'}&event_type=saved&pet_id=${petId || ''}`,
+              { 
+                method: 'POST', 
+                headers: { 
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}` 
+                }
+              }
+            );
+            console.log(`[LEARN] Recorded saved event for ${item.id}`);
+          } catch (evtErr) {
+            console.log('[LEARN] Could not record saved event:', evtErr.message);
+          }
+        }
       }
     } catch (err) {
       console.error('[LEARN] Error saving item:', err);
