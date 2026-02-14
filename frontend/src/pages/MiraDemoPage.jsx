@@ -3585,23 +3585,46 @@ const MiraDemoPage = () => {
             pet={pet}
             token={token}
             onOpenServices={(serviceData) => {
-              // "Let Mira do it" - opens ServiceRequestBuilder with prefill
+              // "Let Mira do it" - opens ServiceRequestBuilder with prefill from LEARN
+              // Per LEARN Bible: One tap → ServiceRequestBuilder prefilled
+              console.log('[LEARN → SERVICES] Opening service request:', serviceData);
               setShowLearnPanel(false);
               setRequestBuilderState({ 
                 isOpen: true, 
                 service: {
                   type: serviceData?.service_type || 'general',
-                  prefill: serviceData?.prefill || {},
+                  prefill: {
+                    ...serviceData?.prefill,
+                    // Add LEARN context to the ticket
+                    learn_context: {
+                      source_layer: serviceData?.source_layer || 'learn',
+                      source_item: serviceData?.source_item,
+                      context_note: serviceData?.context_note
+                    }
+                  },
                   context: serviceData?.context || {}
                 }
               });
             }}
             onOpenConcierge={(conciergeData) => {
-              // "Ask Mira" - opens Concierge with context
+              // "Ask Mira" - opens Concierge with context (zero re-asking)
+              // Per LEARN Bible: Concierge opener shows "I've read X. Help me with Y."
+              console.log('[LEARN → CONCIERGE] Opening concierge with context:', conciergeData);
               setShowLearnPanel(false);
               setShowConciergePanel(true);
-              // TODO: Pass context to concierge
-              console.log('[LEARN] Opening concierge with context:', conciergeData);
+              
+              // Store the context for concierge to use
+              // The concierge should show a pre-filled message
+              if (conciergeData?.initialMessage) {
+                // Set as pending message for concierge
+                setPendingConciergeContext({
+                  source: 'learn',
+                  initialMessage: conciergeData.initialMessage,
+                  learn_item: conciergeData.learn_item,
+                  derived_tags: conciergeData.derived_tags_used,
+                  suggested_action: conciergeData.suggested_next_action
+                });
+              }
             }}
           />
         </Suspense>
