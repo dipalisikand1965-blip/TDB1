@@ -503,15 +503,9 @@ const TodayPanel = ({
   // FETCH LEARN NUDGE FOR TODAY
   // ═══════════════════════════════════════════════════════════════════════════
   
-  // Use ref to prevent duplicate fetches from StrictMode double-mount
-  const learnNudgeFetchedRef = React.useRef(false);
-  
   useEffect(() => {
-    // Prevent duplicate fetches in StrictMode
-    if (learnNudgeFetchedRef.current) {
-      console.log('[TODAY] Learn nudge already fetched, skipping duplicate call');
-      return;
-    }
+    // AbortController to cancel in-flight request when effect re-runs
+    const abortController = new AbortController();
     
     const fetchLearnNudge = async () => {
       console.log('[TODAY] fetchLearnNudge called - isOpen:', isOpen, 'pet:', pet?.id, 'hasToken:', !!token);
@@ -528,9 +522,6 @@ const TodayPanel = ({
         return;
       }
       
-      // Mark as fetched to prevent duplicate calls
-      learnNudgeFetchedRef.current = true;
-      
       try {
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -538,7 +529,10 @@ const TodayPanel = ({
         const url = `${apiUrl}/api/os/learn/today-nudge?pet_id=${pet.id}`;
         console.log('[TODAY] Fetching learn nudge from:', url);
         
-        const response = await fetch(url, { headers });
+        const response = await fetch(url, { 
+          headers,
+          signal: abortController.signal 
+        });
         console.log('[TODAY] Learn nudge response status:', response.status);
         
         if (response.ok) {
@@ -555,17 +549,19 @@ const TodayPanel = ({
           console.log('[TODAY] Learn nudge request failed:', response.status);
         }
       } catch (err) {
-        console.log('[TODAY] Could not fetch learn nudge:', err.message);
-        // Reset fetch flag on error to allow retry
-        learnNudgeFetchedRef.current = false;
+        if (err.name === 'AbortError') {
+          console.log('[TODAY] Learn nudge fetch aborted (expected in StrictMode)');
+        } else {
+          console.log('[TODAY] Could not fetch learn nudge:', err.message);
+        }
       }
     };
     
     fetchLearnNudge();
     
-    // Reset the ref when panel closes or pet changes
+    // Cleanup - abort the fetch when effect re-runs or component unmounts
     return () => {
-      learnNudgeFetchedRef.current = false;
+      abortController.abort();
     };
   }, [isOpen, pet?.id, apiUrl, token]);
   
