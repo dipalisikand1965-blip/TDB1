@@ -20,14 +20,98 @@ import {
   X, Sparkles, ChevronRight, Send, Heart, Check,
   ShoppingBag, RefreshCw, Info, Package, ChevronDown, ChevronUp,
   Gift, Cake, Utensils, Stethoscope, Plane, Scissors, GraduationCap,
-  Hotel, HeartPulse, Star, AlertCircle, MessageSquare
+  Hotel, HeartPulse, Star, AlertCircle, MessageSquare, Shield, Thermometer,
+  Leaf, Zap
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import hapticFeedback from '../../utils/haptic';
+import { onPickSelect } from '../../utils/picksDelights';
 import ConciergeServiceStrip from './ConciergeServiceStrip';
 import ConciergeDetailModal from './ConciergeDetailModal';
 import { ProductDetailModal } from '../ProductCard';
 import { createPortal } from 'react-dom';
+
+/**
+ * FitBadges - Subtle safety/fit indicators for picks
+ * Shows badges like: Allergy-aware, Small-mouth safe, Heat-safe, Anxiety-friendly
+ */
+const FitBadges = ({ pick, pet }) => {
+  const badges = [];
+  
+  // Determine applicable badges based on pick properties and pet context
+  if (pick.safety_level === 'safe' || pick.allergy_safe) {
+    badges.push({ 
+      id: 'allergy', 
+      label: 'Allergy-aware', 
+      icon: Shield, 
+      color: 'text-green-400 bg-green-500/10 border-green-500/20' 
+    });
+  }
+  
+  if (pick.small_mouth_safe || (pet?.size === 'small' && pick.size_safe)) {
+    badges.push({ 
+      id: 'small-mouth', 
+      label: 'Small-mouth safe', 
+      icon: Check, 
+      color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' 
+    });
+  }
+  
+  if (pick.heat_safe || pick.seasonal === 'summer') {
+    badges.push({ 
+      id: 'heat', 
+      label: 'Heat-safe', 
+      icon: Thermometer, 
+      color: 'text-orange-400 bg-orange-500/10 border-orange-500/20' 
+    });
+  }
+  
+  if (pick.anxiety_friendly || pick.calming) {
+    badges.push({ 
+      id: 'anxiety', 
+      label: 'Anxiety-friendly', 
+      icon: Heart, 
+      color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' 
+    });
+  }
+  
+  if (pick.eco_friendly || pick.sustainable) {
+    badges.push({ 
+      id: 'eco', 
+      label: 'Eco-friendly', 
+      icon: Leaf, 
+      color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' 
+    });
+  }
+  
+  if (pick.quick_delivery || pick.express) {
+    badges.push({ 
+      id: 'quick', 
+      label: 'Quick delivery', 
+      icon: Zap, 
+      color: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20' 
+    });
+  }
+  
+  if (badges.length === 0) return null;
+  
+  return (
+    <div className="flex flex-wrap gap-1.5 mt-2">
+      {badges.slice(0, 3).map(badge => {
+        const Icon = badge.icon;
+        return (
+          <span 
+            key={badge.id}
+            className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full border ${badge.color}`}
+          >
+            <Icon className="w-2.5 h-2.5" />
+            {badge.label}
+          </span>
+        );
+      })}
+    </div>
+  );
+};
 
 // Pillar configuration with emojis and gradients
 const PILLARS = [
