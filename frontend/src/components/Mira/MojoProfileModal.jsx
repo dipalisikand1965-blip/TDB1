@@ -197,6 +197,11 @@ const getMissingItems = (sectionId, data) => {
       if (!soulAnswers.walk_frequency) missing.push('walk routine');
       if (!soulAnswers.sleep_pattern) missing.push('sleep schedule');
       break;
+    case 'environment':
+      if (!data?.city && !soulAnswers.city) missing.push('location');
+      if (!soulAnswers.home_type) missing.push('home type');
+      if (!soulAnswers.other_pets) missing.push('other pets info');
+      break;
     case 'documents':
       if (!(data?.documents?.length > 0)) missing.push('vaccination records', 'vet documents');
       break;
