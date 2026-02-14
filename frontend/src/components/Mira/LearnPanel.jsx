@@ -94,15 +94,34 @@ const ContentCard = memo(({ item, onClick, onSave }) => {
         alignItems: 'center',
         gap: '12px',
         padding: '16px',
-        background: 'rgba(255, 255, 255, 0.08)',
-        border: '1px solid rgba(255, 255, 255, 0.12)',
+        background: item.is_personalized ? 'rgba(168, 85, 247, 0.12)' : 'rgba(255, 255, 255, 0.08)',
+        border: item.is_personalized ? '1px solid rgba(168, 85, 247, 0.3)' : '1px solid rgba(255, 255, 255, 0.12)',
         borderRadius: '16px',
         cursor: 'pointer',
         textAlign: 'left',
         width: '100%',
-        marginBottom: '8px'
+        marginBottom: '8px',
+        position: 'relative'
       }}
     >
+      {/* Personalization badge */}
+      {item.relevance_badge && (
+        <span style={{
+          position: 'absolute',
+          top: '-8px',
+          right: '12px',
+          background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
+          color: 'white',
+          fontSize: '10px',
+          fontWeight: 600,
+          padding: '3px 8px',
+          borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(168, 85, 247, 0.4)'
+        }}>
+          {item.relevance_badge}
+        </span>
+      )}
+      
       {/* Card Content */}
       <div className="learn-card-content">
         {/* Icon & Type Badge */}
@@ -113,6 +132,19 @@ const ContentCard = memo(({ item, onClick, onSave }) => {
           <span className={`learn-card-badge ${colorClass.bg} ${colorClass.text}`}>
             {item.time_display}
           </span>
+          {item.is_personalized && !item.relevance_badge && (
+            <span style={{
+              background: 'rgba(168, 85, 247, 0.2)',
+              color: '#a855f7',
+              fontSize: '10px',
+              fontWeight: 500,
+              padding: '2px 6px',
+              borderRadius: '4px',
+              marginLeft: '4px'
+            }}>
+              Relevant
+            </span>
+          )}
         </div>
         
         {/* Title */}
