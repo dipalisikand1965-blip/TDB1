@@ -271,7 +271,8 @@ class TestLearnOSSavedItems:
             "password": TEST_PASSWORD
         })
         if response.status_code == 200:
-            return response.json().get("token")
+            data = response.json()
+            return data.get("access_token") or data.get("token")
         pytest.skip("Authentication failed")
     
     def test_save_item_requires_auth(self):
