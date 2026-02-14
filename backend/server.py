@@ -13778,6 +13778,54 @@ async def mark_member_notification_read(
     return {"success": True, "message": "Notification marked as read"}
 
 
+# Public endpoints for notification polling (used by NotificationBell)
+@api_router.get("/member/notifications/inbox/{user_email}")
+async def get_member_notifications_by_email(
+    user_email: str,
+    limit: int = Query(20, le=100)
+):
+    """Get notifications for a member by email (public endpoint for polling)"""
+    email = user_email.lower()
+    
+    query = {"user_email": email}
+    
+    # Get from member_notifications collection
+    notifications = await db.member_notifications.find(
+        query,
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    unread = await db.member_notifications.count_documents({**query, "read": False})
+    
+    return {
+        "notifications": notifications,
+        "unread": unread,
+        "total": len(notifications)
+    }
+
+
+@api_router.put("/member/notifications/{notification_id}/mark-read")
+async def mark_notification_read_public(notification_id: str):
+    """Mark a notification as read (public endpoint)"""
+    result = await db.member_notifications.update_one(
+        {"id": notification_id},
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"success": result.modified_count > 0}
+
+
+@api_router.put("/member/notifications/mark-all-read/{user_email}")
+async def mark_all_notifications_read(user_email: str):
+    """Mark all notifications as read for a user"""
+    result = await db.member_notifications.update_many(
+        {"user_email": user_email.lower(), "read": False},
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"success": True, "count": result.modified_count}
+
+
 @api_router.get("/member/requests")
 async def get_member_requests(
     current_user: dict = Depends(get_current_user),
