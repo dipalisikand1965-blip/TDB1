@@ -546,22 +546,37 @@ async def save_answer(pet_id: str, answer: DoggyAnswer):
 
 @pet_soul_router.post("/profile/{pet_id}/answers/bulk")
 async def save_bulk_answers(pet_id: str, answers: Dict[str, Any]):
-    """Save multiple answers at once"""
+    """Save multiple answers at once with optional source tracking"""
     pet = await db.pets.find_one({"id": pet_id})
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     
     # Merge with existing answers (handle None case)
     existing_answers = pet.get("doggy_soul_answers") or {}
+    existing_meta = pet.get("doggy_soul_meta") or {}
+    
+    # Check for source in request (default to "direct" for modal edits)
+    source = answers.pop("_source", "direct")
+    confidence = answers.pop("_confidence", 100 if source == "direct" else 85)
     
     # Track NEW answers only (for paw points - no re-award on edits)
     new_answer_count = 0
+    meta_updates = {}
+    
     for key, value in answers.items():
         if key not in existing_answers or existing_answers.get(key) in [None, "", []]:
             if value is not None and value != "" and value != []:
                 new_answer_count += 1
+        
+        # Update metadata for this answer
+        meta_updates[key] = {
+            "source": source,
+            "confidence": confidence,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
     
     existing_answers.update(answers)
+    existing_meta.update(meta_updates)
     
     # Calculate new scores
     folder_scores = {fk: calculate_folder_score(existing_answers, fk) for fk in FOLDER_KEYS}
@@ -573,6 +588,7 @@ async def save_bulk_answers(pet_id: str, answers: Dict[str, Any]):
     
     await db.pets.update_one({"id": pet_id}, {"$set": {
         "doggy_soul_answers": existing_answers,
+        "doggy_soul_meta": existing_meta,
         "overall_score": overall_score,
         "folder_scores": folder_scores,
         "insights": insights,
