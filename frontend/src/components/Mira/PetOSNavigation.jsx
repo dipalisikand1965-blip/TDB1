@@ -315,6 +315,7 @@ const PetOSNavigation = ({
         <div 
           className={`mojo-avatar-wrapper ${activeTab === 'mojo' ? 'active' : ''}`}
           onClick={handleMojoClick}
+          data-testid="mojo-avatar-wrapper"
         >
           <PetAvatarRing
             pet={currentPet}
