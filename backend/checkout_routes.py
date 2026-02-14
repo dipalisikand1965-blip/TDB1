@@ -578,12 +578,28 @@ async def verify_payment(request: VerifyPaymentRequest):
         if order:
             await send_order_confirmation_email(order)
         
+        # ═══════════════════════════════════════════════════════════════════════
+        # TRAIT GRAPH UPDATE - Per MOJO Bible Part 7 §4
+        # "When purchases complete: update traits (food preferences, etc.)"
+        # ═══════════════════════════════════════════════════════════════════════
+        mojo_updated = False
+        if order and order.get("pet", {}).get("id"):
+            try:
+                from trait_graph_service import on_order_placed
+                trait_result = await on_order_placed(db, order)
+                mojo_updated = trait_result.get("success", False)
+                if mojo_updated:
+                    logger.info(f"[TRAIT-GRAPH] ✅ MOJO updated from purchase: {request.order_id}")
+            except Exception as e:
+                logger.warning(f"[TRAIT-GRAPH] Error updating MOJO from purchase: {e}")
+        
         return {
             "success": True,
             "order_id": request.order_id,
             "payment_status": "paid",
             "payment_method": payment.get("method"),
-            "message": "Payment verified successfully"
+            "message": "Payment verified successfully",
+            "mojo_updated": mojo_updated
         }
         
     except razorpay.errors.SignatureVerificationError:
