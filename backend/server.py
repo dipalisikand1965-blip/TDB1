@@ -16293,6 +16293,11 @@ finance_router = create_finance_routes(db, verify_admin)
 app.include_router(finance_router)  # Finance at /api/admin/finance/*
 logger.info("Finance & Reconciliation routes initialized")
 
+# Services Layer (MOJO OS Execution Layer)
+from services_routes import router as services_router
+app.include_router(services_router)  # Services at /api/services/*
+logger.info("Services Layer routes initialized")
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
