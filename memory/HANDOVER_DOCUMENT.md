@@ -230,12 +230,12 @@ Every service request should create:
 
 # PART 8: OS LAYERS STATUS
 
-## Current OS Score: 58%
+## Current OS Score: 63%
 
 | Layer | Score | Status |
 |-------|-------|--------|
-| MOJO (14 components) | 91% | ✅ Mostly complete |
-| TODAY | 15% | ⚠️ Only weather card built |
+| MOJO (14 components) | 94% | ✅ Nearly complete |
+| TODAY | 85% | ✅ Panel complete with weather, reminders, birthday |
 | PICKS | 45% | ⚠️ No auto-refresh on chat |
 | SERVICES | 40% | ⚠️ Basic implementation |
 | INSIGHTS | 0% | ❌ Not built |
