@@ -971,24 +971,47 @@ const TodayPanel = ({
             )}
             
             {/* ─────────────────────────────────────────────────────────────────
-                ACTIVE TASKS WATCHLIST
+                AWAITING YOU - One-tap actions (Killer UX)
             ───────────────────────────────────────────────────────────────── */}
-            {activeTasks.length > 0 && (
+            {watchlist.filter(t => t.awaiting_user).length > 0 && (
+              <section className="today-section awaiting-section" data-testid="awaiting-you-section">
+                <SectionHeader 
+                  icon={Bell} 
+                  title="Awaiting You" 
+                  count={awaitingYouCount}
+                  iconColor="text-rose-400"
+                />
+                <div className="cards-stack">
+                  {watchlist.filter(t => t.awaiting_user).map(ticket => (
+                    <WatchlistTaskCard
+                      key={ticket.ticket_id || ticket.id}
+                      ticket={ticket}
+                      onAction={handleTicketAction}
+                      onView={(t) => onNavigate?.(`/services?ticket=${t.ticket_id}`)}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+            
+            {/* ─────────────────────────────────────────────────────────────────
+                IN PROGRESS - Active service requests
+            ───────────────────────────────────────────────────────────────── */}
+            {watchlist.filter(t => !t.awaiting_user).length > 0 && (
               <section className="today-section">
                 <SectionHeader 
                   icon={Activity} 
-                  title="Active Requests" 
-                  count={activeTasks.length}
-                  iconColor="text-blue-400"
+                  title="In Progress" 
+                  count={watchlist.filter(t => !t.awaiting_user).length}
+                  iconColor="text-cyan-400"
                 />
                 <div className="cards-stack">
-                  {activeTasks.map(task => (
-                    <TaskCard
-                      key={task.id}
-                      title={task.title}
-                      status={task.status}
-                      statusText={task.statusText}
-                      onView={() => onNavigate?.(`/my-tickets?id=${task.id}`)}
+                  {watchlist.filter(t => !t.awaiting_user).map(ticket => (
+                    <WatchlistTaskCard
+                      key={ticket.ticket_id || ticket.id}
+                      ticket={ticket}
+                      onAction={handleTicketAction}
+                      onView={(t) => onNavigate?.(`/services?ticket=${t.ticket_id}`)}
                     />
                   ))}
                 </div>
