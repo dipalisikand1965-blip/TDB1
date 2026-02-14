@@ -445,27 +445,74 @@ const LearnPanel = ({
       overflow: 'hidden'
     }}>
       {/* Header */}
-      <div className="learn-header">
+      <div className="learn-header" style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '12px 16px',
+        paddingTop: 'max(16px, env(safe-area-inset-top))',
+        background: 'rgba(0, 0, 0, 0.3)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        minHeight: '56px'
+      }}>
         {view !== 'home' ? (
-          <button className="learn-back-btn" onClick={handleBack} data-testid="learn-back-btn">
+          <button className="learn-back-btn" onClick={handleBack} data-testid="learn-back-btn" style={{
+            width: '44px',
+            height: '44px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(255, 255, 255, 0.1)',
+            border: 'none',
+            borderRadius: '12px',
+            color: 'white',
+            cursor: 'pointer'
+          }}>
             <ArrowLeft size={20} />
           </button>
         ) : (
-          <div className="learn-header-title">
-            <BookOpen size={20} className="text-purple-400" />
-            <h2>Learn</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <BookOpen size={20} color="#a78bfa" />
+            <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'white', margin: 0 }}>Learn</h2>
           </div>
         )}
         
-        <div className="learn-header-actions">
+        <div style={{ display: 'flex', gap: '8px' }}>
           <button 
-            className="learn-saved-btn"
             onClick={fetchSavedItems}
             data-testid="learn-saved-btn"
+            style={{
+              position: 'relative',
+              width: '44px',
+              height: '44px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: 'none',
+              borderRadius: '12px',
+              color: 'white',
+              cursor: 'pointer'
+            }}
           >
             <Bookmark size={18} />
             {homeData.saved_count > 0 && (
-              <span className="learn-saved-badge">{homeData.saved_count}</span>
+              <span style={{
+                position: 'absolute',
+                top: '-4px',
+                right: '-4px',
+                minWidth: '18px',
+                height: '18px',
+                padding: '0 4px',
+                background: '#8b5cf6',
+                borderRadius: '9px',
+                fontSize: '10px',
+                fontWeight: 600,
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>{homeData.saved_count}</span>
             )}
           </button>
         </div>
