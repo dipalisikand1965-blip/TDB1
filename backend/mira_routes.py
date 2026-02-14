@@ -4496,7 +4496,7 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                     pillar=pillar,
                     urgency=urgency,
                     description=description,
-                    user=None,  # TODO: Get from auth token if available
+                    user=logged_in_user,  # Use auth user for ticket attribution
                     pet=request.pet_context,
                     source="mira_search",
                     picks_vault=picks_vault  # NEW: Pass picks to ticket
