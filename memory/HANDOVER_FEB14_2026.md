@@ -37,7 +37,7 @@ Basic Auth Password: lola4304
 
 ### Preview URL
 ```
-https://mojo-identity.preview.emergentagent.com
+https://miro-audit.preview.emergentagent.com
 ```
 
 ### Backend Environment (/app/backend/.env)

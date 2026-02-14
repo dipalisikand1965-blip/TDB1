@@ -36,7 +36,7 @@ Pass: lola4304
 
 ## Preview
 ```
-https://mojo-identity.preview.emergentagent.com
+https://miro-audit.preview.emergentagent.com
 ```
 
 ---
@@ -116,7 +116,7 @@ sudo supervisorctl status
 tail -f /var/log/supervisor/backend.err.log
 
 # Test API
-curl https://mojo-identity.preview.emergentagent.com/api/health
+curl https://miro-audit.preview.emergentagent.com/api/health
 ```
 
 ---
