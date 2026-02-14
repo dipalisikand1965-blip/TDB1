@@ -98,14 +98,14 @@
 
 ---
 
-# PART 3: MOJO IMPLEMENTATION STATUS (91%)
+# PART 3: MOJO IMPLEMENTATION STATUS (94%)
 
 ## Component Scores
 | Component | Score | Editor Component |
 |-----------|-------|------------------|
 | Pet Snapshot | 100% | BasicDetailsEditor |
 | Soul Profile | 79% | SoulProfileEditor |
-| Health Vault | 92% | HealthProfileEditor |
+| Health Vault | 98% | HealthProfileEditor (with Weight History + Next Vaccination Date) |
 | Diet Profile | 90% | DietProfileEditor |
 | Behaviour Profile | 78% | BehaviourProfileEditor |
 | Grooming Profile | 88% | GroomingProfileEditor |
@@ -119,7 +119,6 @@
 ## Remaining Gaps to 100%
 1. **Life Timeline (67%)**: Need past services/purchases from order history
 2. **Trait Graph (60%)**: Service outcomes → MOJO feedback loop not built
-3. **Weight History**: Currently single value, need array for history
 
 ---
 
