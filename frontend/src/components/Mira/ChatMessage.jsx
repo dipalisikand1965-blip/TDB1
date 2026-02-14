@@ -1121,6 +1121,7 @@ const MiraMessage = ({
           hapticFeedback={hapticFeedback}
           onEngageConcierge={onEngageConcierge}
           onOpenServiceRequest={onOpenServiceRequest}
+          onShowPicks={onShowPicks}
         />
       </div>
     </div>
