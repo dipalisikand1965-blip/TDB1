@@ -16319,6 +16319,10 @@ async def startup_load_admin_credentials():
     await initialize_engagement_data()
     logger.info("Engagement data initialization complete")
     
+    # Auto-seed Learn OS content if none exist
+    await auto_seed_learn_content()
+    logger.info("Learn OS content initialization complete")
+    
     # Start retention scheduler (runs daily at 3 AM UTC)
     try:
         from retention_scheduler import start_scheduler
@@ -16326,6 +16330,24 @@ async def startup_load_admin_credentials():
         logger.info("Retention scheduler started - will run daily at 3 AM UTC")
     except Exception as e:
         logger.warning(f"Could not start retention scheduler: {e}")
+
+# ==================== LEARN OS AUTO-SEED ====================
+
+async def auto_seed_learn_content():
+    """Auto-seed Learn OS content if database is empty"""
+    try:
+        guides_count = await db.learn_guides.count_documents({})
+        videos_count = await db.learn_videos.count_documents({})
+        
+        if guides_count > 0 and videos_count > 0:
+            logger.info(f"Learn content already exists ({guides_count} guides, {videos_count} videos), skipping auto-seed")
+            return
+        
+        from learn_content_seeder import seed_learn_content
+        result = await seed_learn_content(db)
+        logger.info(f"Learn OS auto-seed complete: {result}")
+    except Exception as e:
+        logger.warning(f"Learn OS auto-seed failed: {e}")
 
 # ==================== BLOG AUTO-SEED ====================
 
