@@ -1362,20 +1362,15 @@ async def get_learn_nudge_for_today(
             "dismiss_action": "not_now",  # "Not now" → don't show again for 7 days
             "pet_id": pet_id,
             "pet_name": pet_name,
-            "event_ts": event.get("ts").isoformat() if event.get("ts") else None
+            "event_ts": event.get("ts").isoformat() if event.get("ts") else None,
+            # Include ack endpoint for frontend to call when nudge is actually displayed
+            "ack_required": True
         }
         
-        # Log that we're showing this nudge (pre-emptively)
-        await db.today_nudge_log.insert_one({
-            "user_id": user_id,
-            "pet_id": pet_id,
-            "nudge_type": "learn",
-            "item_id": item_id,
-            "shown_at": now,
-            "dismissed_at": None
-        })
+        # DON'T log shown_at here - frontend must call /today-nudge/ack to start cooldown
+        # This fixes the race condition where StrictMode double-fetch causes premature cooldown
         
-        logger.info(f"[LEARN NUDGE] Showing nudge for item {item_id} to pet {pet_id}")
+        logger.info(f"[LEARN NUDGE] Returning nudge for item {item_id} to pet {pet_id} (ack required)")
         return {"success": True, "nudge": nudge}
     
     # No eligible items found
