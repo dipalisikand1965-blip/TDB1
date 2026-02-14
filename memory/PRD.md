@@ -79,6 +79,20 @@ Build a comprehensive Pet Life Operating System platform for The Doggy Company, 
 - [x] **✅ NEW: Next Vaccination Date (2026-02-14)** - Added to Health Vault editor
 
 ### P1 - High Priority (COMPLETED ✅)
+- [x] **✅ TRAIT GRAPH VISUALIZATION (2026-02-14)** - Shows how Mira learns about pets
+  - File: `/app/frontend/src/components/Mira/TraitGraphVisualization.jsx`
+  - Displays: 27 Traits Tracked, 81 Evidence Points, 19 High Confidence
+  - 92% Average Confidence meter (green when >80%, yellow 50-80%, red <50%)
+  - **Intelligence Sources Breakdown:**
+    - Services: 14 traits (52%) - Green
+    - Observations: 8 traits (30%) - Teal
+    - Direct Input: 4 traits (15%) - Purple
+    - Mira Chat: 1 trait (4%) - Blue
+  - Animated "Mira learns with every interaction" indicator
+  - Integrated into MOJO modal under "Mira's Intelligence" section
+  - Toggle button expands/collapses source breakdown
+- [x] **✅ Soul Score Consistency Fix (2026-02-14)** - All views use `calculate_pet_soul_score`
+- [x] **✅ Pet Life Pass Redesign (2026-02-14)** - Matches dashboard design with progress bars
 - [x] **✅ TODAY Panel REBUILT - Full MOJO Bible Spec (2026-02-14)**
   - File: `/app/frontend/src/components/Mira/TodayPanel.jsx` (800+ lines complete rewrite)
   - **Components per spec:**
