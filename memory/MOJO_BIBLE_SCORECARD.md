@@ -508,15 +508,17 @@
 
 ---
 
-### PICKS OVERALL SCORE: 45%
+### PICKS OVERALL SCORE: 75% ✅ UPDATED
 
-**Priority Implementation Order:**
-1. 🔴 **P0: B6 - Wire auto-refresh** (0% → 100%) = +25% overall
-2. 🔴 **P0: Pillar switching** (20% → 100%) = +10% overall  
-3. 🟡 **P1: "Arranged-for" card template** = +5% overall
-4. 🟡 **P1: Timestamp + "Why these picks"** = +3% overall
-5. 🟢 **P2: 5-second undo toast** = +2% overall
-6. 🟢 **P2: History boost** = +2% overall
+**Completed:**
+1. ✅ **P0: B6 - Wire auto-refresh** - DONE (+25%)
+2. ✅ **P0: Pillar switching** - DONE (+10%)
+
+**Remaining Priority Implementation Order:**
+1. 🟡 **P1: "Arranged-for" card template** = +5% overall
+2. 🟡 **P1: Timestamp + "Why these picks"** = +3% overall
+3. 🟢 **P2: 5-second undo toast** = +2% overall
+4. 🟢 **P2: History boost** = +2% overall
 
 ---
 
