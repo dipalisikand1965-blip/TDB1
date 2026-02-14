@@ -366,58 +366,60 @@ const TodayPanel = ({
   const totalCount = todayItems.urgent.length + todayItems.dueSoon.length + todayItems.tasks.length;
   
   return (
-    <div className="today-panel-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="today-panel" data-testid="today-panel">
-        {/* Header */}
-        <div className="today-header">
-          <div className="today-header-left">
-            <Calendar className="w-5 h-5 text-purple-400" />
-            <h2>Today</h2>
-            {totalCount > 0 && (
-              <span className="today-count">{totalCount}</span>
-            )}
+    <>
+      <style>{todayPanelStyles}</style>
+      <div className="today-panel-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+        <div className="today-panel" data-testid="today-panel">
+          {/* Header */}
+          <div className="today-header">
+            <div className="today-header-left">
+              <Calendar className="w-5 h-5 text-purple-400" />
+              <h2>Today</h2>
+              {totalCount > 0 && (
+                <span className="today-count">{totalCount}</span>
+              )}
+            </div>
+            <div className="today-header-right">
+              {lastUpdated && (
+                <span className="today-updated">
+                  Updated {lastUpdated.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                </span>
+              )}
+              <button className="today-close" onClick={onClose}>
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
-          <div className="today-header-right">
-            {lastUpdated && (
-              <span className="today-updated">
-                Updated {lastUpdated.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-              </span>
+          
+          {/* Content */}
+          <div className="today-content">
+            {/* Weather Alert */}
+            {weather && (
+              <WeatherAlertCard weather={weather} petName={pet?.name} />
             )}
-            <button className="today-close" onClick={onClose}>
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-        
-        {/* Content */}
-        <div className="today-content">
-          {/* Weather Alert */}
-          {weather && (
-            <WeatherAlertCard weather={weather} petName={pet?.name} />
-          )}
-          
-          {/* Birthday Countdown */}
-          {todayItems.birthdayDaysUntil !== null && todayItems.birthdayDaysUntil <= 30 && (
-            <BirthdayCountdown pet={pet} daysUntilBirthday={todayItems.birthdayDaysUntil} />
-          )}
-          
-          {/* Urgent Stack */}
-          {todayItems.urgent.length > 0 && (
-            <div className="today-section">
-              <h3 className="today-section-title">
-                <AlertTriangle className="w-4 h-4 text-red-400" />
-                Needs Attention
-              </h3>
-              <div className="today-urgent-stack">
-                {todayItems.urgent.map((item, i) => (
-                  <UrgentCard
-                    key={i}
-                    icon={item.icon}
-                    title={item.title}
-                    description={item.description}
-                    action={item.action}
-                    variant={item.variant}
-                    onAction={() => onNavigate?.(item.navigateTo || '/care')}
+            
+            {/* Birthday Countdown */}
+            {todayItems.birthdayDaysUntil !== null && todayItems.birthdayDaysUntil <= 30 && (
+              <BirthdayCountdown pet={pet} daysUntilBirthday={todayItems.birthdayDaysUntil} />
+            )}
+            
+            {/* Urgent Stack */}
+            {todayItems.urgent.length > 0 && (
+              <div className="today-section">
+                <h3 className="today-section-title">
+                  <AlertTriangle className="w-4 h-4 text-red-400" />
+                  Needs Attention
+                </h3>
+                <div className="today-urgent-stack">
+                  {todayItems.urgent.map((item, i) => (
+                    <UrgentCard
+                      key={i}
+                      icon={item.icon}
+                      title={item.title}
+                      description={item.description}
+                      action={item.action}
+                      variant={item.variant}
+                      onAction={() => onNavigate?.(item.navigateTo || '/care')}
                   />
                 ))}
               </div>
