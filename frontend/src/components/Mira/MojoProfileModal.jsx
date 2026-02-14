@@ -2026,10 +2026,11 @@ const MojoProfileModal = ({
               })}
             </div>
             
-            {/* Membership & Rewards */}
+            {/* Membership & Rewards - Pet Life Pass */}
             <MembershipRewards 
               membership={membershipData}
               badges={badgesData}
+              petPassNumber={fullPetData?.pet_pass_number || pet?.pet_pass_number}
               onViewRewards={() => navigate('/dashboard?tab=rewards')}
             />
             
