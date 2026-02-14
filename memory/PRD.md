@@ -265,7 +265,7 @@ Per user's architecture vision:
 
 ## Preview URL
 
-**Working:** https://learn-pets-1.preview.emergentagent.com/mira-demo
+**Working:** https://mira-learn-ai.preview.emergentagent.com/mira-demo
 
 ---
 
