@@ -337,19 +337,57 @@ const LearnReader = ({
   };
   
   return (
-    <div className="learn-reader" data-testid="learn-reader">
+    <div className="learn-reader" data-testid="learn-reader" style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'linear-gradient(180deg, #1a1625 0%, #0f0d15 50%, #0a0810 100%)',
+      zIndex: 10000,
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
       {/* Header */}
-      <div className="learn-reader-header">
+      <div className="learn-reader-header" style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '12px 16px',
+        paddingTop: 'max(16px, env(safe-area-inset-top))',
+        background: 'rgba(0, 0, 0, 0.3)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        minHeight: '56px'
+      }}>
         <button 
           className="learn-back-btn" 
           onClick={onBack}
           data-testid="learn-reader-back"
+          style={{
+            width: '44px',
+            height: '44px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(255, 255, 255, 0.1)',
+            border: 'none',
+            borderRadius: '12px',
+            color: 'white',
+            cursor: 'pointer'
+          }}
         >
           <ArrowLeft size={20} />
         </button>
-        <div className="learn-reader-meta">
-          <span className="learn-reader-topic">{item.topic_label || item.topic}</span>
-          <span className="learn-reader-time">{item.time_display}</span>
+        <div className="learn-reader-meta" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <span style={{
+            fontSize: '12px',
+            fontWeight: 500,
+            color: '#a78bfa',
+            background: 'rgba(139, 92, 246, 0.2)',
+            padding: '4px 10px',
+            borderRadius: '8px'
+          }}>{item.topic_label || item.topic}</span>
+          <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)' }}>{item.time_display}</span>
         </div>
       </div>
       
