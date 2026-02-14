@@ -679,6 +679,16 @@ const LearnPanel = ({
               <p>{activeTopic?.description}</p>
             </div>
             
+            {/* For Your Pet - Personalized shelf for this topic */}
+            {topicData.shelves?.for_your_pet?.length > 0 && (
+              <ContentShelf
+                title={`For ${topicData.pet_name || petName}`}
+                items={topicData.shelves.for_your_pet}
+                icon={Heart}
+                onItemClick={handleItemClick}
+              />
+            )}
+            
             <ContentShelf
               title="Start Here"
               items={topicData.shelves?.start_here || []}
