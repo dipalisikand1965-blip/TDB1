@@ -300,6 +300,7 @@ const PetOSNavigation = ({
   onPetClick, // Opens MOJO modal
   onSwitchPet,
   badges = {}, // { picks: 3, services: 1, insights: 2 }
+  picksHasNew = false, // For PICKS "new" sparkle animation
 }) => {
   const [showPetDropdown, setShowPetDropdown] = useState(false);
   
