@@ -254,7 +254,7 @@ const LearnPanel = ({
   const [view, setView] = useState('home'); // 'home' | 'topic' | 'search' | 'saved' | 'detail'
   const [topics, setTopics] = useState([]);
   const [activeTopic, setActiveTopic] = useState(null);
-  const [homeData, setHomeData] = useState({ start_here: [], topics: [] });
+  const [homeData, setHomeData] = useState({ start_here: [], for_your_pet: [], topics: [] });
   const [topicData, setTopicData] = useState({ shelves: {}, topic: {} });
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -263,23 +263,32 @@ const LearnPanel = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   
-  // Fetch home data on mount
+  // Get pet ID for personalization
+  const petId = pet?.id && pet.id !== 'demo-pet' ? pet.id : null;
+  const petName = pet?.name || 'your pet';
+  
+  // Fetch home data on mount or when pet changes
   useEffect(() => {
     if (isOpen) {
       fetchHomeData();
     }
-  }, [isOpen]);
+  }, [isOpen, petId]);
   
   const fetchHomeData = async () => {
     setIsLoading(true);
     setError(null);
     try {
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const response = await fetch(`${API_BASE}/api/os/learn/home`, { headers });
+      // Pass pet_id for personalization
+      const url = petId 
+        ? `${API_BASE}/api/os/learn/home?pet_id=${encodeURIComponent(petId)}`
+        : `${API_BASE}/api/os/learn/home`;
+      const response = await fetch(url, { headers });
       const data = await response.json();
       if (data.success) {
         setHomeData(data);
         setTopics(data.topics || []);
+        console.log('[LEARN] Home loaded, personalization:', data.personalization);
       }
     } catch (err) {
       console.error('[LEARN] Error fetching home:', err);
@@ -294,7 +303,11 @@ const LearnPanel = ({
     setError(null);
     try {
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const response = await fetch(`${API_BASE}/api/os/learn/topic/${topicId}`, { headers });
+      // Pass pet_id for personalization
+      const url = petId
+        ? `${API_BASE}/api/os/learn/topic/${topicId}?pet_id=${encodeURIComponent(petId)}`
+        : `${API_BASE}/api/os/learn/topic/${topicId}`;
+      const response = await fetch(url, { headers });
       const data = await response.json();
       if (data.success) {
         setTopicData(data);
