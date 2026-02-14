@@ -489,12 +489,97 @@ const TodayPanel = ({
   onNavigate,
   onPetSwitch,
   onTicketAction, // Handler for ticket quick actions
+  onOpenServices, // Handler for opening ServiceRequestBuilder with prefill
+  onOpenConcierge, // Handler for opening ConciergePanel with context
 }) => {
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [activeTasks, setActiveTasks] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
   const [isStale, setIsStale] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [learnNudge, setLearnNudge] = useState(null); // LEARN → TODAY smart nudge
+  
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FETCH LEARN NUDGE FOR TODAY
+  // ═══════════════════════════════════════════════════════════════════════════
+  
+  useEffect(() => {
+    const fetchLearnNudge = async () => {
+      if (!isOpen) return;
+      
+      // Skip for demo pets
+      const isDemoPet = !pet?.id || pet.id === 'demo-pet' || pet.id === 'demo';
+      if (isDemoPet) return;
+      
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        
+        const response = await fetch(
+          `${apiUrl}/api/os/learn/today-nudge?pet_id=${pet.id}`,
+          { headers }
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.nudge) {
+            console.log('[TODAY] Learn nudge received:', data.nudge.learn_item?.title);
+            setLearnNudge(data.nudge);
+          } else {
+            setLearnNudge(null);
+          }
+        }
+      } catch (err) {
+        console.log('[TODAY] Could not fetch learn nudge:', err.message);
+      }
+    };
+    
+    fetchLearnNudge();
+  }, [isOpen, pet?.id, apiUrl, token]);
+  
+  // Handler for Learn nudge primary action (Let Mira do it → Services)
+  const handleLearnNudgePrimary = (nudge) => {
+    if (onOpenServices && nudge.primary_cta) {
+      onOpenServices({
+        type: nudge.primary_cta.service_type,
+        name: nudge.primary_cta.label,
+        prefill: nudge.primary_cta.prefill,
+        learn_context: {
+          source_layer: 'learn',
+          source_item: nudge.learn_item,
+          context_note: nudge.context_line
+        }
+      });
+      onClose();
+    } else {
+      onNavigate?.('/services');
+    }
+  };
+  
+  // Handler for Learn nudge secondary action (Ask Mira → Concierge)
+  const handleLearnNudgeSecondary = (nudge) => {
+    if (onOpenConcierge && nudge.secondary_cta?.context) {
+      onOpenConcierge(nudge.secondary_cta.context);
+      onClose();
+    }
+  };
+  
+  // Handler for Learn nudge dismiss
+  const handleLearnNudgeDismiss = async (nudge) => {
+    setLearnNudge(null);
+    
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      
+      await fetch(
+        `${apiUrl}/api/os/learn/today-nudge/dismiss?nudge_id=${nudge.id}&item_id=${nudge.learn_item?.id}&pet_id=${nudge.pet_id}`,
+        { method: 'POST', headers }
+      );
+    } catch (err) {
+      console.log('[TODAY] Could not dismiss nudge:', err.message);
+    }
+  };
   
   // ═══════════════════════════════════════════════════════════════════════════
   // CALCULATE TODAY ITEMS FROM PET DATA
