@@ -4608,8 +4608,38 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                     user_city = city.title()
                     break
             
-            # Fetch nearby places
-            if detected_place_type and (is_location_query or user_city):
+            # ═══════════════════════════════════════════════════════════════════════════════
+            # HARDCODED CONVERSATION FLOW - For service intents, ASK clarifying questions FIRST
+            # Do NOT trigger Places API until user provides location preference
+            # ═══════════════════════════════════════════════════════════════════════════════
+            
+            # Service intents that REQUIRE clarifying questions before location search
+            service_intents_needing_clarification = ["groomer", "trainer", "boarding"]
+            
+            # Check if this is a new service request (not answering a clarifying question)
+            is_answering_clarification = False
+            if request.step_history and len(request.step_history) > 0:
+                is_answering_clarification = True
+            
+            # Check if user EXPLICITLY mentioned location
+            explicit_location_request = any(word in user_input_lower for word in [
+                "near me", "nearby", "close to me", "in my area", "around here",
+                "find me a", "find one", "find a groomer", "find groomer", 
+                "where can i find", "recommend one", "suggest one",
+                "at home", "home grooming"  # Also explicit location preference
+            ])
+            
+            # For service intents: ONLY call Places API if user explicitly asks for location
+            # Otherwise, let the LLM ask clarifying questions first
+            skip_places_for_clarification = (
+                detected_place_type in service_intents_needing_clarification and
+                not explicit_location_request and
+                not is_answering_clarification and
+                request.conversation_stage == "initial"
+            )
+            
+            # Fetch nearby places (but SKIP if we need clarifying questions first)
+            if detected_place_type and (is_location_query or user_city) and not skip_places_for_clarification:
                 city_for_search = user_city or "Mumbai"
                 db = get_db()
                 
