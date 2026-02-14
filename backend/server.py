@@ -16296,7 +16296,7 @@ logger.info("Finance & Reconciliation routes initialized")
 # Services Layer (MOJO OS Execution Layer)
 from services_routes import router as services_router, set_database as set_services_db
 set_services_db(db)
-app.include_router(services_router)  # Services at /api/services/*
+app.include_router(services_router)  # Services at /api/os/services/*
 logger.info("Services Layer routes initialized")
 
 @app.on_event("startup")
