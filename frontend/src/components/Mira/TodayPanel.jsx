@@ -722,51 +722,75 @@ const TodayPanel = ({
   }, [pet, weather]);
   
   // ═══════════════════════════════════════════════════════════════════════════
-  // FETCH ACTIVE TASKS
+  // FETCH WATCHLIST FROM SERVICES API
+  // Uses the unified watchlist endpoint for "in-motion" tickets
   // ═══════════════════════════════════════════════════════════════════════════
   
   useEffect(() => {
-    const fetchTasks = async () => {
+    const fetchWatchlist = async () => {
       if (!pet?.id || !apiUrl || !isOpen) return;
       
       try {
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
         
+        // Use the unified watchlist endpoint from services_routes.py
         const response = await fetch(
-          `${apiUrl}/api/service-desk/tickets?pet_id=${pet.id}&status=active`,
+          `${apiUrl}/api/os/services/watchlist?pet_id=${pet.id}`,
           { headers }
         );
         
         if (response.ok) {
           const data = await response.json();
-          const tasks = (data.tickets || []).slice(0, 5).map(ticket => ({
-            id: ticket._id || ticket.id,
-            title: ticket.subject || ticket.type || 'Service Request',
+          
+          // Set watchlist items directly from API (already enriched)
+          setWatchlist(data.watchlist || []);
+          
+          // Check if data is stale (API returns stale flag)
+          setIsStale(data.stale || false);
+          
+          // Also support legacy activeTasks for backward compatibility
+          const tasks = (data.watchlist || []).slice(0, 5).map(ticket => ({
+            id: ticket.ticket_id || ticket._id || ticket.id,
+            title: ticket.title || ticket.service_type || 'Service Request',
             status: ticket.status,
             statusText: getStatusText(ticket.status)
           }));
           setActiveTasks(tasks);
         }
       } catch (err) {
-        console.log('[TODAY] Could not fetch tasks:', err.message);
+        console.log('[TODAY] Could not fetch watchlist:', err.message);
       }
     };
     
-    fetchTasks();
+    fetchWatchlist();
   }, [isOpen, pet?.id, apiUrl, token]);
   
   const getStatusText = (status) => {
     const texts = {
+      'clarification_needed': 'Awaiting your input',
+      'options_ready': 'Choose an option',
+      'approval_pending': 'Awaiting your approval',
+      'payment_pending': 'Payment pending',
+      'in_progress': 'In progress',
+      'scheduled': 'Scheduled',
+      'shipped': 'Shipped - on its way',
       'pending': 'Awaiting your confirmation',
       'awaiting_confirmation': 'Awaiting your confirmation',
       'scheduling': 'Concierge is scheduling',
-      'in_progress': 'In progress',
-      'payment_pending': 'Payment pending',
-      'shipped': 'Order shipped',
       'confirmed': 'Confirmed'
     };
     return texts[status] || status;
+  };
+  
+  // Handler for quick actions on watchlist tickets
+  const handleTicketAction = async (ticket, action) => {
+    if (onTicketAction) {
+      onTicketAction(ticket, action);
+    } else {
+      // Default: navigate to ticket detail
+      onNavigate?.(`/services?ticket=${ticket.ticket_id}`);
+    }
   };
   
   // ═══════════════════════════════════════════════════════════════════════════
