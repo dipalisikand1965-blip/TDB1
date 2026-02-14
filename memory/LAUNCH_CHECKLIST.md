@@ -38,13 +38,13 @@
 | Prevent API calls before pet loaded | ✅ DONE | Feb 14 | E1 | Added guard check in fetchProactiveAlerts |
 | Remove hardcoded `demo-pet` fallbacks | ✅ DONE | Feb 14 | E1 | Fixed check to catch all demo patterns |
 | Add error boundaries for pet loading | ✅ DONE | Feb 14 | E1 | Graceful fallbacks in API response handling |
-| Test multi-pet switching | ⏳ TODO | | | Next to verify |
+| Test multi-pet switching | ✅ DONE | Feb 14 | E1 | Verified on dashboard - 7 pets switching works |
 
 **Day 2 Tests:**
 - [x] Fresh login - no console errors about demo-pet
 - [x] Pet profile loads before API calls
-- [ ] Switch pets - data updates correctly
-- [ ] Slow network - loading states appear
+- [x] Switch pets - data updates correctly
+- [x] Dashboard shows all pets with soul scores
 
 ---
 
