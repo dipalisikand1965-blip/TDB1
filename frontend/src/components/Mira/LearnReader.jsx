@@ -334,34 +334,102 @@ const LearnReader = ({
   const isVideo = item.item_type === 'video';
   
   // Handle "Let Mira do it" - opens ServiceRequestBuilder with prefill
+  // Per LEARN Bible: One tap from Learn → ServiceRequestBuilder prefilled
   const handleLetMiraDoIt = (cta) => {
+    // Get primary CTA service info
+    const serviceType = cta?.service_type || cta?.service_id || item.service_cta?.[0]?.service_type || 'general';
+    
+    // Build prefill from MOJO (pet profile) + CTA mapping
+    const prefill = {
+      ...(cta?.prefill || {}),
+      // Add handling notes from pet profile if available
+      handling_notes: pet?.doggy_soul_answers?.handling_notes || pet?.preferences?.handling_notes || '',
+      // Add preferred time if available
+      preferred_time: pet?.preferences?.preferred_time || '',
+    };
+    
+    // Build context note (1-2 lines: what they read + what they're trying to do)
+    const contextNote = `User viewed: ${item.title}. ${item.summary ? `Guide focus: ${item.summary.slice(0, 100)}...` : ''}`;
+    
     if (onOpenServices) {
       onOpenServices({
-        prefill: cta?.prefill || {},
-        service_type: cta?.service_type || 'general',
-        source: 'learn',
+        // Source layer identification
+        source_layer: 'learn',
+        source_item: {
+          type: item.item_type || (isVideo ? 'video' : 'guide'),
+          id: item.id,
+          title: item.title
+        },
+        // Pet context
+        pet_id: pet?.id,
+        // Service type from CTA
+        service_type: serviceType,
+        // Prefill object from MOJO + CTA
+        prefill: prefill,
+        // Context for the ticket
+        context_note: contextNote,
+        // Legacy fields for backward compatibility
         context: {
           learn_item_id: item.id,
           learn_item_title: item.title,
-          learn_topic: item.topic
+          learn_topic: item.topic,
+          risk_level: item.risk_level
         }
       });
+    } else {
+      // Fallback: If no service handler, open concierge instead
+      console.log('[LEARN] No service handler, falling back to concierge');
+      handleAskMira();
     }
   };
   
-  // Handle "Ask Mira" - opens Concierge with context
+  // Handle "Ask Mira" - opens Concierge with context (zero re-asking)
+  // Per LEARN Bible: Concierge opener shows "I've read X. Help me with Y."
   const handleAskMira = () => {
+    // Build derived tags (pet_tags only for now; breed tags only if non-health topic)
+    const derivedTags = [];
+    if (pet?.doggy_soul_answers?.noise_sensitivity) derivedTags.push('noise_sensitive');
+    if (pet?.doggy_soul_answers?.separation_anxiety) derivedTags.push('anxious');
+    if (pet?.preferences?.allergies) derivedTags.push('food_sensitive');
+    
+    // Determine suggested next action
+    const primaryCta = item.service_cta?.[0] || item.cta?.[0];
+    const suggestedAction = primaryCta?.service_type || primaryCta?.service_id || 'needs_judgment';
+    
+    // Build initial message (auto-filled, user can edit)
+    const initialMessage = `I've read "${item.title}". Help me understand this better for ${pet?.name || 'my pet'}.`;
+    
     if (onOpenConcierge) {
       onOpenConcierge({
+        // Source identification
+        source_layer: 'learn',
+        pet_id: pet?.id,
+        // Learn item context
+        learn_item: {
+          title: item.title,
+          type: item.item_type || (isVideo ? 'video' : 'guide'),
+          id: item.id
+        },
+        // User stuck step (optional - could be added if tracking step progress)
+        user_stuck_step: null,
+        // Derived tags for context
+        derived_tags_used: derivedTags,
+        // Suggested next action
+        suggested_next_action: suggestedAction,
+        // Pre-populated message
+        initialMessage: initialMessage,
+        // Legacy context field
         context: {
           source: 'learn',
           item_id: item.id,
           item_title: item.title,
           item_topic: item.topic,
-          pet_name: pet?.name
-        },
-        initialMessage: `I just read "${item.title}" and have a question about it.`
+          pet_name: pet?.name,
+          risk_level: item.risk_level
+        }
       });
+    } else {
+      console.log('[LEARN] No concierge handler available');
     }
   };
   
