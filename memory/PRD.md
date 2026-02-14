@@ -11,21 +11,56 @@
 ## 7. `/app/memory/SYSTEM_AUDIT_REPORT.md` - ✅ FULL SYSTEM AUDIT COMPLETED (Feb 2026)
 ---
 
-## CURRENT SCORE: 100% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 14)
+## CURRENT SCORE: 100% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 15)
 
 | Layer | Score | Status |
 |-------|-------|--------|
 | **MOJO (14 components)** | **100%** | ✅ **COMPLETE** |
 | **TODAY** | **100%** | ✅ **COMPLETE** - Watchlist integration done |
 | **PICKS** | **100%** | ✅ **COMPLETE** - UI verified working |
-| **SERVICES** | **100%** | ✅ **COMPLETE** - Execution loop + watchlist |
+| **SERVICES** | **100%** | ✅ **COMPLETE** - Execution loop + Orders integrated |
 | **P1 MOBILE** | **100%** | ✅ **COMPLETE** - iOS Safari + Android Chrome |
 | **LEARN** | **100%** | ✅ **COMPLETE** - Session 12: Full Integration |
 | **CONCIERGE** | **60%** | 🔄 **PHASE 1 COMPLETE** - Session 14: Home + Conversation |
 
 ---
 
-## SESSION 14 ACCOMPLISHMENTS (Feb 14, 2026)
+## SESSION 15 ACCOMPLISHMENTS (Feb 14, 2026)
+
+### P0 UI/Navigation Restructuring ✅
+**Goal:** Simplify the OS navigation per user request
+
+**What was changed:**
+
+#### A) Primary Navigation (6 Layers)
+- **Removed INSIGHTS tab** from primary navigation
+- Final primary nav: **MOJO → TODAY → PICKS → SERVICES → LEARN → CONCIERGE®**
+- Updated `PetOSNavigation.jsx` - OS_LAYERS array now has 6 items (was 7)
+- Updated `MiraDemoPage.jsx` - Tab handler no longer references `insights` tab
+
+#### B) Secondary Button Row Removed
+- **Removed NavigationDock component** from MiraDemoPage.jsx
+- **Removed FloatingActionBar component** from MiraDemoPage.jsx
+- **Removed "Enhance Soul" and "Past Chats" buttons** from WelcomeHero.jsx
+- Functions consolidated into primary OS layers:
+  - **Orders** → Available in SERVICES panel (already present)
+  - **Past Chats** → Available in CONCIERGE "Recent Conversations" section
+  - **Soul/Enhance Soul** → Available in MOJO tab (MojoProfileModal)
+  - **Insights** → Will be integrated into CONCIERGE learning flow
+
+#### C) Code Cleanup
+- Removed unused imports (NavigationDock, FloatingActionBar)
+- Updated comments to reflect new 6-layer architecture
+- Preserved all functionality - just moved to appropriate OS layers
+
+**Files Modified:**
+- `/app/frontend/src/components/Mira/PetOSNavigation.jsx` - Removed INSIGHTS from OS_LAYERS
+- `/app/frontend/src/components/Mira/WelcomeHero.jsx` - Removed secondary action buttons
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - Removed NavigationDock and FloatingActionBar
+
+**Test Status:** ✅ Visual verification complete - UI is cleaner with unified primary navigation
+
+---
 
 ### P0 CONCIERGE OS Layer - Phase 1 Complete ✅
 **Goal:** Build the Concierge OS layer based on CONCIERGE Bible v1.0 (Judgment + Execution + Accountability)
