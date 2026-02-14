@@ -817,13 +817,21 @@ export const GroomingProfileEditor = memo(({ pet, onSave, onCancel, saving }) =>
   );
 });
 
-// Routine Tracker Editor - With Auto-Save
+// Routine Tracker Editor - With Auto-Save (ENHANCED for 100% MOJO)
 export const RoutineProfileEditor = memo(({ pet, onSave, onCancel, saving }) => {
   const [data, setData] = useState({
     walk_frequency: pet?.doggy_soul_answers?.walk_frequency || '',
     exercise_needs: pet?.doggy_soul_answers?.exercise_needs || '',
     sleep_pattern: pet?.doggy_soul_answers?.sleep_pattern || '',
     daily_routine: pet?.doggy_soul_answers?.daily_routine || '',
+    preferred_walk_time: pet?.doggy_soul_answers?.preferred_walk_time || '',
+    bathroom_schedule: pet?.doggy_soul_answers?.bathroom_schedule || '',
+    alone_time_comfort: pet?.doggy_soul_answers?.alone_time_comfort || '',
+    wake_time: pet?.doggy_soul_answers?.wake_time || '',
+    bed_time: pet?.doggy_soul_answers?.bed_time || '',
+    nap_habits: pet?.doggy_soul_answers?.nap_habits || '',
+    activity_peaks: pet?.doggy_soul_answers?.activity_peaks || [],
+    routine_flexibility: pet?.doggy_soul_answers?.routine_flexibility || '',
   });
   
   // Use auto-save hook
@@ -831,11 +839,18 @@ export const RoutineProfileEditor = memo(({ pet, onSave, onCancel, saving }) => 
   
   return (
     <EditorWrapper title="Routine Tracker" onCancel={onCancel} saveStatus={saveStatus}>
+      <div className="editor-section-header">Exercise & Walks</div>
       <SelectField 
         label="Walk Frequency" 
         value={data.walk_frequency} 
         options={OPTIONS.walk_frequency}
         onChange={(v) => setData(prev => ({ ...prev, walk_frequency: v }))}
+      />
+      <SelectField 
+        label="Preferred Walk Time" 
+        value={data.preferred_walk_time} 
+        options={OPTIONS.preferred_walk_time}
+        onChange={(v) => setData(prev => ({ ...prev, preferred_walk_time: v }))}
       />
       <SelectField 
         label="Exercise Needs" 
@@ -844,10 +859,57 @@ export const RoutineProfileEditor = memo(({ pet, onSave, onCancel, saving }) => 
         onChange={(v) => setData(prev => ({ ...prev, exercise_needs: v }))}
       />
       <SelectField 
+        label="Bathroom Schedule" 
+        value={data.bathroom_schedule} 
+        options={OPTIONS.bathroom_schedule}
+        onChange={(v) => setData(prev => ({ ...prev, bathroom_schedule: v }))}
+      />
+      
+      <div className="editor-section-header">Sleep & Rest</div>
+      <SelectField 
         label="Sleep Pattern" 
         value={data.sleep_pattern} 
         options={OPTIONS.sleep_pattern}
         onChange={(v) => setData(prev => ({ ...prev, sleep_pattern: v }))}
+      />
+      <TextField 
+        label="Usual Wake Time" 
+        type="time"
+        value={data.wake_time}
+        onChange={(v) => setData(prev => ({ ...prev, wake_time: v }))}
+      />
+      <TextField 
+        label="Usual Bed Time" 
+        type="time"
+        value={data.bed_time}
+        onChange={(v) => setData(prev => ({ ...prev, bed_time: v }))}
+      />
+      <SelectField 
+        label="Nap Habits" 
+        value={data.nap_habits} 
+        options={['Short naps throughout day', 'One long afternoon nap', 'Sleeps most of day', 'Rarely naps', 'Naps after meals']}
+        onChange={(v) => setData(prev => ({ ...prev, nap_habits: v }))}
+      />
+      
+      <div className="editor-section-header">Daily Rhythm</div>
+      <SelectField 
+        label="Activity Peaks" 
+        value={data.activity_peaks} 
+        options={['Early morning', 'Mid-morning', 'Noon', 'Afternoon', 'Evening', 'Night']}
+        onChange={(v) => setData(prev => ({ ...prev, activity_peaks: v }))}
+        multiple
+      />
+      <SelectField 
+        label="Alone Time Comfort" 
+        value={data.alone_time_comfort} 
+        options={OPTIONS.alone_time_comfort}
+        onChange={(v) => setData(prev => ({ ...prev, alone_time_comfort: v }))}
+      />
+      <SelectField 
+        label="Routine Flexibility" 
+        value={data.routine_flexibility} 
+        options={['Very flexible', 'Somewhat flexible', 'Prefers routine', 'Strict routine needed']}
+        onChange={(v) => setData(prev => ({ ...prev, routine_flexibility: v }))}
       />
       <TextField 
         label="Daily Routine Notes" 
