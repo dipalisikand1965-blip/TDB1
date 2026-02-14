@@ -179,28 +179,7 @@ const WelcomeHero = ({
   
   return (
     <div className="mira-hero-welcome">
-      {/* Action Buttons Row */}
-      <div className="hero-actions-row">
-        {/* Soul / Dashboard Button */}
-        <button 
-          className="soul-journey-btn" 
-          onClick={() => navigate(token ? '/dashboard' : `/pet-soul/${pet.id || ''}`)}
-          data-testid="soul-journey-btn"
-        >
-          <Crown className="w-4 h-4" />
-          <span>{token ? `Enhance ${pet.name}'s Soul` : `Start ${pet.name}'s soul journey`}</span>
-        </button>
-        
-        {/* View Past Chats Button */}
-        <button 
-          className="history-btn" 
-          onClick={onLoadPastChats}
-          data-testid="view-history-btn"
-        >
-          <History className="w-4 h-4" />
-          <span>Past Chats</span>
-        </button>
-      </div>
+      {/* SECONDARY BUTTONS REMOVED - Soul moved to MOJO, Past Chats moved to CONCIERGE */}
       
       {/* Hero Layout - Avatar Left, Content Right */}
       <div className="hero-layout">
