@@ -2958,8 +2958,8 @@ const MiraDemoPage = () => {
           } else if (tabId === 'insights') {
             setShowInsightsPanel(true);
           } else if (tabId === 'learn') {
-            setShowLearnModal(true);
-            fetchLearnVideos('recommended');
+            // Open new LEARN OS Panel
+            setShowLearnPanel(true);
           } else if (tabId === 'concierge') {
             setShowConciergePanel(true);
           }
