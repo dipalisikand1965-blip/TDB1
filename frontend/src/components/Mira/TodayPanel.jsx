@@ -541,6 +541,16 @@ const TodayPanel = ({
           if (data.nudge) {
             console.log('[TODAY] Learn nudge received:', data.nudge.learn_item?.title);
             setLearnNudge(data.nudge);
+            
+            // Acknowledge the nudge was displayed (starts 7-day cooldown)
+            // This ensures cooldown only starts when nudge is actually rendered
+            if (data.nudge.ack_required && data.nudge.learn_item?.id) {
+              fetch(
+                `${apiUrl}/api/os/learn/today-nudge/ack?item_id=${data.nudge.learn_item.id}&pet_id=${pet.id}`,
+                { method: 'POST', headers }
+              ).then(() => console.log('[TODAY] Nudge acknowledged - cooldown started'))
+               .catch(err => console.log('[TODAY] Ack failed:', err.message));
+            }
           } else {
             console.log('[TODAY] No nudge in response, reason:', data.reason);
             setLearnNudge(null);
