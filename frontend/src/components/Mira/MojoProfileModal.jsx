@@ -530,17 +530,20 @@ const SoulProfileContent = memo(({ pet, soulData }) => {
   );
 });
 
-// Health Profile Content Component
+// Health Profile Content Component - Expanded per MOJO Bible
 const HealthProfileContent = memo(({ pet }) => {
   const soulAnswers = pet?.doggy_soul_answers || {};
   const soulMeta = pet?.doggy_soul_meta || {};
   const preferences = pet?.preferences || {};
+  const healthVault = pet?.health_vault || {};
   
   const allergies = preferences.allergies || soulAnswers.food_allergies || [];
   const weight = soulAnswers.weight;
   const spayedNeutered = soulAnswers.spayed_neutered;
   
   const items = [];
+  
+  // Critical: Allergies
   if (allergies && allergies.length > 0 && allergies[0] !== 'No') {
     const meta = getTraitMetadata('food_allergies', soulAnswers, soulMeta);
     items.push({ 
