@@ -88,6 +88,7 @@ const calculateSectionCompleteness = (sectionId, data) => {
   const soulAnswers = data?.doggy_soul_answers || {};
   const preferences = data?.preferences || {};
   const soul = data?.soul || {};
+  const soulMeta = data?.doggy_soul_meta || {};
   
   switch (sectionId) {
     case 'soul': {
@@ -96,6 +97,15 @@ const calculateSectionCompleteness = (sectionId, data) => {
         'social_with_people', 'confidence_level', 'anxiety_triggers', 'comfort_preferences'];
       const filled = soulFields.filter(f => soulAnswers[f] && soulAnswers[f] !== 'Unknown').length;
       return Math.round((filled / soulFields.length) * 100);
+    }
+    case 'trait_graph': {
+      // Trait graph completeness based on number of traits with meta data
+      const metaCount = Object.keys(soulMeta).length;
+      if (metaCount >= 20) return 100;
+      if (metaCount >= 15) return 85;
+      if (metaCount >= 10) return 70;
+      if (metaCount >= 5) return 50;
+      return metaCount > 0 ? 30 : 0;
     }
     case 'health': {
       // Health fields: allergies, weight, vaccinations, vet_info, medications
