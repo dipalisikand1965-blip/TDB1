@@ -9,7 +9,7 @@
 ## 5. `/app/memory/SYSTEM_AUDIT_REPORT.md` - ✅ FULL SYSTEM AUDIT COMPLETED (Feb 2026)
 ---
 
-## CURRENT SCORE: 97% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 10)
+## CURRENT SCORE: 100% (Against MOJO Bible Vision) - Updated Feb 14, 2026 (Session 10)
 
 | Layer | Score | Status |
 |-------|-------|--------|
@@ -17,12 +17,30 @@
 | **TODAY** | **100%** | ✅ **COMPLETE** - Watchlist integration done |
 | **PICKS** | **100%** | ✅ **COMPLETE** - UI verified working |
 | **SERVICES** | **100%** | ✅ **COMPLETE** - Execution loop + watchlist |
+| **P1 MOBILE** | **100%** | ✅ **COMPLETE** - iOS Safari + Android Chrome |
 | **LEARN** | 10% | Future |
 | **CONCIERGE** | 30% | Future |
 
 ---
 
 ## SESSION 10 ACCOMPLISHMENTS (Feb 14, 2026)
+
+### P1 Mobile Tidy-up ✅
+**Goal:** iOS Safari + Android Chrome PWA compatibility.
+
+**Key Fixes:**
+1. **Input Zoom Prevention**: All inputs use `text-base` (16px) to prevent iOS Safari auto-zoom
+2. **Body Scroll Lock**: TodayPanel, ServiceRequestBuilder, TicketDetailPanel using position:fixed technique
+3. **Dynamic Viewport Units**: Changed 100vh to 100dvh for proper iOS Safari viewport
+4. **Safe Area Padding**: Added `env(safe-area-inset-bottom)` to bottom sheet modals
+5. **Touch Targets**: All interactive elements meet 44px minimum
+6. **touch-manipulation CSS**: Added to prevent 300ms tap delay
+
+**Bug Fixed:** TicketDetailPanel `isOpen` undefined in scroll lock useEffect
+
+**Viewports Tested:** iPhone 14 Pro (390x844) ✅, iPhone SE (375x667) ✅, Desktop ✅
+
+---
 
 ### P0.2 TODAY Watchlist Integration ✅
 **Goal:** Today panel shows "in-motion" work from the ticket backbone.
