@@ -26,6 +26,45 @@
 
 ## SESSION 13 ACCOMPLISHMENTS (Feb 14, 2026)
 
+### P0 LEARN → TODAY Integration - Complete ✅
+**Goal:** Connect LEARN and TODAY layers with smart nudges and deep links
+
+**What was built:**
+
+#### A) TODAY → LEARN Deep Links
+- Created `TODAY_TO_LEARN_MAP` mapping alert types to Learn guides
+- `GET /api/os/learn/deep-link-map` endpoint returns enriched mapping with titles
+- Deep link format: `/os?tab=learn&open={type}:{id}&pet_id={pet_id}&src=today:{alert_type}`
+- Maps seasonal alerts, due soon cards, and urgent items to relevant Learn content
+
+#### B) LEARN → TODAY Smart Nudges (One Card, One Week)
+- **Backend:**
+  - `POST /api/os/learn/event` - Records user events (saved, completed, helpful, not_helpful)
+  - `GET /api/os/learn/today-nudge?pet_id=` - Returns ONE eligible nudge (anti-spam rules enforced)
+  - `POST /api/os/learn/today-nudge/ack` - Acknowledges nudge display, starts 7-day cooldown
+  - `POST /api/os/learn/today-nudge/dismiss` - "Not now" dismissal
+- **Anti-Spam Rules (all must be true):**
+  1. User completed/saved a Learn item
+  2. Item has service mapping in `LEARN_TO_SERVICE_MAP`
+  3. No Learn-nudge shown in last 7 days for that pet
+  4. Same item hasn't nudged in 30 days
+- **Frontend:**
+  - `LearnNudgeCard` component with primary/secondary/dismiss actions
+  - Primary → Opens ServiceRequestBuilder with LEARN prefill
+  - Secondary → Opens ConciergePanel with LEARN context
+  - AbortController + ACK pattern fixes React StrictMode race condition
+
+#### C) Data Model
+- `learn_events`: {user_id, pet_id, item_id, item_type, event_type, ts}
+- `today_nudge_log`: {user_id, pet_id, nudge_type, item_id, shown_at, dismissed_at}
+
+#### Test Results
+- **Testing Agent Report:** `/app/test_reports/iteration_193.json`
+- **Backend:** 100% - All endpoints working
+- **Frontend:** 100% - LearnNudgeCard displays correctly
+
+---
+
 ### P0 LEARN Integrations - Verified & Tested ✅
 **Goal:** Test and verify the P0 integrations connecting LEARN → SERVICES and LEARN → CONCIERGE
 
