@@ -10424,7 +10424,7 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
             })
         elif missing_info == ["location"]:
             # Only location is missing
-            return {
+            return add_picks_to_response({
                 "success": True,
                 "response": f"{pet_anchor}\n\nWhich **area** would you like me to search in?",
                 "session_id": session_id,
@@ -10445,10 +10445,10 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
                 ],
                 "products": [],
                 "nearby_places": None
-            }
+            })
         else:
             # Both missing - ask both in ONE message (max 2 questions)
-            return {
+            return add_picks_to_response({
                 "success": True,
                 "response": f"{pet_anchor}\n\nBefore I suggest places:\n\n• Which **area** should I search?\n• **Indoor** or **outdoor** seating preferred?",
                 "session_id": session_id,
