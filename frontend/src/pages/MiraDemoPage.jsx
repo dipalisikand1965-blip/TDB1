@@ -2943,8 +2943,8 @@ const MiraDemoPage = () => {
         </div>
       </header>
       
-      {/* PET OS NAVIGATION - The 7 Layer OS Navigation Bar */}
-      {/* MOJO = Identity | TODAY = Time | PICKS = Intelligence | SERVICES = Action | INSIGHTS = Pattern | LEARN = Knowledge | CONCIERGE = Human */}
+      {/* PET OS NAVIGATION - The 6 Layer OS Navigation Bar */}
+      {/* MOJO = Identity | TODAY = Time | PICKS = Intelligence | SERVICES = Action | LEARN = Knowledge | CONCIERGE = Human */}
       <PetOSNavigation
         currentPet={pet}
         allPets={allPets}
@@ -2964,8 +2964,6 @@ const MiraDemoPage = () => {
             setMiraPicks(prev => ({ ...prev, hasNew: false }));
           } else if (tabId === 'services') {
             setShowServicesPanel(true);
-          } else if (tabId === 'insights') {
-            setShowInsightsPanel(true);
           } else if (tabId === 'learn') {
             // Open new LEARN OS Panel
             setShowLearnPanel(true);
@@ -2987,7 +2985,6 @@ const MiraDemoPage = () => {
               ? (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) 
               : null,
           services: null, // TODO: Connect to pending services count
-          insights: null, // TODO: Connect to new insights count
         }}
         picksHasNew={miraPicks.hasNew}
       />
