@@ -364,22 +364,22 @@
 
 ## PICKS Layer - EXHAUSTIVE SCORECARD
 
-### Current Score: 45% → Target: 100%
+### Current Score: 60% → Target: 100%
 
 ---
 
-### 1. Core Behaviour (Must happen every turn) - 0%
+### 1. Core Behaviour (Must happen every turn) - 80% ✅ UPDATED
 | Item | Status | Notes |
 |------|--------|-------|
-| Refresh every user message | ❌ NOT BUILT | B6 - Critical gap |
-| Refresh every Mira reply | ❌ NOT BUILT | B6 - Critical gap |
+| Refresh every user message | ✅ DONE | Picks engine runs at start of chat |
+| Refresh every Mira reply | ✅ DONE | Returns in response data |
 | Infer active pillar + topic | ✅ DONE | classification_pipeline.py |
 | Fetch Pet Context Pack | ✅ DONE | Exists in backend |
-| Generate ranked picks | ✅ DONE | picks_scorer.py |
-| Render picks into UI | ⚠️ PARTIAL | Static, not auto-refresh |
+| Generate ranked picks | ✅ DONE | picks_scorer.py - 8 picks |
+| Render picks into UI | ⚠️ PARTIAL | useVault.js updated, UI needs testing |
 | Every card actionable → task | ⚠️ PARTIAL | Concierge flow exists |
 
-**Subscore: 40%** (Critical: Auto-refresh NOT wired)
+**Subscore: 80%** (Auto-refresh WIRED - B6 complete)
 
 ---
 
