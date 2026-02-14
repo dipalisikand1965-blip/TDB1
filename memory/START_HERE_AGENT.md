@@ -36,7 +36,7 @@ Pass: lola4304
 
 ## Preview
 ```
-https://learn-action-hub.preview.emergentagent.com
+https://mira-learn.preview.emergentagent.com
 ```
 
 ---
@@ -116,7 +116,7 @@ sudo supervisorctl status
 tail -f /var/log/supervisor/backend.err.log
 
 # Test API
-curl https://learn-action-hub.preview.emergentagent.com/api/health
+curl https://mira-learn.preview.emergentagent.com/api/health
 ```
 
 ---

@@ -371,7 +371,7 @@ Per user's architecture vision:
 
 ## Preview URL
 
-**Working:** https://learn-action-hub.preview.emergentagent.com/mira-demo
+**Working:** https://mira-learn.preview.emergentagent.com/mira-demo
 
 ---
 

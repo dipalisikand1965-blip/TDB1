@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://learn-action-hub.preview.emergentagent.com
+https://mira-learn.preview.emergentagent.com
 
 ---
 
