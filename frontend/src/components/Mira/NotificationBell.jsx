@@ -199,7 +199,7 @@ const NotificationBell = ({ userEmail, className = '' }) => {
                         {notification.title}
                       </h4>
                       <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">
-                        {notification.body}
+                        {notification.message || notification.body}
                       </p>
                       <span className="text-xs text-gray-500 mt-1 block">
                         {getTimeAgo(notification.created_at)}
