@@ -167,6 +167,34 @@ const ChatInputBar = ({
       )}
       
       <div className="mp-composer-inner">
+        {/* New Chat Button - shown when there's an active conversation */}
+        {hasConversation && onNewChat && (
+          <button
+            type="button"
+            onClick={onNewChat}
+            className="mp-btn-newchat"
+            data-testid="new-chat-btn"
+            title="Start a new conversation"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '40px',
+              height: '40px',
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)',
+              border: 'none',
+              borderRadius: '12px',
+              color: 'white',
+              cursor: 'pointer',
+              marginRight: '8px',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              boxShadow: '0 2px 8px rgba(139, 92, 246, 0.3)'
+            }}
+          >
+            <MessageSquarePlus size={18} />
+          </button>
+        )}
+        
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
