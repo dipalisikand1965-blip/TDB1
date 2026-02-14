@@ -187,17 +187,18 @@
 ## 10. Documents Vault
 | Item | Status | Notes |
 |------|--------|-------|
-| Vaccination certificates | ⚠️ PARTIAL | Display exists, upload missing |
-| Medical records | ❌ NOT BUILT | |
-| Insurance documents | ❌ NOT BUILT | |
-| Travel documents | ❌ NOT BUILT | |
-| Licenses | ❌ NOT BUILT | |
-| Prescriptions | ❌ NOT BUILT | |
-| Registration papers | ❌ NOT BUILT | |
-| Document upload UI | ❌ NOT BUILT | Critical gap |
-| Expiry tracking | ❌ NOT BUILT | |
+| Vaccination certificates | ✅ DONE | Via /paperwork upload |
+| Medical records | ✅ DONE | Via /paperwork upload |
+| Insurance documents | ✅ DONE | Via /paperwork upload |
+| Travel documents | ✅ DONE | Via /paperwork upload |
+| Licenses | ✅ DONE | Via /paperwork upload |
+| Prescriptions | ✅ DONE | Via /paperwork upload |
+| Registration papers | ✅ DONE | Via /paperwork upload |
+| Document upload UI | ✅ DONE | Full upload at /paperwork, linked from MOJO |
+| Expiry tracking | ✅ DONE | Expiry dates with alerts in MOJO |
+| MOJO Integration | ✅ DONE | Documents show in MOJO modal with expiry alerts |
 
-**Score: 11%** (1/9 items)
+**Score: 100%** (UPDATED - now integrated with /paperwork)
 
 ---
 
