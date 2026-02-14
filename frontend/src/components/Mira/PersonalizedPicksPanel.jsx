@@ -556,15 +556,28 @@ const ConfirmationModal = ({
 
 /**
  * Main PersonalizedPicksPanel Component
+ * 
+ * Now supports:
+ * - Engine picks from B6 Picks Engine (auto-refreshed every turn)
+ * - Auto pillar switching based on conversation classification
+ * - "Updated just now" timestamp
+ * - Safety override handling
  */
 const PersonalizedPicksPanel = ({
   isOpen,
   onClose,
   pet,
   token,
-  onSendSuccess // Callback when picks are sent successfully - adds message to chat
+  onSendSuccess, // Callback when picks are sent successfully - adds message to chat
+  // NEW: Engine picks props (B6)
+  enginePicks = [],        // Pre-computed picks from picks engine
+  enginePillar = null,     // Auto-detected pillar from classification
+  conciergeDecision = null, // Concierge prominence decision
+  safetyOverride = null,   // Emergency/caution state
+  lastUpdated = null       // For "Updated just now"
 }) => {
-  const [activePillar, setActivePillar] = useState('celebrate');
+  // Use engine pillar if provided, otherwise default to celebrate
+  const [activePillar, setActivePillar] = useState(enginePillar || 'celebrate');
   const [picksData, setPicksData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -577,6 +590,23 @@ const PersonalizedPicksPanel = ({
   const [selectedConcierge, setSelectedConcierge] = useState(null); // For concierge detail modal (fallback)
   const [isSending, setIsSending] = useState(false); // Prevent double submission
   const scrollRef = useRef(null);
+  
+  // AUTO PILLAR SWITCH: When enginePillar changes, switch to it
+  useEffect(() => {
+    if (enginePillar && enginePillar !== activePillar && enginePillar !== 'general') {
+      console.log(`[PICKS PANEL] Auto-switching pillar: ${activePillar} → ${enginePillar}`);
+      setActivePillar(enginePillar);
+    }
+  }, [enginePillar, activePillar]);
+  
+  // Get "Updated just now" text
+  const getUpdatedText = () => {
+    if (!lastUpdated) return null;
+    const diff = Date.now() - new Date(lastUpdated).getTime();
+    if (diff < 60000) return 'Updated just now';
+    if (diff < 300000) return 'Updated a few minutes ago';
+    return null;
+  };
   
   // Fetch picks data
   const fetchPicks = useCallback(async () => {
