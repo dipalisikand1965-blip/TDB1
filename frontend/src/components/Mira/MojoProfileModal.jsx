@@ -1069,8 +1069,14 @@ const DocumentsProfileContent = memo(({ pet, apiUrl, token, onUploadClick }) => 
 
 // Life Timeline Content Component
 const TimelineProfileContent = memo(({ pet }) => {
-  const timeline = pet?.timeline || pet?.life_events || [];
+  // Merge all timeline sources
+  const timeline = [
+    ...(pet?.timeline || []),
+    ...(pet?.life_events || []),
+    ...(pet?.doggy_soul_answers?.timeline_events || [])
+  ];
   const birthday = pet?.birthday || pet?.dob || pet?.doggy_soul_answers?.dob;
+  const adoptionDate = pet?.doggy_soul_answers?.adoption_date;
   
   // Create timeline items including birthday
   const timelineItems = [];
