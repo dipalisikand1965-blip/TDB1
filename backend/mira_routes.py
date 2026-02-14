@@ -9556,6 +9556,53 @@ async def mira_chat(
     pet_name = selected_pet.get("name", "your furry friend") if selected_pet else "your furry friend"
     
     # ═══════════════════════════════════════════════════════════════════════════
+    # PICKS ENGINE (B6) - Run ONCE at the start for every message
+    # This ensures all response paths have access to intelligent picks
+    # ═══════════════════════════════════════════════════════════════════════════
+    picks_engine_result = None
+    picks_response_data = {
+        "picks": [],
+        "concierge": {"mode": "always_on", "cta_prominence": "quiet"},
+        "safety_override": {"active": False, "level": "normal"},
+        "missing_profile_fields": []
+    }
+    
+    if PICKS_ENGINE_AVAILABLE and selected_pet:
+        try:
+            picks_engine_result = await run_picks_engine(
+                message=user_message,
+                pet=selected_pet,
+                session_id=session_id,
+                debug=request.debug if hasattr(request, 'debug') else False,
+                max_picks=8
+            )
+            picks_response_data = {
+                "picks": picks_engine_result.picks if picks_engine_result else [],
+                "concierge": picks_engine_result.concierge if picks_engine_result else {"mode": "always_on", "cta_prominence": "quiet"},
+                "safety_override": picks_engine_result.safety_override if picks_engine_result else {"active": False, "level": "normal"},
+                "missing_profile_fields": picks_engine_result.missing_profile_fields if picks_engine_result else [],
+                "pillar": picks_engine_result.pillar if picks_engine_result else None,
+                "intent": picks_engine_result.intent if picks_engine_result else None,
+                "picks_debug": picks_engine_result.debug if (picks_engine_result and hasattr(request, 'debug') and request.debug) else None
+            }
+            if picks_engine_result and picks_engine_result.picks:
+                logger.info(f"[PICKS ENGINE] Early run: {len(picks_engine_result.picks)} picks for pillar={picks_engine_result.pillar}")
+        except Exception as picks_err:
+            logger.warning(f"[PICKS ENGINE] Early run failed: {picks_err}")
+    
+    # Helper function to merge picks into any response
+    def add_picks_to_response(response_dict):
+        """Add picks engine data to any response dictionary"""
+        response_dict.update({
+            "picks": picks_response_data.get("picks", []),
+            "concierge": picks_response_data.get("concierge", {}),
+            "safety_override": picks_response_data.get("safety_override", {}),
+            "missing_profile_fields": picks_response_data.get("missing_profile_fields", []),
+            "picks_debug": picks_response_data.get("picks_debug")
+        })
+        return response_dict
+    
+    # ═══════════════════════════════════════════════════════════════════════════
     # CONVERSATION CONTINUITY - Handle pending flows from previous turn
     # If we're awaiting a response, check if user answered and continue the flow
     # ═══════════════════════════════════════════════════════════════════════════
