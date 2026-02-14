@@ -1827,6 +1827,7 @@ const MojoProfileModal = ({
                           {section.id === 'behaviour' && <BehaviourProfileContent pet={petData} />}
                           {section.id === 'grooming' && <GroomingProfileContent pet={petData} />}
                           {section.id === 'routine' && <RoutineProfileContent pet={petData} />}
+                          {section.id === 'environment' && <EnvironmentProfileContent pet={petData} />}
                           {section.id === 'documents' && <DocumentsProfileContent pet={petData} apiUrl={apiUrl} token={token} />}
                           {section.id === 'timeline' && <TimelineProfileContent pet={petData} />}
                           {section.id === 'preferences' && <PreferencesProfileContent pet={petData} />}
