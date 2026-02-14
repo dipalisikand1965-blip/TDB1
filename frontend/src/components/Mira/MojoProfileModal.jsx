@@ -764,43 +764,144 @@ const RoutineProfileContent = memo(({ pet }) => {
 });
 
 // Documents Vault Content Component  
-const DocumentsProfileContent = memo(({ pet }) => {
+const DocumentsProfileContent = memo(({ pet, apiUrl, token, onUploadClick }) => {
+  const [paperworkDocs, setPaperworkDocs] = useState([]);
+  const [loadingDocs, setLoadingDocs] = useState(false);
+  const navigate = useNavigate();
+  
+  // Fetch documents from paperwork API
+  useEffect(() => {
+    const fetchPaperworkDocs = async () => {
+      if (!pet?.id || !apiUrl) return;
+      
+      setLoadingDocs(true);
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        
+        const response = await fetch(`${apiUrl}/api/paperwork/documents/${pet.id}`, { headers });
+        if (response.ok) {
+          const data = await response.json();
+          setPaperworkDocs(data.all_documents || []);
+        }
+      } catch (err) {
+        console.error('[MOJO] Failed to fetch paperwork docs:', err);
+      } finally {
+        setLoadingDocs(false);
+      }
+    };
+    
+    fetchPaperworkDocs();
+  }, [pet?.id, apiUrl, token]);
+  
   const documents = pet?.documents || [];
   const healthVault = pet?.health_vault || {};
   
   // Combine documents from various sources
   const allDocs = [
-    ...documents,
-    ...(healthVault.vaccination_records || []).map(v => ({ type: 'vaccination', name: v.name || 'Vaccination', date: v.date })),
+    ...paperworkDocs.map(d => ({
+      type: d.category || 'general',
+      name: d.document_name,
+      date: d.document_date || d.created_at,
+      expiry: d.expiry_date,
+      subcategory: d.subcategory,
+      file_url: d.file_url
+    })),
+    ...documents.map(d => ({ type: d.type || 'general', name: d.name, date: d.date })),
+    ...(healthVault.vaccination_records || []).map(v => ({ type: 'medical', name: v.name || 'Vaccination', date: v.date, subcategory: 'vaccination' })),
     ...(healthVault.medical_records || []).map(m => ({ type: 'medical', name: m.name || 'Medical Record', date: m.date })),
   ];
   
+  // Category icons
+  const getCategoryIcon = (type, subcategory) => {
+    if (subcategory === 'vaccination' || type === 'vaccination') return '💉';
+    if (type === 'medical' || subcategory === 'health_checkup') return '🏥';
+    if (type === 'identity' || subcategory === 'microchip') return '🪪';
+    if (type === 'travel' || subcategory === 'airline_cert') return '✈️';
+    if (type === 'insurance' || subcategory === 'policy') return '🛡️';
+    if (type === 'legal' || subcategory === 'license') return '📋';
+    return '📄';
+  };
+  
+  // Check for expiring documents
+  const expiringDocs = allDocs.filter(d => {
+    if (!d.expiry) return false;
+    const daysUntil = Math.ceil((new Date(d.expiry) - new Date()) / (1000 * 60 * 60 * 24));
+    return daysUntil > 0 && daysUntil <= 30;
+  });
+  
+  if (loadingDocs) {
+    return (
+      <div className="documents-profile-content">
+        <div className="documents-loading">
+          <Loader2 className="w-5 h-5 animate-spin text-cyan-400" />
+          <span className="text-gray-400 text-sm">Loading documents...</span>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div className="documents-profile-content">
-      {allDocs.length > 0 ? (
-        <div className="documents-list">
-          {allDocs.slice(0, 5).map((doc, i) => (
-            <div key={i} className="document-item">
-              <span className="document-icon">
-                {doc.type === 'vaccination' ? '💉' : doc.type === 'medical' ? '🏥' : '📄'}
-              </span>
-              <span className="document-name">{doc.name}</span>
-              {doc.date && (
-                <span className="document-date">
-                  {new Date(doc.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                </span>
-              )}
-            </div>
-          ))}
-          {allDocs.length > 5 && (
-            <div className="documents-more">+{allDocs.length - 5} more documents</div>
-          )}
+      {/* Expiring Alert */}
+      {expiringDocs.length > 0 && (
+        <div className="documents-expiry-alert">
+          <AlertCircle className="w-4 h-4 text-amber-400" />
+          <span>{expiringDocs.length} document{expiringDocs.length > 1 ? 's' : ''} expiring soon</span>
         </div>
+      )}
+      
+      {allDocs.length > 0 ? (
+        <>
+          <div className="documents-list">
+            {allDocs.slice(0, 5).map((doc, i) => (
+              <div key={i} className="document-item">
+                <span className="document-icon">
+                  {getCategoryIcon(doc.type, doc.subcategory)}
+                </span>
+                <div className="document-info">
+                  <span className="document-name">{doc.name}</span>
+                  {doc.expiry && (
+                    <span className={`document-expiry ${new Date(doc.expiry) < new Date() ? 'expired' : ''}`}>
+                      Exp: {new Date(doc.expiry).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                    </span>
+                  )}
+                </div>
+                {doc.date && (
+                  <span className="document-date">
+                    {new Date(doc.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  </span>
+                )}
+              </div>
+            ))}
+            {allDocs.length > 5 && (
+              <div className="documents-more">+{allDocs.length - 5} more documents</div>
+            )}
+          </div>
+          
+          {/* Upload More Button */}
+          <button 
+            className="documents-upload-btn"
+            onClick={() => navigate('/paperwork')}
+            data-testid="upload-more-docs-btn"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Upload More Documents</span>
+          </button>
+        </>
       ) : (
         <div className="documents-empty-state">
           <FileText className="w-8 h-8 text-cyan-400 mb-2" />
           <p>No documents uploaded yet</p>
           <p className="text-xs text-gray-400 mt-1">Store vaccination records, insurance, and prescriptions</p>
+          <button 
+            className="documents-upload-btn primary"
+            onClick={() => navigate('/paperwork')}
+            data-testid="upload-first-doc-btn"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Upload Documents</span>
+          </button>
         </div>
       )}
     </div>
