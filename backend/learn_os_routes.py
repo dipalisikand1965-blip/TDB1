@@ -25,7 +25,7 @@ import uuid
 import os
 import jwt
 
-from models.learn_models import (
+from learn_models import (
     LearnTopic, ContentType, RiskLevel,
     SaveLearnRequest, TOPIC_CONFIG
 )
