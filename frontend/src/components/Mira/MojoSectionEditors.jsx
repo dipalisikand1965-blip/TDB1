@@ -1408,6 +1408,24 @@ export const editorStyles = `
     overflow-y: auto;
   }
   
+  /* Section headers within editors */
+  .editor-section-header {
+    font-size: 11px;
+    font-weight: 600;
+    color: #8B5CF6;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 0 4px;
+    margin-top: 8px;
+    border-top: 1px solid rgba(139, 92, 246, 0.15);
+  }
+  
+  .editor-section-header:first-child {
+    margin-top: 0;
+    border-top: none;
+    padding-top: 0;
+  }
+  
   .editor-field {
     display: flex;
     flex-direction: column;
