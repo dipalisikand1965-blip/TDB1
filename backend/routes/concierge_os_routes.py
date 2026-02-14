@@ -256,7 +256,7 @@ async def get_concierge_home(
                     pet_name = pet.get("name", "Your pet")
             
             recent_threads.append({
-                "id": str(thread.get("_id", "")),
+                "id": thread.get("id", str(thread.get("_id", ""))),  # Prefer UUID id, fallback to ObjectId
                 "pet_id": thread.get("pet_id"),
                 "pet_name": pet_name,
                 "title": thread.get("title", "Conversation"),
