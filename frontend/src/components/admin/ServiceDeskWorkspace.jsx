@@ -727,6 +727,17 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
                     )}
                     AI Draft
                   </Button>
+                  
+                  {/* Send Options Button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowOptionsModal(true)}
+                    className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                  >
+                    <List className="w-4 h-4 mr-1" />
+                    Send Options
+                  </Button>
                 </div>
                 
                 <Button
@@ -747,6 +758,149 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
           </>
         )}
       </div>
+      
+      {/* Options Modal */}
+      {showOptionsModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-4 border-b flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Send Option Cards</h3>
+              <Button variant="ghost" size="sm" onClick={() => setShowOptionsModal(false)}>
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            
+            <div className="p-4 space-y-4">
+              {/* Question */}
+              <div>
+                <Label className="text-sm font-medium">Question for Member</Label>
+                <Input
+                  placeholder="e.g., Choose your groomer:"
+                  value={optionsQuestion}
+                  onChange={(e) => setOptionsQuestion(e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+              
+              {/* Options List */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Options</Label>
+                {optionsList.map((opt, index) => (
+                  <div key={opt.id} className="p-3 bg-gray-50 rounded-lg border">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="w-6 h-6 rounded-full bg-indigo-500 text-white flex items-center justify-center text-xs font-bold">
+                        {opt.id}
+                      </span>
+                      <Input
+                        placeholder="Option title"
+                        value={opt.title}
+                        onChange={(e) => updateOption(index, 'title', e.target.value)}
+                        className="flex-1"
+                      />
+                      {optionsList.length > 2 && (
+                        <Button variant="ghost" size="sm" onClick={() => removeOption(index)}>
+                          <Trash2 className="w-4 h-4 text-red-500" />
+                        </Button>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Description (optional)"
+                        value={opt.description}
+                        onChange={(e) => updateOption(index, 'description', e.target.value)}
+                        className="flex-1 text-sm"
+                      />
+                      <Input
+                        placeholder="Price"
+                        value={opt.price}
+                        onChange={(e) => updateOption(index, 'price', e.target.value)}
+                        className="w-24 text-sm"
+                      />
+                    </div>
+                  </div>
+                ))}
+                
+                {optionsList.length < 5 && (
+                  <Button variant="outline" size="sm" onClick={addOption} className="w-full">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add Option
+                  </Button>
+                )}
+              </div>
+              
+              {/* Notify Channels */}
+              <div>
+                <Label className="text-sm font-medium">Notify via</Label>
+                <div className="flex gap-3 mt-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={notifyChannels.includes('in_app')}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setNotifyChannels([...notifyChannels, 'in_app']);
+                        } else {
+                          setNotifyChannels(notifyChannels.filter(c => c !== 'in_app'));
+                        }
+                      }}
+                      className="rounded"
+                    />
+                    <span className="text-sm">In-App</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={notifyChannels.includes('whatsapp')}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setNotifyChannels([...notifyChannels, 'whatsapp']);
+                        } else {
+                          setNotifyChannels(notifyChannels.filter(c => c !== 'whatsapp'));
+                        }
+                      }}
+                      className="rounded"
+                    />
+                    <span className="text-sm">WhatsApp</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={notifyChannels.includes('email')}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setNotifyChannels([...notifyChannels, 'email']);
+                        } else {
+                          setNotifyChannels(notifyChannels.filter(c => c !== 'email'));
+                        }
+                      }}
+                      className="rounded"
+                    />
+                    <span className="text-sm">Email</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-4 border-t flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowOptionsModal(false)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSendOptions}
+                disabled={!optionsQuestion.trim() || optionsList.filter(o => o.title.trim()).length < 2 || sendingOptions}
+                className="bg-indigo-500 hover:bg-indigo-600"
+              >
+                {sendingOptions ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : (
+                  <Send className="w-4 h-4 mr-2" />
+                )}
+                Send Options
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
