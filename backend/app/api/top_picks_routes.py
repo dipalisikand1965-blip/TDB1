@@ -1428,3 +1428,274 @@ async def get_pillar_top_picks(
         "picks": picks,
         "pet_name": pet.get("name"),
     }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CONTEXT-AWARE PICKS - Based on conversation topic
+# "Going to Goa" → travel picks + beach accessories + travel carriers
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Context to pillar + tag mappings
+CONTEXT_MAPPINGS = {
+    # Travel destinations → travel pillar + location-specific tags
+    "goa": {"pillar": "travel", "tags": ["beach", "resort", "coastal", "vacation", "carrier", "travel bag", "sun protection"], "location": "Goa"},
+    "mumbai": {"pillar": "travel", "tags": ["city", "urban", "carrier"], "location": "Mumbai"},
+    "bangalore": {"pillar": "travel", "tags": ["city", "parks", "urban"], "location": "Bangalore"},
+    "delhi": {"pillar": "travel", "tags": ["city", "urban", "winter"], "location": "Delhi"},
+    "himachal": {"pillar": "travel", "tags": ["mountains", "cold", "snow", "hiking", "winter gear"], "location": "Himachal"},
+    "manali": {"pillar": "travel", "tags": ["mountains", "cold", "snow", "hiking"], "location": "Manali"},
+    "kerala": {"pillar": "travel", "tags": ["beach", "backwaters", "tropical", "monsoon"], "location": "Kerala"},
+    "rajasthan": {"pillar": "travel", "tags": ["desert", "heritage", "summer", "sun protection"], "location": "Rajasthan"},
+    "pondicherry": {"pillar": "travel", "tags": ["beach", "coastal", "french", "vacation"], "location": "Pondicherry"},
+    "lonavala": {"pillar": "travel", "tags": ["hills", "monsoon", "weekend"], "location": "Lonavala"},
+    "ooty": {"pillar": "travel", "tags": ["hills", "cool", "tea gardens"], "location": "Ooty"},
+    
+    # Activity contexts
+    "beach": {"pillar": "travel", "tags": ["beach", "sand", "water", "sun protection", "life jacket", "water toys"]},
+    "mountain": {"pillar": "travel", "tags": ["hiking", "cold", "jacket", "boots", "carrier backpack"]},
+    "trip": {"pillar": "travel", "tags": ["carrier", "travel bag", "portable bowl", "travel treats", "car seat"]},
+    "vacation": {"pillar": "travel", "tags": ["carrier", "travel", "portable", "foldable", "vacation"]},
+    "hotel": {"pillar": "stay", "tags": ["travel", "boarding", "pet-friendly", "comfort"]},
+    "road trip": {"pillar": "travel", "tags": ["car seat", "seat belt", "travel bowl", "car hammock"]},
+    "flight": {"pillar": "travel", "tags": ["airline approved carrier", "travel crate", "pet passport"]},
+    
+    # Grooming contexts
+    "grooming": {"pillar": "care", "tags": ["grooming", "brush", "shampoo", "nail clipper", "deshedding"]},
+    "bath": {"pillar": "care", "tags": ["shampoo", "conditioner", "towel", "dryer", "bath"]},
+    "haircut": {"pillar": "care", "tags": ["grooming", "trimmer", "scissors", "clipper"]},
+    
+    # Food contexts
+    "food": {"pillar": "dine", "tags": ["food", "treats", "meal", "nutrition"]},
+    "treats": {"pillar": "dine", "tags": ["treats", "snacks", "biscuits", "chews"]},
+    "birthday": {"pillar": "celebrate", "tags": ["cake", "party", "celebration", "birthday treats", "party hat"]},
+    "party": {"pillar": "celebrate", "tags": ["party", "celebration", "decorations", "treats"]},
+    
+    # Health contexts
+    "vet": {"pillar": "care", "tags": ["health", "checkup", "medicine", "supplements"]},
+    "health": {"pillar": "care", "tags": ["health", "supplements", "vitamins", "wellness"]},
+    
+    # Training contexts
+    "training": {"pillar": "learn", "tags": ["training", "leash", "collar", "treats", "clicker"]},
+    "walking": {"pillar": "enjoy", "tags": ["leash", "harness", "collar", "poop bags", "walking"]},
+}
+
+@router.post("/top-picks/context-aware")
+async def get_context_aware_picks(
+    pet_id: str,
+    context: str,
+    destination: Optional[str] = None,
+    limit: int = 8
+):
+    """
+    Get context-aware picks based on conversation topic.
+    
+    When user asks about "going to Goa", returns:
+    - Travel carriers
+    - Beach gear
+    - Sun protection items
+    - Pet-friendly hotel recommendations
+    
+    Args:
+        pet_id: Pet ID or name
+        context: Conversation context/topic (e.g., "goa", "beach trip", "grooming")
+        destination: Optional specific destination
+        limit: Max picks to return
+    """
+    global db
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    # Get pet data
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        pet = await db.pets.find_one({"name": {"$regex": pet_id, "$options": "i"}}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail=f"Pet not found: {pet_id}")
+    
+    # Normalize context
+    context_lower = context.lower().strip()
+    destination_lower = (destination or "").lower().strip()
+    
+    # Find matching context mapping
+    matched_pillar = "travel"  # Default for destination queries
+    matched_tags = []
+    matched_location = destination
+    
+    # Check destination first
+    if destination_lower:
+        for key, mapping in CONTEXT_MAPPINGS.items():
+            if key in destination_lower:
+                matched_pillar = mapping["pillar"]
+                matched_tags.extend(mapping.get("tags", []))
+                matched_location = mapping.get("location", destination)
+                break
+    
+    # Then check context
+    for key, mapping in CONTEXT_MAPPINGS.items():
+        if key in context_lower:
+            matched_pillar = mapping["pillar"]
+            matched_tags.extend(mapping.get("tags", []))
+            if not matched_location:
+                matched_location = mapping.get("location")
+            break
+    
+    # Remove duplicates from tags
+    matched_tags = list(set(matched_tags))
+    
+    # Build query for products
+    pet_allergies = pet.get("preferences", {}).get("allergies") or []
+    
+    # Query: Match pillar OR any of the context tags
+    query = {
+        "in_stock": {"$ne": False},
+        "visibility.status": {"$in": ["active", None]},
+        "$or": [
+            {"pillar": matched_pillar},
+            {"primary_pillar": matched_pillar},
+            {"tags": {"$in": matched_tags}} if matched_tags else {},
+            {"category": {"$regex": "|".join(matched_tags[:5]), "$options": "i"}} if matched_tags else {},
+            {"name": {"$regex": "|".join(matched_tags[:5]), "$options": "i"}} if matched_tags else {},
+        ]
+    }
+    
+    # Get products
+    products = await db.unified_products.find(query, {"_id": 0}).limit(20).to_list(20)
+    
+    # Score products by tag relevance
+    scored_products = []
+    for product in products:
+        # Skip if allergies
+        product_allergens = product.get("allergens") or []
+        if any(a.lower() in [al.lower() for al in product_allergens] for a in pet_allergies):
+            continue
+        
+        # Calculate relevance score
+        score = 0
+        product_name = (product.get("name") or "").lower()
+        product_category = (product.get("category") or "").lower()
+        product_tags = [t.lower() for t in (product.get("tags") or [])]
+        
+        for tag in matched_tags:
+            tag_lower = tag.lower()
+            if tag_lower in product_name:
+                score += 20
+            if tag_lower in product_category:
+                score += 15
+            if tag_lower in product_tags:
+                score += 10
+        
+        # Boost for pillar match
+        if product.get("pillar") == matched_pillar:
+            score += 25
+        if product.get("primary_pillar") == matched_pillar:
+            score += 20
+            
+        scored_products.append({
+            **product,
+            "relevance_score": score,
+            "matched_context": context,
+            "why_it_fits": generate_context_reason(product, matched_tags, pet.get("name", "your pet"), matched_location)
+        })
+    
+    # Sort by relevance
+    scored_products.sort(key=lambda p: p.get("relevance_score", 0), reverse=True)
+    
+    # Get concierge picks for this context
+    concierge_picks = get_context_concierge_picks(matched_pillar, matched_tags, matched_location, pet.get("name", "Your pet"))
+    
+    return {
+        "success": True,
+        "context": {
+            "original": context,
+            "destination": destination,
+            "matched_pillar": matched_pillar,
+            "matched_tags": matched_tags,
+            "location": matched_location,
+        },
+        "pet_name": pet.get("name"),
+        "picks": scored_products[:limit],
+        "concierge_picks": concierge_picks[:4],
+        "total": len(scored_products) + len(concierge_picks)
+    }
+
+
+def generate_context_reason(product: dict, tags: List[str], pet_name: str, location: Optional[str]) -> str:
+    """Generate a personalized reason for why this product fits the context."""
+    name = product.get("name", "")
+    category = (product.get("category") or "").lower()
+    
+    # Location-specific reasons
+    if location:
+        if "beach" in tags or location.lower() in ["goa", "kerala", "pondicherry"]:
+            if "carrier" in category or "carrier" in name.lower():
+                return f"Easy to carry {pet_name} on beach trips to {location}"
+            if "water" in name.lower() or "splash" in name.lower():
+                return f"Perfect for beach fun with {pet_name} in {location}"
+            if "sun" in name.lower() or "protection" in name.lower():
+                return f"Keeps {pet_name} safe from the {location} sun"
+        
+        if "mountain" in tags or location.lower() in ["himachal", "manali", "ooty"]:
+            if "jacket" in name.lower() or "sweater" in name.lower():
+                return f"Keeps {pet_name} warm in {location}'s cool weather"
+            if "carrier" in category or "backpack" in name.lower():
+                return f"Carry {pet_name} comfortably on {location} trails"
+    
+    # General context reasons
+    if "travel" in tags or "carrier" in category:
+        return f"Perfect travel companion for {pet_name}'s adventures"
+    if "beach" in tags:
+        return f"Beach-ready gear for {pet_name}"
+    if "grooming" in tags:
+        return f"Keeps {pet_name} looking their best"
+    
+    return f"Recommended for {pet_name}'s {location or 'trip'}"
+
+
+def get_context_concierge_picks(pillar: str, tags: List[str], location: Optional[str], pet_name: str) -> List[dict]:
+    """Get concierge service picks relevant to the context."""
+    picks = []
+    
+    if pillar == "travel" or "travel" in tags:
+        picks.append({
+            "pick_type": "concierge",
+            "name": "Pet-Friendly Hotel Booking",
+            "description": f"We'll find and book the best pet-friendly hotel for {pet_name}" + (f" in {location}" if location else ""),
+            "what_we_arrange": "Hotel booking with pet amenities, welcome treats, and ground floor room preference",
+            "includes": ["Pet-friendly room", "Welcome treats", "Pet bed arrangement", "Nearby park map"],
+            "cta": "Book Hotel",
+            "why_it_fits": f"Stress-free travel planning for {pet_name}"
+        })
+        picks.append({
+            "pick_type": "concierge",
+            "name": "Travel Essentials Kit",
+            "description": f"Custom travel kit curated for {pet_name}'s specific needs",
+            "what_we_arrange": "Carrier, portable bowl, travel treats, and destination-specific items",
+            "includes": ["Right-sized carrier", "Collapsible bowls", "Travel treats", "First aid mini kit"],
+            "cta": "Curate Kit",
+            "why_it_fits": f"Everything {pet_name} needs for the trip"
+        })
+    
+    if pillar == "celebrate" or "birthday" in tags or "party" in tags:
+        picks.append({
+            "pick_type": "concierge",
+            "name": "Pet Party Planning",
+            "description": f"Complete birthday party arrangement for {pet_name}",
+            "what_we_arrange": "Cake, decorations, pet-safe treats for guests, photo session",
+            "includes": ["Custom cake", "Party decorations", "Guest treats", "Photo shoot"],
+            "cta": "Plan Party",
+            "why_it_fits": f"Make {pet_name}'s special day unforgettable"
+        })
+    
+    if pillar == "care" or "grooming" in tags:
+        picks.append({
+            "pick_type": "concierge",
+            "name": "Premium Grooming Session",
+            "description": f"At-home or salon grooming for {pet_name}",
+            "what_we_arrange": "Certified groomer, breed-specific styling, gentle handling",
+            "includes": ["Bath & dry", "Nail trim", "Ear cleaning", "Breed-specific cut"],
+            "cta": "Book Grooming",
+            "why_it_fits": f"Professional care tailored to {pet_name}"
+        })
+    
+    return picks
+
