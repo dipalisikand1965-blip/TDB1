@@ -61,6 +61,34 @@
 
 ---
 
+## SESSION 18 ACCOMPLISHMENTS (Feb 14, 2026)
+
+### BUG FIX: Empty Notifications ✅
+**Issue:** Notifications showing empty (no title/message) in the notification dropdown
+**Root Cause:** NotificationBell component was fetching from `user_notifications` collection, but notifications were being created in `member_notifications` collection
+**Fix:**
+- Updated `NotificationBell.jsx` to use `/api/member/notifications/inbox/{email}` endpoint
+- Added new public API endpoints in `server.py`:
+  - `GET /api/member/notifications/inbox/{email}` - Fetch notifications by email
+  - `PUT /api/member/notifications/{id}/mark-read` - Mark single notification as read  
+  - `PUT /api/member/notifications/mark-all-read/{email}` - Mark all as read
+- Updated notification rendering to use `message` field (not `body`)
+
+### BUG FIX: Service Desk Tickets Missing User Info ✅
+**Issue:** Tickets created from Mira chat had `member: null` - no attribution to logged-in user
+**Root Cause:** `mira_os_understand_with_products` endpoint had `user=None` hardcoded at line 4493
+**Fix:**
+- Added `authorization: Optional[str] = Header(None)` to endpoint signature
+- Extract user with `logged_in_user = await get_user_from_token(authorization)`
+- Pass `user=logged_in_user` to `create_mira_ticket()` function
+
+**Files Modified:**
+- `/app/backend/mira_routes.py` - Added auth header to understand-with-products endpoint
+- `/app/backend/server.py` - Added public notification endpoints
+- `/app/frontend/src/components/Mira/NotificationBell.jsx` - Updated to use member_notifications
+
+---
+
 ### UNIFIED CONCIERGE COMMUNICATION - Option Cards System ✅
 
 **New Feature: Admin can send Option Cards to users via Service Desk**
