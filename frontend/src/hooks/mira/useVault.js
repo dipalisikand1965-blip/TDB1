@@ -176,6 +176,7 @@ const useVault = () => {
     markPicksSeen,
     openVault,
     closeVault,
+    updateConversationContext, // NEW: For context-aware picks
     
     // Helpers
     hasPicks,
