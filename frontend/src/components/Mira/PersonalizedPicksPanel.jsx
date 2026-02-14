@@ -785,6 +785,20 @@ const PersonalizedPicksPanel = ({
             {/* Drag handle */}
             <div className="w-12 h-1.5 bg-gray-700 rounded-full mx-auto mt-3 mb-2" />
             
+            {/* Safety Banner - Shows for emergency/caution */}
+            {safetyOverride?.active && (
+              <div className={`mx-4 mb-2 px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 ${
+                safetyOverride.level === 'emergency' 
+                  ? 'bg-red-900/50 text-red-300 border border-red-500/30' 
+                  : 'bg-yellow-900/50 text-yellow-300 border border-yellow-500/30'
+              }`}>
+                <AlertCircle className="w-4 h-4" />
+                {safetyOverride.level === 'emergency' 
+                  ? 'Emergency detected - showing priority actions' 
+                  : 'Caution - consult your vet for health concerns'}
+              </div>
+            )}
+            
             {/* Title */}
             <div className="px-4 pb-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -793,11 +807,20 @@ const PersonalizedPicksPanel = ({
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">
-                    Personalized for {pet?.name || 'Your Pet'}
+                    Picks for {pet?.name || 'Your Pet'}
                   </h2>
                   <p className="text-xs text-purple-400 flex items-center gap-1">
-                    <Heart className="w-3 h-3" />
-                    Mira knows {pet?.name}
+                    {getUpdatedText() ? (
+                      <>
+                        <RefreshCw className="w-3 h-3" />
+                        {getUpdatedText()}
+                      </>
+                    ) : (
+                      <>
+                        <Heart className="w-3 h-3" />
+                        Mira knows {pet?.name}
+                      </>
+                    )}
                   </p>
                 </div>
               </div>
@@ -813,32 +836,38 @@ const PersonalizedPicksPanel = ({
               </button>
             </div>
             
-            {/* Pillar tabs */}
+            {/* Pillar tabs - with active indicator for engine-selected pillar */}
             <div 
               ref={scrollRef}
               className="flex overflow-x-auto gap-2 px-4 pb-3 scrollbar-hide"
               style={{ WebkitOverflowScrolling: 'touch' }}
             >
-              {PILLARS.map((pillar) => (
-                <button
-                  key={pillar.id}
-                  onClick={() => {
-                    hapticFeedback.buttonTap();
-                    setActivePillar(pillar.id);
-                    // Reset "show all" when changing pillars
-                    setShowAllCatalogue(false);
-                    setShowAllConcierge(false);
-                  }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
-                    activePillar === pillar.id
-                      ? `bg-gradient-to-r ${pillar.gradient} text-white shadow-lg`
-                      : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                  }`}
-                >
-                  <span className="text-base">{pillar.emoji}</span>
-                  <span className="text-sm font-medium">{pillar.name}</span>
-                </button>
-              ))}
+              {PILLARS.map((pillar) => {
+                const isEnginePillar = enginePillar === pillar.id;
+                return (
+                  <button
+                    key={pillar.id}
+                    onClick={() => {
+                      hapticFeedback.buttonTap();
+                      setActivePillar(pillar.id);
+                      // Reset "show all" when changing pillars
+                      setShowAllCatalogue(false);
+                      setShowAllConcierge(false);
+                    }}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
+                      activePillar === pillar.id
+                        ? `bg-gradient-to-r ${pillar.gradient} text-white shadow-lg`
+                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    } ${isEnginePillar && activePillar !== pillar.id ? 'ring-2 ring-purple-500/50' : ''}`}
+                  >
+                    <span className="text-base">{pillar.emoji}</span>
+                    <span className="text-sm font-medium">{pillar.name}</span>
+                    {isEnginePillar && activePillar !== pillar.id && (
+                      <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
           
