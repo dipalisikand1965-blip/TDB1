@@ -36,7 +36,7 @@ Pass: lola4304
 
 ## Preview
 ```
-https://pet-os-unified.preview.emergentagent.com
+https://concierge-2-0.preview.emergentagent.com
 ```
 
 ---
@@ -116,7 +116,7 @@ sudo supervisorctl status
 tail -f /var/log/supervisor/backend.err.log
 
 # Test API
-curl https://pet-os-unified.preview.emergentagent.com/api/health
+curl https://concierge-2-0.preview.emergentagent.com/api/health
 ```
 
 ---
