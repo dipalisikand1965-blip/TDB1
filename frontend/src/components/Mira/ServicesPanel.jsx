@@ -23,8 +23,9 @@ import {
   Camera, PartyPopper, Plane, ChevronRight, ChevronDown,
   Clock, AlertCircle, CheckCircle, CreditCard, Calendar,
   Package, Truck, X, Loader2, RefreshCw, MoreHorizontal,
-  HelpCircle, List, Edit, Inbox, CalendarCheck
+  HelpCircle, List, Edit, Inbox, CalendarCheck, PawPrint, Check
 } from 'lucide-react';
+import TicketDetailPanel from './TicketDetailPanel';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL || '';
 
