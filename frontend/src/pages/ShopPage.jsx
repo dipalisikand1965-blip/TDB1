@@ -737,8 +737,22 @@ const ShopPage = () => {
   const filteredProducts = useMemo(() => {
     let result = allProducts;
     
-    // "For You" / "recommended" - Personalize based on pet
-    if (selectedPillar === 'recommended' && selectedPet) {
+    // "For You" / "recommended" - Personalize based on pet OR show popular products
+    if (selectedPillar === 'recommended') {
+      if (!selectedPet) {
+        // No pet selected - show popular/featured products (celebrate pillar items are great gifts)
+        result = result.filter(p => 
+          p.pillar === 'celebrate' || 
+          p.primary_pillar === 'celebrate' || 
+          p.pillars?.includes('celebrate') ||
+          p.pillar === 'dine' ||
+          p.primary_pillar === 'dine'
+        ).slice(0, 50);
+        // If still no products, show first 50 of all
+        if (result.length === 0) {
+          result = allProducts.slice(0, 50);
+        }
+      } else {
       const petBreedLower = (selectedPet.breed || '').toLowerCase();
       const petSize = selectedPet.size?.toLowerCase() || '';
       const petAge = selectedPet.age_years || 0;
