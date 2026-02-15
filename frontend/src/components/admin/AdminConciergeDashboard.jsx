@@ -669,6 +669,52 @@ const AdminConciergeDashboard = () => {
     }
   }, []);
   
+  // Search messages (Feature 13)
+  const searchMessages = useCallback(async (query) => {
+    if (!query || query.length < 2) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+    
+    setIsSearching(true);
+    setShowSearchResults(true);
+    
+    try {
+      const response = await fetch(`/api/concierge/realtime/admin/search?q=${encodeURIComponent(query)}&limit=30`);
+      if (response.ok) {
+        const data = await response.json();
+        setSearchResults(data.results || []);
+      }
+    } catch (err) {
+      console.error('[ADMIN] Search error:', err);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+  
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.length >= 2) {
+        searchMessages(searchQuery);
+      }
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, [searchQuery, searchMessages]);
+  
+  // Handle search result click
+  const handleSearchResultClick = (result) => {
+    // Find the thread and select it
+    const thread = threads.find(t => t.id === result.thread_id);
+    if (thread) {
+      setSelectedThread(thread);
+      setShowSearchResults(false);
+      setSearchQuery('');
+    }
+  };
+  
   // Initial load
   useEffect(() => {
     fetchThreads();
