@@ -1064,6 +1064,9 @@ const CelebrateNewPage = () => {
   const [smartFilter, setSmartFilter] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
   
+  // Mira OS Search state
+  const [miraSearchResult, setMiraSearchResult] = useState(null);
+  
   // Modal states
   const [showBoxBuilder, setShowBoxBuilder] = useState(false);
   const [boxOccasion, setBoxOccasion] = useState('birthday');
