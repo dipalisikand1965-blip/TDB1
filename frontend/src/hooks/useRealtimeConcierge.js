@@ -97,9 +97,9 @@ const useRealtimeConcierge = ({
     
     setConnectionStatus(ConnectionStatus.CONNECTING);
     
-    // Determine WebSocket URL
+    // Determine WebSocket URL - use current host for relative API URLs
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsHost = API_URL.replace(/^https?:/, '').replace(/^\/\//, '');
+    const wsHost = window.location.host; // Use current host since API_URL is relative
     const wsUrl = `${wsProtocol}//${wsHost}/api/concierge/realtime/ws/user/${userId}`;
     
     console.log('[WS] Connecting to:', wsUrl);
