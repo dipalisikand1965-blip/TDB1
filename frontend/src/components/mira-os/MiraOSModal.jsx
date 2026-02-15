@@ -66,6 +66,26 @@ const CONCIERGE_STATES = {
   pending: 'pending'
 };
 
+// Extract quick replies from API response (same logic as MiraChatWidget)
+const extractQuickReplies = (data) => {
+  if (!data) return [];
+  
+  // Try different sources for quick replies
+  const chips = data.response?.chips || 
+                data.response?.quick_replies || 
+                data.chips ||
+                data.quick_replies ||
+                data.suggested_replies ||
+                [];
+  
+  return chips.map(chip => {
+    if (typeof chip === 'string') {
+      return { text: chip, value: chip };
+    }
+    return chip;
+  }).slice(0, 4); // Limit to 4 quick replies
+};
+
 // Pet Avatar Component
 const PetAvatar = ({ pet, isActive, onClick, hasCuratedPicks }) => (
   <button
