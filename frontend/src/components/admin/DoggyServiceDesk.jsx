@@ -808,6 +808,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           const data = await hoursRes.json();
           if (data.hours) setConciergeHours(data.hours);
           if (data.current_status) setConciergeStatus(data.current_status);
+          if (data.date_overrides) setDateOverrides(data.date_overrides);
         }
       } catch (err) {
         console.debug('Could not fetch concierge hours:', err);
