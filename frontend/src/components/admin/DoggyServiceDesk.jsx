@@ -4267,7 +4267,88 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         {tab === 'attachments' ? 'Files' : tab}
                       </button>
                     ))}
+                    {/* Golden Standard: Message Search Toggle */}
+                    <button
+                      onClick={() => setShowMessageSearch(!showMessageSearch)}
+                      className={`px-3 py-2.5 text-xs font-medium border-b-2 transition-colors ${
+                        showMessageSearch
+                          ? 'border-purple-500 text-purple-600 bg-purple-50'
+                          : 'border-transparent text-gray-500 hover:text-gray-700'
+                      }`}
+                      title="Search messages"
+                      data-testid="message-search-toggle"
+                    >
+                      <Search className="w-3.5 h-3.5" />
+                    </button>
                   </div>
+                  
+                  {/* Golden Standard: Message Search Bar (Feature 13) */}
+                  {showMessageSearch && (
+                    <div className="px-4 py-2 border-b bg-gray-50/50">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                          type="text"
+                          value={messageSearchQuery}
+                          onChange={(e) => setMessageSearchQuery(e.target.value)}
+                          placeholder="Search in conversation..."
+                          className="w-full pl-9 pr-8 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400"
+                          autoFocus
+                          data-testid="message-search-input"
+                        />
+                        {messageSearchQuery && (
+                          <button
+                            onClick={() => {
+                              setMessageSearchQuery('');
+                              setMessageSearchResults([]);
+                            }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                      
+                      {/* Search Results */}
+                      {messageSearchResults.length > 0 && (
+                        <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white">
+                          {messageSearchResults.map((result, idx) => (
+                            <button
+                              key={`${result.id}-${idx}`}
+                              onClick={() => {
+                                // Scroll to message
+                                const msgEl = document.querySelector(`[data-message-id="${result.id}"]`);
+                                if (msgEl) {
+                                  msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                  msgEl.classList.add('ring-2', 'ring-purple-400', 'ring-offset-2');
+                                  setTimeout(() => msgEl.classList.remove('ring-2', 'ring-purple-400', 'ring-offset-2'), 2000);
+                                }
+                                setShowMessageSearch(false);
+                                setMessageSearchQuery('');
+                              }}
+                              className="w-full text-left p-3 hover:bg-gray-50 border-b last:border-0"
+                              data-testid={`search-result-${idx}`}
+                            >
+                              <div className="flex justify-between items-center mb-1">
+                                <span className={`text-xs ${result.sender === 'concierge' ? 'text-purple-500' : 'text-amber-500'}`}>
+                                  {result.sender === 'concierge' ? 'Concierge®' : result.pet_name || 'Member'}
+                                </span>
+                                <span className="text-xs text-gray-400">{formatTime(result.timestamp)}</span>
+                              </div>
+                              <p className="text-sm text-gray-700 truncate">{result.content}</p>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {isSearchingMessages && (
+                        <div className="mt-2 flex items-center justify-center gap-2 text-sm text-gray-500">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Searching...
+                        </div>
+                      )}
+                    </div>
+                  )}
                   
                   {/* Tab Content */}
                   <div className="flex-1 overflow-y-auto">
