@@ -448,6 +448,11 @@ const MiraOSModal = ({
           products: data.products,
           timestamp: new Date().toISOString()
         }]);
+        
+        // Speak the response with ElevenLabs
+        if (voiceEnabled && data.response) {
+          speakWithElevenLabs(data.response);
+        }
       }
     } catch (error) {
       console.error('Chat error:', error);
