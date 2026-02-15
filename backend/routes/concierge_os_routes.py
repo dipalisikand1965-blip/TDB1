@@ -334,10 +334,12 @@ async def get_admin_concierge_hours():
     """
     hours = await get_concierge_hours()
     status = await get_concierge_status()
+    overrides = await get_date_overrides()
     
     return {
         "hours": hours,
         "current_status": status,
+        "date_overrides": overrides,
         "presets": [
             {"name": "Business Hours (9 AM - 6 PM)", "start": 9, "end": 18},
             {"name": "Extended Hours (9 AM - 9 PM)", "start": 9, "end": 21},
