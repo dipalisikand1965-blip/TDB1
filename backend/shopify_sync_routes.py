@@ -202,18 +202,29 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     # Gift Cards - highest priority
     if "gift card" in title:
         category = "gift-cards"
-    # Gift Hampers & Party Boxes
-    elif any(h in title or h in handle for h in ["hamper", "party box", "gift box", "celebration box", "woof box", "bash box", "festive box"]):
+    
+    # Gift Hampers & Party Boxes - EXPANDED patterns
+    elif any(h in title or h in handle for h in [
+        "hamper", "party box", "gift box", "celebration box", "woof box", "bash box", 
+        "festive box", "treat box", "sweet box", "pup box", "doggy box", "combo box",
+        "-box", " box"  # Catch "Go Bananas Box", "Berry Much Love Box", etc.
+    ]) and "toy" not in title:  # Exclude toy boxes
         category = "hampers"
+    
     # Cat products
     elif "cat" in product_type or "cat " in title or "feline" in title or "meow" in title or "purrfect" in title or "cattitude" in title or "purradise" in title or "caviar cupcake" in title:
         category = "cat-treats"
-    # Pupcakes & Dognuts
-    elif "pupcake" in product_type or "pupcake" in title or "dognut" in title or "dognuts" in product_type:
+    
+    # Pupcakes & Dognuts - EXPANDED
+    elif "pupcake" in product_type or "pupcake" in title or "dognut" in title or "dognuts" in product_type or "donuts" in product_type:
         category = "dognuts"
-    # Mini/Bowto cakes
-    elif ("mini" in title and "cake" in title) or "bowto" in title:
+    
+    # Mini/Bowto cakes - EXPANDED to catch "Mini" at end of title
+    elif "bowto" in title or "bowto" in product_type or (
+        "mini" in title and not any(x in title for x in ["toy", "mat", "bandana"])
+    ):
         category = "mini-cakes"
+    
     # Breed-specific cakes
     elif any(breed in title for breed in [
         "retriever", "labrador", "beagle", "husky", "shih tzu", "indie", "german shepherd",
@@ -222,7 +233,7 @@ def transform_shopify_product(shopify_product: dict) -> dict:
         "bulldog", "french bulldog", "english bulldog", "st bernard", "boxer", 
         "yorkshire terrier", "american bully", "cavalier", "chow chow", "dalmation",
         "chihuahua", "greyhound", "shnoodle", "scottish terrier", "irish setter",
-        "basset hound", "mutt munch", "mynx"
+        "basset hound", "mutt munch", "mynx", "labowbow", "spitz", "corgi"
     ]):
         if any(exc in title for exc in ["mat", "bandana", "mug", "coaster", "feeding"]):
             if "mug" in title or "coaster" in title:
@@ -231,34 +242,61 @@ def transform_shopify_product(shopify_product: dict) -> dict:
                 category = "accessories"
         else:
             category = "breed-cakes"
-    # Main cakes
-    elif "cake" in product_type or ("cake" in title and "pupcake" not in title):
+    
+    # Main cakes - includes cake pops, pan india cake
+    elif "cake" in product_type or "cakes" in product_type or ("cake" in title and "pupcake" not in title):
         category = "cakes"
-    # Frozen treats
-    elif "frozen" in product_type or "fro-yo" in title or "jello" in title or "popsicle" in title or "froyo" in title:
+    
+    # Gummies - NEW explicit category (maps to frozen-treats)
+    elif "gummies" in product_type or "gummy" in title:
         category = "frozen-treats"
+    
+    # Frozen treats - EXPANDED
+    elif "frozen" in product_type or "fro-yo" in title or "jello" in title or "popsicle" in title or "froyo" in title or "fro yo" in title or "yoghurt" in title:
+        category = "frozen-treats"
+    
     # Fresh meals
     elif "meal" in product_type or "meal" in title or "pizza" in title or "burger" in title:
         category = "fresh-meals"
-    # Desi treats
-    elif any(desi in title or desi in tags_str for desi in ["desi", "ladoo", "ladoos", "barfi", "kaju", "jalebi", "gujiya", "rakhi", "diwali", "holi"]):
+    
+    # Desi treats - EXPANDED with more patterns
+    elif any(desi in title or desi in tags_str for desi in [
+        "desi", "ladoo", "ladoos", "laddu", "barfi", "kaju", "jalebi", "gujiya", 
+        "rakhi", "diwali", "holi", "modak", "modaks", "besan", "gajjar", "tricolor"
+    ]):
         category = "desi-treats"
+    
     # Nut butters
     elif "nut butter" in title or "peanut butter jar" in title:
         category = "nut-butters"
-    # ACCESSORIES & TOYS
-    elif any(acc in title or acc in product_type for acc in ["toy", "squeaky", "bandana", "feeding mat", "coaster", "leash", "collar", "name tag"]):
+    
+    # ACCESSORIES & TOYS - EXPANDED
+    elif any(acc in title or acc in product_type for acc in [
+        "toy", "squeaky", "bandana", "feeding mat", "coaster", "leash", "collar", 
+        "name tag", "sniffer mat", "snuffle"
+    ]):
         category = "accessories"
-    # Treats & Biscuits
-    elif any(t in product_type or t in title for t in ["treat", "biscuit", "cookie", "jerky", "chew", "snack", "crunch", "munch", "chip"]):
+    
+    # Treats & Biscuits - EXPANDED
+    elif any(t in product_type or t in title for t in [
+        "treat", "biscuit", "cookie", "jerky", "chew", "snack", "crunch", "munch", 
+        "chip", "christmas cookies", "cluck", "peep"
+    ]) or product_type in ["biscuits", "pet treats", "must have", "treat jar"]:
         category = "treats"
+    
+    # Combos - map to hampers
+    elif "combo" in product_type or "combo" in title:
+        category = "hampers"
+    
     # Health products
-    elif any(h in title for h in ["oil", "toothpaste", "detangler", "flea"]):
+    elif any(h in title for h in ["oil", "toothpaste", "detangler", "flea"]) or "oil" in product_type:
         category = "accessories"
+    
     # Merchandise
     elif "merchandise" in product_type or "mug" in title:
         category = "merchandise"
-    # Pan India
+    
+    # Pan India - fallback
     elif "pan india" in tags_str or "pan-india" in tags_str:
         category = "pan-india"
     
