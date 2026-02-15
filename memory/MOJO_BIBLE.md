@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://celebrate-tabbed.preview.emergentagent.com
+https://sync-preview-2.preview.emergentagent.com
 ```
 
 ---

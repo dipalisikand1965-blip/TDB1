@@ -36,7 +36,7 @@ Pass: lola4304
 
 ## Preview
 ```
-https://celebrate-tabbed.preview.emergentagent.com
+https://sync-preview-2.preview.emergentagent.com
 ```
 
 ---
@@ -116,7 +116,7 @@ sudo supervisorctl status
 tail -f /var/log/supervisor/backend.err.log
 
 # Test API
-curl https://celebrate-tabbed.preview.emergentagent.com/api/health
+curl https://sync-preview-2.preview.emergentagent.com/api/health
 ```
 
 ---

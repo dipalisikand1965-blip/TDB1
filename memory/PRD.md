@@ -969,7 +969,7 @@ Per user's architecture vision:
 
 ## Preview URL
 
-**Working:** https://celebrate-tabbed.preview.emergentagent.com/mira-demo
+**Working:** https://sync-preview-2.preview.emergentagent.com/mira-demo
 
 ---
 
