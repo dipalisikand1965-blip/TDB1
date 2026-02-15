@@ -188,12 +188,23 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
 ```
 /app/frontend/src/
 ├── pages/
-│   ├── CelebrateNewPage.jsx      # Mira OS button location
+│   ├── CelebrateNewPage.jsx      # Mira OS + ConciergeButton location
 │   ├── MiraDemoPage.jsx          # Pet Soul dashboard
 │   └── PetSoulPage.jsx           # Onboarding
 ├── components/
-│   ├── mira-os/MiraOSModal.jsx   # NEW Mira OS
-│   └── Mira/MiraChatWidget.jsx   # OLD FAB (deprecated)
+│   ├── mira-os/
+│   │   ├── MiraOSModal.jsx       # NEW Mira OS (with ConciergeButton in header)
+│   │   ├── MiraOSTrigger.jsx     # Trigger button for MiraOS
+│   │   └── index.js              # Exports (MiraOSModal, MiraOSTrigger, ConciergeButton)
+│   ├── Mira/
+│   │   ├── ConciergeButton.jsx   # NEW: Reusable C® communication button
+│   │   ├── ConciergeThreadPanelV2.jsx # Chat panel for threads
+│   │   └── MiraChatWidget.jsx    # OLD FAB (deprecated)
+│   └── admin/
+│       └── DoggyServiceDesk.jsx  # Unified admin service desk
+├── hooks/
+│   ├── useRealtimeConcierge.js   # WebSocket hook for real-time messaging
+│   └── useServiceDeskSocket.js   # WebSocket hook for admin desk
 └── context/PillarContext.jsx
 ```
 
