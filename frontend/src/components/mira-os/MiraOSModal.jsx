@@ -719,10 +719,14 @@ const MiraOSModal = ({
               {messages.length === 0 ? (
                 <div className="text-center py-8">
                   <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                    <span className="text-2xl">{config.emoji}</span>
+                    <MessageSquare className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-2">Chat with Mira</h3>
-                  <p className="text-sm text-gray-500">Ask anything about {config.name.toLowerCase()} for {selectedPet?.name || 'your pet'}</p>
+                  <h3 className="font-bold text-gray-900 mb-2">Concierge<sup className="text-xs">®</sup></h3>
+                  <p className="text-sm text-gray-500">
+                    {selectedPet 
+                      ? `I already know ${selectedPet.name}. How can I help?` 
+                      : `Your personal pet concierge is ready`}
+                  </p>
                 </div>
               ) : (
                 messages.map((msg, msgIndex) => (
