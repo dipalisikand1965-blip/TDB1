@@ -474,63 +474,65 @@ const UnifiedHero = ({
           </div>
         </div>
         
-        {/* Search Bar */}
-        <div className="mt-6 max-w-2xl mx-auto lg:mx-0 px-2">
-          <div className="relative flex items-center bg-white rounded-2xl shadow-xl">
-            <div className="flex-shrink-0 pl-4">
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => onSearchChange?.(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && searchQuery.trim()) {
-                  onSearchSubmit?.(searchQuery.trim());
-                }
-              }}
-              placeholder={`What does ${shoppingForOther ? (otherBreedName || 'this pup') : petName} need?`}
-              className="flex-1 min-w-0 px-3 py-3.5 text-base bg-transparent focus:outline-none text-gray-900 placeholder-gray-400"
-              data-testid="hero-search-input"
-            />
-            <div className="flex items-center gap-1.5 pr-2 flex-shrink-0">
-              {voiceSupported && (
+        {/* Search Bar - HIDDEN when hideSearchBar=true (Mira already knows) */}
+        {!hideSearchBar && (
+          <div className="mt-6 max-w-2xl mx-auto lg:mx-0 px-2">
+            <div className="relative flex items-center bg-white rounded-2xl shadow-xl">
+              <div className="flex-shrink-0 pl-4">
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => onSearchChange?.(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && searchQuery.trim()) {
+                    onSearchSubmit?.(searchQuery.trim());
+                  }
+                }}
+                placeholder={`What does ${shoppingForOther ? (otherBreedName || 'this pup') : petName} need?`}
+                className="flex-1 min-w-0 px-3 py-3.5 text-base bg-transparent focus:outline-none text-gray-900 placeholder-gray-400"
+                data-testid="hero-search-input"
+              />
+              <div className="flex items-center gap-1.5 pr-2 flex-shrink-0">
+                {voiceSupported && (
+                  <button 
+                    onClick={toggleVoice}
+                    className={`w-9 h-9 rounded-xl text-white transition-all flex items-center justify-center ${
+                      isListening 
+                        ? 'bg-red-500 animate-pulse' 
+                        : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90'
+                    }`}
+                    data-testid="voice-search-btn"
+                    aria-label={isListening ? 'Stop listening' : 'Start voice search'}
+                  >
+                    <Mic className={`w-4 h-4 ${isListening ? 'animate-pulse' : ''}`} />
+                  </button>
+                )}
+                {/* Send/Search Button - Always visible */}
                 <button 
-                  onClick={toggleVoice}
+                  onClick={() => searchQuery.trim() && onSearchSubmit?.(searchQuery.trim())}
                   className={`w-9 h-9 rounded-xl text-white transition-all flex items-center justify-center ${
-                    isListening 
-                      ? 'bg-red-500 animate-pulse' 
-                      : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90'
+                    searchQuery.trim()
+                      ? 'bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 active:scale-95'
+                      : 'bg-pink-400 hover:bg-pink-500'
                   }`}
-                  data-testid="voice-search-btn"
-                  aria-label={isListening ? 'Stop listening' : 'Start voice search'}
+                  data-testid="search-submit-btn"
+                  aria-label="Search"
                 >
-                  <Mic className={`w-4 h-4 ${isListening ? 'animate-pulse' : ''}`} />
+                  <Send className="w-4 h-4" />
                 </button>
-              )}
-              {/* Send/Search Button - Always visible */}
-              <button 
-                onClick={() => searchQuery.trim() && onSearchSubmit?.(searchQuery.trim())}
-                className={`w-9 h-9 rounded-xl text-white transition-all flex items-center justify-center ${
-                  searchQuery.trim()
-                    ? 'bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 active:scale-95'
-                    : 'bg-pink-400 hover:bg-pink-500'
-                }`}
-                data-testid="search-submit-btn"
-                aria-label="Search"
-              >
-                <Send className="w-4 h-4" />
-              </button>
+              </div>
             </div>
+            {isListening && (
+              <p className="text-center text-white/70 text-sm mt-2 animate-pulse">
+                Listening... speak now
+              </p>
+            )}
           </div>
-          {isListening && (
-            <p className="text-center text-white/70 text-sm mt-2 animate-pulse">
-              Listening... speak now
-            </p>
-          )}
-        </div>
+        )}
       </div>
       
       {/* Bottom gradient fade */}
