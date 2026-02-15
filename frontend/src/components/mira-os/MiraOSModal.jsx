@@ -758,24 +758,42 @@ const MiraOSModal = ({
                       </div>
                     </div>
                     
-                    {/* Quick Replies - Show only for the last assistant message */}
+                    {/* Inline Quick Replies - Show for ALL assistant messages with quick replies */}
                     {msg.role === 'assistant' && 
                      msg.quickReplies && 
-                     msg.quickReplies.length > 0 && 
-                     msgIndex === messages.length - 1 && (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {msg.quickReplies.map((reply, idx) => (
+                     msg.quickReplies.length > 0 && (
+                      <div className="mt-3 ml-0">
+                        <div className="flex flex-wrap gap-2">
+                          {msg.quickReplies.map((reply, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => sendMessage(reply.value || reply.text || reply)}
+                              className="px-4 py-2.5 text-sm font-medium rounded-full 
+                                       bg-gradient-to-r from-purple-50 to-pink-50 
+                                       text-purple-700 border border-purple-200 
+                                       hover:from-purple-100 hover:to-pink-100 
+                                       hover:border-purple-300 shadow-sm
+                                       transition-all active:scale-95"
+                              data-testid={`quick-reply-${idx}`}
+                            >
+                              {reply.text || reply}
+                            </button>
+                          ))}
+                          {/* Always add "Anything else" option */}
                           <button
-                            key={idx}
-                            onClick={() => sendMessage(reply.value || reply.text || reply)}
-                            className="px-3 py-2 text-sm rounded-full bg-purple-50 text-purple-700 
-                                     border border-purple-200 hover:bg-purple-100 
-                                     transition-colors active:scale-95"
-                            data-testid={`quick-reply-${idx}`}
+                            onClick={() => {
+                              const input = document.querySelector('[data-testid="mira-os-chat-input"]');
+                              if (input) input.focus();
+                            }}
+                            className="px-4 py-2.5 text-sm font-medium rounded-full 
+                                     bg-gray-50 text-gray-600 border border-gray-200 
+                                     hover:bg-gray-100 hover:border-gray-300 shadow-sm
+                                     transition-all active:scale-95"
+                            data-testid="quick-reply-anything-else"
                           >
-                            {reply.text || reply}
+                            ✏️ Anything else
                           </button>
-                        ))}
+                        </div>
                       </div>
                     )}
                   </div>
