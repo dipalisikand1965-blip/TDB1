@@ -343,10 +343,26 @@ const ConciergeThreadPanelV2 = ({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   
+  // Search state (Feature 13)
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  
   // Refs
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const typingTimeoutRef = useRef(null);
+  
+  // Push notifications hook (Feature 11)
+  const {
+    isSupported: pushSupported,
+    isSubscribed: pushSubscribed,
+    permission: pushPermission,
+    loading: pushLoading,
+    subscribe: subscribePush,
+    canSubscribe: canSubscribePush
+  } = usePushNotifications(userId);
   
   // Real-time communication hook
   const {
