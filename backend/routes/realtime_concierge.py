@@ -500,6 +500,7 @@ async def process_admin_message(data: dict):
         return
     
     user_id = thread.get("user_id")
+    pet_name = thread.get("pet_name", "your pet")
     
     # Create message document
     message_doc = {
@@ -533,7 +534,7 @@ async def process_admin_message(data: dict):
             }
         )
         
-        # Notify user
+        # Notify user via WebSocket
         user_notified = await manager.send_to_user(user_id, {
             "type": "new_message",
             "thread_id": thread_id,
@@ -550,6 +551,18 @@ async def process_admin_message(data: dict):
         # Update status based on delivery
         if user_notified:
             await update_message_status(message_id, MessageStatus.DELIVERED)
+        else:
+            # User not connected - send push notification (Feature 11)
+            await send_push_to_user(user_id, {
+                "title": f"Concierge® - {pet_name}",
+                "body": content[:100] + ("..." if len(content) > 100 else ""),
+                "tag": f"concierge-{thread_id}",
+                "data": {
+                    "type": "concierge_message",
+                    "thread_id": thread_id,
+                    "user_id": user_id
+                }
+            })
         
         # Confirm to admins
         await manager.broadcast_to_admins({
