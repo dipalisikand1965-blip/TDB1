@@ -851,6 +851,63 @@ const AdminConciergeDashboard = () => {
           </span>
         </div>
         
+        {/* Search Bar (Feature 13) */}
+        <div className="relative px-3 py-2 border-b border-white/5">
+          <div className="relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search messages..."
+              className="w-full pl-9 pr-8 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-white/30 focus:outline-none focus:border-purple-500/50"
+              data-testid="message-search-input"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setShowSearchResults(false);
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/50"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+          
+          {/* Search Results Dropdown */}
+          {showSearchResults && (
+            <div className="absolute left-0 right-0 top-full z-50 mx-3 mt-1 max-h-64 overflow-y-auto bg-gray-800 border border-white/10 rounded-lg shadow-xl">
+              {isSearching ? (
+                <div className="p-4 text-center text-white/50 text-sm">
+                  <RefreshCw size={16} className="inline-block animate-spin mr-2" />
+                  Searching...
+                </div>
+              ) : searchResults.length === 0 ? (
+                <div className="p-4 text-center text-white/50 text-sm">
+                  No messages found
+                </div>
+              ) : (
+                searchResults.map((result, idx) => (
+                  <button
+                    key={`${result.id}-${idx}`}
+                    onClick={() => handleSearchResultClick(result)}
+                    className="w-full text-left p-3 hover:bg-white/5 border-b border-white/5 last:border-0"
+                    data-testid={`search-result-${idx}`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs text-purple-400">{result.pet_name || result.user_name}</span>
+                      <span className="text-xs text-white/30">{formatTime(result.timestamp)}</span>
+                    </div>
+                    <p className="text-sm text-white/80 truncate">{result.content}</p>
+                  </button>
+                ))
+              )}
+            </div>
+          )}
+        </div>
+        
         {/* Thread List */}
         <div className="flex-1 overflow-y-auto">
           {loading ? (
