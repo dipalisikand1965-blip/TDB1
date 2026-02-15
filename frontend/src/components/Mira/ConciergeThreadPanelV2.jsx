@@ -132,11 +132,18 @@ const OfflineQueueBanner = ({ count }) => {
 const MessageBubble = ({ message, onRetry }) => {
   const isUser = message.sender === 'user' || message.sender === 'member';
   const isFailed = message.status === MessageStatus.FAILED;
+  const senderLabel = isUser ? null : 'Concierge®';
   
   return (
     <div 
-      className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} mb-3 animate-fadeIn`}
+      className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} mb-3 animate-fadeIn transition-colors duration-500`}
+      data-message-id={message.id}
     >
+      {/* Sender label for concierge messages */}
+      {!isUser && (
+        <span className="text-[10px] text-purple-400 mb-1 ml-1">{senderLabel}</span>
+      )}
+      
       {/* Status chip (only for concierge messages) */}
       {!isUser && message.status_chip && (
         <div className="mb-1 ml-1">
