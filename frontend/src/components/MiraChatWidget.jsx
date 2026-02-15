@@ -1391,10 +1391,42 @@ const MiraChatWidget = ({
                       </SafeMarkdownRenderer>
                     </div>
                     
-                    {/* Product Cards (if Mira recommends products) */}
-                    {msg.products && Array.isArray(msg.products) && msg.products.length > 0 && (
+                    {/* MIRA CONCIERGE CARDS - Mira's actual recommendations */}
+                    {/* Parse Mira's text for recommendations and show as actionable cards */}
+                    {msg.role === 'assistant' && (() => {
+                      const miraRecs = parseMiraRecommendations(
+                        typeof msg.content === 'string' ? msg.content : '', 
+                        selectedPet?.name || 'your pet'
+                      );
+                      if (miraRecs.length > 0) {
+                        return (
+                          <MiraConciergeCards
+                            recommendations={miraRecs}
+                            petName={selectedPet?.name || 'your pet'}
+                            petId={selectedPet?.id}
+                            token={token}
+                            onRequestCreated={(data) => {
+                              // Add a confirmation message
+                              const confirmMsg = {
+                                id: `confirm-${Date.now()}`,
+                                role: 'assistant',
+                                content: `✅ Got it! I've sent your request to our Concierge team. They'll source exactly what ${selectedPet?.name || 'your pet'} needs and reach out with details. Request #${data.request_id || 'created'}`,
+                                timestamp: new Date().toISOString()
+                              };
+                              setMessages(prev => [...prev, confirmMsg]);
+                            }}
+                          />
+                        );
+                      }
+                      return null;
+                    })()}
+                    
+                    {/* LEGACY: Product Cards from catalog search (keep for fallback) */}
+                    {/* Only show if no concierge cards were rendered AND products exist */}
+                    {msg.products && Array.isArray(msg.products) && msg.products.length > 0 && 
+                     parseMiraRecommendations(typeof msg.content === 'string' ? msg.content : '', selectedPet?.name).length === 0 && (
                       <div className="mt-3 space-y-2">
-                        <p className="text-xs font-bold text-purple-700 uppercase">✨ Recommended for you:</p>
+                        <p className="text-xs font-bold text-gray-500 uppercase">📦 From our catalog:</p>
                         {msg.products.slice(0, 4).map((product, pIdx) => {
                           if (!product || !product.id) return null;
                           // Use fallback image if product image is a local path or missing
@@ -1405,7 +1437,7 @@ const MiraChatWidget = ({
                           return (
                             <div 
                               key={product.id || pIdx}
-                              className="bg-white rounded-lg p-2.5 flex items-center gap-3 border border-purple-100 cursor-pointer active:bg-purple-50"
+                              className="bg-white rounded-lg p-2.5 flex items-center gap-3 border border-gray-200 cursor-pointer active:bg-gray-50"
                               onClick={() => handleProductClick(product)}
                             >
                               <img 
