@@ -277,6 +277,7 @@ const MiraOSModal = ({
   const [activeTab, setActiveTab] = useState('picks'); // picks | chat | services
   const [dynamicQuickActions, setDynamicQuickActions] = useState([]); // Dynamic context-aware prompts
   const [sessionId, setSessionId] = useState(() => `mira-os-${Date.now()}`); // Unique session per conversation
+  const [intelligentPrompts, setIntelligentPrompts] = useState([]); // Soul-based intelligent prompts
   
   // Refs
   const modalRef = useRef(null);
@@ -284,6 +285,132 @@ const MiraOSModal = ({
   const audioRef = useRef(null);
   const startY = useRef(0);
   const currentY = useRef(0);
+  
+  // Generate intelligent prompts based on pet's soul data - "Mira knows, Mira doesn't ask"
+  const generateIntelligentPrompts = useCallback((pet) => {
+    if (!pet) return [];
+    
+    const prompts = [];
+    const now = new Date();
+    
+    // 1. Check for upcoming birthday (within 30 days)
+    if (pet.dob || pet.birthday || pet.celebrations?.find(c => c.occasion === 'birthday')) {
+      const birthdayData = pet.celebrations?.find(c => c.occasion === 'birthday');
+      const dob = pet.dob || pet.birthday || birthdayData?.date;
+      if (dob) {
+        const birthDate = new Date(dob);
+        const thisYearBirthday = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+        if (thisYearBirthday < now) {
+          thisYearBirthday.setFullYear(now.getFullYear() + 1);
+        }
+        const daysUntil = Math.ceil((thisYearBirthday - now) / (1000 * 60 * 60 * 24));
+        
+        if (daysUntil <= 30 && daysUntil > 0) {
+          prompts.push({
+            text: `🎂 ${pet.name}'s birthday in ${daysUntil} days!`,
+            value: `${pet.name}'s birthday is coming up in ${daysUntil} days. Help me plan something special that's dairy-free since ${pet.name} has allergies.`,
+            priority: 1,
+            type: 'celebration'
+          });
+        }
+      }
+    }
+    
+    // 2. Check allergies - suggest safe treats
+    const allergies = pet.preferences?.allergies || pet.allergies || [];
+    if (allergies.length > 0) {
+      const allergyList = allergies.join(', ').toLowerCase();
+      prompts.push({
+        text: `🍖 ${allergyList}-free treats`,
+        value: `Show me treats that are safe for ${pet.name} - no ${allergyList} since ${pet.name} is allergic.`,
+        priority: 2,
+        type: 'safety'
+      });
+    }
+    
+    // 3. Check temperament for anxiety help
+    if (pet.temperament === 'anxious' || pet.learned_facts?.some(f => f.category === 'anxiety')) {
+      const anxietyFact = pet.learned_facts?.find(f => f.category === 'anxiety');
+      prompts.push({
+        text: `💆 Calm ${pet.name}'s anxiety`,
+        value: anxietyFact 
+          ? `${pet.name} gets anxious when ${anxietyFact.content}. What calming products or techniques would help?`
+          : `${pet.name} is anxious sometimes. What can help calm ${pet.name}?`,
+        priority: 2,
+        type: 'wellness'
+      });
+    }
+    
+    // 4. Check fears
+    const fears = pet.learned_facts?.filter(f => f.category === 'fears') || [];
+    if (fears.length > 0) {
+      const fearContent = fears[0].content;
+      prompts.push({
+        text: `🛡️ Help with ${fearContent} fear`,
+        value: `${pet.name} is scared of ${fearContent}. What products or training can help?`,
+        priority: 3,
+        type: 'training'
+      });
+    }
+    
+    // 5. Check for low-scoring folders - suggest discovery
+    const folderScores = pet.folder_scores || {};
+    const emptyFolders = Object.entries(folderScores)
+      .filter(([_, score]) => score < 10)
+      .map(([folder, _]) => folder);
+    
+    if (emptyFolders.length > 0) {
+      const folderNames = {
+        'adventure_outdoors': 'adventures',
+        'rest_routines': 'sleep routine',
+        'social_world': 'social life'
+      };
+      const friendlyName = folderNames[emptyFolders[0]] || emptyFolders[0].replace(/_/g, ' ');
+      prompts.push({
+        text: `✨ Tell me about ${pet.name}'s ${friendlyName}`,
+        value: `I'd love to know more about ${pet.name}'s ${friendlyName}. Can you help me fill in this part of ${pet.name}'s soul profile?`,
+        priority: 4,
+        type: 'soul_discovery'
+      });
+    }
+    
+    // 6. Check favorite flavors
+    const favorites = pet.preferences?.favorite_flavors || pet.learned_facts?.filter(f => f.category === 'loves') || [];
+    if (favorites.length > 0) {
+      const fav = typeof favorites[0] === 'string' ? favorites[0] : favorites[0]?.content;
+      if (fav) {
+        prompts.push({
+          text: `❤️ ${fav} ${fav.toLowerCase().includes('treat') ? '' : 'treats'}`,
+          value: `${pet.name} loves ${fav}! Show me the best ${fav.toLowerCase().includes('treat') ? fav : fav + ' treats'} options.`,
+          priority: 3,
+          type: 'favorites'
+        });
+      }
+    }
+    
+    // 7. Pillar-specific prompt based on current page
+    const pillarPrompts = {
+      celebrate: { text: '🎁 Plan celebration', value: `Help me plan a special celebration for ${pet.name}` },
+      dine: { text: '🍽️ Meal recommendations', value: `What's the best food for ${pet.name} based on their profile?` },
+      care: { text: '💊 Health check', value: `What health care does ${pet.name} need based on their profile?` },
+      travel: { text: '✈️ Travel prep', value: `Help me prepare ${pet.name} for travel` },
+      stay: { text: '🏠 Comfort at home', value: `What would make ${pet.name} more comfortable at home?` }
+    };
+    
+    if (pillarPrompts[pillar] && !prompts.some(p => p.type === pillarPrompts[pillar].text)) {
+      prompts.push({
+        ...pillarPrompts[pillar],
+        priority: 5,
+        type: 'pillar'
+      });
+    }
+    
+    // Sort by priority and return top 4
+    return prompts
+      .sort((a, b) => a.priority - b.priority)
+      .slice(0, 4);
+      
+  }, [pillar]);
   
   // Function to start a fresh chat
   const startFreshChat = useCallback(() => {
