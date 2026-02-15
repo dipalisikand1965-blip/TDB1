@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-roadmap-100.preview.emergentagent.com
+https://mira-admin-chat.preview.emergentagent.com
 ```
 
 ---

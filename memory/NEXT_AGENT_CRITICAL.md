@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://mira-roadmap-100.preview.emergentagent.com
+https://mira-admin-chat.preview.emergentagent.com
 
 ---
 

@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://mira-roadmap-100.preview.emergentagent.com/mira-demo**
+**https://mira-admin-chat.preview.emergentagent.com/mira-demo**
 
 ---
 

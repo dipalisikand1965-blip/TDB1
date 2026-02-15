@@ -194,7 +194,7 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
 
 ## 🔗 PREVIEW URL
 ```
-https://mira-roadmap-100.preview.emergentagent.com
+https://mira-admin-chat.preview.emergentagent.com
 ```
 
 ---
