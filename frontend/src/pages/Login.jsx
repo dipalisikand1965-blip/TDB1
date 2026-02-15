@@ -16,8 +16,8 @@ const Login = () => {
   const location = useLocation();
   const { toast } = useToast();
   
-  // Get the return path from location state (set by ProtectedRoute) or default to /mira-demo
-  const from = location.state?.from || '/mira-demo';
+  // Get the return path from location state (set by ProtectedRoute) or default to /dashboard
+  const from = location.state?.from || '/dashboard';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
