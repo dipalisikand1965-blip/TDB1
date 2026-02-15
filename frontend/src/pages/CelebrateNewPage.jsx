@@ -868,16 +868,27 @@ const CelebrateNewPage = () => {
   };
 
   return (
+    <PillarPageLayout
+      pillar="celebrate"
+      title="Celebrations for Your Pet"
+      description="Mark the moments that matter to your furry friend"
+      useTabNavigation={true}
+      onSubcategoryChange={(subcat) => {
+        // Map subcat to our tab system
+        const tabMapping = {
+          'cakes': 'cakes',
+          'breed-cakes': 'breed-cakes',
+          'pupcakes': 'pupcakes',
+          'treats': 'treats',
+          'hampers': 'hampers',
+          'accessories': 'accessories'
+        };
+        if (tabMapping[subcat]) {
+          handleTabChange(tabMapping[subcat]);
+        }
+      }}
+    >
     <div className="min-h-screen bg-gray-50 pb-24">
-      <SEOHead title="Celebrate - The Doggy Company" path="/celebrate-new" />
-      
-      {/* ============================================ */}
-      {/* HERO SECTION - Compact, Pet First */}
-      {/* ============================================ */}
-      <section className={`relative bg-gradient-to-br ${currentTab?.color || 'from-purple-600 to-pink-500'} text-white overflow-hidden`}>
-        {/* Decorative blurs */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full blur-3xl" />
         </div>
         
