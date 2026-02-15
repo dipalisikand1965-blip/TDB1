@@ -603,6 +603,7 @@ const CelebrateNewPage = () => {
   const [showBoxBuilder, setShowBoxBuilder] = useState(false);
   const [boxOccasion, setBoxOccasion] = useState('birthday');
   const [showPartyWizard, setShowPartyWizard] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null); // Product detail modal
   
   // Sync tab with URL changes (for back/forward navigation)
   useEffect(() => {
