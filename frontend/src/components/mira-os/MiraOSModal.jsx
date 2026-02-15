@@ -881,59 +881,69 @@ const MiraOSModal = ({
           )}
         </div>
         
-        {/* Dynamic Quick Actions - Contextual prompts based on conversation */}
-        <div className="px-4 py-2 border-t overflow-x-auto">
-          <div className="flex gap-2">
-            {dynamicQuickActions.length > 0 ? (
-              // Show dynamic quick actions from the last AI response
-              dynamicQuickActions.map((action, idx) => (
-                <QuickAction 
-                  key={idx}
-                  label={action.text || action}
-                  onClick={() => sendMessage(action.value || action.text || action)}
-                  isPrimary={idx === 0}
-                />
-              ))
-            ) : (
-              // Default contextual prompts when no conversation started
-              <>
-                <QuickAction 
-                  label={selectedPet ? `Help me with ${selectedPet.name}` : 'Get started'} 
-                  onClick={() => sendMessage(selectedPet ? `Help me with ${selectedPet.name}` : 'What can you help me with?')}
-                  isPrimary
-                />
-                {selectedPet && (
+        {/* Dynamic Quick Actions - Only show when no inline quick replies in last message */}
+        {(() => {
+          const lastMsg = messages[messages.length - 1];
+          const hasInlineReplies = lastMsg?.role === 'assistant' && lastMsg?.quickReplies?.length > 0;
+          
+          // Hide bottom bar when inline replies are shown
+          if (hasInlineReplies) return null;
+          
+          return (
+            <div className="px-4 py-2 border-t overflow-x-auto">
+              <div className="flex gap-2">
+                {dynamicQuickActions.length > 0 ? (
+                  // Show dynamic quick actions from the last AI response
+                  dynamicQuickActions.map((action, idx) => (
+                    <QuickAction 
+                      key={idx}
+                      label={action.text || action}
+                      onClick={() => sendMessage(action.value || action.text || action)}
+                      isPrimary={idx === 0}
+                    />
+                  ))
+                ) : (
+                  // Default contextual prompts when no conversation started
                   <>
                     <QuickAction 
-                      label={`${selectedPet.name}'s birthday`}
-                      emoji="🎂" 
-                      onClick={() => sendMessage(`Plan something special for ${selectedPet.name}'s birthday`)}
+                      label={selectedPet ? `Help me with ${selectedPet.name}` : 'Get started'} 
+                      onClick={() => sendMessage(selectedPet ? `Help me with ${selectedPet.name}` : 'What can you help me with?')}
+                      isPrimary
                     />
-                    <QuickAction 
-                      label={`Food for ${selectedPet.name}`}
-                      emoji="🍖" 
-                      onClick={() => sendMessage(`What food do you recommend for ${selectedPet.name}?`)}
-                    />
+                    {selectedPet && (
+                      <>
+                        <QuickAction 
+                          label={`${selectedPet.name}'s birthday`}
+                          emoji="🎂" 
+                          onClick={() => sendMessage(`Plan something special for ${selectedPet.name}'s birthday`)}
+                        />
+                        <QuickAction 
+                          label={`Food for ${selectedPet.name}`}
+                          emoji="🍖" 
+                          onClick={() => sendMessage(`What food do you recommend for ${selectedPet.name}?`)}
+                        />
+                      </>
+                    )}
+                    {!selectedPet && (
+                      <>
+                        <QuickAction 
+                          label="Celebrate" 
+                          emoji="🎂" 
+                          onClick={() => sendMessage("Help me plan a celebration for my pet")}
+                        />
+                        <QuickAction 
+                          label="Shop" 
+                          emoji="🛒" 
+                          onClick={() => sendMessage("I want to shop for my pet")}
+                        />
+                      </>
+                    )}
                   </>
                 )}
-                {!selectedPet && (
-                  <>
-                    <QuickAction 
-                      label="Celebrate" 
-                      emoji="🎂" 
-                      onClick={() => sendMessage("Help me plan a celebration for my pet")}
-                    />
-                    <QuickAction 
-                      label="Shop" 
-                      emoji="🛒" 
-                      onClick={() => sendMessage("I want to shop for my pet")}
-                    />
-                  </>
-                )}
-              </>
-            )}
-          </div>
-        </div>
+              </div>
+            </div>
+          );
+        })()}
         
         {/* Input Area */}
         <div className="p-4 border-t bg-white">
