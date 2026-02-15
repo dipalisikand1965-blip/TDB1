@@ -576,6 +576,70 @@ async def get_thread(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/threads")
+async def get_user_threads(
+    user_id: str = Query(..., description="User ID"),
+    status: Optional[str] = Query(None, description="Filter by status: open, active, closed"),
+    pet_id: Optional[str] = Query(None, description="Filter by pet ID"),
+    limit: int = Query(10, description="Max threads to return")
+):
+    """
+    Get all threads for a user.
+    Used by ConciergeButton to find existing open threads.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        # Build query
+        query = {"user_id": user_id}
+        
+        # Filter by status (open = active threads still being worked on)
+        if status:
+            if status == "open":
+                query["status"] = {"$in": ["active", "pending", "awaiting_reply"]}
+            else:
+                query["status"] = status
+        
+        # Filter by pet
+        if pet_id:
+            query["pet_id"] = pet_id
+        
+        # Get threads
+        threads = []
+        cursor = db.concierge_threads.find(query).sort("last_message_at", -1).limit(limit)
+        
+        async for thread in cursor:
+            # Get pet name
+            pet_name = thread.get("pet_name", "Your pet")
+            if not pet_name or pet_name == "Your pet":
+                if thread.get("pet_id"):
+                    pet = await db.pets.find_one({"id": thread["pet_id"]})
+                    if pet:
+                        pet_name = pet.get("name", "Your pet")
+            
+            threads.append({
+                "id": thread.get("id", str(thread.get("_id", ""))),
+                "pet_id": thread.get("pet_id"),
+                "pet_name": pet_name,
+                "title": thread.get("title", "Chat"),
+                "status": thread.get("status", "active"),
+                "ticket_id": thread.get("ticket_id"),
+                "last_message_preview": thread.get("last_message_preview", ""),
+                "last_message_at": thread.get("last_message_at"),
+                "message_count": thread.get("message_count", 0),
+                "unread_count": thread.get("unread_count", 0),
+                "created_at": thread.get("created_at"),
+                "source": thread.get("source", "concierge")
+            })
+        
+        return {"threads": threads, "total": len(threads)}
+        
+    except Exception as e:
+        logger.error(f"Error getting threads: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/message")
 async def send_message(request: MessageSendRequest):
     """
