@@ -293,17 +293,50 @@ const MiraOSModal = ({
   };
   
   const loadPicks = async () => {
+    console.log('[MiraOS] Loading picks for', selectedPet?.name || 'general');
     try {
-      const response = await fetch(
+      // Try to load personalized picks from Mira's picks endpoint
+      let response = await fetch(
         `${getApiUrl()}/api/mira/picks?pillar=${pillar}&pet_id=${selectedPet?.id || ''}`,
         { headers: token ? { 'Authorization': `Bearer ${token}` } : {} }
       );
+      
       if (response.ok) {
         const data = await response.json();
-        setPicks(data.picks || []);
+        if (data.picks?.length > 0) {
+          setPicks(data.picks);
+          console.log('[MiraOS] Loaded', data.picks.length, 'picks');
+          return;
+        }
+      }
+      
+      // Fallback: Load products filtered by pillar and create smart picks
+      response = await fetch(
+        `${getApiUrl()}/api/products?pillar=${pillar}&limit=6`,
+        { headers: token ? { 'Authorization': `Bearer ${token}` } : {} }
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        const products = data.products || [];
+        
+        // Convert products to picks format
+        const smartPicks = products.slice(0, 6).map((product, index) => ({
+          id: product.id || product._id || `pick-${index}`,
+          title: product.title || product.name,
+          description: product.description?.substring(0, 80) || `Perfect for ${selectedPet?.name || 'your pet'}`,
+          emoji: pillar === 'celebrate' ? '🎂' : pillar === 'dine' ? '🍖' : '✨',
+          type: 'product',
+          price: product.price,
+          image_url: product.image_url || product.images?.[0],
+          product_id: product.id || product._id
+        }));
+        
+        setPicks(smartPicks);
+        console.log('[MiraOS] Created', smartPicks.length, 'smart picks from products');
       }
     } catch (error) {
-      console.error('Failed to load picks:', error);
+      console.error('[MiraOS] Failed to load picks:', error);
     }
   };
   
