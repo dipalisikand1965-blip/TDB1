@@ -351,9 +351,10 @@ async def get_status():
     Get current concierge operating status.
     Returns whether concierge is live and next available time.
     """
+    status = await get_concierge_status()
     return {
         "success": True,
-        **get_concierge_status()
+        **status
     }
 
 
