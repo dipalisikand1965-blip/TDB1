@@ -369,7 +369,7 @@ const ConciergeThreadPanelV2 = ({
     setError(null);
     
     try {
-      const response = await fetch(`${API_URL}/api/os/concierge/thread/${threadId}?user_id=${userId}`);
+      const response = await fetch(`/api/os/concierge/thread/${threadId}?user_id=${userId}`);
       
       if (!response.ok) {
         throw new Error('Failed to load conversation');
