@@ -9573,6 +9573,177 @@ def get_pillar_quick_prompts(pillar: str) -> List[Dict[str, str]]:
     }
     return prompts.get(pillar, prompts["advisory"])
 
+def generate_intelligent_quick_replies(response_text: str, pet_name: str = None, pet_data: dict = None) -> List[str]:
+    """
+    MIRA INTELLIGENCE: Generate dynamic, pet-first quick replies based on the conversation.
+    
+    This is the BRAINS of Mira - not hardcoded frontend patterns, but intelligent
+    analysis of what Mira is asking and what makes sense for THIS specific pet.
+    
+    Args:
+        response_text: Mira's response text
+        pet_name: Name of the selected pet (e.g., "Lola")
+        pet_data: Full pet profile data for personalization
+        
+    Returns:
+        List of 2-4 contextual quick reply strings
+    """
+    if not response_text:
+        return []
+    
+    quick_replies = []
+    response_lower = response_text.lower()
+    
+    # PET-FIRST: Always use pet name if available
+    pet_ref = pet_name or "your pet"
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 1: Food/Diet Questions
+    # ═══════════════════════════════════════════════════════════════════════════
+    if any(term in response_lower for term in ["everyday meals", "regular meals", "treats/snacks", "treats or snacks", "occasional treats"]):
+        quick_replies = [
+            f"Regular meals for {pet_ref}",
+            "Treats & snacks",
+            "Both - meals and treats"
+        ]
+    
+    elif any(term in response_lower for term in ["kibble", "dry food", "home-cooked", "homemade", "wet food"]):
+        quick_replies = [
+            "Stick with kibble",
+            "Add home-cooked",
+            "Mix of both"
+        ]
+    
+    elif any(term in response_lower for term in ["how many times", "feeding schedule", "how often", "meals per day"]):
+        quick_replies = [
+            "2 meals a day",
+            "3 meals a day", 
+            "Free feeding"
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 2: Allergy/Sensitivity Questions
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["allergies", "allergic to", "sensitive to", "sensitivities"]):
+        quick_replies = [
+            f"{pet_ref} has no allergies",
+            "Yes, has food allergies",
+            "Not sure yet"
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 3: Health/Wellness Questions
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["weight", "overweight", "underweight", "body condition"]):
+        quick_replies = [
+            f"{pet_ref} needs to lose weight",
+            f"{pet_ref} needs to gain weight",
+            "Weight is fine, just maintenance"
+        ]
+    
+    elif any(term in response_lower for term in ["skin", "coat", "shedding", "itchy", "scratching"]):
+        quick_replies = [
+            "Skin/coat issues",
+            "Excessive shedding",
+            "Just general care"
+        ]
+    
+    elif any(term in response_lower for term in ["stool", "digestion", "digestive", "tummy", "upset stomach"]):
+        quick_replies = [
+            "Digestive problems",
+            "Sensitive stomach",
+            "No issues, preventive care"
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 4: Birthday/Celebration Questions
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["birthday", "gotcha day", "celebration", "special occasion", "party"]):
+        quick_replies = [
+            f"Yes, {pet_ref}'s birthday!",
+            "Gotcha day celebration",
+            "Just want to spoil them"
+        ]
+    
+    elif any(term in response_lower for term in ["cake", "treats", "what kind", "flavor", "preference"]):
+        quick_replies = [
+            "Classic flavors",
+            "Something special/unique",
+            "What do you recommend?"
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 5: Location/Service Questions
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["indoor", "outdoor", "seating", "location", "area", "which area"]):
+        quick_replies = [
+            "Indoor preferred",
+            "Outdoor preferred",
+            "Either works"
+        ]
+    
+    elif any(term in response_lower for term in ["book", "schedule", "appointment", "when", "date", "time"]):
+        quick_replies = [
+            "As soon as possible",
+            "This week",
+            "Flexible timing"
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 6: Grooming/Care Questions
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["grooming", "groom", "trim", "bath", "haircut"]):
+        quick_replies = [
+            "Full grooming session",
+            "Just a bath",
+            "Quick trim only"
+        ]
+    
+    elif any(term in response_lower for term in ["vet", "veterinary", "checkup", "vaccination"]):
+        quick_replies = [
+            "Regular checkup",
+            "Specific health concern",
+            "Vaccination due"
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 7: Shopping/Product Questions  
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["budget", "price", "range", "spend", "affordable"]):
+        quick_replies = [
+            "Budget friendly",
+            "Mid-range",
+            "Premium quality"
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 8: Generic Yes/No or Confirmation Questions
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["shall i", "would you like", "should i", "want me to", "does that sound", "is that okay"]):
+        quick_replies = [
+            "Yes, please!",
+            "Tell me more first",
+            "Let's try something else"
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # FALLBACK: Check if there's any question being asked
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif "?" in response_text:
+        # Extract choice-based questions: "X or Y?"
+        import re
+        or_match = re.search(r'(?:do you want|prefer|looking for|asking about)\s+([^,?]+?)(?:\s*,?\s*or\s+|\s+or\s+)([^?]+?)\?', response_lower)
+        if or_match:
+            choice1 = or_match.group(1).strip().title()
+            choice2 = or_match.group(2).strip().title()
+            quick_replies = [choice1, choice2, "Both"]
+    
+    # If we found quick replies, always add "Something else" option
+    if quick_replies:
+        quick_replies.append("Something else")
+    
+    return quick_replies[:4]  # Max 4 options
+
 def needs_research(message: str) -> bool:
     """Check if the message requires web research for factual information"""
     message_lower = message.lower()
