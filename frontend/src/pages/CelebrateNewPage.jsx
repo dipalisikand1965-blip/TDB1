@@ -761,18 +761,12 @@ const CelebrateNewPage = () => {
         });
       }
       
-      // Sort: Shopify products first (have shopify_id), then seeded products
-      allProducts.sort((a, b) => {
-        const aShopify = a.shopify_id ? 1 : 0;
-        const bShopify = b.shopify_id ? 1 : 0;
-        if (bShopify !== aShopify) return bShopify - aShopify;
-        // Secondary sort by bestseller
-        if (a.is_bestseller && !b.is_bestseller) return -1;
-        if (!a.is_bestseller && b.is_bestseller) return 1;
-        return 0;
-      });
-      
-      setProducts(allProducts);
+      // ============================================
+      // MIRA'S SILENT SORTING - The Doctrine in Action
+      // "Mira knows Lola more than the pet parent"
+      // Priority: Pet Profile > Breed > Preferences > Bestsellers > New
+      // ============================================
+      setProducts(allProducts); // Set products first, sorting happens in getFilteredProducts
       console.log(`[CelebrateNew] Loaded ${allProducts.length} products for tab: ${selectedTab} (${allProducts.filter(p => p.shopify_id).length} from Shopify)`);
     } catch (error) {
       console.error('Error fetching products:', error);
