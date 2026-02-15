@@ -1,0 +1,67 @@
+{
+  "summary": "Tested ConciergeButton component on pillar pages and MiraOS Modal. ConciergeButton renders and functions correctly when logged in. Found critical UI issue: ConciergeButton at bottom-right is blocked by MiraChatWidget FAB (same z-index conflict). MiraOS Modal ConciergeButton header variant works correctly with unread badge. Pet name display in DoggyServiceDesk partially working - shows 'member name's pet' when pet_info unavailable.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/os/concierge/threads", "issue": "404 errors when creating/fetching concierge threads", "priority": "MEDIUM"}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "ConciergeButton (floating)",
+        "issue": "Button is blocked/overlapped by MiraChatWidget FAB at bottom-right position. Both have z-[9999] and similar positioning. ConciergeButton at bottom-20 right-4, MiraChatWidget at bottom-4 right-4. Pointer events intercepted.",
+        "selector": "[data-testid='concierge-button']",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "DoggyServiceDesk ticket detail",
+        "issues": ["Pet name shows as '(Member)' when pet_info not available in ticket - this is correct fallback behavior but indicates ticket data may not have pet_info populated"]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/frontend/src/components/Mira/ConciergeButton.jsx",
+    "/app/frontend/src/components/mira-os/MiraOSModal.jsx",
+    "/app/frontend/src/pages/CelebrateNewPage.jsx",
+    "/app/frontend/src/components/admin/DoggyServiceDesk.jsx"
+  ],
+  "action_items": [
+    "Fix z-index conflict between ConciergeButton (floating) and MiraChatWidget FAB - both at bottom-right with same z-index",
+    "Consider moving ConciergeButton to different position (bottom-left or offset from MiraChatWidget)",
+    "Ensure ticket creation APIs populate pet_info properly for better pet name display in Service Desk"
+  ],
+  "critical_code_review_comments": [
+    "ConciergeButton correctly only renders for logged-in users (line 199: if (!user) return null)",
+    "ConciergeButton header variant in MiraOSModal works correctly with unread badge (visible in header next to voice toggle)",
+    "MiraOSTrigger at bottom-left correctly opens MiraOS Modal",
+    "Pet name logic in DoggyServiceDesk (lines 4470-4480) has proper priority chain: pet_info > petProfile > pet_name > metadata.pet_name > pet_names[0] > subject parse > member name's pet > (Member)",
+    "Z-INDEX CONFLICT: ConciergeButton positionConfig 'bottom-right': 'fixed bottom-20 right-4 z-[9999]' overlaps with MiraChatWidget 'fixed bottom-4 right-4 z-[9999]'"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend-only testing)",
+    "frontend": "80% - Core features work but floating ConciergeButton blocked by overlap"
+  },
+  "features_tested": {
+    "ConciergeButton on pillar pages for logged-in users": "PASS with issue - Button renders but blocked by MiraChatWidget",
+    "ConciergeButton in MiraOSModal header": "PASS - Visible with data-testid='concierge-button-header'",
+    "ConciergeButton unread count badge": "PASS - Shows badge count '1' on header variant",
+    "ConciergeButton opens ConciergeThreadPanelV2": "NOT FULLY TESTED - API 404 errors prevent full flow",
+    "Pet name in DoggyServiceDesk": "PARTIAL - Shows 'member's pet' when pet_info not available, which is correct fallback",
+    "MiraOSTrigger opens MiraOSModal": "PASS - Modal opens correctly with all tabs"
+  },
+  "test_credentials": {
+    "user_email": "dipali@clubconcierge.in",
+    "user_password": "test123",
+    "admin_username": "aditya",
+    "admin_password": "lola4304"
+  },
+  "seed_data_creation": "None - used existing data",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "ConciergeButton component works but is BLOCKED by MiraChatWidget FAB at bottom-right. Main agent needs to either adjust z-index or position of ConciergeButton. MiraOS Modal header variant ConciergeButton works perfectly. WebSocket errors present but don't affect core UI functionality."
+}
