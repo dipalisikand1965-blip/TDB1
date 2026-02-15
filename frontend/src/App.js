@@ -76,8 +76,6 @@ function CelebrateRedirect() {
   const { category } = useParams();
   return <Navigate to={`/celebrate?category=${category}`} replace />;
 }
-  return <Navigate to={`/pet/${petId}`} replace />;
-}
 
 // App Badge Manager - Updates PWA icon badge with unread notification count
 function AppBadgeManager() {
