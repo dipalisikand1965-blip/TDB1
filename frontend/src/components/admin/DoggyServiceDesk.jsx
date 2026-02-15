@@ -3325,6 +3325,128 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         </div>
       )}
       
+      {/* Add Date Override Modal */}
+      {showAddOverrideModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4" onClick={() => setShowAddOverrideModal(false)}>
+          <Card className="w-full max-w-[400px] bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-lg">Add Schedule Override</h3>
+                <button onClick={() => setShowAddOverrideModal(false)} className="p-2 hover:bg-gray-100 rounded">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                {/* Date Picker */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Date *</label>
+                  <Input
+                    type="date"
+                    value={newOverride.date}
+                    onChange={(e) => setNewOverride(prev => ({ ...prev, date: e.target.value }))}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full"
+                    data-testid="override-date-input"
+                  />
+                </div>
+                
+                {/* Closed Toggle */}
+                <div className="p-4 border rounded-lg">
+                  <label className="flex items-center justify-between cursor-pointer">
+                    <div>
+                      <span className="font-medium text-gray-800">Closed for the day</span>
+                      <p className="text-sm text-gray-500">Concierge will be offline all day</p>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={newOverride.is_closed}
+                        onChange={(e) => setNewOverride(prev => ({ ...prev, is_closed: e.target.checked }))}
+                        className="sr-only peer"
+                        data-testid="override-closed-toggle"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
+                    </div>
+                  </label>
+                </div>
+                
+                {/* Custom Hours (if not closed) */}
+                {!newOverride.is_closed && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-1 block">Start Time</label>
+                      <select
+                        value={newOverride.start_hour}
+                        onChange={(e) => setNewOverride(prev => ({ ...prev, start_hour: parseInt(e.target.value) }))}
+                        className="w-full px-3 py-2 border rounded-lg"
+                        data-testid="override-start-hour"
+                      >
+                        {Array.from({ length: 24 }, (_, i) => (
+                          <option key={i} value={i}>{i.toString().padStart(2, '0')}:00</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-1 block">End Time</label>
+                      <select
+                        value={newOverride.end_hour}
+                        onChange={(e) => setNewOverride(prev => ({ ...prev, end_hour: parseInt(e.target.value) }))}
+                        className="w-full px-3 py-2 border rounded-lg"
+                        data-testid="override-end-hour"
+                      >
+                        {Array.from({ length: 24 }, (_, i) => (
+                          <option key={i} value={i}>{i.toString().padStart(2, '0')}:00</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Reason */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Reason (optional)</label>
+                  <Input
+                    value={newOverride.reason}
+                    onChange={(e) => setNewOverride(prev => ({ ...prev, reason: e.target.value }))}
+                    placeholder="e.g., Christmas, Diwali, Team Outing"
+                    data-testid="override-reason-input"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-3 mt-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAddOverrideModal(false)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={addDateOverride}
+                  disabled={overrideLoading || !newOverride.date}
+                  className="flex-1 bg-blue-500 hover:bg-blue-600"
+                  data-testid="save-override-btn"
+                >
+                  {overrideLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4 mr-2" />
+                      Add Override
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+      
       {/* Template Creation/Edit Modal */}
       {showTemplateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4" onClick={() => setShowTemplateModal(false)}>
