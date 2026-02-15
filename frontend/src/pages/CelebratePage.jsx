@@ -277,23 +277,34 @@ const CelebratePage = () => {
   }, [searchParams, setSearchParams]);
 
   useEffect(() => {
-    fetchFeaturedProducts();
-  }, []);
+    fetchFeaturedProducts(selectedSubcat);
+  }, [selectedSubcat]);
 
-  const fetchFeaturedProducts = async () => {
+  const fetchFeaturedProducts = async (category = null) => {
+    setLoading(true);
     try {
-      // Use new pillar resolver API for rule-based product filtering
-      const response = await fetch(`${API_URL}/api/products?pillar=celebrate&limit=12`);
+      // Build API URL with category filter
+      let url = `${API_URL}/api/products?pillar=celebrate&limit=24`;
+      if (category && CATEGORY_API_MAP[category]) {
+        url += `&subcategory=${CATEGORY_API_MAP[category]}`;
+      }
+      
+      const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
         setFeaturedProducts(data.products || data || []);
-        console.log(`[CelebratePage] Loaded ${data.count} products via pillar resolver`);
+        console.log(`[CelebratePage] Loaded ${data.count || (data.products || data).length} products${category ? ` for ${category}` : ''}`);
       }
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
       setLoading(false);
     }
+  };
+  
+  // Handle subcategory change from tab navigation
+  const handleSubcategoryChange = (subcatId) => {
+    setSelectedSubcat(subcatId);
   };
   
   const handleBuildBox = (occasion) => {
