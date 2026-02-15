@@ -599,13 +599,15 @@ const CelebrateNewPage = () => {
   const [boxOccasion, setBoxOccasion] = useState('birthday');
   const [showPartyWizard, setShowPartyWizard] = useState(false);
   
-  // Read category from URL on mount
+  // Read category from URL on mount and when URL changes
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category');
     if (categoryFromUrl && CATEGORY_TABS.find(t => t.id === categoryFromUrl)) {
       setSelectedTab(categoryFromUrl);
+    } else if (!categoryFromUrl) {
+      setSelectedTab('all');
     }
-  }, []);
+  }, [searchParams]);
   
   // Update URL when tab changes
   const handleTabChange = useCallback((tabId) => {
