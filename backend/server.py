@@ -16372,6 +16372,12 @@ set_concierge_os_db(db)
 app.include_router(concierge_os_router)  # Concierge at /api/os/concierge/*
 logger.info("Concierge OS Layer routes initialized")
 
+# Real-time Concierge Communication (WebSocket-powered golden standard messaging)
+from routes.realtime_concierge import router as realtime_concierge_router, set_realtime_db
+set_realtime_db(db)
+app.include_router(realtime_concierge_router)  # Realtime at /api/concierge/realtime/*
+logger.info("Real-time Concierge routes initialized (WebSocket support)")
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
