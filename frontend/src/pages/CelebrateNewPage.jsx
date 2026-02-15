@@ -1082,7 +1082,17 @@ const CelebrateNewPage = () => {
                 {currentTab?.name || 'All'} Products
               </h2>
               <p className="text-sm text-gray-500">
-                {loading ? 'Loading...' : `${filteredProducts.length} items`}
+                {loading ? 'Loading...' : (
+                  <>
+                    {filteredProducts.length} items
+                    {/* Mira's Silent Sorting Indicator - Subtle hint that personalization is active */}
+                    {activePet && !loading && (
+                      <span className="ml-2 text-purple-500 font-medium">
+                        · Sorted for {activePet.name}
+                      </span>
+                    )}
+                  </>
+                )}
               </p>
             </div>
             {selectedTab !== 'all' && (
