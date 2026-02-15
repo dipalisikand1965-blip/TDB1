@@ -606,7 +606,7 @@ If no → Reconsider
 - **Customer Login:** dipali@clubconcierge.in / test123
 - **Admin:** aditya / lola4304
 - **Database:** test_database (MongoDB)
-- **Preview URL:** https://furry-funnel.preview.emergentagent.com/mira-demo
+- **Preview URL:** https://celebrate-tabbed.preview.emergentagent.com/mira-demo
 - **Production:** https://thedoggycompany.in/mira-demo
 
 ---

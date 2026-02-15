@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://furry-funnel.preview.emergentagent.com
+https://celebrate-tabbed.preview.emergentagent.com
 
 ---
 

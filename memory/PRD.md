@@ -904,7 +904,7 @@ Per user's architecture vision:
 
 ## Preview URL
 
-**Working:** https://furry-funnel.preview.emergentagent.com/mira-demo
+**Working:** https://celebrate-tabbed.preview.emergentagent.com/mira-demo
 
 ---
 

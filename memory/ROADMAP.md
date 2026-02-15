@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://furry-funnel.preview.emergentagent.com
+https://celebrate-tabbed.preview.emergentagent.com
 
 ---
 

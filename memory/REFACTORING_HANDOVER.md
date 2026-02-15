@@ -229,7 +229,7 @@ useSession: sessionId, setSessionId, sessionRecovered, setSessionRecovered
 
 - **Email**: `dipali@clubconcierge.in`
 - **Password**: `lola4304`
-- **Preview URL**: `https://furry-funnel.preview.emergentagent.com`
+- **Preview URL**: `https://celebrate-tabbed.preview.emergentagent.com`
 
 ---
 
