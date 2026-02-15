@@ -469,6 +469,8 @@ const CelebrateNewPage = () => {
   const [priceRange, setPriceRange] = useState('all');
   const [selectedCity, setSelectedCity] = useState('all');
   const [selectedBreed, setSelectedBreed] = useState('All Breeds');
+  const [selectedShape, setSelectedShape] = useState('all');
+  const [smartFilter, setSmartFilter] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
   
   // Modal states
