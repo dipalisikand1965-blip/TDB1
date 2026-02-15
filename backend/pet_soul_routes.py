@@ -167,13 +167,21 @@ def calculate_folder_score(answers: Dict, folder_key: str) -> float:
 
 
 def calculate_overall_score(answers: Dict) -> float:
-    """Calculate overall Doggy Soul score (0-100)"""
-    folder_scores = []
-    for folder_key in FOLDER_KEYS:
-        score = calculate_folder_score(answers, folder_key)
-        folder_scores.append(score)
-    
-    return round(sum(folder_scores) / len(folder_scores), 1) if folder_scores else 0
+    """
+    Calculate overall Doggy Soul score (0-100) using weighted 8 Golden Pillars.
+    Uses pet_soul_config.py for canonical scoring weights.
+    """
+    try:
+        from pet_soul_config import calculate_score_state
+        score_state = calculate_score_state(answers)
+        return score_state.get("score_percent", 0)
+    except ImportError:
+        # Fallback to simple average if config not available
+        folder_scores = []
+        for folder_key in FOLDER_KEYS:
+            score = calculate_folder_score(answers, folder_key)
+            folder_scores.append(score)
+        return round(sum(folder_scores) / len(folder_scores), 1) if folder_scores else 0
 
 
 def get_next_question(answers: Dict) -> Optional[Dict]:
