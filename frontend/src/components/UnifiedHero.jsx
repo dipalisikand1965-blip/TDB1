@@ -243,6 +243,7 @@ const UnifiedHero = ({
   viewMode = 'products', // 'products' | 'services'
   searchQuery = '',
   onSearchChange,
+  onSearchSubmit,
   shoppingForOther = false,
   otherBreedName = null,
 }) => {
