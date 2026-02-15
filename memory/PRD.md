@@ -3,15 +3,16 @@
 ---
 ## ⚠️ NEW AGENT? READ THIS FIRST:
 ## 1. **MIRA OS URL:** `/mira-demo` (NOT `/mira`)
-## 2. **Test Credentials:** `dipali@clubconcierge.in` / `test123` | Admin: `aditya` / `lola4304`
-## 3. `/app/memory/MOJO_BIBLE.md` - THE COMPLETE MOJO DEFINITION (28 Parts + OS Layers)
-## 4. `/app/memory/LEARN_BIBLE.md` - THE COMPLETE LEARN LAYER SPECIFICATION
-## 5. `/app/memory/CONCIERGE_BIBLE.md` - THE COMPLETE CONCIERGE LAYER SPECIFICATION
-## 6. `/app/memory/MOJO_BIBLE_SCORECARD.md` - Current Implementation Score
-## 7. `/app/memory/SYSTEM_AUDIT_REPORT.md` - ✅ FULL SYSTEM AUDIT COMPLETED (Feb 2026)
+## 2. **CELEBRATE NEW URL:** `/celebrate-new` - Gold Standard with Mira OS Search
+## 3. **Test Credentials:** `dipali@clubconcierge.in` / `test123` | Admin: `aditya` / `lola4304`
+## 4. `/app/memory/MOJO_BIBLE.md` - THE COMPLETE MOJO DEFINITION (28 Parts + OS Layers)
+## 5. `/app/memory/LEARN_BIBLE.md` - THE COMPLETE LEARN LAYER SPECIFICATION
+## 6. `/app/memory/CONCIERGE_BIBLE.md` - THE COMPLETE CONCIERGE LAYER SPECIFICATION
+## 7. `/app/memory/MOJO_BIBLE_SCORECARD.md` - Current Implementation Score
+## 8. `/app/memory/SYSTEM_AUDIT_REPORT.md` - ✅ FULL SYSTEM AUDIT COMPLETED (Feb 2026)
 ---
 
-## CURRENT SCORE: 100% (Against MOJO Bible Vision) - Updated Feb 15, 2026 (Session 21)
+## CURRENT SCORE: 100% (Against MOJO Bible Vision) - Updated Feb 15, 2026 (Session 22)
 
 | Layer | Score | Status |
 |-------|-------|--------|
@@ -24,6 +25,65 @@
 | **CONCIERGE** | **95%** | ✅ **TWO-WAY SYNC COMPLETE** - Admin replies now visible in user chat |
 | **VOICE** | **90%** | ✅ TTS working, glowing red button added, floating indicator added |
 | **SHOPIFY SYNC** | **100%** | ✅ **COMPLETE** - Session 21: Full product sync with 99.2% categorization |
+| **MIRA OS SEARCH** | **100%** | ✅ **COMPLETE** - Session 22: Natural Language Search with Pet-First Personalization |
+
+---
+
+## SESSION 22 ACCOMPLISHMENTS (Feb 15, 2026)
+
+### P0: MIRA OS NATURAL LANGUAGE SEARCH ✅ COMPLETE
+
+**User Request:** Implement "Mira OS" natural language search on the /celebrate-new page with full Pet-First, Breed-Second personalization at OS level.
+
+**What Was Built:**
+
+#### 1. Mira OS Search Engine (parseMiraQuery function)
+Natural language parser that extracts intent from user queries:
+
+| Detection Type | Examples | Response |
+|---------------|----------|----------|
+| **Shape** | "heart shape", "round cake" | "Found heart-shaped options! ❤️" |
+| **Breed** | "labrador cake", "pug birthday" | "Labrador cakes coming right up! 🐕" |
+| **Occasion** | "birthday", "gotcha day" | "Looking for birthday treats! 🎉" |
+| **Category** | "desi treats", "hampers", "pupcakes" | Auto-switches to correct tab |
+| **Price Range** | "under 500", "budget", "premium" | Filters by price |
+| **Dietary** | "grain-free", "allergy safe" | Filters by dietary tags |
+| **Flavor** | "peanut butter", "chicken" | Filters by flavor |
+
+#### 2. Pet-First Personalization
+When logged in with a pet profile:
+- Hero: "Celebrations for **Lola**" (shows pet photo)
+- Placeholder: `Ask Mira: "Lola's birthday cake" or "heart shape"`
+- Example chips: "Lola's birthday cake", "Maltese cake" (pet's breed)
+- Personalized Picks: "Made with love for Lola! 💕"
+
+#### 3. MiraOSSearchBar Component (Lines 304-486)
+- Magic wand icon with gradient background
+- Real-time parse preview showing detected filters
+- Dynamic example query chips based on active pet
+- Enter key + Search button to execute search
+
+#### 4. ActiveMiraFilters Component (Lines 492-556)
+- Displays active search criteria as colored badges
+- Clear button to reset all filters
+- Shows: Category, Shape, Breed, Occasion, Price Range
+
+#### 5. Enhanced Product Filtering (Lines 1260-1363)
+- Applies all detected Mira criteria to product list
+- Works globally across all tabs
+- Combines with existing filters (city, shape pills, etc.)
+
+**Test Results: 100% (10/10 features passing)**
+- Test Report: `/app/test_reports/iteration_198.json`
+
+**Files Modified:**
+- `/app/frontend/src/pages/CelebrateNewPage.jsx` - Added Mira OS Search system (Lines 118-556)
+
+**Key Technical Concepts:**
+- `MIRA_SEARCH_PATTERNS` - Configurable patterns for each detection type
+- `parseMiraQuery(query, activePet)` - Main parsing function
+- `handleMiraSearch(searchResult)` - Applies filters and switches tabs
+- `getFilteredProducts()` - Extended to include Mira OS criteria
 
 ---
 
