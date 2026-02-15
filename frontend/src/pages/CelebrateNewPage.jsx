@@ -776,7 +776,115 @@ const CelebrateNewPage = () => {
     }
   };
   
-  // Apply client-side filters
+  // ============================================
+  // MIRA'S SILENT SORTING ALGORITHM
+  // Based on MIRA_OS_DOCTRINE.md - "Mira knows Lola"
+  // ============================================
+  const miraSilentSort = useCallback((products, pet) => {
+    if (!products || products.length === 0) return products;
+    
+    const petBreed = (pet?.breed || '').toLowerCase();
+    const petSize = pet?.size || pet?.weight_class || '';
+    const petAllergies = pet?.allergies || pet?.doggy_soul_answers?.allergies || [];
+    const petFavorites = pet?.doggy_soul_answers?.favorite_treats || [];
+    
+    return [...products].sort((a, b) => {
+      // ============================================
+      // TIER 1: BREED MATCH (Mira knows Lola is a Shih Tzu)
+      // Breed-specific products get highest priority
+      // ============================================
+      const aBreedMatch = petBreed && (
+        (a.name || a.title || '').toLowerCase().includes(petBreed) ||
+        (a.tags || []).some(t => (t || '').toLowerCase().includes(petBreed)) ||
+        (a.breed || '').toLowerCase().includes(petBreed)
+      );
+      const bBreedMatch = petBreed && (
+        (b.name || b.title || '').toLowerCase().includes(petBreed) ||
+        (b.tags || []).some(t => (t || '').toLowerCase().includes(petBreed)) ||
+        (b.breed || '').toLowerCase().includes(petBreed)
+      );
+      
+      if (aBreedMatch && !bBreedMatch) return -1;
+      if (!aBreedMatch && bBreedMatch) return 1;
+      
+      // ============================================
+      // TIER 2: SIZE APPROPRIATENESS
+      // Small dog? Small portions first. Large dog? Bigger cakes first.
+      // ============================================
+      const aSmall = (a.tags || []).some(t => ['small', 'mini', 'tiny', 'petite'].some(s => (t || '').toLowerCase().includes(s)));
+      const bSmall = (b.tags || []).some(t => ['small', 'mini', 'tiny', 'petite'].some(s => (t || '').toLowerCase().includes(s)));
+      const aLarge = (a.tags || []).some(t => ['large', 'big', 'xl', 'giant'].some(s => (t || '').toLowerCase().includes(s)));
+      const bLarge = (b.tags || []).some(t => ['large', 'big', 'xl', 'giant'].some(s => (t || '').toLowerCase().includes(s)));
+      
+      const petIsSmall = ['small', 'tiny', 'toy', 'mini'].some(s => petSize.toLowerCase().includes(s));
+      const petIsLarge = ['large', 'big', 'giant', 'xl'].some(s => petSize.toLowerCase().includes(s));
+      
+      if (petIsSmall) {
+        if (aSmall && !bSmall) return -1;
+        if (!aSmall && bSmall) return 1;
+      }
+      if (petIsLarge) {
+        if (aLarge && !bLarge) return -1;
+        if (!aLarge && bLarge) return 1;
+      }
+      
+      // ============================================
+      // TIER 3: ALLERGY SAFETY (Hard gate from Health Vault)
+      // Products without allergens get priority
+      // ============================================
+      if (petAllergies && petAllergies.length > 0) {
+        const aHasAllergen = petAllergies.some(allergen => 
+          (a.name || a.title || '').toLowerCase().includes(allergen.toLowerCase()) ||
+          (a.ingredients || '').toLowerCase().includes(allergen.toLowerCase())
+        );
+        const bHasAllergen = petAllergies.some(allergen => 
+          (b.name || b.title || '').toLowerCase().includes(allergen.toLowerCase()) ||
+          (b.ingredients || '').toLowerCase().includes(allergen.toLowerCase())
+        );
+        
+        if (!aHasAllergen && bHasAllergen) return -1;
+        if (aHasAllergen && !bHasAllergen) return 1;
+      }
+      
+      // ============================================
+      // TIER 4: PREFERENCE MATCH (From Soul Answers)
+      // If Lola loves peanut butter, PB products rise
+      // ============================================
+      if (petFavorites && petFavorites.length > 0) {
+        const aMatchesFavorite = petFavorites.some(fav => 
+          (a.name || a.title || '').toLowerCase().includes(fav.toLowerCase()) ||
+          (a.tags || []).some(t => (t || '').toLowerCase().includes(fav.toLowerCase()))
+        );
+        const bMatchesFavorite = petFavorites.some(fav => 
+          (b.name || b.title || '').toLowerCase().includes(fav.toLowerCase()) ||
+          (b.tags || []).some(t => (t || '').toLowerCase().includes(fav.toLowerCase()))
+        );
+        
+        if (aMatchesFavorite && !bMatchesFavorite) return -1;
+        if (!aMatchesFavorite && bMatchesFavorite) return 1;
+      }
+      
+      // ============================================
+      // TIER 5: BESTSELLERS (Social proof)
+      // ============================================
+      if (a.is_bestseller && !b.is_bestseller) return -1;
+      if (!a.is_bestseller && b.is_bestseller) return 1;
+      
+      // ============================================
+      // TIER 6: SHOPIFY PRODUCTS (Live inventory)
+      // ============================================
+      const aShopify = a.shopify_id ? 1 : 0;
+      const bShopify = b.shopify_id ? 1 : 0;
+      if (bShopify !== aShopify) return bShopify - aShopify;
+      
+      // ============================================
+      // TIER 7: PRICE (Lower first for discovery)
+      // ============================================
+      return (a.price || 0) - (b.price || 0);
+    });
+  }, []);
+  
+  // Apply client-side filters + Mira's Silent Sorting
   const getFilteredProducts = useCallback(() => {
     let filtered = [...products];
     
