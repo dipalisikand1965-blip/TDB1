@@ -34,6 +34,12 @@ Each step is designed to be **completed in one focused session**. No multitaskin
 - Added "Fresh Chat" feature: new session ID on pet switch
 - Added "New Chat" button (RotateCcw icon) in Mira OS header
 - Chat clears automatically when switching pets for fresh conversation
+- **INTELLIGENT PROMPTS**: Quick actions now generated from pet's soul data
+  - Shows allergy-safe treats if pet has allergies
+  - Shows anxiety help if pet has anxious temperament  
+  - Shows birthday prompt if within 30 days
+  - Shows soul discovery prompts for empty pillar folders
+  - Follows "Mira knows, Mira doesn't ask" doctrine
 
 ---
 
