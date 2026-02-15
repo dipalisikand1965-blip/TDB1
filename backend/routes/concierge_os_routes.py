@@ -404,6 +404,178 @@ async def update_concierge_hours(request: ConciergeHoursUpdate):
 
 
 # ============================================================================
+# DATE-SPECIFIC OVERRIDES (Holidays, Special Hours)
+# ============================================================================
+
+class DateOverrideCreate(BaseModel):
+    """Request to create a date-specific schedule override"""
+    date: str = Field(..., description="Date in YYYY-MM-DD format")
+    is_closed: bool = Field(default=False, description="If True, concierge is offline all day")
+    start_hour: Optional[int] = Field(default=None, ge=0, le=23, description="Custom start hour (if not closed)")
+    end_hour: Optional[int] = Field(default=None, ge=0, le=23, description="Custom end hour (if not closed)")
+    reason: str = Field(default="", description="Reason for override (e.g., 'Christmas', 'Diwali')")
+
+
+@router.get("/admin/date-overrides")
+async def get_all_date_overrides():
+    """
+    Get all date-specific schedule overrides.
+    Returns list of holidays and custom hour dates.
+    """
+    overrides = await get_date_overrides()
+    
+    # Also get current status to show if today is affected
+    current_status = await get_concierge_status()
+    
+    return {
+        "overrides": overrides,
+        "current_status": current_status,
+        "total_count": len(overrides)
+    }
+
+
+@router.post("/admin/date-overrides")
+async def create_date_override(request: DateOverrideCreate):
+    """
+    Create a date-specific schedule override.
+    Use this for holidays (closed) or custom hours for specific days.
+    """
+    global _date_overrides_cache, _date_overrides_timestamp
+    
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    # Validate date format
+    try:
+        datetime.strptime(request.date, "%Y-%m-%d")
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
+    
+    # Check if override already exists for this date
+    existing = await db.concierge_date_overrides.find_one({"date": request.date})
+    if existing:
+        raise HTTPException(status_code=400, detail=f"Override already exists for {request.date}. Delete it first or update.")
+    
+    try:
+        now = datetime.now(timezone.utc).isoformat()
+        
+        override_doc = {
+            "date": request.date,
+            "is_closed": request.is_closed,
+            "start_hour": request.start_hour if not request.is_closed else None,
+            "end_hour": request.end_hour if not request.is_closed else None,
+            "reason": request.reason,
+            "created_at": now
+        }
+        
+        await db.concierge_date_overrides.insert_one(override_doc)
+        
+        # Clear cache
+        _date_overrides_cache = None
+        _date_overrides_timestamp = None
+        
+        logger.info(f"Date override created: {request.date} - {'CLOSED' if request.is_closed else f'{request.start_hour}:00 - {request.end_hour}:00'} ({request.reason})")
+        
+        return {
+            "success": True,
+            "message": f"Schedule override created for {request.date}",
+            "override": {
+                "date": request.date,
+                "is_closed": request.is_closed,
+                "start_hour": request.start_hour,
+                "end_hour": request.end_hour,
+                "reason": request.reason
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error creating date override: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/admin/date-overrides/{date}")
+async def delete_date_override(date: str):
+    """
+    Delete a date-specific schedule override.
+    Date should be in YYYY-MM-DD format.
+    """
+    global _date_overrides_cache, _date_overrides_timestamp
+    
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        result = await db.concierge_date_overrides.delete_one({"date": date})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail=f"No override found for {date}")
+        
+        # Clear cache
+        _date_overrides_cache = None
+        _date_overrides_timestamp = None
+        
+        logger.info(f"Date override deleted: {date}")
+        
+        return {
+            "success": True,
+            "message": f"Schedule override for {date} deleted"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting date override: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/admin/date-overrides/{date}")
+async def update_date_override(date: str, request: DateOverrideCreate):
+    """
+    Update an existing date-specific schedule override.
+    """
+    global _date_overrides_cache, _date_overrides_timestamp
+    
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        now = datetime.now(timezone.utc).isoformat()
+        
+        update_doc = {
+            "date": request.date,  # Allow changing the date
+            "is_closed": request.is_closed,
+            "start_hour": request.start_hour if not request.is_closed else None,
+            "end_hour": request.end_hour if not request.is_closed else None,
+            "reason": request.reason,
+            "updated_at": now
+        }
+        
+        result = await db.concierge_date_overrides.update_one(
+            {"date": date},
+            {"$set": update_doc}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail=f"No override found for {date}")
+        
+        # Clear cache
+        _date_overrides_cache = None
+        _date_overrides_timestamp = None
+        
+        return {
+            "success": True,
+            "message": f"Schedule override updated",
+            "override": update_doc
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating date override: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
 # SUGGESTION CHIPS
 # ============================================================================
 
