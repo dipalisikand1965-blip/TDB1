@@ -588,37 +588,37 @@ const CelebratePage = () => {
       </div>
 
       {/* Featured Products - MOBILE: 2 tiles, DESKTOP: 3 tiles */}
-      <div className="max-w-6xl mx-auto px-4 py-10 sm:py-16">
+      <div className="max-w-6xl mx-auto px-4 py-10 sm:py-16" id="products-section">
         <div className="flex items-center justify-between mb-5 sm:mb-8">
           <div>
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
               {selectedSubcat 
-                ? celebrateCategories.find(c => c.id === selectedSubcat)?.name || 'Celebration Items'
-                : 'Featured Celebration Items'
+                ? CATEGORY_DISPLAY_NAMES[selectedSubcat] || celebrateCategories.find(c => c.id === selectedSubcat)?.name || 'Celebration Items'
+                : 'All Celebration Products'
               }
             </h2>
             <p className="text-gray-600 text-sm sm:text-base">
               {selectedSubcat 
                 ? `Showing ${featuredProducts.length} items`
-                : 'Hand-picked treats and cakes'
+                : `${featuredProducts.length} products • Tap a category above to filter`
               }
             </p>
           </div>
-          {!selectedSubcat && (
+          {selectedSubcat && (
             <Button 
               variant="outline" 
               size="sm" 
               className="gap-1 sm:gap-2 text-xs sm:text-sm"
-              onClick={() => handleSubcategoryChange('cakes')}
+              onClick={() => handleSubcategoryChange(null)}
             >
-              View All <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
+              Show All
             </Button>
           )}
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <Card key={i} className="p-3 sm:p-4 md:p-6 animate-pulse">
                 <div className="aspect-square bg-gray-200 rounded-lg mb-3 sm:mb-4"></div>
                 <div className="h-3 sm:h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
@@ -627,7 +627,7 @@ const CelebratePage = () => {
             ))}
           </div>
         ) : featuredProducts.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {featuredProducts.map((product) => (
               <ProductCard key={product._id || product.id} product={product} />
             ))}
@@ -635,8 +635,23 @@ const CelebratePage = () => {
         ) : (
           <Card className="p-8 sm:p-12 text-center">
             <Cake className="w-10 h-10 sm:w-12 sm:h-12 text-pink-300 mx-auto mb-3 sm:mb-4" />
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Coming Soon!</h3>
-            <p className="text-sm text-gray-600">Our celebration products will be available shortly.</p>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+              {selectedSubcat ? 'No products in this category' : 'Coming Soon!'}
+            </h3>
+            <p className="text-sm text-gray-600">
+              {selectedSubcat 
+                ? 'Try selecting a different category or view all products.'
+                : 'Our celebration products will be available shortly.'
+              }
+            </p>
+            {selectedSubcat && (
+              <Button 
+                className="mt-4"
+                onClick={() => handleSubcategoryChange(null)}
+              >
+                View All Products
+              </Button>
+            )}
           </Card>
         )}
       </div>
