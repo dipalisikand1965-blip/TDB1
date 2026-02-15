@@ -718,13 +718,15 @@ const Navbar = () => {
             </div>
           </div>
           
-          {/* Mobile: Mira Search Bar Row (below main header) */}
-          <div className="sm:hidden pb-3 relative z-[100]">
-            <MiraSearchPanel 
-              variant="hero"
-              placeholder={primaryPet ? `Ask Mira for ${primaryPet.name}...` : "Ask Mira anything..."}
-            />
-          </div>
+          {/* Mobile: Mira Search Bar Row (below main header) - HIDDEN on pillar pages per doctrine */}
+          {!isPillarPage && (
+            <div className="sm:hidden pb-3 relative z-[100]">
+              <MiraSearchPanel 
+                variant="hero"
+                placeholder={primaryPet ? `Ask Mira for ${primaryPet.name}...` : "Ask Mira anything..."}
+              />
+            </div>
+          )}
           
           {/* Desktop Layout: Logo | Search | Icons */}
           <div className="hidden sm:flex items-center h-14 gap-4">
