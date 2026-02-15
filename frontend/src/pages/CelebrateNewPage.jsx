@@ -872,37 +872,25 @@ const CelebrateNewPage = () => {
       pillar="celebrate"
       title="Celebrations for Your Pet"
       description="Mark the moments that matter to your furry friend"
-      showSubcategories={false}
+      showSubcategories={true}
       useTabNavigation={true}
       onSubcategoryChange={(subcat) => {
-        // Map subcat to our tab system
+        // Map PillarPageLayout subcategories to our internal tab system
         const tabMapping = {
           'cakes': 'cakes',
           'breed-cakes': 'breed-cakes',
           'pupcakes': 'pupcakes',
           'treats': 'treats',
           'hampers': 'hampers',
-          'accessories': 'accessories'
+          'accessories': 'accessories',
+          null: 'all' // "All Celebrate" maps to our 'all' tab
         };
-        if (tabMapping[subcat]) {
-          handleTabChange(tabMapping[subcat]);
-        }
+        const mappedTab = tabMapping[subcat] ?? 'all';
+        handleTabChange(mappedTab);
       }}
     >
-    <div className="min-h-screen bg-gray-50 pb-24">
-      
-      {/* ============================================ */}
-      {/* STICKY CATEGORY TABS */}
-      {/* ============================================ */}
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
-        <div className="max-w-6xl mx-auto">
-          <SwipableTabs
-            tabs={CATEGORY_TABS}
-            selectedTab={selectedTab}
-            onTabChange={handleTabChange}
-          />
-        </div>
-      </div>
+    <div className="min-h-screen bg-transparent pb-24">
+      {/* Category tabs removed - now handled by PillarPageLayout's subcategory navigation */}
       
       {/* ============================================ */}
       {/* MAIN CONTENT */}
