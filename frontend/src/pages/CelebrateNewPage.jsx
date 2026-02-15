@@ -175,7 +175,7 @@ const SwipableTabs = ({ tabs, selectedTab, onTabChange }) => {
   const scrollRef = useRef(null);
   
   const handleTabClick = (tabId) => {
-    triggerHaptic('light');
+    haptic('light');
     onTabChange(tabId);
   };
   
