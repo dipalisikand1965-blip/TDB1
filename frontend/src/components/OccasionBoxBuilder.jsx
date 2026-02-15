@@ -273,8 +273,8 @@ const OccasionBoxBuilder = ({
               <span className="text-3xl">{template.icon}</span>
               {petName}&apos;s {template.name}
             </DialogTitle>
+            <DialogDescription className="text-white/80 mt-2">{template.description}</DialogDescription>
           </DialogHeader>
-          <p className="text-white/80 mt-2">{template.description}</p>
           
           {/* Progress Dots */}
           <div className="flex items-center justify-center gap-2 mt-4">
