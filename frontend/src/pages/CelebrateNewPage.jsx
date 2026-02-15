@@ -34,6 +34,7 @@ import OccasionBoxBuilder from '../components/OccasionBoxBuilder';
 import PartyPlanningWizard from '../components/PartyPlanningWizard';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import SEOHead from '../components/SEOHead';
+import PillarPageLayout from '../components/PillarPageLayout';
 import { toast } from 'sonner';
 
 // ============================================
