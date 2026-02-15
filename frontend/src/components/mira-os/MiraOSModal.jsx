@@ -203,9 +203,12 @@ const MiraOSModal = ({
   
   // Load pets on mount
   useEffect(() => {
-    if (isOpen && token) {
-      loadPets();
-      loadPicks();
+    if (isOpen) {
+      console.log('[MiraOS] Modal opened, token:', token ? 'present' : 'missing');
+      if (token) {
+        loadPets();
+        loadPicks();
+      }
     }
   }, [isOpen, token, pillar]);
   
@@ -215,19 +218,22 @@ const MiraOSModal = ({
   }, [messages]);
   
   const loadPets = async () => {
+    console.log('[MiraOS] Loading pets...');
     try {
       const response = await fetch(`${getApiUrl()}/api/pets`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      console.log('[MiraOS] Pets response status:', response.status);
       if (response.ok) {
         const data = await response.json();
+        console.log('[MiraOS] Pets loaded:', data.pets?.length || 0);
         setPets(data.pets || []);
         if (data.pets?.length > 0 && !selectedPet) {
           setSelectedPet(data.pets[0]);
         }
       }
     } catch (error) {
-      console.error('Failed to load pets:', error);
+      console.error('[MiraOS] Failed to load pets:', error);
     }
   };
   
