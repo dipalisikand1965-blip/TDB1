@@ -516,6 +516,72 @@ async def get_quick_questions(pet_id: str, limit: int = Query(default=3, le=5)):
     }
 
 
+@pet_soul_router.get("/profile/{pet_id}/8-pillars")
+async def get_8_pillars_summary(pet_id: str):
+    """
+    Get the 8 Golden Pillars summary for a pet.
+    Returns weighted scores aligned with pet_soul_config.py scoring system.
+    """
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "doggy_soul_answers": 1, "name": 1})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    answers = pet.get("doggy_soul_answers", {})
+    pet_name = pet.get("name", "your pet")
+    
+    try:
+        from pet_soul_config import calculate_score_state, get_pillar_summary, PET_SOUL_TIERS
+        
+        score_state = calculate_score_state(answers)
+        pillar_summary = get_pillar_summary(answers)
+        
+        return {
+            "pet_id": pet_id,
+            "pet_name": pet_name,
+            "overall_score": score_state["score_percent"],
+            "tier": {
+                "key": score_state["tier_key"],
+                "name": score_state["tier_name"],
+                "emoji": score_state["tier_emoji"],
+                "description": score_state["tier_description"]
+            },
+            "next_tier": {
+                "key": score_state["next_tier_key"],
+                "name": score_state["next_tier_name"],
+                "at_percent": score_state["next_tier_at"],
+                "percent_to_go": score_state["percent_to_next"]
+            },
+            "pillars": pillar_summary,
+            "pillar_completion": score_state["pillar_completion"],
+            "sections": score_state["sections"],
+            "missing_high_impact": score_state["missing_top_5"],
+            "stats": {
+                "total_questions": score_state["total_questions"],
+                "answered": score_state["answered_count"],
+                "total_points": score_state["total_points"],
+                "earned_points": score_state["earned_points"]
+            },
+            "tiers_available": list(PET_SOUL_TIERS.keys())
+        }
+    except ImportError:
+        # Fallback to basic calculation
+        folder_scores = {fk: calculate_folder_score(answers, fk) for fk in FOLDER_KEYS}
+        overall_score = calculate_overall_score(answers)
+        
+        return {
+            "pet_id": pet_id,
+            "pet_name": pet_name,
+            "overall_score": overall_score,
+            "pillars": [
+                {"pillar_key": fk, "name": DOGGY_SOUL_QUESTIONS[fk]["name"], 
+                 "icon": DOGGY_SOUL_QUESTIONS[fk]["icon"], "percent": folder_scores[fk]}
+                for fk in FOLDER_KEYS
+            ],
+            "note": "Using legacy scoring - pet_soul_config not available"
+        }
+
+
+
 @pet_soul_router.post("/profile/{pet_id}/answer")
 async def save_answer(pet_id: str, answer: DoggyAnswer):
     """Save a single answer and update scores"""
