@@ -888,10 +888,16 @@ const CelebrateNewPage = () => {
         </div>
         
         {/* ============================================ */}
-        {/* TAB: ALL - Show concierge + occasion boxes */}
+        {/* TAB: ALL - Show smart discovery + concierge + occasion boxes */}
         {/* ============================================ */}
         {selectedTab === 'all' && (
           <>
+            <TrustStats />
+            <SmartDiscovery 
+              activeFilter={smartFilter} 
+              onFilterChange={setSmartFilter}
+              onTabChange={handleTabChange}
+            />
             <OccasionBoxGrid onSelectBox={openBoxBuilder} />
             <ConciergeSection onPlanParty={() => setShowPartyWizard(true)} />
           </>
@@ -909,19 +915,27 @@ const CelebrateNewPage = () => {
         )}
         
         {/* ============================================ */}
-        {/* TAB: CAKES - City Filter */}
+        {/* TAB: CAKES - City Filter + Shape Filter + Custom CTA */}
         {/* ============================================ */}
         {selectedTab === 'cakes' && (
-          <div className="flex items-center gap-2 mb-4">
-            <CityFilter selectedCity={selectedCity} onCityChange={setSelectedCity} />
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-xl text-sm font-medium text-gray-600 active:bg-gray-200"
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              Filters
-            </button>
-          </div>
+          <>
+            <TrustStats />
+            <CustomCakeCTA />
+            <div className="flex items-center gap-2 mb-3">
+              <CityFilter selectedCity={selectedCity} onCityChange={setSelectedCity} />
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-xl text-sm font-medium text-gray-600 active:bg-gray-200"
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                Filters
+              </button>
+            </div>
+            <div className="mb-4">
+              <p className="text-xs text-gray-500 mb-2 font-medium">Filter by shape:</p>
+              <ShapeFilter selectedShape={selectedShape} onShapeChange={setSelectedShape} />
+            </div>
+          </>
         )}
         
         {/* ============================================ */}
