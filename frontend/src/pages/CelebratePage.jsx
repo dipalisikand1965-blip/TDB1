@@ -550,14 +550,29 @@ const CelebratePage = () => {
       <div className="max-w-6xl mx-auto px-4 py-10 sm:py-16">
         <div className="flex items-center justify-between mb-5 sm:mb-8">
           <div>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Featured Celebration Items</h2>
-            <p className="text-gray-600 text-sm sm:text-base">Hand-picked treats and cakes</p>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
+              {selectedSubcat 
+                ? celebrateCategories.find(c => c.id === selectedSubcat)?.name || 'Celebration Items'
+                : 'Featured Celebration Items'
+              }
+            </h2>
+            <p className="text-gray-600 text-sm sm:text-base">
+              {selectedSubcat 
+                ? `Showing ${featuredProducts.length} items`
+                : 'Hand-picked treats and cakes'
+              }
+            </p>
           </div>
-          <Link to="/celebrate/cakes">
-            <Button variant="outline" size="sm" className="gap-1 sm:gap-2 text-xs sm:text-sm">
+          {!selectedSubcat && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-1 sm:gap-2 text-xs sm:text-sm"
+              onClick={() => handleSubcategoryChange('cakes')}
+            >
               View All <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
             </Button>
-          </Link>
+          )}
         </div>
 
         {loading ? (
@@ -572,7 +587,7 @@ const CelebratePage = () => {
           </div>
         ) : featuredProducts.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-            {featuredProducts.slice(0, 6).map((product) => (
+            {featuredProducts.map((product) => (
               <ProductCard key={product._id || product.id} product={product} />
             ))}
           </div>
