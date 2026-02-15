@@ -262,7 +262,7 @@ const CityFilter = ({ selectedCity, onCityChange }) => {
     <div className="relative">
       <button
         onClick={() => {
-          triggerHaptic('light');
+          haptic('light');
           setIsOpen(!isOpen);
         }}
         className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 active:bg-gray-50"
@@ -280,7 +280,7 @@ const CityFilter = ({ selectedCity, onCityChange }) => {
               <button
                 key={city.value}
                 onClick={() => {
-                  triggerHaptic('light');
+                  haptic('light');
                   onCityChange(city.value);
                   setIsOpen(false);
                 }}
