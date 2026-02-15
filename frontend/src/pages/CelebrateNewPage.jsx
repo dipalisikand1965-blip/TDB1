@@ -1125,6 +1125,23 @@ const CelebrateNewPage = () => {
           }}
         />
       )}
+      
+      {/* Product Detail Modal - Full rich experience with Pawmeter, Options, Personalization */}
+      {selectedProduct && createPortal(
+        <ProductDetailModal
+          product={selectedProduct}
+          pillar="celebrate"
+          selectedPet={activePet}
+          miraContext={{
+            petName: activePet?.name,
+            petBreed: activePet?.breed,
+            pillar: 'celebrate',
+            quietHints: ['Perfect for celebrations', 'Handled by Mira']
+          }}
+          onClose={() => setSelectedProduct(null)}
+        />,
+        document.body
+      )}
     </div>
   );
 };
