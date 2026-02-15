@@ -830,8 +830,21 @@ const ServicesPage = () => {
   const filteredServices = useMemo(() => {
     let result = services;
     
-    // "For You" / "recommended" - Personalize based on pet
-    if (selectedPillar === 'recommended' && selectedPet) {
+    // "For You" / "recommended" - Personalize based on pet OR show popular services
+    if (selectedPillar === 'recommended') {
+      if (!selectedPet) {
+        // No pet selected - show popular/featured services (grooming, training, etc.)
+        result = result.filter(s => 
+          s.category?.toLowerCase().includes('groom') || 
+          s.category?.toLowerCase().includes('train') ||
+          s.pillar === 'care' ||
+          s.pillar === 'learn'
+        ).slice(0, 30);
+        // If still no services, show first 30 of all
+        if (result.length === 0) {
+          result = services.slice(0, 30);
+        }
+      } else {
       const petBreedLower = (selectedPet.breed || '').toLowerCase();
       const petSize = selectedPet.size?.toLowerCase() || '';
       const petAge = selectedPet.age_years || 0;
