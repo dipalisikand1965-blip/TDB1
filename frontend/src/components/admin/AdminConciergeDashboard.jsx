@@ -275,12 +275,18 @@ const ThreadListItem = ({ thread, isSelected, onClick, isUserOnline, isUserTypin
 
 /**
  * Message Component for Admin View
+ * Shows (Pet name) for user messages and Concierge® for admin messages
  */
-const AdminMessageBubble = ({ message }) => {
+const AdminMessageBubble = ({ message, petName }) => {
   const isAdmin = message.sender === 'concierge' || message.source === 'service_desk';
+  const senderLabel = isAdmin ? 'Concierge®' : (petName ? `(${petName})` : 'Member');
   
   return (
     <div className={`flex flex-col ${isAdmin ? 'items-end' : 'items-start'} mb-3`}>
+      {/* Sender label */}
+      <span className={`text-[10px] mb-1 px-1 ${isAdmin ? 'text-purple-400' : 'text-amber-400'}`}>
+        {senderLabel}
+      </span>
       <div className={`max-w-[85%] px-4 py-2.5 rounded-2xl ${
         isAdmin 
           ? 'bg-purple-500/30 text-white rounded-tr-sm' 
