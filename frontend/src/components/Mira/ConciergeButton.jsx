@@ -1,58 +1,82 @@
 /**
- * ConciergeButton - Floating Concierge® Communication Button
+ * ConciergeButton - Reusable Concierge® Communication Button
  * ===========================================================
  * 
- * A floating button that provides two-way communication between
+ * A reusable button that provides two-way communication between
  * users and the Service Desk concierge team.
  * 
- * Features:
- * - Floating C® icon accessible from any pillar page
- * - Unread message badge indicator
+ * FEATURES:
+ * - C® icon accessible from any pillar page and Mira OS modal
+ * - Unread message badge indicator with pulse animation
  * - Opens real-time chat panel (ConciergeThreadPanelV2)
- * - Messages go to Service Desk for admin response
- * - Push notifications when admin replies
+ * - Messages route to DoggyServiceDesk for admin response
+ * - WebSocket-based real-time updates
+ * - Multiple placement options: floating, inline, header
  * 
- * Usage:
- *   <ConciergeButton userId={user.id} petId={selectedPet?.id} />
+ * USAGE:
+ *   // Floating on pillar page
+ *   <ConciergeButton pillar="celebrate" position="bottom-right" />
+ *   
+ *   // Inline in Mira OS header  
+ *   <ConciergeButton variant="header" size="small" />
+ *   
+ *   // With pet context
+ *   <ConciergeButton petId={selectedPet?.id} petName={selectedPet?.name} />
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { MessageCircle, X, Loader2 } from 'lucide-react';
+import { Loader2, MessageSquare } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getApiUrl } from '../../utils/api';
+import useRealtimeConcierge, { ConnectionStatus } from '../../hooks/useRealtimeConcierge';
 import ConciergeThreadPanelV2 from './ConciergeThreadPanelV2';
-
-// Concierge® Brand Icon
-const ConciergeIcon = ({ className = "w-6 h-6" }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z" />
-    <path d="M7 21v-4" />
-    <path d="M17 21v-4" />
-    <path d="M12 3v6" />
-    <path d="M8 6l4-3 4 3" />
-  </svg>
-);
 
 /**
  * ConciergeButton Component
  */
 const ConciergeButton = ({ 
   petId = null,
+  petName = null,
   pillar = 'general',
-  position = 'bottom-right', // bottom-right, bottom-left, inline
+  position = 'bottom-right', // bottom-right, bottom-left, inline, none
+  variant = 'floating', // floating, header, minimal
   size = 'default', // small, default, large
-  showLabel = false
+  showLabel = false,
+  className = ''
 }) => {
   const { user, token } = useAuth();
   
   // State
   const [isOpen, setIsOpen] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [activeThread, setActiveThread] = useState(null);
-  const [hasNewMessage, setHasNewMessage] = useState(false);
+  const [localUnreadCount, setLocalUnreadCount] = useState(0);
   
-  // Fetch unread count
+  // Real-time concierge hook for WebSocket connection
+  const {
+    connectionStatus,
+    isConnected,
+    unreadCount: wsUnreadCount,
+    adminOnline
+  } = useRealtimeConcierge({
+    userId: user?.id,
+    enabled: !!user?.id && !isOpen, // Only track when panel is closed
+    onNewMessage: (newMsg, threadId) => {
+      // Update local unread when new message arrives and panel is closed
+      if (!isOpen) {
+        setLocalUnreadCount(prev => prev + 1);
+      }
+    },
+    onUnreadCountChange: (count) => {
+      setLocalUnreadCount(count);
+    }
+  });
+  
+  // Use local count or WS count, whichever is higher
+  const unreadCount = Math.max(localUnreadCount, wsUnreadCount || 0);
+  const hasNewMessage = unreadCount > 0;
+  
+  // Fetch unread count on mount
   const fetchUnreadCount = useCallback(async () => {
     if (!user?.id) return;
     
@@ -64,10 +88,7 @@ const ConciergeButton = ({
       
       if (response.ok) {
         const data = await response.json();
-        setUnreadCount(data.unread_count || 0);
-        if (data.unread_count > 0) {
-          setHasNewMessage(true);
-        }
+        setLocalUnreadCount(data.unread_count || 0);
       }
     } catch (err) {
       console.debug('[ConciergeButton] Could not fetch unread count:', err);
@@ -105,8 +126,9 @@ const ConciergeButton = ({
           body: JSON.stringify({
             user_id: user.id,
             pet_id: petId,
+            pet_name: petName,
             source: `pillar_${pillar}`,
-            title: `Chat from ${pillar} page`
+            title: petName ? `Chat about ${petName}` : `Chat from ${pillar} page`
           })
         }
       );
@@ -123,7 +145,7 @@ const ConciergeButton = ({
     } finally {
       setLoading(false);
     }
-  }, [user?.id, petId, pillar, token]);
+  }, [user?.id, petId, petName, pillar, token]);
   
   // Open the chat panel
   const handleOpen = async () => {
@@ -136,9 +158,8 @@ const ConciergeButton = ({
     if (thread) {
       setActiveThread(thread);
       setIsOpen(true);
-      setHasNewMessage(false);
       // Reset unread when opening
-      setUnreadCount(0);
+      setLocalUnreadCount(0);
     }
   };
   
@@ -149,39 +170,118 @@ const ConciergeButton = ({
     fetchUnreadCount();
   };
   
-  // Initial fetch and polling for unread count
+  // Initial fetch
   useEffect(() => {
     if (user?.id) {
       fetchUnreadCount();
-      
-      // Poll every 30 seconds for new messages
-      const interval = setInterval(fetchUnreadCount, 30000);
-      return () => clearInterval(interval);
     }
   }, [user?.id, fetchUnreadCount]);
   
   // Size configurations
   const sizeConfig = {
-    small: { button: 'w-12 h-12', icon: 'w-5 h-5', badge: 'w-5 h-5 text-[10px]' },
-    default: { button: 'w-14 h-14', icon: 'w-6 h-6', badge: 'w-6 h-6 text-xs' },
-    large: { button: 'w-16 h-16', icon: 'w-7 h-7', badge: 'w-7 h-7 text-sm' }
+    small: { button: 'w-10 h-10', text: 'text-sm', badge: 'w-4 h-4 text-[9px]' },
+    default: { button: 'w-14 h-14', text: 'text-lg', badge: 'w-5 h-5 text-[10px]' },
+    large: { button: 'w-16 h-16', text: 'text-xl', badge: 'w-6 h-6 text-xs' }
   };
   
-  // Position configurations
+  // Position configurations for floating variant
   const positionConfig = {
-    'bottom-right': 'fixed bottom-20 right-4 z-50 sm:bottom-6 sm:right-6',
-    'bottom-left': 'fixed bottom-20 left-4 z-50 sm:bottom-6 sm:left-6',
-    'inline': 'relative'
+    'bottom-right': 'fixed bottom-20 right-4 z-[9999] sm:bottom-6 sm:right-6',
+    'bottom-left': 'fixed bottom-20 left-4 z-[9999] sm:bottom-6 sm:left-6',
+    'inline': 'relative',
+    'none': ''
   };
   
   const config = sizeConfig[size] || sizeConfig.default;
-  const posClass = positionConfig[position] || positionConfig['bottom-right'];
+  const posClass = variant === 'floating' ? (positionConfig[position] || positionConfig['bottom-right']) : '';
   
-  // Don't render if user is not logged in (or render a disabled state)
+  // Don't render if user is not logged in
   if (!user) {
     return null;
   }
   
+  // Header variant - compact button for modal headers
+  if (variant === 'header') {
+    return (
+      <>
+        <button
+          onClick={handleOpen}
+          disabled={loading}
+          className={`w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors relative ${className}`}
+          data-testid="concierge-button-header"
+          title="Chat with Concierge®"
+        >
+          {loading ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <span className="font-bold text-sm">C®</span>
+          )}
+          
+          {/* Unread Badge */}
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold">
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </span>
+          )}
+          
+          {/* Pulse for new messages */}
+          {hasNewMessage && !loading && (
+            <span className="absolute inset-0 rounded-full bg-white/30 animate-ping" />
+          )}
+        </button>
+        
+        {/* Chat Panel */}
+        {isOpen && activeThread && (
+          <ConciergeThreadPanelV2
+            isOpen={isOpen}
+            onClose={handleClose}
+            userId={user.id}
+            threadId={activeThread.id}
+            initialThread={activeThread}
+          />
+        )}
+      </>
+    );
+  }
+  
+  // Minimal variant - just an icon button
+  if (variant === 'minimal') {
+    return (
+      <>
+        <button
+          onClick={handleOpen}
+          disabled={loading}
+          className={`p-2 rounded-full hover:bg-gray-100 transition-colors relative ${className}`}
+          data-testid="concierge-button-minimal"
+          title="Chat with Concierge®"
+        >
+          {loading ? (
+            <Loader2 className="w-5 h-5 animate-spin text-purple-500" />
+          ) : (
+            <MessageSquare className="w-5 h-5 text-purple-500" />
+          )}
+          
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold">
+              {unreadCount}
+            </span>
+          )}
+        </button>
+        
+        {isOpen && activeThread && (
+          <ConciergeThreadPanelV2
+            isOpen={isOpen}
+            onClose={handleClose}
+            userId={user.id}
+            threadId={activeThread.id}
+            initialThread={activeThread}
+          />
+        )}
+      </>
+    );
+  }
+  
+  // Default floating variant
   return (
     <>
       {/* Floating Button */}
@@ -189,16 +289,16 @@ const ConciergeButton = ({
         <button
           onClick={handleOpen}
           disabled={loading}
-          className={`${config.button} rounded-full bg-gradient-to-br from-purple-600 to-pink-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center justify-center relative group`}
+          className={`${config.button} rounded-full bg-gradient-to-br from-purple-600 to-pink-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center justify-center relative group ${className}`}
           data-testid="concierge-button"
           title="Chat with Concierge®"
         >
           {loading ? (
-            <Loader2 className={`${config.icon} animate-spin`} />
+            <Loader2 className="w-6 h-6 animate-spin" />
           ) : (
             <>
               {/* C® Text Icon */}
-              <span className="font-bold text-lg">C®</span>
+              <span className={`font-bold ${config.text}`}>C®</span>
               
               {/* Pulse animation for new messages */}
               {hasNewMessage && (
@@ -212,6 +312,11 @@ const ConciergeButton = ({
             <span className={`absolute -top-1 -right-1 ${config.badge} bg-red-500 text-white rounded-full flex items-center justify-center font-bold shadow-md`}>
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
+          )}
+          
+          {/* Connection indicator */}
+          {isConnected && (
+            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white" />
           )}
           
           {/* Label on hover */}
