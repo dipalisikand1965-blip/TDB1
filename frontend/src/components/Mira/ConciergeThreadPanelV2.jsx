@@ -23,9 +23,10 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { 
   X, Send, ChevronLeft, ChevronDown, ChevronUp, PawPrint,
   BookOpen, Wifi, WifiOff, Clock, Check, CheckCheck,
-  AlertCircle, RefreshCw, Loader2
+  AlertCircle, RefreshCw, Loader2, Bell, BellOff, Search
 } from 'lucide-react';
 import useRealtimeConcierge, { MessageStatus, ConnectionStatus } from '../../hooks/useRealtimeConcierge';
+import usePushNotifications from '../../hooks/usePushNotifications';
 import { formatDistanceToNow, isToday, isYesterday, format } from 'date-fns';
 
 // Use relative URL for API calls
