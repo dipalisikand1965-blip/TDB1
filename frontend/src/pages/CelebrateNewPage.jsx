@@ -1455,6 +1455,13 @@ const CelebrateNewPage = () => {
       {/* ============================================ */}
       <div className="max-w-6xl mx-auto px-4 pt-4">
         
+        {/* MIRA OS ACTIVE FILTERS - Show when Mira search is active */}
+        <ActiveMiraFilters 
+          searchResult={miraSearchResult}
+          onClear={clearMiraSearch}
+          petName={activePet?.name}
+        />
+        
         {/* PERSONALIZED PICKS - Always show */}
         <div className="mb-6">
           <PersonalizedPicks 
