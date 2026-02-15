@@ -4466,8 +4466,18 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                           {selectedTicket.messages?.map((msg, idx) => {
                             const isAgent = msg.direction === 'outgoing' || msg.is_agent_reply || msg.sender === 'concierge';
                             const hasAttachments = msg.attachments?.length > 0;
-                            // Golden Standard: Label for message sender
-                            const senderLabel = isAgent ? 'Concierge®' : `(${selectedTicket.pet_info?.name || petProfile?.name || 'Member'})`;
+                            // Golden Standard: Label for message sender - Priority: pet_info > petProfile > pet_names > member name > Member
+                            const petDisplayName = selectedTicket.pet_info?.name 
+                              || petProfile?.name 
+                              || selectedTicket.pet_name 
+                              || selectedTicket.metadata?.pet_name
+                              || selectedTicket.pet_names?.[0]
+                              || (selectedTicket.subject?.includes("'s") ? selectedTicket.subject.split("'s")[0] : null);
+                            const senderLabel = isAgent 
+                              ? 'Concierge®' 
+                              : petDisplayName 
+                                ? `🐾 ${petDisplayName}` 
+                                : (selectedTicket.member?.name ? `${selectedTicket.member.name}'s pet` : '(Member)');
                             return (
                               <div key={idx} className={`flex gap-3 ${isAgent ? 'flex-row-reverse' : ''}`} data-message-id={msg.id || idx}>
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 ${
