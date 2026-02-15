@@ -404,5 +404,109 @@ Always respect `prefers-reduced-motion`:
 
 ---
 
+## UNIFIED SERVICE FLOW (HARDCODED)
+
+**THIS IS NON-NEGOTIABLE. Every user intent follows this exact flow.**
+
+### The Flow (Desktop = Mobile = PWA = Any Device)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     USER INTENT                              │
+│  Sources: Search button, Product click, Mira chat,          │
+│           Quick book, Service request, ANY interaction      │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  1. SERVICE DESK TICKET                                      │
+│     Collection: service_desk_tickets                         │
+│     ID Format: TKT-XXXX-XXXXXXXX                            │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  2. ADMIN NOTIFICATION                                       │
+│     Collection: admin_notifications                          │
+│     ID Format: NOTIF-XXXXXXXX                               │
+│     Shows: Admin Dashboard → Bell icon                       │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  3. MEMBER NOTIFICATION                                      │
+│     Collection: member_notifications                         │
+│     ID Format: MNOTIF-XXXXXXXX                              │
+│     Shows: Member Dashboard → Notifications                  │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  4. PILLAR REQUEST                                           │
+│     Collection: pillar_requests                              │
+│     ID Format: PR-XXXXXXXX                                  │
+│     Tracks: By pillar (care, dine, travel, etc.)            │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  5. TICKETS                                                  │
+│     Collection: tickets                                      │
+│     Universal ticket store for unified tracking              │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  6. CHANNEL INTAKES                                          │
+│     Collection: channel_intakes                              │
+│     ID Format: INBOX-XXXXXXXX                               │
+│     Tracks: Source (web, mira, whatsapp, mobile, pwa)       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Backend Implementation
+
+The flow is enforced via `central_signal_flow.py`:
+
+```python
+from central_signal_flow import create_signal
+
+# Every user action calls this:
+result = await create_signal(
+    pillar="celebrate",
+    action_type="product_interest",
+    title="User interested in Birthday Cake",
+    description="...",
+    customer_name="...",
+    source="web"  # or "mobile", "mira", "whatsapp"
+)
+
+# Returns:
+# {
+#     "notification_id": "NOTIF-XXXXXXXX",
+#     "ticket_id": "TKT-CELE-XXXXXXXX",
+#     "inbox_id": "INBOX-XXXXXXXX"
+# }
+```
+
+### Frontend Trigger Points
+
+| Trigger | Flow Called |
+|---------|-------------|
+| Product "Add to Cart" | ✓ |
+| Product "Request via Concierge" | ✓ |
+| Mira Chat recommendation selected | ✓ |
+| Quick Book form submitted | ✓ |
+| Service inquiry clicked | ✓ |
+| Search button (if results) | ✓ |
+| ANY user intent | ✓ |
+
+### Concierge Icon Reflects Flow
+
+The **Helping Hands** icon state tracks the flow:
+
+| Flow Step | Icon State |
+|-----------|------------|
+| No intent | Idle (gray, 60% opacity) |
+| User selects product | Active (purple glow) |
+| Ticket created | Pulsing (notification) |
+| Concierge picks up | Badge with count |
+
+---
+
 *Last Updated: February 2026*
 *Maintained by: Mira OS Team*
