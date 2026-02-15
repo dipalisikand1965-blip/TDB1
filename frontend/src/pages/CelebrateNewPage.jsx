@@ -381,7 +381,7 @@ const ConciergeSection = ({ onPlanParty }) => {
           <button
             key={exp.id}
             onClick={() => {
-              triggerHaptic('medium');
+              haptic('medium');
               onPlanParty();
             }}
             className={`p-4 rounded-2xl bg-gradient-to-br ${exp.gradient} text-white text-left transition-all active:scale-[0.97] shadow-lg`}
