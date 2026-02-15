@@ -1080,9 +1080,11 @@ async def get_admin_threads(
             user = await db.users.find_one({"id": thread.get("user_id")})
             user_name = "Unknown"
             user_email = ""
+            user_phone = ""
             if user:
                 user_name = user.get("name", user.get("first_name", "Unknown"))
                 user_email = user.get("email", "")
+                user_phone = user.get("phone", user.get("whatsapp", ""))
             
             threads.append({
                 "id": thread.get("id"),
@@ -1091,6 +1093,7 @@ async def get_admin_threads(
                 "user_id": thread.get("user_id"),
                 "user_name": user_name,
                 "user_email": user_email,
+                "user_phone": user_phone,
                 "title": thread.get("title", "Conversation"),
                 "status": thread.get("status", "active"),
                 "last_message_preview": thread.get("last_message_preview", ""),
