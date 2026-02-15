@@ -318,7 +318,7 @@ const BuildBoxCTA = ({ onBuildBox }) => {
         </div>
         <Button
           onClick={() => {
-            triggerHaptic('medium');
+            haptic('medium');
             onBuildBox();
           }}
           size="sm"
@@ -347,7 +347,7 @@ const OccasionBoxGrid = ({ onSelectBox }) => {
           <button
             key={box.id}
             onClick={() => {
-              triggerHaptic('light');
+              haptic('light');
               onSelectBox(box.id);
             }}
             className={`p-3 rounded-xl border ${box.color} text-left transition-all active:scale-[0.98]`}
