@@ -712,35 +712,55 @@ const MiraOSModal = ({
                   <p className="text-sm text-gray-500">Ask anything about {config.name.toLowerCase()} for {selectedPet?.name || 'your pet'}</p>
                 </div>
               ) : (
-                messages.map(msg => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div className={`max-w-[85%] rounded-2xl px-4 py-3 ${
-                      msg.role === 'user'
-                        ? `bg-gradient-to-r ${config.color} text-white rounded-br-sm`
-                        : 'bg-gray-100 text-gray-800 rounded-bl-sm'
-                    }`}>
-                      {/* Markdown rendering for Mira's responses */}
-                      <div className="text-sm whitespace-pre-wrap prose prose-sm max-w-none [&_p]:mb-1 [&_ul]:mb-1 [&_ol]:mb-1 [&_li]:mb-0.5 [&_strong]:font-bold">
-                        {msg.role === 'assistant' ? (
-                          <ReactMarkdown
-                            components={{
-                              p: ({ children }) => <span className="block mb-1 last:mb-0">{children}</span>,
-                              strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-                              ul: ({ children }) => <ul className="list-disc pl-4 my-1">{children}</ul>,
-                              ol: ({ children }) => <ol className="list-decimal pl-4 my-1">{children}</ol>,
-                              li: ({ children }) => <li className="mb-0.5">{children}</li>,
-                            }}
-                          >
-                            {msg.content}
-                          </ReactMarkdown>
-                        ) : (
-                          msg.content
-                        )}
+                messages.map((msg, msgIndex) => (
+                  <div key={msg.id}>
+                    <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+                        msg.role === 'user'
+                          ? `bg-gradient-to-r ${config.color} text-white rounded-br-sm`
+                          : 'bg-gray-100 text-gray-800 rounded-bl-sm'
+                      }`}>
+                        {/* Markdown rendering for Mira's responses */}
+                        <div className="text-sm whitespace-pre-wrap prose prose-sm max-w-none [&_p]:mb-1 [&_ul]:mb-1 [&_ol]:mb-1 [&_li]:mb-0.5 [&_strong]:font-bold">
+                          {msg.role === 'assistant' ? (
+                            <ReactMarkdown
+                              components={{
+                                p: ({ children }) => <span className="block mb-1 last:mb-0">{children}</span>,
+                                strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                                ul: ({ children }) => <ul className="list-disc pl-4 my-1">{children}</ul>,
+                                ol: ({ children }) => <ol className="list-decimal pl-4 my-1">{children}</ol>,
+                                li: ({ children }) => <li className="mb-0.5">{children}</li>,
+                              }}
+                            >
+                              {msg.content}
+                            </ReactMarkdown>
+                          ) : (
+                            msg.content
+                          )}
+                        </div>
                       </div>
                     </div>
+                    
+                    {/* Quick Replies - Show only for the last assistant message */}
+                    {msg.role === 'assistant' && 
+                     msg.quickReplies && 
+                     msg.quickReplies.length > 0 && 
+                     msgIndex === messages.length - 1 && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {msg.quickReplies.map((reply, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => sendMessage(reply.value || reply.text || reply)}
+                            className="px-3 py-2 text-sm rounded-full bg-purple-50 text-purple-700 
+                                     border border-purple-200 hover:bg-purple-100 
+                                     transition-colors active:scale-95"
+                            data-testid={`quick-reply-${idx}`}
+                          >
+                            {reply.text || reply}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))
               )}
