@@ -67,18 +67,50 @@ const CONCIERGE_STATES = {
 };
 
 // Extract quick replies from API response (same logic as MiraChatWidget)
+// Also generates contextual replies from Mira's questions
 const extractQuickReplies = (data) => {
   if (!data) return [];
   
   // Try different sources for quick replies
-  const chips = data.response?.chips || 
-                data.response?.quick_replies || 
-                data.chips ||
-                data.quick_replies ||
-                data.suggested_replies ||
-                data.follow_ups ||  // API returns follow_ups!
-                data.response?.follow_ups ||
-                [];
+  let chips = data.response?.chips || 
+              data.response?.quick_replies || 
+              data.chips ||
+              data.quick_replies ||
+              data.suggested_replies ||
+              data.follow_ups ||  
+              data.response?.follow_ups ||
+              [];
+  
+  // If no explicit chips, check if Mira asked a question - generate contextual replies
+  if (chips.length === 0 && data.response) {
+    const responseText = typeof data.response === 'string' ? data.response : '';
+    
+    // Detect question patterns and generate contextual quick replies
+    const questionPatterns = [
+      // Food/Diet questions
+      { pattern: /stay on kibble|better brand|move towards.*home.?cooked|add.*meals/i, 
+        replies: ['Stay on kibble, better brand', 'Add home-cooked meals', 'Mix of both'] },
+      // Allergy questions  
+      { pattern: /allergies|sensitive ingredients|allergic to/i,
+        replies: ['No allergies', 'Has food allergies', 'Not sure, need to check'] },
+      // Birthday/Celebration
+      { pattern: /birthday|celebration|special occasion/i,
+        replies: ['Yes, birthday coming up!', 'Just a treat day', 'Planning a party'] },
+      // Generic clarifying questions
+      { pattern: /do you want to|would you like|prefer|which option/i,
+        replies: [] }, // Let the context determine
+      // Yes/No questions
+      { pattern: /\?.*(?:yes|no|correct)\?|is that right|does that sound|shall I/i,
+        replies: ['Yes, please!', 'No, let me explain', 'Tell me more'] },
+    ];
+    
+    for (const { pattern, replies } of questionPatterns) {
+      if (pattern.test(responseText) && replies.length > 0) {
+        chips = replies;
+        break;
+      }
+    }
+  }
   
   return chips.map(chip => {
     if (typeof chip === 'string') {
@@ -87,6 +119,10 @@ const extractQuickReplies = (data) => {
     // Handle follow_ups format { text: 'xxx', type: 'yyy' }
     if (chip.text) {
       return { text: chip.text, value: chip.text };
+    }
+    // Handle quick_prompts format { label: 'xxx', message: 'yyy' }
+    if (chip.label) {
+      return { text: chip.label, value: chip.message || chip.label };
     }
     return chip;
   }).slice(0, 4); // Limit to 4 quick replies
