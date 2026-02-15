@@ -220,6 +220,7 @@ const MiraOSModal = ({
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [activeTab, setActiveTab] = useState('picks'); // picks | chat | services
+  const [dynamicQuickActions, setDynamicQuickActions] = useState([]); // Dynamic context-aware prompts
   
   // Refs
   const modalRef = useRef(null);
