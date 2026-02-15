@@ -36,7 +36,7 @@ Pass: lola4304
 
 ## Preview
 ```
-https://pet-os-deploy.preview.emergentagent.com
+https://mira-audit.preview.emergentagent.com
 ```
 
 ---
@@ -116,7 +116,7 @@ sudo supervisorctl status
 tail -f /var/log/supervisor/backend.err.log
 
 # Test API
-curl https://pet-os-deploy.preview.emergentagent.com/api/health
+curl https://mira-audit.preview.emergentagent.com/api/health
 ```
 
 ---
