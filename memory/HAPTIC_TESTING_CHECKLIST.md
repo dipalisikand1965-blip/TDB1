@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://golden-pillars.preview.emergentagent.com/mira-demo**
+**https://mira-roadmap-100.preview.emergentagent.com/mira-demo**
 
 ---
 

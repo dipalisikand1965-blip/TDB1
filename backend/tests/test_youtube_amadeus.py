@@ -7,7 +7,7 @@ import requests
 import os
 
 # Get base URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://golden-pillars.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-roadmap-100.preview.emergentagent.com')
 
 
 class TestYouTubeAPI:

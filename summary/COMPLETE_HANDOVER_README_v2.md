@@ -47,13 +47,13 @@ OPENWEATHER_API_KEY: 53f54942766320a15584e440644000e3
 
 ## Frontend Environment
 ```
-REACT_APP_BACKEND_URL: https://golden-pillars.preview.emergentagent.com
+REACT_APP_BACKEND_URL: https://mira-roadmap-100.preview.emergentagent.com
 REACT_APP_RAZORPAY_KEY_ID: rzp_test_1234567890abcdef
 ```
 
 ## Preview URL
 ```
-https://golden-pillars.preview.emergentagent.com
+https://mira-roadmap-100.preview.emergentagent.com
 ```
 
 ---
