@@ -1245,6 +1245,9 @@ const CelebrateNewPage = () => {
         />,
         document.body
       )}
+      
+      {/* Mira OS - BETA Testing (Parallel to existing FAB) */}
+      <MiraOSTrigger pillar="celebrate" position="bottom-left" />
     </div>
     </PillarPageLayout>
   );
