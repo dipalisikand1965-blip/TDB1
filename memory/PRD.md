@@ -89,6 +89,41 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
   - Settings stored in MongoDB `admin_settings` collection
   - Configuration cached for 5 minutes to reduce DB calls
 
+### February 15, 2026 (Session 7) - DATE-SPECIFIC SCHEDULE OVERRIDES (HOLIDAYS)
+- [x] **SCHEDULE OVERRIDES FEATURE (HOLIDAYS/SPECIAL DAYS):**
+  - Allows admins to mark specific dates as closed or set custom hours
+  - Use cases: Christmas, Diwali, team outings, special events
+  - Backend endpoints:
+    - `GET /api/os/concierge/admin/date-overrides` - List all date overrides
+    - `POST /api/os/concierge/admin/date-overrides` - Create new override
+    - `PUT /api/os/concierge/admin/date-overrides/{date}` - Update override
+    - `DELETE /api/os/concierge/admin/date-overrides/{date}` - Remove override
+  - Data model (MongoDB `concierge_date_overrides` collection):
+    - `date`: YYYY-MM-DD format
+    - `is_closed`: boolean (if true, closed all day)
+    - `start_hour`/`end_hour`: custom hours (if not closed)
+    - `reason`: string (e.g., "Christmas", "Diwali")
+  - Priority: Date overrides checked BEFORE regular hours in status logic
+  - Caching: Date overrides cached for 1 minute
+- [x] **FRONTEND UI (SERVICE DESK SETTINGS):**
+  - "Schedule Overrides" section in Concierge Hours tab
+  - "Add Date" button opens modal with:
+    - Date picker (min: today)
+    - "Closed for the day" toggle
+    - Custom hours (if not closed)
+    - Reason field (optional)
+  - List view shows all overrides with:
+    - Date in "Wed, 25 Dec 2025" format
+    - Status badge (Closed/Custom Hours)
+    - Reason text
+    - Delete button (trash icon)
+  - data-testid attributes: add-date-override-btn, override-date-input, save-override-btn
+- [x] **CONCIERGE STATUS BUG ANALYSIS:**
+  - Original report: Showed offline at 8:50 PM when hours set to 9 AM - 9 PM
+  - Logic verified correct: `start_hour <= current_hour < end_hour` (9 <= 20 < 21 = True)
+  - Root cause likely: Caching issue or settings not saved properly
+  - Added debug logging to trace time comparisons
+
 ### February 15, 2026 (Session 4) - GOLDEN STANDARD PHASE 2 (4 NEW FEATURES)
 - [x] **FEATURE 11 - PUSH NOTIFICATIONS:**
   - Service worker updated: `/app/frontend/public/service-worker.js`
