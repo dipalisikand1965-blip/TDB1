@@ -114,6 +114,8 @@ DEFAULT_CONCIERGE_HOURS = {
 # In-memory cache for settings (refreshed from DB)
 _concierge_hours_cache = None
 _cache_timestamp = None
+_date_overrides_cache = None
+_date_overrides_timestamp = None
 
 async def get_concierge_hours() -> Dict[str, Any]:
     """
@@ -153,15 +155,113 @@ async def get_concierge_hours() -> Dict[str, Any]:
     _cache_timestamp = datetime.now(timezone.utc)
     return DEFAULT_CONCIERGE_HOURS.copy()
 
+
+async def get_date_overrides() -> List[Dict[str, Any]]:
+    """
+    Get date-specific schedule overrides (holidays, special hours).
+    Caches result for 1 minute.
+    """
+    global _date_overrides_cache, _date_overrides_timestamp
+    
+    # Check cache (valid for 1 minute)
+    if _date_overrides_cache is not None and _date_overrides_timestamp:
+        cache_age = (datetime.now(timezone.utc) - _date_overrides_timestamp).total_seconds()
+        if cache_age < 60:  # 1 minute
+            return _date_overrides_cache
+    
+    overrides = []
+    if db is not None:
+        try:
+            cursor = db.concierge_date_overrides.find({}).sort("date", 1)
+            async for doc in cursor:
+                overrides.append({
+                    "id": str(doc.get("_id", "")),
+                    "date": doc.get("date"),  # Format: "YYYY-MM-DD"
+                    "is_closed": doc.get("is_closed", False),
+                    "start_hour": doc.get("start_hour"),
+                    "end_hour": doc.get("end_hour"),
+                    "reason": doc.get("reason", ""),
+                    "created_at": doc.get("created_at")
+                })
+        except Exception as e:
+            logger.error(f"Error fetching date overrides: {e}")
+    
+    _date_overrides_cache = overrides
+    _date_overrides_timestamp = datetime.now(timezone.utc)
+    return overrides
+
+
 async def get_concierge_status() -> Dict[str, Any]:
     """
     Get current concierge status based on operating hours.
+    Checks date-specific overrides first, then regular hours.
     Returns live status, next available time, and message.
-    Now reads from database settings.
     """
     hours = await get_concierge_hours()
     
-    # If 24x7 mode, always online
+    # Get current time in local timezone
+    now_utc = datetime.now(timezone.utc)
+    ist_offset = timedelta(hours=hours["timezone_offset"])
+    now_local = now_utc + ist_offset
+    
+    current_hour = now_local.hour
+    current_minute = now_local.minute
+    current_day = now_local.weekday()  # 0=Monday, 6=Sunday
+    is_weekend = current_day >= 5  # Saturday=5, Sunday=6
+    today_str = now_local.strftime("%Y-%m-%d")  # Format: "2025-12-25"
+    
+    # Check for date-specific override first (holidays, special hours)
+    overrides = await get_date_overrides()
+    today_override = next((o for o in overrides if o.get("date") == today_str), None)
+    
+    if today_override:
+        # This date has a special schedule
+        if today_override.get("is_closed"):
+            # Closed for the day (holiday)
+            reason = today_override.get("reason", "Holiday")
+            return {
+                "is_live": False,
+                "status_text": f"Closed - {reason}",
+                "status_color": "red",
+                "message": f"We're closed today ({reason}). We'll be back tomorrow!",
+                "next_available": None,
+                "hours_config": hours,
+                "date_override": today_override
+            }
+        else:
+            # Custom hours for this date
+            start_hour = today_override.get("start_hour", hours["start"])
+            end_hour = today_override.get("end_hour", hours["end"])
+            is_live = start_hour <= current_hour < end_hour
+            
+            if is_live:
+                return {
+                    "is_live": True,
+                    "status_text": "Live now",
+                    "status_color": "green",
+                    "message": "Your Concierge is ready to help",
+                    "next_available": None,
+                    "hours_config": hours,
+                    "date_override": today_override,
+                    "custom_hours": f"{start_hour}:00 - {end_hour}:00"
+                }
+            else:
+                if current_hour < start_hour:
+                    next_time = now_local.replace(hour=start_hour, minute=0, second=0)
+                else:
+                    next_time = (now_local + timedelta(days=1)).replace(hour=hours["start"], minute=0, second=0)
+                
+                return {
+                    "is_live": False,
+                    "status_text": f"Back at {start_hour}:00 {hours['timezone_name']}",
+                    "status_color": "amber",
+                    "message": hours.get("offline_message", "Leave a message and we'll respond when we're back"),
+                    "next_available": next_time.strftime("%I:%M %p"),
+                    "hours_config": hours,
+                    "date_override": today_override
+                }
+    
+    # If 24x7 mode, always online (unless there's a date override above)
     if hours.get("is_24x7"):
         return {
             "is_live": True,
@@ -172,14 +272,6 @@ async def get_concierge_status() -> Dict[str, Any]:
             "hours_config": hours
         }
     
-    now_utc = datetime.now(timezone.utc)
-    ist_offset = timedelta(hours=hours["timezone_offset"])
-    now_local = now_utc + ist_offset
-    
-    current_hour = now_local.hour
-    current_day = now_local.weekday()  # 0=Monday, 6=Sunday
-    is_weekend = current_day >= 5  # Saturday=5, Sunday=6
-    
     # Get applicable hours (weekend or regular)
     start_hour = hours["start"]
     end_hour = hours["end"]
@@ -189,7 +281,10 @@ async def get_concierge_status() -> Dict[str, Any]:
         end_hour = hours["weekend_hours"].get("end", end_hour)
     
     # Check if within operating hours
+    # Uses hour-based check: 9 AM to 9 PM means online from 9:00 to 20:59
     is_live = start_hour <= current_hour < end_hour
+    
+    logger.debug(f"[STATUS] Local time: {now_local}, Hour: {current_hour}, Start: {start_hour}, End: {end_hour}, Is Live: {is_live}")
     
     if is_live:
         return {
