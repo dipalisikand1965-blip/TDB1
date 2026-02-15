@@ -66,8 +66,29 @@ New foundational document: `/app/memory/MIRA_OS_DOCTRINE.md`
 - Rule 4: Emotional Color Language
 - Rule 5: The Mira Voice
 
+#### 3. MIRA'S SILENT SORTING ALGORITHM ✅ IMPLEMENTED
+
+**The Doctrine in Action** - "Mira knows Lola more than the pet parent"
+
+Implemented in `CelebrateNewPage.jsx` function `miraSilentSort()`:
+
+| Priority Tier | What It Does | Example |
+|--------------|--------------|---------|
+| **TIER 1: Breed Match** | Pet's breed products first | Shih Tzu cakes appear first for Lola |
+| **TIER 2: Size Appropriateness** | Small dogs → mini products | Mini cakes prioritized for toy breeds |
+| **TIER 3: Allergy Safety** | Products without pet's allergens | Chicken-free for allergic pets |
+| **TIER 4: Preference Match** | Soul answers inform sorting | PB products rise if Lola loves PB |
+| **TIER 5: Bestsellers** | Social proof fallback | Popular items after personalization |
+| **TIER 6: Shopify Products** | Live inventory priority | Real products over seeded |
+| **TIER 7: Price** | Lower first for discovery | Budget-friendly browsing |
+
+**Visual Indicators (Subtle, not intrusive):**
+- Product grid shows "· Sorted for Lola" when logged in
+- Quick Discovery shows "· for Lola" next to heading
+- "By Breed" filter shows pet's breed name instead of generic label
+
 **Files Modified:**
-- `/app/frontend/src/pages/CelebrateNewPage.jsx` - Removed duplicate tabs (lines 870-892)
+- `/app/frontend/src/pages/CelebrateNewPage.jsx` - Added `miraSilentSort()` function (lines 790-888)
 - `/app/memory/MIRA_OS_DOCTRINE.md` - Created comprehensive doctrine document
 
 ---
