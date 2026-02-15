@@ -837,6 +837,14 @@ const MiraOSModal = ({
             >
               {voiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
             </button>
+            {/* Concierge® Button - Two-way communication */}
+            <ConciergeButton 
+              variant="header"
+              size="small"
+              petId={selectedPet?.id}
+              petName={selectedPet?.name}
+              pillar={pillar}
+            />
             <ConciergeIndicator 
               state={conciergeState} 
               count={pendingRequests}
