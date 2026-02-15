@@ -297,6 +297,9 @@ function AppRouter() {
         {/* Full-Screen Concierge® Dashboard - NO navbar/footer */}
         <Route path="/admin/concierge" element={<ConciergeRequestsDashboard />} />
         
+        {/* Real-time Concierge Dashboard - WebSocket-powered Golden Standard */}
+        <Route path="/admin/concierge-realtime" element={<AdminConciergeDashboard />} />
+        
         {/* NEW: Mira Concierge Dashboard - Handoff tickets management */}
         <Route path="/admin/mira-concierge" element={<ConciergeDashboard />} />
         <Route path="/concierge-dashboard" element={<ConciergeDashboard />} />
