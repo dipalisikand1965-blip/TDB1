@@ -246,6 +246,7 @@ const UnifiedHero = ({
   onSearchSubmit,
   shoppingForOther = false,
   otherBreedName = null,
+  hideSearchBar = false, // MIRA OS DOCTRINE: Mira already knows - no need to ask
 }) => {
   const petName = pet?.name || 'Your Pet';
   const petBreed = pet?.breed || '';
