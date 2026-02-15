@@ -19,6 +19,12 @@ Every screen, every interaction, every recommendation centers on the pet - not t
 ### 2. MIRA IS SILENT INTELLIGENCE
 Mira is NOT a chatbot UI element. Mira is the invisible brain that powers every personalized experience. Users should feel Mira's presence through smart recommendations, contextual content, and anticipatory service - not through explicit "AI Assistant" interfaces.
 
+**THE GOLDEN RULE: Mira Already Knows**
+- Mira does NOT ask "What does Lola need?" - Mira KNOWS what Lola needs
+- No search bars asking questions - Mira shows through silent sorting
+- No prompts for user input - Mira proactively surfaces the right products
+- The user browses, Mira curates silently in the background
+
 **What Mira IS:**
 - The intelligence behind product sorting (Lola's breed-appropriate cakes first)
 - The context engine that knows it's Lola's birthday next month
@@ -26,14 +32,16 @@ Mira is NOT a chatbot UI element. Mira is the invisible brain that powers every 
 - The taste engine that learns from every interaction
 
 **What Mira is NOT:**
-- A visible search bar that says "Ask Mira"
+- A visible search bar that says "Ask Mira" or "What does X need?"
 - A chatbot popup on every page
 - An assistant that interrupts the flow
+- A question-asker (Mira knows, Mira doesn't ask)
 
 **The ONE Exception:** The Floating Action Button (FAB)
 - Mira FAB appears subtly in the corner
 - It's an opt-in conversation, not a forced interaction
 - When opened, Mira has FULL context (current pillar, pet profile, browsing history)
+- This is the ONLY place users can explicitly talk to Mira
 
 ### 3. PILLAR-BASED LIFE ORGANIZATION
 A pet's life is organized into 14 pillars - not categories, not departments. Each pillar represents a dimension of the pet-parent journey:
