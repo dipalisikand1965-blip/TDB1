@@ -483,11 +483,16 @@ const MiraOSModal = ({
       
       if (response.ok) {
         const data = await response.json();
+        
+        // Extract quick replies from various possible locations in the response
+        const quickReplies = extractQuickReplies(data);
+        
         setMessages(prev => [...prev, {
           id: `assistant-${Date.now()}`,
           role: 'assistant',
           content: data.response,
           products: data.products,
+          quickReplies: quickReplies,
           timestamp: new Date().toISOString()
         }]);
         
