@@ -190,6 +190,7 @@ const AdvisoryPage = lazy(() => import("./pages/AdvisoryPage"));
 const PaperworkPage = lazy(() => import("./pages/PaperworkPage"));
 const EmergencyPage = lazy(() => import("./pages/EmergencyPage"));
 const CelebratePage = lazy(() => import("./pages/CelebratePage"));
+const CelebrateNewPage = lazy(() => import("./pages/CelebrateNewPage"));
 const FarewellPage = lazy(() => import("./pages/FarewellPage"));
 const AdoptPage = lazy(() => import("./pages/AdoptPage"));
 const PillarPage = lazy(() => import("./pages/PillarPage"));
