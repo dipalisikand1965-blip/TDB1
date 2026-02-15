@@ -21,6 +21,7 @@ import { toast } from 'sonner';
 import { useMiraSignal } from '../hooks/useMiraSignal';
 import MiraOrb from './MiraOrb';
 import CinematicKitAssembly from './CinematicKitAssembly';
+import MiraConciergeCards, { parseMiraRecommendations } from './MiraConciergeCard';
 import ReactMarkdown from 'react-markdown';
 import { 
   X, Send, Loader2, Mic, MicOff, Volume2, VolumeX, 
