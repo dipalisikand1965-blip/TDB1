@@ -501,9 +501,13 @@ const MiraOSModal = ({
       setDynamicQuickActions([]);
       // Generate new session ID for fresh conversation with this pet
       setSessionId(`mira-os-${selectedPet.id}-${Date.now()}`);
+      // Generate intelligent prompts based on pet's soul - "Mira knows"
+      const prompts = generateIntelligentPrompts(selectedPet);
+      setIntelligentPrompts(prompts);
+      console.log('[MiraOS] Generated', prompts.length, 'intelligent prompts for', selectedPet.name);
       console.log('[MiraOS] Chat cleared for fresh conversation with', selectedPet.name);
     }
-  }, [selectedPet?.id]);
+  }, [selectedPet?.id, generateIntelligentPrompts]);
   
   // Auto-scroll chat
   useEffect(() => {
