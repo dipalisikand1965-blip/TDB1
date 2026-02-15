@@ -258,7 +258,10 @@ const PillarPageLayout = ({
               {/* Subcategory Pills - Scrollable on mobile */}
               <div className="flex gap-2 overflow-x-auto scrollbar-hide flex-1 pr-4">
                 <button
-                  onClick={() => setSelectedSubcategory(null)}
+                  onClick={() => {
+                    setSelectedSubcategory(null);
+                    onSubcategoryChange?.(null);
+                  }}
                   className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-sm transition-all ${
                     !selectedSubcategory
                       ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
@@ -270,20 +273,39 @@ const PillarPageLayout = ({
                   <span>All {pillar.charAt(0).toUpperCase() + pillar.slice(1)}</span>
                 </button>
                 {subcategories.map((subcat) => (
-                  <Link
-                    key={subcat.id}
-                    to={subcat.path}
-                    onClick={() => setSelectedSubcategory(subcat.id)}
-                    className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-sm transition-all ${
-                      selectedSubcategory === subcat.id
-                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                        : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                    }`}
-                    data-testid={`subcat-${subcat.id}`}
-                  >
-                    <span>{subcat.emoji}</span>
-                    <span className="whitespace-nowrap">{subcat.name}</span>
-                  </Link>
+                  useTabNavigation ? (
+                    <button
+                      key={subcat.id}
+                      onClick={() => {
+                        setSelectedSubcategory(subcat.id);
+                        onSubcategoryChange?.(subcat.id);
+                      }}
+                      className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-sm transition-all ${
+                        selectedSubcategory === subcat.id
+                          ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                          : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                      }`}
+                      data-testid={`subcat-${subcat.id}`}
+                    >
+                      <span>{subcat.emoji}</span>
+                      <span className="whitespace-nowrap">{subcat.name}</span>
+                    </button>
+                  ) : (
+                    <Link
+                      key={subcat.id}
+                      to={subcat.path}
+                      onClick={() => setSelectedSubcategory(subcat.id)}
+                      className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-sm transition-all ${
+                        selectedSubcategory === subcat.id
+                          ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                          : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                      }`}
+                      data-testid={`subcat-${subcat.id}`}
+                    >
+                      <span>{subcat.emoji}</span>
+                      <span className="whitespace-nowrap">{subcat.name}</span>
+                    </Link>
+                  )
                 ))}
               </div>
               
