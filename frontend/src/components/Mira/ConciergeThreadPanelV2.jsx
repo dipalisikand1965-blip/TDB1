@@ -22,6 +22,7 @@ import {
   AlertCircle, RefreshCw, Loader2
 } from 'lucide-react';
 import useRealtimeConcierge, { MessageStatus, ConnectionStatus } from '../../hooks/useRealtimeConcierge';
+import { formatDistanceToNow, isToday, isYesterday, format } from 'date-fns';
 
 // Use relative URL for API calls
 const API_BASE = '';
