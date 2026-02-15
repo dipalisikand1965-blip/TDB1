@@ -803,6 +803,7 @@ const ShopPage = () => {
       result = result
         .sort((a, b) => b._relevanceScore - a._relevanceScore)
         .filter(p => p._relevanceScore > 0 || result.indexOf(p) < 50); // Show scored items + fallback
+      }
     } else if (selectedPillar !== 'all' && selectedPillar !== 'shop') {
       result = result.filter(p => {
         const productPillars = p.pillars || [];
