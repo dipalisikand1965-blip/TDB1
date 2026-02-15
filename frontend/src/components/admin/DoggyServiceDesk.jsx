@@ -373,6 +373,18 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [conciergeHoursLoading, setConciergeHoursLoading] = useState(false);
   const [conciergeStatus, setConciergeStatus] = useState({ is_live: false, status_text: 'Loading...' });
   
+  // Date Overrides (Holidays/Special Days)
+  const [dateOverrides, setDateOverrides] = useState([]);
+  const [showAddOverrideModal, setShowAddOverrideModal] = useState(false);
+  const [newOverride, setNewOverride] = useState({
+    date: '',
+    is_closed: true,
+    start_hour: 9,
+    end_hour: 21,
+    reason: ''
+  });
+  const [overrideLoading, setOverrideLoading] = useState(false);
+  
   // Agent Collision Detection
   const [activeAgents, setActiveAgents] = useState({}); // { ticketId: [agentNames] }
   const [viewingTicketSince, setViewingTicketSince] = useState(null);
