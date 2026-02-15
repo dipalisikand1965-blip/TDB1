@@ -8,11 +8,15 @@
  * 3. Retry mechanism for failed messages
  * 4. Offline queue with visual indicator
  * 5. Guaranteed message ordering
- * 6. Typing indicators ("Admin is typing...")
+ * 6. Typing indicators ("Concierge® is typing...")
  * 7. Read receipts
  * 8. Connection status indicator (green/red dot)
  * 9. Sound notifications
  * 10. Visual animations for new messages
+ * 11. Push notifications (even when browser is closed) - Feature 11
+ * 12. Multi-device sync (same thread on phone/desktop) - Feature 12
+ * 13. Message search - Feature 13
+ * 14. Relative timestamps ("Just now", "2 min ago") - Feature 14
  */
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
