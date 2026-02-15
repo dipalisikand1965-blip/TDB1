@@ -359,7 +359,7 @@ const useRealtimeConcierge = ({
     
     const fetchUnreadCount = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/concierge/realtime/unread-count?user_id=${userId}`);
+        const response = await fetch(`/api/concierge/realtime/unread-count?user_id=${userId}`);
         if (response.ok) {
           const data = await response.json();
           setUnreadCount(data.unread_count || 0);
