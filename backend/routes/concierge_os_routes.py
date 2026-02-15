@@ -566,7 +566,7 @@ async def update_date_override(date: str, request: DateOverrideCreate):
         
         return {
             "success": True,
-            "message": f"Schedule override updated",
+            "message": "Schedule override updated",
             "override": update_doc
         }
         
