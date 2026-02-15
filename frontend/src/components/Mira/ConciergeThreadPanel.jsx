@@ -375,10 +375,13 @@ const ConciergeThreadPanel = ({
   
   // Load data when panel opens
   useEffect(() => {
-    if (isOpen && threadId && !initialThread) {
+    // Fetch thread data if:
+    // 1. No initialThread provided, OR
+    // 2. initialThread provided but no messages (empty array)
+    if (isOpen && threadId && (!initialThread || (initialMessages && initialMessages.length === 0))) {
       fetchThread();
     }
-  }, [isOpen, threadId, initialThread, fetchThread]);
+  }, [isOpen, threadId, initialThread, fetchThread, initialMessages]);
   
   // Poll for new messages every 5 seconds when panel is open
   useEffect(() => {
