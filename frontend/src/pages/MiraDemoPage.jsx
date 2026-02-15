@@ -70,7 +70,7 @@ const PastChatsPanel = lazy(() => import('../components/Mira/PastChatsPanel'));
 const InsightsPanel = lazy(() => import('../components/Mira/InsightsPanel'));
 const ConciergePanel = lazy(() => import('../components/Mira/ConciergePanel'));
 const ConciergeHomePanel = lazy(() => import('../components/Mira/ConciergeHomePanel'));
-const ConciergeThreadPanel = lazy(() => import('../components/Mira/ConciergeThreadPanel'));
+const ConciergeThreadPanel = lazy(() => import('../components/Mira/ConciergeThreadPanelV2'));
 const HelpModal = lazy(() => import('../components/Mira/HelpModal'));
 const LearnModal = lazy(() => import('../components/Mira/LearnModal'));
 const LearnPanel = lazy(() => import('../components/Mira/LearnPanel'));
