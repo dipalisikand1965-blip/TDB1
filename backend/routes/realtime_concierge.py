@@ -673,10 +673,79 @@ async def initiate_admin_conversation(data: dict):
             "delivered": user_notified
         })
         
+        # If user not online, send push notification (Feature 11)
+        if not user_notified:
+            await send_push_to_user(user_id, {
+                "title": f"Concierge® - {pet_name}",
+                "body": initial_message[:100] + ("..." if len(initial_message) > 100 else ""),
+                "tag": f"concierge-{thread_id}",
+                "data": {
+                    "type": "new_conversation",
+                    "thread_id": thread_id,
+                    "user_id": user_id
+                }
+            })
+        
         logger.info(f"[INITIATE] Admin initiated conversation {thread_id} with user {user_id}")
         
     except Exception as e:
         logger.error(f"[INITIATE] Error: {e}")
+
+
+# =============================================================================
+# PUSH NOTIFICATIONS HELPER (Feature 11)
+# =============================================================================
+
+async def send_push_to_user(user_id: str, notification: dict):
+    """
+    Send a push notification to a user when they're not connected via WebSocket.
+    This enables notifications even when the browser is closed.
+    """
+    if db is None:
+        return False
+    
+    try:
+        # Import the push notification sending function
+        from push_notification_routes import send_push_notification, get_or_create_vapid_keys
+        
+        # Get user's active push subscriptions
+        subscriptions = await db.push_subscriptions.find({
+            "user_id": user_id,
+            "active": True,
+            "preferences.concierge_updates": {"$ne": False}
+        }).to_list(10)
+        
+        if not subscriptions:
+            logger.info(f"[PUSH] No active push subscriptions for user {user_id}")
+            return False
+        
+        sent_count = 0
+        for sub in subscriptions:
+            subscription_info = {
+                "endpoint": sub["endpoint"],
+                "keys": sub["keys"]
+            }
+            
+            result = await send_push_notification(
+                subscription_info=subscription_info,
+                title=notification.get("title", "Concierge® Message"),
+                body=notification.get("body", "You have a new message"),
+                icon="/logo192.png",
+                badge="/logo192.png",
+                tag=notification.get("tag", "concierge-message"),
+                data=notification.get("data", {}),
+                require_interaction=True
+            )
+            
+            if result.get("success"):
+                sent_count += 1
+        
+        logger.info(f"[PUSH] Sent {sent_count}/{len(subscriptions)} push notifications to user {user_id}")
+        return sent_count > 0
+        
+    except Exception as e:
+        logger.error(f"[PUSH] Error sending push to user {user_id}: {e}")
+        return False
 
 
 # =============================================================================
