@@ -686,9 +686,20 @@ const MiraOSModal = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* New Chat / Refresh button */}
+            <button
+              onClick={startFreshChat}
+              className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+              title="Start fresh chat"
+              data-testid="mira-os-new-chat"
+            >
+              <RotateCcw className="w-5 h-5" />
+            </button>
             <button
               onClick={() => setVoiceEnabled(!voiceEnabled)}
               className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center"
+              title={voiceEnabled ? 'Mute voice' : 'Enable voice'}
+              data-testid="mira-os-voice-toggle"
             >
               {voiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
             </button>
