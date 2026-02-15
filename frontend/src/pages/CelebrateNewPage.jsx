@@ -103,7 +103,7 @@ const QuickProductTile = ({ product, onTap }) => {
   
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    triggerHaptic('light');
+    haptic('light');
     addToCart({
       id: product._id || product.id,
       title: product.name || product.title,
