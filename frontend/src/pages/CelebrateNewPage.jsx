@@ -543,7 +543,7 @@ const CelebrateNewPage = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/products?pillar=celebrate&limit=200`);
+      const response = await fetch(`${API_URL}/api/products?pillar=celebrate&limit=500`);
       if (response.ok) {
         const data = await response.json();
         let allProducts = data.products || data || [];
@@ -551,12 +551,18 @@ const CelebrateNewPage = () => {
         // Filter by category based on selected tab
         const currentTab = CATEGORY_TABS.find(t => t.id === selectedTab);
         if (currentTab?.dbCategory) {
+          const targetCategories = Array.isArray(currentTab.dbCategory) 
+            ? currentTab.dbCategory 
+            : [currentTab.dbCategory];
+          
           allProducts = allProducts.filter(p => {
             const productCategory = (p.category || '').toLowerCase();
-            const targetCategory = currentTab.dbCategory.toLowerCase();
-            return productCategory === targetCategory || 
-                   productCategory.includes(targetCategory) ||
-                   (p.tags || []).some(t => (t || '').toLowerCase().includes(targetCategory));
+            return targetCategories.some(target => {
+              const targetLower = target.toLowerCase();
+              return productCategory === targetLower || 
+                     productCategory.includes(targetLower) ||
+                     (p.tags || []).some(t => (t || '').toLowerCase().includes(targetLower));
+            });
           });
         }
         
