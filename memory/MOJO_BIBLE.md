@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://concierge-v2.preview.emergentagent.com
+https://service-hub-v2.preview.emergentagent.com
 ```
 
 ---

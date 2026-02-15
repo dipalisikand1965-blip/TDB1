@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://concierge-v2.preview.emergentagent.com
+**Preview URL:** https://service-hub-v2.preview.emergentagent.com
 
 ---
 
