@@ -50,6 +50,31 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
   - Email opens mailto: with subject and body
   - data-testid: channel-chat, channel-whatsapp, channel-email
 
+### February 15, 2026 (Session 6) - CONCIERGE® BUTTON FOR TWO-WAY COMMUNICATION
+- [x] **NEW: REUSABLE CONCIERGE BUTTON COMPONENT:**
+  - Location: `/app/frontend/src/components/Mira/ConciergeButton.jsx`
+  - Three variants: `floating` (pillar pages), `header` (MiraOS modal), `minimal`
+  - C® icon with unread badge count and pulse animation for new messages
+  - Uses `useRealtimeConcierge` hook for WebSocket real-time updates
+  - Opens `ConciergeThreadPanelV2` when clicked
+- [x] **MIRA OS MODAL INTEGRATION:**
+  - ConciergeButton (header variant) added to modal header
+  - Shows between voice toggle and ConciergeIndicator
+  - data-testid: concierge-button-header
+- [x] **PILLAR PAGE PATTERN ESTABLISHED:**
+  - ConciergeButton (floating variant) added to `/celebrate-new`
+  - Position: bottom-right (z-index: 10000 to stack above MiraChatWidget)
+  - Pattern ready for all 14 pillar pages
+  - data-testid: concierge-button
+- [x] **NEW BACKEND ENDPOINTS:**
+  - `GET /api/os/concierge/threads` - Get user's threads (for ConciergeButton)
+  - `POST /api/os/concierge/threads` - Create simple thread from button
+  - SimpleThreadCreateRequest model added
+- [x] **PET NAME FIX IN SERVICE DESK:**
+  - Fixed senderLabel logic in DoggyServiceDesk.jsx (line ~4470)
+  - Priority chain: pet_info.name → petProfile.name → pet_name → metadata.pet_name → pet_names[0] → subject parse → member name → "(Member)"
+  - Now shows 🐾 Lola instead of (Member)
+
 ### February 15, 2026 (Session 4) - GOLDEN STANDARD PHASE 2 (4 NEW FEATURES)
 - [x] **FEATURE 11 - PUSH NOTIFICATIONS:**
   - Service worker updated: `/app/frontend/public/service-worker.js`
