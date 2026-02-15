@@ -223,22 +223,25 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
 
 ## 📋 PRIORITIZED BACKLOG
 
-### P0 - Critical
+### P0 - Critical (Completed)
 - [x] ~~Test ElevenLabs voice in Mira OS~~ ✅ VERIFIED WORKING (Feb 15)
+- [x] ~~Port Golden Standard features to DoggyServiceDesk.jsx~~ ✅ COMPLETED (Feb 15)
+
+### P1 - Important (Next Up)
+- [ ] Standardize Pillar Page UI (14 pages with consistent styling)
+- [ ] Connect Concierge indicator (🤲) states - idle, active, pulsing
 - [ ] Weave Quick Questions into Concierge® chat
 - [ ] Update /mira-demo to show 8-pillar visual
-
-### P1 - Important
-- [ ] Connect Concierge indicator states
-- [ ] Proactive Mira intelligence
 
 ### P2 - Nice to Have
 - [ ] Gate Mira OS for paid members
 - [ ] Fix original FAB issues
+- [ ] Proactive Mira intelligence
 
-### P3 - Future
+### P3 - Future/Backlog
 - [ ] Phase out old FAB
-- [ ] Backend refactoring
+- [ ] Replace old `/celebrate` page with `/celebrate-new`
+- [ ] Backend refactoring (split server.py into modular routers)
 
 ---
 
