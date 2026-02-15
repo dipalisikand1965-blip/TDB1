@@ -865,7 +865,7 @@ Per user's architecture vision:
 
 ## Preview URL
 
-**Working:** https://production-ready-45.preview.emergentagent.com/mira-demo
+**Working:** https://furry-funnel.preview.emergentagent.com/mira-demo
 
 ---
 

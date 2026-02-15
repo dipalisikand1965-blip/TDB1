@@ -15,7 +15,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://production-ready-45.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://furry-funnel.preview.emergentagent.com').rstrip('/')
 
 class TestHealth:
     """Health check tests"""

@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://production-ready-45.preview.emergentagent.com/mira-demo**
+**https://furry-funnel.preview.emergentagent.com/mira-demo**
 
 ---
 

@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://production-ready-45.preview.emergentagent.com` |
+| **Preview** | `https://furry-funnel.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |

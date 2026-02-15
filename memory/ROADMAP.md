@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://production-ready-45.preview.emergentagent.com
+https://furry-funnel.preview.emergentagent.com
 
 ---
 
