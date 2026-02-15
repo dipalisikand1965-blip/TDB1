@@ -185,9 +185,11 @@ const ConciergeButton = ({
   };
   
   // Position configurations for floating variant
+  // Note: Using z-[10000] to stack above MiraChatWidget (z-[9999])
+  // bottom-24 on mobile to clear mobile nav, bottom-20 on desktop to stack above Ask Mira FAB
   const positionConfig = {
-    'bottom-right': 'fixed bottom-20 right-4 z-[9999] sm:bottom-6 sm:right-6',
-    'bottom-left': 'fixed bottom-20 left-4 z-[9999] sm:bottom-6 sm:left-6',
+    'bottom-right': 'fixed bottom-24 right-4 z-[10000] sm:bottom-20 sm:right-6',
+    'bottom-left': 'fixed bottom-24 left-20 z-[10000] sm:bottom-20 sm:left-6',
     'inline': 'relative',
     'none': ''
   };
