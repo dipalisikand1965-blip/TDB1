@@ -9626,7 +9626,7 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
     # ═══════════════════════════════════════════════════════════════════════════
     elif any(term in response_lower for term in ["allergies", "allergic to", "sensitive to", "sensitivities"]):
         quick_replies = [
-            f"{pet_ref} has no allergies",
+            f"No allergies for {pet_ref}",
             "Yes, has food allergies",
             "Not sure yet"
         ]
