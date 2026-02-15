@@ -497,6 +497,8 @@ const CelebrateNewPage = () => {
     // Reset filters on tab change
     setSearchQuery('');
     setSelectedBreed('All Breeds');
+    setSelectedShape('all');
+    setSmartFilter(null);
     // Scroll to products
     setTimeout(() => {
       document.getElementById('products-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
