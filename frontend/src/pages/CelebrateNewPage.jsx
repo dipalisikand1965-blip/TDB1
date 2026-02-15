@@ -36,16 +36,19 @@ import SEOHead from '../components/SEOHead';
 import { toast } from 'sonner';
 
 // ============================================
-// CATEGORY TABS CONFIGURATION
+// CATEGORY TABS CONFIGURATION - COMPREHENSIVE
 // ============================================
 const CATEGORY_TABS = [
   { id: 'all', name: 'All', emoji: '✨', color: 'from-purple-500 to-pink-500', dbCategory: null },
-  { id: 'cakes', name: 'Cakes', emoji: '🎂', color: 'from-pink-500 to-rose-500', dbCategory: 'cakes', hasFilters: ['city'] },
+  { id: 'cakes', name: 'Cakes', emoji: '🎂', color: 'from-pink-500 to-rose-500', dbCategory: 'cakes', hasFilters: ['city', 'shape'] },
   { id: 'breed-cakes', name: 'Breed', emoji: '🐕', color: 'from-purple-500 to-violet-500', dbCategory: 'breed-cakes', hasFilters: ['breed'] },
-  { id: 'pupcakes', name: 'Pupcakes', emoji: '🧁', color: 'from-amber-500 to-orange-500', dbCategory: 'dognuts' },
-  { id: 'treats', name: 'Treats', emoji: '🎁', color: 'from-green-500 to-emerald-500', dbCategory: 'treats' },
-  { id: 'hampers', name: 'Hampers', emoji: '🛍️', color: 'from-blue-500 to-cyan-500', dbCategory: 'hampers', hasBuilder: true },
+  { id: 'mini-cakes', name: 'Mini', emoji: '🧁', color: 'from-rose-400 to-pink-400', dbCategory: 'mini-cakes' },
+  { id: 'pupcakes', name: 'Pupcakes', emoji: '🍩', color: 'from-amber-500 to-orange-500', dbCategory: 'dognuts' },
+  { id: 'treats', name: 'Treats', emoji: '🦴', color: 'from-green-500 to-emerald-500', dbCategory: ['treats', 'desi-treats'] },
+  { id: 'desi-treats', name: 'Desi', emoji: '🪔', color: 'from-orange-500 to-amber-600', dbCategory: 'desi-treats' },
+  { id: 'hampers', name: 'Hampers', emoji: '🎁', color: 'from-blue-500 to-cyan-500', dbCategory: 'hampers', hasBuilder: true },
   { id: 'accessories', name: 'Party', emoji: '🎉', color: 'from-rose-500 to-pink-500', dbCategory: 'accessories' },
+  { id: 'cat', name: 'Cats', emoji: '🐱', color: 'from-cyan-500 to-teal-500', dbCategory: ['cat-cakes', 'cat-party', 'cat-hampers', 'cat-gotcha'] },
 ];
 
 // Tab-specific hero content
@@ -53,10 +56,13 @@ const TAB_CONTENT = {
   'all': { title: 'Celebrations for', highlight: 'Your Pet', subtitle: 'Mark the moments that matter' },
   'cakes': { title: 'Birthday', highlight: 'Cakes', subtitle: 'Freshly baked, 100% pet-safe' },
   'breed-cakes': { title: 'Breed', highlight: 'Cakes', subtitle: 'Shaped like your beloved breed!' },
+  'mini-cakes': { title: 'Mini', highlight: 'Cakes', subtitle: 'Perfect for small celebrations' },
   'pupcakes': { title: 'Pupcakes &', highlight: 'Dognuts', subtitle: 'Mini baked treats for pups' },
   'treats': { title: 'Treats &', highlight: 'Snacks', subtitle: 'Healthy bites & rewards' },
+  'desi-treats': { title: 'Desi', highlight: 'Treats', subtitle: 'Traditional Indian treats' },
   'hampers': { title: 'Celebration', highlight: 'Hampers', subtitle: 'Complete party boxes' },
   'accessories': { title: 'Party', highlight: 'Gear', subtitle: 'Bandanas, hats & more!' },
+  'cat': { title: 'Cat', highlight: 'Celebrations', subtitle: 'For your feline friends!' },
 };
 
 // Breed options for breed filter
@@ -73,7 +79,31 @@ const CITY_OPTIONS = [
   { value: 'bangalore', label: 'Bangalore', emoji: '🏙️' },
   { value: 'mumbai', label: 'Mumbai', emoji: '🏙️' },
   { value: 'delhi', label: 'Delhi NCR', emoji: '🏙️' },
+  { value: 'hyderabad', label: 'Hyderabad', emoji: '🏙️' },
+  { value: 'chennai', label: 'Chennai', emoji: '🏙️' },
   { value: 'pan-india', label: 'Pan-India', emoji: '📦' },
+];
+
+// Shape options for cakes
+const SHAPE_OPTIONS = [
+  { value: 'all', label: 'All Shapes', emoji: '🎂' },
+  { value: 'round', label: 'Round', emoji: '⭕' },
+  { value: 'heart', label: 'Heart', emoji: '❤️' },
+  { value: 'paw', label: 'Paw', emoji: '🐾' },
+  { value: 'bone', label: 'Bone', emoji: '🦴' },
+  { value: 'custom', label: 'Custom', emoji: '✨' },
+];
+
+// Smart Discovery Filters - Quick filter pills
+const SMART_FILTERS = [
+  { id: 'breed-cakes', emoji: '🐕', label: 'By Breed', desc: 'Labrador, Pug, GSD...' },
+  { id: 'gift-ready', emoji: '🎁', label: 'Gift Ready', desc: 'Beautifully packaged' },
+  { id: 'allergy-safe', emoji: '🥜', label: 'Allergy Safe', desc: 'No wheat, no nuts' },
+  { id: 'budget', emoji: '💰', label: 'Under ₹500', desc: 'Sweet savings' },
+  { id: 'same-day', emoji: '⚡', label: 'Same Day', desc: 'Order now, get today' },
+  { id: 'bestsellers', emoji: '🏆', label: 'Bestsellers', desc: 'Fan favorites' },
+  { id: 'cat', emoji: '🐱', label: 'Cat Cakes', desc: 'Feline friends' },
+  { id: 'premium', emoji: '✨', label: 'Premium', desc: 'Luxury treats' },
 ];
 
 // Occasion box types
