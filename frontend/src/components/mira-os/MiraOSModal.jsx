@@ -834,20 +834,25 @@ const MiraOSModal = ({
                               {reply.text || reply}
                             </button>
                           ))}
-                          {/* Always add "Anything else" option */}
-                          <button
-                            onClick={() => {
-                              const input = document.querySelector('[data-testid="mira-os-chat-input"]');
-                              if (input) input.focus();
-                            }}
-                            className="px-4 py-2.5 text-sm font-medium rounded-full 
-                                     bg-gray-50 text-gray-600 border border-gray-200 
-                                     hover:bg-gray-100 hover:border-gray-300 shadow-sm
-                                     transition-all active:scale-95"
-                            data-testid="quick-reply-anything-else"
-                          >
-                            ✏️ Anything else
-                          </button>
+                          {/* Add "Anything else" only if backend didn't include "Something else" */}
+                          {!msg.quickReplies.some(r => 
+                            (r.text || r || '').toLowerCase().includes('something else') ||
+                            (r.text || r || '').toLowerCase().includes('anything else')
+                          ) && (
+                            <button
+                              onClick={() => {
+                                const input = document.querySelector('[data-testid="mira-os-chat-input"]');
+                                if (input) input.focus();
+                              }}
+                              className="px-4 py-2.5 text-sm font-medium rounded-full 
+                                       bg-gray-50 text-gray-600 border border-gray-200 
+                                       hover:bg-gray-100 hover:border-gray-300 shadow-sm
+                                       transition-all active:scale-95"
+                              data-testid="quick-reply-anything-else"
+                            >
+                              ✏️ Anything else
+                            </button>
+                          )}
                         </div>
                       </div>
                     )}
