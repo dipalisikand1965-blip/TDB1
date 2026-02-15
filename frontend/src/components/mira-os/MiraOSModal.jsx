@@ -345,6 +345,27 @@ const MiraOSModal = ({
     setActiveTab('chat');
     
     try {
+      // Build FULL pet context - this is what Mira FAB does right!
+      const petContext = selectedPet ? {
+        id: selectedPet.id,
+        name: selectedPet.name,
+        breed: selectedPet.breed || selectedPet.identity?.breed,
+        age: selectedPet.age || selectedPet.identity?.age,
+        weight: selectedPet.weight || selectedPet.identity?.weight,
+        birthday: selectedPet.birthday || selectedPet.identity?.birthday,
+        allergies: selectedPet.allergies || selectedPet.health?.allergies || [],
+        sensitivities: selectedPet.sensitivities || selectedPet.health?.sensitivities || [],
+        preferences: selectedPet.preferences || selectedPet.food_preferences || {},
+        personality: selectedPet.personality || selectedPet.behavior?.personality,
+        activity_level: selectedPet.activity_level || selectedPet.behavior?.activity_level,
+        favorite_treats: selectedPet.favorite_treats || selectedPet.preferences?.favorite_treats || [],
+        // Soul data if available
+        soul_score: selectedPet.soul_score,
+        traits: selectedPet.traits || []
+      } : null;
+      
+      console.log('[MiraOS] Sending chat with pet context:', petContext?.name);
+      
       const response = await fetch(`${getApiUrl()}/api/mira/chat`, {
         method: 'POST',
         headers: {
@@ -356,7 +377,11 @@ const MiraOSModal = ({
           session_id: `mira-os-${Date.now()}`,
           source: 'mira_os',
           current_pillar: pillar,
-          selected_pet_id: selectedPet?.id
+          selected_pet_id: selectedPet?.id,
+          // FULL PET CONTEXT - Critical for personalization!
+          pet_context: petContext,
+          pet_name: selectedPet?.name,
+          pet_breed: selectedPet?.breed || selectedPet?.identity?.breed
         })
       });
       
