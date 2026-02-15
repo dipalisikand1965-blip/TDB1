@@ -132,6 +132,14 @@ const QuickProductTile = ({ product, onTap }) => {
   const [isPressed, setIsPressed] = useState(false);
   const { addToCart } = useCart();
   
+  // Check if product is a cake (has complimentary items)
+  const isCake = product.category?.toLowerCase().includes('cake') || 
+                 product.pillar === 'celebrate' ||
+                 product.includes_compliments;
+  
+  // Get option count for badge
+  const optionCount = product.variants?.length || (product.options?.length > 0 ? product.options.reduce((acc, opt) => acc + (opt.values?.length || 0), 0) : 0);
+  
   const handleAddToCart = (e) => {
     e.stopPropagation();
     haptic('light');
@@ -171,16 +179,42 @@ const QuickProductTile = ({ product, onTap }) => {
         >
           <span className="text-lg">+</span>
         </button>
-        {/* Badge */}
-        {product.is_bestseller && (
-          <Badge className="absolute top-2 left-2 bg-amber-500 text-white text-[10px] px-2">
-            Bestseller
-          </Badge>
+        {/* Badges Row */}
+        <div className="absolute top-2 left-2 flex flex-col gap-1">
+          {product.is_bestseller && (
+            <Badge className="bg-amber-500 text-white text-[10px] px-2">
+              Bestseller
+            </Badge>
+          )}
+          {optionCount > 1 && (
+            <Badge className="bg-white/90 text-gray-700 text-[9px] px-1.5 backdrop-blur-sm">
+              {optionCount} options
+            </Badge>
+          )}
+        </div>
+        
+        {/* With Our Compliments - For cakes */}
+        {isCake && (
+          <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm px-2 py-1.5 flex items-center justify-center gap-1 text-[10px] text-gray-600">
+            <span className="opacity-60">🎈</span>
+            <span className="font-medium">With Our Compliments:</span>
+            <span className="opacity-60">🎉</span>
+            <span className="text-[9px] text-gray-500">Balloons, Candles, Party Hats</span>
+          </div>
         )}
       </div>
       
       {/* Info */}
       <div className="p-3">
+        {/* Paw Score if available */}
+        {(product.paw_score || product.rating) && (
+          <div className="flex items-center gap-1 mb-1">
+            <PawPrint className="w-3 h-3 fill-amber-500 text-amber-500" />
+            <span className="text-[10px] font-semibold text-gray-700">
+              {(product.paw_score || product.rating * 2).toFixed(1)}/10
+            </span>
+          </div>
+        )}
         <h3 className="font-medium text-sm text-gray-900 line-clamp-2 leading-tight min-h-[2.5rem]">
           {product.name || product.title}
         </h3>
