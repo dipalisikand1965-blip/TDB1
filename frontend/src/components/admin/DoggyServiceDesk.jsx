@@ -17,6 +17,7 @@ import { API_URL, getApiUrl } from '../../utils/api';
 import { useServiceDeskSocket, TicketNotificationToast } from '../../hooks/useServiceDeskSocket';
 import RichTextEditor from './RichTextEditor';
 import KanbanBoard from './KanbanBoard';
+import { formatDistanceToNow, isToday, isYesterday, format } from 'date-fns';
 import {
   Search, Plus, RefreshCw, X, Send, Clock, User, Phone, Mail,
   Calendar, AlertCircle, CheckCircle, Loader2, MessageSquare,
