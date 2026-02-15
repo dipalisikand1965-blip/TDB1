@@ -329,6 +329,8 @@ const CelebratePage = () => {
       pillar="celebrate"
       title="Celebrations for Your Pet"
       description="Mark the moments that matter to your furry friend"
+      useTabNavigation={true}
+      onSubcategoryChange={handleSubcategoryChange}
     >
 
       {/* Personalized Picks for User's Pet */}
