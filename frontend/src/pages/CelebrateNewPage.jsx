@@ -12,6 +12,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { 
   Cake, Gift, Heart, Sparkles, PartyPopper, Crown, Star,
@@ -27,7 +28,7 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { haptic } from '../utils/haptic';
-import ProductCard from '../components/ProductCard';
+import ProductCard, { ProductDetailModal } from '../components/ProductCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import OccasionBoxBuilder from '../components/OccasionBoxBuilder';
 import PartyPlanningWizard from '../components/PartyPlanningWizard';
