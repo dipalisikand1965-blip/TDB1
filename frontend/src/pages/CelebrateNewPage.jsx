@@ -578,8 +578,12 @@ const CelebrateNewPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   
+  // Initialize selectedTab from URL
+  const initialTab = searchParams.get('category') || 'all';
+  const validInitialTab = CATEGORY_TABS.find(t => t.id === initialTab) ? initialTab : 'all';
+  
   // Core state
-  const [selectedTab, setSelectedTab] = useState('all');
+  const [selectedTab, setSelectedTab] = useState(validInitialTab);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userPets, setUserPets] = useState([]);
@@ -599,13 +603,14 @@ const CelebrateNewPage = () => {
   const [boxOccasion, setBoxOccasion] = useState('birthday');
   const [showPartyWizard, setShowPartyWizard] = useState(false);
   
-  // Read category from URL on mount and when URL changes
+  // Sync tab with URL changes (for back/forward navigation)
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category');
-    if (categoryFromUrl && CATEGORY_TABS.find(t => t.id === categoryFromUrl)) {
-      setSelectedTab(categoryFromUrl);
-    } else if (!categoryFromUrl) {
-      setSelectedTab('all');
+    const newTab = categoryFromUrl && CATEGORY_TABS.find(t => t.id === categoryFromUrl) 
+      ? categoryFromUrl 
+      : 'all';
+    if (newTab !== selectedTab) {
+      setSelectedTab(newTab);
     }
   }, [searchParams]);
   
