@@ -647,20 +647,21 @@ const MiraOSModal = ({
         {/* Tab Bar */}
         <div className="flex border-b">
           {[
-            { id: 'picks', label: 'Picks', emoji: '✨' },
-            { id: 'chat', label: 'Chat', emoji: '💬' },
-            { id: 'services', label: 'Services', emoji: '🛠️' }
+            { id: 'picks', label: 'Picks', icon: <Sparkles className="w-4 h-4" /> },
+            { id: 'chat', label: 'Concierge®', icon: <MessageSquare className="w-4 h-4" /> },
+            { id: 'services', label: 'Services', icon: <Package className="w-4 h-4" /> }
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 py-3 text-sm font-medium transition-colors ${
+              data-testid={`mira-os-tab-${tab.id}`}
+              className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
                 activeTab === tab.id 
                   ? 'text-purple-600 border-b-2 border-purple-600' 
                   : 'text-gray-500'
               }`}
             >
-              {tab.emoji} {tab.label}
+              {tab.icon} {tab.label}
             </button>
           ))}
         </div>
