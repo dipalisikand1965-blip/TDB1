@@ -1081,6 +1081,41 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     }
   };
 
+  // Search messages in current thread (Golden Standard Feature 13)
+  const searchMessages = useCallback(async (query) => {
+    if (!query || query.length < 2 || !selectedTicket) {
+      setMessageSearchResults([]);
+      return;
+    }
+    
+    setIsSearchingMessages(true);
+    try {
+      const response = await fetch(
+        `${getApiUrl()}/api/concierge/realtime/admin/search?q=${encodeURIComponent(query)}&limit=30`,
+        { headers: authHeaders }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setMessageSearchResults(data.results || []);
+      }
+    } catch (err) {
+      console.error('[Search] Error:', err);
+    } finally {
+      setIsSearchingMessages(false);
+    }
+  }, [authHeaders, selectedTicket]);
+
+  // Debounced message search
+  useEffect(() => {
+    if (!showMessageSearch || !messageSearchQuery) return;
+    const timer = setTimeout(() => {
+      if (messageSearchQuery.length >= 2) {
+        searchMessages(messageSearchQuery);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [messageSearchQuery, showMessageSearch, searchMessages]);
+
   // Create new ticket
   const handleCreateTicket = async () => {
     if (!newTicketForm.subject.trim()) return;
