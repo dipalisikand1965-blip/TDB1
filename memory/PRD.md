@@ -71,18 +71,36 @@
 - **With pet:** "Ask about Lola..."
 - **Without pet:** "Ask your Concierge..."
 
+### P0.2: INLINE QUICK REPLIES IN CONVERSATION ✅ COMPLETE
+
+**User Request:** Move quick reply buttons from bottom bar to INLINE within the conversation flow, right after Mira's questions. Always include "Anything else" option.
+
+**What Was Built:**
+
+#### 1. Inline Quick Replies After Each AI Message
+- Quick replies now appear directly below Mira's message (not at bottom)
+- Contextually generated from Mira's question patterns
+- Pattern detection for: food choices, allergies, celebrations, weight/health, yes/no questions
+
+#### 2. Smart Pattern Extraction
+When API doesn't return `quick_replies`, the frontend detects question patterns:
+- "regular meals or treats/snacks?" → ["Regular everyday meals", "Occasional treats/snacks", "Both"]
+- "kibble or home-cooked?" → ["Stay on kibble", "Add home-cooked", "Mix of both"]
+- "any allergies?" → ["No allergies", "Has food allergies", "Not sure"]
+
+#### 3. "Anything else" Always Present
+Every set of quick replies includes "✏️ Anything else" button that focuses the input field.
+
+#### 4. Clean UX - No Duplication
+Bottom quick action bar is HIDDEN when inline replies are showing to avoid redundancy.
+
 **Files Modified:**
 - `/app/frontend/src/components/mira-os/MiraOSModal.jsx`:
-  - Added `MessageSquare` import (line 21)
-  - Added `dynamicQuickActions` state (line 223)
-  - Tab bar updated with icons and "Concierge®" label (lines 649-668)
-  - Chat empty state updated with Concierge® branding (lines 710-720)
-  - Dynamic quick actions section (lines 801-834)
-  - Input placeholder personalized (line 827)
+  - Enhanced `extractQuickReplies()` function with pattern detection (lines 69-142)
+  - Inline quick replies in chat messages (lines 814-853)
+  - Bottom bar conditionally hidden (lines 884-936)
 
-**Test Results:** 100% (8/8 features passing)
-- Test Report: `/app/test_reports/iteration_199.json`
-- All features verified by testing agent
+**Test Results:** Visual verification - inline quick replies appearing correctly in conversation flow.
 
 ---
 
