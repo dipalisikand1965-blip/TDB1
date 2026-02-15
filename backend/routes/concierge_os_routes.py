@@ -649,6 +649,69 @@ async def get_user_threads(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/threads")
+async def create_simple_thread(request: SimpleThreadCreateRequest):
+    """
+    Create a simple concierge thread from ConciergeButton.
+    This is a simplified version for quick thread creation.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Get pet name if pet_id provided
+        pet_name = request.pet_name or "Your pet"
+        if not pet_name or pet_name == "Your pet":
+            if request.pet_id:
+                pet = await db.pets.find_one({"id": request.pet_id})
+                if pet:
+                    pet_name = pet.get("name", "Your pet")
+        
+        # Generate thread title
+        title = request.title or f"Chat with {pet_name}"
+        
+        # Create thread
+        thread_id = str(uuid.uuid4())
+        thread_doc = {
+            "id": thread_id,
+            "pet_id": request.pet_id,
+            "user_id": request.user_id,
+            "pet_name": pet_name,
+            "title": title,
+            "status": "active",
+            "ticket_id": None,
+            "source": request.source,
+            "last_message_preview": "",
+            "last_message_at": now,
+            "message_count": 0,
+            "unread_count": 0,
+            "created_at": now,
+            "updated_at": now
+        }
+        
+        await db.concierge_threads.insert_one(thread_doc)
+        
+        logger.info(f"Created simple thread {thread_id} for user {request.user_id}")
+        
+        return {
+            "thread": {
+                "id": thread_id,
+                "pet_id": request.pet_id,
+                "pet_name": pet_name,
+                "title": title,
+                "status": "active",
+                "created_at": now
+            },
+            "success": True
+        }
+        
+    except Exception as e:
+        logger.error(f"Error creating simple thread: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/message")
 async def send_message(request: MessageSendRequest):
     """
