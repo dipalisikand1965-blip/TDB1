@@ -1024,7 +1024,7 @@ Per user's architecture vision:
 
 ## Preview URL
 
-**Working:** https://sync-preview-2.preview.emergentagent.com/mira-demo
+**Working:** https://pet-os-deploy.preview.emergentagent.com/mira-demo
 
 ---
 

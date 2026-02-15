@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://sync-preview-2.preview.emergentagent.com
+https://pet-os-deploy.preview.emergentagent.com
 
 ---
 
