@@ -21,8 +21,10 @@ import {
   BookOpen, Wifi, WifiOff, Clock, Check, CheckCheck,
   AlertCircle, RefreshCw, Loader2
 } from 'lucide-react';
-import { API_URL } from '../../utils/api';
 import useRealtimeConcierge, { MessageStatus, ConnectionStatus } from '../../hooks/useRealtimeConcierge';
+
+// Use relative URL for API calls
+const API_BASE = '';
 
 /**
  * Message Status Indicator - Shows delivery state
