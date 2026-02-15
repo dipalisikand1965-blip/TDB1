@@ -183,17 +183,47 @@ const MessageBubble = ({ message, onRetry }) => {
 };
 
 /**
- * Format timestamp
+ * Format timestamp with relative time support (Feature 14)
  */
 const formatTime = (ts) => {
   if (!ts) return '';
   try {
     const date = new Date(ts);
-    return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
-      minute: '2-digit',
-      hour12: true 
-    });
+    const now = new Date();
+    const diffMinutes = Math.floor((now - date) / (1000 * 60));
+    
+    // Just now (< 1 minute)
+    if (diffMinutes < 1) {
+      return 'Just now';
+    }
+    
+    // Within the last hour
+    if (diffMinutes < 60) {
+      return `${diffMinutes} min ago`;
+    }
+    
+    // Today - show relative time for recent, otherwise time
+    if (isToday(date)) {
+      const diffHours = Math.floor(diffMinutes / 60);
+      if (diffHours < 6) {
+        return formatDistanceToNow(date, { addSuffix: true });
+      }
+      return format(date, 'h:mm a');
+    }
+    
+    // Yesterday
+    if (isYesterday(date)) {
+      return 'Yesterday';
+    }
+    
+    // Within last week
+    const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+    if (diffDays < 7) {
+      return format(date, 'EEEE'); // Day name
+    }
+    
+    // Older - show date
+    return format(date, 'MMM d');
   } catch {
     return '';
   }
