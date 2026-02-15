@@ -35,7 +35,7 @@ import PartyPlanningWizard from '../components/PartyPlanningWizard';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import SEOHead from '../components/SEOHead';
 import PillarPageLayout from '../components/PillarPageLayout';
-import { MiraOSTrigger } from '../components/mira-os';
+import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import { toast } from 'sonner';
 
 // ============================================
