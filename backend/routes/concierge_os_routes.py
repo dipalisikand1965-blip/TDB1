@@ -50,6 +50,15 @@ class ThreadCreateRequest(BaseModel):
     suggestion_chip: Optional[str] = None  # If started from chip: grooming, boarding, travel, lost_pet
 
 
+class SimpleThreadCreateRequest(BaseModel):
+    """Simplified request for creating thread from ConciergeButton"""
+    user_id: str
+    pet_id: Optional[str] = None
+    pet_name: Optional[str] = None
+    source: Optional[str] = "concierge_button"
+    title: Optional[str] = None
+
+
 class MessageSendRequest(BaseModel):
     """Request to send a message in a thread"""
     thread_id: str
