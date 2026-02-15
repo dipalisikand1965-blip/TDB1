@@ -3244,6 +3244,79 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         )}
                       </Button>
                     </div>
+                    
+                    {/* Date-Specific Overrides (Holidays/Special Days) */}
+                    <div className="pt-6 border-t">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="font-semibold text-gray-800">Schedule Overrides</h3>
+                          <p className="text-sm text-gray-500">Mark specific dates as closed or set custom hours</p>
+                        </div>
+                        <Button
+                          onClick={() => setShowAddOverrideModal(true)}
+                          size="sm"
+                          className="bg-blue-500 hover:bg-blue-600"
+                          data-testid="add-date-override-btn"
+                        >
+                          <Plus className="w-4 h-4 mr-1" />
+                          Add Date
+                        </Button>
+                      </div>
+                      
+                      {/* List of Date Overrides */}
+                      {dateOverrides.length === 0 ? (
+                        <div className="text-center py-6 bg-gray-50 rounded-lg border border-dashed">
+                          <Calendar className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                          <p className="text-gray-500 text-sm">No schedule overrides set</p>
+                          <p className="text-gray-400 text-xs mt-1">Add holidays like Christmas, Diwali, etc.</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2 max-h-64 overflow-y-auto">
+                          {dateOverrides.map((override) => (
+                            <div 
+                              key={override.date} 
+                              className={`flex items-center justify-between p-3 rounded-lg border ${override.is_closed ? 'bg-red-50 border-red-200' : 'bg-blue-50 border-blue-200'}`}
+                              data-testid={`date-override-${override.date}`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${override.is_closed ? 'bg-red-100' : 'bg-blue-100'}`}>
+                                  {override.is_closed ? (
+                                    <Ban className="w-5 h-5 text-red-600" />
+                                  ) : (
+                                    <Clock className="w-5 h-5 text-blue-600" />
+                                  )}
+                                </div>
+                                <div>
+                                  <div className="font-medium text-gray-800">
+                                    {new Date(override.date + 'T00:00:00').toLocaleDateString('en-IN', { 
+                                      weekday: 'short', 
+                                      day: 'numeric', 
+                                      month: 'short', 
+                                      year: 'numeric' 
+                                    })}
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    {override.is_closed ? (
+                                      <span className="text-red-600 font-medium">Closed</span>
+                                    ) : (
+                                      <span className="text-blue-600">{override.start_hour}:00 - {override.end_hour}:00</span>
+                                    )}
+                                    {override.reason && <span className="ml-2 text-gray-400">• {override.reason}</span>}
+                                  </div>
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => deleteDateOverride(override.date)}
+                                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-100 rounded-lg transition-colors"
+                                data-testid={`delete-override-${override.date}`}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
