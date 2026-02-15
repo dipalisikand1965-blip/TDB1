@@ -872,6 +872,7 @@ const CelebrateNewPage = () => {
       pillar="celebrate"
       title="Celebrations for Your Pet"
       description="Mark the moments that matter to your furry friend"
+      showSubcategories={false}
       useTabNavigation={true}
       onSubcategoryChange={(subcat) => {
         // Map subcat to our tab system
