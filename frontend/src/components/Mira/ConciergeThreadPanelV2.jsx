@@ -539,10 +539,10 @@ const ConciergeThreadPanelV2 = ({
           
           <div className="flex-1 min-w-0">
             <h2 className="text-base font-medium text-white truncate">
-              {thread?.title || 'Conversation'}
+              {thread?.pet_name || thread?.title || 'Concierge®'}
             </h2>
             {thread?.pet_name && (
-              <p className="text-xs text-white/50">with {thread.pet_name}</p>
+              <p className="text-xs text-white/50">Your personal concierge</p>
             )}
           </div>
           
