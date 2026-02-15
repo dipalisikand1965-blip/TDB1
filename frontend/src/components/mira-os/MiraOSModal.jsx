@@ -276,6 +276,7 @@ const MiraOSModal = ({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [activeTab, setActiveTab] = useState('picks'); // picks | chat | services
   const [dynamicQuickActions, setDynamicQuickActions] = useState([]); // Dynamic context-aware prompts
+  const [sessionId, setSessionId] = useState(() => `mira-os-${Date.now()}`); // Unique session per conversation
   
   // Refs
   const modalRef = useRef(null);
@@ -283,6 +284,19 @@ const MiraOSModal = ({
   const audioRef = useRef(null);
   const startY = useRef(0);
   const currentY = useRef(0);
+  
+  // Function to start a fresh chat
+  const startFreshChat = useCallback(() => {
+    setMessages([]);
+    setDynamicQuickActions([]);
+    setSessionId(`mira-os-${Date.now()}`);
+    setActiveTab('chat');
+    console.log('[MiraOS] Fresh chat started for', selectedPet?.name);
+    toast.success('Fresh conversation started!', {
+      description: selectedPet ? `Ready to help with ${selectedPet.name}` : 'How can I help?',
+      duration: 2000
+    });
+  }, [selectedPet]);
   
   const config = PILLAR_CONFIG[pillar] || PILLAR_CONFIG.general;
   
