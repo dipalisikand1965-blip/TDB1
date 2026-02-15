@@ -419,6 +419,8 @@ function MainLayout() {
         {/* ALL Life Pillars - Open for browsing (login required only at checkout) */}
         {/* Celebrate Pillar - Single consolidated page */}
         <Route path="/celebrate" element={<CelebratePage />} />
+        {/* GOLD STANDARD Celebrate - Sandbox for new design */}
+        <Route path="/celebrate-new" element={<CelebrateNewPage />} />
         <Route path="/occasion-box/:type" element={<OccasionBoxPage />} />
         <Route path="/occasion-box" element={<OccasionBoxPage />} />
         <Route path="/build-box" element={<OccasionBoxPage />} />
