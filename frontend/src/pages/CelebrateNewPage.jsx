@@ -1092,7 +1092,7 @@ const CelebrateNewPage = () => {
     } else {
       setSearchParams({ category: tabId });
     }
-    // Reset filters on tab change
+    // Reset filters on tab change (but keep Mira search if it triggered the tab change)
     setSearchQuery('');
     setSelectedBreed('All Breeds');
     setSelectedShape('all');
@@ -1102,6 +1102,47 @@ const CelebrateNewPage = () => {
       document.getElementById('products-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
   }, [setSearchParams]);
+  
+  // Mira OS Search handler
+  const handleMiraSearch = useCallback((searchResult) => {
+    if (!searchResult) return;
+    
+    setMiraSearchResult(searchResult);
+    
+    // Apply detected filters
+    if (searchResult.detectedShape) {
+      setSelectedShape(searchResult.detectedShape);
+    }
+    if (searchResult.petBreed && searchResult.petBreed !== 'All Breeds') {
+      setSelectedBreed(searchResult.petBreed);
+    }
+    if (searchResult.detectedPriceRange) {
+      setPriceRange(searchResult.detectedPriceRange);
+    }
+    if (searchResult.detectedQuickFilter) {
+      setSmartFilter(searchResult.detectedQuickFilter);
+    }
+    
+    // Set search query for text matching
+    if (searchResult.keywords.length > 0) {
+      setSearchQuery(searchResult.keywords.join(' '));
+    }
+    
+    // Scroll to products
+    setTimeout(() => {
+      document.getElementById('products-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 200);
+  }, []);
+  
+  // Clear Mira search
+  const clearMiraSearch = useCallback(() => {
+    setMiraSearchResult(null);
+    setSearchQuery('');
+    setSelectedBreed('All Breeds');
+    setSelectedShape('all');
+    setSmartFilter(null);
+    setPriceRange('all');
+  }, []);
   
   // Fetch user's pets
   useEffect(() => {
