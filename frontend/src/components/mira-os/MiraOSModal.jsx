@@ -570,7 +570,7 @@ const MiraOSModal = ({
         },
         body: JSON.stringify({
           message: text.trim(),
-          session_id: `mira-os-${Date.now()}`,
+          session_id: sessionId, // Use persistent session for conversation continuity
           source: 'mira_os',
           current_pillar: pillar,
           selected_pet_id: selectedPet?.id,
