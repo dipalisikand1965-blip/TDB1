@@ -29,6 +29,27 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
 
 ## ✅ WHAT'S BEEN IMPLEMENTED
 
+### February 15, 2026 (Session 5) - GOLDEN STANDARD PORTED TO UNIFIED SERVICE DESK
+- [x] **PORTED ALL FEATURES TO DoggyServiceDesk.jsx** (Main Admin Service Desk):
+  - Source: AdminConciergeDashboard.jsx → Target: DoggyServiceDesk.jsx
+  - All 9 features verified working with 100% test pass rate
+- [x] **FEATURE 13 - MESSAGE SEARCH (PORTED):**
+  - Search toggle button next to "History" tab (data-testid: message-search-toggle)
+  - Search input with "Search in conversation..." placeholder
+  - Backend: `GET /api/concierge/realtime/admin/search` endpoint reused
+- [x] **FEATURE 14 - RELATIVE TIMESTAMPS (PORTED):**
+  - formatTime function using date-fns (lines 2105-2147)
+  - Shows: "Just now", "Xm ago", "Xh ago", "Yesterday", day name, "MMM d"
+- [x] **UI LABELS (PORTED):**
+  - "Concierge®" label (purple) for admin messages
+  - "(Pet name)" label (amber) for user messages - falls back to "(Member)" if pet data unavailable
+  - "C®" avatar icon for admin/concierge messages
+- [x] **OMNICHANNEL SELECTOR (PORTED):**
+  - "Send via:" label with Chat | WhatsApp | Email buttons
+  - WhatsApp opens wa.me link with pre-filled message text
+  - Email opens mailto: with subject and body
+  - data-testid: channel-chat, channel-whatsapp, channel-email
+
 ### February 15, 2026 (Session 4) - GOLDEN STANDARD PHASE 2 (4 NEW FEATURES)
 - [x] **FEATURE 11 - PUSH NOTIFICATIONS:**
   - Service worker updated: `/app/frontend/public/service-worker.js`
