@@ -26,7 +26,7 @@ import { Input } from '../components/ui/input';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { triggerHaptic } from '../utils/haptic';
+import { haptic } from '../utils/haptic';
 import ProductCard from '../components/ProductCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import OccasionBoxBuilder from '../components/OccasionBoxBuilder';
