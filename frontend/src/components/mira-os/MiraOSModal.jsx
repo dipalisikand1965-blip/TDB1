@@ -804,24 +804,57 @@ const MiraOSModal = ({
           )}
         </div>
         
-        {/* Quick Actions */}
+        {/* Dynamic Quick Actions - Contextual prompts based on conversation */}
         <div className="px-4 py-2 border-t overflow-x-auto">
           <div className="flex gap-2">
-            <QuickAction 
-              label={`${config.emoji} ${config.name}`} 
-              onClick={() => sendMessage(`Help me with ${config.name.toLowerCase()}`)}
-              isPrimary
-            />
-            <QuickAction 
-              label="Birthday" 
-              emoji="🎂" 
-              onClick={() => sendMessage("Plan a birthday")}
-            />
-            <QuickAction 
-              label="Quick Book" 
-              emoji="⚡" 
-              onClick={() => sendMessage("I want to book something")}
-            />
+            {dynamicQuickActions.length > 0 ? (
+              // Show dynamic quick actions from the last AI response
+              dynamicQuickActions.map((action, idx) => (
+                <QuickAction 
+                  key={idx}
+                  label={action.text || action}
+                  onClick={() => sendMessage(action.value || action.text || action)}
+                  isPrimary={idx === 0}
+                />
+              ))
+            ) : (
+              // Default contextual prompts when no conversation started
+              <>
+                <QuickAction 
+                  label={selectedPet ? `Help me with ${selectedPet.name}` : 'Get started'} 
+                  onClick={() => sendMessage(selectedPet ? `Help me with ${selectedPet.name}` : 'What can you help me with?')}
+                  isPrimary
+                />
+                {selectedPet && (
+                  <>
+                    <QuickAction 
+                      label={`${selectedPet.name}'s birthday`}
+                      emoji="🎂" 
+                      onClick={() => sendMessage(`Plan something special for ${selectedPet.name}'s birthday`)}
+                    />
+                    <QuickAction 
+                      label={`Food for ${selectedPet.name}`}
+                      emoji="🍖" 
+                      onClick={() => sendMessage(`What food do you recommend for ${selectedPet.name}?`)}
+                    />
+                  </>
+                )}
+                {!selectedPet && (
+                  <>
+                    <QuickAction 
+                      label="Celebrate" 
+                      emoji="🎂" 
+                      onClick={() => sendMessage("Help me plan a celebration for my pet")}
+                    />
+                    <QuickAction 
+                      label="Shop" 
+                      emoji="🛒" 
+                      onClick={() => sendMessage("I want to shop for my pet")}
+                    />
+                  </>
+                )}
+              </>
+            )}
           </div>
         </div>
         
