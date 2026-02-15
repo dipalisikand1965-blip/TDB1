@@ -247,6 +247,7 @@ const PillarPageLayout = ({
       />
       
       {/* Unified Hero - Pet is the HERO! */}
+      {/* MIRA OS DOCTRINE: hideSearchBar=true because Mira already knows what pet needs */}
       <UnifiedHero
         pet={activePet}
         soulData={petSoulData}
@@ -256,6 +257,7 @@ const PillarPageLayout = ({
         onSearchChange={handleSearchChange}
         onSearchSubmit={handleSearchSubmit}
         shoppingForOther={shoppingForOther}
+        hideSearchBar={true}
       />
       
       {/* Navigation Bar - Subcategories Only (Removed clinical Products/Services toggle) */}
