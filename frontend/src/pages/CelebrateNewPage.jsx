@@ -1257,8 +1257,8 @@ const CelebrateNewPage = () => {
       <ConciergeButton 
         pillar="celebrate" 
         position="bottom-right"
-        petId={selectedPet?.id}
-        petName={selectedPet?.name}
+        petId={activePet?.id}
+        petName={activePet?.name}
         showLabel
       />
     </div>
