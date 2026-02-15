@@ -2059,21 +2059,49 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     conversationEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [selectedTicket?.messages]);
 
-  // Format time
+  // Format time with relative timestamps (Golden Standard Feature 14)
   const formatTime = (ts) => {
     if (!ts) return '';
-    const date = new Date(ts);
-    const now = new Date();
-    const diff = now - date;
-    const mins = Math.floor(diff / 60000);
-    const hrs = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return `${mins}m ago`;
-    if (hrs < 24) return `${hrs}h ago`;
-    if (days < 7) return `${days}d ago`;
-    return date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+    try {
+      const date = new Date(ts);
+      const now = new Date();
+      const diffMinutes = Math.floor((now - date) / (1000 * 60));
+      
+      // Just now (< 1 minute)
+      if (diffMinutes < 1) {
+        return 'Just now';
+      }
+      
+      // Within the last hour
+      if (diffMinutes < 60) {
+        return `${diffMinutes}m ago`;
+      }
+      
+      // Today - show relative or time
+      if (isToday(date)) {
+        const diffHours = Math.floor(diffMinutes / 60);
+        if (diffHours < 6) {
+          return `${diffHours}h ago`;
+        }
+        return format(date, 'h:mm a');
+      }
+      
+      // Yesterday
+      if (isYesterday(date)) {
+        return 'Yesterday';
+      }
+      
+      // Within last week - show day name
+      const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+      if (diffDays < 7) {
+        return format(date, 'EEEE'); // Day name
+      }
+      
+      // Older - show date
+      return format(date, 'MMM d');
+    } catch {
+      return '';
+    }
   };
 
   // Get pillar icon component
