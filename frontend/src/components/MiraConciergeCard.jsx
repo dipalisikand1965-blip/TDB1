@@ -218,7 +218,7 @@ const MiraConciergeCards = ({
     setSending(true);
     
     try {
-      const response = await fetch(`${getApiUrl()}/api/concierge/request`, {
+      const response = await fetch(`${getApiUrl()}/api/concierge/mira-request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -266,7 +266,7 @@ const MiraConciergeCards = ({
     setSending(true);
     
     try {
-      const response = await fetch(`${getApiUrl()}/api/concierge/request`, {
+      const response = await fetch(`${getApiUrl()}/api/concierge/mira-request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
