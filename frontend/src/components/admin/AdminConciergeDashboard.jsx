@@ -576,7 +576,7 @@ const AdminConciergeDashboard = () => {
   // Fetch threads
   const fetchThreads = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/api/os/concierge/admin/threads?limit=50`);
+      const response = await fetch(`/api/os/concierge/admin/threads?limit=50`);
       if (response.ok) {
         const data = await response.json();
         setThreads(data.threads || []);
@@ -591,7 +591,7 @@ const AdminConciergeDashboard = () => {
   // Fetch messages for a thread
   const fetchMessages = useCallback(async (threadId) => {
     try {
-      const response = await fetch(`${API_URL}/api/os/concierge/admin/thread/${threadId}`);
+      const response = await fetch(`/api/os/concierge/admin/thread/${threadId}`);
       if (response.ok) {
         const data = await response.json();
         setMessages(data.messages || []);
@@ -614,7 +614,7 @@ const AdminConciergeDashboard = () => {
   const fetchUsers = useCallback(async (search = '') => {
     setLoadingUsers(true);
     try {
-      const response = await fetch(`${API_URL}/api/concierge/realtime/admin/users?search=${encodeURIComponent(search)}&limit=20`);
+      const response = await fetch(`/api/concierge/realtime/admin/users?search=${encodeURIComponent(search)}&limit=20`);
       if (response.ok) {
         const data = await response.json();
         setUsers(data.users || []);
@@ -691,7 +691,7 @@ const AdminConciergeDashboard = () => {
       setMessages(prev => [...prev, tempMsg]);
     } else {
       // Fallback to REST
-      fetch(`${API_URL}/api/os/concierge/admin/reply`, {
+      fetch(`/api/os/concierge/admin/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -708,7 +708,7 @@ const AdminConciergeDashboard = () => {
     
     if (!sent) {
       // Fallback to REST
-      fetch(`${API_URL}/api/concierge/realtime/admin/initiate`, {
+      fetch(`/api/concierge/realtime/admin/initiate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
