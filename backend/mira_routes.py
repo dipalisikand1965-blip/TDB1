@@ -13859,6 +13859,15 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
             "nearby_places": nearby_places_data,  # Nearby vet clinics, restaurants, stays
             "weather": weather_data,  # NEW: Weather-based activity recommendations
             "quick_prompts": get_pillar_quick_prompts(pillar),
+            # ═══════════════════════════════════════════════════════════════════════════
+            # MIRA INTELLIGENCE: Dynamic, pet-first quick replies based on conversation
+            # These are contextual to what Mira is asking, not generic pillar prompts
+            # ═══════════════════════════════════════════════════════════════════════════
+            "quick_replies": generate_intelligent_quick_replies(
+                response_text=response,
+                pet_name=selected_pet.get("name") if selected_pet else None,
+                pet_data=selected_pet
+            ),
             "end_state": "RESPONDED",
             "disclaimer_shown": is_nutrition_query,  # Track if nutrition disclaimer should be shown
             # Picks Vault handoff info for Concierge
