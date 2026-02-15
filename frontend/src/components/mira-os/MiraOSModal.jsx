@@ -262,10 +262,19 @@ const MiraOSModal = ({
       console.log('[MiraOS] Modal opened, token:', token ? 'present' : 'missing');
       if (token) {
         loadPets();
-        loadPicks();
       }
+      // Load picks even without token for non-personalized experience
+      loadPicks();
     }
   }, [isOpen, token, pillar]);
+  
+  // Reload picks when selected pet changes
+  useEffect(() => {
+    if (isOpen && selectedPet) {
+      console.log('[MiraOS] Pet changed to:', selectedPet.name);
+      loadPicks();
+    }
+  }, [selectedPet?.id]);
   
   // Auto-scroll chat
   useEffect(() => {
