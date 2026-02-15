@@ -23,10 +23,17 @@ Each step is designed to be **completed in one focused session**. No multitaskin
 
 | Step | Task | Points | Status |
 |------|------|--------|--------|
-| **1** | Test & Fix ElevenLabs Voice Playback in Mira OS Modal | +1 | ⬜ |
+| **1** | Test & Fix ElevenLabs Voice Playback in Mira OS Modal | +1 | ✅ DONE |
 | **2** | Fix Mira Picks API to return pet-specific products | +1 | ⬜ |
 | **3** | Implement Concierge Handoff API endpoint | +1 | ⬜ |
 | **4** | Add product cards to Mira chat responses | +1 | ⬜ |
+
+**Step 1 Notes (Completed Feb 15, 2026):**
+- ElevenLabs TTS confirmed working via backend API `/api/tts/generate`
+- Frontend integration verified with console logs showing audio playback
+- Added "Fresh Chat" feature: new session ID on pet switch
+- Added "New Chat" button (RotateCcw icon) in Mira OS header
+- Chat clears automatically when switching pets for fresh conversation
 
 ---
 
