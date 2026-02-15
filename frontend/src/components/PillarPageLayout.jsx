@@ -106,6 +106,8 @@ const PILLAR_SUBCATEGORIES = {
  * @param {React.ReactNode} children - The pillar-specific content (can be a render prop)
  * @param {string} defaultViewMode - 'products' or 'services' (default: 'products')
  * @param {boolean} showSubcategories - Whether to show subcategory pills (default: true)
+ * @param {boolean} useTabNavigation - If true, tabs update state instead of navigating (default: false)
+ * @param {function} onSubcategoryChange - Callback when subcategory changes (for tab mode)
  */
 const PillarPageLayout = ({
   pillar,
@@ -113,7 +115,9 @@ const PillarPageLayout = ({
   description,
   children,
   defaultViewMode = 'products',
-  showSubcategories = true
+  showSubcategories = true,
+  useTabNavigation = false,
+  onSubcategoryChange
 }) => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
