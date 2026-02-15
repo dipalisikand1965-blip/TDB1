@@ -195,7 +195,9 @@ const useRealtimeConcierge = ({
         break;
         
       case 'message_confirmed':
-        // Our message was successfully sent
+        // Our message was successfully sent - this is received by ALL devices
+        // For the sending device: replace temp message with confirmed
+        // For other devices: add the new message (multi-device sync - Feature 12)
         onMessageStatusChange?.(data.temp_id, data.message);
         break;
         
