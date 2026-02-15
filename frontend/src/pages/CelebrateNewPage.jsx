@@ -11,14 +11,14 @@
  * URL: /celebrate-new?category={tab}
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { 
   Cake, Gift, Heart, Sparkles, PartyPopper, Crown, Star,
   ChevronRight, MapPin, SlidersHorizontal, X, Check,
   Loader2, ShoppingBag, PawPrint, Camera, Package, Dog,
-  ChevronDown, Filter, Zap, ArrowRight, Send
+  ChevronDown, Filter, Zap, ArrowRight, Send, Search, Wand2
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
