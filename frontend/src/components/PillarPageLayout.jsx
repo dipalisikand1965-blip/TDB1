@@ -179,6 +179,13 @@ const PillarPageLayout = ({
     fetchSoulData();
   }, [activePet?.id, token, contextSoulData]);
   
+  // Handle search submit - navigate to search results
+  const handleSearchSubmit = (query) => {
+    if (query.trim()) {
+      navigate(`/search?q=${encodeURIComponent(query.trim())}&pillar=${pillar}`);
+    }
+  };
+  
   // Handle view mode change
   const handleViewModeChange = (mode) => {
     setViewMode(mode);
@@ -234,6 +241,7 @@ const PillarPageLayout = ({
         viewMode={viewMode}
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
+        onSearchSubmit={handleSearchSubmit}
         shoppingForOther={shoppingForOther}
       />
       
