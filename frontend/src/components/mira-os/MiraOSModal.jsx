@@ -24,6 +24,7 @@ import { useCart } from '../../context/CartContext';
 import { getApiUrl } from '../../utils/api';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
+import ConciergeButton from '../Mira/ConciergeButton';
 
 // Pillar configurations
 const PILLAR_CONFIG = {
