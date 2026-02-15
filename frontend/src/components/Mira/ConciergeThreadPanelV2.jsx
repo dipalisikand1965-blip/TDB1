@@ -449,6 +449,40 @@ const ConciergeThreadPanelV2 = ({
     }
   }, [threadId, userId, markAsRead]);
   
+  // Search messages (Feature 13)
+  const handleSearch = useCallback(async (query) => {
+    if (!query || query.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+    
+    setIsSearching(true);
+    try {
+      const response = await fetch(
+        `/api/concierge/realtime/search?user_id=${userId}&q=${encodeURIComponent(query)}&thread_id=${threadId}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setSearchResults(data.results || []);
+      }
+    } catch (err) {
+      console.error('[Search] Error:', err);
+    } finally {
+      setIsSearching(false);
+    }
+  }, [userId, threadId]);
+  
+  // Debounced search
+  useEffect(() => {
+    if (!showSearch) return;
+    const timer = setTimeout(() => {
+      if (searchQuery.length >= 2) {
+        handleSearch(searchQuery);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, showSearch, handleSearch]);
+  
   // Load data when panel opens
   useEffect(() => {
     if (isOpen && threadId && !initialThread) {
