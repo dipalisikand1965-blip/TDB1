@@ -192,15 +192,69 @@ const MiraOSModal = ({
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [activeTab, setActiveTab] = useState('picks'); // picks | chat | services
   
   // Refs
   const modalRef = useRef(null);
   const chatEndRef = useRef(null);
+  const audioRef = useRef(null);
   const startY = useRef(0);
   const currentY = useRef(0);
   
   const config = PILLAR_CONFIG[pillar] || PILLAR_CONFIG.general;
+  
+  // ElevenLabs TTS - Same as MiraChatWidget
+  const speakWithElevenLabs = useCallback(async (text) => {
+    if (!voiceEnabled) return false;
+    
+    try {
+      setIsSpeaking(true);
+      console.log('[MiraOS Voice] Attempting ElevenLabs TTS...');
+      
+      // Clean text for speech
+      let cleanText = text
+        .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋😊💝🎁]/g, '')
+        .replace(/\*\*/g, '')
+        .replace(/[*#_~`]/g, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/\n/g, ' ')
+        .substring(0, 500);
+      
+      const response = await fetch(`${getApiUrl()}/api/tts/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: cleanText })
+      });
+      
+      if (!response.ok) {
+        throw new Error('ElevenLabs TTS failed');
+      }
+      
+      const data = await response.json();
+      console.log('[MiraOS Voice] ✓ ElevenLabs audio received, playing...');
+      
+      // Play audio
+      const audio = new Audio(`data:audio/mpeg;base64,${data.audio_base64}`);
+      audioRef.current = audio;
+      
+      audio.onended = () => {
+        console.log('[MiraOS Voice] ✓ Audio playback complete');
+        setIsSpeaking(false);
+      };
+      audio.onerror = (e) => {
+        console.log('[MiraOS Voice] Audio playback error:', e);
+        setIsSpeaking(false);
+      };
+      
+      await audio.play();
+      return true;
+    } catch (error) {
+      console.log('[MiraOS Voice] ElevenLabs unavailable:', error.message);
+      setIsSpeaking(false);
+      return false;
+    }
+  }, [voiceEnabled]);
   
   // Load pets on mount
   useEffect(() => {
