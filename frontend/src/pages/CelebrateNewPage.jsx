@@ -950,8 +950,14 @@ const CelebrateNewPage = () => {
       filtered = filtered.filter(p => (p.price || 0) > 1000);
     }
     
+    // ============================================
+    // MIRA'S SILENT SORTING - Apply the Doctrine
+    // "Mira knows Lola more than the pet parent"
+    // ============================================
+    filtered = miraSilentSort(filtered, activePet);
+    
     return filtered;
-  }, [products, searchQuery, selectedBreed, selectedShape, smartFilter, priceRange, selectedTab]);
+  }, [products, searchQuery, selectedBreed, selectedShape, smartFilter, priceRange, selectedTab, miraSilentSort, activePet]);
   
   const filteredProducts = getFilteredProducts();
   const currentTab = CATEGORY_TABS.find(t => t.id === selectedTab);
