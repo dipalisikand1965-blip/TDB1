@@ -3002,6 +3002,173 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                     </div>
                   </div>
                 )}
+                
+                {/* Concierge Hours Tab */}
+                {settingsTab === 'concierge-hours' && (
+                  <div className="space-y-6">
+                    {/* Current Status Banner */}
+                    <div className={`p-4 rounded-lg border-2 ${conciergeStatus.is_live ? 'border-emerald-200 bg-emerald-50' : 'border-amber-200 bg-amber-50'}`}>
+                      <div className="flex items-center gap-3">
+                        <div className={`w-3 h-3 rounded-full ${conciergeStatus.is_live ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+                        <div>
+                          <span className="font-semibold">{conciergeStatus.status_text || 'Loading...'}</span>
+                          <p className="text-sm text-gray-600">{conciergeStatus.message || ''}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* 24/7 Toggle */}
+                    <div className="p-4 border rounded-lg">
+                      <label className="flex items-center justify-between cursor-pointer">
+                        <div>
+                          <span className="font-semibold text-gray-800">24/7 Always Online</span>
+                          <p className="text-sm text-gray-500">Enable to show "Live now" at all times</p>
+                        </div>
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            checked={conciergeHours.is_24x7}
+                            onChange={(e) => setConciergeHours(prev => ({ ...prev, is_24x7: e.target.checked }))}
+                            className="sr-only peer"
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                        </div>
+                      </label>
+                    </div>
+                    
+                    {/* Operating Hours */}
+                    {!conciergeHours.is_24x7 && (
+                      <div className="space-y-4">
+                        <h3 className="font-semibold text-gray-800">Operating Hours</h3>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-sm font-medium text-gray-700 mb-1 block">Start Time</label>
+                            <select
+                              value={conciergeHours.start}
+                              onChange={(e) => setConciergeHours(prev => ({ ...prev, start: parseInt(e.target.value) }))}
+                              className="w-full px-3 py-2 border rounded-lg"
+                              data-testid="concierge-hours-start"
+                            >
+                              {Array.from({ length: 24 }, (_, i) => (
+                                <option key={i} value={i}>{i.toString().padStart(2, '0')}:00 ({i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i-12} PM`})</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-700 mb-1 block">End Time</label>
+                            <select
+                              value={conciergeHours.end}
+                              onChange={(e) => setConciergeHours(prev => ({ ...prev, end: parseInt(e.target.value) }))}
+                              className="w-full px-3 py-2 border rounded-lg"
+                              data-testid="concierge-hours-end"
+                            >
+                              {Array.from({ length: 24 }, (_, i) => (
+                                <option key={i} value={i}>{i.toString().padStart(2, '0')}:00 ({i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i-12} PM`})</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-sm font-medium text-gray-700 mb-1 block">Timezone</label>
+                            <select
+                              value={conciergeHours.timezone_offset}
+                              onChange={(e) => {
+                                const offset = parseFloat(e.target.value);
+                                const names = { 5.5: 'IST', 0: 'UTC', 1: 'CET', 8: 'SGT', '-5': 'EST', '-8': 'PST' };
+                                setConciergeHours(prev => ({ 
+                                  ...prev, 
+                                  timezone_offset: offset,
+                                  timezone_name: names[offset] || `UTC${offset >= 0 ? '+' : ''}${offset}`
+                                }));
+                              }}
+                              className="w-full px-3 py-2 border rounded-lg"
+                              data-testid="concierge-hours-timezone"
+                            >
+                              <option value="5.5">IST (UTC+5:30)</option>
+                              <option value="0">UTC</option>
+                              <option value="1">CET (UTC+1)</option>
+                              <option value="8">SGT (UTC+8)</option>
+                              <option value="-5">EST (UTC-5)</option>
+                              <option value="-8">PST (UTC-8)</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-700 mb-1 block">Display Name</label>
+                            <Input
+                              value={conciergeHours.timezone_name}
+                              onChange={(e) => setConciergeHours(prev => ({ ...prev, timezone_name: e.target.value }))}
+                              placeholder="IST"
+                              data-testid="concierge-hours-timezone-name"
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* Quick Presets */}
+                        <div>
+                          <label className="text-sm font-medium text-gray-700 mb-2 block">Quick Presets</label>
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              onClick={() => setConciergeHours(prev => ({ ...prev, start: 9, end: 18 }))}
+                              className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
+                            >
+                              Business (9AM-6PM)
+                            </button>
+                            <button
+                              onClick={() => setConciergeHours(prev => ({ ...prev, start: 9, end: 21 }))}
+                              className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
+                            >
+                              Extended (9AM-9PM)
+                            </button>
+                            <button
+                              onClick={() => setConciergeHours(prev => ({ ...prev, start: 6, end: 22 }))}
+                              className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
+                            >
+                              Long (6AM-10PM)
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Offline Message */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-1 block">Offline Message</label>
+                      <textarea
+                        value={conciergeHours.offline_message}
+                        onChange={(e) => setConciergeHours(prev => ({ ...prev, offline_message: e.target.value }))}
+                        className="w-full px-3 py-2 border rounded-lg resize-none"
+                        rows={2}
+                        placeholder="Message shown when concierge is offline..."
+                        data-testid="concierge-offline-message"
+                      />
+                    </div>
+                    
+                    {/* Save Button */}
+                    <div className="flex justify-end pt-4 border-t">
+                      <Button
+                        onClick={saveConciergeHours}
+                        disabled={conciergeHoursLoading}
+                        className="bg-emerald-500 hover:bg-emerald-600"
+                        data-testid="save-concierge-hours"
+                      >
+                        {conciergeHoursLoading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Check className="w-4 h-4 mr-2" />
+                            Save Hours
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </Card>
