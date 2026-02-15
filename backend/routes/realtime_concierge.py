@@ -913,3 +913,140 @@ async def get_users_for_initiation(search: str = Query(None), limit: int = Query
         "users": users,
         "total": len(users)
     }
+
+
+
+# =============================================================================
+# MESSAGE SEARCH (Feature 13)
+# =============================================================================
+
+@router.get("/search")
+async def search_messages(
+    user_id: str = Query(..., description="User ID to search messages for"),
+    q: str = Query(..., min_length=1, description="Search query"),
+    thread_id: Optional[str] = Query(None, description="Optional thread ID to limit search"),
+    limit: int = Query(20, le=50)
+):
+    """
+    Search messages for a user across all threads or within a specific thread.
+    Returns messages matching the search query with thread context.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    # Build search query
+    search_filter = {
+        "content": {"$regex": q, "$options": "i"}
+    }
+    
+    # Get user's thread IDs
+    user_threads = await db.concierge_threads.find(
+        {"user_id": user_id},
+        {"id": 1}
+    ).to_list(100)
+    
+    user_thread_ids = [t["id"] for t in user_threads]
+    
+    if not user_thread_ids:
+        return {"success": True, "results": [], "total": 0, "query": q}
+    
+    if thread_id:
+        # Verify user owns this thread
+        if thread_id not in user_thread_ids:
+            raise HTTPException(status_code=403, detail="Thread not found")
+        search_filter["thread_id"] = thread_id
+    else:
+        search_filter["thread_id"] = {"$in": user_thread_ids}
+    
+    # Search messages
+    cursor = db.concierge_messages.find(search_filter).sort("timestamp", -1).limit(limit)
+    
+    results = []
+    thread_cache = {}
+    
+    async for msg in cursor:
+        thread_id = msg.get("thread_id")
+        
+        # Get thread info (cached)
+        if thread_id not in thread_cache:
+            thread = await db.concierge_threads.find_one({"id": thread_id})
+            thread_cache[thread_id] = thread
+        
+        thread_info = thread_cache.get(thread_id, {})
+        
+        results.append({
+            "id": msg.get("id"),
+            "thread_id": thread_id,
+            "thread_title": thread_info.get("title", "Conversation"),
+            "pet_name": thread_info.get("pet_name"),
+            "sender": msg.get("sender"),
+            "content": msg.get("content"),
+            "timestamp": msg.get("timestamp"),
+            "highlight_start": msg.get("content", "").lower().find(q.lower()),
+            "highlight_length": len(q)
+        })
+    
+    return {
+        "success": True,
+        "results": results,
+        "total": len(results),
+        "query": q
+    }
+
+
+@router.get("/admin/search")
+async def admin_search_messages(
+    q: str = Query(..., min_length=1, description="Search query"),
+    user_id: Optional[str] = Query(None, description="Optional user ID to filter"),
+    limit: int = Query(30, le=100)
+):
+    """
+    Admin endpoint to search all concierge messages.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    search_filter = {
+        "content": {"$regex": q, "$options": "i"}
+    }
+    
+    if user_id:
+        # Get threads for this user
+        user_threads = await db.concierge_threads.find(
+            {"user_id": user_id},
+            {"id": 1}
+        ).to_list(100)
+        thread_ids = [t["id"] for t in user_threads]
+        search_filter["thread_id"] = {"$in": thread_ids}
+    
+    cursor = db.concierge_messages.find(search_filter).sort("timestamp", -1).limit(limit)
+    
+    results = []
+    thread_cache = {}
+    
+    async for msg in cursor:
+        thread_id = msg.get("thread_id")
+        
+        if thread_id not in thread_cache:
+            thread = await db.concierge_threads.find_one({"id": thread_id})
+            thread_cache[thread_id] = thread
+        
+        thread_info = thread_cache.get(thread_id, {})
+        
+        results.append({
+            "id": msg.get("id"),
+            "thread_id": thread_id,
+            "thread_title": thread_info.get("title"),
+            "user_name": thread_info.get("user_name"),
+            "pet_name": thread_info.get("pet_name"),
+            "sender": msg.get("sender"),
+            "content": msg.get("content"),
+            "timestamp": msg.get("timestamp")
+        })
+    
+    return {
+        "success": True,
+        "results": results,
+        "total": len(results),
+        "query": q
+    }
