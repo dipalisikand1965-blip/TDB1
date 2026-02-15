@@ -1428,31 +1428,12 @@ const CelebrateNewPage = () => {
             </div>
           )}
           
-          {/* Search Bar */}
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Search cakes, treats, hampers..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-12 pl-12 pr-12 bg-white/95 backdrop-blur-sm border-0 rounded-2xl text-gray-900 placeholder:text-gray-400 shadow-lg"
-            />
-            <div className="absolute left-4 top-1/2 -translate-y-1/2">
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <button 
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl flex items-center justify-center"
-              onClick={() => {
-                if (searchQuery.trim()) {
-                  navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}&pillar=celebrate`);
-                }
-              }}
-            >
-              <Send className="w-4 h-4 text-white" />
-            </button>
-          </div>
+          {/* Mira OS Search Bar - Pet-First Natural Language Search */}
+          <MiraOSSearchBar
+            activePet={activePet}
+            onSearch={handleMiraSearch}
+            onTabChange={handleTabChange}
+          />
         </div>
       </section>
       
