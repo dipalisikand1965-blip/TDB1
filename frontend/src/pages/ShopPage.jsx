@@ -847,6 +847,7 @@ const ShopPage = () => {
       <SEOHead page="shop" path="/shop" />
       
       {/* Unified Hero - Meister is the HERO! */}
+      {/* MIRA OS DOCTRINE: hideSearchBar=true because Mira already knows */}
       <UnifiedHero 
         pet={selectedPet}
         soulData={petSoulData}
@@ -855,6 +856,7 @@ const ShopPage = () => {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         shoppingForOther={shoppingForOther}
+        hideSearchBar={true}
       />
       
       {/* Pillar Navigation with Product/Service toggle */}
