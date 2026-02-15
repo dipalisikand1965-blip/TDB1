@@ -73,6 +73,16 @@ const CelebratePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('products'); // 'products' | 'services'
   const [selectedSubcat, setSelectedSubcat] = useState(null);
+  
+  // Category mapping for API filter
+  const CATEGORY_API_MAP = {
+    'cakes': 'birthday-cakes',
+    'breed-cakes': 'breed-cakes',
+    'pupcakes': 'pupcakes',
+    'treats': 'treats',
+    'hampers': 'gift-hampers',
+    'accessories': 'party-accessories'
+  };
 
   // Rotating hero images for visual appeal
   const HERO_IMAGES = [
