@@ -601,6 +601,41 @@ const ConciergeThreadPanelV2 = ({
             )}
           </div>
           
+          {/* Search Button (Feature 13) */}
+          <button
+            onClick={() => setShowSearch(!showSearch)}
+            className={`p-2 rounded-full transition-colors ${showSearch ? 'bg-purple-500/30 text-purple-400' : 'hover:bg-white/10 text-white/50'}`}
+            title="Search messages"
+            data-testid="search-messages-button"
+          >
+            <Search size={18} />
+          </button>
+          
+          {/* Push Notification Button (Feature 11) */}
+          {pushSupported && (
+            <button
+              onClick={pushSubscribed ? null : subscribePush}
+              disabled={pushLoading || !canSubscribePush}
+              className={`p-2 rounded-full transition-colors ${
+                pushSubscribed 
+                  ? 'text-green-400' 
+                  : pushPermission === 'denied'
+                  ? 'text-red-400 cursor-not-allowed'
+                  : 'hover:bg-white/10 text-white/50'
+              }`}
+              title={
+                pushSubscribed 
+                  ? 'Notifications enabled' 
+                  : pushPermission === 'denied'
+                  ? 'Notifications blocked'
+                  : 'Enable notifications'
+              }
+              data-testid="push-notification-button"
+            >
+              {pushSubscribed ? <Bell size={18} /> : <BellOff size={18} />}
+            </button>
+          )}
+          
           {/* Connection Status */}
           <ConnectionIndicator status={connectionStatus} adminOnline={adminOnline} />
           
@@ -612,6 +647,68 @@ const ConciergeThreadPanelV2 = ({
             <X size={20} className="text-white/70" />
           </button>
         </div>
+        
+        {/* Search Bar (Feature 13) */}
+        {showSearch && (
+          <div className="px-4 py-2 border-b border-white/10 bg-gray-800/50">
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search messages..."
+                className="w-full pl-9 pr-8 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-white/30 focus:outline-none focus:border-purple-500/50"
+                autoFocus
+                data-testid="message-search-input"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => { setSearchQuery(''); setSearchResults([]); }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/50"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+            
+            {/* Search Results */}
+            {searchResults.length > 0 && (
+              <div className="mt-2 max-h-48 overflow-y-auto rounded-lg bg-gray-900 border border-white/10">
+                {searchResults.map((result, idx) => (
+                  <button
+                    key={`${result.id}-${idx}`}
+                    onClick={() => {
+                      // Scroll to message in the thread
+                      const msgEl = document.querySelector(`[data-message-id="${result.id}"]`);
+                      if (msgEl) {
+                        msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        msgEl.classList.add('bg-purple-500/20');
+                        setTimeout(() => msgEl.classList.remove('bg-purple-500/20'), 2000);
+                      }
+                      setShowSearch(false);
+                      setSearchQuery('');
+                    }}
+                    className="w-full text-left p-3 hover:bg-white/5 border-b border-white/5 last:border-0"
+                  >
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-xs text-purple-400">{result.sender === 'user' ? 'You' : 'Concierge®'}</span>
+                      <span className="text-xs text-white/30">{formatTime(result.timestamp)}</span>
+                    </div>
+                    <p className="text-sm text-white/70 truncate">{result.content}</p>
+                  </button>
+                ))}
+              </div>
+            )}
+            
+            {isSearching && (
+              <div className="mt-2 text-center text-white/50 text-sm">
+                <RefreshCw size={14} className="inline-block animate-spin mr-2" />
+                Searching...
+              </div>
+            )}
+          </div>
+        )}
         
         {/* Offline Queue Banner */}
         <OfflineQueueBanner count={offlineQueueLength} />
