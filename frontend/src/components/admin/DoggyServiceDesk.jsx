@@ -308,6 +308,13 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiSuggestion, setAiSuggestion] = useState(null);
   const [aiReplyStyle, setAiReplyStyle] = useState('professional'); // 5 styles
+  const [replyChannel, setReplyChannel] = useState('chat'); // chat, whatsapp, email (Golden Standard Omnichannel)
+  
+  // Message Search (Golden Standard Feature 13)
+  const [messageSearchQuery, setMessageSearchQuery] = useState('');
+  const [messageSearchResults, setMessageSearchResults] = useState([]);
+  const [isSearchingMessages, setIsSearchingMessages] = useState(false);
+  const [showMessageSearch, setShowMessageSearch] = useState(false);
   
   // Intelligent Summary & Pet Soul Prompts
   const [conversationSummary, setConversationSummary] = useState(null);
