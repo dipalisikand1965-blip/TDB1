@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://lola-knows-best.preview.emergentagent.com
+**Preview URL:** https://golden-pillars.preview.emergentagent.com
 
 ---
 

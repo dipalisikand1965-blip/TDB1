@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://lola-knows-best.preview.emergentagent.com
+https://golden-pillars.preview.emergentagent.com
 
 ---
 

@@ -296,4 +296,4 @@ Password: test123
 
 **Audit Status:** COMPLETE
 **Generated:** February 9, 2026
-**Preview URL:** https://lola-knows-best.preview.emergentagent.com
+**Preview URL:** https://golden-pillars.preview.emergentagent.com

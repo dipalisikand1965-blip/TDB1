@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://lola-knows-best.preview.emergentagent.com/mira-demo**
+**https://golden-pillars.preview.emergentagent.com/mira-demo**
 
 ---
 
