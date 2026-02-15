@@ -873,9 +873,10 @@ const MiraOSModal = ({
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-              placeholder="Ask Mira anything..."
+              placeholder={selectedPet ? `Ask about ${selectedPet.name}...` : "Ask your Concierge..."}
               className="flex-1 px-4 py-3 border rounded-full text-base focus:outline-none focus:ring-2 focus:ring-purple-500"
               disabled={isSending}
+              data-testid="mira-os-chat-input"
             />
             <button
               onClick={() => sendMessage()}
