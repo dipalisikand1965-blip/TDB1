@@ -826,9 +826,10 @@ const CelebrateNewPage = () => {
     setShowBoxBuilder(true);
   };
   
-  // Navigate to product detail
+  // Open product detail modal (same rich experience as original /celebrate page)
   const handleProductTap = (product) => {
-    navigate(`/product/${product._id || product.id}`);
+    haptic('medium');
+    setSelectedProduct(product);
   };
 
   return (
