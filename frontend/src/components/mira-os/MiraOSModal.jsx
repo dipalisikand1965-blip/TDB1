@@ -350,11 +350,15 @@ const MiraOSModal = ({
     }
   }, [isOpen, token, pillar]);
   
-  // Reload picks when selected pet changes
+  // Reload picks and clear chat when selected pet changes
   useEffect(() => {
     if (isOpen && selectedPet) {
       console.log('[MiraOS] Pet changed to:', selectedPet.name);
       loadPicks();
+      // Clear chat for fresh conversation when switching pets
+      setMessages([]);
+      setDynamicQuickActions([]);
+      console.log('[MiraOS] Chat cleared for fresh conversation with', selectedPet.name);
     }
   }, [selectedPet?.id]);
   
