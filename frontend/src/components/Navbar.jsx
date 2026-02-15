@@ -745,13 +745,15 @@ const Navbar = () => {
               </div>
             </Link>
 
-            {/* Mira-Powered Search Bar - Desktop */}
-            <div className="flex-1 max-w-xl">
-              <MiraSearchPanel 
-                variant="navbar"
-                placeholder={primaryPet ? `Ask Mira anything for ${primaryPet.name}...` : "Ask Mira anything..."}
-              />
-            </div>
+            {/* Mira-Powered Search Bar - Desktop - HIDDEN on pillar pages per doctrine */}
+            {!isPillarPage && (
+              <div className="flex-1 max-w-xl">
+                <MiraSearchPanel 
+                  variant="navbar"
+                  placeholder={primaryPet ? `Ask Mira anything for ${primaryPet.name}...` : "Ask Mira anything..."}
+                />
+              </div>
+            )}
 
             {/* Legacy Voice Wizard Modal - Keep for backward compatibility */}
             <div className="hidden">
