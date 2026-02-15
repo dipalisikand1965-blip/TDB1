@@ -4352,12 +4352,16 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         
                         {/* Messages */}
                         <div className="space-y-4">
-                          {/* Initial message */}
+                          {/* Initial message - User message with (Pet name) label */}
                           <div className="flex gap-3">
                             <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-medium flex-shrink-0">
                               {(selectedTicket.member?.name || 'U').slice(0, 2).toUpperCase()}
                             </div>
                             <div className="flex-1">
+                              {/* Golden Standard: Pet name label for user messages */}
+                              <span className="text-[10px] text-amber-500 mb-1 block">
+                                ({selectedTicket.pet_info?.name || petProfile?.name || 'Member'})
+                              </span>
                               <div className="bg-gray-100 rounded-lg p-3">
                                 <p className="text-sm text-gray-800 whitespace-pre-wrap">{selectedTicket.description}</p>
                               </div>
@@ -4377,18 +4381,24 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                             </div>
                           </div>
                           
-                          {/* Conversation messages */}
+                          {/* Conversation messages with Golden Standard labels */}
                           {selectedTicket.messages?.map((msg, idx) => {
                             const isAgent = msg.direction === 'outgoing' || msg.is_agent_reply || msg.sender === 'concierge';
                             const hasAttachments = msg.attachments?.length > 0;
+                            // Golden Standard: Label for message sender
+                            const senderLabel = isAgent ? 'Concierge®' : `(${selectedTicket.pet_info?.name || petProfile?.name || 'Member'})`;
                             return (
-                              <div key={idx} className={`flex gap-3 ${isAgent ? 'flex-row-reverse' : ''}`}>
+                              <div key={idx} className={`flex gap-3 ${isAgent ? 'flex-row-reverse' : ''}`} data-message-id={msg.id || idx}>
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 ${
                                   isAgent ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
                                 }`}>
-                                  {isAgent ? 'AD' : (msg.sender_name || 'CU').slice(0, 2).toUpperCase()}
+                                  {isAgent ? 'C®' : (msg.sender_name || 'CU').slice(0, 2).toUpperCase()}
                                 </div>
                                 <div className={`flex-1 ${isAgent ? 'text-right' : ''}`}>
+                                  {/* Golden Standard: Sender label */}
+                                  <span className={`text-[10px] mb-1 block ${isAgent ? 'text-purple-500' : 'text-amber-500'}`}>
+                                    {senderLabel}
+                                  </span>
                                   <div className={`inline-block rounded-lg p-3 max-w-[85%] ${
                                     msg.is_internal
                                       ? 'bg-amber-50 border border-amber-200 text-left'
