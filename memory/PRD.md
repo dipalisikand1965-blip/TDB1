@@ -1,122 +1,182 @@
 # The Doggy Company - Mira OS Product Requirements Document
 ## Pet Operating System Evolution
+### Master Document - February 15, 2026
 
 ---
 
-## Original Problem Statement
-Transform the pet e-commerce platform into a "Pet Operating System" centered on the principle "Mira knows, Mira doesn't ask." The core goal is making Mira the "Pet Operating Soul System" that understands each pet's unique "Soul" through 8 Golden Pillars.
+## 🎯 ORIGINAL PROBLEM STATEMENT
+
+Transform the pet e-commerce platform into a **"Pet Operating System"** centered on the principle **"Mira knows, Mira doesn't ask."** 
+
+The core goal is making Mira the **"Pet Operating Soul System"** that understands each pet's unique "Soul" through the **8 Golden Pillars**.
 
 ---
 
-## What's Been Implemented (Feb 15, 2026)
+## 📋 PRODUCT REQUIREMENTS
 
-### ✅ Completed Features
-1. **Mira OS Modal (BETA)**
-   - Accessible via "Mira OS (BETA)" button on `/celebrate-new`
-   - Three tabs: Picks, Concierge®, Services
-   
-2. **Concierge® Rebranding**
-   - Chat tab renamed to Concierge® with Freshchat-style icon
-   - Consistent branding across modal
+### Core Requirements
+1. **Silent Mira OS** - Proactive, personalized concierge without asking redundant questions
+2. **8 Golden Pillars** - Comprehensive pet understanding across all life aspects
+3. **Intelligence First** - Mira should know the pet better than anyone
+4. **Feature Parity** - New Mira OS must match and exceed old FAB capabilities
 
-3. **Backend-Driven Intelligent Quick Replies**
-   - `generate_intelligent_quick_replies()` in `server.py`
-   - Dynamic, pet-first contextual prompts
-   - Inline conversational UI in `MiraOSModal.jsx`
-
-4. **Bug Fix: `/celebrate-new` Array Error (Feb 15)**
-   - Fixed `l.some is not a function` by ensuring array validation for petAllergies/petFavorites
-
-5. **UNIFIED 8 GOLDEN PILLARS SCORING SYSTEM (Feb 15)**
-   - Restructured `pet_soul_config.py` from 6 categories → 8 pillars
-   - 39 scored questions (up from 26), total still = 100 points
-   - Distribution:
-     - 🎭 Identity & Temperament: 15 pts (5 questions)
-     - 👨‍👩‍👧‍👦 Family & Pack: 12 pts (5 questions) - NEW
-     - ⏰ Rhythm & Routine: 14 pts (6 questions) - NEW
-     - 🏠 Home Comforts: 8 pts (4 questions)
-     - ✈️ Travel Style: 10 pts (4 questions) - NEW
-     - 🍖 Taste & Treat: 14 pts (5 questions)
-     - 🎓 Training & Behaviour: 10 pts (4 questions)
-     - 🌅 Long Horizon (Health): 17 pts (6 questions)
-   - New endpoint: `GET /api/pet-soul/profile/{pet_id}/8-pillars`
-
-### Pet Soul System Architecture
-- **55+ questions in DOGGY_SOUL_QUESTIONS** (`pet_soul_routes.py`)
-- **39 questions now SCORED** (`pet_soul_config.py`)
-- **5 Tier System:**
-  - 🐾 Curious Pup (0-24%)
-  - 🌱 Loyal Companion (25-49%)
-  - 🤝 Trusted Guardian (50-74%)
-  - 🐕‍🦺 Pack Leader (75-89%)
-  - ✨ Soul Master (90-100%)
-
-- **Quick Questions Engine** (`pet_soul_routes.py`):
-  - `/api/pet-soul/profile/{pet_id}/quick-questions`
-  - Returns max 3 unanswered high-weight questions
-  - Ensures diversity across folders
-
-- **Mira System Prompt** (`mira_routes.py`):
-  - Soul-First Response Generation doctrine
-  - Injects pet allergies, favorites, temperament
-  - Conversation memory integration
+### User Stories
+- As a pet parent, I want Mira to remember everything about my pet
+- As a pet parent, I want personalized product recommendations based on my pet's soul
+- As a pet parent, I want Mira to proactively suggest things my pet might need
 
 ---
 
-## Prioritized Backlog
+## ✅ WHAT'S BEEN IMPLEMENTED
 
-### P0 - Critical (Immediate)
-- [ ] Test & Fix ElevenLabs voice in Mira OS
-- [ ] Weave Quick Questions into Concierge® chat flow
-- [ ] Update /mira-demo UI to show 8-pillar visual breakdown
+### February 15, 2026
+- [x] **Bug Fix:** `/celebrate-new` "l.some is not a function" error
+- [x] **UNIFIED 8 Golden Pillars Scoring System**
+  - Restructured from 6 categories → 8 pillars
+  - 39 scored questions (up from 26)
+  - Total = 100 points distributed across all pillars
+- [x] **New Endpoint:** `GET /api/pet-soul/profile/{pet_id}/8-pillars`
+- [x] **Comprehensive Handover Documentation**
+- [x] **API Verification** - All soul endpoints tested and working
 
-### P1 - Important (Next Sprint)
-- [ ] Connect Concierge indicator (🤲) states
-- [ ] Proactive Mira prompts based on pillar gaps
+### February 14, 2026
+- [x] Concierge® rebrand (Chat → Concierge®)
+- [x] Backend-driven intelligent quick replies
+- [x] Inline conversational UI
 
-### P2 - Nice to Have
-- [ ] Gate Mira OS for paid members
+### February 13, 2026
+- [x] Mira OS Modal (BETA) with 3 tabs
+- [x] Multi-pet switching in modal
 
-### P3 - Future
-- [ ] Phase out old FAB
-- [ ] Replace `/celebrate` with `/celebrate-new`
-- [ ] Backend modular refactor (`server.py` → routers)
-
----
-
-## Known Issues
-1. **ElevenLabs Voice** - Code added but untested in Mira OS
-2. **Original FAB** - Multi-pet switching broken (not priority)
-3. **Production Domain** - `thedoggycompany.in` DNS issue (external blocker)
-
----
-
-## Key Files Reference
-- `backend/server.py` - Main API with Mira chat
-- `backend/mira_routes.py` - Mira system prompt builder
-- `backend/pet_soul_routes.py` - Quick Questions + 8-pillars endpoint
-- `backend/pet_soul_config.py` - **UNIFIED** Soul scoring config (8 pillars, 100 pts)
-- `frontend/src/components/mira-os/MiraOSModal.jsx` - Mira OS UI
-- `frontend/src/pages/CelebrateNewPage.jsx` - Fixed array bug
-- `frontend/src/pages/MiraDemoPage.jsx` - Pet Soul page
-- `memory/MIRA_SOUL_SCORECARD.md` - Intelligence assessment
+### Earlier (Days 1-100)
+- [x] Pet Soul onboarding flow
+- [x] 14 pillar pages architecture
+- [x] Original Mira FAB
+- [x] Shopify integration
+- [x] Membership system
 
 ---
 
-## API Endpoints - Soul System
+## 🏗️ ARCHITECTURE
+
+### Frontend
+```
+/app/frontend/src/
+├── pages/
+│   ├── CelebrateNewPage.jsx      # Mira OS button location
+│   ├── MiraDemoPage.jsx          # Pet Soul dashboard
+│   └── PetSoulPage.jsx           # Onboarding
+├── components/
+│   ├── mira-os/MiraOSModal.jsx   # NEW Mira OS
+│   └── Mira/MiraChatWidget.jsx   # OLD FAB (deprecated)
+└── context/PillarContext.jsx
+```
+
+### Backend
+```
+/app/backend/
+├── server.py                      # Main API (12k+ lines)
+├── mira_routes.py                 # Mira chat
+├── pet_soul_routes.py             # Soul endpoints (8-pillars, quick-questions)
+├── pet_soul_config.py             # Scoring config (UPDATED)
+└── soul_first_logic.py            # AI context
+```
+
+---
+
+## 🌟 8 GOLDEN PILLARS SCORING
+
+| Pillar | Points | Questions | Status |
+|--------|--------|-----------|--------|
+| 🎭 Identity & Temperament | 15 | 5 | ✅ |
+| 👨‍👩‍👧‍👦 Family & Pack | 12 | 5 | ✅ NEW |
+| ⏰ Rhythm & Routine | 14 | 6 | ✅ NEW |
+| 🏠 Home Comforts | 8 | 4 | ✅ |
+| ✈️ Travel Style | 10 | 4 | ✅ NEW |
+| 🍖 Taste & Treat | 14 | 5 | ✅ |
+| 🎓 Training & Behaviour | 10 | 4 | ✅ |
+| 🌅 Long Horizon (Health) | 17 | 6 | ✅ |
+| **TOTAL** | **100** | **39** | |
+
+### Tier System
+| Tier | Range | Emoji |
+|------|-------|-------|
+| Curious Pup | 0-24% | 🐾 |
+| Loyal Companion | 25-49% | 🌱 |
+| Trusted Guardian | 50-74% | 🤝 |
+| Pack Leader | 75-89% | 🐕‍🦺 |
+| Soul Master | 90-100% | ✨ |
+
+---
+
+## 🔑 KEY API ENDPOINTS
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/pet-soul/profile/{pet_id}/8-pillars` | GET | **NEW** - Full 8-pillar breakdown, tier, gaps |
-| `/api/pet-soul/profile/{pet_id}/quick-questions` | GET | Top 3 unanswered high-weight questions |
-| `/api/pet-soul/profile/{pet_id}/answers` | POST | Save soul answers |
-| `/api/mira/chat` | POST | Mira chat with intelligent quick replies |
+| `/api/pet-soul/profile/{pet_id}/8-pillars` | GET | Full pillar breakdown |
+| `/api/pet-soul/profile/{pet_id}/quick-questions` | GET | Top 3 unanswered |
+| `/api/pet-soul/profile/{pet_id}/answer` | POST | Save single answer |
+| `/api/pet-soul/profile/{pet_id}/answers/bulk` | POST | Save multiple |
+| `/api/mira/chat` | POST | Mira chat |
 
 ---
 
-## Credentials
-- Test User: `dipali@clubconcierge.in` / `test123` (may need to recreate)
-- DB Pet IDs: `pet-99a708f1722a` (Mojo - 89% score)
+## 📋 PRIORITIZED BACKLOG
+
+### P0 - Critical
+- [ ] Test ElevenLabs voice in Mira OS
+- [ ] Weave Quick Questions into Concierge® chat
+- [ ] Update /mira-demo to show 8-pillar visual
+
+### P1 - Important
+- [ ] Connect Concierge indicator states
+- [ ] Proactive Mira intelligence
+
+### P2 - Nice to Have
+- [ ] Gate Mira OS for paid members
+- [ ] Fix original FAB issues
+
+### P3 - Future
+- [ ] Phase out old FAB
+- [ ] Backend refactoring
+
+---
+
+## ⚠️ KNOWN ISSUES
+
+| Issue | Status | Priority |
+|-------|--------|----------|
+| ElevenLabs voice in Mira OS | Untested | P0 |
+| Production domain DNS | External | Blocker |
+| Original FAB bugs | Not fixed | P2 |
+
+---
+
+## 🧪 TEST DATA
+
+| Pet | ID | Score | Use For |
+|-----|----|----|---------|
+| Mojo | pet-99a708f1722a | 89% | High score testing |
+| Lennu | pet-79d93864ca5d | 5% | Quick questions testing |
+
+---
+
+## 📚 KEY MEMORY FILES
+
+| File | Purpose |
+|------|---------|
+| `START_HERE_AGENT.md` | Master handover |
+| `8_GOLDEN_PILLARS_SPEC.md` | Technical spec |
+| `CHANGELOG.md` | Development history |
+| `ROADMAP.md` | Prioritized backlog |
+| `API_VERIFICATION.md` | Test results |
+
+---
+
+## 🔗 PREVIEW URL
+```
+https://lola-knows-best.preview.emergentagent.com
+```
 
 ---
 
