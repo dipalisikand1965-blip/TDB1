@@ -992,6 +992,51 @@ const AdminConciergeDashboard = () => {
             
             {/* Input */}
             <div className="px-4 py-3 border-t border-white/10">
+              {/* Channel selector for omnichannel (WhatsApp/Email/In-app) */}
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs text-white/40">Send via:</span>
+                <button
+                  className="flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-purple-500/20 text-purple-400 border border-purple-500/30"
+                  title="In-app chat"
+                  data-testid="channel-inapp"
+                >
+                  <MessageCircle size={12} />
+                  Chat
+                </button>
+                <button
+                  onClick={() => {
+                    if (selectedThread?.user_phone) {
+                      window.open(`https://wa.me/${selectedThread.user_phone}?text=${encodeURIComponent(inputValue)}`, '_blank');
+                    } else {
+                      alert('No phone number on file for this user');
+                    }
+                  }}
+                  className="flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-white/5 text-green-400 border border-white/10 hover:bg-green-500/10 hover:border-green-500/30 transition-colors"
+                  title="Send via WhatsApp"
+                  data-testid="channel-whatsapp"
+                >
+                  <Phone size={12} />
+                  WhatsApp
+                </button>
+                <button
+                  onClick={() => {
+                    if (selectedThread?.user_email) {
+                      // Trigger email compose
+                      const subject = `Re: ${selectedThread.title || 'Your inquiry'}`;
+                      window.open(`mailto:${selectedThread.user_email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(inputValue)}`, '_blank');
+                    } else {
+                      alert('No email on file for this user');
+                    }
+                  }}
+                  className="flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-white/5 text-blue-400 border border-white/10 hover:bg-blue-500/10 hover:border-blue-500/30 transition-colors"
+                  title="Send via Email"
+                  data-testid="channel-email"
+                >
+                  <Mail size={12} />
+                  Email
+                </button>
+              </div>
+              
               <div className="flex items-end gap-2">
                 <textarea
                   value={inputValue}
