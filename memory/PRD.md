@@ -88,6 +88,40 @@ Implemented in `CelebrateNewPage.jsx` function `miraSilentSort()`:
 - Quick Discovery shows "· for Lola" next to heading
 - "By Breed" filter shows pet's breed name instead of generic label
 
+#### 4. MIRA CONCIERGE CARDS ✅ IMPLEMENTED (Major Feature)
+
+**The Problem Solved:**
+- Mira's AI recommends "dairy-free chicken celebration cake for Lola"
+- Old system searched catalog → showed WRONG products (Paw Rakhi Box, Puppuccino Toy)
+- Mismatch between Mira's intelligence and catalog inventory
+
+**The Solution:**
+```
+OLD: Mira recommends → Search catalog → Show mismatched products
+NEW: Mira recommends → Concierge Cards → User selects → Concierge fulfills
+```
+
+**New Components Created:**
+- `MiraConciergeCard.jsx` - Parses Mira's text for recommendations, displays as actionable cards
+- Backend endpoint `/api/concierge/mira-request` - Creates tickets from Mira recommendations
+
+**How It Works:**
+1. User talks to Mira via FAB
+2. Mira recommends specific items (e.g., "dairy-free chicken cake")
+3. System parses recommendations into **Concierge Cards**
+4. Cards show: Title, Description, "Why it's right for [Pet]"
+5. User selects card → "Request via Concierge" button
+6. Request goes to Concierge team → They source exactly what Mira suggested
+
+**Key Insight from User:**
+> "The ecommerce shopping products (like Amazon anyway there)"
+> "Mira is Mira" - Mira is a concierge, not a catalog search engine
+
+**Files Modified:**
+- `/app/frontend/src/components/MiraConciergeCard.jsx` - NEW
+- `/app/frontend/src/components/MiraChatWidget.jsx` - Integrated concierge cards
+- `/app/backend/concierge_routes.py` - Added `/api/concierge/mira-request` endpoint
+
 **Files Modified:**
 - `/app/frontend/src/pages/CelebrateNewPage.jsx` - Added `miraSilentSort()` function (lines 790-888)
 - `/app/memory/MIRA_OS_DOCTRINE.md` - Created comprehensive doctrine document
