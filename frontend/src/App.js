@@ -410,22 +410,24 @@ function MainLayout() {
         <Route path="/contact" element={<Contact />} />
         
         {/* ALL Life Pillars - Open for browsing (login required only at checkout) */}
-        {/* Celebrate Pillar - Dedicated page with Concierge® Experiences */}
+        {/* Celebrate Pillar - Single consolidated page */}
         <Route path="/celebrate" element={<CelebratePage />} />
         <Route path="/occasion-box/:type" element={<OccasionBoxPage />} />
         <Route path="/occasion-box" element={<OccasionBoxPage />} />
         <Route path="/build-box" element={<OccasionBoxPage />} />
-        <Route path="/celebrate/cakes" element={<ProductListing category="cakes" />} />
-        <Route path="/celebrate/birthday-cakes" element={<ProductListing category="cakes" />} />
-        <Route path="/celebrate/breed-cakes" element={<ProductListing category="breed-cakes" />} />
-        <Route path="/celebrate/pupcakes" element={<ProductListing category="dognuts" />} />
-        <Route path="/celebrate/treats" element={<ProductListing category="treats" />} />
-        <Route path="/celebrate/valentine" element={<ProductListing category="treats" />} />
-        <Route path="/celebrate/desi" element={<ProductListing category="desi-treats" />} />
-        <Route path="/celebrate/hampers" element={<ProductListing category="hampers" />} />
-        <Route path="/celebrate/cat" element={<ProductListing category="cat-treats" />} />
-        <Route path="/celebrate/accessories" element={<ProductListing category="accessories" />} />
-        <Route path="/celebrate/:category" element={<ProductListing />} />
+        
+        {/* Redirect all celebrate sub-pages to main celebrate page with category */}
+        <Route path="/celebrate/cakes" element={<Navigate to="/celebrate?category=cakes" replace />} />
+        <Route path="/celebrate/birthday-cakes" element={<Navigate to="/celebrate?category=cakes" replace />} />
+        <Route path="/celebrate/breed-cakes" element={<Navigate to="/celebrate?category=breed-cakes" replace />} />
+        <Route path="/celebrate/pupcakes" element={<Navigate to="/celebrate?category=pupcakes" replace />} />
+        <Route path="/celebrate/treats" element={<Navigate to="/celebrate?category=treats" replace />} />
+        <Route path="/celebrate/valentine" element={<Navigate to="/celebrate?category=valentine" replace />} />
+        <Route path="/celebrate/desi" element={<Navigate to="/celebrate?category=desi-treats" replace />} />
+        <Route path="/celebrate/hampers" element={<Navigate to="/celebrate?category=hampers" replace />} />
+        <Route path="/celebrate/cat" element={<Navigate to="/celebrate?category=cat-treats" replace />} />
+        <Route path="/celebrate/accessories" element={<Navigate to="/celebrate?category=accessories" replace />} />
+        <Route path="/celebrate/:category" element={<CelebrateRedirect />} />
         
         {/* Other Product Routes - Open for browsing */}
         <Route path="/cakes" element={<ProductListing category="cakes" />} />
