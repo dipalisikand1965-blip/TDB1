@@ -377,7 +377,7 @@ async def get_concierge_home(
     
     try:
         # Get concierge status
-        status = get_concierge_status()
+        status = await get_concierge_status()
         
         # Build query filters
         user_filter = {"user_id": user_id}
