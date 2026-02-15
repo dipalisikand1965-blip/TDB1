@@ -11,14 +11,14 @@
  * URL: /celebrate-new?category={tab}
  */
 
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { 
   Cake, Gift, Heart, Sparkles, PartyPopper, Crown, Star,
   ChevronRight, MapPin, SlidersHorizontal, X, Check,
   Loader2, ShoppingBag, PawPrint, Camera, Package, Dog,
-  ChevronDown, Filter, Zap, ArrowRight, Send, Search, Wand2
+  ChevronDown, Filter, Zap, ArrowRight, Send
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -124,437 +124,6 @@ const CONCIERGE_EXPERIENCES = [
   { id: 'pet-wedding', title: 'Pet Wedding', icon: '💒', gradient: 'from-rose-400 to-pink-500' },
   { id: 'milestone', title: 'Milestone Moments', icon: '📸', gradient: 'from-indigo-500 to-purple-500' },
 ];
-
-// ============================================
-// MIRA OS - NATURAL LANGUAGE SEARCH ENGINE
-// Pet-First, Breed-Second Personalization
-// ============================================
-
-// Mira OS understands these natural language patterns
-const MIRA_SEARCH_PATTERNS = {
-  // Occasions
-  occasions: ['birthday', 'gotcha day', 'gotcha', 'anniversary', 'graduation', 'welcome home', 'party', 'celebration', 'special'],
-  
-  // Shapes (for cakes)
-  shapes: ['heart', 'round', 'paw', 'bone', 'square', 'star', 'custom', 'number', 'letter'],
-  
-  // Categories
-  categories: {
-    'cake': ['cake', 'cakes'],
-    'breed-cakes': ['breed cake', 'breed', 'my breed', 'labrador cake', 'pug cake', 'golden retriever cake', 'husky cake', 'beagle cake'],
-    'mini-cakes': ['mini', 'mini cake', 'small cake', 'tiny'],
-    'dognuts': ['pupcake', 'pupcakes', 'dognut', 'dognuts', 'cupcake'],
-    'treats': ['treat', 'treats', 'snack', 'snacks', 'biscuit', 'cookie'],
-    'desi-treats': ['desi', 'indian', 'ladoo', 'barfi', 'modak', 'traditional'],
-    'hampers': ['hamper', 'gift box', 'gift', 'party box', 'celebration box'],
-    'accessories': ['party', 'decoration', 'bandana', 'hat', 'balloon', 'accessory', 'accessories'],
-    'cat': ['cat', 'kitty', 'kitten', 'feline']
-  },
-  
-  // Flavors
-  flavors: ['peanut butter', 'chicken', 'banana', 'carrot', 'apple', 'sweet potato', 'lamb', 'beef', 'fish', 'pumpkin', 'cheese'],
-  
-  // Dietary/Preferences
-  dietary: ['grain-free', 'wheat-free', 'gluten-free', 'allergy', 'sensitive', 'vegan', 'vegetarian', 'healthy'],
-  
-  // Price ranges
-  priceRanges: {
-    'budget': { max: 500, phrases: ['cheap', 'budget', 'affordable', 'under 500', 'inexpensive'] },
-    'mid': { min: 500, max: 1000, phrases: ['mid range', 'moderate', '500 to 1000'] },
-    'premium': { min: 1000, phrases: ['premium', 'luxury', 'expensive', 'best', 'top'] }
-  },
-  
-  // Quick filters
-  quickFilters: {
-    'bestsellers': ['bestseller', 'best seller', 'popular', 'top rated', 'favorite'],
-    'gift-ready': ['gift', 'gift ready', 'packaged', 'wrapped'],
-    'same-day': ['same day', 'today', 'urgent', 'quick', 'fast'],
-  }
-};
-
-// Mira OS Search Parser - Extracts intent from natural language
-const parseMiraQuery = (query, activePet = null) => {
-  if (!query) return null;
-  
-  const normalized = query.toLowerCase().trim();
-  const result = {
-    originalQuery: query,
-    petName: activePet?.name || null,
-    petBreed: activePet?.breed || null,
-    detectedCategory: null,
-    detectedShape: null,
-    detectedOccasion: null,
-    detectedFlavor: null,
-    detectedDietary: [],
-    detectedPriceRange: null,
-    detectedQuickFilter: null,
-    keywords: [],
-    miraResponse: null
-  };
-  
-  // 1. Check for pet name in query (e.g., "Lola's birthday cake")
-  if (activePet?.name) {
-    const petNameLower = activePet.name.toLowerCase();
-    if (normalized.includes(petNameLower)) {
-      result.keywords.push(activePet.name);
-      result.miraResponse = `Finding the perfect ${activePet.name} special! 🐾`;
-    }
-  }
-  
-  // 2. Detect occasion
-  for (const occasion of MIRA_SEARCH_PATTERNS.occasions) {
-    if (normalized.includes(occasion)) {
-      result.detectedOccasion = occasion;
-      result.miraResponse = result.miraResponse || `Looking for ${occasion} treats! 🎉`;
-      break;
-    }
-  }
-  
-  // 3. Detect shape (for cakes)
-  for (const shape of MIRA_SEARCH_PATTERNS.shapes) {
-    if (normalized.includes(shape)) {
-      result.detectedShape = shape;
-      result.miraResponse = `Found ${shape}-shaped options! ❤️`;
-      break;
-    }
-  }
-  
-  // 4. Detect category
-  for (const [category, keywords] of Object.entries(MIRA_SEARCH_PATTERNS.categories)) {
-    for (const keyword of keywords) {
-      if (normalized.includes(keyword)) {
-        result.detectedCategory = category;
-        break;
-      }
-    }
-    if (result.detectedCategory) break;
-  }
-  
-  // 5. Detect breed from query OR use active pet's breed
-  for (const breed of BREED_OPTIONS) {
-    if (breed !== 'All Breeds' && normalized.includes(breed.toLowerCase())) {
-      result.petBreed = breed;
-      result.detectedCategory = 'breed-cakes';
-      result.miraResponse = `${breed} cakes coming right up! 🐕`;
-      break;
-    }
-  }
-  // Auto-suggest breed cakes if user has a registered pet
-  if (!result.petBreed && activePet?.breed && normalized.includes('my breed')) {
-    result.petBreed = activePet.breed;
-    result.detectedCategory = 'breed-cakes';
-    result.miraResponse = `${activePet.name}'s ${activePet.breed} cakes! 🐾`;
-  }
-  
-  // 6. Detect flavor
-  for (const flavor of MIRA_SEARCH_PATTERNS.flavors) {
-    if (normalized.includes(flavor)) {
-      result.detectedFlavor = flavor;
-      break;
-    }
-  }
-  
-  // 7. Detect dietary preferences
-  for (const dietary of MIRA_SEARCH_PATTERNS.dietary) {
-    if (normalized.includes(dietary)) {
-      result.detectedDietary.push(dietary);
-    }
-  }
-  
-  // 8. Detect price range
-  for (const [range, config] of Object.entries(MIRA_SEARCH_PATTERNS.priceRanges)) {
-    for (const phrase of config.phrases) {
-      if (normalized.includes(phrase)) {
-        result.detectedPriceRange = range;
-        break;
-      }
-    }
-    if (result.detectedPriceRange) break;
-  }
-  
-  // 9. Detect quick filters
-  for (const [filter, keywords] of Object.entries(MIRA_SEARCH_PATTERNS.quickFilters)) {
-    for (const keyword of keywords) {
-      if (normalized.includes(keyword)) {
-        result.detectedQuickFilter = filter;
-        break;
-      }
-    }
-    if (result.detectedQuickFilter) break;
-  }
-  
-  // 10. Extract remaining keywords for text search
-  const stopWords = ['a', 'an', 'the', 'for', 'my', 'with', 'and', 'or', 'in', 'on', 'at'];
-  const words = normalized.split(/\s+/).filter(w => 
-    w.length > 2 && !stopWords.includes(w)
-  );
-  result.keywords = [...new Set([...result.keywords, ...words])];
-  
-  // Generate default Mira response if none set
-  if (!result.miraResponse && result.keywords.length > 0) {
-    result.miraResponse = `Searching for "${result.keywords.slice(0, 3).join(', ')}"... 🔍`;
-  }
-  
-  return result;
-};
-
-// ============================================
-// MIRA OS SEARCH BAR COMPONENT
-// ============================================
-const MiraOSSearchBar = ({ 
-  activePet, 
-  onSearch, 
-  onTabChange, 
-  initialValue = '',
-  placeholder = null 
-}) => {
-  const [query, setQuery] = useState(initialValue);
-  const [parsedResult, setParsedResult] = useState(null);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const inputRef = useRef(null);
-  
-  // Example queries based on pet
-  const exampleQueries = useMemo(() => {
-    const petName = activePet?.name || 'your pet';
-    const petBreed = activePet?.breed;
-    return [
-      `${petName}'s birthday cake`,
-      'heart shape cake',
-      petBreed ? `${petBreed} cake` : 'breed cake',
-      'party hamper',
-      'desi treats',
-      'bestsellers under 500'
-    ].filter(Boolean);
-  }, [activePet]);
-  
-  // Parse query in real-time
-  useEffect(() => {
-    if (query.length >= 2) {
-      const result = parseMiraQuery(query, activePet);
-      setParsedResult(result);
-      setShowSuggestions(true);
-    } else {
-      setParsedResult(null);
-      setShowSuggestions(false);
-    }
-  }, [query, activePet]);
-  
-  const handleSearch = () => {
-    if (!query.trim()) return;
-    
-    haptic('medium');
-    const result = parseMiraQuery(query, activePet);
-    
-    // If a category was detected, switch to that tab
-    if (result?.detectedCategory) {
-      const tabId = result.detectedCategory === 'cake' ? 'cakes' : result.detectedCategory;
-      const tabExists = CATEGORY_TABS.find(t => t.id === tabId);
-      if (tabExists) {
-        onTabChange(tabId);
-      }
-    }
-    
-    onSearch(result);
-    setShowSuggestions(false);
-  };
-  
-  const handleExampleClick = (example) => {
-    setQuery(example);
-    haptic('light');
-  };
-  
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-  
-  // Dynamic placeholder based on pet
-  const dynamicPlaceholder = placeholder || (
-    activePet?.name 
-      ? `Ask Mira: "${activePet.name}'s birthday cake" or "heart shape"`
-      : 'Ask Mira: "birthday heart cake" or "breed cake"'
-  );
-  
-  return (
-    <div className="relative" data-testid="mira-os-search">
-      {/* Search Input */}
-      <div className="relative">
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
-            <Wand2 className="w-3.5 h-3.5 text-white" />
-          </div>
-        </div>
-        <Input
-          ref={inputRef}
-          type="text"
-          placeholder={dynamicPlaceholder}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onFocus={() => query.length >= 2 && setShowSuggestions(true)}
-          className="h-14 pl-14 pr-14 bg-white border-2 border-pink-200 focus:border-pink-400 rounded-2xl text-gray-900 placeholder:text-gray-400 shadow-lg text-base"
-          data-testid="mira-search-input"
-        />
-        <button 
-          className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl flex items-center justify-center active:scale-95 transition-transform shadow-md"
-          onClick={handleSearch}
-          data-testid="mira-search-btn"
-        >
-          <Search className="w-5 h-5 text-white" />
-        </button>
-      </div>
-      
-      {/* Real-time Parse Preview */}
-      {parsedResult && showSuggestions && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl border border-pink-200 shadow-xl z-50 overflow-hidden">
-          {/* Mira Response */}
-          <div className="px-4 py-3 bg-gradient-to-r from-pink-50 to-purple-50 border-b border-pink-100">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
-                <Sparkles className="w-3.5 h-3.5 text-white" />
-              </div>
-              <p className="text-sm font-medium text-gray-800">
-                {parsedResult.miraResponse || 'Searching...'}
-              </p>
-            </div>
-          </div>
-          
-          {/* Detected Filters */}
-          <div className="px-4 py-3 space-y-2">
-            {parsedResult.detectedCategory && (
-              <div className="flex items-center gap-2 text-xs">
-                <Badge className="bg-pink-100 text-pink-700">Category</Badge>
-                <span className="text-gray-600 capitalize">{parsedResult.detectedCategory.replace('-', ' ')}</span>
-              </div>
-            )}
-            {parsedResult.detectedShape && (
-              <div className="flex items-center gap-2 text-xs">
-                <Badge className="bg-rose-100 text-rose-700">Shape</Badge>
-                <span className="text-gray-600 capitalize">{parsedResult.detectedShape}</span>
-              </div>
-            )}
-            {parsedResult.petBreed && (
-              <div className="flex items-center gap-2 text-xs">
-                <Badge className="bg-purple-100 text-purple-700">Breed</Badge>
-                <span className="text-gray-600">{parsedResult.petBreed}</span>
-              </div>
-            )}
-            {parsedResult.detectedOccasion && (
-              <div className="flex items-center gap-2 text-xs">
-                <Badge className="bg-amber-100 text-amber-700">Occasion</Badge>
-                <span className="text-gray-600 capitalize">{parsedResult.detectedOccasion}</span>
-              </div>
-            )}
-            {parsedResult.detectedPriceRange && (
-              <div className="flex items-center gap-2 text-xs">
-                <Badge className="bg-green-100 text-green-700">Price</Badge>
-                <span className="text-gray-600 capitalize">{parsedResult.detectedPriceRange}</span>
-              </div>
-            )}
-          </div>
-          
-          {/* Search Button */}
-          <div className="px-4 py-3 border-t bg-gray-50">
-            <Button 
-              onClick={handleSearch}
-              className="w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl"
-              data-testid="mira-search-submit"
-            >
-              <Search className="w-4 h-4 mr-2" />
-              Search with Mira
-            </Button>
-          </div>
-        </div>
-      )}
-      
-      {/* Example Queries - Show when empty */}
-      {!query && (
-        <div className="flex gap-2 mt-3 overflow-x-auto scrollbar-hide pb-1">
-          {exampleQueries.map((example, idx) => (
-            <button
-              key={idx}
-              onClick={() => handleExampleClick(example)}
-              className="flex-shrink-0 px-3 py-1.5 bg-white/80 backdrop-blur-sm border border-pink-200 rounded-full text-xs text-gray-600 hover:bg-pink-50 hover:border-pink-300 transition-all"
-            >
-              {example}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// ============================================
-// ACTIVE SEARCH FILTERS DISPLAY
-// ============================================
-const ActiveMiraFilters = ({ searchResult, onClear, petName }) => {
-  if (!searchResult) return null;
-  
-  const hasFilters = searchResult.detectedCategory || 
-                     searchResult.detectedShape || 
-                     searchResult.petBreed ||
-                     searchResult.detectedOccasion ||
-                     searchResult.detectedPriceRange ||
-                     searchResult.detectedQuickFilter;
-  
-  if (!hasFilters) return null;
-  
-  return (
-    <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-3 mb-4 border border-pink-200">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
-            <Wand2 className="w-3 h-3 text-white" />
-          </div>
-          <span className="text-sm font-semibold text-gray-800">
-            Mira found {petName ? `for ${petName}` : 'results'}
-          </span>
-        </div>
-        <button 
-          onClick={onClear}
-          className="text-xs text-pink-600 hover:text-pink-700 font-medium flex items-center gap-1"
-        >
-          <X className="w-3 h-3" /> Clear
-        </button>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {searchResult.detectedCategory && (
-          <Badge className="bg-pink-100 text-pink-700 text-xs">
-            {searchResult.detectedCategory.replace('-', ' ')}
-          </Badge>
-        )}
-        {searchResult.detectedShape && (
-          <Badge className="bg-rose-100 text-rose-700 text-xs">
-            {searchResult.detectedShape} shape
-          </Badge>
-        )}
-        {searchResult.petBreed && (
-          <Badge className="bg-purple-100 text-purple-700 text-xs">
-            {searchResult.petBreed}
-          </Badge>
-        )}
-        {searchResult.detectedOccasion && (
-          <Badge className="bg-amber-100 text-amber-700 text-xs">
-            {searchResult.detectedOccasion}
-          </Badge>
-        )}
-        {searchResult.detectedPriceRange && (
-          <Badge className="bg-green-100 text-green-700 text-xs">
-            {searchResult.detectedPriceRange === 'budget' ? 'Under ₹500' : 
-             searchResult.detectedPriceRange === 'premium' ? 'Premium' : 'Mid-range'}
-          </Badge>
-        )}
-        {searchResult.detectedQuickFilter && (
-          <Badge className="bg-blue-100 text-blue-700 text-xs">
-            {searchResult.detectedQuickFilter}
-          </Badge>
-        )}
-      </div>
-    </div>
-  );
-};
 
 // ============================================
 // PRODUCT CARD - iOS-Like Quick View
@@ -1064,9 +633,6 @@ const CelebrateNewPage = () => {
   const [smartFilter, setSmartFilter] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
   
-  // Mira OS Search state
-  const [miraSearchResult, setMiraSearchResult] = useState(null);
-  
   // Modal states
   const [showBoxBuilder, setShowBoxBuilder] = useState(false);
   const [boxOccasion, setBoxOccasion] = useState('birthday');
@@ -1092,7 +658,7 @@ const CelebrateNewPage = () => {
     } else {
       setSearchParams({ category: tabId });
     }
-    // Reset filters on tab change (but keep Mira search if it triggered the tab change)
+    // Reset filters on tab change
     setSearchQuery('');
     setSelectedBreed('All Breeds');
     setSelectedShape('all');
@@ -1102,47 +668,6 @@ const CelebrateNewPage = () => {
       document.getElementById('products-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
   }, [setSearchParams]);
-  
-  // Mira OS Search handler
-  const handleMiraSearch = useCallback((searchResult) => {
-    if (!searchResult) return;
-    
-    setMiraSearchResult(searchResult);
-    
-    // Apply detected filters
-    if (searchResult.detectedShape) {
-      setSelectedShape(searchResult.detectedShape);
-    }
-    if (searchResult.petBreed && searchResult.petBreed !== 'All Breeds') {
-      setSelectedBreed(searchResult.petBreed);
-    }
-    if (searchResult.detectedPriceRange) {
-      setPriceRange(searchResult.detectedPriceRange);
-    }
-    if (searchResult.detectedQuickFilter) {
-      setSmartFilter(searchResult.detectedQuickFilter);
-    }
-    
-    // Set search query for text matching
-    if (searchResult.keywords.length > 0) {
-      setSearchQuery(searchResult.keywords.join(' '));
-    }
-    
-    // Scroll to products
-    setTimeout(() => {
-      document.getElementById('products-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 200);
-  }, []);
-  
-  // Clear Mira search
-  const clearMiraSearch = useCallback(() => {
-    setMiraSearchResult(null);
-    setSearchQuery('');
-    setSelectedBreed('All Breeds');
-    setSelectedShape('all');
-    setSmartFilter(null);
-    setPriceRange('all');
-  }, []);
   
   // Fetch user's pets
   useEffect(() => {
@@ -1260,68 +785,32 @@ const CelebrateNewPage = () => {
   const getFilteredProducts = useCallback(() => {
     let filtered = [...products];
     
-    // Search filter (from Mira OS or regular search)
+    // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(p => 
         (p.name || p.title || '').toLowerCase().includes(query) ||
-        (p.tags || []).some(t => (t || '').toLowerCase().includes(query)) ||
-        (p.description || '').toLowerCase().includes(query)
+        (p.tags || []).some(t => (t || '').toLowerCase().includes(query))
       );
     }
     
-    // Mira OS: Shape filter (applies globally when Mira search is active)
-    if (miraSearchResult?.detectedShape || (selectedTab === 'cakes' && selectedShape !== 'all')) {
-      const shape = (miraSearchResult?.detectedShape || selectedShape).toLowerCase();
-      filtered = filtered.filter(p => 
-        (p.name || p.title || '').toLowerCase().includes(shape) ||
-        (p.tags || []).some(t => (t || '').toLowerCase().includes(shape)) ||
-        (p.shape || '').toLowerCase() === shape
-      );
-    }
-    
-    // Mira OS: Breed filter (applies globally when Mira search detected a breed)
-    if (miraSearchResult?.petBreed || (selectedTab === 'breed-cakes' && selectedBreed !== 'All Breeds')) {
-      const breed = (miraSearchResult?.petBreed || selectedBreed).toLowerCase();
+    // Breed filter (for breed-cakes)
+    if (selectedTab === 'breed-cakes' && selectedBreed !== 'All Breeds') {
+      const breed = selectedBreed.toLowerCase();
       filtered = filtered.filter(p => 
         (p.name || p.title || '').toLowerCase().includes(breed) ||
         (p.tags || []).some(t => (t || '').toLowerCase().includes(breed))
       );
     }
     
-    // Mira OS: Occasion filter
-    if (miraSearchResult?.detectedOccasion) {
-      const occasion = miraSearchResult.detectedOccasion.toLowerCase();
-      // For birthday, include cakes and treats
-      if (occasion === 'birthday') {
-        filtered = filtered.filter(p => 
-          (p.category || '').toLowerCase().includes('cake') ||
-          (p.name || p.title || '').toLowerCase().includes('birthday') ||
-          (p.tags || []).some(t => (t || '').toLowerCase().includes('birthday'))
-        );
-      } else {
-        filtered = filtered.filter(p => 
-          (p.name || p.title || '').toLowerCase().includes(occasion) ||
-          (p.tags || []).some(t => (t || '').toLowerCase().includes(occasion))
-        );
-      }
-    }
-    
-    // Mira OS: Flavor filter
-    if (miraSearchResult?.detectedFlavor) {
-      const flavor = miraSearchResult.detectedFlavor.toLowerCase();
+    // Shape filter (for cakes)
+    if (selectedTab === 'cakes' && selectedShape !== 'all') {
+      const shape = selectedShape.toLowerCase();
       filtered = filtered.filter(p => 
-        (p.name || p.title || '').toLowerCase().includes(flavor) ||
-        (p.tags || []).some(t => (t || '').toLowerCase().includes(flavor))
+        (p.name || p.title || '').toLowerCase().includes(shape) ||
+        (p.tags || []).some(t => (t || '').toLowerCase().includes(shape)) ||
+        (p.shape || '').toLowerCase() === shape
       );
-    }
-    
-    // Mira OS: Dietary filter
-    if (miraSearchResult?.detectedDietary?.length > 0) {
-      filtered = filtered.filter(p => {
-        const productText = `${p.name || ''} ${(p.tags || []).join(' ')}`.toLowerCase();
-        return miraSearchResult.detectedDietary.some(d => productText.includes(d.toLowerCase()));
-      });
     }
     
     // Smart filter
@@ -1349,18 +838,17 @@ const CelebrateNewPage = () => {
       }
     }
     
-    // Price filter (from Mira OS or regular filter)
-    const effectivePriceRange = miraSearchResult?.detectedPriceRange || priceRange;
-    if (effectivePriceRange === 'budget' || effectivePriceRange === 'under500') {
+    // Price filter
+    if (priceRange === 'under500') {
       filtered = filtered.filter(p => (p.price || 0) < 500);
-    } else if (effectivePriceRange === 'mid' || effectivePriceRange === '500-1000') {
+    } else if (priceRange === '500-1000') {
       filtered = filtered.filter(p => (p.price || 0) >= 500 && (p.price || 0) <= 1000);
-    } else if (effectivePriceRange === 'premium' || effectivePriceRange === 'over1000') {
-      filtered = filtered.filter(p => (p.price || 0) >= 1000);
+    } else if (priceRange === 'over1000') {
+      filtered = filtered.filter(p => (p.price || 0) > 1000);
     }
     
     return filtered;
-  }, [products, searchQuery, selectedBreed, selectedShape, smartFilter, priceRange, selectedTab, miraSearchResult]);
+  }, [products, searchQuery, selectedBreed, selectedShape, smartFilter, priceRange, selectedTab]);
   
   const filteredProducts = getFilteredProducts();
   const currentTab = CATEGORY_TABS.find(t => t.id === selectedTab);
@@ -1428,12 +916,31 @@ const CelebrateNewPage = () => {
             </div>
           )}
           
-          {/* Mira OS Search Bar - Pet-First Natural Language Search */}
-          <MiraOSSearchBar
-            activePet={activePet}
-            onSearch={handleMiraSearch}
-            onTabChange={handleTabChange}
-          />
+          {/* Search Bar */}
+          <div className="relative">
+            <Input
+              type="text"
+              placeholder="Search cakes, treats, hampers..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-12 pl-12 pr-12 bg-white/95 backdrop-blur-sm border-0 rounded-2xl text-gray-900 placeholder:text-gray-400 shadow-lg"
+            />
+            <div className="absolute left-4 top-1/2 -translate-y-1/2">
+              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <button 
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl flex items-center justify-center"
+              onClick={() => {
+                if (searchQuery.trim()) {
+                  navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}&pillar=celebrate`);
+                }
+              }}
+            >
+              <Send className="w-4 h-4 text-white" />
+            </button>
+          </div>
         </div>
       </section>
       
@@ -1454,13 +961,6 @@ const CelebrateNewPage = () => {
       {/* MAIN CONTENT */}
       {/* ============================================ */}
       <div className="max-w-6xl mx-auto px-4 pt-4">
-        
-        {/* MIRA OS ACTIVE FILTERS - Show when Mira search is active */}
-        <ActiveMiraFilters 
-          searchResult={miraSearchResult}
-          onClear={clearMiraSearch}
-          petName={activePet?.name}
-        />
         
         {/* PERSONALIZED PICKS - Always show */}
         <div className="mb-6">
