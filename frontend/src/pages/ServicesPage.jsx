@@ -899,6 +899,7 @@ const ServicesPage = () => {
       result = result
         .sort((a, b) => b._relevanceScore - a._relevanceScore)
         .filter(s => s._relevanceScore > 0 || result.indexOf(s) < 30);
+      }
     } else if (selectedPillar !== 'all') {
       result = result.filter(s => {
         const servicePillars = s.pillars || [];
