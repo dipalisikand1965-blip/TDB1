@@ -121,6 +121,7 @@ const PillarPageLayout = ({
 }) => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   
   // Use global pet from PillarContext - ensures consistency when pet is switched elsewhere
   const { currentPet, setCurrentPet, pets: contextPets, soulData: contextSoulData } = usePillarContext();
@@ -139,6 +140,14 @@ const PillarPageLayout = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [shoppingForOther, setShoppingForOther] = useState(false);
+  
+  // Read category from URL params on mount (for tab highlighting after redirects)
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category');
+    if (categoryFromUrl) {
+      setSelectedSubcategory(categoryFromUrl);
+    }
+  }, [searchParams]);
   
   // Fetch user's pets (fallback if context doesn't have them)
   useEffect(() => {
