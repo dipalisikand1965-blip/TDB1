@@ -599,6 +599,41 @@ const CelebrateNewPage = () => {
       );
     }
     
+    // Shape filter (for cakes)
+    if (selectedTab === 'cakes' && selectedShape !== 'all') {
+      const shape = selectedShape.toLowerCase();
+      filtered = filtered.filter(p => 
+        (p.name || p.title || '').toLowerCase().includes(shape) ||
+        (p.tags || []).some(t => (t || '').toLowerCase().includes(shape)) ||
+        (p.shape || '').toLowerCase() === shape
+      );
+    }
+    
+    // Smart filter
+    if (smartFilter) {
+      if (smartFilter === 'budget') {
+        filtered = filtered.filter(p => (p.price || 0) < 500);
+      } else if (smartFilter === 'bestsellers') {
+        filtered = filtered.filter(p => p.is_bestseller);
+      } else if (smartFilter === 'gift-ready') {
+        filtered = filtered.filter(p => 
+          (p.tags || []).some(t => (t || '').toLowerCase().includes('gift')) ||
+          (p.category || '').toLowerCase().includes('hamper')
+        );
+      } else if (smartFilter === 'same-day') {
+        filtered = filtered.filter(p => 
+          (p.tags || []).some(t => (t || '').toLowerCase().includes('same-day')) ||
+          p.same_day_delivery
+        );
+      } else if (smartFilter === 'allergy-safe') {
+        filtered = filtered.filter(p => 
+          (p.tags || []).some(t => ['grain-free', 'wheat-free', 'nut-free', 'allergy'].some(a => (t || '').toLowerCase().includes(a)))
+        );
+      } else if (smartFilter === 'premium') {
+        filtered = filtered.filter(p => (p.price || 0) >= 1000);
+      }
+    }
+    
     // Price filter
     if (priceRange === 'under500') {
       filtered = filtered.filter(p => (p.price || 0) < 500);
@@ -609,7 +644,7 @@ const CelebrateNewPage = () => {
     }
     
     return filtered;
-  }, [products, searchQuery, selectedBreed, priceRange, selectedTab]);
+  }, [products, searchQuery, selectedBreed, selectedShape, smartFilter, priceRange, selectedTab]);
   
   const filteredProducts = getFilteredProducts();
   const currentTab = CATEGORY_TABS.find(t => t.id === selectedTab);
