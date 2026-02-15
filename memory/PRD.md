@@ -34,6 +34,12 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
 - [x] **Fresh Chat Feature** - Chat clears on pet switch, new session ID generated
 - [x] **New Chat Button** - RotateCcw icon in Mira OS header for manual chat refresh
 - [x] **Pet Context in Chat** - Full pet context sent with every message
+- [x] **INTELLIGENT QUICK PROMPTS** - Soul-based personalized actions (CRITICAL FIX)
+  - Shows "dairy-free treats" for Lola (knows she has dairy allergy)
+  - Shows "Calm Lola's anxiety" (knows she's anxious temperament)
+  - Shows birthday prompts when within 30 days
+  - Shows soul discovery for empty pillars
+  - Different prompts for each pet based on their soul data
 - [x] **Comprehensive Platform Audit** - 89/100 score documented
 - [x] **Roadmap to 100** - 22-step sequential plan created
 
