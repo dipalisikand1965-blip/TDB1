@@ -664,32 +664,55 @@ const CelebrateNewPage = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/products?pillar=celebrate&limit=500`);
-      if (response.ok) {
-        const data = await response.json();
-        let allProducts = data.products || data || [];
+      // Determine which API calls to make based on selected tab
+      const currentTab = CATEGORY_TABS.find(t => t.id === selectedTab);
+      let allProducts = [];
+      
+      // Always fetch celebrate pillar products
+      const celebrateResponse = await fetch(`${API_URL}/api/products?pillar=celebrate&limit=500`);
+      if (celebrateResponse.ok) {
+        const data = await celebrateResponse.json();
+        allProducts = data.products || data || [];
+      }
+      
+      // For specific categories that might be in other pillars, fetch them too
+      const crossPillarCategories = ['desi-treats', 'cat-cakes', 'cat-party', 'cat-hampers', 'mini-cakes'];
+      if (currentTab?.dbCategory) {
+        const targetCategories = Array.isArray(currentTab.dbCategory) 
+          ? currentTab.dbCategory 
+          : [currentTab.dbCategory];
         
-        // Filter by category based on selected tab
-        const currentTab = CATEGORY_TABS.find(t => t.id === selectedTab);
-        if (currentTab?.dbCategory) {
-          const targetCategories = Array.isArray(currentTab.dbCategory) 
-            ? currentTab.dbCategory 
-            : [currentTab.dbCategory];
-          
-          allProducts = allProducts.filter(p => {
-            const productCategory = (p.category || '').toLowerCase();
-            return targetCategories.some(target => {
-              const targetLower = target.toLowerCase();
-              return productCategory === targetLower || 
-                     productCategory.includes(targetLower) ||
-                     (p.tags || []).some(t => (t || '').toLowerCase().includes(targetLower));
-            });
-          });
+        // Check if any target categories need cross-pillar fetch
+        for (const cat of targetCategories) {
+          if (crossPillarCategories.includes(cat)) {
+            const catResponse = await fetch(`${API_URL}/api/products?category=${cat}&limit=100`);
+            if (catResponse.ok) {
+              const catData = await catResponse.json();
+              const catProducts = catData.products || catData || [];
+              // Merge without duplicates
+              catProducts.forEach(p => {
+                if (!allProducts.find(existing => (existing._id || existing.id) === (p._id || p.id))) {
+                  allProducts.push(p);
+                }
+              });
+            }
+          }
         }
         
-        setProducts(allProducts);
-        console.log(`[CelebrateNew] Loaded ${allProducts.length} products for tab: ${selectedTab}`);
+        // Now filter by category
+        allProducts = allProducts.filter(p => {
+          const productCategory = (p.category || '').toLowerCase();
+          return targetCategories.some(target => {
+            const targetLower = target.toLowerCase();
+            return productCategory === targetLower || 
+                   productCategory.includes(targetLower) ||
+                   (p.tags || []).some(t => (t || '').toLowerCase().includes(targetLower));
+          });
+        });
       }
+      
+      setProducts(allProducts);
+      console.log(`[CelebrateNew] Loaded ${allProducts.length} products for tab: ${selectedTab}`);
     } catch (error) {
       console.error('Error fetching products:', error);
       setProducts([]);
