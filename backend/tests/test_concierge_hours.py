@@ -83,7 +83,7 @@ class TestConciergeHoursAPI:
         """PUT /api/os/concierge/admin/hours with 24/7 mode enabled"""
         test_config = {
             "start": 0,
-            "end": 24,
+            "end": 23,  # Valid end hour (0-23)
             "timezone_offset": 5.5,
             "timezone_name": "IST",
             "is_24x7": True,
