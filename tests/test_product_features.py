@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-admin-chat.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://concierge-v2.preview.emergentagent.com')
 ADMIN_AUTH = ('aditya', 'doggy2026')
 
 

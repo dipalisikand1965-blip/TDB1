@@ -225,7 +225,7 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
 
 ## 🔗 PREVIEW URL
 ```
-https://mira-admin-chat.preview.emergentagent.com
+https://concierge-v2.preview.emergentagent.com
 ```
 
 ---

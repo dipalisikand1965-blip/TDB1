@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-admin-chat.preview.emergentagent.com
+https://concierge-v2.preview.emergentagent.com
 ```
 
 ---
