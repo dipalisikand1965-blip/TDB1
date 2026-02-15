@@ -419,6 +419,120 @@ async def create_experience_request(request: ConciergeExperienceRequest):
 
 # ============== CONCIERGE® EXPERIENCE REQUEST MANAGEMENT ==============
 
+# ============== MIRA RECOMMENDATION REQUEST (NEW - from FAB) ==============
+
+class MiraRecommendation(BaseModel):
+    """Single recommendation from Mira."""
+    title: str
+    description: Optional[str] = None
+    type: str = "product"
+    why_right: Optional[str] = None
+
+class MiraRecommendationRequest(BaseModel):
+    """Request model for Mira's concierge recommendations."""
+    type: str  # "mira_recommendation" or "mira_bundle"
+    pet_id: Optional[str] = None
+    pet_name: Optional[str] = "your pet"
+    recommendation: Optional[MiraRecommendation] = None  # Single recommendation
+    recommendations: Optional[List[MiraRecommendation]] = None  # Bundle of recommendations
+    source: str = "mira_fab"
+    priority: str = "normal"
+
+@router.post("/mira-request")
+async def create_mira_concierge_request(request: MiraRecommendationRequest):
+    """
+    Create a concierge request from Mira's recommendations.
+    
+    MIRA OS DOCTRINE:
+    - Mira recommends, Concierge delivers
+    - No catalog matching needed - Concierge sources exactly what Mira suggested
+    """
+    db = get_db()
+    import uuid
+    from timestamp_utils import get_utc_timestamp
+    
+    request_id = f"MIRA-{uuid.uuid4().hex[:8].upper()}"
+    ticket_id = f"TKT-MIRA-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
+    now_iso = get_utc_timestamp()
+    
+    # Combine single recommendation or bundle
+    all_recs = []
+    if request.recommendation:
+        all_recs.append(request.recommendation.dict())
+    if request.recommendations:
+        all_recs.extend([r.dict() for r in request.recommendations])
+    
+    if not all_recs:
+        return {"success": False, "error": "No recommendations provided"}
+    
+    # Build description from recommendations
+    rec_descriptions = []
+    for rec in all_recs:
+        desc = f"• {rec['title']}"
+        if rec.get('why_right'):
+            desc += f" ({rec['why_right']})"
+        rec_descriptions.append(desc)
+    
+    full_description = f"Mira's picks for {request.pet_name}:\n" + "\n".join(rec_descriptions)
+    
+    # Create the request document
+    request_doc = {
+        "id": request_id,
+        "ticket_id": ticket_id,
+        "type": request.type,
+        "source": request.source,
+        "pet_id": request.pet_id,
+        "pet_name": request.pet_name,
+        "recommendations": all_recs,
+        "description": full_description,
+        "status": "new",
+        "priority": request.priority,
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "mira_sourced": True,  # Flag that this came from Mira's intelligence
+        "timeline": [
+            {
+                "status": "new",
+                "timestamp": now_iso,
+                "note": f"Request created from Mira FAB - {len(all_recs)} recommendation(s)"
+            }
+        ]
+    }
+    
+    await db.concierge_requests.insert_one({k: v for k, v in request_doc.items() if k != "_id"})
+    
+    # Also create a ticket for visibility
+    ticket_doc = {
+        "id": ticket_id,
+        "request_id": request_id,
+        "type": "mira_recommendation",
+        "title": f"Mira's Picks for {request.pet_name}",
+        "description": full_description,
+        "status": "open",
+        "priority": request.priority,
+        "pet_name": request.pet_name,
+        "pet_id": request.pet_id,
+        "source": "mira_fab",
+        "mira_sourced": True,
+        "recommendations": all_recs,
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "tags": ["mira", "concierge", request.type]
+    }
+    
+    await db.service_desk_tickets.insert_one({k: v for k, v in ticket_doc.items() if k != "_id"})
+    
+    logger.info(f"[MIRA CONCIERGE] Created request {request_id} with {len(all_recs)} recommendations for {request.pet_name}")
+    
+    return {
+        "success": True,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "recommendations_count": len(all_recs),
+        "message": f"We'll source exactly what Mira recommended for {request.pet_name}"
+    }
+
+
 class ConciergeGeneralRequest(BaseModel):
     """Model for general Concierge® requests from modal forms."""
     pillar: str
