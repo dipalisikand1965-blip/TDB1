@@ -20,7 +20,7 @@ import KanbanBoard from './KanbanBoard';
 import { formatDistanceToNow, isToday, isYesterday, format } from 'date-fns';
 import {
   Search, Plus, RefreshCw, X, Send, Clock, User, Phone, Mail,
-  Calendar, AlertCircle, CheckCircle, Loader2, MessageSquare,
+  Calendar, AlertCircle, CheckCircle, Check, Loader2, MessageSquare,
   ChevronRight, ChevronDown, MoreVertical, Edit, Trash2, Star, Zap,
   Inbox, PawPrint, Sparkles, Wand2, Settings, HelpCircle, Bell,
   LayoutDashboard, Users, Building2, PhoneCall, Activity, BarChart3,
