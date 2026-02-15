@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Sparkles, Heart, Crown, PawPrint, Mic, MicOff, Loader2 } from 'lucide-react';
+import { Sparkles, Heart, Crown, PawPrint, Mic, MicOff, Loader2, Send } from 'lucide-react';
 import SoulScoreArc from './SoulScoreArc';
 import MiraLoveNote from './MiraLoveNote';
 import { getPillarMessage, getPillarTagline } from '../context/PillarContext';
@@ -484,28 +484,49 @@ const UnifiedHero = ({
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange?.(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && searchQuery.trim()) {
+                  onSearchSubmit?.(searchQuery.trim());
+                }
+              }}
               placeholder={`What does ${shoppingForOther ? (otherBreedName || 'this pup') : petName} need?`}
               className="flex-1 px-4 py-4 text-base bg-transparent focus:outline-none text-gray-900 placeholder-gray-400"
               data-testid="hero-search-input"
             />
-            {voiceSupported && (
+            <div className="flex items-center gap-1 pr-2">
+              {voiceSupported && (
+                <button 
+                  onClick={toggleVoice}
+                  className={`flex-shrink-0 p-2 rounded-xl text-white transition-all ${
+                    isListening 
+                      ? 'bg-red-500 animate-pulse' 
+                      : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90'
+                  }`}
+                  data-testid="voice-search-btn"
+                  aria-label={isListening ? 'Stop listening' : 'Start voice search'}
+                >
+                  {isListening ? (
+                    <Mic className="w-5 h-5 animate-pulse" />
+                  ) : (
+                    <Mic className="w-5 h-5" />
+                  )}
+                </button>
+              )}
+              {/* Send/Search Button */}
               <button 
-                onClick={toggleVoice}
-                className={`flex-shrink-0 p-2 m-2 rounded-xl text-white transition-all ${
-                  isListening 
-                    ? 'bg-red-500 animate-pulse' 
-                    : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90'
+                onClick={() => searchQuery.trim() && onSearchSubmit?.(searchQuery.trim())}
+                disabled={!searchQuery.trim()}
+                className={`flex-shrink-0 p-2 rounded-xl text-white transition-all ${
+                  searchQuery.trim()
+                    ? 'bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 active:scale-95'
+                    : 'bg-gray-300 cursor-not-allowed'
                 }`}
-                data-testid="voice-search-btn"
-                aria-label={isListening ? 'Stop listening' : 'Start voice search'}
+                data-testid="search-submit-btn"
+                aria-label="Search"
               >
-                {isListening ? (
-                  <Mic className="w-5 h-5 animate-pulse" />
-                ) : (
-                  <Mic className="w-5 h-5" />
-                )}
+                <Send className="w-5 h-5" />
               </button>
-            )}
+            </div>
           </div>
           {isListening && (
             <p className="text-center text-white/70 text-sm mt-2 animate-pulse">
