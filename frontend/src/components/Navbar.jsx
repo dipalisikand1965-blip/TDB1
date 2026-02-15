@@ -1044,15 +1044,17 @@ const Navbar = () => {
                 </div>
               )}
 
-              {/* Ask Mira Button */}
-              <button
-                onClick={openMiraAI}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-xs font-semibold hover:from-purple-600 hover:to-pink-600 transition-all"
-                data-testid="navbar-mira-btn"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                Ask Mira
-              </button>
+              {/* Ask Mira Button - HIDDEN on pillar pages (FAB is available) per doctrine */}
+              {!isPillarPage && (
+                <button
+                  onClick={openMiraAI}
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-xs font-semibold hover:from-purple-600 hover:to-pink-600 transition-all"
+                  data-testid="navbar-mira-btn"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Ask Mira
+                </button>
+              )}
 
               {/* Cart - Desktop */}
               <button
