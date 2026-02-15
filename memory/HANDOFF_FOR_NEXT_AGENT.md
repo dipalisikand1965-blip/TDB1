@@ -185,7 +185,7 @@ The user's exact words that define everything:
 | Test User | dipali@clubconcierge.in / test123 |
 | Admin | aditya / lola4304 |
 | Database | MongoDB - test_database |
-| Preview URL | https://mira-websocket-hub.preview.emergentagent.com/mira-demo |
+| Preview URL | https://production-ready-45.preview.emergentagent.com/mira-demo |
 | Production | https://thedoggycompany.in/mira-demo |
 
 ---

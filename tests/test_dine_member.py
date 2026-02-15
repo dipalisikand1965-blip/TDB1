@@ -8,7 +8,7 @@ import requests
 import os
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-websocket-hub.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://production-ready-45.preview.emergentagent.com')
 
 # Test user credentials
 TEST_EMAIL = "test@example.com"
