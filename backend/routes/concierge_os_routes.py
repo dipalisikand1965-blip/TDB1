@@ -100,27 +100,96 @@ class ConciergeThread(BaseModel):
 # CONCIERGE OPERATING HOURS
 # ============================================================================
 
-# Operating hours (IST)
-CONCIERGE_HOURS = {
+# Default operating hours (IST) - can be overridden via admin settings
+DEFAULT_CONCIERGE_HOURS = {
     "start": 9,   # 9:00 AM IST
     "end": 21,    # 9:00 PM IST
-    "timezone_offset": 5.5  # IST is UTC+5:30
+    "timezone_offset": 5.5,  # IST is UTC+5:30
+    "timezone_name": "IST",
+    "is_24x7": False,  # If True, always online
+    "weekend_hours": None,  # Optional different hours for weekends
+    "offline_message": "Leave a message and we'll respond when we're back"
 }
 
-def get_concierge_status() -> Dict[str, Any]:
+# In-memory cache for settings (refreshed from DB)
+_concierge_hours_cache = None
+_cache_timestamp = None
+
+async def get_concierge_hours() -> Dict[str, Any]:
+    """
+    Get concierge operating hours from database or use defaults.
+    Caches result for 5 minutes to reduce DB calls.
+    """
+    global _concierge_hours_cache, _cache_timestamp
+    
+    # Check cache (valid for 5 minutes)
+    if _concierge_hours_cache and _cache_timestamp:
+        cache_age = (datetime.now(timezone.utc) - _cache_timestamp).total_seconds()
+        if cache_age < 300:  # 5 minutes
+            return _concierge_hours_cache
+    
+    # Try to get from database
+    if db is not None:
+        try:
+            settings = await db.admin_settings.find_one({"setting_type": "concierge_hours"})
+            if settings:
+                hours = {
+                    "start": settings.get("start", DEFAULT_CONCIERGE_HOURS["start"]),
+                    "end": settings.get("end", DEFAULT_CONCIERGE_HOURS["end"]),
+                    "timezone_offset": settings.get("timezone_offset", DEFAULT_CONCIERGE_HOURS["timezone_offset"]),
+                    "timezone_name": settings.get("timezone_name", DEFAULT_CONCIERGE_HOURS["timezone_name"]),
+                    "is_24x7": settings.get("is_24x7", DEFAULT_CONCIERGE_HOURS["is_24x7"]),
+                    "weekend_hours": settings.get("weekend_hours"),
+                    "offline_message": settings.get("offline_message", DEFAULT_CONCIERGE_HOURS["offline_message"])
+                }
+                _concierge_hours_cache = hours
+                _cache_timestamp = datetime.now(timezone.utc)
+                return hours
+        except Exception as e:
+            logger.error(f"Error fetching concierge hours from DB: {e}")
+    
+    # Return defaults
+    _concierge_hours_cache = DEFAULT_CONCIERGE_HOURS.copy()
+    _cache_timestamp = datetime.now(timezone.utc)
+    return DEFAULT_CONCIERGE_HOURS.copy()
+
+async def get_concierge_status() -> Dict[str, Any]:
     """
     Get current concierge status based on operating hours.
     Returns live status, next available time, and message.
+    Now reads from database settings.
     """
+    hours = await get_concierge_hours()
+    
+    # If 24x7 mode, always online
+    if hours.get("is_24x7"):
+        return {
+            "is_live": True,
+            "status_text": "Live now",
+            "status_color": "green",
+            "message": "Your Concierge is ready to help 24/7",
+            "next_available": None,
+            "hours_config": hours
+        }
+    
     now_utc = datetime.now(timezone.utc)
-    ist_offset = timedelta(hours=CONCIERGE_HOURS["timezone_offset"])
-    now_ist = now_utc + ist_offset
+    ist_offset = timedelta(hours=hours["timezone_offset"])
+    now_local = now_utc + ist_offset
     
-    current_hour = now_ist.hour
-    current_day = now_ist.weekday()  # 0=Monday, 6=Sunday
+    current_hour = now_local.hour
+    current_day = now_local.weekday()  # 0=Monday, 6=Sunday
+    is_weekend = current_day >= 5  # Saturday=5, Sunday=6
     
-    # Check if within operating hours (9 AM - 9 PM IST, all days)
-    is_live = CONCIERGE_HOURS["start"] <= current_hour < CONCIERGE_HOURS["end"]
+    # Get applicable hours (weekend or regular)
+    start_hour = hours["start"]
+    end_hour = hours["end"]
+    
+    if is_weekend and hours.get("weekend_hours"):
+        start_hour = hours["weekend_hours"].get("start", start_hour)
+        end_hour = hours["weekend_hours"].get("end", end_hour)
+    
+    # Check if within operating hours
+    is_live = start_hour <= current_hour < end_hour
     
     if is_live:
         return {
@@ -128,24 +197,115 @@ def get_concierge_status() -> Dict[str, Any]:
             "status_text": "Live now",
             "status_color": "green",
             "message": "Your Concierge is ready to help",
-            "next_available": None
+            "next_available": None,
+            "hours_config": hours
         }
     else:
         # Calculate next available time
-        if current_hour < CONCIERGE_HOURS["start"]:
+        if current_hour < start_hour:
             # Before opening today
-            next_time = now_ist.replace(hour=CONCIERGE_HOURS["start"], minute=0, second=0)
+            next_time = now_local.replace(hour=start_hour, minute=0, second=0)
         else:
             # After closing, next day
-            next_time = (now_ist + timedelta(days=1)).replace(hour=CONCIERGE_HOURS["start"], minute=0, second=0)
+            next_time = (now_local + timedelta(days=1)).replace(hour=start_hour, minute=0, second=0)
         
         return {
             "is_live": False,
-            "status_text": f"Back at {CONCIERGE_HOURS['start']}:00",
+            "status_text": f"Back at {start_hour}:00 {hours['timezone_name']}",
             "status_color": "amber",
-            "message": "Leave a message and we'll respond when we're back",
-            "next_available": next_time.strftime("%I:%M %p")
+            "message": hours.get("offline_message", "Leave a message and we'll respond when we're back"),
+            "next_available": next_time.strftime("%I:%M %p"),
+            "hours_config": hours
         }
+
+
+# Request model for updating concierge hours
+class ConciergeHoursUpdate(BaseModel):
+    """Request to update concierge operating hours"""
+    start: int = Field(..., ge=0, le=23, description="Start hour (0-23)")
+    end: int = Field(..., ge=0, le=23, description="End hour (0-23)")
+    timezone_offset: float = Field(default=5.5, description="Timezone offset from UTC")
+    timezone_name: str = Field(default="IST", description="Timezone display name")
+    is_24x7: bool = Field(default=False, description="Enable 24/7 mode")
+    weekend_hours: Optional[Dict[str, int]] = Field(default=None, description="Different hours for weekends")
+    offline_message: str = Field(default="Leave a message and we'll respond when we're back")
+
+
+@router.get("/admin/hours")
+async def get_admin_concierge_hours():
+    """
+    Get current concierge operating hours configuration.
+    Used by admin panel to display/edit settings.
+    """
+    hours = await get_concierge_hours()
+    status = await get_concierge_status()
+    
+    return {
+        "hours": hours,
+        "current_status": status,
+        "presets": [
+            {"name": "Business Hours (9 AM - 6 PM)", "start": 9, "end": 18},
+            {"name": "Extended Hours (9 AM - 9 PM)", "start": 9, "end": 21},
+            {"name": "Morning Shift (6 AM - 2 PM)", "start": 6, "end": 14},
+            {"name": "Evening Shift (2 PM - 10 PM)", "start": 14, "end": 22},
+            {"name": "24/7 Always Online", "is_24x7": True}
+        ]
+    }
+
+
+@router.put("/admin/hours")
+async def update_concierge_hours(request: ConciergeHoursUpdate):
+    """
+    Update concierge operating hours.
+    Admin-only endpoint to configure when concierge is online.
+    """
+    global _concierge_hours_cache, _cache_timestamp
+    
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Prepare settings document
+        settings_doc = {
+            "setting_type": "concierge_hours",
+            "start": request.start,
+            "end": request.end,
+            "timezone_offset": request.timezone_offset,
+            "timezone_name": request.timezone_name,
+            "is_24x7": request.is_24x7,
+            "weekend_hours": request.weekend_hours,
+            "offline_message": request.offline_message,
+            "updated_at": now
+        }
+        
+        # Upsert into admin_settings collection
+        await db.admin_settings.update_one(
+            {"setting_type": "concierge_hours"},
+            {"$set": settings_doc},
+            upsert=True
+        )
+        
+        # Clear cache to force refresh
+        _concierge_hours_cache = None
+        _cache_timestamp = None
+        
+        # Get updated status
+        new_status = await get_concierge_status()
+        
+        logger.info(f"Concierge hours updated: {request.start}:00 - {request.end}:00 {request.timezone_name}, 24x7={request.is_24x7}")
+        
+        return {
+            "success": True,
+            "message": "Concierge hours updated successfully",
+            "hours": settings_doc,
+            "current_status": new_status
+        }
+        
+    except Exception as e:
+        logger.error(f"Error updating concierge hours: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # ============================================================================
