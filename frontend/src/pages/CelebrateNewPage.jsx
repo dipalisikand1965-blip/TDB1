@@ -1252,6 +1252,15 @@ const CelebrateNewPage = () => {
       
       {/* Mira OS - BETA Testing (Parallel to existing FAB) */}
       <MiraOSTrigger pillar="celebrate" position="bottom-left" />
+      
+      {/* Concierge® Button - Two-way communication with Service Desk */}
+      <ConciergeButton 
+        pillar="celebrate" 
+        position="bottom-right"
+        petId={selectedPet?.id}
+        petName={selectedPet?.name}
+        showLabel
+      />
     </div>
     </PillarPageLayout>
   );
