@@ -494,11 +494,11 @@ const UnifiedHero = ({
               className="flex-1 px-4 py-4 text-base bg-transparent focus:outline-none text-gray-900 placeholder-gray-400"
               data-testid="hero-search-input"
             />
-            <div className="flex items-center gap-1 pr-2">
+            <div className="flex items-center gap-2 pr-2">
               {voiceSupported && (
                 <button 
                   onClick={toggleVoice}
-                  className={`flex-shrink-0 p-2 rounded-xl text-white transition-all ${
+                  className={`flex-shrink-0 w-10 h-10 rounded-xl text-white transition-all flex items-center justify-center ${
                     isListening 
                       ? 'bg-red-500 animate-pulse' 
                       : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90'
@@ -513,14 +513,13 @@ const UnifiedHero = ({
                   )}
                 </button>
               )}
-              {/* Send/Search Button */}
+              {/* Send/Search Button - Always visible */}
               <button 
                 onClick={() => searchQuery.trim() && onSearchSubmit?.(searchQuery.trim())}
-                disabled={!searchQuery.trim()}
-                className={`flex-shrink-0 p-2 rounded-xl text-white transition-all ${
+                className={`flex-shrink-0 w-10 h-10 rounded-xl text-white transition-all flex items-center justify-center ${
                   searchQuery.trim()
                     ? 'bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 active:scale-95'
-                    : 'bg-gray-300 cursor-not-allowed'
+                    : 'bg-pink-400 hover:bg-pink-500'
                 }`}
                 data-testid="search-submit-btn"
                 aria-label="Search"
