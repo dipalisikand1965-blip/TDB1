@@ -273,20 +273,24 @@ def transform_shopify_product(shopify_product: dict) -> dict:
     # ACCESSORIES & TOYS - EXPANDED
     elif any(acc in title or acc in product_type for acc in [
         "toy", "squeaky", "bandana", "feeding mat", "coaster", "leash", "collar", 
-        "name tag", "sniffer mat", "snuffle"
-    ]):
+        "name tag", "sniffer mat", "snuffle", "key chain", "keychain", "fridge magnet", "magnet"
+    ]) or "toys" in tags_str or "accessories" in tags_str or "key chain" in tags_str:
         category = "accessories"
     
     # Treats & Biscuits - EXPANDED
     elif any(t in product_type or t in title for t in [
         "treat", "biscuit", "cookie", "jerky", "chew", "snack", "crunch", "munch", 
-        "chip", "christmas cookies", "cluck", "peep"
-    ]) or product_type in ["biscuits", "pet treats", "must have", "treat jar"]:
+        "chip", "christmas cookies", "cluck", "peep", "pawps"
+    ]) or product_type in ["biscuits", "pet treats", "must have", "treat jar"] or "treats" in tags_str:
         category = "treats"
     
     # Combos - map to hampers
-    elif "combo" in product_type or "combo" in title:
+    elif "combo" in product_type or "combo" in title or "gift box" in tags_str:
         category = "hampers"
+    
+    # Tag-based fallbacks for uncategorized
+    elif "pupcakes" in tags_str or "dognuts" in tags_str:
+        category = "dognuts"
     
     # Health products
     elif any(h in title for h in ["oil", "toothpaste", "detangler", "flea"]) or "oil" in product_type:
