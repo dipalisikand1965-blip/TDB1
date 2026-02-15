@@ -205,7 +205,6 @@ async def get_concierge_status() -> Dict[str, Any]:
     now_local = now_utc + ist_offset
     
     current_hour = now_local.hour
-    current_minute = now_local.minute
     current_day = now_local.weekday()  # 0=Monday, 6=Sunday
     is_weekend = current_day >= 5  # Saturday=5, Sunday=6
     today_str = now_local.strftime("%Y-%m-%d")  # Format: "2025-12-25"
