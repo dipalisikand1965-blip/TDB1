@@ -40,6 +40,11 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
   - Shows birthday prompts when within 30 days
   - Shows soul discovery for empty pillars
   - Different prompts for each pet based on their soul data
+- [x] **TWO-WAY CONCIERGE COMMUNICATION** - Admin ↔ User messaging fixed
+  - Added admin endpoints: `/api/os/concierge/admin/threads`, `/admin/thread/{id}`, `/admin/reply`
+  - Added polling (5s) to ConciergeThreadPanel for real-time message updates
+  - Fixed thread panel to load messages when opened
+  - Admin login fixed (accepts username without @ symbol)
 - [x] **Comprehensive Platform Audit** - 89/100 score documented
 - [x] **Roadmap to 100** - 22-step sequential plan created
 
