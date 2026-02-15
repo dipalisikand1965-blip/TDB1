@@ -76,11 +76,17 @@ const extractQuickReplies = (data) => {
                 data.chips ||
                 data.quick_replies ||
                 data.suggested_replies ||
+                data.follow_ups ||  // API returns follow_ups!
+                data.response?.follow_ups ||
                 [];
   
   return chips.map(chip => {
     if (typeof chip === 'string') {
       return { text: chip, value: chip };
+    }
+    // Handle follow_ups format { text: 'xxx', type: 'yyy' }
+    if (chip.text) {
+      return { text: chip.text, value: chip.text };
     }
     return chip;
   }).slice(0, 4); // Limit to 4 quick replies
