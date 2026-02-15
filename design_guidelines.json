@@ -1,130 +1,175 @@
 {
-  "project_name": "Mira OS - Premium Pet Companion",
-  "version": "2.0",
-  "design_philosophy": {
-    "core_identity": "E1 - Anti-AI Designer",
-    "vibe": "Magical, Premium, Intimate, Deep Space",
-    "archetype": "Jewel & Luxury (Archetype 5)",
-    "principles": [
-      "Fusion over Imitation: Mix iMessage clarity with sci-fi HUD aesthetics.",
-      "Emotion First: Every interaction feels like magic.",
-      "Negative Space: Value the empty areas.",
-      "Glassmorphism: Use optical clarity, not just blur."
-    ]
+  "identity": {
+    "name": "Mira OS",
+    "core_doctrine": "Mira knows, Mira doesn't ask",
+    "tagline": "The World's First Pet Operating System",
+    "description": "A proactive, concierge-driven experience that transforms a standard e-commerce site into a personalized intelligent OS for pet parenting.",
+    "emotional_tone": {
+      "primary": "Empathetic Intelligence",
+      "secondary": "Proactive Magic",
+      "keywords": ["Intuitive", "Premium", "Organic", "Anticipatory", "Fluid"]
+    }
+  },
+  "platform_guidelines": {
+    "ios": {
+      "principle": "Human Interface Guidelines",
+      "navigation": "Bottom sheet navigation + Full-page Modals",
+      "touch_targets": "Minimum 44x44pt",
+      "gestures": "Swipe to dismiss modals, Edge swipe for back",
+      "haptics": "Soft impact for selection, Success for completion",
+      "safe_areas": "Respect top notch and bottom home indicator"
+    },
+    "android": {
+      "principle": "Material Design 3",
+      "navigation": "Navigation Bar + Full-screen Dialogs",
+      "touch_targets": "Minimum 48x48dp",
+      "gestures": "Predictive back gesture support",
+      "ripple": "Subtle surface ripples on interaction",
+      "elevation": "Tonal elevation instead of heavy shadows"
+    },
+    "desktop": {
+      "principle": "Productivity & Immersion",
+      "navigation": "Side-drawer pattern (Slide-out from right)",
+      "layout": "Bento Grid dashboard",
+      "hover_states": "Rich hover lifts and glows",
+      "keyboard_shortcuts": "Esc to close modal, Cmd+K for command palette"
+    }
   },
   "typography": {
-    "primary_font": "Manrope, sans-serif",
-    "heading_font": "Syne, sans-serif",
-    "code_font": "JetBrains Mono, monospace",
+    "font_family": {
+      "display": "Manrope, sans-serif",
+      "body": "Inter, sans-serif",
+      "special": "Syne, sans-serif"
+    },
     "scale": {
-      "h1": "text-3xl md:text-4xl font-bold tracking-tight",
-      "h2": "text-2xl font-semibold tracking-tight",
-      "body": "text-base leading-relaxed",
-      "caption": "text-xs tracking-wider uppercase opacity-70"
+      "h1": "text-4xl md:text-5xl font-bold tracking-tight",
+      "h2": "text-3xl md:text-4xl font-semibold tracking-tight",
+      "h3": "text-2xl md:text-3xl font-medium",
+      "body_lg": "text-lg leading-relaxed",
+      "body_base": "text-base leading-relaxed text-muted-foreground",
+      "caption": "text-sm text-muted-foreground uppercase tracking-wider"
+    },
+    "rules": {
+      "headings": "No 'Inter' for headings. Use Manrope or Syne.",
+      "readability": "High contrast (WCAG AA). 1.6 line-height for body.",
+      "hierarchy": "Use size and weight, not just color."
     }
   },
   "colors": {
-    "background": {
-      "main": "linear-gradient(180deg, #1e1b4b 0%, #312e81 40%, #4c1d95 100%)",
-      "glass": "rgba(255, 255, 255, 0.08)",
-      "glass_active": "rgba(255, 255, 255, 0.15)",
-      "glass_heavy": "rgba(15, 23, 42, 0.6)"
+    "palette": {
+      "primary": "#0F766E",
+      "primary_light": "#14B8A6",
+      "primary_dark": "#0D5C56",
+      "mira_purple": "#9333EA",
+      "mira_glow": "#A855F7",
+      "amber_warm": "#D97706",
+      "pink_heart": "#BE185D",
+      "background": "#FAFAF9",
+      "surface": "#FFFFFF",
+      "surface_glass": "rgba(255, 255, 255, 0.85)"
     },
-    "text": {
-      "primary": "#FFFFFF",
-      "secondary": "rgba(255, 255, 255, 0.7)",
-      "accent": "#F59E0B",
-      "brand_pink": "#EC4899",
-      "brand_purple": "#A855F7"
+    "gradients": {
+      "mira_magic": "linear-gradient(135deg, #9333EA 0%, #EC4899 100%)",
+      "golden_hour": "linear-gradient(135deg, #FDE68A 0%, #FDBA74 50%, #FDA4AF 100%)",
+      "deep_forest": "linear-gradient(135deg, #0F766E 0%, #0D5C56 100%)"
     },
-    "accents": {
-      "amber_glow": "0 0 20px rgba(245, 158, 11, 0.3)",
-      "purple_glow": "0 0 30px rgba(168, 85, 247, 0.4)",
-      "amber_strip": "linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%)"
-    }
-  },
-  "layout_strategy": {
-    "type": "Mobile-First Stack",
-    "structure": [
-      "Header (Fixed Top): Branding + Pet Selector",
-      "Chat Area (Scrollable): Messages + Products",
-      "Dock (Fixed Bottom Layer 2): Navigation Items",
-      "Composer (Fixed Bottom Layer 1): Input + Voice",
-      "Sandbox Footer (Fixed Bottom Layer 0): Debug info"
-    ],
-    "spacing": {
-      "container_padding": "p-4 md:p-6",
-      "message_gap": "gap-4",
-      "section_gap": "gap-8"
+    "states": {
+      "idle": "text-muted-foreground bg-transparent",
+      "active": "text-mira_purple bg-purple-50",
+      "highlighted": "ring-2 ring-mira_purple ring-offset-2",
+      "error": "text-red-600 bg-red-50 border-red-200"
     }
   },
   "components": {
-    "Header": {
-      "style": "Glassmorphism Crystal",
-      "classes": "fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-[#1e1b4b]/80 backdrop-blur-xl border-b border-white/10",
-      "elements": {
-        "Logo": "text-white font-bold font-syne text-xl tracking-tight",
-        "Subtitle": "text-[10px] text-white/50 uppercase tracking-[0.2em] ml-2",
-        "PetBadge": "flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full border border-white/20 backdrop-blur-md hover:bg-white/20 transition-all cursor-pointer"
+    "mira_fab": {
+      "name": "The Mira Orb",
+      "description": "The primary interaction point. Floats above content.",
+      "position": "Fixed bottom-center (Mobile), Bottom-right (Desktop)",
+      "appearance": "3.5rem circle, Mira Magic gradient, white border",
+      "animation": "Subtle pulse when idle. Expands to OS Modal on click.",
+      "interaction": "Tap to open OS Modal. Drag to move (optional future).",
+      "path": "/app/frontend/src/components/Mira/MiraOrb.jsx"
+    },
+    "os_modal": {
+      "name": "Mira OS Layer",
+      "behavior_mobile": "Full-screen modal, slides up from bottom. 100% width/height.",
+      "behavior_desktop": "Side drawer, slides in from right. 400px width.",
+      "sections": ["Pet Context", "Concierge Chat", "Smart Picks", "Services"],
+      "background": "Glass-morphism (Blur 20px) + Surface tint",
+      "path": "/app/frontend/src/components/Mira/MiraTray.jsx"
+    },
+    "concierge_icon": {
+      "name": "Helping Hands",
+      "symbol": "Hands icon (Phosphor/Lucide)",
+      "behavior": "Always visible in Navbar/Header. Lights up/Glows when product selected.",
+      "state_idle": "Opacity 0.6, Grayscale",
+      "state_active": "Opacity 1, Color: Mira Purple, Glow effect",
+      "trigger": "User Intent -> Ticket Created -> Icon Glows",
+      "path": "/app/frontend/src/components/Mira/ConciergeConfirmation.jsx"
+    },
+    "indicators": {
+      "curated_badge": {
+        "type": "Badge",
+        "style": "Small purple dot or 'Picks' label inside product card",
+        "meaning": "Mira has curated this specifically for the selected pet"
+      },
+      "pet_switcher": {
+        "type": "Avatar Row",
+        "style": "Horizontal scroll of pet avatars. Active pet has ring.",
+        "location": "Top of OS Modal"
       }
     },
-    "ChatBubble_Mira": {
-      "style": "Glass Panel",
-      "classes": "relative bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl rounded-tl-sm text-white/90 p-4 shadow-lg max-w-[85%] md:max-w-[70%]",
-      "highlight": "border-l-4 border-amber-500 pl-4 bg-gradient-to-r from-amber-500/10 to-transparent"
-    },
-    "ChatBubble_User": {
-      "style": "Deep Gradient",
-      "classes": "bg-gradient-to-br from-[#A855F7] to-[#EC4899] text-white rounded-2xl rounded-tr-sm p-4 shadow-purple-glow max-w-[85%] ml-auto font-medium"
-    },
-    "ThinDock": {
-      "style": "Floating Island",
-      "classes": "flex items-center justify-center gap-2 p-2 bg-[#0f172a]/60 backdrop-blur-xl border border-white/10 rounded-full mx-auto mb-2 w-fit max-w-full overflow-x-auto scrollbar-hide",
-      "item_classes": "flex flex-col items-center justify-center px-3 py-2 min-w-[60px] rounded-xl hover:bg-white/10 transition-all group",
-      "icon_classes": "w-5 h-5 mb-1 text-white/70 group-hover:text-white group-hover:scale-110 transition-transform",
-      "label_classes": "text-[9px] uppercase tracking-wider text-white/50 group-hover:text-white"
-    },
-    "Composer": {
-      "style": "Dark Glass",
-      "classes": "w-full bg-[#1e1b4b]/90 backdrop-blur-xl border-t border-white/10 p-4 pb-8",
-      "input_classes": "w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all",
-      "button_classes": "p-3 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg hover:shadow-purple-glow transition-all active:scale-95"
-    },
-    "ProductCard": {
-      "style": "Bento Card",
-      "classes": "min-w-[160px] w-[160px] bg-white rounded-xl overflow-hidden shadow-lg border border-white/10 flex flex-col snap-center",
-      "image_classes": "w-full h-32 object-cover bg-gray-100",
-      "content_classes": "p-3 flex flex-col flex-1",
-      "title_classes": "text-sm font-bold text-gray-900 line-clamp-2 mb-1",
-      "price_classes": "text-xs font-medium text-purple-600 mb-2",
-      "add_btn_classes": "mt-auto w-full py-1.5 text-xs font-bold text-white bg-gray-900 rounded-lg hover:bg-black transition-colors"
-    },
-    "TestScenarios": {
-      "style": "Grid",
-      "classes": "grid grid-cols-2 md:grid-cols-4 gap-2 p-4 bg-white/5 rounded-2xl border border-white/10 mt-4",
-      "chip_classes": "flex items-center gap-2 px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg cursor-pointer transition-all text-sm text-white/80"
+    "cards": {
+      "concierge_card": {
+        "style": "Bento-style, clean white surface, soft shadow.",
+        "content": "Actionable recommendation (e.g., 'Book Vet', 'Reorder Food').",
+        "action": "One-tap execution."
+      }
     }
+  },
+  "layout_strategies": {
+    "bento_grid": {
+      "mobile": "grid-cols-1 gap-4",
+      "desktop": "grid-cols-4 gap-6",
+      "rules": "Mix square and tall rectangular cards. No perfect symmetry."
+    },
+    "spacing": {
+      "base": "1rem (16px)",
+      "container_padding": "p-4 md:p-8",
+      "section_gap": "gap-8 md:gap-12",
+      "safe_bottom": "pb-24 (Mobile) to clear FAB"
+    }
+  },
+  "animation_standards": {
+    "library": "Framer Motion (recommended) or CSS Transitions",
+    "physics": {
+      "spring": "type: 'spring', stiffness: 300, damping: 30",
+      "ease": "ease-out duration-300"
+    },
+    "types": {
+      "modal_entry": "Slide up (y: 100% -> 0%)",
+      "drawer_entry": "Slide left (x: 100% -> 0%)",
+      "stagger": "Stagger children by 0.05s",
+      "micro_interaction": "Scale 0.95 on press"
+    },
+    "reduced_motion": "Respect user preference. Fade instead of slide."
   },
   "assets": {
-    "images": {
-      "buddy": "https://images.unsplash.com/photo-1768058430062-9e8309e7e665?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "treats": "https://images.unsplash.com/photo-1741942732060-cf4b1058fc7f?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "food": "https://images.unsplash.com/photo-1714068691210-073dc52c6c1d?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "toy": "https://images.unsplash.com/photo-1659700097688-f26bf79735af?crop=entropy&cs=srgb&fm=jpg&q=85"
-    },
-    "icons": {
-      "library": "lucide-react",
-      "preferred": ["Sparkles", "MessageCircle", "ShoppingBag", "Heart", "HelpCircle", "Calendar"]
-    }
+    "icons_library": "Lucide React or Phosphor Icons",
+    "image_style": "High-quality, natural lighting, genuine pet emotion. No stock-photo look.",
+    "logo": "Mira Logo (SVG)"
   },
-  "universal_guidelines": [
-    "Use data-testid for all interactive elements.",
-    "Do NOT use 'Inter' for headings. Use 'Syne' class 'font-special'.",
-    "Avoid generic centered layouts. Use asymmetry.",
-    "Use 2-3x more spacing than typical designs.",
-    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
-    "Create depth through layered design elements with z-index hierarchy.",
-    "Every interaction needs micro-animations."
-  ],
-  "instructions_to_main_agent": "Rewrite /app/frontend/src/pages/MiraDemoPage.jsx to implement this premium design. You MUST Replace the existing CSS in /app/frontend/src/styles/mira-chat.css with the new Tailwind-based styles or updated CSS variables. However, since the user asked to 'Transform' and 'match reference', it is safer to rewrite the CSS to match the new guideline variables and classes, or better yet, use inline Tailwind classes in the JSX for structure and only use CSS for complex animations/glass effects. The provided JSON defines the specific look. Focus on the 'Dock' and 'Chat Bubbles' distinctiveness."
+  "accessibility": {
+    "contrast": "Ensure text is readable on glass backgrounds.",
+    "touch": "All interactive elements must be at least 44px.",
+    "labels": "Aria-labels for all icon-only buttons (FAB, Concierge).",
+    "focus": "Visible focus rings for keyboard navigation."
+  },
+  "implementation_steps": {
+    "step_1": "Implement global MiraFab component ensuring z-index > 50.",
+    "step_2": "Create/Update MiraTray to handle Full-screen (Mobile) vs Drawer (Desktop).",
+    "step_3": "Integrate Concierge 'Light Up' logic using global state (Zustand/Context).",
+    "step_4": "Apply Manrope/Syne typography to Headings.",
+    "step_5": "Refine Bento Grid layouts for Dashboard/Home."
+  }
 }
