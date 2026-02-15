@@ -16,9 +16,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   MessageCircle, Users, Send, Search, Plus, X, Check, CheckCheck,
-  Clock, Wifi, WifiOff, ChevronRight, PawPrint, User, RefreshCw
+  Clock, Wifi, WifiOff, ChevronRight, PawPrint, User, RefreshCw,
+  Mail, Phone, MessageSquare
 } from 'lucide-react';
-// Use relative URLs - no import needed
+import { formatDistanceToNow, isToday, isYesterday, format } from 'date-fns';
 
 // Connection status
 const ConnectionStatus = {
