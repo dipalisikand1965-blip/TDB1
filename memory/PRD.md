@@ -73,34 +73,52 @@
 
 ### P0.2: INLINE QUICK REPLIES IN CONVERSATION ✅ COMPLETE
 
-**User Request:** Move quick reply buttons from bottom bar to INLINE within the conversation flow, right after Mira's questions. Always include "Anything else" option.
+**User Request:** Move quick reply buttons from bottom bar to INLINE within the conversation flow, right after Mira's questions. Always include "Something else" option. **MUST BE DYNAMIC FROM MIRA'S INTELLIGENCE, NOT HARDCODED FRONTEND.**
 
 **What Was Built:**
 
-#### 1. Inline Quick Replies After Each AI Message
-- Quick replies now appear directly below Mira's message (not at bottom)
-- Contextually generated from Mira's question patterns
-- Pattern detection for: food choices, allergies, celebrations, weight/health, yes/no questions
+#### 1. Backend Intelligence: `generate_intelligent_quick_replies()` Function
+New function in `mira_routes.py` (lines 9575-9720) that generates PET-FIRST, conversation-aware quick replies:
 
-#### 2. Smart Pattern Extraction
-When API doesn't return `quick_replies`, the frontend detects question patterns:
-- "regular meals or treats/snacks?" → ["Regular everyday meals", "Occasional treats/snacks", "Both"]
-- "kibble or home-cooked?" → ["Stay on kibble", "Add home-cooked", "Mix of both"]
-- "any allergies?" → ["No allergies", "Has food allergies", "Not sure"]
+| Pattern Detected | Quick Replies Generated |
+|-----------------|-------------------------|
+| "everyday meals or treats" | "Regular meals for Lola", "Treats & snacks", "Both" |
+| "kibble or home-cooked" | "Stick with kibble", "Add home-cooked", "Mix of both" |
+| "how many meals/day" | "2 meals a day", "3 meals a day", "Free feeding" |
+| "allergies" | "No allergies for Lola", "Yes, has food allergies", "Not sure yet" |
+| "birthday/celebration" | "Yes, Lola's birthday!", "Gotcha day", "Just want to spoil them" |
+| "grooming" | "Full grooming session", "Just a bath", "Quick trim only" |
+| Generic "yes/no" questions | "Yes, please!", "Tell me more first", "Let's try something else" |
 
-#### 3. "Anything else" Always Present
-Every set of quick replies includes "✏️ Anything else" button that focuses the input field.
+All replies are personalized with the pet's name (pet_ref) when available.
 
-#### 4. Clean UX - No Duplication
-Bottom quick action bar is HIDDEN when inline replies are showing to avoid redundancy.
+#### 2. API Response Now Includes `quick_replies`
+Response from `/api/mira/chat` now includes:
+```json
+{
+  "response": "What are you thinking for Lola? Kibble or home-cooked?",
+  "quick_replies": ["Stick with kibble", "Add home-cooked", "Mix of both", "Something else"]
+}
+```
+
+#### 3. Frontend Renders Inline Quick Replies
+- Quick replies appear directly below Mira's message (not at bottom bar)
+- Backend "Something else" option is respected (no duplicate from frontend)
+- Clean, gradient-styled buttons with tap feedback
+
+#### 4. "Something else" Always Included
+Backend automatically appends "Something else" to every quick reply set, allowing users to type custom responses.
 
 **Files Modified:**
+- `/app/backend/mira_routes.py`:
+  - Added `generate_intelligent_quick_replies()` function (lines 9575-9720)
+  - Added `quick_replies` to response_data (line 13871)
 - `/app/frontend/src/components/mira-os/MiraOSModal.jsx`:
-  - Enhanced `extractQuickReplies()` function with pattern detection (lines 69-142)
-  - Inline quick replies in chat messages (lines 814-853)
-  - Bottom bar conditionally hidden (lines 884-936)
+  - Removed hardcoded frontend pattern detection
+  - Frontend now primarily uses backend `quick_replies`
+  - Conditional "Anything else" button (only if backend doesn't include it)
 
-**Test Results:** Visual verification - inline quick replies appearing correctly in conversation flow.
+**Test Results:** Verified via curl and screenshot - intelligent quick replies appearing correctly.
 
 ---
 
