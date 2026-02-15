@@ -1034,3 +1034,226 @@ async def review_conversation_insight(
     except Exception as e:
         logger.error(f"Error reviewing insight: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+# ============================================================================
+# ADMIN ENDPOINTS - For Service Desk to reply to Concierge threads
+# ============================================================================
+
+class AdminReplyRequest(BaseModel):
+    """Admin reply to a concierge thread"""
+    thread_id: str
+    content: str
+    status_chip: Optional[str] = None  # Optional status like "Options ready"
+
+
+@router.get("/admin/threads")
+async def get_admin_threads(
+    limit: int = Query(50, description="Max threads to return"),
+    status: Optional[str] = Query(None, description="Filter by status: active, awaiting_concierge, awaiting_user")
+):
+    """
+    Get all concierge threads for admin view.
+    Returns threads awaiting_concierge first for quick action.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        query = {}
+        if status:
+            query["status"] = status
+        
+        # Sort by awaiting_concierge first, then by last_message_at
+        threads = []
+        cursor = db.concierge_threads.find(query).sort([
+            ("status", 1),  # awaiting_concierge comes first alphabetically before "active"
+            ("last_message_at", -1)
+        ]).limit(limit)
+        
+        async for thread in cursor:
+            # Get pet info
+            pet_name = thread.get("pet_name", "Unknown Pet")
+            
+            # Get user info
+            user = await db.users.find_one({"id": thread.get("user_id")})
+            user_name = "Unknown"
+            user_email = ""
+            if user:
+                user_name = user.get("name", user.get("first_name", "Unknown"))
+                user_email = user.get("email", "")
+            
+            threads.append({
+                "id": thread.get("id"),
+                "pet_id": thread.get("pet_id"),
+                "pet_name": pet_name,
+                "user_id": thread.get("user_id"),
+                "user_name": user_name,
+                "user_email": user_email,
+                "title": thread.get("title", "Conversation"),
+                "status": thread.get("status", "active"),
+                "last_message_preview": thread.get("last_message_preview", ""),
+                "last_message_at": thread.get("last_message_at"),
+                "message_count": thread.get("message_count", 0),
+                "unread_count": thread.get("unread_count", 0),
+                "created_at": thread.get("created_at")
+            })
+        
+        # Get counts by status
+        awaiting_count = await db.concierge_threads.count_documents({"status": "awaiting_concierge"})
+        active_count = await db.concierge_threads.count_documents({"status": "active"})
+        
+        return {
+            "success": True,
+            "threads": threads,
+            "counts": {
+                "awaiting_concierge": awaiting_count,
+                "active": active_count,
+                "total": len(threads)
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting admin threads: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/admin/thread/{thread_id}")
+async def get_admin_thread_detail(thread_id: str):
+    """
+    Get thread detail for admin - includes all messages and context.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        # Get thread
+        thread = await db.concierge_threads.find_one({"id": thread_id})
+        if not thread:
+            raise HTTPException(status_code=404, detail="Thread not found")
+        
+        # Get all messages
+        messages = []
+        cursor = db.concierge_messages.find({"thread_id": thread_id}).sort("timestamp", 1)
+        async for msg in cursor:
+            messages.append({
+                "id": msg.get("id"),
+                "sender": msg.get("sender"),
+                "content": msg.get("content"),
+                "timestamp": msg.get("timestamp"),
+                "status_chip": msg.get("status_chip"),
+                "source": msg.get("source", "chat")
+            })
+        
+        # Get pet info
+        pet = None
+        if thread.get("pet_id"):
+            pet_doc = await db.pets.find_one({"id": thread.get("pet_id")})
+            if pet_doc:
+                pet = {
+                    "id": pet_doc.get("id"),
+                    "name": pet_doc.get("name"),
+                    "breed": pet_doc.get("breed"),
+                    "photo_url": pet_doc.get("photo_url"),
+                    "allergies": pet_doc.get("preferences", {}).get("allergies", []),
+                    "temperament": pet_doc.get("temperament")
+                }
+        
+        # Get user info
+        user = None
+        if thread.get("user_id"):
+            user_doc = await db.users.find_one({"id": thread.get("user_id")})
+            if user_doc:
+                user = {
+                    "id": user_doc.get("id"),
+                    "name": user_doc.get("name"),
+                    "email": user_doc.get("email"),
+                    "phone": user_doc.get("phone")
+                }
+        
+        return {
+            "success": True,
+            "thread": {
+                "id": thread.get("id"),
+                "title": thread.get("title"),
+                "status": thread.get("status"),
+                "created_at": thread.get("created_at"),
+                "last_message_at": thread.get("last_message_at")
+            },
+            "messages": messages,
+            "pet": pet,
+            "user": user
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting admin thread: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/admin/reply")
+async def send_admin_reply(request: AdminReplyRequest):
+    """
+    Admin sends a reply to a concierge thread.
+    This creates a message in concierge_messages and updates the thread status.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Verify thread exists
+        thread = await db.concierge_threads.find_one({"id": request.thread_id})
+        if not thread:
+            raise HTTPException(status_code=404, detail="Thread not found")
+        
+        # Create the message
+        message_doc = {
+            "id": str(uuid.uuid4()),
+            "thread_id": request.thread_id,
+            "sender": "concierge",
+            "content": request.content,
+            "timestamp": now,
+            "status_chip": request.status_chip,
+            "attachments": None,
+            "type": "reply",
+            "source": "service_desk"  # Mark that this came from admin panel
+        }
+        
+        await db.concierge_messages.insert_one(message_doc)
+        
+        # Update thread status and last message
+        await db.concierge_threads.update_one(
+            {"id": request.thread_id},
+            {
+                "$set": {
+                    "last_message_preview": request.content[:100],
+                    "last_message_at": now,
+                    "status": "awaiting_user",  # Now waiting for user response
+                    "updated_at": now
+                },
+                "$inc": {"message_count": 1, "unread_count": 1}
+            }
+        )
+        
+        logger.info(f"[ADMIN REPLY] Reply sent to thread {request.thread_id}")
+        
+        return {
+            "success": True,
+            "message": {
+                "id": message_doc["id"],
+                "sender": "concierge",
+                "content": request.content,
+                "timestamp": now,
+                "status_chip": request.status_chip
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error sending admin reply: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
