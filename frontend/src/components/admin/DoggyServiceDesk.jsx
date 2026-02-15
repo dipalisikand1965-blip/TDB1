@@ -4910,6 +4910,74 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         className={isInternal ? 'border-amber-300 bg-amber-50/50' : ''}
                       />
                       
+                      {/* Golden Standard: Omnichannel Selector */}
+                      <div className="flex items-center gap-2 mb-2 py-2 border-b border-gray-100">
+                        <span className="text-xs text-gray-500">Send via:</span>
+                        <button
+                          onClick={() => setReplyChannel('chat')}
+                          className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs transition-colors ${
+                            replyChannel === 'chat' 
+                              ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' 
+                              : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'
+                          }`}
+                          data-testid="channel-chat"
+                        >
+                          <MessageCircle className="w-3 h-3" />
+                          Chat
+                        </button>
+                        <button
+                          onClick={() => {
+                            const phone = selectedTicket.member?.phone;
+                            if (phone) {
+                              const text = replyText.replace(/<[^>]*>/g, '').trim();
+                              window.open(`https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(text)}`, '_blank');
+                            } else {
+                              toast({
+                                title: 'No Phone Number',
+                                description: 'No phone number on file for this member',
+                                variant: 'destructive'
+                              });
+                            }
+                          }}
+                          className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs transition-colors ${
+                            replyChannel === 'whatsapp' 
+                              ? 'bg-green-100 text-green-700 border border-green-300' 
+                              : 'bg-gray-50 text-green-600 border border-gray-200 hover:bg-green-50 hover:border-green-300'
+                          }`}
+                          data-testid="channel-whatsapp"
+                          title={selectedTicket.member?.phone ? `Open WhatsApp: ${selectedTicket.member.phone}` : 'No phone on file'}
+                        >
+                          <Phone className="w-3 h-3" />
+                          WhatsApp
+                        </button>
+                        <button
+                          onClick={() => {
+                            const email = selectedTicket.member?.email;
+                            if (email) {
+                              const subject = `Re: ${selectedTicket.subject || selectedTicket.ticket_id}`;
+                              const body = replyText.replace(/<[^>]*>/g, '').trim();
+                              window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+                            } else {
+                              toast({
+                                title: 'No Email',
+                                description: 'No email address on file for this member',
+                                variant: 'destructive'
+                              });
+                            }
+                          }}
+                          className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs transition-colors ${
+                            replyChannel === 'email' 
+                              ? 'bg-blue-100 text-blue-700 border border-blue-300' 
+                              : 'bg-gray-50 text-blue-600 border border-gray-200 hover:bg-blue-50 hover:border-blue-300'
+                          }`}
+                          data-testid="channel-email"
+                          title={selectedTicket.member?.email ? `Send email: ${selectedTicket.member.email}` : 'No email on file'}
+                        >
+                          <Mail className="w-3 h-3" />
+                          Email
+                        </button>
+                      </div>
+                      
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1">
                           {/* Document attachment */}
