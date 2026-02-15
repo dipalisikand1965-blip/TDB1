@@ -281,6 +281,127 @@ const BreedFilterPills = ({ selectedBreed, onBreedChange, petBreed }) => {
 };
 
 // ============================================
+// SHAPE FILTER - iOS Pill Style
+// ============================================
+const ShapeFilter = ({ selectedShape, onShapeChange }) => {
+  return (
+    <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+      {SHAPE_OPTIONS.map((shape) => (
+        <button
+          key={shape.value}
+          onClick={() => {
+            haptic('light');
+            onShapeChange(shape.value);
+          }}
+          className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all ${
+            selectedShape === shape.value
+              ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md'
+              : 'bg-white text-gray-600 border border-gray-200 active:bg-gray-50'
+          }`}
+        >
+          <span>{shape.emoji}</span>
+          <span>{shape.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+};
+
+// ============================================
+// SMART DISCOVERY - Quick Filter Pills
+// ============================================
+const SmartDiscovery = ({ activeFilter, onFilterChange, onTabChange }) => {
+  const handleFilterClick = (filterId) => {
+    haptic('light');
+    // Some filters should switch tabs
+    if (filterId === 'breed-cakes') {
+      onTabChange('breed-cakes');
+    } else if (filterId === 'cat') {
+      onTabChange('cat');
+    } else {
+      // Toggle filter
+      onFilterChange(activeFilter === filterId ? null : filterId);
+    }
+  };
+  
+  return (
+    <div className="mb-6">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-bold text-gray-900 flex items-center gap-2">
+          <Zap className="w-5 h-5 text-amber-500" />
+          Quick Discovery
+        </h3>
+      </div>
+      <div className="grid grid-cols-4 gap-2">
+        {SMART_FILTERS.map((filter) => (
+          <button
+            key={filter.id}
+            onClick={() => handleFilterClick(filter.id)}
+            className={`p-2 rounded-xl text-center transition-all active:scale-[0.97] ${
+              activeFilter === filter.id
+                ? 'bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-lg'
+                : 'bg-white border border-gray-200 text-gray-700'
+            }`}
+            data-testid={`smart-filter-${filter.id}`}
+          >
+            <div className="text-xl mb-0.5">{filter.emoji}</div>
+            <div className="text-[10px] font-semibold leading-tight">{filter.label}</div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ============================================
+// TRUST STATS BANNER
+// ============================================
+const TrustStats = () => {
+  return (
+    <div className="flex justify-between items-center bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl p-4 mb-4">
+      <div className="text-center flex-1">
+        <div className="text-lg font-bold text-gray-900">50+</div>
+        <div className="text-[10px] text-gray-600">Cake Designs</div>
+      </div>
+      <div className="w-px h-8 bg-gray-200" />
+      <div className="text-center flex-1">
+        <div className="text-lg font-bold text-gray-900 flex items-center justify-center gap-0.5">
+          <Star className="w-4 h-4 text-amber-500 fill-amber-500" />4.9
+        </div>
+        <div className="text-[10px] text-gray-600">Avg Rating</div>
+      </div>
+      <div className="w-px h-8 bg-gray-200" />
+      <div className="text-center flex-1">
+        <div className="text-lg font-bold text-gray-900">2hr</div>
+        <div className="text-[10px] text-gray-600">Fastest Delivery</div>
+      </div>
+    </div>
+  );
+};
+
+// ============================================
+// CUSTOM CAKE CTA
+// ============================================
+const CustomCakeCTA = () => {
+  const navigate = useNavigate();
+  return (
+    <button
+      onClick={() => navigate('/custom-cake')}
+      className="w-full bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-2xl p-4 mb-4 flex items-center gap-4 active:scale-[0.99] transition-transform shadow-lg"
+    >
+      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl">
+        ✨
+      </div>
+      <div className="flex-1 text-left">
+        <h3 className="font-bold">Design Your Own Cake</h3>
+        <p className="text-sm text-white/80">Custom shapes, flavors & decorations</p>
+      </div>
+      <ArrowRight className="w-5 h-5" />
+    </button>
+  );
+};
+
+// ============================================
 // CITY FILTER - iOS Dropdown Style
 // ============================================
 const CityFilter = ({ selectedCity, onCityChange }) => {
