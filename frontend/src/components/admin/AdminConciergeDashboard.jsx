@@ -41,8 +41,9 @@ const useAdminWebSocket = ({ enabled, onNewMessage, onUserStatusChange, onTyping
     
     setConnectionStatus(ConnectionStatus.CONNECTING);
     
+    // Use current host for WebSocket URL since API_URL is relative
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsHost = API_URL.replace(/^https?:/, '').replace(/^\/\//, '');
+    const wsHost = window.location.host;
     const wsUrl = `${wsProtocol}//${wsHost}/api/concierge/realtime/ws/admin`;
     
     console.log('[ADMIN WS] Connecting to:', wsUrl);
