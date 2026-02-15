@@ -17,7 +17,7 @@ import { createPortal } from 'react-dom';
 import { 
   X, ChevronLeft, Volume2, VolumeX, Send, Mic, MicOff,
   Sparkles, PawPrint, Heart, HandHeart, Package,
-  Loader2, Check, Clock, Shield
+  Loader2, Check, Clock, Shield, MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
