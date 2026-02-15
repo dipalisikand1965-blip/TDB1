@@ -514,6 +514,11 @@ const MiraOSModal = ({
         // Extract quick replies from various possible locations in the response
         const quickReplies = extractQuickReplies(data);
         
+        // Update dynamic quick actions for bottom bar
+        if (quickReplies.length > 0) {
+          setDynamicQuickActions(quickReplies);
+        }
+        
         setMessages(prev => [...prev, {
           id: `assistant-${Date.now()}`,
           role: 'assistant',
