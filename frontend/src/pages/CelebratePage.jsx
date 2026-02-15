@@ -307,17 +307,34 @@ const CelebratePage = () => {
   const fetchFeaturedProducts = async (category = null) => {
     setLoading(true);
     try {
-      // Build API URL with category filter
-      let url = `${API_URL}/api/products?pillar=celebrate&limit=24`;
+      // Build API URL with category filter - load ALL products for the category
+      let url = `${API_URL}/api/products?pillar=celebrate&limit=100`;
       if (category && CATEGORY_API_MAP[category]) {
-        url += `&subcategory=${CATEGORY_API_MAP[category]}`;
+        url += `&category=${CATEGORY_API_MAP[category]}`;
       }
       
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
-        setFeaturedProducts(data.products || data || []);
-        console.log(`[CelebratePage] Loaded ${data.count || (data.products || data).length} products${category ? ` for ${category}` : ''}`);
+        let products = data.products || data || [];
+        
+        // Additional client-side filtering for more precision
+        if (category && CATEGORY_API_MAP[category]) {
+          const apiCategory = CATEGORY_API_MAP[category].toLowerCase();
+          products = products.filter(p => {
+            const productCategory = (p.category || '').toLowerCase();
+            const productTags = (p.tags || []).map(t => (t || '').toLowerCase());
+            const productName = (p.name || p.title || '').toLowerCase();
+            
+            // Match by category, tags, or name
+            return productCategory.includes(apiCategory) ||
+                   productTags.some(t => t.includes(apiCategory)) ||
+                   productName.includes(apiCategory.replace('-', ' '));
+          });
+        }
+        
+        setFeaturedProducts(products);
+        console.log(`[CelebratePage] Loaded ${products.length} products${category ? ` for ${category}` : ''}`);
       }
     } catch (error) {
       console.error('Error fetching products:', error);
