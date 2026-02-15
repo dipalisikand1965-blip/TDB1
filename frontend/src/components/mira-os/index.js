@@ -6,3 +6,4 @@
 
 export { default as MiraOSModal } from './MiraOSModal';
 export { default as MiraOSTrigger } from './MiraOSTrigger';
+export { default as ConciergeButton } from '../Mira/ConciergeButton';
