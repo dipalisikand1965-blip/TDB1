@@ -605,6 +605,20 @@ const Navbar = () => {
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
+  // ============================================
+  // MIRA OS DOCTRINE: ONE of Everything
+  // Hide Navbar search on pillar pages that have their own UnifiedHero search
+  // ============================================
+  const PILLAR_PAGES_WITH_HERO_SEARCH = [
+    '/celebrate', '/celebrate-new', '/dine', '/care', '/enjoy', 
+    '/travel', '/stay', '/fit', '/learn', '/advisory', 
+    '/emergency', '/paperwork', '/farewell', '/adopt'
+  ];
+  
+  const isPillarPage = PILLAR_PAGES_WITH_HERO_SEARCH.some(path => 
+    location.pathname === path || location.pathname.startsWith(path + '/')
+  );
+
   // Get dropdown position class
   const getDropdownPosition = (index) => {
     if (index <= 1) return 'left-0'; // First 2 items align left
