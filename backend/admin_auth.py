@@ -48,7 +48,7 @@ class AdminCreate(BaseModel):
     role: str = "admin"
 
 class AdminLogin(BaseModel):
-    email: EmailStr
+    email: str  # Accept any string for legacy username support
     password: str
 
 class PasswordResetRequest(BaseModel):
