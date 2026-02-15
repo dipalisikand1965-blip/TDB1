@@ -3,7 +3,7 @@ import ProductCard from '../components/ProductCard';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { SlidersHorizontal, Loader2, ChevronDown, Sparkles, PawPrint, Cake, Gift, Star, Heart, MapPin, Shield, Activity, Droplets, Brain, HeartPulse, X, Check } from 'lucide-react';
-import { useSearchParams, useLocation } from 'react-router-dom';
+import { useSearchParams, useLocation, Link } from 'react-router-dom';
 import { API_URL, getApiUrl } from '../utils/api';
 import MiraChatWidget from '../components/MiraChatWidget';
 import CelebrateConcierePicker from '../components/CelebrateConcierePicker';
@@ -13,6 +13,17 @@ import { toast } from 'sonner';
 import SoulScoreBanner from '../components/SoulScoreBanner';
 
 const PRODUCTS_PER_PAGE = 20;
+
+// Celebrate pillar subcategories for navigation bar
+const CELEBRATE_SUBCATEGORIES = [
+  { id: 'all', name: 'All Celebrate', path: '/celebrate', emoji: '✨' },
+  { id: 'cakes', name: 'Birthday Cakes', path: '/celebrate/cakes', emoji: '🎂' },
+  { id: 'breed-cakes', name: 'Breed Cakes', path: '/celebrate/breed-cakes', emoji: '❤️' },
+  { id: 'pupcakes', name: 'Pupcakes & Dognuts', path: '/celebrate/pupcakes', emoji: '✨' },
+  { id: 'treats', name: 'Treats', path: '/celebrate/treats', emoji: '🎁' },
+  { id: 'hampers', name: 'Gift Hampers', path: '/celebrate/hampers', emoji: '🛍️' },
+  { id: 'accessories', name: 'Party Accessories', path: '/celebrate/accessories', emoji: '🎉' },
+];
 
 // Hero images for different categories
 const CATEGORY_HERO_IMAGES = {
