@@ -800,8 +800,12 @@ const CelebrateNewPage = () => {
     
     const petBreed = (pet?.breed || '').toLowerCase();
     const petSize = pet?.size || pet?.weight_class || '';
-    const petAllergies = pet?.allergies || pet?.doggy_soul_answers?.allergies || [];
-    const petFavorites = pet?.doggy_soul_answers?.favorite_treats || [];
+    // Ensure allergies is always an array - it could be a string or undefined
+    const rawAllergies = pet?.allergies || pet?.doggy_soul_answers?.allergies;
+    const petAllergies = Array.isArray(rawAllergies) ? rawAllergies : (rawAllergies ? [rawAllergies] : []);
+    // Ensure favorites is always an array - it could be a string or undefined
+    const rawFavorites = pet?.doggy_soul_answers?.favorite_treats;
+    const petFavorites = Array.isArray(rawFavorites) ? rawFavorites : (rawFavorites ? [rawFavorites] : []);
     
     return [...products].sort((a, b) => {
       // ============================================
