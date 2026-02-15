@@ -474,8 +474,8 @@ const UnifiedHero = ({
         </div>
         
         {/* Search Bar */}
-        <div className="mt-6 max-w-2xl mx-auto lg:mx-0">
-          <div className="relative flex items-center bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="mt-6 max-w-2xl mx-auto lg:mx-0 px-2">
+          <div className="relative flex items-center bg-white rounded-2xl shadow-xl">
             <div className="flex-shrink-0 pl-4">
               <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -491,14 +491,14 @@ const UnifiedHero = ({
                 }
               }}
               placeholder={`What does ${shoppingForOther ? (otherBreedName || 'this pup') : petName} need?`}
-              className="flex-1 px-4 py-4 text-base bg-transparent focus:outline-none text-gray-900 placeholder-gray-400"
+              className="flex-1 min-w-0 px-3 py-3.5 text-base bg-transparent focus:outline-none text-gray-900 placeholder-gray-400"
               data-testid="hero-search-input"
             />
-            <div className="flex items-center gap-2 pr-2">
+            <div className="flex items-center gap-1.5 pr-2 flex-shrink-0">
               {voiceSupported && (
                 <button 
                   onClick={toggleVoice}
-                  className={`flex-shrink-0 w-10 h-10 rounded-xl text-white transition-all flex items-center justify-center ${
+                  className={`w-9 h-9 rounded-xl text-white transition-all flex items-center justify-center ${
                     isListening 
                       ? 'bg-red-500 animate-pulse' 
                       : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90'
@@ -506,17 +506,13 @@ const UnifiedHero = ({
                   data-testid="voice-search-btn"
                   aria-label={isListening ? 'Stop listening' : 'Start voice search'}
                 >
-                  {isListening ? (
-                    <Mic className="w-5 h-5 animate-pulse" />
-                  ) : (
-                    <Mic className="w-5 h-5" />
-                  )}
+                  <Mic className={`w-4 h-4 ${isListening ? 'animate-pulse' : ''}`} />
                 </button>
               )}
               {/* Send/Search Button - Always visible */}
               <button 
                 onClick={() => searchQuery.trim() && onSearchSubmit?.(searchQuery.trim())}
-                className={`flex-shrink-0 w-10 h-10 rounded-xl text-white transition-all flex items-center justify-center ${
+                className={`w-9 h-9 rounded-xl text-white transition-all flex items-center justify-center ${
                   searchQuery.trim()
                     ? 'bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 active:scale-95'
                     : 'bg-pink-400 hover:bg-pink-500'
@@ -524,7 +520,7 @@ const UnifiedHero = ({
                 data-testid="search-submit-btn"
                 aria-label="Search"
               >
-                <Send className="w-5 h-5" />
+                <Send className="w-4 h-4" />
               </button>
             </div>
           </div>
