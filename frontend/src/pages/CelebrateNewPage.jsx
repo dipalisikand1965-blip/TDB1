@@ -1123,6 +1123,7 @@ const CelebrateNewPage = () => {
         document.body
       )}
     </div>
+    </PillarPageLayout>
   );
 };
 
