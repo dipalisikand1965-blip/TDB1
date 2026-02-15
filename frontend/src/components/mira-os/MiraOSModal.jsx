@@ -372,6 +372,8 @@ const MiraOSModal = ({
       // Clear chat for fresh conversation when switching pets
       setMessages([]);
       setDynamicQuickActions([]);
+      // Generate new session ID for fresh conversation with this pet
+      setSessionId(`mira-os-${selectedPet.id}-${Date.now()}`);
       console.log('[MiraOS] Chat cleared for fresh conversation with', selectedPet.name);
     }
   }, [selectedPet?.id]);
