@@ -874,6 +874,70 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       setConciergeHoursLoading(false);
     }
   };
+  
+  // Add date override (holiday/special day)
+  const addDateOverride = async () => {
+    if (!newOverride.date) {
+      toast({ title: 'Error', description: 'Please select a date', variant: 'destructive' });
+      return;
+    }
+    
+    setOverrideLoading(true);
+    try {
+      const res = await fetch(`${getApiUrl()}/api/os/concierge/admin/date-overrides`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify(newOverride)
+      });
+      
+      if (res.ok) {
+        // Refresh the list
+        const hoursRes = await fetch(`${getApiUrl()}/api/os/concierge/admin/hours`, { headers: authHeaders });
+        if (hoursRes.ok) {
+          const data = await hoursRes.json();
+          if (data.date_overrides) setDateOverrides(data.date_overrides);
+          if (data.current_status) setConciergeStatus(data.current_status);
+        }
+        
+        setShowAddOverrideModal(false);
+        setNewOverride({ date: '', is_closed: true, start_hour: 9, end_hour: 21, reason: '' });
+        toast({ title: 'Success', description: 'Date override added successfully' });
+      } else {
+        const errData = await res.json();
+        toast({ title: 'Error', description: errData.detail || 'Failed to add date override', variant: 'destructive' });
+      }
+    } catch (err) {
+      console.error('Error adding date override:', err);
+      toast({ title: 'Error', description: 'Error adding date override', variant: 'destructive' });
+    } finally {
+      setOverrideLoading(false);
+    }
+  };
+  
+  // Delete date override
+  const deleteDateOverride = async (date) => {
+    if (!confirm(`Remove schedule override for ${date}?`)) return;
+    
+    try {
+      const res = await fetch(`${getApiUrl()}/api/os/concierge/admin/date-overrides/${date}`, {
+        method: 'DELETE',
+        headers: authHeaders
+      });
+      
+      if (res.ok) {
+        setDateOverrides(prev => prev.filter(o => o.date !== date));
+        // Refresh status
+        const hoursRes = await fetch(`${getApiUrl()}/api/os/concierge/admin/hours`, { headers: authHeaders });
+        if (hoursRes.ok) {
+          const data = await hoursRes.json();
+          if (data.current_status) setConciergeStatus(data.current_status);
+        }
+        toast({ title: 'Success', description: 'Date override removed' });
+      }
+    } catch (err) {
+      console.error('Error deleting date override:', err);
+    }
+  };
 
   // Fetch pet & member context when ticket selected
   const fetchContext = async (ticket) => {
