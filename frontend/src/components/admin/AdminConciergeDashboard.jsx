@@ -562,6 +562,12 @@ const AdminConciergeDashboard = () => {
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [typingUsers, setTypingUsers] = useState({}); // threadId -> userId
   
+  // Search state (Feature 13)
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  
   // Refs
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
