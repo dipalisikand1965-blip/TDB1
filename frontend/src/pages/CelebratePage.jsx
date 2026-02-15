@@ -365,11 +365,6 @@ const CelebratePage = () => {
     }
   };
   
-  // Handle subcategory change from tab navigation
-  const handleSubcategoryChange = (subcatId) => {
-    setSelectedSubcat(subcatId);
-  };
-  
   const handleBuildBox = (occasion) => {
     // Navigate to the dedicated occasion box page
     navigate(`/occasion-box/${occasion}`);
