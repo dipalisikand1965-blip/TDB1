@@ -664,55 +664,72 @@ const CelebrateNewPage = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      // Determine which API calls to make based on selected tab
       const currentTab = CATEGORY_TABS.find(t => t.id === selectedTab);
       let allProducts = [];
       
-      // Always fetch celebrate pillar products
-      const celebrateResponse = await fetch(`${API_URL}/api/products?pillar=celebrate&limit=500`);
-      if (celebrateResponse.ok) {
-        const data = await celebrateResponse.json();
-        allProducts = data.products || data || [];
-      }
+      // Celebration-relevant categories from Shopify
+      const celebrateCategories = [
+        'cakes', 'breed-cakes', 'mini-cakes', 'dognuts', 'hampers', 
+        'treats', 'desi-treats', 'frozen-treats', 'accessories', 
+        'cat-treats', 'fresh-meals', 'nut-butters'
+      ];
       
-      // For specific categories that might be in other pillars, fetch them too
-      const crossPillarCategories = ['desi-treats', 'cat-cakes', 'cat-party', 'cat-hampers', 'mini-cakes'];
-      if (currentTab?.dbCategory) {
+      if (selectedTab === 'all') {
+        // Fetch all celebration-relevant products
+        const promises = celebrateCategories.map(cat => 
+          fetch(`${API_URL}/api/products?category=${cat}&limit=100`).then(r => r.ok ? r.json() : { products: [] })
+        );
+        const results = await Promise.all(promises);
+        
+        // Merge all products, avoiding duplicates
+        const seenIds = new Set();
+        results.forEach(data => {
+          const products = data.products || data || [];
+          products.forEach(p => {
+            const pid = p._id || p.id;
+            if (!seenIds.has(pid)) {
+              seenIds.add(pid);
+              allProducts.push(p);
+            }
+          });
+        });
+      } else if (currentTab?.dbCategory) {
+        // Fetch specific category
         const targetCategories = Array.isArray(currentTab.dbCategory) 
           ? currentTab.dbCategory 
           : [currentTab.dbCategory];
         
-        // Check if any target categories need cross-pillar fetch
-        for (const cat of targetCategories) {
-          if (crossPillarCategories.includes(cat)) {
-            const catResponse = await fetch(`${API_URL}/api/products?category=${cat}&limit=100`);
-            if (catResponse.ok) {
-              const catData = await catResponse.json();
-              const catProducts = catData.products || catData || [];
-              // Merge without duplicates
-              catProducts.forEach(p => {
-                if (!allProducts.find(existing => (existing._id || existing.id) === (p._id || p.id))) {
-                  allProducts.push(p);
-                }
-              });
-            }
-          }
-        }
+        const promises = targetCategories.map(cat =>
+          fetch(`${API_URL}/api/products?category=${cat}&limit=200`).then(r => r.ok ? r.json() : { products: [] })
+        );
+        const results = await Promise.all(promises);
         
-        // Now filter by category
-        allProducts = allProducts.filter(p => {
-          const productCategory = (p.category || '').toLowerCase();
-          return targetCategories.some(target => {
-            const targetLower = target.toLowerCase();
-            return productCategory === targetLower || 
-                   productCategory.includes(targetLower) ||
-                   (p.tags || []).some(t => (t || '').toLowerCase().includes(targetLower));
+        const seenIds = new Set();
+        results.forEach(data => {
+          const products = data.products || data || [];
+          products.forEach(p => {
+            const pid = p._id || p.id;
+            if (!seenIds.has(pid)) {
+              seenIds.add(pid);
+              allProducts.push(p);
+            }
           });
         });
       }
       
+      // Sort: Shopify products first (have shopify_id), then seeded products
+      allProducts.sort((a, b) => {
+        const aShopify = a.shopify_id ? 1 : 0;
+        const bShopify = b.shopify_id ? 1 : 0;
+        if (bShopify !== aShopify) return bShopify - aShopify;
+        // Secondary sort by bestseller
+        if (a.is_bestseller && !b.is_bestseller) return -1;
+        if (!a.is_bestseller && b.is_bestseller) return 1;
+        return 0;
+      });
+      
       setProducts(allProducts);
-      console.log(`[CelebrateNew] Loaded ${allProducts.length} products for tab: ${selectedTab}`);
+      console.log(`[CelebrateNew] Loaded ${allProducts.length} products for tab: ${selectedTab} (${allProducts.filter(p => p.shopify_id).length} from Shopify)`);
     } catch (error) {
       console.error('Error fetching products:', error);
       setProducts([]);
