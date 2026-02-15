@@ -16,7 +16,6 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { API_URL } from '../utils/api';
 
 // Message status constants
 export const MessageStatus = {
