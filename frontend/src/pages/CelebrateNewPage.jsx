@@ -1038,6 +1038,7 @@ const CelebrateNewPage = () => {
               activeFilter={smartFilter} 
               onFilterChange={setSmartFilter}
               onTabChange={handleTabChange}
+              activePet={activePet}
             />
             <OccasionBoxGrid onSelectBox={openBoxBuilder} />
             <ConciergeSection onPlanParty={() => setShowPartyWizard(true)} />
