@@ -345,8 +345,9 @@ const ShapeFilter = ({ selectedShape, onShapeChange }) => {
 
 // ============================================
 // SMART DISCOVERY - Quick Filter Pills
+// Now with Mira's Silent Intelligence - knows pet's breed
 // ============================================
-const SmartDiscovery = ({ activeFilter, onFilterChange, onTabChange }) => {
+const SmartDiscovery = ({ activeFilter, onFilterChange, onTabChange, activePet }) => {
   const handleFilterClick = (filterId) => {
     haptic('light');
     // Some filters should switch tabs
@@ -360,12 +361,25 @@ const SmartDiscovery = ({ activeFilter, onFilterChange, onTabChange }) => {
     }
   };
   
+  // Mira knows the pet's breed - personalize the filter label
+  const getFilterLabel = (filter) => {
+    if (filter.id === 'breed-cakes' && activePet?.breed) {
+      // Extract first word of breed (e.g., "Shih Tzu" -> "Shih Tzu")
+      const breedName = activePet.breed.split(' ').slice(0, 2).join(' ');
+      return breedName.length > 10 ? breedName.substring(0, 8) + '...' : breedName;
+    }
+    return filter.label;
+  };
+  
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-bold text-gray-900 flex items-center gap-2">
           <Zap className="w-5 h-5 text-amber-500" />
           Quick Discovery
+          {activePet && (
+            <span className="text-xs font-normal text-purple-500">· for {activePet.name}</span>
+          )}
         </h3>
       </div>
       <div className="grid grid-cols-4 gap-2">
@@ -381,7 +395,7 @@ const SmartDiscovery = ({ activeFilter, onFilterChange, onTabChange }) => {
             data-testid={`smart-filter-${filter.id}`}
           >
             <div className="text-xl mb-0.5">{filter.emoji}</div>
-            <div className="text-[10px] font-semibold leading-tight">{filter.label}</div>
+            <div className="text-[10px] font-semibold leading-tight">{getFilterLabel(filter)}</div>
           </button>
         ))}
       </div>
