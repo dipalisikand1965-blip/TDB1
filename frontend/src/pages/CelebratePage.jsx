@@ -74,6 +74,28 @@ const CelebratePage = () => {
   const [viewMode, setViewMode] = useState('products'); // 'products' | 'services'
   const [selectedSubcat, setSelectedSubcat] = useState(null);
   
+  // Read category from URL params on mount
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category');
+    if (categoryFromUrl && CATEGORY_API_MAP[categoryFromUrl]) {
+      setSelectedSubcat(categoryFromUrl);
+    }
+  }, []);
+  
+  // Update URL when category changes (for sharing/bookmarking)
+  const handleSubcategoryChange = (subcatId) => {
+    setSelectedSubcat(subcatId);
+    if (subcatId) {
+      setSearchParams({ category: subcatId });
+    } else {
+      setSearchParams({});
+    }
+    // Scroll to products section
+    setTimeout(() => {
+      document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+  
   // Complete category mapping for API filter - covers ALL celebrate subcategories
   const CATEGORY_API_MAP = {
     'cakes': 'cakes',
