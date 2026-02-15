@@ -74,14 +74,38 @@ const CelebratePage = () => {
   const [viewMode, setViewMode] = useState('products'); // 'products' | 'services'
   const [selectedSubcat, setSelectedSubcat] = useState(null);
   
-  // Category mapping for API filter
+  // Complete category mapping for API filter - covers ALL celebrate subcategories
   const CATEGORY_API_MAP = {
-    'cakes': 'birthday-cakes',
+    'cakes': 'cakes',
+    'birthday-cakes': 'cakes',
     'breed-cakes': 'breed-cakes',
-    'pupcakes': 'pupcakes',
+    'pupcakes': 'dognuts',
+    'dognuts': 'dognuts',
     'treats': 'treats',
-    'hampers': 'gift-hampers',
-    'accessories': 'party-accessories'
+    'desi-treats': 'desi-treats',
+    'hampers': 'hampers',
+    'gift-hampers': 'hampers',
+    'accessories': 'accessories',
+    'party-accessories': 'accessories',
+    'cat-treats': 'cat-treats',
+    'valentine': 'valentine',
+    'frozen-treats': 'frozen-treats',
+    'mini-cakes': 'mini-cakes'
+  };
+  
+  // Category display names for the section title
+  const CATEGORY_DISPLAY_NAMES = {
+    'cakes': 'Birthday Cakes',
+    'breed-cakes': 'Breed Cakes',
+    'pupcakes': 'Pupcakes & Dognuts',
+    'treats': 'Treats',
+    'hampers': 'Gift Hampers',
+    'accessories': 'Party Accessories',
+    'desi-treats': 'Desi Treats',
+    'cat-treats': 'Cat Treats',
+    'valentine': 'Valentine Collection',
+    'frozen-treats': 'Frozen Treats',
+    'mini-cakes': 'Mini Cakes'
   };
 
   // Rotating hero images for visual appeal
