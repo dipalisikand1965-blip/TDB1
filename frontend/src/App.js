@@ -68,6 +68,14 @@ function ConditionalMobileNav() {
 // Redirect component for deprecated pet-soul-journey route
 function PetSoulJourneyRedirect() {
   const { petId } = useParams();
+  return <Navigate to={`/pets/${petId}/soul`} replace />;
+}
+
+// Redirect component for celebrate sub-categories to main celebrate page
+function CelebrateRedirect() {
+  const { category } = useParams();
+  return <Navigate to={`/celebrate?category=${category}`} replace />;
+}
   return <Navigate to={`/pet/${petId}`} replace />;
 }
 
