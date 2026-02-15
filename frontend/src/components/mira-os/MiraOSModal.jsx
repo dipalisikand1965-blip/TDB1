@@ -87,27 +87,46 @@ const extractQuickReplies = (data) => {
     
     // Detect question patterns and generate contextual quick replies
     const questionPatterns = [
-      // Food/Diet questions
+      // Food - regular vs treats
+      { pattern: /regular.*meals|everyday meals|occasional treats|treats.*snacks/i, 
+        replies: ['Regular everyday meals', 'Occasional treats/snacks', 'Both'] },
+      // Food/Diet questions - kibble vs homemade
       { pattern: /stay on kibble|better brand|move towards.*home.?cooked|add.*meals/i, 
         replies: ['Stay on kibble, better brand', 'Add home-cooked meals', 'Mix of both'] },
       // Allergy questions  
-      { pattern: /allergies|sensitive ingredients|allergic to/i,
+      { pattern: /allergies|sensitive ingredients|allergic to|any known allergies/i,
         replies: ['No allergies', 'Has food allergies', 'Not sure, need to check'] },
       // Birthday/Celebration
-      { pattern: /birthday|celebration|special occasion/i,
+      { pattern: /birthday.*coming|celebration|special occasion|gotcha day/i,
         replies: ['Yes, birthday coming up!', 'Just a treat day', 'Planning a party'] },
-      // Generic clarifying questions
-      { pattern: /do you want to|would you like|prefer|which option/i,
-        replies: [] }, // Let the context determine
+      // Weight/Health specific
+      { pattern: /weight|skin|stool|digestive|health/i,
+        replies: ['Weight management', 'Skin/coat health', 'Digestive health', 'General wellness'] },
       // Yes/No questions
-      { pattern: /\?.*(?:yes|no|correct)\?|is that right|does that sound|shall I/i,
+      { pattern: /is that right|does that sound|shall I|would you like me to/i,
         replies: ['Yes, please!', 'No, let me explain', 'Tell me more'] },
+      // Generic "or" choice questions
+      { pattern: /,\s*or\s+(?:are you|is it|do you|would you)/i,
+        replies: [] }, // Will be caught by extractOrChoices below
     ];
     
+    // First try explicit patterns
     for (const { pattern, replies } of questionPatterns) {
       if (pattern.test(responseText) && replies.length > 0) {
         chips = replies;
         break;
+      }
+    }
+    
+    // If still no chips, try to extract choices from "X or Y" pattern in the question
+    if (chips.length === 0) {
+      const orMatch = responseText.match(/(?:Is this about|Are you asking about|Do you want|Would you prefer)\s+([^,?]+)(?:,\s*or\s+(?:are you asking about\s+)?([^?]+))\?/i);
+      if (orMatch) {
+        const choice1 = orMatch[1]?.trim();
+        const choice2 = orMatch[2]?.trim();
+        if (choice1 && choice2) {
+          chips = [choice1, choice2, 'Both actually'];
+        }
       }
     }
   }
