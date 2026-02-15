@@ -495,20 +495,50 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, users, loadingUsers }
 };
 
 /**
- * Format timestamp
+ * Format timestamp with relative time (Feature 14)
  */
 const formatTime = (ts) => {
   if (!ts) return '';
-  const date = new Date(ts);
-  const now = new Date();
-  const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-  
-  if (diffDays === 0) {
-    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  try {
+    const date = new Date(ts);
+    const now = new Date();
+    const diffMinutes = Math.floor((now - date) / (1000 * 60));
+    
+    // Just now (< 1 minute)
+    if (diffMinutes < 1) {
+      return 'Just now';
+    }
+    
+    // Within the last hour
+    if (diffMinutes < 60) {
+      return `${diffMinutes}m ago`;
+    }
+    
+    // Today
+    if (isToday(date)) {
+      const diffHours = Math.floor(diffMinutes / 60);
+      if (diffHours < 6) {
+        return `${diffHours}h ago`;
+      }
+      return format(date, 'h:mm a');
+    }
+    
+    // Yesterday
+    if (isYesterday(date)) {
+      return 'Yesterday';
+    }
+    
+    // Within last week
+    const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+    if (diffDays < 7) {
+      return format(date, 'EEE'); // Short day name
+    }
+    
+    // Older
+    return format(date, 'MMM d');
+  } catch {
+    return '';
   }
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return date.toLocaleDateString('en-US', { weekday: 'short' });
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
 /**
