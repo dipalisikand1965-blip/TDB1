@@ -1260,32 +1260,68 @@ const CelebrateNewPage = () => {
   const getFilteredProducts = useCallback(() => {
     let filtered = [...products];
     
-    // Search filter
+    // Search filter (from Mira OS or regular search)
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(p => 
         (p.name || p.title || '').toLowerCase().includes(query) ||
-        (p.tags || []).some(t => (t || '').toLowerCase().includes(query))
+        (p.tags || []).some(t => (t || '').toLowerCase().includes(query)) ||
+        (p.description || '').toLowerCase().includes(query)
       );
     }
     
-    // Breed filter (for breed-cakes)
-    if (selectedTab === 'breed-cakes' && selectedBreed !== 'All Breeds') {
-      const breed = selectedBreed.toLowerCase();
+    // Mira OS: Shape filter (applies globally when Mira search is active)
+    if (miraSearchResult?.detectedShape || (selectedTab === 'cakes' && selectedShape !== 'all')) {
+      const shape = (miraSearchResult?.detectedShape || selectedShape).toLowerCase();
+      filtered = filtered.filter(p => 
+        (p.name || p.title || '').toLowerCase().includes(shape) ||
+        (p.tags || []).some(t => (t || '').toLowerCase().includes(shape)) ||
+        (p.shape || '').toLowerCase() === shape
+      );
+    }
+    
+    // Mira OS: Breed filter (applies globally when Mira search detected a breed)
+    if (miraSearchResult?.petBreed || (selectedTab === 'breed-cakes' && selectedBreed !== 'All Breeds')) {
+      const breed = (miraSearchResult?.petBreed || selectedBreed).toLowerCase();
       filtered = filtered.filter(p => 
         (p.name || p.title || '').toLowerCase().includes(breed) ||
         (p.tags || []).some(t => (t || '').toLowerCase().includes(breed))
       );
     }
     
-    // Shape filter (for cakes)
-    if (selectedTab === 'cakes' && selectedShape !== 'all') {
-      const shape = selectedShape.toLowerCase();
+    // Mira OS: Occasion filter
+    if (miraSearchResult?.detectedOccasion) {
+      const occasion = miraSearchResult.detectedOccasion.toLowerCase();
+      // For birthday, include cakes and treats
+      if (occasion === 'birthday') {
+        filtered = filtered.filter(p => 
+          (p.category || '').toLowerCase().includes('cake') ||
+          (p.name || p.title || '').toLowerCase().includes('birthday') ||
+          (p.tags || []).some(t => (t || '').toLowerCase().includes('birthday'))
+        );
+      } else {
+        filtered = filtered.filter(p => 
+          (p.name || p.title || '').toLowerCase().includes(occasion) ||
+          (p.tags || []).some(t => (t || '').toLowerCase().includes(occasion))
+        );
+      }
+    }
+    
+    // Mira OS: Flavor filter
+    if (miraSearchResult?.detectedFlavor) {
+      const flavor = miraSearchResult.detectedFlavor.toLowerCase();
       filtered = filtered.filter(p => 
-        (p.name || p.title || '').toLowerCase().includes(shape) ||
-        (p.tags || []).some(t => (t || '').toLowerCase().includes(shape)) ||
-        (p.shape || '').toLowerCase() === shape
+        (p.name || p.title || '').toLowerCase().includes(flavor) ||
+        (p.tags || []).some(t => (t || '').toLowerCase().includes(flavor))
       );
+    }
+    
+    // Mira OS: Dietary filter
+    if (miraSearchResult?.detectedDietary?.length > 0) {
+      filtered = filtered.filter(p => {
+        const productText = `${p.name || ''} ${(p.tags || []).join(' ')}`.toLowerCase();
+        return miraSearchResult.detectedDietary.some(d => productText.includes(d.toLowerCase()));
+      });
     }
     
     // Smart filter
@@ -1313,17 +1349,18 @@ const CelebrateNewPage = () => {
       }
     }
     
-    // Price filter
-    if (priceRange === 'under500') {
+    // Price filter (from Mira OS or regular filter)
+    const effectivePriceRange = miraSearchResult?.detectedPriceRange || priceRange;
+    if (effectivePriceRange === 'budget' || effectivePriceRange === 'under500') {
       filtered = filtered.filter(p => (p.price || 0) < 500);
-    } else if (priceRange === '500-1000') {
+    } else if (effectivePriceRange === 'mid' || effectivePriceRange === '500-1000') {
       filtered = filtered.filter(p => (p.price || 0) >= 500 && (p.price || 0) <= 1000);
-    } else if (priceRange === 'over1000') {
-      filtered = filtered.filter(p => (p.price || 0) > 1000);
+    } else if (effectivePriceRange === 'premium' || effectivePriceRange === 'over1000') {
+      filtered = filtered.filter(p => (p.price || 0) >= 1000);
     }
     
     return filtered;
-  }, [products, searchQuery, selectedBreed, selectedShape, smartFilter, priceRange, selectedTab]);
+  }, [products, searchQuery, selectedBreed, selectedShape, smartFilter, priceRange, selectedTab, miraSearchResult]);
   
   const filteredProducts = getFilteredProducts();
   const currentTab = CATEGORY_TABS.find(t => t.id === selectedTab);
