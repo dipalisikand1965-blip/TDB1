@@ -18,7 +18,7 @@ import {
   MessageCircle, Users, Send, Search, Plus, X, Check, CheckCheck,
   Clock, Wifi, WifiOff, ChevronRight, PawPrint, User, RefreshCw
 } from 'lucide-react';
-import { API_URL } from '../../utils/api';
+// Use relative URLs - no import needed
 
 // Connection status
 const ConnectionStatus = {
