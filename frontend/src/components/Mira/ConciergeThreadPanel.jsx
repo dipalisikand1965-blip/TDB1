@@ -380,6 +380,32 @@ const ConciergeThreadPanel = ({
     }
   }, [isOpen, threadId, initialThread, fetchThread]);
   
+  // Poll for new messages every 5 seconds when panel is open
+  useEffect(() => {
+    if (!isOpen || !threadId || !userId) return;
+    
+    const pollInterval = setInterval(async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/os/concierge/thread/${threadId}?user_id=${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          const newMessages = data.messages || [];
+          
+          // Only update if there are new messages
+          if (newMessages.length > messages.length) {
+            console.log('[ConciergeThread] New messages received:', newMessages.length - messages.length);
+            setMessages(newMessages);
+            setThread(data.thread);
+          }
+        }
+      } catch (err) {
+        console.error('[ConciergeThread] Poll error:', err);
+      }
+    }, 5000); // Poll every 5 seconds
+    
+    return () => clearInterval(pollInterval);
+  }, [isOpen, threadId, userId, messages.length]);
+  
   // Scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
