@@ -1,155 +1,142 @@
-# MIRA OS - ROADMAP
-
-**Last Updated:** February 8, 2026
+# ROADMAP - The Doggy Company / Mira OS
+## Prioritized Feature Backlog
+### Last Updated: February 15, 2026
 
 ---
 
 ## ✅ COMPLETED
 
-### P0 Items - All Done!
-| # | Task | Status | Notes |
-|---|------|--------|-------|
-| 1 | Soul Score Consistency | ✅ Done | Shows "Help Mira know [Pet]" for low scores |
-| 2 | YouTube Training Videos | ✅ Done | In chat + Learn tab with categories |
-| 3 | Amadeus Pet-Friendly Travel | ✅ Done | Hotels in chat + Stay page |
-| 4 | Viator Attractions | ✅ Done | Experiences with Book buttons |
-| 5 | CSS Build Error Fix | ✅ Done | Disabled CSS minification in craco.config.js |
-| 6 | Unified Service Desk Flow | ✅ Done | Member notifications added to ticket creation |
+### Feb 15, 2026
+- [x] Fix `/celebrate-new` array error
+- [x] Unify 8 Golden Pillars scoring system
+- [x] Create `/api/pet-soul/profile/{pet_id}/8-pillars` endpoint
+- [x] Create comprehensive handover documentation
 
-### Pillar Page Enhancements - Done!
-| Page | Feature | Status |
-|------|---------|--------|
-| Stay | Pet-Friendly Hotels (Amadeus) | ✅ Done |
-| Stay | Pet-Friendly Experiences (Viator) | ✅ Done |
-| Dine | Pet Cafes (Foursquare fallback) | ✅ Done |
-| Dine | Dog Parks (Foursquare fallback) | ✅ Done |
+### Feb 14, 2026
+- [x] Concierge® rebrand
+- [x] Backend-driven intelligent quick replies
+- [x] Inline conversational UI
+
+### Feb 13, 2026
+- [x] Mira OS Modal (BETA)
+- [x] Multi-pet switching in modal
 
 ---
 
-## 🔴 P0 - Critical (Do Now)
+## 🔴 P0 - Critical (Do This Week)
 
-### 1. Unified Service Desk Flow ✅ IMPLEMENTED
-- **Description**: Full ticket workflow implementation
-- **Flow**: User Request → Service Desk Ticket → Admin Notification → Member Notification
-- **Status**: ✅ COMPLETE
-- **Changes Made**:
-  - Added member notification to `create_mira_ticket()` in `/app/backend/mira_routes.py`
-  - Verified `/api/service-requests` endpoint includes member notifications
-  - Tested end-to-end flow successfully
+### 1. ElevenLabs Voice Testing
+**Status:** Code exists, UNTESTED
+**Files:** `MiraOSModal.jsx`
+**Task:** 
+- Test voice playback in Mira OS
+- Fix any audio issues
+- Verify voice works on mobile
 
-### 2. Foursquare API Key
-- **Issue**: Current key returns 401 Unauthorized
-- **Impact**: Dine page uses curated fallback data instead of live API
-- **Action**: User needs to regenerate key from Foursquare dashboard
-- **Status**: BLOCKED (waiting on user)
+### 2. Quick Questions in Concierge®
+**Status:** Not started
+**Task:**
+- Mira should proactively ask Quick Questions during chat
+- When pillar gaps detected, weave in relevant questions
+- Save answers from chat to pet soul
 
----
-
-## 🟠 P1 - High Priority
-
-### 3. Interactive Google Maps
-- **Description**: Replace static "Get Directions" links with embedded maps
-- **Pages**: Stay, Dine, Care pages
-- **Benefit**: Better UX, users can preview location without leaving app
-
-### 4. Loading Skeleton Animations ⭐ NEW
-- **Description**: Add skeleton loading states while API data loads
-- **Pages**: Stay page hotels, Dine page cafes/parks
-- **Benefit**: Improved perceived performance, polished feel
-
-### 5. Expand Location Data
-- Add more cities: Ahmedabad, Lucknow, expanded Jaipur
-- Seed more vet clinics and restaurants
-- Improve Google Places search accuracy
-
-### 6. Voice Commands Enhancement
-- "Navigate to nearest vet" via voice
-- Voice-activated feature showcase
+### 3. /mira-demo 8-Pillar Visual
+**Status:** Not started
+**Task:**
+- Update MiraDemoPage to show 8-pillar breakdown
+- Use new `/8-pillars` endpoint
+- Show radar chart of pillar completion
 
 ---
 
-## 🟡 P2 - Medium Priority
+## 🟡 P1 - Important (Next 2 Weeks)
 
-### 7. Code Refactoring
-- Break down `MiraDemoPage.jsx` (4,800+ lines) into components:
-  - `ChatHeader.jsx`
-  - `FeatureShowcase.jsx`
-  - `NearbyPlacesCard.jsx`
-  - `LearnTabModal.jsx`
-- Break down `mira_routes.py` (12,000+ lines) into blueprints:
-  - `youtube_routes.py`
-  - `amadeus_routes.py`
-  - `foursquare_routes.py`
+### 4. Concierge Indicator States
+**Task:**
+- Connect 🤲 icon in navbar to unified flow
+- States: idle, active, pulsing
+- Show when concierge action needed
 
-### 8. Breed Detector
-- Add to Learn tab
-- Photo-based breed identification
-- Integration with pet profile
+### 5. Proactive Mira Intelligence
+**Task:**
+- Mira detects pillar gaps automatically
+- Suggests completing low-score pillars
+- "I notice we haven't talked about X..."
 
-### 9. Advanced Personalization
-- Filter Learn content by pet age + breed
-- Personalized training recommendations
-- Stage-appropriate tips (puppy vs adult vs senior)
+### 6. Soul Score Display Everywhere
+**Task:**
+- Show tier badge on pet cards
+- Progress bar to next tier
+- Pillar breakdown on hover
 
 ---
 
-## 🔵 P3 - Future / Backlog
+## 🟢 P2 - Nice to Have (This Month)
 
-### 10. E026: Photo Analysis
-- Breed identification from photos
-- Skipped per user request (no medical diagnosis)
+### 7. Gate Mira OS for Paid Members
+**Task:**
+- Check membership status before showing OS
+- Show upgrade prompt for free users
+- Premium experience differentiation
 
-### 11. E030: Real-time Vet Consultation
-- Video call with vet
-- Requires significant infrastructure
-
-### 12. E031: Gamified Pet Profile
-- Achievements and badges
-- Pet journey milestones
-
-### 13. E035: Proactive Health Alerts
-- Vaccination reminders
-- Health checkup scheduling
+### 8. Original FAB Fixes
+**Task:**
+- Fix multi-pet switching in old FAB
+- Fix voice in old FAB
+- (Lower priority since Mira OS is replacing it)
 
 ---
 
-## Integration Status
+## 🔵 P3 - Future (Backlog)
 
-| Service | Status | Chat | Stay | Dine | Learn |
-|---------|--------|------|------|------|-------|
-| Google Places | ✅ Working | ✅ | - | - | - |
-| OpenWeather | ✅ Working | ✅ | - | - | - |
-| YouTube | ✅ Working | ✅ | - | - | ✅ |
-| Amadeus | ✅ Working | ✅ | ✅ | - | - |
-| Viator | ✅ Working | ✅ | ✅ | - | - |
-| Foursquare | ⚠️ Fallback | - | - | ✅ | - |
-| ElevenLabs | ✅ Working | ✅ | - | - | - |
+### 9. Phase Out Old FAB
+- Remove MiraChatWidget from codebase
+- Make MiraOSModal the only Mira experience
+- Update all pages to use new modal
 
----
+### 10. Replace /celebrate with /celebrate-new
+- Make /celebrate-new the canonical URL
+- Redirect old URL
+- Update all internal links
 
-## Data Seeding Status
+### 11. Backend Refactoring
+- Split server.py into modular routers
+- Separate concerns: auth, pets, products, mira
+- Improve maintainability
 
-| Collection | Count | Status |
-|------------|-------|--------|
-| Vet Clinics | 32 | ✅ Seeded |
-| Restaurants | 75+ | ✅ Seeded |
-| Pet Stays | 31+ | ✅ Seeded |
-| Products | 4,000+ | ✅ Tagged |
-| Services | 2,200+ | ✅ Tagged |
+### 12. WebSocket Notifications
+- Real-time updates for orders
+- Live Mira typing indicator
+- Push notifications
 
 ---
 
-## Test Credentials
+## 📊 Success Metrics
 
-- **Email**: `dipali@clubconcierge.in`
-- **Password**: `test123`
+### Mira Intelligence Score Target
+- Current (Mojo): 89% Pack Leader
+- Target: 95% Soul Master for engaged users
+
+### Pillar Completion Targets
+| Pillar | Current | Target |
+|--------|---------|--------|
+| Identity | 100% | 100% |
+| Family | 100% | 100% |
+| Rhythm | 100% | 100% |
+| Home | 100% | 80%+ |
+| Travel | 100% | 60%+ |
+| Taste | 100% | 90%+ |
+| Training | 100% | 70%+ |
+| Health | 82% | 90%+ |
 
 ---
 
-## Preview URL
+## 🚫 NOT DOING
 
-https://lola-knows-best.preview.emergentagent.com
+1. **Redesigning 14 pillar pages** - Current design is acceptable
+2. **New onboarding flow** - Current flow works
+3. **Mobile app** - Web-first approach continues
 
 ---
 
-*Last updated: February 8, 2026*
+*Update this roadmap as priorities change.*
