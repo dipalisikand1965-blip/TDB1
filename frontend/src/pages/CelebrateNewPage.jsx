@@ -227,7 +227,7 @@ const BreedFilterPills = ({ selectedBreed, onBreedChange, petBreed }) => {
           <button
             key={breed}
             onClick={() => {
-              triggerHaptic('light');
+              haptic('light');
               onBreedChange(breed);
             }}
             className={`flex-shrink-0 px-3 py-2 rounded-full text-xs font-medium transition-all ${
