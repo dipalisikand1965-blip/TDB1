@@ -850,13 +850,13 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       if (res.ok) {
         const data = await res.json();
         if (data.current_status) setConciergeStatus(data.current_status);
-        toast.success('Concierge hours updated successfully');
+        toast({ title: 'Success', description: 'Concierge hours updated successfully' });
       } else {
-        toast.error('Failed to update concierge hours');
+        toast({ title: 'Error', description: 'Failed to update concierge hours', variant: 'destructive' });
       }
     } catch (err) {
       console.error('Error saving concierge hours:', err);
-      toast.error('Error saving settings');
+      toast({ title: 'Error', description: 'Error saving settings', variant: 'destructive' });
     } finally {
       setConciergeHoursLoading(false);
     }
