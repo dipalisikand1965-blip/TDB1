@@ -360,6 +360,19 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notificationPermission, setNotificationPermission] = useState('default');
   
+  // Concierge Hours Settings
+  const [conciergeHours, setConciergeHours] = useState({
+    start: 9,
+    end: 21,
+    timezone_offset: 5.5,
+    timezone_name: 'IST',
+    is_24x7: false,
+    weekend_hours: null,
+    offline_message: 'Leave a message and we\'ll respond when we\'re back'
+  });
+  const [conciergeHoursLoading, setConciergeHoursLoading] = useState(false);
+  const [conciergeStatus, setConciergeStatus] = useState({ is_live: false, status_text: 'Loading...' });
+  
   // Agent Collision Detection
   const [activeAgents, setActiveAgents] = useState({}); // { ticketId: [agentNames] }
   const [viewingTicketSince, setViewingTicketSince] = useState(null);
