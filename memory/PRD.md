@@ -74,6 +74,20 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
   - Fixed senderLabel logic in DoggyServiceDesk.jsx (line ~4470)
   - Priority chain: pet_info.name → petProfile.name → pet_name → metadata.pet_name → pet_names[0] → subject parse → member name → "(Member)"
   - Now shows 🐾 Lola instead of (Member)
+- [x] **CONCIERGE HOURS ADMIN CONFIGURATION:**
+  - New "🕐 Concierge Hours" tab in Service Desk Settings modal
+  - Features:
+    - Live status banner (green/amber indicator)
+    - 24/7 Always Online toggle
+    - Start/End time dropdowns (00:00-23:00)
+    - Timezone selector (IST, UTC, CET, SGT, EST, PST)
+    - Quick presets: Business (9-6), Extended (9-9), Long (6-10)
+    - Customizable offline message
+  - Backend endpoints:
+    - `GET /api/os/concierge/admin/hours` - Get current config
+    - `PUT /api/os/concierge/admin/hours` - Save new config
+  - Settings stored in MongoDB `admin_settings` collection
+  - Configuration cached for 5 minutes to reduce DB calls
 
 ### February 15, 2026 (Session 4) - GOLDEN STANDARD PHASE 2 (4 NEW FEATURES)
 - [x] **FEATURE 11 - PUSH NOTIFICATIONS:**
