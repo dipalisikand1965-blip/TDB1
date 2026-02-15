@@ -789,6 +789,18 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         console.debug('Could not fetch custom settings:', err);
       }
       
+      // Fetch concierge hours settings
+      try {
+        const hoursRes = await fetch(`${getApiUrl()}/api/os/concierge/admin/hours`, { headers: authHeaders });
+        if (hoursRes.ok) {
+          const data = await hoursRes.json();
+          if (data.hours) setConciergeHours(data.hours);
+          if (data.current_status) setConciergeStatus(data.current_status);
+        }
+      } catch (err) {
+        console.debug('Could not fetch concierge hours:', err);
+      }
+      
       // Fetch sidebar data (Pet Parents, Pets, Orders, Analytics)
       try {
         // Fetch pet parents/members from admin directory endpoint
@@ -824,6 +836,31 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     };
     loadSettings();
   }, [authHeaders]);
+  
+  // Save concierge hours
+  const saveConciergeHours = async () => {
+    setConciergeHoursLoading(true);
+    try {
+      const res = await fetch(`${getApiUrl()}/api/os/concierge/admin/hours`, {
+        method: 'PUT',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify(conciergeHours)
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        if (data.current_status) setConciergeStatus(data.current_status);
+        toast.success('Concierge hours updated successfully');
+      } else {
+        toast.error('Failed to update concierge hours');
+      }
+    } catch (err) {
+      console.error('Error saving concierge hours:', err);
+      toast.error('Error saving settings');
+    } finally {
+      setConciergeHoursLoading(false);
+    }
+  };
 
   // Fetch pet & member context when ticket selected
   const fetchContext = async (ticket) => {
