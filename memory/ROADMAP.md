@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://mira-concierge-7.preview.emergentagent.com
+https://lola-knows-best.preview.emergentagent.com
 
 ---
 

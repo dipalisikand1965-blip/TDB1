@@ -1276,7 +1276,7 @@ Per user's architecture vision:
 
 ## Preview URL
 
-**Working:** https://mira-concierge-7.preview.emergentagent.com/mira-demo
+**Working:** https://lola-knows-best.preview.emergentagent.com/mira-demo
 
 ---
 
