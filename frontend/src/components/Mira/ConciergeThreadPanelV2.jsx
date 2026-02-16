@@ -522,6 +522,23 @@ const ConciergeThreadPanelV2 = ({
     }
   }, [isOpen, threadId, initialThread, initialMessages.length, fetchThread]);
   
+  // Fetch Concierge Hours status when panel opens
+  useEffect(() => {
+    if (isOpen) {
+      fetch('/api/os/concierge/status')
+        .then(res => res.json())
+        .then(data => {
+          if (data.success !== false) {
+            setConciergeStatus({
+              is_live: data.is_live,
+              status_text: data.status_text || (data.is_live ? 'Live now' : 'Offline hours')
+            });
+          }
+        })
+        .catch(err => console.error('[ConciergeThread] Status fetch error:', err));
+    }
+  }, [isOpen]);
+  
   // Scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
