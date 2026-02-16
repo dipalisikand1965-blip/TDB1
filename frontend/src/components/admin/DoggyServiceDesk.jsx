@@ -1019,7 +1019,6 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           if (data.ticket?.messages?.length > 0) {
             generateConversationSummary(data.ticket);
           }
-          }
           // Fetch Pet Soul prompts if pet is linked
           if (data.ticket?.pet_info?.id || data.ticket?.pet_id) {
             fetchPetSoulPrompts(data.ticket.pet_info?.id || data.ticket.pet_id);
