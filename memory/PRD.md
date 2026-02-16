@@ -91,6 +91,40 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
 
 ### February 15, 2026 (Session 7) - DATE-SPECIFIC SCHEDULE OVERRIDES (HOLIDAYS)
 
+### February 16, 2026 (Session 9) - CONCIERGE BUTTON ON ALL PILLAR PAGES
+- [x] **CONCIERGE BUTTON DEPLOYED TO ALL 13 PILLAR PAGES:**
+  - Added `ConciergeButton` and `MiraOSTrigger` components to all pillar pages
+  - Pages updated:
+    - DinePage.jsx (pillar="dine")
+    - StayPage.jsx (pillar="stay")
+    - TravelPage.jsx (pillar="travel")
+    - CarePage.jsx (pillar="care")
+    - EnjoyPage.jsx (pillar="enjoy")
+    - FitPage.jsx (pillar="fit")
+    - LearnPage.jsx (pillar="learn")
+    - AdoptPage.jsx (pillar="adopt")
+    - FarewellPage.jsx (pillar="farewell")
+    - EmergencyPage.jsx (pillar="emergency")
+    - PaperworkPage.jsx (pillar="paperwork")
+    - ShopPage.jsx (pillar="shop")
+    - MealsPage.jsx (pillar="dine")
+  - Pattern follows CelebrateNewPage.jsx reference implementation
+  - MiraOSTrigger: bottom-left position with BETA badge
+  - ConciergeButton: bottom-right position with showLabel prop
+  - Total: 14 pages now have both Mira OS and Concierge® access points
+- [x] **DOCUMENTED SOUL QUESTIONS & SCORING SYSTEM:**
+  - Full 8 Golden Pillars question bank with 40+ questions documented
+  - Scoring weights per pillar:
+    - Identity & Temperament: 15 points
+    - Family & Pack: 12 points
+    - Rhythm & Routine: 14 points
+    - Home Comforts: 8 points
+    - Travel Style: 10 points
+    - Taste & Treat: 14 points
+    - Training & Behaviour: 10 points
+    - Long Horizon (Health): 17 points
+  - Tier system: Curious Pup → Loyal Companion → Trusted Guardian → Pack Leader → Soul Master
+
 ### February 16, 2026 (Session 8) - SOUL SCORE & MIRA INTEL IN SERVICE DESK + EMAIL INTEGRATION
 - [x] **SOUL SCORE DISPLAY IN TICKET MODAL:**
   - Pet Profile section now shows Mira's relationship with the pet
