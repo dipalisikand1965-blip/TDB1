@@ -377,6 +377,9 @@ const ConciergeThreadPanelV2 = ({
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   
+  // Concierge Hours status (from backend API)
+  const [conciergeStatus, setConciergeStatus] = useState({ is_live: true, status_text: 'Live now' });
+  
   // Refs
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
