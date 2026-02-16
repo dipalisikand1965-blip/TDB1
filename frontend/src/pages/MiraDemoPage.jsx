@@ -2785,6 +2785,9 @@ const MiraDemoPage = () => {
     setActiveDockItem(item.id);
     if (item.action === 'openChat') {
       window.dispatchEvent(new CustomEvent('openMiraAI'));
+    } else if (item.action === 'openConcierge') {
+      // Open the Concierge Home Panel (same as header CONCIERGE tab)
+      setShowConciergeHome(true);
     } else if (item.action === 'openHelp') {
       setShowHelpModal(true);
     } else if (item.action === 'openLearn') {
