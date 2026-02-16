@@ -2064,6 +2064,51 @@ async def add_reply(ticket_id: str, reply: TicketReply):
     # TWO-WAY SYNC: Sync reply to Concierge thread if linked
     # ============================================================
     if not reply.is_internal:
+        # SEND EMAIL if channel is 'email'
+        if reply.channel == "email" and member_email:
+            resend_client = get_resend()
+            if resend_client:
+                try:
+                    # Convert HTML to clean format for email
+                    email_content = reply.message
+                    pet_name = ticket.get("pet_info", {}).get("name") or "your pet"
+                    
+                    resend_client.Emails.send({
+                        "from": f"Concierge <{SENDER_EMAIL}>",
+                        "to": member_email,
+                        "reply_to": SENDER_EMAIL,
+                        "subject": f"Re: {ticket.get('subject', 'Your Request')} - The Doggy Company",
+                        "html": f"""
+                            <div style="font-family: 'Segoe UI', -apple-system, sans-serif; max-width: 640px; margin: 0 auto; background: #f8f4f0;">
+                                <div style="background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%); padding: 24px 32px; border-radius: 16px 16px 0 0;">
+                                    <h2 style="color: white; margin: 0; font-weight: 600;">🐾 The Doggy Company</h2>
+                                    <p style="color: rgba(255,255,255,0.9); margin: 4px 0 0 0; font-size: 14px;">Pet Concierge Team</p>
+                                </div>
+                                <div style="padding: 32px; background: white;">
+                                    <p style="color: #333; margin: 0 0 16px 0;">Hi {member_name}! 👋</p>
+                                    <div style="background: #faf8f6; padding: 20px; border-radius: 12px; margin: 16px 0; border-left: 4px solid #9333ea;">
+                                        {email_content}
+                                    </div>
+                                    <p style="color: #666; font-size: 14px; margin-top: 24px; padding-top: 16px; border-top: 1px solid #eee;">
+                                        Ticket Reference: <strong>{ticket_id[-8:]}</strong><br>
+                                        Regarding: {pet_name}
+                                    </p>
+                                </div>
+                                <div style="padding: 20px 32px; background: #f5f5f5; border-radius: 0 0 16px 16px; text-align: center;">
+                                    <p style="color: #888; font-size: 12px; margin: 0;">
+                                        With love, from The Doggy Company 💜<br>
+                                        <a href="https://thedoggycompany.in" style="color: #9333ea;">thedoggycompany.in</a>
+                                    </p>
+                                </div>
+                            </div>
+                        """
+                    })
+                    message["email_sent"] = True
+                    logger.info(f"[EMAIL] Sent reply email to {member_email} for ticket {ticket_id}")
+                except Exception as e:
+                    logger.error(f"[EMAIL] Failed to send email: {e}")
+                    message["email_error"] = str(e)
+        
         # 1. Find any concierge_thread linked to this ticket
         linked_thread = await db.concierge_threads.find_one({"ticket_id": ticket_id})
         
