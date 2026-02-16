@@ -137,7 +137,7 @@ class TestMemberNotifications:
     def test_notifications_created_for_member(self):
         """Verify notification is created when Service Desk replies"""
         response = requests.get(
-            f"{BASE_URL}/api/user/notifications?user_email={TEST_USER_EMAIL}"
+            f"{BASE_URL}/api/user/notifications?email={TEST_USER_EMAIL}"
         )
         
         assert response.status_code == 200, f"Failed to get notifications: {response.text}"
