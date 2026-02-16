@@ -51,8 +51,35 @@ const TicketFullPageModal = ({
   const [aiLoading, setAiLoading] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [replyChannel, setReplyChannel] = useState('chat');
+  const [miraKnowledge, setMiraKnowledge] = useState(null);
+  const [loadingKnowledge, setLoadingKnowledge] = useState(false);
   const conversationEndRef = useRef(null);
   const modalRef = useRef(null);
+  
+  // Fetch "What Mira Knows" about the pet
+  useEffect(() => {
+    const fetchMiraKnowledge = async () => {
+      const petId = petProfile?.id || ticket?.pet_info?.id || ticket?.pet_id;
+      if (!petId) return;
+      
+      setLoadingKnowledge(true);
+      try {
+        const response = await fetch(`${getApiUrl()}/api/mira/personalization-stats/${petId}`, {
+          headers: authHeaders
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setMiraKnowledge(data);
+        }
+      } catch (error) {
+        console.error('Error fetching Mira knowledge:', error);
+      } finally {
+        setLoadingKnowledge(false);
+      }
+    };
+    
+    fetchMiraKnowledge();
+  }, [petProfile?.id, ticket?.pet_info?.id, ticket?.pet_id, authHeaders]);
 
   // Scroll to bottom of conversation
   useEffect(() => {
