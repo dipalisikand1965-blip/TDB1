@@ -5491,11 +5491,12 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         value={replyText}
                         onChange={setReplyText}
                         placeholder={isInternal ? "Add internal note (not visible to customer)..." : `Reply to ${selectedTicket.member?.name || 'customer'}...`}
-                        minHeight="120px"
+                        minHeight="180px"
                         showAI={true}
                         onAIGenerate={() => generateAiReply(aiReplyStyle)}
                         aiLoading={aiLoading}
                         className={isInternal ? 'border-amber-300 bg-amber-50/50' : ''}
+                      />
                       />
                       
                       {/* Golden Standard: Omnichannel Selector */}
