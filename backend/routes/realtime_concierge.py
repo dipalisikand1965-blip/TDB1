@@ -36,6 +36,14 @@ router = APIRouter(prefix="/api/concierge/realtime", tags=["Concierge Realtime"]
 # Database reference
 db = None
 
+# Import central signal flow
+try:
+    from central_signal_flow import create_signal
+    CENTRAL_FLOW_AVAILABLE = True
+except ImportError:
+    CENTRAL_FLOW_AVAILABLE = False
+    logger.warning("Central signal flow not available - concierge messages won't create tickets")
+
 def set_realtime_db(database):
     """Set database reference"""
     global db
