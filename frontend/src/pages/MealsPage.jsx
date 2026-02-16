@@ -589,6 +589,16 @@ const MealsPage = () => {
 
       {/* Mira Chat Widget */}
       <MiraChatWidget pillar="dine" />
+      
+      {/* Mira OS Trigger */}
+      <MiraOSTrigger pillar="dine" position="bottom-left" />
+      
+      {/* Concierge® Button */}
+      <ConciergeButton 
+        pillar="dine" 
+        position="bottom-right"
+        showLabel
+      />
     </div>
   );
 };
