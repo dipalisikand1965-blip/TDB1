@@ -29,6 +29,14 @@ router = APIRouter(prefix="/api/os/concierge", tags=["Concierge OS"])
 # Database reference (set from server.py)
 db = None
 
+# Import central signal flow for unified tickets
+try:
+    from central_signal_flow import create_signal
+    CENTRAL_FLOW_AVAILABLE = True
+except ImportError:
+    CENTRAL_FLOW_AVAILABLE = False
+    logger.warning("Central signal flow not available for Concierge OS")
+
 def set_concierge_os_db(database):
     """Set database reference"""
     global db
