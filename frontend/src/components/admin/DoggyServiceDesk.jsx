@@ -221,6 +221,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   // Data
   const [allTickets, setAllTickets] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [showTicketModal, setShowTicketModal] = useState(false); // Full-page ticket modal
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   
