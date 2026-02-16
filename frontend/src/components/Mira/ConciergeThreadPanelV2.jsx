@@ -491,11 +491,12 @@ const ConciergeThreadPanelV2 = ({
   }, [searchQuery, showSearch, handleSearch]);
   
   // Load data when panel opens
+  // Fetch if no initialThread OR if initialMessages is empty (thread was opened from list)
   useEffect(() => {
-    if (isOpen && threadId && !initialThread) {
+    if (isOpen && threadId && (!initialThread || initialMessages.length === 0)) {
       fetchThread();
     }
-  }, [isOpen, threadId, initialThread, fetchThread]);
+  }, [isOpen, threadId, initialThread, initialMessages.length, fetchThread]);
   
   // Scroll to bottom when messages change
   useEffect(() => {
