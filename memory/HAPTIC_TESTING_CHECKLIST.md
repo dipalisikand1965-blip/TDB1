@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://service-desk-pro-4.preview.emergentagent.com/mira-demo**
+**https://concierge-hub-25.preview.emergentagent.com/mira-demo**
 
 ---
 

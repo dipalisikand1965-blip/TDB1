@@ -8,7 +8,7 @@ import requests
 import os
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://service-desk-pro-4.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://concierge-hub-25.preview.emergentagent.com')
 ADMIN_USERNAME = "aditya"
 ADMIN_PASSWORD = "doggy2026"
 
