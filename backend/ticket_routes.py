@@ -2115,6 +2115,12 @@ async def add_reply(ticket_id: str, reply: TicketReply):
         # 1. Find any concierge_thread linked to this ticket
         linked_thread = await db.concierge_threads.find_one({"ticket_id": ticket_id})
         
+        # 1b. If not found, try by metadata.thread_id (same ID as ticket_id in many cases)
+        if not linked_thread and metadata_thread_id:
+            linked_thread = await db.concierge_threads.find_one({"id": metadata_thread_id})
+            if linked_thread:
+                logger.info(f"[TWO-WAY SYNC] Found thread via metadata.thread_id: {metadata_thread_id}")
+        
         # 2. If not found by ticket_id, try to find by user_id or member_email
         if not linked_thread:
             # Try user_id first
