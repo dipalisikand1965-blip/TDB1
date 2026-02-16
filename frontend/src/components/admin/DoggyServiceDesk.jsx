@@ -989,9 +989,10 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     setLoadingContext(false);
   };
 
-  // Handle ticket selection
+  // Handle ticket selection - opens full-page modal
   const handleSelectTicket = async (ticket) => {
     setSelectedTicket(ticket);
+    setShowTicketModal(true); // Open full-page modal
     setConversationSummary(null);
     setIsEditingTicket(false);
     setPetSoulPrompts(null);
@@ -1017,6 +1018,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           // Generate summary for tickets with messages
           if (data.ticket?.messages?.length > 0) {
             generateConversationSummary(data.ticket);
+          }
           }
           // Fetch Pet Soul prompts if pet is linked
           if (data.ticket?.pet_info?.id || data.ticket?.pet_id) {
