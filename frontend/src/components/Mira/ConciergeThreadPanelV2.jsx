@@ -65,19 +65,21 @@ const MessageStatusIndicator = ({ status, timestamp }) => {
 
 /**
  * Connection Status Indicator
+ * Uses Concierge Hours API status (is_live) instead of WebSocket adminOnline
  */
-const ConnectionIndicator = ({ status, adminOnline }) => {
+const ConnectionIndicator = ({ status, isLive, statusText }) => {
   const getStatusConfig = () => {
-    if (status === ConnectionStatus.CONNECTED && adminOnline) {
-      return { color: 'bg-green-400', pulse: true, text: 'Live' };
-    }
-    if (status === ConnectionStatus.CONNECTED) {
-      return { color: 'bg-amber-400', pulse: false, text: 'Offline hours' };
-    }
     if (status === ConnectionStatus.RECONNECTING) {
       return { color: 'bg-amber-400', pulse: true, text: 'Reconnecting...' };
     }
-    return { color: 'bg-red-400', pulse: false, text: 'Disconnected' };
+    if (status !== ConnectionStatus.CONNECTED) {
+      return { color: 'bg-red-400', pulse: false, text: 'Disconnected' };
+    }
+    // Use Concierge Hours API status
+    if (isLive) {
+      return { color: 'bg-green-400', pulse: true, text: statusText || 'Live now' };
+    }
+    return { color: 'bg-amber-400', pulse: false, text: statusText || 'Offline hours' };
   };
   
   const config = getStatusConfig();
