@@ -1203,6 +1203,16 @@ const TravelPage = () => {
       </Dialog>
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="travel" position="bottom-left" />
+      
+      {/* Mira OS Trigger */}
+      <MiraOSTrigger pillar="travel" position="bottom-left" />
+      
+      {/* Concierge® Button */}
+      <ConciergeButton 
+        pillar="travel" 
+        position="bottom-right"
+        showLabel
+      />
     </PillarPageLayout>
   );
 };

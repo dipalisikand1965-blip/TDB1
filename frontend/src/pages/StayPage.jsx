@@ -3046,6 +3046,16 @@ const SocialDetailsModal = ({ social, onClose }) => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="stay" position="bottom-left" />
+      
+      {/* Mira OS Trigger */}
+      <MiraOSTrigger pillar="stay" position="bottom-left" />
+      
+      {/* Concierge® Button */}
+      <ConciergeButton 
+        pillar="stay" 
+        position="bottom-right"
+        showLabel
+      />
     </div>
   );
 };

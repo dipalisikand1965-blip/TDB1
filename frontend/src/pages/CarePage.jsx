@@ -1618,6 +1618,16 @@ const CarePage = () => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="care" position="bottom-left" />
+      
+      {/* Mira OS Trigger */}
+      <MiraOSTrigger pillar="care" position="bottom-left" />
+      
+      {/* Concierge® Button */}
+      <ConciergeButton 
+        pillar="care" 
+        position="bottom-right"
+        showLabel
+      />
     </PillarPageLayout>
   );
 };

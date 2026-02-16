@@ -2430,6 +2430,15 @@ const RestaurantBookingModal = ({ restaurant, onClose, user, activePet }) => {
           </p>
         </form>
       </Card>
+      {/* Mira OS Trigger */}
+      <MiraOSTrigger pillar="dine" position="bottom-left" />
+      
+      {/* Concierge® Button */}
+      <ConciergeButton 
+        pillar="dine" 
+        position="bottom-right"
+        showLabel
+      />
     </div>
   );
 };
