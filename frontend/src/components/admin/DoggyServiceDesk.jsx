@@ -6772,6 +6772,45 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           </div>
         </div>
       )}
+      
+      {/* Full-Page Ticket Modal (Zoho-style) */}
+      {showTicketModal && selectedTicket && (
+        <TicketFullPageModal
+          ticket={selectedTicket}
+          onClose={() => {
+            setShowTicketModal(false);
+            // Keep selectedTicket for context, but close the modal
+          }}
+          onReply={handleReply}
+          onStatusChange={async (newStatus) => {
+            try {
+              await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}/status`, {
+                method: 'PUT',
+                headers: { ...authHeaders, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+              });
+              setSelectedTicket(prev => ({ ...prev, status: newStatus }));
+              toast({ title: 'Status Updated', description: `Ticket status changed to ${newStatus}` });
+            } catch (error) {
+              toast({ title: 'Error', description: 'Failed to update status', variant: 'destructive' });
+            }
+          }}
+          onRefresh={async () => {
+            try {
+              const res = await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}`, { headers: authHeaders });
+              if (res.ok) {
+                const data = await res.json();
+                setSelectedTicket(prev => ({ ...prev, ...data.ticket }));
+              }
+            } catch (error) {
+              console.error('Refresh error:', error);
+            }
+          }}
+          authHeaders={authHeaders}
+          petProfile={petProfile}
+          memberProfile={memberProfile}
+        />
+      )}
     </div>
   );
 };
