@@ -2,7 +2,7 @@
   "summary": "Successfully tested 7-dimension Header Shell implementation on /mira-os. All 7 tabs (Mojo, Today, Picks, Services, Insights, Learn, Concierge) render correctly and are clickable. All tabs meet 44px minimum touch target requirement. Dual placement components (NavigationDock) are visible. Services tab is default as expected.",
   "test_date": "2026-02-13",
   "test_type": "frontend_only",
-  "tested_url": "https://concierge-status-fix.preview.emergentagent.com/mira-os",
+  "tested_url": "https://doggy-service-hub.preview.emergentagent.com/mira-os",
   "tested_features": {
     "all_7_tabs_render_clickable": {
       "status": "PASSED",

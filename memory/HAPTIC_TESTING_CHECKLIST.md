@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://concierge-status-fix.preview.emergentagent.com/mira-demo**
+**https://doggy-service-hub.preview.emergentagent.com/mira-demo**
 
 ---
 

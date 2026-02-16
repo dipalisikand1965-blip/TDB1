@@ -12,7 +12,7 @@
 | **Mira OS** | `/mira-demo` (THE MAIN OS - NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` or `/my-pets` |
-| **Preview** | `https://concierge-status-fix.preview.emergentagent.com` |
+| **Preview** | `https://doggy-service-hub.preview.emergentagent.com` |
 
 ## Test Credentials
 | Role | Email/Username | Password |
