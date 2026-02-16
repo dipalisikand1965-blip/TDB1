@@ -17,7 +17,7 @@
 import { MessageCircle, Package, Calendar, HelpCircle, Heart, Play } from 'lucide-react';
 
 export const DOCK_ITEMS = [
-  { id: 'concierge', label: 'Concierge®', icon: MessageCircle, action: 'openChat' },
+  { id: 'concierge', label: 'Concierge®', icon: MessageCircle, action: 'openConcierge' },
   { id: 'orders', label: 'Orders', icon: Package, path: '/orders' },
   { id: 'plan', label: 'Plan', icon: Calendar, path: '/family-dashboard', tab: 'calendar' },
   { id: 'help', label: 'Help', icon: HelpCircle, action: 'openHelp' },
