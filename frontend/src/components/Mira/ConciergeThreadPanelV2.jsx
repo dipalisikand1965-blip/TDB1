@@ -127,12 +127,31 @@ const OfflineQueueBanner = ({ count }) => {
 };
 
 /**
+ * Strip HTML tags from content for display
+ */
+const stripHtml = (html) => {
+  if (!html) return '';
+  // Remove HTML tags but preserve line breaks
+  return html
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<[^>]*>/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+};
+
+/**
  * Message Bubble Component with Status
  */
 const MessageBubble = ({ message, onRetry }) => {
   const isUser = message.sender === 'user' || message.sender === 'member';
   const isFailed = message.status === MessageStatus.FAILED;
   const senderLabel = isUser ? null : 'Concierge®';
+  
+  // Clean HTML from Service Desk replies
+  const displayContent = message.source === 'service_desk' 
+    ? stripHtml(message.content) 
+    : message.content;
   
   return (
     <div 
