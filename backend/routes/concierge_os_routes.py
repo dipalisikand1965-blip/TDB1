@@ -799,10 +799,74 @@ async def create_thread(request: ThreadCreateRequest):
         
         await db.concierge_messages.insert_one(first_message)
         
-        # Check if this should auto-create a ticket (for urgent items like lost_pet)
-        ticket_id = None
-        if request.suggestion_chip == "lost_pet":
-            # Create urgent ticket immediately
+        # ========== UNIFIED SERVICE FLOW ==========
+        # Create signal for Service Desk, Admin Notification, Channel Intake
+        signal_ids = None
+        if CENTRAL_FLOW_AVAILABLE:
+            try:
+                # Get user info for the signal
+                user_info = await db.users.find_one({"_id": request.user_id}) or {}
+                member_name = user_info.get("name", "Member")
+                member_email = user_info.get("email", "")
+                member_phone = user_info.get("phone", "")
+                
+                # Determine pillar based on suggestion chip or context
+                pillar = "concierge"
+                if request.suggestion_chip:
+                    chip_to_pillar = {
+                        "grooming": "care",
+                        "boarding": "stay",
+                        "travel": "travel",
+                        "lost_pet": "emergency",
+                        "vet": "care",
+                        "training": "learn",
+                        "food": "dine",
+                        "adoption": "adopt"
+                    }
+                    pillar = chip_to_pillar.get(request.suggestion_chip, "concierge")
+                
+                urgency = "critical" if request.suggestion_chip == "lost_pet" else "normal"
+                
+                signal_ids = await create_signal(
+                    pillar=pillar,
+                    action_type="concierge_request",
+                    title=f"Concierge Request: {title}",
+                    description=request.intent,
+                    source=request.source or "concierge_chat",
+                    urgency=urgency,
+                    customer_name=member_name,
+                    customer_email=member_email,
+                    customer_phone=member_phone,
+                    pet_name=pet_name,
+                    pet_id=request.pet_id,
+                    linked_id=thread_id,
+                    extra_data={
+                        "thread_id": thread_id,
+                        "user_id": request.user_id,
+                        "suggestion_chip": request.suggestion_chip,
+                        "source_context": request.source_context or {},
+                        "first_message": request.intent[:200]
+                    }
+                )
+                logger.info(f"[UNIFIED FLOW] Created signal for concierge thread {thread_id}: ticket={signal_ids.get('ticket_id')}")
+                
+                # Update thread with signal IDs
+                await db.concierge_threads.update_one(
+                    {"id": thread_id},
+                    {"$set": {
+                        "ticket_id": signal_ids.get("ticket_id"),
+                        "notification_id": signal_ids.get("notification_id"),
+                        "inbox_id": signal_ids.get("inbox_id"),
+                        "unified_flow": True
+                    }}
+                )
+            except Exception as signal_error:
+                logger.error(f"[UNIFIED FLOW] Error creating signal: {signal_error}")
+        
+        # Check if this should auto-create a ticket (for urgent items like lost_pet) - LEGACY
+        ticket_id = signal_ids.get("ticket_id") if signal_ids else None
+        if request.suggestion_chip == "lost_pet" and not ticket_id:
+            # Create urgent ticket immediately (fallback if unified flow failed)
             ticket_id = await create_urgent_ticket(request, pet_name, now)
             await db.concierge_threads.update_one(
                 {"id": thread_id},
@@ -852,8 +916,10 @@ async def create_thread(request: ThreadCreateRequest):
                 "title": title,
                 "status": "active" if not ticket_id else "awaiting_concierge",
                 "ticket_id": ticket_id,
+                "notification_id": signal_ids.get("notification_id") if signal_ids else None,
                 "source": request.source,
-                "created_at": now
+                "created_at": now,
+                "unified_flow": True if signal_ids else False
             },
             "messages": [
                 {
