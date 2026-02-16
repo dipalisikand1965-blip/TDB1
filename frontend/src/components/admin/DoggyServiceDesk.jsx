@@ -5500,7 +5500,6 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         aiLoading={aiLoading}
                         className={isInternal ? 'border-amber-300 bg-amber-50/50' : ''}
                       />
-                      />
                       
                       {/* Golden Standard: Omnichannel Selector */}
                       <div className="flex items-center gap-2 mb-2 py-2 border-b border-gray-100">
