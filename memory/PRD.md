@@ -278,7 +278,7 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
 - [x] **Comprehensive Platform Audit** - 89/100 score documented
 - [x] **Roadmap to 100** - 22-step sequential plan created
 
-### February 16, 2026 (Session 10) - SERVICE DESK → CONCIERGE SYNC FIX
+### February 16, 2026 (Session 10) - SERVICE DESK → CONCIERGE SYNC FIX + UI IMPROVEMENTS
 - [x] **BUG FIX: Service Desk Replies Not Reaching Customers:**
   - **Root Cause 1:** Backend `add_reply` looked for `user_id` at ticket root, but Concierge tickets store it in `metadata.user_id`
   - **Fix:** Updated `/app/backend/ticket_routes.py` (lines 2062-2064) to check both root and metadata fields
@@ -293,6 +293,17 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
   - Messages display cleanly without HTML tags
   - AI Reply draft generation with 5 styles (professional, friendly, empathetic, concise, detailed)
 - [x] **TESTING:** 100% pass rate (14/14 backend tests, visual verification passed)
+- [x] **24/7 CONCIERGE MODE ENABLED:**
+  - Updated Concierge Hours to `is_24x7: true`
+  - Fixed status indicator to use API-based `is_live` instead of WebSocket `adminOnline`
+  - Now shows "Live now" (green) when 24/7 mode is active
+  - Files: `/app/frontend/src/components/Mira/ConciergeThreadPanelV2.jsx` (lines 70-90, 515-537)
+- [x] **C° DOCK BUTTON FIX:**
+  - Changed from `action: 'openChat'` (floating widget) to `action: 'openConcierge'` (header panel)
+  - Files: `/app/frontend/src/utils/miraConstants.js`, `/app/frontend/src/pages/MiraDemoPage.jsx`
+- [x] **PET AVATAR IMAGE ALIGNMENT:**
+  - Added `object-position: center 20%` for better face/pet centering in circular avatars
+  - Files: `PetOSNavigation.jsx` (line 510), `SoulKnowledgeTicker.jsx` (line 659)
 
 ### February 15, 2026 (Session 1)
 - [x] **Bug Fix:** `/celebrate-new` "l.some is not a function" error
