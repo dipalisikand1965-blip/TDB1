@@ -855,6 +855,16 @@ const AdoptPage = () => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="adopt" position="bottom-left" />
+      
+      {/* Mira OS Trigger */}
+      <MiraOSTrigger pillar="adopt" position="bottom-left" />
+      
+      {/* Concierge® Button */}
+      <ConciergeButton 
+        pillar="adopt" 
+        position="bottom-right"
+        showLabel
+      />
     </PillarPageLayout>
   );
 };

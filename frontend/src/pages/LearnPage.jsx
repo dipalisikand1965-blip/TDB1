@@ -1308,6 +1308,16 @@ const LearnPage = () => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="learn" position="bottom-left" />
+      
+      {/* Mira OS Trigger */}
+      <MiraOSTrigger pillar="learn" position="bottom-left" />
+      
+      {/* Concierge® Button */}
+      <ConciergeButton 
+        pillar="learn" 
+        position="bottom-right"
+        showLabel
+      />
     </PillarPageLayout>
   );
 };

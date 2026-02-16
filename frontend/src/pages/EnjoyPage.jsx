@@ -884,6 +884,16 @@ const EnjoyPage = () => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="enjoy" position="bottom-left" />
+      
+      {/* Mira OS Trigger */}
+      <MiraOSTrigger pillar="enjoy" position="bottom-left" />
+      
+      {/* Concierge® Button */}
+      <ConciergeButton 
+        pillar="enjoy" 
+        position="bottom-right"
+        showLabel
+      />
     </PillarPageLayout>
   );
 };

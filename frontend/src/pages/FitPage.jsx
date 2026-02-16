@@ -1070,6 +1070,16 @@ const FitPage = () => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="fit" position="bottom-left" />
+      
+      {/* Mira OS Trigger */}
+      <MiraOSTrigger pillar="fit" position="bottom-left" />
+      
+      {/* Concierge® Button */}
+      <ConciergeButton 
+        pillar="fit" 
+        position="bottom-right"
+        showLabel
+      />
     </PillarPageLayout>
   );
 };
