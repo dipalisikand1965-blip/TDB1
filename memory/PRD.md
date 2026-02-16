@@ -413,17 +413,27 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
 ### P0 - Critical (Completed)
 - [x] ~~Test ElevenLabs voice in Mira OS~~ ✅ VERIFIED WORKING (Feb 15)
 - [x] ~~Port Golden Standard features to DoggyServiceDesk.jsx~~ ✅ COMPLETED (Feb 15)
+- [x] ~~Service Desk → Concierge two-way sync~~ ✅ FIXED (Feb 16)
+- [x] ~~24/7 Concierge mode~~ ✅ ENABLED (Feb 16)
 
-### P1 - Important (Next Up)
+### P0 - Critical (NEXT SESSION PRIORITY)
+- [ ] **REDESIGN ONBOARDING PAGE** - Transform `MembershipOnboarding.jsx` into engaging multi-step "Soul Questions" experience
+  - User will provide: 6 chapters mapping + Questions rewritten in "Mira voice"
+  - Waiting on user input before implementation
+- [ ] **OS2 BETA CLARIFICATION** - User asked: "Will that be the OS2 Beta we have?" (UNANSWERED)
+
+### P1 - Important (Roadmap to 100)
 - [ ] Standardize Pillar Page UI (14 pages with consistent styling)
 - [ ] Connect Concierge indicator (🤲) states - idle, active, pulsing
 - [ ] Weave Quick Questions into Concierge® chat
 - [ ] Update /mira-demo to show 8-pillar visual
+- [ ] Full WhatsApp Integration (blocked on API credentials)
 
 ### P2 - Nice to Have
 - [ ] Gate Mira OS for paid members
 - [ ] Fix original FAB issues
 - [ ] Proactive Mira intelligence
+- [ ] Refactor large files: `DoggyServiceDesk.jsx` (5,500+ lines), `server.py`
 
 ### P3 - Future/Backlog
 - [ ] Phase out old FAB
