@@ -2122,6 +2122,26 @@ async def add_reply(ticket_id: str, reply: TicketReply):
                 }
             )
             logger.info(f"[TWO-WAY SYNC] Synced admin reply to concierge thread {thread_id}")
+            
+            # 2b. Send WebSocket notification to user (real-time update)
+            try:
+                from routes.realtime_concierge import manager as realtime_manager
+                user_ws_id = linked_thread.get("user_id")
+                if user_ws_id and realtime_manager:
+                    await realtime_manager.send_to_user(user_ws_id, {
+                        "type": "new_message",
+                        "thread_id": thread_id,
+                        "message": {
+                            "id": message_id,
+                            "sender": "concierge",
+                            "content": reply.message,
+                            "timestamp": now,
+                            "source": "service_desk"
+                        }
+                    })
+                    logger.info(f"[TWO-WAY SYNC] WebSocket notification sent to user {user_ws_id}")
+            except Exception as ws_error:
+                logger.debug(f"[TWO-WAY SYNC] WebSocket notify failed (user may be offline): {ws_error}")
         
         # 3. ALSO sync to mira_conversations if this ticket exists there
         #    (for tickets that came from Mira chat handoff)
