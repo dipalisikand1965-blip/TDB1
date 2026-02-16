@@ -2058,7 +2058,10 @@ async def add_reply(ticket_id: str, reply: TicketReply):
     # Get member info for notifications and user_id for thread lookup
     member_email = ticket.get("member_email") or ticket.get("customer_email") or ticket.get("member", {}).get("email")
     member_name = ticket.get("member", {}).get("name") or ticket.get("member_name") or "Pet Parent"
-    user_id = ticket.get("user_id") or ticket.get("parent_id")
+    # Check both root level and metadata for user_id (tickets from Concierge store it in metadata)
+    user_id = ticket.get("user_id") or ticket.get("parent_id") or ticket.get("metadata", {}).get("user_id")
+    # Also get thread_id from metadata if available
+    metadata_thread_id = ticket.get("metadata", {}).get("thread_id")
     
     # ============================================================
     # TWO-WAY SYNC: Sync reply to Concierge thread if linked
