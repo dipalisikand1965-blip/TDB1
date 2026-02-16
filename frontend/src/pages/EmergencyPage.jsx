@@ -725,6 +725,16 @@ const EmergencyPage = () => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="emergency" position="bottom-left" />
+      
+      {/* Mira OS Trigger */}
+      <MiraOSTrigger pillar="emergency" position="bottom-left" />
+      
+      {/* Concierge® Button */}
+      <ConciergeButton 
+        pillar="emergency" 
+        position="bottom-right"
+        showLabel
+      />
     </PillarPageLayout>
   );
 };

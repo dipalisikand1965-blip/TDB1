@@ -928,6 +928,16 @@ const PaperworkPage = () => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="paperwork" position="bottom-left" />
+      
+      {/* Mira OS Trigger */}
+      <MiraOSTrigger pillar="paperwork" position="bottom-left" />
+      
+      {/* Concierge® Button */}
+      <ConciergeButton 
+        pillar="paperwork" 
+        position="bottom-right"
+        showLabel
+      />
     </PillarPageLayout>
   );
 };

@@ -779,6 +779,16 @@ const FarewellPage = () => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="farewell" position="bottom-left" />
+      
+      {/* Mira OS Trigger */}
+      <MiraOSTrigger pillar="farewell" position="bottom-left" />
+      
+      {/* Concierge® Button */}
+      <ConciergeButton 
+        pillar="farewell" 
+        position="bottom-right"
+        showLabel
+      />
     </PillarPageLayout>
   );
 };

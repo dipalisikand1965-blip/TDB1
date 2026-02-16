@@ -964,6 +964,16 @@ const ShopPage = () => {
       
       <MiraChatWidget pillar="shop" isOpen={miraChatOpen} onClose={() => setMiraChatOpen(false)} />
       
+      {/* Mira OS Trigger */}
+      <MiraOSTrigger pillar="shop" position="bottom-left" />
+      
+      {/* Concierge® Button */}
+      <ConciergeButton 
+        pillar="shop" 
+        position="bottom-right"
+        showLabel
+      />
+      
       <style>{`
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
