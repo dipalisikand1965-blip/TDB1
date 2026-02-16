@@ -419,6 +419,53 @@ async def process_user_message(user_id: str, data: dict):
         # Store in database
         await db.concierge_messages.insert_one(message_doc)
         
+        # Get thread info for context
+        thread = await db.concierge_threads.find_one({"id": thread_id})
+        
+        # Check if this is the first message in thread (trigger unified flow)
+        message_count = await db.concierge_messages.count_documents({"thread_id": thread_id})
+        
+        if message_count == 1 and CENTRAL_FLOW_AVAILABLE and thread:
+            # First message - create unified signal for Service Desk
+            try:
+                # Get user/member info
+                user_info = await db.users.find_one({"_id": thread.get("user_id")}) or {}
+                
+                pet_name = thread.get("pet_name", "")
+                pet_id = thread.get("pet_id", "")
+                member_name = user_info.get("name", thread.get("user_name", "Member"))
+                member_email = user_info.get("email", "")
+                member_phone = user_info.get("phone", "")
+                
+                # Determine pillar from context
+                pillar = thread.get("pillar", "concierge")
+                context = thread.get("context", {})
+                
+                await create_signal(
+                    pillar=pillar,
+                    action_type="concierge_request",
+                    title=f"Concierge Request from {pet_name or member_name}",
+                    description=content[:500],
+                    source="concierge_chat",
+                    urgency="normal",
+                    customer_name=member_name,
+                    customer_email=member_email,
+                    customer_phone=member_phone,
+                    pet_name=pet_name,
+                    pet_id=pet_id,
+                    linked_id=thread_id,
+                    extra_data={
+                        "thread_id": thread_id,
+                        "user_id": user_id,
+                        "context": context,
+                        "source_page": thread.get("source_page", ""),
+                        "first_message": content[:200]
+                    }
+                )
+                logger.info(f"[UNIFIED FLOW] Created signal for concierge thread {thread_id}")
+            except Exception as signal_error:
+                logger.error(f"[UNIFIED FLOW] Error creating signal: {signal_error}")
+        
         # Update thread
         await db.concierge_threads.update_one(
             {"id": thread_id},
@@ -427,7 +474,8 @@ async def process_user_message(user_id: str, data: dict):
                     "last_message_preview": content[:100],
                     "last_message_at": now,
                     "status": "awaiting_concierge",
-                    "updated_at": now
+                    "updated_at": now,
+                    "unified_flow_triggered": message_count == 1
                 },
                 "$inc": {"message_count": 1}
             }
@@ -446,9 +494,6 @@ async def process_user_message(user_id: str, data: dict):
                 "status": MessageStatus.SENT.value
             }
         })
-        
-        # Get thread info for admin notification
-        thread = await db.concierge_threads.find_one({"id": thread_id})
         
         # Notify admins
         await manager.broadcast_to_admins({
