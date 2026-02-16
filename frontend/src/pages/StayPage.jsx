@@ -12,6 +12,7 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import AdminQuickEdit from '../components/AdminQuickEdit';
+import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';

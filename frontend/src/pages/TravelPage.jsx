@@ -15,6 +15,7 @@ import { toast } from '../hooks/use-toast';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import ProductCard from '../components/ProductCard';
 import AdminQuickEdit from '../components/AdminQuickEdit';
+import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import BreedAutocomplete from '../components/BreedAutocomplete';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';

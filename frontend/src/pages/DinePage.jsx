@@ -23,6 +23,7 @@ import DiningConciergePicker from '../components/DiningConciergePicker';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import PillarPageLayout from '../components/PillarPageLayout';
+import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 
 // Get user from AuthContext or localStorage
 const getUser = () => {
