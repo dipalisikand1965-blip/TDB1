@@ -182,7 +182,7 @@ const MessageBubble = ({ message, onRetry }) => {
             : 'bg-white/10 text-white rounded-tl-sm'
         }`}
       >
-        <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+        <p className="text-sm whitespace-pre-wrap">{displayContent}</p>
       </div>
       
       {/* Status indicator (only for user messages) */}
