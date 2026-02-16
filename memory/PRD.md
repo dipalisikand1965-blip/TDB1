@@ -486,7 +486,11 @@ https://service-desk-test.preview.emergentagent.com
 
 ## 🎯 ROADMAP TO 100/100 SOUL SCORE
 
-The goal is to build a complete Pet Operating System where each pet can achieve a 100% Soul Score. The scoring system is built on **8 Golden Pillars** with **39 questions** totaling **100 points**.
+### THE CORE DOCTRINE
+> **"MIRA IS THE BRAIN, CONCIERGE® IS THE HANDS"**
+> - Mira knows the pet's Soul (100 points across 8 pillars, 39 questions)
+> - Mira is the Bible for the pet - she remembers EVERYTHING
+> - Concierge executes with human hands
 
 ### Current Pillar Status
 | Pillar | Points | Questions | Status |
@@ -501,12 +505,28 @@ The goal is to build a complete Pet Operating System where each pet can achieve 
 | 🌅 Long Horizon (Health) | 17 | 6 | ✅ Implemented |
 | **TOTAL** | **100** | **39** | ✅ Backend Ready |
 
-### Next Steps to Complete OS
-1. **Onboarding Redesign** - Make soul questions engaging (P0)
-2. **Pillar Page Standardization** - Consistent UI across 14 pages
-3. **Quick Questions in Concierge** - Weave questions naturally into chat
-4. **8-Pillar Visual** - Show progress on /mira-demo
-5. **Proactive Mira Intelligence** - Use soul data for suggestions
+### 🔥 P0: ONBOARDING REDESIGN (NEXT SESSION)
+**User's Vision:**
+- Make ALL 39 questions available on onboarding in an EXCITING way
+- "Mira works when she knows the soul of the dog"
+- "Pet first - Mira is the Bible for the (pet), Concierge the hands"
+- Transform boring form → engaging multi-chapter experience
+
+**Key Doctrines to Follow:**
+- `/app/memory/MASTER_DOCTRINE.md` - Core philosophy
+- `/app/memory/MIRA_DOCTRINE.md` - Mira's voice & behavior
+- `/app/memory/8_GOLDEN_PILLARS_SPEC.md` - Scoring system
+- `/app/memory/COMPLETE_QUESTIONS_LIST.md` - All 39+ questions
+
+**Current Onboarding File:** `/app/frontend/src/pages/MembershipOnboarding.jsx`
+
+### 22-STEP ROADMAP TO 100/100
+See `/app/memory/ROADMAP_TO_100.md` for detailed steps:
+- Phase 1: Critical Fixes (89→93) - 4 steps
+- Phase 2: Soul Intelligence (93→96) - 5 steps  
+- Phase 3: UX Polish (96→98) - 4 steps
+- Phase 4: Trust & Content (98→99) - 4 steps
+- Phase 5: Final Polish (99→100) - 5 steps
 
 ### Key Files for Soul System
 - `/app/backend/pet_soul_routes.py` - Soul API endpoints
