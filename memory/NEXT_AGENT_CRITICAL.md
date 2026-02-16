@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://concierge-hub-25.preview.emergentagent.com
+https://service-desk-test.preview.emergentagent.com
 
 ---
 

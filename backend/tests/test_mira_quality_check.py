@@ -19,7 +19,7 @@ import time
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://concierge-hub-25.preview.emergentagent.com"
+    BASE_URL = "https://service-desk-test.preview.emergentagent.com"
 
 # Test credentials
 TEST_EMAIL = "dipali@clubconcierge.in"

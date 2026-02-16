@@ -15,7 +15,7 @@ import requests
 import os
 import json
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://concierge-hub-25.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://service-desk-test.preview.emergentagent.com').rstrip('/')
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # HEALTH CHECK TESTS
