@@ -465,6 +465,57 @@ async def process_user_message(user_id: str, data: dict):
                 logger.info(f"[UNIFIED FLOW] Created signal for concierge thread {thread_id}")
             except Exception as signal_error:
                 logger.error(f"[UNIFIED FLOW] Error creating signal: {signal_error}")
+        else:
+            # Subsequent messages - sync to existing Service Desk ticket
+            ticket_id = thread.get("ticket_id") if thread else None
+            if ticket_id and db is not None:
+                try:
+                    # Add message to ticket's messages array
+                    pet_name = thread.get("pet_name", "Member") if thread else "Member"
+                    await db.service_desk_tickets.update_one(
+                        {"ticket_id": ticket_id},
+                        {
+                            "$push": {
+                                "messages": {
+                                    "id": message_id,
+                                    "sender": "user",
+                                    "sender_name": pet_name,
+                                    "content": content,
+                                    "timestamp": now,
+                                    "type": "user_reply",
+                                    "source": "concierge_chat"
+                                }
+                            },
+                            "$set": {
+                                "updated_at": now,
+                                "last_message_at": now,
+                                "status": "awaiting_response"  # Mark as needing response
+                            },
+                            "$inc": {"unread_count": 1}
+                        }
+                    )
+                    logger.info(f"[TWO-WAY SYNC] User reply synced to ticket {ticket_id}")
+                    
+                    # Create admin notification for the reply
+                    notif_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+                    user_info = await db.users.find_one({"_id": thread.get("user_id")}) or {} if thread else {}
+                    await db.admin_notifications.insert_one({
+                        "id": notif_id,
+                        "type": "concierge_reply",
+                        "pillar": thread.get("pillar", "concierge") if thread else "concierge",
+                        "title": f"Reply from {pet_name}",
+                        "message": content[:150] + "..." if len(content) > 150 else content,
+                        "read": False,
+                        "status": "unread",
+                        "urgency": "normal",
+                        "ticket_id": ticket_id,
+                        "thread_id": thread_id,
+                        "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+                        "created_at": now
+                    })
+                    logger.info(f"[TWO-WAY SYNC] Admin notification created: {notif_id}")
+                except Exception as sync_error:
+                    logger.error(f"[TWO-WAY SYNC] Error syncing user reply: {sync_error}")
         
         # Update thread
         await db.concierge_threads.update_one(
