@@ -278,6 +278,22 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
 - [x] **Comprehensive Platform Audit** - 89/100 score documented
 - [x] **Roadmap to 100** - 22-step sequential plan created
 
+### February 16, 2026 (Session 10) - SERVICE DESK → CONCIERGE SYNC FIX
+- [x] **BUG FIX: Service Desk Replies Not Reaching Customers:**
+  - **Root Cause 1:** Backend `add_reply` looked for `user_id` at ticket root, but Concierge tickets store it in `metadata.user_id`
+  - **Fix:** Updated `/app/backend/ticket_routes.py` (lines 2062-2064) to check both root and metadata fields
+  - **Root Cause 2:** Frontend `ConciergeThreadPanelV2` skipped fetching when `initialThread` was provided (even with empty messages)
+  - **Fix:** Changed condition to `(!initialThread || initialMessages.length === 0)` (line 515)
+  - **Root Cause 3:** HTML tags showing in Service Desk messages
+  - **Fix:** Added `stripHtml()` function in ConciergeThreadPanelV2.jsx for `source === 'service_desk'` messages
+- [x] **VERIFIED WORKING:**
+  - Service Desk replies sync to `concierge_messages` collection
+  - Member notifications created on reply
+  - WebSocket notifications sent to user
+  - Messages display cleanly without HTML tags
+  - AI Reply draft generation with 5 styles (professional, friendly, empathetic, concise, detailed)
+- [x] **TESTING:** 100% pass rate (14/14 backend tests, visual verification passed)
+
 ### February 15, 2026 (Session 1)
 - [x] **Bug Fix:** `/celebrate-new` "l.some is not a function" error
 - [x] **UNIFIED 8 Golden Pillars Scoring System**
