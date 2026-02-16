@@ -4997,9 +4997,11 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                                         <FileText className="w-3 h-3" /> Internal Note
                                       </div>
                                     )}
-                                    <p className={`text-sm whitespace-pre-wrap ${isAgent && !msg.is_internal ? 'text-white' : 'text-gray-800'}`}>
-                                      {msg.content || msg.message}
-                                    </p>
+                                    {/* Message content - render HTML if present */}
+                                    <div 
+                                      className={`text-sm ${isAgent && !msg.is_internal ? 'text-white' : 'text-gray-800'} prose prose-sm max-w-none ${isAgent && !msg.is_internal ? 'prose-invert' : ''}`}
+                                      dangerouslySetInnerHTML={{ __html: msg.content || msg.message || '' }}
+                                    />
                                     
                                     {/* Attachments in message */}
                                     {hasAttachments && (
