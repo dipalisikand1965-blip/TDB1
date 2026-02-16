@@ -6,6 +6,7 @@ import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
 import { toast } from '../../hooks/use-toast';
 import QuoteBuilder from './QuoteBuilder';
+import TicketFullPageModal from './TicketFullPageModal';
 import {
   DropdownMenu,
   DropdownMenuContent,
