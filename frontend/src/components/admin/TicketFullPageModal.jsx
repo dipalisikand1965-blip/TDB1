@@ -320,12 +320,12 @@ const TicketFullPageModal = ({
                 </Card>
               </div>
 
-              {/* Pet Info */}
+              {/* Pet Info with Soul Score */}
               {(petProfile?.name || ticket.pet_info?.name) && (
                 <div>
                   <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
                     <PawPrint className="w-3.5 h-3.5" />
-                    Pet Info
+                    Pet Profile
                   </h3>
                   <Card className="p-3 bg-white">
                     <div className="flex items-center gap-3 mb-3">
@@ -340,7 +340,7 @@ const TicketFullPageModal = ({
                           <PawPrint className="w-6 h-6 text-purple-500" />
                         </div>
                       )}
-                      <div>
+                      <div className="flex-1">
                         <div className="font-medium text-gray-900">
                           {petProfile?.name || ticket.pet_info?.name}
                         </div>
@@ -349,11 +349,77 @@ const TicketFullPageModal = ({
                         </div>
                       </div>
                     </div>
+                    
+                    {/* Soul Score Arc */}
+                    {miraKnowledge?.soul_score !== undefined && (
+                      <div className="mt-3 pt-3 border-t border-gray-100">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs text-gray-500 font-medium">Mira knows</span>
+                          <span className="text-sm font-bold text-purple-600">{Math.round(miraKnowledge.soul_score)}%</span>
+                        </div>
+                        <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div 
+                            className="absolute left-0 top-0 h-full rounded-full transition-all duration-500"
+                            style={{ 
+                              width: `${miraKnowledge.soul_score}%`,
+                              background: `linear-gradient(90deg, #9333ea ${miraKnowledge.soul_score < 50 ? '0%' : '0%'}, #c084fc 100%)`
+                            }}
+                          />
+                        </div>
+                        <div className="text-[10px] text-gray-400 mt-1 text-center">
+                          {miraKnowledge.soul_score < 30 ? 'Just getting started' : 
+                           miraKnowledge.soul_score < 60 ? 'Building relationship' :
+                           miraKnowledge.soul_score < 80 ? 'Strong connection' : 'Soul mate!'}
+                        </div>
+                      </div>
+                    )}
+                    
                     {(petProfile?.age || ticket.pet_info?.age) && (
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-500 mt-2">
                         Age: {petProfile?.age || ticket.pet_info?.age}
                       </div>
                     )}
+                  </Card>
+                </div>
+              )}
+              
+              {/* What Mira Knows - Intelligence Card */}
+              {miraKnowledge?.knowledge_items?.length > 0 && (
+                <div>
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <Brain className="w-3.5 h-3.5 text-purple-500" />
+                    Mira's Intel
+                  </h3>
+                  <Card className="p-3 bg-gradient-to-br from-purple-50 to-white border-purple-100">
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {miraKnowledge.knowledge_items.slice(0, 8).map((item, idx) => (
+                        <div 
+                          key={idx}
+                          className="flex items-start gap-2 text-xs"
+                        >
+                          <span className="text-base flex-shrink-0">{item.icon}</span>
+                          <span className="text-gray-700">{item.text}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {miraKnowledge.knowledge_items.length > 8 && (
+                      <div className="text-[10px] text-purple-500 text-center mt-2 pt-2 border-t border-purple-100">
+                        +{miraKnowledge.knowledge_items.length - 8} more insights
+                      </div>
+                    )}
+                  </Card>
+                </div>
+              )}
+              
+              {/* Loading state for Mira Knowledge */}
+              {loadingKnowledge && (petProfile?.id || ticket?.pet_info?.id) && (
+                <div className="animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded w-24 mb-3"></div>
+                  <Card className="p-3 bg-white">
+                    <div className="space-y-2">
+                      <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
                   </Card>
                 </div>
               )}
