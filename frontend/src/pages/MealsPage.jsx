@@ -20,6 +20,7 @@ import PersonalizedPicks from '../components/PersonalizedPicks';
 import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import SEOHead from '../components/SEOHead';
+import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import {
   Utensils, Leaf, Heart, Star, ChevronRight, Sparkles,
   Clock, Truck, Shield, CheckCircle, Package, ChevronLeft,
