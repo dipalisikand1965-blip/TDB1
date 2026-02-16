@@ -200,7 +200,7 @@ All features tested and verified (Test Report: `/app/test_reports/iteration_23.j
 | System | Username | Password |
 |--------|----------|----------|
 | Admin Panel | aditya | lola4304 |
-| Preview URL | https://doggy-service-hub.preview.emergentagent.com |
+| Preview URL | https://service-desk-pro-4.preview.emergentagent.com |
 
 ---
 

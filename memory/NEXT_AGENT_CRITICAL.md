@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://doggy-service-hub.preview.emergentagent.com
+https://service-desk-pro-4.preview.emergentagent.com
 
 ---
 
