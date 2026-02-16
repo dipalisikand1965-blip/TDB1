@@ -686,7 +686,11 @@ const ConciergeThreadPanelV2 = ({
           )}
           
           {/* Connection Status */}
-          <ConnectionIndicator status={connectionStatus} adminOnline={adminOnline} />
+          <ConnectionIndicator 
+            status={connectionStatus} 
+            isLive={conciergeStatus.is_live} 
+            statusText={conciergeStatus.status_text} 
+          />
           
           <button
             onClick={onClose}
