@@ -22,6 +22,10 @@ import json
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/whatsapp", tags=["whatsapp"])
 
+# Import canonical ticket spine helper (SINGLE ENTRY POINT for all tickets)
+from utils.spine_helper import handoff_to_spine
+
+
 # WhatsApp Cloud API Configuration
 WHATSAPP_API_URL = "https://graph.facebook.com/v18.0"
 

@@ -17,6 +17,10 @@ import logging
 # Initialize router
 router = APIRouter(prefix="/api/membership", tags=["Membership"])
 
+# Import canonical ticket spine helper (SINGLE ENTRY POINT for all tickets)
+from utils.spine_helper import handoff_to_spine
+
+
 # Get database and logger from main app
 def get_db():
     from server import db

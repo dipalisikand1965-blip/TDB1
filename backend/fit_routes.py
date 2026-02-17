@@ -14,6 +14,10 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/fit", tags=["fit"])
 
+# Import canonical ticket spine helper (SINGLE ENTRY POINT for all tickets)
+from utils.spine_helper import handoff_to_spine
+
+
 def get_db():
     from server import db
     return db
