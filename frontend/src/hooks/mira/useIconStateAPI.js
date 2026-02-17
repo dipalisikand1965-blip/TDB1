@@ -5,9 +5,33 @@
  * 
  * Single endpoint: /api/os/icon-state
  * Returns real counts from the Service Desk ticket spine
+ * 
+ * FEATURE FLAG: ICON_STATE_API_ENABLED
+ * - Set to true only after ALL intake points use canonical ticket_id
+ * - Until then, shows "syncing" indicator when legacy data detected
+ * 
+ * UNIFORM SERVICE FLOW:
+ * User Intent → User Request → Service Desk Ticket → Admin Notification → 
+ * Member Notification → Pillar Request → Tickets → Channel Intakes
+ * 
+ * Icons are a READOUT of this spine, not independent features.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FEATURE FLAG - Enable only after ALL intake points use canonical ticket_id
+// ═══════════════════════════════════════════════════════════════════════════
+const ICON_STATE_API_ENABLED = true; // Set to true to use real API data
+
+// Remaining intake points that need canonical ticket_id (for reference):
+// - stay_routes.py, dine_routes.py, celebrate_routes.py, enjoy_routes.py
+// - fit_routes.py, learn_routes.py, paperwork_routes.py, emergency_routes.py
+// - whatsapp_routes.py, membership_routes.py, ticket_auto_create.py
+// - unified_signal_flow.py, user_tickets_routes.py, service_catalog_routes.py
+// - ticket_messaging.py
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
