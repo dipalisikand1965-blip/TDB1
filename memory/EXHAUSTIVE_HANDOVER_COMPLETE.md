@@ -59,7 +59,7 @@ MOJO (Identity)
 ## 2.2 URLs
 | Environment | URL |
 |-------------|-----|
-| **Preview** | https://picks-fallback.preview.emergentagent.com |
+| **Preview** | https://mira-picks-qa.preview.emergentagent.com |
 | **Main Demo Page** | /mira-demo |
 | **Admin Panel** | /admin |
 | **Dashboard** | /dashboard |
@@ -77,7 +77,7 @@ MOJO (Identity)
 
 ## 2.4 API Base URL
 ```
-REACT_APP_BACKEND_URL=https://picks-fallback.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://mira-picks-qa.preview.emergentagent.com
 ```
 
 ---

@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://picks-fallback.preview.emergentagent.com
+https://mira-picks-qa.preview.emergentagent.com
 ```
 
 ---

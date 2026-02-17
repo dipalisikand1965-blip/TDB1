@@ -15,7 +15,7 @@ import requests
 import os
 import json
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://picks-fallback.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-picks-qa.preview.emergentagent.com').rstrip('/')
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # HEALTH CHECK TESTS
