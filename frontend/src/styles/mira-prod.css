@@ -762,7 +762,51 @@
   border-radius: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
-  /* Remove margin-left: auto since it's on help button now */
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ICON STATE SYSTEM (Bible Section 2) - PICKS Indicator
+   OFF: Dim/muted - no picks
+   ON: Lit - picks exist
+   PULSE: Animated glow - NEW picks (Mira chose something!)
+═══════════════════════════════════════════════════════════════════════════════ */
+
+/* OFF State - Dimmed */
+.mp-header-picks-icon.state-off {
+  opacity: 0.4;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(139, 92, 246, 0.1));
+  border-color: rgba(236, 72, 153, 0.3);
+}
+
+.mp-header-picks-icon.state-off .mp-picks-gift {
+  opacity: 0.5;
+}
+
+/* ON State - Lit */
+.mp-header-picks-icon.state-on {
+  opacity: 1;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(139, 92, 246, 0.3));
+  border-color: rgba(236, 72, 153, 0.6);
+}
+
+/* PULSE State - Animated glow (new picks - Mira chose something!) */
+.mp-header-picks-icon.state-pulse {
+  opacity: 1;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.45), rgba(139, 92, 246, 0.45));
+  border-color: #ec4899;
+  animation: picks-pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 12px rgba(236, 72, 153, 0.5);
+}
+
+@keyframes picks-pulse {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(236, 72, 153, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(236, 72, 153, 0.7);
+    transform: scale(1.08);
+  }
 }
 
 .mp-header-picks-icon:hover {
