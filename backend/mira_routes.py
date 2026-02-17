@@ -3133,36 +3133,18 @@ async def search_real_products(
     ])
     
     if is_bespoke_request:
-        import uuid as uuid_module
         logger.info(f"[PICKS FALLBACK] 🎯 Bespoke/custom request detected - triggering Concierge fallback for '{user_input_lower[:50]}'")
-        pet_name_val = pet_context.get('name', 'your pet')
         detected_pillar = entities.get("pillar", "care")
-        return {
-            "products": [],
-            "concierge_fallback": True,
-            "concierge_fallback_reason": "bespoke_request",
-            "concierge_arranges": [
-                {
-                    "id": f"concierge-{uuid_module.uuid4().hex[:8]}",
-                    "type": "concierge_pick",
-                    "label": "Concierge Pick",
-                    "title": f"Special request for {pet_name_val}",
-                    "subtitle": "Sourced by our concierge team",
-                    "description": f"This is a specialized request — our concierge team will source and arrange this for {pet_name_val}.",
-                    "spec_chip": "Specialist sourcing",
-                    "no_price": True,
-                    "action": "create_ticket",
-                    "pillar": detected_pillar,
-                    "category": "concierge_arranges",
-                    "intent": user_input_lower[:200],
-                    "original_request": user_query,
-                    "pet_id": pet_context.get("id"),
-                    "pet_name": pet_name_val,
-                    "pet_constraints": pet_context.get("sensitivities", []),
-                    "why_it_fits": "Specialist sourcing by our concierge team"
-                }
-            ]
-        }
+        return build_picks_fallback_contract(
+            fallback_mode="concierge",
+            fallback_reason="bespoke_intent",
+            match_count=0,
+            top_score=0.0,
+            blocked_by_safety=False,
+            pet_context=pet_context,
+            user_query=user_query,
+            pillar=detected_pillar
+        )
     
     try:
         # Build search query based on entities
