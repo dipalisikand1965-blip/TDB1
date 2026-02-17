@@ -20,6 +20,7 @@ import {
 import ReactMarkdown from 'react-markdown';
 import InlineConciergeCard from './InlineConciergeCard';
 import PlacesWithConcierge from './PlacesWithConcierge';
+import { QuickReplyChips } from '../mira-os/QuickReplyChips';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // UTILITY FUNCTIONS
