@@ -5172,7 +5172,10 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             )
             
             # Fetch nearby places (but SKIP if we need clarifying questions first)
-            if detected_place_type and (is_location_query or user_city) and not skip_places_for_clarification:
+            # ALSO skip if conversation_contract says mode=clarify (need location consent)
+            contract_says_clarify = contract_mode_result and contract_mode_result.get("mode") == "clarify"
+            
+            if detected_place_type and (is_location_query or user_city) and not skip_places_for_clarification and not contract_says_clarify:
                 city_for_search = user_city or "Mumbai"
                 db = get_db()
                 
