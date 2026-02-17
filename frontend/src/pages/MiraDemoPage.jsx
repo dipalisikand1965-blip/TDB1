@@ -103,7 +103,7 @@ import {
 import { 
   useVoice, usePet, useVault, useSession, DEMO_PET, ALL_DEMO_PETS,
   useChatSubmit, useConversation, useMiraUI, useProactiveAlerts,
-  useLayerNavigation, useChatContinuity, useDraft,
+  useLayerNavigation, useChatContinuity, useDraft, useIconState, ICON_STATE, TAB_IDS,
   detectMiraMode, preprocessInput, detectStepId, extractCityFromQuery,
   detectContextTopic, hasTrainingIntent, extractTrainingTopic,
   shouldFetchTravelData, isMeaningfulTopic, isCelebrationQuery, MEANINGFUL_TOPICS,
