@@ -327,9 +327,35 @@ def determine_contract_mode(
     clarify_reason = None
     
     # ═══════════════════════════════════════════════════════════════════════════
+    # PRIORITY ORDER: ticket > places > learn > bespoke > answer
+    # Ticket intent has highest priority when booking keywords are present
+    # ═══════════════════════════════════════════════════════════════════════════
+    
+    # Check for bespoke/handoff FIRST (highest priority for specialist requests)
+    bespoke_keywords = [
+        "acupuncturist", "hydrotherapy", "physiotherapy", "rehab",
+        "canine therapist", "animal communicator", "holistic", "specialist",
+        "custom", "bespoke", "one-of-a-kind"
+    ]
+    is_bespoke = any(kw in message.lower() for kw in bespoke_keywords)
+    
+    if is_bespoke:
+        # Bespoke/specialist request → handoff
+        detected_intent = "bespoke"
+        mode = "handoff"
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # TICKET/BOOKING INTENT - High priority when booking keywords + service type
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif ticket_intent["has_intent"] and ticket_intent["confidence"] >= 0.85:
+        # Strong booking intent (has booking keyword + service type + time indicator)
+        detected_intent = f"ticket:{ticket_intent['service_type'] or 'general'}"
+        mode = "ticket"
+    
+    # ═══════════════════════════════════════════════════════════════════════════
     # PLACES INTENT LOGIC (Non-negotiable)
     # ═══════════════════════════════════════════════════════════════════════════
-    if places_intent["has_intent"]:
+    elif places_intent["has_intent"]:
         detected_intent = f"places:{places_intent['place_type'] or 'general'}"
         
         if places_intent["has_location"]:
@@ -360,23 +386,11 @@ def determine_contract_mode(
         youtube_call_allowed = True
     
     # ═══════════════════════════════════════════════════════════════════════════
-    # TICKET/BOOKING INTENT LOGIC
+    # LOWER PRIORITY TICKET INTENT (only service type, no strong booking signal)
     # ═══════════════════════════════════════════════════════════════════════════
-    elif ticket_intent["has_intent"]:
+    elif ticket_intent["has_intent"] and ticket_intent["confidence"] >= 0.6:
         detected_intent = f"ticket:{ticket_intent['service_type'] or 'general'}"
         mode = "ticket"
-    
-    # ═══════════════════════════════════════════════════════════════════════════
-    # BESPOKE/HANDOFF DETECTION (same as picks_contract)
-    # ═══════════════════════════════════════════════════════════════════════════
-    bespoke_keywords = [
-        "acupuncturist", "hydrotherapy", "physiotherapy", "rehab",
-        "canine therapist", "animal communicator", "holistic", "specialist",
-        "custom", "bespoke", "one-of-a-kind"
-    ]
-    if any(kw in message.lower() for kw in bespoke_keywords):
-        detected_intent = "bespoke"
-        mode = "handoff"
     
     return {
         "mode": mode,
