@@ -5454,8 +5454,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         </Card>
                       )}
                       
-                      {/* Internal Note Toggle */}
-                      <div className="flex items-center justify-between mb-2">
+                      {/* Internal Note Toggle + AI Reply Styles */}
+                      <div className="flex items-center gap-4 mb-2 flex-wrap">
                         <label className="flex items-center gap-2 text-xs cursor-pointer">
                           <input
                             type="checkbox"
@@ -5467,7 +5467,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         </label>
                         
                         {/* AI Reply Styles Dropdown */}
-                        <div className="flex items-center gap-2" data-testid="mira-tone-selector">
+                        <div className="flex items-center gap-2 ml-auto" data-testid="mira-tone-selector">
                           <select
                             value={aiReplyStyle}
                             onChange={(e) => setAiReplyStyle(e.target.value)}
