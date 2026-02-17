@@ -34,6 +34,15 @@ const PRIORITY_COLORS = {
   critical: 'bg-red-200 text-red-800',
 };
 
+// AI Reply Style options (Mira tones)
+const AI_REPLY_STYLES = [
+  { id: 'professional', label: 'Professional', icon: '💼' },
+  { id: 'friendly', label: 'Friendly', icon: '😊' },
+  { id: 'empathetic', label: 'Empathetic', icon: '💝' },
+  { id: 'concise', label: 'Concise', icon: '✨' },
+  { id: 'detailed', label: 'Detailed', icon: '📝' },
+];
+
 const TicketFullPageModal = ({ 
   ticket, 
   onClose, 
@@ -49,6 +58,8 @@ const TicketFullPageModal = ({
   const [isInternal, setIsInternal] = useState(false);
   const [sending, setSending] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
+  const [aiReplyStyle, setAiReplyStyle] = useState('professional');
+  const [aiSuggestion, setAiSuggestion] = useState(null);
   const [attachments, setAttachments] = useState([]);
   const [replyChannel, setReplyChannel] = useState('chat');
   const [miraKnowledge, setMiraKnowledge] = useState(null);
