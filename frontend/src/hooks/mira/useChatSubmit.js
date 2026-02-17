@@ -584,19 +584,29 @@ const useChatSubmit = (config) => {
       const shouldShowConcierge = data.show_concierge !== false;
       
       // ═══════════════════════════════════════════════════════════════════════════
-      // PICKS FALLBACK RULE (Bible Section 9.0)
-      // When no catalogue match exists, PICKS must show Concierge Arranges cards
-      // Never show generic popular items as substitutes
+      // PICKS FALLBACK CONTRACT (Bible Section 9.0)
+      // Explicit, deterministic contract from backend
+      // fallback_mode: "catalogue" | "concierge" | "clarify"
+      // NEVER show generic popular items when no match/low confidence/blocked by safety
       // ═══════════════════════════════════════════════════════════════════════════
-      const conciergeFallback = data.concierge_fallback || false;
-      const conciergeArranges = data.concierge_arranges || [];
-      const conciergeFallbackReason = data.concierge_fallback_reason || null;
+      const picksContract = data.picks_contract || {};
+      const fallbackMode = picksContract.fallback_mode || (data.concierge_fallback ? 'concierge' : 'catalogue');
+      const fallbackReason = picksContract.fallback_reason || data.concierge_fallback_reason || null;
+      const matchCount = picksContract.match_count || 0;
+      const topScore = picksContract.top_score || 0.0;
+      const blockedBySafety = picksContract.blocked_by_safety || false;
+      const conciergeCards = picksContract.concierge_cards || data.concierge_arranges || [];
+      const clarifyingQuestions = picksContract.clarifying_questions || [];
       
-      if (conciergeFallback) {
-        console.log(`[PICKS FALLBACK] No catalogue match - showing Concierge Arranges | Reason: ${conciergeFallbackReason}`);
+      // Legacy field support
+      const conciergeFallback = fallbackMode === 'concierge' || fallbackMode === 'clarify';
+      const conciergeArranges = conciergeCards;
+      
+      if (fallbackMode !== 'catalogue') {
+        console.log(`[PICKS CONTRACT] mode=${fallbackMode} reason=${fallbackReason} match_count=${matchCount} top_score=${topScore.toFixed(3)} blocked_by_safety=${blockedBySafety}`);
       }
       
-      console.log(`[MODE SYSTEM] Mode: ${miraMode} | Clarify only: ${clarifyOnly} | Show products: ${shouldShowProductsFromBackend} | Concierge fallback: ${conciergeFallback}`);
+      console.log(`[MODE SYSTEM] Mode: ${miraMode} | Clarify only: ${clarifyOnly} | Show products: ${shouldShowProductsFromBackend} | Fallback mode: ${fallbackMode}`);
       
       // NEARBY PLACES
       const nearbyPlaces = data.nearby_places?.places || [];
@@ -618,18 +628,40 @@ const useChatSubmit = (config) => {
           nearby_places: data.nearby_places
         });
         setVaultUserMessage(inputQuery);
-      } else if (conciergeFallback && conciergeArranges.length > 0) {
+      } else if (fallbackMode === 'clarify' && clarifyingQuestions.length > 0) {
         // ═══════════════════════════════════════════════════════════════════════════
-        // PICKS FALLBACK: No catalogue match - show Concierge Arranges cards
+        // CLARIFY MODE: Ask clarifying questions before showing picks
+        // ═══════════════════════════════════════════════════════════════════════════
+        console.log(`[CLARIFY MODE] Showing ${clarifyingQuestions.length} clarifying questions`);
+        setMiraPicks({
+          products: [],
+          services: [],
+          conciergeArranges: [],
+          clarifyingQuestions: clarifyingQuestions,
+          picksContract: picksContract,
+          fallbackMode: fallbackMode,
+          fallbackReason: fallbackReason,
+          context: updatedPickContext,
+          mode: miraMode,
+          clarifyOnly: true,
+          showConcierge: false,
+          hasNew: true
+        });
+      } else if (fallbackMode === 'concierge' && conciergeCards.length > 0) {
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CONCIERGE FALLBACK: No catalogue match - show Concierge Arranges cards
         // Bible Section 9.0: Never show generic popular items as substitutes
         // ═══════════════════════════════════════════════════════════════════════════
-        console.log(`[CONCIERGE FALLBACK] Showing ${conciergeArranges.length} Concierge Arrange cards`);
+        console.log(`[CONCIERGE FALLBACK] Showing ${conciergeCards.length} Concierge Arrange cards | reason: ${fallbackReason}`);
         setMiraPicks({
           products: [],  // No catalogue products
           services: [],
-          conciergeArranges: conciergeArranges,  // NEW: Concierge fallback cards
+          conciergeArranges: conciergeCards,
+          picksContract: picksContract,
+          fallbackMode: fallbackMode,
+          fallbackReason: fallbackReason,
           conciergeFallback: true,
-          conciergeFallbackReason: conciergeFallbackReason,
+          conciergeFallbackReason: fallbackReason,
           context: updatedPickContext,
           subIntent: celebrationSubIntent,
           mode: miraMode,
@@ -639,8 +671,9 @@ const useChatSubmit = (config) => {
         });
         setActiveVaultData({
           ...data.response,
-          concierge_arranges: conciergeArranges,
-          concierge_fallback: true
+          concierge_arranges: conciergeCards,
+          concierge_fallback: true,
+          picks_contract: picksContract
         });
         setVaultUserMessage(inputQuery);
         notificationSounds.picks();
