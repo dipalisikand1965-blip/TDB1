@@ -3508,9 +3508,22 @@ async def search_real_products(
             # ═══════════════════════════════════════════════════════════════════════════
             # RELEVANCE SCORING: How well does this product match the user's query?
             # ═══════════════════════════════════════════════════════════════════════════
-            if user_query_terms:
-                matching_terms = user_query_terms.intersection(product_terms)
-                relevance_score = len(matching_terms) / len(user_query_terms) if user_query_terms else 0.0
+            # RELEVANCE SCORING: How well does this product match the user's query?
+            # Use expanded terms with synonyms for better category matching
+            # ═══════════════════════════════════════════════════════════════════════════
+            if expanded_query_terms:
+                matching_terms = expanded_query_terms.intersection(product_terms)
+                # Also check if any expanded term appears in product name or description
+                for term in expanded_query_terms:
+                    if term in product_name or term in product_desc:
+                        matching_terms.add(term)
+                relevance_score = len(matching_terms) / len(user_query_terms) if user_query_terms else 0.5
+            
+            # Category match gives automatic relevance boost
+            if product_category:
+                for term in user_query_terms:
+                    if term in product_category or (term in CATEGORY_SYNONYMS and any(syn in product_category for syn in CATEGORY_SYNONYMS[term])):
+                        relevance_score = max(relevance_score, 0.6)  # Ensure category matches pass threshold
             
             # FIRST: Check if product is in "products to avoid" list (parent feedback)
             if str(product_id) in avoided_product_ids or product_name in avoided_product_names:
