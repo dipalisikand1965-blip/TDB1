@@ -7172,9 +7172,38 @@ def detect_pillar(message: str, current_pillar: str = None) -> str:
     if grief_not_missing and not is_missing_pet:
         return "farewell"
     
-    # Emergency takes priority (but not for grief)
-    if any(kw in message_lower for kw in EMERGENCY_KEYWORDS):
-        # Double-check it's not grief context
+    # ═══════════════════════════════════════════════════════════════════════════
+    # EMERGENCY TRIAGE SYSTEM (Two-Tier)
+    # Tier 1: TRIAGE_FIRST - Ingestion uncertainty, ask questions first
+    # Tier 2: EMERGENCY (GO_NOW) - Immediate red flags, no questions
+    # ═══════════════════════════════════════════════════════════════════════════
+    
+    # Check for GO_NOW red flags first (immediate escalation)
+    has_go_now_flags = any(flag in message_lower for flag in GO_NOW_RED_FLAGS)
+    
+    # Check for triage_first keywords (ingestion uncertainty)
+    has_triage_keywords = any(kw in message_lower for kw in TRIAGE_FIRST_KEYWORDS)
+    
+    # Check for standard emergency keywords
+    has_emergency_keywords = any(kw in message_lower for kw in EMERGENCY_KEYWORDS)
+    
+    # Decision logic:
+    # - GO_NOW flags → immediate "emergency" pillar
+    # - Triage keywords WITHOUT go_now flags → "triage_first" (calm questioning)
+    # - Standard emergency keywords → "emergency" pillar
+    
+    if has_go_now_flags:
+        # Immediate escalation - known danger
+        if not grief_not_missing:
+            return "emergency"
+    
+    if has_triage_keywords and not has_go_now_flags:
+        # Ingestion uncertainty - needs triage questions first
+        if not grief_not_missing:
+            return "triage_first"
+    
+    if has_emergency_keywords:
+        # Standard emergency (not ingestion uncertainty)
         if not grief_not_missing:
             return "emergency"
     
