@@ -3551,6 +3551,10 @@ const MiraDemoPage = () => {
       <ConciergeConfirmation
         confirmation={conciergeConfirmation}
         onDismiss={() => setConciergeConfirmation(null)}
+        onViewInServices={() => {
+          setConciergeConfirmation(null);
+          setActiveTab('services');
+        }}
         petName={pet?.name || 'your pet'}
       />
       
