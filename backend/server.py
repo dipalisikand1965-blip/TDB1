@@ -13834,12 +13834,22 @@ async def mark_member_notification_read(
 @api_router.get("/member/notifications/inbox/{user_email}")
 async def get_member_notifications_by_email(
     user_email: str,
-    limit: int = Query(20, le=100)
+    limit: int = Query(20, le=100),
+    pet_id: str = Query(None, description="Filter notifications by pet ID")
 ):
-    """Get notifications for a member by email (public endpoint for polling)"""
+    """Get notifications for a member by email (public endpoint for polling)
+    Optionally filter by pet_id for per-pet notifications"""
     email = user_email.lower()
     
     query = {"user_email": email}
+    
+    # Filter by pet_id if provided
+    if pet_id:
+        query["$or"] = [
+            {"pet_id": pet_id},
+            {"data.pet_id": pet_id},
+            {"metadata.pet_id": pet_id}
+        ]
     
     # Get from member_notifications collection
     notifications = await db.member_notifications.find(
