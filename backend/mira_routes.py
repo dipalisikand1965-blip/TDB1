@@ -4749,6 +4749,11 @@ async def mira_os_understand_with_products(
                         }
                     ]
                     concierge_arranges = concierge_cards
+                    # Set picks_contract variables for this path
+                    fallback_mode = "concierge"
+                    fallback_reason = "no_match"
+                    concierge_fallback = True
+                    concierge_fallback_reason = "no_match"
                 else:
                     concierge_cards = []
                     concierge_arranges = []
