@@ -3,12 +3,13 @@
  * ======================================
  * The bottom input bar for typing/voice messages to Mira
  * Includes: Text input, Photo upload, Voice output toggle, Voice input button, Send button
+ * Plus: Non-clickable status indicators for C° (Concierge) and PICKS
  * 
  * Extracted from MiraDemoPage.jsx - Stage 5 Refactoring
  */
 
 import React, { useRef, useState } from 'react';
-import { Send, Mic, MicOff, Volume2, VolumeX, X, Camera, ImagePlus, Loader2, MessageSquarePlus } from 'lucide-react';
+import { Send, Mic, MicOff, Volume2, VolumeX, X, Camera, ImagePlus, Loader2, MessageSquarePlus, Gift } from 'lucide-react';
 import hapticFeedback from '../../utils/haptic';
 
 /**
