@@ -236,9 +236,11 @@ async def start_conversation(
     await db.conversations.insert_one(conversation)
     
     # Also create in service_desk_tickets for compatibility
+    # Use CANONICAL ticket_id format (TCK-YYYY-NNNNNN)
+    canonical_ticket_id = await generate_conversation_ticket_id(db)
     ticket = {
-        "ticket_id": conversation_id,
-        "conversation_id": conversation_id,
+        "ticket_id": canonical_ticket_id,  # Canonical format
+        "conversation_id": conversation_id,  # Link to conversation
         "subject": subject or "General Inquiry",
         "description": subject or "New conversation started",
         "member_email": email,
