@@ -251,9 +251,11 @@ function App() {
         <AuthProvider>
           <CartProvider>
             <PillarProvider>
-              <BrowserRouter>
-                <AppRouter />
-              </BrowserRouter>
+              <LayerProvider>
+                <BrowserRouter>
+                  <AppRouter />
+                </BrowserRouter>
+              </LayerProvider>
             </PillarProvider>
           </CartProvider>
         </AuthProvider>
