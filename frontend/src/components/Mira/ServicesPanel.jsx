@@ -428,6 +428,15 @@ const ServicesPanel = ({
     return counts;
   }, [inbox.active]);
   
+  // Calculate unread count from awaiting_user that have concierge replies
+  const unreadAwaitingCount = useMemo(() => {
+    return inbox.awaiting_user.filter(t => 
+      t.has_concierge_reply || 
+      t.unread_count > 0 || 
+      inbox.unread_ticket_ids?.includes(t.ticket_id)
+    ).length;
+  }, [inbox.awaiting_user, inbox.unread_ticket_ids]);
+  
   // Render
   if (loading) {
     return (
@@ -442,17 +451,17 @@ const ServicesPanel = ({
       {/* Header - Luxury execution thread */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
         <div>
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-            Services
-            {/* Unread replies badge */}
-            {inbox?.awaitingYou?.length > 0 && (
-              <span className="px-2 py-0.5 bg-pink-500 text-white text-xs rounded-full font-medium animate-pulse">
-                {inbox.awaitingYou.length} {inbox.awaitingYou.length === 1 ? 'reply' : 'replies'}
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-white">Services</h2>
+            {/* Unread replies badge - WhatsApp DM style */}
+            {(unreadRepliesCount > 0 || unreadAwaitingCount > 0) && (
+              <span className="px-2.5 py-1 bg-gradient-to-r from-pink-500 to-amber-500 text-white text-xs rounded-full font-bold shadow-lg shadow-pink-500/30 animate-pulse" data-testid="services-unread-badge">
+                {unreadRepliesCount || unreadAwaitingCount} new
               </span>
             )}
-          </h2>
+          </div>
           <p className="text-[10px] text-slate-400 mt-0.5">
-            Your execution thread with Concierge. Updates and replies live here.
+            Your thread with Concierge. Replies and updates live here.
           </p>
         </div>
         <button 
