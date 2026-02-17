@@ -16430,6 +16430,12 @@ set_realtime_db(db)
 app.include_router(realtime_concierge_router)  # Realtime at /api/concierge/realtime/*
 logger.info("Real-time Concierge routes initialized (WebSocket support)")
 
+# Icon State API - Unified counts for navigation icons
+from routes.icon_state_routes import router as icon_state_router, set_database as set_icon_state_db
+set_icon_state_db(db)
+app.include_router(icon_state_router)  # Icon State at /api/os/icon-state
+logger.info("Icon State API routes initialized (Unified Service Flow)")
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
