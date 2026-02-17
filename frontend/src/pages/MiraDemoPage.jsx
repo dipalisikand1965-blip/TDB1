@@ -819,6 +819,10 @@ const MiraDemoPage = () => {
   const [showPastChats, setShowPastChats] = useState(false);
   const [loadingPastChats, setLoadingPastChats] = useState(false);
   
+  // NEW CHAT FLOW - Confirmation dialog + Starter chips
+  const [showNewChatConfirm, setShowNewChatConfirm] = useState(false);
+  const [showStarterChips, setShowStarterChips] = useState(false);
+  
   // INACTIVITY AUTO-ARCHIVE: After X mins of no activity, archive conversation to past chats
   const SESSION_TIMEOUT_KEY = 'mira_last_activity';
   const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes for faster archiving
