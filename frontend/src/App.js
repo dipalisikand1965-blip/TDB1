@@ -3,6 +3,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { PillarProvider } from "./context/PillarContext";
+import { LayerProvider } from "./context/LayerContext";
 import { Toaster } from "./components/ui/toaster";
 import { useEffect, useCallback, Suspense, lazy } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
