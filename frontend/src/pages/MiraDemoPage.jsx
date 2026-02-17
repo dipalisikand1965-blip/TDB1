@@ -3778,7 +3778,7 @@ const MiraDemoPage = () => {
             isLoading={loadingPastChats}
             currentSessionId={sessionId}
             onLoadSession={loadSession}
-            onStartNewChat={startNewSession}
+            onStartNewChat={handleNewChatClick}
           />
         </Suspense>
       )}
