@@ -1190,6 +1190,16 @@ const TodayPanel = ({
           ═══════════════════════════════════════════════════════════════════ */}
           <div className="today-content">
             
+            {/* WEATHER HERO - Full weather display at top */}
+            {weather && (
+              <WeatherHeroCard
+                weather={weather}
+                city={weather.city || 'Your area'}
+                petName={pet?.name}
+                onAskMira={onAskMira}
+              />
+            )}
+            
             {/* Birthday Countdown - Special prominence */}
             {todayData.birthday && (
               <BirthdayCountdown pet={pet} daysUntil={todayData.birthday.daysUntil} />
