@@ -322,6 +322,7 @@ const ServicesPanel = ({
   onClose = null,
   onTicketSelect = null,
   onOpenRequestBuilder = null,
+  unreadRepliesCount = 0, // NEW: Count of unread concierge replies
 }) => {
   // State
   const [launchers, setLaunchers] = useState([]);
@@ -330,7 +331,8 @@ const ServicesPanel = ({
     active: [],
     orders: [],
     completed: [],
-    counts: { awaiting_user: 0, active: 0, orders: 0, total: 0 }
+    counts: { awaiting_user: 0, active: 0, orders: 0, total: 0 },
+    unread_ticket_ids: [] // Track which tickets have unread messages
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
