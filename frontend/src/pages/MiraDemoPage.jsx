@@ -3629,6 +3629,57 @@ const MiraDemoPage = () => {
         </div>
       )}
       
+      {/* Pet Switch Banner - Shows when switching pets with an existing draft (Bible Section 3.2) */}
+      {petSwitchBanner && (
+        <div 
+          className="fixed bottom-32 left-1/2 transform -translate-x-1/2 z-50 bg-gray-800/95 backdrop-blur-sm border border-purple-500/30 rounded-2xl px-4 py-3 shadow-xl max-w-md"
+          data-testid="pet-switch-banner"
+        >
+          <p className="text-white text-sm mb-2">{petSwitchBanner.message}</p>
+          {petSwitchBanner.showSendChoice && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  const result = sendForOldPet();
+                  if (result) {
+                    // Handle sending for old pet - could trigger a switch back
+                    toast({ title: `Sending for ${petSwitchBanner.oldPetName}`, duration: 2000 });
+                  }
+                }}
+                className="px-3 py-1 text-xs bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+              >
+                Send for {petSwitchBanner.oldPetName}
+              </button>
+              <button
+                onClick={() => {
+                  const result = sendForNewPet();
+                  if (result) {
+                    setQuery(result.text);
+                  }
+                }}
+                className="px-3 py-1 text-xs bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+              >
+                Send for {petSwitchBanner.newPetName}
+              </button>
+              <button
+                onClick={dismissBanner}
+                className="px-3 py-1 text-xs text-gray-400 hover:text-white transition-colors"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
+          {!petSwitchBanner.showSendChoice && (
+            <button
+              onClick={dismissBanner}
+              className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
+            >
+              Got it
+            </button>
+          )}
+        </div>
+      )}
+      
       {/* Scroll to Bottom Button - Extracted to ScrollToBottomButton component */}
       <ScrollToBottomButton 
         visible={hasNewMessages && !isAtBottom}
@@ -3641,6 +3692,8 @@ const MiraDemoPage = () => {
         query={query}
         onQueryChange={(value) => {
           setQuery(value);
+          // Update draft with sliding TTL (Bible Section 3.2)
+          updateDraft(value);
           // VOICE SYNC: Stop voice when user types
           if (value.length > 0) {
             if (voiceTimeoutRef.current) {
