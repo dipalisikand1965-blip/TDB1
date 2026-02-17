@@ -3743,51 +3743,46 @@ async def search_real_products(
         # Bible Section 9.0: No catalogue match → Concierge Arranges, NOT generic picks
         # ═══════════════════════════════════════════════════════════════════════════
         if len(products) == 0:
-            import uuid as uuid_module
             logger.info(f"[PICKS] 0 products after filtering for '{user_input_lower[:50]}' - triggering Concierge fallback")
-            detected_pillar = entities.get("pillar", "care")
-            return {
-                "products": [],
-                "concierge_fallback": True,
-                "concierge_fallback_reason": "no_matches_after_filtering",
-                "concierge_arranges": [
-                    {
-                        "id": f"concierge-{uuid_module.uuid4().hex[:8]}",
-                        "type": "concierge_pick",
-                        "label": "Concierge Pick",
-                        "title": f"Custom request for {pet_name}",
-                        "subtitle": "Allergy-safe" if pet_context.get("sensitivities") else "Made to requirements",
-                        "description": f"We don't have this in the catalogue yet — we can arrange it for {pet_name}.",
-                        "spec_chip": f"Made to {pet_name}'s requirements",
-                        "no_price": True,
-                        "action": "create_ticket",
-                        "pillar": detected_pillar,
-                        "category": "concierge_arranges",
-                        "intent": user_input_lower[:200],
-                        "original_request": user_query,
-                        "pet_id": pet_context.get("id"),
-                        "pet_name": pet_name,
-                        "pet_constraints": pet_context.get("sensitivities", []),
-                        "why_it_fits": f"Made to {pet_name}'s requirements"
-                    }
-                ]
-            }
+            return build_picks_fallback_contract(
+                fallback_mode="concierge",
+                fallback_reason="no_match",
+                match_count=0,
+                top_score=0.0,
+                blocked_by_safety=blocked_by_safety_count > 0,
+                pet_context=pet_context,
+                user_query=user_query,
+                pillar=detected_pillar
+            )
         
-        # Return products in consistent format
-        return {
-            "products": products,
-            "concierge_fallback": False,
-            "concierge_arranges": []
-        }
+        # ═══════════════════════════════════════════════════════════════════════════
+        # SUCCESS: Return catalogue products with explicit contract
+        # ═══════════════════════════════════════════════════════════════════════════
+        top_score = scored_products[0].get("relevance_score", 0.5) if scored_products else 0.5
+        return build_picks_fallback_contract(
+            fallback_mode="catalogue",
+            fallback_reason=None,
+            products=products,
+            match_count=len(products),
+            top_score=top_score,
+            blocked_by_safety=False,
+            pet_context=pet_context,
+            user_query=user_query,
+            pillar=detected_pillar
+        )
         
     except Exception as e:
         logger.error(f"Product search error: {e}")
-        return {
-            "products": [],
-            "concierge_fallback": True,
-            "concierge_fallback_reason": "error",
-            "error": str(e)
-        }
+        return build_picks_fallback_contract(
+            fallback_mode="concierge",
+            fallback_reason="error",
+            match_count=0,
+            top_score=0.0,
+            blocked_by_safety=False,
+            pet_context=pet_context,
+            user_query=user_query,
+            pillar="care"
+        )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
