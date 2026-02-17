@@ -90,16 +90,17 @@ PILLAR_MAP = {
     "fit": Pillar.FIT.value,
     "learn": Pillar.LEARN.value,
     "travel": Pillar.TRAVEL.value,
-    "advisory": Pillar.ADVISORY.value,
     "paperwork": Pillar.PAPERWORK.value,
     "emergency": Pillar.EMERGENCY.value,
-    "adopt": Pillar.ADOPT.value,
-    "farewell": Pillar.FAREWELL.value,
-    "shop": Pillar.SHOP.value,
-    "services": Pillar.SERVICES.value,
+    "general": Pillar.GENERAL.value,
+    # Aliases and non-enum pillars
+    "advisory": "advisory",
+    "adopt": "adopt",
+    "farewell": "farewell",
+    "shop": "shop",
+    "services": "services",
     "membership": "membership",
-    "whatsapp": "whatsapp",
-    "general": "general"
+    "whatsapp": "whatsapp"
 }
 
 CHANNEL_MAP = {
