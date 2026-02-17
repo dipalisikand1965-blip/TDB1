@@ -421,32 +421,52 @@ const MiraMessageHeader = ({
       </button>
     )}
     
-    {/* Picks Icon */}
-    <button 
-      className="mp-header-picks-icon"
-      onClick={() => { hapticFeedback?.trayOpen?.(); onShowPicks(); }}
+    {/* Picks Indicator - Non-clickable status display */}
+    <div 
+      className="mp-header-picks-indicator"
       title={`${pet.name}'s Picks`}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+        padding: '4px 8px',
+        borderRadius: '12px',
+        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2))',
+        border: '1.5px solid rgba(236, 72, 153, 0.4)',
+        pointerEvents: 'none',
+        cursor: 'default'
+      }}
     >
-      <div className="mp-picks-gift">
-        <Gift size={18} />
-      </div>
+      <Gift size={14} style={{ color: 'white', opacity: 0.8 }} />
       {pet.photo ? (
         <img 
           src={pet.photo} 
           alt={pet.name}
-          className="mp-picks-pet-face"
+          style={{
+            width: '18px',
+            height: '18px',
+            borderRadius: '50%',
+            objectFit: 'cover',
+            border: '1px solid rgba(255,255,255,0.3)'
+          }}
         />
       ) : (
-        <div className="mp-picks-paw">
-          <PawPrint size={12} />
-        </div>
+        <PawPrint size={12} style={{ color: 'white', opacity: 0.7 }} />
       )}
       {(miraPicks.products.length + miraPicks.services.length) > 0 && (
-        <span className="mp-picks-count">
+        <span style={{
+          fontSize: '10px',
+          fontWeight: 700,
+          color: 'white',
+          background: '#ec4899',
+          borderRadius: '8px',
+          padding: '1px 5px',
+          marginLeft: '2px'
+        }}>
           {miraPicks.products.length + miraPicks.services.length}
         </span>
       )}
-    </button>
+    </div>
   </div>
 );
 
