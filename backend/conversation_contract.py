@@ -437,15 +437,17 @@ def build_quick_replies(
         clarify_reason = context.get("clarify_reason", "need_location")
         
         if clarify_reason == "need_location":
+            # User didn't provide location and didn't say "near me"
             quick_replies = [
-                {"id": "qr_use_location", "label": "Use my current location", "payload_text": "Use my current location", "intent_type": "continue"},
-                {"id": "qr_choose_area", "label": "Choose an area", "payload_text": "Let me specify the area", "intent_type": "continue"},
-                {"id": "qr_different_city", "label": "Different city", "payload_text": "Search in a different city", "intent_type": "continue"}
+                {"id": "qr_use_location", "label": "Use current location", "payload_text": "Use my current location", "intent_type": "continue"},
+                {"id": "qr_type_area", "label": "Type an area", "payload_text": "Let me type the area", "intent_type": "continue"}
             ]
         elif clarify_reason == "need_location_consent":
+            # User said "near me" but we don't have location permission
+            # CONSENT GATE: Only show these 2 chips - "Use current location" triggers browser geo
             quick_replies = [
-                {"id": "qr_allow_location", "label": "Allow location access", "payload_text": "Allow location access", "intent_type": "continue"},
-                {"id": "qr_type_location", "label": "I'll type the location", "payload_text": "I'll type the location instead", "intent_type": "continue"}
+                {"id": "qr_use_location", "label": "Use current location", "payload_text": "Use my current location", "intent_type": "continue"},
+                {"id": "qr_type_area", "label": "Type an area", "payload_text": "Let me type the area", "intent_type": "continue"}
             ]
     
     elif mode == "places":
