@@ -85,11 +85,17 @@ const getGroomingIntervalDays = (frequency) => {
 const WeatherHeroCard = memo(({ weather, city, petName, onAskMira }) => {
   if (!weather) return null;
   
-  const temp = weather.temperature || weather.temp;
-  const description = weather.description || weather.conditions || 'Clear';
-  const humidity = weather.humidity;
-  const windSpeed = weather.wind_speed || weather.windSpeed;
-  const feelsLike = weather.feels_like || weather.feelsLike;
+  // Handle various weather data structures
+  const currentWeather = weather.current_weather || weather;
+  const temp = currentWeather.temperature || currentWeather.temp || weather.temperature || weather.temp;
+  const description = currentWeather.description || currentWeather.conditions || weather.description || 'Clear';
+  const humidity = currentWeather.humidity || weather.humidity;
+  const windSpeed = currentWeather.wind_speed || currentWeather.windSpeed || weather.wind_speed;
+  const feelsLike = currentWeather.feels_like || currentWeather.feelsLike || weather.feels_like;
+  const weatherCity = city || weather.city || currentWeather.city || 'Your area';
+  
+  // Skip if no valid temperature
+  if (temp === undefined || temp === null || isNaN(temp)) return null;
   
   // Determine walk safety
   const getWalkSafety = () => {
