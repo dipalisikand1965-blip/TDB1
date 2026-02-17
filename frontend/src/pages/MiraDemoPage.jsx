@@ -64,6 +64,8 @@ import ServiceRequestBuilder from '../components/Mira/ServiceRequestBuilder';
 import ReplyNudge from '../components/Mira/ReplyNudge';
 import OnboardingTooltip from '../components/Mira/OnboardingTooltip';
 import ConciergeReplyBanner from '../components/Mira/ConciergeReplyBanner';
+import NewChatConfirmDialog from '../components/Mira/NewChatConfirmDialog';
+import StarterChips from '../components/Mira/StarterChips';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LAZY LOADED COMPONENTS (Performance Optimization)
