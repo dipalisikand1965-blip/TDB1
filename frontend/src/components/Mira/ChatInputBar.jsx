@@ -161,6 +161,133 @@ const ChatInputBar = ({
   
   return (
     <div className="mp-composer">
+      {/* Status Indicators - Non-clickable, passive status display */}
+      {(conciergeCount > 0 || picksCount > 0 || hasConciergeNew || hasPicksNew) && (
+        <div 
+          className="mp-status-indicators"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px',
+            padding: '8px 16px',
+            pointerEvents: 'none', // NOT clickable
+            userSelect: 'none'
+          }}
+          data-testid="chat-status-indicators"
+        >
+          {/* C° Indicator - Concierge status */}
+          {(conciergeCount > 0 || hasConciergeNew) && (
+            <div 
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                background: 'rgba(16, 185, 129, 0.15)',
+                border: '2px solid rgba(16, 185, 129, 0.5)',
+                position: 'relative'
+              }}
+            >
+              <span style={{
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+                fontSize: '14px',
+                fontWeight: 600,
+                color: '#10b981',
+                letterSpacing: '-0.5px'
+              }}>
+                C°
+              </span>
+              
+              {/* Count badge or new dot */}
+              {conciergeCount > 0 ? (
+                <span style={{
+                  position: 'absolute',
+                  top: '-4px',
+                  right: '-4px',
+                  minWidth: '18px',
+                  height: '18px',
+                  borderRadius: '9px',
+                  background: '#ef4444',
+                  color: 'white',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0 4px'
+                }}>
+                  {conciergeCount > 9 ? '9+' : conciergeCount}
+                </span>
+              ) : hasConciergeNew && (
+                <span style={{
+                  position: 'absolute',
+                  top: '0',
+                  right: '0',
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: '#10b981'
+                }} />
+              )}
+            </div>
+          )}
+          
+          {/* PICKS Indicator */}
+          {(picksCount > 0 || hasPicksNew) && (
+            <div 
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '44px',
+                height: '40px',
+                borderRadius: '14px',
+                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.3))',
+                border: '2px solid rgba(236, 72, 153, 0.5)',
+                position: 'relative'
+              }}
+            >
+              <Gift size={18} style={{ color: 'white', opacity: 0.9 }} />
+              
+              {/* Count badge or new dot */}
+              {picksCount > 0 ? (
+                <span style={{
+                  position: 'absolute',
+                  top: '-4px',
+                  right: '-4px',
+                  minWidth: '18px',
+                  height: '18px',
+                  borderRadius: '9px',
+                  background: '#ec4899',
+                  color: 'white',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0 4px'
+                }}>
+                  {picksCount > 9 ? '9+' : picksCount}
+                </span>
+              ) : hasPicksNew && (
+                <span style={{
+                  position: 'absolute',
+                  top: '0',
+                  right: '0',
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: '#ec4899'
+                }} />
+              )}
+            </div>
+          )}
+        </div>
+      )}
+      
       {/* Helper text - Mental model clarifier */}
       <div className="mp-helper-text" style={{
         padding: '4px 16px 8px',
