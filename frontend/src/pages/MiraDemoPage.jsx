@@ -3909,10 +3909,12 @@ const MiraDemoPage = () => {
                     miraPicks={miraPicks}
                     miraMode={miraMode}
                     isOld={true}
+                    picksState={picksState}
+                    conciergeState={conciergeState}
                     hapticFeedback={hapticFeedback}
-                    onShowConcierge={() => setShowConciergePanel(true)}
+                    onShowConcierge={() => handleOSTabChange('concierge')}
                     onShowInsights={() => setShowInsightsPanel(true)}
-                    onShowPicks={() => setShowMiraTray(true)}
+                    onShowPicks={() => handleOSTabChange('picks')}
                     onQuickReply={handleQuickReply}
                     onEngageConcierge={engageConcierge}
                     onOpenServiceRequest={openServiceRequest}
@@ -3930,10 +3932,12 @@ const MiraDemoPage = () => {
                   miraPicks={miraPicks}
                   miraMode={miraMode}
                   isOld={false}
+                  picksState={picksState}
+                  conciergeState={conciergeState}
                   hapticFeedback={hapticFeedback}
-                  onShowConcierge={() => setShowConciergePanel(true)}
+                  onShowConcierge={() => handleOSTabChange('concierge')}
                   onShowInsights={() => setShowInsightsPanel(true)}
-                  onShowPicks={() => setShowMiraTray(true)}
+                  onShowPicks={() => handleOSTabChange('picks')}
                   onQuickReply={handleQuickReply}
                   onEngageConcierge={engageConcierge}
                   onOpenServiceRequest={openServiceRequest}
