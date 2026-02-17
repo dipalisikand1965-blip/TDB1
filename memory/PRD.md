@@ -481,7 +481,7 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
 
 ## 🔗 PREVIEW URL
 ```
-https://service-desk-test.preview.emergentagent.com
+https://mira-soul-sync.preview.emergentagent.com
 ```
 
 ---
