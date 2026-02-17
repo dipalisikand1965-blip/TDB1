@@ -38,7 +38,8 @@ const useIconStateAPI = ({
   const fetchIconState = useCallback(async (silent = false) => {
     if (!enabled) return;
 
-    const token = localStorage.getItem('token');
+    // Try multiple token keys (app uses different keys in different contexts)
+    const token = localStorage.getItem('tdb_auth_token') || localStorage.getItem('token');
     if (!token) {
       setError('No auth token');
       return;
