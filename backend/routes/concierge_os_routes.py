@@ -1541,18 +1541,14 @@ async def store_conversation_insights(db, pet_id: str, insights: List[Dict], thr
     learned_facts = pet.get("learned_facts", [])
     
     # Build dedup lookup: (normalized_category, normalized_content) -> True
-    # Only for pending_review insights from last 7 days
-    from datetime import datetime, timedelta
-    cutoff_date = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
-    
+    # CONSERVATIVE DEDUPE: Exact match only (category + content)
+    # We want Mira to capture the same fact if restated months later or phrased differently
     existing_pending = set()
     for ins in existing_insights:
         if ins.get("status") == "pending_review":
-            extracted_at = ins.get("extracted_at", "")
-            if extracted_at >= cutoff_date:
-                norm_cat = (ins.get("category") or "").lower().strip()
-                norm_content = (ins.get("content") or "").lower().strip()
-                existing_pending.add((norm_cat, norm_content))
+            norm_cat = (ins.get("category") or "").lower().strip()
+            norm_content = (ins.get("content") or "").lower().strip()
+            existing_pending.add((norm_cat, norm_content))
     
     # Also check learned_facts for dedup
     for fact in learned_facts:
