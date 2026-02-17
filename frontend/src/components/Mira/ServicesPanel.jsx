@@ -4,14 +4,18 @@
  * SERVICES = Execution Layer - "Where hands move"
  * Per MOJO Bible Part 4: Turn intent into real outcomes via tasks.
  * 
- * Layout (Premium):
+ * Layout (Premium, WhatsApp/Instagram DM Style):
  * - Top: Service Launchers (8 max visible, small grid)
  * - Middle: "Awaiting You" shelf (always pinned - the killer UX)
+ *   - Unread dot indicator (pink/amber)
+ *   - "New" badge label
+ *   - Preview with "Concierge:" prefix
  * - Next: Active Requests (status tabs + smart grouping)
  * - Bottom: Orders (only if there are orders - no empty modules)
  * 
  * UI/UX Laws:
  * - Feels like a private office dashboard (no emojis)
+ * - WhatsApp/Instagram DM style unread indicators
  * - Desktop: Two-column (inbox left, detail right)
  * - Mobile: List → Detail page
  * - Micro-delights only for state changes
@@ -23,7 +27,8 @@ import {
   Camera, PartyPopper, Plane, ChevronRight, ChevronDown,
   Clock, AlertCircle, CheckCircle, CreditCard, Calendar,
   Package, Truck, X, Loader2, RefreshCw, MoreHorizontal,
-  HelpCircle, List, Edit, Inbox, CalendarCheck, PawPrint, Check
+  HelpCircle, List, Edit, Inbox, CalendarCheck, PawPrint, Check,
+  MessageSquare
 } from 'lucide-react';
 import TicketDetailPanel from './TicketDetailPanel';
 
