@@ -111,11 +111,24 @@ export const getIconState = (tabId, data = {}, activeTab = null) => {
     // PULSE: urgent_count > 0 OR due_today_count > 0
     // ON: upcoming_count > 0 (but not urgent/due)
     // OFF: All are zero
+    // SYNCING: null values indicate legacy data migration in progress
     // Badge: urgent + due_today (cap 9+)
     // ─────────────────────────────────────────────────────────────────────
     case TAB_IDS.TODAY: {
-      const { urgentCount = 0, dueTodayCount = 0, upcomingCount = 0 } = data;
-      const badgeCount = urgentCount + dueTodayCount;
+      const { urgentCount, dueTodayCount, upcomingCount } = data;
+      
+      // Legacy data handling: null means "unknown, possibly non-zero"
+      const hasLegacyUnknown = urgentCount === null || dueTodayCount === null;
+      if (hasLegacyUnknown) {
+        return {
+          state: ICON_STATE.ON, // Show as ON (not OFF) when data is unknown
+          badge: '—', // Dash indicates "syncing"
+          tooltip: 'Syncing ticket data...',
+          _syncing: true,
+        };
+      }
+      
+      const badgeCount = (urgentCount || 0) + (dueTodayCount || 0);
       
       if (urgentCount > 0 || dueTodayCount > 0) {
         return {
@@ -125,7 +138,7 @@ export const getIconState = (tabId, data = {}, activeTab = null) => {
         };
       }
       
-      if (upcomingCount > 0) {
+      if ((upcomingCount || 0) > 0) {
         return {
           state: ICON_STATE.ON,
           badge: null,
