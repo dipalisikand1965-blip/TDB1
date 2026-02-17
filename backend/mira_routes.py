@@ -6545,10 +6545,31 @@ EMERGENCY_KEYWORDS = [
     "emergency", "urgent", "help now", "immediately", "lost pet", "missing",
     "accident", "injured", "bleeding", "poison", "poisoned", "choking", "not breathing",
     "collapsed", "seizure", "hit by car", "bite", "attacked",
-    # Toxic ingestion emergencies
+    # Toxic ingestion emergencies - IMMEDIATE (known toxins)
     "ate chocolate", "ate xylitol", "ate grapes", "ate raisins", "ate onion",
-    "chocolate", "xylitol", "antifreeze", "rat poison", "medication",
-    "swallowed", "ingested", "ate something", "licked", "drank"
+    "chocolate", "xylitol", "antifreeze", "rat poison", "medication"
+]
+
+# TRIAGE_FIRST keywords - Ingestion uncertainty, needs questions before sirens
+TRIAGE_FIRST_KEYWORDS = [
+    "ate something", "swallowed", "ingested", "licked", "drank",
+    "got into", "chewed on", "eaten something", "swallowed something",
+    "ate weird", "ate strange", "ate unknown"
+]
+
+# GO_NOW red flags - If ANY of these appear, skip triage and escalate immediately
+GO_NOW_RED_FLAGS = [
+    # Physical distress
+    "not breathing", "can't breathe", "trouble breathing", "gasping", "choking",
+    "collapsed", "can't stand", "won't stand", "can't walk", "limp",
+    "seizure", "seizing", "convulsing", "shaking", "tremors",
+    "unresponsive", "won't wake", "unconscious", "not moving",
+    "vomiting blood", "blood in vomit", "bloody vomit",
+    "pale gums", "blue gums", "white gums", "grey tongue",
+    # Known toxins
+    "rat poison", "rodenticide", "xylitol", "antifreeze", "coolant",
+    "grapes", "raisins", "chocolate large", "medication overdose",
+    "insecticide", "pesticide", "battery", "sharp object"
 ]
 
 
