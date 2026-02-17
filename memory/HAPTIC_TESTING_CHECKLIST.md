@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://mojo-first-os.preview.emergentagent.com/mira-demo**
+**https://mira-icon-phase3.preview.emergentagent.com/mira-demo**
 
 ---
 

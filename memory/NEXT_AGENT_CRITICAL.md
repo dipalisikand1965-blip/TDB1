@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://mojo-first-os.preview.emergentagent.com
+https://mira-icon-phase3.preview.emergentagent.com
 
 ---
 
