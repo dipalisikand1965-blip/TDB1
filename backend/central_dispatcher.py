@@ -179,7 +179,7 @@ async def dispatch_action(
                 "inbox_id": inbox_id,
                 "description": description,
                 "tags": tags,
-                "metadata": metadata,
+                "raw_data": raw_data,
             },
             
             # Options
