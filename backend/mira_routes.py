@@ -4438,7 +4438,7 @@ async def mira_os_understand_with_products(
             elif mira_mode == "EMERGENCY":
                 life_state = "EMERGENCY"
             
-            real_products = await search_real_products(
+            product_search_result = await search_real_products(
                 entities=entities,
                 pet_context=request.pet_context or {},
                 limit=6,
@@ -4448,6 +4448,21 @@ async def mira_os_understand_with_products(
                 user_query=request.input,          # Pass original query for treat detection
                 conversation_history=request.conversation_history  # NEW: For advisory detection
             )
+            
+            # Handle new return format from search_real_products
+            # Bible Section 9.0: No catalogue match → Concierge Arranges, NOT generic picks
+            if isinstance(product_search_result, dict):
+                real_products = product_search_result.get("products", [])
+                concierge_fallback = product_search_result.get("concierge_fallback", False)
+                concierge_arranges = product_search_result.get("concierge_arranges", [])
+                
+                if concierge_fallback:
+                    logger.info(f"[PICKS FALLBACK] No catalogue match - Concierge arranges triggered for pet {request.pet_context.get('name', 'unknown')}")
+            else:
+                # Legacy format: just a list of products
+                real_products = product_search_result if product_search_result else []
+                concierge_fallback = False
+                concierge_arranges = []
         
         logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_food_main={is_food_main_intent}, is_treat={is_treat_request}, is_grief_hold={is_grief_hold}, is_groom_tools={is_groom_tools}, is_groom_medical={is_groom_medical_boundary}, is_food_medical={is_food_medical_boundary}, showing_products={should_show_products}")
         
