@@ -252,31 +252,56 @@ const PetDropdown = memo(({
 
 /**
  * OSLayerTab - Individual tab in the navigation
+ * Updated for PET_OS_BEHAVIOR_BIBLE v1.1 Section 2 (OFF/ON/PULSE states)
  */
 const OSLayerTab = memo(({ 
   layer, 
   isActive, 
   onClick, 
   badge = null,
-  hasNew = false // For PICKS "new" sparkle animation
+  hasNew = false, // Legacy: For PICKS "new" sparkle animation
+  iconState = 'OFF', // NEW: OFF | ON | PULSE per Bible
+  iconCount = 0, // NEW: Count for badge
 }) => {
   const Icon = layer.icon;
+  const isOff = iconState === 'OFF';
+  const isOn = iconState === 'ON';
+  const isPulse = iconState === 'PULSE';
   
   return (
     <button
-      className={`os-layer-tab ${isActive ? 'active' : ''} ${hasNew ? 'has-new-picks' : ''}`}
+      className={`
+        os-layer-tab 
+        ${isActive ? 'active' : ''} 
+        ${hasNew || isPulse ? 'has-new-picks' : ''}
+        ${isOff ? 'icon-off' : ''}
+        ${isPulse ? 'icon-pulse' : ''}
+      `}
       onClick={() => {
         hapticFeedback.buttonTap();
         onClick(layer.id);
       }}
       title={layer.description}
       data-testid={`os-tab-${layer.id}`}
+      data-icon-state={iconState}
+      aria-label={`${layer.label}, ${isOff ? 'no items' : isPulse ? `${iconCount || badge} new items` : `${iconCount || badge || 0} items`}`}
     >
-      {Icon && <Icon className="tab-icon" />}
-      <span className="tab-label">{layer.label}</span>
-      {badge && (
-        <span className={`tab-badge ${hasNew ? 'badge-new' : ''}`}>
-          {hasNew ? '✨' : ''}{badge}
+      {/* Icon with state-based styling */}
+      {Icon && (
+        <div className="tab-icon-wrapper">
+          <Icon className={`tab-icon ${isOff ? 'opacity-50' : ''} ${isPulse ? 'animate-pulse-subtle' : ''}`} />
+          {/* State indicator dot */}
+          {(isOn || isPulse) && !badge && !iconCount && (
+            <span className={`tab-state-dot ${isPulse ? 'dot-pulse' : 'dot-on'}`} />
+          )}
+        </div>
+      )}
+      <span className={`tab-label ${isOff ? 'opacity-50' : ''}`}>{layer.label}</span>
+      {/* Badge: Show count from iconCount or legacy badge */}
+      {(badge || iconCount > 0) && (
+        <span className={`tab-badge ${hasNew || isPulse ? 'badge-new badge-pulse' : ''}`}>
+          {isPulse ? '✨' : ''}{iconCount || badge}
+        </span>
         </span>
       )}
       {hasNew && layer.id === 'picks' && (
