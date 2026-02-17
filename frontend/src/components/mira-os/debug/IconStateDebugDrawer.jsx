@@ -13,7 +13,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Bug, RefreshCw, Check, X, AlertTriangle } from 'lucide-react';
-import { ICON_STATE, TAB_IDS, getIconState } from '../../hooks/mira/useIconState';
+import { ICON_STATE, TAB_IDS, getIconState } from '../../../hooks/mira/useIconState';
 
 const StateIndicator = ({ state }) => {
   const colors = {
