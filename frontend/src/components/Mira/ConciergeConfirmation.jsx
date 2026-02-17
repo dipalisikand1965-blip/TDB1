@@ -58,7 +58,7 @@ const ConciergeConfirmation = ({
   
   // Personalized title based on pet name
   const ticketId = confirmation.ticket_id || '';
-  const personalizedTitle = `Request sent to Concierge • ${ticketId}`;
+  const personalizedTitle = `Request opened • ${ticketId}`;
 
   return (
     <div 
@@ -90,7 +90,7 @@ const ConciergeConfirmation = ({
                   {personalizedTitle}
                 </h3>
                 <span className="text-emerald-100 text-xs">
-                  You can reply in Services.
+                  Reply in Services to add details or change timing.
                 </span>
               </div>
             </div>
@@ -102,11 +102,6 @@ const ConciergeConfirmation = ({
               <X className="w-4 h-4" />
             </button>
           </div>
-          
-          {/* Message - Where do I reply? killer */}
-          <p className="text-white/90 text-sm leading-relaxed ml-12">
-            Your Concierge thread lives in Services. Reply there to add details or change timing.
-          </p>
           
           {/* Status indicator */}
           <div className="flex items-center gap-2 mt-3 ml-12">
