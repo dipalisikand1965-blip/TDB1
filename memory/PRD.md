@@ -89,6 +89,11 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 - [x] Wire icon states to real API data (`/api/os/icon-state`)
 - [x] Implement canonical ticket_id format (`TCK-YYYY-NNNNNN`)
 - [x] **PICKS Fallback Rule (Bible Section 9.0)** - No catalogue match → Concierge Arranges
+- [x] **PICKS Fallback QA Verification** - All acceptance tests passed (Feb 17, 2026)
+  - Test 1: Bespoke request → `fallback_mode='concierge'`, `fallback_reason='bespoke_intent'` ✓
+  - Test 2: Normal request → `fallback_mode='catalogue'` with matches ✓
+  - Test 3: Ambiguous request → Handled correctly ✓  
+  - Test 4: Ticket creation → Canonical `TCK-2026-*` format ✓
 - [ ] Update remaining intake routes to use `create_or_attach_service_ticket()`:
   - `stay_routes.py`, `dine_routes.py`, `celebrate_routes.py`, `enjoy_routes.py`
   - `fit_routes.py`, `learn_routes.py`, `paperwork_routes.py`, `emergency_routes.py`
