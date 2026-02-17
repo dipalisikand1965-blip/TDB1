@@ -2335,7 +2335,21 @@ const MojoProfileModal = ({
                         <>
                           {/* Section-specific content */}
                           {section.id === 'soul' && <SoulProfileContent pet={petData} />}
-                          {section.id === 'learned' && <LearnedFactsContent pet={petData} />}
+                          {section.id === 'learned' && (
+                            <LearnedFactsContent 
+                              pet={petData} 
+                              apiUrl={apiUrl}
+                              token={token}
+                              onInsightAction={(action, insightId) => {
+                                // Refresh pet data after confirm/reject
+                                console.log(`[MOJO] Insight ${insightId} ${action}ed, refreshing...`);
+                                // Trigger a refresh of pet data
+                                window.dispatchEvent(new CustomEvent('mojo-refresh-pet', { 
+                                  detail: { petId: pet?.id } 
+                                }));
+                              }}
+                            />
+                          )}
                           {section.id === 'trait_graph' && (
                             <TraitGraphVisualization 
                               petId={pet?.id}
