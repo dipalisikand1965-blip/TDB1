@@ -4069,6 +4069,33 @@ async def mira_os_understand_with_products(
         input_for_llm = enhanced_input if resolution_info.get("context_used") else request.input
         
         # ═══════════════════════════════════════════════════════════════════════════
+        # CONVERSATION CONTRACT (Phase 5) - Deterministic UI rendering
+        # Bible Section 10.0: Chat output must be deterministic
+        # ═══════════════════════════════════════════════════════════════════════════
+        conversation_contract_data = None
+        contract_mode_result = None
+        
+        if CONVERSATION_CONTRACT_AVAILABLE:
+            try:
+                # Determine if user has location permission (from request or session)
+                has_location_permission = request.has_location_permission if hasattr(request, 'has_location_permission') else False
+                
+                # Process the conversation contract
+                contract_result = await process_conversation_contract(
+                    message=request.input,
+                    pet_context=request.pet_context,
+                    has_location_permission=has_location_permission
+                )
+                contract_mode_result = contract_result.get("mode_result", {})
+                
+                logger.info(f"[CONVERSATION CONTRACT] Mode: {contract_mode_result.get('mode')}, Intent: {contract_mode_result.get('detected_intent')}")
+            except Exception as contract_err:
+                logger.warning(f"[CONVERSATION CONTRACT] Error: {contract_err}")
+                contract_mode_result = {"mode": "answer", "detected_intent": "general"}
+        else:
+            contract_mode_result = {"mode": "answer", "detected_intent": "general"}
+        
+        # ═══════════════════════════════════════════════════════════════════════════
         # PICKS ENGINE (B6) - Run ONCE at the start for every message
         # This ensures picks auto-refresh on every chat turn
         # ═══════════════════════════════════════════════════════════════════════════
