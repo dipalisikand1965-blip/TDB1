@@ -513,6 +513,7 @@ const TraitBadge = memo(({ confidence, isInferred }) => {
 const LearnedFactsContent = memo(({ pet, apiUrl, token, onInsightAction }) => {
   const [processingId, setProcessingId] = useState(null);
   const [showPending, setShowPending] = useState(true);
+  const [conflictRefreshKey, setConflictRefreshKey] = useState(0);
   
   const learnedFacts = pet?.learned_facts || [];
   const conversationInsights = pet?.conversation_insights || [];
