@@ -121,7 +121,7 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 
 ### P1 (High Priority) - Next Tasks
 - [ ] **Legacy Ticket Migration** - 134 tickets with non-canonical IDs need migration to TCK-* format
-- [ ] **Refine "Legacy Data Detected" label** - Change to "Syncing history" in UI
+- [x] **Refine "Legacy Data Detected" label** - Changed to "Syncing history" in UI ✅ (Feb 17, 2026)
 - [ ] Implement PICKS material change logic (Bible Section 2.4)
 - [ ] Connect LEARN items to icon state
 - [ ] Provide 60-second screen recording proof (verify PULSE → ON transitions)
