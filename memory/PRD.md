@@ -71,16 +71,23 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 
 ## Prioritized Backlog
 
-### P0 (Critical)
+### P0 (Critical) - Blockers before enabling for real users
 - [x] Fix Phase 3 bug (soulKnowledge initialization order)
 - [x] Complete Phase 3 implementation with MOJO tab
-- [ ] Provide 60-second screen recording proof (verify PULSE → ON transitions)
+- [x] Wire icon states to real API data (`/api/os/icon-state`)
+- [x] Implement canonical ticket_id format (`TCK-YYYY-NNNNNN`)
+- [ ] Update remaining intake routes to use `generate_ticket_id()`:
+  - `stay_routes.py`, `dine_routes.py`, `celebrate_routes.py`, `enjoy_routes.py`
+  - `fit_routes.py`, `learn_routes.py`, `paperwork_routes.py`, `emergency_routes.py`
+  - `whatsapp_routes.py`, `membership_routes.py`, `ticket_auto_create.py`
+  - `unified_signal_flow.py`, `user_tickets_routes.py`, `service_catalog_routes.py`, `ticket_messaging.py`
+- [ ] OR: Create single `create_or_attach_service_ticket()` helper for all intakes
 
 ### P1 (High Priority)
-- [ ] Wire icon states to real data (tickets, concierge, alerts)
 - [ ] Implement PICKS material change logic (Bible Section 2.4)
 - [ ] Connect LEARN items to icon state
-- [ ] Phase 4: Ticket Schema + Status Mapping
+- [ ] Phase 5: Picks Material Change Logic
+- [ ] Provide 60-second screen recording proof (verify PULSE → ON transitions)
 
 ### P2 (Medium Priority)
 - [ ] Refactor `server.py` (monolithic)
