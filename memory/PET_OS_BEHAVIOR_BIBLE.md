@@ -1534,6 +1534,156 @@ PASS CRITERIA: Full insight lifecycle works
 
 ---
 
+# SECTION 11: CONVERSATION CONTRACT (Phase 5)
+
+## 11.0 Non-Negotiable Principle
+
+**Chat output must be deterministic. UI must never infer behavior from free text.**
+
+The `conversation_contract` is returned on EVERY chat response and controls:
+- `mode`: answer | clarify | places | learn | ticket | handoff
+- `quick_replies`: 3-6 chips with payload_text
+- `actions`: create_ticket CTAs via spine
+- `places_results`: Google Places results
+- `youtube_results`: YouTube learning videos
+- `spine`: { ticket_id }
+
+---
+
+## 11.1 Conversation Contract Schema
+
+```json
+{
+  "mode": "answer|clarify|places|learn|ticket|handoff",
+  "assistant_text": "string",
+  "quick_replies": [
+    { "id": "qr_1", "label": "Find nearby vets", "payload_text": "Find a vet near me", "intent_type": "refine" }
+  ],
+  "clarifying_questions": [
+    { "id": "cq_1", "question": "Where should I search?", "chips": [...] }
+  ],
+  "actions": [
+    { "type": "create_ticket", "label": "Send to Concierge", "payload": { "pillar": "care", "category": "concierge_arranges", "intent": "..." } }
+  ],
+  "places_query": { "query": "", "location": "", "radius_m": 3000, "filters": {} },
+  "places_results": [],
+  "youtube_query": { "query": "", "filters": {} },
+  "youtube_results": [],
+  "spine": { "ticket_id": null },
+  "_debug": {
+    "detected_intent": "places:vet",
+    "places_call_allowed": false,
+    "youtube_call_allowed": false,
+    "location_source": "none|user_text|consented_geo"
+  }
+}
+```
+
+---
+
+## 11.2 Deterministic Render Rules (Frontend Must Follow)
+
+| Mode | Render | DO NOT Show |
+|------|--------|-------------|
+| `answer` | assistant_text + quick_replies | - |
+| `clarify` | assistant_text + clarifying_questions + quick_replies | places, youtube, products, generic padding |
+| `places` | assistant_text + places_results + quick_replies | youtube, products |
+| `learn` | assistant_text + youtube_results + quick_replies | places, products |
+| `ticket` | assistant_text + actions (CTA) | places, youtube |
+| `handoff` | assistant_text + actions (CTA) | places, youtube, generic products |
+
+**HARD RULE:** Never show "popular/featured" filler when mode is not `catalogue` or `answer`. No padding.
+
+---
+
+## 11.3 Quick Replies Rules (Chips)
+
+- **Max 6 chips** per response
+- Each chip MUST include `payload_text` (what is sent when tapped)
+- Allowed `intent_type` values:
+  - `continue`: Asks for one missing detail
+  - `refine`: Adds constraint (budget, time, distance, preferences)
+  - `execute`: Creates ticket / sends to concierge via spine
+- **No generic chips.** If not grounded in contract mode + context, don't show.
+
+---
+
+## 11.4 Google Places Mode Gates (Non-Negotiable)
+
+### When to trigger `mode="clarify"`:
+- Intent is places-related (vet, groomer, park, cafe, etc.)
+- AND user did NOT provide city/area
+- AND user did NOT say "near me / around here / nearby"
+
+### When to trigger `mode="places"`:
+- User provided explicit location (e.g., "in Koramangala")
+- OR user said "near me" AND location_permission = true
+
+### Location Permission Rule:
+- **Never auto-trigger browser geolocation on generic request**
+- Only ask to use location when user explicitly implies proximity ("near me") OR taps "Use current location" chip
+- If user didn't provide city/area and didn't say "near me" → `mode="clarify"` and ask
+
+---
+
+## 11.5 YouTube Mode Gates
+
+### When to trigger `mode="learn"`:
+- User intent is explicitly training/how-to/teach/steps
+- Example keywords: "how to", "teach", "train", "tips", "guide", "help with"
+- NOT for venue discovery
+
+### Return:
+- 3-5 videos max
+- Fields: title, channel, link, duration (if available)
+
+---
+
+## 11.6 Ticket/Handoff Mode
+
+### When to trigger `mode="ticket"`:
+- User wants to book/schedule/arrange a service
+- Keywords: "book", "schedule", "appointment", "reserve"
+- Time indicators: "tomorrow", "morning", "next week"
+
+### When to trigger `mode="handoff"`:
+- Request is bespoke/specialist (acupuncturist, hydrotherapy, etc.)
+- Request requires human execution
+- No catalogue match available
+
+### Action Must:
+- Call `create_or_attach_service_ticket()` 
+- Return canonical `TCK-YYYY-NNNNNN` format
+- Include spine.ticket_id in contract
+
+---
+
+## 11.7 Debug Visibility Requirements
+
+Add to Debug Drawer (when URL has `debug=1`):
+- `detected_intent`: What intent was detected
+- `mode`: Chosen contract mode
+- `places_call_allowed`: Boolean
+- `youtube_call_allowed`: Boolean
+- `location_source`: none | user_text | consented_geo
+
+---
+
+## 11.8 Acceptance Tests (Must Pass)
+
+| # | Prompt | Expected Mode | Verification |
+|---|--------|---------------|--------------|
+| 1 | "I want a pet cafe" | `clarify` | No Places call, clarifying questions shown |
+| 2 | "Pet cafe near me" + consent | `places` | Places call made, results shown |
+| 3 | "Pet cafe in Koramangala" | `places` | Places call with location_source=user_text |
+| 4 | "How to train recall" | `learn` | YouTube videos shown |
+| 5 | "Book grooming tomorrow" | `ticket` | Ticket created via spine |
+| 6 | "Find canine acupuncturist" | `handoff` | Concierge handoff via spine |
+
+**Pass condition:** UI behavior is fully determined by `conversation_contract.mode` and arrays; no UI inference from text; no filler fallback.
+
+---
+
 # APPENDIX A: QUICK REFERENCE TABLES
 
 ## A.1 Layer → BACK Behavior
