@@ -583,7 +583,20 @@ const useChatSubmit = (config) => {
       const shouldShowServicesFromBackend = data.show_services !== false;
       const shouldShowConcierge = data.show_concierge !== false;
       
-      console.log(`[MODE SYSTEM] Mode: ${miraMode} | Clarify only: ${clarifyOnly} | Show products: ${shouldShowProductsFromBackend}`);
+      // ═══════════════════════════════════════════════════════════════════════════
+      // PICKS FALLBACK RULE (Bible Section 9.0)
+      // When no catalogue match exists, PICKS must show Concierge Arranges cards
+      // Never show generic popular items as substitutes
+      // ═══════════════════════════════════════════════════════════════════════════
+      const conciergeFallback = data.concierge_fallback || false;
+      const conciergeArranges = data.concierge_arranges || [];
+      const conciergeFallbackReason = data.concierge_fallback_reason || null;
+      
+      if (conciergeFallback) {
+        console.log(`[PICKS FALLBACK] No catalogue match - showing Concierge Arranges | Reason: ${conciergeFallbackReason}`);
+      }
+      
+      console.log(`[MODE SYSTEM] Mode: ${miraMode} | Clarify only: ${clarifyOnly} | Show products: ${shouldShowProductsFromBackend} | Concierge fallback: ${conciergeFallback}`);
       
       // NEARBY PLACES
       const nearbyPlaces = data.nearby_places?.places || [];
