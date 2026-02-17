@@ -435,6 +435,42 @@ All flows tested and verified via screenshots and API calls:
   - "What Mira Learned" shows 0% because `learned_facts` array is empty
   - Insights are created via Concierge conversations when Mira extracts facts
 
+
+### Feb 17, 2026 (Session 4 - UI/UX Refinements for "Foolproof" Chat vs Services Flow)
+- **FIXED: OnboardingTooltip positioning bug (P1)**
+  - Changed from fixed positioning with anchor ref to mobile-first centered bottom modal
+  - Added backdrop overlay for focus
+  - Two-column visual showing Chat → Services flow
+  - "Show me Services" CTA + "Got it" dismiss option
+  - Stores dismissed state in localStorage
+
+- **IMPLEMENTED: WhatsApp/Instagram DM Style unread indicators in ServicesPanel**
+  - Updated AwaitingCard component with:
+    - Pink unread dot indicator (left side, WhatsApp style)
+    - "New" badge label (Instagram DM style)
+    - Message preview with "Concierge:" prefix
+    - Gradient highlight for unread items
+  - Updated ServicesPanel header with unread badge
+  - New copy: "Your thread with Concierge. Replies and updates live here."
+
+- **ENHANCED: ConciergeReplyBanner for chat view**
+  - WhatsApp/Instagram DM style notification banner
+  - Shows at top of chat when unread Concierge replies exist
+  - Animated pulse dot indicator
+  - "Open Services" CTA button
+  - Session-based dismissal with smart reset on new messages
+
+- **INTEGRATED: Mental Model Components in MiraDemoPage**
+  - OnboardingTooltip with onOpenServices handler
+  - ConciergeReplyBanner connected to apiCounts.unreadRepliesCount
+  - ServicesPanel receiving unreadRepliesCount prop
+
+- **FILES MODIFIED:**
+  - `/app/frontend/src/components/Mira/OnboardingTooltip.jsx` - Complete redesign
+  - `/app/frontend/src/components/Mira/ServicesPanel.jsx` - WhatsApp DM style cards
+  - `/app/frontend/src/components/Mira/ConciergeReplyBanner.jsx` - Enhanced banner
+  - `/app/frontend/src/pages/MiraDemoPage.jsx` - Integration
+
 ### Feb 17, 2026 (Session 3 - Insights Review & Confirm)
 - **BUILT: "Review & Confirm" UI for pending insights in MOJO modal**
   - Shows collapsible "X New Insights to Review" section
