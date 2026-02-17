@@ -623,75 +623,178 @@ const LearnedFactsContent = memo(({ pet, apiUrl, token, onInsightAction }) => {
   
   return (
     <div className="mojo-learned-facts" style={{ padding: '12px 0' }}>
-      {/* Pending Insights Alert */}
+      {/* Pending Insights - Review & Confirm Section */}
       {pendingCount > 0 && (
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '8px 12px', marginBottom: 16,
-          background: 'rgba(16, 185, 129, 0.1)',
-          border: '1px solid rgba(16, 185, 129, 0.3)',
-          borderRadius: 8
-        }}>
-          <Sparkles size={16} className="text-emerald-400" />
-          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', flex: 1 }}>
-            {pendingCount} new insight{pendingCount > 1 ? 's' : ''} from conversations
-          </span>
-          <span style={{ 
-            fontSize: 11, color: 'rgba(16, 185, 129, 0.8)', 
-            background: 'rgba(16, 185, 129, 0.15)', 
-            padding: '2px 6px', borderRadius: 4 
-          }}>
-            Review in Admin
-          </span>
+        <div style={{ marginBottom: 20 }}>
+          <button
+            onClick={() => setShowPending(!showPending)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+              padding: '10px 12px', marginBottom: showPending ? 12 : 0,
+              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(139, 92, 246, 0.1))',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              borderRadius: 10, cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Sparkles size={18} className="text-emerald-400" />
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'white', flex: 1, textAlign: 'left' }}>
+              {pendingCount} New Insight{pendingCount > 1 ? 's' : ''} to Review
+            </span>
+            <ChevronDown 
+              size={18} 
+              style={{ 
+                color: 'rgba(255,255,255,0.6)',
+                transform: showPending ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s ease'
+              }} 
+            />
+          </button>
+          
+          {showPending && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {pendingInsights.map((insight) => {
+                const config = categoryConfig[insight.category] || categoryConfig.other;
+                const isProcessing = processingId === insight.id;
+                
+                return (
+                  <div 
+                    key={insight.id}
+                    style={{
+                      display: 'flex', alignItems: 'flex-start', gap: 10,
+                      padding: '12px',
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      borderRadius: 10,
+                      opacity: isProcessing ? 0.5 : 1,
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <span style={{ fontSize: 16, marginTop: 2 }}>{config.icon}</span>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ 
+                        margin: 0, fontSize: 14, color: 'rgba(255,255,255,0.9)',
+                        lineHeight: 1.4
+                      }}>
+                        {insight.content}
+                      </p>
+                      <p style={{ 
+                        margin: '4px 0 0', fontSize: 11, 
+                        color: 'rgba(255,255,255,0.4)' 
+                      }}>
+                        From conversation • {new Date(insight.extracted_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button
+                        onClick={() => handleInsightAction(insight.id, 'confirm')}
+                        disabled={isProcessing}
+                        style={{
+                          padding: '6px 12px',
+                          background: 'linear-gradient(135deg, #10B981, #059669)',
+                          color: 'white', fontSize: 12, fontWeight: 600,
+                          borderRadius: 6, border: 'none', cursor: isProcessing ? 'wait' : 'pointer',
+                          display: 'flex', alignItems: 'center', gap: 4
+                        }}
+                        data-testid={`confirm-insight-${insight.id}`}
+                      >
+                        <Check size={14} />
+                        Confirm
+                      </button>
+                      <button
+                        onClick={() => handleInsightAction(insight.id, 'reject')}
+                        disabled={isProcessing}
+                        style={{
+                          padding: '6px 10px',
+                          background: 'rgba(239, 68, 68, 0.1)',
+                          color: '#EF4444', fontSize: 12, fontWeight: 500,
+                          borderRadius: 6, border: '1px solid rgba(239, 68, 68, 0.3)', 
+                          cursor: isProcessing ? 'wait' : 'pointer'
+                        }}
+                        data-testid={`reject-insight-${insight.id}`}
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
       
-      {/* Grouped Facts */}
-      {Object.entries(groupedFacts).map(([category, facts]) => {
-        const config = categoryConfig[category] || categoryConfig.other;
-        return (
-          <div key={category} style={{ marginBottom: 16 }}>
+      {/* Confirmed Facts Section */}
+      {learnedFacts.length > 0 && (
+        <>
+          {pendingCount > 0 && (
             <div style={{ 
-              display: 'flex', alignItems: 'center', gap: 6, 
-              marginBottom: 8, paddingLeft: 4 
+              fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)',
+              marginBottom: 12, paddingLeft: 4
             }}>
-              <span style={{ fontSize: 14 }}>{config.icon}</span>
-              <span className={config.color} style={{ fontSize: 12, fontWeight: 500 }}>
-                {config.label}
-              </span>
+              CONFIRMED
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {facts.map((fact, idx) => (
-                <span 
-                  key={fact.id || idx}
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 4,
-                    padding: '6px 10px',
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: 20,
-                    fontSize: 13,
-                    color: 'rgba(255,255,255,0.8)'
-                  }}
-                >
-                  {fact.content}
-                  <Check size={12} className="text-emerald-400" style={{ marginLeft: 2 }} />
-                </span>
-              ))}
-            </div>
-          </div>
-        );
-      })}
+          )}
+          
+          {/* Grouped Facts */}
+          {Object.entries(groupedFacts).map(([category, facts]) => {
+            const config = categoryConfig[category] || categoryConfig.other;
+            return (
+              <div key={category} style={{ marginBottom: 16 }}>
+                <div style={{ 
+                  display: 'flex', alignItems: 'center', gap: 6, 
+                  marginBottom: 8, paddingLeft: 4 
+                }}>
+                  <span style={{ fontSize: 14 }}>{config.icon}</span>
+                  <span className={config.color} style={{ fontSize: 12, fontWeight: 500 }}>
+                    {config.label}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {facts.map((fact, idx) => (
+                    <span 
+                      key={fact.id || idx}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                        padding: '6px 10px',
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: 20,
+                        fontSize: 13,
+                        color: 'rgba(255,255,255,0.8)'
+                      }}
+                    >
+                      {fact.content}
+                      <Check size={12} className="text-emerald-400" style={{ marginLeft: 2 }} />
+                    </span>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </>
+      )}
+      
+      {/* Empty state when no facts at all */}
+      {learnedFacts.length === 0 && pendingCount === 0 && (
+        <div className="mojo-section-empty" style={{ textAlign: 'center', padding: '8px 16px' }}>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, margin: 0 }}>
+            No confirmed learnings yet. Chat with Mira to teach her about {pet?.name || 'your pet'}!
+          </p>
+        </div>
+      )}
       
       {/* Source Attribution */}
-      <div style={{ 
-        marginTop: 16, paddingTop: 12, 
-        borderTop: '1px solid rgba(255,255,255,0.05)',
-        fontSize: 11, color: 'rgba(255,255,255,0.4)'
-      }}>
-        <Sparkles size={10} style={{ display: 'inline', marginRight: 4 }} />
-        Learned from your conversations with Concierge®
-      </div>
+      {(learnedFacts.length > 0 || pendingCount > 0) && (
+        <div style={{ 
+          marginTop: 16, paddingTop: 12, 
+          borderTop: '1px solid rgba(255,255,255,0.05)',
+          fontSize: 11, color: 'rgba(255,255,255,0.4)'
+        }}>
+          <Sparkles size={10} style={{ display: 'inline', marginRight: 4 }} />
+          Learned from your conversations with Mira & Concierge®
+        </div>
+      )}
     </div>
   );
 });
