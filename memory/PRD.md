@@ -219,6 +219,49 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 - Services hero shows "⚠️ 6 hidden" indicator ✅
 - Services hero does NOT show "loves lamb" or "loves chicken" ✅
 
+### Feb 17, 2026 (Session 6 - PICKS Fallback Rule)
+**CRITICAL: Implemented Bible Section 9.0 - Picks Fallback Rule**
+
+**The Rule (Non-Negotiable):**
+- When no catalogue match exists, PICKS must show "Concierge Arranges" cards
+- The CTA must create a Service Desk ticket via the spine
+- NEVER show generic popular items as substitutes
+- "Catalogue is optional; concierge is guaranteed."
+
+**Implementation:**
+1. **Backend (`/app/backend/mira_routes.py`):**
+   - Added `concierge_fallback`, `concierge_fallback_reason`, `concierge_arranges` to chat response
+   - `search_real_products()` now returns dict with fallback data instead of empty list
+   - Added bespoke request detection (acupuncture, hydrotherapy, rehab, etc.)
+   - Added MIN_MATCH_SCORE threshold (0.3) with relevance scoring
+   - Category synonym expansion for better relevance matching
+
+2. **New Endpoint (`POST /api/mira/picks/concierge-arrange`):**
+   - Creates ticket via `create_or_attach_service_ticket()` spine
+   - Returns canonical TCK-YYYY-NNNNNN ticket ID
+   - Returns deep link to Services page
+
+3. **Frontend (`/app/frontend/src/hooks/mira/useChatSubmit.js`):**
+   - Added handling for `concierge_fallback` and `concierge_arranges` in chat response
+   - Triggers "Concierge Arranges" UI when fallback is true
+
+4. **Frontend (`/app/frontend/src/components/PicksVault/UnifiedPicksVault.jsx`):**
+   - Added `ConciergeArrangeCard` component for fallback cards
+   - Shows "Concierge Arranges for {pet}" section with sparkle icon
+   - "+" action creates ticket via the spine
+   - Shows ticket confirmation: "Got it. Request opened: TCK-2026-NNNNNN"
+
+5. **Bible Update (`/app/memory/PET_OS_BEHAVIOR_BIBLE.md`):**
+   - Added explicit summary statement under Section 9.0
+   - "When no catalogue match exists, PICKS must switch to Concierge fallback..."
+   - "Catalogue is optional; concierge is guaranteed."
+
+**QA Results (All Passing):**
+- ✅ Non-catalogue request (pet acupuncture) → Concierge Fallback
+- ✅ Bespoke request (hydrotherapy/rehab) → Concierge Fallback
+- ✅ Normal catalogue match (treats, photoshoot) → Shows products
+- ✅ Ticket creation from card → TCK-2026-NNNNNN created via spine
+
 ### Feb 17, 2026 (Session 4 - Mira Intelligence QA)
 **Completed comprehensive QA of Mira's intelligence system:**
 
