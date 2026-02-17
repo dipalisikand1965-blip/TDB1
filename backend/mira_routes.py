@@ -3461,14 +3461,30 @@ async def search_real_products(
         # MIN_MATCH_SCORE THRESHOLD (Bible Section 9.0)
         # Explicit threshold to determine if products truly match user's request
         # If top_score < MIN_MATCH_SCORE, trigger Concierge fallback
+        # Start with 0.3 (lenient) - we rely more on the bespoke request detection
         # ═══════════════════════════════════════════════════════════════════════════
-        MIN_MATCH_SCORE = 0.55  # Configurable threshold
+        MIN_MATCH_SCORE = 0.3  # Configurable threshold - start lenient
         
         # Extract key terms from user query for relevance scoring
         user_query_terms = set(user_input_lower.replace(',', ' ').replace('.', ' ').split())
         # Filter out common stop words
         stop_words = {'i', 'me', 'my', 'a', 'an', 'the', 'for', 'of', 'to', 'in', 'on', 'with', 'want', 'need', 'find', 'show', 'can', 'you', 'please', 'get', 'some', 'like', 'would'}
         user_query_terms = user_query_terms - stop_words
+        
+        # Synonym mappings for common product categories
+        CATEGORY_SYNONYMS = {
+            'treats': ['treats', 'snacks', 'biscuits', 'ladoos', 'jerky', 'chews'],
+            'toys': ['toys', 'play', 'squeaky', 'ball', 'fetch'],
+            'food': ['food', 'meals', 'kibble', 'wet food'],
+            'grooming': ['grooming', 'shampoo', 'brush', 'care'],
+            'healthy': ['healthy', 'natural', 'organic', 'wholesome', 'nutritious'],
+        }
+        
+        # Expand user query terms with synonyms
+        expanded_query_terms = set(user_query_terms)
+        for term in user_query_terms:
+            if term in CATEGORY_SYNONYMS:
+                expanded_query_terms.update(CATEGORY_SYNONYMS[term])
         
         for product in all_products:
             score = 0
