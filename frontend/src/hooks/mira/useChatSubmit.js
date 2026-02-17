@@ -584,6 +584,25 @@ const useChatSubmit = (config) => {
       const shouldShowConcierge = data.show_concierge !== false;
       
       // ═══════════════════════════════════════════════════════════════════════════
+      // CONVERSATION CONTRACT (Bible Section 10.0) - Phase 5
+      // Deterministic UI rendering based on contract mode
+      // mode: "answer" | "clarify" | "places" | "learn" | "ticket" | "handoff"
+      // Frontend MUST render based ONLY on this contract - no UI inference from text
+      // ═══════════════════════════════════════════════════════════════════════════
+      const conversationContract = data.conversation_contract || {};
+      const contractMode = conversationContract.mode || 'answer';
+      const contractQuickReplies = conversationContract.quick_replies || [];
+      const contractActions = conversationContract.actions || [];
+      const contractPlacesResults = conversationContract.places_results || [];
+      const contractYoutubeResults = conversationContract.youtube_results || [];
+      const contractSpine = conversationContract.spine || {};
+      const contractDebug = conversationContract._debug || {};
+      
+      if (contractMode !== 'answer') {
+        console.log(`[CONVERSATION CONTRACT] mode=${contractMode} intent=${contractDebug.detected_intent} places_allowed=${contractDebug.places_call_allowed} youtube_allowed=${contractDebug.youtube_call_allowed}`);
+      }
+      
+      // ═══════════════════════════════════════════════════════════════════════════
       // PICKS FALLBACK CONTRACT (Bible Section 9.0)
       // Explicit, deterministic contract from backend
       // fallback_mode: "catalogue" | "concierge" | "clarify"
