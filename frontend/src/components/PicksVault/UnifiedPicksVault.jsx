@@ -1768,7 +1768,7 @@ const UnifiedPicksVault = ({
                           Not in the catalogue. We'll arrange this for {pet?.name}.
                         </h3>
                         <p className="text-xs text-gray-500 mt-1">
-                          Creates a tracked request in Services.
+                          Opens a request in Services.
                         </p>
                         {fallbackReason && (
                           <p className="text-[10px] text-gray-400 mt-1">
