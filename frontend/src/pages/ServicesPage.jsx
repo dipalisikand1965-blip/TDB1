@@ -406,7 +406,7 @@ const PetSoulTraits = ({ pet, soulData, token }) => {
 // =============================================================================
 // ANIMATED PET HERO WITH SOUL SCORE
 // =============================================================================
-const PetHero = ({ pet, soulData, onPetSwitch, pets }) => {
+const PetHero = ({ pet, soulData, onPetSwitch, pets, token }) => {
   const petPhoto = pet?.photo_url || pet?.image_url || pet?.image;
   const petName = pet?.name || 'Your Companion';
   const soulScore = pet?.overall_score || soulData?.overall_score || 0;
