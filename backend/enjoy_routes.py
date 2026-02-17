@@ -552,46 +552,34 @@ async def create_rsvp(rsvp: ExperienceRSVP):
     }
     await db.admin_notifications.insert_one(notification_doc)
     
-    # Also add to service_desk_tickets for Command Center visibility
-    service_desk_entry = {
-        "ticket_id": rsvp_id,
-        "source": "enjoy_pillar",
-        "channel": "web",
-        "pillar": "enjoy",
-        "category": "rsvp",
-        "subcategory": experience.get("experience_type"),
-        "status": "new",
-        "priority": "normal",
-        "subject": f"RSVP: {experience.get('name')} - {rsvp.pet_name}",
-        "description": f"{rsvp.user_name} has requested to attend {experience.get('name')} with {rsvp.pet_name}. Event Date: {experience.get('event_date')}",
-        "customer": {
-            "name": rsvp.user_name,
-            "email": rsvp.user_email,
-            "phone": rsvp.user_phone
-        },
-        "pet_context": {
-            "pet_id": rsvp.pet_id,
-            "pet_name": rsvp.pet_name,
-            "pet_breed": rsvp.pet_breed
-        },
-        "metadata": {
-            "rsvp_id": rsvp_id,
-            "experience_id": rsvp.experience_id,
-            "event_date": experience.get("event_date"),
-            "venue": experience.get("venue_name"),
-            "total_price": experience.get("price", 0) * (rsvp.number_of_pets + rsvp.number_of_humans)
-        },
-        "messages": [{
-            "id": f"MSG-{uuid.uuid4().hex[:6]}",
-            "sender": "customer",
-            "sender_name": rsvp.user_name,
-            "content": f"I would like to attend {experience.get('name')} with my pet {rsvp.pet_name}.",
-            "timestamp": get_utc_timestamp()
-        }],
-        "created_at": get_utc_timestamp(),
-        "updated_at": get_utc_timestamp()
-    }
-    await db.service_desk_tickets.insert_one(service_desk_entry)
+    # Service desk ticket via SPINE HELPER (canonical TCK-* format)
+    try:
+        spine_result = await handoff_to_spine(
+            db=db,
+            route_name="enjoy_routes.py",
+            endpoint="/api/enjoy/rsvps",
+            pillar="enjoy",
+            category="rsvp",
+            intent=f"RSVP for {experience.get('name')} by {rsvp.user_name} with {rsvp.pet_name}",
+            user={"email": rsvp.user_email, "name": rsvp.user_name, "phone": rsvp.user_phone},
+            pet={"id": rsvp.pet_id, "name": rsvp.pet_name, "breed": rsvp.pet_breed},
+            payload={
+                "rsvp_id": rsvp_id,
+                "experience_id": rsvp.experience_id,
+                "experience_name": experience.get("name"),
+                "event_date": experience.get("event_date"),
+                "venue": experience.get("venue_name"),
+                "number_of_pets": rsvp.number_of_pets,
+                "number_of_humans": rsvp.number_of_humans,
+                "total_price": experience.get("price", 0) * (rsvp.number_of_pets + rsvp.number_of_humans)
+            },
+            channel="web"
+        )
+        canonical_ticket_id = spine_result.get("ticket_id")
+        logger.info(f"[SPINE-HELPER] Created ticket {canonical_ticket_id} for enjoy RSVP {rsvp_id}")
+    except Exception as e:
+        logger.error(f"[SPINE-HELPER] Failed to create ticket for enjoy RSVP: {e}")
+        canonical_ticket_id = rsvp_id  # Fallback to legacy format
     
     # Update pet profile with experience preferences
     if rsvp.pet_id and rsvp.pet_personality:
