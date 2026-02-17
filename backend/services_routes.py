@@ -517,9 +517,10 @@ async def create_service_request(
     now = datetime.now(timezone.utc)
     
     # ═══════════════════════════════════════════════════════════════════════════
-    # STEP 1: Generate Service Desk Ticket ID
+    # STEP 1: Generate Canonical Service Desk Ticket ID (TCK-YYYY-NNNNNN)
+    # All intake points use the same canonical format for uniform service flow
     # ═══════════════════════════════════════════════════════════════════════════
-    ticket_id = f"SVC-{now.strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    ticket_id = await generate_ticket_id(db)
     
     # ═══════════════════════════════════════════════════════════════════════════
     # STEP 2: Build Service Desk Ticket Document
