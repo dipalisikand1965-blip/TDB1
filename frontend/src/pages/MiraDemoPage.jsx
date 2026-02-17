@@ -3417,7 +3417,7 @@ const MiraDemoPage = () => {
           {/* Right side: Notification Bell + Pet Selector */}
           <div className="flex items-center gap-2">
             {/* Notification Bell */}
-            <NotificationBell userEmail={user?.email} petId={pet?.id} />
+            <NotificationBell userEmail={user?.email} petId={pet?.id} petName={pet?.name} />
             
             {/* Pet Selector - Simple dropdown for switching pets */}
             <PetSelector
