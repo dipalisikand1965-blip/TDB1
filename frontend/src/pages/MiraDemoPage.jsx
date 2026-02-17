@@ -61,6 +61,8 @@ import WeatherCard from '../components/Mira/WeatherCard';
 import WhyForPetBadge from '../components/Mira/WhyForPetBadge';
 import ServicesPanel from '../components/Mira/ServicesPanel';
 import ServiceRequestBuilder from '../components/Mira/ServiceRequestBuilder';
+import ReplyNudge from '../components/Mira/ReplyNudge';
+import OnboardingTooltip from '../components/Mira/OnboardingTooltip';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LAZY LOADED COMPONENTS (Performance Optimization)
