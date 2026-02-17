@@ -618,11 +618,39 @@ const useChatSubmit = (config) => {
           nearby_places: data.nearby_places
         });
         setVaultUserMessage(inputQuery);
+      } else if (conciergeFallback && conciergeArranges.length > 0) {
+        // ═══════════════════════════════════════════════════════════════════════════
+        // PICKS FALLBACK: No catalogue match - show Concierge Arranges cards
+        // Bible Section 9.0: Never show generic popular items as substitutes
+        // ═══════════════════════════════════════════════════════════════════════════
+        console.log(`[CONCIERGE FALLBACK] Showing ${conciergeArranges.length} Concierge Arrange cards`);
+        setMiraPicks({
+          products: [],  // No catalogue products
+          services: [],
+          conciergeArranges: conciergeArranges,  // NEW: Concierge fallback cards
+          conciergeFallback: true,
+          conciergeFallbackReason: conciergeFallbackReason,
+          context: updatedPickContext,
+          subIntent: celebrationSubIntent,
+          mode: miraMode,
+          clarifyOnly: false,
+          showConcierge: true,
+          hasNew: true
+        });
+        setActiveVaultData({
+          ...data.response,
+          concierge_arranges: conciergeArranges,
+          concierge_fallback: true
+        });
+        setVaultUserMessage(inputQuery);
+        notificationSounds.picks();
       } else if ((shouldShowProductsFromBackend && (newProducts.length > 0 || newServices.length > 0 || newExperiences.length > 0)) || 
           (!clarifyOnly && ['party_planning', 'cake_shopping', 'celebration'].includes(celebrationSubIntent))) {
         setMiraPicks({
           products: clarifyOnly ? [] : newProducts,
           services: clarifyOnly ? [] : [...newServices, ...newExperiences],
+          conciergeArranges: [],  // Include for consistency
+          conciergeFallback: false,
           context: updatedPickContext,
           subIntent: celebrationSubIntent,
           mode: miraMode,
@@ -674,6 +702,8 @@ const useChatSubmit = (config) => {
           ...prev,
           products: [],
           services: [],
+          conciergeArranges: [],
+          conciergeFallback: false,
           mode: miraMode,
           clarifyOnly: true,
           showConcierge: false,
