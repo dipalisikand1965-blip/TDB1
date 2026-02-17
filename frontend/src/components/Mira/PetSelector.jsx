@@ -33,7 +33,8 @@ const PetSelector = ({
   isOpen = false,
   onToggle,
   onSelectPet,
-  onPetNameClick // NEW: Opens MOJO Profile Modal when pet name is clicked
+  onPetNameClick, // Opens MOJO Profile Modal when pet name is clicked
+  onPetCardClick // NEW: Opens MOJO Profile Modal for ANY pet when their card is clicked
 }) => {
   const navigate = useNavigate();
   const [intelligenceData, setIntelligenceData] = useState(null);
@@ -62,8 +63,19 @@ const PetSelector = ({
     if (onToggle) onToggle();
   };
   
-  const handleSelectPet = (pet) => {
-    if (onSelectPet) onSelectPet(pet);
+  // Handle pet card click - opens MOJO Profile Modal for that pet
+  const handlePetCardClick = (pet) => {
+    hapticFeedback.buttonTap();
+    if (onPetCardClick) {
+      // First switch to the pet, then open their profile
+      if (pet.id !== currentPet?.id) {
+        onSelectPet?.(pet);
+      }
+      onPetCardClick(pet);
+    } else if (onSelectPet) {
+      // Fallback: just select the pet
+      onSelectPet(pet);
+    }
   };
   
   // Handle pet name click - opens MOJO Profile Modal
