@@ -10149,33 +10149,46 @@ async def mira_chat(
     if triggered_service:
         logger.info(f"[SERVICE HANDOFF] Triggered: {triggered_service['id']} for {pet_name}")
         
-        # Create service ticket
-        now = datetime.now(timezone.utc).isoformat()
-        ticket_id = f"SVC-{int(datetime.now().timestamp())}"
-        
+        # Create service ticket via UNIFORM SERVICE FLOW (centralized helper)
+        ticket_id = None
         try:
-            service_ticket = {
-                "ticket_id": ticket_id,
-                "service_id": triggered_service["id"],
-                "service_name": triggered_service["display_name"],
-                "category": triggered_service["category"],
-                "pet_id": selected_pet.get("id") if selected_pet else None,
-                "pet_name": pet_name,
-                "member_email": user.get("email") if user else None,
-                "member_name": user.get("name") if user else "Guest",
-                "original_request": user_message,
-                "session_id": session_id,
-                "status": "pending",
-                "source": "mira_service_handoff",
-                "created_at": now,
-                "updated_at": now
-            }
-            
-            if db:
-                await db.concierge_tasks.insert_one(service_ticket)
-                logger.info(f"[SERVICE HANDOFF] Ticket created: {ticket_id}")
+            if SERVICE_TICKET_SPINE_AVAILABLE and db is not None:
+                ticket_result = await create_or_attach_service_ticket(
+                    db=db,
+                    intent=user_message,
+                    intent_type="request",
+                    member_email=user.get("email") if user else None,
+                    member_name=user.get("name") if user else "Guest",
+                    member_id=user.get("id") if user else None,
+                    pet_ids=[selected_pet.get("id")] if selected_pet else [],
+                    pet_names=[pet_name] if pet_name else [],
+                    pillar=triggered_service["category"],
+                    category=triggered_service["id"],
+                    source_route="mira_routes.py:service_handoff",
+                    channel="web",
+                    created_by="mira",
+                    thread_id=session_id,
+                    payload={
+                        "service_id": triggered_service["id"],
+                        "service_name": triggered_service["display_name"],
+                        "original_request": user_message,
+                    },
+                    urgency="normal",
+                    notify_admin=True,
+                    notify_member=True,
+                )
+                if ticket_result.get("success"):
+                    ticket_id = ticket_result.get("ticket_id")
+                    logger.info(f"[SERVICE HANDOFF] Canonical ticket created via spine: {ticket_id}")
+                else:
+                    logger.warning(f"[SERVICE HANDOFF] Spine returned error: {ticket_result}")
+                    ticket_id = f"SVC-{int(datetime.now().timestamp())}"  # Fallback
+            else:
+                ticket_id = f"SVC-{int(datetime.now().timestamp())}"
+                logger.warning("[SERVICE HANDOFF] Spine not available, using fallback ticket_id")
         except Exception as ticket_err:
             logger.error(f"[SERVICE HANDOFF] Ticket creation failed: {ticket_err}")
+            ticket_id = f"SVC-{int(datetime.now().timestamp())}"
         
         # Build confirmation response
         confirmation_response = f"""Got it! I've sent this to your **Concierge®** team.
