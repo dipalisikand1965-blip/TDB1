@@ -32,68 +32,18 @@ const PetSelector = ({
   allPets = [],
   isOpen = false,
   onToggle,
-  onSelectPet,
-  onPetNameClick, // Opens MOJO Profile Modal when pet name is clicked
-  onPetCardClick // NEW: Opens MOJO Profile Modal for ANY pet when their card is clicked
+  onSelectPet
 }) => {
   const navigate = useNavigate();
-  const [intelligenceData, setIntelligenceData] = useState(null);
-  const [showIntelligenceTooltip, setShowIntelligenceTooltip] = useState(false);
-  
-  // Fetch intelligence data for current pet
-  useEffect(() => {
-    if (!currentPet?.id) return;
-    
-    const fetchIntelligence = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/mira/pet-intelligence/${currentPet.id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setIntelligenceData(data);
-        }
-      } catch (err) {
-        console.log('[PetSelector] Could not fetch intelligence:', err);
-      }
-    };
-    
-    fetchIntelligence();
-  }, [currentPet?.id]);
   
   const handleToggle = () => {
     if (onToggle) onToggle();
   };
   
-  // Handle pet card click - opens MOJO Profile Modal for that pet
-  const handlePetCardClick = (pet) => {
+  // Simple pet selection - just switch pet, nothing else
+  const handleSelectPet = (pet) => {
     hapticFeedback.buttonTap();
-    if (onPetCardClick) {
-      // First switch to the pet, then open their profile
-      if (pet.id !== currentPet?.id) {
-        onSelectPet?.(pet);
-      }
-      onPetCardClick(pet);
-    } else if (onSelectPet) {
-      // Fallback: just select the pet
-      onSelectPet(pet);
-    }
-  };
-  
-  // Handle pet name click - opens MOJO Profile Modal
-  const handlePetNameClick = (e) => {
-    e.stopPropagation();
-    hapticFeedback.buttonTap();
-    if (onPetNameClick) {
-      onPetNameClick();
-    } else {
-      navigate(`/my-pets?pet=${currentPet?.id}`);
-    }
-  };
-  
-  // Handle score click - navigate to pet profile
-  const handleScoreClick = (e, petId) => {
-    e.stopPropagation();
-    hapticFeedback.buttonTap();
-    navigate(`/my-pets?pet=${petId}`);
+    if (onSelectPet) onSelectPet(pet);
   };
   
   // Calculate intelligence score
