@@ -114,10 +114,9 @@ async def dispatch_action(
     now = datetime.now(timezone.utc)
     now_iso = now.isoformat()
     
-    # Generate IDs - ticket_id uses CANONICAL format (TCK-YYYY-NNNNNN)
+    # Generate supporting IDs (ticket_id is handled by centralized helper)
     action_id = f"ACT-{now.strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6].upper()}"
     notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
-    ticket_id = await generate_ticket_id(db)  # Canonical format: TCK-YYYY-NNNNNN
     inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
     
     # Build member info
@@ -146,7 +145,56 @@ async def dispatch_action(
     logger.info(f"[CENTRAL DISPATCHER] Pillar: {pillar} | Type: {action_type} | Source: {source}")
     
     try:
-        # ==================== STEP 1: NOTIFICATION (ALWAYS FIRST) ====================
+        # ==================== CENTRALIZED TICKET CREATION ====================
+        # ALL ticket creation routes through create_or_attach_service_ticket()
+        ticket_result = await create_or_attach_service_ticket(
+            db=db,
+            
+            # Intent
+            intent=title,
+            intent_type=action_type,
+            
+            # Member
+            member_email=member_email,
+            member_name=member_name,
+            member_id=member_id,
+            
+            # Pet
+            pet_ids=[pet_id] if pet_id else None,
+            pet_names=[pet_name] if pet_name else None,
+            
+            # Classification
+            pillar=pillar,
+            category=action_type,
+            
+            # Source tracking (for audits)
+            source_route="central_dispatcher.py",
+            channel=Channel.WEB if source in ["web", "chat"] else Channel.ADMIN,
+            created_by=CreatedBy.SYSTEM,
+            
+            # Payload
+            payload={
+                "action_id": action_id,
+                "notification_id": notification_id,
+                "inbox_id": inbox_id,
+                "description": description,
+                "tags": tags,
+                "metadata": metadata,
+            },
+            
+            # Options
+            urgency=urgency,
+            notify_admin=True,
+            notify_member=True,
+        )
+        
+        if not ticket_result["success"]:
+            raise Exception("Failed to create ticket via spine helper")
+        
+        ticket_id = ticket_result["ticket_id"]
+        logger.info(f"[CENTRAL DISPATCHER] ✅ Ticket {ticket_result['action']}: {ticket_id}")
+        
+        # ==================== STEP 1: NOTIFICATION (with ticket_id) ====================
         notification_doc = {
             "id": notification_id,
             "action_id": action_id,
@@ -154,7 +202,7 @@ async def dispatch_action(
             "pillar": pillar,
             "title": title,
             "message": description[:200] + "..." if len(description) > 200 else description,
-            "read": False,  # IMPORTANT: Use 'read' field for API compatibility
+            "read": False,
             "status": "unread",
             "urgency": urgency,
             "priority": priority,
