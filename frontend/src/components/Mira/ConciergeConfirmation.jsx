@@ -59,9 +59,17 @@ const ConciergeConfirmation = ({
 
   if (!confirmation?.show_banner) return null;
   
-  // Personalized title based on pet name
-  const ticketId = confirmation.ticket_id || '';
-  const personalizedTitle = `Request opened • ${ticketId}`;
+  // Request ID for display
+  const ticketId = confirmation.ticket_id || 'TCK-...';
+
+  const handleViewInServices = () => {
+    setIsExiting(true);
+    setTimeout(() => {
+      setIsVisible(false);
+      if (onViewInServices) onViewInServices();
+      if (onDismiss) onDismiss();
+    }, 200);
+  };
 
   return (
     <div 
@@ -77,24 +85,24 @@ const ConciergeConfirmation = ({
         <div className="h-1 bg-white/20 relative overflow-hidden">
           <div 
             className="absolute inset-0 bg-white/60 animate-shrink-width"
-            style={{ animationDuration: '8s', animationTimingFunction: 'linear' }}
+            style={{ animationDuration: '12s', animationTimingFunction: 'linear' }}
           />
         </div>
         
         <div className="p-4">
           {/* Header with icon and dismiss */}
-          <div className="flex items-start justify-between mb-2">
-            <div className="flex items-center gap-2">
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                 <Heart className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className="text-white font-semibold text-sm flex items-center gap-1">
-                  {personalizedTitle}
+                <h3 className="text-white font-semibold text-sm">
+                  Request opened • <span className="font-mono">{ticketId}</span>
                 </h3>
-                <span className="text-emerald-100 text-xs">
+                <p className="text-emerald-100 text-xs mt-0.5">
                   Reply in Services to add details or change timing.
-                </span>
+                </p>
               </div>
             </div>
             <button 
@@ -106,11 +114,27 @@ const ConciergeConfirmation = ({
             </button>
           </div>
           
-          {/* Status indicator */}
-          <div className="flex items-center gap-2 mt-3 ml-12">
+          {/* Luxury subtext */}
+          <p className="text-white/80 text-xs ml-13 mb-3 pl-13" style={{ marginLeft: '52px' }}>
+            Replies from Concierge will appear in Services.
+          </p>
+          
+          {/* CTA Button - "View in Services" */}
+          <button
+            onClick={handleViewInServices}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-emerald-700 rounded-xl text-sm font-medium hover:bg-emerald-50 transition-colors shadow-lg"
+            data-testid="view-in-services-cta"
+          >
+            <MessageSquare className="w-4 h-4" />
+            View in Services
+            <ArrowRight className="w-4 h-4" />
+          </button>
+          
+          {/* Response time indicator */}
+          <div className="flex items-center justify-center gap-2 mt-3">
             <Clock className="w-3.5 h-3.5 text-emerald-200" />
             <span className="text-emerald-100 text-xs">
-              Typically responds within 2-4 hours
+              Your Concierge typically responds within 2-4 hours
             </span>
           </div>
         </div>
