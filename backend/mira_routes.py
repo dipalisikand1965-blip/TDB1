@@ -5051,7 +5051,17 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             # ═══════════════════════════════════════════════════════════════════════════
             "topic_shift": topic_shift_detected,  # True if topic changed from previous conversation
             "current_pillar": current_pillar,  # Current conversation pillar
-            "previous_pillar": previous_pillar  # Previous pillar (for UI indicator)
+            "previous_pillar": previous_pillar,  # Previous pillar (for UI indicator)
+            
+            # ═══════════════════════════════════════════════════════════════════════════
+            # PICKS FALLBACK RULE (Bible Section 9.0)
+            # When no catalogue match exists, PICKS must show Concierge Arranges cards
+            # The CTA must create a Service Desk ticket via the spine
+            # NEVER show generic popular items as substitutes
+            # ═══════════════════════════════════════════════════════════════════════════
+            "concierge_fallback": concierge_fallback,  # True if no catalogue match
+            "concierge_fallback_reason": concierge_fallback_reason,  # Why fallback triggered
+            "concierge_arranges": concierge_arranges  # Array of concierge pick cards to show
         }
         
         # ============================================
