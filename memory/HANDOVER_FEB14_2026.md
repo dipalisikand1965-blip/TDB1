@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://mira-concierge-ai.preview.emergentagent.com` |
+| **Preview** | `https://chat-ask-services-do.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |

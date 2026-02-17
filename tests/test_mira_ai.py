@@ -14,7 +14,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-concierge-ai.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://chat-ask-services-do.preview.emergentagent.com')
 
 # Test credentials
 TEST_EMAIL = "dipali@clubconcierge.in"

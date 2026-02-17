@@ -179,7 +179,7 @@ curl "$API_URL/api/pet-soul/profile/pet-99a708f1722a/quick-questions"
 
 ## 🚀 PREVIEW URL
 ```
-https://mira-concierge-ai.preview.emergentagent.com
+https://chat-ask-services-do.preview.emergentagent.com
 ```
 
 Key pages:
