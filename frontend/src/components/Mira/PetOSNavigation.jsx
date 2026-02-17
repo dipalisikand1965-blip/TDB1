@@ -312,6 +312,7 @@ const OSLayerTab = memo(({
 
 /**
  * Main PetOSNavigation Component
+ * Updated for PET_OS_BEHAVIOR_BIBLE v1.1 Section 2 (OFF/ON/PULSE states)
  */
 const PetOSNavigation = ({
   currentPet,
@@ -322,8 +323,16 @@ const PetOSNavigation = ({
   onTabChange,
   onPetClick, // Opens MOJO modal
   onSwitchPet,
-  badges = {}, // { picks: 3, services: 1, insights: 2 }
-  picksHasNew = false, // For PICKS "new" sparkle animation
+  badges = {}, // Legacy: { picks: 3, services: 1, insights: 2 }
+  picksHasNew = false, // Legacy: For PICKS "new" sparkle animation
+  // NEW: Icon states per Bible Section 2
+  iconStates = {
+    today: { state: 'OFF', count: 0 },
+    picks: { state: 'OFF', count: 0 },
+    services: { state: 'OFF', count: 0 },
+    learn: { state: 'OFF', count: 0 },
+    concierge: { state: 'OFF', count: 0 },
+  },
 }) => {
   const [showPetDropdown, setShowPetDropdown] = useState(false);
   
