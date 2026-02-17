@@ -468,6 +468,51 @@ const MiraDemoPage = () => {
       console.log('[Draft] Synced draft to query:', draftText.substring(0, 30));
     }
   }, [draftText]); // Note: intentionally not including query to avoid loops
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // ICON STATE SYSTEM - OFF/ON/PULSE (Bible Section 2)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const {
+    iconStates,
+    todayState,
+    servicesState,
+    conciergeState,
+    picksState,
+    learnState,
+    markTabVisited,
+    triggerPulse,
+    recalculateAll: recalculateIconStates,
+  } = useIconState({
+    currentPetId: pet?.id,
+    todayData: {
+      urgent: proactiveAlerts?.filter(a => a.priority === 'urgent') || [],
+      due: proactiveAlerts?.filter(a => a.type === 'due') || [],
+      watchlist: proactiveAlerts?.filter(a => a.type === 'watchlist') || [],
+      awaitingYou: [], // TODO: Connect to tickets awaiting user response
+    },
+    servicesData: {
+      activeTickets: currentTicket ? [currentTicket] : [],
+      awaitingYou: currentTicket?.status === 'awaiting_user',
+      newTickets: [],
+      statusChanges: [],
+    },
+    conciergeData: {
+      isOnline: true, // Concierge is considered online during business hours
+      openThreads: conciergeThread?.isOpen ? [conciergeThread] : [],
+      newReplies: false,
+      awaitingYou: false,
+    },
+    picksData: {
+      items: miraPicks?.enginePicks || miraPicks?.products || [],
+      hasNew: miraPicks?.hasNew || false,
+      materialChange: false,
+    },
+    learnData: {
+      forYourPetItems: [], // TODO: Connect to learn items
+      newItems: false,
+    },
+    activeTab: activeOSTab,
+  });
   
   // State
   const [activeScenario, setActiveScenario] = useState(null);
