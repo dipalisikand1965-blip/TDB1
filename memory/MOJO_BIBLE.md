@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-icons-live.preview.emergentagent.com
+https://insight-extraction.preview.emergentagent.com
 ```
 
 ---
