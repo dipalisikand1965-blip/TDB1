@@ -86,7 +86,7 @@ const useIconStateAPI = ({
    * Mark a tab as viewed (clears new badges)
    */
   const markTabViewed = useCallback(async (tab) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('tdb_auth_token') || localStorage.getItem('token');
     if (!token) return;
 
     try {
