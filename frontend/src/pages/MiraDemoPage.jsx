@@ -4282,6 +4282,14 @@ const MiraDemoPage = () => {
               setPendingConciergeContext(context);
               setShowConciergeHome(true);
             }}
+            onAskMira={(question) => {
+              // Close TODAY and send question to Mira
+              setShowTodayPanel(false);
+              handleOSTabChange('chat');
+              // Set query and submit
+              setQuery(question);
+              setTimeout(() => handleSubmit(null, question), 100);
+            }}
           />
         </Suspense>
       )}
