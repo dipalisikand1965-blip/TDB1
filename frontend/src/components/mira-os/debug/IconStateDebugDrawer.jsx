@@ -303,6 +303,41 @@ const IconStateDebugDrawer = ({
           </div>
         )}
 
+        {/* Suppressed Tags Section (Conflict Resolution Debug) */}
+        {counts?.suppressedTagsCount !== undefined && (
+          <div className="p-3 border-t border-gray-700">
+            <h3 className="text-gray-400 text-xs font-medium mb-2 uppercase tracking-wider">
+              Tag Safety (Conflict Resolution)
+            </h3>
+            <div className="bg-gray-800/50 rounded p-2 text-xs space-y-1">
+              <div className="flex justify-between">
+                <span className="text-gray-400">Suppressed Tags:</span>
+                <span className={`font-mono ${counts.suppressedTagsCount > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                  {counts.suppressedTagsCount}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Has Conflicts:</span>
+                <span className={`font-mono ${counts.hasConflicts ? 'text-orange-400' : 'text-green-400'}`}>
+                  {counts.hasConflicts ? 'YES' : 'NO'}
+                </span>
+              </div>
+              {counts.suppressedTagsList?.length > 0 && (
+                <div className="mt-2 pt-2 border-t border-gray-700">
+                  <span className="text-red-400 font-medium">Suppressed:</span>
+                  <ul className="mt-1 space-y-0.5">
+                    {counts.suppressedTagsList.map((tag, idx) => (
+                      <li key={idx} className="text-red-300 truncate">
+                        ❌ [{tag.category}] {tag.content}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Legend */}
         <div className="p-3 border-t border-gray-700">
           <h3 className="text-gray-400 text-xs font-medium mb-2 uppercase tracking-wider">
