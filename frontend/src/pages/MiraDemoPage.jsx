@@ -120,7 +120,7 @@ import {
 // Icon State API - Real data from unified Service Desk ticket spine
 import useIconStateAPI from '../hooks/mira/useIconStateAPI';
 
-// Debug Drawer for icon state validation
+// Proof Panel for icon state validation (feature flag: ?debug=1)
 import IconStateDebugDrawer from '../components/mira-os/debug/IconStateDebugDrawer';
 
 // Toast for commit action confirmations
