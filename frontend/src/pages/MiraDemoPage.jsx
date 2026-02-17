@@ -4227,6 +4227,7 @@ const MiraDemoPage = () => {
                 console.log('[SERVICES] Open request builder for:', service);
                 setRequestBuilderState({ isOpen: true, service });
               }}
+              unreadRepliesCount={apiCounts?.unreadRepliesCount || 0}
             />
           </div>
         </div>
