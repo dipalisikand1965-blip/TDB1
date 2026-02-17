@@ -494,7 +494,7 @@ const ServicesPanel = ({
             </div>
           </section>
           
-          {/* Awaiting You - THE KILLER SHELF */}
+          {/* Awaiting You - THE KILLER SHELF (WhatsApp/Instagram DM Style) */}
           {inbox.awaiting_user.length > 0 && (
             <section className="animate-in fade-in-50 duration-300">
               <SectionHeader 
@@ -502,14 +502,21 @@ const ServicesPanel = ({
                 count={inbox.awaiting_user.length}
               />
               <div className="space-y-2">
-                {inbox.awaiting_user.map(ticket => (
-                  <AwaitingCard
-                    key={ticket.ticket_id}
-                    ticket={ticket}
-                    onAction={handleAction}
-                    onSelect={handleTicketSelect}
-                  />
-                ))}
+                {inbox.awaiting_user.map(ticket => {
+                  // Check if this ticket has unread concierge replies
+                  const isUnread = ticket.has_concierge_reply || 
+                                   ticket.unread_count > 0 || 
+                                   inbox.unread_ticket_ids?.includes(ticket.ticket_id);
+                  return (
+                    <AwaitingCard
+                      key={ticket.ticket_id}
+                      ticket={ticket}
+                      onAction={handleAction}
+                      onSelect={handleTicketSelect}
+                      isUnread={isUnread}
+                    />
+                  );
+                })}
               </div>
             </section>
           )}
