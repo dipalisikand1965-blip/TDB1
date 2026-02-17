@@ -163,7 +163,7 @@ const ChatInputBar = ({
         color: 'rgba(255, 255, 255, 0.5)',
         fontStyle: 'italic'
       }}>
-        Ask for anything. If it needs humans, we'll turn it into a tracked request.
+        Ask for anything. If it needs action, we'll open a request and handle it in Services.
       </div>
       
       {/* Photo Preview Banner */}
