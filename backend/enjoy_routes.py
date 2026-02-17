@@ -592,13 +592,13 @@ async def create_rsvp(rsvp: ExperienceRSVP):
             }}
         )
     
-    logger.info(f"[UNIFIED FLOW] RSVP created: {rsvp_id} | Notification({notification_id}) → Ticket({rsvp_id}) → Inbox({inbox_id})")
+    logger.info(f"[UNIFIED FLOW] RSVP created: {rsvp_id} | Notification({notification_id}) → Ticket({canonical_ticket_id}) → Inbox({inbox_id})")
     
     # Return ALL unified flow IDs for frontend validation
     return {
         "success": True,
         "rsvp_id": rsvp_id,
-        "ticket_id": rsvp_id,  # RSVP ID is also the ticket ID
+        "ticket_id": canonical_ticket_id,  # Canonical TCK-* from spine
         "notification_id": notification_id,
         "inbox_id": inbox_id,
         "status": "pending",
