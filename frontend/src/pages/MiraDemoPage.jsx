@@ -3966,6 +3966,128 @@ const MiraDemoPage = () => {
                 />
               )}
               
+              {/* STATUS INDICATORS - Non-clickable, passive status display
+                  Shows C° (Concierge) and PICKS counts when there's activity
+                  Spec: NOT clickable, no tap target, no hover state
+                  Visual: dot + count, dot = new but low urgency, number = attention needed
+              */}
+              {conversationHistory.length > 0 && (
+                ((apiCounts?.awaitingYouCount || 0) > 0 || 
+                 (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) > 0 ||
+                 miraPicks.hasNew) && (
+                <div 
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '12px',
+                    padding: '12px 16px',
+                    pointerEvents: 'none', // NOT clickable
+                    userSelect: 'none'
+                  }}
+                  data-testid="chat-status-indicators"
+                >
+                  {/* C° Indicator - Concierge awaiting count */}
+                  {(apiCounts?.awaitingYouCount || 0) > 0 && (
+                    <div 
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '44px',
+                        height: '44px',
+                        borderRadius: '50%',
+                        background: 'rgba(16, 185, 129, 0.15)',
+                        border: '2px solid rgba(16, 185, 129, 0.5)',
+                        position: 'relative'
+                      }}
+                    >
+                      <span style={{
+                        fontFamily: 'system-ui, -apple-system, sans-serif',
+                        fontSize: '16px',
+                        fontWeight: 600,
+                        color: '#10b981'
+                      }}>
+                        C°
+                      </span>
+                      
+                      {/* Count badge */}
+                      <span style={{
+                        position: 'absolute',
+                        top: '-4px',
+                        right: '-4px',
+                        minWidth: '18px',
+                        height: '18px',
+                        borderRadius: '9px',
+                        background: '#ef4444',
+                        color: 'white',
+                        fontSize: '10px',
+                        fontWeight: 700,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '0 4px'
+                      }}>
+                        {apiCounts.awaitingYouCount > 9 ? '9+' : apiCounts.awaitingYouCount}
+                      </span>
+                    </div>
+                  )}
+                  
+                  {/* PICKS Indicator - Curated items count */}
+                  {((miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) > 0 || miraPicks.hasNew) && (
+                    <div 
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '48px',
+                        height: '44px',
+                        borderRadius: '14px',
+                        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.3))',
+                        border: '2px solid rgba(236, 72, 153, 0.5)',
+                        position: 'relative'
+                      }}
+                    >
+                      <Gift size={20} style={{ color: 'white', opacity: 0.9 }} />
+                      
+                      {/* Count badge or "New" dot */}
+                      {(miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) > 0 ? (
+                        <span style={{
+                          position: 'absolute',
+                          top: '-4px',
+                          right: '-4px',
+                          minWidth: '18px',
+                          height: '18px',
+                          borderRadius: '9px',
+                          background: '#ec4899',
+                          color: 'white',
+                          fontSize: '10px',
+                          fontWeight: 700,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '0 4px'
+                        }}>
+                          {(miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) > 9 
+                            ? '9+' 
+                            : (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0)}
+                        </span>
+                      ) : miraPicks.hasNew && (
+                        <span style={{
+                          position: 'absolute',
+                          top: '0',
+                          right: '0',
+                          width: '10px',
+                          height: '10px',
+                          borderRadius: '50%',
+                          background: '#ec4899'
+                        }} />
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+              
               <div ref={messagesEndRef} />
               
               {/* CONVERSATION COMPLETE BANNER - Compact, non-intrusive */}
