@@ -81,6 +81,84 @@ const getGroomingIntervalDays = (frequency) => {
 // SUB-COMPONENTS
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// Weather Hero Card - Full weather display at top of TODAY
+const WeatherHeroCard = memo(({ weather, city, petName, onAskMira }) => {
+  if (!weather) return null;
+  
+  const temp = weather.temperature || weather.temp;
+  const description = weather.description || weather.conditions || 'Clear';
+  const humidity = weather.humidity;
+  const windSpeed = weather.wind_speed || weather.windSpeed;
+  const feelsLike = weather.feels_like || weather.feelsLike;
+  
+  // Determine walk safety
+  const getWalkSafety = () => {
+    if (temp >= 35) return { level: 'danger', text: 'Avoid walks', icon: AlertOctagon, color: 'text-red-400' };
+    if (temp >= 30) return { level: 'warning', text: 'Early/late walks only', icon: Sun, color: 'text-amber-400' };
+    if (temp <= 5) return { level: 'warning', text: 'Keep walks short', icon: Thermometer, color: 'text-blue-400' };
+    return { level: 'safe', text: 'Great for walks', icon: CheckCircle, color: 'text-green-400' };
+  };
+  
+  const walkSafety = getWalkSafety();
+  const WalkIcon = walkSafety.icon;
+  
+  return (
+    <div className="weather-hero-card" data-testid="weather-hero">
+      {/* Main temp display */}
+      <div className="weather-hero-main">
+        <div className="weather-temp-large">
+          <span className="temp-number">{Math.round(temp)}</span>
+          <span className="temp-unit">°C</span>
+        </div>
+        <div className="weather-location">
+          <MapPin className="w-3 h-3" />
+          <span>{city}</span>
+        </div>
+        <p className="weather-description">{description}</p>
+      </div>
+      
+      {/* Walk safety indicator */}
+      <div className={`walk-safety ${walkSafety.level}`}>
+        <WalkIcon className={`w-4 h-4 ${walkSafety.color}`} />
+        <span>{walkSafety.text}</span>
+      </div>
+      
+      {/* Weather details */}
+      <div className="weather-details">
+        {feelsLike && (
+          <div className="weather-detail">
+            <Thermometer className="w-3.5 h-3.5 text-slate-400" />
+            <span>Feels {Math.round(feelsLike)}°</span>
+          </div>
+        )}
+        {humidity && (
+          <div className="weather-detail">
+            <Droplets className="w-3.5 h-3.5 text-blue-400" />
+            <span>{humidity}%</span>
+          </div>
+        )}
+        {windSpeed && (
+          <div className="weather-detail">
+            <Wind className="w-3.5 h-3.5 text-slate-400" />
+            <span>{windSpeed} km/h</span>
+          </div>
+        )}
+      </div>
+      
+      {/* Ask Mira button */}
+      {onAskMira && (
+        <button 
+          className="weather-ask-mira"
+          onClick={() => onAskMira(`What's the best time to walk ${petName} today?`)}
+        >
+          Ask Mira about today's weather
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      )}
+    </div>
+  );
+});
+
 // Section Header Component
 const SectionHeader = memo(({ icon: Icon, title, count, iconColor = 'text-purple-400' }) => (
   <div className="today-section-header">
