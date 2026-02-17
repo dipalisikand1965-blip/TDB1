@@ -109,10 +109,10 @@ async def dispatch_action(
     now = datetime.now(timezone.utc)
     now_iso = now.isoformat()
     
-    # Generate IDs
+    # Generate IDs - ticket_id uses CANONICAL format (TCK-YYYY-NNNNNN)
     action_id = f"ACT-{now.strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6].upper()}"
     notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
-    ticket_id = f"TKT-{now.strftime('%Y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
+    ticket_id = await generate_ticket_id(db)  # Canonical format: TCK-YYYY-NNNNNN
     inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
     
     # Build member info
