@@ -327,6 +327,7 @@ const PetOSNavigation = ({
   picksHasNew = false, // Legacy: For PICKS "new" sparkle animation
   // NEW: Icon states per Bible Section 2
   iconStates = {
+    mojo: { state: 'ON', count: 0 }, // MOJO is always at least ON
     today: { state: 'OFF', count: 0 },
     picks: { state: 'OFF', count: 0 },
     services: { state: 'OFF', count: 0 },
@@ -335,6 +336,10 @@ const PetOSNavigation = ({
   },
 }) => {
   const [showPetDropdown, setShowPetDropdown] = useState(false);
+  
+  // Get MOJO icon state for visual feedback on pet avatar
+  const mojoIconState = iconStates.mojo || { state: 'ON', count: 0 };
+  const isMojoPulse = mojoIconState.state === 'PULSE';
   
   const handleMojoClick = () => {
     hapticFeedback.buttonTap();
@@ -352,11 +357,12 @@ const PetOSNavigation = ({
   return (
     <nav className="pet-os-navigation" data-testid="pet-os-navigation">
       {/* MOJO Tab (Pet Avatar) - Always First */}
-      <div className="os-mojo-tab">
+      <div className={`os-mojo-tab ${isMojoPulse ? 'mojo-pulse' : ''}`}>
         <div 
-          className={`mojo-avatar-wrapper ${activeTab === 'mojo' ? 'active' : ''}`}
+          className={`mojo-avatar-wrapper ${activeTab === 'mojo' ? 'active' : ''} ${isMojoPulse ? 'needs-attention' : ''}`}
           onClick={handleMojoClick}
           data-testid="mojo-avatar-wrapper"
+          data-icon-state={mojoIconState.state}
         >
           <PetAvatarRing
             pet={currentPet}
