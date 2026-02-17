@@ -536,22 +536,59 @@ const LearnedFactsContent = memo(({ pet }) => {
   };
   
   if (learnedFacts.length === 0) {
+    const petName = pet?.name || 'your pet';
     return (
-      <div className="mojo-section-empty" style={{ textAlign: 'center', padding: '24px 16px' }}>
+      <div className="mojo-section-empty" style={{ textAlign: 'center', padding: '28px 16px' }}>
         <div style={{ 
-          width: 48, height: 48, margin: '0 auto 12px', 
-          background: 'rgba(16, 185, 129, 0.15)', 
-          borderRadius: 12,
+          width: 56, height: 56, margin: '0 auto 16px', 
+          background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(139, 92, 246, 0.2))', 
+          borderRadius: 16,
           display: 'flex', alignItems: 'center', justifyContent: 'center'
         }}>
-          <Sparkles size={24} className="text-emerald-400" />
+          <Sparkles size={28} className="text-emerald-400" />
         </div>
-        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 4 }}>
-          No learned facts yet
+        <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: 15, fontWeight: 500, marginBottom: 6 }}>
+          Mira hasn't learned enough about {petName} yet
         </p>
-        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
-          Chat with Concierge® to teach Mira about your pet!
+        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, marginBottom: 20, maxWidth: 280, margin: '0 auto 20px' }}>
+          The more you chat, the smarter Mira gets about {petName}'s needs
         </p>
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => {
+              // Close modal and navigate to chat
+              window.dispatchEvent(new CustomEvent('mojo-action', { detail: { action: 'teach-mira' } }));
+            }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '10px 16px',
+              background: 'linear-gradient(135deg, #10B981, #059669)',
+              color: 'white', fontSize: 13, fontWeight: 600,
+              borderRadius: 10, border: 'none', cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Brain size={16} />
+            Teach Mira
+          </button>
+          <button
+            onClick={() => {
+              // Navigate to chat with save prompt
+              window.dispatchEvent(new CustomEvent('mojo-action', { detail: { action: 'save-from-chat' } }));
+            }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '10px 16px',
+              background: 'rgba(255,255,255,0.1)',
+              color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: 500,
+              borderRadius: 10, border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <MessageSquare size={16} />
+            Save from chat
+          </button>
+        </div>
       </div>
     );
   }
