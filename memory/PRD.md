@@ -508,6 +508,77 @@ All flows tested and verified via screenshots and API calls:
   - `/app/frontend/src/components/Mira/NewChatConfirmDialog.jsx`
   - `/app/frontend/src/components/Mira/StarterChips.jsx`
 
+### Feb 17, 2026 (Session 4c - Wiring & Weather Hint)
+- **WIRED: NewChatConfirmDialog + StarterChips in MiraDemoPage**
+  - `handleNewChatClick` checks for draft/awaiting before starting new chat
+  - Shows confirmation dialog when user has unfinished work
+  - StarterChips appear after new chat is confirmed
+  - Three starter chips: "Book something", "Find a place", "Ask a question"
+  
+- **ADDED: Minimal Weather Hint in Header**
+  - Shows "26°C · Mumbai" in navigation bar
+  - Taps to open TODAY panel
+  - No warnings/banners - caution info lives in TODAY layer
+
+- **UPDATED: PetOSNavigation**
+  - Added `weather` and `onWeatherClick` props
+  - Weather hint styled as subtle pill button at end of nav
+
+---
+
+## NEXT AGENT NOTES - System Health Scorecard
+
+### Score System /100 - ASSESS THESE:
+
+**1. Mobile Experience Score: __/100**
+- iOS/Android responsiveness
+- Touch targets (44x44px)
+- Scroll behavior
+- Bottom sheet modals
+- Gesture support
+
+**2. Intelligence Score: __/100**
+- Mira's understanding of pet context
+- Picks quality and relevance
+- Conversation flow management
+- Memory (learned facts) accuracy
+- Health-first safety rule enforcement
+
+**3. Overall System Score: __/100**
+- Chat vs Services mental model clarity
+- Ticket flow (TCK-* canonical IDs)
+- Concierge integration
+- WhatsApp webhook reliability
+- UI consistency across layers
+
+### Key Areas to Clean Up:
+- Mira placement on all 6 pillars (MOJO, TODAY, PICKS, SERVICES, LEARN, CONCIERGE)
+- Ensure each pillar has clear purpose per Bible
+
+### Roadmap to 100:
+- [ ] P1: Legacy Ticket Migration (134 tickets → TCK-* format)
+- [ ] P2: WhatsApp Webhook Idempotency
+- [ ] P3: Refactor monolithic files (mira_routes.py, MiraDemoPage.jsx)
+- [ ] P4: Push notification system
+- [ ] P5: Offline support / PWA
+
+### ONBOARDING REDESIGN (8-10 Step Soul Capture)
+Reference: luminaireclub.com onboarding flow
+
+**Proposed Steps:**
+1. Welcome + Pet name
+2. Pet species & breed
+3. Pet age/birthday
+4. Pet photo upload
+5. Personality traits (multiple choice)
+6. Health basics (weight, allergies)
+7. Feeding preferences
+8. Activity level
+9. Special needs/fears
+10. Location setup
+
+This should be a separate beautiful full-screen flow like Aabee.
+
 ### Feb 17, 2026 (Session 3 - Insights Review & Confirm)
 - **BUILT: "Review & Confirm" UI for pending insights in MOJO modal**
   - Shows collapsible "X New Insights to Review" section
