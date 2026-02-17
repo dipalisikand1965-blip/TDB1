@@ -302,7 +302,6 @@ const OSLayerTab = memo(({
         <span className={`tab-badge ${hasNew || isPulse ? 'badge-new badge-pulse' : ''}`}>
           {isPulse ? '✨' : ''}{iconCount || badge}
         </span>
-        </span>
       )}
       {hasNew && layer.id === 'picks' && (
         <span className="new-picks-indicator" />
