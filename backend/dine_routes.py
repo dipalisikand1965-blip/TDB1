@@ -2253,22 +2253,27 @@ async def order_dine_bundle(
         metadata={"bundle_id": bundle_id, "total": total_price}
     )
     
-    # Create service desk ticket
+    # Create service desk ticket via SPINE HELPER
     try:
-        await create_ticket_from_event(
+        spine_result = await handoff_to_spine(
             db=db,
-            event_type="dine_bundle_order",
-            event_data={
+            route_name="dine_routes.py",
+            endpoint="/api/dine/bundles/{bundle_id}/order",
+            pillar="dine",
+            category="bundle_order",
+            intent=f"Dine bundle order: {bundle['name']} x{quantity} (₹{total_price})",
+            user={"email": customer_email, "name": customer_name, "phone": customer_phone},
+            pet={},
+            payload={
                 "order_id": order_id,
                 "bundle_name": bundle["name"],
-                "customer_name": customer_name,
-                "customer_email": customer_email,
-                "customer_phone": customer_phone,
                 "total": total_price
-            }
+            },
+            channel="web"
         )
+        logger.info(f"[SPINE-HELPER] Created ticket {spine_result.get('ticket_id')} for dine bundle order {order_id}")
     except Exception as e:
-        logger.error(f"Failed to create ticket for dine bundle order: {e}")
+        logger.error(f"[SPINE-HELPER] Failed to create ticket for dine bundle order: {e}")
     
     return {
         "success": True,
