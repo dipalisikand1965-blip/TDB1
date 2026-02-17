@@ -803,27 +803,89 @@ async def get_insurance_services():
 
 @router.post("/insure/request")
 async def create_insurance_request(request_data: dict):
-    """Create an insurance assistance request"""
+    """
+    Create an insurance assistance request via UNIFORM SERVICE FLOW.
+    MIGRATED to handoff_to_spine() per Bible Section 12.0.
+    """
     db = get_db()
     
     request_id = f"INS-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
     service_type = request_data.get("service_type", "quote_request")
+    pet_name = request_data.get("pet_name", "Pet")
+    user_name = request_data.get("user_name", "Customer")
+    description = request_data.get("description", "")
     
+    # Get service config
+    service_config = INSURANCE_SERVICES.get(service_type, {})
+    service_name = service_config.get("name", service_type.replace("_", " ").title())
+    
+    # Build intent
+    intent = f"Insurance {service_name} for {pet_name}. {description[:100]}"
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # HANDOFF TO SPINE - Single canonical ticket creation
+    # ═══════════════════════════════════════════════════════════════════════════
+    spine_result = await handoff_to_spine(
+        db=db,
+        route_name="paperwork_routes.py",
+        endpoint="/paperwork/insure/request",
+        pillar="paperwork",
+        category=f"insure_{service_type}",
+        intent=intent,
+        user={
+            "email": request_data.get("user_email"),
+            "name": user_name,
+            "phone": request_data.get("user_phone")
+        },
+        pet={
+            "id": request_data.get("pet_id"),
+            "name": pet_name,
+            "breed": request_data.get("pet_breed")
+        },
+        payload={
+            "request_id": request_id,
+            "service_type": service_type,
+            "current_policy": request_data.get("current_policy"),
+            "policy_number": request_data.get("policy_number"),
+            "coverage_needs": request_data.get("coverage_needs", []),
+            "budget_range": request_data.get("budget_range"),
+            "health_conditions": request_data.get("health_conditions", []),
+            "description": description,
+            "notes": request_data.get("notes", "")
+        },
+        channel="web",
+        urgency=request_data.get("priority", "normal"),
+        created_by="member",
+        notify_admin=True,
+        notify_member=True,
+        tags=["insurance", "insure", service_type, "paperwork"]
+    )
+    
+    if not spine_result.get("success"):
+        logger.error(f"[INSURE] Spine handoff failed: {spine_result.get('error')}")
+        raise HTTPException(status_code=500, detail="Failed to create service ticket")
+    
+    canonical_ticket_id = spine_result["ticket_id"]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SAVE TO insurance_requests collection (pillar-specific record)
+    # ═══════════════════════════════════════════════════════════════════════════
     ins_request = {
         "id": request_id,
+        "ticket_id": canonical_ticket_id,  # Link to canonical ticket
         "service_type": service_type,
         "status": "pending",
         "priority": request_data.get("priority", "normal"),
         
         # Pet Details
         "pet_id": request_data.get("pet_id"),
-        "pet_name": request_data.get("pet_name"),
+        "pet_name": pet_name,
         "pet_breed": request_data.get("pet_breed"),
         "pet_age": request_data.get("pet_age"),
         
         # User Details
         "user_id": request_data.get("user_id"),
-        "user_name": request_data.get("user_name"),
+        "user_name": user_name,
         "user_email": request_data.get("user_email"),
         "user_phone": request_data.get("user_phone"),
         
@@ -835,7 +897,7 @@ async def create_insurance_request(request_data: dict):
         "health_conditions": request_data.get("health_conditions", []),
         
         # Request Details
-        "description": request_data.get("description", ""),
+        "description": description,
         "notes": request_data.get("notes", ""),
         
         # Tracking
@@ -845,71 +907,14 @@ async def create_insurance_request(request_data: dict):
     
     await db.insurance_requests.insert_one({k: v for k, v in ins_request.items() if k != "_id"})
     
-    # Get service config
-    service_config = INSURANCE_SERVICES.get(service_type, {})
-    
-    # Create Service Desk Ticket
-    ticket = {
-        "id": f"TKT-{uuid.uuid4().hex[:8].upper()}",
-        "source": "insure_pillar",
-        "source_id": request_id,
-        "category": "insurance",
-        "subcategory": service_type,
-        "subject": f"Insurance Request: {service_config.get('name', service_type)} for {ins_request.get('pet_name', 'Pet')}",
-        "description": f"Insurance assistance request from {ins_request['user_name']}.\nService: {service_config.get('name', service_type)}\n{ins_request['description']}",
-        "status": "open",
-        "priority": ins_request["priority"],
-        "customer_name": ins_request["user_name"],
-        "customer_email": ins_request["user_email"],
-        "customer_phone": ins_request["user_phone"],
-        "pet_name": ins_request["pet_name"],
-        "pet_id": ins_request["pet_id"],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "tags": ["insurance", "insure", service_type, "paperwork"],
-        "pillar": "paperwork"
-    }
-    
-    await db.tickets.insert_one({k: v for k, v in ticket.items() if k != "_id"})
-    
-    # Unified Inbox
-    inbox_item = {
-        "id": f"INB-{uuid.uuid4().hex[:8].upper()}",
-        "type": "insurance_request",
-        "source": "insure_pillar",
-        "source_id": request_id,
-        "title": f"🛡️ Insurance: {service_config.get('name', service_type)}",
-        "summary": f"{ins_request['user_name']} needs {service_config.get('name', 'insurance assistance')} for {ins_request.get('pet_name', 'their pet')}",
-        "customer_name": ins_request["user_name"],
-        "customer_email": ins_request["user_email"],
-        "pet_name": ins_request.get("pet_name"),
-        "status": "new",
-        "priority": ins_request["priority"],
-        "pillar": "paperwork",
-        "created_at": datetime.now(timezone.utc).isoformat()
-    }
-    
-    await db.unified_inbox.insert_one({k: v for k, v in inbox_item.items() if k != "_id"})
-    
-    # Admin notification
-    admin_notif = {
-        "id": f"NOTIF-{uuid.uuid4().hex[:8].upper()}",
-        "type": "new_insurance_request",
-        "title": f"🛡️ New Insurance Request: {service_config.get('name', service_type)}",
-        "message": f"{ins_request['user_name']} needs {service_config.get('name', 'insurance assistance')} for {ins_request.get('pet_name', 'their pet')}",
-        "category": "insurance",
-        "priority": ins_request["priority"],
-        "read": False,
-        "link_to": f"/admin?tab=insurance&request={request_id}",
-        "created_at": datetime.now(timezone.utc).isoformat()
-    }
-    
-    await db.admin_notifications.insert_one({k: v for k, v in admin_notif.items() if k != "_id"})
+    logger.info(f"[SPINE-MIGRATED] paperwork_routes.py:/paperwork/insure/request → {canonical_ticket_id} | pillar=paperwork category=insure_{service_type}")
     
     return {
         "message": "Insurance request created successfully",
         "request_id": request_id,
         "estimated_response": service_config.get("typical_response_time", "24-48 hours"),
-        "ticket_id": ticket["id"]
+        "ticket_id": canonical_ticket_id,
+        "deep_link": spine_result.get("deep_link")
     }
 
 
