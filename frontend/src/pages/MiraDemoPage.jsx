@@ -3628,6 +3628,15 @@ const MiraDemoPage = () => {
         }}
       />
       
+      {/* NEW CHAT CONFIRM DIALOG - Shows when user has draft/awaiting ticket */}
+      <NewChatConfirmDialog
+        isOpen={showNewChatConfirm}
+        onConfirm={handleConfirmNewChat}
+        onCancel={handleCancelNewChat}
+        hasDraft={query && query.trim().length > 0}
+        hasAwaitingTicket={apiCounts?.awaitingYouCount > 0}
+      />
+      
       {/* HANDOFF SUMMARY - Lazy loaded */}
       {(handoffSummary?.isOpen) && (
         <Suspense fallback={<LazyFallback />}>
