@@ -3564,6 +3564,10 @@ const MiraDemoPage = () => {
         anchorRef={servicesTabRef}
         isLoggedIn={!!user}
         onDismiss={() => console.log('[ONBOARDING] User dismissed tooltip')}
+        onOpenServices={() => {
+          handleOSTabChange('services');
+          console.log('[ONBOARDING] User opened Services from tooltip');
+        }}
       />
       
       {/* HANDOFF SUMMARY - Lazy loaded */}
