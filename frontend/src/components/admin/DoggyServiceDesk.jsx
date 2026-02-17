@@ -5455,7 +5455,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                       )}
                       
                       {/* Internal Note Toggle + AI Reply Styles */}
-                      <div className="flex items-center gap-4 mb-2 flex-wrap">
+                      <div className="flex items-center justify-between mb-2">
                         <label className="flex items-center gap-2 text-xs cursor-pointer">
                           <input
                             type="checkbox"
@@ -5463,15 +5463,15 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                             onChange={(e) => setIsInternal(e.target.checked)}
                             className="rounded"
                           />
-                          <span className={isInternal ? 'text-amber-600 font-medium' : 'text-gray-500'}>Internal Note</span>
+                          <span className={isInternal ? 'text-amber-600 font-medium' : 'text-gray-500'}>Internal Note (not visible to customer)</span>
                         </label>
                         
-                        {/* AI Reply Styles Dropdown */}
-                        <div className="flex items-center gap-2 ml-auto" data-testid="mira-tone-selector">
+                        {/* AI Reply Styles Dropdown - Mira Tone Selector */}
+                        <div className="flex items-center gap-2 shrink-0" data-testid="mira-tone-selector">
                           <select
                             value={aiReplyStyle}
                             onChange={(e) => setAiReplyStyle(e.target.value)}
-                            className="h-8 px-3 text-xs font-medium border-2 border-purple-200 rounded-lg bg-purple-50 text-purple-700 cursor-pointer hover:border-purple-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-200"
+                            className="h-7 px-2 text-xs border border-purple-200 rounded bg-purple-50 text-purple-700 cursor-pointer"
                             data-testid="mira-style-dropdown"
                           >
                             {AI_REPLY_STYLES.map(style => (
@@ -5483,10 +5483,10 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                             size="sm"
                             onClick={() => generateAiReply(aiReplyStyle)}
                             disabled={aiLoading}
-                            className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100 hover:border-purple-300 text-xs h-8 px-3"
+                            className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100 text-xs h-7 px-2"
                             data-testid="ask-mira-btn"
                           >
-                            {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : <Brain className="w-3.5 h-3.5 mr-1.5" />}
+                            {aiLoading ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Brain className="w-3 h-3 mr-1" />}
                             Ask Mira
                           </Button>
                         </div>
