@@ -772,10 +772,44 @@ const PetOSNavigation = ({
           50% { box-shadow: 0 0 15px rgba(139, 92, 246, 0.8); }
         }
         
+        /* MOJO PULSE STATE - Pet avatar needs attention (incomplete profile) */
+        .os-mojo-tab.mojo-pulse .mojo-avatar-wrapper {
+          animation: mojo-attention-pulse 2s ease-in-out infinite;
+        }
+        
+        .mojo-avatar-wrapper.needs-attention::after {
+          content: '';
+          position: absolute;
+          top: -4px;
+          right: -4px;
+          width: 12px;
+          height: 12px;
+          background: linear-gradient(135deg, #F59E0B, #EF4444);
+          border-radius: 50%;
+          border: 2px solid #1a1025;
+          animation: mojo-dot-pulse 1.5s ease-out infinite;
+        }
+        
+        @keyframes mojo-attention-pulse {
+          0%, 100% { 
+            filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.4));
+          }
+          50% { 
+            filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.7));
+          }
+        }
+        
+        @keyframes mojo-dot-pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.2); }
+        }
+        
         @media (prefers-reduced-motion: reduce) {
           .os-layer-tab.icon-pulse .tab-icon,
           .tab-state-dot.dot-pulse,
-          .tab-badge.badge-pulse {
+          .tab-badge.badge-pulse,
+          .os-mojo-tab.mojo-pulse .mojo-avatar-wrapper,
+          .mojo-avatar-wrapper.needs-attention::after {
             animation: none;
           }
         }
