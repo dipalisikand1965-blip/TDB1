@@ -133,40 +133,54 @@ const useIconStateAPI = ({
 
   /**
    * Transform API response to hook-friendly counts format
+   * 
+   * LEGACY DATA HANDLING:
+   * If invalid_count > 0, we have legacy tickets with non-canonical IDs.
+   * In this case, we return special flags so UI can show "syncing" instead of "0"
    */
   const getCounts = useCallback(() => {
-    if (!data?.counts) return {};
+    if (!data?.counts) return { _hasLegacyData: false, _isLoading: true };
 
     const { services, today, concierge, picks, learn, mojo } = data.counts;
+    
+    // Check for legacy data (non-canonical ticket_ids)
+    const validation = services?._validation || {};
+    const invalidCount = validation.invalid_count || 0;
+    const hasLegacyData = invalidCount > 0;
 
     return {
+      // LEGACY DATA FLAG - UI should show "syncing" indicator
+      _hasLegacyData: hasLegacyData,
+      _invalidCount: invalidCount,
+      _isLoading: false,
+      
       // MOJO
       hasCriticalMissing: (mojo?.critical_fields_missing || 0) > 0,
       soulScore: mojo?.soul_score || 0,
       missingFields: mojo?.missing_fields || [],
       
-      // TODAY
-      urgentCount: today?.urgent || 0,
-      dueTodayCount: today?.due_today || 0,
-      upcomingCount: today?.upcoming || 0,
+      // TODAY - use null if legacy data exists and count is 0 (means "unknown")
+      urgentCount: hasLegacyData && today?.urgent === 0 ? null : (today?.urgent || 0),
+      dueTodayCount: hasLegacyData && today?.due_today === 0 ? null : (today?.due_today || 0),
+      upcomingCount: hasLegacyData && today?.upcoming === 0 ? null : (today?.upcoming || 0),
       
-      // PICKS
-      picksCount: 0, // Total picks not returned by API
+      // PICKS (not affected by ticket legacy data)
+      picksCount: 0,
       newPicksSinceLastView: picks?.new_picks_since_last_view || 0,
       materialChangeCount: picks?.material_change || 0,
       
-      // SERVICES
-      activeTicketsCount: services?.active_tickets || 0,
-      awaitingYouCount: services?.awaiting_you || 0,
+      // SERVICES - use null if legacy data exists and count is 0
+      activeTicketsCount: hasLegacyData && services?.active_tickets === 0 ? null : (services?.active_tickets || 0),
+      awaitingYouCount: hasLegacyData && services?.awaiting_you === 0 ? null : (services?.awaiting_you || 0),
       
       // CONCIERGE
       unreadRepliesCount: concierge?.unread_replies || 0,
       openThreadsCount: concierge?.open_threads || 0,
       
-      // LEARN
+      // LEARN (not affected by ticket legacy data)
       pendingInsightsCount: learn?.pending_insights || 0,
       learnedFactsCount: learn?.learned_facts || 0,
-      newContentCount: 0, // Not tracked by API yet
+      newContentCount: 0,
     };
   }, [data]);
 
