@@ -338,9 +338,8 @@ async def create_reservation(reservation: ReservationRequest):
     if not restaurant:
         raise HTTPException(status_code=404, detail="Restaurant not found")
     
-    # Generate unified flow IDs
+    # Generate unified flow IDs (notification and inbox use non-canonical IDs, but ticket MUST be canonical)
     reservation_id = f"res-{uuid.uuid4().hex[:12]}"
-    ticket_id = f"TKT-DINE-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
     notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
     inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
     now = get_utc_timestamp()
@@ -360,9 +359,51 @@ async def create_reservation(reservation: ReservationRequest):
     if not reservation.pet_name and pet_names:
         reservation.pet_name = pet_names[0]
     
+    # ==================== STEP 2: SERVICE DESK TICKET via UNIFORM SPINE (CANONICAL) ====================
+    description = f"Dine Reservation at {restaurant.get('name')} on {reservation.date} at {reservation.time}. {reservation.guests} guests, {pet_count} pets. Customer: {reservation.name} ({reservation.phone})"
+    
+    try:
+        spine_result = await create_or_attach_service_ticket(
+            db=db,
+            intent=f"Dine reservation at {restaurant.get('name')} on {reservation.date} at {reservation.time}",
+            intent_type="request",
+            member_email=reservation.email,
+            member_name=reservation.name,
+            pet_ids=[],
+            pet_names=pet_names if pet_names else ([reservation.pet_name] if reservation.pet_name else []),
+            pillar=Pillar.DINE.value,
+            category="reservation",
+            source_route="dine_routes.py",
+            channel=Channel.WEB.value,
+            created_by=CreatedBy.MEMBER.value,
+            payload={
+                "reservation_id": reservation_id,
+                "restaurant_id": reservation.restaurant_id,
+                "restaurant_name": restaurant.get("name"),
+                "restaurant_area": restaurant.get("area"),
+                "restaurant_city": restaurant.get("city"),
+                "date": reservation.date,
+                "time": reservation.time,
+                "guests": reservation.guests,
+                "pets_count": pet_count,
+                "pet_name": reservation.pet_name,
+                "pet_breed": reservation.pet_breed,
+                "phone": reservation.phone,
+                "special_requests": getattr(reservation, 'special_requests', None)
+            },
+            urgency="normal",
+            notify_admin=True,
+            notify_member=True
+        )
+        ticket_id = spine_result.get("ticket_id")
+        logger.info(f"[UNIFORM SPINE] Created canonical ticket {ticket_id} for dine reservation {reservation_id}")
+    except Exception as e:
+        logger.error(f"[UNIFORM SPINE] Failed to create ticket for dine reservation: {e}")
+        ticket_id = f"TKT-ERR-{uuid.uuid4().hex[:8].upper()}"  # Fallback - should not happen
+    
     reservation_data = reservation.model_dump()
-    reservation_data["pets_count"] = pet_count  # Store normalized count
-    reservation_data["pet_names"] = pet_names  # Store all pet names
+    reservation_data["pets_count"] = pet_count
+    reservation_data["pet_names"] = pet_names
     
     reservation_doc = {
         "id": reservation_id,
