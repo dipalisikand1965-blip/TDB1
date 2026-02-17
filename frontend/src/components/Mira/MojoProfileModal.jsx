@@ -547,7 +547,13 @@ const LearnedFactsContent = memo(({ pet, apiUrl, token, onInsightAction }) => {
       if (response.ok) {
         const result = await response.json();
         console.log(`[MOJO] Insight ${action}ed:`, result);
-        // Notify parent to refresh pet data
+        
+        // Handle duplicate case
+        if (result.duplicate) {
+          console.log(`[MOJO] Duplicate insight skipped`);
+        }
+        
+        // Notify parent to refresh pet data (even for duplicates, to update pending list)
         onInsightAction?.(action, insightId);
       } else {
         const errorText = await response.text();
