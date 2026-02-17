@@ -118,7 +118,7 @@ const WeatherHeroCard = memo(({ weather, city, petName, onAskMira }) => {
         </div>
         <div className="weather-location">
           <MapPin className="w-3 h-3" />
-          <span>{city}</span>
+          <span>{weatherCity}</span>
         </div>
         <p className="weather-description">{description}</p>
       </div>
