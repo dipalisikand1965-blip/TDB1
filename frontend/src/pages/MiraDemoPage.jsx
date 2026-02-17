@@ -584,13 +584,25 @@ const MiraDemoPage = () => {
   // Now powered by real API data from unified Service Desk ticket spine
   // 
   // CRITICAL FIX: miraPicks.hasNew must trigger PICKS indicator PULSE
-  // When Mira recommends products in chat, the indicator must light up immediately
+  // When Mira recommends products, services, OR PLACES, the indicator must light up
   // ═══════════════════════════════════════════════════════════════════════════════
   
   // Merge local miraPicks.hasNew with API counts for real-time indicator updates
-  const mergedCounts = React.useMemo(() => {
-    const localPicksCount = (miraPicks?.products?.length || 0) + (miraPicks?.services?.length || 0);
+  const mergedCounts = useMemo(() => {
+    // Count ALL types of picks: products, services, places, conciergeArranges
+    const localPicksCount = (miraPicks?.products?.length || 0) + 
+                            (miraPicks?.services?.length || 0) + 
+                            (miraPicks?.places?.length || 0) +
+                            (miraPicks?.conciergeArranges?.length || 0);
+    
+    // hasNew flag means Mira just recommended something
     const hasLocalNewPicks = miraPicks?.hasNew && localPicksCount > 0;
+    
+    console.log('[ICON STATE] miraPicks.hasNew:', miraPicks?.hasNew, 
+                'localPicksCount:', localPicksCount, 
+                'products:', miraPicks?.products?.length,
+                'services:', miraPicks?.services?.length,
+                'places:', miraPicks?.places?.length);
     
     return {
       ...apiCounts,
@@ -598,7 +610,7 @@ const MiraDemoPage = () => {
       picksCount: Math.max(apiCounts?.picksCount || 0, localPicksCount),
       newPicksSinceLastView: hasLocalNewPicks ? localPicksCount : (apiCounts?.newPicksSinceLastView || 0),
     };
-  }, [apiCounts, miraPicks?.hasNew, miraPicks?.products?.length, miraPicks?.services?.length]);
+  }, [apiCounts, miraPicks?.hasNew, miraPicks?.products?.length, miraPicks?.services?.length, miraPicks?.places?.length, miraPicks?.conciergeArranges?.length]);
   
   const {
     iconStates,
