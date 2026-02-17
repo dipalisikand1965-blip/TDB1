@@ -532,18 +532,22 @@ const LearnedFactsContent = memo(({ pet, apiUrl, token, onInsightAction }) => {
   const handleInsightAction = async (insightId, action) => {
     setProcessingId(insightId);
     try {
-      const response = await fetch(`${apiUrl}/api/concierge/insights/${pet.id}/${insightId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ action })
-      });
+      const response = await fetch(
+        `${apiUrl}/api/concierge/insights/${pet.id}/review?insight_id=${insightId}&action=${action}`, 
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
       
       if (response.ok) {
         // Notify parent to refresh pet data
         onInsightAction?.(action, insightId);
+      } else {
+        console.error('Failed to process insight:', await response.text());
       }
     } catch (error) {
       console.error('Failed to process insight:', error);
