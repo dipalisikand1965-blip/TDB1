@@ -9944,6 +9944,10 @@ async def mira_chat(
     # Extract facts about the pet from user messages and store for review
     # ═══════════════════════════════════════════════════════════════════════════
     logger.info(f"[INSIGHTS DEBUG] AVAILABLE={INSIGHT_EXTRACTION_AVAILABLE}, selected_pet={selected_pet is not None}, db={db is not None}")
+    
+    # Track if a new conflict was detected (for chat interruption prompt - Bible 6.3)
+    new_conflict_detected = None
+    
     if INSIGHT_EXTRACTION_AVAILABLE and selected_pet and db is not None:
         try:
             pet_id = selected_pet.get("id")
@@ -9954,6 +9958,38 @@ async def mira_chat(
                 logger.info(f"[INSIGHTS DEBUG] Extracted {len(insights)} insights: {insights}")
                 if insights:
                     timestamp = datetime.now(timezone.utc).isoformat()
+                    
+                    # Check for conflicts BEFORE storing
+                    try:
+                        from utils.fact_conflict_resolver import detect_conflict, get_active_conflicts
+                        
+                        # Get existing learned facts
+                        pet_doc = await db.pets.find_one({"id": pet_id})
+                        learned_facts = pet_doc.get("learned_facts", []) if pet_doc else []
+                        
+                        # Check each new insight for conflicts
+                        for insight in insights:
+                            conflict = detect_conflict(
+                                {"category": insight["category"], "content": insight["content"]},
+                                learned_facts
+                            )
+                            if conflict and conflict.get("detected"):
+                                new_conflict_detected = {
+                                    "entity": conflict.get("entity"),
+                                    "health_fact": conflict.get("health_fact"),
+                                    "preference_fact": {
+                                        "category": insight["category"],
+                                        "content": insight["content"]
+                                    },
+                                    "safety_note": conflict.get("safety_note")
+                                }
+                                logger.info(f"[INSIGHTS] Conflict detected for entity '{conflict.get('entity')}'")
+                                break  # Only report first conflict
+                    except ImportError:
+                        pass
+                    except Exception as conflict_err:
+                        logger.warning(f"[INSIGHTS] Conflict detection error: {conflict_err}")
+                    
                     await store_conversation_insights(
                         db=db,
                         pet_id=pet_id,
