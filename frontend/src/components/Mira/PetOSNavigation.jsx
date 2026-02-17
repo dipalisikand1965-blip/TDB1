@@ -430,6 +430,21 @@ const PetOSNavigation = ({
         })}
       </div>
       
+      {/* Weather Hint - Minimal ambient display, taps to open TODAY */}
+      {weatherTemp && weatherCity && (
+        <button
+          className="weather-hint"
+          onClick={() => {
+            hapticFeedback.buttonTap();
+            onWeatherClick?.();
+          }}
+          data-testid="weather-hint"
+        >
+          <span className="weather-temp">{Math.round(weatherTemp)}°C</span>
+          <span className="weather-city">· {weatherCity}</span>
+        </button>
+      )}
+      
       {/* Styles */}
       <style jsx>{`
         .pet-os-navigation {
