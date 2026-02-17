@@ -896,9 +896,9 @@ const ConciergeArrangeCard = ({ arrange, pet, onCreateTicket }) => {
             {arrange.label || 'Concierge Pick'}
           </span>
           
-          {/* Title */}
+          {/* Title - Updated copy */}
           <h4 className="font-medium text-white text-sm mb-1">
-            {arrange.title || `Custom request for ${petName}`}
+            Not in the catalogue. We'll arrange this for {petName}.
           </h4>
           
           {/* Subtitle/Spec chip */}
@@ -909,21 +909,24 @@ const ConciergeArrangeCard = ({ arrange, pet, onCreateTicket }) => {
             </p>
           )}
           
-          {/* Description */}
+          {/* Description - Creates tracked request */}
           <p className="text-xs text-gray-400 leading-relaxed">
-            {arrange.description || `We don't have this in the catalogue yet — we can arrange it for ${petName}.`}
+            {arrange.description || "Creates a tracked request in Services."}
           </p>
           
-          {/* Ticket confirmation */}
+          {/* Ticket confirmation - Updated toast copy */}
           {ticketCreated && (
             <motion.div
               className="mt-3 p-2 bg-green-500/20 border border-green-500/30 rounded-lg"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
             >
-              <p className="text-xs text-green-300 flex items-center gap-2">
-                <Check className="w-4 h-4" />
-                Got it. Request opened: <span className="font-mono">{ticketCreated}</span>
+              <p className="text-xs text-green-300 flex flex-col gap-1">
+                <span className="flex items-center gap-2">
+                  <Check className="w-4 h-4" />
+                  Request sent to Concierge • <span className="font-mono">{ticketCreated}</span>
+                </span>
+                <span className="text-green-400/70 text-[10px] ml-6">You can reply in Services.</span>
               </p>
             </motion.div>
           )}
