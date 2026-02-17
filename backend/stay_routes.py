@@ -27,8 +27,8 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 import secrets
 from bson import ObjectId
 
-# Import canonical ticket spine (SINGLE ENTRY POINT for all tickets)
-from utils.service_ticket_spine import create_or_attach_service_ticket, Pillar, Channel, CreatedBy
+# Import canonical ticket spine helper (SINGLE ENTRY POINT for all tickets)
+from utils.spine_helper import handoff_to_spine
 
 logger = logging.getLogger(__name__)
 
