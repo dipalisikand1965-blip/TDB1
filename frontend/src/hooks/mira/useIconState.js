@@ -224,7 +224,6 @@ export const getIconState = (tabId, data = {}, activeTab = null) => {
           tooltip: `${activeTicketsCount} active ticket${activeTicketsCount > 1 ? 's' : ''}`,
         };
       }
-      }
       
       return {
         state: ICON_STATE.OFF,
