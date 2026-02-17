@@ -14058,6 +14058,51 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
         
         response_data["soul_intelligence"] = soul_intelligence_data
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # CONFLICT DETECTION PROMPT (Bible 6.3) - Insert at response time
+        # If a new conflict was detected during insight extraction, inject prompt
+        # ═══════════════════════════════════════════════════════════════════════════
+        if new_conflict_detected:
+            entity = new_conflict_detected.get("entity", "this item")
+            health_fact = new_conflict_detected.get("health_fact", {})
+            pref_fact = new_conflict_detected.get("preference_fact", {})
+            
+            conflict_prompt = f"""
+
+---
+
+⚠️ **I want to be careful here.** I'm holding two different notes about {pet_name}:
+
+• **{pet_name} is allergic to {entity}** (health restriction)
+• **{pet_name} loves {pref_fact.get('content', entity)}** (preference)
+
+Has {pet_name}'s {entity} sensitivity changed, or should I treat {entity} as strictly off-limits?
+
+"""
+            # Prepend conflict prompt to response
+            response_data["response"] = conflict_prompt + response_data.get("response", "")
+            
+            # Add conflict metadata to response for frontend
+            response_data["conflict_detected"] = {
+                "entity": entity,
+                "health_fact": health_fact,
+                "preference_fact": pref_fact,
+                "quick_replies": [
+                    f"Off-limits (allergy)",
+                    f"It's fine now",
+                    f"Not sure"
+                ]
+            }
+            
+            # Override quick_replies with conflict resolution options
+            response_data["quick_replies"] = [
+                f"Off-limits (allergy)",
+                f"It's fine now", 
+                f"Not sure"
+            ]
+            
+            logger.info(f"[CONFLICT-PROMPT] Injected conflict prompt for entity '{entity}'")
+        
         return response_data
         
     except Exception as e:
