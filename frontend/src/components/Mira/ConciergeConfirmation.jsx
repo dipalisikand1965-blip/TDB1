@@ -57,7 +57,8 @@ const ConciergeConfirmation = ({
   if (!confirmation?.show_banner) return null;
   
   // Personalized title based on pet name
-  const personalizedTitle = `${petName}'s request is on its way! 🎉`;
+  const ticketId = confirmation.ticket_id || '';
+  const personalizedTitle = `Request sent to Concierge • ${ticketId}`;
 
   return (
     <div 
@@ -88,8 +89,8 @@ const ConciergeConfirmation = ({
                 <h3 className="text-white font-semibold text-sm flex items-center gap-1">
                   {personalizedTitle}
                 </h3>
-                <span className="text-emerald-100 text-xs font-mono">
-                  {confirmation.ticket_id}
+                <span className="text-emerald-100 text-xs">
+                  You can reply in Services.
                 </span>
               </div>
             </div>
@@ -102,9 +103,9 @@ const ConciergeConfirmation = ({
             </button>
           </div>
           
-          {/* Message - Personalized */}
+          {/* Message - Where do I reply? killer */}
           <p className="text-white/90 text-sm leading-relaxed ml-12">
-            Your Pet Concierge® is now reviewing {petName}'s request. They'll get back to you with the best options shortly.
+            Your Concierge thread lives in Services. Reply there to add details or change timing.
           </p>
           
           {/* Status indicator */}
