@@ -1205,6 +1205,9 @@ const ChatMessage = ({
   miraPicks = { products: [], services: [] },
   miraMode = 'ready',
   isOld = false,
+  // Icon states (per Bible Section 2)
+  picksState,
+  conciergeState,
   hapticFeedback,
   onShowConcierge,
   onShowInsights,
@@ -1236,6 +1239,8 @@ const ChatMessage = ({
       miraPicks={miraPicks}
       miraMode={miraMode}
       isOld={isOld}
+      picksState={picksState}
+      conciergeState={conciergeState}
       hapticFeedback={hapticFeedback}
       onShowConcierge={onShowConcierge}
       onShowInsights={onShowInsights}
