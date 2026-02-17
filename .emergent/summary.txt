@@ -1,7 +1,7 @@
 <analysis>**original_problem_statement:**
 The user's vision is to create a Golden Standard Communication System, centered around an AI named Mira. The development is strictly guided by an internal design document, . A critical architectural rule is the **Uniform Service Flow,** mandating that all service actions create or attach to a single, canonical Service Desk Ticket spine using a  ID format. Another core principle is the **Health-First Safety Rule**, where pet health facts always override conflicting preferences.
 
-The overarching user-facing mental model is: **Chat is where you ask. Services is where it gets done.** The UI must be refined to make this distinction foolproof and intuitive, with a premium, human-centric feel targeted at millennial pet parents.
+The overarching user-facing mental model is: **Chat is where you ask. Services is where it gets done.** The UI must be refined to make this distinction foolproof and intuitive, with a premium, human-centric feel targeted at millennial pet parents, with a strong emphasis on a mobile-first experience for iOS and Android.
 
 **PRODUCT REQUIREMENTS:**
 1.  **Mental Model Reinforcement:** All UI copy, notifications, and interaction flows must guide the user to ask in Chat and manage execution/replies in Services.
@@ -11,141 +11,166 @@ The overarching user-facing mental model is: **Chat is where you ask. Services i
 5.  **Explicit Location Consent:** For near me queries, the system must ask for consent before triggering geolocation.
 6.  **Reply Guardrail:** Prevent users from replying to open tickets in the main Chat view by nudging them to the Services thread.
 7.  **Consistent Ownership:** Ensure ticket ownership is derived from a unified identity model across the application.
+8.  **Pet First, Breed Second Doctrine:** Personalization logic must prioritize a pet's individual traits over its breed characteristics.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a functional React/FastAPI/MongoDB stack. The core architecture for the Uniform Service Flow and API-driven UI is complete. The agent has successfully completed a full QA Proof Pack of the primary conversational flows (Clarify -> Places -> Concierge).
+The application is a functional React/FastAPI/MongoDB stack with a strong focus on a premium, mobile-first UI. A significant number of UI/UX refinements have been completed to enforce the Chat vs. Services mental model. This includes a corrected onboarding tooltip, WhatsApp/DM-style unread indicators in the Services panel, a banner for new concierge replies, and a streamlined New Chat flow with starter prompts.
 
-Most recently, the agent implemented a comprehensive set of UI copy and component changes to align with the user's refined mental model. This includes renaming the Debug Drawer to Proof Panel, replacing technical warnings with a user-friendly Syncing history message, implementing a Reply in Services nudge, and adding a first-visit onboarding tooltip. The copy across the app has been updated to feel more luxury and less like a technical support system.
+The UI has been decluttered by moving the weather card into a dedicated TODAY panel and simplifying the main chat view. The  pillar is now fully functional, with content seeded and personalized based on the active pet's attributes, adhering to the Pet First, Breed Second doctrine. The agent has performed extensive analysis of the Soul questions and created design documents for the upcoming onboarding overhaul.
 
 **Last working item**:
--   **Last item agent was working:** The agent was in the middle of implementing a final set of UI/UX refinements to make the Chat vs. Services distinction unmistakable for users. This involved updating the onboarding tooltip, the syncing history copy, and beginning to rework the  to show unread indicators in a WhatsApp/Instagram DM style.
--   **Status:** IN PROGRESS
--   **Agent Testing Done:** N (for the latest batch of UI refinements)
--   **Which testing method agent to use?** Screenshot tool to verify the updated copy and new UI elements (Onboarding Tooltip, Proof Panel, and Services Panel unread indicators).
+-   **Last item agent was working:** The agent completed reading and analyzing the  and  to ensure full alignment with the project's core principles, following a user request to do so. This was subsequent to verifying the  pillar's personalization logic. The last active development task was populating the LEARN pillar with content, which is complete.
+-   **Status:** COMPLETED
+-   **Agent Testing Done:** Y
+-   **Which testing method agent to use?** NA
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
 -   **Issue 1: WhatsApp Webhook Idempotency (P2)**
-    -   **Description:** Webhook retries can create duplicate tickets. The idempotency check should be based on a unique message ID, not just an open conversation.
-    -   **Next debug checklist:** Modify the  logic in  to store and check for .
+    -   **Description:** Webhook retries can create duplicate tickets. The idempotency check should be based on a unique message ID (), not just an open conversation.
+    -   **Next debug checklist:** Modify the  logic in  to store and check for the message ID before creating a new ticket.
     -   **Status:** NOT STARTED
--   **Issue 2: Onboarding tooltip positioning is incorrect (P1)**
-    -   **Description:** The onboarding tooltip is partially cut off on the screen. A previous fix was insufficient.
-    -   **Next debug checklist:** Re-evaluate the CSS for . Adjust the positioning logic (e.g., using , , or a different anchor point) to ensure it's fully visible. Verify with a screenshot.
-    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Backend
 
 **In progress Task List**:
--   **Task 1: P0 - Implement Final UI/UX Refinements for Foolproof Flow**
-    -   **Where to resume:**
-        1.  **Services Panel:** Continue modifying  to implement WhatsApp/Instagram DM style unread indicators: an unread dot, a New label, and prefixing the message preview with Concierge:. The badge on the Services tab must *only* count unread replies.
-        2.  **Chat Banner:** Implement a new, dismissible banner at the top of the chat view that appears when a new Concierge message arrives. It should say Concierge replied in Services and have an Open Services button.
-        3.  **Verification:** Take screenshots to verify all the recent UI copy and component changes, including the fixes for the tooltip and the new indicators in the Services panel.
-    -   **What will be achieved with this?** A highly intuitive UX that naturally guides users to the correct communication channel, fulfilling the user's vision for a premium, human-centric experience.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Frontend (using the screenshot tool).
-    -   **Blocked on something:** No.
+-   None.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
-*   **P1: Legacy Ticket Migration:** Migrate the 134+ legacy tickets to the canonical  format.
+*   **P0: Implement new 8-10 step soul-capture onboarding experience.**
+    *   The user wants a beautiful onboarding flow, similar to , to capture the pet's full soul before the user interacts with the main app.
+    *   The agent has already done preparatory work by compiling all 35+ soul questions into  and creating an initial design in .
+    *   The next step is to build the React components and flow for this multi-step onboarding process.
+*   **P1: Strategic Discussion & Alignment**
+    *   Review the  with the user to score the Mobile Experience, Intelligence, and Overall System out of 100.
+    *   Clarify the user's request to Clean up Mira placement on 6 pillars.
+    *   Discuss the roadmap to achieving a 100/100 score for the system.
+*   **P2: Legacy Ticket Migration**
+    *   Migrate the 134+ legacy tickets to the canonical  format.
+    *   The agent determined the staging database is empty, so this is likely a production task. The agent needs to confirm this with the user and plan the migration script.
 
 **Future Tasks:**
 *   Refactor the monolithic  and .
-*   Redesign the Onboarding Page.
 *   Enhance the Picks Engine.
 *   Gate Mira OS for Paid Members.
 *   Implement a push notification system.
 
 **Completed work in this session**
--   **QA Proof Pack for Conversational Flow:** Verified the end-to-end flow from Clarify to Places to Concierge ticket creation.
--   **Implemented Mental Model UI Copy:** Updated helper texts, panel headers, and confirmation banners to distinguish between Chat (asking) and Services (execution).
--   **Renamed Debug Drawer to Proof Panel:** Replaced the technical term with a user-friendly Proof Panel and added explanatory microcopy.
--   **Improved Legacy Warning:** Changed the warning to a reassuring Syncing history message with a spinner.
--   **Implemented Reply in Services Guardrail:** Created a  component to prevent users from replying to tickets in the main chat.
--   **Implemented Onboarding Tooltip:** Added a first-visit tooltip explaining the Chat vs. Services model.
--   **Updated :** Added SECTION 12: USER MENTAL MODEL AND MESSAGING LAW.
--   **Completed User's E2E Test Script:** Verified Memory, Places, and Concierge flows.
--   **Added View in Services CTA:** The ticket creation toast now includes a button to navigate directly to the services thread.
+-   **UI/UX Foolproof Flow:**
+    -   Fixed  positioning and updated its design to be mobile-first.
+    -   Implemented WhatsApp/DM-style unread indicators and updated header copy in .
+    -   Implemented and integrated the  in the chat view.
+-   **Chat Experience Refinement:**
+    -   Implemented a New Chat flow with a confirmation dialog () and post-action starter prompts ().
+    -   Cleaned up the main view by removing the Personalized picks card from .
+    -   Fixed contrast issues and simplified grouping (Today/Earlier) in .
+    -   Simplified the  by removing the duplicate soul card.
+-   **Header & Navigation:**
+    -   Added a minimal, non-clickable weather hint () to the main navigation header in .
+    -   Added non-clickable indicators for  and .
+-   **TODAY Panel:**
+    -   Moved the full weather display into a Weather Hero Card inside the .
+-   **LEARN Pillar Activation:**
+    -   Successfully ran the database seeder () to populate the LEARN pillar with 50+ content items.
+    -   Verified via screenshot that the content now appears correctly in the UI.
+    -   Confirmed the personalization logic adheres to the Pet First, Breed Second rule by analyzing the code and pet data.
+-   **Documentation & Analysis:**
+    -   Created analysis documents: , , and .
+    -   Consistently updated  with completed tasks.
 
 **Earlier issues found/mentioned but not fixed**
--   The user's production domain  is reportedly inaccessible due to an external DNS issue (out of scope).
--   An E2E test of pet memory did not explicitly refuse a chicken treat for a pet that was supposed to have an allergy, suggesting a potential data integrity issue in the pet's profile.
+-   **Pet Memory Allergy Test:** An earlier E2E test note suggested a pet's profile with an allergy did not correctly refuse a treat. This potential data integrity or logic issue in the  implementation has not been investigated.
+-   **Production DNS:** The user's production domain  is reportedly inaccessible (out of scope).
 
 **Known issue recurrence from previous fork**
 -   None.
 
 **Code Architecture**
--   **Stack:** React (Frontend), FastAPI (Backend), MongoDB (Database).
--   **Fonts:** Manrope (primary), Syne (headings).
+-   **Stack:** React (Vite), FastAPI, MongoDB.
 -   **Styling:** Tailwind CSS.
--   **UI Libraries:** Radix UI components.
--   **Key Architectural Principles:**
-    -   **Deterministic Contracts:** Backend contracts (, ) drive frontend rendering.
-    -   **Uniform Service Spine:** A centralized helper () handles all ticket creation.
-    -   **Mental Model:** Chat is for asking. Services is the execution thread for replies with Concierge.
+-   **UI Libraries:** Radix UI primitives,  for icons.
+-   **Fonts:** Manrope (primary), Syne (headings).
+-   **Key Principles:** API-Driven UI (Deterministic Contracts), Centralized Service Spine (), Chat vs. Services Mental Model.
 
 **Key Technical Concepts**
--   API-Driven UI State.
--   Centralized Ticket Helper ().
--   Unified Identity Query ( in MongoDB).
--   Conditional rendering of UI components (, ) based on application state.
+-   API-Driven UI State Management.
+-   Component-based UI with React hooks.
+-   Centralized API hooks ().
+-   Database seeding for bootstrapping content.
+-   Conditional rendering for dynamic UI elements (tooltips, banners, dialogs).
 
 **key DB schema**
--   ** & :** Consistently populated with a canonical  ID and unified ownership data (, ).
+-   ** & :** The core collections for the Uniform Service Spine, using canonical  IDs.
+-   **:** Contains member profiles, which in turn embed pet profiles ( array).
+-   **:** Stores articles and videos for the LEARN pillar, with tags for personalization.
 
 **All files of reference**
--   **/app/frontend/src/components/mira/ServicesPanel.jsx**: Updated header microcopy; needs further modification for unread indicators.
--   **/app/frontend/src/components/mira/IconStateDebugDrawer.jsx**: Renamed to Proof Panel, updated copy for Syncing history.
--   **/app/frontend/src/components/OnboardingTooltip.jsx**: Created for first-visit guidance; positioning needs fixing.
--   **/app/frontend/src/components/ReplyNudge.jsx**: Created to guard against replies in chat.
--   **/app/frontend/src/pages/MiraDemoPage.jsx**: Integrated the new components (, ) and passed new props.
--   **/app/frontend/src/components/mira/toast/TicketCreationToast.jsx**: Updated with refined copy and a View in Services CTA button.
--   **/app/frontend/src/components/mira/ChatInputBar.jsx**: Updated with new helper text.
--   **/app/memory/PET_OS_BEHAVIOR_BIBLE.md**: The source of truth design document, updated with Section 12.
+-   **/app/memory/PET_OS_BEHAVIOR_BIBLE.md**: The primary design and behavior document.
+-   **/app/memory/LEARN_BIBLE.md**: The design document for the LEARN pillar.
+-   **/app/frontend/src/pages/MiraDemoPage.jsx**: The main application page, heavily modified to integrate new components and logic.
+-   **/app/frontend/src/components/mira/ServicesPanel.jsx**: Updated with DM style unread indicators.
+-   **/app/frontend/src/components/mira/TodayPanel.jsx**: Updated with the full Weather Hero Card.
+-   **/app/frontend/src/components/mira/PetOSNavigation.jsx**: Updated with weather hint and status indicators.
+-   **/app/frontend/src/components/OnboardingTooltip.jsx**: Styling and positioning fixed.
+-   **/app/frontend/src/components/mira/NewChatConfirmDialog.jsx**: New component for the New Chat flow.
+-   **/app/frontend/src/components/mira/StarterChips.jsx**: New component for the New Chat flow.
+-   **/app/backend/seed/learn.py**: Script executed to populate the LEARN pillar content.
+-   **/app/memory/PRD.md**: Project requirements document, updated throughout the session.
+-   **/app/memory/SYSTEM_HEALTH_SCORECARD.md**: New analysis document.
+-   **/app/memory/ONBOARDING_DESIGN.md**: New design document for the upcoming onboarding feature.
+-   **/app/memory/SOUL_QUESTIONS_MASTER_LIST.md**: New reference document listing all soul questions.
 
 **Areas that need refactoring**:
--    and  are large and could be broken down.
--   The positioning logic for the  needs to be made more robust.
+-   The main frontend page, , is becoming a god component and should be broken down into smaller, more manageable child components.
+-   Similarly,  is monolithic and could be split into logical sub-routers.
 
 **key api endpoints**
--   : Main chat endpoint.
--   : Services panel endpoint.
--   : UI badge counts endpoint.
+-   : Main chat processing endpoint.
+-   : Retrieves tickets for the Services panel.
+-   : Provides badge counts for the UI (e.g., unread replies).
+-   : Fetches personalized content for the LEARN pillar.
+-   : Retrieves the profile of the currently active pet.
 
 **Critical Info for New Agent**
--   Your immediate priority is to **complete the final UI/UX refinements** requested by the user. The goal is to make the distinction between Chat and Services foolproof.
--   **First, fix the buggy positioning of the **.
--   **Second, implement the WhatsApp/Instagram DM style unread indicators** in the . The badge count on the Services tab must *only* reflect unread replies.
--   **Third, add the new chat banner** that alerts users to new Concierge replies when they are in the chat view.
--   The user has provided very specific wording and design patterns. Adhere to them strictly.
--   Once all changes are implemented, verify them with screenshots before finishing the task.
+-   Your primary focus is the **new 8-10 step soul-capture onboarding experience**. The user has a high-end, beautiful vision for this flow. Review the design and question documents (, ) before starting implementation.
+-   The user is extremely detail-oriented, especially regarding UI/UX that aligns with their premium, human-centric vision. Follow their instructions and the  precisely.
+-   Before diving into the onboarding task, propose a plan that includes the strategic discussion points the user raised (scoring the system, clarifying Mira on 6 pillars) to ensure alignment.
+-   The Chat vs. Services mental model is the bedrock of the application's UX. Ensure any new feature reinforces this separation.
 
 **documents and test reports created in this job**
--   
+-   /app/memory/SYSTEM_HEALTH_SCORECARD.md
+-   /app/memory/ONBOARDING_DESIGN.md
+-   /app/memory/SOUL_QUESTIONS_MASTER_LIST.md
+-   /app/memory/PRD.md (updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Confirmed font stack and asked to proceed with millennial-friendly UI refinements. (STATUS: In Progress)
-2.  **User**: Provided detailed specs for a foolproof reply flow: Services tab badge should only count unread replies, unread threads should be visually loud (like WhatsApp), and a banner should appear in chat when a new message arrives in Services. (STATUS: Not Started)
-3.  **User**: Refined the copy for the onboarding tooltip to be more direct and human-centric. (STATUS: Implemented, verification pending)
-4.  **User**: Confirmed the Proof Panel and Syncing history copy changes were perfect. (STATUS: Completed)
-5.  **User**: Provided refined, luxury copy strings for the chat helper text, Services header, Concierge card, and ticket confirmation banner. (STATUS: Implemented, verification pending)
-6.  **User**: Introduced the concept of a Request Thread as the user-facing term for the two-way ticketing model. (STATUS: Acknowledged)
-7.  **User**: Approved the E2E test and confirmed the two-way ticketing model is working as intended. (STATUS: Completed)
-8.  **User**: Provided a detailed E2E test script to verify Memory, Places, and Concierge flows. (STATUS: Completed)
-9.  **User**: Approved renaming Debug to Proof Panel and changing the legacy warning to Syncing history. (STATUS: Completed)
-10. **User**: Provided a comprehensive definition of the Chat vs. Services mental model to be added to the internal bible, including specific user-facing copy, QA proof requirements, and rules for location consent. (STATUS: Completed)
+1.  **User**: Asked to implement a large batch of UI/UX changes, including weather placement, removing a Personalized picks card, simplifying chat history, and adding a New Chat flow. (STATUS: Completed)
+2.  **User**: Clarified that the soul card should only be in the nav bar, not in the pet selector dropdown. (STATUS: Completed)
+3.  **User**: Asked agent to continue with implementation. (STATUS: Acknowledged)
+4.  **User**: Provided strategic next steps: Wire up , add weather hint, address legacy ticket migration, and introduced new tasks to score the system and plan the new onboarding experience. (STATUS: In Progress)
+5.  **User**: Asked about missing soul questions for the new onboarding flow. (STATUS: Addressed)
+6.  **User**: Confirmed all 35+ soul questions (pre-boarding and pillars) are needed for the onboarding design. (STATUS: Addressed)
+7.  **User**: Asked to prioritize cleaning up the weather integration while they think about the onboarding flow. (STATUS: Completed)
+8.  **User**: Asked if there are any other extra elements on the page that could be cleaned up. (STATUS: Addressed)
+9.  **User**: Asked how the LEARN pillar works, as it was empty. (STATUS: Addressed & Fixed)
+10. **User**: Asked for clarification on the LEARN personalization logic (is it LOLA pet first then breed). (STATUS: Addressed)
+11. **User**: Instructed the agent to PLEASE READ OUR BIBLE to ensure full alignment with project principles. (STATUS: Completed)
 
 **Project Health Check:**
--   **Broken:** The  positioning is visually glitched.
+-   **Broken:** None.
 -   **Mocked:** None.
 
 **3rd Party Integrations**
 -   Google Places — uses Emergent-managed integration
 -   YouTube — uses Emergent-managed integration
 -   WhatsApp (Gupshup, Meta)
--   Existing: Resend, Shopify, ElevenLabs, Firebase.
+-   Resend
+-   Shopify
+-   ElevenLabs
+-   Firebase
 
 **Testing status**
 -   **Testing agent used after significant changes:** NO
@@ -160,5 +185,4 @@ Most recently, the agent implemented a comprehensive set of UI copy and componen
 -   **Test URL:** 
 
 **What agent forgot to execute**
--   The agent did not fully resolve the visual bug with the  positioning.
--   The agent has not yet started implementing the chat banner that notifies the user of a new message in Services, which was a key part of the user's latest refinement requests.</analysis>
+-   The agent did not start the investigation into the potential Pet Memory Allergy Test issue mentioned in the previous handoff.</analysis>
