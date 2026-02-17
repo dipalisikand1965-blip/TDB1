@@ -1,0 +1,705 @@
+"""
+Icon State API - Unified counts for navigation icons
+=====================================================
+Single endpoint that powers the icon state system.
+Enforces the uniform service flow by querying the canonical Service Desk ticket spine.
+
+CANONICAL SOURCES:
+- Service Desk Tickets: db.tickets (primary) + db.mira_tickets (services tab)
+- Concierge Threads: db.mira_conversations (linked to tickets via ticket_id)
+- Picks: db.picks_catalogue (recommendations freshness)
+- Pet Profile: db.pets (insights + learned facts)
+
+UNIFIED VIEW:
+Since tickets can exist in both db.tickets and db.mira_tickets, we query both
+and dedupe by ticket_id to prevent double counting.
+"""
+
+from fastapi import APIRouter, HTTPException, Header, Query
+from typing import Optional, Dict, Any, List
+from datetime import datetime, timezone, timedelta
+import logging
+import os
+import jwt
+
+logger = logging.getLogger(__name__)
+router = APIRouter(prefix="/api/os/icon-state", tags=["icon-state"])
+
+# Database connection (will be set from server.py)
+_db = None
+
+def set_database(database):
+    """Set the database instance from server.py"""
+    global _db
+    _db = database
+    logger.info("[ICON-STATE] Database connection set")
+
+def get_db():
+    """Get the database instance"""
+    return _db
+
+# JWT Config
+SECRET_KEY = os.environ.get("JWT_SECRET", "tdb_super_secret_key_2025_woof")
+ALGORITHM = "HS256"
+
+# ============================================
+# STATUS DEFINITIONS (Canonical)
+# ============================================
+
+# Terminal statuses - ticket is done
+TERMINAL_STATUSES = ["resolved", "closed", "completed", "cancelled", "archived"]
+
+# Statuses that require user action
+AWAITING_USER_STATUSES = [
+    "awaiting_approval",
+    "awaiting_confirmation", 
+    "awaiting_user_action",
+    "pending_approval",
+    "quote_ready",
+    "options_ready"
+]
+
+# High urgency levels
+HIGH_URGENCY = ["critical", "high", "urgent"]
+
+
+# ============================================
+# HELPER FUNCTIONS
+# ============================================
+
+async def get_user_from_token(authorization: Optional[str] = None) -> Optional[Dict]:
+    """Extract user info from JWT token."""
+    if not authorization:
+        return None
+    
+    try:
+        token = authorization.replace("Bearer ", "")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_email = payload.get("sub") or payload.get("email")
+        user_id = payload.get("user_id")
+        
+        if not user_email:
+            return None
+        
+        db = get_db()
+        if db is None:
+            return None
+            
+        user = await db.users.find_one({"email": user_email}, {"_id": 0, "password_hash": 0})
+        if user:
+            user["user_id"] = user_id or user.get("id")
+            user["email"] = user_email
+        return user
+    except Exception as e:
+        logger.warning(f"[ICON-STATE] Token decode error: {e}")
+        return None
+
+
+async def get_unified_tickets(db, user_email: str, pet_ids: List[str] = None) -> List[Dict]:
+    """
+    Query both ticket collections and return unified, deduplicated list.
+    This is the SINGLE SOURCE OF TRUTH for Service Desk state.
+    
+    Query order:
+    1. db.tickets (primary - concierge requests, admin-created)
+    2. db.mira_tickets (services tab requests)
+    
+    Deduplication: by ticket_id (first occurrence wins)
+    """
+    all_tickets = []
+    seen_ticket_ids = set()
+    
+    # Build query filter for user's tickets
+    base_query = {
+        "$or": [
+            {"member.email": user_email},
+            {"user_email": user_email},
+            {"customer_email": user_email}
+        ]
+    }
+    
+    # Add pet filter if provided
+    if pet_ids:
+        base_query["$and"] = [
+            {"$or": [
+                {"pet_ids": {"$in": pet_ids}},
+                {"pet.id": {"$in": pet_ids}},
+                {"pet_id": {"$in": pet_ids}}
+            ]}
+        ]
+    
+    # Query 1: db.tickets (primary collection)
+    try:
+        tickets_cursor = db.tickets.find(base_query, {"_id": 0}).sort("updated_at", -1).limit(200)
+        async for ticket in tickets_cursor:
+            ticket_id = ticket.get("ticket_id") or ticket.get("id")
+            if ticket_id and ticket_id not in seen_ticket_ids:
+                seen_ticket_ids.add(ticket_id)
+                ticket["_source"] = "tickets"
+                all_tickets.append(ticket)
+    except Exception as e:
+        logger.warning(f"[ICON-STATE] Error querying db.tickets: {e}")
+    
+    # Query 2: db.mira_tickets (services tab collection)
+    try:
+        mira_cursor = db.mira_tickets.find(base_query, {"_id": 0}).sort("updated_at", -1).limit(200)
+        async for ticket in mira_cursor:
+            ticket_id = ticket.get("ticket_id") or ticket.get("id")
+            if ticket_id and ticket_id not in seen_ticket_ids:
+                seen_ticket_ids.add(ticket_id)
+                ticket["_source"] = "mira_tickets"
+                all_tickets.append(ticket)
+    except Exception as e:
+        logger.warning(f"[ICON-STATE] Error querying db.mira_tickets: {e}")
+    
+    return all_tickets
+
+
+# ============================================
+# COUNT FUNCTIONS
+# ============================================
+
+async def get_services_counts(db, user_email: str, pet_ids: List[str] = None) -> Dict:
+    """
+    SERVICES tab counts from unified Service Desk tickets.
+    
+    Returns:
+    - active_tickets: All non-terminal tickets
+    - awaiting_you: Tickets requiring user action
+    """
+    tickets = await get_unified_tickets(db, user_email, pet_ids)
+    
+    active_tickets = 0
+    awaiting_you = 0
+    
+    for ticket in tickets:
+        status = (ticket.get("status") or "").lower()
+        
+        # Skip terminal statuses
+        if status in TERMINAL_STATUSES:
+            continue
+        
+        active_tickets += 1
+        
+        # Check if awaiting user action
+        if status in AWAITING_USER_STATUSES:
+            awaiting_you += 1
+    
+    return {
+        "active_tickets": active_tickets,
+        "awaiting_you": awaiting_you,
+        "_query": {
+            "terminal_statuses": TERMINAL_STATUSES,
+            "awaiting_statuses": AWAITING_USER_STATUSES
+        }
+    }
+
+
+async def get_today_counts(db, user_email: str, pet_ids: List[str] = None) -> Dict:
+    """
+    TODAY tab counts - urgency and SLA from unified Service Desk tickets.
+    
+    Returns:
+    - urgent: High urgency tickets not closed
+    - due_today: SLA due today
+    - upcoming: SLA due within 7 days
+    """
+    tickets = await get_unified_tickets(db, user_email, pet_ids)
+    
+    now = datetime.now(timezone.utc)
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = today_start + timedelta(days=1)
+    week_end = today_start + timedelta(days=7)
+    
+    urgent = 0
+    due_today = 0
+    upcoming = 0
+    
+    for ticket in tickets:
+        status = (ticket.get("status") or "").lower()
+        
+        # Skip terminal statuses
+        if status in TERMINAL_STATUSES:
+            continue
+        
+        # Check urgency
+        urgency = (ticket.get("urgency") or ticket.get("priority") or "").lower()
+        if urgency in HIGH_URGENCY:
+            urgent += 1
+        
+        # Check SLA due date
+        sla_due = ticket.get("sla_due_at") or ticket.get("due_date")
+        if sla_due:
+            try:
+                if isinstance(sla_due, str):
+                    due_dt = datetime.fromisoformat(sla_due.replace('Z', '+00:00'))
+                else:
+                    due_dt = sla_due
+                
+                if today_start <= due_dt < today_end:
+                    due_today += 1
+                elif today_end <= due_dt < week_end:
+                    upcoming += 1
+            except (ValueError, TypeError):
+                pass
+    
+    return {
+        "urgent": urgent,
+        "due_today": due_today,
+        "upcoming": upcoming,
+        "_query": {
+            "high_urgency": HIGH_URGENCY,
+            "today_range": [today_start.isoformat(), today_end.isoformat()],
+            "week_range": [today_end.isoformat(), week_end.isoformat()]
+        }
+    }
+
+
+async def get_concierge_counts(db, user_email: str, pet_ids: List[str] = None) -> Dict:
+    """
+    CONCIERGE tab counts - thread state linked to tickets.
+    
+    Concierge is a CHANNEL attached to tickets, not a separate workflow.
+    We count:
+    - unread_replies: Concierge messages user hasn't seen (from ticket-linked threads)
+    - open_threads: Active conversation threads
+    """
+    unread_replies = 0
+    open_threads = 0
+    
+    # Query mira_conversations (threads linked to tickets)
+    try:
+        query = {
+            "$or": [
+                {"parent_id": user_email},
+                {"user_email": user_email},
+                {"member.email": user_email}
+            ]
+        }
+        
+        if pet_ids:
+            query["pet_id"] = {"$in": pet_ids}
+        
+        cursor = db.mira_conversations.find(query, {"_id": 0}).sort("updated_at", -1).limit(100)
+        
+        async for thread in cursor:
+            status = (thread.get("status") or "").lower()
+            
+            # Count open threads (not resolved/closed)
+            if status not in ["resolved", "closed"]:
+                open_threads += 1
+            
+            # Count unread concierge replies
+            conversation = thread.get("conversation") or []
+            last_user_view = thread.get("last_user_view_at")
+            
+            for msg in conversation:
+                sender = (msg.get("sender") or "").lower()
+                if sender in ["concierge", "admin"]:
+                    msg_time = msg.get("timestamp")
+                    if msg_time and last_user_view:
+                        try:
+                            msg_dt = datetime.fromisoformat(msg_time.replace('Z', '+00:00'))
+                            view_dt = datetime.fromisoformat(last_user_view.replace('Z', '+00:00'))
+                            if msg_dt > view_dt:
+                                unread_replies += 1
+                        except (ValueError, TypeError):
+                            pass
+                    elif msg_time and not last_user_view:
+                        # Never viewed = all concierge messages are unread
+                        unread_replies += 1
+    except Exception as e:
+        logger.warning(f"[ICON-STATE] Error querying mira_conversations: {e}")
+    
+    return {
+        "unread_replies": unread_replies,
+        "open_threads": open_threads,
+        "_query": {
+            "thread_collection": "mira_conversations",
+            "note": "Threads linked to Service Desk tickets"
+        }
+    }
+
+
+async def get_picks_counts(db, user_email: str, pet_ids: List[str] = None) -> Dict:
+    """
+    PICKS tab counts - recommendation freshness.
+    
+    Picks is a SUGGESTION LAYER. When user acts on a pick, it routes to Service Desk.
+    We only count freshness here, not a separate workflow.
+    
+    Returns:
+    - new_picks_since_last_view: New picks user hasn't seen
+    - material_change: (Phase 5) Significant updates to picks
+    """
+    new_picks = 0
+    material_change = 0
+    
+    # Get user's last picks view timestamp
+    try:
+        user = await db.users.find_one({"email": user_email}, {"last_picks_view_at": 1})
+        last_view = user.get("last_picks_view_at") if user else None
+        
+        # Count new picks since last view
+        if last_view:
+            query = {
+                "active": {"$ne": False},
+                "created_at": {"$gt": last_view}
+            }
+            new_picks = await db.picks_catalogue.count_documents(query)
+        else:
+            # Never viewed - count recent picks (last 7 days)
+            week_ago = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
+            query = {
+                "active": {"$ne": False},
+                "created_at": {"$gt": week_ago}
+            }
+            new_picks = await db.picks_catalogue.count_documents(query)
+    except Exception as e:
+        logger.warning(f"[ICON-STATE] Error querying picks: {e}")
+    
+    # TODO Phase 5: material_change logic
+    # material_change counts picks where price/availability changed significantly
+    
+    return {
+        "new_picks_since_last_view": new_picks,
+        "material_change": material_change,
+        "_query": {
+            "picks_collection": "picks_catalogue",
+            "note": "Suggestion layer - actions route to Service Desk"
+        }
+    }
+
+
+async def get_learn_counts(db, pet_ids: List[str] = None) -> Dict:
+    """
+    LEARN tab counts - insights from pet profile.
+    
+    Returns:
+    - pending_insights: AI-extracted facts pending review
+    - learned_facts: Confirmed facts count
+    """
+    pending_insights = 0
+    learned_facts = 0
+    
+    if not pet_ids:
+        return {
+            "pending_insights": 0,
+            "learned_facts": 0,
+            "_query": {"note": "No pet_ids provided"}
+        }
+    
+    try:
+        for pet_id in pet_ids:
+            pet = await db.pets.find_one(
+                {"id": pet_id},
+                {"conversation_insights": 1, "learned_facts": 1}
+            )
+            
+            if pet:
+                # Count pending insights
+                insights = pet.get("conversation_insights") or []
+                for insight in insights:
+                    if insight.get("status") == "pending_review":
+                        pending_insights += 1
+                
+                # Count learned facts
+                facts = pet.get("learned_facts") or []
+                learned_facts += len(facts)
+    except Exception as e:
+        logger.warning(f"[ICON-STATE] Error querying pet insights: {e}")
+    
+    return {
+        "pending_insights": pending_insights,
+        "learned_facts": learned_facts,
+        "_query": {
+            "source": "pets.conversation_insights + pets.learned_facts"
+        }
+    }
+
+
+async def get_mojo_counts(db, pet_ids: List[str] = None) -> Dict:
+    """
+    MOJO (pet profile) counts.
+    
+    Returns:
+    - critical_fields_missing: Count of critical profile fields not filled
+    - soul_score: Pet's overall completeness score
+    """
+    critical_missing = 0
+    soul_score = 0
+    critical_fields_list = []
+    
+    # Define critical fields for a complete pet profile
+    CRITICAL_FIELDS = [
+        "name", "breed", "date_of_birth", "weight_kg", "gender",
+        "vaccination_status", "photo_url"
+    ]
+    
+    if not pet_ids:
+        return {
+            "critical_fields_missing": 0,
+            "soul_score": 0,
+            "missing_fields": [],
+            "_query": {"note": "No pet_ids provided"}
+        }
+    
+    try:
+        for pet_id in pet_ids:
+            pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+            
+            if pet:
+                # Check critical fields
+                for field in CRITICAL_FIELDS:
+                    value = pet.get(field)
+                    if not value or value == "" or value == []:
+                        critical_missing += 1
+                        critical_fields_list.append(field)
+                
+                # Get soul score
+                soul_score = pet.get("overall_score") or pet.get("doggy_soul_score") or 0
+    except Exception as e:
+        logger.warning(f"[ICON-STATE] Error querying pet profile: {e}")
+    
+    return {
+        "critical_fields_missing": critical_missing,
+        "soul_score": soul_score,
+        "missing_fields": list(set(critical_fields_list)),
+        "_query": {
+            "critical_fields": CRITICAL_FIELDS
+        }
+    }
+
+
+# ============================================
+# ICON STATE COMPUTATION
+# ============================================
+
+def compute_icon_state(tab: str, counts: Dict, is_active: bool = False) -> str:
+    """
+    Compute icon state (OFF/ON/PULSE) based on counts.
+    
+    Rules:
+    - OFF: No activity (all counts are 0)
+    - ON: Has activity but nothing urgent
+    - PULSE: Needs immediate attention (override prevents pulse if tab is active)
+    
+    Active tab override: If tab is currently active, never PULSE (user is already there)
+    """
+    # Active tab override
+    if is_active:
+        # Still show ON if there's activity, but never PULSE
+        total = sum(v for k, v in counts.items() if isinstance(v, int) and not k.startswith("_"))
+        return "ON" if total > 0 else "OFF"
+    
+    # Tab-specific PULSE rules
+    if tab == "services":
+        if counts.get("awaiting_you", 0) > 0:
+            return "PULSE"
+        elif counts.get("active_tickets", 0) > 0:
+            return "ON"
+        return "OFF"
+    
+    elif tab == "today":
+        if counts.get("urgent", 0) > 0 or counts.get("due_today", 0) > 0:
+            return "PULSE"
+        elif counts.get("upcoming", 0) > 0:
+            return "ON"
+        return "OFF"
+    
+    elif tab == "concierge":
+        if counts.get("unread_replies", 0) > 0:
+            return "PULSE"
+        elif counts.get("open_threads", 0) > 0:
+            return "ON"
+        return "OFF"
+    
+    elif tab == "picks":
+        if counts.get("new_picks_since_last_view", 0) > 0:
+            return "PULSE"
+        elif counts.get("material_change", 0) > 0:
+            return "ON"
+        return "OFF"
+    
+    elif tab == "learn":
+        if counts.get("pending_insights", 0) > 0:
+            return "PULSE"
+        elif counts.get("learned_facts", 0) > 0:
+            return "ON"
+        return "OFF"
+    
+    elif tab == "mojo":
+        if counts.get("critical_fields_missing", 0) > 0:
+            return "PULSE"
+        elif counts.get("soul_score", 0) > 50:
+            return "ON"
+        return "OFF"
+    
+    return "OFF"
+
+
+def get_badge_value(tab: str, counts: Dict) -> Optional[int]:
+    """
+    Get badge value for each tab.
+    Badge shows the most important count that needs attention.
+    """
+    if tab == "services":
+        return counts.get("awaiting_you", 0) or None
+    elif tab == "today":
+        return (counts.get("urgent", 0) + counts.get("due_today", 0)) or None
+    elif tab == "concierge":
+        return counts.get("unread_replies", 0) or None
+    elif tab == "picks":
+        return counts.get("new_picks_since_last_view", 0) or None
+    elif tab == "learn":
+        return counts.get("pending_insights", 0) or None
+    elif tab == "mojo":
+        return counts.get("critical_fields_missing", 0) or None
+    return None
+
+
+# ============================================
+# MAIN ENDPOINT
+# ============================================
+
+@router.get("")
+async def get_icon_state(
+    pet_id: Optional[str] = Query(None, description="Filter by pet ID"),
+    active_tab: Optional[str] = Query(None, description="Currently active tab (prevents PULSE)"),
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get icon state for all navigation tabs.
+    
+    Single endpoint that returns:
+    - counts: Raw counts for each tab
+    - states: Computed states (OFF/ON/PULSE)
+    - badges: Badge values for each tab
+    - debug: Query filters used (for Debug Drawer)
+    
+    Query params:
+    - pet_id: Optional pet filter
+    - active_tab: Currently active tab (overrides PULSE to prevent pulsing on active tab)
+    """
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    user = await get_user_from_token(authorization)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user_email = user.get("email")
+    pet_ids = [pet_id] if pet_id else None
+    
+    # If no specific pet, get all user's pets
+    if not pet_ids:
+        try:
+            pets_cursor = db.pets.find(
+                {"owner_email": user_email},
+                {"id": 1}
+            )
+            user_pets = await pets_cursor.to_list(20)
+            pet_ids = [p.get("id") for p in user_pets if p.get("id")]
+        except Exception as e:
+            logger.warning(f"[ICON-STATE] Error fetching user pets: {e}")
+            pet_ids = []
+    
+    # Gather all counts
+    services_counts = await get_services_counts(db, user_email, pet_ids)
+    today_counts = await get_today_counts(db, user_email, pet_ids)
+    concierge_counts = await get_concierge_counts(db, user_email, pet_ids)
+    picks_counts = await get_picks_counts(db, user_email, pet_ids)
+    learn_counts = await get_learn_counts(db, pet_ids)
+    mojo_counts = await get_mojo_counts(db, pet_ids)
+    
+    # Compute states (with active tab override)
+    states = {
+        "services": compute_icon_state("services", services_counts, active_tab == "services"),
+        "today": compute_icon_state("today", today_counts, active_tab == "today"),
+        "concierge": compute_icon_state("concierge", concierge_counts, active_tab == "concierge"),
+        "picks": compute_icon_state("picks", picks_counts, active_tab == "picks"),
+        "learn": compute_icon_state("learn", learn_counts, active_tab == "learn"),
+        "mojo": compute_icon_state("mojo", mojo_counts, active_tab == "mojo"),
+    }
+    
+    # Get badge values
+    badges = {
+        "services": get_badge_value("services", services_counts),
+        "today": get_badge_value("today", today_counts),
+        "concierge": get_badge_value("concierge", concierge_counts),
+        "picks": get_badge_value("picks", picks_counts),
+        "learn": get_badge_value("learn", learn_counts),
+        "mojo": get_badge_value("mojo", mojo_counts),
+    }
+    
+    return {
+        "success": True,
+        "user_email": user_email,
+        "pet_ids": pet_ids,
+        "active_tab": active_tab,
+        
+        # Raw counts for each tab
+        "counts": {
+            "services": services_counts,
+            "today": today_counts,
+            "concierge": concierge_counts,
+            "picks": picks_counts,
+            "learn": learn_counts,
+            "mojo": mojo_counts,
+        },
+        
+        # Computed states
+        "states": states,
+        
+        # Badge values (null if 0)
+        "badges": badges,
+        
+        # Debug info
+        "debug": {
+            "unified_ticket_sources": ["db.tickets", "db.mira_tickets"],
+            "deduplication": "by ticket_id, first occurrence wins",
+            "terminal_statuses": TERMINAL_STATUSES,
+            "awaiting_user_statuses": AWAITING_USER_STATUSES,
+            "high_urgency": HIGH_URGENCY,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+    }
+
+
+@router.post("/mark-viewed/{tab}")
+async def mark_tab_viewed(
+    tab: str,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Mark a tab as viewed (clears 'new' badges).
+    Used when user opens PICKS tab to clear new_picks_since_last_view.
+    """
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    user = await get_user_from_token(authorization)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user_email = user.get("email")
+    now = datetime.now(timezone.utc).isoformat()
+    
+    if tab == "picks":
+        await db.users.update_one(
+            {"email": user_email},
+            {"$set": {"last_picks_view_at": now}}
+        )
+        return {"success": True, "tab": tab, "marked_at": now}
+    
+    elif tab == "concierge":
+        # Mark all threads as viewed
+        await db.mira_conversations.update_many(
+            {"$or": [{"parent_id": user_email}, {"user_email": user_email}]},
+            {"$set": {"last_user_view_at": now}}
+        )
+        return {"success": True, "tab": tab, "marked_at": now}
+    
+    return {"success": True, "tab": tab, "note": "No action needed for this tab"}
