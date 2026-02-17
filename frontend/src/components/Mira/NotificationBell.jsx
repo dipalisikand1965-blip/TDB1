@@ -15,20 +15,24 @@ import { Bell, X, Check, ChevronRight, Settings } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import hapticFeedback from '../../utils/haptic';
 
-const NotificationBell = ({ userEmail, className = '' }) => {
+const NotificationBell = ({ userEmail, petId, className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
   
-  // Fetch notifications
+  // Fetch notifications - filtered by pet if petId is provided
   const fetchNotifications = async () => {
     if (!userEmail) return;
     
     try {
-      // Use member_notifications inbox endpoint
-      const response = await fetch(`${API_URL}/api/member/notifications/inbox/${encodeURIComponent(userEmail)}?limit=10`);
+      // Use member_notifications inbox endpoint with optional pet filter
+      let url = `${API_URL}/api/member/notifications/inbox/${encodeURIComponent(userEmail)}?limit=10`;
+      if (petId) {
+        url += `&pet_id=${encodeURIComponent(petId)}`;
+      }
+      const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
         setNotifications(data.notifications || []);
@@ -39,12 +43,12 @@ const NotificationBell = ({ userEmail, className = '' }) => {
     }
   };
   
-  // Poll for updates every 30 seconds
+  // Poll for updates every 30 seconds - re-fetch when pet changes
   useEffect(() => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(interval);
-  }, [userEmail]);
+  }, [userEmail, petId]);
   
   // Close dropdown on outside click
   useEffect(() => {
