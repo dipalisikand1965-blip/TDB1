@@ -734,6 +734,9 @@ const useChatSubmit = (config) => {
           services: [],
           conciergeArranges: conciergeCards,
           picksContract: picksContract,
+          conversationContract: conversationContract,
+          contractMode: contractMode,
+          quickReplies: contractQuickReplies,
           fallbackMode: fallbackMode,
           fallbackReason: fallbackReason,
           conciergeFallback: true,
@@ -749,7 +752,8 @@ const useChatSubmit = (config) => {
           ...data.response,
           concierge_arranges: conciergeCards,
           concierge_fallback: true,
-          picks_contract: picksContract
+          picks_contract: picksContract,
+          conversation_contract: conversationContract
         });
         setVaultUserMessage(inputQuery);
         notificationSounds.picks();
@@ -764,6 +768,9 @@ const useChatSubmit = (config) => {
           services: clarifyOnly ? [] : [...newServices, ...newExperiences],
           conciergeArranges: [],
           picksContract: picksContract,  // Include contract for consistency
+          conversationContract: conversationContract,
+          contractMode: contractMode,
+          quickReplies: contractQuickReplies,
           fallbackMode: 'catalogue',
           conciergeFallback: false,
           context: updatedPickContext,
