@@ -731,7 +731,8 @@
 }
 
 /* Yellow paw fallback - if no pet photo */
-.mp-picks-paw {
+.mp-picks-paw,
+.mp-picks-pet-fallback {
   position: absolute;
   bottom: -2px;
   right: -2px;
