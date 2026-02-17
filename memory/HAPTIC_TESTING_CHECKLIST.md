@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://pet-profile-soul.preview.emergentagent.com/mira-demo**
+**https://unified-ticket-spine.preview.emergentagent.com/mira-demo**
 
 ---
 

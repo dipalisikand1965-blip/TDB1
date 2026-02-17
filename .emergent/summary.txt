@@ -16,21 +16,33 @@ The overarching user-facing mental model is: **Chat is where you ask. Services i
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a functional React/FastAPI/MongoDB stack with a strong focus on a premium, mobile-first UI. A significant number of UI/UX refinements have been completed to enforce the Chat vs. Services mental model. This includes a corrected onboarding tooltip, WhatsApp/DM-style unread indicators in the Services panel, a banner for new concierge replies, and a streamlined New Chat flow with starter prompts.
-
-The UI has been decluttered by moving the weather card into a dedicated TODAY panel and simplifying the main chat view. The  pillar is now fully functional, with content seeded and personalized based on the active pet's attributes, adhering to the Pet First, Breed Second doctrine. The agent has performed extensive analysis of the Soul questions and created design documents for the upcoming onboarding overhaul.
+The application is a functional React/FastAPI/MongoDB stack. The agent performed a full audit and confirmed the app is compliant with its core design Bible. During this session, several UI regressions and bugs were fixed. The pet selector in the header was simplified to prevent a modal from opening accidentally. A critical bug was fixed where notifications were not filtering per pet; this is now restored. The loading state for instant AI responses was also fixed to show descriptive text. The agent is currently working on implementing user-specified status indicators.
 
 **Last working item**:
--   **Last item agent was working:** The agent completed reading and analyzing the  and  to ensure full alignment with the project's core principles, following a user request to do so. This was subsequent to verifying the  pillar's personalization logic. The last active development task was populating the LEARN pillar with content, which is complete.
--   **Status:** COMPLETED
--   **Agent Testing Done:** Y
--   **Which testing method agent to use?** NA
+-   **Last item agent was working:** The agent was attempting to implement the user's request to make the C° (Concierge) and PICKS indicators non-clickable status-only indicators. There has been significant confusion and multiple corrections from the user about the exact location of these indicators. The user's final instruction was to place them on the chat bar, which the agent interpreted as the chat message header bar. The agent believes they made the change in  to make them non-clickable but has not successfully verified this with the user.
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** Frontend testing agent to verify the final placement and non-interactive behavior of the indicators after confirming the location with the user.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: WhatsApp Webhook Idempotency (P2)**
-    -   **Description:** Webhook retries can create duplicate tickets. The idempotency check should be based on a unique message ID (), not just an open conversation.
-    -   **Next debug checklist:** Modify the  logic in  to store and check for the message ID before creating a new ticket.
+-   **Issue 1: C° and PICKS Indicator Placement and Behavior (P0)**
+    -   **Description:** The user wants the C° and PICKS indicators to be non-clickable status indicators, but their precise location is unclear due to conflicting instructions. The user also wants to remove any clickable versions of these icons that open modals.
+    -   **Attempted fixes:** The agent has attempted to place these indicators in multiple locations (chat input, conversation area, top navigation) and believes the non-clickable logic was added to . These attempts have not been successful or confirmed by the user.
+    -   **Next debug checklist:**
+        1.  **Confirm the exact location.** Before writing any code, show the user a screenshot and ask them to clarify precisely where on the chat bar the indicators should appear.
+        2.  Review  and its child components (, ) to implement the indicators in the **correct** location.
+        3.  Ensure they are rendered as non-interactive elements (e.g., using  or  instead of , with ).
+        4.  Completely remove any  handlers or components that would render a clickable C°/PICKS icon that opens a modal (e.g., the old  or the logic in  that was opening the ).
+        5.  Verify the fix with a screenshot showing the final implementation.
+    -   **Why fix this issue?** To correctly implement the user's explicit UI/UX requirements and resolve a point of repeated confusion.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Frontend
+
+-   **Issue 2: WhatsApp Webhook Idempotency (P2)**
+    -   **Description:** Webhook retries can create duplicate tickets. The idempotency check should use a unique message ID ().
+    -   **Next debug checklist:** Modify the  logic in .
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Backend
@@ -40,17 +52,13 @@ The UI has been decluttered by moving the weather card into a dedicated TODAY pa
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
-*   **P0: Implement new 8-10 step soul-capture onboarding experience.**
-    *   The user wants a beautiful onboarding flow, similar to , to capture the pet's full soul before the user interacts with the main app.
-    *   The agent has already done preparatory work by compiling all 35+ soul questions into  and creating an initial design in .
-    *   The next step is to build the React components and flow for this multi-step onboarding process.
-*   **P1: Strategic Discussion & Alignment**
-    *   Review the  with the user to score the Mobile Experience, Intelligence, and Overall System out of 100.
-    *   Clarify the user's request to Clean up Mira placement on 6 pillars.
-    *   Discuss the roadmap to achieving a 100/100 score for the system.
-*   **P2: Legacy Ticket Migration**
-    *   Migrate the 134+ legacy tickets to the canonical  format.
-    *   The agent determined the staging database is empty, so this is likely a production task. The agent needs to confirm this with the user and plan the migration script.
+*   **P0: Implement new 8-10 step soul-capture onboarding experience.** The user wants a beautiful onboarding flow. Preparatory design and question list documents already exist.
+*   **P1: Implement remaining UI refinements:**
+    *   **Past Chats Panel:** Default to showing the last 3 threads, group headers by Today and Earlier, and fix text contrast.
+    *   **Unread Replies Indicator:** Ensure the  tab badge and individual ticket rows in the Services panel correctly indicate unread replies.
+    *   **Ticket Creation Banner:** After a ticket is created, show a confirmation banner: Request opened • TCK-XXXXXX with a View in Services button.
+*   **P1: Strategic Discussion & Alignment:** Review the  with the user.
+*   **P2: Legacy Ticket Migration:** Plan and execute the migration of 134+ legacy tickets to the canonical  format.
 
 **Future Tasks:**
 *   Refactor the monolithic  and .
@@ -59,113 +67,109 @@ The UI has been decluttered by moving the weather card into a dedicated TODAY pa
 *   Implement a push notification system.
 
 **Completed work in this session**
--   **UI/UX Foolproof Flow:**
-    -   Fixed  positioning and updated its design to be mobile-first.
-    -   Implemented WhatsApp/DM-style unread indicators and updated header copy in .
-    -   Implemented and integrated the  in the chat view.
--   **Chat Experience Refinement:**
-    -   Implemented a New Chat flow with a confirmation dialog () and post-action starter prompts ().
-    -   Cleaned up the main view by removing the Personalized picks card from .
-    -   Fixed contrast issues and simplified grouping (Today/Earlier) in .
-    -   Simplified the  by removing the duplicate soul card.
--   **Header & Navigation:**
-    -   Added a minimal, non-clickable weather hint () to the main navigation header in .
-    -   Added non-clickable indicators for  and .
--   **TODAY Panel:**
-    -   Moved the full weather display into a Weather Hero Card inside the .
--   **LEARN Pillar Activation:**
-    -   Successfully ran the database seeder () to populate the LEARN pillar with 50+ content items.
-    -   Verified via screenshot that the content now appears correctly in the UI.
-    -   Confirmed the personalization logic adheres to the Pet First, Breed Second rule by analyzing the code and pet data.
--   **Documentation & Analysis:**
-    -   Created analysis documents: , , and .
-    -   Consistently updated  with completed tasks.
+-   **Bible Compliance Audit:** Performed a comprehensive audit of  and confirmed it is compliant with  and .
+-   **Pet Selector Simplification:** The pet selector dropdown in the header was fixed to only switch pets, removing the confusing behavior of opening a profile modal on click. ().
+-   **Per-Pet Notifications Restored:** Fixed a critical regression where notifications were not filtered by the active pet. This involved updating both the frontend (, ) and the backend ().
+-   **Mira Loader Text Fixed:** The instant AI loading state (⚡) now correctly displays text like Finding that for Lola... ().
 
 **Earlier issues found/mentioned but not fixed**
--   **Pet Memory Allergy Test:** An earlier E2E test note suggested a pet's profile with an allergy did not correctly refuse a treat. This potential data integrity or logic issue in the  implementation has not been investigated.
--   **Production DNS:** The user's production domain  is reportedly inaccessible (out of scope).
+-   **Pet Memory Allergy Test:** A potential logic issue in the Health-First Safety Rule where a pet with an allergy might not correctly refuse a treat has not been investigated.
 
 **Known issue recurrence from previous fork**
 -   None.
 
 **Code Architecture**
--   **Stack:** React (Vite), FastAPI, MongoDB.
--   **Styling:** Tailwind CSS.
--   **UI Libraries:** Radix UI primitives,  for icons.
--   **Fonts:** Manrope (primary), Syne (headings).
--   **Key Principles:** API-Driven UI (Deterministic Contracts), Centralized Service Spine (), Chat vs. Services Mental Model.
+Tree structure of the entire codebase
+- **/app**
+  - **/backend**
+    - **/routes**
+      - 
+    - **/seed**
+      - 
+    - 
+  - **/frontend**
+    - **/src**
+      - **/components**
+        - **/mira**
+          - 
+          - 
+          - 
+          - 
+          - 
+          - 
+        - **/ui**
+      - **/pages**
+        - 
+      - **/hooks**
+        - 
+  - **/memory**
+    - 
+    - 
+    - 
+    - 
 
 **Key Technical Concepts**
--   API-Driven UI State Management.
--   Component-based UI with React hooks.
+-   API-Driven UI State Management (Deterministic Contracts)
+-   Component-based UI with React hooks for state and side effects.
 -   Centralized API hooks ().
--   Database seeding for bootstrapping content.
--   Conditional rendering for dynamic UI elements (tooltips, banners, dialogs).
+-   Backend routing and logic with FastAPI.
+-   MongoDB as the database.
 
 **key DB schema**
--   ** & :** The core collections for the Uniform Service Spine, using canonical  IDs.
--   **:** Contains member profiles, which in turn embed pet profiles ( array).
--   **:** Stores articles and videos for the LEARN pillar, with tags for personalization.
+-   ** & :** Core service ticket collections.
+-   **:** Stores user profiles and their embedded  array.
+-   **:** Content for the LEARN pillar.
+-   **:** Stores user notifications, now filterable by pet.
+
+**changes in tech stack**
+-   None.
 
 **All files of reference**
--   **/app/memory/PET_OS_BEHAVIOR_BIBLE.md**: The primary design and behavior document.
--   **/app/memory/LEARN_BIBLE.md**: The design document for the LEARN pillar.
--   **/app/frontend/src/pages/MiraDemoPage.jsx**: The main application page, heavily modified to integrate new components and logic.
--   **/app/frontend/src/components/mira/ServicesPanel.jsx**: Updated with DM style unread indicators.
--   **/app/frontend/src/components/mira/TodayPanel.jsx**: Updated with the full Weather Hero Card.
--   **/app/frontend/src/components/mira/PetOSNavigation.jsx**: Updated with weather hint and status indicators.
--   **/app/frontend/src/components/OnboardingTooltip.jsx**: Styling and positioning fixed.
--   **/app/frontend/src/components/mira/NewChatConfirmDialog.jsx**: New component for the New Chat flow.
--   **/app/frontend/src/components/mira/StarterChips.jsx**: New component for the New Chat flow.
--   **/app/backend/seed/learn.py**: Script executed to populate the LEARN pillar content.
--   **/app/memory/PRD.md**: Project requirements document, updated throughout the session.
--   **/app/memory/SYSTEM_HEALTH_SCORECARD.md**: New analysis document.
--   **/app/memory/ONBOARDING_DESIGN.md**: New design document for the upcoming onboarding feature.
--   **/app/memory/SOUL_QUESTIONS_MASTER_LIST.md**: New reference document listing all soul questions.
+-   : Main application page, modified for indicators and notification props.
+-   : Rewritten for simplified select-only functionality.
+-   : Modified to accept  and  for filtering.
+-   : Modified the  endpoint to support filtering by pet.
+-   : Potentially modified to make indicators non-clickable (needs verification).
+-   : Modified to add a text label to the 'instant' loading mode.
+-   : The primary design and behavior document.
 
 **Areas that need refactoring**:
--   The main frontend page, , is becoming a god component and should be broken down into smaller, more manageable child components.
--   Similarly,  is monolithic and could be split into logical sub-routers.
+-    is a large god component that should be broken down.
+-    is a monolithic file that could be split into logical sub-routers.
 
 **key api endpoints**
--   : Main chat processing endpoint.
--   : Retrieves tickets for the Services panel.
--   : Provides badge counts for the UI (e.g., unread replies).
--   : Fetches personalized content for the LEARN pillar.
--   : Retrieves the profile of the currently active pet.
+-   : Modified to accept optional  and  query parameters for filtering notifications.
 
 **Critical Info for New Agent**
--   Your primary focus is the **new 8-10 step soul-capture onboarding experience**. The user has a high-end, beautiful vision for this flow. Review the design and question documents (, ) before starting implementation.
--   The user is extremely detail-oriented, especially regarding UI/UX that aligns with their premium, human-centric vision. Follow their instructions and the  precisely.
--   Before diving into the onboarding task, propose a plan that includes the strategic discussion points the user raised (scoring the system, clarifying Mira on 6 pillars) to ensure alignment.
--   The Chat vs. Services mental model is the bedrock of the application's UX. Ensure any new feature reinforces this separation.
+-   The user is highly detail-oriented about UI/UX. The immediate priority is resolving the C° and PICKS indicator issue. **Do not proceed without getting explicit confirmation from the user on the exact location and behavior.** Use a screenshot to clarify if needed. The user's last instruction was nononono on the chat bar.
+-   The user has expressed anxiety about unintended changes. Be transparent and communicative about which files you are modifying and why. Reassure the user you are only touching relevant components.
+-   After resolving the indicator issue, move on to the other pending UI refinements (Past Chats, Unread Replies, Ticket Banner) before starting the large P0 onboarding task.
 
 **documents and test reports created in this job**
--   /app/memory/SYSTEM_HEALTH_SCORECARD.md
--   /app/memory/ONBOARDING_DESIGN.md
--   /app/memory/SOUL_QUESTIONS_MASTER_LIST.md
--   /app/memory/PRD.md (updated)
+-   None. The agent updated existing documents as per the previous handoff.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Asked to implement a large batch of UI/UX changes, including weather placement, removing a Personalized picks card, simplifying chat history, and adding a New Chat flow. (STATUS: Completed)
-2.  **User**: Clarified that the soul card should only be in the nav bar, not in the pet selector dropdown. (STATUS: Completed)
-3.  **User**: Asked agent to continue with implementation. (STATUS: Acknowledged)
-4.  **User**: Provided strategic next steps: Wire up , add weather hint, address legacy ticket migration, and introduced new tasks to score the system and plan the new onboarding experience. (STATUS: In Progress)
-5.  **User**: Asked about missing soul questions for the new onboarding flow. (STATUS: Addressed)
-6.  **User**: Confirmed all 35+ soul questions (pre-boarding and pillars) are needed for the onboarding design. (STATUS: Addressed)
-7.  **User**: Asked to prioritize cleaning up the weather integration while they think about the onboarding flow. (STATUS: Completed)
-8.  **User**: Asked if there are any other extra elements on the page that could be cleaned up. (STATUS: Addressed)
-9.  **User**: Asked how the LEARN pillar works, as it was empty. (STATUS: Addressed & Fixed)
-10. **User**: Asked for clarification on the LEARN personalization logic (is it LOLA pet first then breed). (STATUS: Addressed)
-11. **User**: Instructed the agent to PLEASE READ OUR BIBLE to ensure full alignment with project principles. (STATUS: Completed)
+1.  **User**: Wants a simple pet selector without a modal. (Status: **Completed**)
+2.  **User**: Confirms a list of other UI changes and asks agent to proceed. (Status: **In Progress**)
+3.  **User**: Prioritizes fixing the C° and PICKS indicators first. (Status: **Acknowledged**)
+4.  **User**: Expresses fear that the agent broke per-pet notifications while making other changes. (Status: **Addressed**)
+5.  **User**: Confirms they want the agent to continue, but to be very careful not to touch unrelated elements. (Status: **Acknowledged**)
+6.  **User**: Points out that per-pet notifications are indeed broken. (Status: **Addressed & Fixed**)
+7.  **User**: Confirms per-pet notifications used to work and asks for them to be added back. (Status: **Completed**)
+8.  **User**: Expresses gratitude for the fix. (Status: **Acknowledged**)
+9.  **User**: Asks about extra clickable C°/PICKS buttons that open modals. (Status: **In Progress**)
+10. **User**: Points out that the AI loading state is missing text. (Status: **Addressed & Fixed**)
+11. **User**: Clarifies they want to remove the clickable C° button that opens a Concierge Help modal. (Status: **In Progress**)
+12. **User**: Gives conflicting instruction to put indicators in the top header. (Status: **Superseded**)
+13. **User**: Corrects again: nononono on the chat bar. (Status: **Pending Action**)
 
 **Project Health Check:**
--   **Broken:** None.
+-   **Broken:** The placement and behavior of the C° and PICKS indicators are incorrect and do not meet user requirements.
 -   **Mocked:** None.
 
 **3rd Party Integrations**
--   Google Places — uses Emergent-managed integration
--   YouTube — uses Emergent-managed integration
+-   Google Places
+-   YouTube
 -   WhatsApp (Gupshup, Meta)
 -   Resend
 -   Shopify
@@ -175,14 +179,14 @@ The UI has been decluttered by moving the weather card into a dedicated TODAY pa
 **Testing status**
 -   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** None.
--   **Known regressions:** None.
+-   **Test files created:** None
+-   **Known regressions:** The agent successfully identified and fixed two regressions during this session (pet selector behavior and per-pet notifications).
 
 **Credentials to test flow:**
 -   **User Login:**  / 
--   **Admin Login:**  / 
--   **Key Pet for Testing:** Lola (ID: )
+-   **Key Pet for Testing:** Lola (), Mystique
 -   **Test URL:** 
 
 **What agent forgot to execute**
--   The agent did not start the investigation into the potential Pet Memory Allergy Test issue mentioned in the previous handoff.</analysis>
+-   The agent has not yet implemented the other UI tasks from the user's list: refining the Past Chats Panel, implementing the Unread Replies Indicator in Services, and adding the Ticket Creation Banner.
+-   The Pet Memory Allergy Test logic issue from the initial handoff remains uninvestigated.</analysis>
