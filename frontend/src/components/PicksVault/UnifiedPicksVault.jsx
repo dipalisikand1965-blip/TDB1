@@ -1223,6 +1223,10 @@ const UnifiedPicksVault = ({
   tipCard = null,
   userMessage = '',
   currentPillar = '',
+  // PICKS FALLBACK (Bible Section 9.0)
+  conciergeArranges = [],    // Concierge Arrange cards when no catalogue match
+  conciergeFallback = false, // Flag indicating fallback mode
+  conciergeFallbackReason = null,
   // Pet data - automatically syncs from main app
   pet = {},
   allPets = [],
@@ -1234,6 +1238,7 @@ const UnifiedPicksVault = ({
   onSaveTip,
   onShowFullTopPicks,
   onQuickAction,
+  onCreateConciergeTicket, // NEW: Handler for creating ticket from Concierge Arrange card
   token,
 }) => {
   const [activeTab, setActiveTab] = useState('forPet');
