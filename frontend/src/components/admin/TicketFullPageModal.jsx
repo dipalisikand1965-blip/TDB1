@@ -143,27 +143,37 @@ const TicketFullPageModal = ({
   };
 
   // Generate AI reply
-  const generateAiReply = async () => {
+  const generateAiReply = async (style = aiReplyStyle) => {
     setAiLoading(true);
+    setAiSuggestion(null);
     try {
-      const response = await fetch(`${getApiUrl()}/api/mira/generate-reply`, {
+      const response = await fetch(`${getApiUrl()}/api/tickets/ai/draft-reply`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ticket_id: ticket.ticket_id || ticket.id,
-          context: ticket.messages?.slice(-5),
-          pet_name: petProfile?.name || ticket.pet_info?.name,
-          member_name: memberProfile?.name || ticket.member?.name,
-          style: 'professional'
+          reply_type: style
         })
       });
 
       if (response.ok) {
         const data = await response.json();
-        setReplyText(data.reply || data.message || '');
+        const draft = data.draft || data.reply || data.message || '';
+        setAiSuggestion(draft);
+      } else {
+        toast({
+          title: 'AI Generation Failed',
+          description: 'Could not generate a reply. Try again.',
+          variant: 'destructive'
+        });
       }
     } catch (error) {
       console.error('AI generation error:', error);
+      toast({
+        title: 'AI Generation Error',
+        description: error.message,
+        variant: 'destructive'
+      });
     } finally {
       setAiLoading(false);
     }
