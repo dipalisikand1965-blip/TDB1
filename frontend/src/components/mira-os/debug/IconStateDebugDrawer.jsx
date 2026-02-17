@@ -207,7 +207,7 @@ const IconStateDebugDrawer = ({
           
           {/* QA microcopy */}
           <p className="text-[10px] text-gray-500 italic mb-2">
-            For QA only. Shows the contracts Mira is following for this turn.
+            QA only. Shows what Mira decided this turn (Picks, Places, Tickets).
           </p>
 
           {/* Status */}
