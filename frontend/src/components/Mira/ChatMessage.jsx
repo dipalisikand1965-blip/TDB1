@@ -387,15 +387,25 @@ const MiraMessageHeader = ({
       </div>
     )}
     
-    {/* Concierge Icon - Takes user to top bar CONCIERGE® */}
-    <button 
-      className="mp-header-concierge-icon"
-      onClick={() => { hapticFeedback?.buttonTap?.(); onShowConcierge(); }}
+    {/* Concierge Indicator - Non-clickable status display (C° shows Concierge activity) */}
+    <div 
+      className="mp-header-concierge-indicator"
       title="Concierge®"
-      data-testid="concierge-icon-btn"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '28px',
+        height: '28px',
+        borderRadius: '50%',
+        background: 'rgba(16, 185, 129, 0.15)',
+        border: '1.5px solid rgba(16, 185, 129, 0.4)',
+        pointerEvents: 'none',
+        cursor: 'default'
+      }}
     >
-      <span className="mp-concierge-badge">C°</span>
-    </button>
+      <span style={{ fontSize: '11px', fontWeight: 600, color: '#10b981' }}>C°</span>
+    </div>
     
     {/* Insight Icon */}
     {(msg.data?.response?.tips?.length > 0 || msg.data?.insights?.length > 0) && (
