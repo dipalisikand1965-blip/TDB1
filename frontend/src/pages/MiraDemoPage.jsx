@@ -1373,9 +1373,61 @@ const MiraDemoPage = () => {
     // Clear picks/tips (tip cards are session-specific)
     clearPicks();
     
+    // Show starter chips after new chat
+    setShowStarterChips(true);
+    
     console.log('[SESSION] Started new session:', newSessionId, 'for pet:', pet.name);
     return newSessionId;
   }, [baseStartNewSession, pet.name, clearPicks]);
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // NEW CHAT FLOW - Smart handler with confirmation if draft/awaiting exists
+  // ═══════════════════════════════════════════════════════════════════════════════
+  
+  // Check if user has unfinished work (draft text or awaiting ticket)
+  const hasUnfinishedWork = useCallback(() => {
+    const hasDraft = query && query.trim().length > 0;
+    const hasAwaitingTicket = apiCounts?.awaitingYouCount > 0;
+    return { hasDraft, hasAwaitingTicket, hasAny: hasDraft || hasAwaitingTicket };
+  }, [query, apiCounts?.awaitingYouCount]);
+  
+  // Handler for "New Chat" button click
+  const handleNewChatClick = useCallback(() => {
+    const { hasAny, hasDraft } = hasUnfinishedWork();
+    
+    if (hasAny) {
+      // Show confirmation dialog
+      setShowNewChatConfirm(true);
+    } else {
+      // No unfinished work - start new chat directly
+      startNewSession();
+    }
+  }, [hasUnfinishedWork, startNewSession]);
+  
+  // Confirm handler for NewChatConfirmDialog
+  const handleConfirmNewChat = useCallback(() => {
+    setShowNewChatConfirm(false);
+    setQuery(''); // Clear draft
+    startNewSession();
+  }, [startNewSession]);
+  
+  // Cancel handler for NewChatConfirmDialog
+  const handleCancelNewChat = useCallback(() => {
+    setShowNewChatConfirm(false);
+  }, []);
+  
+  // Handler for StarterChips click
+  const handleStarterChipClick = useCallback((chipQuery, chipId) => {
+    setShowStarterChips(false);
+    if (chipQuery) {
+      setQuery(chipQuery);
+    }
+    // Focus the input
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+    console.log('[NEW_CHAT] Starter chip clicked:', chipId);
+  }, []);
   
   // ═══════════════════════════════════════════════════════════════════════════════
   // IDLE TIMEOUT - Auto-save conversation after 5 minutes of inactivity
