@@ -5298,14 +5298,23 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             "previous_pillar": previous_pillar,  # Previous pillar (for UI indicator)
             
             # ═══════════════════════════════════════════════════════════════════════════
-            # PICKS FALLBACK RULE (Bible Section 9.0)
-            # When no catalogue match exists, PICKS must show Concierge Arranges cards
-            # The CTA must create a Service Desk ticket via the spine
-            # NEVER show generic popular items as substitutes
+            # PICKS FALLBACK CONTRACT (Bible Section 9.0) - Explicit, deterministic
+            # fallback_mode: "catalogue" | "concierge" | "clarify"
+            # NEVER show generic popular items when no match/low confidence/blocked by safety
             # ═══════════════════════════════════════════════════════════════════════════
-            "concierge_fallback": concierge_fallback,  # True if no catalogue match
-            "concierge_fallback_reason": concierge_fallback_reason,  # Why fallback triggered
-            "concierge_arranges": concierge_arranges  # Array of concierge pick cards to show
+            "picks_contract": {
+                "match_count": match_count,
+                "top_score": top_score,
+                "fallback_mode": fallback_mode,  # "catalogue" | "concierge" | "clarify"
+                "fallback_reason": fallback_reason,  # "no_match" | "low_confidence" | "blocked_by_safety" | "bespoke_intent" | None
+                "blocked_by_safety": blocked_by_safety,
+                "concierge_cards": concierge_cards,  # 1-3 cards when fallback_mode="concierge"
+                "clarifying_questions": clarifying_questions  # Array when fallback_mode="clarify"
+            },
+            # Legacy fields for backwards compatibility
+            "concierge_fallback": concierge_fallback,
+            "concierge_fallback_reason": concierge_fallback_reason,
+            "concierge_arranges": concierge_arranges
         }
         
         # ============================================
