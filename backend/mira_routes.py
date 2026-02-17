@@ -28,6 +28,17 @@ from pillar_resolver import get_resolver, PillarResolver
 # Import breed knowledge base
 from breed_knowledge import get_breed_knowledge, format_breed_context_for_llm
 
+# Import insight extraction for learning from conversations
+try:
+    from routes.concierge_os_routes import extract_pet_insights, store_conversation_insights, INSIGHT_PATTERNS
+    INSIGHT_EXTRACTION_AVAILABLE = True
+except ImportError:
+    INSIGHT_EXTRACTION_AVAILABLE = False
+    def extract_pet_insights(text):
+        return []
+    async def store_conversation_insights(db, pet_id, insights, thread_id, timestamp):
+        pass
+
 # Import conversation intelligence for pronoun resolution and follow-up context
 try:
     from conversation_intelligence import (
