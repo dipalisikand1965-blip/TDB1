@@ -5549,6 +5549,14 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 "concierge_cards": concierge_cards,  # 1-3 cards when fallback_mode="concierge"
                 "clarifying_questions": clarifying_questions  # Array when fallback_mode="clarify"
             },
+            
+            # ═══════════════════════════════════════════════════════════════════════════
+            # CONVERSATION CONTRACT (Bible Section 10.0) - Phase 5: Deterministic UI
+            # mode: "answer" | "clarify" | "places" | "learn" | "ticket" | "handoff"
+            # Frontend MUST render based ONLY on this contract - no UI inference from text
+            # ═══════════════════════════════════════════════════════════════════════════
+            "conversation_contract": conversation_contract,
+            
             # Legacy fields for backwards compatibility
             "concierge_fallback": concierge_fallback,
             "concierge_fallback_reason": concierge_fallback_reason,
