@@ -35,6 +35,7 @@ from ticket_status_system import (
     get_status_display_info,
     is_awaiting_user,
 )
+from utils.ticket_id_generator import generate_ticket_id, is_valid_ticket_id
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/os/services", tags=["services-os"])
