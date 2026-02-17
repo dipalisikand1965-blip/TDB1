@@ -1,31 +1,34 @@
 /**
- * ConciergeConfirmation - Personalized Handoff Confirmation Banner
+ * ConciergeConfirmation - Personalized Request Confirmation Banner
  * ================================================================
- * Shows when Mira successfully sends request to Concierge®
- * Personalized to the pet: "Mojo's request is on its way!"
+ * Shows when Mira successfully creates a request for Concierge®
  * 
- * Part of the MIRA OS doctrine: "Concierge is the hands"
+ * Copy contract (Section 12):
+ * - Title: "Request opened • TCK-XXXXXX"
+ * - Subtext: "Reply in Services to add details or change timing."
+ * - CTA: "View in Services" button
+ * 
+ * The rule: Chat is for asking. Services is where replies live.
  */
 
 import React, { useEffect, useState } from 'react';
-import { CheckCircle, X, Sparkles, Clock, Heart } from 'lucide-react';
+import { X, Clock, Heart, ArrowRight, MessageSquare } from 'lucide-react';
 
 /**
  * ConciergeConfirmation Component
  * 
  * @param {Object} props
  * @param {Object} props.confirmation - Confirmation data from backend
- * @param {string} props.confirmation.title - Banner title
- * @param {string} props.confirmation.message - Confirmation message
- * @param {string} props.confirmation.ticket_id - Ticket reference number
+ * @param {string} props.confirmation.ticket_id - Request reference number (TCK-XXXXXX)
  * @param {boolean} props.confirmation.show_banner - Whether to show banner
- * @param {string} props.confirmation.pillar - Request pillar for theming
  * @param {Function} props.onDismiss - Called when user dismisses banner
+ * @param {Function} props.onViewInServices - Called when user clicks "View in Services"
  * @param {string} props.petName - Pet name for personalization
  */
 const ConciergeConfirmation = ({ 
   confirmation, 
   onDismiss,
+  onViewInServices,
   petName = 'your pet'
 }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -36,10 +39,10 @@ const ConciergeConfirmation = ({
       // Animate in
       setTimeout(() => setIsVisible(true), 100);
       
-      // Auto-dismiss after 8 seconds
+      // Auto-dismiss after 12 seconds (longer to let them read + tap CTA)
       const timer = setTimeout(() => {
         handleDismiss();
-      }, 8000);
+      }, 12000);
       
       return () => clearTimeout(timer);
     }
