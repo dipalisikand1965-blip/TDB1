@@ -428,6 +428,7 @@ const useIconState = ({
     if (!currentPetId) return;
 
     const newStates = {
+      [TAB_IDS.MOJO]: calculateMojoState(),
       [TAB_IDS.TODAY]: calculateTodayState(),
       [TAB_IDS.SERVICES]: calculateServicesState(),
       [TAB_IDS.CONCIERGE]: calculateConciergeState(),
@@ -440,7 +441,7 @@ const useIconState = ({
     );
 
     setIconStates(newStates);
-  }, [currentPetId, calculateTodayState, calculateServicesState, calculateConciergeState, calculatePicksState, calculateLearnState]);
+  }, [currentPetId, calculateMojoState, calculateTodayState, calculateServicesState, calculateConciergeState, calculatePicksState, calculateLearnState]);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // RETURN API
@@ -451,6 +452,7 @@ const useIconState = ({
     iconStates,
     
     // Individual state getters
+    mojoState: iconStates[TAB_IDS.MOJO],
     todayState: iconStates[TAB_IDS.TODAY],
     servicesState: iconStates[TAB_IDS.SERVICES],
     conciergeState: iconStates[TAB_IDS.CONCIERGE],
