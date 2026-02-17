@@ -582,7 +582,24 @@ const MiraDemoPage = () => {
   // ═══════════════════════════════════════════════════════════════════════════════
   // ICON STATE SYSTEM - OFF/ON/PULSE (Bible Section 2)
   // Now powered by real API data from unified Service Desk ticket spine
+  // 
+  // CRITICAL FIX: miraPicks.hasNew must trigger PICKS indicator PULSE
+  // When Mira recommends products in chat, the indicator must light up immediately
   // ═══════════════════════════════════════════════════════════════════════════════
+  
+  // Merge local miraPicks.hasNew with API counts for real-time indicator updates
+  const mergedCounts = React.useMemo(() => {
+    const localPicksCount = (miraPicks?.products?.length || 0) + (miraPicks?.services?.length || 0);
+    const hasLocalNewPicks = miraPicks?.hasNew && localPicksCount > 0;
+    
+    return {
+      ...apiCounts,
+      // Override picks counts with local state if Mira just added picks
+      picksCount: Math.max(apiCounts?.picksCount || 0, localPicksCount),
+      newPicksSinceLastView: hasLocalNewPicks ? localPicksCount : (apiCounts?.newPicksSinceLastView || 0),
+    };
+  }, [apiCounts, miraPicks?.hasNew, miraPicks?.products?.length, miraPicks?.services?.length]);
+  
   const {
     iconStates,
     mojoState,
@@ -595,8 +612,8 @@ const MiraDemoPage = () => {
     getDebugData,
   } = useIconState({
     currentPetId: pet?.id,
-    // REAL COUNTS from backend API (unified Service Desk ticket spine)
-    counts: apiCounts,
+    // REAL COUNTS from backend API + local miraPicks.hasNew for real-time updates
+    counts: mergedCounts,
     activeTab: activeOSTab,
   });
   
