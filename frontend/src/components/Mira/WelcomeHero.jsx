@@ -267,12 +267,7 @@ const WelcomeHero = ({
             </div>
           )}
           
-          {/* WEATHER CARD - Shows walk safety for today */}
-          <WeatherCardInline 
-            weather={currentWeather}
-            petName={pet.name}
-            onAskMira={handleQuickReply}
-          />
+          {/* WEATHER - Moved to TODAY layer. Minimal ambient hint only here */}
           
           {/* SMART PROACTIVE ALERTS - Vaccination, Birthday, Grooming */}
           {proactiveAlerts.smartAlerts && proactiveAlerts.smartAlerts.length > 0 && (
