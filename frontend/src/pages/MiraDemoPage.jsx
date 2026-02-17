@@ -485,9 +485,9 @@ const MiraDemoPage = () => {
   } = useIconState({
     currentPetId: pet?.id,
     todayData: {
-      urgent: proactiveAlerts?.filter(a => a.priority === 'urgent') || [],
-      due: proactiveAlerts?.filter(a => a.type === 'due') || [],
-      watchlist: proactiveAlerts?.filter(a => a.type === 'watchlist') || [],
+      urgent: Array.isArray(proactiveAlerts) ? proactiveAlerts.filter(a => a.priority === 'urgent') : [],
+      due: Array.isArray(proactiveAlerts) ? proactiveAlerts.filter(a => a.type === 'due') : [],
+      watchlist: Array.isArray(proactiveAlerts) ? proactiveAlerts.filter(a => a.type === 'watchlist') : [],
       awaitingYou: [], // TODO: Connect to tickets awaiting user response
     },
     servicesData: {
