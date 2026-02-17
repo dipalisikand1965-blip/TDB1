@@ -12,6 +12,7 @@
  * - Streaming chat (SSE response streaming)
  * - Chat submission (main chat flow logic)
  * - Conversation state (Phase 2A)
+ * - Layer navigation (Bible-compliant OS navigation)
  */
 
 export { default as useVoice } from './useVoice';
@@ -23,6 +24,7 @@ export { default as useChatSubmit } from './useChatSubmit';
 export { default as useConversation } from './useConversation';
 export { default as useMiraUI } from './useMiraUI';
 export { default as useProactiveAlerts } from './useProactiveAlerts';
+export { default as useLayerNavigation } from './useLayerNavigation';
 export { 
   default as useChat,
   // Detection helpers
