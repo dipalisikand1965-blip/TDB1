@@ -155,6 +155,17 @@ const ChatInputBar = ({
   
   return (
     <div className="mp-composer">
+      {/* Helper text - Mental model clarifier */}
+      <div className="mp-helper-text" style={{
+        padding: '4px 16px 8px',
+        textAlign: 'center',
+        fontSize: '11px',
+        color: 'rgba(255, 255, 255, 0.5)',
+        fontStyle: 'italic'
+      }}>
+        Ask for anything. If it needs humans, we'll turn it into a tracked request.
+      </div>
+      
       {/* Photo Preview Banner */}
       {uploadPreview && (
         <div className="mp-upload-preview">
