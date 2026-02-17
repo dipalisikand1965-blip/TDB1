@@ -100,6 +100,14 @@ const useDraft = ({
   // Previous pet ID (to detect pet switches)
   const prevPetIdRef = useRef(currentPetId);
   
+  // Ref to track drafts in real-time (avoids stale closure issues)
+  const draftsRef = useRef(drafts);
+  
+  // Keep draftsRef in sync
+  useEffect(() => {
+    draftsRef.current = drafts;
+  }, [drafts]);
+  
   // Banner state
   const [petSwitchBanner, setPetSwitchBanner] = useState(null);
   // { message: "Draft saved for Lola. Now chatting about Bruno.", 
