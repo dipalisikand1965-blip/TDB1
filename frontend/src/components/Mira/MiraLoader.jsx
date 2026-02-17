@@ -25,7 +25,7 @@ const MiraModeBadge = ({ mode, petName }) => {
       case 'instant':
         return {
           icon: '⚡',
-          label: ''
+          label: `Finding that for ${petName}...`
         };
       case 'comfort':
         return {
