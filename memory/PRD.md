@@ -55,6 +55,18 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 - CSS animations for PULSE states (icon glow, dot ping, badge glow)
 - Accessibility: Reduced motion support, proper ARIA labels
 
+### Phase 4: Icon State API + Canonical Ticket ID ✅ COMPLETE (Feb 17, 2026)
+**Icons/badges are a read-only view of the Service Desk Ticket spine. They never create state and never bypass the uniform service flow.**
+
+- Created `/api/os/icon-state` - Single endpoint for unified counts
+- Created `useIconStateAPI.js` - Frontend hook with feature flag
+- Strict `TCK-YYYY-NNNNNN` validation (regex: `^TCK-\d{4}-\d{6}$`)
+- Created `utils/ticket_id_generator.py` - Atomic sequential ID generator
+- Updated intake points: `services_routes.py`, `central_dispatcher.py`, `conversation_routes.py`
+- Legacy data handling: Shows "—" badge (syncing) instead of misleading "0"
+- Debug Drawer: Shows legacy data warning + invalid count
+- Updated Bible to reflect canonical format
+
 ---
 
 ## Prioritized Backlog
