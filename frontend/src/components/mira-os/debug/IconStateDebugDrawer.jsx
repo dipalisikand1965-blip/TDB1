@@ -241,6 +241,20 @@ const IconStateDebugDrawer = ({
             </div>
           )}
           
+          {/* LEGACY DATA WARNING */}
+          {counts?._hasLegacyData && (
+            <div className="text-orange-400 text-xs p-2 bg-orange-500/10 rounded mb-2 border border-orange-500/30">
+              <div className="font-medium flex items-center gap-1">
+                <AlertTriangle className="w-3 h-3" />
+                Legacy Data Detected
+              </div>
+              <div className="text-orange-300 mt-1">
+                {counts._invalidCount} tickets with non-canonical IDs.
+                Counts may be incomplete until migration.
+              </div>
+            </div>
+          )}
+          
           {tabConfig.map(({ id, name, counts: tabCounts }) => (
             <TabSection
               key={id}
