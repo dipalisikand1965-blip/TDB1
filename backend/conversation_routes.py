@@ -68,10 +68,15 @@ class ConciergeSendMessage(BaseModel):
 # ============== HELPER FUNCTIONS ==============
 
 def generate_conversation_id() -> str:
-    """Generate a unique conversation ID"""
+    """Generate a unique conversation ID (legacy - for conversation collection only)"""
     today = datetime.now(timezone.utc).strftime("%Y%m%d")
     short_uuid = uuid.uuid4().hex[:6].upper()
     return f"CONV-{today}-{short_uuid}"
+
+
+async def generate_conversation_ticket_id(db) -> str:
+    """Generate canonical ticket_id for conversation's service desk entry"""
+    return await generate_ticket_id(db)
 
 
 def generate_message_id() -> str:
