@@ -80,6 +80,7 @@ const saveLastVisits = (data) => {
  * 
  * @param {Object} options
  * @param {string} options.currentPetId - Current active pet ID
+ * @param {Object} options.mojoData - { soulScore: number, hasIncompleteFields: boolean, pendingSuggestions: [], newInsights: boolean }
  * @param {Object} options.todayData - { urgent: [], due: [], watchlist: [], awaitingYou: [] }
  * @param {Object} options.servicesData - { activeTickets: [], awaitingYou: boolean }
  * @param {Object} options.conciergeData - { isOnline: boolean, openThreads: [], newReplies: boolean }
@@ -89,6 +90,7 @@ const saveLastVisits = (data) => {
  */
 const useIconState = ({
   currentPetId,
+  mojoData = {},
   todayData = {},
   servicesData = {},
   conciergeData = {},
@@ -96,8 +98,9 @@ const useIconState = ({
   learnData = {},
   activeTab = null,
 } = {}) => {
-  // Icon states for each tab
+  // Icon states for each tab (including MOJO)
   const [iconStates, setIconStates] = useState({
+    [TAB_IDS.MOJO]: { state: ICON_STATE.ON, count: 0 }, // MOJO is always at least ON (pet exists)
     [TAB_IDS.TODAY]: { state: ICON_STATE.OFF, count: 0 },
     [TAB_IDS.PICKS]: { state: ICON_STATE.OFF, count: 0 },
     [TAB_IDS.SERVICES]: { state: ICON_STATE.OFF, count: 0 },
