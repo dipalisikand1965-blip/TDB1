@@ -4972,6 +4972,58 @@ async def admin_get_all_pets(
     return {"pets": pets, "total": total}
 
 
+@admin_router.get("/members/{member_email}/pets")
+async def admin_get_member_pets(
+    member_email: str,
+    username: str = Depends(verify_admin)
+):
+    """
+    Get all pets belonging to a member by their email.
+    Used by Service Desk to show Pet Profile when ticket lacks pet_id.
+    Searches across multiple email fields and member record.
+    """
+    pets = []
+    
+    # Search by various email fields in pets collection
+    query = {
+        "$or": [
+            {"owner_email": member_email},
+            {"user_email": member_email},
+            {"parent_email": member_email}
+        ]
+    }
+    
+    pets_cursor = db.pets.find(query, {"_id": 0})
+    found_pets = await pets_cursor.to_list(10)
+    if found_pets:
+        pets = found_pets
+    
+    # If no pets found, check member record for linked pets
+    if not pets:
+        member = await db.members.find_one({"email": member_email})
+        if member and member.get("pets"):
+            member_pets = member.get("pets", [])
+            if member_pets:
+                if isinstance(member_pets[0], str):
+                    # List of pet IDs
+                    for pet_id in member_pets:
+                        pet_doc = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+                        if pet_doc:
+                            pets.append(pet_doc)
+                elif isinstance(member_pets[0], dict):
+                    # Embedded pet objects
+                    pets = member_pets
+    
+    # Add persona info to each pet
+    for pet in pets:
+        soul = pet.get("soul", {}) or {}
+        persona = soul.get("persona", "shadow")
+        if persona in DOG_PERSONAS:
+            pet["persona_info"] = DOG_PERSONAS[persona]
+    
+    return {"pets": pets, "total": len(pets), "member_email": member_email}
+
+
 @admin_router.get("/pets/upcoming-celebrations")
 async def admin_get_upcoming_celebrations(
     username: str = Depends(verify_admin),
