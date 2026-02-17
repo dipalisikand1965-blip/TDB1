@@ -142,6 +142,15 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
   - "What Mira Learned" shows 0% because `learned_facts` array is empty
   - Insights are created via Concierge conversations when Mira extracts facts
 
+### Feb 17, 2026 (Session 3 - Insights Review & Confirm)
+- **BUILT: "Review & Confirm" UI for pending insights in MOJO modal**
+  - Shows collapsible "X New Insights to Review" section
+  - Each insight shows: category icon, content, source date
+  - Confirm button → moves to `learned_facts[]` + updates status
+  - Reject button → marks as rejected (stays in `conversation_insights`)
+- **API endpoint verified:** `POST /api/os/concierge/insights/{pet_id}/review?insight_id=X&action=confirm|reject`
+- **Lola test:** Confirmed "toy is a squeaky duck" → learned_facts went 3→4
+
 ### Feb 17, 2026 (Earlier)
 - Phase 1 Layer Manager implemented and tested
 - Phase 2 Chat Continuity + Draft Persistence implemented and tested
