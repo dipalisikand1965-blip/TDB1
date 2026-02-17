@@ -304,6 +304,12 @@ The core goal is making Mira the **"Pet Operating Soul System"** that understand
 - [x] **PET AVATAR IMAGE ALIGNMENT:**
   - Added `object-position: center 20%` for better face/pet centering in circular avatars
   - Files: `PetOSNavigation.jsx` (line 510), `SoulKnowledgeTicker.jsx` (line 659)
+- [x] **MIRA TONE SELECTOR RESTORED:**
+  - Added AI_REPLY_STYLES dropdown to `TicketFullPageModal.jsx`
+  - 5 tones: Professional, Friendly, Empathetic, Concise, Detailed
+  - "Ask Mira" button generates AI draft with selected tone
+  - "Use This" button inserts suggestion into reply editor
+  - Files: `/app/frontend/src/components/admin/TicketFullPageModal.jsx` (lines 37-47, 146-178, 610-670)
 
 ### February 15, 2026 (Session 1)
 - [x] **Bug Fix:** `/celebrate-new` "l.some is not a function" error
