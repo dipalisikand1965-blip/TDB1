@@ -437,58 +437,76 @@ async def process_incoming_message(message: dict, contacts: list):
             logger.info(f"Added WhatsApp message to ticket: {ticket.get('ticket_id')}")
             
         else:
-            # Create new ticket from WhatsApp message
-            new_ticket_id = f"WA-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:6].upper()}"
+            # ═══════════════════════════════════════════════════════════════════════════
+            # HANDOFF TO SPINE - Create new ticket from WhatsApp message (Meta Cloud API)
+            # MIGRATED to handoff_to_spine() per Bible Section 12.0.
+            # ═══════════════════════════════════════════════════════════════════════════
+            intent = f"WhatsApp: {content[:50]}..." if len(content) > 50 else f"WhatsApp: {content}"
             
-            new_ticket = {
-                "ticket_id": new_ticket_id,
-                "source": "whatsapp",
+            initial_message = {
+                "id": str(uuid.uuid4()),
+                "type": "initial",
+                "content": content,
+                "sender": "member",
+                "sender_name": sender_name,
                 "channel": "whatsapp",
-                "category": "inquiry",
-                "status": "new",
-                "urgency": "medium",
-                "subject": f"WhatsApp: {content[:50]}..." if len(content) > 50 else f"WhatsApp: {content}",
-                "description": content,
+                "direction": "incoming",
+                "timestamp": now,
+                "is_internal": False,
+                "metadata": {
+                    "whatsapp_message_id": message_id,
+                    "phone": from_number,
+                    "message_type": message_type
+                }
+            }
+            
+            if media_info:
+                initial_message["media"] = media_info
+            
+            spine_result = await handoff_to_spine(
+                db=db,
+                route_name="whatsapp_routes.py",
+                endpoint="/whatsapp/webhook (meta)",
+                pillar="support",
+                category="whatsapp_inquiry",
+                intent=intent,
+                user={
+                    "email": None,
+                    "name": sender_name,
+                    "phone": from_number
+                },
+                pet=None,
+                payload={
+                    "provider": "meta_cloud_api",
+                    "message_type": message_type,
+                    "original_message": content,
+                    "whatsapp_message_id": message_id,
+                    "messages": [initial_message]
+                },
+                channel="whatsapp",
+                urgency="normal",
+                created_by="member",
+                notify_admin=True,
+                notify_member=False,  # No email for WhatsApp users
+                tags=["whatsapp", "meta", "inquiry"]
+            )
+            
+            new_ticket_id = spine_result.get("ticket_id", f"WA-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:6].upper()}")
+            
+            # Emit real-time notification for new ticket
+            await notification_manager.emit_new_ticket({
+                "ticket_id": new_ticket_id,
+                "subject": intent,
                 "member": {
                     "name": sender_name,
                     "phone": from_number,
                     "whatsapp": from_number
                 },
-                "messages": [{
-                    "id": str(uuid.uuid4()),
-                    "type": "initial",
-                    "content": content,
-                    "sender": "member",
-                    "sender_name": sender_name,
-                    "channel": "whatsapp",
-                    "direction": "incoming",
-                    "timestamp": now,
-                    "is_internal": False,
-                    "metadata": {
-                        "whatsapp_message_id": message_id,
-                        "phone": from_number,
-                        "message_type": message_type
-                    }
-                }],
-                "created_at": now,
-                "updated_at": now
-            }
-            
-            if media_info:
-                new_ticket["messages"][0]["media"] = media_info
-            
-            await db.tickets.insert_one(new_ticket)
-            
-            # Emit real-time notification for new ticket
-            await notification_manager.emit_new_ticket({
-                "ticket_id": new_ticket_id,
-                "subject": new_ticket["subject"],
-                "member": new_ticket["member"],
                 "channel": "whatsapp",
                 "status": "new"
             })
             
-            logger.info(f"Created new ticket from WhatsApp: {new_ticket_id}")
+            logger.info(f"[SPINE-MIGRATED] whatsapp_routes.py (meta) → {new_ticket_id} | pillar=support category=whatsapp_inquiry")
         
         # 🐕‍🦺 Send Mira's auto-reply
         await send_auto_mira_reply(from_number, content, sender_name)
