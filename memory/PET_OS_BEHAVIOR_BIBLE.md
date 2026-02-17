@@ -136,6 +136,19 @@ When a layer closes:
 
 ## 2.2 State Definitions Per Tab
 
+### MOJO Icon (Pet Avatar)
+| State | Condition |
+|-------|-----------|
+| OFF | Never OFF - pet always exists when in OS |
+| ON | Pet profile exists AND soul score >= 50% |
+| PULSE | Soul score < 50% (incomplete profile) OR new insights discovered OR pending suggestions to enhance profile |
+
+**Visual Implementation:**
+- MOJO uses the pet avatar ring instead of a traditional icon
+- PULSE state shows animated glow effect + attention dot on avatar
+- ON state shows normal avatar with soul score badge
+- The avatar's ring color indicates soul score progress
+
 ### TODAY Icon
 | State | Condition |
 |-------|-----------|
