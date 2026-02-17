@@ -1572,7 +1572,42 @@ const UnifiedPicksVault = ({
                     </p>
                   )}
                   
-                  {enhancedConversationPicks.length > 0 ? (
+                  {/* ═══════════════════════════════════════════════════════════════════════════
+                      PICKS FALLBACK RULE (Bible Section 9.0)
+                      When no catalogue match exists, show Concierge Arranges cards
+                      Never show generic popular items as substitutes
+                      ═══════════════════════════════════════════════════════════════════════════ */}
+                  {conciergeFallback && conciergeArranges.length > 0 ? (
+                    <div className="space-y-4">
+                      {/* Fallback Header */}
+                      <div className="text-center py-4 px-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100">
+                        <Sparkles className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+                        <h3 className="text-sm font-semibold text-gray-800">
+                          Concierge Arranges for {pet?.name}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                          We'll source and arrange everything
+                        </p>
+                      </div>
+                      
+                      {/* Concierge Arrange Cards */}
+                      <div className="space-y-3">
+                        {conciergeArranges.map((arrange, i) => (
+                          <ConciergeArrangeCard
+                            key={arrange.id || i}
+                            arrange={arrange}
+                            pet={pet}
+                            onCreateTicket={onCreateConciergeTicket}
+                          />
+                        ))}
+                      </div>
+                      
+                      {/* Info note */}
+                      <p className="text-xs text-gray-400 text-center">
+                        "Catalogue is optional; concierge is guaranteed."
+                      </p>
+                    </div>
+                  ) : enhancedConversationPicks.length > 0 ? (
                     <div 
                       className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory"
                       style={{ WebkitOverflowScrolling: 'touch' }}
