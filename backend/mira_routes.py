@@ -68,6 +68,24 @@ except ImportError:
     def extract_context_from_history(*args, **kwargs):
         return {}
 
+# Import Conversation Contract (Phase 5: Conversational Rules)
+# Bible Section 10.0 - Deterministic UI rendering based on contract
+try:
+    from conversation_contract import (
+        process_conversation_contract,
+        build_conversation_contract,
+        determine_contract_mode
+    )
+    CONVERSATION_CONTRACT_AVAILABLE = True
+except ImportError:
+    CONVERSATION_CONTRACT_AVAILABLE = False
+    async def process_conversation_contract(*args, **kwargs):
+        return {"mode_result": {"mode": "answer"}, "contract_context": {}}
+    def build_conversation_contract(*args, **kwargs):
+        return {"mode": "answer", "quick_replies": [], "places_results": [], "youtube_results": []}
+    def determine_contract_mode(*args, **kwargs):
+        return {"mode": "answer"}
+
 # Import push notification for ticket updates
 try:
     from push_notification_routes import notify_ticket_update
