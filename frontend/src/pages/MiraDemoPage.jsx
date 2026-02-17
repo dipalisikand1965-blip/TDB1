@@ -555,8 +555,28 @@ const MiraDemoPage = () => {
   const [isPageReady, setIsPageReady] = useState(false);
 
   // ═══════════════════════════════════════════════════════════════════════════════
+  // ICON STATE API - Real data from unified Service Desk ticket spine
+  // Single endpoint: /api/os/icon-state - enforces uniform service flow
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const {
+    counts: apiCounts,
+    serverStates,
+    serverBadges,
+    refetch: refetchIconState,
+    markTabViewed,
+    getDebugInfo,
+    loading: iconStateLoading,
+    error: iconStateError,
+  } = useIconStateAPI({
+    petId: pet?.id,
+    activeTab: activeOSTab,
+    pollInterval: 30000, // Poll every 30 seconds
+    enabled: !!pet?.id, // Only fetch when we have a pet
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════════
   // ICON STATE SYSTEM - OFF/ON/PULSE (Bible Section 2)
-  // Must be placed AFTER all state declarations that it depends on
+  // Now powered by real API data from unified Service Desk ticket spine
   // ═══════════════════════════════════════════════════════════════════════════════
   const {
     iconStates,
@@ -567,51 +587,11 @@ const MiraDemoPage = () => {
     picksState,
     learnState,
     markTabVisited,
-    triggerPulse,
-    recalculateAll: recalculateIconStates,
+    getDebugData,
   } = useIconState({
     currentPetId: pet?.id,
-    mojoData: {
-      // Soul score from pet data
-      soulScore: pet?.soulScore || pet?.overall_score || 0,
-      // Critical missing fields check (per user requirement - not just soul score)
-      // Critical = vaccinations, allergies, medications, emergency contact, location, vet details
-      hasCriticalMissing: (() => {
-        const answers = pet?.doggy_soul_answers || {};
-        const criticalFields = ['vaccination_status', 'food_allergies', 'medications', 'vet_info', 'location'];
-        return criticalFields.some(field => !answers[field] || answers[field] === 'Unknown' || answers[field] === '');
-      })(),
-      hasIncompleteFields: (pet?.soulScore || pet?.overall_score || 0) < 50,
-      pendingSuggestions: [], // TODO: Connect to soul form suggestions
-      newInsights: false, // TODO: Track new insights from conversations
-    },
-    todayData: {
-      urgent: Array.isArray(proactiveAlerts) ? proactiveAlerts.filter(a => a.priority === 'urgent') : [],
-      due: Array.isArray(proactiveAlerts) ? proactiveAlerts.filter(a => a.type === 'due') : [],
-      watchlist: Array.isArray(proactiveAlerts) ? proactiveAlerts.filter(a => a.type === 'watchlist') : [],
-      awaitingYou: [], // TODO: Connect to tickets awaiting user response
-    },
-    servicesData: {
-      activeTickets: currentTicket ? [currentTicket] : [],
-      awaitingYou: currentTicket?.status === 'awaiting_user',
-      newTickets: [],
-      statusChanges: [],
-    },
-    conciergeData: {
-      isOnline: true, // Concierge is considered online during business hours
-      openThreads: conciergeThread?.isOpen ? [conciergeThread] : [],
-      newReplies: false,
-      awaitingYou: false,
-    },
-    picksData: {
-      items: miraPicks?.enginePicks || miraPicks?.products || [],
-      hasNew: miraPicks?.hasNew || false,
-      materialChange: false,
-    },
-    learnData: {
-      forYourPetItems: [], // TODO: Connect to learn items
-      newItems: false,
-    },
+    // REAL COUNTS from backend API (unified Service Desk ticket spine)
+    counts: apiCounts,
     activeTab: activeOSTab,
   });
   
