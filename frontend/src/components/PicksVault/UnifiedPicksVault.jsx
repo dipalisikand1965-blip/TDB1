@@ -1354,11 +1354,16 @@ const UnifiedPicksVault = ({
   tipCard = null,
   userMessage = '',
   currentPillar = '',
-  // PICKS FALLBACK (Bible Section 9.0)
-  conciergeArranges = [],    // Concierge Arrange cards when no catalogue match
-  conciergeFallback = false, // Flag indicating fallback mode
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PICKS CONTRACT (Bible Section 9.0) - Deterministic UI Logic
+  // This is the source of truth for rendering. NOT advisory.
+  // ═══════════════════════════════════════════════════════════════════════════
+  picksContract = null,  // NEW: Full contract object from backend
+  // Legacy fields (deprecated - use picksContract instead)
+  conciergeArranges = [],
+  conciergeFallback = false,
   conciergeFallbackReason = null,
-  // Pet data - automatically syncs from main app
+  // Pet data
   pet = {},
   allPets = [],
   // Top picks data (fetched)
@@ -1369,7 +1374,7 @@ const UnifiedPicksVault = ({
   onSaveTip,
   onShowFullTopPicks,
   onQuickAction,
-  onCreateConciergeTicket, // NEW: Handler for creating ticket from Concierge Arrange card
+  onCreateConciergeTicket,
   token,
 }) => {
   const [activeTab, setActiveTab] = useState('forPet');
@@ -1379,7 +1384,19 @@ const UnifiedPicksVault = ({
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [selectionMode, setSelectionMode] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);  // Concierge confirmation modal
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DETERMINISTIC RENDER LOGIC (Non-negotiable)
+  // Read from picksContract as source of truth, fall back to legacy fields
+  // ═══════════════════════════════════════════════════════════════════════════
+  const fallbackMode = picksContract?.fallback_mode || (conciergeFallback ? 'concierge' : 'catalogue');
+  const fallbackReason = picksContract?.fallback_reason || conciergeFallbackReason;
+  const conciergeCards = picksContract?.concierge_cards || conciergeArranges || [];
+  const clarifyingQuestions = picksContract?.clarifying_questions || [];
+  const matchCount = picksContract?.match_count || 0;
+  const topScore = picksContract?.top_score || 0;
+  const blockedBySafety = picksContract?.blocked_by_safety || false;
   
   const season = getCurrentSeason();
   const birthdayNear = isPetBirthdayNear(pet);
