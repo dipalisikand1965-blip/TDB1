@@ -824,6 +824,137 @@ const ExpandablePickCard = ({
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// CONCIERGE ARRANGE CARD - Bible Section 9.0: Picks Fallback Rule
+// Shows when no catalogue match exists - user can create a Service Desk ticket
+// The "+" action creates a ticket via the Uniform Service Spine
+// ═══════════════════════════════════════════════════════════════════════════════
+const ConciergeArrangeCard = ({ arrange, pet, onCreateTicket }) => {
+  const [isCreating, setIsCreating] = useState(false);
+  const [ticketCreated, setTicketCreated] = useState(null);
+  const petName = pet?.name || 'your pet';
+  
+  const handleArrangeClick = async () => {
+    if (ticketCreated || isCreating) return;
+    
+    setIsCreating(true);
+    hapticFeedback.buttonTap();
+    
+    try {
+      if (onCreateTicket) {
+        const result = await onCreateTicket(arrange);
+        if (result?.ticket_id) {
+          setTicketCreated(result.ticket_id);
+          hapticFeedback.success();
+        }
+      } else {
+        // Direct API call as fallback
+        const response = await fetch(`${API_URL}/api/mira/picks/concierge-arrange`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pet_id: pet?.id,
+            pet_name: petName,
+            pillar: arrange.pillar || 'care',
+            intent: arrange.intent,
+            original_request: arrange.original_request || arrange.intent,
+            pet_constraints: arrange.pet_constraints || [],
+            source: 'picks_concierge_fallback'
+          })
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          setTicketCreated(result.ticket_id);
+          hapticFeedback.success();
+        }
+      }
+    } catch (err) {
+      console.error('[CONCIERGE ARRANGE] Failed to create ticket:', err);
+      hapticFeedback.error();
+    } finally {
+      setIsCreating(false);
+    }
+  };
+  
+  return (
+    <motion.div
+      className="p-4 rounded-xl bg-gradient-to-br from-purple-900/40 to-pink-900/20 border border-purple-500/30"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="flex items-start gap-4">
+        {/* Icon */}
+        <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+          <Sparkles className="w-6 h-6 text-white" />
+        </div>
+        
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          {/* Badge */}
+          <span className="inline-block px-2 py-0.5 bg-pink-500/30 text-pink-300 text-xs rounded-full mb-2">
+            {arrange.label || 'Concierge Pick'}
+          </span>
+          
+          {/* Title */}
+          <h4 className="font-medium text-white text-sm mb-1">
+            {arrange.title || `Custom request for ${petName}`}
+          </h4>
+          
+          {/* Subtitle/Spec chip */}
+          {arrange.spec_chip && (
+            <p className="text-xs text-purple-300 mb-2 flex items-center gap-1">
+              <Heart className="w-3 h-3" />
+              {arrange.spec_chip}
+            </p>
+          )}
+          
+          {/* Description */}
+          <p className="text-xs text-gray-400 leading-relaxed">
+            {arrange.description || `We don't have this in the catalogue yet — we can arrange it for ${petName}.`}
+          </p>
+          
+          {/* Ticket confirmation */}
+          {ticketCreated && (
+            <motion.div
+              className="mt-3 p-2 bg-green-500/20 border border-green-500/30 rounded-lg"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+            >
+              <p className="text-xs text-green-300 flex items-center gap-2">
+                <Check className="w-4 h-4" />
+                Got it. Request opened: <span className="font-mono">{ticketCreated}</span>
+              </p>
+            </motion.div>
+          )}
+        </div>
+        
+        {/* Action Button */}
+        <button
+          onClick={handleArrangeClick}
+          disabled={isCreating || ticketCreated}
+          className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+            ticketCreated
+              ? 'bg-green-500 text-white cursor-default'
+              : isCreating
+              ? 'bg-yellow-500 text-white cursor-wait'
+              : 'bg-purple-600 text-white hover:bg-purple-500 cursor-pointer'
+          }`}
+        >
+          {ticketCreated ? (
+            <Check className="w-5 h-5" />
+          ) : isCreating ? (
+            <RefreshCw className="w-5 h-5 animate-spin" />
+          ) : (
+            <span className="text-xl">+</span>
+          )}
+        </button>
+      </div>
+    </motion.div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // BEAUTIFUL CONCIERGE CARD - Matches dark theme of The Doggy Company
 // Shows: icon, title, "Handpicked for Pet", why it fits, spec chip, Request button
 // Info panel shows: what we source, selection rules, safety note, questions
