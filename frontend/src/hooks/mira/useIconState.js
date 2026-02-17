@@ -342,7 +342,9 @@ const useIconState = ({
       console.log('[IconState] Resetting all icon states to OFF, then recalculating...');
 
       // Reset all states to OFF first (no cross-pet leakage)
+      // Note: MOJO resets to ON (never OFF) since pet exists
       setIconStates({
+        [TAB_IDS.MOJO]: { state: ICON_STATE.ON, count: 0 },
         [TAB_IDS.TODAY]: { state: ICON_STATE.OFF, count: 0 },
         [TAB_IDS.PICKS]: { state: ICON_STATE.OFF, count: 0 },
         [TAB_IDS.SERVICES]: { state: ICON_STATE.OFF, count: 0 },
@@ -364,6 +366,7 @@ const useIconState = ({
     if (!currentPetId) return;
 
     const newStates = {
+      [TAB_IDS.MOJO]: calculateMojoState(),
       [TAB_IDS.TODAY]: calculateTodayState(),
       [TAB_IDS.SERVICES]: calculateServicesState(),
       [TAB_IDS.CONCIERGE]: calculateConciergeState(),
@@ -386,7 +389,7 @@ const useIconState = ({
       }
       return prev;
     });
-  }, [currentPetId, calculateTodayState, calculateServicesState, calculateConciergeState, calculatePicksState, calculateLearnState]);
+  }, [currentPetId, calculateMojoState, calculateTodayState, calculateServicesState, calculateConciergeState, calculatePicksState, calculateLearnState]);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // HANDLE TAB VISIT (PULSE → ON)
