@@ -235,6 +235,12 @@ const IconStateDebugDrawer = ({
             Tab States
           </h3>
           
+          {!userEmail && (
+            <div className="text-yellow-400 text-xs p-2 bg-yellow-500/10 rounded mb-2">
+              Login required to fetch icon state data
+            </div>
+          )}
+          
           {tabConfig.map(({ id, name, counts: tabCounts }) => (
             <TabSection
               key={id}
