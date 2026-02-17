@@ -33,8 +33,6 @@ const ICON_STATE_API_ENABLED = true; // Set to true to use real API data
 // - unified_signal_flow.py, user_tickets_routes.py, service_catalog_routes.py
 // - ticket_messaging.py
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
-
 /**
  * useIconStateAPI - Fetches real icon state data from backend
  * 
