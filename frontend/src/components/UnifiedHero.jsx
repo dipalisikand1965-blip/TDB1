@@ -5,10 +5,12 @@
  */
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Sparkles, Heart, Crown, PawPrint, Mic, MicOff, Loader2, Send } from 'lucide-react';
+import { Sparkles, Heart, Crown, PawPrint, Mic, MicOff, Loader2, Send, Shield, AlertTriangle, RefreshCw } from 'lucide-react';
 import SoulScoreArc from './SoulScoreArc';
 import MiraLoveNote from './MiraLoveNote';
 import { getPillarMessage, getPillarTagline } from '../context/PillarContext';
+import { useSafeTags } from '../hooks/mira/useSafeTags';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * DOG SOUL COLORS - How a dog FEELS in each moment
