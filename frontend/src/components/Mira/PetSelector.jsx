@@ -227,7 +227,7 @@ const PetSelector = ({
             return (
             <button 
               key={p.id} 
-              onClick={() => handleSelectPet(p)} 
+              onClick={() => handlePetCardClick(p)} 
               className={`mp-pet-option ${p.id === currentPet.id ? 'active' : ''}`}
               data-testid={`pet-option-${p.id}`}
             >
