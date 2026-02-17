@@ -25,6 +25,15 @@ import re
 from dotenv import load_dotenv
 from pillar_resolver import get_resolver, PillarResolver
 
+# Import centralized ticket creation helper (UNIFORM SERVICE FLOW)
+try:
+    from utils.service_ticket_spine import create_or_attach_service_ticket
+    SERVICE_TICKET_SPINE_AVAILABLE = True
+except ImportError:
+    SERVICE_TICKET_SPINE_AVAILABLE = False
+    async def create_or_attach_service_ticket(*args, **kwargs):
+        return {"success": False, "error": "Service ticket spine not available"}
+
 # Import breed knowledge base
 from breed_knowledge import get_breed_knowledge, format_breed_context_for_llm
 
