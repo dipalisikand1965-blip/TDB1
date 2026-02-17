@@ -125,10 +125,14 @@ const StatusBadge = memo(({ status, statusDisplay }) => {
   );
 });
 
-// Awaiting You Card (highlighted, actionable)
-const AwaitingCard = memo(({ ticket, onAction, onSelect }) => {
+// Awaiting You Card (WhatsApp/Instagram DM style - highlighted, actionable)
+const AwaitingCard = memo(({ ticket, onAction, onSelect, isUnread = false }) => {
   const colors = STATUS_COLORS[ticket.status_display?.color] || STATUS_COLORS.amber;
   const IconComponent = getIcon(ticket.status_display?.icon);
+  
+  // Get latest message preview for DM-style display
+  const lastMessage = ticket.last_message || ticket.status_display?.description || '';
+  const hasConciergReply = ticket.has_concierge_reply || ticket.last_sender === 'concierge';
   
   const getActionButton = () => {
     switch (ticket.status) {
@@ -149,21 +153,40 @@ const AwaitingCard = memo(({ ticket, onAction, onSelect }) => {
   
   return (
     <div 
-      className={`p-4 bg-slate-800/60 rounded-xl border ${colors.border} hover:border-purple-500/40 
-                  transition-all cursor-pointer group`}
+      className={`relative p-4 rounded-xl border transition-all cursor-pointer group
+                  ${isUnread 
+                    ? 'bg-gradient-to-r from-amber-500/10 to-pink-500/10 border-amber-500/30 hover:border-pink-500/40' 
+                    : 'bg-slate-800/60 border-white/5 hover:border-purple-500/40'}`}
       onClick={() => onSelect(ticket)}
       data-testid={`awaiting-card-${ticket.ticket_id}`}
     >
+      {/* Unread dot indicator - WhatsApp style */}
+      {isUnread && (
+        <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-gradient-to-r from-pink-500 to-amber-500 shadow-lg shadow-pink-500/40 animate-pulse" />
+      )}
+      
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
+          {/* Title row with NEW badge */}
           <div className="flex items-center gap-2 mb-1">
             <IconComponent className={`w-4 h-4 ${colors.text} flex-shrink-0`} />
             <h4 className="text-sm font-medium text-white truncate">
               {ticket.title || ticket.service_type}
             </h4>
+            {/* NEW badge - Instagram DM style */}
+            {isUnread && (
+              <span className="px-1.5 py-0.5 bg-pink-500 text-white text-[10px] font-bold rounded uppercase tracking-wide flex-shrink-0">
+                New
+              </span>
+            )}
           </div>
-          <p className="text-xs text-slate-400 mb-2">
-            {ticket.pet_display} • {ticket.status_display?.description}
+          
+          {/* Preview row - WhatsApp style with "Concierge:" prefix */}
+          <p className={`text-xs mb-2 truncate ${isUnread ? 'text-white/80 font-medium' : 'text-slate-400'}`}>
+            {hasConciergReply && (
+              <span className="text-purple-400 font-semibold">Concierge: </span>
+            )}
+            {lastMessage || `${ticket.pet_display} • ${ticket.status_display?.description}`}
           </p>
         </div>
         
@@ -172,8 +195,10 @@ const AwaitingCard = memo(({ ticket, onAction, onSelect }) => {
             e.stopPropagation();
             onAction(ticket, actionBtn.action);
           }}
-          className={`px-4 py-2.5 ${colors.bg} ${colors.text} text-xs font-medium rounded-lg
-                      hover:opacity-80 transition-opacity flex-shrink-0 min-h-[44px] touch-manipulation`}
+          className={`px-4 py-2.5 text-xs font-medium rounded-lg transition-opacity flex-shrink-0 min-h-[44px] touch-manipulation
+                      ${isUnread 
+                        ? 'bg-gradient-to-r from-pink-500 to-amber-500 text-white hover:opacity-90' 
+                        : `${colors.bg} ${colors.text} hover:opacity-80`}`}
         >
           {actionBtn.label}
         </button>
