@@ -185,26 +185,36 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
    - Resolved state shows confirmation message with "Change decision" link
    - Suppressed tags show with strikethrough + red shield icon
 
-3. **Extraction-Time Deduplication (Conservative)**
+3. **Safe Tags Hook & Renderer** (P1 - Wired everywhere)
+   - `/app/frontend/src/hooks/mira/useSafeTags.js` - Centralized hook for safe tags
+   - `/app/frontend/src/components/Mira/SafeTagsRenderer.jsx` - Component with suppression logic
+   - Fallback to raw tags + "syncing" indicator if API fails
+   - 30-second cache to reduce API calls
+
+4. **Chat Interruption Prompt (Bible 6.3)**
+   - Conflict detected at extraction time in `mira_routes.py`
+   - Prompt injected: "⚠️ I want to be careful here. I'm holding two different notes..."
+   - Quick replies: "Off-limits (allergy)", "It's fine now", "Not sure"
+   - `conflict_detected` field in API response for frontend handling
+
+5. **Debug Drawer Enhanced**
+   - Added "Tag Safety" section showing suppressed_tags_count
+   - Lists all suppressed tags with reasons
+
+6. **Conservative Deduplication**
    - Exact match only (category + content)
    - No time-based blocking - allows re-stated facts months later
-   - Prevents duplicate noise within same conversation
 
-4. **API Endpoints:**
-   - `GET /api/os/concierge/conflicts/{pet_id}` - Get unresolved conflicts
-   - `POST /api/os/concierge/conflicts/{pet_id}/resolve` - Resolve a conflict
-   - `GET /api/os/concierge/safe-tags/{pet_id}` - Get tags with safety filtering
-
-5. **Entity Normalization:**
+7. **Entity Normalization**
    - Handles plurals (peanut/peanuts, chicken/chickens)
    - Common variations mapped (peanut butter → peanut)
 
-**Full QA Test Results:**
-- A) Extraction → Pending Insights: ✅ PASS
-- B) Confirm + Retrieval: ✅ PASS  
-- C) Contradiction Trigger: ✅ PASS
-- D) Resolution: ✅ PASS
-- E) Service Handoff: ✅ PASS (TCK-2026-000005)
+**Acceptance Test Results (all passed):**
+- Create conflict: health + preference on same entity ✅
+- Resolve as health_wins ✅
+- Services page doesn't show suppressed preference ✅
+- Mira stops mentioning suppressed preference ✅
+- Chat interruption prompt appears on new conflict ✅
 
 ### Feb 17, 2026 (Session 4 - Mira Intelligence QA)
 **Completed comprehensive QA of Mira's intelligence system:**
