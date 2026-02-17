@@ -3828,6 +3828,17 @@ const MiraDemoPage = () => {
             />
           )}
           
+          {/* STARTER CHIPS - Shows after starting a new chat */}
+          {showStarterChips && conversationHistory.length === 0 && (
+            <div className="px-4 py-6">
+              <StarterChips
+                isVisible={true}
+                onChipClick={handleStarterChipClick}
+                petName={pet?.name}
+              />
+            </div>
+          )}
+          
           {/* Conversation Messages */}
           {conversationHistory.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
