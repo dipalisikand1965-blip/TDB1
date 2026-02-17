@@ -1095,6 +1095,7 @@ const MiraDemoPage = () => {
   const recognitionRef = useRef(null);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
+  const servicesTabRef = useRef(null); // Ref for onboarding tooltip anchor
   
   // ═══════════════════════════════════════════════════════════════════════════════
   // CHAT CONTINUITY IMPLEMENTATION (Bible Section 3.1)
