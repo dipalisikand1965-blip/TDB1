@@ -1223,6 +1223,18 @@ create_or_attach_service_ticket({
 
 **"Catalogue is optional; concierge is guaranteed."**
 
+### Guardrails (Prevent Drift)
+
+These rules are **non-negotiable** and must never be relaxed:
+
+1. **No generic fallback ever.** If `fallback_mode !== "catalogue"`, do NOT render featured/popular items. The screen stays clean with only Concierge Arranges cards.
+
+2. **Concierge cards must always CTA into the spine.** The `+` action MUST call `create_or_attach_service_ticket()` and return a canonical `TCK-YYYY-NNNNNN` ticket. Never create a separate thread or side-channel.
+
+3. **Clarify mode is only for truly vague requests.** Use `fallback_mode = "clarify"` when user intent is ambiguous ("something fun this weekend"). Do NOT use clarify mode as a workaround for missing catalogue inventory — that's concierge territory.
+
+4. **PICKS is not a shop. It's a decision layer.** If the catalogue can't satisfy the intent (no match / low confidence / safety block / bespoke), route to Concierge. No "popular products" padding. No pretending. No dead ends.
+
 ---
 
 ## 9.1 Filter Definitions
