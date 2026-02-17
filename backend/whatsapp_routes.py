@@ -274,38 +274,52 @@ async def process_gupshup_webhook(body: dict):
                 
                 logger.info(f"[GUPSHUP] Added message to ticket {ticket.get('ticket_id')}")
             else:
-                # Create new ticket from WhatsApp message
-                ticket_id = f"WA-{uuid.uuid4().hex[:8].upper()}"
-                new_ticket = {
-                    "ticket_id": ticket_id,
-                    "type": "whatsapp_inquiry",
-                    "source": "whatsapp",
-                    "provider": "gupshup",
-                    "status": "new",
-                    "priority": "medium",
-                    "member": {
-                        "name": sender_name,
-                        "phone": from_number,
-                        "whatsapp": from_number
-                    },
-                    "subject": content[:100] if content else "WhatsApp Inquiry",
-                    "messages": [{
-                        "id": str(uuid.uuid4()),
-                        "type": "initial_message",
-                        "content": content,
-                        "sender": "member",
-                        "sender_name": sender_name,
-                        "channel": "whatsapp",
-                        "direction": "incoming",
-                        "timestamp": now,
-                        "is_internal": False
-                    }],
-                    "created_at": now,
-                    "updated_at": now
-                }
+                # ═══════════════════════════════════════════════════════════════════════════
+                # HANDOFF TO SPINE - Create new ticket from WhatsApp message (Gupshup)
+                # MIGRATED to handoff_to_spine() per Bible Section 12.0.
+                # ═══════════════════════════════════════════════════════════════════════════
+                intent = f"WhatsApp Inquiry: {content[:100]}" if content else "WhatsApp Inquiry"
                 
-                await db.tickets.insert_one(new_ticket)
-                logger.info(f"[GUPSHUP] Created new ticket {ticket_id}")
+                spine_result = await handoff_to_spine(
+                    db=db,
+                    route_name="whatsapp_routes.py",
+                    endpoint="/whatsapp/webhook (gupshup)",
+                    pillar="support",
+                    category="whatsapp_inquiry",
+                    intent=intent,
+                    user={
+                        "email": None,
+                        "name": sender_name,
+                        "phone": from_number
+                    },
+                    pet=None,
+                    payload={
+                        "provider": "gupshup",
+                        "message_type": message_type,
+                        "original_message": content,
+                        "whatsapp_message_id": message_id,
+                        "messages": [{
+                            "id": str(uuid.uuid4()),
+                            "type": "initial_message",
+                            "content": content,
+                            "sender": "member",
+                            "sender_name": sender_name,
+                            "channel": "whatsapp",
+                            "direction": "incoming",
+                            "timestamp": now,
+                            "is_internal": False
+                        }]
+                    },
+                    channel="whatsapp",
+                    urgency="normal",
+                    created_by="member",
+                    notify_admin=True,
+                    notify_member=False,  # No email for WhatsApp users
+                    tags=["whatsapp", "gupshup", "inquiry"]
+                )
+                
+                ticket_id = spine_result.get("ticket_id", f"WA-{uuid.uuid4().hex[:8].upper()}")
+                logger.info(f"[SPINE-MIGRATED] whatsapp_routes.py (gupshup) → {ticket_id} | pillar=support category=whatsapp_inquiry")
             
             # Send real-time notification to admin
             try:
