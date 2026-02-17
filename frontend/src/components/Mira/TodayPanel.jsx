@@ -569,6 +569,7 @@ const TodayPanel = ({
   onTicketAction, // Handler for ticket quick actions
   onOpenServices, // Handler for opening ServiceRequestBuilder with prefill
   onOpenConcierge, // Handler for opening ConciergePanel with context
+  onAskMira, // Handler for asking Mira a question
 }) => {
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [activeTasks, setActiveTasks] = useState([]);
