@@ -39,6 +39,7 @@ export const ICON_STATE = {
 
 // Tab IDs
 export const TAB_IDS = {
+  MOJO: 'mojo',
   TODAY: 'today',
   PICKS: 'picks',
   SERVICES: 'services',
