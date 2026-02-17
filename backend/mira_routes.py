@@ -3349,13 +3349,40 @@ async def search_real_products(
             ).limit(limit * 2)
             all_products = await cursor.to_list(length=limit * 2)
         
-        # Still no results? Get popular/featured products
+        # ═══════════════════════════════════════════════════════════════════════════
+        # PICKS FALLBACK RULE (Bible Section 9.0)
+        # No catalogue match → Concierge Arranges (ticket), NOT generic picks
+        # NEVER fill "no match" with popular/featured products - breaks trust
+        # ═══════════════════════════════════════════════════════════════════════════
+        concierge_fallback = False
+        concierge_fallback_reason = None
+        
         if not all_products:
-            cursor = db.products_master.find(
-                {"available": {"$ne": False}},
-                {"_id": 0}
-            ).limit(limit)
-            all_products = await cursor.to_list(length=limit)
+            # NO PRODUCTS FOUND - trigger Concierge fallback
+            concierge_fallback = True
+            concierge_fallback_reason = "no_catalogue_match"
+            logger.info(f"[PICKS] No catalogue match for '{user_input_lower[:50]}' - triggering Concierge fallback")
+            
+            # Return empty products with concierge_fallback flag
+            return {
+                "products": [],
+                "concierge_fallback": True,
+                "concierge_fallback_reason": "no_catalogue_match",
+                "concierge_arranges": [
+                    {
+                        "type": "concierge_pick",
+                        "title": f"Custom request for {pet_context.get('name', 'your pet')}",
+                        "subtitle": "Concierge arranges",
+                        "description": f"We don't have this in the catalogue yet — we can arrange it for {pet_context.get('name', 'your pet')}.",
+                        "no_price": True,
+                        "action": "create_ticket",
+                        "pillar": entities.get("pillar", "care"),
+                        "intent": user_input_lower[:200],
+                        "pet_id": pet_context.get("id"),
+                        "pet_name": pet_context.get("name"),
+                    }
+                ]
+            }
         
         # Score and filter products based on pet context
         pet_name = pet_context.get("name", "your pet")
