@@ -787,23 +787,51 @@ const LearnedFactsContent = memo(({ pet, apiUrl, token, onInsightAction }) => {
                   </span>
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                  {facts.map((fact, idx) => (
-                    <span 
-                      key={fact.id || idx}
-                      style={{
-                        display: 'inline-flex', alignItems: 'center', gap: 4,
-                        padding: '6px 10px',
-                        background: 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        borderRadius: 20,
-                        fontSize: 13,
-                        color: 'rgba(255,255,255,0.8)'
-                      }}
-                    >
-                      {fact.content}
-                      <Check size={12} className="text-emerald-400" style={{ marginLeft: 2 }} />
-                    </span>
-                  ))}
+                  {facts.map((fact, idx) => {
+                    // Check if fact is suppressed (health conflict)
+                    const isSuppressed = fact.is_active === false || fact.suppressed_reason;
+                    const hasConflict = fact.has_conflict || fact.conflict_status === 'pending_resolution';
+                    
+                    return (
+                      <span 
+                        key={fact.id || idx}
+                        title={isSuppressed 
+                          ? `Hidden due to health restriction. Safety takes priority.` 
+                          : hasConflict 
+                            ? `Conflict detected - please resolve above`
+                            : null
+                        }
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 4,
+                          padding: '6px 10px',
+                          background: isSuppressed 
+                            ? 'rgba(239, 68, 68, 0.1)' 
+                            : hasConflict 
+                              ? 'rgba(251, 191, 36, 0.1)'
+                              : 'rgba(255,255,255,0.05)',
+                          border: isSuppressed 
+                            ? '1px solid rgba(239, 68, 68, 0.3)' 
+                            : hasConflict
+                              ? '1px solid rgba(251, 191, 36, 0.3)'
+                              : '1px solid rgba(255,255,255,0.1)',
+                          borderRadius: 20,
+                          fontSize: 13,
+                          color: isSuppressed 
+                            ? 'rgba(255,255,255,0.4)' 
+                            : 'rgba(255,255,255,0.8)',
+                          textDecoration: isSuppressed ? 'line-through' : 'none',
+                          opacity: isSuppressed ? 0.6 : 1
+                        }}
+                      >
+                        {isSuppressed && <Shield size={12} className="text-red-400" />}
+                        {hasConflict && !isSuppressed && <AlertTriangle size={12} className="text-amber-400" />}
+                        {fact.content}
+                        {!isSuppressed && !hasConflict && (
+                          <Check size={12} className="text-emerald-400" style={{ marginLeft: 2 }} />
+                        )}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
             );
