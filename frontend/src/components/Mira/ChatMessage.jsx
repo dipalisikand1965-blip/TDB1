@@ -353,104 +353,130 @@ const TopicShiftIndicator = () => (
 
 /**
  * MiraMessageHeader Component
+ * 
+ * Includes C° and PICKS status indicators that:
+ * - Light up (PULSE) when Mira has chosen something new
+ * - Navigate to respective tabs when clicked (NO dropdown modals)
+ * - Follow PET_OS_BEHAVIOR_BIBLE Section 2: Icon State System
  */
 const MiraMessageHeader = ({ 
   msg, 
   pet, 
   miraPicks,
+  // Icon states from useIconState hook (per Bible Section 2)
+  picksState = { state: 'OFF', badge: null },
+  conciergeState = { state: 'OFF', badge: null },
+  // Handlers - navigate to tab, NOT open modal
   onShowConcierge,
   onShowInsights,
   onShowPicks,
   onQuickReply,
   hapticFeedback
-}) => (
-  <div className="mp-card-header">
-    <div className="mp-mira-avatar"><Sparkles /></div>
-    <span className="mp-mira-name">Mira</span>
-    
-    {/* Quick Reply Tiles */}
-    {msg.quickReplies && msg.quickReplies.length > 0 && (
-      <div className="mp-header-tiles">
-        {msg.quickReplies.map((chip, cIdx) => (
-          <button 
-            key={cIdx} 
-            onClick={() => { 
-              hapticFeedback?.chipTap?.(); 
-              onQuickReply(chip.value); 
-            }} 
-            className="mp-header-tile"
-            data-testid={`header-tile-${cIdx}`}
-          >
-            {chip.text}
-          </button>
-        ))}
-      </div>
-    )}
-    
-    {/* Concierge Indicator - Non-clickable status display (C° shows Concierge activity) */}
-    <div 
-      className="mp-header-concierge-indicator"
-      title="Concierge®"
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '28px',
-        height: '28px',
-        borderRadius: '50%',
-        background: 'rgba(16, 185, 129, 0.15)',
-        border: '1.5px solid rgba(16, 185, 129, 0.4)',
-        pointerEvents: 'none',
-        cursor: 'default'
-      }}
-    >
-      <span style={{ fontSize: '11px', fontWeight: 600, color: '#10b981' }}>C°</span>
-    </div>
-    
-    {/* Insight Icon */}
-    {(msg.data?.response?.tips?.length > 0 || msg.data?.insights?.length > 0) && (
-      <button 
-        className="mp-header-insight-icon"
-        onClick={onShowInsights}
-        title="View insights"
-      >
-        <PawPrint size={16} />
-        <span className="mp-insight-count">
-          {(msg.data?.response?.tips?.length || 0) + (msg.data?.insights?.length || 0)}
-        </span>
-      </button>
-    )}
-    
-    {/* Picks Indicator - Clickable, opens PICKS tray (no dropdown modal) */}
-    <button 
-      className="mp-header-picks-icon"
-      onClick={() => {
-        hapticFeedback?.pickSelect?.();
-        onShowPicks?.();
-      }}
-      title={`${pet.name}'s Picks`}
-      data-testid="header-picks-btn"
-    >
-      <Gift size={18} className="mp-picks-gift" />
-      {pet.photo ? (
-        <img 
-          src={pet.photo} 
-          alt={pet.name}
-          className="mp-picks-pet-face"
-        />
-      ) : (
-        <div className="mp-picks-pet-face mp-picks-pet-fallback">
-          <PawPrint size={10} />
+}) => {
+  // Determine visual states for indicators
+  const isPulsingPicks = picksState?.state === 'PULSE';
+  const isOnPicks = picksState?.state === 'ON' || isPulsingPicks;
+  const isPulsingConcierge = conciergeState?.state === 'PULSE';
+  const isOnConcierge = conciergeState?.state === 'ON' || isPulsingConcierge;
+  
+  return (
+    <div className="mp-card-header">
+      <div className="mp-mira-avatar"><Sparkles /></div>
+      <span className="mp-mira-name">Mira</span>
+      
+      {/* Quick Reply Tiles */}
+      {msg.quickReplies && msg.quickReplies.length > 0 && (
+        <div className="mp-header-tiles">
+          {msg.quickReplies.map((chip, cIdx) => (
+            <button 
+              key={cIdx} 
+              onClick={() => { 
+                hapticFeedback?.chipTap?.(); 
+                onQuickReply(chip.value); 
+              }} 
+              className="mp-header-tile"
+              data-testid={`header-tile-${cIdx}`}
+            >
+              {chip.text}
+            </button>
+          ))}
         </div>
       )}
-      {(miraPicks.products.length + miraPicks.services.length) > 0 && (
-        <span className="mp-picks-count">
-          {miraPicks.products.length + miraPicks.services.length}
-        </span>
+      
+      {/* ═══════════════════════════════════════════════════════════════════════
+          C° CONCIERGE INDICATOR - Status indicator per Bible Section 2
+          - OFF: Dim/muted (no activity)
+          - ON: Lit (threads exist)
+          - PULSE: Animated glow (unread replies - Mira chose something!)
+          - Click: Navigate to CONCIERGE tab (NO dropdown modal)
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <button 
+        className={`mp-header-concierge-icon ${isPulsingConcierge ? 'state-pulse' : ''} ${isOnConcierge ? 'state-on' : 'state-off'}`}
+        onClick={() => {
+          hapticFeedback?.buttonTap?.();
+          onShowConcierge?.();
+        }}
+        title={conciergeState?.tooltip || 'Concierge®'}
+        data-testid="header-concierge-btn"
+      >
+        <span className="mp-concierge-badge">C°</span>
+        {conciergeState?.badge && (
+          <span className="mp-concierge-count">{conciergeState.badge}</span>
+        )}
+      </button>
+      
+      {/* Insight Icon */}
+      {(msg.data?.response?.tips?.length > 0 || msg.data?.insights?.length > 0) && (
+        <button 
+          className="mp-header-insight-icon"
+          onClick={onShowInsights}
+          title="View insights"
+        >
+          <PawPrint size={16} />
+          <span className="mp-insight-count">
+            {(msg.data?.response?.tips?.length || 0) + (msg.data?.insights?.length || 0)}
+          </span>
+        </button>
       )}
-    </button>
-  </div>
-);
+      
+      {/* ═══════════════════════════════════════════════════════════════════════
+          PICKS INDICATOR - Status indicator per Bible Section 2
+          - OFF: Dim/muted (no picks)
+          - ON: Lit (picks exist)
+          - PULSE: Animated glow (NEW picks - Mira chose something!)
+          - Click: Navigate to PICKS tab (NO dropdown modal)
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <button 
+        className={`mp-header-picks-icon ${isPulsingPicks ? 'state-pulse' : ''} ${isOnPicks ? 'state-on' : 'state-off'}`}
+        onClick={() => {
+          hapticFeedback?.pickSelect?.();
+          onShowPicks?.();
+        }}
+        title={picksState?.tooltip || `${pet.name}'s Picks`}
+        data-testid="header-picks-btn"
+      >
+        <Gift size={18} className="mp-picks-gift" />
+        {pet.photo ? (
+          <img 
+            src={pet.photo} 
+            alt={pet.name}
+            className="mp-picks-pet-face"
+          />
+        ) : (
+          <div className="mp-picks-pet-face mp-picks-pet-fallback">
+            <PawPrint size={10} />
+          </div>
+        )}
+        {/* Show badge from icon state OR fallback to miraPicks count */}
+        {(picksState?.badge || (miraPicks.products.length + miraPicks.services.length) > 0) && (
+          <span className="mp-picks-count">
+            {picksState?.badge || (miraPicks.products.length + miraPicks.services.length)}
+          </span>
+        )}
+      </button>
+    </div>
+  );
+};
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // DATA CARD COMPONENTS
