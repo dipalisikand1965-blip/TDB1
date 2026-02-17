@@ -466,6 +466,37 @@ User can save from:
 
 # SECTION 5: UNIFIED SERVICE TICKET SCHEMA
 
+## 5.0 Canonical Ticket ID Format
+
+**Format:** `TCK-YYYY-NNNNNN`
+
+| Component | Description | Example |
+|-----------|-------------|---------|
+| `TCK` | Fixed prefix | TCK |
+| `YYYY` | Current year | 2026 |
+| `NNNNNN` | 6-digit sequential (atomic counter) | 000001 |
+
+**Example:** `TCK-2026-000001`, `TCK-2026-000002`, ...
+
+**Validation Regex:** `^TCK-\d{4}-\d{6}$`
+
+**Why this format:**
+- Sequential IDs are sortable and audit-friendly
+- No random suffix collisions or debug ambiguity
+- Easy for support teams to reference
+- Atomic counter prevents duplicates
+
+**UNIFORM SERVICE FLOW (Non-negotiable):**
+```
+User Intent (from anywhere, incl Search) → User Request → Service Desk Ticket → 
+Admin Notification → Member Notification → Pillar Request → Tickets → Channel Intakes
+```
+
+Every actionable request MUST create or attach to a Service Desk Ticket with a canonical `ticket_id`.
+Icons/badges are a READOUT of this spine, not independent features.
+
+**Legacy Format:** `TKT-YYYYMMDD-XXXX` is deprecated. Use `legacy_ticket_id` field for migration/tracing only.
+
 ## 5.1 Ticket Schema (Complete)
 
 ```json
