@@ -105,13 +105,16 @@ PILLAR_MAP = {
 
 CHANNEL_MAP = {
     "web": Channel.WEB.value,
+    "app": Channel.APP.value,
     "whatsapp": Channel.WHATSAPP.value,
     "email": Channel.EMAIL.value,
-    "phone": Channel.PHONE.value,
-    "chat": Channel.CHAT.value,
-    "mira": Channel.MIRA.value,
     "admin": Channel.ADMIN.value,
-    "api": Channel.API.value
+    "system": Channel.SYSTEM.value,
+    # Aliases for non-enum channels
+    "phone": "phone",
+    "chat": "chat",
+    "mira": "mira",
+    "api": "api"
 }
 
 
