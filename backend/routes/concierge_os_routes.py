@@ -1718,7 +1718,7 @@ async def review_conversation_insight(
             {"$set": {"conversation_insights": insights}}
         )
         
-        # If confirmed, add to learned_facts (with duplicate check)
+        # If confirmed, add to learned_facts (with duplicate and conflict check)
         if action == "confirm":
             learned_facts = pet.get("learned_facts", [])
             
@@ -1746,18 +1746,67 @@ async def review_conversation_insight(
                     "duplicate": True
                 }
             
-            # Not a duplicate, add to learned_facts
-            learned_facts.append({
+            # CHECK FOR CONFLICTS before adding
+            conflict_info = None
+            has_conflict = insight_found.get("has_conflict", False)
+            
+            try:
+                from utils.fact_conflict_resolver import detect_conflict, is_health_category, is_preference_category
+                
+                if not has_conflict:
+                    # Re-check for conflicts
+                    conflict_info = detect_conflict(
+                        {"category": insight_found["category"], "content": insight_found["content"]},
+                        learned_facts
+                    )
+                    has_conflict = conflict_info is not None and conflict_info.get("detected", False)
+            except ImportError:
+                pass
+            
+            # Build the new fact document
+            new_fact = {
                 "id": insight_id,
                 "category": insight_found["category"],
                 "content": insight_found["content"],
                 "learned_from": "conversation",
-                "confirmed_at": now
-            })
+                "confirmed_at": now,
+                "is_active": True,  # Default active
+            }
+            
+            # If conflict detected, add conflict metadata
+            if has_conflict:
+                conflict_entity = insight_found.get("conflict_entity") or (conflict_info.get("entity") if conflict_info else None)
+                new_fact["has_conflict"] = True
+                new_fact["conflict_entity"] = conflict_entity
+                new_fact["conflict_status"] = "pending_resolution"
+                
+                # Apply safety default: if this is a preference and conflicts with health, suppress it
+                try:
+                    from utils.fact_conflict_resolver import is_preference_category
+                    if is_preference_category(insight_found["category"]):
+                        new_fact["is_active"] = False  # Suppress preference until resolved
+                        new_fact["suppressed_reason"] = "health_restriction"
+                except ImportError:
+                    pass
+            
+            learned_facts.append(new_fact)
             await db.pets.update_one(
                 {"id": pet_id},
                 {"$set": {"learned_facts": learned_facts}}
             )
+            
+            # Return with conflict warning if applicable
+            if has_conflict:
+                conflict_entity = new_fact.get("conflict_entity", "this item")
+                return {
+                    "success": True,
+                    "insight_id": insight_id,
+                    "action": action,
+                    "message": f"Insight added but has a conflict with existing health data for '{conflict_entity}'",
+                    "has_conflict": True,
+                    "conflict_entity": conflict_entity,
+                    "safety_note": f"Until you resolve this, '{conflict_entity}' will be treated as restricted for safety."
+                }
         
         return {
             "success": True,
