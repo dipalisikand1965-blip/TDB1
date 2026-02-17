@@ -27,6 +27,7 @@ export { default as useProactiveAlerts } from './useProactiveAlerts';
 export { default as useLayerNavigation } from './useLayerNavigation';
 export { default as useChatContinuity } from './useChatContinuity';
 export { default as useDraft } from './useDraft';
+export { default as useIconState, ICON_STATE, TAB_IDS } from './useIconState';
 export { 
   default as useChat,
   // Detection helpers
