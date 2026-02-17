@@ -175,6 +175,38 @@ const useIconState = ({
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
+   * Calculate MOJO (Pet Profile) icon state
+   * OFF: Never (pet always exists when in OS)
+   * ON: Pet profile exists, soul score >= 50%
+   * PULSE: Soul score < 50% (incomplete profile) OR new insights discovered OR pending suggestions
+   */
+  const calculateMojoState = useCallback(() => {
+    const { 
+      soulScore = 0, 
+      hasIncompleteFields = false, 
+      pendingSuggestions = [], 
+      newInsights = false 
+    } = mojoData;
+    
+    // MOJO is never OFF - if pet exists, it's at least ON
+    // PULSE conditions:
+    // 1. Soul score < 50% (encouraging profile completion)
+    // 2. Has incomplete critical fields
+    // 3. New insights discovered from conversation
+    // 4. Pending suggestions to enhance profile
+    
+    const needsAttention = soulScore < 50 || hasIncompleteFields || newInsights;
+    const hasPendingSuggestions = pendingSuggestions.length > 0;
+    
+    if (needsAttention || hasPendingSuggestions) {
+      const count = pendingSuggestions.length || (soulScore < 50 ? 1 : 0);
+      return { state: ICON_STATE.PULSE, count };
+    }
+    
+    return { state: ICON_STATE.ON, count: 0 };
+  }, [mojoData]);
+
+  /**
    * Calculate TODAY icon state
    * OFF: 0 urgent + 0 due + 0 watchlist for active pet
    * ON: Any of urgent/due/watchlist exists
