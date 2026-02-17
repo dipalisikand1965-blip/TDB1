@@ -276,12 +276,13 @@ async def create_or_attach_service_ticket(
     
     if action == "created":
         # Insert new ticket into BOTH collections for compatibility
-        await db.tickets.insert_one({**ticket_doc, "_id": None})
+        # Let MongoDB generate _id automatically
+        ticket_doc_copy = {k: v for k, v in ticket_doc.items() if k != "_id"}
+        await db.tickets.insert_one(ticket_doc_copy.copy())
         
         # Also insert into mira_tickets for services tab visibility
         await db.mira_tickets.insert_one({
-            **ticket_doc,
-            "_id": None,
+            **ticket_doc_copy,
             "user_email": member_email,
             "customer_email": member_email,
         })
