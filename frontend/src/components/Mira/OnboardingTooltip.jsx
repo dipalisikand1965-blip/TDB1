@@ -89,8 +89,8 @@ const OnboardingTooltip = ({
     <div 
       className="fixed z-[9999] animate-in fade-in slide-in-from-top-2 duration-300"
       style={{
-        top: position.top,
-        left: position.left,
+        top: Math.max(position.top, 80), // Ensure at least 80px from top
+        left: Math.max(position.left, 180), // Ensure at least 180px from left edge
         transform: 'translateX(-50%)'
       }}
       data-testid="onboarding-tooltip"
