@@ -11857,11 +11857,11 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
     # ═══════════════════════════════════════════════════════════════════════════
     
     if is_search_request:
-        # Build pet-anchored acknowledgment
+        # Build pet-anchored acknowledgment (SOULFUL VOICE - NO "That sounds lovely")
         if pet_traits_text:
-            pet_anchor = f"That sounds lovely — an outing with {pet_name}.\n\nBased on what I know about {pronoun_possessive.lower() if pronoun_possessive != 'their' else 'them'} — {pet_traits_text} — I'll look for spaces that suit {pronoun_possessive} comfort."
+            pet_anchor = f"Looking out for {pet_name}'s wellbeing – I love that.\n\nSince I know {pronoun_possessive.lower() if pronoun_possessive != 'their' else 'them'} — {pet_traits_text} — I'll find places that suit {pronoun_possessive} comfort."
         else:
-            pet_anchor = f"That sounds lovely — an outing with {pet_name}."
+            pet_anchor = f"{pet_name}'s lucky to have someone thinking ahead like this."
         
         # Determine what questions to ask (MAX 2, only what's missing)
         missing_info = []
