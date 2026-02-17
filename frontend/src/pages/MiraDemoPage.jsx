@@ -103,6 +103,7 @@ import {
 import { 
   useVoice, usePet, useVault, useSession, DEMO_PET, ALL_DEMO_PETS,
   useChatSubmit, useConversation, useMiraUI, useProactiveAlerts,
+  useLayerNavigation,
   detectMiraMode, preprocessInput, detectStepId, extractCityFromQuery,
   detectContextTopic, hasTrainingIntent, extractTrainingTopic,
   shouldFetchTravelData, isMeaningfulTopic, isCelebrationQuery, MEANINGFUL_TOPICS,
@@ -115,6 +116,9 @@ import {
   fetchTrainingVideos, fetchTravelHotels, fetchTravelAttractions,
   saveConversationMemory, buildMemoryPrefix
 } from '../hooks/mira';
+
+// Toast for commit action confirmations
+import { useToast } from '../hooks/use-toast';
 
 // Import the production-style CSS (matches thedoggycompany.in)
 import '../styles/mira-prod.css';
