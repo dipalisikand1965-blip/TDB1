@@ -107,25 +107,102 @@ SEVERITY_LEVELS = [
 
 @router.post("/request")
 async def create_emergency_request(request_data: dict):
-    """Create a new emergency request with high-priority Service Desk integration"""
+    """
+    Create a new emergency request via UNIFORM SERVICE FLOW.
+    MIGRATED to handoff_to_spine() per Bible Section 12.0.
+    """
     db = get_db()
     
     request_id = f"EMRG-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
     
     emergency_type = request_data.get("emergency_type", "medical_emergency")
     type_info = EMERGENCY_TYPES.get(emergency_type, {})
+    pet_name = request_data.get("pet_name", "Pet")
+    user_name = request_data.get("user_name", "Customer")
+    severity = request_data.get("severity", "urgent")
+    description = request_data.get("description", "")
+    location = request_data.get("location", "")
     
+    # Build intent
+    intent = f"🚨 EMERGENCY: {type_info.get('name', emergency_type)} - {pet_name}. {description[:100]}"
+    
+    # Map urgency from severity
+    urgency = "emergency" if severity in ["critical", "urgent"] else "high"
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # HANDOFF TO SPINE - Single canonical ticket creation (HIGH PRIORITY)
+    # ═══════════════════════════════════════════════════════════════════════════
+    spine_result = await handoff_to_spine(
+        db=db,
+        route_name="emergency_routes.py",
+        endpoint="/emergency/request",
+        pillar="emergency",
+        category=emergency_type,
+        intent=intent,
+        user={
+            "email": request_data.get("user_email"),
+            "name": user_name,
+            "phone": request_data.get("user_phone")
+        },
+        pet={
+            "id": request_data.get("pet_id"),
+            "name": pet_name,
+            "breed": request_data.get("pet_breed")
+        },
+        payload={
+            "request_id": request_id,
+            "emergency_type": emergency_type,
+            "severity": severity,
+            "location": location,
+            "city": request_data.get("city", ""),
+            "coordinates": request_data.get("coordinates"),
+            "landmark": request_data.get("landmark", ""),
+            "symptoms": request_data.get("symptoms", []),
+            "situation_details": request_data.get("situation_details", ""),
+            "immediate_needs": request_data.get("immediate_needs", []),
+            "is_emergency": True,
+            # Lost Pet specific
+            "last_seen_location": request_data.get("last_seen_location"),
+            "last_seen_time": request_data.get("last_seen_time"),
+            "distinctive_features": request_data.get("distinctive_features", ""),
+            "reward_offered": request_data.get("reward_offered", False),
+            "reward_amount": request_data.get("reward_amount"),
+            # Found Pet specific
+            "found_location": request_data.get("found_location"),
+            "found_time": request_data.get("found_time"),
+            "pet_condition": request_data.get("pet_condition"),
+            "found_by_name": request_data.get("found_by_name"),
+            "found_by_phone": request_data.get("found_by_phone")
+        },
+        channel="web",
+        urgency=urgency,
+        created_by="member",
+        notify_admin=True,
+        notify_member=True,
+        tags=["emergency", emergency_type, "urgent", severity]
+    )
+    
+    if not spine_result.get("success"):
+        logger.error(f"[EMERGENCY] Spine handoff failed: {spine_result.get('error')}")
+        raise HTTPException(status_code=500, detail="Failed to create emergency ticket")
+    
+    canonical_ticket_id = spine_result["ticket_id"]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SAVE TO emergency_requests collection (pillar-specific record)
+    # ═══════════════════════════════════════════════════════════════════════════
     emergency_request = {
         "id": request_id,
         "request_id": request_id,
+        "ticket_id": canonical_ticket_id,  # Link to canonical ticket
         "emergency_type": emergency_type,
-        "status": "active",  # active, responding, resolved, closed
+        "status": "active",
         "priority": type_info.get("priority", "high"),
-        "severity": request_data.get("severity", "urgent"),
+        "severity": severity,
         
         # Pet Details
         "pet_id": request_data.get("pet_id"),
-        "pet_name": request_data.get("pet_name"),
+        "pet_name": pet_name,
         "pet_breed": request_data.get("pet_breed"),
         "pet_age": request_data.get("pet_age"),
         "pet_species": request_data.get("pet_species", "dog"),
@@ -135,18 +212,18 @@ async def create_emergency_request(request_data: dict):
         
         # User Details
         "user_id": request_data.get("user_id"),
-        "user_name": request_data.get("user_name"),
+        "user_name": user_name,
         "user_email": request_data.get("user_email"),
         "user_phone": request_data.get("user_phone"),
         
-        # Location Details (critical for emergencies)
-        "location": request_data.get("location", ""),
+        # Location Details
+        "location": location,
         "city": request_data.get("city", ""),
-        "coordinates": request_data.get("coordinates"),  # {lat, lng}
+        "coordinates": request_data.get("coordinates"),
         "landmark": request_data.get("landmark", ""),
         
         # Emergency Details
-        "description": request_data.get("description", ""),
+        "description": description,
         "symptoms": request_data.get("symptoms", []),
         "situation_details": request_data.get("situation_details", ""),
         "immediate_needs": request_data.get("immediate_needs", []),
@@ -183,74 +260,6 @@ async def create_emergency_request(request_data: dict):
     
     await db.emergency_requests.insert_one({k: v for k, v in emergency_request.items() if k != "_id"})
     
-    # Create HIGH PRIORITY Service Desk Ticket
-    ticket_priority = "urgent" if emergency_request["severity"] in ["critical", "urgent"] else "high"
-    
-    ticket = {
-        "id": f"TKT-{uuid.uuid4().hex[:8].upper()}",
-        "source": "emergency_pillar",
-        "source_id": request_id,
-        "category": "emergency",
-        "subcategory": emergency_type,
-        "subject": f"🚨 EMERGENCY: {type_info.get('name', emergency_type)} - {emergency_request['pet_name']}",
-        "description": f"URGENT: {emergency_request['description']}\n\nLocation: {emergency_request['location']}\nPhone: {emergency_request['user_phone']}\n\nPet: {emergency_request['pet_name']} ({emergency_request['pet_breed']})",
-        "status": "open",
-        "priority": ticket_priority,
-        "urgency": "critical" if emergency_request["severity"] == "critical" else "high",
-        "customer_name": emergency_request["user_name"],
-        "customer_email": emergency_request["user_email"],
-        "customer_phone": emergency_request["user_phone"],
-        "pet_name": emergency_request["pet_name"],
-        "pet_id": emergency_request["pet_id"],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
-        "tags": ["emergency", emergency_type, "urgent", emergency_request["severity"]],
-        "pillar": "emergency",
-        "sla_deadline": datetime.now(timezone.utc).isoformat(),  # Immediate SLA
-        "is_emergency": True
-    }
-    
-    await db.tickets.insert_one({k: v for k, v in ticket.items() if k != "_id"})
-    
-    # Add to Unified Inbox with CRITICAL flag
-    inbox_item = {
-        "id": f"INB-{uuid.uuid4().hex[:8].upper()}",
-        "type": "emergency_request",
-        "source": "emergency_pillar",
-        "reference_id": request_id,
-        "ticket_id": ticket["id"],
-        "title": f"🚨 EMERGENCY: {type_info.get('name', emergency_type)}",
-        "preview": f"{emergency_request['pet_name']} - {emergency_request['description'][:80]}...",
-        "customer_name": emergency_request["user_name"],
-        "customer_email": emergency_request["user_email"],
-        "customer_phone": emergency_request["user_phone"],
-        "pet_name": emergency_request["pet_name"],
-        "status": "unread",
-        "priority": "critical",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "pillar": "emergency",
-        "is_emergency": True
-    }
-    
-    await db.unified_inbox.insert_one({k: v for k, v in inbox_item.items() if k != "_id"})
-    
-    # Create CRITICAL admin notification
-    notification = {
-        "id": f"NOTIF-{uuid.uuid4().hex[:8].upper()}",
-        "type": "emergency_alert",
-        "title": f"🚨 EMERGENCY: {type_info.get('name', emergency_type)}",
-        "message": f"URGENT: {emergency_request['user_name']} needs help with {emergency_request['pet_name']}. {emergency_request['description'][:100]}",
-        "category": "emergency",
-        "priority": "critical",
-        "related_id": request_id,
-        "link_to": f"/admin?tab=emergency&request={request_id}",
-        "read": False,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "is_emergency": True,
-        "sound_alert": True
-    }
-    await db.admin_notifications.insert_one({k: v for k, v in notification.items() if k != "_id"})
-    
     # Update Pet Soul with emergency info
     if emergency_request["pet_id"]:
         await db.pets.update_one(
@@ -259,8 +268,9 @@ async def create_emergency_request(request_data: dict):
                 "$push": {
                     "soul.emergencies": {
                         "emergency_id": request_id,
+                        "ticket_id": canonical_ticket_id,
                         "type": emergency_type,
-                        "severity": emergency_request["severity"],
+                        "severity": severity,
                         "date": datetime.now(timezone.utc).isoformat(),
                         "resolved": False
                     }
@@ -269,14 +279,15 @@ async def create_emergency_request(request_data: dict):
             }
         )
     
-    logger.info(f"🚨 EMERGENCY request {request_id} created - Type: {emergency_type}, Severity: {emergency_request['severity']}")
+    logger.info(f"[SPINE-MIGRATED] emergency_routes.py:/emergency/request → {canonical_ticket_id} | pillar=emergency category={emergency_type} severity={severity}")
     
     return {
         "message": "Emergency request submitted. Our team is being notified immediately.",
         "request_id": request_id,
-        "ticket_id": ticket["id"],
-        "priority": ticket_priority,
-        "expected_response": type_info.get("sla_hours", 1)
+        "ticket_id": canonical_ticket_id,
+        "priority": urgency,
+        "expected_response": type_info.get("sla_hours", 1),
+        "deep_link": spine_result.get("deep_link")
     }
 
 
