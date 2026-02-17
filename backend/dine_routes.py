@@ -361,23 +361,17 @@ async def create_reservation(reservation: ReservationRequest):
     if not reservation.pet_name and pet_names:
         reservation.pet_name = pet_names[0]
     
-    # ==================== STEP 2: SERVICE DESK TICKET via UNIFORM SPINE (CANONICAL) ====================
-    description = f"Dine Reservation at {restaurant.get('name')} on {reservation.date} at {reservation.time}. {reservation.guests} guests, {pet_count} pets. Customer: {reservation.name} ({reservation.phone})"
-    
+    # ==================== SERVICE DESK TICKET via SPINE HELPER ====================
     try:
-        spine_result = await create_or_attach_service_ticket(
+        spine_result = await handoff_to_spine(
             db=db,
-            intent=f"Dine reservation at {restaurant.get('name')} on {reservation.date} at {reservation.time}",
-            intent_type="request",
-            member_email=reservation.email,
-            member_name=reservation.name,
-            pet_ids=[],
-            pet_names=pet_names if pet_names else ([reservation.pet_name] if reservation.pet_name else []),
-            pillar=Pillar.DINE.value,
+            route_name="dine_routes.py",
+            endpoint="/dine/reservations",
+            pillar="dine",
             category="reservation",
-            source_route="dine_routes.py",
-            channel=Channel.WEB.value,
-            created_by=CreatedBy.MEMBER.value,
+            intent=f"Dine reservation at {restaurant.get('name')} on {reservation.date} at {reservation.time}",
+            user={"email": reservation.email, "name": reservation.name, "phone": reservation.phone},
+            pet={"name": reservation.pet_name, "breed": reservation.pet_breed},
             payload={
                 "reservation_id": reservation_id,
                 "restaurant_id": reservation.restaurant_id,
@@ -388,20 +382,17 @@ async def create_reservation(reservation: ReservationRequest):
                 "time": reservation.time,
                 "guests": reservation.guests,
                 "pets_count": pet_count,
-                "pet_name": reservation.pet_name,
-                "pet_breed": reservation.pet_breed,
-                "phone": reservation.phone,
                 "special_requests": getattr(reservation, 'special_requests', None)
             },
-            urgency="normal",
-            notify_admin=True,
-            notify_member=True
+            channel="web"
         )
         ticket_id = spine_result.get("ticket_id")
-        logger.info(f"[UNIFORM SPINE] Created canonical ticket {ticket_id} for dine reservation {reservation_id}")
+        logger.info(f"[SPINE-HELPER] Created ticket {ticket_id} for dine reservation {reservation_id}")
     except Exception as e:
-        logger.error(f"[UNIFORM SPINE] Failed to create ticket for dine reservation: {e}")
+        logger.error(f"[SPINE-HELPER] Failed to create ticket for dine reservation: {e}")
         ticket_id = f"TKT-ERR-{uuid.uuid4().hex[:8].upper()}"  # Fallback - should not happen
+    
+    description = f"Dine Reservation at {restaurant.get('name')} on {reservation.date} at {reservation.time}. {reservation.guests} guests, {pet_count} pets. Customer: {reservation.name} ({reservation.phone})"
     
     reservation_data = reservation.model_dump()
     reservation_data["pets_count"] = pet_count
