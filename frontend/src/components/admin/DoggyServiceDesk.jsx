@@ -951,12 +951,15 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     setPetSoulPrompts(null);
     
     try {
-      // Try to fetch pet profile
+      let petFound = false;
+      
+      // Try to fetch pet profile by pet_info.id first
       if (ticket.pet_info?.id) {
         const petRes = await fetch(`${getApiUrl()}/api/pets/${ticket.pet_info.id}`, { headers: authHeaders });
         if (petRes.ok) {
           const petData = await petRes.json();
           setPetProfile(petData.pet || petData);
+          petFound = true;
         }
       }
       
@@ -980,6 +983,23 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             } catch (e) {
               console.debug('Could not fetch orders:', e);
             }
+          }
+        }
+        
+        // FALLBACK: If no pet found yet, try to get member's pets by email
+        if (!petFound) {
+          try {
+            const memberPetsRes = await fetch(`${getApiUrl()}/api/admin/members/${encodeURIComponent(ticket.member.email)}/pets`, { headers: authHeaders });
+            if (memberPetsRes.ok) {
+              const petsData = await memberPetsRes.json();
+              // Use the first pet (primary pet) if found
+              if (petsData.pets?.length > 0) {
+                setPetProfile(petsData.pets[0]);
+                console.log('Pet Profile loaded via member email fallback:', petsData.pets[0]?.name);
+              }
+            }
+          } catch (e) {
+            console.debug('Could not fetch pets by member email:', e);
           }
         }
       }
