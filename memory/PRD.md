@@ -124,7 +124,15 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 
 ## Change Log
 
-### Feb 17, 2026
+### Feb 17, 2026 (Phase 3 Completion)
+- Phase 3 Icon State System COMPLETE
+- Added MOJO tab to icon state system (PULSE when soul < 50%)
+- Fixed soulKnowledge initialization order bug
+- Updated PET_OS_BEHAVIOR_BIBLE.md with MOJO icon specifications
+- Console confirms state transitions: demo-pet(PULSE) → Lola(ON)
+- Pet switch correctly resets and recalculates all icon states
+
+### Feb 17, 2026 (Earlier)
 - Phase 1 Layer Manager implemented and tested
 - Phase 2 Chat Continuity + Draft Persistence implemented and tested
 - Phase 3 Icon State System started (bug pending)
