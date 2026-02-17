@@ -209,6 +209,29 @@ async def create_or_attach_service_ticket(
         action = "created"
     
     # ═══════════════════════════════════════════════════════════════════════════
+    # STEP 1.5: Derive member.id and parent_id from member.email
+    # This ensures consistent ownership across icon-state and services/inbox
+    # ═══════════════════════════════════════════════════════════════════════════
+    
+    derived_member_id = member_id  # Use provided if available
+    derived_parent_id = None       # Legacy field for back-compat
+    
+    if member_email and not derived_member_id:
+        # Lookup user by email to get their ID
+        user_record = await db.users.find_one(
+            {"email": member_email},
+            {"_id": 0, "id": 1, "user_id": 1}
+        )
+        if user_record:
+            derived_member_id = user_record.get("id") or user_record.get("user_id")
+            derived_parent_id = derived_member_id  # Legacy parent_id = member.id
+            logger.debug(f"[TICKET-SPINE] Derived member.id={derived_member_id} from email={member_email}")
+    
+    # If member_id was provided but parent_id wasn't derived, use member_id
+    if derived_member_id and not derived_parent_id:
+        derived_parent_id = derived_member_id
+    
+    # ═══════════════════════════════════════════════════════════════════════════
     # STEP 2: Build ticket document
     # ═══════════════════════════════════════════════════════════════════════════
     
@@ -223,12 +246,15 @@ async def create_or_attach_service_ticket(
         "intent": intent,
         "intent_type": intent_type,
         
-        # === MEMBER ===
+        # === MEMBER (Canonical ownership) ===
         "member": {
             "email": member_email,
             "name": member_name,
-            "id": member_id,
+            "id": derived_member_id,  # Derived from email lookup
         },
+        
+        # === LEGACY BACK-COMPAT ===
+        "parent_id": derived_parent_id,  # For services/inbox backward compatibility
         
         # === PET ===
         "pet_ids": pet_ids or [],
