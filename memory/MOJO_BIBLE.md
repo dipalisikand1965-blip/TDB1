@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-spine.preview.emergentagent.com
+https://mira-concierge-ai.preview.emergentagent.com
 ```
 
 ---

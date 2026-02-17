@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://mira-spine.preview.emergentagent.com
+https://mira-concierge-ai.preview.emergentagent.com
 
 ---
 

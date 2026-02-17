@@ -4,71 +4,66 @@ The user's vision is to create a Golden Standard Communication System, centered 
 **PRODUCT REQUIREMENTS:**
 1.  **Uniform Service Flow:** Enforce a single ticket backbone for all service requests.
 2.  **Canonical Ticket IDs:** All tickets must use the  format.
-3.  **Picks Fallback Logic:** If Mira cannot find a matching product, the Picks panel must fall back to a Concierge Arranges flow, creating a service ticket via the ticket spine.
-4.  **Conversational Rules Contract:** Implement a deterministic  from the backend to drive UI for quick replies, Google Places, and YouTube integrations, ensuring UI never infers logic from free text.
+3.  **Picks Fallback Logic:** If Mira cannot find a matching product, the Picks panel must fall back to a Concierge Arranges flow.
+4.  **Conversational Rules Contract:** Implement a deterministic  from the backend to drive UI for quick replies and integrations.
 5.  **Explicit Location Consent:** For near me type queries, the system must explicitly ask for user consent before triggering browser geolocation.
 6.  **Route Migration:** All ticket-creating endpoints must be migrated to a centralized helper to enforce the Uniform Service Flow.
+7.  **Consistent Ownership:** Ticket ownership must be derived from a unified identity model () across all APIs and UI components to ensure data consistency.
 
 **User's preferred language**: English
 
 **what currently exists?**
 The application is a functional React/FastAPI/MongoDB stack.
-- The Picks Fallback Logic is fully implemented and verified, governed by a deterministic  from the backend.
-- **Phase 5 Conversational Rules Contract is implemented and verified.** A  is returned from the main chat API to deterministically render quick replies, Google Places cards, and YouTube video cards.
-- An explicit location consent gate is implemented, which asks the user for permission before using their location for near me searches.
-- **The P0 task to migrate all intake routes is in progress.** A centralized helper, , has been created in . Several key routes (, , , ) have already been migrated to use this helper.
+- **P0 Route Migration is COMPLETE.** All 10 ticket-creating endpoints across 7 files (, , , , , , ) have been migrated to use the centralized  helper, enforcing canonical  ticket IDs.
+- **The  feature flag is .** UI badges for SERVICES and TODAY now show live, accurate counts derived from the canonical ticket spine.
+- **The Ownership Contract is fixed.** A critical bug causing a count mismatch between the API (11 tickets) and the UI (5 tickets) has been resolved. The  helper now populates  and a legacy , and the  endpoint uses a unified query ( OR  OR ) to ensure consistency.
+- **A Clarify Before Places bug has been fixed.** Legacy code in  that was bypassing the  has been guarded, ensuring the system correctly asks for location clarification before making a Places API call.
 
 **Last working item**:
--   **Last item agent was working:** The agent was in the middle of the P0 task to migrate all remaining ticket intake routes to the new  helper. It had just started analyzing  before being asked to provide a summary, pausing the migration work.
--   **Status:** IN PROGRESS
--   **Agent Testing Done:** Y (for the routes migrated so far, like  and )
--   **Which testing method agent to use?** Manual testing by curl. The agent should continue testing each migrated endpoint individually by sending a request and verifying that a canonical  ticket is created and returned in the response.
+-   **Last item agent was working:** The agent was executing a multi-step user-provided QA script to verify the end-to-end conversational flow. It fixed a critical bug in the Clarify before Places logic and successfully verified the first step of the script.
+-   **Status:** USER VERIFICATION PENDING
+-   **Agent Testing Done:** Y (for the Clarify before Places part of the QA script)
+-   **Which testing method agent to use?** Screenshot tool to complete the remaining QA script and provide the requested Proof Pack.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
-There are no pending bugs. The primary focus is the ongoing migration task.
+-   **Issue 1: WhatsApp Webhook Idempotency (P2)**
+    -   **Description:** Webhook retries from providers like Gupshup or Meta can create duplicate tickets because the current idempotency check is based on an open conversation for a phone number, not a unique message ID.
+    -   **Next debug checklist:** Modify the  logic in  to store and check for  before creating a new ticket.
+    -   **Why fix this issue and what will be achieved with the fix?** To prevent data duplication and ensure system robustness against common webhook retry patterns.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Backend (simulating webhook calls).
 
 **In progress Task List**:
--   **Task 1: P0 - Complete migration of all remaining intake routes to the  helper. (P0)**
-    -   **Where to resume:** The agent must modify  to use the  helper.
-    -   **What will be achieved with this?** This will enforce the Uniform Service Flow across the entire application, ensuring all tickets are canonical  tickets created via the central spine. This is a critical blocker for enabling the  feature flag.
+-   **Task 1: P0 - Complete QA Proof Pack for Conversational Flow**
+    -   **Where to resume:** The agent has fixed and verified the Clarify flow. It must now continue the user's script to test the Places, Concierge, and other flows.
+    -   **What will be achieved with this?** Deliver a full Proof Pack as requested by the user, including screenshots and a screen recording, to validate that the , , and ticket spine are working together correctly.
     -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Backend. Each migrated route needs to be tested with .
+    -   **Should Test frontend/backend/both after fix?** Frontend (using the screenshot tool).
     -   **Blocked on something:** No.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
-*   **P0: Continue and complete the migration** of the following routes in order:
-    1.  
-    2.  
-    3.  
-    4.  
-    5.  
-    6.  
-    7.   (to be migrated last)
-*   **P1: Enable the  feature flag** after all routes are migrated and verified.
-*   **P2: Run a final smoke sweep** (1 request per pillar) to verify E2E ticket creation and UI badge updates.
+*   **P1: Legacy Ticket Migration:** Begin migrating the 134+ legacy tickets (, , etc.) to the canonical  format. This is now unblocked.
+*   **P2: Refine User-Facing Legacy Warning:** Change the Legacy Data Detected label to a more user-friendly term like Syncing history in the UI.
 
 **Future Tasks:**
-*   Migrate legacy ticket data to the new canonical format.
 *   Refactor the monolithic  and .
 *   Redesign the Onboarding Page.
 *   Enhance the Picks Engine.
 *   Gate Mira OS for Paid Members.
 
 **Completed work in this session**
--   **Verified Picks Fallback Logic**: Completed the user's QA script, confirming the deterministic  works as specified.
--   **Implemented Phase 5: Conversational Rules Contract**:
-    -   **Backend**: Created a  in  to dictate chat UI mode (, , , , , ) and integrated Google Places and YouTube API calls.
-    -   **Frontend**: Created new components (, , , ) to render the UI deterministically based on the backend contract.
-    -   **Location Consent Gate**: Implemented and verified an explicit consent flow for near me queries.
--   **Started P0 Route Migration**:
-    -   Created a centralized migration helper:  in .
-    -   Successfully migrated endpoints in , , , and .
--   **Documentation**: Updated  with the new Conversational Rules Contract rules.
+-   **P0 Route Migration (COMPLETE):** Successfully migrated all 10 remaining ticket intake routes to the  helper, standardizing ticket creation.
+-   **Enabled :** The UI now reflects real-time data from the canonical ticket spine.
+-   **Resolved Ownership Contract Mismatch (CRITICAL FIX):**
+    -   Modified  to populate  and legacy  on new tickets.
+    -   Updated  to use a unified ownership query ( OR  OR ), making the Services inbox consistent with API counts.
+-   **Fixed Clarify Before Places Bug:** Added a guard in  to prevent legacy Places API calls from overriding the  when the mode is .
 
 **Earlier issues found/mentioned but not fixed**
--   The user's production domain  is reportedly inaccessible due to an external DNS issue. This is outside the agent's scope.
+-   The user's production domain  is reportedly inaccessible due to an external DNS issue (out of scope).
 
 **Known issue recurrence from previous fork**
 -   None.
@@ -76,74 +71,72 @@ There are no pending bugs. The primary focus is the ongoing migration task.
 **Code Architecture**
 -   **Stack:** React (Frontend), FastAPI (Backend), MongoDB (Database).
 -   **Key Architectural Principles:**
-    -   **Deterministic Contracts:** Both  and  are sent from the backend to dictate frontend rendering, eliminating UI-side logic.
-    -   **Uniform Service Spine:** All ticket creation logic is being centralized into a single helper () that generates canonical  IDs. This migration is currently in progress.
+    -   **Deterministic Contracts:** Backend  and  drive frontend rendering.
+    -   **Uniform Service Spine:** All ticket creation is now centralized in .
+    -   **Unified Ownership Model:** Ticket ownership is consistently determined by  across the application.
 
 **Key Technical Concepts**
--   **API-Driven UI State:** The backend fully controls UI rendering modes through explicit JSON contracts.
--   **Centralized Ticket Helper:** A single helper function () is being used to standardize ticket creation across all backend routes.
--   **Intent Routing:** The  logic uses a router to determine the user's intent (, , , etc.) and sets the appropriate  for the frontend.
+-   **API-Driven UI State:** The backend fully controls UI rendering modes via explicit JSON contracts.
+-   **Centralized Ticket Helper:** A single function, , standardizes all ticket creation.
+-   **Unified Identity Query:** Using an  query in MongoDB to match tickets by , , or legacy .
 
 **key DB schema**
--   No changes were made to the database schema in this session.
+-   ** & :** Now consistently populated with  and  (for backward compatibility) in addition to  on all new tickets created via the spine.
 
 **All files of reference**
--   **Critical Doc:** 
--   **New Core Backend Logic:**
-    -   
-    -   
--   **Migrated/Modified Backend Routes:**
-    -   
-    -   
-    -   
-    -   
-    -   
--   **New Frontend Components:**
+-   **Core Logic Modified:**
+    -   : Updated to populate  and .
+    -   : Updated inbox query to use unified ownership model.
+    -   : Added guard to prevent legacy Places logic from running in  mode.
+-   **Routes Migrated (Completed):**
     -   
     -   
     -   
     -   
--   **Modified Frontend Logic:**
     -   
     -   
+    -   
+-   **Key Frontend File:**
+    -   : Verified  is .
 
 **Areas that need refactoring**:
--   The primary refactoring task is the ongoing migration of all ticket-creating routes.
--   Future targets for refactoring remain  and .
+-    remains a large, monolithic file that could be broken down.
+-    is also a candidate for future refactoring.
 
 **key api endpoints**
--   : The main chat endpoint, which now returns both  and .
--   Various ticket creation endpoints across the application are being refactored to use the new  helper, which centralizes calls to the ticket spine.
+-   : Main chat endpoint.
+-   : Services panel endpoint, now using the unified ownership query.
+-   : Endpoint providing badge counts for the UI.
 
 **Critical Info for New Agent**
--   Your immediate and only priority is to **complete the P0 task of migrating all remaining service intake routes** to the  helper.
--   Follow the user-specified order, starting with .
--   For **each** migrated file, you MUST provide a proof block to the user containing: the  request used, the returned  ticket_id, the pillar/category, and confirmation that no  logs were triggered.
--   **DO NOT** enable the  feature flag until ALL routes are migrated and you have received user approval.
--   Use the existing  helper in .
+-   Your immediate priority is to **complete the user's QA Proof Pack**. You have already fixed the first part of the script (Clarify before Places). You must now continue the flow to test Places and Concierge modes.
+-   Deliver the full proof pack as requested: screenshots of the chat UI with the debug drawer open (showing the contract), and a short screen recording of a quick-reply chip being tapped.
+-   Do not work on any other tasks (legacy migration, WhatsApp idempotency) until this QA script is fully completed and verified by the user.
+-   The core architectural migrations and fixes are done. This task is about E2E verification of the live system.
 
 **documents and test reports created in this job**
--    was updated.
+-   None.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Proceed to complete the remaining route migrations. Provide proof for each migrated file. Do not touch  yet. (STATUS: In Progress)
-2.  **User**: Specifies the non-negotiable approach for migration: create a helper first, then migrate ALL routes. Provides acceptance test criteria. (STATUS: Completed, migration in progress)
-3.  **User**: Confirms the location consent gate is done. Tells the agent to start the P0 route migration. (STATUS: Completed, migration started)
-4.  **User**: Provides strict, non-negotiable rules for the location permission consent gate. (STATUS: Completed)
-5.  **User**: Approves Phase 5 implementation plan and provides specific integration choices and deterministic rules. (STATUS: Completed)
-6.  **User**: Asks agent to proceed with Phase 5 Conversational Rules Contract. (STATUS: Completed)
-7.  **User**: Asks agent to start QA script and provide a proof pack. (STATUS: Completed, QA is done)
-8.  **User**: Provides detailed 10-point QA script for Picks contract. (STATUS: Completed)
-9.  **User**: Provides final, non-negotiable frontend render rules for Picks contract. (STATUS: Completed)
-10. **User**: Gives final approval on Picks implementation and provides QA script. (STATUS: Completed)
+1.  **User**: Confirms the Clarify before Places bug fix and asks the agent to proceed with the full QA script. (STATUS: In Progress)
+2.  **User**: Instructs the agent to fix the UI/API count mismatch by unifying the ticket ownership model. (STATUS: Completed)
+3.  **User**: Identifies the count mismatch (Services 5 vs API 11) and asks for an investigation. (STATUS: Completed)
+4.  **User**: Praises the progress and notes that the OS is feeling real. (STATUS: Acknowledged)
+5.  **User**: Reports findings from the E2E test, highlighting gaps like the lack of location consent. (STATUS: Acknowledged)
+6.  **User**: Asks for a full E2E run-through of a conversational flow, from birthday planning to checking Picks/Learn. (STATUS: Completed)
+7.  **User**: Approves enabling  and asks for a screenshot to verify the UI state. (STATUS: Completed)
+8.  **User**: Provides final approval for the P0 route migration and asks for real trigger proofs for  and WhatsApp webhooks. (STATUS: Completed)
+9.  **User**: Asks the agent to resume the migration with , providing strict inventory first and proof block per endpoint rules. (STATUS: Completed)
+10. **User**: Approves the agent's plan to continue with the route migration. (STATUS: Completed)
 
 **Project Health Check:**
 -   **Broken:** None.
--   **Mocked:** The  feature flag remains . This is intentional and is blocked by the completion of the P0 route migration task.
+-   **Mocked:** None. The  feature is now live.
 
 **3rd Party Integrations**
 -   Google Places — uses Emergent-managed integration
 -   YouTube — uses Emergent-managed integration
+-   WhatsApp (Gupshup, Meta)
 -   Existing: Resend, Shopify, ElevenLabs, Firebase.
 
 **Testing status**
@@ -159,4 +152,4 @@ There are no pending bugs. The primary focus is the ongoing migration task.
 -   **Test URL:** 
 
 **What agent forgot to execute**
--   The agent has not forgotten any tasks. It was correctly executing the user's explicit instructions for the P0 migration task before being paused to provide this summary.</analysis>
+-   The agent has not forgotten any tasks. It is in the middle of executing the user's most recent request for a QA proof pack.</analysis>
