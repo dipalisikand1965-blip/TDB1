@@ -23,6 +23,8 @@ import logging
 import uuid
 import os
 
+from utils.ticket_id_generator import generate_ticket_id
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/conversations", tags=["conversations"])
