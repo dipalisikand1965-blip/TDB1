@@ -204,6 +204,14 @@ async def get_services_inbox(
     """
     Get all active tickets for the user, grouped by status.
     This powers the Services inbox view.
+    
+    OWNERSHIP CONTRACT (unified with icon-state):
+    A ticket belongs to this user if ANY of these match:
+    - ticket.member.email == user.email (canonical)
+    - ticket.member.id == user.id (canonical if present)
+    - ticket.parent_id == user.id (legacy back-compat)
+    
+    parent_id must NEVER be the sole gating filter.
     """
     user = await get_user_from_token_services(authorization)
     if not user:
@@ -213,22 +221,72 @@ async def get_services_inbox(
     if db is None:
         return {"success": True, "awaiting_user": [], "active": [], "orders": [], "completed": []}
     
-    parent_id = user.get("id") or user.get("user_id")
+    # Extract user identifiers
+    user_email = user.get("email") or user.get("sub")
+    user_id = user.get("id") or user.get("user_id")
     
-    # Build query
-    query = {"parent_id": parent_id}
+    # ═══════════════════════════════════════════════════════════════════════════
+    # OWNERSHIP CONTRACT: Match by email (primary) OR member.id OR parent_id (legacy)
+    # This ensures new canonical tickets AND legacy tickets both appear
+    # ═══════════════════════════════════════════════════════════════════════════
+    ownership_conditions = []
+    
+    if user_email:
+        ownership_conditions.append({"member.email": user_email})
+    
+    if user_id:
+        ownership_conditions.append({"member.id": user_id})
+        ownership_conditions.append({"parent_id": user_id})  # Legacy back-compat
+    
+    if not ownership_conditions:
+        # Fallback - shouldn't happen but be safe
+        return {"success": True, "awaiting_user": [], "active": [], "orders": [], "completed": []}
+    
+    # Build base query with ownership
+    base_query = {"$or": ownership_conditions}
+    
+    # Add pet filter if specified
     if pet_id:
-        query["$or"] = [
-            {"pet_id": pet_id},
-            {"pet_ids": pet_id}
-        ]
+        base_query = {
+            "$and": [
+                base_query,
+                {"$or": [{"pet_id": pet_id}, {"pet_ids": pet_id}]}
+            ]
+        }
     
+    # Add status filter
     if not include_completed:
-        query["status"] = {"$nin": TERMINAL_STATUSES}
+        if "$and" in base_query:
+            base_query["$and"].append({"status": {"$nin": TERMINAL_STATUSES}})
+        else:
+            base_query = {"$and": [base_query, {"status": {"$nin": TERMINAL_STATUSES}}]}
     
-    # Fetch tickets
-    tickets_cursor = db.mira_tickets.find(query, {"_id": 0}).sort("updated_at", -1).limit(limit)
-    tickets = await tickets_cursor.to_list(limit)
+    # Fetch from BOTH collections and merge (union)
+    seen_ticket_ids = set()
+    all_tickets = []
+    
+    # Query mira_tickets first (primary source)
+    mira_cursor = db.mira_tickets.find(base_query, {"_id": 0}).sort("updated_at", -1).limit(limit)
+    mira_tickets = await mira_cursor.to_list(limit)
+    for t in mira_tickets:
+        tid = t.get("ticket_id")
+        if tid and tid not in seen_ticket_ids:
+            seen_ticket_ids.add(tid)
+            all_tickets.append(t)
+    
+    # Query tickets collection for any missed canonical tickets
+    remaining = limit - len(all_tickets)
+    if remaining > 0:
+        tickets_cursor = db.tickets.find(base_query, {"_id": 0}).sort("updated_at", -1).limit(remaining)
+        tickets_list = await tickets_cursor.to_list(remaining)
+        for t in tickets_list:
+            tid = t.get("ticket_id")
+            if tid and tid not in seen_ticket_ids:
+                seen_ticket_ids.add(tid)
+                all_tickets.append(t)
+    
+    # Sort merged results by updated_at
+    all_tickets.sort(key=lambda x: x.get("updated_at", ""), reverse=True)
     
     # Enrich and group
     awaiting_user = []
@@ -236,7 +294,7 @@ async def get_services_inbox(
     orders = []
     completed = []
     
-    for ticket in tickets:
+    for ticket in all_tickets[:limit]:
         enriched = enrich_ticket_for_frontend(ticket)
         status = enriched["status"]
         
@@ -259,7 +317,13 @@ async def get_services_inbox(
             "awaiting_user": len(awaiting_user),
             "active": len(active),
             "orders": len(orders),
-            "total": len(tickets)
+            "total": len(all_tickets[:limit])
+        },
+        "_debug": {
+            "ownership_query": "member.email OR member.id OR parent_id",
+            "user_email": user_email,
+            "user_id": user_id,
+            "sources_queried": ["mira_tickets", "tickets"]
         }
     }
 
