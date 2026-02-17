@@ -2677,20 +2677,6 @@ const MiraDemoPage = () => {
       if (ticketResponse.ok) {
         console.log('[SERVICE_REQUEST] Ticket created:', ticketData.ticket_id);
         
-        // Add confirmation message to chat
-        const confirmationMessage = {
-          type: 'mira',
-          content: `I've submitted your ${service.label} request for ${pet.name}. Your request ID is **${ticketData.ticket_id}**. ${isConciergeLive() ? 'Your pet Concierge® has been notified and will reach out shortly!' : 'Our team will follow up first thing at 6:30 AM.'}`,
-          isConfirmation: true,
-          serviceRequest: {
-            id: ticketData.ticket_id,
-            service: service.label,
-            status: 'submitted'
-          },
-          timestamp: new Date()
-        };
-        setConversationHistory(prev => [...prev, confirmationMessage]);
-        
         // Update soul score for the interaction
         try {
           await fetch(`${API_URL}/api/mira/increment-soul-score`, {
@@ -2710,22 +2696,40 @@ const MiraDemoPage = () => {
           console.log('[SOUL] Could not increment soul score:', err);
         }
         
-        setServiceRequestModal(prev => ({
-          ...prev,
+        // Per Bible Section 1.5: Commit action → return to CHAT_HOME with toast + confirmation
+        // Reset modal state
+        setServiceRequestModal({
+          isOpen: false,
+          service: null,
+          formData: {},
           isSubmitting: false,
-          submitted: true
-        }));
+          submitted: false
+        });
         
-        // Close modal after showing success briefly
-        setTimeout(() => {
-          setServiceRequestModal({
-            isOpen: false,
-            service: null,
-            formData: {},
-            isSubmitting: false,
-            submitted: false
-          });
-        }, 2500);
+        // Return to CHAT_HOME (close all layers)
+        returnToChat();
+        
+        // Show toast (3s per Bible)
+        toast({
+          title: 'Request Submitted',
+          description: `Your ${service.label} request has been sent to your Concierge®`,
+          duration: 3000,
+        });
+        
+        // Add confirmation message to chat (per Bible: "optional but preferred")
+        const confirmationMessage = {
+          type: 'mira',
+          content: `I've submitted your ${service.label} request for ${pet.name}. Your request ID is **${ticketData.ticket_id}**. ${isConciergeLive() ? 'Your pet Concierge® has been notified and will reach out shortly!' : 'Our team will follow up first thing at 6:30 AM.'}`,
+          isConfirmation: true,
+          isCommitConfirmation: true,
+          serviceRequest: {
+            id: ticketData.ticket_id,
+            service: service.label,
+            status: 'submitted'
+          },
+          timestamp: new Date()
+        };
+        setConversationHistory(prev => [...prev, confirmationMessage]);
         
       } else {
         throw new Error(ticketData.detail || 'Failed to create request');
@@ -2744,9 +2748,9 @@ const MiraDemoPage = () => {
       };
       setConversationHistory(prev => [...prev, errorMessage]);
     }
-  }, [serviceRequestModal, pet, token, user]);
+  }, [serviceRequestModal, pet, token, user, returnToChat, toast, setConversationHistory]);
   
-  // Close service request modal
+  // Close service request modal - uses handleBack for proper layer management
   const closeServiceRequest = useCallback(() => {
     setServiceRequestModal({
       isOpen: false,
@@ -2755,6 +2759,8 @@ const MiraDemoPage = () => {
       isSubmitting: false,
       submitted: false
     });
+    // Note: handleBack is available but we just close the modal directly
+    // since this is an ephemeral layer and user may want to stay on current PRIMARY
   }, []);
   
   // Voice recognition state
