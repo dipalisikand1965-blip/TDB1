@@ -412,7 +412,7 @@ const ServicesPanel = ({
         <div>
           <h2 className="text-lg font-semibold text-white">Services</h2>
           <p className="text-[10px] text-slate-500 mt-0.5">
-            This is where you and Concierge message each other about requests.
+            This is your execution thread with Concierge. Updates and replies live here.
           </p>
         </div>
         <button 
