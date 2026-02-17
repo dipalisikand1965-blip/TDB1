@@ -292,6 +292,41 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 - ✅ "Professional photoshoot" → mode=catalogue, products=6, services=5
 - ✅ Ticket creation → TCK-2026-000010, canonical=true
 
+### Feb 17, 2026 (Session 7 - QA Proof Pack Complete)
+**E2E Verification of Conversational Flows:**
+
+All flows tested and verified via screenshots and API calls:
+
+1. **Clarify Before Places Flow** ✅
+   - User: "Find pet-friendly cafes near me"
+   - System correctly asks for location before Places API call
+   - Quick reply chips: "Use current location", "Type an area"
+
+2. **Places Flow** ✅
+   - User provides: "Indiranagar, Bangalore"
+   - System returns real Places results with ratings and addresses
+   - conversation_contract.mode = "places" working correctly
+
+3. **Birthday Party / Concierge Flow** ✅
+   - User: "I want to plan a birthday party for Lola"
+   - Personalized response using Lola's traits (warm, cuddly)
+   - "Send to Concierge" shows ticket modal
+   - Canonical TCK-YYYY-NNNNNN format confirmed
+
+4. **Services Panel** ✅
+   - Shows 50 active requests (46 Placed, 4 In Progress)
+   - Unified ownership query working correctly
+
+5. **Icon State Debug Drawer** ✅
+   - Real-time tab states: SERVICES=ON, TODAY=PULSE, LEARN=PULSE
+   - Badge counts accurate from canonical ticket spine
+   - 12 valid canonical tickets, 134 legacy tickets pending migration
+
+**API Verification (`/api/os/icon-state`):**
+- `valid_from_tickets: 12` (canonical TCK-* format)
+- `invalid_count: 134` (legacy tickets for migration)
+- `states: { services: "ON", today: "PULSE", learn: "PULSE", mojo: "PULSE" }`
+
 ### Feb 17, 2026 (Session 4 - Mira Intelligence QA)
 **Completed comprehensive QA of Mira's intelligence system:**
 
