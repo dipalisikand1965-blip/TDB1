@@ -100,12 +100,25 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
   - Test 3: "How to train recall" → `mode='learn'`, 5 YouTube videos ✓
   - Test 4: "Book grooming tomorrow" → `mode='ticket'`, ticket created ✓
   - Test 5: "Find canine acupuncturist" → `mode='handoff'`, bespoke intent ✓
+  - Location Consent Gate: "near me" without permission → clarify with chips ✓
   - Frontend: Quick reply chips rendering correctly based on contract mode
-- [ ] Update remaining intake routes to use `create_or_attach_service_ticket()`:
-  - `stay_routes.py`, `dine_routes.py`, `celebrate_routes.py`, `enjoy_routes.py`
-  - `fit_routes.py`, `learn_routes.py`, `paperwork_routes.py`, `emergency_routes.py`
-  - `whatsapp_routes.py`, `membership_routes.py`, `ticket_auto_create.py`
-  - `unified_signal_flow.py`, `user_tickets_routes.py`, `service_catalog_routes.py`, `ticket_messaging.py`
+- [x] **Spine Helper Created** (`/app/backend/utils/spine_helper.py`)
+  - `handoff_to_spine()` - single entry point for all route migrations
+  - Enforces canonical TCK-YYYY-NNNNNN format
+  - Logs SPINE-VIOLATION for any non-canonical tickets
+- [x] **Route Migration Progress** (Using spine helper):
+  - `stay_routes.py` - booking endpoint ✓ TCK-* format
+  - `dine_routes.py` - reservation, buddy_visit, meetup_request, bundle_order ✓ TCK-* format
+  - `celebrate_routes.py` - requests endpoint ✓ TCK-* format (verified: TCK-2026-000019)
+  - `enjoy_routes.py` - RSVP endpoint ✓ TCK-* format
+- [ ] **Remaining Route Migrations**:
+  - `fit_routes.py` - import added, needs endpoint updates
+  - `paperwork_routes.py` - import added, needs endpoint updates
+  - `emergency_routes.py` - import added, needs endpoint updates
+  - `learn_routes.py` - import added, needs endpoint updates
+  - `membership_routes.py` - import added, needs endpoint updates
+  - `whatsapp_routes.py` - import added, needs endpoint updates
+  - `ticket_auto_create.py` - hub file, needs full migration
 - [ ] Enable `ICON_STATE_API_ENABLED` feature flag after all routes migrated
 - **Do not enable the flag for production until all ticket-creating intakes route through the canonical helper.**
 
