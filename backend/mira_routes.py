@@ -3588,13 +3588,15 @@ async def search_real_products(
                 logger.debug(f"[PRODUCTS] Skipping '{product_name}' - marked as didn't work for {pet_name}")
                 continue
             
-            # Check sensitivities (negative filter)
+            # Check sensitivities (negative filter) - TRACK BLOCKED BY SAFETY
             for sens_lower in sensitivities:
                 if sens_lower in product_name or sens_lower in product_desc or any(sens_lower in f for f in product_flavors):
                     if "allergy" in sens_lower or "chicken" in sens_lower:
                         # Skip chicken products for chicken allergy
                         if "chicken" in product_name or any("chicken" in f for f in product_flavors):
                             skip = True
+                            blocked_by_safety_count += 1  # Track blocked items
+                            logger.debug(f"[SAFETY] Blocking '{product_name}' due to {sens_lower} sensitivity")
                             break
             
             if skip:
