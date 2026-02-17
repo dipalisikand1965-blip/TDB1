@@ -117,7 +117,7 @@ const OnboardingTooltip = ({
               Chat is where you ask.
             </h4>
             <p className="text-purple-100 text-xs leading-relaxed">
-              Services is where it gets done. Any request you create will live here with Concierge.
+              Services is where Concierge replies and handles requests.
             </p>
             
             {/* CTA Button */}
