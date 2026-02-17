@@ -220,65 +220,9 @@ async def dispatch_action(
         await db.admin_notifications.insert_one(notification_doc)
         logger.info(f"[CENTRAL DISPATCHER] ✅ STEP 1 COMPLETE: Notification {notification_id}")
         
-        # ==================== STEP 2: SERVICE DESK TICKET (ALWAYS SECOND) ====================
-        ticket_doc = {
-            "ticket_id": ticket_id,
-            "id": ticket_id,
-            "action_id": action_id,
-            "notification_id": notification_id,
-            "inbox_id": inbox_id,
-            
-            "pillar": pillar,
-            "category": action_type,
-            "sub_category": action_type,
-            
-            "subject": title,
-            "description": description,
-            
-            "member": member,
-            "pet": pet,
-            
-            "status": "new",
-            "priority": priority,
-            "urgency": urgency,
-            "source": source,
-            "source_reference": linked_entity_id,
-            
-            "linked_entity_type": linked_entity_type,
-            "linked_entity_id": linked_entity_id,
-            
-            "assigned_to": assigned_to,
-            "tags": tags,
-            
-            "messages": [{
-                "id": str(uuid.uuid4()),
-                "type": "action_created",
-                "content": f"Action created from {source}: {title}",
-                "sender": "system",
-                "sender_name": "Central Dispatcher",
-                "channel": source,
-                "timestamp": now_iso,
-                "is_internal": False
-            }],
-            
-            "internal_notes": "",
-            "attachments": [],
-            "metadata": raw_data or {},
-            
-            "created_at": now_iso,
-            "updated_at": now_iso,
-            "first_response_at": None,
-            "resolved_at": None,
-            "closed_at": None,
-            
-            "unified_flow_processed": True,
-            "dispatcher_version": "v1.0"
-        }
-        
-        # Insert into BOTH collections for compatibility
-        await db.service_desk_tickets.insert_one(ticket_doc)
-        await db.tickets.insert_one({**ticket_doc, "type": action_type})
-        logger.info(f"[CENTRAL DISPATCHER] ✅ STEP 2 COMPLETE: Ticket {ticket_id}")
+        # NOTE: Ticket creation is handled above via centralized helper
+        # The helper already inserted into db.tickets and db.mira_tickets
+        logger.info(f"[CENTRAL DISPATCHER] ✅ STEP 2 COMPLETE: Ticket {ticket_id} (via spine helper)")
         
         # ==================== STEP 3: UNIFIED INBOX (ALWAYS THIRD) ====================
         inbox_doc = {
