@@ -372,6 +372,14 @@ const PetOSNavigation = ({
             showDropdownArrow={allPets.length > 1}
           />
           <span className="mojo-pet-name">{currentPet?.name || 'Pet'}</span>
+          
+          {/* Complete Profile Prompt - Shows when MOJO is PULSE */}
+          {isMojoPulse && (
+            <div className="mojo-complete-prompt" data-testid="mojo-complete-prompt">
+              <span className="prompt-text">Complete {currentPet?.name || 'pet'}'s profile</span>
+              <span className="prompt-cta">Finish now</span>
+            </div>
+          )}
         </div>
         
         {/* Multi-pet dropdown toggle */}
