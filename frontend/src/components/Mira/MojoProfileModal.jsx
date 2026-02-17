@@ -1820,6 +1820,7 @@ const MojoProfileModal = ({
   onEditSection,
   onSoulQuestionClick,
   deepLinkSection = null, // 'soul' to auto-scroll to soul section
+  onRefreshPet, // NEW: Callback to refresh pet data after insight actions
 }) => {
   const navigate = useNavigate();
   const modalRef = useRef(null);
