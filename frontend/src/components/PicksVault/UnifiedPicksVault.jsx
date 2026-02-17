@@ -1721,13 +1721,44 @@ const UnifiedPicksVault = ({
                   )}
                   
                   {/* ═══════════════════════════════════════════════════════════════════════════
-                      PICKS FALLBACK RULE (Bible Section 9.0)
-                      When no catalogue match exists, show Concierge Arranges cards
-                      Never show generic popular items as substitutes
+                      PICKS CONTRACT - DETERMINISTIC UI LOGIC (Non-negotiable)
+                      
+                      If fallback_mode === "catalogue" → render catalogue products only
+                      If fallback_mode === "concierge" → render ONLY concierge_cards, NO products
+                      If fallback_mode === "clarify" → render clarifying_questions, block all else
+                      
+                      NEVER show generic/popular products when mode !== "catalogue"
                       ═══════════════════════════════════════════════════════════════════════════ */}
-                  {conciergeFallback && conciergeArranges.length > 0 ? (
+                  {fallbackMode === 'clarify' && clarifyingQuestions.length > 0 ? (
+                    // CLARIFY MODE: Block rendering until questions answered
                     <div className="space-y-4">
-                      {/* Fallback Header */}
+                      <div className="text-center py-4 px-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-100">
+                        <HelpCircle className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                        <h3 className="text-sm font-semibold text-gray-800">
+                          Quick question for {pet?.name}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Help me find the perfect match
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        {clarifyingQuestions.map((q, i) => (
+                          <button
+                            key={q.id || i}
+                            className="w-full p-3 text-left bg-white border border-gray-200 rounded-lg hover:border-blue-300 transition-colors"
+                            onClick={() => {
+                              hapticFeedback.buttonTap();
+                              // Handle clarifying question response
+                            }}
+                          >
+                            <p className="text-sm text-gray-700">{q.question}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : fallbackMode === 'concierge' && conciergeCards.length > 0 ? (
+                    // CONCIERGE MODE: Render ONLY concierge cards, NO generic products
+                    <div className="space-y-4">
                       <div className="text-center py-4 px-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100">
                         <Sparkles className="w-8 h-8 text-purple-500 mx-auto mb-2" />
                         <h3 className="text-sm font-semibold text-gray-800">
@@ -1736,11 +1767,19 @@ const UnifiedPicksVault = ({
                         <p className="text-xs text-gray-500 mt-1">
                           We'll source and arrange everything
                         </p>
+                        {fallbackReason && (
+                          <p className="text-[10px] text-gray-400 mt-1">
+                            {fallbackReason === 'bespoke_intent' && 'Specialist request detected'}
+                            {fallbackReason === 'no_match' && 'Not in catalogue yet'}
+                            {fallbackReason === 'low_confidence' && 'Best handled by concierge'}
+                            {fallbackReason === 'blocked_by_safety' && 'Safety-filtered, concierge will source safe options'}
+                          </p>
+                        )}
                       </div>
                       
                       {/* Concierge Arrange Cards */}
                       <div className="space-y-3">
-                        {conciergeArranges.map((arrange, i) => (
+                        {conciergeCards.map((arrange, i) => (
                           <ConciergeArrangeCard
                             key={arrange.id || i}
                             arrange={arrange}
@@ -1750,12 +1789,13 @@ const UnifiedPicksVault = ({
                         ))}
                       </div>
                       
-                      {/* Info note */}
+                      {/* No price semantics note */}
                       <p className="text-xs text-gray-400 text-center">
                         "Catalogue is optional; concierge is guaranteed."
                       </p>
                     </div>
                   ) : enhancedConversationPicks.length > 0 ? (
+                    // CATALOGUE MODE: Normal product rendering
                     <div 
                       className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory"
                       style={{ WebkitOverflowScrolling: 'touch' }}
