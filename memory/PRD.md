@@ -165,6 +165,52 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 
 ## Change Log
 
+### Feb 17, 2026 (Session 5 - Conflict Handling & Safety)
+**CRITICAL FIX: Fact Conflict Resolution System**
+
+- **Problem:** "Loves chicken" showed as UI tag even though "allergic to chicken" was confirmed
+- **Solution:** Implemented health-first conflict resolution system
+
+**New Features:**
+1. **Conflict Detection & Resolution** (`/app/backend/utils/fact_conflict_resolver.py`)
+   - `detect_conflict()` - Finds health vs preference conflicts on same entity
+   - `resolve_conflict()` - Resolves with `health_wins` / `preference_wins` / `not_sure`
+   - `get_safe_tags()` - Returns tags with health priority (suppresses conflicting preferences)
+   - **Safety Rule:** Health always wins by default until user explicitly resolves
+
+2. **Extraction-Time Deduplication**
+   - Skips insights that already exist in `pending_review` (last 7 days)
+   - Skips insights that already exist in `learned_facts`
+   - Prevents duplicate fact noise
+
+3. **New API Endpoints:**
+   - `GET /api/os/concierge/conflicts/{pet_id}` - Get unresolved conflicts
+   - `POST /api/os/concierge/conflicts/{pet_id}/resolve` - Resolve a conflict
+   - `GET /api/os/concierge/safe-tags/{pet_id}` - Get tags with safety filtering
+
+4. **Confirm Endpoint Enhanced:**
+   - Detects conflicts when confirming new insights
+   - Suppresses preference tags that conflict with health restrictions
+   - Returns conflict warnings in response
+
+**Test Results:**
+- Duplicate extraction: BLOCKED ✅
+- New fact extraction: WORKING ✅
+- Conflict detection (chicken): DETECTED ✅
+- Conflict resolution (health_wins): RESOLVED ✅
+- "Loves chicken" tag: SUPPRESSED ✅
+- Mira behavior post-resolution: CORRECT ✅
+
+### Feb 17, 2026 (Session 4 - Mira Intelligence QA)
+**Completed comprehensive QA of Mira's intelligence system:**
+
+- **Part B (Confirm/Reject):** PASS - 5 confirmed, 2 rejected, duplicate detection working
+- **Part C (Retrieval):** PASS - All 6 retrieval tests used only confirmed facts
+- **Part D (Service Flow):** PASS - Canonical TCK-* ticket created via spine, notifications sent
+- **Part E (Edge Cases):** Identified issues that led to Session 5 fixes
+
+**Key Fix:** Modified `/app/backend/mira_routes.py` service handoff to use centralized `create_or_attach_service_ticket()` helper. Canonical tickets (TCK-2026-NNNNNN) now created correctly.
+
 ### Feb 17, 2026 (Phase 3 Completion)
 - Phase 3 Icon State System COMPLETE
 - Added MOJO tab to icon state system (PULSE when soul < 50%)
