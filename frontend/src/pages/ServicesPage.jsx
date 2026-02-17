@@ -15,13 +15,15 @@ import SoulScoreArc from '../components/SoulScoreArc';
 import MiraLoveNote from '../components/MiraLoveNote';
 import UnifiedHero from '../components/UnifiedHero';
 import PillarNav from '../components/PillarNav';
+import SafeTagsRenderer from '../components/Mira/SafeTagsRenderer';
+import { useSafeTags } from '../hooks/mira/useSafeTags';
 import { 
   Search, Heart, Stethoscope, GraduationCap, Home, Plane, 
   PartyPopper, Lightbulb, AlertTriangle, FileText, Sunrise,
   PawPrint, Sparkles, ChevronDown, Clock, MapPin, Star,
   Dumbbell, Package, Mic, ChevronRight, Shield, Users,
   Scissors, Bath, Syringe, Car, Camera, BookOpen, Brain,
-  Phone, Award, CheckCircle2, TrendingUp, Crown, X
+  Phone, Award, CheckCircle2, TrendingUp, Crown, X, RefreshCw
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
