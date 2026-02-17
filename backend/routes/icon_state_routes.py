@@ -21,9 +21,26 @@ from datetime import datetime, timezone, timedelta
 import logging
 import os
 import jwt
+import re
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/os/icon-state", tags=["icon-state"])
+
+# ============================================
+# CANONICAL TICKET_ID VALIDATION
+# ============================================
+# Strict format: TCK-YYYY-NNNNNN (e.g., TCK-2026-000001)
+# This prevents badge inflation from duplicate/invalid tickets
+CANONICAL_TICKET_ID_PATTERN = re.compile(r'^TCK-\d{4}-\d{6}$')
+
+def is_valid_ticket_id(ticket_id: str) -> bool:
+    """
+    Validate ticket_id matches canonical format.
+    Only tickets with valid IDs are counted for icon states.
+    """
+    if not ticket_id:
+        return False
+    return bool(CANONICAL_TICKET_ID_PATTERN.match(ticket_id))
 
 # Database connection (will be set from server.py)
 _db = None
