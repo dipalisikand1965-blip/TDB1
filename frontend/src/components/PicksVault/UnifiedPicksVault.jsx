@@ -909,12 +909,12 @@ const ConciergeArrangeCard = ({ arrange, pet, onCreateTicket }) => {
             </p>
           )}
           
-          {/* Description - Creates tracked request */}
+          {/* Description - Opens a request in Services */}
           <p className="text-xs text-gray-400 leading-relaxed">
-            {arrange.description || "Creates a tracked request in Services."}
+            {arrange.description || "Opens a request in Services."}
           </p>
           
-          {/* Ticket confirmation - Updated toast copy */}
+          {/* Ticket confirmation - Updated copy */}
           {ticketCreated && (
             <motion.div
               className="mt-3 p-2 bg-green-500/20 border border-green-500/30 rounded-lg"
@@ -924,9 +924,9 @@ const ConciergeArrangeCard = ({ arrange, pet, onCreateTicket }) => {
               <p className="text-xs text-green-300 flex flex-col gap-1">
                 <span className="flex items-center gap-2">
                   <Check className="w-4 h-4" />
-                  Request sent to Concierge • <span className="font-mono">{ticketCreated}</span>
+                  Request opened • <span className="font-mono">{ticketCreated}</span>
                 </span>
-                <span className="text-green-400/70 text-[10px] ml-6">You can reply in Services.</span>
+                <span className="text-green-400/70 text-[10px] ml-6">Reply in Services to add details or change timing.</span>
               </p>
             </motion.div>
           )}
