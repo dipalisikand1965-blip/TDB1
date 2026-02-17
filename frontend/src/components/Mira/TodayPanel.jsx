@@ -1588,6 +1588,123 @@ const todayPanelStyles = `
   -webkit-overflow-scrolling: touch;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   WEATHER HERO CARD - Full weather display at top of TODAY
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.weather-hero-card {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.weather-hero-main {
+  text-align: center;
+}
+
+.weather-temp-large {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  line-height: 1;
+}
+
+.weather-temp-large .temp-number {
+  font-size: 64px;
+  font-weight: 300;
+  color: white;
+  letter-spacing: -0.02em;
+}
+
+.weather-temp-large .temp-unit {
+  font-size: 24px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 8px;
+}
+
+.weather-location {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.weather-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  margin: 8px 0 0 0;
+  text-transform: capitalize;
+}
+
+.walk-safety {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.walk-safety.safe {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.walk-safety.warning {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+
+.walk-safety.danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+.weather-details {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.weather-detail {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.weather-ask-mira {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 12px;
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 12px;
+  color: #a78bfa;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.weather-ask-mira:hover {
+  background: rgba(139, 92, 246, 0.3);
+}
+
 /* Section */
 .today-section {
   display: flex;
