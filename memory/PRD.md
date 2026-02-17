@@ -486,7 +486,54 @@ https://mira-soul-sync.preview.emergentagent.com
 
 ---
 
-*Last Updated: February 16, 2026*
+*Last Updated: February 17, 2026*
+
+---
+
+### February 17, 2026 (Session 10) - SERVICE DESK ZOHO-STYLE REDESIGN + PET PROFILE FIX
+- [x] **SERVICE DESK TICKET MODAL REDESIGN (ZOHO-STYLE):**
+  - Complete overhaul of `TicketFullPageModal.jsx` to be chat-centric
+  - **New Layout:**
+    - Collapsible left sidebar (~280px) for ticket properties
+    - Main chat area dominates (~70%+ width)
+    - Reply input pinned at bottom (always visible)
+  - **Chat Conversation Area:**
+    - Large, readable message bubbles (14px font)
+    - Agent messages: right-aligned with emerald/green bubbles
+    - Customer messages: left-aligned with white/bordered bubbles
+    - Clear timestamps on each message (e.g., "Feb 17, 12:13 AM")
+    - Sender avatars with initials or "C" for Concierge
+  - **Collapsible Sidebar Sections:**
+    - TICKET PROPERTIES (status, priority, category, dates)
+    - CONTACT INFO (name, email, phone)
+    - PET PROFILE (pet name, breed, Mira knowledge score)
+    - MIRA'S INTEL (knowledge items from soul data)
+    - QUICK ACTIONS (WhatsApp, Email, Call buttons)
+  - **Reply Input Features:**
+    - Internal Note toggle checkbox
+    - AI reply style selector (Professional, Friendly, Empathetic, Concise, Detailed)
+    - "Ask Mira" button for AI-generated replies
+    - Channel selector (Chat, Email, WhatsApp)
+    - Keyboard shortcut: Ctrl+Enter to send
+  - Testing: 100% pass rate (12/12 features verified)
+
+- [x] **PET PROFILE FALLBACK FIX (P0 BUG):**
+  - **Problem:** Travel tickets and other tickets without `pet_id` field didn't show Pet Profile
+  - **Solution:** Added fallback to fetch member's pets by email
+  - **Backend Changes:**
+    - New endpoint: `GET /api/admin/members/{member_email}/pets`
+    - Searches pets by owner_email, user_email, parent_email
+    - Falls back to checking member record for linked pets
+    - Returns all pets for the member
+  - **Frontend Changes:**
+    - Updated `DoggyServiceDesk.jsx` (lines 950-1005)
+    - When `pet_info.id` is missing, fetches pets via member email
+    - Uses first (primary) pet from results
+  - Testing: Verified working - Travel ticket showing "Lola (Maltese)" even without pet_id
+
+- [x] **TEST SUITE CREATED:**
+  - `/app/backend/tests/test_service_desk_chat_redesign.py` - 10 backend tests
+  - All tests passing (100% pass rate)
 
 ---
 
