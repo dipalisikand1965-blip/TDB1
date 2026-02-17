@@ -3586,6 +3586,10 @@ const MiraDemoPage = () => {
         tipCard={miraPicks.tipCard}
         userMessage={vaultUserMessage || conversationHistory[conversationHistory.length - 2]?.content}
         currentPillar={currentPillar}
+        // PICKS FALLBACK (Bible Section 9.0)
+        conciergeArranges={miraPicks.conciergeArranges || []}
+        conciergeFallback={miraPicks.conciergeFallback || false}
+        conciergeFallbackReason={miraPicks.conciergeFallbackReason || null}
         pet={pet}
         allPets={allPets}
         token={token}
@@ -3595,6 +3599,41 @@ const MiraDemoPage = () => {
             products: [...(prev.products || []), pick],
             hasNew: true
           }));
+        }}
+        onCreateConciergeTicket={async (arrange) => {
+          // Bible Section 9.0: Create ticket via the Uniform Service Spine
+          console.log('[CONCIERGE ARRANGE] Creating ticket for:', arrange);
+          try {
+            const response = await fetch(`${API_URL}/api/mira/picks/concierge-arrange`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(token && { Authorization: `Bearer ${token}` })
+              },
+              body: JSON.stringify({
+                pet_id: pet?.id,
+                pet_name: pet?.name,
+                pillar: arrange.pillar || currentPillar || 'care',
+                intent: arrange.intent,
+                original_request: arrange.original_request || arrange.intent,
+                member_email: user?.email,
+                member_name: user?.name,
+                member_id: user?.id,
+                session_id: sessionId,
+                pet_constraints: arrange.pet_constraints || [],
+                source: 'picks_concierge_fallback'
+              })
+            });
+            
+            if (response.ok) {
+              const result = await response.json();
+              console.log('[CONCIERGE ARRANGE] Ticket created:', result.ticket_id);
+              return result;
+            }
+          } catch (err) {
+            console.error('[CONCIERGE ARRANGE] Error:', err);
+          }
+          return null;
         }}
         onSendToConcierge={async (data) => {
           console.log('[UNIFIED VAULT] Send to Concierge:', data);
