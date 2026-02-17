@@ -5349,6 +5349,119 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             show_travel_results = True
             logger.info("[TRAVEL FLOW] Clarification done, signaling frontend to show hotels")
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # CONVERSATION CONTRACT (Phase 5) - Build the deterministic contract
+        # Bible Section 10.0: UI must render based ONLY on this contract
+        # ═══════════════════════════════════════════════════════════════════════════
+        conversation_contract = None
+        places_results_for_contract = []
+        youtube_results_for_contract = []
+        contract_ticket_id = None
+        
+        if contract_mode_result:
+            contract_mode = contract_mode_result.get("mode", "answer")
+            contract_context = {
+                "pet_name": request.pet_context.get("name") if request.pet_context else "your pet",
+                "pet_id": request.pet_id or (request.pet_context.get("id") if request.pet_context else None),
+                "original_message": request.input,
+                "detected_intent": contract_mode_result.get("detected_intent"),
+                "places_call_allowed": contract_mode_result.get("places_call_allowed", False),
+                "youtube_call_allowed": contract_mode_result.get("youtube_call_allowed", False),
+                "location_source": contract_mode_result.get("location_source", "none"),
+                "clarify_reason": contract_mode_result.get("clarify_reason"),
+                "place_type": contract_mode_result.get("debug", {}).get("places_intent", {}).get("place_type"),
+                "location": contract_mode_result.get("debug", {}).get("places_intent", {}).get("location"),
+                "topic": contract_mode_result.get("debug", {}).get("learn_intent", {}).get("topic"),
+                "pillar": current_pillar
+            }
+            
+            # ═══════════════════════════════════════════════════════════════════════════
+            # PLACES API CALL - Only if places_call_allowed=True
+            # ═══════════════════════════════════════════════════════════════════════════
+            if contract_mode == "places" and contract_mode_result.get("places_call_allowed"):
+                try:
+                    from services.google_places_service import search_places_by_text
+                    place_type = contract_context.get("place_type", "vet")
+                    location = contract_context.get("location", "")
+                    
+                    # Build search query
+                    if place_type and location:
+                        search_query = f"{place_type} in {location}"
+                    elif place_type:
+                        search_query = f"{place_type} near me"
+                    else:
+                        search_query = request.input
+                    
+                    places_raw = await search_places_by_text(query=search_query, max_results=5)
+                    
+                    # Format for contract
+                    places_results_for_contract = [
+                        {
+                            "id": p.get("id"),
+                            "name": p.get("name"),
+                            "address": p.get("address"),
+                            "rating": p.get("rating"),
+                            "is_open": p.get("is_open_now"),
+                            "phone": p.get("phone"),
+                            "website": p.get("website"),
+                            "maps_link": f"https://www.google.com/maps/place/?q=place_id:{p.get('id')}" if p.get("id") else None
+                        }
+                        for p in places_raw
+                    ]
+                    logger.info(f"[CONVERSATION CONTRACT] Places API returned {len(places_results_for_contract)} results")
+                except Exception as places_err:
+                    logger.warning(f"[CONVERSATION CONTRACT] Places API error: {places_err}")
+            
+            # ═══════════════════════════════════════════════════════════════════════════
+            # YOUTUBE API CALL - Only if youtube_call_allowed=True
+            # ═══════════════════════════════════════════════════════════════════════════
+            if contract_mode == "learn" and contract_mode_result.get("youtube_call_allowed"):
+                try:
+                    from services.youtube_service import get_training_videos_by_topic
+                    topic = contract_context.get("topic", "dog training")
+                    pet_breed = request.pet_context.get("breed") if request.pet_context else None
+                    pet_age = request.pet_context.get("age_years") if request.pet_context else None
+                    
+                    youtube_result = await get_training_videos_by_topic(
+                        topic=topic,
+                        breed=pet_breed,
+                        age_years=pet_age,
+                        max_results=5
+                    )
+                    
+                    # Format for contract
+                    youtube_results_for_contract = [
+                        {
+                            "id": v.get("id"),
+                            "title": v.get("title"),
+                            "channel": v.get("channel"),
+                            "thumbnail": v.get("thumbnail"),
+                            "url": v.get("url"),
+                            "duration": v.get("duration")
+                        }
+                        for v in youtube_result.get("videos", [])
+                    ]
+                    logger.info(f"[CONVERSATION CONTRACT] YouTube API returned {len(youtube_results_for_contract)} videos")
+                except Exception as youtube_err:
+                    logger.warning(f"[CONVERSATION CONTRACT] YouTube API error: {youtube_err}")
+            
+            # ═══════════════════════════════════════════════════════════════════════════
+            # TICKET CREATION - For mode=ticket or mode=handoff
+            # ═══════════════════════════════════════════════════════════════════════════
+            if contract_mode in ["ticket", "handoff"] and not ticket_id:
+                # Use the ticket_id already created by the main flow if available
+                contract_ticket_id = ticket_id
+            
+            # Build the full contract
+            conversation_contract = build_conversation_contract(
+                mode=contract_mode,
+                assistant_text=understanding.get("message", ""),
+                context=contract_context,
+                places_results=places_results_for_contract,
+                youtube_results=youtube_results_for_contract,
+                ticket_id=contract_ticket_id or ticket_id
+            )
+        
         response_data = {
             "success": True,
             "understanding": {
