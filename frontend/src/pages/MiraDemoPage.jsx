@@ -414,6 +414,55 @@ const MiraDemoPage = () => {
         break;
     }
   }, [layerHandleTabChange]);
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // CHAT CONTINUITY - Scroll position preservation (Bible Section 3.1)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const chatContinuity = useChatContinuity({
+    chatContainerRef: { current: null }, // Will be set to messagesContainerRef after it's created
+    messages: [], // Will be wired to conversationHistory
+    onSoftRefresh: () => {
+      console.log('[ChatContinuity] Soft refresh triggered');
+      // TODO: Refresh messages only
+    },
+    onMediumRefresh: () => {
+      console.log('[ChatContinuity] Medium refresh triggered');
+      // TODO: Refresh messages + picks
+    },
+    onFullRefresh: () => {
+      console.log('[ChatContinuity] Full refresh triggered');
+      // TODO: Re-evaluate all icons + picks
+    },
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // DRAFT PERSISTENCE - Pet-scoped drafts with 30-min TTL (Bible Section 3.2)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const {
+    draftText,
+    updateDraft,
+    clearDraft,
+    petSwitchBanner,
+    dismissBanner,
+    sendForOldPet,
+    sendForNewPet,
+    hasDraftForPet,
+  } = useDraft({
+    currentPetId: pet?.id,
+    currentPetName: pet?.name,
+    allPets: allPets,
+    onPetSwitchWithDraft: (info) => {
+      console.log('[Draft] Pet switch with draft:', info);
+      // Toast notification for draft saved
+      if (info.draftText && info.draftText.trim()) {
+        toast({
+          title: `Draft saved for ${info.oldPetName}`,
+          description: `Now chatting about ${info.newPetName}`,
+          duration: 4000,
+        });
+      }
+    },
+  });
   
   // State
   const [activeScenario, setActiveScenario] = useState(null);
