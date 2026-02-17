@@ -51,17 +51,53 @@ def extract_entity(content: str) -> Optional[str]:
             entity = match.group(1)
             # Filter out common non-entities
             if entity not in {"the", "a", "an", "her", "his", "their", "my", "to", "be"}:
-                return entity
+                return normalize_entity(entity)
     
     # Fallback: use the whole content as entity if short enough
     if len(content_lower) < 30:
         # Clean common prefixes
         for prefix in ["loves ", "allergic to ", "sensitive to ", "prefers "]:
             if content_lower.startswith(prefix):
-                return content_lower[len(prefix):].strip()
-        return content_lower
+                return normalize_entity(content_lower[len(prefix):].strip())
+        return normalize_entity(content_lower)
     
     return None
+
+
+def normalize_entity(entity: str) -> str:
+    """Normalize entity for comparison (handle plurals, common variations)."""
+    if not entity:
+        return entity
+    
+    entity = entity.lower().strip()
+    
+    # Remove common suffixes for plurals
+    if entity.endswith('s') and len(entity) > 3:
+        # Check if it's a common plural (not a word like 'bus')
+        singular = entity[:-1]
+        if singular not in {'bu', 'ga', 'ye'}:  # Exceptions
+            entity = singular
+    
+    # Handle -es plurals
+    if entity.endswith('es') and len(entity) > 4:
+        entity = entity[:-2]
+    
+    # Handle -ies plurals (berries -> berry)
+    if entity.endswith('ies') and len(entity) > 5:
+        entity = entity[:-3] + 'y'
+    
+    # Common variations
+    variations = {
+        'peanut butter': 'peanut',
+        'peanuts': 'peanut',
+        'chickens': 'chicken',
+        'beef': 'beef',
+        'lamb': 'lamb',
+        'grains': 'grain',
+        'dairy': 'dairy',
+    }
+    
+    return variations.get(entity, entity)
 
 
 def is_health_category(category: str) -> bool:
