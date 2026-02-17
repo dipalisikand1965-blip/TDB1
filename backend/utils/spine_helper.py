@@ -246,8 +246,7 @@ async def handoff_to_spine(
             urgency=urgency,
             parent_ticket_id=parent_ticket_id,
             notify_admin=notify_admin,
-            notify_member=notify_member,
-            tags=tags
+            notify_member=notify_member
         )
         
         ticket_id = result.get("ticket_id")
