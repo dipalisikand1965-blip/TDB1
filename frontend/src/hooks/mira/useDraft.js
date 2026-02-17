@@ -144,10 +144,15 @@ const useDraft = ({
     const prevPetId = prevPetIdRef.current;
     
     // Detect pet switch
-    if (prevPetId && prevPetId !== currentPetId) {
-      const oldDraft = drafts[prevPetId];
+    if (prevPetId && currentPetId && prevPetId !== currentPetId) {
+      // Use ref to get latest drafts (avoids stale closure)
+      const currentDrafts = draftsRef.current;
+      const oldDraft = currentDrafts[prevPetId];
       const oldPet = allPets.find(p => p.id === prevPetId);
       const oldPetName = oldPet?.name || 'your pet';
+      
+      console.log('[useDraft] Pet switch detected:', prevPetId, '→', currentPetId);
+      console.log('[useDraft] Old draft:', oldDraft?.text?.substring(0, 30));
       
       // Check if there was a draft for the old pet
       if (oldDraft && oldDraft.text && oldDraft.text.trim()) {
@@ -156,6 +161,8 @@ const useDraft = ({
         
         // Show banner per Bible Section 3.2
         const bannerMessage = `Draft saved for ${oldPetName}. Now chatting about ${currentPetName}.`;
+        
+        console.log('[useDraft] Setting pet switch banner:', bannerMessage);
         
         setPetSwitchBanner({
           message: bannerMessage,
@@ -166,8 +173,6 @@ const useDraft = ({
           newPetName: currentPetName,
           draftText: oldDraft.text,
         });
-        
-        console.log('[useDraft] Pet switch with draft:', bannerMessage);
         
         // Notify parent
         onPetSwitchWithDraft?.({
@@ -189,11 +194,14 @@ const useDraft = ({
             return prev;
           });
         }, 5000);
+      } else {
+        console.log('[useDraft] No draft for old pet, no banner needed');
       }
     }
     
+    // Always update prevPetIdRef
     prevPetIdRef.current = currentPetId;
-  }, [currentPetId, currentPetName, drafts, allPets, allPetNames, onPetSwitchWithDraft]);
+  }, [currentPetId, currentPetName, allPets, allPetNames, onPetSwitchWithDraft]);
   
   // ═══════════════════════════════════════════════════════════════════════════
   // DRAFT ACTIONS
