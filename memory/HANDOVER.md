@@ -18,6 +18,41 @@ Admin Notification → Member Notification → Pillar Request → Tickets → Ch
 
 ## What Was Built This Session
 
+### 0. CENTRALIZED TICKET CREATION HELPER (P0 COMPLETE)
+**File:** `/app/backend/utils/service_ticket_spine.py`
+
+**This is the ONLY allowed way to create/attach tickets.**
+
+```python
+from utils.service_ticket_spine import create_or_attach_service_ticket
+
+result = await create_or_attach_service_ticket(
+    db=db,
+    intent="Book grooming",
+    intent_type="request",
+    member_email="user@example.com",
+    member_name="John Doe",
+    pet_ids=["pet-123"],
+    pet_names=["Lola"],
+    pillar="care",
+    source_route="your_route.py",
+    channel=Channel.WEB,
+    created_by=CreatedBy.MEMBER,
+    payload={"key": "value"},
+)
+```
+
+**Features:**
+- Canonical ID only (TCK-YYYY-NNNNNN)
+- Attach vs Create logic (idempotent)
+- Source + channel tracking (for audits)
+- Admin + Member notifications
+- Audit trail history
+
+**Updated Routes (now use helper):**
+- ✅ `/app/backend/services_routes.py`
+- ✅ `/app/backend/central_dispatcher.py`
+
 ### 1. Backend: `/api/os/icon-state` Endpoint
 **File:** `/app/backend/routes/icon_state_routes.py`
 
