@@ -1047,6 +1047,112 @@ const MiraDemoPage = () => {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // CHAT CONTINUITY IMPLEMENTATION (Bible Section 3.1)
+  // Wired to messagesContainerRef after it's created
+  // ═══════════════════════════════════════════════════════════════════════════════
+  
+  const BOTTOM_THRESHOLD = 100; // pixels from bottom to consider "at bottom"
+  
+  // Check if user is at bottom of chat
+  const checkIfAtBottom = useCallback(() => {
+    if (!messagesContainerRef.current) return true;
+    const container = messagesContainerRef.current;
+    const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+    return distanceFromBottom <= BOTTOM_THRESHOLD;
+  }, []);
+  
+  // Save scroll position (call before navigating away)
+  const saveScrollPosition = useCallback(() => {
+    if (!messagesContainerRef.current) return;
+    chatScrollRef.current.savedPosition = messagesContainerRef.current.scrollTop;
+    chatScrollRef.current.isAtBottom = checkIfAtBottom();
+    console.log('[ChatContinuity] Saved scroll position:', chatScrollRef.current.savedPosition, 'isAtBottom:', chatScrollRef.current.isAtBottom);
+  }, [checkIfAtBottom]);
+  
+  // Restore scroll position (call when returning to chat)
+  const restoreScrollPosition = useCallback(() => {
+    if (!messagesContainerRef.current || chatScrollRef.current.savedPosition === 0) return;
+    requestAnimationFrame(() => {
+      if (messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTop = chatScrollRef.current.savedPosition;
+        console.log('[ChatContinuity] Restored scroll position:', chatScrollRef.current.savedPosition);
+      }
+    });
+  }, []);
+  
+  // Scroll to bottom
+  const scrollToChatBottom = useCallback((smooth = true) => {
+    if (!messagesContainerRef.current) return;
+    messagesContainerRef.current.scrollTo({
+      top: messagesContainerRef.current.scrollHeight,
+      behavior: smooth ? 'smooth' : 'auto'
+    });
+    setShowNewMessagesPill(false);
+    setNewMessageCount(0);
+  }, []);
+  
+  // Handle scroll to first unread (when clicking "New messages" pill)
+  const scrollToFirstUnread = useCallback(() => {
+    scrollToChatBottom();
+    setShowNewMessagesPill(false);
+    setNewMessageCount(0);
+  }, [scrollToChatBottom]);
+  
+  // Handle new messages - Per Bible: Auto-scroll only if user is at bottom
+  useEffect(() => {
+    const currentCount = conversationHistory.length;
+    const prevCount = prevMessageCountRef.current;
+    
+    if (currentCount > prevCount && prevCount > 0) {
+      const newMsgCount = currentCount - prevCount;
+      const isAtBottom = checkIfAtBottom();
+      
+      if (isAtBottom) {
+        // User is at bottom → auto-scroll to new messages
+        scrollToChatBottom();
+        console.log('[ChatContinuity] Auto-scrolled to new messages');
+      } else {
+        // User is scrolled up → show "New messages" pill, don't auto-scroll
+        setShowNewMessagesPill(true);
+        setNewMessageCount(prev => prev + newMsgCount);
+        console.log('[ChatContinuity] New messages arrived, showing pill. Count:', newMsgCount);
+      }
+    }
+    
+    prevMessageCountRef.current = currentCount;
+  }, [conversationHistory.length, checkIfAtBottom, scrollToChatBottom]);
+  
+  // Listen for scroll events to update isAtBottom and clear pill when scrolled to bottom
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+    
+    const handleScroll = () => {
+      const isAtBottom = checkIfAtBottom();
+      chatScrollRef.current.isAtBottom = isAtBottom;
+      
+      // Clear pill when user scrolls to bottom
+      if (isAtBottom && showNewMessagesPill) {
+        setShowNewMessagesPill(false);
+        setNewMessageCount(0);
+      }
+    };
+    
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [checkIfAtBottom, showNewMessagesPill]);
+  
+  // Save scroll position when opening any panel (tab switch)
+  useEffect(() => {
+    if (!isAtChatHome) {
+      saveScrollPosition();
+    } else {
+      // Returning to chat - restore position
+      restoreScrollPosition();
+    }
+  }, [isAtChatHome, saveScrollPosition, restoreScrollPosition]);
+
   // LOAD REAL PET DATA when user is logged in
   useEffect(() => {
     const loadUserPets = async () => {
