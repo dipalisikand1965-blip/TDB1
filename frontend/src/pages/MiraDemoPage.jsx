@@ -1829,6 +1829,62 @@ const MiraDemoPage = () => {
     return date.toLocaleDateString();
   };
   
+  // Helper to ensure array format (used by fetchPetData)
+  const ensureArray = useCallback((val, defaultVal = []) => {
+    if (!val) return defaultVal;
+    if (Array.isArray(val)) return val;
+    if (typeof val === 'string') return val.split(',').map(s => s.trim()).filter(Boolean);
+    return defaultVal;
+  }, []);
+  
+  // Reusable function to fetch and update pet data
+  const refreshPetData = useCallback(async (petId) => {
+    if (!token) return;
+    try {
+      const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.pets && data.pets.length > 0) {
+          // Find the specific pet or use first one
+          const p = petId 
+            ? data.pets.find(pet => pet.id === petId) || data.pets[0]
+            : data.pets[0];
+          
+          const updatedPet = {
+            id: p.id,
+            name: p.name,
+            breed: p.breed,
+            age: p.age || 'Unknown',
+            photo: p.photo_url ? `${API_URL}${p.photo_url}` : null,
+            traits: ensureArray(p.doggy_soul_answers?.describe_3_words, ['Loving']),
+            sensitivities: ensureArray(p.doggy_soul_answers?.health_conditions),
+            favorites: ensureArray(p.doggy_soul_answers?.favorite_treats),
+            // Include full data for MOJO modal
+            soulScore: Math.round(p.overall_score || 0),
+            doggy_soul_answers: p.doggy_soul_answers || {},
+            preferences: p.preferences || {},
+            soul: p.soul || {},
+            health_vault: p.health_vault || {},
+            overall_score: p.overall_score || 0,
+            // Include insights data
+            learned_facts: p.learned_facts || [],
+            conversation_insights: p.conversation_insights || [],
+            doggy_soul_meta: p.doggy_soul_meta || {},
+          };
+          
+          setPet(updatedPet);
+          console.log('[MiraDemoPage] Pet data refreshed:', p.name, 'learned_facts:', (p.learned_facts || []).length);
+          return updatedPet;
+        }
+      }
+    } catch (err) {
+      console.error('Failed to refresh pet data:', err);
+    }
+    return null;
+  }, [token, ensureArray]);
+  
   // Fetch user's pet if logged in
   useEffect(() => {
     const fetchPet = async () => {
@@ -1841,13 +1897,6 @@ const MiraDemoPage = () => {
           const data = await response.json();
           if (data.pets && data.pets.length > 0) {
             const p = data.pets[0];
-            // Helper to ensure array format
-            const ensureArray = (val, defaultVal = []) => {
-              if (!val) return defaultVal;
-              if (Array.isArray(val)) return val;
-              if (typeof val === 'string') return val.split(',').map(s => s.trim()).filter(Boolean);
-              return defaultVal;
-            };
             setPet({
               id: p.id,
               name: p.name,
@@ -1863,7 +1912,11 @@ const MiraDemoPage = () => {
               preferences: p.preferences || {},
               soul: p.soul || {},
               health_vault: p.health_vault || {},
-              overall_score: p.overall_score || 0
+              overall_score: p.overall_score || 0,
+              // Include insights data
+              learned_facts: p.learned_facts || [],
+              conversation_insights: p.conversation_insights || [],
+              doggy_soul_meta: p.doggy_soul_meta || {},
             });
           }
         }
@@ -1872,7 +1925,7 @@ const MiraDemoPage = () => {
       }
     };
     fetchPet();
-  }, [token]);
+  }, [token, ensureArray]);
   
   // Auto-scroll to bottom
   const scrollToBottom = useCallback((behavior = 'smooth') => {
