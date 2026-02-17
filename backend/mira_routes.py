@@ -9934,12 +9934,15 @@ async def mira_chat(
     # INSIGHT EXTRACTION - Learn from user's messages (runs in background)
     # Extract facts about the pet from user messages and store for review
     # ═══════════════════════════════════════════════════════════════════════════
+    logger.info(f"[INSIGHTS DEBUG] AVAILABLE={INSIGHT_EXTRACTION_AVAILABLE}, selected_pet={selected_pet is not None}, db={db is not None}")
     if INSIGHT_EXTRACTION_AVAILABLE and selected_pet and db is not None:
         try:
             pet_id = selected_pet.get("id")
+            logger.info(f"[INSIGHTS DEBUG] pet_id={pet_id}, user_message present={bool(user_message)}")
             if pet_id and user_message:
                 # Extract insights from the user's message
                 insights = extract_pet_insights(user_message)
+                logger.info(f"[INSIGHTS DEBUG] Extracted {len(insights)} insights: {insights}")
                 if insights:
                     timestamp = datetime.now(timezone.utc).isoformat()
                     await store_conversation_insights(
