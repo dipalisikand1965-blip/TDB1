@@ -817,8 +817,65 @@ const PetOSNavigation = ({
           .tab-state-dot.dot-pulse,
           .tab-badge.badge-pulse,
           .os-mojo-tab.mojo-pulse .mojo-avatar-wrapper,
-          .mojo-avatar-wrapper.needs-attention::after {
+          .mojo-avatar-wrapper.needs-attention::after,
+          .mojo-complete-prompt {
             animation: none;
+          }
+        }
+        
+        /* Complete Profile Prompt - Shows on MOJO PULSE */
+        .mojo-complete-prompt {
+          position: absolute;
+          top: calc(100% + 8px);
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+          padding: 10px 14px;
+          background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(234, 88, 12, 0.15));
+          border: 1px solid rgba(245, 158, 11, 0.4);
+          border-radius: 12px;
+          white-space: nowrap;
+          z-index: 100;
+          animation: prompt-fade-in 0.3s ease-out;
+          box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2);
+        }
+        
+        .mojo-complete-prompt::before {
+          content: '';
+          position: absolute;
+          top: -6px;
+          left: 50%;
+          transform: translateX(-50%);
+          border-left: 6px solid transparent;
+          border-right: 6px solid transparent;
+          border-bottom: 6px solid rgba(245, 158, 11, 0.4);
+        }
+        
+        .mojo-complete-prompt .prompt-text {
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.85);
+          font-weight: 500;
+        }
+        
+        .mojo-complete-prompt .prompt-cta {
+          font-size: 11px;
+          color: #F59E0B;
+          font-weight: 600;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+        }
+        
+        @keyframes prompt-fade-in {
+          from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-4px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
           }
         }
         
