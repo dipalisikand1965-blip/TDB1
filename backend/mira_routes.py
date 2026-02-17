@@ -4295,6 +4295,14 @@ async def mira_os_understand_with_products(
         should_show_products = not is_service_intent and not is_food_main_intent
         
         # ═══════════════════════════════════════════════════════════════════════════
+        # PICKS FALLBACK RULE (Bible Section 9.0)
+        # Initialize concierge_fallback variables here so they're available later
+        # ═══════════════════════════════════════════════════════════════════════════
+        concierge_fallback = False
+        concierge_fallback_reason = None
+        concierge_arranges = []
+        
+        # ═══════════════════════════════════════════════════════════════════════════
         # MODE-BASED PRODUCT CONTROL
         # ═══════════════════════════════════════════════════════════════════════════
         
