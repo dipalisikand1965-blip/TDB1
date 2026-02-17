@@ -3586,7 +3586,12 @@ const MiraDemoPage = () => {
         tipCard={miraPicks.tipCard}
         userMessage={vaultUserMessage || conversationHistory[conversationHistory.length - 2]?.content}
         currentPillar={currentPillar}
-        // PICKS FALLBACK (Bible Section 9.0)
+        // ═══════════════════════════════════════════════════════════════════════════
+        // PICKS CONTRACT (Bible Section 9.0) - Source of Truth for Rendering
+        // This is deterministic UI logic, not advisory.
+        // ═══════════════════════════════════════════════════════════════════════════
+        picksContract={miraPicks.picksContract || null}
+        // Legacy fields (deprecated - use picksContract instead)
         conciergeArranges={miraPicks.conciergeArranges || []}
         conciergeFallback={miraPicks.conciergeFallback || false}
         conciergeFallbackReason={miraPicks.conciergeFallbackReason || null}
@@ -3601,8 +3606,12 @@ const MiraDemoPage = () => {
           }));
         }}
         onCreateConciergeTicket={async (arrange) => {
-          // Bible Section 9.0: Create ticket via the Uniform Service Spine
-          console.log('[CONCIERGE ARRANGE] Creating ticket for:', arrange);
+          // ═══════════════════════════════════════════════════════════════════════════
+          // TICKET SPINE REQUIREMENT (Non-negotiable)
+          // Any concierge_cards[].action === "create_ticket" MUST call the spine
+          // Must return canonical TCK-* and trigger admin + member notification
+          // ═══════════════════════════════════════════════════════════════════════════
+          console.log('[CONCIERGE ARRANGE] Creating ticket via spine for:', arrange);
           try {
             const response = await fetch(`${API_URL}/api/mira/picks/concierge-arrange`, {
               method: 'POST',
@@ -3611,8 +3620,9 @@ const MiraDemoPage = () => {
                 ...(token && { Authorization: `Bearer ${token}` })
               },
               body: JSON.stringify({
-                pet_id: pet?.id,
-                pet_name: pet?.name,
+                pet_id: arrange.pet_id || pet?.id,
+                pet_name: arrange.pet_name || pet?.name,
+                // Use pillar from card (source of truth for ticket routing)
                 pillar: arrange.pillar || currentPillar || 'care',
                 intent: arrange.intent,
                 original_request: arrange.original_request || arrange.intent,
@@ -3628,6 +3638,7 @@ const MiraDemoPage = () => {
             if (response.ok) {
               const result = await response.json();
               console.log('[CONCIERGE ARRANGE] Ticket created:', result.ticket_id);
+              // Show confirmation with ticket ID as per contract
               return result;
             }
           } catch (err) {
