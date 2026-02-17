@@ -3648,38 +3648,41 @@ async def search_real_products(
         # If the top scored product's relevance is below threshold, trigger fallback
         # This catches cases where products exist but don't match user's specific request
         # ═══════════════════════════════════════════════════════════════════════════
+        # MIN_MATCH_SCORE CHECK + BLOCKED_BY_SAFETY CHECK (Bible Section 9.0)
+        # If top_score < MIN_MATCH_SCORE OR all_matches_blocked_by_safety → Concierge fallback
+        # ═══════════════════════════════════════════════════════════════════════════
+        detected_pillar = entities.get("pillar", "care")
+        
+        # Check if ALL products were blocked by safety rules
+        all_blocked_by_safety = blocked_by_safety_count > 0 and len(scored_products) == 0
+        
+        if all_blocked_by_safety:
+            logger.info(f"[PICKS FALLBACK] All {blocked_by_safety_count} products blocked by safety rules - triggering Concierge fallback for '{user_input_lower[:50]}'")
+            return build_picks_fallback_contract(
+                fallback_mode="concierge",
+                fallback_reason="blocked_by_safety",
+                match_count=0,
+                top_score=0.0,
+                blocked_by_safety=True,
+                pet_context=pet_context,
+                user_query=user_query,
+                pillar=detected_pillar
+            )
+        
         if scored_products:
             top_relevance = scored_products[0].get("relevance_score", 0)
             if top_relevance < MIN_MATCH_SCORE:
                 logger.info(f"[PICKS FALLBACK] Top relevance score {top_relevance:.2f} < MIN_MATCH_SCORE {MIN_MATCH_SCORE} - triggering Concierge fallback for '{user_input_lower[:50]}'")
-                import uuid as uuid_module
-                detected_pillar = entities.get("pillar", "care")
-                return {
-                    "products": [],
-                    "concierge_fallback": True,
-                    "concierge_fallback_reason": "low_relevance_score",
-                    "concierge_arranges": [
-                        {
-                            "id": f"concierge-{uuid_module.uuid4().hex[:8]}",
-                            "type": "concierge_pick",
-                            "label": "Concierge Pick",
-                            "title": f"Custom request for {pet_name}",
-                            "subtitle": "Allergy-safe" if pet_context.get("sensitivities") else "Made to requirements",
-                            "description": f"We don't have this in the catalogue yet — we can arrange it for {pet_name}.",
-                            "spec_chip": f"Made to {pet_name}'s requirements",
-                            "no_price": True,
-                            "action": "create_ticket",
-                            "pillar": detected_pillar,
-                            "category": "concierge_arranges",
-                            "intent": user_input_lower[:200],
-                            "original_request": user_query,
-                            "pet_id": pet_context.get("id"),
-                            "pet_name": pet_name,
-                            "pet_constraints": pet_context.get("sensitivities", []),
-                            "why_it_fits": f"Made to {pet_name}'s requirements"
-                        }
-                    ]
-                }
+                return build_picks_fallback_contract(
+                    fallback_mode="concierge",
+                    fallback_reason="low_confidence",
+                    match_count=len(scored_products),
+                    top_score=top_relevance,
+                    blocked_by_safety=blocked_by_safety_count > 0,
+                    pet_context=pet_context,
+                    user_query=user_query,
+                    pillar=detected_pillar
+                )
         
         # Format for response with match_type for UI badges
         pet_breed_lower = safe_lower(pet_context.get("breed", ""))
