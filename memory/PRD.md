@@ -526,58 +526,49 @@ All flows tested and verified via screenshots and API calls:
 
 ---
 
-## NEXT AGENT NOTES - System Health Scorecard
+## COMPLETED THIS SESSION - Feb 17, 2026
 
-### Score System /100 - ASSESS THESE:
+### System Health Assessment ✅
+- **Mobile Experience: 78/100** - Good foundations, needs PWA & gestures
+- **Intelligence: 72/100** - Context-aware, needs allergy detection fix
+- **Overall System: 75/100** - Solid architecture, needs polish
 
-**1. Mobile Experience Score: __/100**
-- iOS/Android responsiveness
-- Touch targets (44x44px)
-- Scroll behavior
-- Bottom sheet modals
-- Gesture support
+See full scorecard: `/app/memory/SYSTEM_HEALTH_SCORECARD.md`
 
-**2. Intelligence Score: __/100**
-- Mira's understanding of pet context
-- Picks quality and relevance
-- Conversation flow management
-- Memory (learned facts) accuracy
-- Health-first safety rule enforcement
+### Soul Questions Inventory ✅
+- Documented all 27 scoring questions
+- Mapped weights to onboarding steps
+- Identified minimum for 80% soul score
 
-**3. Overall System Score: __/100**
-- Chat vs Services mental model clarity
-- Ticket flow (TCK-* canonical IDs)
-- Concierge integration
-- WhatsApp webhook reliability
-- UI consistency across layers
+See full inventory: `/app/memory/SOUL_QUESTIONS_INVENTORY.md`
 
-### Key Areas to Clean Up:
-- Mira placement on all 6 pillars (MOJO, TODAY, PICKS, SERVICES, LEARN, CONCIERGE)
-- Ensure each pillar has clear purpose per Bible
+### Onboarding Redesign - TEMPLATE CREATED ✅
+- Created `/app/frontend/src/pages/PetSoulOnboarding.jsx`
+- 10-step soul capture flow designed
+- Premium animations with framer-motion
+- Each step targets specific soul score categories
 
-### Roadmap to 100:
-- [ ] P1: Legacy Ticket Migration (134 tickets → TCK-* format)
-- [ ] P2: WhatsApp Webhook Idempotency
-- [ ] P3: Refactor monolithic files (mira_routes.py, MiraDemoPage.jsx)
-- [ ] P4: Push notification system
-- [ ] P5: Offline support / PWA
+### Legacy Ticket Migration
+- **Status:** No tickets in staging environment
+- **Note:** 134 legacy tickets exist in PRODUCTION only
+- Migration script needed for production deployment
 
-### ONBOARDING REDESIGN (8-10 Step Soul Capture)
-Reference: luminaireclub.com onboarding flow
+### Pillar Assessment
+| Pillar | Status | Action Needed |
+|--------|--------|---------------|
+| MOJO | ✅ Working | - |
+| TODAY | 🟡 Basic | Move full weather card here |
+| PICKS | 🟡 Basic | Improve relevance engine |
+| SERVICES | ✅ Working | - |
+| LEARN | 🔴 Empty | Build content section |
+| CONCIERGE | 🟡 Unclear | Define vs Services |
 
-**Proposed Steps:**
-1. Welcome + Pet name
-2. Pet species & breed
-3. Pet age/birthday
-4. Pet photo upload
-5. Personality traits (multiple choice)
-6. Health basics (weight, allergies)
-7. Feeding preferences
-8. Activity level
-9. Special needs/fears
-10. Location setup
+---
 
-This should be a separate beautiful full-screen flow like Aabee.
+## FILES CREATED THIS SESSION
+- `/app/memory/SOUL_QUESTIONS_INVENTORY.md` - Complete soul question mapping
+- `/app/memory/SYSTEM_HEALTH_SCORECARD.md` - System health assessment
+- `/app/frontend/src/pages/PetSoulOnboarding.jsx` - 10-step onboarding template
 
 ### Feb 17, 2026 (Session 3 - Insights Review & Confirm)
 - **BUILT: "Review & Confirm" UI for pending insights in MOJO modal**
