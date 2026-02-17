@@ -303,6 +303,118 @@ const MiraDemoPage = () => {
     setCurrentWeather
   } = useProactiveAlerts(pet);
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // TOAST - For commit action confirmations (Bible Section 1.5)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const { toast } = useToast();
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // LAYER NAVIGATION - Bible-compliant OS navigation (PET_OS_BEHAVIOR_BIBLE v1.1)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const {
+    activeTab: layerActiveTab,
+    isAtChatHome,
+    hasDetailOpen,
+    hasEphemeralOpen,
+    handleTabChange: layerHandleTabChange,
+    openDetail,
+    openEphemeral,
+    closeEphemeral,
+    handleBack,
+    handleCommit,
+    commitAndReturn,
+    returnToChat,
+    isLayerOpen,
+  } = useLayerNavigation({
+    onReturnToChat: () => {
+      // Reset all legacy panel states when returning to chat
+      setShowMojoModal(false);
+      setShowTodayPanel(false);
+      setShowTopPicksPanel(false);
+      setShowServicesPanel(false);
+      setShowLearnPanel(false);
+      setShowConciergeHome(false);
+      setShowInsightsPanel(false);
+      setShowConciergePanel(false);
+      setShowHelpModal(false);
+      setShowSoulFormModal(false);
+      setRequestBuilderState({ isOpen: false, service: null });
+      setConciergeThread({ isOpen: false, threadId: null, thread: null, messages: [] });
+    }
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // COMMIT ACTION HANDLER - With toast + chat confirmation (Bible Section 1.5)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const handleCommitAction = useCallback(async (action, actionName = 'Action', successMessage = 'Done!') => {
+    const result = await handleCommit(action, actionName);
+    
+    if (result.success) {
+      // Show toast notification (3s per Bible)
+      toast({
+        title: successMessage,
+        description: `${actionName} completed successfully`,
+        duration: 3000,
+      });
+      
+      // Add confirmation system line in chat (optional but preferred per Bible)
+      setConversationHistory(prev => [...prev, {
+        type: 'system',
+        content: `✓ ${successMessage}`,
+        timestamp: new Date(),
+        isCommitConfirmation: true,
+      }]);
+    }
+    
+    return result;
+  }, [handleCommit, toast, setConversationHistory]);
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // TAB CHANGE HANDLER - Bridges Layer Manager with legacy state
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const handleOSTabChange = useCallback((tabId) => {
+    // Use Layer Manager for navigation
+    layerHandleTabChange(tabId);
+    
+    // Sync legacy state for panels that still need it
+    // (This ensures existing panel components render correctly during migration)
+    setActiveOSTab(tabId);
+    
+    // Close all panels first (Layer Manager handles this, but sync legacy state)
+    setShowMojoModal(false);
+    setShowTodayPanel(false);
+    setShowTopPicksPanel(false);
+    setShowServicesPanel(false);
+    setShowLearnPanel(false);
+    setShowConciergeHome(false);
+    setConciergeThread({ isOpen: false, threadId: null, thread: null, messages: [] });
+    
+    // Open the appropriate panel based on tab
+    switch (tabId) {
+      case 'mojo':
+        setShowMojoModal(true);
+        break;
+      case 'today':
+        setShowTodayPanel(true);
+        break;
+      case 'picks':
+        setShowTopPicksPanel(true);
+        break;
+      case 'services':
+        setShowServicesPanel(true);
+        break;
+      case 'learn':
+        setShowLearnPanel(true);
+        break;
+      case 'concierge':
+        setShowConciergeHome(true);
+        break;
+      default:
+        // Unknown tab or clicking same tab (return to chat)
+        break;
+    }
+  }, [layerHandleTabChange]);
+  
   // State
   const [activeScenario, setActiveScenario] = useState(null);
   const [showScenarios, setShowScenarios] = useState(true);
