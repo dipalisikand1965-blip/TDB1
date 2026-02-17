@@ -3331,6 +3331,9 @@ const MiraDemoPage = () => {
           // Use Bible-compliant tab change handler
           handleOSTabChange(tabId);
           
+          // Mark tab as visited (PULSE → ON)
+          markTabVisited(tabId);
+          
           // Clear "new" flag when picks panel is opened
           if (tabId === 'picks') {
             setMiraPicks(prev => ({ ...prev, hasNew: false }));
@@ -3351,6 +3354,7 @@ const MiraDemoPage = () => {
           services: null, // TODO: Connect to pending services count
         }}
         picksHasNew={miraPicks.hasNew}
+        iconStates={iconStates}
       />
       
       {/* SECONDARY NAVIGATION REMOVED - All functions moved to primary OS layers:
