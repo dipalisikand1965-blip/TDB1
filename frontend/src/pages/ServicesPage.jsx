@@ -267,55 +267,138 @@ const getMiraServiceWhisper = (service, breed) => {
 };
 
 // =============================================================================
-// PET SOUL TRAITS DISPLAY
+// PET SOUL TRAITS DISPLAY - Now uses Safe Tags API
 // =============================================================================
-const PetSoulTraits = ({ pet, soulData }) => {
-  const traits = [];
-  const answers = pet?.doggy_soul_answers || pet?.soul_answers || soulData || {};
+const PetSoulTraits = ({ pet, soulData, token }) => {
+  // Fetch safe tags (health-first, suppresses conflicting preferences)
+  const { safeTags, suppressedTags, isLoading, isSyncing, hasConflicts } = useSafeTags(pet?.id, token);
   
-  if (answers.describe_3_words) {
-    traits.push({ icon: '✨', text: answers.describe_3_words });
-  } else if (answers.general_nature) {
-    traits.push({ icon: '🌟', text: answers.general_nature });
-  }
-  
-  if (answers.favorite_treats) {
-    const treats = Array.isArray(answers.favorite_treats) ? answers.favorite_treats[0] : answers.favorite_treats;
-    traits.push({ icon: '🍖', text: `Loves ${treats}` });
-  }
-  
-  if (answers.energetic_time) {
-    traits.push({ icon: '⚡', text: `Active: ${answers.energetic_time}` });
-  } else if (answers.walks_per_day) {
-    traits.push({ icon: '🚶', text: `${answers.walks_per_day} walks daily` });
-  }
-  
-  // Fallback traits
-  if (traits.length < 3) {
-    const breed = (pet?.breed || '').toLowerCase();
-    if (breed.includes('retriever')) {
-      if (traits.length < 1) traits.push({ icon: '🏊', text: 'Water lover' });
-      if (traits.length < 2) traits.push({ icon: '🎾', text: 'Fetch fan' });
-      if (traits.length < 3) traits.push({ icon: '💛', text: 'Family friendly' });
-    } else if (breed.includes('shih tzu')) {
-      if (traits.length < 1) traits.push({ icon: '👑', text: 'Royal companion' });
-      if (traits.length < 2) traits.push({ icon: '🛋️', text: 'Lap dog' });
-      if (traits.length < 3) traits.push({ icon: '💕', text: 'Affectionate' });
-    } else {
-      if (traits.length < 1) traits.push({ icon: '🐕', text: pet?.breed || 'Good pup' });
-      if (traits.length < 2) traits.push({ icon: '❤️', text: 'Loved' });
-      if (traits.length < 3) traits.push({ icon: '🏠', text: 'Family' });
+  // Build display traits combining safe tags + soul answers
+  const traits = useMemo(() => {
+    const result = [];
+    const answers = pet?.doggy_soul_answers || pet?.soul_answers || soulData || {};
+    
+    // Priority 1: Safe tags from API (learned facts with conflict filtering)
+    if (safeTags && safeTags.length > 0) {
+      const categoryEmoji = {
+        fears: '😰',
+        loves: '❤️',
+        anxiety: '😟',
+        behavior: '🐕',
+        preferences: '⭐',
+        health: '💊',
+        other: '📝',
+      };
+      
+      // Add safe tags (max 2 from learned facts to leave room for soul answers)
+      safeTags.slice(0, 2).forEach(tag => {
+        const emoji = tag.is_health ? '💊' : (categoryEmoji[tag.category] || '📝');
+        result.push({ 
+          icon: emoji, 
+          text: tag.content,
+          isFromSafeTags: true,
+          isHealth: tag.is_health
+        });
+      });
     }
-  }
+    
+    // Priority 2: Soul questionnaire answers (fill remaining slots)
+    if (result.length < 3) {
+      if (answers.describe_3_words && result.length < 3) {
+        result.push({ icon: '✨', text: answers.describe_3_words });
+      } else if (answers.general_nature && result.length < 3) {
+        result.push({ icon: '🌟', text: answers.general_nature });
+      }
+      
+      // Only add "Loves [treat]" if NOT suppressed due to health conflict
+      if (answers.favorite_treats && result.length < 3) {
+        const treats = Array.isArray(answers.favorite_treats) ? answers.favorite_treats[0] : answers.favorite_treats;
+        const treatLower = (treats || '').toLowerCase();
+        
+        // Check if this treat is suppressed (health conflict)
+        const isSuppressed = suppressedTags?.some(s => 
+          treatLower.includes(s.content?.toLowerCase()) || 
+          s.content?.toLowerCase().includes(treatLower)
+        );
+        
+        if (!isSuppressed) {
+          result.push({ icon: '🍖', text: `Loves ${treats}` });
+        }
+      }
+      
+      if (answers.energetic_time && result.length < 3) {
+        result.push({ icon: '⚡', text: `Active: ${answers.energetic_time}` });
+      } else if (answers.walks_per_day && result.length < 3) {
+        result.push({ icon: '🚶', text: `${answers.walks_per_day} walks daily` });
+      }
+    }
+    
+    // Fallback traits if still empty
+    if (result.length < 3) {
+      const breed = (pet?.breed || '').toLowerCase();
+      if (breed.includes('retriever')) {
+        if (result.length < 1) result.push({ icon: '🏊', text: 'Water lover' });
+        if (result.length < 2) result.push({ icon: '🎾', text: 'Fetch fan' });
+        if (result.length < 3) result.push({ icon: '💛', text: 'Family friendly' });
+      } else if (breed.includes('shih tzu')) {
+        if (result.length < 1) result.push({ icon: '👑', text: 'Royal companion' });
+        if (result.length < 2) result.push({ icon: '🛋️', text: 'Lap dog' });
+        if (result.length < 3) result.push({ icon: '💕', text: 'Affectionate' });
+      } else {
+        if (result.length < 1) result.push({ icon: '🐕', text: pet?.breed || 'Good pup' });
+        if (result.length < 2) result.push({ icon: '❤️', text: 'Loved' });
+        if (result.length < 3) result.push({ icon: '🏠', text: 'Family' });
+      }
+    }
+    
+    return result.slice(0, 3);
+  }, [safeTags, suppressedTags, pet, soulData]);
   
   return (
     <div className="flex flex-wrap justify-center md:justify-start gap-2 sm:gap-3">
-      {traits.slice(0, 3).map((trait, idx) => (
-        <div key={idx} className="flex items-center gap-1.5 px-2 sm:px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full text-[10px] sm:text-xs text-white/80">
+      {/* Syncing indicator */}
+      {isSyncing && (
+        <div className="flex items-center gap-1.5 px-2 sm:px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full text-[10px] sm:text-xs text-amber-400">
+          <RefreshCw className="w-3 h-3 animate-spin" />
+          <span>syncing</span>
+        </div>
+      )}
+      
+      {/* Loading skeleton */}
+      {isLoading && !traits.length && (
+        <>
+          {[1, 2, 3].map(i => (
+            <div key={i} className="h-6 w-20 bg-white/10 rounded-full animate-pulse" />
+          ))}
+        </>
+      )}
+      
+      {/* Trait pills */}
+      {traits.map((trait, idx) => (
+        <div 
+          key={idx} 
+          className={`flex items-center gap-1.5 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs ${
+            trait.isHealth 
+              ? 'bg-green-500/20 border border-green-500/30 text-green-400'
+              : 'bg-white/10 backdrop-blur-sm text-white/80'
+          }`}
+        >
+          {trait.isHealth && <Shield className="w-3 h-3" />}
           <span>{trait.icon}</span>
           <span className="truncate max-w-[100px]">{trait.text}</span>
         </div>
       ))}
+      
+      {/* Suppressed tags indicator */}
+      {hasConflicts && suppressedTags && suppressedTags.length > 0 && (
+        <div 
+          className="flex items-center gap-1.5 px-2 sm:px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] sm:text-xs text-white/40 cursor-help"
+          title={`${suppressedTags.length} preference(s) hidden due to health restrictions:\n${suppressedTags.map(t => `• ${t.content}`).join('\n')}`}
+        >
+          <AlertTriangle className="w-3 h-3 text-amber-400" />
+          <span>{suppressedTags.length} hidden</span>
+        </div>
+      )}
     </div>
   );
 };
