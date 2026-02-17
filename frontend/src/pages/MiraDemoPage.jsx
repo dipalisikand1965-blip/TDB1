@@ -17,7 +17,7 @@
  * - Memoized components where possible
  */
 
-import React, { useState, useEffect, useRef, useCallback, lazy, Suspense, memo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Mic, MicOff, Send, MessageCircle, Package, Calendar, 
