@@ -509,7 +509,10 @@ const TraitBadge = memo(({ confidence, isInferred }) => {
 });
 
 // Learned Facts Content Component - Shows what Mira learned from conversations
-const LearnedFactsContent = memo(({ pet }) => {
+const LearnedFactsContent = memo(({ pet, apiUrl, token, onInsightAction }) => {
+  const [processingId, setProcessingId] = useState(null);
+  const [showPending, setShowPending] = useState(true);
+  
   const learnedFacts = pet?.learned_facts || [];
   const conversationInsights = pet?.conversation_insights || [];
   
@@ -521,8 +524,33 @@ const LearnedFactsContent = memo(({ pet }) => {
     return acc;
   }, {});
   
-  // Pending insights count
-  const pendingCount = conversationInsights.filter(i => i.status === 'pending_review').length;
+  // Pending insights
+  const pendingInsights = conversationInsights.filter(i => i.status === 'pending_review');
+  const pendingCount = pendingInsights.length;
+  
+  // Handle confirm/reject
+  const handleInsightAction = async (insightId, action) => {
+    setProcessingId(insightId);
+    try {
+      const response = await fetch(`${apiUrl}/api/concierge/insights/${pet.id}/${insightId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ action })
+      });
+      
+      if (response.ok) {
+        // Notify parent to refresh pet data
+        onInsightAction?.(action, insightId);
+      }
+    } catch (error) {
+      console.error('Failed to process insight:', error);
+    } finally {
+      setProcessingId(null);
+    }
+  };
   
   // Category icons and labels
   const categoryConfig = {
