@@ -259,7 +259,7 @@ const IconStateDebugDrawer = ({
                 Syncing history
               </div>
               <div className="text-blue-300 mt-1">
-                Some older requests may appear gradually. New requests are always tracked.
+                Older requests may appear gradually. New requests are tracked instantly.
               </div>
             </div>
           )}
