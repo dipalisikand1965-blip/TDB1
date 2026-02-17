@@ -1140,6 +1140,7 @@ const MiraMessage = ({
           onEngageConcierge={onEngageConcierge}
           onOpenServiceRequest={onOpenServiceRequest}
           onShowPicks={onShowPicks}
+          onQuickReplyClick={(text, chip) => onQuickReply?.(text)}
         />
       </div>
     </div>
