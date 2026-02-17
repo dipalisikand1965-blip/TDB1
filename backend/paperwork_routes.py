@@ -649,29 +649,84 @@ async def get_quick_access_documents(pet_id: str):
 
 @router.post("/request")
 async def create_document_request(request_data: dict):
-    """Create a document assistance request with Service Desk integration"""
+    """
+    Create a document assistance request via UNIFORM SERVICE FLOW.
+    MIGRATED to handoff_to_spine() per Bible Section 12.0.
+    """
     db = get_db()
     
     request_id = f"PAPER-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    request_type = request_data.get("request_type", "document_organization")
+    pet_name = request_data.get("pet_name", "Pet")
+    user_name = request_data.get("user_name", "Customer")
+    description = request_data.get("description", "")
     
+    # Build intent
+    intent = f"Paperwork {request_type.replace('_', ' ').title()} for {pet_name}. {description[:100]}"
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # HANDOFF TO SPINE - Single canonical ticket creation
+    # ═══════════════════════════════════════════════════════════════════════════
+    spine_result = await handoff_to_spine(
+        db=db,
+        route_name="paperwork_routes.py",
+        endpoint="/paperwork/request",
+        pillar="paperwork",
+        category=request_type,
+        intent=intent,
+        user={
+            "email": request_data.get("user_email"),
+            "name": user_name,
+            "phone": request_data.get("user_phone")
+        },
+        pet={
+            "id": request_data.get("pet_id"),
+            "name": pet_name,
+            "breed": request_data.get("pet_breed")
+        },
+        payload={
+            "request_id": request_id,
+            "request_type": request_type,
+            "description": description,
+            "documents_needed": request_data.get("documents_needed", []),
+            "notes": request_data.get("notes", "")
+        },
+        channel="web",
+        urgency=request_data.get("urgency", "normal"),
+        created_by="member",
+        notify_admin=True,
+        notify_member=True,
+        tags=["paperwork", request_type]
+    )
+    
+    if not spine_result.get("success"):
+        logger.error(f"[PAPERWORK] Spine handoff failed: {spine_result.get('error')}")
+        raise HTTPException(status_code=500, detail="Failed to create service ticket")
+    
+    canonical_ticket_id = spine_result["ticket_id"]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SAVE TO paperwork_requests collection (pillar-specific record)
+    # ═══════════════════════════════════════════════════════════════════════════
     doc_request = {
         "id": request_id,
-        "request_type": request_data.get("request_type", "document_organization"),  # document_organization, lost_documents, emergency_access
+        "ticket_id": canonical_ticket_id,  # Link to canonical ticket
+        "request_type": request_type,
         "status": "pending",
         "priority": request_data.get("priority", "normal"),
         
         # Pet Details
         "pet_id": request_data.get("pet_id"),
-        "pet_name": request_data.get("pet_name"),
+        "pet_name": pet_name,
         
         # User Details
         "user_id": request_data.get("user_id"),
-        "user_name": request_data.get("user_name"),
+        "user_name": user_name,
         "user_email": request_data.get("user_email"),
         "user_phone": request_data.get("user_phone"),
         
         # Request Details
-        "description": request_data.get("description", ""),
+        "description": description,
         "documents_needed": request_data.get("documents_needed", []),
         "urgency": request_data.get("urgency", "normal"),
         "notes": request_data.get("notes", ""),
@@ -683,68 +738,13 @@ async def create_document_request(request_data: dict):
     
     await db.paperwork_requests.insert_one({k: v for k, v in doc_request.items() if k != "_id"})
     
-    # Create Service Desk Ticket
-    ticket = {
-        "id": f"TKT-{uuid.uuid4().hex[:8].upper()}",
-        "source": "paperwork_pillar",
-        "source_id": request_id,
-        "category": "paperwork",
-        "subcategory": doc_request["request_type"],
-        "subject": f"Paperwork Request: {doc_request['request_type'].replace('_', ' ').title()} for {doc_request['pet_name']}",
-        "description": f"Document request from {doc_request['user_name']}.\n{doc_request['description']}",
-        "status": "open",
-        "priority": doc_request["priority"],
-        "customer_name": doc_request["user_name"],
-        "customer_email": doc_request["user_email"],
-        "customer_phone": doc_request["user_phone"],
-        "pet_name": doc_request["pet_name"],
-        "pet_id": doc_request["pet_id"],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "tags": ["paperwork", doc_request["request_type"]],
-        "pillar": "paperwork"
-    }
-    
-    await db.tickets.insert_one({k: v for k, v in ticket.items() if k != "_id"})
-    
-    # Unified Inbox
-    inbox_item = {
-        "id": f"INB-{uuid.uuid4().hex[:8].upper()}",
-        "type": "paperwork_request",
-        "source": "paperwork_pillar",
-        "reference_id": request_id,
-        "ticket_id": ticket["id"],
-        "title": f"Paperwork Request: {doc_request['request_type'].replace('_', ' ').title()}",
-        "preview": f"{doc_request['pet_name']} - {doc_request['description'][:50]}...",
-        "customer_name": doc_request["user_name"],
-        "customer_email": doc_request["user_email"],
-        "pet_name": doc_request["pet_name"],
-        "status": "unread",
-        "priority": doc_request["priority"],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "pillar": "paperwork"
-    }
-    
-    await db.unified_inbox.insert_one({k: v for k, v in inbox_item.items() if k != "_id"})
-    
-    # Admin Notification
-    notification = {
-        "id": f"NOTIF-{uuid.uuid4().hex[:8].upper()}",
-        "type": "new_paperwork_request",
-        "title": f"New Paperwork Request: {doc_request['request_type'].replace('_', ' ').title()}",
-        "message": f"{doc_request['user_name']} needs document assistance for {doc_request['pet_name']}",
-        "category": "paperwork",
-        "priority": doc_request["priority"],
-        "related_id": request_id,
-        "link_to": f"/admin?tab=paperwork&request={request_id}",
-        "read": False,
-        "created_at": datetime.now(timezone.utc).isoformat()
-    }
-    await db.admin_notifications.insert_one({k: v for k, v in notification.items() if k != "_id"})
+    logger.info(f"[SPINE-MIGRATED] paperwork_routes.py:/paperwork/request → {canonical_ticket_id} | pillar=paperwork category={request_type}")
     
     return {
         "message": "Document request submitted successfully",
         "request_id": request_id,
-        "ticket_id": ticket["id"]
+        "ticket_id": canonical_ticket_id,
+        "deep_link": spine_result.get("deep_link")
     }
 
 
