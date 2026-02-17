@@ -22,6 +22,9 @@ import httpx
 
 router = APIRouter(prefix="/api/enjoy", tags=["enjoy"])
 
+# Import canonical ticket spine helper (SINGLE ENTRY POINT for all tickets)
+from utils.spine_helper import handoff_to_spine
+
 # Eventbrite API Config
 EVENTBRITE_PRIVATE_TOKEN = os.environ.get("EVENTBRITE_PRIVATE_TOKEN", "")
 EVENTBRITE_API_BASE = "https://www.eventbriteapi.com/v3"
