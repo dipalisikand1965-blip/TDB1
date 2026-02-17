@@ -1773,6 +1773,159 @@ async def review_conversation_insight(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/conflicts/{pet_id}")
+async def get_pet_conflicts(pet_id: str):
+    """
+    Get all unresolved conflicts for a pet.
+    Returns conflicts where health/allergy facts conflict with preference facts.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        from utils.fact_conflict_resolver import get_active_conflicts, get_safe_tags
+        
+        pet = await db.pets.find_one({"id": pet_id})
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet not found")
+        
+        learned_facts = pet.get("learned_facts", [])
+        conversation_insights = pet.get("conversation_insights", [])
+        
+        conflicts = get_active_conflicts(conversation_insights, learned_facts)
+        safe_tags = get_safe_tags(learned_facts, conversation_insights)
+        
+        return {
+            "success": True,
+            "pet_id": pet_id,
+            "pet_name": pet.get("name"),
+            "conflicts": conflicts,
+            "conflict_count": len(conflicts),
+            "has_unresolved_conflicts": len(conflicts) > 0,
+            "safe_tags": safe_tags
+        }
+        
+    except ImportError:
+        # Conflict resolver not available
+        return {
+            "success": True,
+            "pet_id": pet_id,
+            "conflicts": [],
+            "conflict_count": 0,
+            "has_unresolved_conflicts": False,
+            "error": "Conflict resolver not available"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting conflicts: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/conflicts/{pet_id}/resolve")
+async def resolve_pet_conflict(
+    pet_id: str,
+    entity: str = Query(..., description="The entity with conflict (e.g., 'chicken')"),
+    resolution: str = Query(..., description="Resolution: health_wins, preference_wins, or not_sure")
+):
+    """
+    Resolve a conflict between health and preference facts.
+    
+    resolution options:
+    - health_wins: Health/allergy is true, preference is suppressed (RECOMMENDED)
+    - preference_wins: User explicitly allows preference despite health warning
+    - not_sure: Keep safety default (health wins) but mark as uncertain
+    
+    SAFETY RULE: Until resolved, health always wins.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    if resolution not in ["health_wins", "preference_wins", "not_sure"]:
+        raise HTTPException(
+            status_code=400, 
+            detail="Resolution must be 'health_wins', 'preference_wins', or 'not_sure'"
+        )
+    
+    try:
+        from utils.fact_conflict_resolver import resolve_conflict
+        
+        result = await resolve_conflict(
+            db=db,
+            pet_id=pet_id,
+            entity=entity,
+            resolution=resolution,
+            resolved_by="user"
+        )
+        
+        return result
+        
+    except ImportError:
+        raise HTTPException(status_code=500, detail="Conflict resolver not available")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error resolving conflict: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/safe-tags/{pet_id}")
+async def get_pet_safe_tags(pet_id: str):
+    """
+    Get tags that are safe to display for a pet.
+    
+    Rules:
+    - Health/allergy tags always render
+    - Preference tags are suppressed if they conflict with health restrictions
+    - Returns both visible and suppressed tags with reasons
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        from utils.fact_conflict_resolver import get_safe_tags
+        
+        pet = await db.pets.find_one({"id": pet_id})
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet not found")
+        
+        learned_facts = pet.get("learned_facts", [])
+        conversation_insights = pet.get("conversation_insights", [])
+        
+        result = get_safe_tags(learned_facts, conversation_insights)
+        
+        return {
+            "success": True,
+            "pet_id": pet_id,
+            "pet_name": pet.get("name"),
+            **result
+        }
+        
+    except ImportError:
+        # Fallback: return all facts as tags (no conflict filtering)
+        pet = await db.pets.find_one({"id": pet_id})
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet not found")
+        
+        learned_facts = pet.get("learned_facts", [])
+        return {
+            "success": True,
+            "pet_id": pet_id,
+            "pet_name": pet.get("name"),
+            "visible_tags": [
+                {"content": f.get("content"), "category": f.get("category"), "suppressed": False}
+                for f in learned_facts
+            ],
+            "suppressed_tags": [],
+            "has_conflicts": False,
+            "warning": "Conflict resolver not available"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting safe tags: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 # ============================================================================
 # ADMIN ENDPOINTS - For Service Desk to reply to Concierge threads
