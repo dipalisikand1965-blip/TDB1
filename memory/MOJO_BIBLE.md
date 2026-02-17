@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://insight-extraction.preview.emergentagent.com
+https://picks-fallback.preview.emergentagent.com
 ```
 
 ---

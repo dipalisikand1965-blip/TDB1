@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://insight-extraction.preview.emergentagent.com/mira-demo**
+**https://picks-fallback.preview.emergentagent.com/mira-demo**
 
 ---
 

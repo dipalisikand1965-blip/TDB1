@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://insight-extraction.preview.emergentagent.com
+https://picks-fallback.preview.emergentagent.com
 
 ---
 

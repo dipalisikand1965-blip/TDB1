@@ -1,142 +1,164 @@
 <analysis>**original_problem_statement:**
-The user's vision is to create a Golden Standard Communication System, centered around an AI named Mira. The current focus is a deep, comprehensive audit and alignment of the entire Mira OS against a newly created internal design document, . The project follows the user's Mojo-First OS Rulebook, which dictates strict rules for UI layers, state management, chat continuity, and component behavior. The implementation is being done in phased manner, based on the Bible's specifications.
+The user's vision is to create a Golden Standard Communication System, centered around an AI named Mira. The development is strictly guided by an internal design document, . A critical, non-negotiable architectural rule is the **Uniform Service Flow,** which mandates that all service actions must create or attach to a single, canonical Service Desk Ticket spine using a  ID format. Another core principle is the **Health-First Safety Rule**, where pet health facts (e.g., allergies) always override conflicting preferences (e.g., loves chicken).
 
 **PRODUCT REQUIREMENTS:**
-Refer to  for all system behavior rules.
-1.  **Phase 1: Layer Manager & Navigation (DONE):** Implement a robust navigation stack that respects the Bible's rules for , , and  layers.
-2.  **Phase 2: Chat Continuity & Drafts (DONE):** Implement scroll position preservation, a new messages indicator, and pet-scoped draft messages with a 30-minute Time-To-Live (TTL).
-3.  **Phase 3: Icon State System (IN PROGRESS):** Implement the 3-state icon system (OFF/ON/PULSE) for the main navigation tabs to create a feel alive experience.
-4.  **Phase 4: Ticket Schema & Status Mapping (UPCOMING):** Update the backend ticket model and map internal statuses to user-facing chips.
-5.  **Phase 5: Picks Material Change Logic (UPCOMING):** Implement logic to prevent the Picks tab from pulsing unnecessarily.
-6.  **Future:** Redesign Onboarding, Integrate WhatsApp, build Learn section, refactor monoliths.
+1.  **Uniform Service Flow:** Enforce a single ticket backbone for all service requests.
+2.  **Canonical Ticket IDs:** All tickets must use the  format.
+3.  **Mira Intelligence QA:** A comprehensive test of Mira's ability to learn, confirm, and use facts from chat, including handling contradictions.
+4.  **Conflict Resolution:** When a new fact conflicts with a learned fact (e.g., preference vs. health), the system must prompt the user for resolution and default to the safest option.
+5.  **Safe Tag Rendering:** UI elements (like tags on the Services page) must never show conflicting information (e.g., show Loves chicken if a chicken allergy is confirmed).
+6.  **Picks Fallback Logic:** If Mira cannot find a matching product in the catalogue for a user's request, the Picks panel must not show generic items. Instead, it must fall back to a Concierge Arranges flow, which creates a service ticket via the ticket spine.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack React/FastAPI/MongoDB application. The agent has successfully completed and received user approval for Phase 1 (Layer Manager) and Phase 2 (Chat Continuity & Drafts) of the  implementation. This includes a new  for navigation, pet-scoped drafts saved to , and rules for chat scroll preservation. The agent is currently in the middle of implementing Phase 3, the Icon State System, but has introduced a crashing bug related to React hook ordering.
+The application is a functional React/FastAPI/MongoDB stack.
+-   **Uniform Service Flow:** A centralized helper  exists and has been integrated into the Mira chat service handoff.
+-   **Mira Intelligence & Conflict Handling:** A robust system is in place for extracting insights from chat, detecting contradictions (e.g., health vs. preference), and handling them. This includes:
+    -   Backend APIs to manage and resolve conflicts ().
+    -   A **Conflict Resolution Card** in the frontend MOJO modal to allow users to resolve conflicts.
+    -   A **chat interruption prompt** that asks for clarification in real-time when a conflicting fact is mentioned.
+-   **Safe Tags System:**
+    -   An API endpoint () serves only tags that respect the Health-First Safety Rule.
+    -   The  component has been integrated into the Services page hero section, ensuring suppressed preference tags are not displayed.
+-   **Picks Fallback Logic (Partially Implemented):** The  has been updated with the rule for Concierge Arranges. The backend was being modified to return a  flag, and the user confirmed the required frontend UI already exists.
 
 **Last working item**:
-- **Last item agent was working:** Implementing the Icon State System (Phase 3). The agent introduced a bug in  by calling the  hook before its state dependencies (, ) were initialized, causing the application to crash on load.
-- **Status:** IN PROGRESS
-- **Agent Testing Done:** N
-- **Which testing method agent to use?** Frontend testing agent. After fixing the bug, use the screenshot tool to verify the app loads. Then, a screen recording will be needed to demonstrate the PULSE -> ON state changes, pet-switch behavior, and absence of cross-pet state leakage, as requested by the user.
-- **User Testing Done:** N
+-   **Last item agent was working:** The agent was implementing the Picks Fallback Logic. The user clarified that when no product-in-catalogue matches a user's request, the Picks system must show a Concierge Arranges UI that creates a service ticket, instead of showing generic products. The agent was investigating why this was not happening and was in the middle of tracing the backend logic in  to ensure the  flag was correctly passed to trigger the existing frontend UI.
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** Manual testing. After fixing the backend, the agent must test by sending a chat request for a non-catalogued item and taking a screenshot of the  page to verify the Concierge Arranges UI appears correctly.
+-   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
-- **Issue 1: Application crashes on load due to incorrect hook placement (P0)**
-  - **Attempted fixes:** The agent correctly identified that  is called on line 494 of , while its dependencies like  are initialized later (e.g., line 526).
-  - **Next debug checklist:**
-    1.  In , remove the  hook call from its current position.
-    2.  Move the  hook call to be after all state declarations and other hook initializations, specifically after line 550 and before the first  block.
-    3.  Run yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. and yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. to ensure the fix doesn't introduce new issues.
-    4.  Restart the frontend service and use the screenshot tool to confirm the application loads successfully without crashing.
-  - **Why fix this issue and what will be achieved with the fix?** This is a critical, blocking bug. Fixing it will make the application runnable again and unblock the completion of the Phase 3 Icon State System.
-  - **Status:** IN PROGRESS
-  - **Is recurring issue?** N
-  - **Should Test frontend/backend/both after fix?** Frontend
+-   **Issue 1: Picks system does not fall back to Concierge Arranges when no catalogue match is found. (P0)**
+    -   **Attempted fixes:** The agent updated the  function to return a  flag and was tracing its usage through the  function in .
+    -   **Next debug checklist:**
+        1.  Continue tracing the  flag within the  function in .
+        2.  Ensure the final response dictionary sent to the frontend correctly includes the  flag and data to render the Concierge Arranges cards.
+        3.  Verify that the  action on a Concierge Arranges card correctly calls the  helper to create a canonical  ticket.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a non-negotiable rule from the user. Fixing it aligns the app with the  and improves user trust by ensuring Mira provides relevant actions.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Both. The backend logic must be fixed, and the frontend UI on  must be verified.
 
 **In progress Task List**:
-- **Task 1: Implement Phase 3: Icon State System (OFF/ON/PULSE) (P0)**
-  - **Where to resume:** Resume by fixing the hook placement bug described in All Pending/In progress Issue list. Once the app is stable, continue integrating the  data into the  and  components. Then, implement the state calculation logic within the  hook for the , , and  tabs as per the Bible.
-  - **What will be achieved with this?** The main navigation icons will dynamically change state (OFF, ON, PULSE) based on real-time application data for the active pet, fulfilling a core requirement of the .
-  - **Status:** IN PROGRESS
-  - **Should Test frontend/backend/both after fix?** Frontend. A screen recording is required for user verification.
-  - **Blocked on something:** Issue 1: Application crashes on load.
+-   None. The current focus is on resolving the pending issue.
 
 **Upcoming and Future Tasks**
-
 **Upcoming Tasks:**
-*   **P0: Complete Phase 3 (Icon State System):** After fixing the crash and implementing for the priority tabs, add the logic for the  and  tabs.
-*   **P1: Implement Phase 4 (Ticket Schema + Status Mapping):** Update the backend  model in MongoDB to include , , and . Implement the  mapping logic to ensure the UI shows the correct user-facing status.
-*   **P2: Implement Phase 5 (Picks Material Change Logic):** Create the logic to prevent the  icon from pulsing on minor changes, adhering to the Material Change Contract in the Bible.
-*   **P3: Run Golden Flow Regression Tests:** As per the Bible, test the core user journeys to ensure no regressions were introduced.
+*   **P0: Migrate all remaining ticket intake routes to the centralized helper.** The user has designated this as the real P0 after the current fixes are done. This includes routes like , , , etc., and is a **blocker** for enabling real-data icon states.
+*   **P1: Enable the  feature flag.** This can only be done after all intake points are migrated to the ticket spine.
 
 **Future Tasks:**
-*   Redesign Onboarding Page (Blocked: awaiting user content).
-*   Picks Engine Enhancement (filter using pet profile data).
-*   Full WhatsApp Integration (Blocked: awaiting user credentials).
-*   Build out Learn Section.
-*   Refactor  and .
+*   Implement Phase 5 (Picks Material Change Logic) to prevent the  icon from pulsing on minor changes.
+*   Migrate legacy ticket data to the new canonical  format.
+*   Refactor the monolithic  and .
+*   Redesign the Onboarding Page.
+*   Enhance the Picks Engine.
 *   Gate Mira OS for Paid Members.
 
 **Completed work in this session**
-- **Phase 1: Layer Manager (DONE & VERIFIED):**
-  - Created  for managing UI layer state (, , ).
-  - Created  to integrate the context with existing navigation.
-  - Refactored  and  to use the new Layer Manager.
-- **Phase 2: Chat Continuity & Draft Persistence (DONE & VERIFIED):**
-  - Created  for scroll preservation and  for pet-scoped drafts with a 30-min TTL.
-  - Integrated into , ensuring drafts are saved immediately on input change.
-  - Successfully implemented and tested the Draft saved for... banner on pet switch.
+-   **Implemented Robust Contradiction Handling:**
+    -   Created backend APIs (, ) to detect, manage, and resolve conflicting facts.
+    -   Built a frontend **MOJO Conflict Resolution Card** for user-driven resolution.
+    -   Implemented a **chat interruption prompt** to proactively ask for clarification when a conflict is created.
+-   **Implemented Safe Tags UI Guardrail:**
+    -   Created  to serve tags that respect health rules.
+    -   Integrated the  component into the **Services page hero**, ensuring suppressed/unsafe tags are never displayed.
+-   **Completed Full Mira Intelligence QA:**
+    -   Fixed and verified the Uniform Service Flow for chat requests, ensuring canonical  tickets are created via the spine.
+    -   Validated the end-to-end intelligence cycle (extraction, confirmation, retrieval).
+-   **Updated Documentation:** Added the Picks fallback rule to .
 
 **Earlier issues found/mentioned but not fixed**
-- **Live Site Down:** The user's production domain  is reportedly inaccessible due to an external DNS issue, which is outside the agent's control.
+-   The user's production domain  is reportedly inaccessible due to an external DNS issue.
 
 **Known issue recurrence from previous fork**
-- None.
+-   None.
 
 **Code Architecture**
-- **Stack:** React (Frontend), FastAPI (Backend), MongoDB (Database).
-- **Key Frontend Architecture:**
-  - : The main, monolithic component for the Mira OS interface. It's becoming overly complex.
-  - : A new React Context to manage navigation state according to the Bible's rules.
-  - : A directory of custom hooks (, , , ) that encapsulate the complex business logic defined in the Bible.
+-   **Stack:** React (Frontend), FastAPI (Backend), MongoDB (Database).
+-   **New Key Architecture:**
+    -   **Uniform Service Spine:** A principle enforced by the  helper in .
+    -   **Conflict Handling Engine:** Logic in  and  to manage and resolve contradictions in learned facts, enforcing a health-first default.
+    -   **Safe Tags API:** The  endpoint, which provides a filtered, UI-safe list of pet tags.
 
 **Key Technical Concepts**
-- **Documentation-Driven Development:** All implementation is strictly based on the rules defined in .
-- **React Context and Custom Hooks:** This pattern is being used to manage global state (navigation) and encapsulate complex, reusable logic (drafts, icon states), preventing further bloat in .
-- **Stateful UI:** The Icon State System introduces a complex state machine to make the UI feel alive and context-aware.
+-   **Health-First Safety Rule:** A core business logic principle where health facts (allergies) always override conflicting preference facts (loves) by default.
+-   **UI Guardrails:** Proactively preventing the display of incorrect or untrustworthy information, such as using  to suppress conflicting preference tags.
+-   **Picks Fallback Logic:** A rule ensuring that if no relevant catalogued items are found, the system defaults to a concierge service flow instead of showing irrelevant popular items.
 
 **key DB schema**
-- No schema changes have been made yet. Upcoming work in Phase 4 will add , , and  to the  collection.
+-   :
+    -   : Array of confirmed facts. Now includes  and .
+    -   : Array of pending insights.
+-    & : Collections for service tickets, unified by the ticket spine. Valid tickets have a  field in the format .
 
 **All files of reference**
--   **Critical:**  - The single source of truth for all system behavior.
--    - Main integration point for all new hooks. **(Currently contains a bug)**.
--    - The hook causing the crash.
--    - The foundation for the new navigation system.
--    - Logic for pet-scoped drafts.
--    - Where icon states will be displayed.
--    - The individual tab component being modified for icon states.
+-   **Critical Doc:** 
+-   **Central Logic:**
+    -    (Ticket Spine)
+    -    (Main chat/picks logic, conflict handling)
+    -    (Insight/conflict APIs, safe tags API)
+-   **New Frontend Components:**
+    -   
+    -   
+    -   
+-   **Modified Frontend Components:**
+    -    (Integrates conflict card)
+    -    (Integrates SafeTagsRenderer)
+-   **Main App Page:** 
 
 **Areas that need refactoring**:
--  is extremely large (over 3000 lines) and difficult to maintain. The hook dependency ordering is fragile. It should be broken down into smaller, self-contained child components.
+-   **All Remaining Intake Routes:** The next P0 task is to refactor ~15 routes (, , etc.) to use the  helper.
+-   : This file is extremely large and brittle (~15,000 lines). It is a major source of technical debt and is on the list for future refactoring.
 
 **key api endpoints**
-- No new API endpoints were created.
+-   : Main chat endpoint. Includes logic for insight extraction, picks, service handoff, and conflict interruption prompts.
+-   : **New**. Fetches UI-safe tags that respect health suppressions.
+-   : **New**. Fetches pending conflicts for the MOJO UI.
+-   : **New**. Resolves a conflict based on user choice.
 
 **Critical Info for New Agent**
-- **You are blocked.** The application is currently crashing on startup. Your first and only priority is to fix the hook ordering issue in  as detailed in the All Pending/In progress Issue list.
-- **Follow the Bible:** All work must strictly adhere to the . The user is very precise about this.
-- **Phase 3 is in progress:** You are in the middle of implementing the Icon State System. After fixing the crash, your goal is to get this feature working for the , , and  tabs.
-- **User requires proof:** The user has requested a screen recording to verify the completion of Phase 3, showing that the icon states (PULSE, ON, OFF) work correctly during tab visits and pet switches.
+-   Your immediate priority (P0) is to fix the **Picks fallback logic**. The user confirmed the frontend UI for Concierge Arranges already exists. You must ensure the backend  route in  correctly returns the  flag and data when no catalogue items match the user's intent.
+-   After fixing the Picks fallback, the next P0 task is to **migrate all remaining service intake routes** to use the  helper. This is a blocker for enabling the real-data icon states.
+-   **The user is very attentive to detail and the rules in **. Adhere strictly to these rules, especially regarding the Uniform Service Flow and Health-First Safety principles.
+-   All Mira-related intelligence features should be tested on the  page.
 
 **documents and test reports created in this job**
-- 
+-    (Updated)
+-    (Updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User (Summary):** Approved Phase 2 (Chat/Drafts) and instructed the agent to start Phase 3 (Icon States), prioritizing TODAY, SERVICES, CONCIERGE tabs. Requested a 60-second screen recording as proof of completion. **STATUS: In Progress**.
-2.  **Agent (Summary):** Began Phase 3, creating and integrating  and related components. Introduced a crashing bug.
-3.  **User:** Asked for a detailed summary for the next agent. **STATUS: Pending (This summary fulfills the request).**
+1.  **User:** Asks the agent to check the Bible for rules on what happens when a product is not in the catalogue for PICKS/SERVICES and confirm if the behavior is being followed. (STATUS: In Progress)
+2.  **User:** Points out that the agent should be testing on  and asks about the rule for recommendations when a product is not in the catalogue. (STATUS: In Progress)
+3.  **User:** Approves the  integration and asks the agent to proceed with migrating the remaining intake routes to the ticket spine. (STATUS: Completed, but next task is defined)
+4.  **User:** Provides a complete acceptance test for the  integration. (STATUS: Completed)
+5.  **User:** Asks the agent to integrate  into the Services page hero. (STATUS: Completed)
+6.  **User:** Acknowledges the previous QA summary and asks the agent to proceed with P1: wiring the  API into the Services page. (STATUS: Completed)
+7.  **User:** Asks agent to add the chat interruption prompt for conflicts. (STATUS: Completed)
+8.  **User:** Confirms the conflict UI and conservative deduplication was the right call and provides a clean QA script for testing Mira's intelligence. (STATUS: Completed)
+9.  **User:** Asks the agent to build the MOJO Conflict Resolution UI (P0). (STATUS: Completed)
+10. **User:** Confirms the QA deliverables are solid but points out the critical issue of conflicting tags and provides a clear, prioritized list of fixes (contradiction handling, tag guardrail, deduplication). (STATUS: Completed)
 
 **Project Health Check:**
-- **Broken:** The application currently crashes on load due to a bug in the Phase 3 implementation.
-- **Mocked:** None.
+-   **Broken:** The Picks system fallback logic is not working as specified in the . It shows generic products instead of the Concierge Arranges UI when there's no catalogue match.
+-   **Mocked:** The  feature flag remains . The main navigation icons do not yet reflect real-time, unified ticket data.
 
 **3rd Party Integrations**
-- No new integrations. Existing ones include Resend, Shopify, YouTube, ElevenLabs, and Firebase.
+-   Existing stack includes Resend, Shopify, YouTube, ElevenLabs, and Firebase. No new integrations were added.
 
 **Testing status**
-- **Testing agent used after significant changes:** YES, for Phase 2.
-- **Troubleshoot agent used after agent stuck in loop:** NO
-- **Test files created:** None.
-- **Known regressions:** The entire app is non-functional due to the crash.
+-   **Testing agent used after significant changes:** NO
+-   **Troubleshoot agent used after agent stuck in loop:** NO
+-   **Test files created:** None.
+-   **Known regressions:** None.
 
 **Credentials to test flow:**
 -   **User Login:**  / 
 -   **Admin Login:**  / 
+-   **Key Pet for Testing:** Lola (ID: )
 
 **What agent forgot to execute**
-- The agent did not forget a specific task but made a mistake during implementation. They correctly diagnosed the cause of the bug (incorrect hook ordering) but were interrupted before they could apply the fix. The next step is to execute that identified fix.</analysis>
+-   The agent has not forgotten any tasks but is in the middle of implementing the Picks Fallback Logic. The immediate next action is to complete the backend fix in .</analysis>

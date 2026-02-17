@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://insight-extraction.preview.emergentagent.com
+**Preview URL:** https://picks-fallback.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
