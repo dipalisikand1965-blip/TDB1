@@ -4520,12 +4520,19 @@ async def mira_os_understand_with_products(
         should_show_products = not is_service_intent and not is_food_main_intent
         
         # ═══════════════════════════════════════════════════════════════════════════
-        # PICKS FALLBACK RULE (Bible Section 9.0)
-        # Initialize concierge_fallback variables here so they're available later
+        # PICKS CONTRACT - Initialize with defaults (Bible Section 9.0)
+        # These variables MUST be set for ALL code paths
         # ═══════════════════════════════════════════════════════════════════════════
+        fallback_mode = "catalogue"  # Default, overridden by search results
+        fallback_reason = None
+        match_count = 0
+        top_score = 0.0
+        blocked_by_safety = False
+        concierge_cards = []
+        clarifying_questions = []
         concierge_fallback = False
-        concierge_fallback_reason = None
         concierge_arranges = []
+        concierge_fallback_reason = None
         
         # ═══════════════════════════════════════════════════════════════════════════
         # MODE-BASED PRODUCT CONTROL
