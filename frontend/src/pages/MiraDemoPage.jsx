@@ -554,6 +554,7 @@ const MiraDemoPage = () => {
   // ═══════════════════════════════════════════════════════════════════════════════
   const {
     iconStates,
+    mojoState,
     todayState,
     servicesState,
     conciergeState,
@@ -564,6 +565,12 @@ const MiraDemoPage = () => {
     recalculateAll: recalculateIconStates,
   } = useIconState({
     currentPetId: pet?.id,
+    mojoData: {
+      soulScore: pet?.soulScore || soulKnowledge.soulScore || 0,
+      hasIncompleteFields: (pet?.soulScore || soulKnowledge.soulScore || 0) < 50,
+      pendingSuggestions: [], // TODO: Connect to soul form suggestions
+      newInsights: false, // TODO: Track new insights from conversations
+    },
     todayData: {
       urgent: Array.isArray(proactiveAlerts) ? proactiveAlerts.filter(a => a.priority === 'urgent') : [],
       due: Array.isArray(proactiveAlerts) ? proactiveAlerts.filter(a => a.type === 'due') : [],
