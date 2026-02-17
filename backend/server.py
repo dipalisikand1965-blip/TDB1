@@ -4975,7 +4975,7 @@ async def admin_get_all_pets(
 @admin_router.get("/members/{member_email}/pets")
 async def admin_get_member_pets(
     member_email: str,
-    username: str = Depends(verify_admin)
+    username: str = Depends(verify_admin_auth)
 ):
     """
     Get all pets belonging to a member by their email.
