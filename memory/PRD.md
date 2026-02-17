@@ -94,6 +94,13 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
   - Test 2: Normal request → `fallback_mode='catalogue'` with matches ✓
   - Test 3: Ambiguous request → Handled correctly ✓  
   - Test 4: Ticket creation → Canonical `TCK-2026-*` format ✓
+- [x] **Phase 5: Conversation Contract (Bible Section 11.0)** - All acceptance tests passed (Feb 17, 2026)
+  - Test 1: "I want a pet cafe" → `mode='clarify'`, no Places call ✓
+  - Test 2: "Pet cafe in Koramangala" → `mode='places'`, 5 places returned ✓
+  - Test 3: "How to train recall" → `mode='learn'`, 5 YouTube videos ✓
+  - Test 4: "Book grooming tomorrow" → `mode='ticket'`, ticket created ✓
+  - Test 5: "Find canine acupuncturist" → `mode='handoff'`, bespoke intent ✓
+  - Frontend: Quick reply chips rendering correctly based on contract mode
 - [ ] Update remaining intake routes to use `create_or_attach_service_ticket()`:
   - `stay_routes.py`, `dine_routes.py`, `celebrate_routes.py`, `enjoy_routes.py`
   - `fit_routes.py`, `learn_routes.py`, `paperwork_routes.py`, `emergency_routes.py`
@@ -105,14 +112,13 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 ### P1 (High Priority)
 - [ ] Implement PICKS material change logic (Bible Section 2.4)
 - [ ] Connect LEARN items to icon state
-- [ ] Phase 5: Picks Material Change Logic
 - [ ] Provide 60-second screen recording proof (verify PULSE → ON transitions)
 
 ### P2 (Medium Priority)
 - [ ] Refactor `server.py` (monolithic)
 - [ ] Refactor `DoggyServiceDesk.jsx` (monolithic)
 - [ ] Implement Safety Mode suppression (Bible Section 8)
-- [ ] Phase 5: Picks Material Change Logic
+- [ ] Refactor `mira_routes.py` (extremely large)
 
 ### Future Tasks
 - [ ] Redesign Onboarding Page (blocked on user content)
