@@ -3018,6 +3018,53 @@ async def search_real_products(
         logger.info(f"[ADVISORY-ONLY] 📋 Meal/diet request detected - skipping product search, use tip card")
         return []  # Return empty - tip card will be generated instead
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # BESPOKE/CUSTOM REQUEST DETECTION (Bible Section 9.0)
+    # If user intent is clearly custom/bespoke, trigger Concierge fallback immediately
+    # Examples: "find a rare supplement brand", "book a private trainer who understands post-surgery rehab"
+    # ═══════════════════════════════════════════════════════════════════════════
+    is_bespoke_request = any(kw in full_search_context for kw in [
+        "specialist", "acupuncture", "hydrotherapy", "physiotherapy", "rehab", "rehabilitation",
+        "rare", "specific brand", "custom", "bespoke", "special order", "source", "arrange",
+        "find me a", "book a private", "post-surgery", "post surgery", "special diet",
+        "veterinary nutritionist", "animal behaviorist", "behaviorist", "holistic", 
+        "alternative medicine", "chiropractor", "massage therapist", "pool session",
+        "swim therapy", "water therapy", "laser therapy", "stem cell", "cbd", "hemp",
+        "prosthetic", "wheelchair", "mobility aid", "blind dog", "deaf dog"
+    ])
+    
+    if is_bespoke_request:
+        import uuid as uuid_module
+        logger.info(f"[PICKS FALLBACK] 🎯 Bespoke/custom request detected - triggering Concierge fallback for '{user_input_lower[:50]}'")
+        pet_name_val = pet_context.get('name', 'your pet')
+        detected_pillar = entities.get("pillar", "care")
+        return {
+            "products": [],
+            "concierge_fallback": True,
+            "concierge_fallback_reason": "bespoke_request",
+            "concierge_arranges": [
+                {
+                    "id": f"concierge-{uuid_module.uuid4().hex[:8]}",
+                    "type": "concierge_pick",
+                    "label": "Concierge Pick",
+                    "title": f"Special request for {pet_name_val}",
+                    "subtitle": "Sourced by our concierge team",
+                    "description": f"This is a specialized request — our concierge team will source and arrange this for {pet_name_val}.",
+                    "spec_chip": "Specialist sourcing",
+                    "no_price": True,
+                    "action": "create_ticket",
+                    "pillar": detected_pillar,
+                    "category": "concierge_arranges",
+                    "intent": user_input_lower[:200],
+                    "original_request": user_query,
+                    "pet_id": pet_context.get("id"),
+                    "pet_name": pet_name_val,
+                    "pet_constraints": pet_context.get("sensitivities", []),
+                    "why_it_fits": "Specialist sourcing by our concierge team"
+                }
+            ]
+        }
+    
     try:
         # Build search query based on entities
         query = {"available": {"$ne": False}}
