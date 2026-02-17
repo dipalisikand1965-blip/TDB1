@@ -566,8 +566,10 @@ const MiraDemoPage = () => {
   } = useIconState({
     currentPetId: pet?.id,
     mojoData: {
-      soulScore: pet?.soulScore || soulKnowledge.soulScore || 0,
-      hasIncompleteFields: (pet?.soulScore || soulKnowledge.soulScore || 0) < 50,
+      // Note: soulKnowledge is defined later - use pet?.soulScore only here
+      // The hook will recalculate when pet changes
+      soulScore: pet?.soulScore || pet?.overall_score || 0,
+      hasIncompleteFields: (pet?.soulScore || pet?.overall_score || 0) < 50,
       pendingSuggestions: [], // TODO: Connect to soul form suggestions
       newInsights: false, // TODO: Track new insights from conversations
     },
