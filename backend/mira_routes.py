@@ -3409,8 +3409,23 @@ async def search_real_products(
         avoided_product_names = {p.get("product_name", "").lower() for p in products_to_avoid if p.get("product_name")}
         
         scored_products = []
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # MIN_MATCH_SCORE THRESHOLD (Bible Section 9.0)
+        # Explicit threshold to determine if products truly match user's request
+        # If top_score < MIN_MATCH_SCORE, trigger Concierge fallback
+        # ═══════════════════════════════════════════════════════════════════════════
+        MIN_MATCH_SCORE = 0.55  # Configurable threshold
+        
+        # Extract key terms from user query for relevance scoring
+        user_query_terms = set(user_input_lower.replace(',', ' ').replace('.', ' ').split())
+        # Filter out common stop words
+        stop_words = {'i', 'me', 'my', 'a', 'an', 'the', 'for', 'of', 'to', 'in', 'on', 'with', 'want', 'need', 'find', 'show', 'can', 'you', 'please', 'get', 'some', 'like', 'would'}
+        user_query_terms = user_query_terms - stop_words
+        
         for product in all_products:
             score = 0
+            relevance_score = 0.0  # NEW: Track how well product matches user's intent
             why_reasons = []
             skip = False
             
@@ -3420,6 +3435,19 @@ async def search_real_products(
             product_desc = safe_lower(product.get("description", ""))
             product_tags = safe_string_list(product.get("tags", []))
             product_flavors = safe_string_list(product.get("flavors", []))
+            product_category = safe_lower(product.get("category", ""))
+            
+            # Create product term set for relevance matching
+            product_terms = set(product_name.replace(',', ' ').replace('.', ' ').split())
+            product_terms.update(product_tags)
+            product_terms.add(product_category)
+            
+            # ═══════════════════════════════════════════════════════════════════════════
+            # RELEVANCE SCORING: How well does this product match the user's query?
+            # ═══════════════════════════════════════════════════════════════════════════
+            if user_query_terms:
+                matching_terms = user_query_terms.intersection(product_terms)
+                relevance_score = len(matching_terms) / len(user_query_terms) if user_query_terms else 0.0
             
             # FIRST: Check if product is in "products to avoid" list (parent feedback)
             if str(product_id) in avoided_product_ids or product_name in avoided_product_names:
@@ -3442,18 +3470,21 @@ async def search_real_products(
             for fav_lower in favorites:
                 if fav_lower in product_name or fav_lower in product_desc or any(fav_lower in f for f in product_flavors):
                     score += 10
+                    relevance_score += 0.2  # Boost relevance for favorites
                     why_reasons.append(f"{pet_name} loves {fav_lower}")
             
             # Check attributes match (attributes already normalized)
             for attr_lower in attributes:
                 if attr_lower in product_name or attr_lower in product_desc or attr_lower in product_tags:
                     score += 5
+                    relevance_score += 0.1
                     why_reasons.append(f"Matches '{attr_lower}' preference")
             
             # Check constraints (constraints already normalized)
             for const_lower in constraints:
                 if const_lower in product_name or const_lower in product_desc or const_lower in product_tags:
                     score += 3
+                    relevance_score += 0.05
             
             # Generate personalized "why for pet" reason
             if not why_reasons:
@@ -3469,6 +3500,7 @@ async def search_real_products(
             scored_products.append({
                 "product": product,
                 "score": score,
+                "relevance_score": min(1.0, relevance_score),  # Cap at 1.0
                 "why_for_pet": " • ".join(why_reasons[:2])
             })
         
