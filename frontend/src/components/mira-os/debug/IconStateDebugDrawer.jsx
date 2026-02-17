@@ -1,14 +1,19 @@
 /**
- * IconStateDebugDrawer.jsx
- * ========================
- * Debug drawer to display raw counts and computed icon states
- * For developer validation of the icon state system
+ * IconStateDebugDrawer.jsx (internally) / Proof Panel (user-facing)
+ * ==================================================================
+ * QA panel to display raw counts and computed icon states
+ * For developer/tester validation of the icon state system
+ * 
+ * User-facing name: "Proof Panel"
+ * Feature flag: ?debug=1
+ * Microcopy: "For QA only. Shows the contracts Mira is following for this turn."
  * 
  * Shows:
  * - Raw counts from backend API
  * - Computed states per icon
  * - Query filters used
  * - Data flow verification
+ * - "Syncing history" notice (never says "legacy" to users)
  */
 
 import React, { useState, useEffect } from 'react';
