@@ -2966,6 +2966,105 @@ def safe_string_list(val):
         return [safe_lower(item) for item in val if item]
     return []
 
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PICKS FALLBACK CONTRACT BUILDER (Bible Section 9.0)
+# Returns explicit, deterministic contract for frontend rendering
+# ═══════════════════════════════════════════════════════════════════════════════
+def build_picks_fallback_contract(
+    fallback_mode: str,  # "catalogue" | "concierge" | "clarify"
+    fallback_reason: str,  # "no_match" | "low_confidence" | "blocked_by_safety" | "bespoke_intent" | None
+    products: list = None,
+    match_count: int = 0,
+    top_score: float = 0.0,
+    blocked_by_safety: bool = False,
+    concierge_cards: list = None,
+    clarifying_questions: list = None,
+    pet_context: dict = None,
+    user_query: str = "",
+    pillar: str = "care"
+) -> dict:
+    """
+    Build the explicit fallback contract for PICKS.
+    
+    Contract fields:
+    - match_count: Number of catalogue items found
+    - top_score: Relevance score of best match (0.0 - 1.0)
+    - fallback_mode: "catalogue" | "concierge" | "clarify"
+    - fallback_reason: "no_match" | "low_confidence" | "blocked_by_safety" | "bespoke_intent" | None
+    - products: Array of catalogue products (only when fallback_mode="catalogue")
+    - concierge_cards: Array of 1-3 cards (only when fallback_mode="concierge")
+    - clarifying_questions: Array (only when fallback_mode="clarify")
+    - blocked_by_safety: Boolean flag
+    """
+    import uuid as uuid_module
+    
+    pet_name = pet_context.get("name", "your pet") if pet_context else "your pet"
+    pet_id = pet_context.get("id") if pet_context else None
+    pet_constraints = pet_context.get("sensitivities", []) if pet_context else []
+    
+    # Build base contract
+    contract = {
+        "match_count": match_count,
+        "top_score": round(top_score, 3),
+        "fallback_mode": fallback_mode,
+        "fallback_reason": fallback_reason,
+        "blocked_by_safety": blocked_by_safety,
+        "products": products or [],
+        "concierge_cards": [],
+        "clarifying_questions": []
+    }
+    
+    # Add concierge cards if fallback_mode is "concierge"
+    if fallback_mode == "concierge":
+        if concierge_cards:
+            contract["concierge_cards"] = concierge_cards
+        else:
+            # Build default concierge card
+            contract["concierge_cards"] = [
+                {
+                    "id": f"concierge-{uuid_module.uuid4().hex[:8]}",
+                    "type": "concierge_pick",
+                    "label": "Concierge Pick",
+                    "title": f"Custom request for {pet_name}",
+                    "subtitle": "Allergy-safe" if pet_constraints else "Made to requirements",
+                    "description": f"We don't have this in the catalogue yet — we can arrange it for {pet_name}.",
+                    "spec_chip": f"Made to {pet_name}'s requirements",
+                    "no_price": True,
+                    "action": "create_ticket",
+                    "pillar": pillar,
+                    "category": "concierge_arranges",
+                    "intent": user_query[:200] if user_query else "",
+                    "original_request": user_query or "",
+                    "pet_id": pet_id,
+                    "pet_name": pet_name,
+                    "pet_constraints": pet_constraints,
+                    "why_it_fits": f"Made to {pet_name}'s requirements"
+                }
+            ]
+    
+    # Add clarifying questions if fallback_mode is "clarify"
+    if fallback_mode == "clarify":
+        if clarifying_questions:
+            contract["clarifying_questions"] = clarifying_questions
+        else:
+            # Build default clarifying questions
+            contract["clarifying_questions"] = [
+                {
+                    "id": f"clarify-{uuid_module.uuid4().hex[:8]}",
+                    "question": "What city or area are you looking in?",
+                    "type": "location"
+                },
+                {
+                    "id": f"clarify-{uuid_module.uuid4().hex[:8]}",
+                    "question": "When do you need this?",
+                    "type": "date"
+                }
+            ]
+    
+    return contract
+
+
 async def search_real_products(
     entities: Dict[str, Any],
     pet_context: Dict[str, Any],
