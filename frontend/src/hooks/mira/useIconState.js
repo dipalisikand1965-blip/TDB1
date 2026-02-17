@@ -177,30 +177,33 @@ const useIconState = ({
   /**
    * Calculate MOJO (Pet Profile) icon state
    * OFF: Never (pet always exists when in OS)
-   * ON: Pet profile exists, soul score >= 50%
-   * PULSE: Soul score < 50% (incomplete profile) OR new insights discovered OR pending suggestions
+   * ON: Pet profile exists AND no critical missing fields AND soul score >= 50%
+   * PULSE: Critical missing fields OR soul score < 50% OR new insights discovered OR pending suggestions
+   * 
+   * Critical missing fields = vaccinations, allergies, medications, emergency contact, location, vet details
    */
   const calculateMojoState = useCallback(() => {
     const { 
       soulScore = 0, 
+      hasCriticalMissing = false,
       hasIncompleteFields = false, 
       pendingSuggestions = [], 
       newInsights = false 
     } = mojoData;
     
     // MOJO is never OFF - if pet exists, it's at least ON
-    // PULSE conditions:
-    // 1. Soul score < 50% (encouraging profile completion)
-    // 2. Has incomplete critical fields
+    // PULSE conditions (priority order):
+    // 1. Has critical missing fields (vaccinations, allergies, etc.) - highest priority
+    // 2. Soul score < 50% (encouraging profile completion)
     // 3. New insights discovered from conversation
     // 4. Pending suggestions to enhance profile
     
-    const needsAttention = soulScore < 50 || hasIncompleteFields || newInsights;
+    const needsAttention = hasCriticalMissing || soulScore < 50 || hasIncompleteFields || newInsights;
     const hasPendingSuggestions = pendingSuggestions.length > 0;
     
     if (needsAttention || hasPendingSuggestions) {
-      const count = pendingSuggestions.length || (soulScore < 50 ? 1 : 0);
-      return { state: ICON_STATE.PULSE, count };
+      const count = hasCriticalMissing ? 1 : (pendingSuggestions.length || (soulScore < 50 ? 1 : 0));
+      return { state: ICON_STATE.PULSE, count, reason: hasCriticalMissing ? 'critical_missing' : 'incomplete' };
     }
     
     return { state: ICON_STATE.ON, count: 0 };
