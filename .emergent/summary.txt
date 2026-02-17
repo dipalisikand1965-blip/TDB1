@@ -1,153 +1,150 @@
 <analysis>**original_problem_statement:**
-The user's vision is to create a Golden Standard Communication System, centered around an AI named Mira. The development is strictly guided by an internal design document, . A critical, non-negotiable architectural rule is the **Uniform Service Flow,** which mandates that all service actions must create or attach to a single, canonical Service Desk Ticket spine using a  ID format. Another core principle is the **Health-First Safety Rule**, where pet health facts (e.g., allergies) always override conflicting preferences (e.g., loves chicken).
+The user's vision is to create a Golden Standard Communication System, centered around an AI named Mira. The development is strictly guided by an internal design document, . A critical architectural rule is the **Uniform Service Flow,** mandating that all service actions create or attach to a single, canonical Service Desk Ticket spine using a  ID format. Another core principle is the **Health-First Safety Rule**, where pet health facts always override conflicting preferences.
 
 **PRODUCT REQUIREMENTS:**
 1.  **Uniform Service Flow:** Enforce a single ticket backbone for all service requests.
 2.  **Canonical Ticket IDs:** All tickets must use the  format.
-3.  **Mira Intelligence QA:** A comprehensive test of Mira's ability to learn, confirm, and use facts from chat, including handling contradictions.
-4.  **Conflict Resolution:** When a new fact conflicts with a learned fact (e.g., preference vs. health), the system must prompt the user for resolution and default to the safest option.
-5.  **Safe Tag Rendering:** UI elements (like tags on the Services page) must never show conflicting information (e.g., show Loves chicken if a chicken allergy is confirmed).
-6.  **Picks Fallback Logic:** If Mira cannot find a matching product in the catalogue for a user's request, the Picks panel must not show generic items. Instead, it must fall back to a Concierge Arranges flow, which creates a service ticket via the ticket spine.
+3.  **Picks Fallback Logic:** If Mira cannot find a matching product, the Picks panel must fall back to a Concierge Arranges flow, creating a service ticket via the ticket spine.
+4.  **Conversational Rules Contract:** Implement a deterministic  from the backend to drive UI for quick replies, Google Places, and YouTube integrations, ensuring UI never infers logic from free text.
+5.  **Explicit Location Consent:** For near me type queries, the system must explicitly ask for user consent before triggering browser geolocation.
+6.  **Route Migration:** All ticket-creating endpoints must be migrated to a centralized helper to enforce the Uniform Service Flow.
 
 **User's preferred language**: English
 
 **what currently exists?**
 The application is a functional React/FastAPI/MongoDB stack.
--   **Uniform Service Flow:** A centralized helper  exists and has been integrated into the Mira chat service handoff.
--   **Mira Intelligence & Conflict Handling:** A robust system is in place for extracting insights from chat, detecting contradictions (e.g., health vs. preference), and handling them. This includes:
-    -   Backend APIs to manage and resolve conflicts ().
-    -   A **Conflict Resolution Card** in the frontend MOJO modal to allow users to resolve conflicts.
-    -   A **chat interruption prompt** that asks for clarification in real-time when a conflicting fact is mentioned.
--   **Safe Tags System:**
-    -   An API endpoint () serves only tags that respect the Health-First Safety Rule.
-    -   The  component has been integrated into the Services page hero section, ensuring suppressed preference tags are not displayed.
--   **Picks Fallback Logic (Partially Implemented):** The  has been updated with the rule for Concierge Arranges. The backend was being modified to return a  flag, and the user confirmed the required frontend UI already exists.
+- The Picks Fallback Logic is fully implemented and verified, governed by a deterministic  from the backend.
+- **Phase 5 Conversational Rules Contract is implemented and verified.** A  is returned from the main chat API to deterministically render quick replies, Google Places cards, and YouTube video cards.
+- An explicit location consent gate is implemented, which asks the user for permission before using their location for near me searches.
+- **The P0 task to migrate all intake routes is in progress.** A centralized helper, , has been created in . Several key routes (, , , ) have already been migrated to use this helper.
 
 **Last working item**:
--   **Last item agent was working:** The agent was implementing the Picks Fallback Logic. The user clarified that when no product-in-catalogue matches a user's request, the Picks system must show a Concierge Arranges UI that creates a service ticket, instead of showing generic products. The agent was investigating why this was not happening and was in the middle of tracing the backend logic in  to ensure the  flag was correctly passed to trigger the existing frontend UI.
+-   **Last item agent was working:** The agent was in the middle of the P0 task to migrate all remaining ticket intake routes to the new  helper. It had just started analyzing  before being asked to provide a summary, pausing the migration work.
 -   **Status:** IN PROGRESS
--   **Agent Testing Done:** N
--   **Which testing method agent to use?** Manual testing. After fixing the backend, the agent must test by sending a chat request for a non-catalogued item and taking a screenshot of the  page to verify the Concierge Arranges UI appears correctly.
+-   **Agent Testing Done:** Y (for the routes migrated so far, like  and )
+-   **Which testing method agent to use?** Manual testing by curl. The agent should continue testing each migrated endpoint individually by sending a request and verifying that a canonical  ticket is created and returned in the response.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Picks system does not fall back to Concierge Arranges when no catalogue match is found. (P0)**
-    -   **Attempted fixes:** The agent updated the  function to return a  flag and was tracing its usage through the  function in .
-    -   **Next debug checklist:**
-        1.  Continue tracing the  flag within the  function in .
-        2.  Ensure the final response dictionary sent to the frontend correctly includes the  flag and data to render the Concierge Arranges cards.
-        3.  Verify that the  action on a Concierge Arranges card correctly calls the  helper to create a canonical  ticket.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a non-negotiable rule from the user. Fixing it aligns the app with the  and improves user trust by ensuring Mira provides relevant actions.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Both. The backend logic must be fixed, and the frontend UI on  must be verified.
+There are no pending bugs. The primary focus is the ongoing migration task.
 
 **In progress Task List**:
--   None. The current focus is on resolving the pending issue.
+-   **Task 1: P0 - Complete migration of all remaining intake routes to the  helper. (P0)**
+    -   **Where to resume:** The agent must modify  to use the  helper.
+    -   **What will be achieved with this?** This will enforce the Uniform Service Flow across the entire application, ensuring all tickets are canonical  tickets created via the central spine. This is a critical blocker for enabling the  feature flag.
+    -   **Status:** IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** Backend. Each migrated route needs to be tested with .
+    -   **Blocked on something:** No.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
-*   **P0: Migrate all remaining ticket intake routes to the centralized helper.** The user has designated this as the real P0 after the current fixes are done. This includes routes like , , , etc., and is a **blocker** for enabling real-data icon states.
-*   **P1: Enable the  feature flag.** This can only be done after all intake points are migrated to the ticket spine.
+*   **P0: Continue and complete the migration** of the following routes in order:
+    1.  
+    2.  
+    3.  
+    4.  
+    5.  
+    6.  
+    7.   (to be migrated last)
+*   **P1: Enable the  feature flag** after all routes are migrated and verified.
+*   **P2: Run a final smoke sweep** (1 request per pillar) to verify E2E ticket creation and UI badge updates.
 
 **Future Tasks:**
-*   Implement Phase 5 (Picks Material Change Logic) to prevent the  icon from pulsing on minor changes.
-*   Migrate legacy ticket data to the new canonical  format.
+*   Migrate legacy ticket data to the new canonical format.
 *   Refactor the monolithic  and .
 *   Redesign the Onboarding Page.
 *   Enhance the Picks Engine.
 *   Gate Mira OS for Paid Members.
 
 **Completed work in this session**
--   **Implemented Robust Contradiction Handling:**
-    -   Created backend APIs (, ) to detect, manage, and resolve conflicting facts.
-    -   Built a frontend **MOJO Conflict Resolution Card** for user-driven resolution.
-    -   Implemented a **chat interruption prompt** to proactively ask for clarification when a conflict is created.
--   **Implemented Safe Tags UI Guardrail:**
-    -   Created  to serve tags that respect health rules.
-    -   Integrated the  component into the **Services page hero**, ensuring suppressed/unsafe tags are never displayed.
--   **Completed Full Mira Intelligence QA:**
-    -   Fixed and verified the Uniform Service Flow for chat requests, ensuring canonical  tickets are created via the spine.
-    -   Validated the end-to-end intelligence cycle (extraction, confirmation, retrieval).
--   **Updated Documentation:** Added the Picks fallback rule to .
+-   **Verified Picks Fallback Logic**: Completed the user's QA script, confirming the deterministic  works as specified.
+-   **Implemented Phase 5: Conversational Rules Contract**:
+    -   **Backend**: Created a  in  to dictate chat UI mode (, , , , , ) and integrated Google Places and YouTube API calls.
+    -   **Frontend**: Created new components (, , , ) to render the UI deterministically based on the backend contract.
+    -   **Location Consent Gate**: Implemented and verified an explicit consent flow for near me queries.
+-   **Started P0 Route Migration**:
+    -   Created a centralized migration helper:  in .
+    -   Successfully migrated endpoints in , , , and .
+-   **Documentation**: Updated  with the new Conversational Rules Contract rules.
 
 **Earlier issues found/mentioned but not fixed**
--   The user's production domain  is reportedly inaccessible due to an external DNS issue.
+-   The user's production domain  is reportedly inaccessible due to an external DNS issue. This is outside the agent's scope.
 
 **Known issue recurrence from previous fork**
 -   None.
 
 **Code Architecture**
 -   **Stack:** React (Frontend), FastAPI (Backend), MongoDB (Database).
--   **New Key Architecture:**
-    -   **Uniform Service Spine:** A principle enforced by the  helper in .
-    -   **Conflict Handling Engine:** Logic in  and  to manage and resolve contradictions in learned facts, enforcing a health-first default.
-    -   **Safe Tags API:** The  endpoint, which provides a filtered, UI-safe list of pet tags.
+-   **Key Architectural Principles:**
+    -   **Deterministic Contracts:** Both  and  are sent from the backend to dictate frontend rendering, eliminating UI-side logic.
+    -   **Uniform Service Spine:** All ticket creation logic is being centralized into a single helper () that generates canonical  IDs. This migration is currently in progress.
 
 **Key Technical Concepts**
--   **Health-First Safety Rule:** A core business logic principle where health facts (allergies) always override conflicting preference facts (loves) by default.
--   **UI Guardrails:** Proactively preventing the display of incorrect or untrustworthy information, such as using  to suppress conflicting preference tags.
--   **Picks Fallback Logic:** A rule ensuring that if no relevant catalogued items are found, the system defaults to a concierge service flow instead of showing irrelevant popular items.
+-   **API-Driven UI State:** The backend fully controls UI rendering modes through explicit JSON contracts.
+-   **Centralized Ticket Helper:** A single helper function () is being used to standardize ticket creation across all backend routes.
+-   **Intent Routing:** The  logic uses a router to determine the user's intent (, , , etc.) and sets the appropriate  for the frontend.
 
 **key DB schema**
--   :
-    -   : Array of confirmed facts. Now includes  and .
-    -   : Array of pending insights.
--    & : Collections for service tickets, unified by the ticket spine. Valid tickets have a  field in the format .
+-   No changes were made to the database schema in this session.
 
 **All files of reference**
 -   **Critical Doc:** 
--   **Central Logic:**
-    -    (Ticket Spine)
-    -    (Main chat/picks logic, conflict handling)
-    -    (Insight/conflict APIs, safe tags API)
+-   **New Core Backend Logic:**
+    -   
+    -   
+-   **Migrated/Modified Backend Routes:**
+    -   
+    -   
+    -   
+    -   
+    -   
 -   **New Frontend Components:**
     -   
     -   
     -   
--   **Modified Frontend Components:**
-    -    (Integrates conflict card)
-    -    (Integrates SafeTagsRenderer)
--   **Main App Page:** 
+    -   
+-   **Modified Frontend Logic:**
+    -   
+    -   
 
 **Areas that need refactoring**:
--   **All Remaining Intake Routes:** The next P0 task is to refactor ~15 routes (, , etc.) to use the  helper.
--   : This file is extremely large and brittle (~15,000 lines). It is a major source of technical debt and is on the list for future refactoring.
+-   The primary refactoring task is the ongoing migration of all ticket-creating routes.
+-   Future targets for refactoring remain  and .
 
 **key api endpoints**
--   : Main chat endpoint. Includes logic for insight extraction, picks, service handoff, and conflict interruption prompts.
--   : **New**. Fetches UI-safe tags that respect health suppressions.
--   : **New**. Fetches pending conflicts for the MOJO UI.
--   : **New**. Resolves a conflict based on user choice.
+-   : The main chat endpoint, which now returns both  and .
+-   Various ticket creation endpoints across the application are being refactored to use the new  helper, which centralizes calls to the ticket spine.
 
 **Critical Info for New Agent**
--   Your immediate priority (P0) is to fix the **Picks fallback logic**. The user confirmed the frontend UI for Concierge Arranges already exists. You must ensure the backend  route in  correctly returns the  flag and data when no catalogue items match the user's intent.
--   After fixing the Picks fallback, the next P0 task is to **migrate all remaining service intake routes** to use the  helper. This is a blocker for enabling the real-data icon states.
--   **The user is very attentive to detail and the rules in **. Adhere strictly to these rules, especially regarding the Uniform Service Flow and Health-First Safety principles.
--   All Mira-related intelligence features should be tested on the  page.
+-   Your immediate and only priority is to **complete the P0 task of migrating all remaining service intake routes** to the  helper.
+-   Follow the user-specified order, starting with .
+-   For **each** migrated file, you MUST provide a proof block to the user containing: the  request used, the returned  ticket_id, the pillar/category, and confirmation that no  logs were triggered.
+-   **DO NOT** enable the  feature flag until ALL routes are migrated and you have received user approval.
+-   Use the existing  helper in .
 
 **documents and test reports created in this job**
--    (Updated)
--    (Updated)
+-    was updated.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Asks the agent to check the Bible for rules on what happens when a product is not in the catalogue for PICKS/SERVICES and confirm if the behavior is being followed. (STATUS: In Progress)
-2.  **User:** Points out that the agent should be testing on  and asks about the rule for recommendations when a product is not in the catalogue. (STATUS: In Progress)
-3.  **User:** Approves the  integration and asks the agent to proceed with migrating the remaining intake routes to the ticket spine. (STATUS: Completed, but next task is defined)
-4.  **User:** Provides a complete acceptance test for the  integration. (STATUS: Completed)
-5.  **User:** Asks the agent to integrate  into the Services page hero. (STATUS: Completed)
-6.  **User:** Acknowledges the previous QA summary and asks the agent to proceed with P1: wiring the  API into the Services page. (STATUS: Completed)
-7.  **User:** Asks agent to add the chat interruption prompt for conflicts. (STATUS: Completed)
-8.  **User:** Confirms the conflict UI and conservative deduplication was the right call and provides a clean QA script for testing Mira's intelligence. (STATUS: Completed)
-9.  **User:** Asks the agent to build the MOJO Conflict Resolution UI (P0). (STATUS: Completed)
-10. **User:** Confirms the QA deliverables are solid but points out the critical issue of conflicting tags and provides a clear, prioritized list of fixes (contradiction handling, tag guardrail, deduplication). (STATUS: Completed)
+1.  **User**: Proceed to complete the remaining route migrations. Provide proof for each migrated file. Do not touch  yet. (STATUS: In Progress)
+2.  **User**: Specifies the non-negotiable approach for migration: create a helper first, then migrate ALL routes. Provides acceptance test criteria. (STATUS: Completed, migration in progress)
+3.  **User**: Confirms the location consent gate is done. Tells the agent to start the P0 route migration. (STATUS: Completed, migration started)
+4.  **User**: Provides strict, non-negotiable rules for the location permission consent gate. (STATUS: Completed)
+5.  **User**: Approves Phase 5 implementation plan and provides specific integration choices and deterministic rules. (STATUS: Completed)
+6.  **User**: Asks agent to proceed with Phase 5 Conversational Rules Contract. (STATUS: Completed)
+7.  **User**: Asks agent to start QA script and provide a proof pack. (STATUS: Completed, QA is done)
+8.  **User**: Provides detailed 10-point QA script for Picks contract. (STATUS: Completed)
+9.  **User**: Provides final, non-negotiable frontend render rules for Picks contract. (STATUS: Completed)
+10. **User**: Gives final approval on Picks implementation and provides QA script. (STATUS: Completed)
 
 **Project Health Check:**
--   **Broken:** The Picks system fallback logic is not working as specified in the . It shows generic products instead of the Concierge Arranges UI when there's no catalogue match.
--   **Mocked:** The  feature flag remains . The main navigation icons do not yet reflect real-time, unified ticket data.
+-   **Broken:** None.
+-   **Mocked:** The  feature flag remains . This is intentional and is blocked by the completion of the P0 route migration task.
 
 **3rd Party Integrations**
--   Existing stack includes Resend, Shopify, YouTube, ElevenLabs, and Firebase. No new integrations were added.
+-   Google Places — uses Emergent-managed integration
+-   YouTube — uses Emergent-managed integration
+-   Existing: Resend, Shopify, ElevenLabs, Firebase.
 
 **Testing status**
 -   **Testing agent used after significant changes:** NO
@@ -159,6 +156,7 @@ The application is a functional React/FastAPI/MongoDB stack.
 -   **User Login:**  / 
 -   **Admin Login:**  / 
 -   **Key Pet for Testing:** Lola (ID: )
+-   **Test URL:** 
 
 **What agent forgot to execute**
--   The agent has not forgotten any tasks but is in the middle of implementing the Picks Fallback Logic. The immediate next action is to complete the backend fix in .</analysis>
+-   The agent has not forgotten any tasks. It was correctly executing the user's explicit instructions for the P0 migration task before being paused to provide this summary.</analysis>

@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://mira-picks-qa.preview.emergentagent.com
+**Preview URL:** https://mira-spine.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
