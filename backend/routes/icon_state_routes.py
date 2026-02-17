@@ -112,19 +112,30 @@ async def get_user_from_token(authorization: Optional[str] = None) -> Optional[D
         return None
 
 
-async def get_unified_tickets(db, user_email: str, pet_ids: List[str] = None) -> List[Dict]:
+async def get_unified_tickets(db, user_email: str, pet_ids: List[str] = None) -> tuple[List[Dict], Dict]:
     """
     Query both ticket collections and return unified, deduplicated list.
     This is the SINGLE SOURCE OF TRUTH for Service Desk state.
     
-    Query order:
-    1. db.tickets (primary - concierge requests, admin-created)
-    2. db.mira_tickets (services tab requests)
+    STRICT RULES (Uniform Service Flow):
+    1. Only tickets with canonical ticket_id (TCK-YYYY-NNNNNN) are counted
+    2. db.tickets is PRIMARY, db.mira_tickets is SECONDARY
+    3. Deduplication by ticket_id - first occurrence wins
+    4. Invalid tickets are logged for upstream fix
     
-    Deduplication: by ticket_id (first occurrence wins)
+    Returns:
+        (valid_tickets, stats) where stats contains counts of valid/invalid/duplicate
     """
     all_tickets = []
     seen_ticket_ids = set()
+    
+    # Stats for debugging and validation
+    stats = {
+        "valid_from_tickets": 0,
+        "valid_from_mira_tickets": 0,
+        "invalid_ticket_id": [],  # Tickets without valid canonical ID
+        "duplicates_skipped": 0,
+    }
     
     # Build query filter for user's tickets
     base_query = {
@@ -145,31 +156,66 @@ async def get_unified_tickets(db, user_email: str, pet_ids: List[str] = None) ->
             ]}
         ]
     
-    # Query 1: db.tickets (primary collection)
+    # Query 1: db.tickets (PRIMARY collection - concierge requests, admin-created)
     try:
         tickets_cursor = db.tickets.find(base_query, {"_id": 0}).sort("updated_at", -1).limit(200)
         async for ticket in tickets_cursor:
-            ticket_id = ticket.get("ticket_id") or ticket.get("id")
-            if ticket_id and ticket_id not in seen_ticket_ids:
-                seen_ticket_ids.add(ticket_id)
-                ticket["_source"] = "tickets"
-                all_tickets.append(ticket)
+            ticket_id = ticket.get("ticket_id")  # STRICT: Only ticket_id, no fallback to "id"
+            
+            # Validate canonical format
+            if not is_valid_ticket_id(ticket_id):
+                # Log invalid for upstream fix
+                stats["invalid_ticket_id"].append({
+                    "source": "tickets",
+                    "raw_id": ticket_id or ticket.get("id"),
+                    "status": ticket.get("status"),
+                    "created_at": ticket.get("created_at")
+                })
+                logger.warning(f"[ICON-STATE] Invalid ticket_id in db.tickets: {ticket_id or ticket.get('id')}")
+                continue
+            
+            # Dedupe check
+            if ticket_id in seen_ticket_ids:
+                stats["duplicates_skipped"] += 1
+                continue
+            
+            seen_ticket_ids.add(ticket_id)
+            ticket["_source"] = "tickets"
+            all_tickets.append(ticket)
+            stats["valid_from_tickets"] += 1
     except Exception as e:
         logger.warning(f"[ICON-STATE] Error querying db.tickets: {e}")
     
-    # Query 2: db.mira_tickets (services tab collection)
+    # Query 2: db.mira_tickets (SECONDARY - services tab requests)
     try:
         mira_cursor = db.mira_tickets.find(base_query, {"_id": 0}).sort("updated_at", -1).limit(200)
         async for ticket in mira_cursor:
-            ticket_id = ticket.get("ticket_id") or ticket.get("id")
-            if ticket_id and ticket_id not in seen_ticket_ids:
-                seen_ticket_ids.add(ticket_id)
-                ticket["_source"] = "mira_tickets"
-                all_tickets.append(ticket)
+            ticket_id = ticket.get("ticket_id")  # STRICT: Only ticket_id, no fallback
+            
+            # Validate canonical format
+            if not is_valid_ticket_id(ticket_id):
+                stats["invalid_ticket_id"].append({
+                    "source": "mira_tickets",
+                    "raw_id": ticket_id or ticket.get("id"),
+                    "status": ticket.get("status"),
+                    "created_at": ticket.get("created_at")
+                })
+                logger.warning(f"[ICON-STATE] Invalid ticket_id in db.mira_tickets: {ticket_id or ticket.get('id')}")
+                continue
+            
+            # Dedupe check (already seen in db.tickets takes precedence)
+            if ticket_id in seen_ticket_ids:
+                stats["duplicates_skipped"] += 1
+                continue
+            
+            seen_ticket_ids.add(ticket_id)
+            ticket["_source"] = "mira_tickets"
+            all_tickets.append(ticket)
+            stats["valid_from_mira_tickets"] += 1
     except Exception as e:
         logger.warning(f"[ICON-STATE] Error querying db.mira_tickets: {e}")
     
-    return all_tickets
+    return all_tickets, stats
 
 
 # ============================================
