@@ -1217,6 +1217,12 @@ create_or_attach_service_ticket({
    Member Notification → Pillar Request → Tickets → Channel Intakes
    ```
 
+### Summary Statement (Non-Negotiable)
+
+**"When no catalogue match exists, PICKS must switch to Concierge fallback (Concierge Arranges) and the CTA must create a Service Desk ticket via the spine. Never show generic popular items as substitutes."**
+
+**"Catalogue is optional; concierge is guaranteed."**
+
 ---
 
 ## 9.1 Filter Definitions
