@@ -3554,6 +3554,13 @@ const MiraDemoPage = () => {
         petName={pet?.name || 'your pet'}
       />
       
+      {/* ONBOARDING TOOLTIP - First-visit tooltip for Services (Bible Section 12.8) */}
+      <OnboardingTooltip
+        anchorRef={servicesTabRef}
+        isLoggedIn={!!user}
+        onDismiss={() => console.log('[ONBOARDING] User dismissed tooltip')}
+      />
+      
       {/* HANDOFF SUMMARY - Lazy loaded */}
       {(handoffSummary?.isOpen) && (
         <Suspense fallback={<LazyFallback />}>
