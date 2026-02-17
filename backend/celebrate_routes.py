@@ -177,13 +177,38 @@ async def create_celebrate_request(request: CelebrateRequestCreate):
     
     request_id = f"cel-req-{uuid.uuid4().hex[:8]}"
     notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
-    ticket_id = f"TKT-CEL-{uuid.uuid4().hex[:8].upper()}"
     inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
     now_iso = get_utc_timestamp()
     
     user_name = request.user_name or request.customer_name or "Guest"
+    user_email = getattr(request, 'user_email', None) or getattr(request, 'customer_email', None)
+    user_phone = getattr(request, 'user_phone', None) or getattr(request, 'customer_phone', None)
     pet_name = request.pet_name or "Pet"
     request_type = request.request_type or "custom_order"
+    
+    # ==================== SERVICE DESK TICKET via SPINE HELPER ====================
+    try:
+        spine_result = await handoff_to_spine(
+            db=db,
+            route_name="celebrate_routes.py",
+            endpoint="/api/celebrate/requests",
+            pillar="celebrate",
+            category=request_type,
+            intent=f"Celebrate {request_type.replace('_', ' ')} request for {pet_name}",
+            user={"email": user_email, "name": user_name, "phone": user_phone},
+            pet={"name": pet_name},
+            payload={
+                "request_id": request_id,
+                "request_type": request_type,
+                **request.dict()
+            },
+            channel="web"
+        )
+        ticket_id = spine_result.get("ticket_id")
+        logger.info(f"[SPINE-HELPER] Created ticket {ticket_id} for celebrate request {request_id}")
+    except Exception as e:
+        logger.error(f"[SPINE-HELPER] Failed to create ticket for celebrate request: {e}")
+        ticket_id = f"TKT-ERR-{uuid.uuid4().hex[:8].upper()}"
     
     request_doc = {
         "id": request_id,
@@ -214,11 +239,7 @@ async def create_celebrate_request(request: CelebrateRequestCreate):
         "urgency": "medium",
         "ticket_id": ticket_id,
         "inbox_id": inbox_id,
-        "customer": {
-            "name": user_name,
-            "email": getattr(request, 'user_email', None) or getattr(request, 'customer_email', None),
-            "phone": getattr(request, 'user_phone', None) or getattr(request, 'customer_phone', None)
-        },
+        "customer": {"name": user_name, "email": user_email, "phone": user_phone},
         "pet": {"name": pet_name},
         "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
         "created_at": now_iso,
@@ -226,36 +247,7 @@ async def create_celebrate_request(request: CelebrateRequestCreate):
     })
     logger.info(f"[UNIFIED FLOW] Celebrate notification created: {notification_id}")
     
-    # ==================== STEP 2: SERVICE DESK TICKET (MANDATORY) ====================
-    ticket_doc = {
-        "id": ticket_id,
-        "ticket_id": ticket_id,
-        "notification_id": notification_id,
-        "inbox_id": inbox_id,
-        "source": "celebrate_pillar",
-        "source_id": request_id,
-        "pillar": "celebrate",
-        "category": "celebrate",
-        "subcategory": request_type,
-        "subject": f"Celebrate Request: {request_type.replace('_', ' ').title()} for {pet_name}",
-        "description": f"New celebrate request from {user_name} for {pet_name}",
-        "status": "new",
-        "priority": 3,
-        "urgency": "medium",
-        "member": {
-            "name": user_name,
-            "email": getattr(request, 'user_email', None) or getattr(request, 'customer_email', None),
-            "phone": getattr(request, 'user_phone', None) or getattr(request, 'customer_phone', None)
-        },
-        "pet": {"name": pet_name},
-        "created_at": now_iso,
-        "updated_at": now_iso,
-        "tags": ["celebrate", request_type, "unified-flow"],
-        "unified_flow_processed": True
-    }
-    await db.service_desk_tickets.insert_one({k: v for k, v in ticket_doc.items() if k != "_id"})
-    await db.tickets.insert_one({k: v for k, v in ticket_doc.items() if k != "_id"})
-    logger.info(f"[UNIFIED FLOW] Celebrate ticket created: {ticket_id}")
+    # NOTE: STEP 2 (SERVICE DESK TICKET) is now handled by SPINE HELPER above
     
     # ==================== STEP 3: UNIFIED INBOX (MANDATORY) ====================
     inbox_entry = {
@@ -270,7 +262,7 @@ async def create_celebrate_request(request: CelebrateRequestCreate):
         "status": "new",
         "urgency": "medium",
         "customer_name": user_name,
-        "customer_email": getattr(request, 'user_email', None) or getattr(request, 'customer_email', None),
+        "customer_email": user_email,
         "customer_phone": getattr(request, 'user_phone', None) or getattr(request, 'customer_phone', None),
         "member": {
             "name": user_name,
