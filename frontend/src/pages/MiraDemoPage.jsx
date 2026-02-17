@@ -3719,6 +3719,22 @@ const MiraDemoPage = () => {
         className="mp-messages"
       >
         <div className="mp-messages-inner">
+          {/* CONCIERGE REPLY BANNER - Shows when new messages arrive in Services */}
+          {/* Part of "Chat vs Services" mental model - WhatsApp/Instagram DM style */}
+          {isAtChatHome && apiCounts?.unreadRepliesCount > 0 && (
+            <ConciergeReplyBanner
+              hasUnreadReply={true}
+              unreadCount={apiCounts.unreadRepliesCount}
+              onOpenServices={() => {
+                handleOSTabChange('services');
+              }}
+              onDismiss={() => {
+                // Optional: refetch to update counts
+                refetchIconState?.();
+              }}
+            />
+          )}
+          
           {/* Welcome State - Extracted to WelcomeHero component (Stage 5) */}
           {conversationHistory.length === 0 && !isProcessing && (
             <WelcomeHero
