@@ -192,12 +192,24 @@ export const getIconState = (tabId, data = {}, activeTab = null) => {
     // PULSE: awaitingYouCount > 0 (this is the key!)
     // ON: activeTicketsCount > 0 (but not awaiting you)
     // OFF: None
+    // SYNCING: null values indicate legacy data migration in progress
     // Badge: awaitingYouCount first; if 0 then activeTicketsCount
     // ─────────────────────────────────────────────────────────────────────
     case TAB_IDS.SERVICES: {
-      const { activeTicketsCount = 0, awaitingYouCount = 0 } = data;
+      const { activeTicketsCount, awaitingYouCount } = data;
       
-      if (awaitingYouCount > 0) {
+      // Legacy data handling: null means "unknown, possibly non-zero"
+      const hasLegacyUnknown = activeTicketsCount === null || awaitingYouCount === null;
+      if (hasLegacyUnknown) {
+        return {
+          state: ICON_STATE.ON, // Show as ON (not OFF) when data is unknown
+          badge: '—', // Dash indicates "syncing"
+          tooltip: 'Syncing ticket data...',
+          _syncing: true,
+        };
+      }
+      
+      if ((awaitingYouCount || 0) > 0) {
         return {
           state: isActive ? ICON_STATE.ON : ICON_STATE.PULSE,
           badge: formatBadge(awaitingYouCount),
@@ -205,12 +217,13 @@ export const getIconState = (tabId, data = {}, activeTab = null) => {
         };
       }
       
-      if (activeTicketsCount > 0) {
+      if ((activeTicketsCount || 0) > 0) {
         return {
           state: ICON_STATE.ON,
           badge: formatBadge(activeTicketsCount),
           tooltip: `${activeTicketsCount} active ticket${activeTicketsCount > 1 ? 's' : ''}`,
         };
+      }
       }
       
       return {
