@@ -463,6 +463,18 @@ const MiraDemoPage = () => {
       }
     },
   });
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // DRAFT → QUERY SYNC - Load draft into query when pet changes (Bible Section 3.2)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  useEffect(() => {
+    // When draftText changes (e.g., after pet switch), sync to query
+    // Only sync if draftText is non-empty and query is empty (avoid overwriting user's current typing)
+    if (draftText && !query) {
+      setQuery(draftText);
+      console.log('[Draft] Synced draft to query:', draftText.substring(0, 30));
+    }
+  }, [draftText]); // Note: intentionally not including query to avoid loops
   
   // State
   const [activeScenario, setActiveScenario] = useState(null);
