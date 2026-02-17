@@ -666,7 +666,7 @@ const TicketFullPageModal = ({
                       </div>
                       <p className="text-sm text-gray-700 whitespace-pre-wrap">{aiSuggestion}</p>
                     </div>
-                  )
+                  )}
 
                   {/* Rich Text Editor */}
                   <div className={`border rounded-lg ${isInternal ? 'border-amber-300 bg-amber-50/30' : 'border-gray-200'}`}>
