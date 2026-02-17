@@ -117,6 +117,12 @@ import {
   saveConversationMemory, buildMemoryPrefix
 } from '../hooks/mira';
 
+// Icon State API - Real data from unified Service Desk ticket spine
+import useIconStateAPI from '../hooks/mira/useIconStateAPI';
+
+// Debug Drawer for icon state validation
+import IconStateDebugDrawer from '../components/mira-os/debug/IconStateDebugDrawer';
+
 // Toast for commit action confirmations
 import { useToast } from '../hooks/use-toast';
 
