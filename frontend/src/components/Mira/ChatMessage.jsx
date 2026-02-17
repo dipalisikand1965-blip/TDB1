@@ -421,52 +421,34 @@ const MiraMessageHeader = ({
       </button>
     )}
     
-    {/* Picks Indicator - Non-clickable status display */}
-    <div 
-      className="mp-header-picks-indicator"
-      title={`${pet.name}'s Picks`}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '4px',
-        padding: '4px 8px',
-        borderRadius: '12px',
-        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2))',
-        border: '1.5px solid rgba(236, 72, 153, 0.4)',
-        pointerEvents: 'none',
-        cursor: 'default'
+    {/* Picks Indicator - Clickable, opens PICKS tray (no dropdown modal) */}
+    <button 
+      className="mp-header-picks-icon"
+      onClick={() => {
+        hapticFeedback?.pickSelect?.();
+        onShowPicks?.();
       }}
+      title={`${pet.name}'s Picks`}
+      data-testid="header-picks-btn"
     >
-      <Gift size={14} style={{ color: 'white', opacity: 0.8 }} />
+      <Gift size={18} className="mp-picks-gift" />
       {pet.photo ? (
         <img 
           src={pet.photo} 
           alt={pet.name}
-          style={{
-            width: '18px',
-            height: '18px',
-            borderRadius: '50%',
-            objectFit: 'cover',
-            border: '1px solid rgba(255,255,255,0.3)'
-          }}
+          className="mp-picks-pet-face"
         />
       ) : (
-        <PawPrint size={12} style={{ color: 'white', opacity: 0.7 }} />
+        <div className="mp-picks-pet-face mp-picks-pet-fallback">
+          <PawPrint size={10} />
+        </div>
       )}
       {(miraPicks.products.length + miraPicks.services.length) > 0 && (
-        <span style={{
-          fontSize: '10px',
-          fontWeight: 700,
-          color: 'white',
-          background: '#ec4899',
-          borderRadius: '8px',
-          padding: '1px 5px',
-          marginLeft: '2px'
-        }}>
+        <span className="mp-picks-count">
           {miraPicks.products.length + miraPicks.services.length}
         </span>
       )}
-    </div>
+    </button>
   </div>
 );
 
