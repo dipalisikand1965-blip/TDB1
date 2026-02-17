@@ -1513,20 +1513,76 @@ async def store_conversation_insights(db, pet_id: str, insights: List[Dict], thr
     """
     Store extracted insights in the pet's profile under 'conversation_insights'.
     These can be reviewed by the user or concierge before being promoted to the main profile.
+    
+    DEDUPLICATION: Skips insights that already exist (same category + normalized content)
+    in pending_review state within last 7 days.
+    
+    CONFLICT DETECTION: Marks insights that conflict with existing health facts.
     """
     if not insights:
         return
+    
+    # Import conflict resolver
+    try:
+        from utils.fact_conflict_resolver import detect_conflict, extract_entity
+        CONFLICT_RESOLVER_AVAILABLE = True
+    except ImportError:
+        CONFLICT_RESOLVER_AVAILABLE = False
+        def detect_conflict(new_fact, existing_facts): return None
+        def extract_entity(content): return content.lower().strip()[:30]
     
     # Get existing pet
     pet = await db.pets.find_one({"id": pet_id})
     if not pet:
         return
     
-    # Get or create conversation_insights array
+    # Get existing data
     existing_insights = pet.get("conversation_insights", [])
+    learned_facts = pet.get("learned_facts", [])
     
-    # Add new insights with metadata
+    # Build dedup lookup: (normalized_category, normalized_content) -> True
+    # Only for pending_review insights from last 7 days
+    from datetime import datetime, timedelta
+    cutoff_date = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
+    
+    existing_pending = set()
+    for ins in existing_insights:
+        if ins.get("status") == "pending_review":
+            extracted_at = ins.get("extracted_at", "")
+            if extracted_at >= cutoff_date:
+                norm_cat = (ins.get("category") or "").lower().strip()
+                norm_content = (ins.get("content") or "").lower().strip()
+                existing_pending.add((norm_cat, norm_content))
+    
+    # Also check learned_facts for dedup
+    for fact in learned_facts:
+        norm_cat = (fact.get("category") or "").lower().strip()
+        norm_content = (fact.get("content") or "").lower().strip()
+        existing_pending.add((norm_cat, norm_content))
+    
+    # Add new insights with deduplication and conflict detection
+    added_count = 0
+    skipped_count = 0
+    conflict_count = 0
+    
     for insight in insights:
+        norm_cat = (insight.get("category") or "").lower().strip()
+        norm_content = (insight.get("content") or "").lower().strip()
+        
+        # DEDUPLICATION CHECK
+        if (norm_cat, norm_content) in existing_pending:
+            skipped_count += 1
+            logger.debug(f"[INSIGHTS] Skipped duplicate: [{norm_cat}] {norm_content}")
+            continue
+        
+        # CONFLICT DETECTION
+        conflict_info = None
+        if CONFLICT_RESOLVER_AVAILABLE:
+            conflict_info = detect_conflict(
+                {"category": insight["category"], "content": insight["content"]},
+                learned_facts
+            )
+        
         insight_doc = {
             "id": str(uuid.uuid4()),
             "category": insight["category"],
@@ -1534,23 +1590,38 @@ async def store_conversation_insights(db, pet_id: str, insights: List[Dict], thr
             "source_thread_id": thread_id,
             "extracted_at": timestamp,
             "confidence": insight.get("confidence", 0.7),
-            "status": "pending_review",  # pending_review, confirmed, rejected
-            "original_text": insight.get("original_text", "")[:200]
+            "status": "pending_review",
+            "original_text": insight.get("original_text", "")[:200],
+            "is_active": True,  # Default active
         }
+        
+        # Add conflict info if detected
+        if conflict_info and conflict_info.get("detected"):
+            insight_doc["has_conflict"] = True
+            insight_doc["conflict_with"] = conflict_info.get("health_fact", {}).get("id")
+            insight_doc["conflict_entity"] = conflict_info.get("entity")
+            insight_doc["conflict_type"] = conflict_info.get("conflict_type")
+            insight_doc["safety_note"] = conflict_info.get("safety_note")
+            conflict_count += 1
+            logger.info(f"[INSIGHTS] Conflict detected for '{norm_content}' with entity '{conflict_info.get('entity')}'")
+        
         existing_insights.append(insight_doc)
+        existing_pending.add((norm_cat, norm_content))  # Prevent duplicates within same batch
+        added_count += 1
     
     # Update pet with new insights
-    await db.pets.update_one(
-        {"id": pet_id},
-        {
-            "$set": {
-                "conversation_insights": existing_insights,
-                "conversation_insights_updated_at": timestamp
+    if added_count > 0:
+        await db.pets.update_one(
+            {"id": pet_id},
+            {
+                "$set": {
+                    "conversation_insights": existing_insights,
+                    "conversation_insights_updated_at": timestamp
+                }
             }
-        }
-    )
+        )
     
-    logger.info(f"[INSIGHTS] Stored {len(insights)} insights for pet {pet_id}")
+    logger.info(f"[INSIGHTS] Pet {pet_id}: Added {added_count}, Skipped {skipped_count} dupes, {conflict_count} conflicts")
 
 
 @router.get("/insights/{pet_id}")
