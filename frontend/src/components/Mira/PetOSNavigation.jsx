@@ -186,8 +186,9 @@ const PetAvatarRing = memo(({
 });
 
 /**
- * PetDropdown - Simple multi-pet switcher dropdown
- * No duplicate soul display - that lives only in the nav bar avatar
+ * PetDropdown - Multi-pet switcher dropdown with soul score badges
+ * Shows: Photo | Name | Breed | Soul Score % Badge | Checkmark
+ * Per user request - restore the original design with soul scores
  */
 const PetDropdown = memo(({ 
   pets = [], 
@@ -214,40 +215,165 @@ const PetDropdown = memo(({
   
   if (!isOpen) return null;
   
+  // Paw placeholder SVG for pets without photos
+  const PawPlaceholder = () => (
+    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+        <path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 12c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+      </svg>
+    </div>
+  );
+  
   return (
-    <div className="pet-dropdown" ref={dropdownRef} data-testid="pet-dropdown">
-      <div className="pet-dropdown-header">
-        <span>Switch Pet</span>
+    <div 
+      className="pet-dropdown" 
+      ref={dropdownRef} 
+      data-testid="pet-dropdown"
+      style={{
+        position: 'absolute',
+        top: '100%',
+        right: 0,
+        marginTop: '8px',
+        background: 'linear-gradient(145deg, rgba(88,28,135,0.98), rgba(59,7,100,0.98))',
+        borderRadius: '16px',
+        border: '1px solid rgba(168,85,247,0.3)',
+        boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
+        minWidth: '280px',
+        zIndex: 1000,
+        overflow: 'hidden'
+      }}
+    >
+      <div 
+        className="pet-dropdown-header"
+        style={{
+          padding: '12px 16px',
+          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          background: 'rgba(0,0,0,0.2)'
+        }}
+      >
+        <span style={{ fontSize: '12px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          Switch Pet
+        </span>
       </div>
-      <div className="pet-dropdown-list">
-        {pets.map((pet) => (
-          <button
-            key={pet.id}
-            className={`pet-dropdown-item ${pet.id === currentPet?.id ? 'active' : ''}`}
-            onClick={() => {
-              hapticFeedback.buttonTap();
-              onSelectPet(pet);
-              onClose();
-            }}
-            data-testid={`pet-option-${pet.id}`}
-          >
-            {/* Simple avatar - no ring/score here, just photo */}
-            <div className="pet-dropdown-avatar">
-              <img 
-                src={pet.image || pet.photo || '/default-pet.png'} 
-                alt={pet.name}
-                className="w-10 h-10 rounded-full object-cover border-2 border-white/20"
-              />
-            </div>
-            <div className="pet-dropdown-info">
-              <span className="pet-dropdown-name">{pet.name}</span>
-              <span className="pet-dropdown-breed">{pet.breed}</span>
-            </div>
-            {pet.id === currentPet?.id && (
-              <Check className="pet-dropdown-check" />
-            )}
-          </button>
-        ))}
+      <div className="pet-dropdown-list" style={{ padding: '8px' }}>
+        {pets.map((pet) => {
+          const soulScore = Number(pet.soulScore) || Number(pet.overall_score) || 0;
+          const hasPhoto = pet.photo || pet.image;
+          
+          return (
+            <button
+              key={pet.id}
+              className={`pet-dropdown-item ${pet.id === currentPet?.id ? 'active' : ''}`}
+              onClick={() => {
+                hapticFeedback.buttonTap();
+                onSelectPet(pet);
+                onClose();
+              }}
+              data-testid={`pet-option-${pet.id}`}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                width: '100%',
+                padding: '10px 12px',
+                background: pet.id === currentPet?.id ? 'rgba(168,85,247,0.2)' : 'transparent',
+                border: 'none',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                marginBottom: '4px'
+              }}
+              onMouseEnter={(e) => {
+                if (pet.id !== currentPet?.id) {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = pet.id === currentPet?.id ? 'rgba(168,85,247,0.2)' : 'transparent';
+              }}
+            >
+              {/* Pet Avatar */}
+              <div className="pet-dropdown-avatar">
+                {hasPhoto ? (
+                  <img 
+                    src={hasPhoto} 
+                    alt={pet.name}
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                      border: '2px solid rgba(255,255,255,0.2)'
+                    }}
+                  />
+                ) : (
+                  <PawPlaceholder />
+                )}
+              </div>
+              
+              {/* Pet Info */}
+              <div style={{ flex: 1, textAlign: 'left' }}>
+                <span style={{ 
+                  display: 'block', 
+                  color: 'white', 
+                  fontWeight: 600, 
+                  fontSize: '14px',
+                  marginBottom: '2px'
+                }}>
+                  {pet.name}
+                </span>
+                <span style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  color: 'rgba(255,255,255,0.5)', 
+                  fontSize: '12px' 
+                }}>
+                  {pet.breed}
+                  {/* Soul Score Badge */}
+                  {soulScore > 10 ? (
+                    <span 
+                      style={{ 
+                        background: 'linear-gradient(135deg, #f59e0b, #d97706)', 
+                        padding: '2px 8px', 
+                        borderRadius: '8px', 
+                        fontSize: '10px',
+                        fontWeight: '700',
+                        color: 'white',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '3px'
+                      }}
+                    >
+                      {Math.round(soulScore)}%
+                      <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" style={{ opacity: 0.7 }}>
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                      </svg>
+                    </span>
+                  ) : (
+                    <span 
+                      style={{ 
+                        background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', 
+                        padding: '2px 6px', 
+                        borderRadius: '8px', 
+                        fontSize: '9px',
+                        fontWeight: '600',
+                        color: 'white'
+                      }}
+                    >
+                      ✨ New
+                    </span>
+                  )}
+                </span>
+              </div>
+              
+              {/* Checkmark for selected pet */}
+              {pet.id === currentPet?.id && (
+                <Check style={{ color: '#a855f7', width: '20px', height: '20px' }} />
+              )}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
