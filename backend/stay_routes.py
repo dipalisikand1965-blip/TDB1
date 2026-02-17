@@ -611,19 +611,15 @@ async def create_booking_request(booking: BookingRequest):
     # Auto-create Service Desk ticket for Stay booking via UNIFORM SERVICE SPINE
     ticket_id = None
     try:
-        spine_result = await create_or_attach_service_ticket(
+        spine_result = await handoff_to_spine(
             db=db,
-            intent=f"Stay booking at {property.get('name')}: {booking.check_in_date} to {booking.check_out_date}",
-            intent_type="request",
-            member_email=booking.guest_email,
-            member_name=booking.guest_name,
-            pet_ids=[],  # Could be enhanced with pet_id if available
-            pet_names=[booking.pet_name] if booking.pet_name else [],
-            pillar=Pillar.STAY.value,
+            route_name="stay_routes.py",
+            endpoint="/stay/bookings",
+            pillar="stay",
             category="booking_request",
-            source_route="stay_routes.py",
-            channel=Channel.WEB.value,
-            created_by=CreatedBy.MEMBER.value,
+            intent=f"Stay booking at {property.get('name')}: {booking.check_in_date} to {booking.check_out_date}",
+            user={"email": booking.guest_email, "name": booking.guest_name, "phone": booking.guest_phone},
+            pet={"name": booking.pet_name, "breed": booking.pet_breed},
             payload={
                 "booking_id": booking_doc["id"],
                 "property_name": property.get("name"),
@@ -632,22 +628,17 @@ async def create_booking_request(booking: BookingRequest):
                 "check_out_date": booking.check_out_date,
                 "adults": booking.num_adults,
                 "pets": booking.num_pets,
-                "pet_name": booking.pet_name,
-                "pet_breed": booking.pet_breed,
                 "pet_age": booking.pet_age,
                 "pet_weight_kg": booking.pet_weight_kg,
                 "special_requests": booking.special_requests,
-                "phone": booking.guest_phone,
                 "bundle_name": getattr(booking, 'bundle_name', None)
             },
-            urgency="normal",
-            notify_admin=True,
-            notify_member=True
+            channel="web"
         )
         ticket_id = spine_result.get("ticket_id")
-        logger.info(f"[UNIFORM SPINE] Created ticket {ticket_id} for stay booking {booking_doc['id']}")
+        logger.info(f"[SPINE-HELPER] Created ticket {ticket_id} for stay booking {booking_doc['id']}")
     except Exception as e:
-        logger.error(f"[UNIFORM SPINE] Failed to create ticket for stay booking: {e}")
+        logger.error(f"[SPINE-HELPER] Failed to create ticket for stay booking: {e}")
     except Exception as e:
         logger.error(f"Failed to auto-create ticket for stay booking: {e}")
     
