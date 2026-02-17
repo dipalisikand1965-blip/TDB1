@@ -3534,23 +3534,32 @@ async def search_real_products(
         # Bible Section 9.0: No catalogue match → Concierge Arranges, NOT generic picks
         # ═══════════════════════════════════════════════════════════════════════════
         if len(products) == 0:
+            import uuid as uuid_module
             logger.info(f"[PICKS] 0 products after filtering for '{user_input_lower[:50]}' - triggering Concierge fallback")
+            detected_pillar = entities.get("pillar", "care")
             return {
                 "products": [],
                 "concierge_fallback": True,
                 "concierge_fallback_reason": "no_matches_after_filtering",
                 "concierge_arranges": [
                     {
+                        "id": f"concierge-{uuid_module.uuid4().hex[:8]}",
                         "type": "concierge_pick",
+                        "label": "Concierge Pick",
                         "title": f"Custom request for {pet_name}",
-                        "subtitle": "Concierge arranges",
+                        "subtitle": "Allergy-safe" if pet_context.get("sensitivities") else "Made to requirements",
                         "description": f"We don't have this in the catalogue yet — we can arrange it for {pet_name}.",
+                        "spec_chip": f"Made to {pet_name}'s requirements",
                         "no_price": True,
                         "action": "create_ticket",
-                        "pillar": entities.get("pillar", "care"),
+                        "pillar": detected_pillar,
+                        "category": "concierge_arranges",
                         "intent": user_input_lower[:200],
+                        "original_request": user_query,
                         "pet_id": pet_context.get("id"),
                         "pet_name": pet_name,
+                        "pet_constraints": pet_context.get("sensitivities", []),
+                        "why_it_fits": f"Made to {pet_name}'s requirements"
                     }
                 ]
             }
