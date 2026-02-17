@@ -186,7 +186,8 @@ const PetAvatarRing = memo(({
 });
 
 /**
- * PetDropdown - Multi-pet switcher dropdown
+ * PetDropdown - Simple multi-pet switcher dropdown
+ * No duplicate soul display - that lives only in the nav bar avatar
  */
 const PetDropdown = memo(({ 
   pets = [], 
@@ -230,12 +231,14 @@ const PetDropdown = memo(({
             }}
             data-testid={`pet-option-${pet.id}`}
           >
-            <PetAvatarRing 
-              pet={pet} 
-              soulScore={pet.soulScore || pet.overall_score || 0}
-              healthScore={pet.healthScore || 0}
-              size="small"
-            />
+            {/* Simple avatar - no ring/score here, just photo */}
+            <div className="pet-dropdown-avatar">
+              <img 
+                src={pet.image || pet.photo || '/default-pet.png'} 
+                alt={pet.name}
+                className="w-10 h-10 rounded-full object-cover border-2 border-white/20"
+              />
+            </div>
             <div className="pet-dropdown-info">
               <span className="pet-dropdown-name">{pet.name}</span>
               <span className="pet-dropdown-breed">{pet.breed}</span>
