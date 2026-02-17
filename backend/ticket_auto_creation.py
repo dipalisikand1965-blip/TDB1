@@ -14,6 +14,8 @@ Events that create tickets:
 6. Health record updated
 7. Booking made (stay, dine, travel, care)
 8. Voice order received
+
+MIGRATED to use handoff_to_spine() per Bible Section 12.0.
 """
 
 import os
@@ -23,6 +25,9 @@ from typing import Dict, Optional, Any
 import uuid
 
 logger = logging.getLogger(__name__)
+
+# Import canonical ticket spine helper (SINGLE ENTRY POINT for all tickets)
+from utils.spine_helper import handoff_to_spine
 
 # Database reference (set by server.py)
 db = None
@@ -41,7 +46,7 @@ def get_db():
     return db
 
 
-# Ticket ID prefixes by type
+# Ticket ID prefixes by type (kept for logging purposes only)
 TICKET_PREFIXES = {
     "order": "ORD-TKT",
     "pet_soul": "SOUL-TKT",
@@ -72,7 +77,8 @@ async def create_auto_ticket(
     action_required: bool = True
 ) -> Dict:
     """
-    Create an automatic ticket for an event.
+    Create an automatic ticket for an event via UNIFORM SERVICE FLOW.
+    MIGRATED to handoff_to_spine() per Bible Section 12.0.
     
     Args:
         event_type: Type of event (order, pet_soul, profile, membership, etc.)
@@ -92,122 +98,74 @@ async def create_auto_ticket(
     """
     database = get_db()
     
-    # Generate ticket ID
-    prefix = TICKET_PREFIXES.get(event_type, "GEN-TKT")
-    ticket_id = f"{prefix}-{uuid.uuid4().hex[:8].upper()}"
+    # Normalize member data
+    member_data = member or {}
     
-    # Build ticket document
-    ticket = {
-        "ticket_id": ticket_id,
-        "event_type": event_type,
-        "category": pillar,
-        "pillar": pillar,
-        "urgency": urgency,
-        "priority": urgency,
-        "status": "open" if action_required else "info",
-        "subject": subject,
-        "original_request": description,
-        "description": description,
-        "source": "auto_system",
-        "auto_created": True,
-        "action_required": action_required,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
-        "member": member,
-        "pet": pet if pet else ({"name": pet} if isinstance(pet, str) else None),
-        "reference_id": reference_id,
-        "reference_type": reference_type,
-        "metadata": metadata or {},
-        "timeline": [{
-            "action": "auto_created",
+    # Normalize pet data
+    pet_data = None
+    if pet:
+        if isinstance(pet, str):
+            pet_data = {"name": pet}
+        else:
+            pet_data = {
+                "id": pet.get("id"),
+                "name": pet.get("name"),
+                "breed": pet.get("breed")
+            }
+    
+    # Build intent from subject
+    intent = subject
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # HANDOFF TO SPINE - Single canonical ticket creation
+    # ═══════════════════════════════════════════════════════════════════════════
+    spine_result = await handoff_to_spine(
+        db=database,
+        route_name="ticket_auto_creation.py",
+        endpoint=f"/auto/{event_type}",
+        pillar=pillar,
+        category=event_type,
+        intent=intent,
+        user={
+            "email": member_data.get("email"),
+            "name": member_data.get("name"),
+            "phone": member_data.get("phone")
+        },
+        pet=pet_data,
+        payload={
             "event_type": event_type,
-            "at": datetime.now(timezone.utc).isoformat()
-        }],
-        "communications": []
-    }
-    
-    try:
-        await database.service_desk_tickets.insert_one(ticket)
-        logger.info(f"Auto-created ticket {ticket_id} for {event_type}")
-        
-        # Also create admin notification for the Command Center bell
-        notification = {
-            "id": f"NOTIF-{uuid.uuid4().hex[:8].upper()}",
-            "type": event_type,
-            "pillar": pillar,
-            "title": subject,
-            "message": description[:200] if len(description) > 200 else description,
-            "priority": urgency,
-            "status": "unread",
-            "source": "auto_system",
             "reference_id": reference_id,
             "reference_type": reference_type,
-            "ticket_id": ticket_id,
-            "customer": member,
-            "pet": pet,
+            "auto_created": True,
             "action_required": action_required,
-            "created_at": datetime.now(timezone.utc).isoformat()
-        }
-        await database.admin_notifications.insert_one(notification)
-        
-        # Also add to channel_intakes for Unified Inbox visibility
-        inbox_entry = {
-            "request_id": ticket_id,
-            "channel": "system",
-            "request_type": event_type,
-            "pillar": pillar,
-            "status": "pending" if action_required else "info",
-            "customer_name": member.get("name") if member else None,
-            "customer_email": member.get("email") if member else None,
-            "customer_phone": member.get("phone") if member else None,
-            "pet_info": pet,
-            "message": description,
-            "metadata": {"ticket_id": ticket_id, "event_type": event_type, **(metadata or {})},
-            "created_at": datetime.now(timezone.utc).isoformat()
-        }
-        await database.channel_intakes.insert_one(inbox_entry)
-        
-        # ==================== PILLAR-SPECIFIC COLLECTION ROUTING ====================
-        # Route ticket to pillar-specific collection for pillar-wise agent access
-        pillar_collection_map = {
-            "fit": "fit_requests",
-            "care": "care_requests",
-            "celebrate": "celebrate_requests",
-            "dine": "dine_requests",
-            "stay": "stay_requests",
-            "travel": "travel_requests",
-            "learn": "learn_requests",
-            "enjoy": "enjoy_requests",
-            "advisory": "advisory_requests",
-            "shop": "shop_requests",
-            "discover": "discover_requests",
-            "protect": "protect_requests",
-            "connect": "connect_requests",
-            "gift": "gift_requests"
-        }
-        
-        pillar_collection = pillar_collection_map.get(pillar.lower())
-        if pillar_collection:
-            pillar_request = {
-                **ticket,
-                "source_collection": "service_desk_tickets",
-                "routed_at": datetime.now(timezone.utc).isoformat()
-            }
-            await database[pillar_collection].insert_one(pillar_request)
-            logger.info(f"[PILLAR ROUTING] Ticket {ticket_id} routed to {pillar_collection}")
-        
-        return {
-            "success": True,
-            "ticket_id": ticket_id,
-            "event_type": event_type,
-            "pillar_collection": pillar_collection
-        }
-    except Exception as e:
-        logger.error(f"Failed to auto-create ticket: {e}")
+            "original_description": description,
+            **(metadata or {})
+        },
+        channel="system",
+        urgency=urgency,
+        created_by="system",
+        notify_admin=action_required,
+        notify_member=False,  # Auto-tickets don't notify members
+        tags=[event_type, pillar, "auto-system"]
+    )
+    
+    if not spine_result.get("success"):
+        logger.error(f"[AUTO-TICKET] Spine handoff failed for {event_type}: {spine_result.get('error')}")
         return {
             "success": False,
-            "error": str(e)
+            "error": spine_result.get("error")
         }
+    
+    ticket_id = spine_result["ticket_id"]
+    
+    logger.info(f"[SPINE-MIGRATED] ticket_auto_creation.py:/auto/{event_type} → {ticket_id} | pillar={pillar} category={event_type}")
+    
+    return {
+        "success": True,
+        "ticket_id": ticket_id,
+        "event_type": event_type,
+        "deep_link": spine_result.get("deep_link")
+    }
 
 
 # ============== EVENT HANDLERS ==============
