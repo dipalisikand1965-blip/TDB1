@@ -495,6 +495,17 @@ Admin Notification → Member Notification → Pillar Request → Tickets → Ch
 Every actionable request MUST create or attach to a Service Desk Ticket with a canonical `ticket_id`.
 Icons/badges are a READOUT of this spine, not independent features.
 
+**⚠️ CRITICAL: All ticket creation must route through `create_or_attach_service_ticket()`**
+
+Located at: `/app/backend/utils/service_ticket_spine.py`
+
+This is the SINGLE ENTRY POINT for ALL ticket creation/attachment. NO route should generate ticket_id directly.
+The helper enforces:
+- Canonical ID format (TCK-YYYY-NNNNNN)
+- Attach vs Create logic (idempotent)
+- Source + channel tracking (for audits)
+- Admin + Member notifications
+
 **Legacy Format:** `TKT-YYYYMMDD-XXXX` is deprecated. Use `legacy_ticket_id` field for migration/tracing only.
 
 ## 5.1 Ticket Schema (Complete)
