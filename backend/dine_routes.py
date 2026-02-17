@@ -427,14 +427,15 @@ async def create_reservation(reservation: ReservationRequest):
     # Build pet display string for email
     pet_display = ', '.join(pet_names) if pet_names else reservation.pet_name or f'{pet_count} pet(s)'
     
-    description = f"Dine Reservation at {restaurant.get('name')} on {reservation.date} at {reservation.time}. {reservation.guests} guests, {pet_count} pets. Customer: {reservation.name} ({reservation.phone})"
-    
     # ==================== STEP 1: NOTIFICATION (MANDATORY) ====================
+    # Build pet display string for email
+    pet_display = ', '.join(pet_names) if pet_names else reservation.pet_name or f'{pet_count} pet(s)'
+    
     await db.admin_notifications.insert_one({
         "id": notification_id,
         "type": "dine_reservation",
         "pillar": "dine",
-        "title": f"🍽️ New Reservation - {restaurant.get('name')}",
+        "title": f"New Reservation - {restaurant.get('name')}",
         "message": f"{reservation.name} booked for {reservation.date} at {reservation.time}",
         "read": False,
         "status": "unread",
@@ -450,40 +451,8 @@ async def create_reservation(reservation: ReservationRequest):
     })
     logger.info(f"[UNIFIED FLOW] Dine reservation notification created: {notification_id}")
     
-    # ==================== STEP 2: SERVICE DESK TICKET (MANDATORY) ====================
-    ticket_doc = {
-        "id": ticket_id,
-        "ticket_id": ticket_id,
-        "notification_id": notification_id,
-        "inbox_id": inbox_id,
-        "reservation_id": reservation_id,
-        "type": "dine_reservation",
-        "category": "dine",
-        "sub_category": "reservation",
-        "subject": f"Dine Reservation - {restaurant.get('name')} ({reservation.date})",
-        "description": description,
-        "status": "open",
-        "priority": "normal",
-        "channel": "web",
-        "pillar": "dine",
-        "member": {"name": reservation.name, "email": reservation.email, "phone": reservation.phone},
-        "pet": {"name": reservation.pet_name, "breed": reservation.pet_breed},
-        "metadata": {
-            "restaurant_name": restaurant.get("name"),
-            "restaurant_area": restaurant.get("area"),
-            "restaurant_city": restaurant.get("city"),
-            "date": reservation.date,
-            "time": reservation.time,
-            "guests": reservation.guests,
-            "pets": pet_count
-        },
-        "created_at": now,
-        "updated_at": now,
-        "unified_flow_processed": True
-    }
-    await db.service_desk_tickets.insert_one(ticket_doc)
-    await db.tickets.insert_one(ticket_doc)
-    logger.info(f"[UNIFIED FLOW] Dine service desk ticket created: {ticket_id}")
+    # NOTE: STEP 2 (SERVICE DESK TICKET) is now handled by UNIFORM SPINE above
+    # The spine creates a canonical TCK-YYYY-NNNNNN ticket
     
     # ==================== STEP 3: UNIFIED INBOX (MANDATORY) ====================
     inbox_entry = {
