@@ -30,7 +30,7 @@ import {
   X, Gift, Lightbulb, Sparkles, ChevronRight, Send, Heart,
   ShoppingBag, Calendar, TrendingUp, RefreshCw, Star, Clock,
   AlertCircle, Check, Info, Flame, Package, Filter, CheckSquare, Square,
-  ShoppingCart, ThumbsDown, Share2, MoreHorizontal, ChevronDown,
+  ShoppingCart, ThumbsDown, Share2, MoreHorizontal, ChevronDown, HelpCircle,
   // Icons for Concierge Cards
   Cake, Utensils, PartyPopper, Camera, Scissors, Cookie, Salad, 
   Stethoscope, Hotel, Moon, Home, UserCheck, PhoneCall, Plane, MapPin,
