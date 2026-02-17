@@ -488,8 +488,8 @@ const PetHero = ({ pet, soulData, onPetSwitch, pets, token }) => {
               Thoughtfully selected for {pet ? `${petName}'s` : 'your companion\'s'} life and needs.
             </p>
             
-            {/* Pet Soul Traits */}
-            <PetSoulTraits pet={pet} soulData={soulData} />
+            {/* Pet Soul Traits - Now uses Safe Tags API */}
+            <PetSoulTraits pet={pet} soulData={soulData} token={token} />
             
             {/* Mira's Love Note - Emotional message about the pet */}
             {pet && <MiraLoveNote pet={pet} variant="hero" />}
