@@ -209,9 +209,15 @@ const useDraft = ({
   
   /**
    * Update draft text (extends TTL on every edit - sliding window)
+   * IMMEDIATE save - no debouncing per Bible requirement
    */
   const updateDraft = useCallback((text) => {
-    if (!currentPetId) return;
+    if (!currentPetId) {
+      console.log('[useDraft] updateDraft called but no currentPetId');
+      return;
+    }
+    
+    console.log('[useDraft] updateDraft pet=' + currentPetId + ' len=' + (text?.length || 0));
     
     setDraftText(text);
     
@@ -227,8 +233,13 @@ const useDraft = ({
         }
       };
       
-      // Persist to localStorage
+      // IMPORTANT: Also update the ref immediately so pet switch detection has latest data
+      draftsRef.current = updated;
+      
+      // Persist to localStorage IMMEDIATELY
       saveDrafts(updated);
+      
+      console.log('[useDraft] saved pet=' + currentPetId + ' expiresAt=' + updated[currentPetId].expiresAt);
       
       return updated;
     });
