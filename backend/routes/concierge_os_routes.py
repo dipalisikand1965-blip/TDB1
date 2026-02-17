@@ -1612,6 +1612,7 @@ async def review_conversation_insight(
 ):
     """
     Review a conversation insight - confirm to add to profile or reject to discard.
+    Prevents duplicates by checking normalized category + content.
     """
     if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
@@ -1640,15 +1641,41 @@ async def review_conversation_insight(
         if not insight_found:
             raise HTTPException(status_code=404, detail="Insight not found")
         
-        # Update the pet document
+        # Update the pet document with the reviewed insight
         await db.pets.update_one(
             {"id": pet_id},
             {"$set": {"conversation_insights": insights}}
         )
         
-        # If confirmed, also add to a separate "learned_facts" field that can be displayed in MOJO
+        # If confirmed, add to learned_facts (with duplicate check)
         if action == "confirm":
             learned_facts = pet.get("learned_facts", [])
+            
+            # Normalize content for comparison (lowercase, strip whitespace)
+            def normalize(text):
+                return (text or "").lower().strip()
+            
+            new_category = normalize(insight_found.get("category", ""))
+            new_content = normalize(insight_found.get("content", ""))
+            
+            # Check if this insight already exists in learned_facts
+            is_duplicate = any(
+                normalize(fact.get("category", "")) == new_category and 
+                normalize(fact.get("content", "")) == new_content
+                for fact in learned_facts
+            )
+            
+            if is_duplicate:
+                logger.info(f"Duplicate insight detected for pet {pet_id}: {new_content}")
+                return {
+                    "success": True,
+                    "insight_id": insight_id,
+                    "action": action,
+                    "message": "Insight already exists in profile (duplicate skipped)",
+                    "duplicate": True
+                }
+            
+            # Not a duplicate, add to learned_facts
             learned_facts.append({
                 "id": insight_id,
                 "category": insight_found["category"],
