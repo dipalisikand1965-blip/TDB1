@@ -88,12 +88,13 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 - [x] Complete Phase 3 implementation with MOJO tab
 - [x] Wire icon states to real API data (`/api/os/icon-state`)
 - [x] Implement canonical ticket_id format (`TCK-YYYY-NNNNNN`)
-- [ ] Update remaining intake routes to use `generate_ticket_id()`:
+- [x] **PICKS Fallback Rule (Bible Section 9.0)** - No catalogue match → Concierge Arranges
+- [ ] Update remaining intake routes to use `create_or_attach_service_ticket()`:
   - `stay_routes.py`, `dine_routes.py`, `celebrate_routes.py`, `enjoy_routes.py`
   - `fit_routes.py`, `learn_routes.py`, `paperwork_routes.py`, `emergency_routes.py`
   - `whatsapp_routes.py`, `membership_routes.py`, `ticket_auto_create.py`
   - `unified_signal_flow.py`, `user_tickets_routes.py`, `service_catalog_routes.py`, `ticket_messaging.py`
-- [ ] OR: Create single `create_or_attach_service_ticket()` helper for all intakes
+- [ ] Enable `ICON_STATE_API_ENABLED` feature flag after all routes migrated
 - **Do not enable the flag for production until all ticket-creating intakes route through the canonical helper.**
 
 ### P1 (High Priority)
