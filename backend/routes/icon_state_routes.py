@@ -732,10 +732,12 @@ async def get_icon_state(
         # Debug info
         "debug": {
             "unified_ticket_sources": ["db.tickets", "db.mira_tickets"],
-            "deduplication": "by ticket_id, first occurrence wins",
+            "deduplication": "by canonical ticket_id (TCK-YYYY-NNNNNN), first occurrence wins",
+            "canonical_ticket_id_format": "^TCK-\\d{4}-\\d{6}$",
             "terminal_statuses": TERMINAL_STATUSES,
             "awaiting_user_statuses": AWAITING_USER_STATUSES,
             "high_urgency": HIGH_URGENCY,
+            "validation": services_counts.get("_validation", {}),
             "timestamp": datetime.now(timezone.utc).isoformat()
         }
     }
