@@ -178,28 +178,33 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
    - `get_safe_tags()` - Returns tags with health priority (suppresses conflicting preferences)
    - **Safety Rule:** Health always wins by default until user explicitly resolves
 
-2. **Extraction-Time Deduplication**
-   - Skips insights that already exist in `pending_review` (last 7 days)
-   - Skips insights that already exist in `learned_facts`
-   - Prevents duplicate fact noise
+2. **MOJO Conflict Resolution UI** (`/app/frontend/src/components/Mira/ConflictResolutionCard.jsx`)
+   - Shows conflict cards at top of "What Mira Learned" section
+   - Three resolution options: "Allergic (avoid)", "Loves (it's fine now)", "Not sure"
+   - Safety note: "Until you confirm, I'll avoid X to stay on the safe side"
+   - Resolved state shows confirmation message with "Change decision" link
+   - Suppressed tags show with strikethrough + red shield icon
 
-3. **New API Endpoints:**
+3. **Extraction-Time Deduplication (Conservative)**
+   - Exact match only (category + content)
+   - No time-based blocking - allows re-stated facts months later
+   - Prevents duplicate noise within same conversation
+
+4. **API Endpoints:**
    - `GET /api/os/concierge/conflicts/{pet_id}` - Get unresolved conflicts
    - `POST /api/os/concierge/conflicts/{pet_id}/resolve` - Resolve a conflict
    - `GET /api/os/concierge/safe-tags/{pet_id}` - Get tags with safety filtering
 
-4. **Confirm Endpoint Enhanced:**
-   - Detects conflicts when confirming new insights
-   - Suppresses preference tags that conflict with health restrictions
-   - Returns conflict warnings in response
+5. **Entity Normalization:**
+   - Handles plurals (peanut/peanuts, chicken/chickens)
+   - Common variations mapped (peanut butter → peanut)
 
-**Test Results:**
-- Duplicate extraction: BLOCKED ✅
-- New fact extraction: WORKING ✅
-- Conflict detection (chicken): DETECTED ✅
-- Conflict resolution (health_wins): RESOLVED ✅
-- "Loves chicken" tag: SUPPRESSED ✅
-- Mira behavior post-resolution: CORRECT ✅
+**Full QA Test Results:**
+- A) Extraction → Pending Insights: ✅ PASS
+- B) Confirm + Retrieval: ✅ PASS  
+- C) Contradiction Trigger: ✅ PASS
+- D) Resolution: ✅ PASS
+- E) Service Handoff: ✅ PASS (TCK-2026-000005)
 
 ### Feb 17, 2026 (Session 4 - Mira Intelligence QA)
 **Completed comprehensive QA of Mira's intelligence system:**
