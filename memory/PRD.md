@@ -129,8 +129,18 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 - Added MOJO tab to icon state system (PULSE when soul < 50%)
 - Fixed soulKnowledge initialization order bug
 - Updated PET_OS_BEHAVIOR_BIBLE.md with MOJO icon specifications
-- Console confirms state transitions: demo-pet(PULSE) → Lola(ON)
+- Console confirms state transitions: demo-pet(PULSE) → Lola(PULSE - critical fields missing)
 - Pet switch correctly resets and recalculates all icon states
+
+### Feb 17, 2026 (Session 2 - MOJO & Insights Investigation)
+- **MOJO PULSE now triggers on critical missing fields** (vaccinations, allergies, medications, vet_info, location)
+- Added orange attention dot on pet avatar when PULSE
+- Updated "What Mira Learned" empty state with "Teach Mira" and "Save from chat" CTAs
+- **INVESTIGATION RESULTS:**
+  - Mystique: Soul Score = 72%, learned_facts = [], doggy_soul_meta = 4 keys
+  - "Mira's Intelligence" shows based on `doggy_soul_meta` count (4 keys = ~30%)
+  - "What Mira Learned" shows 0% because `learned_facts` array is empty
+  - Insights are created via Concierge conversations when Mira extracts facts
 
 ### Feb 17, 2026 (Earlier)
 - Phase 1 Layer Manager implemented and tested
