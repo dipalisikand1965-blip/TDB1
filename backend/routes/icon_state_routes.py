@@ -222,15 +222,20 @@ async def get_unified_tickets(db, user_email: str, pet_ids: List[str] = None) ->
 # COUNT FUNCTIONS
 # ============================================
 
+# Store ticket stats for debug info (set during main endpoint call)
+_ticket_stats = {}
+
 async def get_services_counts(db, user_email: str, pet_ids: List[str] = None) -> Dict:
     """
     SERVICES tab counts from unified Service Desk tickets.
     
     Returns:
-    - active_tickets: All non-terminal tickets
+    - active_tickets: All non-terminal tickets (with valid canonical ticket_id)
     - awaiting_you: Tickets requiring user action
     """
-    tickets = await get_unified_tickets(db, user_email, pet_ids)
+    global _ticket_stats
+    tickets, stats = await get_unified_tickets(db, user_email, pet_ids)
+    _ticket_stats = stats  # Store for debug endpoint
     
     active_tickets = 0
     awaiting_you = 0
@@ -254,6 +259,12 @@ async def get_services_counts(db, user_email: str, pet_ids: List[str] = None) ->
         "_query": {
             "terminal_statuses": TERMINAL_STATUSES,
             "awaiting_statuses": AWAITING_USER_STATUSES
+        },
+        "_validation": {
+            "valid_from_tickets": stats["valid_from_tickets"],
+            "valid_from_mira_tickets": stats["valid_from_mira_tickets"],
+            "invalid_count": len(stats["invalid_ticket_id"]),
+            "duplicates_skipped": stats["duplicates_skipped"]
         }
     }
 
@@ -267,7 +278,7 @@ async def get_today_counts(db, user_email: str, pet_ids: List[str] = None) -> Di
     - due_today: SLA due today
     - upcoming: SLA due within 7 days
     """
-    tickets = await get_unified_tickets(db, user_email, pet_ids)
+    tickets, stats = await get_unified_tickets(db, user_email, pet_ids)
     
     now = datetime.now(timezone.utc)
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
