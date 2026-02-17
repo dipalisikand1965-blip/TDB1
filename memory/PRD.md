@@ -83,21 +83,18 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 
 ## Prioritized Backlog
 
-### P0 (Critical) - Blockers before enabling for real users
+### P0 (Critical) - All Complete ✅
 - [x] Fix Phase 3 bug (soulKnowledge initialization order)
 - [x] Complete Phase 3 implementation with MOJO tab
 - [x] Wire icon states to real API data (`/api/os/icon-state`)
 - [x] Implement canonical ticket_id format (`TCK-YYYY-NNNNNN`)
 - [x] **PICKS Fallback Rule (Bible Section 9.0)** - No catalogue match → Concierge Arranges
 - [x] **PICKS Fallback QA Verification** - All acceptance tests passed (Feb 17, 2026)
-  - Test 1: Bespoke request → `fallback_mode='concierge'`, `fallback_reason='bespoke_intent'` ✓
-  - Test 2: Normal request → `fallback_mode='catalogue'` with matches ✓
-  - Test 3: Ambiguous request → Handled correctly ✓  
-  - Test 4: Ticket creation → Canonical `TCK-2026-*` format ✓
 - [x] **Phase 5: Conversation Contract (Bible Section 11.0)** - All acceptance tests passed (Feb 17, 2026)
-  - Test 1: "I want a pet cafe" → `mode='clarify'`, no Places call ✓
-  - Test 2: "Pet cafe in Koramangala" → `mode='places'`, 5 places returned ✓
-  - Test 3: "How to train recall" → `mode='learn'`, 5 YouTube videos ✓
+- [x] **P0 Route Migration** - All 10 ticket-creating endpoints migrated to `handoff_to_spine()`
+- [x] **Ownership Contract Fix** - Unified query (`member.email` OR `member.id` OR `parent_id`)
+- [x] **Clarify Before Places Bug Fix** - Guard added to prevent legacy code bypass
+- [x] **QA Proof Pack Complete** - E2E verification of all flows (Feb 17, 2026)
   - Test 4: "Book grooming tomorrow" → `mode='ticket'`, ticket created ✓
   - Test 5: "Find canine acupuncturist" → `mode='handoff'`, bespoke intent ✓
   - Location Consent Gate: "near me" without permission → clarify with chips ✓
