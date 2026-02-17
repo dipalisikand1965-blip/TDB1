@@ -22,6 +22,8 @@ import secrets
 
 # Import canonical ticket spine (SINGLE ENTRY POINT for all tickets)
 from utils.service_ticket_spine import create_or_attach_service_ticket, Pillar, Channel, CreatedBy
+# Legacy import for backwards compatibility - migrate these to spine
+from ticket_auto_create import create_ticket_from_event, update_ticket_from_event
 
 logger = logging.getLogger(__name__)
 
