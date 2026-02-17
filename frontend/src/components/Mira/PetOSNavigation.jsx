@@ -232,14 +232,14 @@ const PetDropdown = memo(({
       style={{
         position: 'absolute',
         top: '100%',
-        right: 0,
+        left: 0,
         marginTop: '8px',
         background: 'linear-gradient(145deg, rgba(88,28,135,0.98), rgba(59,7,100,0.98))',
         borderRadius: '16px',
         border: '1px solid rgba(168,85,247,0.3)',
         boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
         minWidth: '280px',
-        zIndex: 1000,
+        zIndex: 9999,
         overflow: 'hidden'
       }}
     >
