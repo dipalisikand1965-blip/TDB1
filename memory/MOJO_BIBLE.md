@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-soul-sync.preview.emergentagent.com
+https://mojo-first-os.preview.emergentagent.com
 ```
 
 ---

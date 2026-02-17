@@ -8,7 +8,7 @@ import os
 import uuid
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-soul-sync.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mojo-first-os.preview.emergentagent.com').rstrip('/')
 
 # Test user credentials - unique per test run
 TEST_EMAIL = f"test_auth_{uuid.uuid4().hex[:8]}@example.com"

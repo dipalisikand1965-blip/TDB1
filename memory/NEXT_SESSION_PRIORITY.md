@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://mira-soul-sync.preview.emergentagent.com
+**Preview URL:** https://mojo-first-os.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

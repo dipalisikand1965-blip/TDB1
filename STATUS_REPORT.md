@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://mira-soul-sync.preview.emergentagent.com
+**Preview URL:** https://mojo-first-os.preview.emergentagent.com
 
 ---
 
