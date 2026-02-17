@@ -153,8 +153,13 @@ const getUniqueTraitsForPet = (pet) => {
 };
 
 // Soul traits display - with glass effect and animation
+// NOW USES SAFE TAGS API for health-first conflict handling
 const SoulTraits = ({ pet, soulData }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const { token } = useAuth();
+  
+  // Fetch safe tags (health-first, suppresses conflicting preferences)
+  const { safeTags, suppressedTags, isLoading, isSyncing, hasConflicts } = useSafeTags(pet?.id, token);
   
   useEffect(() => {
     // Stagger animation on mount
@@ -168,25 +173,60 @@ const SoulTraits = ({ pet, soulData }) => {
     const traitList = [];
     const answers = pet.doggy_soul_answers || soulData?.answers || {};
     
-    // Get personality traits from soul data
-    if (answers.describe_3_words) {
+    // Category emoji mapping for safe tags
+    const categoryEmoji = {
+      fears: '😰',
+      loves: '❤️',
+      anxiety: '😟',
+      behavior: '🐕',
+      preferences: '⭐',
+      health: '💊',
+      other: '📝',
+    };
+    
+    // Priority 1: Safe tags from API (learned facts with conflict filtering)
+    if (safeTags && safeTags.length > 0) {
+      // Add safe tags (max 2 to leave room for soul answers)
+      safeTags.slice(0, 2).forEach(tag => {
+        const emoji = tag.is_health ? '💊' : (categoryEmoji[tag.category] || '📝');
+        traitList.push({ 
+          emoji, 
+          text: tag.content,
+          isFromSafeTags: true,
+          isHealth: tag.is_health
+        });
+      });
+    }
+    
+    // Priority 2: Get personality traits from soul data (if room)
+    if (traitList.length < 3 && answers.describe_3_words) {
       const words = Array.isArray(answers.describe_3_words) 
         ? answers.describe_3_words 
         : [answers.describe_3_words];
-      words.slice(0, 3).forEach(word => {
+      words.slice(0, Math.max(0, 3 - traitList.length)).forEach(word => {
         traitList.push({ emoji: '✨', text: word });
       });
     }
     
-    // Get favorite treats
-    if (answers.favorite_treats && traitList.length < 3) {
+    // Priority 3: Get favorite treats - BUT check for health conflicts!
+    if (traitList.length < 3 && answers.favorite_treats) {
       const treats = Array.isArray(answers.favorite_treats)
         ? answers.favorite_treats[0]
         : answers.favorite_treats;
-      traitList.push({ emoji: '🍖', text: `Loves ${treats}` });
+      
+      // Check if this treat is suppressed due to health conflict
+      const treatLower = (treats || '').toLowerCase();
+      const isSuppressed = suppressedTags?.some(s => {
+        const suppressedContent = (s.content || '').toLowerCase();
+        return treatLower.includes(suppressedContent) || suppressedContent.includes(treatLower);
+      });
+      
+      if (!isSuppressed) {
+        traitList.push({ emoji: '🍖', text: `Loves ${treats}` });
+      }
     }
     
-    // Default: Use unique breed-based traits
+    // Default: Use unique breed-based traits if still empty
     if (traitList.length === 0) {
       const uniqueTraits = getUniqueTraitsForPet(pet);
       uniqueTraits.forEach(trait => {
@@ -196,19 +236,40 @@ const SoulTraits = ({ pet, soulData }) => {
     }
     
     return traitList.slice(0, 3);
-  }, [pet, soulData]);
+  }, [pet, soulData, safeTags, suppressedTags]);
   
-  if (traits.length === 0) return null;
+  if (traits.length === 0 && !isLoading && !isSyncing) return null;
   
   return (
     <div className="flex flex-wrap gap-2 mt-3">
+      {/* Syncing indicator */}
+      {isSyncing && (
+        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 text-xs">
+          <RefreshCw size={12} className="animate-spin" />
+          <span>syncing</span>
+        </div>
+      )}
+      
+      {/* Loading skeleton */}
+      {isLoading && traits.length === 0 && (
+        <>
+          {[1, 2, 3].map(i => (
+            <div key={i} className="h-8 w-24 bg-white/10 rounded-full animate-pulse" />
+          ))}
+        </>
+      )}
+      
       {traits.map((trait, idx) => (
         <div
           key={idx}
           className={`
             flex items-center gap-1.5 px-3 py-1.5 
-            bg-white/5 backdrop-blur-md border border-white/10
-            rounded-full text-white/80 text-xs sm:text-sm
+            ${trait.isHealth 
+              ? 'bg-green-500/10 border-green-500/30' 
+              : 'bg-white/5 border-white/10'
+            }
+            backdrop-blur-md border
+            rounded-full text-xs sm:text-sm
             shadow-lg shadow-black/5
             transition-all duration-500 ease-out
             hover:bg-white/15 hover:scale-105
@@ -216,10 +277,37 @@ const SoulTraits = ({ pet, soulData }) => {
               ? 'opacity-100 translate-y-0' 
               : 'opacity-0 translate-y-2'
             }
+            ${trait.isHealth ? 'text-green-400' : 'text-white/80'}
           `}
           style={{ 
             transitionDelay: `${idx * 100}ms`,
             animation: isVisible ? `float-gentle 3s ease-in-out ${idx * 0.5}s infinite` : 'none'
+          }}
+        >
+          {trait.isHealth && <Shield size={12} />}
+          <span>{trait.emoji}</span>
+          <span>{trait.text}</span>
+        </div>
+      ))}
+      
+      {/* Suppressed tags indicator */}
+      {hasConflicts && suppressedTags && suppressedTags.length > 0 && (
+        <div
+          className={`
+            flex items-center gap-1.5 px-3 py-1.5 
+            bg-white/5 border border-white/10
+            rounded-full text-white/40 text-xs
+            cursor-help
+            transition-all duration-500 ease-out
+            ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}
+          `}
+          style={{ transitionDelay: '300ms' }}
+          title={`${suppressedTags.length} preference(s) hidden due to health restrictions:\n${suppressedTags.map(t => `• ${t.content}`).join('\n')}`}
+        >
+          <AlertTriangle size={12} className="text-amber-400" />
+          <span>{suppressedTags.length} hidden</span>
+        </div>
+      )}
           }}
         >
           <span className="text-sm">{trait.emoji}</span>
