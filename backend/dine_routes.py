@@ -1274,24 +1274,34 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
         except Exception as e:
             logger.error(f"Failed to send visit email: {e}")
     
-    # Auto-create Service Desk ticket for buddy visit
+    # Auto-create Service Desk ticket for buddy visit via SPINE HELPER
     try:
-        ticket_id = await create_ticket_from_event(db, "buddy_visit", {
-            "visit_id": visit_doc["id"],
-            "user_name": visit_doc.get("user_name"),
-            "user_email": user_email,
-            "restaurant_name": restaurant.get("name"),
-            "restaurant_area": restaurant.get("area"),
-            "restaurant_city": restaurant.get("city"),
-            "date": visit.date,
-            "time_slot": visit.time_slot,
-            "pets": pets_info,
-            "looking_for_buddies": visit.looking_for_buddies,
-            "notes": visit.notes
-        })
-        logger.info(f"Auto-created ticket {ticket_id} for buddy visit {visit_doc['id']}")
+        spine_result = await handoff_to_spine(
+            db=db,
+            route_name="dine_routes.py",
+            endpoint="/dine/restaurants/{restaurant_id}/visits",
+            pillar="dine",
+            category="buddy_visit",
+            intent=f"Buddy visit at {restaurant.get('name')} on {visit.date} at {visit.time_slot}",
+            user={"email": user_email, "name": visit_doc.get("user_name"), "phone": ""},
+            pet={"name": pets_info[0].get("name") if pets_info else ""},
+            payload={
+                "visit_id": visit_doc["id"],
+                "restaurant_name": restaurant.get("name"),
+                "restaurant_area": restaurant.get("area"),
+                "restaurant_city": restaurant.get("city"),
+                "date": visit.date,
+                "time_slot": visit.time_slot,
+                "pets": pets_info,
+                "looking_for_buddies": visit.looking_for_buddies,
+                "notes": visit.notes
+            },
+            channel="web"
+        )
+        ticket_id = spine_result.get("ticket_id")
+        logger.info(f"[SPINE-HELPER] Created ticket {ticket_id} for buddy visit {visit_doc['id']}")
     except Exception as e:
-        logger.error(f"Failed to auto-create ticket for buddy visit: {e}")
+        logger.error(f"[SPINE-HELPER] Failed to create ticket for buddy visit: {e}")
     
     return {"message": "Visit scheduled", "visit": visit_doc}
 
