@@ -55,12 +55,7 @@ const ChatInputBar = ({
   petId,
   sessionId,
   onNewChat,
-  hasConversation = false,
-  // Status indicators (non-clickable)
-  conciergeCount = 0,
-  picksCount = 0,
-  hasConciergeNew = false,
-  hasPicksNew = false
+  hasConversation = false
 }) => {
   const fileInputRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
