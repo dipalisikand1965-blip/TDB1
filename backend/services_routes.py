@@ -502,6 +502,7 @@ async def create_service_request(
     
     Works for BOTH mobile and desktop.
     This is the SINGLE PIPE for ALL service requests from ANY source.
+    ALL ticket creation routes through create_or_attach_service_ticket().
     """
     user = await get_user_from_token_services(authorization)
     if not user:
@@ -510,7 +511,7 @@ async def create_service_request(
     db = get_db()
     if db is None:
         # Return mock for development
-        mock_id = f"SVC-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+        mock_id = f"TCK-{datetime.now().strftime('%Y')}-000000"
         return {
             "success": True,
             "ticket_id": mock_id,
@@ -519,53 +520,58 @@ async def create_service_request(
             "mock": True
         }
     
-    parent_id = user.get("id") or user.get("user_id")
     user_email = user.get("email", "")
     user_name = user.get("name", user.get("full_name", "Member"))
-    now = datetime.now(timezone.utc)
+    user_id = user.get("id") or user.get("user_id")
     
     # ═══════════════════════════════════════════════════════════════════════════
-    # STEP 1: Generate Canonical Service Desk Ticket ID (TCK-YYYY-NNNNNN)
-    # All intake points use the same canonical format for uniform service flow
+    # CENTRALIZED TICKET CREATION via create_or_attach_service_ticket()
+    # This is the ONLY allowed way to create/attach tickets.
     # ═══════════════════════════════════════════════════════════════════════════
-    ticket_id = await generate_ticket_id(db)
+    result = await create_or_attach_service_ticket(
+        db=db,
+        
+        # Intent
+        intent=request.title or f"{request.service_type.title()} Request",
+        intent_type="request",
+        
+        # Member
+        member_email=user_email,
+        member_name=user_name,
+        member_id=user_id,
+        
+        # Pet
+        pet_ids=request.pet_ids,
+        pet_names=request.pet_names,
+        
+        # Classification
+        pillar=request.pillar or request.service_type,
+        category=request.service_type,
+        
+        # Source tracking (for audits)
+        source_route="services_routes.py",
+        channel=Channel.WEB if request.source != "app" else Channel.APP,
+        created_by=CreatedBy.MEMBER,
+        
+        # Payload
+        payload={
+            "service_type": request.service_type,
+            "description": request.description,
+            "constraints": request.constraints,
+            "preferred_time_window": request.preferred_time_window,
+            "location": request.location,
+        },
+        
+        # Options
+        urgency="normal",
+        notify_admin=True,
+        notify_member=True,
+    )
     
-    # ═══════════════════════════════════════════════════════════════════════════
-    # STEP 2: Build Service Desk Ticket Document
-    # ═══════════════════════════════════════════════════════════════════════════
-    ticket_doc = {
-        "ticket_id": ticket_id,
-        "ticket_type": "service",
-        "service_type": request.service_type,
-        "status": CanonicalStatus.PLACED.value,
-        
-        # Who (Member)
-        "parent_id": parent_id,
-        "member_email": user_email,
-        "member_name": user_name,
-        "pet_ids": request.pet_ids,
-        "pet_names": request.pet_names,
-        "pet_id": request.pet_ids[0] if request.pet_ids else None,
-        "pet_name": request.pet_names[0] if request.pet_names else None,
-        
-        # What
-        "title": request.title or f"{request.service_type.title()} Request",
-        "description": request.description or "",
-        "constraints": request.constraints or {},
-        
-        # When/Where
-        "preferred_time_window": request.preferred_time_window,
-        "location": request.location,
-        
-        # Pillar Classification
-        "pillar": request.pillar or request.service_type,
-        
-        # Source Tracking (mobile/desktop/search/chat)
-        "source": request.source,
-        "device_type": request.constraints.get("device_type", "unknown") if request.constraints else "unknown",
-        
-        # Timestamps
-        "created_at": now.isoformat(),
+    if not result["success"]:
+        raise HTTPException(status_code=500, detail="Failed to create ticket")
+    
+    ticket_id = result["ticket_id"]
         "updated_at": now.isoformat(),
         
         # Admin Assignment (null = unassigned, goes to pool)
