@@ -20,6 +20,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any, Literal, List
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from utils.ticket_id_generator import generate_ticket_id
 
 logger = logging.getLogger(__name__)
 
