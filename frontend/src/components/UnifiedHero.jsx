@@ -308,12 +308,6 @@ const SoulTraits = ({ pet, soulData }) => {
           <span>{suppressedTags.length} hidden</span>
         </div>
       )}
-          }}
-        >
-          <span className="text-sm">{trait.emoji}</span>
-          <span className="truncate max-w-[100px] sm:max-w-none font-light">{trait.text}</span>
-        </div>
-      ))}
       
       {/* CSS for gentle floating animation */}
       <style>{`
