@@ -639,6 +639,20 @@ const LearnedFactsContent = memo(({ pet, apiUrl, token, onInsightAction }) => {
   
   return (
     <div className="mojo-learned-facts" style={{ padding: '12px 0' }}>
+      {/* Conflict Resolution Cards - Show at TOP for safety-critical issues */}
+      <ConflictResolutionCard 
+        pet={pet}
+        apiUrl={apiUrl}
+        token={token}
+        onConflictResolved={(entity, resolution) => {
+          console.log(`[MOJO] Conflict resolved: ${entity} -> ${resolution}`);
+          setConflictRefreshKey(prev => prev + 1);
+          // Refresh pet data to update tags
+          onInsightAction?.('conflict_resolved', entity);
+        }}
+        key={`conflicts-${conflictRefreshKey}`}
+      />
+      
       {/* Pending Insights - Review & Confirm Section */}
       {pendingCount > 0 && (
         <div style={{ marginBottom: 20 }}>
