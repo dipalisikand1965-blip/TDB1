@@ -12254,7 +12254,53 @@ Or we can just sit together quietly. Whatever you need. 💜"""
             "hide_concierge": True
         }
     
-    # 5. Handle EMERGENCY immediately
+    # 5. Handle TRIAGE_FIRST (ingestion uncertainty) - calm questioning before sirens
+    if pillar == "triage_first":
+        triage_response = f"""I'm here with you. Let's figure out if this is urgent.
+
+**Quick questions to help {pet_name}:**
+
+1️⃣ **What did {pet_name} eat** (or what do you think it might be)?
+
+2️⃣ **How long ago**, and roughly how much?
+
+3️⃣ **Right now**: Is {pet_name} showing any of these signs?
+   - Vomiting repeatedly (more than 2-3 times)
+   - Trouble breathing or gagging that won't stop
+   - Extreme lethargy or collapse
+   - Pale, blue, or white gums
+
+**If any of those signs are happening → go to an emergency vet NOW.**
+
+If not, tell me what {pet_name} ate and the timing, and I'll guide the next step."""
+        
+        # Add AI response to ticket
+        await add_message_to_ticket(session_id, {
+            "type": "mira_response",
+            "content": triage_response,
+            "sender": "mira",
+            "channel": request.source,
+            "is_internal": False,
+            "mode": "triage_first"
+        })
+        
+        # Update ticket - not critical yet, pending triage
+        await update_mira_ticket(session_id, {
+            "status": "pending_triage",
+            "urgency": "high"
+        })
+        
+        return {
+            "response": triage_response,
+            "session_id": session_id,
+            "ticket_id": ticket_id,
+            "pillar": "care",  # Route to care pillar for follow-up
+            "ticket_type": "triage",
+            "is_triage": True,
+            "awaiting_triage_response": True
+        }
+    
+    # 5.5 Handle EMERGENCY immediately (GO_NOW tier)
     if pillar == "emergency":
         emergency_response = """**EMERGENCY DETECTED**
 
