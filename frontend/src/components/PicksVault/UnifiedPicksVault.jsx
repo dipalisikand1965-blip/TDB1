@@ -1765,10 +1765,10 @@ const UnifiedPicksVault = ({
                       <div className="text-center py-4 px-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100">
                         <Sparkles className="w-8 h-8 text-purple-500 mx-auto mb-2" />
                         <h3 className="text-sm font-semibold text-gray-800">
-                          Concierge Arranges for {pet?.name}
+                          Not in the catalogue. We'll arrange this for {pet?.name}.
                         </h3>
                         <p className="text-xs text-gray-500 mt-1">
-                          We'll source and arrange everything
+                          Creates a tracked request in Services.
                         </p>
                         {fallbackReason && (
                           <p className="text-[10px] text-gray-400 mt-1">
