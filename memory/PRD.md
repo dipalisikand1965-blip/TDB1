@@ -185,11 +185,13 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
    - Resolved state shows confirmation message with "Change decision" link
    - Suppressed tags show with strikethrough + red shield icon
 
-3. **Safe Tags Hook & Renderer** (P1 - Wired everywhere)
+3. **Safe Tags Hook & Renderer** (P1 - Wired EVERYWHERE)
    - `/app/frontend/src/hooks/mira/useSafeTags.js` - Centralized hook for safe tags
    - `/app/frontend/src/components/Mira/SafeTagsRenderer.jsx` - Component with suppression logic
+   - **ServicesPage.jsx** - PetSoulTraits now uses safe-tags API
+   - **UnifiedHero.jsx** - SoulTraits now uses safe-tags API
    - Fallback to raw tags + "syncing" indicator if API fails
-   - 30-second cache to reduce API calls
+   - Shows "⚠️ X hidden" when tags are suppressed
 
 4. **Chat Interruption Prompt (Bible 6.3)**
    - Conflict detected at extraction time in `mira_routes.py`
@@ -209,12 +211,13 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
    - Handles plurals (peanut/peanuts, chicken/chickens)
    - Common variations mapped (peanut butter → peanut)
 
-**Acceptance Test Results (all passed):**
-- Create conflict: health + preference on same entity ✅
+**Acceptance Test Results (Services Page - all passed):**
+- Create [health] lamb allergy ✅
+- Add conflicting [loves] lamb treats ✅
 - Resolve as health_wins ✅
-- Services page doesn't show suppressed preference ✅
-- Mira stops mentioning suppressed preference ✅
-- Chat interruption prompt appears on new conflict ✅
+- Services hero shows: thunder, anxiety, personality traits ✅
+- Services hero shows "⚠️ 6 hidden" indicator ✅
+- Services hero does NOT show "loves lamb" or "loves chicken" ✅
 
 ### Feb 17, 2026 (Session 4 - Mira Intelligence QA)
 **Completed comprehensive QA of Mira's intelligence system:**
