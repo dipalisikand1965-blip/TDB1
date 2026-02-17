@@ -253,7 +253,7 @@ const WelcomeHero = ({
             For <span className="gradient-text">{pet.name}</span>
           </h1>
           
-          <p className="hero-subtitle">Curated with love for {pet.name}</p>
+          <p className="hero-subtitle">Curated for {pet.name} today</p>
           
           {/* Proactive Greeting */}
           {proactiveGreeting && (
