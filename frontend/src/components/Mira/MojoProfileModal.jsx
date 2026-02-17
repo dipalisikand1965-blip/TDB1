@@ -555,6 +555,12 @@ const LearnedFactsContent = memo(({ pet, apiUrl, token, onInsightAction }) => {
           console.log(`[MOJO] Duplicate insight skipped`);
         }
         
+        // Handle conflict case - trigger conflict refresh
+        if (result.has_conflict) {
+          console.log(`[MOJO] Conflict detected for entity: ${result.conflict_entity}`);
+          setConflictRefreshKey(prev => prev + 1);
+        }
+        
         // Notify parent to refresh pet data (even for duplicates, to update pending list)
         onInsightAction?.(action, insightId);
       } else {
