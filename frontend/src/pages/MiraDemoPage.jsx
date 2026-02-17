@@ -3980,6 +3980,17 @@ const MiraDemoPage = () => {
         onClick={() => scrollToBottom()}
       />
       
+      {/* Reply Nudge - Shows when user types update-like content with open ticket (Bible Section 12.7) */}
+      <ReplyNudge
+        message={query}
+        hasOpenTicket={!!currentTicket && currentTicket.status !== 'closed'}
+        onOpenServices={() => setActiveTab('services')}
+        onSendAnyway={() => {
+          // Let them send, they chose to
+          handleSubmitRef.current?.(query);
+        }}
+      />
+      
       {/* Input Composer - Extracted to ChatInputBar component */}
       <ChatInputBar
         inputRef={inputRef}
