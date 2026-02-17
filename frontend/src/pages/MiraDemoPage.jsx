@@ -3419,18 +3419,13 @@ const MiraDemoPage = () => {
             {/* Notification Bell */}
             <NotificationBell userEmail={user?.email} />
             
-            {/* Pet Selector - Extracted to PetSelector component */}
+            {/* Pet Selector - Simple dropdown for switching pets */}
             <PetSelector
               currentPet={pet}
               allPets={allPets}
               isOpen={showPetSelector}
               onToggle={() => setShowPetSelector(!showPetSelector)}
               onSelectPet={switchPet}
-              onPetNameClick={() => {
-                // Open MOJO Profile Modal when pet name is clicked
-                setShowMojoModal(true);
-                setMojoDeepLink(null); // Open at top, not deep-linked to soul
-              }}
             />
           </div>
         </div>
