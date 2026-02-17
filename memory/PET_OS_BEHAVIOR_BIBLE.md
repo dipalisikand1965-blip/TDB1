@@ -471,8 +471,16 @@ User can save from:
 ```json
 {
   // === IDENTITY ===
-  "ticket_id": "TKT-20260217-XXXX",
-  "short_id": "XXXX",
+  // CANONICAL FORMAT: TCK-YYYY-NNNNNN (e.g., TCK-2026-000001)
+  // - TCK: Fixed prefix
+  // - YYYY: Current year
+  // - NNNNNN: 6-digit sequential number (atomic counter)
+  // 
+  // Why sequential: Sortable, audit-friendly, no collision, easy support comms
+  // Legacy format (TKT-YYYYMMDD-XXXX) is deprecated - alias only for tracing
+  "ticket_id": "TCK-2026-000001",
+  "short_id": "000001",
+  "legacy_ticket_id": null, // For migration: old TKT-... format if exists
   
   // === CLASSIFICATION ===
   "type": "grooming_request",
