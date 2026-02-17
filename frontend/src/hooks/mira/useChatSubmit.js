@@ -658,6 +658,11 @@ const useChatSubmit = (config) => {
           conciergeArranges: [],
           clarifyingQuestions: clarifyingQuestions,
           picksContract: picksContract,
+          conversationContract: conversationContract,
+          contractMode: contractMode,
+          quickReplies: contractQuickReplies,
+          placesResults: contractPlacesResults,
+          youtubeResults: contractYoutubeResults,
           fallbackMode: fallbackMode,
           fallbackReason: fallbackReason,
           context: updatedPickContext,
@@ -666,6 +671,58 @@ const useChatSubmit = (config) => {
           showConcierge: false,
           hasNew: true
         });
+      } else if (contractMode === 'places' && contractPlacesResults.length > 0) {
+        // ═══════════════════════════════════════════════════════════════════════════
+        // PLACES MODE (Phase 5): Show Google Places results
+        // conversation_contract.mode === "places"
+        // ═══════════════════════════════════════════════════════════════════════════
+        console.log(`[CONVERSATION CONTRACT PLACES] Showing ${contractPlacesResults.length} places from contract`);
+        setMiraPicks({
+          products: [],
+          services: [],
+          places: contractPlacesResults,
+          placesType: 'places',
+          conciergeArranges: [],
+          picksContract: picksContract,
+          conversationContract: conversationContract,
+          contractMode: contractMode,
+          quickReplies: contractQuickReplies,
+          placesResults: contractPlacesResults,
+          youtubeResults: [],
+          fallbackMode: fallbackMode,
+          context: updatedPickContext,
+          mode: miraMode,
+          clarifyOnly: false,
+          showConcierge: false,
+          hasNew: true
+        });
+        notificationSounds.picks();
+      } else if (contractMode === 'learn' && contractYoutubeResults.length > 0) {
+        // ═══════════════════════════════════════════════════════════════════════════
+        // LEARN MODE (Phase 5): Show YouTube learning videos
+        // conversation_contract.mode === "learn"
+        // ═══════════════════════════════════════════════════════════════════════════
+        console.log(`[CONVERSATION CONTRACT LEARN] Showing ${contractYoutubeResults.length} YouTube videos from contract`);
+        setMiraPicks({
+          products: [],
+          services: [],
+          places: [],
+          youtubeVideos: contractYoutubeResults,
+          conciergeArranges: [],
+          picksContract: picksContract,
+          conversationContract: conversationContract,
+          contractMode: contractMode,
+          quickReplies: contractQuickReplies,
+          placesResults: [],
+          youtubeResults: contractYoutubeResults,
+          fallbackMode: fallbackMode,
+          context: updatedPickContext,
+          mode: miraMode,
+          clarifyOnly: false,
+          showConcierge: false,
+          hasNew: true
+        });
+        notificationSounds.picks();
       } else if (fallbackMode === 'concierge' && conciergeCards.length > 0) {
         // ═══════════════════════════════════════════════════════════════════════════
         // CONCIERGE FALLBACK: No catalogue match - show Concierge Arranges cards
