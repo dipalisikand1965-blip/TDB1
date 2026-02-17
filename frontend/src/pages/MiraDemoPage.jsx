@@ -566,9 +566,15 @@ const MiraDemoPage = () => {
   } = useIconState({
     currentPetId: pet?.id,
     mojoData: {
-      // Note: soulKnowledge is defined later - use pet?.soulScore only here
-      // The hook will recalculate when pet changes
+      // Soul score from pet data
       soulScore: pet?.soulScore || pet?.overall_score || 0,
+      // Critical missing fields check (per user requirement - not just soul score)
+      // Critical = vaccinations, allergies, medications, emergency contact, location, vet details
+      hasCriticalMissing: (() => {
+        const answers = pet?.doggy_soul_answers || {};
+        const criticalFields = ['vaccination_status', 'food_allergies', 'medications', 'vet_info', 'location'];
+        return criticalFields.some(field => !answers[field] || answers[field] === 'Unknown' || answers[field] === '');
+      })(),
       hasIncompleteFields: (pet?.soulScore || pet?.overall_score || 0) < 50,
       pendingSuggestions: [], // TODO: Connect to soul form suggestions
       newInsights: false, // TODO: Track new insights from conversations
