@@ -3517,11 +3517,47 @@ async def search_real_products(
                 "available": p.get("available", True)
             })
         
-        return products
+        # ═══════════════════════════════════════════════════════════════════════════
+        # CHECK: If after all filtering we have 0 products, trigger Concierge fallback
+        # Bible Section 9.0: No catalogue match → Concierge Arranges, NOT generic picks
+        # ═══════════════════════════════════════════════════════════════════════════
+        if len(products) == 0:
+            logger.info(f"[PICKS] 0 products after filtering for '{user_input_lower[:50]}' - triggering Concierge fallback")
+            return {
+                "products": [],
+                "concierge_fallback": True,
+                "concierge_fallback_reason": "no_matches_after_filtering",
+                "concierge_arranges": [
+                    {
+                        "type": "concierge_pick",
+                        "title": f"Custom request for {pet_name}",
+                        "subtitle": "Concierge arranges",
+                        "description": f"We don't have this in the catalogue yet — we can arrange it for {pet_name}.",
+                        "no_price": True,
+                        "action": "create_ticket",
+                        "pillar": entities.get("pillar", "care"),
+                        "intent": user_input_lower[:200],
+                        "pet_id": pet_context.get("id"),
+                        "pet_name": pet_name,
+                    }
+                ]
+            }
+        
+        # Return products in consistent format
+        return {
+            "products": products,
+            "concierge_fallback": False,
+            "concierge_arranges": []
+        }
         
     except Exception as e:
         logger.error(f"Product search error: {e}")
-        return []
+        return {
+            "products": [],
+            "concierge_fallback": True,
+            "concierge_fallback_reason": "error",
+            "error": str(e)
+        }
 
 
 # ═══════════════════════════════════════════════════════════════════════════
