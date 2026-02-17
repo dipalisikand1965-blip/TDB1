@@ -465,11 +465,48 @@ All flows tested and verified via screenshots and API calls:
   - ConciergeReplyBanner connected to apiCounts.unreadRepliesCount
   - ServicesPanel receiving unreadRepliesCount prop
 
+### Feb 17, 2026 (Session 4b - Additional UI Cleanup per User Specs)
+- **REMOVED: "Personalized picks for [Pet]" card from WelcomeHero**
+  - Was duplicating: pet selection, "For Lola", and Picks tab functionality
+  - Replaced with simpler subtitle: "Curated for Lola today"
+
+- **REMOVED: Weather card from WelcomeHero**
+  - Weather details now live exclusively in TODAY panel
+  - Caution/heat warnings belong inside TODAY for context, not interruption
+
+- **REDESIGNED: PastChatsPanel (Chat History)**
+  - New "Today" / "Earlier" grouping (removed 1-2 days / 3-5 days complexity)
+  - Shows last 3 sessions by default, "View all" CTA for more
+  - Fixed font contrast - all text now uses proper on-dark palette
+  - Bottom sheet slide-up animation for mobile
+  - "New chat" button at bottom
+
+- **SIMPLIFIED: PetDropdown (Pet Switcher)**
+  - Removed duplicate soul card/ring from dropdown
+  - Soul info only lives in nav bar avatar (MOJO)
+  - Dropdown is now a simple list: photo + name + breed + checkmark
+
+- **CREATED: NewChatConfirmDialog component**
+  - Shows when user starts new chat with unfinished work
+  - "Your requests stay safe in Services. This just starts a fresh chat thread."
+  - "Start new chat" / "Cancel" buttons
+
+- **CREATED: StarterChips component**
+  - Shows after new chat: "Book something", "Find a place", "Ask a question"
+  - Nudges users into contract modes without thinking
+
 - **FILES MODIFIED:**
   - `/app/frontend/src/components/Mira/OnboardingTooltip.jsx` - Complete redesign
   - `/app/frontend/src/components/Mira/ServicesPanel.jsx` - WhatsApp DM style cards
   - `/app/frontend/src/components/Mira/ConciergeReplyBanner.jsx` - Enhanced banner
+  - `/app/frontend/src/components/Mira/WelcomeHero.jsx` - Removed picks card + weather
+  - `/app/frontend/src/components/Mira/PastChatsPanel.jsx` - Today/Earlier grouping
+  - `/app/frontend/src/components/Mira/PetOSNavigation.jsx` - Simplified pet dropdown
   - `/app/frontend/src/pages/MiraDemoPage.jsx` - Integration
+
+- **FILES CREATED:**
+  - `/app/frontend/src/components/Mira/NewChatConfirmDialog.jsx`
+  - `/app/frontend/src/components/Mira/StarterChips.jsx`
 
 ### Feb 17, 2026 (Session 3 - Insights Review & Confirm)
 - **BUILT: "Review & Confirm" UI for pending insights in MOJO modal**
