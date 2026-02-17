@@ -37,60 +37,78 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 ## Mental Model: Two Outcomes
 
 **The one-sentence mental model:**
-> Mira is one conversation with two outcomes: she either recommends from the catalogue, or she creates a Concierge request that becomes a tracked ticket.
+> Chat is where you ask. Services is where it gets done.
 
-**Slightly more luxurious, still precise:**
-> Tell Mira what you want. If it's in-catalogue, you'll see picks. If it's bespoke, Mira hands it to Concierge and you'll see it as a tracked request.
+**Slightly more luxurious:**
+> Tell Mira what you want. If it's in-catalogue, you'll see picks. If it needs action, we'll open a request and handle it in Services.
 
 **System framing (Bible-friendly):**
-> Chat is the home layer. Every action resolves into one of two rails: **Recommendations** (catalogue) or **Execution** (Concierge ticket via the Service Spine).
+> Chat is the home layer. Every action resolves into one of two rails: **Picks** (catalogue suggestions) or **Services** (execution thread with Concierge).
 
-### Two-Way Ticketing Model (Member ↔ Concierge)
+### Request Thread Model (Member ↔ Concierge)
+
+*Note: Internally called "tickets", but user-facing language uses "request" or "request thread".*
 
 **A) Member → Concierge:**
-- If the request needs execution, Mira creates a TCK ticket
-- The ticket automatically opens a thread in Services
-- That thread is the official place for details, confirmations, changes, photos, addresses, timing, etc.
+- If the request needs execution, Mira creates a TCK request
+- The request automatically opens a thread in Services
+- That thread is the single source of truth for: updates, questions, confirmations, changes, proof
 
 **B) Concierge → Member:**
-- Concierge replies inside the same ticket thread
+- Concierge replies inside the same thread
 - Member sees it in Services under "Awaiting you" / "In progress"
 - Member replies in that thread (Not in random chat turns)
 
 **Why this matters:**
 > Chat is for intent. Services is for accountability.
-> Everything that must be tracked lives in the ticket thread.
+> Everything that must be tracked lives in the request thread.
 
 ### User-Facing Language Rules
 
-**Never say to users:** legacy, parent_id, ownership query, migration, database, canonical
+**Never say to users:** legacy, parent_id, ownership query, migration, database, canonical, ticket (use "request" instead)
 
 **Use instead:**
 - Badge/label: "Syncing history"
 - Helper line: "Some older requests may appear gradually. New requests are always tracked."
 
-**Internal dev terminology (OK):** "Legacy ticket linkage mismatch" / "Ownership join mismatch"
+**Internal dev terminology (OK):** "Legacy ticket linkage mismatch" / "Ownership join mismatch" / "TCK ticket"
 
-### UI Copy Contract (Implemented Feb 17, 2026)
+### UI Copy Contract (Updated Feb 17, 2026)
 
 | Location | Copy |
 |----------|------|
-| Under chat input | "Ask for anything. If it needs humans, we'll turn it into a tracked request." |
-| On Concierge Arranges card | "Not in the catalogue. We'll arrange this for {pet}." + "Creates a tracked request in Services." |
-| Confirmation toast | "Request sent to Concierge • TCK-2026-XXXXXX" + "You can reply in Services." |
-| After ticket created in chat | "Your Concierge thread lives in Services. Reply there to add details or change timing." |
-| Services header | "This is where you and Concierge message each other about requests." |
+| Under chat input | "Ask for anything. If it needs action, we'll open a request and handle it in Services." |
+| On Concierge Arranges card | "Not in the catalogue. We'll arrange this for {pet}." + "Opens a request in Services." |
+| Confirmation banner | "Request opened • TCK-2026-XXXXXX" + "Reply in Services to add details or change timing." |
+| Services header | "This is your execution thread with Concierge. Updates and replies live here." |
+
+### Reply Nudge (Implemented Feb 17, 2026)
+
+When user types something that looks like an update (time, location, preferences, budget) while an open request exists:
+
+> "Looks like you're adding details to your request. Reply in Services so Concierge sees it in the thread."
+> 
+> **Buttons:** [Open Services] [Send anyway]
+
+### Onboarding Tooltip (Implemented Feb 17, 2026)
+
+First-visit tooltip anchored to Services tab:
+
+> "Chat is where you ask. Services is where it gets done.
+>  Any request you create will live here with Concierge."
+> 
+> **CTA:** [Got it]
 
 ### Proof Panel (QA)
 
 **Feature flag:** `?debug=1`
 **UI label:** "Proof Panel" (not "Debug Drawer")
-**Microcopy:** "For QA only. Shows the contracts Mira is following for this turn."
+**Microcopy:** "QA only. Shows what Mira decided this turn (Picks, Places, Tickets)."
 
 **What "done" means (proof checklist):**
 1. Proof Panel screenshot showing `conversation_contract.mode` and `picks_contract.fallback_mode`
-2. Toast/confirmation screenshot: "Request sent" + TCK-YYYY-NNNNNN
-3. Services thread screenshot: Ticket visible in list, open ticket view with latest message
+2. Confirmation screenshot: "Request opened" + TCK-YYYY-NNNNNN
+3. Services thread screenshot: Request visible in list, open view with latest message
 4. Reply proof: Member reply in Services, Concierge reply visible in same thread
 
 ---
