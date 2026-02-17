@@ -547,6 +547,52 @@ const MiraDemoPage = () => {
   
   // Track if page is fully loaded (for deferring non-critical operations)
   const [isPageReady, setIsPageReady] = useState(false);
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // ICON STATE SYSTEM - OFF/ON/PULSE (Bible Section 2)
+  // Must be placed AFTER all state declarations that it depends on
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const {
+    iconStates,
+    todayState,
+    servicesState,
+    conciergeState,
+    picksState,
+    learnState,
+    markTabVisited,
+    triggerPulse,
+    recalculateAll: recalculateIconStates,
+  } = useIconState({
+    currentPetId: pet?.id,
+    todayData: {
+      urgent: Array.isArray(proactiveAlerts) ? proactiveAlerts.filter(a => a.priority === 'urgent') : [],
+      due: Array.isArray(proactiveAlerts) ? proactiveAlerts.filter(a => a.type === 'due') : [],
+      watchlist: Array.isArray(proactiveAlerts) ? proactiveAlerts.filter(a => a.type === 'watchlist') : [],
+      awaitingYou: [], // TODO: Connect to tickets awaiting user response
+    },
+    servicesData: {
+      activeTickets: currentTicket ? [currentTicket] : [],
+      awaitingYou: currentTicket?.status === 'awaiting_user',
+      newTickets: [],
+      statusChanges: [],
+    },
+    conciergeData: {
+      isOnline: true, // Concierge is considered online during business hours
+      openThreads: conciergeThread?.isOpen ? [conciergeThread] : [],
+      newReplies: false,
+      awaitingYou: false,
+    },
+    picksData: {
+      items: miraPicks?.enginePicks || miraPicks?.products || [],
+      hasNew: miraPicks?.hasNew || false,
+      materialChange: false,
+    },
+    learnData: {
+      forYourPetItems: [], // TODO: Connect to learn items
+      newItems: false,
+    },
+    activeTab: activeOSTab,
+  });
   
   // Mark page as ready after initial render
   useEffect(() => {
