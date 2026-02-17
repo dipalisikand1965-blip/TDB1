@@ -9929,6 +9929,30 @@ async def mira_chat(
     # This supports anonymous users or testing without database
     if not selected_pet and request.pet_context:
         selected_pet = request.pet_context
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # INSIGHT EXTRACTION - Learn from user's messages (runs in background)
+    # Extract facts about the pet from user messages and store for review
+    # ═══════════════════════════════════════════════════════════════════════════
+    if INSIGHT_EXTRACTION_AVAILABLE and selected_pet and db:
+        try:
+            pet_id = selected_pet.get("id")
+            if pet_id and user_message:
+                # Extract insights from the user's message
+                insights = extract_pet_insights(user_message)
+                if insights:
+                    timestamp = datetime.now(timezone.utc).isoformat()
+                    await store_conversation_insights(
+                        db=db,
+                        pet_id=pet_id,
+                        insights=insights,
+                        thread_id=session_id,
+                        timestamp=timestamp
+                    )
+                    logger.info(f"[INSIGHTS] Extracted {len(insights)} insights from chat for pet {pet_id}")
+        except Exception as insight_err:
+            logger.warning(f"[INSIGHTS] Extraction error: {insight_err}")
+        selected_pet = request.pet_context
         logger.info(f"[PET LOAD] Using pet_context from request: {selected_pet.get('name')}")
     
     pet_name = selected_pet.get("name", "your furry friend") if selected_pet else "your furry friend"
