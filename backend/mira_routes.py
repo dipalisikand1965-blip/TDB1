@@ -9952,6 +9952,9 @@ async def mira_chat(
                     logger.info(f"[INSIGHTS] Extracted {len(insights)} insights from chat for pet {pet_id}")
         except Exception as insight_err:
             logger.warning(f"[INSIGHTS] Extraction error: {insight_err}")
+    
+    # FALLBACK: If no selected_pet but pet_context provided in request, use it
+    if not selected_pet and request.pet_context:
         selected_pet = request.pet_context
         logger.info(f"[PET LOAD] Using pet_context from request: {selected_pet.get('name')}")
     
