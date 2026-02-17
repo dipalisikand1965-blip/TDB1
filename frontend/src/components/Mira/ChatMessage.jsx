@@ -1130,6 +1130,9 @@ const MiraMessage = ({
   miraPicks,
   miraMode,
   isOld = false,
+  // Icon states (per Bible Section 2)
+  picksState,
+  conciergeState,
   hapticFeedback,
   onShowConcierge,
   onShowInsights,
@@ -1164,6 +1167,8 @@ const MiraMessage = ({
           msg={msg}
           pet={pet}
           miraPicks={miraPicks}
+          picksState={picksState}
+          conciergeState={conciergeState}
           onShowConcierge={onShowConcierge}
           onShowInsights={onShowInsights}
           onShowPicks={onShowPicks}
