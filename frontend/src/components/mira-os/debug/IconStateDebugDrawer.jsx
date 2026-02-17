@@ -173,7 +173,7 @@ const IconStateDebugDrawer = ({
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed right-0 top-1/2 -translate-y-1/2 z-[9999] bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-l-lg shadow-lg transition-all"
-        title="Debug Drawer"
+        title="Proof Panel"
       >
         {isOpen ? <ChevronRight className="w-4 h-4" /> : <Bug className="w-4 h-4" />}
       </button>
@@ -189,7 +189,7 @@ const IconStateDebugDrawer = ({
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-white font-bold text-sm flex items-center gap-2">
               <Bug className="w-4 h-4 text-purple-400" />
-              Icon State Debug
+              Proof Panel
             </h2>
             <button
               onClick={onRefresh}
@@ -199,6 +199,11 @@ const IconStateDebugDrawer = ({
               <RefreshCw className="w-4 h-4 text-gray-400" />
             </button>
           </div>
+          
+          {/* QA microcopy */}
+          <p className="text-[10px] text-gray-500 italic mb-2">
+            For QA only. Shows the contracts Mira is following for this turn.
+          </p>
 
           {/* Status */}
           <div className="text-xs space-y-1">
@@ -241,16 +246,15 @@ const IconStateDebugDrawer = ({
             </div>
           )}
           
-          {/* LEGACY DATA WARNING */}
+          {/* SYNCING HISTORY NOTICE - User-friendly language */}
           {counts?._hasLegacyData && (
-            <div className="text-orange-400 text-xs p-2 bg-orange-500/10 rounded mb-2 border border-orange-500/30">
+            <div className="text-blue-400 text-xs p-2 bg-blue-500/10 rounded mb-2 border border-blue-500/30">
               <div className="font-medium flex items-center gap-1">
-                <AlertTriangle className="w-3 h-3" />
-                Legacy Data Detected
+                <RefreshCw className="w-3 h-3 animate-spin" />
+                Syncing history
               </div>
-              <div className="text-orange-300 mt-1">
-                {counts._invalidCount} tickets with non-canonical IDs.
-                Counts may be incomplete until migration.
+              <div className="text-blue-300 mt-1">
+                Some older requests may appear gradually. New requests are always tracked.
               </div>
             </div>
           )}
