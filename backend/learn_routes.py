@@ -516,23 +516,80 @@ async def get_learn_bundles():
 
 @router.post("/enroll")
 async def enroll_in_program(enrollment_data: dict):
-    """Enroll in a training program"""
+    """
+    Enroll in a training program via UNIFORM SERVICE FLOW.
+    MIGRATED to handoff_to_spine() per Bible Section 12.0.
+    """
     db = get_db()
     
     enrollment_id = f"ENR-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    pet_name = enrollment_data.get("pet_name", "Pet")
+    user_name = enrollment_data.get("user_name", "Customer")
+    program_name = enrollment_data.get("program_name", "Training Program")
     
+    # Build intent
+    intent = f"Training Enrollment: {program_name} for {pet_name}. Start: {enrollment_data.get('preferred_start_date', 'TBD')}"
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # HANDOFF TO SPINE - Single canonical ticket creation
+    # ═══════════════════════════════════════════════════════════════════════════
+    spine_result = await handoff_to_spine(
+        db=db,
+        route_name="learn_routes.py",
+        endpoint="/learn/enroll",
+        pillar="learn",
+        category="enrollment",
+        intent=intent,
+        user={
+            "email": enrollment_data.get("user_email"),
+            "name": user_name,
+            "phone": enrollment_data.get("user_phone")
+        },
+        pet={
+            "id": enrollment_data.get("pet_id"),
+            "name": pet_name,
+            "breed": enrollment_data.get("pet_breed")
+        },
+        payload={
+            "enrollment_id": enrollment_id,
+            "program_id": enrollment_data.get("program_id"),
+            "program_name": program_name,
+            "trainer_id": enrollment_data.get("trainer_id"),
+            "preferred_start_date": enrollment_data.get("preferred_start_date"),
+            "preferred_time_slot": enrollment_data.get("preferred_time_slot"),
+            "location_preference": enrollment_data.get("location_preference", "home"),
+            "amount": enrollment_data.get("amount", 0)
+        },
+        channel="web",
+        urgency="high",
+        created_by="member",
+        notify_admin=True,
+        notify_member=True,
+        tags=["learn", "enrollment"]
+    )
+    
+    if not spine_result.get("success"):
+        logger.error(f"[LEARN-ENROLL] Spine handoff failed: {spine_result.get('error')}")
+        raise HTTPException(status_code=500, detail="Failed to create service ticket")
+    
+    canonical_ticket_id = spine_result["ticket_id"]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SAVE TO learn_enrollments collection (pillar-specific record)
+    # ═══════════════════════════════════════════════════════════════════════════
     enrollment = {
         "id": enrollment_id,
+        "ticket_id": canonical_ticket_id,  # Link to canonical ticket
         "program_id": enrollment_data.get("program_id"),
-        "program_name": enrollment_data.get("program_name"),
+        "program_name": program_name,
         "trainer_id": enrollment_data.get("trainer_id"),
         "status": "pending_confirmation",
         
         # Pet & User Details
         "pet_id": enrollment_data.get("pet_id"),
-        "pet_name": enrollment_data.get("pet_name"),
+        "pet_name": pet_name,
         "user_id": enrollment_data.get("user_id"),
-        "user_name": enrollment_data.get("user_name"),
+        "user_name": user_name,
         "user_email": enrollment_data.get("user_email"),
         "user_phone": enrollment_data.get("user_phone"),
         
@@ -552,31 +609,13 @@ async def enroll_in_program(enrollment_data: dict):
     
     await db.learn_enrollments.insert_one({k: v for k, v in enrollment.items() if k != "_id"})
     
-    # Create Service Desk Ticket
-    ticket = {
-        "id": f"TKT-{uuid.uuid4().hex[:8].upper()}",
-        "ticket_id": f"TKT-{uuid.uuid4().hex[:8].upper()}",
-        "source": "learn_pillar",
-        "source_type": "learn",
-        "source_id": enrollment_id,
-        "category": "enrollment",
-        "pillar": "learn",
-        "subject": f"Program Enrollment: {enrollment['program_name']} for {enrollment['pet_name']}",
-        "original_request": f"New enrollment from {enrollment['user_name']} for {enrollment['pet_name']}.\nProgram: {enrollment['program_name']}\nPreferred Start: {enrollment['preferred_start_date']}",
-        "status": "open",
-        "priority_bucket": "high",
-        "member_email": enrollment["user_email"],
-        "member_name": enrollment["user_name"],
-        "pet_name": enrollment["pet_name"],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
-    }
-    
-    await db.service_desk_tickets.insert_one({k: v for k, v in ticket.items() if k != "_id"})
+    logger.info(f"[SPINE-MIGRATED] learn_routes.py:/learn/enroll → {canonical_ticket_id} | pillar=learn category=enrollment")
     
     return {
         "success": True,
         "enrollment_id": enrollment_id,
+        "ticket_id": canonical_ticket_id,
+        "deep_link": spine_result.get("deep_link"),
         "message": "Enrollment submitted! Our team will confirm your schedule shortly."
     }
 
