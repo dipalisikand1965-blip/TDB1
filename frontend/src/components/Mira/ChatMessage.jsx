@@ -984,12 +984,17 @@ const MiraMessageBody = ({
   hapticFeedback,
   onEngageConcierge,
   onOpenServiceRequest,
-  onShowPicks // NEW: Handler to open PICKS panel
+  onShowPicks, // Handler to open PICKS panel
+  onQuickReplyClick // Handler for quick reply chips (Phase 5)
 }) => {
   const { mainText, questionText } = splitMessageWithQuestion(msg.content);
   
-  // REMOVED: InlineConciergeCard - Concierge is now only accessible via top bar
-  // This keeps the chat clean and prevents multiple entry points
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CONVERSATION CONTRACT (Phase 5) - Quick Replies
+  // ═══════════════════════════════════════════════════════════════════════════
+  const conversationContract = msg.data?.conversation_contract || msg.data?.response?.conversation_contract || {};
+  const quickReplies = conversationContract.quick_replies || [];
+  const contractMode = conversationContract.mode || 'answer';
   
   // Check if message has context that warrants showing picks hint
   const hasTravelContext = msg.data?.response?.detected_destination || 
