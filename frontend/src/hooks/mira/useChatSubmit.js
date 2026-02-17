@@ -679,10 +679,16 @@ const useChatSubmit = (config) => {
         notificationSounds.picks();
       } else if ((shouldShowProductsFromBackend && (newProducts.length > 0 || newServices.length > 0 || newExperiences.length > 0)) || 
           (!clarifyOnly && ['party_planning', 'cake_shopping', 'celebration'].includes(celebrationSubIntent))) {
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CATALOGUE MODE: Normal product rendering
+        // fallback_mode === "catalogue" - render products/services normally
+        // ═══════════════════════════════════════════════════════════════════════════
         setMiraPicks({
           products: clarifyOnly ? [] : newProducts,
           services: clarifyOnly ? [] : [...newServices, ...newExperiences],
-          conciergeArranges: [],  // Include for consistency
+          conciergeArranges: [],
+          picksContract: picksContract,  // Include contract for consistency
+          fallbackMode: 'catalogue',
           conciergeFallback: false,
           context: updatedPickContext,
           subIntent: celebrationSubIntent,
