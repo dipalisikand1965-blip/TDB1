@@ -2295,7 +2295,7 @@ const MiraDemoPage = () => {
   // CHAT SUBMIT HOOK - Extracted from MiraDemoPage.jsx (Phase 1 Refactor)
   // Main chat flow: user input → API call → response processing
   // ═══════════════════════════════════════════════════════════════════════════════
-  const { handleSubmit } = useChatSubmit({
+  const { handleSubmit: originalHandleSubmit } = useChatSubmit({
     // API Config
     API_URL,
     token,
@@ -2405,6 +2405,14 @@ const MiraDemoPage = () => {
     fetchTravelHotels,
     fetchTravelAttractions
   });
+  
+  // Wrap handleSubmit to clear draft after successful submission (Bible Section 3.2)
+  const handleSubmit = useCallback((e, overrideQuery) => {
+    // Clear the draft when message is sent
+    clearDraft();
+    // Call the original handler
+    return originalHandleSubmit(e, overrideQuery);
+  }, [originalHandleSubmit, clearDraft]);
   
   // OLD handleSubmit REMOVED - Now using useChatSubmit hook above
   // ═══════════════════════════════════════════════════════════════════════════════
