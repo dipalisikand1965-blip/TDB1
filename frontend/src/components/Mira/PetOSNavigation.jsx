@@ -465,6 +465,37 @@ const PetOSNavigation = ({
           display: none;
         }
         
+        /* Weather Hint - Minimal ambient display */
+        .weather-hint {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding: 6px 10px;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 20px;
+          font-size: 11px;
+          color: rgba(255, 255, 255, 0.6);
+          cursor: pointer;
+          transition: all 0.2s ease;
+          flex-shrink: 0;
+          margin-left: auto;
+        }
+        
+        .weather-hint:hover {
+          background: rgba(255, 255, 255, 0.1);
+          color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .weather-temp {
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .weather-city {
+          opacity: 0.7;
+        }
+        
         /* MOJO Tab (Pet Avatar) */
         .os-mojo-tab {
           position: relative;
