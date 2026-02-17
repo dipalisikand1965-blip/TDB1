@@ -1063,6 +1063,18 @@ const MiraMessageBody = ({
       
       {/* Dynamic Concierge Request */}
       <DynamicConciergeRequest msg={msg} pet={pet} />
+      
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          CONVERSATION CONTRACT (Phase 5) - Quick Reply Chips
+          Deterministic rendering based on conversation_contract.quick_replies
+      ═══════════════════════════════════════════════════════════════════════════ */}
+      {quickReplies.length > 0 && onQuickReplyClick && (
+        <QuickReplyChips
+          quickReplies={quickReplies}
+          onChipClick={onQuickReplyClick}
+          contractMode={contractMode}
+        />
+      )}
     </div>
   );
 };
