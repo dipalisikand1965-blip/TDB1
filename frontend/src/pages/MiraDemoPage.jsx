@@ -4340,6 +4340,18 @@ const MiraDemoPage = () => {
           />
         </div>
       )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          DEBUG DRAWER - Icon State System Validation
+          Shows raw counts, computed states, and query filters
+          Only visible in development mode or when ?debug=1 in URL
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <IconStateDebugDrawer
+        debugInfo={getDebugInfo()}
+        onRefresh={refetchIconState}
+        counts={apiCounts}
+        activeTab={activeOSTab}
+      />
     </div>
   );
 };
