@@ -34,6 +34,67 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 
 ---
 
+## Mental Model: Two Outcomes
+
+**The one-sentence mental model:**
+> Mira is one conversation with two outcomes: she either recommends from the catalogue, or she creates a Concierge request that becomes a tracked ticket.
+
+**Slightly more luxurious, still precise:**
+> Tell Mira what you want. If it's in-catalogue, you'll see picks. If it's bespoke, Mira hands it to Concierge and you'll see it as a tracked request.
+
+**System framing (Bible-friendly):**
+> Chat is the home layer. Every action resolves into one of two rails: **Recommendations** (catalogue) or **Execution** (Concierge ticket via the Service Spine).
+
+### Two-Way Ticketing Model (Member ↔ Concierge)
+
+**A) Member → Concierge:**
+- If the request needs execution, Mira creates a TCK ticket
+- The ticket automatically opens a thread in Services
+- That thread is the official place for details, confirmations, changes, photos, addresses, timing, etc.
+
+**B) Concierge → Member:**
+- Concierge replies inside the same ticket thread
+- Member sees it in Services under "Awaiting you" / "In progress"
+- Member replies in that thread (Not in random chat turns)
+
+**Why this matters:**
+> Chat is for intent. Services is for accountability.
+> Everything that must be tracked lives in the ticket thread.
+
+### User-Facing Language Rules
+
+**Never say to users:** legacy, parent_id, ownership query, migration, database, canonical
+
+**Use instead:**
+- Badge/label: "Syncing history"
+- Helper line: "Some older requests may appear gradually. New requests are always tracked."
+
+**Internal dev terminology (OK):** "Legacy ticket linkage mismatch" / "Ownership join mismatch"
+
+### UI Copy Contract (Implemented Feb 17, 2026)
+
+| Location | Copy |
+|----------|------|
+| Under chat input | "Ask for anything. If it needs humans, we'll turn it into a tracked request." |
+| On Concierge Arranges card | "Not in the catalogue. We'll arrange this for {pet}." + "Creates a tracked request in Services." |
+| Confirmation toast | "Request sent to Concierge • TCK-2026-XXXXXX" + "You can reply in Services." |
+| After ticket created in chat | "Your Concierge thread lives in Services. Reply there to add details or change timing." |
+| Services header | "This is where you and Concierge message each other about requests." |
+
+### Proof Panel (QA)
+
+**Feature flag:** `?debug=1`
+**UI label:** "Proof Panel" (not "Debug Drawer")
+**Microcopy:** "For QA only. Shows the contracts Mira is following for this turn."
+
+**What "done" means (proof checklist):**
+1. Proof Panel screenshot showing `conversation_contract.mode` and `picks_contract.fallback_mode`
+2. Toast/confirmation screenshot: "Request sent" + TCK-YYYY-NNNNNN
+3. Services thread screenshot: Ticket visible in list, open ticket view with latest message
+4. Reply proof: Member reply in Services, Concierge reply visible in same thread
+
+---
+
 ## Implementation Status
 
 ### Phase 1: Layer Manager ✅ COMPLETE (Feb 17, 2026)
