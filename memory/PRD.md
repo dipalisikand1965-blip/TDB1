@@ -270,6 +270,68 @@ First-visit tooltip anchored to Services tab:
 
 ## Change Log
 
+### Feb 17, 2026 (Session 7 - Voice & Triage Tuning)
+**CRITICAL: Mira's Soulful Voice & Emergency Triage System**
+
+**The Problem:**
+- Mira was starting responses with robotic phrases: "Great idea!", "That sounds lovely"
+- Emergency mode triggered immediately for uncertain ingestion (scared + ate something)
+- No structured triage before sirens
+
+**Solutions Implemented:**
+
+1. **CRITICAL FIRST-WORD BAN (System Prompt)**
+   - Added to top of `build_mira_system_prompt()` in `/app/backend/mira_routes.py`
+   - Banned: "Great idea", "That sounds", "I'd be happy", "Absolutely", etc.
+   - Required openers: "Oh, [Pet]...", "Since I know [Pet]...", "I've got you..."
+
+2. **Context-Adaptive Voice Register**
+   - Treats/Food → Knowing delight + personalized
+   - Health concern → Calm, caring, safety-first
+   - Vet/Places → Clarify location FIRST
+   - Booking → In-control (NOT "Great idea!" energy)
+   - Celebration → Joy + specifics
+   - Emergency → STEADY AND SERIOUS
+   - Grief → Presence only
+
+3. **Two-Tier Emergency System**
+   - **TRIAGE_FIRST** (new pillar): Calm triage for uncertain ingestion
+     - Keywords: "ate something", "swallowed", "got into"
+     - Response: "What did [Pet] eat? How long ago? Any symptoms?"
+   - **GO_NOW** (immediate): Known toxins or physical distress
+     - Keywords: "chocolate", "xylitol", "not breathing", "collapsed"
+     - Response: "This needs emergency care NOW."
+
+4. **Hardcoded Response Fixes**
+   - Fixed "That sounds lovely — an outing with [Pet]" 
+   - Changed to "Looking out for [Pet]'s wellbeing – I love that."
+
+5. **PET_OS_BEHAVIOR_BIBLE Updates**
+   - Added Section 2.7.1: First-Word Ban
+   - Added Section 2.7.6: Emergency Triage System (Two-Tier)
+
+6. **Exhaustive Audit Framework Created**
+   - `/app/memory/EXHAUSTIVE_AUDIT_FRAMEWORK.md`
+   - 14 sections covering: Voice, UI/UX, Intelligence, SPINE, Pillars, Icons, Emergency, Admin, Integrations, Mobile, Performance, Security, Data, Regression
+
+**Test Results:**
+| Test | First Words | Status |
+|------|-------------|--------|
+| "What treats?" | "Oh, Lola… I love that..." | ✅ SOULFUL |
+| "Plan birthday" | "Oh, a birthday for Lola..." | ✅ SOULFUL |
+| "Find vet nearby" | "Looking out for Lola's wellbeing..." | ✅ SOULFUL |
+| "I'm scared, ate something" | Calm triage questions | ✅ TRIAGE_FIRST |
+| "Ate chocolate!" | Immediate emergency | ✅ GO_NOW |
+
+**Audit Verification:**
+- ✅ PICKS panel: "MIRA'S PICKS FOR LOLA" - All items personalized
+- ✅ LEARN panel: "For Lola" - Content tagged as "Relevant"
+- ✅ TODAY panel: "Curated for Lola today" - Soul score + traits
+- ✅ All tabs follow Pet First, Breed Second doctrine
+- ✅ All tabs connected to unified SPINE via icon-state API
+
+---
+
 ### Feb 17, 2026 (Session 5 - Conflict Handling & Safety)
 **CRITICAL FIX: Fact Conflict Resolution System**
 
