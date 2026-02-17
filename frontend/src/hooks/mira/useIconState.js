@@ -116,6 +116,7 @@ const useIconState = ({
   
   // Track previous data for change detection
   const prevDataRef = useRef({
+    mojoData: {},
     todayData: {},
     servicesData: {},
     conciergeData: {},
