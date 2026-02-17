@@ -2602,6 +2602,8 @@ class MiraOSUnderstandRequest(BaseModel):
     # Tell me more handling
     user_asking_for_more_info: Optional[bool] = False  # User wants options explained
     current_step: Optional[str] = None  # Current pending step being explained
+    # CONVERSATION CONTRACT (Phase 5) - Location permission for Places API
+    has_location_permission: Optional[bool] = False  # User has granted location access
 
 class MiraOSUnderstandResponse(BaseModel):
     success: bool
