@@ -119,7 +119,9 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 - [ ] Enable `ICON_STATE_API_ENABLED` feature flag after all routes migrated
 - **Do not enable the flag for production until all ticket-creating intakes route through the canonical helper.**
 
-### P1 (High Priority)
+### P1 (High Priority) - Next Tasks
+- [ ] **Legacy Ticket Migration** - 134 tickets with non-canonical IDs need migration to TCK-* format
+- [ ] **Refine "Legacy Data Detected" label** - Change to "Syncing history" in UI
 - [ ] Implement PICKS material change logic (Bible Section 2.4)
 - [ ] Connect LEARN items to icon state
 - [ ] Provide 60-second screen recording proof (verify PULSE → ON transitions)
