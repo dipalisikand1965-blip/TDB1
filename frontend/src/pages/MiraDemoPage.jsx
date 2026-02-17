@@ -3109,29 +3109,17 @@ const MiraDemoPage = () => {
         healthScore={calculateHealthScore(pet)}
         activeTab={activeOSTab}
         onTabChange={(tabId) => {
-          setActiveOSTab(tabId);
-          // Handle tab-specific actions
-          if (tabId === 'mojo') {
-            setShowMojoModal(true);
-          } else if (tabId === 'today') {
-            setShowTodayPanel(true);
-          } else if (tabId === 'picks') {
-            setShowTopPicksPanel(true);
-            // Clear "new" flag when picks panel is opened
+          // Use Bible-compliant tab change handler
+          handleOSTabChange(tabId);
+          
+          // Clear "new" flag when picks panel is opened
+          if (tabId === 'picks') {
             setMiraPicks(prev => ({ ...prev, hasNew: false }));
-          } else if (tabId === 'services') {
-            setShowServicesPanel(true);
-          } else if (tabId === 'learn') {
-            // Open new LEARN OS Panel
-            setShowLearnPanel(true);
-          } else if (tabId === 'concierge') {
-            // Open new CONCIERGE OS Home Panel
-            setShowConciergeHome(true);
           }
         }}
         onPetClick={() => {
           // Open MOJO Profile Modal when pet avatar is clicked
-          setShowMojoModal(true);
+          handleOSTabChange('mojo');
           setMojoDeepLink(null);
         }}
         onSwitchPet={switchPet}
