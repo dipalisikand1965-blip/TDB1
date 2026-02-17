@@ -4136,6 +4136,11 @@ const MiraDemoPage = () => {
         }}
         onNewChat={handleNewChatClick}
         hasConversation={conversationHistory.length > 0}
+        // Status indicators (non-clickable)
+        conciergeCount={apiCounts?.awaitingYouCount || 0}
+        picksCount={(miraPicks.products?.length || 0) + (miraPicks.services?.length || 0)}
+        hasConciergeNew={apiCounts?.awaitingYouCount > 0}
+        hasPicksNew={miraPicks.hasNew}
       />
       
       {/* Sandbox Footer */}
