@@ -4683,19 +4683,38 @@ async def mira_os_understand_with_products(
             )
             
             # Handle new return format from search_real_products
-            # Bible Section 9.0: No catalogue match → Concierge Arranges, NOT generic picks
+            # Bible Section 9.0: Explicit fallback contract
             if isinstance(product_search_result, dict):
                 real_products = product_search_result.get("products", [])
-                concierge_fallback = product_search_result.get("concierge_fallback", False)
-                concierge_arranges = product_search_result.get("concierge_arranges", [])
+                # Extract the full fallback contract
+                fallback_mode = product_search_result.get("fallback_mode", "catalogue")
+                fallback_reason = product_search_result.get("fallback_reason")
+                match_count = product_search_result.get("match_count", len(real_products))
+                top_score = product_search_result.get("top_score", 0.0)
+                blocked_by_safety = product_search_result.get("blocked_by_safety", False)
+                concierge_cards = product_search_result.get("concierge_cards", [])
+                clarifying_questions = product_search_result.get("clarifying_questions", [])
                 
-                if concierge_fallback:
-                    logger.info(f"[PICKS FALLBACK] No catalogue match - Concierge arranges triggered for pet {request.pet_context.get('name', 'unknown')}")
+                # Legacy field mapping for backwards compatibility
+                concierge_fallback = fallback_mode in ["concierge", "clarify"]
+                concierge_arranges = concierge_cards
+                concierge_fallback_reason = fallback_reason
+                
+                if fallback_mode != "catalogue":
+                    logger.info(f"[PICKS FALLBACK] mode={fallback_mode} reason={fallback_reason} match_count={match_count} top_score={top_score:.3f} blocked_by_safety={blocked_by_safety}")
             else:
                 # Legacy format: just a list of products
                 real_products = product_search_result if product_search_result else []
-                concierge_fallback = False
+                fallback_mode = "catalogue" if real_products else "concierge"
+                fallback_reason = None if real_products else "no_match"
+                match_count = len(real_products)
+                top_score = 0.5 if real_products else 0.0
+                blocked_by_safety = False
+                concierge_cards = []
+                clarifying_questions = []
+                concierge_fallback = not real_products
                 concierge_arranges = []
+                concierge_fallback_reason = fallback_reason
         
         logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_food_main={is_food_main_intent}, is_treat={is_treat_request}, is_grief_hold={is_grief_hold}, is_groom_tools={is_groom_tools}, is_groom_medical={is_groom_medical_boundary}, is_food_medical={is_food_medical_boundary}, showing_products={should_show_products}")
         
