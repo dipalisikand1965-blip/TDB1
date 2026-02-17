@@ -3799,9 +3799,27 @@ const MiraDemoPage = () => {
         </div>
       )}
       
+      {/* New Messages Pill - Per Bible Section 3.1 */}
+      {showNewMessagesPill && (
+        <div
+          className="fixed bottom-28 left-1/2 transform -translate-x-1/2 z-40 cursor-pointer"
+          onClick={scrollToFirstUnread}
+          data-testid="new-messages-pill"
+        >
+          <div className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full shadow-lg transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12l7 7 7-7"/>
+            </svg>
+            <span className="text-sm font-medium">
+              {newMessageCount} new message{newMessageCount !== 1 ? 's' : ''}
+            </span>
+          </div>
+        </div>
+      )}
+      
       {/* Scroll to Bottom Button - Extracted to ScrollToBottomButton component */}
       <ScrollToBottomButton 
-        visible={hasNewMessages && !isAtBottom}
+        visible={hasNewMessages && !isAtBottom && !showNewMessagesPill}
         onClick={() => scrollToBottom()}
       />
       
