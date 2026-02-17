@@ -2349,13 +2349,16 @@ const MojoProfileModal = ({
                               pet={petData} 
                               apiUrl={apiUrl}
                               token={token}
-                              onInsightAction={(action, insightId) => {
+                              onInsightAction={async (action, insightId) => {
                                 // Refresh pet data after confirm/reject
                                 console.log(`[MOJO] Insight ${insightId} ${action}ed, refreshing...`);
-                                // Trigger a refresh of pet data
-                                window.dispatchEvent(new CustomEvent('mojo-refresh-pet', { 
-                                  detail: { petId: pet?.id } 
-                                }));
+                                
+                                // Call the parent's refresh function
+                                if (onRefreshPet) {
+                                  await onRefreshPet();
+                                  // Re-fetch full pet data for modal
+                                  fetchFullPetData();
+                                }
                               }}
                             />
                           )}
