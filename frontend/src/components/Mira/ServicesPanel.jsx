@@ -409,7 +409,12 @@ const ServicesPanel = ({
     <div className="services-panel h-full flex flex-col" data-testid="services-panel">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
-        <h2 className="text-lg font-semibold text-white">Services</h2>
+        <div>
+          <h2 className="text-lg font-semibold text-white">Services</h2>
+          <p className="text-[10px] text-slate-500 mt-0.5">
+            This is where you and Concierge message each other about requests.
+          </p>
+        </div>
         <button 
           onClick={fetchData}
           className="p-2 text-slate-400 hover:text-white transition-colors"
