@@ -25,6 +25,8 @@ export { default as useConversation } from './useConversation';
 export { default as useMiraUI } from './useMiraUI';
 export { default as useProactiveAlerts } from './useProactiveAlerts';
 export { default as useLayerNavigation } from './useLayerNavigation';
+export { default as useChatContinuity } from './useChatContinuity';
+export { default as useDraft } from './useDraft';
 export { 
   default as useChat,
   // Detection helpers
