@@ -82,6 +82,7 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
   - `whatsapp_routes.py`, `membership_routes.py`, `ticket_auto_create.py`
   - `unified_signal_flow.py`, `user_tickets_routes.py`, `service_catalog_routes.py`, `ticket_messaging.py`
 - [ ] OR: Create single `create_or_attach_service_ticket()` helper for all intakes
+- **Do not enable the flag for production until all ticket-creating intakes route through the canonical helper.**
 
 ### P1 (High Priority)
 - [ ] Implement PICKS material change logic (Bible Section 2.4)
