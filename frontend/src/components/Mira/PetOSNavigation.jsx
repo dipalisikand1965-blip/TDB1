@@ -437,8 +437,10 @@ const PetOSNavigation = ({
           background: linear-gradient(180deg, rgba(26, 16, 37, 0.98) 0%, rgba(13, 10, 18, 0.95) 100%);
           border-bottom: 1px solid rgba(139, 92, 246, 0.2);
           overflow-x: auto;
+          overflow-y: visible;
           -webkit-overflow-scrolling: touch;
           scrollbar-width: none;
+          position: relative;
         }
         
         .pet-os-navigation::-webkit-scrollbar {
@@ -452,9 +454,11 @@ const PetOSNavigation = ({
           align-items: center;
           gap: 4px;
           flex-shrink: 0;
+          overflow: visible;
         }
         
         .mojo-avatar-wrapper {
+          position: relative;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -464,6 +468,7 @@ const PetOSNavigation = ({
           cursor: pointer;
           transition: all 0.2s ease;
           border: 2px solid transparent;
+          overflow: visible;
         }
         
         .mojo-avatar-wrapper:hover {
