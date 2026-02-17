@@ -609,17 +609,64 @@ const TicketFullPageModal = ({
                       </span>
                     </label>
                     
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={generateAiReply}
-                      disabled={aiLoading}
-                      className="text-purple-600 hover:text-purple-700"
-                    >
-                      {aiLoading ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Brain className="w-4 h-4 mr-1" />}
-                      Ask Mira
-                    </Button>
+                    {/* AI Reply Styles Dropdown + Ask Mira Button */}
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={aiReplyStyle}
+                        onChange={(e) => setAiReplyStyle(e.target.value)}
+                        className="h-8 px-2 text-xs border border-purple-200 rounded bg-purple-50 text-purple-700 cursor-pointer hover:border-purple-300"
+                      >
+                        {AI_REPLY_STYLES.map(style => (
+                          <option key={style.id} value={style.id}>{style.icon} {style.label}</option>
+                        ))}
+                      </select>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => generateAiReply(aiReplyStyle)}
+                        disabled={aiLoading}
+                        className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
+                      >
+                        {aiLoading ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Brain className="w-4 h-4 mr-1" />}
+                        Ask Mira
+                      </Button>
+                    </div>
                   </div>
+
+                  {/* AI Suggestion Preview */}
+                  {aiSuggestion && (
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-3">
+                      <div className="flex items-start justify-between mb-2">
+                        <span className="text-xs font-medium text-purple-700 flex items-center gap-1">
+                          <Sparkles className="w-3 h-3" />
+                          Mira's Suggestion ({AI_REPLY_STYLES.find(s => s.id === aiReplyStyle)?.label})
+                        </span>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setReplyText(aiSuggestion);
+                              setAiSuggestion(null);
+                            }}
+                            className="h-6 text-xs text-purple-700 hover:text-purple-800 hover:bg-purple-100"
+                          >
+                            <Check className="w-3 h-3 mr-1" />
+                            Use This
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setAiSuggestion(null)}
+                            className="h-6 text-xs text-gray-500 hover:text-gray-700"
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-700 whitespace-pre-wrap">{aiSuggestion}</p>
+                    </div>
+                  )
 
                   {/* Rich Text Editor */}
                   <div className={`border rounded-lg ${isInternal ? 'border-amber-300 bg-amber-50/30' : 'border-gray-200'}`}>
