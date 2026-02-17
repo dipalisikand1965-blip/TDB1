@@ -417,23 +417,16 @@ const MiraDemoPage = () => {
 
   // ═══════════════════════════════════════════════════════════════════════════════
   // CHAT CONTINUITY - Scroll position preservation (Bible Section 3.1)
+  // Note: messagesContainerRef is defined later in the file at Refs section
+  // We'll wire this up after the ref is created using useEffect
   // ═══════════════════════════════════════════════════════════════════════════════
-  const chatContinuity = useChatContinuity({
-    chatContainerRef: { current: null }, // Will be set to messagesContainerRef after it's created
-    messages: [], // Will be wired to conversationHistory
-    onSoftRefresh: () => {
-      console.log('[ChatContinuity] Soft refresh triggered');
-      // TODO: Refresh messages only
-    },
-    onMediumRefresh: () => {
-      console.log('[ChatContinuity] Medium refresh triggered');
-      // TODO: Refresh messages + picks
-    },
-    onFullRefresh: () => {
-      console.log('[ChatContinuity] Full refresh triggered');
-      // TODO: Re-evaluate all icons + picks
-    },
-  });
+  
+  // Chat continuity state (managed here, not in hook, for proper ref access)
+  const [chatScrollPosition, setChatScrollPosition] = useState(0);
+  const [showNewMessagesPill, setShowNewMessagesPill] = useState(false);
+  const [newMessageCount, setNewMessageCount] = useState(0);
+  const chatScrollRef = useRef({ isAtBottom: true, savedPosition: 0 });
+  const prevMessageCountRef = useRef(0);
 
   // ═══════════════════════════════════════════════════════════════════════════════
   // DRAFT PERSISTENCE - Pet-scoped drafts with 30-min TTL (Bible Section 3.2)
