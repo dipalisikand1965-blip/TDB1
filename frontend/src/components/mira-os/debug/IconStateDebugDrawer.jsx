@@ -106,11 +106,13 @@ const IconStateDebugDrawer = ({
     const debugParam = urlParams.get('debug');
     const isDev = process.env.NODE_ENV === 'development' || debugParam === '1';
     setIsDevMode(isDev);
+    console.log('[DEBUG DRAWER] Dev mode:', isDev, 'Debug param:', debugParam);
   }, []);
 
+  // Always show button in dev mode, even if no data
   if (!isDevMode) return null;
 
-  const { raw, serverStates, serverBadges, lastFetchedAt, error, petIds, userEmail } = debugInfo;
+  const { raw, serverStates = {}, serverBadges = {}, lastFetchedAt, error, petIds = [], userEmail } = debugInfo || {};
 
   // Map tab IDs to display names and counts
   const tabConfig = [
