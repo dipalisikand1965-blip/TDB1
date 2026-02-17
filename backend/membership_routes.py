@@ -651,33 +651,48 @@ async def verify_payment(request: PaymentVerifyRequest):
             {"$inc": {"used_count": 1}}
         )
     
-    # Create service desk ticket for onboarding
-    ticket_id = f"TKT-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
-    await db.tickets.insert_one({
-        "ticket_id": ticket_id,
-        "source": "membership",
-        "pillar": "membership",
-        "category": "new_member_onboarding",
-        "subject": f"New Member: {membership['user_name']} - {plan['name'] if plan else 'Membership'}",
-        "customer": {
-            "user_id": user_id,
-            "name": membership["user_name"],
+    # ═══════════════════════════════════════════════════════════════════════════
+    # HANDOFF TO SPINE - Single canonical ticket creation for new member onboarding
+    # MIGRATED to handoff_to_spine() per Bible Section 12.0.
+    # ═══════════════════════════════════════════════════════════════════════════
+    plan_name = plan['name'] if plan else 'Membership'
+    intent = f"New Member Onboarding: {membership['user_name']} - {plan_name}"
+    
+    spine_result = await handoff_to_spine(
+        db=db,
+        route_name="membership_routes.py",
+        endpoint="/membership/verify-payment",
+        pillar="membership",
+        category="new_member_onboarding",
+        intent=intent,
+        user={
             "email": membership["user_email"],
-            "phone": membership["user_phone"],
-            "is_member": True
+            "name": membership["user_name"],
+            "phone": membership["user_phone"]
         },
-        "priority": "medium",
-        "status": "open",
-        "reference": {
-            "type": "membership",
-            "id": request.membership_id
+        pet=None,  # No pet associated at onboarding stage
+        payload={
+            "membership_id": request.membership_id,
+            "plan_id": membership["plan_id"],
+            "plan_name": plan_name,
+            "started_at": started_at.isoformat(),
+            "expires_at": expires_at.isoformat(),
+            "user_id": user_id,
+            "is_new_member": True
         },
-        "timeline": [
-            {"status": "created", "at": datetime.now(timezone.utc).isoformat(), "note": "New membership activated"}
-        ],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
-    })
+        channel="web",
+        urgency="normal",
+        created_by="system",
+        notify_admin=True,
+        notify_member=True,
+        tags=["membership", "new_member", "onboarding"]
+    )
+    
+    if not spine_result.get("success"):
+        logger.error(f"[MEMBERSHIP] Spine handoff failed: {spine_result.get('error')}")
+        # Don't fail the membership activation, but log the error
+    else:
+        logger.info(f"[SPINE-MIGRATED] membership_routes.py:/membership/verify-payment → {spine_result['ticket_id']} | pillar=membership category=new_member_onboarding")
     
     logger.info(f"Membership activated: {request.membership_id} for {membership['user_email']}")
     
