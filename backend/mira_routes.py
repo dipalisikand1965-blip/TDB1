@@ -9934,7 +9934,7 @@ async def mira_chat(
     # INSIGHT EXTRACTION - Learn from user's messages (runs in background)
     # Extract facts about the pet from user messages and store for review
     # ═══════════════════════════════════════════════════════════════════════════
-    if INSIGHT_EXTRACTION_AVAILABLE and selected_pet and db:
+    if INSIGHT_EXTRACTION_AVAILABLE and selected_pet and db is not None:
         try:
             pet_id = selected_pet.get("id")
             if pet_id and user_message:
