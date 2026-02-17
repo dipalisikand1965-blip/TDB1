@@ -3505,7 +3505,45 @@ async def search_real_products(
             })
         
         # Sort by score and take top results
-        scored_products.sort(key=lambda x: x["score"], reverse=True)
+        scored_products.sort(key=lambda x: (x.get("relevance_score", 0), x["score"]), reverse=True)
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # MIN_MATCH_SCORE CHECK (Bible Section 9.0)
+        # If the top scored product's relevance is below threshold, trigger fallback
+        # This catches cases where products exist but don't match user's specific request
+        # ═══════════════════════════════════════════════════════════════════════════
+        if scored_products:
+            top_relevance = scored_products[0].get("relevance_score", 0)
+            if top_relevance < MIN_MATCH_SCORE:
+                logger.info(f"[PICKS FALLBACK] Top relevance score {top_relevance:.2f} < MIN_MATCH_SCORE {MIN_MATCH_SCORE} - triggering Concierge fallback for '{user_input_lower[:50]}'")
+                import uuid as uuid_module
+                detected_pillar = entities.get("pillar", "care")
+                return {
+                    "products": [],
+                    "concierge_fallback": True,
+                    "concierge_fallback_reason": "low_relevance_score",
+                    "concierge_arranges": [
+                        {
+                            "id": f"concierge-{uuid_module.uuid4().hex[:8]}",
+                            "type": "concierge_pick",
+                            "label": "Concierge Pick",
+                            "title": f"Custom request for {pet_name}",
+                            "subtitle": "Allergy-safe" if pet_context.get("sensitivities") else "Made to requirements",
+                            "description": f"We don't have this in the catalogue yet — we can arrange it for {pet_name}.",
+                            "spec_chip": f"Made to {pet_name}'s requirements",
+                            "no_price": True,
+                            "action": "create_ticket",
+                            "pillar": detected_pillar,
+                            "category": "concierge_arranges",
+                            "intent": user_input_lower[:200],
+                            "original_request": user_query,
+                            "pet_id": pet_context.get("id"),
+                            "pet_name": pet_name,
+                            "pet_constraints": pet_context.get("sensitivities", []),
+                            "why_it_fits": f"Made to {pet_name}'s requirements"
+                        }
+                    ]
+                }
         
         # Format for response with match_type for UI badges
         pet_breed_lower = safe_lower(pet_context.get("breed", ""))
