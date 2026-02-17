@@ -337,12 +337,19 @@ const PetOSNavigation = ({
     learn: { state: 'OFF', count: 0 },
     concierge: { state: 'OFF', count: 0 },
   },
+  // Weather hint for header
+  weather = null,
+  onWeatherClick = null, // Opens TODAY panel
 }) => {
   const [showPetDropdown, setShowPetDropdown] = useState(false);
   
   // Get MOJO icon state for visual feedback on pet avatar
   const mojoIconState = iconStates.mojo || { state: 'ON', count: 0 };
   const isMojoPulse = mojoIconState.state === 'PULSE';
+  
+  // Extract weather data for minimal display
+  const weatherTemp = weather?.current_weather?.temperature || weather?.temperature;
+  const weatherCity = weather?.city || currentPet?.city;
   
   const handleMojoClick = () => {
     hapticFeedback.buttonTap();
