@@ -1,43 +1,39 @@
 /**
  * useIconState.js
  * ================
- * Icon State System - Per PET_OS_BEHAVIOR_BIBLE v1.1 Section 2
+ * CENTRALIZED Icon State System - Single Source of Truth
+ * Per PET_OS_BEHAVIOR_BIBLE v1.1 Section 2
  * 
  * THREE STATES:
- * - OFF: Muted icon, no dot - Zero relevant items for active pet
- * - ON: Lit icon, subtle dot - Items exist (may be seen)
- * - PULSE: Subtle pulse + dot + optional count - NEW or materially changed since last visit
+ * - OFF: Muted icon, no badge - Zero relevant items for active pet
+ * - ON: Lit icon - Items exist (may be seen)
+ * - PULSE: Animated icon + badge - NEW or needs attention
  * 
  * RULES:
  * - PULSE should be rare and meaningful
- * - Visiting tab: PULSE → ON immediately
+ * - Active tab override: No PULSE animation while inside the tab (badge remains)
  * - Pet switch: Reset all states to OFF, then recalculate
  * - No cross-pet leakage
  * 
- * CANONICAL TRIGGER EVENTS (Section 2.2):
- * - PET_SWITCHED
- * - TICKET_CREATED
- * - TICKET_STATUS_CHANGED
- * - OPTIONS_ADDED
- * - USER_ACTION_REQUIRED_SET
- * - CONCIERGE_MESSAGE_RECEIVED
- * - INSIGHT_SAVED
- * - LEARN_ITEM_PUBLISHED_FOR_PET
- * - SAFETY_MODE_ENTERED
- * - SAFETY_MODE_EXITED
- * - PICKS_MATERIAL_CHANGE
+ * BADGE RULES:
+ * - 0 = hide badge
+ * - 1-9 = show number
+ * - >9 = show "9+"
+ * - PICKS uses "+N" format
  */
 
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 
-// Icon states
+// ═══════════════════════════════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════════════════════════════
+
 export const ICON_STATE = {
   OFF: 'OFF',
   ON: 'ON',
   PULSE: 'PULSE',
 };
 
-// Tab IDs
 export const TAB_IDS = {
   MOJO: 'mojo',
   TODAY: 'today',
@@ -50,429 +46,418 @@ export const TAB_IDS = {
 // Storage key for tracking last visit timestamps per pet per tab
 const LAST_VISIT_KEY = 'mira_icon_last_visits';
 
+// ═══════════════════════════════════════════════════════════════════════════
+// BADGE FORMATTER (Consistent across all tabs)
+// ═══════════════════════════════════════════════════════════════════════════
+
 /**
- * Load last visit data from localStorage
- * Format: { [petId]: { [tabId]: timestamp } }
+ * Format badge count for display
+ * @param {number} count - Raw count
+ * @param {string} format - 'numeric' (default) or 'plus' (for PICKS: +N)
+ * @returns {string|null} - Formatted badge or null if should be hidden
  */
+export const formatBadge = (count, format = 'numeric') => {
+  if (!count || count <= 0) return null;
+  if (count > 9) return '9+';
+  return format === 'plus' ? `+${count}` : String(count);
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CENTRALIZED STATE CALCULATOR (Single Source of Truth)
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * getIconState - THE single source of truth for all icon states
+ * Every tab MUST use this function. No tab computes state internally.
+ * 
+ * @param {string} tabId - Tab identifier (from TAB_IDS)
+ * @param {Object} data - Tab-specific data counts
+ * @param {string} activeTab - Currently active tab (for override)
+ * @returns {{ state: 'OFF'|'ON'|'PULSE', badge: string|null, tooltip: string }}
+ */
+export const getIconState = (tabId, data = {}, activeTab = null) => {
+  // Active tab override: No PULSE while inside the tab
+  const isActive = activeTab === tabId;
+  
+  switch (tabId) {
+    // ─────────────────────────────────────────────────────────────────────
+    // MOJO (Pet Avatar)
+    // PULSE: Critical missing fields (vaccinations, allergies, medications, vet_info, location)
+    // ON: Pet exists (always at least ON)
+    // Badge: None (orange dot IS the badge)
+    // ─────────────────────────────────────────────────────────────────────
+    case TAB_IDS.MOJO: {
+      const { hasCriticalMissing = false, soulScore = 100 } = data;
+      
+      // MOJO is never OFF (pet always exists)
+      if (hasCriticalMissing || soulScore < 50) {
+        return {
+          state: isActive ? ICON_STATE.ON : ICON_STATE.PULSE,
+          badge: null, // Orange dot is the visual indicator
+          tooltip: 'Complete your pet\'s profile',
+          reason: hasCriticalMissing ? 'critical_missing' : 'low_soul_score',
+        };
+      }
+      
+      return {
+        state: ICON_STATE.ON,
+        badge: null,
+        tooltip: 'View pet profile',
+      };
+    }
+    
+    // ─────────────────────────────────────────────────────────────────────
+    // TODAY
+    // PULSE: urgent_count > 0 OR due_today_count > 0
+    // ON: upcoming_count > 0 (but not urgent/due)
+    // OFF: All are zero
+    // Badge: urgent + due_today (cap 9+)
+    // ─────────────────────────────────────────────────────────────────────
+    case TAB_IDS.TODAY: {
+      const { urgentCount = 0, dueTodayCount = 0, upcomingCount = 0 } = data;
+      const badgeCount = urgentCount + dueTodayCount;
+      
+      if (urgentCount > 0 || dueTodayCount > 0) {
+        return {
+          state: isActive ? ICON_STATE.ON : ICON_STATE.PULSE,
+          badge: formatBadge(badgeCount),
+          tooltip: `${badgeCount} item${badgeCount > 1 ? 's' : ''} need attention`,
+        };
+      }
+      
+      if (upcomingCount > 0) {
+        return {
+          state: ICON_STATE.ON,
+          badge: null,
+          tooltip: `${upcomingCount} upcoming item${upcomingCount > 1 ? 's' : ''}`,
+        };
+      }
+      
+      return {
+        state: ICON_STATE.OFF,
+        badge: null,
+        tooltip: 'Nothing for today',
+      };
+    }
+    
+    // ─────────────────────────────────────────────────────────────────────
+    // PICKS
+    // PULSE: newSinceLastView > 0 OR materialChangeCount > 0
+    // ON: picksCount > 0 (but nothing new)
+    // OFF: picksCount == 0
+    // Badge: "+N" for new picks
+    // ─────────────────────────────────────────────────────────────────────
+    case TAB_IDS.PICKS: {
+      const { picksCount = 0, newSinceLastView = 0, materialChangeCount = 0 } = data;
+      const newCount = newSinceLastView + materialChangeCount;
+      
+      if (newCount > 0) {
+        return {
+          state: isActive ? ICON_STATE.ON : ICON_STATE.PULSE,
+          badge: formatBadge(newCount, 'plus'), // "+N" format
+          tooltip: `${newCount} new pick${newCount > 1 ? 's' : ''} for your pet`,
+        };
+      }
+      
+      if (picksCount > 0) {
+        return {
+          state: ICON_STATE.ON,
+          badge: null,
+          tooltip: `${picksCount} personalized pick${picksCount > 1 ? 's' : ''}`,
+        };
+      }
+      
+      return {
+        state: ICON_STATE.OFF,
+        badge: null,
+        tooltip: 'No picks yet',
+      };
+    }
+    
+    // ─────────────────────────────────────────────────────────────────────
+    // SERVICES
+    // PULSE: awaitingYouCount > 0 (this is the key!)
+    // ON: activeTicketsCount > 0 (but not awaiting you)
+    // OFF: None
+    // Badge: awaitingYouCount first; if 0 then activeTicketsCount
+    // ─────────────────────────────────────────────────────────────────────
+    case TAB_IDS.SERVICES: {
+      const { activeTicketsCount = 0, awaitingYouCount = 0 } = data;
+      
+      if (awaitingYouCount > 0) {
+        return {
+          state: isActive ? ICON_STATE.ON : ICON_STATE.PULSE,
+          badge: formatBadge(awaitingYouCount),
+          tooltip: `${awaitingYouCount} ticket${awaitingYouCount > 1 ? 's' : ''} awaiting your response`,
+        };
+      }
+      
+      if (activeTicketsCount > 0) {
+        return {
+          state: ICON_STATE.ON,
+          badge: formatBadge(activeTicketsCount),
+          tooltip: `${activeTicketsCount} active ticket${activeTicketsCount > 1 ? 's' : ''}`,
+        };
+      }
+      
+      return {
+        state: ICON_STATE.OFF,
+        badge: null,
+        tooltip: 'No active services',
+      };
+    }
+    
+    // ─────────────────────────────────────────────────────────────────────
+    // CONCIERGE®
+    // PULSE: unreadRepliesCount > 0
+    // ON: openThreadsCount > 0 (but no unread)
+    // OFF: None
+    // Badge: unread count (cap 9+)
+    // ─────────────────────────────────────────────────────────────────────
+    case TAB_IDS.CONCIERGE: {
+      const { unreadRepliesCount = 0, openThreadsCount = 0 } = data;
+      
+      if (unreadRepliesCount > 0) {
+        return {
+          state: isActive ? ICON_STATE.ON : ICON_STATE.PULSE,
+          badge: formatBadge(unreadRepliesCount),
+          tooltip: `${unreadRepliesCount} unread message${unreadRepliesCount > 1 ? 's' : ''}`,
+        };
+      }
+      
+      if (openThreadsCount > 0) {
+        return {
+          state: ICON_STATE.ON,
+          badge: formatBadge(openThreadsCount),
+          tooltip: `${openThreadsCount} open thread${openThreadsCount > 1 ? 's' : ''}`,
+        };
+      }
+      
+      return {
+        state: ICON_STATE.OFF,
+        badge: null,
+        tooltip: 'Chat with Concierge',
+      };
+    }
+    
+    // ─────────────────────────────────────────────────────────────────────
+    // LEARN
+    // PULSE: pendingInsightsCount > 0 (tied to MOJO review!)
+    // ON: learnedFactsCount > 0 (but no pending)
+    // OFF: None
+    // Badge: pending insights count
+    // ─────────────────────────────────────────────────────────────────────
+    case TAB_IDS.LEARN: {
+      const { pendingInsightsCount = 0, learnedFactsCount = 0, newContentCount = 0 } = data;
+      
+      if (pendingInsightsCount > 0 || newContentCount > 0) {
+        const count = pendingInsightsCount + newContentCount;
+        return {
+          state: isActive ? ICON_STATE.ON : ICON_STATE.PULSE,
+          badge: formatBadge(count),
+          tooltip: `${count} new thing${count > 1 ? 's' : ''} to learn`,
+        };
+      }
+      
+      if (learnedFactsCount > 0) {
+        return {
+          state: ICON_STATE.ON,
+          badge: null,
+          tooltip: `${learnedFactsCount} learned fact${learnedFactsCount > 1 ? 's' : ''}`,
+        };
+      }
+      
+      return {
+        state: ICON_STATE.OFF,
+        badge: null,
+        tooltip: 'Learn about your pet',
+      };
+    }
+    
+    default:
+      return {
+        state: ICON_STATE.OFF,
+        badge: null,
+        tooltip: '',
+      };
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LAST VISIT TRACKING (For PULSE → ON transition)
+// ═══════════════════════════════════════════════════════════════════════════
+
 const loadLastVisits = () => {
   try {
     const stored = localStorage.getItem(LAST_VISIT_KEY);
     return stored ? JSON.parse(stored) : {};
-  } catch (e) {
-    console.error('[useIconState] Error loading last visits:', e);
+  } catch {
     return {};
   }
 };
 
-/**
- * Save last visit data to localStorage
- */
-const saveLastVisits = (data) => {
+const saveLastVisits = (visits) => {
   try {
-    localStorage.setItem(LAST_VISIT_KEY, JSON.stringify(data));
+    localStorage.setItem(LAST_VISIT_KEY, JSON.stringify(visits));
   } catch (e) {
-    console.error('[useIconState] Error saving last visits:', e);
+    console.warn('[IconState] Failed to save last visits:', e);
   }
 };
 
+// ═══════════════════════════════════════════════════════════════════════════
+// MAIN HOOK
+// ═══════════════════════════════════════════════════════════════════════════
+
 /**
  * useIconState - Hook to manage icon states for all OS tabs
+ * Uses centralized getIconState() for all calculations
  * 
  * @param {Object} options
  * @param {string} options.currentPetId - Current active pet ID
- * @param {Object} options.mojoData - { soulScore: number, hasIncompleteFields: boolean, pendingSuggestions: [], newInsights: boolean }
- * @param {Object} options.todayData - { urgent: [], due: [], watchlist: [], awaitingYou: [] }
- * @param {Object} options.servicesData - { activeTickets: [], awaitingYou: boolean }
- * @param {Object} options.conciergeData - { isOnline: boolean, openThreads: [], newReplies: boolean }
- * @param {Object} options.picksData - { items: [], hasNew: boolean, heroPillar: string }
- * @param {Object} options.learnData - { forYourPetItems: [], newItems: boolean }
+ * @param {Object} options.counts - Real data counts for all tabs
  * @param {string} options.activeTab - Currently active tab
  */
 const useIconState = ({
   currentPetId,
-  mojoData = {},
-  todayData = {},
-  servicesData = {},
-  conciergeData = {},
-  picksData = {},
-  learnData = {},
+  counts = {},
   activeTab = null,
 } = {}) => {
-  // Icon states for each tab (including MOJO)
-  const [iconStates, setIconStates] = useState({
-    [TAB_IDS.MOJO]: { state: ICON_STATE.ON, count: 0 }, // MOJO is always at least ON (pet exists)
-    [TAB_IDS.TODAY]: { state: ICON_STATE.OFF, count: 0 },
-    [TAB_IDS.PICKS]: { state: ICON_STATE.OFF, count: 0 },
-    [TAB_IDS.SERVICES]: { state: ICON_STATE.OFF, count: 0 },
-    [TAB_IDS.LEARN]: { state: ICON_STATE.OFF, count: 0 },
-    [TAB_IDS.CONCIERGE]: { state: ICON_STATE.OFF, count: 0 },
-  });
-
-  // Last visit timestamps per pet per tab
+  const prevPetIdRef = useRef(null);
   const [lastVisits, setLastVisits] = useState(() => loadLastVisits());
   
-  // Previous pet ID (to detect pet switches)
-  const prevPetIdRef = useRef(currentPetId);
+  // ─────────────────────────────────────────────────────────────────────────
+  // Compute all icon states using centralized getIconState()
+  // ─────────────────────────────────────────────────────────────────────────
+  const iconStates = useMemo(() => {
+    const {
+      // MOJO
+      hasCriticalMissing = false,
+      soulScore = 100,
+      // TODAY
+      urgentCount = 0,
+      dueTodayCount = 0,
+      upcomingCount = 0,
+      // PICKS
+      picksCount = 0,
+      newPicksSinceLastView = 0,
+      materialChangeCount = 0,
+      // SERVICES
+      activeTicketsCount = 0,
+      awaitingYouCount = 0,
+      // CONCIERGE
+      unreadRepliesCount = 0,
+      openThreadsCount = 0,
+      // LEARN
+      pendingInsightsCount = 0,
+      learnedFactsCount = 0,
+      newContentCount = 0,
+    } = counts;
+    
+    return {
+      [TAB_IDS.MOJO]: getIconState(TAB_IDS.MOJO, { hasCriticalMissing, soulScore }, activeTab),
+      [TAB_IDS.TODAY]: getIconState(TAB_IDS.TODAY, { urgentCount, dueTodayCount, upcomingCount }, activeTab),
+      [TAB_IDS.PICKS]: getIconState(TAB_IDS.PICKS, { picksCount, newSinceLastView: newPicksSinceLastView, materialChangeCount }, activeTab),
+      [TAB_IDS.SERVICES]: getIconState(TAB_IDS.SERVICES, { activeTicketsCount, awaitingYouCount }, activeTab),
+      [TAB_IDS.CONCIERGE]: getIconState(TAB_IDS.CONCIERGE, { unreadRepliesCount, openThreadsCount }, activeTab),
+      [TAB_IDS.LEARN]: getIconState(TAB_IDS.LEARN, { pendingInsightsCount, learnedFactsCount, newContentCount }, activeTab),
+    };
+  }, [counts, activeTab]);
   
-  // Track previous data for change detection
-  const prevDataRef = useRef({
-    mojoData: {},
-    todayData: {},
-    servicesData: {},
-    conciergeData: {},
-    picksData: {},
-    learnData: {},
-  });
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // VISIT TRACKING
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  /**
-   * Mark a tab as visited for current pet
-   * Per Bible: PULSE → ON when user visits
-   */
+  // ─────────────────────────────────────────────────────────────────────────
+  // Pet switch handling: Reset states when pet changes
+  // ─────────────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    const prevPetId = prevPetIdRef.current;
+    
+    if (prevPetId && currentPetId && prevPetId !== currentPetId) {
+      console.log(`[IconState] Pet switched: ${prevPetId} → ${currentPetId}`);
+    }
+    
+    prevPetIdRef.current = currentPetId;
+  }, [currentPetId]);
+  
+  // ─────────────────────────────────────────────────────────────────────────
+  // Mark tab as visited (for PULSE → ON transition tracking)
+  // ─────────────────────────────────────────────────────────────────────────
   const markTabVisited = useCallback((tabId) => {
     if (!currentPetId || !tabId) return;
-
-    const now = Date.now();
     
+    const now = Date.now();
     setLastVisits(prev => {
       const updated = {
         ...prev,
         [currentPetId]: {
           ...(prev[currentPetId] || {}),
           [tabId]: now,
-        }
+        },
       };
       saveLastVisits(updated);
       return updated;
     });
-
-    // PULSE → ON immediately when visited
-    setIconStates(prev => {
-      if (prev[tabId]?.state === ICON_STATE.PULSE) {
-        console.log(`[IconState] ${tabId}: PULSE → ON (visited)`);
-        return {
-          ...prev,
-          [tabId]: { ...prev[tabId], state: ICON_STATE.ON }
-        };
-      }
-      return prev;
-    });
+    
+    console.log(`[IconState] Tab visited: ${tabId}`);
   }, [currentPetId]);
-
-  /**
-   * Get last visit timestamp for a tab
-   */
+  
+  // ─────────────────────────────────────────────────────────────────────────
+  // Get last visit timestamp for a tab
+  // ─────────────────────────────────────────────────────────────────────────
   const getLastVisit = useCallback((tabId) => {
     if (!currentPetId) return 0;
     return lastVisits[currentPetId]?.[tabId] || 0;
   }, [currentPetId, lastVisits]);
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // STATE CALCULATIONS (Per Bible Section 2.3)
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  /**
-   * Calculate MOJO (Pet Profile) icon state
-   * OFF: Never (pet always exists when in OS)
-   * ON: Pet profile exists AND no critical missing fields AND soul score >= 50%
-   * PULSE: Critical missing fields OR soul score < 50% OR new insights discovered OR pending suggestions
-   * 
-   * Critical missing fields = vaccinations, allergies, medications, emergency contact, location, vet details
-   */
-  const calculateMojoState = useCallback(() => {
-    const { 
-      soulScore = 0, 
-      hasCriticalMissing = false,
-      hasIncompleteFields = false, 
-      pendingSuggestions = [], 
-      newInsights = false 
-    } = mojoData;
-    
-    // MOJO is never OFF - if pet exists, it's at least ON
-    // PULSE conditions (priority order):
-    // 1. Has critical missing fields (vaccinations, allergies, etc.) - highest priority
-    // 2. Soul score < 50% (encouraging profile completion)
-    // 3. New insights discovered from conversation
-    // 4. Pending suggestions to enhance profile
-    
-    const needsAttention = hasCriticalMissing || soulScore < 50 || hasIncompleteFields || newInsights;
-    const hasPendingSuggestions = pendingSuggestions.length > 0;
-    
-    if (needsAttention || hasPendingSuggestions) {
-      const count = hasCriticalMissing ? 1 : (pendingSuggestions.length || (soulScore < 50 ? 1 : 0));
-      return { state: ICON_STATE.PULSE, count, reason: hasCriticalMissing ? 'critical_missing' : 'incomplete' };
-    }
-    
-    return { state: ICON_STATE.ON, count: 0 };
-  }, [mojoData]);
-
-  /**
-   * Calculate TODAY icon state
-   * OFF: 0 urgent + 0 due + 0 watchlist for active pet
-   * ON: Any of urgent/due/watchlist exists
-   * PULSE: New urgent added OR watchlist item changed OR "Awaiting you" exists
-   */
-  const calculateTodayState = useCallback(() => {
-    const { urgent = [], due = [], watchlist = [], awaitingYou = [] } = todayData;
-    const total = urgent.length + due.length + watchlist.length;
-    
-    if (total === 0 && awaitingYou.length === 0) {
-      return { state: ICON_STATE.OFF, count: 0 };
-    }
-
-    // Check for PULSE conditions
-    const hasAwaitingYou = awaitingYou.length > 0;
-    const lastVisit = getLastVisit(TAB_IDS.TODAY);
-    const hasNewUrgent = urgent.some(item => 
-      item.createdAt && new Date(item.createdAt).getTime() > lastVisit
-    );
-
-    if (hasAwaitingYou || hasNewUrgent) {
-      return { state: ICON_STATE.PULSE, count: awaitingYou.length || urgent.length };
-    }
-
-    return { state: ICON_STATE.ON, count: total };
-  }, [todayData, getLastVisit]);
-
-  /**
-   * Calculate SERVICES icon state
-   * OFF: 0 active service tickets for active pet
-   * ON: Any open/active tickets exist
-   * PULSE: Ticket created OR status changed OR "Awaiting you" set
-   */
-  const calculateServicesState = useCallback(() => {
-    const { activeTickets = [], awaitingYou = false, newTickets = [], statusChanges = [] } = servicesData;
-    
-    if (activeTickets.length === 0) {
-      return { state: ICON_STATE.OFF, count: 0 };
-    }
-
-    // Check for PULSE conditions
-    const lastVisit = getLastVisit(TAB_IDS.SERVICES);
-    const hasNewTickets = newTickets.length > 0 || activeTickets.some(ticket => 
-      ticket.createdAt && new Date(ticket.createdAt).getTime() > lastVisit
-    );
-    const hasStatusChanges = statusChanges.length > 0;
-
-    if (awaitingYou || hasNewTickets || hasStatusChanges) {
-      const pulseCount = awaitingYou ? 1 : (newTickets.length || statusChanges.length || 1);
-      return { state: ICON_STATE.PULSE, count: pulseCount };
-    }
-
-    return { state: ICON_STATE.ON, count: activeTickets.length };
-  }, [servicesData, getLastVisit]);
-
-  /**
-   * Calculate CONCIERGE icon state
-   * OFF: Concierge offline AND no open threads
-   * ON: Concierge online OR open threads exist
-   * PULSE: New reply received OR "Awaiting you" set
-   */
-  const calculateConciergeState = useCallback(() => {
-    const { isOnline = false, openThreads = [], newReplies = false, awaitingYou = false } = conciergeData;
-    
-    if (!isOnline && openThreads.length === 0) {
-      return { state: ICON_STATE.OFF, count: 0 };
-    }
-
-    // Check for PULSE conditions
-    if (newReplies || awaitingYou) {
-      return { state: ICON_STATE.PULSE, count: 1 };
-    }
-
-    return { state: ICON_STATE.ON, count: openThreads.length || (isOnline ? 1 : 0) };
-  }, [conciergeData]);
-
-  /**
-   * Calculate PICKS icon state
-   * OFF: No picks (should be extremely rare)
-   * ON: Picks exist
-   * PULSE: Only when PICKS_MATERIAL_CHANGE fires (see Bible 2.4)
-   */
-  const calculatePicksState = useCallback(() => {
-    const { items = [], hasNew = false, materialChange = false } = picksData;
-    
-    if (items.length === 0) {
-      return { state: ICON_STATE.OFF, count: 0 };
-    }
-
-    // PULSE only on material change (rare)
-    if (materialChange || hasNew) {
-      return { state: ICON_STATE.PULSE, count: items.length };
-    }
-
-    return { state: ICON_STATE.ON, count: items.length };
-  }, [picksData]);
-
-  /**
-   * Calculate LEARN icon state
-   * OFF: No "For your pet" items
-   * ON: "For your pet" shelf has items
-   * PULSE: New item published for this pet since last visit
-   */
-  const calculateLearnState = useCallback(() => {
-    const { forYourPetItems = [], newItems = false } = learnData;
-    
-    if (forYourPetItems.length === 0) {
-      return { state: ICON_STATE.OFF, count: 0 };
-    }
-
-    // Check for PULSE
-    const lastVisit = getLastVisit(TAB_IDS.LEARN);
-    const hasNewSinceVisit = forYourPetItems.some(item =>
-      item.publishedAt && new Date(item.publishedAt).getTime() > lastVisit
-    );
-
-    if (newItems || hasNewSinceVisit) {
-      return { state: ICON_STATE.PULSE, count: forYourPetItems.length };
-    }
-
-    return { state: ICON_STATE.ON, count: forYourPetItems.length };
-  }, [learnData, getLastVisit]);
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // PET SWITCH HANDLING (Section 2.6)
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  useEffect(() => {
-    const prevPetId = prevPetIdRef.current;
-
-    if (prevPetId && currentPetId && prevPetId !== currentPetId) {
-      console.log(`[IconState] Pet switched: ${prevPetId} → ${currentPetId}`);
-      console.log('[IconState] Resetting all icon states to OFF, then recalculating...');
-
-      // Reset all states to OFF first (no cross-pet leakage)
-      // Note: MOJO resets to ON (never OFF) since pet exists
-      setIconStates({
-        [TAB_IDS.MOJO]: { state: ICON_STATE.ON, count: 0 },
-        [TAB_IDS.TODAY]: { state: ICON_STATE.OFF, count: 0 },
-        [TAB_IDS.PICKS]: { state: ICON_STATE.OFF, count: 0 },
-        [TAB_IDS.SERVICES]: { state: ICON_STATE.OFF, count: 0 },
-        [TAB_IDS.LEARN]: { state: ICON_STATE.OFF, count: 0 },
-        [TAB_IDS.CONCIERGE]: { state: ICON_STATE.OFF, count: 0 },
-      });
-
-      // Recalculate will happen in the next effect cycle when data updates
-    }
-
-    prevPetIdRef.current = currentPetId;
-  }, [currentPetId]);
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // RECALCULATE STATES WHEN DATA CHANGES
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  useEffect(() => {
-    if (!currentPetId) return;
-
-    const newStates = {
-      [TAB_IDS.MOJO]: calculateMojoState(),
-      [TAB_IDS.TODAY]: calculateTodayState(),
-      [TAB_IDS.SERVICES]: calculateServicesState(),
-      [TAB_IDS.CONCIERGE]: calculateConciergeState(),
-      [TAB_IDS.PICKS]: calculatePicksState(),
-      [TAB_IDS.LEARN]: calculateLearnState(),
+  
+  // ─────────────────────────────────────────────────────────────────────────
+  // Debug: Get all raw counts (for Debug Drawer)
+  // ─────────────────────────────────────────────────────────────────────────
+  const getDebugData = useCallback(() => {
+    return {
+      petId: currentPetId,
+      activeTab,
+      counts,
+      iconStates,
+      lastVisits: lastVisits[currentPetId] || {},
     };
-
-    setIconStates(prev => {
-      // Only update if states actually changed
-      const hasChanges = Object.keys(newStates).some(tabId => 
-        prev[tabId]?.state !== newStates[tabId].state ||
-        prev[tabId]?.count !== newStates[tabId].count
-      );
-
-      if (hasChanges) {
-        console.log('[IconState] States recalculated:', 
-          Object.entries(newStates).map(([k, v]) => `${k}:${v.state}`).join(', ')
-        );
-        return newStates;
-      }
-      return prev;
-    });
-  }, [currentPetId, calculateMojoState, calculateTodayState, calculateServicesState, calculateConciergeState, calculatePicksState, calculateLearnState]);
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // HANDLE TAB VISIT (PULSE → ON)
-  // ═══════════════════════════════════════════════════════════════════════════
-
+  }, [currentPetId, activeTab, counts, iconStates, lastVisits]);
+  
+  // ─────────────────────────────────────────────────────────────────────────
+  // Log state changes for debugging
+  // ─────────────────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (activeTab) {
-      markTabVisited(activeTab);
-    }
-  }, [activeTab, markTabVisited]);
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // TRIGGER EVENT HANDLERS
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  /**
-   * Trigger PULSE for a specific tab
-   * Call this when canonical trigger events fire
-   */
-  const triggerPulse = useCallback((tabId, count = 1) => {
-    if (!currentPetId) return;
-
-    console.log(`[IconState] PULSE triggered for ${tabId}`);
-    
-    setIconStates(prev => ({
-      ...prev,
-      [tabId]: { state: ICON_STATE.PULSE, count }
-    }));
-  }, [currentPetId]);
-
-  /**
-   * Force recalculation of all states
-   * Call this after significant data changes
-   */
-  const recalculateAll = useCallback(() => {
-    if (!currentPetId) return;
-
-    const newStates = {
-      [TAB_IDS.MOJO]: calculateMojoState(),
-      [TAB_IDS.TODAY]: calculateTodayState(),
-      [TAB_IDS.SERVICES]: calculateServicesState(),
-      [TAB_IDS.CONCIERGE]: calculateConciergeState(),
-      [TAB_IDS.PICKS]: calculatePicksState(),
-      [TAB_IDS.LEARN]: calculateLearnState(),
-    };
-
-    console.log('[IconState] Force recalculate:', 
-      Object.entries(newStates).map(([k, v]) => `${k}:${v.state}`).join(', ')
-    );
-
-    setIconStates(newStates);
-  }, [currentPetId, calculateMojoState, calculateTodayState, calculateServicesState, calculateConciergeState, calculatePicksState, calculateLearnState]);
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // RETURN API
-  // ═══════════════════════════════════════════════════════════════════════════
-
+    const stateStr = Object.entries(iconStates)
+      .map(([k, v]) => `${k}:${v.state}${v.badge ? `(${v.badge})` : ''}`)
+      .join(', ');
+    console.log(`[IconState] States: ${stateStr}`);
+  }, [iconStates]);
+  
+  // ─────────────────────────────────────────────────────────────────────────
+  // Return API
+  // ─────────────────────────────────────────────────────────────────────────
   return {
-    // Current states
+    // All computed states
     iconStates,
     
-    // Individual state getters
+    // Individual state getters (convenience)
     mojoState: iconStates[TAB_IDS.MOJO],
     todayState: iconStates[TAB_IDS.TODAY],
+    picksState: iconStates[TAB_IDS.PICKS],
     servicesState: iconStates[TAB_IDS.SERVICES],
     conciergeState: iconStates[TAB_IDS.CONCIERGE],
-    picksState: iconStates[TAB_IDS.PICKS],
     learnState: iconStates[TAB_IDS.LEARN],
-
+    
     // Actions
     markTabVisited,
-    triggerPulse,
-    recalculateAll,
-
-    // Helpers
     getLastVisit,
-
-    // Constants
+    
+    // Debug
+    getDebugData,
+    
+    // Constants (for external use)
     ICON_STATE,
     TAB_IDS,
+    
+    // Utility
+    getIconState,
+    formatBadge,
   };
 };
 
