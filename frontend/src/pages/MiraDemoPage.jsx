@@ -3472,6 +3472,8 @@ const MiraDemoPage = () => {
         }}
         picksHasNew={miraPicks.hasNew}
         iconStates={iconStates}
+        weather={currentWeather}
+        onWeatherClick={() => handleOSTabChange('today')}
       />
       
       {/* SECONDARY NAVIGATION REMOVED - All functions moved to primary OS layers:
