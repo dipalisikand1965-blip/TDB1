@@ -121,15 +121,24 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 │   ├── useLayerNavigation.js     # Layer bridge hook
 │   ├── useChatContinuity.js      # Scroll preservation
 │   ├── useDraft.js               # Pet-scoped drafts
-│   └── useIconState.js           # OFF/ON/PULSE states
-├── components/Mira/
-│   ├── PetOSNavigation.jsx       # OS navigation bar
-│   └── TabIcon.jsx               # Icon with states
+│   ├── useIconState.js           # OFF/ON/PULSE states
+│   └── useIconStateAPI.js        # Real data from backend API
+├── components/mira-os/
+│   ├── navigation/PetOSNavigation.jsx  # OS navigation bar
+│   └── debug/IconStateDebugDrawer.jsx  # Debug drawer for validation
 └── pages/
     └── MiraDemoPage.jsx          # Main Mira OS page
 
+/app/backend/
+├── routes/
+│   └── icon_state_routes.py      # /api/os/icon-state endpoint
+├── utils/
+│   └── ticket_id_generator.py    # Canonical TCK-YYYY-NNNNNN generator
+└── services_routes.py            # Updated to use canonical ticket_id
+
 /app/memory/
 ├── PET_OS_BEHAVIOR_BIBLE.md      # System Contract (CRITICAL)
+├── PRD.md                        # This file
 ├── MIRA_DOCTRINE.md              # What Mira says
 ├── MOJO_BIBLE.md                 # What data exists
 └── PET_OS_UI_UX_BIBLE.md         # What things look like
