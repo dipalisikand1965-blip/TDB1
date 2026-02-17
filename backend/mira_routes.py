@@ -3364,22 +3364,34 @@ async def search_real_products(
             logger.info(f"[PICKS] No catalogue match for '{user_input_lower[:50]}' - triggering Concierge fallback")
             
             # Return empty products with concierge_fallback flag
+            # Bible Section 9.0: Concierge Pick Card Structure for UI
+            import uuid as uuid_module
+            pet_name_val = pet_context.get('name', 'your pet')
+            detected_pillar = entities.get("pillar", "care")
+            
             return {
                 "products": [],
                 "concierge_fallback": True,
                 "concierge_fallback_reason": "no_catalogue_match",
                 "concierge_arranges": [
                     {
+                        "id": f"concierge-{uuid_module.uuid4().hex[:8]}",
                         "type": "concierge_pick",
-                        "title": f"Custom request for {pet_context.get('name', 'your pet')}",
-                        "subtitle": "Concierge arranges",
-                        "description": f"We don't have this in the catalogue yet — we can arrange it for {pet_context.get('name', 'your pet')}.",
+                        "label": "Concierge Pick",  # Badge label
+                        "title": f"Custom request for {pet_name_val}",
+                        "subtitle": "Allergy-safe" if pet_context.get("sensitivities") else "Made to requirements",
+                        "description": f"We don't have this in the catalogue yet — we can arrange it for {pet_name_val}.",
+                        "spec_chip": f"Made to {pet_name_val}'s requirements",
                         "no_price": True,
                         "action": "create_ticket",
-                        "pillar": entities.get("pillar", "care"),
+                        "pillar": detected_pillar,
+                        "category": "concierge_arranges",
                         "intent": user_input_lower[:200],
+                        "original_request": user_query,
                         "pet_id": pet_context.get("id"),
-                        "pet_name": pet_context.get("name"),
+                        "pet_name": pet_name_val,
+                        "pet_constraints": pet_context.get("sensitivities", []),
+                        "why_it_fits": f"Made to {pet_name_val}'s requirements"
                     }
                 ]
             }
