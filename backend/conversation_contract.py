@@ -478,7 +478,7 @@ def build_quick_replies(
         # Default answer chips - contextual follow-ups
         quick_replies = [
             {"id": "qr_tell_more", "label": "Tell me more", "payload_text": "Tell me more about this", "intent_type": "continue"},
-            {"id": "qr_find_place", "label": f"Find a place", "payload_text": f"Help me find a place for {pet_name}", "intent_type": "refine"},
+            {"id": "qr_find_place", "label": "Find a place", "payload_text": f"Help me find a place for {pet_name}", "intent_type": "refine"},
             {"id": "qr_book_service", "label": "Book a service", "payload_text": f"I want to book a service for {pet_name}", "intent_type": "execute"}
         ]
     
