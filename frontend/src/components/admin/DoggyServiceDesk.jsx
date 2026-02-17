@@ -5467,11 +5467,12 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         </label>
                         
                         {/* AI Reply Styles Dropdown */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2" data-testid="mira-tone-selector">
                           <select
                             value={aiReplyStyle}
                             onChange={(e) => setAiReplyStyle(e.target.value)}
                             className="h-8 px-3 text-xs font-medium border-2 border-purple-200 rounded-lg bg-purple-50 text-purple-700 cursor-pointer hover:border-purple-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-200"
+                            data-testid="mira-style-dropdown"
                           >
                             {AI_REPLY_STYLES.map(style => (
                               <option key={style.id} value={style.id}>{style.icon} {style.label}</option>
@@ -5483,6 +5484,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                             onClick={() => generateAiReply(aiReplyStyle)}
                             disabled={aiLoading}
                             className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100 hover:border-purple-300 text-xs h-8 px-3"
+                            data-testid="ask-mira-btn"
                           >
                             {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : <Brain className="w-3.5 h-3.5 mr-1.5" />}
                             Ask Mira
