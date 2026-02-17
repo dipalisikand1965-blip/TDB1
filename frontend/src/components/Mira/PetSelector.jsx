@@ -173,11 +173,11 @@ const PetSelector = ({
       {isOpen && (
         <div className="mp-pet-dropdown" data-testid="pet-dropdown">
           {allPets.map((p) => {
-            console.log('[PetSelector] Pet:', p.name, 'soulScore:', p.soulScore, 'type:', typeof p.soulScore, '>10:', Number(p.soulScore) > 10);
+            const soulScore = Number(p.soulScore) || 0;
             return (
             <button 
               key={p.id} 
-              onClick={() => handlePetCardClick(p)} 
+              onClick={() => handleSelectPet(p)} 
               className={`mp-pet-option ${p.id === currentPet.id ? 'active' : ''}`}
               data-testid={`pet-option-${p.id}`}
             >
