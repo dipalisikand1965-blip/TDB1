@@ -4757,6 +4757,42 @@ async def mira_os_understand_with_products(
                 else:
                     concierge_cards = []
                     concierge_arranges = []
+        else:
+            # Product search was SKIPPED (should_show_products=False or intent not in list)
+            # But we still need to set picks_contract for the response
+            # If execution_type is CONCIERGE, generate concierge cards
+            if len(concierge_cards) == 0 and len(real_products) == 0:
+                # Service/travel/special intent without products - generate concierge cards
+                import uuid as uuid_module
+                pet_name = request.pet_context.get("name", "your pet") if request.pet_context else "your pet"
+                pet_id = request.pet_context.get("id") if request.pet_context else None
+                pet_constraints = request.pet_context.get("sensitivities", []) if request.pet_context else []
+                concierge_cards = [
+                    {
+                        "id": f"concierge-{uuid_module.uuid4().hex[:8]}",
+                        "type": "concierge_pick",
+                        "label": "Concierge Pick",
+                        "title": f"Custom request for {pet_name}",
+                        "subtitle": "Allergy-safe" if pet_constraints else "Made to requirements",
+                        "description": f"We don't have this in the catalogue yet — we can arrange it for {pet_name}.",
+                        "spec_chip": f"Made to {pet_name}'s requirements",
+                        "no_price": True,
+                        "action": "create_ticket",
+                        "pillar": current_pillar or "care",
+                        "category": "concierge_arranges",
+                        "intent": request.input[:200] if request.input else "",
+                        "original_request": request.input or "",
+                        "pet_id": pet_id,
+                        "pet_name": pet_name,
+                        "pet_constraints": pet_constraints,
+                        "why_it_fits": f"Made to {pet_name}'s requirements"
+                    }
+                ]
+                concierge_arranges = concierge_cards
+                fallback_mode = "concierge"
+                fallback_reason = "service_intent"
+                concierge_fallback = True
+                concierge_fallback_reason = "service_intent"
         
         logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_food_main={is_food_main_intent}, is_treat={is_treat_request}, is_grief_hold={is_grief_hold}, is_groom_tools={is_groom_tools}, is_groom_medical={is_groom_medical_boundary}, is_food_medical={is_food_medical_boundary}, showing_products={should_show_products}")
         
