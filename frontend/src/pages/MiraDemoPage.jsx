@@ -4081,6 +4081,11 @@ const MiraDemoPage = () => {
               setShowMojoModal(false);
               setShowSoulFormModal(true);
             }}
+            onRefreshPet={async () => {
+              // Called after insight confirm/reject to refresh pet data
+              console.log('[MiraDemoPage] Refreshing pet data after insight action...');
+              await refreshPetData(pet?.id);
+            }}
           />
         </Suspense>
       )}
