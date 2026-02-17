@@ -127,10 +127,12 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 - [ ] Provide 60-second screen recording proof (verify PULSE → ON transitions)
 
 ### P2 (Medium Priority)
+- [ ] WhatsApp Webhook Idempotency - Store/check `source.provider_message_id` to prevent duplicate tickets
 - [ ] Refactor `server.py` (monolithic)
 - [ ] Refactor `DoggyServiceDesk.jsx` (monolithic)
 - [ ] Implement Safety Mode suppression (Bible Section 8)
 - [ ] Refactor `mira_routes.py` (extremely large)
+- [ ] Refactor `MiraDemoPage.jsx` (large file)
 
 ### Future Tasks
 - [ ] Redesign Onboarding Page (blocked on user content)
