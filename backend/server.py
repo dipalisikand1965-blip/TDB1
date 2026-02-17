@@ -13835,21 +13835,29 @@ async def mark_member_notification_read(
 async def get_member_notifications_by_email(
     user_email: str,
     limit: int = Query(20, le=100),
-    pet_id: str = Query(None, description="Filter notifications by pet ID")
+    pet_id: str = Query(None, description="Filter notifications by pet ID"),
+    pet_name: str = Query(None, description="Filter notifications by pet name")
 ):
     """Get notifications for a member by email (public endpoint for polling)
-    Optionally filter by pet_id for per-pet notifications"""
+    Optionally filter by pet_id or pet_name for per-pet notifications"""
     email = user_email.lower()
     
     query = {"user_email": email}
     
     # Filter by pet_id if provided
     if pet_id:
-        query["$or"] = [
+        pet_filters = [
             {"pet_id": pet_id},
             {"data.pet_id": pet_id},
             {"metadata.pet_id": pet_id}
         ]
+        # Also filter by pet name in title if pet_name provided
+        if pet_name:
+            pet_filters.append({"title": {"$regex": pet_name, "$options": "i"}})
+        query["$or"] = pet_filters
+    elif pet_name:
+        # Filter by pet name in title only
+        query["title"] = {"$regex": pet_name, "$options": "i"}
     
     # Get from member_notifications collection
     notifications = await db.member_notifications.find(
