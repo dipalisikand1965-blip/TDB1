@@ -527,29 +527,20 @@ def build_clarifying_questions(
             "id": "cq_location",
             "question": "Where should I search?",
             "chips": [
-                {"id": "chip_use_location", "label": "Use my current location", "payload_text": "Use my current location"},
-                {"id": "chip_type_area", "label": "Let me type the area", "payload_text": "Let me type the area"}
+                {"id": "chip_use_location", "label": "Use current location", "payload_text": "Use my current location"},
+                {"id": "chip_type_area", "label": "Type an area", "payload_text": "Let me type the area"}
             ]
         })
-        
-        if place_type == "cafe":
-            questions.append({
-                "id": "cq_vibe",
-                "question": "What kind of vibe?",
-                "chips": [
-                    {"id": "chip_quiet", "label": "Quiet", "payload_text": "Quiet cafe"},
-                    {"id": "chip_social", "label": "Social", "payload_text": "Social cafe"},
-                    {"id": "chip_outdoor", "label": "Outdoor", "payload_text": "Outdoor seating"}
-                ]
-            })
     
     elif clarify_reason == "need_location_consent":
+        # CONSENT GATE: User said "near me" but no location permission yet
+        # Single question with 2 chips - "Use current location" is the ONLY trigger for browser geo
         questions.append({
             "id": "cq_consent",
-            "question": "I need your location to find places nearby. Allow access?",
+            "question": "Do you want me to use your current location, or tell me the area?",
             "chips": [
-                {"id": "chip_allow", "label": "Allow location", "payload_text": "Allow location access"},
-                {"id": "chip_type_instead", "label": "I'll type it", "payload_text": "I'll type the location instead"}
+                {"id": "chip_use_location", "label": "Use current location", "payload_text": "Use my current location"},
+                {"id": "chip_type_area", "label": "Type an area", "payload_text": "Let me type the area"}
             ]
         })
     
