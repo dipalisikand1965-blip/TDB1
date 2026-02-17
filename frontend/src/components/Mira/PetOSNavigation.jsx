@@ -394,16 +394,23 @@ const PetOSNavigation = ({
       
       {/* Other OS Layer Tabs */}
       <div className="os-layer-tabs">
-        {OS_LAYERS.filter(l => l.id !== 'mojo').map((layer) => (
-          <OSLayerTab
-            key={layer.id}
-            layer={layer}
-            isActive={activeTab === layer.id}
-            onClick={onTabChange}
-            badge={badges[layer.id]}
-            hasNew={layer.id === 'picks' && picksHasNew}
-          />
-        ))}
+        {OS_LAYERS.filter(l => l.id !== 'mojo').map((layer) => {
+          // Get icon state for this tab
+          const tabIconState = iconStates[layer.id] || { state: 'OFF', count: 0 };
+          
+          return (
+            <OSLayerTab
+              key={layer.id}
+              layer={layer}
+              isActive={activeTab === layer.id}
+              onClick={onTabChange}
+              badge={badges[layer.id]}
+              hasNew={layer.id === 'picks' && picksHasNew}
+              iconState={tabIconState.state}
+              iconCount={tabIconState.count}
+            />
+          );
+        })}
       </div>
       
       {/* Styles */}
