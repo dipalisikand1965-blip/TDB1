@@ -163,13 +163,12 @@ Added Section 5.0 documenting:
 
 ## Intake Points - Status
 
-### ✅ Updated (Use canonical `generate_ticket_id()`)
-1. `/app/backend/services_routes.py` - Line ~530
-2. `/app/backend/central_dispatcher.py` - Line ~130
-3. `/app/backend/conversation_routes.py` - Line ~230
+### ✅ Updated (Use centralized `create_or_attach_service_ticket()`)
+1. `/app/backend/services_routes.py` - COMPLETE
+2. `/app/backend/central_dispatcher.py` - COMPLETE
 
-### ❌ NOT Updated (Still create non-canonical IDs) - BLOCKERS
-These routes still generate tickets with non-canonical formats (`TKT-...`, `SVC-...`, UUID, etc.):
+### ❌ NOT Updated (Still need migration) - BLOCKERS
+These routes still need to be updated to use the centralized helper:
 
 1. `stay_routes.py`
 2. `dine_routes.py`
@@ -186,6 +185,29 @@ These routes still generate tickets with non-canonical formats (`TKT-...`, `SVC-
 13. `user_tickets_routes.py`
 14. `service_catalog_routes.py`
 15. `ticket_messaging.py`
+16. `conversation_routes.py` (partially updated)
+
+**Migration Pattern:**
+```python
+# OLD (DON'T DO THIS)
+ticket_id = f"TKT-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:4]}"
+await db.tickets.insert_one({...})
+
+# NEW (DO THIS)
+from utils.service_ticket_spine import create_or_attach_service_ticket, Channel, CreatedBy
+
+result = await create_or_attach_service_ticket(
+    db=db,
+    intent="...",
+    member_email="...",
+    pillar="...",
+    source_route="your_file.py",
+    channel=Channel.WEB,
+    created_by=CreatedBy.MEMBER,
+    # ... other params
+)
+ticket_id = result["ticket_id"]
+```
 
 **Do not enable the flag for production until all ticket-creating intakes route through the canonical helper.**
 
