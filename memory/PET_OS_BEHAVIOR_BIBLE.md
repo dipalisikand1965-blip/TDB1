@@ -1128,6 +1128,97 @@ Suppress further medical Q&A. Redirect to professional.
 
 # SECTION 9: DESKTOP FILTER SPEC (PICKS)
 
+## 9.0 PICKS FALLBACK RULE (CRITICAL)
+
+**Rule: No catalogue match → Concierge Arranges (ticket), NOT generic picks**
+
+When user intent has no matching product/service in the catalogue (or matches < MIN_RELEVANCE_THRESHOLD):
+
+### Trigger
+```
+if catalogue_matches.length === 0 OR all_matches_below_threshold:
+    return concierge_fallback = true
+```
+
+### UI Layout (Same Picks Panel)
+
+**Left Column: Catalogue Picks (Empty State)**
+```
+┌─────────────────────────────────────────────┐
+│ ♡ MIRA'S PICKS FOR {PET}                    │
+│ Handpicked because Mira knows {Pet}         │
+├─────────────────────────────────────────────┤
+│                                             │
+│   Nothing in the catalogue for this         │
+│   request yet.                              │
+│                                             │
+│   [Send to Concierge →]                     │
+│                                             │
+└─────────────────────────────────────────────┘
+```
+
+**Right Column: Concierge Arranges**
+```
+┌─────────────────────────────────────────────┐
+│ ✦ CONCIERGE ARRANGES FOR {PET}              │
+│ We'll source and arrange everything         │
+├─────────────────────────────────────────────┤
+│ ┌─────────────────────────────────────────┐ │
+│ │ [Concierge Pick]                        │ │
+│ │ {Intent-based title}                    │ │
+│ │ {Personalization note}                  │ │
+│ │ ♡ Made to {Pet}'s requirements          │+│
+│ └─────────────────────────────────────────┘ │
+│                                             │
+│ "We don't have this in the catalogue yet —  │
+│ we can arrange it for {Pet}."               │
+└─────────────────────────────────────────────┘
+```
+
+### Concierge Pick Card Structure
+- **Label**: "Concierge Pick" (badge)
+- **Title**: Intent-derived (e.g., "Custom allergy-safe birthday cake")
+- **Subtitle**: Safety note (e.g., "Allergy-safe")
+- **Description**: "Made to {Pet}'s [diet rules/requirements], [benefit]."
+- **Price**: NO PRICE (Concierge arranges pricing)
+- **Action (+)**: Creates Service Desk Ticket
+
+### Ticket Creation on "+" Action
+```javascript
+create_or_attach_service_ticket({
+  intent: user_intent_summary,
+  intent_type: "request",
+  pillar: detected_pillar,
+  category: "concierge_arranges",
+  pet_ids: [pet.id],
+  pet_names: [pet.name],
+  source_route: "picks_concierge_fallback",
+  channel: "web",
+  created_by: "mira",
+  status: "placed",
+  payload: {
+    original_request: user_message,
+    no_catalogue_match: true,
+    pet_constraints: pet.health_restrictions
+  },
+  notify_admin: true,
+  notify_member: true
+})
+```
+
+### Guardrails (Non-Negotiable)
+1. **Never fill "no match" with popular/featured products** - breaks trust
+2. **Concierge fallback must respect**:
+   - Health/safety suppressions (safe-tags)
+   - Legality/morality constraints
+3. **All "Arrange this" actions route into Uniform Service Flow**:
+   ```
+   User Intent → Service Desk Ticket → Admin Notification → 
+   Member Notification → Pillar Request → Tickets → Channel Intakes
+   ```
+
+---
+
 ## 9.1 Filter Definitions
 
 | Filter | Type | Options |
