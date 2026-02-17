@@ -67,6 +67,18 @@ Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mi
 - Debug Drawer: Shows legacy data warning + invalid count
 - Updated Bible to reflect canonical format
 
+### Phase 4b: Centralized Ticket Spine Helper ✅ COMPLETE (Feb 17, 2026)
+**All ticket creation must route through `create_or_attach_service_ticket()`**
+
+- Created `/app/backend/utils/service_ticket_spine.py` - SINGLE ENTRY POINT
+- Enforces canonical ID format (TCK-YYYY-NNNNNN)
+- Attach vs Create logic (idempotent)
+- Source + channel tracking (for audits)
+- Admin + Member notifications built-in
+- Updated `services_routes.py` to use helper
+- Updated `central_dispatcher.py` to use helper
+- Tested and verified: `TCK-2026-000003` generated correctly
+
 ---
 
 ## Prioritized Backlog
