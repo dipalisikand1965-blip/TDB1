@@ -6167,6 +6167,97 @@ async def create_service_ticket(
     }
 
 
+class ConciergeArrangesRequest(BaseModel):
+    """Request to create a ticket from Concierge Arranges fallback (Bible Section 9.0)"""
+    pet_id: str
+    pet_name: str
+    pillar: str  # care, celebrate, dine, stay, travel, etc.
+    intent: str  # The user's original request
+    original_request: str  # Full original message
+    member_email: Optional[str] = None
+    member_name: Optional[str] = None
+    member_id: Optional[str] = None
+    session_id: Optional[str] = None
+    pet_constraints: Optional[List[str]] = []  # Allergies, sensitivities
+    source: str = "picks_concierge_fallback"
+
+
+@router.post("/picks/concierge-arrange")
+async def create_concierge_arrange_ticket(
+    request: ConciergeArrangesRequest,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Create a Service Desk Ticket via the Uniform Service Spine when PICKS has no catalogue match.
+    
+    Bible Section 9.0: PICKS FALLBACK RULE (CRITICAL)
+    - No catalogue match → Concierge Arranges (ticket), NOT generic picks
+    - The "+" action on a Concierge Pick card calls this endpoint
+    - All tickets flow through create_or_attach_service_ticket() helper
+    
+    Response includes ticket_id for frontend confirmation:
+    "Got it. I've opened a request." + show ticket_id
+    """
+    db = get_db()
+    if db is None:
+        logger.warning("[CONCIERGE_ARRANGE] No database, returning mock response")
+        return {
+            "success": True,
+            "ticket_id": f"TCK-MOCK-{uuid.uuid4().hex[:8]}",
+            "action": "created",
+            "message": f"Request opened for {request.pet_name}",
+            "mock": True
+        }
+    
+    # Get user from token if available
+    logged_in_user = await get_user_from_token(authorization)
+    member_email = request.member_email or (logged_in_user.get("email") if logged_in_user else None)
+    member_name = request.member_name or (logged_in_user.get("name") if logged_in_user else None)
+    member_id = request.member_id or (logged_in_user.get("user_id") if logged_in_user else None)
+    
+    try:
+        # Use the centralized Service Ticket Spine (UNIFORM SERVICE FLOW)
+        result = await create_or_attach_service_ticket(
+            db=db,
+            intent=request.intent,
+            intent_type="request",
+            member_email=member_email,
+            member_name=member_name,
+            member_id=member_id,
+            pet_ids=[request.pet_id] if request.pet_id else [],
+            pet_names=[request.pet_name] if request.pet_name else [],
+            pillar=request.pillar,
+            category="concierge_arranges",
+            source_route=request.source,
+            channel="web",
+            created_by="mira",
+            thread_id=request.session_id,
+            payload={
+                "original_request": request.original_request,
+                "no_catalogue_match": True,
+                "pet_constraints": request.pet_constraints,
+                "fallback_reason": "picks_no_match"
+            },
+            urgency="normal",
+            notify_admin=True,
+            notify_member=True
+        )
+        
+        logger.info(f"[CONCIERGE_ARRANGE] Created ticket via spine: {result.get('ticket_id')} | Pillar: {request.pillar} | Pet: {request.pet_name}")
+        
+        return {
+            "success": True,
+            "ticket_id": result.get("ticket_id"),
+            "action": result.get("action", "created"),
+            "message": f"Got it. I've opened a request for {request.pet_name}.",
+            "deep_link": f"/services?ticket_id={result.get('ticket_id')}"
+        }
+        
+    except Exception as e:
+        logger.error(f"[CONCIERGE_ARRANGE] Failed to create ticket: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create service request: {str(e)}")
+
+
 @router.post("/tickets/sync")
 async def sync_transcript(
     request: TranscriptSyncRequest,
