@@ -63,6 +63,7 @@ import ServicesPanel from '../components/Mira/ServicesPanel';
 import ServiceRequestBuilder from '../components/Mira/ServiceRequestBuilder';
 import ReplyNudge from '../components/Mira/ReplyNudge';
 import OnboardingTooltip from '../components/Mira/OnboardingTooltip';
+import ConciergeReplyBanner from '../components/Mira/ConciergeReplyBanner';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LAZY LOADED COMPONENTS (Performance Optimization)
