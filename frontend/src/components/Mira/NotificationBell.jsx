@@ -15,14 +15,14 @@ import { Bell, X, Check, ChevronRight, Settings } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import hapticFeedback from '../../utils/haptic';
 
-const NotificationBell = ({ userEmail, petId, className = '' }) => {
+const NotificationBell = ({ userEmail, petId, petName, className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
   
-  // Fetch notifications - filtered by pet if petId is provided
+  // Fetch notifications - filtered by pet if petId/petName is provided
   const fetchNotifications = async () => {
     if (!userEmail) return;
     
@@ -31,6 +31,9 @@ const NotificationBell = ({ userEmail, petId, className = '' }) => {
       let url = `${API_URL}/api/member/notifications/inbox/${encodeURIComponent(userEmail)}?limit=10`;
       if (petId) {
         url += `&pet_id=${encodeURIComponent(petId)}`;
+      }
+      if (petName) {
+        url += `&pet_name=${encodeURIComponent(petName)}`;
       }
       const response = await fetch(url);
       if (response.ok) {
@@ -48,7 +51,7 @@ const NotificationBell = ({ userEmail, petId, className = '' }) => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(interval);
-  }, [userEmail, petId]);
+  }, [userEmail, petId, petName]);
   
   // Close dropdown on outside click
   useEffect(() => {
