@@ -718,7 +718,7 @@ async def get_watchlist(
             try:
                 oldest_dt = datetime.fromisoformat(oldest_update.replace("Z", "+00:00"))
                 stale = (datetime.now(timezone.utc) - oldest_dt) > timedelta(minutes=5)
-            except:
+            except (ValueError, TypeError):
                 pass
     
     return {
