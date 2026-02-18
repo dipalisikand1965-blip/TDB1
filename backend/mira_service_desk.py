@@ -1065,6 +1065,102 @@ async def concierge_reply(
 
 
 # ============================================
+# MEMBER REPLY - For Outlook-style Inbox Drawer
+# ============================================
+
+class MemberReplyRequest(BaseModel):
+    content: str
+    sender_email: Optional[str] = None
+
+@service_desk_router.post("/tickets/{ticket_id}/reply")
+async def member_reply(ticket_id: str, request: MemberReplyRequest):
+    """
+    Member sends a reply in an existing ticket thread.
+    Called from the Concierge Inbox Drawer (Outlook-style).
+    """
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not available")
+    
+    now = datetime.now(timezone.utc)
+    message_id = f"MSG-{uuid.uuid4().hex[:8].upper()}"
+    
+    message_entry = {
+        "id": message_id,
+        "sender": "member",
+        "source": "inbox_drawer",
+        "content": request.content,
+        "text": request.content,  # For backward compatibility
+        "timestamp": now.isoformat(),
+        "sender_email": request.sender_email
+    }
+    
+    # Update mira_conversations (uses conversation[])
+    result1 = await db.mira_conversations.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"conversation": message_entry},
+            "$set": {
+                "updated_at": now.isoformat(),
+                "has_unread_member_reply": True,
+                "last_member_reply_at": now.isoformat()
+            }
+        }
+    )
+    
+    # Update mira_tickets (uses messages[])
+    result2 = await db.mira_tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"messages": message_entry},
+            "$set": {
+                "updated_at": now.isoformat(),
+                "has_unread_member_reply": True
+            }
+        }
+    )
+    
+    # Update service_desk_tickets
+    result3 = await db.service_desk_tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"messages": message_entry},
+            "$set": {
+                "updated_at": now.isoformat(),
+                "has_unread_member_reply": True
+            }
+        }
+    )
+    
+    if result1.matched_count == 0 and result2.matched_count == 0 and result3.matched_count == 0:
+        raise HTTPException(status_code=404, detail=f"Ticket {ticket_id} not found")
+    
+    logger.info(f"[SERVICE_DESK] Member reply added to ticket: {ticket_id}")
+    
+    # Create admin notification for concierge
+    try:
+        admin_notif_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+        await db.admin_notifications.insert_one({
+            "id": admin_notif_id,
+            "type": "member_reply",
+            "title": "New Member Reply",
+            "message": request.content[:100] + ("..." if len(request.content) > 100 else ""),
+            "ticket_id": ticket_id,
+            "read": False,
+            "created_at": now.isoformat(),
+            "link": f"/admin?tab=servicedesk&ticket={ticket_id}"
+        })
+    except Exception as e:
+        logger.warning(f"Failed to create admin notification for member reply: {e}")
+    
+    return {
+        "success": True,
+        "ticket_id": ticket_id,
+        "message_id": message_id
+    }
+
+
+# ============================================
 # TICKET STATUS UPDATES
 # ============================================
 
