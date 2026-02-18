@@ -11196,7 +11196,8 @@ async def mira_chat(
         try:
             from learn_intent_bridge import process_chat_for_learn_intents
             user_id = user.get("user_id") or user.get("email")
-            pet_id = selected_pet.get("id")
+            # Use pet id, or fallback to name as identifier
+            pet_id = selected_pet.get("id") or selected_pet.get("name")
             
             if user_id and pet_id:
                 intent_result = await process_chat_for_learn_intents(
