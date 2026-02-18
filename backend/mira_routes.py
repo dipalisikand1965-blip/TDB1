@@ -11980,8 +11980,24 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
             try:
                 from services.google_places_service import search_pet_friendly_restaurants, search_pet_friendly_hotels, search_vets_in_city, search_dog_parks_in_city
                 
-                # Default to restaurant if no place type detected (most common for outings)
-                place_type_to_search = "restaurant"  # TODO: Get from session context if available
+                # ═══════════════════════════════════════════════════════════
+                # PILLAR-AWARE PLACE TYPE SELECTION
+                # Fix for TRAVEL pillar bug: "trip to Goa" was returning cafés
+                # Now uses detected pillar to determine appropriate place type
+                # ═══════════════════════════════════════════════════════════
+                if pillar == "travel":
+                    place_type_to_search = "hotel"
+                elif pillar == "stay":
+                    place_type_to_search = "hotel"
+                elif pillar == "care":
+                    place_type_to_search = "vet"
+                elif pillar == "enjoy":
+                    place_type_to_search = "park"
+                elif pillar == "dine":
+                    place_type_to_search = "restaurant"
+                else:
+                    # Default to restaurant for unspecified pillars (dine is most common)
+                    place_type_to_search = "restaurant"
                 
                 places = []
                 if place_type_to_search == "restaurant":
