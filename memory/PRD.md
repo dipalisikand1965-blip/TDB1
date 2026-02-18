@@ -4,6 +4,36 @@
 
 ---
 
+## 🚨 GOLDEN STANDARD: UNIFIED SERVICE FLOW - NEVER FORGET 🚨
+
+**EVERY USER INTENT from ANYWHERE (Chat, Search, PICKS, Vault, FAB, Mobile, Desktop) MUST create:**
+
+```
+User Request 
+    → Service Desk Ticket 
+    → Admin Notification 
+    → Member Notification 
+    → Pillar Request 
+    → Tickets 
+    → Channel Intakes
+```
+
+**WHY:** The Concierge® sits BEHIND the Service Desk and answers ALL requests. Without this flow, requests get lost and users never hear back.
+
+**ENFORCEMENT CHECKLIST:**
+| Step | Collection | Purpose |
+|------|------------|---------|
+| 1. Service Desk Ticket | `service_desk_tickets` | Admin sees in Command Center |
+| 2. Admin Notification | `admin_notifications` | Admin bell icon alert |
+| 3. Member Notification | `member_notifications` | User bell icon confirmation |
+| 4. Pillar Request | `concierge_requests` / context-specific | Original request details |
+| 5. Legacy Tickets | `tickets` | Backward compatibility |
+| 6. Channel Intakes | `channel_intakes` | Unified inbox |
+
+**NO EXCEPTIONS.** Mobile = Desktop = PWA = Any Device. Same plumbing.
+
+---
+
 ## ⚠️ CRITICAL: DEPLOYMENT BIBLE - READ BEFORE EVERY DEPLOY ⚠️
 
 ### 🚨 FRONTEND URL FIX (MUST DO BEFORE EVERY DEPLOYMENT)
