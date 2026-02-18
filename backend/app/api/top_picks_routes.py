@@ -1669,9 +1669,12 @@ async def get_top_picks(
     # Get the actual pet_id from the database (not the input parameter which might be a name)
     actual_pet_id = pet.get("id") or pet.get("name")
     
+    logger.info(f"[PICKS SOUL] Looking up intents for user_id={user_id}, pet_id={actual_pet_id}")
+    
     if user_id:
         # Fetch recent intents (last 48 hours)
         recent_intents = await get_user_recent_intents(db, user_id, actual_pet_id)
+        logger.info(f"[PICKS SOUL] get_user_recent_intents returned {len(recent_intents)} intents")
         
         if recent_intents:
             timely_context["enabled"] = True
