@@ -1,25 +1,35 @@
 /**
- * InboxRow - Consistent notification row layout
+ * InboxRow - Consistent notification row layout with swipe actions
  * 
  * iOS Mail-style row:
- * [Avatar] [Headline (bold) + Snippet] [Time]
+ * [Avatar] [Headline (bold) + TCK line + Snippet] [Time]
  * Blue dot for unread
  * 
- * Used in NotificationsInbox for consistent rendering across tabs/filters
+ * Swipe actions:
+ * - Left swipe: Archive
+ * - Right swipe: Mark read/unread
  */
 
-import React from 'react';
-import { ChevronRight } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { ChevronRight, Archive, Mail, MailOpen } from 'lucide-react';
 
 const InboxRow = ({ 
   notification,
   petName,
   isUnread = false,
   onClick,
-  onSwipeLeft,  // Archive
-  onSwipeRight, // Mark read/unread
-  showPetName = false // For "All Pets" view
+  onMarkRead,
+  onMarkUnread,
+  onArchive,
+  showPetName = false,
+  isSelected = false,
+  selectMode = false
 }) => {
+  const [swipeX, setSwipeX] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const startXRef = useRef(0);
+  const rowRef = useRef(null);
+
   // Get avatar letter from pet name or fallback
   const avatarLetter = petName?.charAt(0)?.toUpperCase() || 'C';
   
@@ -58,66 +68,152 @@ const InboxRow = ({
     }
   };
 
-  // Build snippet with optional pet name for All Pets view
+  // Build TCK + pillar line
+  const getTicketLine = () => {
+    const parts = [];
+    if (notification.ticket_id) {
+      parts.push(notification.ticket_id);
+    }
+    if (notification.pillar && notification.pillar !== 'general') {
+      parts.push(notification.pillar.charAt(0).toUpperCase() + notification.pillar.slice(1));
+    }
+    if (showPetName && petName && petName !== 'General') {
+      parts.push(petName);
+    }
+    return parts.length > 0 ? parts.join(' • ') : null;
+  };
+
+  // Build snippet
   const getSnippet = () => {
     let snippet = notification.message || notification.body || '';
-    if (showPetName && petName) {
+    // Don't duplicate pet name in snippet if already showing in ticket line
+    if (!showPetName && petName && petName !== 'General' && !notification.ticket_id) {
       snippet = `${petName} • ${snippet}`;
     }
     return snippet;
   };
 
+  // Handle touch events for swipe
+  const handleTouchStart = (e) => {
+    if (selectMode) return;
+    startXRef.current = e.touches[0].clientX;
+    setIsSwiping(true);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isSwiping || selectMode) return;
+    const currentX = e.touches[0].clientX;
+    const diff = currentX - startXRef.current;
+    // Limit swipe distance
+    const clampedDiff = Math.max(-100, Math.min(100, diff));
+    setSwipeX(clampedDiff);
+  };
+
+  const handleTouchEnd = () => {
+    if (!isSwiping || selectMode) return;
+    
+    // Trigger action based on swipe distance
+    if (swipeX < -60) {
+      // Left swipe - Archive
+      onArchive?.(notification);
+    } else if (swipeX > 60) {
+      // Right swipe - Toggle read/unread
+      if (isUnread) {
+        onMarkRead?.(notification);
+      } else {
+        onMarkUnread?.(notification);
+      }
+    }
+    
+    setSwipeX(0);
+    setIsSwiping(false);
+  };
+
+  const ticketLine = getTicketLine();
+
   return (
-    <div
-      className={`
-        flex items-center gap-3 px-4 py-3
-        border-b border-gray-800/30
-        cursor-pointer
-        active:bg-gray-800/50
-        transition-colors
-        ${isUnread ? 'bg-blue-500/5' : ''}
-      `}
-      onClick={onClick}
-      data-testid="inbox-row"
-      data-ticket-id={notification.ticket_id}
+    <div 
+      className="relative overflow-hidden"
+      ref={rowRef}
     >
-      {/* Unread indicator */}
-      {isUnread && (
-        <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
-      )}
-      {!isUnread && <div className="w-2 flex-shrink-0" />}
+      {/* Swipe action backgrounds */}
+      <div className="absolute inset-0 flex">
+        {/* Right swipe background (mark read/unread) */}
+        <div className={`flex-1 flex items-center justify-start pl-4 ${isUnread ? 'bg-blue-500' : 'bg-amber-500'}`}>
+          {isUnread ? (
+            <MailOpen className="w-5 h-5 text-white" />
+          ) : (
+            <Mail className="w-5 h-5 text-white" />
+          )}
+        </div>
+        {/* Left swipe background (archive) */}
+        <div className="flex-1 flex items-center justify-end pr-4 bg-gray-600">
+          <Archive className="w-5 h-5 text-white" />
+        </div>
+      </div>
       
-      {/* Pet Avatar */}
-      <div 
+      {/* Row content */}
+      <div
         className={`
-          w-10 h-10 rounded-full flex-shrink-0
-          flex items-center justify-center
-          bg-gradient-to-br ${getPillarColor(notification.pillar)}
-          text-white font-semibold text-sm
+          relative flex items-center gap-3 px-4 py-3
+          bg-[#0a0a14] border-b border-gray-800/30
+          cursor-pointer transition-transform
+          ${isUnread ? 'bg-blue-500/5' : ''}
+          ${isSelected ? 'bg-pink-500/10' : ''}
         `}
+        style={{ transform: `translateX(${swipeX}px)` }}
+        onClick={() => !isSwiping && onClick?.()}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        data-testid="inbox-row"
+        data-ticket-id={notification.ticket_id}
       >
-        {avatarLetter}
-      </div>
-      
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        {/* Headline - bold if unread */}
-        <h3 className={`text-sm truncate ${isUnread ? 'font-semibold text-white' : 'font-medium text-gray-200'}`}>
-          {notification.title}
-        </h3>
+        {/* Unread indicator */}
+        {isUnread && !selectMode && (
+          <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
+        )}
+        {!isUnread && !selectMode && <div className="w-2 flex-shrink-0" />}
         
-        {/* Snippet */}
-        <p className="text-xs text-gray-400 truncate mt-0.5">
-          {getSnippet()}
-        </p>
-      </div>
-      
-      {/* Time + Chevron */}
-      <div className="flex items-center gap-1 flex-shrink-0">
-        <span className="text-xs text-gray-500">
-          {formatTime(notification.created_at)}
-        </span>
-        <ChevronRight className="w-4 h-4 text-gray-600" />
+        {/* Pet Avatar */}
+        <div 
+          className={`
+            w-10 h-10 rounded-full flex-shrink-0
+            flex items-center justify-center
+            bg-gradient-to-br ${getPillarColor(notification.pillar)}
+            text-white font-semibold text-sm
+          `}
+        >
+          {avatarLetter}
+        </div>
+        
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          {/* Headline - bold if unread */}
+          <h3 className={`text-sm truncate ${isUnread ? 'font-semibold text-white' : 'font-medium text-gray-200'}`}>
+            {notification.title}
+          </h3>
+          
+          {/* TCK + Pillar + Pet line */}
+          {ticketLine && (
+            <p className="text-[10px] text-gray-500 font-mono truncate mt-0.5">
+              {ticketLine}
+            </p>
+          )}
+          
+          {/* Snippet */}
+          <p className="text-xs text-gray-400 truncate mt-0.5">
+            {getSnippet()}
+          </p>
+        </div>
+        
+        {/* Time + Chevron */}
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <span className="text-xs text-gray-500">
+            {formatTime(notification.created_at)}
+          </span>
+          <ChevronRight className="w-4 h-4 text-gray-600" />
+        </div>
       </div>
     </div>
   );
