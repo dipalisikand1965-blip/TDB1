@@ -48,6 +48,46 @@ from utils.service_ticket_spine import (
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/os/services", tags=["services-os"])
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# SOUL INTEGRATION - Intent to Service Mapping
+# Mira knows what the pet parent is thinking about
+# ═══════════════════════════════════════════════════════════════════════════════
+
+INTENT_TO_SERVICE_MAPPING = {
+    "grooming": {
+        "service_types": ["grooming", "spa", "bath", "haircut", "nail-trim"],
+        "why_timely": "grooming care"
+    },
+    "health": {
+        "service_types": ["vet-consult", "health-checkup", "vaccination", "wellness"],
+        "why_timely": "health care"
+    },
+    "training": {
+        "service_types": ["training", "behaviour-consultation", "obedience"],
+        "why_timely": "training"
+    },
+    "behaviour": {
+        "service_types": ["behaviour-consultation", "training", "anxiety-therapy"],
+        "why_timely": "behaviour support"
+    },
+    "boarding": {
+        "service_types": ["boarding", "daycare", "pet-sitting", "home-boarding"],
+        "why_timely": "boarding"
+    },
+    "travel": {
+        "service_types": ["pet-taxi", "transport", "relocation", "travel-kit"],
+        "why_timely": "travel arrangements"
+    },
+    "food": {
+        "service_types": ["custom-meals", "nutrition-consult", "food-delivery"],
+        "why_timely": "nutrition"
+    },
+    "emergency": {
+        "service_types": ["emergency-vet", "urgent-care", "24hr-helpline"],
+        "why_timely": "emergency care"
+    },
+}
+
 # Database connection (will be set from server.py)
 _db = None
 
