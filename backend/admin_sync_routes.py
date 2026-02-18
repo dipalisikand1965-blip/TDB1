@@ -175,8 +175,16 @@ async def apply_pets_to_target(request: DirectSyncRequest, token: str = None):
             await db.pets.insert_one(pet_doc)
             action = "created"
         
-        # Sync soul data if provided
+        # Sync soul data if provided - write to doggy_soul_answers field in pets
         if pet_data.soul_data:
+            soul_answers = pet_data.soul_data.get('soul_answers', {})
+            if soul_answers:
+                await db.pets.update_one(
+                    {"id": pet_id},
+                    {"$set": {"doggy_soul_answers": soul_answers}}
+                )
+            
+            # Also store in pet_souls collection for backup
             soul_doc = {
                 "pet_id": pet_id,
                 **pet_data.soul_data,
