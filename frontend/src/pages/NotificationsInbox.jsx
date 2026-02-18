@@ -857,7 +857,8 @@ const NotificationsInbox = () => {
         
         {/* Desktop: Thread Panel - Render component directly */}
         {isDesktop && selectedTicketId && (
-          <div className="flex-1 bg-[#0a0a14] overflow-y-auto">
+          <div className="flex-1 bg-[#0a0a14] overflow-y-auto" data-testid="thread-panel">
+            <div className="p-2 text-white text-xs">Debug: Loading ticket {selectedTicketId}</div>
             <TicketThread 
               ticketIdProp={selectedTicketId} 
               isEmbedded={true}
