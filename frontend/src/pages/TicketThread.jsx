@@ -3,7 +3,11 @@
  * 
  * Routes: /tickets/:ticketId
  * Query params: ?event=:eventId (highlight specific update)
- *               ?embed=true (for desktop split view iframe)
+ * 
+ * Props (for embedded mode):
+ * - ticketIdProp: ticket ID when rendered inside NotificationsInbox
+ * - isEmbedded: true when rendered in split view
+ * - onClose: callback to close the thread panel
  * 
  * Features:
  * - Full-screen on mobile (no drawers)
@@ -15,6 +19,7 @@
  * - Bottom sheet composer on tap
  * - Deep-link highlight (auto-scroll + 2s highlight)
  * - Actions menu: Mark unread, Archive
+ * - GlobalNav on full-screen mode (Dashboard | Inbox)
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -25,6 +30,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import ReplySheet from '../components/Mira/ReplySheet';
+import GlobalNav from '../components/Mira/GlobalNav';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
