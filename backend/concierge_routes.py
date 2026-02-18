@@ -888,7 +888,7 @@ async def create_picks_request(payload: PicksRequestPayload):
                     "items_count": len(payload.selected_items)
                 }
             }
-            await db.mira_member_notifications.insert_one(member_notification)
+            await db.member_notifications.insert_one(member_notification)
             logger.info(f"[PICKS REQUEST] Created member notification: {member_notification_id} for {payload.pet_name}")
         except Exception as notif_error:
             logger.error(f"[PICKS REQUEST] Failed to create member notification: {notif_error}")
