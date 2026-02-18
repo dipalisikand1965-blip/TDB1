@@ -244,6 +244,10 @@ const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const MembershipPayment = lazy(() => import("./pages/MembershipPayment"));
 const DreamfolksDemo = lazy(() => import("./pages/DreamfolksDemo"));
 
+// Notifications Inbox + Ticket Thread (iOS Mail-style)
+const NotificationsInbox = lazy(() => import("./pages/NotificationsInbox"));
+const TicketThread = lazy(() => import("./pages/TicketThread"));
+
 function App() {
   return (
     <ErrorBoundary>
