@@ -3115,29 +3115,114 @@ async def mira_os_handoff(
     request_summary: str,
     original_input: str,
     pet_context: Dict[str, Any],
-    urgency: str = "normal"
+    urgency: str = "normal",
+    user_id: str = None,
+    user_email: str = None
 ):
-    """Create a concierge task from Mira handoff."""
-    db = get_db()
+    """
+    Create a concierge task AND thread from Mira handoff.
     
+    CRITICAL: This ensures the request appears in BOTH:
+    1. Service Desk (admin) via concierge_tasks
+    2. Concierge Tab (member) via concierge_threads
+    """
+    db = get_db()
+    now = datetime.now(timezone.utc)
+    
+    task_id = f"CNC-{now.strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}"
+    thread_id = f"thread-{uuid.uuid4().hex[:12]}"
+    
+    # Get pet info
+    pet_name = pet_context.get("name", "your pet") if pet_context else "your pet"
+    pet_id = pet_context.get("id") if pet_context else None
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # STEP 1: Create concierge_task (for admin service desk)
+    # ═══════════════════════════════════════════════════════════════════════════
     task = {
-        "id": f"CNC-{datetime.now().strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}",
-        "created_at": datetime.now(timezone.utc),
+        "id": task_id,
+        "thread_id": thread_id,
+        "created_at": now,
         "status": "pending",
         "urgency": urgency,
         "request_summary": request_summary,
         "original_input": original_input,
         "pet_context": pet_context,
-        "source": "mira_os"
+        "pet_name": pet_name,
+        "pet_id": pet_id,
+        "user_id": user_id,
+        "user_email": user_email,
+        "source": "mira_chat_handoff"
     }
     
     if db is not None:
         await db.concierge_tasks.insert_one(task)
+        logger.info(f"[HANDOFF] Created concierge_task: {task_id}")
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # STEP 2: Create concierge_thread (for member's Concierge Tab)
+        # THIS IS CRITICAL - ensures request shows in member's Concierge panel
+        # ═══════════════════════════════════════════════════════════════════════════
+        thread_doc = {
+            "id": thread_id,
+            "task_id": task_id,
+            "user_id": user_id or user_email,
+            "pet_id": pet_id,
+            "pet_name": pet_name,
+            "subject": request_summary[:100] if request_summary else "Concierge Request",
+            "preview": original_input[:200] if original_input else request_summary[:200],
+            "status": "open",
+            "urgency": urgency,
+            "source": "mira_chat",
+            "pillar": pet_context.get("pillar", "care") if pet_context else "care",
+            "created_at": now,
+            "updated_at": now,
+            "last_message_at": now,
+            "messages": [
+                {
+                    "id": f"msg-{uuid.uuid4().hex[:8]}",
+                    "sender": "parent",
+                    "content": original_input,
+                    "timestamp": now.isoformat()
+                },
+                {
+                    "id": f"msg-{uuid.uuid4().hex[:8]}",
+                    "sender": "system",
+                    "content": f"Request sent to Concierge: {request_summary}",
+                    "timestamp": now.isoformat()
+                }
+            ],
+            "unread_count": 0,
+            "concierge_unread": 1
+        }
+        
+        await db.concierge_threads.insert_one(thread_doc)
+        logger.info(f"[HANDOFF] Created concierge_thread: {thread_id} (visible in Concierge Tab)")
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # STEP 3: Create admin notification
+        # ═══════════════════════════════════════════════════════════════════════════
+        await db.admin_notifications.insert_one({
+            "id": f"NOTIF-{uuid.uuid4().hex[:8].upper()}",
+            "type": "concierge_handoff",
+            "title": f"🤝 Chat Handoff: {pet_name}",
+            "message": request_summary[:200],
+            "task_id": task_id,
+            "thread_id": thread_id,
+            "pet_name": pet_name,
+            "user_id": user_id,
+            "urgency": urgency,
+            "read": False,
+            "link": f"/admin?tab=servicedesk&thread={thread_id}",
+            "created_at": now
+        })
     
     return {
         "success": True,
-        "task_id": task["id"],
-        "message": "Your pet concierge will take it from here. They'll reach out within the hour."
+        "task_id": task_id,
+        "thread_id": thread_id,
+        "message": f"Your pet concierge will take it from here. They'll reach out within the hour.",
+        "concierge_tab_updated": True
     }
 
 # ============================================
