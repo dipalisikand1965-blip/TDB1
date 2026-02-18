@@ -871,27 +871,32 @@ async def create_picks_request(payload: PicksRequestPayload):
         # ═══════════════════════════════════════════════════════════════════════
         try:
             member_notification_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
-            member_notification = {
-                "id": member_notification_id,
-                "type": "picks_request_received",
-                "title": f"Request Received: {payload.pet_name}",
-                "message": f"Your {len(payload.selected_items)} picks for {payload.pet_name} have been sent to Concierge®. We'll get back to you soon!",
-                "pet_name": payload.pet_name,
-                "pet_id": payload.pet_id if hasattr(payload, 'pet_id') else None,
-                "user_email": payload.user_email if hasattr(payload, 'user_email') else None,
-                "ticket_id": ticket_id,
-                "request_id": request_id,
-                "pillar": primary_pillar,
-                "read": False,
-                "created_at": now.isoformat(),
-                "data": {
-                    "thread_id": signal_result.get("thread_id"),
-                    "thread_url": f"/mira-demo?tab=services&thread={ticket_id}",
-                    "items_count": len(payload.selected_items)
+            user_email = payload.user_email.lower() if payload.user_email else None
+            
+            if user_email:
+                member_notification = {
+                    "id": member_notification_id,
+                    "type": "picks_request_received",
+                    "title": f"Request Received: {payload.pet_name}",
+                    "message": f"Your {len(payload.selected_items)} picks for {payload.pet_name} have been sent to Concierge®. We'll get back to you soon!",
+                    "pet_name": payload.pet_name,
+                    "pet_id": payload.pet_id,
+                    "user_email": user_email,
+                    "ticket_id": ticket_id,
+                    "request_id": request_id,
+                    "pillar": primary_pillar,
+                    "read": False,
+                    "created_at": now.isoformat(),
+                    "data": {
+                        "thread_id": signal_result.get("thread_id"),
+                        "thread_url": f"/mira-demo?tab=services&thread={ticket_id}",
+                        "items_count": len(payload.selected_items)
+                    }
                 }
-            }
-            await db.member_notifications.insert_one(member_notification)
-            logger.info(f"[PICKS REQUEST] Created member notification: {member_notification_id} for {payload.pet_name}")
+                await db.member_notifications.insert_one(member_notification)
+                logger.info(f"[PICKS REQUEST] Created member notification: {member_notification_id} for {payload.pet_name}")
+            else:
+                logger.warning(f"[PICKS REQUEST] No user_email provided, skipping member notification")
         except Exception as notif_error:
             logger.error(f"[PICKS REQUEST] Failed to create member notification: {notif_error}")
         
