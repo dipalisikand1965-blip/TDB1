@@ -5,6 +5,8 @@
  * Bell tap opens /notifications full-screen inbox
  * 
  * NO dropdown. NO drawer. Just badge + navigation.
+ * 
+ * DEPRECATED: ConciergeInboxDrawer.jsx (don't delete yet, deprecate for cleanup PR)
  */
 
 import React, { useState, useEffect } from 'react';
@@ -17,7 +19,7 @@ const NotificationBell = ({ userEmail, petId, petName, className = '' }) => {
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
   
-  // Fetch unread count only (not full notifications)
+  // Fetch unread count only
   const fetchUnreadCount = async () => {
     if (!userEmail) return;
     
@@ -36,267 +38,43 @@ const NotificationBell = ({ userEmail, petId, petName, className = '' }) => {
     }
   };
   
-  // Poll for updates every 30 seconds - re-fetch when pet changes
+  // Fetch on mount and set up polling
   useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
-  }, [userEmail, petId, petName]);
-  
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-  
-  // Mark notification as read
-  const markAsRead = async (notificationId) => {
-    try {
-      await fetch(`${API_URL}/api/member/notifications/${notificationId}/mark-read`, {
-        method: 'PUT'
-      });
-      setNotifications(prev => 
-        prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
-      );
-      setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (err) {
-      console.log('Could not mark as read');
-    }
-  };
-  
-  // Mark all as read
-  const markAllRead = async () => {
-    try {
-      await fetch(`${API_URL}/api/member/notifications/mark-all-read/${encodeURIComponent(userEmail)}`, {
-        method: 'PUT'
-      });
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-      setUnreadCount(0);
-    } catch (err) {
-      console.log('Could not mark all as read');
-    }
-  };
-  
-  const toggleDropdown = (e) => {
-    hapticFeedback.buttonTap(e);
-    setIsOpen(!isOpen);
-    if (!isOpen) {
-      fetchNotifications(); // Refresh when opening
-    }
-  };
-  
-  const getTimeAgo = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
+    fetchUnreadCount();
     
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    return `${diffDays}d ago`;
+    // Poll every 30 seconds for updates
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, [userEmail, petId]);
+  
+  // Handle bell click - navigate to full-screen inbox
+  const handleClick = (e) => {
+    hapticFeedback.buttonTap(e);
+    navigate('/notifications');
   };
   
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
-      {/* Bell Button */}
-      <button
-        onClick={toggleDropdown}
-        className="relative p-2 rounded-full hover:bg-white/10 transition-colors"
-        data-testid="notification-bell"
-      >
-        <Bell size={20} className="text-purple-300" />
-        
-        {/* Unread Badge */}
-        {unreadCount > 0 && (
-          <span 
-            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] 
-                       flex items-center justify-center
-                       bg-red-500 text-white text-xs font-bold 
-                       rounded-full px-1 animate-pulse"
-            data-testid="unread-badge"
-          >
-            {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
-        )}
-      </button>
+    <button
+      onClick={handleClick}
+      className={`relative p-2 rounded-full hover:bg-white/10 transition-colors ${className}`}
+      data-testid="notification-bell"
+      aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+    >
+      <Bell size={20} className="text-purple-300" />
       
-      {/* Dropdown */}
-      {isOpen && (
-        <div 
-          className="absolute right-0 top-full mt-2 w-80 
-                     bg-gray-900/95 backdrop-blur-xl 
-                     border border-purple-500/30 rounded-xl
-                     shadow-2xl shadow-purple-900/30
-                     z-50 overflow-hidden"
-          data-testid="notification-dropdown"
+      {/* Unread Badge */}
+      {unreadCount > 0 && (
+        <span 
+          className="absolute -top-1 -right-1 min-w-[18px] h-[18px] 
+                     flex items-center justify-center
+                     bg-red-500 text-white text-xs font-bold 
+                     rounded-full px-1"
+          data-testid="unread-badge"
         >
-          {/* Header */}
-          <div className="flex items-center justify-between p-3 border-b border-purple-500/20">
-            <div>
-              <h3 className="text-sm font-semibold text-white">
-                Notifications {petName ? `• ${petName}` : ''}
-              </h3>
-              <p className="text-xs text-purple-400/70 mt-0.5">
-                Updates from Concierge®. Tap to open the thread in Services.
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              {/* My Account Link */}
-              <button
-                onClick={() => {
-                  setIsOpen(false);
-                  window.location.href = '/profile';
-                }}
-                className="p-1 rounded hover:bg-white/10"
-                title="My Account"
-              >
-                <User size={14} className="text-purple-400" />
-              </button>
-              {unreadCount > 0 && (
-                <button
-                  onClick={markAllRead}
-                  className="text-xs text-purple-400 hover:text-purple-300"
-                >
-                  Mark all read
-                </button>
-              )}
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-1 rounded hover:bg-white/10"
-              >
-                <X size={14} className="text-gray-400" />
-              </button>
-            </div>
-          </div>
-          
-          {/* Notifications List */}
-          <div className="max-h-80 overflow-y-auto">
-            {notifications.length === 0 ? (
-              <div className="p-6 text-center text-gray-400 text-sm">
-                <Bell size={24} className="mx-auto mb-2 opacity-50" />
-                <p>No notifications yet</p>
-                <p className="text-xs mt-1">Mira will notify you about important updates</p>
-              </div>
-            ) : (
-              notifications.map(notification => (
-                <div
-                  key={notification.id}
-                  className={`
-                    p-3 border-b border-purple-500/10 
-                    hover:bg-purple-500/10 cursor-pointer
-                    transition-colors
-                    ${!notification.read ? 'bg-purple-500/5' : ''}
-                  `}
-                  onClick={() => {
-                    if (!notification.read) markAsRead(notification.id);
-                    
-                    // Extract ticket_id from notification data
-                    const ticketId = notification.ticket_id || 
-                                   notification.data?.ticket_id ||
-                                   (notification.data?.thread_url && notification.data.thread_url.split('thread=')[1]);
-                    
-                    if (ticketId) {
-                      // Open the Outlook-style drawer instead of navigating
-                      setActiveThreadId(ticketId);
-                      setActiveNotification(notification);
-                      setIsOpen(false); // Close dropdown
-                    } else {
-                      // Fallback to navigation for notifications without ticket_id
-                      if (notification.data?.thread_url) {
-                        window.location.href = notification.data.thread_url;
-                      } else if (notification.data?.url || notification.link) {
-                        window.location.href = notification.data?.url || notification.link;
-                      }
-                    }
-                  }}
-                >
-                  <div className="flex items-start gap-2">
-                    {/* Pet Avatar or Unread dot */}
-                    {notification.pet_name ? (
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 
-                                      flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">
-                        {notification.pet_name.charAt(0).toUpperCase()}
-                      </div>
-                    ) : !notification.read ? (
-                      <div className="w-2 h-2 mt-1.5 rounded-full bg-purple-500 flex-shrink-0" />
-                    ) : null}
-                    
-                    <div className="flex-1 min-w-0">
-                      {/* Pet name tag */}
-                      {notification.pet_name && (
-                        <span className="text-xs text-purple-400 font-medium">
-                          {notification.pet_name}
-                        </span>
-                      )}
-                      <h4 className={`text-sm truncate ${!notification.read ? 'font-semibold text-white' : 'text-gray-300'}`}>
-                        {notification.title}
-                      </h4>
-                      <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">
-                        {notification.message || notification.body}
-                      </p>
-                      <span className="text-xs text-gray-500 mt-1 block">
-                        {getTimeAgo(notification.created_at)}
-                      </span>
-                    </div>
-                    
-                    {/* Mark as read button */}
-                    {!notification.read && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          markAsRead(notification.id);
-                        }}
-                        className="p-1 rounded hover:bg-white/10"
-                        title="Mark as read"
-                      >
-                        <Check size={14} className="text-purple-400" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-          
-          {/* Footer */}
-          {notifications.length > 0 && (
-            <div className="p-2 border-t border-purple-500/20">
-              <button
-                className="w-full py-2 text-xs text-purple-400 hover:text-purple-300 
-                           flex items-center justify-center gap-1"
-                onClick={() => {
-                  setIsOpen(false);
-                  // Navigate to member dashboard - notifications shown there
-                  window.location.href = '/dashboard';
-                }}
-              >
-                View all notifications
-                <ChevronRight size={14} />
-              </button>
-            </div>
-          )}
-        </div>
+          {unreadCount > 9 ? '9+' : unreadCount}
+        </span>
       )}
-      
-      {/* Concierge Inbox Drawer - Outlook-style inline thread view */}
-      <ConciergeInboxDrawer
-        threadId={activeThreadId}
-        onClose={() => {
-          setActiveThreadId(null);
-          setActiveNotification(null);
-        }}
-        notification={activeNotification}
-        userEmail={userEmail}
-      />
-    </div>
+    </button>
   );
 };
 
