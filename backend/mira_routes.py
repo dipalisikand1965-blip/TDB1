@@ -11119,7 +11119,7 @@ async def mira_chat(
     
     # Helper function to merge picks into any response
     def add_picks_to_response(response_dict):
-        """Add picks engine data to any response dictionary"""
+        """Add picks engine data to any response dictionary and ensure conversation_contract exists"""
         response_dict.update({
             "picks": picks_response_data.get("picks", []),
             "concierge": picks_response_data.get("concierge", {}),
@@ -11127,7 +11127,12 @@ async def mira_chat(
             "missing_profile_fields": picks_response_data.get("missing_profile_fields", []),
             "picks_debug": picks_response_data.get("picks_debug")
         })
-        return response_dict
+        # Ensure conversation_contract exists (Section 11.2)
+        return ensure_conversation_contract(
+            response_dict, 
+            pillar=response_dict.get("pillar"),
+            ticket_id=response_dict.get("ticket_id")
+        )
     
     # ═══════════════════════════════════════════════════════════════════════════
     # CONVERSATION CONTINUITY - Handle pending flows from previous turn
