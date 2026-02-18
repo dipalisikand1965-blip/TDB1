@@ -461,7 +461,7 @@ const ServicesPanel = ({
             )}
           </div>
           <p className="text-[10px] text-slate-400 mt-0.5">
-            Your thread with Concierge. Replies and updates live here.
+            Your execution thread with Concierge. Updates and replies live here.
           </p>
         </div>
         <button 
