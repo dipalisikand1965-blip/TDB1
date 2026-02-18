@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-spine-fix.preview.emergentagent.com
+https://celebrate-pillar-fix.preview.emergentagent.com
 ```
 
 ---

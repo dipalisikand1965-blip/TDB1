@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://mira-spine-fix.preview.emergentagent.com
+https://celebrate-pillar-fix.preview.emergentagent.com
 
 ---
 
