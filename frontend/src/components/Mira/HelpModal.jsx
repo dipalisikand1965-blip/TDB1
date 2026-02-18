@@ -32,8 +32,8 @@ const HelpModal = ({
   const faqs = [
     {
       id: 'replies',
-      question: 'Where do I see replies from Concierge?',
-      answer: 'You\'ll see them in Services. Every request becomes a tracked thread there, and that\'s where Concierge replies.'
+      question: 'Where do I see replies from Concierge®?',
+      answer: 'You\'ll see them in Services. Every request becomes a tracked thread there, and that\'s where Concierge® replies.'
     },
     {
       id: 'chat',
@@ -52,13 +52,13 @@ const HelpModal = ({
     },
     {
       id: 'details',
-      question: 'I added details in Chat. Will Concierge see it?',
+      question: 'I added details in Chat. Will Concierge® see it?',
       answer: 'If it\'s about an open request, add it in Services so it lands inside the same thread and nothing gets missed.'
     },
     {
       id: 'badge',
       question: 'What does the badge on Services mean?',
-      answer: 'It means there\'s an unread update from Concierge for that pet.'
+      answer: 'It means there\'s an unread update from Concierge® for that pet.'
     }
   ];
   

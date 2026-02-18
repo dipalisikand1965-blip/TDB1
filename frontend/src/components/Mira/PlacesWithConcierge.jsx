@@ -272,7 +272,7 @@ const PlacesWithConcierge = ({
             }}
           >
             <MessageSquare size={16} />
-            Send to Concierge
+            Send to Concierge®
             <ChevronRight size={16} />
           </button>
         </div>
