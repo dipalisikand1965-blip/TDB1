@@ -155,7 +155,7 @@ const NotificationBell = ({ userEmail, petId, petName, className = '' }) => {
                 Notifications {petName ? `• ${petName}` : ''}
               </h3>
               <p className="text-xs text-purple-400/70 mt-0.5">
-                Updates from Concierge. Tap to open the thread in Services.
+                Updates from Concierge®. Tap to open the thread in Services.
               </p>
             </div>
             <div className="flex items-center gap-2">
