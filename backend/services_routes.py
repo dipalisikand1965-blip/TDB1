@@ -55,38 +55,122 @@ router = APIRouter(prefix="/api/os/services", tags=["services-os"])
 
 INTENT_TO_SERVICE_MAPPING = {
     "grooming": {
-        "service_types": ["grooming", "spa", "bath", "haircut", "nail-trim"],
-        "why_timely": "grooming care"
+        "service_types": ["grooming", "spa", "bath", "haircut", "nail-trim", "coat-care", "ear-cleaning"],
+        "why_timely": "grooming care",
+        "emoji": "✂️"
     },
     "health": {
-        "service_types": ["vet-consult", "health-checkup", "vaccination", "wellness"],
-        "why_timely": "health care"
+        "service_types": ["vet-consult", "health-checkup", "vaccination", "wellness", "dental-care", "lab-tests"],
+        "why_timely": "health care",
+        "emoji": "🏥"
     },
     "training": {
-        "service_types": ["training", "behaviour-consultation", "obedience"],
-        "why_timely": "training"
+        "service_types": ["training", "obedience", "puppy-training", "agility"],
+        "why_timely": "training",
+        "emoji": "🎓"
     },
     "behaviour": {
-        "service_types": ["behaviour-consultation", "training", "anxiety-therapy"],
-        "why_timely": "behaviour support"
+        "service_types": ["behaviour-consultation", "anxiety-therapy", "aggression-management", "socialization"],
+        "why_timely": "behaviour support",
+        "emoji": "🧠"
     },
     "boarding": {
-        "service_types": ["boarding", "daycare", "pet-sitting", "home-boarding"],
-        "why_timely": "boarding"
+        "service_types": ["boarding", "daycare", "pet-sitting", "home-boarding", "overnight-stay"],
+        "why_timely": "boarding",
+        "emoji": "🏨"
     },
     "travel": {
-        "service_types": ["pet-taxi", "transport", "relocation", "travel-kit"],
-        "why_timely": "travel arrangements"
+        "service_types": ["pet-taxi", "transport", "relocation", "travel-kit", "airport-pickup", "pet-passport"],
+        "why_timely": "travel arrangements",
+        "emoji": "✈️"
     },
     "food": {
-        "service_types": ["custom-meals", "nutrition-consult", "food-delivery"],
-        "why_timely": "nutrition"
+        "service_types": ["custom-meals", "nutrition-consult", "food-delivery", "diet-plan", "treats-subscription"],
+        "why_timely": "nutrition",
+        "emoji": "🍽️"
     },
     "emergency": {
-        "service_types": ["emergency-vet", "urgent-care", "24hr-helpline"],
-        "why_timely": "emergency care"
+        "service_types": ["emergency-vet", "urgent-care", "24hr-helpline", "ambulance", "first-aid"],
+        "why_timely": "emergency care",
+        "emoji": "🚨"
+    },
+    "puppies": {
+        "service_types": ["puppy-training", "puppy-vaccination", "puppy-socialization", "puppy-essentials"],
+        "why_timely": "puppy care",
+        "emoji": "🐕"
+    },
+    "senior": {
+        "service_types": ["senior-care", "mobility-therapy", "joint-supplements", "comfort-check"],
+        "why_timely": "senior care",
+        "emoji": "🦴"
+    },
+    "seasonal": {
+        "service_types": ["monsoon-care", "summer-grooming", "winter-care", "flea-treatment"],
+        "why_timely": "seasonal care",
+        "emoji": "🌦️"
     },
 }
+
+# Service display names (pretty formatting)
+SERVICE_DISPLAY_NAMES = {
+    "grooming": "Grooming",
+    "spa": "Spa Treatment",
+    "bath": "Bath & Dry",
+    "haircut": "Haircut",
+    "nail-trim": "Nail Trim",
+    "coat-care": "Coat Care",
+    "ear-cleaning": "Ear Cleaning",
+    "vet-consult": "Vet Consultation",
+    "health-checkup": "Health Checkup",
+    "vaccination": "Vaccination",
+    "wellness": "Wellness Check",
+    "dental-care": "Dental Care",
+    "lab-tests": "Lab Tests",
+    "training": "Training",
+    "obedience": "Obedience Training",
+    "puppy-training": "Puppy Training",
+    "agility": "Agility Training",
+    "behaviour-consultation": "Behaviour Consult",
+    "anxiety-therapy": "Anxiety Therapy",
+    "aggression-management": "Aggression Help",
+    "socialization": "Socialization",
+    "boarding": "Boarding",
+    "daycare": "Daycare",
+    "pet-sitting": "Pet Sitting",
+    "home-boarding": "Home Boarding",
+    "overnight-stay": "Overnight Stay",
+    "pet-taxi": "Pet Taxi",
+    "transport": "Transport",
+    "relocation": "Relocation",
+    "travel-kit": "Travel Kit",
+    "airport-pickup": "Airport Pickup",
+    "pet-passport": "Pet Passport",
+    "custom-meals": "Custom Meals",
+    "nutrition-consult": "Nutrition Consult",
+    "food-delivery": "Food Delivery",
+    "diet-plan": "Diet Plan",
+    "treats-subscription": "Treats Box",
+    "emergency-vet": "Emergency Vet",
+    "urgent-care": "Urgent Care",
+    "24hr-helpline": "24hr Helpline",
+    "ambulance": "Pet Ambulance",
+    "first-aid": "First Aid Kit",
+    "senior-care": "Senior Care",
+    "mobility-therapy": "Mobility Therapy",
+    "joint-supplements": "Joint Supplements",
+    "comfort-check": "Comfort Check",
+    "monsoon-care": "Monsoon Care",
+    "summer-grooming": "Summer Grooming",
+    "winter-care": "Winter Care",
+    "flea-treatment": "Flea Treatment",
+    "puppy-vaccination": "Puppy Shots",
+    "puppy-socialization": "Puppy Social",
+    "puppy-essentials": "Puppy Essentials",
+}
+
+def format_service_name(service_type: str) -> str:
+    """Get formatted display name for a service type."""
+    return SERVICE_DISPLAY_NAMES.get(service_type, service_type.replace('-', ' ').title())
 
 # Database connection (will be set from server.py)
 _db = None
