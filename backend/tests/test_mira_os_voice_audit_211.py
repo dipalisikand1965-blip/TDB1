@@ -134,9 +134,9 @@ class TestCelebratePillar:
             f"{BASE_URL}/api/mira/chat",
             json={
                 "message": "I want to celebrate Lola",
-                "pet_id": TEST_PET_ID,
-                "pet_name": TEST_PET_NAME,
-                "pillar": "celebrate"
+                "selected_pet_id": TEST_PET_ID,
+                "current_pillar": "celebrate",
+                "debug": True
             }
         )
         
@@ -220,9 +220,9 @@ class TestTravelPillar:
             f"{BASE_URL}/api/mira/chat",
             json={
                 "message": "I'm planning a trip to Goa with Lola",
-                "pet_id": TEST_PET_ID,
-                "pet_name": TEST_PET_NAME,
-                "pillar": "travel"
+                "selected_pet_id": TEST_PET_ID,
+                "current_pillar": "travel",
+                "debug": True
             }
         )
         
@@ -280,8 +280,8 @@ class TestBreedSubstitution:
             f"{BASE_URL}/api/mira/chat",
             json={
                 "message": "What grooming does Lola need?",
-                "pet_id": TEST_PET_ID,
-                "pet_name": TEST_PET_NAME
+                "selected_pet_id": TEST_PET_ID,
+                "debug": True
             }
         )
         
