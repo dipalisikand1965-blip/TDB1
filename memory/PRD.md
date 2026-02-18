@@ -79,6 +79,26 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 
 ## What's Been Implemented
 
+### February 18, 2026 (Session 3)
+
+1. **Notification Deep-Link Fix** - ✅ VERIFIED WORKING
+   - `concierge_reply` notifications now navigate to `/mira-demo?tab=services&ticket={ticket_id}`
+   - Fixed NotificationBell.jsx priority: thread_url > construct from ticket_id > fallback link
+   - Backend sets `data.thread_url` correctly in notification records
+
+2. **Ticket-to-Soul Auto-Enrichment** - ✅ COMPLETE & TESTED
+   - `resolve_ticket` endpoint now works with `mira_tickets` collection (not just `mira_conversations`)
+   - `append_message` endpoint dual-writes to both collections
+   - Extracts learnings: allergies, preferences, anxiety triggers from ticket conversations
+   - Pet Mystique enriched with: `food_allergies_from_tickets=['chicken']`, `preferences_from_tickets=['swimming']`, `anxiety_triggers_from_tickets=['thunder']`
+   - Files: `/app/backend/ticket_soul_enrichment.py`, `/app/backend/mira_service_desk.py`
+
+3. **Backend Dual-Collection Support**
+   - Fixed `resolve_ticket` to update both `mira_tickets` and `mira_conversations`
+   - Fixed `append_message` to write to both collections
+
+4. **Test Suite Added** - `/app/backend/tests/test_notification_deeplink_and_soul_enrichment.py`
+
 ### February 18, 2026 (Session 2)
 
 1. **ConciergeReplyBanner** - Verified working with petName prop
