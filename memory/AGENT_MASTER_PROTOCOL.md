@@ -161,12 +161,12 @@ A: A badge on Services means Concierge has replied and you haven't opened it yet
 ## Notification Card Requirements
 
 Each card MUST show:
-- [ ] Pet avatar (first letter of pet name)
-- [ ] Pet name tag
-- [ ] 1-line title (e.g., "Concierge replied • TCK-2026-000038")
-- [ ] 1-line preview (truncated message)
-- [ ] Timestamp
-- [ ] Unread dot (if unread)
+- [x] Pet avatar (first letter of pet name)
+- [x] Pet name tag
+- [x] 1-line title (e.g., "Concierge replied • TCK-2026-000038")
+- [x] 1-line preview (truncated message)
+- [x] Timestamp
+- [x] Unread dot (if unread)
 
 ## On Tap Behavior
 
@@ -206,11 +206,36 @@ POST /api/service_desk/concierge_reply
     ↓
 Updates mira_tickets.messages[] ✅
 Sets has_unread_concierge_reply = true ✅
-Creates member_notifications record ✅  ← CRITICAL
+Creates member_notifications record ✅  ← FIXED
     ↓
 Bell badge increments
 Member sees notification
 Taps → Services → ticket thread
+```
+
+## TICKET CREATION CONTRACT (CRITICAL FIX APPLIED)
+
+**Rule:** If user is in pet context, `pet_id` and `pet_name` are MANDATORY.
+
+**Auto-Resolution Logic (in handoff_to_spine):**
+1. If pet context provided → use it directly
+2. If user has exactly 1 pet → auto-attach that pet
+3. If user has multiple pets and none specified → set `needs_pet_selection=true`
+4. Never guess the pet silently
+
+**Required Fields on Every Ticket:**
+```javascript
+{
+  ticket_id: "TCK-2026-NNNNNN",  // REQUIRED
+  member: {
+    email: "...",                 // REQUIRED
+    id: "...",                    // REQUIRED (derived)
+  },
+  parent_id: "...",               // REQUIRED (legacy)
+  pet_id: "...",                  // REQUIRED (for per-pet)
+  pet_name: "...",                // REQUIRED (for display)
+  needs_pet_selection: false,     // True if pet must be selected
+}
 ```
 
 ---
