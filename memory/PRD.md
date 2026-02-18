@@ -301,8 +301,14 @@ First-visit tooltip anchored to Services tab:
 - **Do not enable the flag for production until all ticket-creating intakes route through the canonical helper.**
 
 ### P1 (High Priority) - Next Tasks
-- [ ] **Breed Substitution Bug Investigation** - Sporadic issue where wrong breed may appear in responses (needs reproduction)
-- [ ] **Legacy Ticket Migration** - 134+ tickets with non-canonical IDs need migration to TCK-* format
+- [x] **Intermittent personalisation mismatch (breed mention) — not reproducible, instrumented** (Feb 19, 2026)
+  - Could not reproduce in testing - Pet First doctrine being followed
+  - Added sealed breed variable in system prompt (line 8763)
+  - Added breed mention detector (`/app/backend/utils/breed_mention_detector.py`)
+  - Integrated into `add_picks_to_response()` for automatic monitoring
+  - Created forced-breed regression tests (`/app/backend/tests/test_breed_mention_regression.py`)
+  - Logs `[BREED-MISMATCH-ALERT]` when mismatch detected with full context
+- [ ] **Legacy Ticket Migration** - 372+ tickets with non-canonical IDs need migration to TCK-* format
 - [x] **Refine "Legacy Data Detected" label** - Changed to "Syncing history" in UI ✅ (Feb 17, 2026)
 - [ ] Implement PICKS material change logic (Bible Section 2.4)
 - [ ] Connect LEARN items to icon state
