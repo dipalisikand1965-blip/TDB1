@@ -298,6 +298,17 @@ const NotificationBell = ({ userEmail, petId, petName, className = '' }) => {
           )}
         </div>
       )}
+      
+      {/* Concierge Inbox Drawer - Outlook-style inline thread view */}
+      <ConciergeInboxDrawer
+        threadId={activeThreadId}
+        onClose={() => {
+          setActiveThreadId(null);
+          setActiveNotification(null);
+        }}
+        notification={activeNotification}
+        userEmail={userEmail}
+      />
     </div>
   );
 };
