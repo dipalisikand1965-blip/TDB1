@@ -93,6 +93,10 @@ const MobileNavBar = () => {
     if (basePath === '/') {
       return location.pathname === '/';
     }
+    // Special handling for inbox - also active on /tickets routes
+    if (basePath === '/notifications') {
+      return location.pathname.startsWith('/notifications') || location.pathname.startsWith('/tickets');
+    }
     return location.pathname === basePath || location.pathname.startsWith(basePath);
   };
   
