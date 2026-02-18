@@ -547,12 +547,12 @@ const COMMAND_PATTERNS = [
   {
     patterns: ['help', 'what can you do', 'commands', 'how do i', 'where is'],
     intent: 'help',
-    response: (petName) => `I'm here to help you with ${petName}'s everyday needs - treats, grooming, celebrations, travel, boarding, and more. For health concerns, our Care Concierge is your best support. Just ask me anything!`
+    response: (petName) => `I'm here to help you with ${petName}'s everyday needs - treats, grooming, celebrations, travel, boarding, and more. For health concerns, our Care Concierge® is your best support. Just ask me anything!`
   },
   {
     patterns: ['contact', 'call', 'phone', 'customer service', 'support', 'talk to human', 'real person'],
     intent: 'contact_support',
-    response: (petName) => `I'll connect you with our Care Concierge right away. They're here to help!`,
+    response: (petName) => `I'll connect you with our Care Concierge® right away. They're here to help!`,
     action: 'navigate',
     path: '/care'
   },
