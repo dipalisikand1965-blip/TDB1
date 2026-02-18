@@ -14041,6 +14041,68 @@ async def mark_all_notifications_read(user_email: str):
     return {"success": True, "count": result.modified_count}
 
 
+# ═══════════════════════════════════════════════════════════════════════
+# NOTIFICATION INBOX ACTIONS (iOS Mail-style)
+# ═══════════════════════════════════════════════════════════════════════
+
+@api_router.post("/member/notifications/{notification_id}/read")
+async def mark_notification_read_v2(notification_id: str):
+    """Mark a single notification as read"""
+    result = await db.member_notifications.update_one(
+        {"id": notification_id},
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": result.modified_count > 0, "notification_id": notification_id}
+
+
+@api_router.post("/member/notifications/{notification_id}/unread")
+async def mark_notification_unread(notification_id: str):
+    """Mark a notification as unread (for swipe action)"""
+    result = await db.member_notifications.update_one(
+        {"id": notification_id},
+        {"$set": {"read": False}, "$unset": {"read_at": ""}}
+    )
+    return {"success": result.modified_count > 0, "notification_id": notification_id}
+
+
+@api_router.post("/member/notifications/{notification_id}/archive")
+async def archive_notification(notification_id: str):
+    """Archive a notification (hide from inbox, but ticket still exists)"""
+    result = await db.member_notifications.update_one(
+        {"id": notification_id},
+        {"$set": {"archived": True, "archived_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": result.modified_count > 0, "notification_id": notification_id}
+
+
+@api_router.post("/member/notifications/ticket/{ticket_id}/read")
+async def mark_ticket_notifications_read(ticket_id: str, user_email: str = None):
+    """Mark all notifications for a ticket as read (when opening ticket thread)"""
+    query = {"ticket_id": ticket_id}
+    if user_email:
+        query["user_email"] = user_email.lower()
+    
+    result = await db.member_notifications.update_many(
+        {**query, "read": False},
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": True, "count": result.modified_count, "ticket_id": ticket_id}
+
+
+@api_router.post("/member/notifications/ticket/{ticket_id}/archive")
+async def archive_ticket_notifications(ticket_id: str, user_email: str = None):
+    """Archive all notifications for a ticket"""
+    query = {"ticket_id": ticket_id}
+    if user_email:
+        query["user_email"] = user_email.lower()
+    
+    result = await db.member_notifications.update_many(
+        query,
+        {"$set": {"archived": True, "archived_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": True, "count": result.modified_count, "ticket_id": ticket_id}
+
+
 @api_router.get("/member/requests")
 async def get_member_requests(
     current_user: dict = Depends(get_current_user),
