@@ -20,17 +20,19 @@
  * - Global Dashboard | Inbox navigation
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ArrowLeft, Bell, Filter, Search, X, 
   CheckSquare, Square, RefreshCw, Archive, Mail, MailOpen,
-  ArchiveRestore, Inbox
+  ArchiveRestore, Inbox, Loader2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import InboxRow from '../components/Mira/InboxRow';
 import GlobalNav from '../components/Mira/GlobalNav';
-import TicketThread from './TicketThread';
+
+// Lazy load TicketThread to avoid circular dependency issues
+const TicketThread = lazy(() => import('./TicketThread'));
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
