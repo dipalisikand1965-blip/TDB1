@@ -11253,6 +11253,7 @@ async def mira_chat(
             )
             
             # Build memory trace for QA/debugging
+            logger.info(f"[SOUL-LEARNING] Building memory trace, selected_pet={selected_pet.get('name') if selected_pet else None}")
             if selected_pet:
                 memory_trace = build_memory_trace(
                     pet_soul=selected_pet,
@@ -11266,6 +11267,7 @@ async def mira_chat(
                     "new_enrichments_saved": memory_trace.get("new_enrichments_saved", []),
                     "not_saved_reason": memory_trace.get("not_saved_reason", [])[:3]  # Limit
                 }
+                logger.info(f"[SOUL-LEARNING] Memory trace added to response: {len(response_dict.get('_memory_trace', {}).get('memory_used', []))} fields")
                 
                 # Actually save new enrichments to the pet's soul
                 new_enrichments = memory_trace.get("new_enrichments_saved", [])
