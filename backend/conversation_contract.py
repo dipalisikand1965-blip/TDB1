@@ -867,11 +867,18 @@ def build_conversation_contract(
     Build the full conversation_contract object.
     
     This is returned on EVERY chat response.
+    Section 11.2 of PET_OS_BEHAVIOR_BIBLE.md defines the contract schema.
     """
     context = context or {}
+    pillar = context.get("pillar")
     
-    # Build quick replies
-    quick_replies = build_quick_replies(mode, context)
+    # Build quick replies (Section 11.3 chip library)
+    quick_replies = build_quick_replies(
+        mode=mode, 
+        context=context, 
+        pillar=pillar,
+        ticket_id=ticket_id
+    )
     
     # Build clarifying questions if clarify mode
     clarifying_questions = []
