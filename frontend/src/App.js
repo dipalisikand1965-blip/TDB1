@@ -404,12 +404,6 @@ function MainLayout() {
           {/* NPS Feedback - Public access */}
           <Route path="/feedback" element={<NPSFeedbackPage />} />
         
-        {/* ═══════════════════════════════════════════════════════════════════
-            NOTIFICATIONS INBOX + TICKET THREAD (iOS Mail-style)
-            ═══════════════════════════════════════════════════════════════════ */}
-        <Route path="/notifications" element={<ProtectedRoute><NotificationsInbox /></ProtectedRoute>} />
-        <Route path="/tickets/:ticketId" element={<ProtectedRoute><TicketThread /></ProtectedRoute>} />
-        
         {/* Pet Profile - Accessible without login */}
         <Route path="/pet-profile" element={<PetProfile />} />
         <Route path="/my-pets" element={<ProtectedRoute><MyPets /></ProtectedRoute>} />
