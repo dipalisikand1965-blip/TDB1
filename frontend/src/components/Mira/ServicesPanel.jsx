@@ -324,6 +324,9 @@ const ServicesPanel = ({
   onOpenRequestBuilder = null,
   unreadRepliesCount = 0, // NEW: Count of unread concierge replies
 }) => {
+  // Get selected pet ID
+  const selectedPetId = selectedPet?.id || selectedPet?.name;
+  
   // State
   const [launchers, setLaunchers] = useState([]);
   const [inbox, setInbox] = useState({
