@@ -973,7 +973,7 @@ async def concierge_reply(
 
 @service_desk_router.post("/resolve_ticket/{ticket_id}")
 async def resolve_ticket(ticket_id: str, resolution_note: Optional[str] = None):
-    """Mark a ticket as resolved."""
+    """Mark a ticket as resolved and enrich pet Soul from learnings."""
     db = get_db()
     if db is None:
         raise HTTPException(status_code=500, detail="Database not available")
@@ -1004,4 +1004,22 @@ async def resolve_ticket(ticket_id: str, resolution_note: Optional[str] = None):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail=f"Ticket {ticket_id} not found")
     
-    return {"success": True, "ticket_id": ticket_id, "status": "resolved"}
+    # ═══════════════════════════════════════════════════════════════════════════
+    # TICKET → SOUL AUTO-ENRICHMENT
+    # Extract learnings from resolved ticket and persist to pet's Soul
+    # ═══════════════════════════════════════════════════════════════════════════
+    enrichment_result = {"success": False, "message": "Enrichment not attempted"}
+    try:
+        from ticket_soul_enrichment import process_ticket_resolution_enrichment
+        enrichment_result = await process_ticket_resolution_enrichment(db, ticket_id)
+        logger.info(f"[RESOLVE] Soul enrichment for {ticket_id}: {enrichment_result.get('message', 'done')}")
+    except Exception as enrich_err:
+        logger.warning(f"[RESOLVE] Soul enrichment failed for {ticket_id}: {enrich_err}")
+        enrichment_result = {"success": False, "message": str(enrich_err)}
+    
+    return {
+        "success": True, 
+        "ticket_id": ticket_id, 
+        "status": "resolved",
+        "soul_enrichment": enrichment_result
+    }
