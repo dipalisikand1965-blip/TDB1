@@ -15695,7 +15695,7 @@ Has {pet_name}'s {entity} sensitivity changed, or should I treat {entity} as str
             ticket_id=response_data.get("ticket_id")
         )
         
-        return response_data
+        return add_picks_to_response(response_data)
         
     except Exception as e:
         logger.error(f"Mira chat error: {e}", exc_info=True)
