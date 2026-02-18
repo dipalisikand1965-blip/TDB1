@@ -11353,6 +11353,18 @@ async def mira_chat(
     # Helper function to merge picks into any response
     def add_picks_to_response(response_dict):
         """Add picks engine data to any response dictionary and ensure conversation_contract exists"""
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # BANNED OPENER FILTER (P0 - Voice Compliance)
+        # Apply filter to remove corporate openers and make responses soulful
+        # ═══════════════════════════════════════════════════════════════════════════
+        if response_dict.get("response"):
+            pet_name_for_filter = selected_pet.get("name") if selected_pet else None
+            response_dict["response"] = filter_banned_openers(
+                response_dict["response"], 
+                pet_name=pet_name_for_filter
+            )
+        
         response_dict.update({
             "picks": picks_response_data.get("picks", []),
             "concierge": picks_response_data.get("concierge", {}),
