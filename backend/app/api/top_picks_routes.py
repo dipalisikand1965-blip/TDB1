@@ -1179,7 +1179,7 @@ async def get_smart_fallback_picks(
     
     if not smart_tags:
         smart_tags = ["treats", "toys", "wellness", "grooming"]
-        why_it_fits_reasons = [f"Mira's top picks for {pet_name}"]
+        why_it_fits_reasons = [f"{breed}s like {pet_name} love this" if breed else f"Perfect for {pet_name}"]
     
     # Query products matching smart tags
     try:
