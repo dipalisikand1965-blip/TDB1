@@ -304,7 +304,7 @@ const PlacesWithConcierge = ({
             </div>
             <div>
               <div style={{ color: '#F472B6', fontWeight: '700', fontSize: '16px' }}>
-                Send to Concierge
+                Send to Concierge®
               </div>
               <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>
                 For {petName}
