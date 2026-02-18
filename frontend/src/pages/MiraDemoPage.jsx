@@ -4621,6 +4621,7 @@ const MiraDemoPage = () => {
             onClose={() => setShowTopPicksPanel(false)}
             pet={pet}
             token={token}
+            userEmail={user?.email}
             // NEW: Engine picks props (B6)
             enginePicks={miraPicks.enginePicks || []}
             enginePillar={miraPicks.activePillar}
