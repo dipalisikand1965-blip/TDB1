@@ -1338,6 +1338,219 @@ const PersonalizedPicksPanel = ({
                   </div>
                 )}
                 
+                {/* ═══════════════════════════════════════════════════════════════════ */}
+                {/* INTENT-DRIVEN SHELF - "{Pet} needs this for {Intent}"              */}
+                {/* Dynamic cards from MIRA brain based on chat intent                  */}
+                {/* Concierge-sourced (no price) - "Concierge will arrange"            */}
+                {/* ═══════════════════════════════════════════════════════════════════ */}
+                {picksData?.intent_driven?.has_recommendations && (
+                  <div className="mb-6">
+                    <div className="mb-3">
+                      <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
+                        <Zap className="w-4 h-4 text-cyan-400" />
+                        {picksData.intent_driven.shelf_title || `${pet?.name} needs this`}
+                      </h3>
+                      <p className="text-xs text-cyan-400/70 mt-1">Concierge® will source and arrange these for you</p>
+                    </div>
+                    
+                    {/* Intent-Driven Picks */}
+                    {picksData.intent_driven.picks?.length > 0 && (
+                      <div className="mb-4">
+                        <p className="text-xs text-gray-400 mb-2 uppercase tracking-wide">Products</p>
+                        <div className="grid grid-cols-2 gap-3">
+                          {picksData.intent_driven.picks.slice(0, 4).map((pick, index) => (
+                            <div 
+                              key={pick.id || `intent-pick-${index}`}
+                              className={`p-3 rounded-xl bg-gradient-to-br from-cyan-900/30 to-blue-900/20 border border-cyan-500/30 cursor-pointer hover:border-cyan-400/50 transition-all active:scale-[0.98] relative ${
+                                isSelected(pick) ? 'ring-2 ring-cyan-400' : ''
+                              }`}
+                              onClick={() => {
+                                hapticFeedback.buttonTap();
+                                toggleSelection(pick, 'concierge');
+                              }}
+                            >
+                              <div className="flex justify-between items-start mb-2">
+                                <span className="text-xl">{pick.icon || '🎯'}</span>
+                                <span className="text-[9px] px-2 py-0.5 bg-cyan-500/80 text-white rounded-full font-semibold">
+                                  For {pet?.name}
+                                </span>
+                              </div>
+                              <h4 className="text-xs font-medium text-white mb-1">{pick.name}</h4>
+                              <p className="text-[10px] text-cyan-300/80 line-clamp-2">{pick.description || pick.reason}</p>
+                              <p className="text-[10px] text-gray-500 mt-2 italic">{pick.price_display || 'Concierge sources'}</p>
+                              {isSelected(pick) && (
+                                <div className="absolute top-2 right-2">
+                                  <CheckCircle className="w-4 h-4 text-cyan-400" />
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Intent-Driven Services */}
+                    {picksData.intent_driven.services?.length > 0 && (
+                      <div>
+                        <p className="text-xs text-gray-400 mb-2 uppercase tracking-wide">Services</p>
+                        <div className="space-y-2">
+                          {picksData.intent_driven.services.slice(0, 3).map((service, index) => (
+                            <div 
+                              key={service.id || `intent-service-${index}`}
+                              className={`p-3 rounded-xl bg-gradient-to-r from-purple-900/40 to-cyan-900/20 border border-purple-500/30 cursor-pointer hover:border-purple-400/50 transition-all active:scale-[0.98] ${
+                                isSelected(service) ? 'ring-2 ring-purple-400' : ''
+                              }`}
+                              onClick={() => {
+                                hapticFeedback.buttonTap();
+                                toggleSelection(service, 'concierge');
+                              }}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
+                                  <span className="text-lg">{service.icon || '🎯'}</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <h4 className="text-sm font-medium text-white">{service.name}</h4>
+                                    <span className="text-[9px] px-2 py-0.5 bg-purple-500/50 text-purple-200 rounded-full">
+                                      {service.duration || 'Varies'}
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-purple-300/80">{service.description || service.reason}</p>
+                                </div>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                                  isSelected(service) 
+                                    ? 'bg-purple-500 text-white' 
+                                    : 'bg-purple-700/50 text-purple-300'
+                                }`}>
+                                  {isSelected(service) ? <Check className="w-4 h-4" /> : <span className="text-lg">+</span>}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* ═══════════════════════════════════════════════════════════════════ */}
+                {/* PERSONALIZED SHELF - "✨ Personalized for {Pet}"                    */}
+                {/* ALWAYS shown proactively - unique items with pet's photo           */}
+                {/* Concierge creates these (mugs, coasters, blankets, etc.)           */}
+                {/* ═══════════════════════════════════════════════════════════════════ */}
+                {picksData?.personalized?.has_products && (
+                  <div className="mb-6">
+                    <div className="mb-3">
+                      <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-pink-400" />
+                        {picksData.personalized.shelf_title || `Personalized for ${pet?.name}`}
+                      </h3>
+                      <p className="text-xs text-pink-400/70 mt-1">{picksData.personalized.shelf_subtitle || 'Unique items featuring your pet'}</p>
+                    </div>
+                    <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
+                      {picksData.personalized.products.slice(0, 6).map((product, index) => (
+                        <div 
+                          key={product.id || `personalized-${index}`}
+                          className={`flex-shrink-0 w-36 p-3 rounded-xl bg-gradient-to-br from-pink-900/40 to-purple-900/20 border border-pink-500/30 cursor-pointer hover:border-pink-400/50 transition-all active:scale-[0.98] ${
+                            isSelected(product) ? 'ring-2 ring-pink-400' : ''
+                          }`}
+                          onClick={() => {
+                            hapticFeedback.buttonTap();
+                            // If it links to /celebrate, navigate there
+                            if (product.links_to) {
+                              window.location.href = product.links_to;
+                            } else {
+                              toggleSelection(product, 'personalized');
+                            }
+                          }}
+                        >
+                          <div className="flex justify-center mb-2">
+                            <span className="text-3xl">{product.icon || '🎁'}</span>
+                          </div>
+                          <h4 className="text-xs font-medium text-white text-center mb-1">{product.name}</h4>
+                          <p className="text-[10px] text-pink-300/80 text-center line-clamp-2">{product.description}</p>
+                          <p className="text-[10px] text-gray-500 text-center mt-2 italic">{product.price_display || 'Concierge creates'}</p>
+                          <button
+                            className={`w-full mt-2 py-1.5 rounded-lg text-[10px] font-medium transition-all ${
+                              isSelected(product)
+                                ? 'bg-pink-500 text-white'
+                                : 'bg-pink-500/20 text-pink-300 hover:bg-pink-500/40'
+                            }`}
+                          >
+                            {isSelected(product) ? '✓ Added' : (product.cta || `Create for ${pet?.name}`)}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* ═══════════════════════════════════════════════════════════════════ */}
+                {/* CELEBRATE SHELF - "Celebrate {Pet}'s Birthday"                      */}
+                {/* Shown when birthday intent is detected - links to cake designer    */}
+                {/* ═══════════════════════════════════════════════════════════════════ */}
+                {picksData?.celebrate?.has_products && (
+                  <div className="mb-6">
+                    <div className="mb-3">
+                      <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
+                        <Cake className="w-4 h-4 text-amber-400" />
+                        {picksData.celebrate.shelf_title || `Celebrate ${pet?.name}'s Birthday`}
+                      </h3>
+                      <p className="text-xs text-amber-400/70 mt-1">{picksData.celebrate.shelf_subtitle || 'Make it special!'}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {picksData.celebrate.products.slice(0, 4).map((product, index) => (
+                        <div 
+                          key={product.id || `celebrate-${index}`}
+                          className={`p-3 rounded-xl bg-gradient-to-br from-amber-900/40 to-pink-900/20 border border-amber-500/30 cursor-pointer hover:border-amber-400/50 transition-all active:scale-[0.98] ${
+                            isSelected(product) ? 'ring-2 ring-amber-400' : ''
+                          }`}
+                          onClick={() => {
+                            hapticFeedback.buttonTap();
+                            // Navigate to cake designer if it links there
+                            if (product.links_to) {
+                              window.location.href = product.links_to;
+                            } else {
+                              toggleSelection(product, 'celebrate');
+                            }
+                          }}
+                        >
+                          <div className="flex justify-center mb-2">
+                            <span className="text-2xl">{product.icon || '🎂'}</span>
+                          </div>
+                          <h4 className="text-xs font-medium text-white text-center mb-1">{product.name}</h4>
+                          <p className="text-[10px] text-amber-300/80 text-center line-clamp-2">{product.description}</p>
+                          <button
+                            className={`w-full mt-2 py-1.5 rounded-lg text-[10px] font-medium transition-all ${
+                              product.links_to
+                                ? 'bg-gradient-to-r from-amber-500 to-pink-500 text-white hover:opacity-90'
+                                : isSelected(product)
+                                ? 'bg-amber-500 text-white'
+                                : 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/40'
+                            }`}
+                          >
+                            {product.links_to ? (product.cta || 'Design Now') : isSelected(product) ? '✓ Added' : (product.cta || 'Request')}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Quick link to cake designer */}
+                    {picksData.celebrate.tool_link && (
+                      <button
+                        onClick={() => {
+                          hapticFeedback.buttonTap();
+                          window.location.href = picksData.celebrate.tool_link;
+                        }}
+                        className="w-full mt-3 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-pink-500 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-[0.98]"
+                      >
+                        <Cake className="w-4 h-4" />
+                        {picksData.celebrate.tool_cta || `Design ${pet?.name}'s Cake`}
+                      </button>
+                    )}
+                  </div>
+                )}
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* ═══════════════════════════════════════════════════ */}
                 {/* LEFT: MIRA'S PICKS - Handpicked products for this pet */}
