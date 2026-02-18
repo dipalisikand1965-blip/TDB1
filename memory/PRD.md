@@ -19,18 +19,6 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 
 ---
 
-## Documentation Hierarchy
-
-| Priority | Document | Purpose |
-|----------|----------|---------|
-| 1 | `/app/memory/AGENT_MASTER_PROTOCOL.md` | **THE MASTER PROTOCOL** - Read first |
-| 2 | `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` | The Law - Design specification |
-| 3 | `/app/memory/ONE_SPINE_SPEC.md` | Ticket system spec, 5 Hard Proofs |
-| 4 | `/app/memory/LEARN_BIBLE.md` | LEARN OS Layer specification |
-| 5 | `/app/memory/PRD.md` | This file - Product requirements |
-
----
-
 ## Current System Status
 
 ### One Spine: ✅ CERTIFIED
@@ -38,22 +26,27 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 ### Ticket-to-Soul Enrichment: ✅ COMPLETE
 ### LEARN Tab: ✅ WORKING
 
-### NEW: Conversation-to-LEARN Bridge: ✅ COMPLETE (Feb 18, 2026)
+### NEW: Mira Soul Integration (Feb 18, 2026): ✅ COMPLETE
 
-| Feature | Status |
-|---------|--------|
-| Intent extraction from chat | ✅ Working |
-| Intent storage (48-hour TTL) | ✅ Working |
-| LEARN content boosting (+15 score) | ✅ Working |
-| "Based on your chat" shelf | ✅ Working |
-| Blue contextual badges | ✅ Working |
-| API returns conversation_context | ✅ Working |
+**Mira now "knows" what the pet parent is thinking about across all OS layers:**
 
-**Files Created/Modified:**
-- `/app/backend/learn_intent_bridge.py` (NEW)
-- `/app/backend/learn_os_routes.py` (Modified)
-- `/app/backend/mira_routes.py` (Modified)
-- `/app/frontend/src/components/Mira/LearnPanel.jsx` (Modified)
+| Layer | Feature | Status |
+|-------|---------|--------|
+| LEARN | "{petName} might need this" shelf | ✅ Working |
+| PICKS | "Lola might need this" shelf | ✅ Working |
+| Shared Intent Store | `user_learn_intents` collection | ✅ Working |
+| Intent Capture | 50+ keywords → 10 topic categories | ✅ Working |
+
+**How It Works:**
+1. User chats about "travel" → Intent captured in `user_learn_intents`
+2. User opens LEARN → Travel guides appear in "{petName} might need this"
+3. User opens PICKS → Travel products appear in "{petName} might need this"
+4. Badge: "Timely" (amber) - Mira knows, no "based on your chat" messaging
+
+**Files:**
+- `/app/backend/learn_intent_bridge.py` - Intent extraction & storage
+- `/app/backend/learn_os_routes.py` - LEARN integration
+- `/app/backend/app/api/top_picks_routes.py` - PICKS integration
 
 ---
 
@@ -62,52 +55,49 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 ### February 18, 2026 (Current Session)
 
 1. **Conversation-to-LEARN Contextual Bridge** - ✅ COMPLETE
-   - When user discusses a topic in chat, LEARN automatically surfaces relevant content
-   - Intent capture from chat messages (50+ keywords → 9 topic categories)
-   - "Based on your chat" shelf appears at top of LEARN
-   - Blue badges indicate contextually relevant items
-   - Intent TTL: 48 hours
+   - Intent capture from chat (50+ keywords)
+   - "{petName} might need this" shelf in LEARN
+   - "Timely" badge on contextual items
 
-2. **LEARN Tab Bug Investigation** - ✅ VERIFIED WORKING
-   - Tab navigation functioning correctly
-   - Personalization loading properly
-   - Bible-compliant detail view structure
+2. **PICKS Soul Integration** - ✅ COMPLETE
+   - PICKS reads from shared intent store
+   - "{petName} might need this" shelf in PICKS
+   - Soul-aware "why_it_fits" reasons: "Safe travels with Lola"
+   - Email-to-UUID resolution for user matching
+
+3. **LEARN Tab Verification** - ✅ CONFIRMED WORKING
 
 ### Previous Sessions
-
-1. **"Send to Concierge" Admin Notifications** - ✅ FIXED
-2. **"What Mira Learned" UI in MOJO Profile** - ✅ IMPLEMENTED
-3. **20-point Mobile Audit** - ✅ COMPLETED
-4. **Ticket-to-Soul E2E Flow** - ✅ VERIFIED
-5. **Notification Deep-Link Fix** - ✅ VERIFIED
-6. **"Concierge®" Branding** - ✅ 13 files updated
-7. **One Spine Re-Audit** - ✅ All 5 proofs passing
+- "Send to Concierge" Admin Notifications
+- "What Mira Learned" UI in MOJO Profile
+- 20-point Mobile Audit
+- Ticket-to-Soul E2E Flow
+- Notification Deep-Link Fix
+- "Concierge®" Branding
 
 ---
 
 ## Prioritized Backlog
 
 ### P0 - Critical
-- [x] ~~One Spine certification~~ ✅ DONE
-- [x] ~~Notification system fixes~~ ✅ DONE
-- [x] ~~Fix LEARN Tab~~ ✅ VERIFIED WORKING
-- [x] ~~Conversation-to-LEARN Bridge~~ ✅ COMPLETE
+- [x] ~~One Spine certification~~ ✅
+- [x] ~~Conversation-to-LEARN Bridge~~ ✅
+- [x] ~~PICKS Soul Integration~~ ✅
 - [ ] **UI Improvement: "Test Scenarios" Panel** - Move to bottom sheet
-- [ ] **UI Improvement: "Concierge Replied" Banner** - Convert to compact single-line banner
+- [ ] **UI Improvement: "Concierge Replied" Banner** - Compact banner
 
 ### P1 - High Priority
+- [ ] **TODAY Soul Integration** - Contextual TODAY content
 - [ ] **"All pets" toggle** in notification dropdown
 - [ ] **Soul-Capture Onboarding** - 8-10 step experience
-- [ ] **Mobile Specs Audit** - Typography & tap targets vs Bible
 
 ### P2 - Medium Priority
 - [ ] WhatsApp Webhook Idempotency
-- [ ] Legacy Ticket Migration (134+ to TCK-*)
+- [ ] Legacy Ticket Migration
 
 ### P3 - Backlog
-- [ ] Refactor `mira_routes.py` (20k+ lines)
+- [ ] Refactor `mira_routes.py`
 - [ ] Refactor `MiraDemoPage.jsx`
-- [ ] Push notification system
 
 ---
 
@@ -116,15 +106,9 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 ```
 Email: dipali@clubconcierge.in
 Password: test123
-URL: /mira-demo?debug=1
+URL: /mira-demo
 
-Admin Login:
-Email: aditya@thedoggycompany.in
-Password: lola4304
-
-Enriched Pets:
-- Mystique (senior, arthritis, chicken/wheat allergy)
-- Lola (young, energetic, default pet)
+Admin: aditya@thedoggycompany.in / lola4304
 ```
 
 ---
@@ -133,38 +117,12 @@ Enriched Pets:
 
 | Endpoint | Purpose |
 |----------|---------|
-| POST `/api/mira/chat` | Main chat (now captures intents for LEARN) |
-| GET `/api/os/learn/home?pet_id=X` | LEARN home (now includes from_your_chat shelf) |
-| GET `/api/os/learn/topic/{topic}` | LEARN topic content |
-
----
-
-## Key Files
-
-### Backend
-- `/app/backend/mira_routes.py` - Main chat (integrates intent bridge)
-- `/app/backend/learn_os_routes.py` - LEARN OS Layer (conversation context)
-- `/app/backend/learn_intent_bridge.py` - NEW: Intent extraction and storage
-
-### Frontend
-- `/app/frontend/src/components/Mira/LearnPanel.jsx` - LEARN panel (from_your_chat shelf)
+| POST `/api/mira/chat` | Chat (captures intents) |
+| GET `/api/os/learn/home?pet_id=X` | LEARN (includes from_your_chat) |
+| GET `/api/mira/top-picks/{pet_id}` | PICKS (includes timely_picks) |
 
 ---
 
 ## 3rd Party Integrations
 
-- Google Places
-- YouTube
-- WhatsApp (Gupshup, Meta)
-- Resend
-- Shopify
-- ElevenLabs
-- Firebase
-
----
-
-## The Rule
-
-> **If you break One Spine, you break the entire user experience.**
-
-Read the protocol. Follow the QA. Every. Single. Time.
+Google Places, YouTube, WhatsApp (Gupshup, Meta), Resend, Shopify, ElevenLabs, Firebase
