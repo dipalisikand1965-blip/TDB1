@@ -310,16 +310,24 @@ def extract_enrichments_from_message(
 
 
 def _clean_extracted_value(value: str) -> str:
-    """Clean up extracted value"""
+    """Clean up extracted value to get the core fact"""
     if not value:
         return ""
     
+    # Remove common trailing phrases that add context but not the core fact
+    value = re.sub(r'\s+(and always|and she|and he|and they|and never|and sometimes|when|because|since|so|which).+$', '', value, flags=re.IGNORECASE)
     # Remove common trailing words
     value = re.sub(r'\s+(very much|a lot|so much|really)$', '', value, flags=re.IGNORECASE)
     # Remove punctuation at end
     value = re.sub(r'[.,!?;:]+$', '', value).strip()
     # Remove articles at start
     value = re.sub(r'^(the|a|an)\s+', '', value, flags=re.IGNORECASE)
+    # Limit to reasonable length (max 50 chars for a dislike/trigger)
+    if len(value) > 50:
+        # Try to find first key noun/phrase
+        parts = value.split()
+        if len(parts) > 5:
+            value = ' '.join(parts[:5])
     
     return value.strip()
 
