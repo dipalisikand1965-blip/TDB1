@@ -477,10 +477,10 @@ def enrich_item_for_frontend(
         "relevance_score": relevance_score,
     }
     
-    # Add "Based on your recent chat" badge if intent matched
+    # Add "Timely" badge if intent matched (Mira knows what's relevant right now)
     if from_recent_chat:
         enriched["from_recent_chat"] = True
-        enriched["relevance_badge"] = "Based on your chat"
+        enriched["relevance_badge"] = "Timely"
         enriched["is_personalized"] = True
     # Add personalization badge if highly relevant
     elif relevance_score >= 10 and pet_name:
