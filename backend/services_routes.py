@@ -755,7 +755,7 @@ async def create_service_request(
             "success": True,
             "ticket_id": mock_id,
             "status": "placed",
-            "message": f"Service request created (mock)",
+            "message": "Service request created (mock)",
             "mock": True
         }
     
