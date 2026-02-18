@@ -61,6 +61,18 @@
 
 # CHANGELOG
 
+### Feb 19, 2026 - CELEBRATE Pillar Multi-Step Flow Fix
+- **Fixed:** CELEBRATE pillar 3-step conversation flow now works correctly
+  - Step 1: Location question ("Where would you like to celebrate?")
+  - Step 2: Size question ("How big are we thinking?")  
+  - Step 3: Execution options (Custom cake, Photographer, Open request)
+- **Root cause:** The condition at line 12486 checked `existing_ticket.get("pillar") != "celebrate"` but pillar was set to "advisory"
+- **Solution:** Changed to check `ai_context.celebrate_stage` instead, and added `pillar: "celebrate"` to ticket update
+- **Verified:** Emergency triage chips (6 chips: Chocolate, Medicine, Grapes/raisins, Plant, Not sure, Go to vet now) working
+- **Verified:** Location consent gate working
+- **Verified:** Voice compliance - no banned openers
+- **Test report:** `/app/test_reports/iteration_212.json` - 8/8 tests passed
+
 ### Feb 18, 2026 - One Spine Unread Indicator Fix
 - **Fixed:** Concierge replies now correctly update `awaiting_you` and `unread_replies` counts
 - **Fixed:** Pet ID filter now includes tickets with null/empty pet_id
