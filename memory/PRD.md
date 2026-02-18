@@ -115,10 +115,37 @@ sudo supervisorctl restart frontend
    - Optimistic UI: instant bubble with "Sending..." status
    - Failure state: "Not sent. Tap to retry."
 
+4. **Member Reply Flow (Step-by-Step)**
+   1. Member opens a thread via Inbox row (desktop split view or mobile full-screen)
+   2. Types in "Reply to this ticket…" composer at bottom
+   3. Hits Send (paper-plane) or Enter
+   4. Frontend calls `POST /api/member/tickets/:ticketId/reply`
+   5. Backend writes to `service_desk_tickets` FIRST, then syncs, then emits `admin_notification`
+   6. Member sees optimistic bubble → delivered / failure retry state
+
 **Files Changed:**
 - `/app/backend/server.py` - Added new endpoint at lines 14169-14263
 - `/app/frontend/src/pages/NotificationsInbox.jsx` - Removed iframe, renders TicketThread directly
 - `/app/frontend/src/pages/TicketThread.jsx` - Added mode prop, optimistic UI, new reply flow
+
+---
+
+## 🚨 GUARDRAIL: NO NOTIFICATION-ONLY OBJECTS 🚨
+
+**HARD RULE:** No `admin_notification` or `member_notification` may be created unless it references a **real** `service_desk_tickets.ticket_id`.
+
+**Enforcement:**
+- Before inserting any notification, assert `ticket_id` exists and references a real ticket
+- If ticket doesn't exist → **FAIL LOUDLY** (log error, return 400)
+- No silent "notification-only" objects allowed
+- This prevents orphan notifications that break the inbox UX
+
+**Why:** Notifications without tickets cause:
+- Broken inbox rows (click → "Ticket not found")
+- Data integrity violations
+- Lost member requests
+
+---
 
 ### ✅ PICKS Panel Dynamic Shelves - COMPLETED
 - Updated `PersonalizedPicksPanel.jsx` to render new dynamic shelves:
