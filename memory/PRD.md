@@ -136,13 +136,29 @@ When no chat intents exist, Mira still shows intelligent picks based on:
   - `/app/backend/auth_routes.py`
 
 ### ✅ IMPLEMENTED (Feb 18, 2026): Outlook-Style Inbox Drawer
-- Created `ConciergeInboxDrawer.jsx` component
-- Modified `NotificationBell.jsx` to open drawer instead of navigating
-- Added `/api/service_desk/tickets/{id}/reply` endpoint for member replies
-- **Files Created/Changed:**
-  - `/app/frontend/src/components/Mira/ConciergeInboxDrawer.jsx` (NEW)
-  - `/app/frontend/src/components/Mira/NotificationBell.jsx` (MODIFIED)
-  - `/app/backend/mira_service_desk.py` (ADDED member_reply endpoint)
+- **REPLACED** with full iOS Mail-style Inbox system
+- See next section for details
+
+### ✅ IMPLEMENTED (Feb 18, 2026): iOS Mail-Style Notifications Inbox
+- **Route `/notifications`**: Full-screen inbox with tabs (Primary/Updates/All)
+- **Route `/tickets/:ticketId`**: Full-screen ticket thread with messages
+- **Desktop**: Split view (inbox left, thread right)
+- **Mobile**: Full-screen transitions (no drawers)
+- **Reply**: Bottom sheet composer with attachments
+- **Actions**: Mark read/unread, Archive
+- **Bell**: Navigates to /notifications (no dropdown)
+
+**Files Created:**
+- `/app/frontend/src/pages/NotificationsInbox.jsx`
+- `/app/frontend/src/pages/TicketThread.jsx`
+- `/app/frontend/src/components/Mira/ReplySheet.jsx`
+- `/app/frontend/src/components/Mira/InboxRow.jsx`
+- `/app/memory/UNIFIED_INFLOW_BIBLE.md`
+
+**Files Modified:**
+- `/app/frontend/src/components/Mira/NotificationBell.jsx` (simplified to badge + navigate)
+- `/app/frontend/src/App.js` (added routes)
+- `/app/backend/server.py` (added inbox action endpoints)
 
 ### 1. Intent Capture (P1) - VERIFIED WORKING
 - **Status:** NOT A BUG - Intent capture IS working
