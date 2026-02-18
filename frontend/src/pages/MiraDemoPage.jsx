@@ -3729,6 +3729,7 @@ const MiraDemoPage = () => {
         pet={pet}
         allPets={allPets}
         token={token}
+        user={user}
         onAddToPicks={(pick) => {
           setMiraPicks(prev => ({
             ...prev,
