@@ -7,19 +7,22 @@
  * - Real-time unread count badge
  * - Dropdown notification list
  * - Mark as read functionality
- * - Link to full inbox
+ * - Outlook-style inline drawer for thread conversations
  */
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, X, Check, ChevronRight, Settings, User } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import hapticFeedback from '../../utils/haptic';
+import ConciergeInboxDrawer from './ConciergeInboxDrawer';
 
 const NotificationBell = ({ userEmail, petId, petName, className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [activeThreadId, setActiveThreadId] = useState(null);
+  const [activeNotification, setActiveNotification] = useState(null);
   const dropdownRef = useRef(null);
   
   // Fetch notifications - filtered by pet if petId/petName is provided
