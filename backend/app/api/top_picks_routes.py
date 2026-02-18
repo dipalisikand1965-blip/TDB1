@@ -1040,6 +1040,8 @@ async def get_user_recent_intents(db, user_id: str, pet_id: str, hours: int = 48
     """
     Get user's recent LEARN intents from the shared intent store.
     Same data that powers LEARN's "{petName} might need this" shelf.
+    
+    Note: user_id can be either UUID or email - we check both
     """
     if db is None or not user_id:
         return []
@@ -1048,8 +1050,16 @@ async def get_user_recent_intents(db, user_id: str, pet_id: str, hours: int = 48
         now = datetime.now(timezone.utc)
         cutoff = now - timedelta(hours=hours)
         
+        # Try to find user UUID if we got an email
+        resolved_user_id = user_id
+        if "@" in user_id:
+            user_doc = await db.users.find_one({"email": user_id}, {"id": 1})
+            if user_doc and user_doc.get("id"):
+                resolved_user_id = user_doc["id"]
+                logger.info(f"[PICKS SOUL] Resolved email {user_id} to UUID {resolved_user_id}")
+        
         query = {
-            "user_id": user_id,
+            "user_id": resolved_user_id,
             "created_at": {"$gte": cutoff}
         }
         
