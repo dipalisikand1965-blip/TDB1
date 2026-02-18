@@ -73,6 +73,21 @@
 - **Verified:** Voice compliance - no banned openers
 - **Test report:** `/app/test_reports/iteration_212.json` - 8/8 tests passed
 
+### Feb 19, 2026 - Intermittent Personalisation Mismatch Instrumentation
+- **Status:** Intermittent personalisation mismatch (breed mention) — not reproducible, instrumented
+- **Investigation:** Could not reproduce breed substitution in testing - Pet First doctrine being followed correctly
+- **Instrumentation added:**
+  1. **Sealed breed variable in system prompt** - BREED MENTION RULE block at line 8763
+  2. **Breed mention detector** - `/app/backend/utils/breed_mention_detector.py`
+     - Detects all breed mentions in responses
+     - Compares against active pet's actual breed
+     - Logs `[BREED-MISMATCH-ALERT]` with full context (pet_id, session, ticket, pillar, response snippet)
+  3. **Integrated into response pipeline** - `add_picks_to_response()` automatically checks every response
+  4. **Forced-breed regression tests** - `/app/backend/tests/test_breed_mention_regression.py`
+     - Tests that force breed mention: "What grooming brush is best for X's coat type as a Y?"
+     - Cross-contamination tests: Chat about pet A, then pet B
+- **Why this approach:** "Cannot reproduce" sounds dismissive; "Intermittent + instrumented" shows we take it seriously and will catch it next time
+
 ### Feb 18, 2026 - One Spine Unread Indicator Fix
 - **Fixed:** Concierge replies now correctly update `awaiting_you` and `unread_replies` counts
 - **Fixed:** Pet ID filter now includes tickets with null/empty pet_id
