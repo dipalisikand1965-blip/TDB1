@@ -525,8 +525,6 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
                 className="p-2 rounded-full hover:bg-gray-800 flex-shrink-0"
                 data-testid="thread-back-btn"
               >
-                className="p-2 rounded-full hover:bg-gray-800 flex-shrink-0"
-              >
                 <ArrowLeft className="w-5 h-5 text-gray-300" />
               </button>
             )}
