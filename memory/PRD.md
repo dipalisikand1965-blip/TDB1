@@ -7,15 +7,15 @@
 
 **EVERY AGENT** working on this codebase MUST complete these steps before making ANY changes:
 
-## Step 1: Read All Bibles and Doctrines
+## Step 1: Read All Bibles and Doctrines (IN ORDER)
 
-| Document | Path | Purpose |
-|----------|------|---------|
-| **PET_OS_BEHAVIOR_BIBLE** | `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` | Complete system contract, voice rules, quick replies |
-| **Quick Replies Audit** | `/app/memory/QUICK_REPLIES_AUDIT_FRAMEWORK.md` | Chip validation tests |
-| **Comprehensive Audit** | `/app/memory/MIRA_OS_COMPREHENSIVE_AUDIT_FRAMEWORK.md` | Full system audit |
-| **LEARN Bible** | `/app/memory/LEARN_BIBLE.md` | LEARN pillar specifics |
-| **This PRD** | `/app/memory/PRD.md` | Product requirements |
+| # | Document | Path | Purpose |
+|---|----------|------|---------|
+| 1 | **PET_OS_BEHAVIOR_BIBLE** | `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` | Complete system contract, voice rules, quick replies |
+| 2 | **AGENT_INSTRUCTIONS** | `/app/memory/AGENT_INSTRUCTIONS.md` | QA protocols, test scripts, verification steps |
+| 3 | **Quick Replies Audit** | `/app/memory/QUICK_REPLIES_AUDIT_FRAMEWORK.md` | Chip validation tests |
+| 4 | **Comprehensive Audit** | `/app/memory/MIRA_OS_COMPREHENSIVE_AUDIT_FRAMEWORK.md` | Full system audit |
+| 5 | **This PRD** | `/app/memory/PRD.md` | Product requirements & changelog |
 
 ## Step 2: Understand Core Doctrines
 
@@ -39,6 +39,13 @@
 - No Places without consent/area
 - Ticket chips must call spine (`TCK-YYYY-NNNNNN`)
 
+### THE SOUL LEARNING CONTRACT (Section F)
+- Every response includes `_memory_trace` with:
+  - `known_fields_used` - what Mira recalled
+  - `new_enrichments_detected` - what Mira learned
+  - `saved_enrichments` - what was saved to Soul
+  - `rejected_enrichments` - what was NOT saved (with reason)
+
 ## Step 3: Test Credentials
 
 | What | Value |
@@ -46,7 +53,7 @@
 | Test URL | `/mira-demo?debug=1` |
 | User Email | `dipali@clubconcierge.in` |
 | Password | `test123` |
-| Test Pet | Lola, Mystique |
+| Test Pet | Mystique (Shih Tzu - arthritis, chicken allergy) |
 | Admin | `aditya` / `lola4304` |
 
 ## Step 4: Warn on Conflicts
