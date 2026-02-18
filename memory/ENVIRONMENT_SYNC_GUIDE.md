@@ -23,10 +23,10 @@ An API exists to sync pet data between environments.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/admin/sync/status` | GET | Check sync API status |
-| `/api/admin/sync/fetch-from-source` | POST | Fetch pets from source env |
-| `/api/admin/sync/apply-to-target` | POST | Apply pet data to current DB |
-| `/api/admin/sync/full-sync` | POST | Complete sync in one call |
+| `/api/admin/env-sync/status` | GET | Check sync API status |
+| `/api/admin/env-sync/fetch-from-source` | POST | Fetch pets from source env |
+| `/api/admin/env-sync/apply-to-target` | POST | Apply pet data to current DB |
+| `/api/admin/env-sync/full-sync` | POST | Complete sync in one call |
 
 ### Authentication
 
