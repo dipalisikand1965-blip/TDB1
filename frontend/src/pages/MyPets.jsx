@@ -438,6 +438,9 @@ const MyPets = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-50/50 via-white to-gray-50" data-testid="my-pets-page">
+      {/* Global Navigation: Dashboard | Inbox */}
+      <GlobalNav activePetName={activePet?.name} />
+      
       {/* Modern Header */}
       <div className="bg-white border-b border-gray-100 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
