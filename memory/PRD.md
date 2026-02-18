@@ -45,6 +45,32 @@ sudo supervisorctl restart frontend
 - All shelves now rendering correctly with proper badges and styling
 - Backend APIs `/api/mira/top-picks/{pet_id}` providing all data
 
+### ✅ MOJO Bible P1 Fields - COMPLETED
+Added new data models and API endpoints for MOJO Bible compliance:
+
+1. **Weight History Timeline** - Track weight changes over time
+   - `GET/POST /api/pet-soul/profile/{pet_id}/weight-history`
+   - Supports trend analysis (gaining/losing/stable)
+   - Target weight tracking
+
+2. **Training History & Progress Notes** - Track skill mastery
+   - `GET/POST /api/pet-soul/profile/{pet_id}/training-history`
+   - Skills: not_started → in_progress → mastered
+   - Stats: mastered count, current focus skills
+
+3. **Environment & Climate Profile** - Pet's living context
+   - `GET/POST /api/pet-soul/profile/{pet_id}/environment`
+   - City, climate zone, housing type, AC status
+   - Auto-calculated seasonal risks (monsoon, heat stroke, etc.)
+   - Integrates with breed_knowledge.py climate data
+
+### ✅ MOJO Bible P0 Items - ALREADY IMPLEMENTED
+Verified existing implementations:
+- ✅ Banned Opener Filter (mira_routes.py lines 220-305)
+- ✅ Emergency Two-Tier Triage (14 references in mira_routes.py)
+- ✅ PICKS Concierge Fallback (PersonalizedPicksPanel.jsx lines 1738+)
+- ✅ Icon State System (useIconState.js - OFF/ON/PULSE)
+
 ---
 
 ## Original Problem Statement
