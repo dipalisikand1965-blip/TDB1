@@ -5,8 +5,8 @@
  * 
  * Features:
  * - Full-screen list (no dropdown)
- * - Search inside inbox (subject, pet, messages)
- * - Select mode + bulk actions (mark read/unread, archive - NO delete)
+ * - Search inside inbox (subject, pet, messages, ticket ID)
+ * - Select mode + bulk actions (mark read/unread, archive/unarchive - NO delete)
  * - Tabs: Primary / Updates / All
  * - Pet filter: Active Pet / All Pets
  * - Filter sheet: Status, Pet, Type (with active indicator)
@@ -15,13 +15,15 @@
  * - Desktop: Split view (list left, thread right)
  * - Every row opens a ticket thread
  * - Unread count = NotificationEvents (not tickets)
+ * - Archived view toggle
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
-  ArrowLeft, Bell, Filter, Search, X, Check, Square, 
-  CheckSquare, RefreshCw, Archive, Mail, MailOpen
+  ArrowLeft, Bell, Filter, Search, X, 
+  CheckSquare, Square, RefreshCw, Archive, Mail, MailOpen,
+  ArchiveRestore, Inbox
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import InboxRow from '../components/Mira/InboxRow';
@@ -35,34 +37,45 @@ const TABS = [
   { id: 'all', label: 'All' }
 ];
 
-// Group events within time window (60 seconds)
+// Group events within time window (60 seconds) for same ticket+type
 const groupEvents = (notifications) => {
   const grouped = [];
-  const seen = new Map(); // ticket_id -> latest notification
+  const ticketGroups = new Map(); // ticket_id-type -> { notif, count, ids }
   
-  for (const notif of notifications) {
+  // Sort by created_at descending first
+  const sorted = [...notifications].sort((a, b) => 
+    new Date(b.created_at) - new Date(a.created_at)
+  );
+  
+  for (const notif of sorted) {
     const key = `${notif.ticket_id}-${notif.type}`;
-    const existing = seen.get(key);
+    const existing = ticketGroups.get(key);
     
     if (existing) {
-      // Check if within 60 second window
-      const existingTime = new Date(existing.created_at);
+      const existingTime = new Date(existing.notif.created_at);
       const currentTime = new Date(notif.created_at);
       const diffSeconds = Math.abs(existingTime - currentTime) / 1000;
       
+      // Group if within 60 second window
       if (diffSeconds < 60) {
-        // Group: increment count on existing
-        existing.groupCount = (existing.groupCount || 1) + 1;
+        existing.count++;
+        existing.ids.push(notif.id);
         continue;
       }
     }
     
-    // New entry or outside window
-    seen.set(key, notif);
-    grouped.push(notif);
+    // New group or outside window
+    const group = { notif, count: 1, ids: [notif.id] };
+    ticketGroups.set(key, group);
+    grouped.push(group);
   }
   
-  return grouped;
+  // Return notifications with group counts
+  return grouped.map(g => ({
+    ...g.notif,
+    groupCount: g.count,
+    groupIds: g.ids
+  }));
 };
 
 const NotificationsInbox = () => {
@@ -89,6 +102,9 @@ const NotificationsInbox = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   
+  // Archive view state
+  const [viewArchived, setViewArchived] = useState(false);
+  
   // Select mode state
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
@@ -106,6 +122,20 @@ const NotificationsInbox = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Exit select mode when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (selectMode && !e.target.closest('[data-select-area]')) {
+        // Only exit if clicking on backdrop areas
+        if (e.target.closest('[data-exit-select]')) {
+          clearSelection();
+        }
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [selectMode]);
 
   // Fetch user's pets
   useEffect(() => {
@@ -142,6 +172,11 @@ const NotificationsInbox = () => {
     try {
       let url = `${API_URL}/api/member/notifications/inbox/${encodeURIComponent(user.email)}?limit=100`;
       
+      // Add archived filter
+      if (viewArchived) {
+        url += `&archived=true`;
+      }
+      
       // Add pet filter
       if (petFilter === 'active' && activePet?.id) {
         url += `&pet_id=${activePet.id}`;
@@ -172,7 +207,7 @@ const NotificationsInbox = () => {
     } finally {
       setLoading(false);
     }
-  }, [user?.email, token, activeTab, petFilter, activePet?.id]);
+  }, [user?.email, token, activeTab, petFilter, activePet?.id, viewArchived]);
 
   useEffect(() => {
     fetchNotifications();
@@ -247,7 +282,7 @@ const NotificationsInbox = () => {
       if (isDesktop) {
         setSelectedTicketId(ticketId);
       } else {
-        navigate(`/tickets/${ticketId}${notification.event_id ? `?event=${notification.event_id}` : ''}`);
+        navigate(`/tickets/${ticketId}${notification.id ? `?event=${notification.id}` : ''}`);
       }
     }
   };
@@ -272,77 +307,113 @@ const NotificationsInbox = () => {
     setSelectMode(false);
   };
 
-  // Bulk actions
+  // Bulk actions using new bulk endpoints
   const handleBulkMarkRead = async () => {
     const ids = Array.from(selectedIds);
-    let successCount = 0;
+    if (ids.length === 0) return;
     
-    for (const id of ids) {
-      try {
-        await fetch(`${API_URL}/api/member/notifications/${id}/read`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
-        });
-        successCount++;
-      } catch (err) {
-        console.error('Failed to mark read:', err);
+    try {
+      const response = await fetch(`${API_URL}/api/member/notifications/bulk/read`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          ...(token && { 'Authorization': `Bearer ${token}` }) 
+        },
+        body: JSON.stringify(ids)
+      });
+      
+      if (response.ok) {
+        // Update local state
+        const affectedUnread = notifications.filter(n => selectedIds.has(n.id) && !n.read).length;
+        setNotifications(prev => prev.map(n => 
+          selectedIds.has(n.id) ? { ...n, read: true } : n
+        ));
+        setUnreadCount(prev => Math.max(0, prev - affectedUnread));
       }
+    } catch (err) {
+      console.error('Failed to bulk mark read:', err);
     }
-    
-    // Update local state
-    const affectedUnread = notifications.filter(n => selectedIds.has(n.id) && !n.read).length;
-    setNotifications(prev => prev.map(n => 
-      selectedIds.has(n.id) ? { ...n, read: true } : n
-    ));
-    setUnreadCount(prev => Math.max(0, prev - affectedUnread));
     
     clearSelection();
   };
 
   const handleBulkMarkUnread = async () => {
     const ids = Array.from(selectedIds);
-    let successCount = 0;
+    if (ids.length === 0) return;
     
-    for (const id of ids) {
-      try {
-        await fetch(`${API_URL}/api/member/notifications/${id}/unread`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
-        });
-        successCount++;
-      } catch (err) {
-        console.error('Failed to mark unread:', err);
+    try {
+      const response = await fetch(`${API_URL}/api/member/notifications/bulk/unread`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          ...(token && { 'Authorization': `Bearer ${token}` }) 
+        },
+        body: JSON.stringify(ids)
+      });
+      
+      if (response.ok) {
+        // Update local state
+        const affectedRead = notifications.filter(n => selectedIds.has(n.id) && n.read).length;
+        setNotifications(prev => prev.map(n => 
+          selectedIds.has(n.id) ? { ...n, read: false } : n
+        ));
+        setUnreadCount(prev => prev + affectedRead);
       }
+    } catch (err) {
+      console.error('Failed to bulk mark unread:', err);
     }
-    
-    // Update local state
-    const affectedRead = notifications.filter(n => selectedIds.has(n.id) && n.read).length;
-    setNotifications(prev => prev.map(n => 
-      selectedIds.has(n.id) ? { ...n, read: false } : n
-    ));
-    setUnreadCount(prev => prev + affectedRead);
     
     clearSelection();
   };
 
   const handleBulkArchive = async () => {
     const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
     
-    for (const id of ids) {
-      try {
-        await fetch(`${API_URL}/api/member/notifications/${id}/archive`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
-        });
-      } catch (err) {
-        console.error('Failed to archive:', err);
+    try {
+      const response = await fetch(`${API_URL}/api/member/notifications/bulk/archive`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          ...(token && { 'Authorization': `Bearer ${token}` }) 
+        },
+        body: JSON.stringify(ids)
+      });
+      
+      if (response.ok) {
+        // Remove from list (Archive = hide from inbox)
+        const affectedUnread = notifications.filter(n => selectedIds.has(n.id) && !n.read).length;
+        setNotifications(prev => prev.filter(n => !selectedIds.has(n.id)));
+        setUnreadCount(prev => Math.max(0, prev - affectedUnread));
       }
+    } catch (err) {
+      console.error('Failed to bulk archive:', err);
     }
     
-    // Remove from list (Archive = hide from inbox)
-    const affectedUnread = notifications.filter(n => selectedIds.has(n.id) && !n.read).length;
-    setNotifications(prev => prev.filter(n => !selectedIds.has(n.id)));
-    setUnreadCount(prev => Math.max(0, prev - affectedUnread));
+    clearSelection();
+  };
+
+  const handleBulkUnarchive = async () => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/member/notifications/bulk/unarchive`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          ...(token && { 'Authorization': `Bearer ${token}` }) 
+        },
+        body: JSON.stringify(ids)
+      });
+      
+      if (response.ok) {
+        // Remove from archived view
+        setNotifications(prev => prev.filter(n => !selectedIds.has(n.id)));
+      }
+    } catch (err) {
+      console.error('Failed to bulk unarchive:', err);
+    }
     
     clearSelection();
   };
@@ -397,6 +468,18 @@ const NotificationsInbox = () => {
     }
   };
 
+  const handleSingleUnarchive = async (notification) => {
+    try {
+      await fetch(`${API_URL}/api/member/notifications/${notification.id}/unarchive`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
+      });
+      setNotifications(prev => prev.filter(n => n.id !== notification.id));
+    } catch (err) {
+      console.error('Failed to unarchive:', err);
+    }
+  };
+
   // Get pet name for notification
   const getPetName = (notification) => {
     if (notification.pet_name) return notification.pet_name;
@@ -418,14 +501,14 @@ const NotificationsInbox = () => {
       <header className="sticky top-0 z-40 bg-[#0d0d1a] border-b border-gray-800/50">
         {/* Select mode header */}
         {selectMode ? (
-          <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center justify-between px-4 py-3" data-select-area>
             <div className="flex items-center gap-3">
-              <button onClick={clearSelection} className="p-2 rounded-full hover:bg-gray-800">
+              <button onClick={clearSelection} className="p-2 rounded-full hover:bg-gray-800" data-testid="exit-select-mode">
                 <X className="w-5 h-5 text-gray-300" />
               </button>
               <span className="text-white font-medium">{selectedIds.size} selected</span>
             </div>
-            <button onClick={selectAll} className="text-pink-400 text-sm font-medium">
+            <button onClick={selectAll} className="text-pink-400 text-sm font-medium" data-testid="select-all-btn">
               Select All
             </button>
           </div>
@@ -435,27 +518,48 @@ const NotificationsInbox = () => {
               <button 
                 onClick={() => navigate(-1)}
                 className="p-2 rounded-full hover:bg-gray-800 lg:hidden"
+                data-testid="back-btn"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-300" />
               </button>
               <div>
                 <h1 className="text-lg font-semibold text-white flex items-center gap-2">
-                  <Bell className="w-5 h-5 text-pink-400" />
-                  Inbox
+                  {viewArchived ? (
+                    <Archive className="w-5 h-5 text-gray-400" />
+                  ) : (
+                    <Bell className="w-5 h-5 text-pink-400" />
+                  )}
+                  {viewArchived ? 'Archive' : 'Inbox'}
                 </h1>
                 <p className="text-xs text-gray-400">
-                  {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}
+                  {viewArchived 
+                    ? `${filteredNotifications.length} archived`
+                    : unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'
+                  }
                 </p>
               </div>
             </div>
             
             <div className="flex items-center gap-1">
+              {/* Archive/Inbox toggle */}
+              <button 
+                onClick={() => {
+                  setViewArchived(!viewArchived);
+                  setSelectedIds(new Set());
+                }}
+                className={`p-2 rounded-full ${viewArchived ? 'bg-pink-500/20 text-pink-400' : 'hover:bg-gray-800 text-gray-400'}`}
+                data-testid="toggle-archive-view"
+              >
+                {viewArchived ? <Inbox className="w-5 h-5" /> : <Archive className="w-5 h-5" />}
+              </button>
+              
               <button 
                 onClick={() => {
                   setSelectMode(true);
                   setSelectedIds(new Set());
                 }}
                 className="p-2 rounded-full hover:bg-gray-800 text-gray-400"
+                data-testid="enter-select-mode"
               >
                 <CheckSquare className="w-5 h-5" />
               </button>
@@ -463,6 +567,7 @@ const NotificationsInbox = () => {
               <button 
                 onClick={() => setShowSearch(!showSearch)}
                 className={`p-2 rounded-full ${showSearch ? 'bg-blue-500/20 text-blue-400' : 'hover:bg-gray-800 text-gray-400'}`}
+                data-testid="search-toggle"
               >
                 <Search className="w-5 h-5" />
               </button>
@@ -470,6 +575,7 @@ const NotificationsInbox = () => {
               <button 
                 onClick={fetchNotifications}
                 className="p-2 rounded-full hover:bg-gray-800"
+                data-testid="refresh-btn"
               >
                 <RefreshCw className={`w-5 h-5 text-gray-400 ${loading ? 'animate-spin' : ''}`} />
               </button>
@@ -478,6 +584,7 @@ const NotificationsInbox = () => {
               <button 
                 onClick={() => setShowFilterSheet(true)}
                 className="p-2 rounded-full hover:bg-gray-800 relative"
+                data-testid="filter-btn"
               >
                 <Filter className="w-5 h-5 text-gray-400" />
                 {hasActiveFilters && (
@@ -500,6 +607,7 @@ const NotificationsInbox = () => {
                 placeholder="Search tickets, pets, messages..."
                 className="w-full bg-gray-800/50 border border-gray-700/50 rounded-full pl-10 pr-10 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50"
                 autoFocus
+                data-testid="search-input"
               />
               {searchQuery && (
                 <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -511,7 +619,7 @@ const NotificationsInbox = () => {
         )}
         
         {/* Tabs + Pet Filter */}
-        {!selectMode && (
+        {!selectMode && !viewArchived && (
           <div className="flex items-center justify-between px-4 pb-3">
             <div className="flex gap-1">
               {TABS.map(tab => (
@@ -525,6 +633,7 @@ const NotificationsInbox = () => {
                       : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
                     }
                   `}
+                  data-testid={`tab-${tab.id}`}
                 >
                   {tab.label}
                 </button>
@@ -535,6 +644,7 @@ const NotificationsInbox = () => {
             <button
               onClick={() => setPetFilter(petFilter === 'active' ? 'all' : 'active')}
               className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-gray-800/50 text-gray-400 hover:bg-gray-800"
+              data-testid="pet-filter-toggle"
             >
               {petFilter === 'active' ? (activePet?.name || 'Active Pet') : 'All Pets'}
               <span className="text-[10px]">▾</span>
@@ -544,10 +654,11 @@ const NotificationsInbox = () => {
         
         {/* Bulk Actions Bar */}
         {selectMode && selectedIds.size > 0 && (
-          <div className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-800/50 border-t border-gray-700/30">
+          <div className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-800/50 border-t border-gray-700/30" data-select-area>
             <button
               onClick={handleBulkMarkRead}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
+              data-testid="bulk-mark-read"
             >
               <MailOpen className="w-4 h-4" />
               Mark Read
@@ -555,24 +666,37 @@ const NotificationsInbox = () => {
             <button
               onClick={handleBulkMarkUnread}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-amber-500/20 text-amber-400 hover:bg-amber-500/30"
+              data-testid="bulk-mark-unread"
             >
               <Mail className="w-4 h-4" />
               Mark Unread
             </button>
-            <button
-              onClick={handleBulkArchive}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-500/20 text-gray-400 hover:bg-gray-500/30"
-            >
-              <Archive className="w-4 h-4" />
-              Archive
-            </button>
+            {viewArchived ? (
+              <button
+                onClick={handleBulkUnarchive}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-green-500/20 text-green-400 hover:bg-green-500/30"
+                data-testid="bulk-unarchive"
+              >
+                <ArchiveRestore className="w-4 h-4" />
+                Unarchive
+              </button>
+            ) : (
+              <button
+                onClick={handleBulkArchive}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-500/20 text-gray-400 hover:bg-gray-500/30"
+                data-testid="bulk-archive"
+              >
+                <Archive className="w-4 h-4" />
+                Archive
+              </button>
+            )}
           </div>
         )}
       </header>
       
       {/* Filter Sheet */}
       {showFilterSheet && (
-        <div className="fixed inset-0 z-50 bg-black/50" onClick={() => setShowFilterSheet(false)}>
+        <div className="fixed inset-0 z-50 bg-black/50" onClick={() => setShowFilterSheet(false)} data-exit-select>
           <div 
             className="absolute bottom-0 left-0 right-0 bg-[#0d0d1a] rounded-t-2xl p-4 max-h-[70vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
@@ -581,7 +705,7 @@ const NotificationsInbox = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Filters</h3>
               {hasActiveFilters && (
-                <button onClick={resetFilters} className="text-pink-400 text-sm">
+                <button onClick={resetFilters} className="text-pink-400 text-sm" data-testid="reset-filters">
                   Reset
                 </button>
               )}
@@ -598,6 +722,7 @@ const NotificationsInbox = () => {
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                       statusFilter === status ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
                     }`}
+                    data-testid={`filter-status-${status}`}
                   >
                     {status === 'in_progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}
                   </button>
@@ -616,6 +741,7 @@ const NotificationsInbox = () => {
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                       typeFilter === type ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
                     }`}
+                    data-testid={`filter-type-${type}`}
                   >
                     {type.charAt(0).toUpperCase() + type.slice(1)}
                   </button>
@@ -632,6 +758,7 @@ const NotificationsInbox = () => {
                   className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                     petFilter === 'all' ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
                   }`}
+                  data-testid="filter-pet-all"
                 >
                   All Pets
                 </button>
@@ -645,6 +772,7 @@ const NotificationsInbox = () => {
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                       petFilter === 'active' && activePet?.id === pet.id ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
                     }`}
+                    data-testid={`filter-pet-${pet.id}`}
                   >
                     {pet.name}
                   </button>
@@ -655,6 +783,7 @@ const NotificationsInbox = () => {
             <button
               onClick={() => setShowFilterSheet(false)}
               className="w-full py-3 bg-pink-500 text-white font-medium rounded-full"
+              data-testid="apply-filters"
             >
               Apply Filters
             </button>
@@ -663,7 +792,7 @@ const NotificationsInbox = () => {
       )}
       
       {/* Content */}
-      <div className="flex-1 flex">
+      <div className="flex-1 flex" data-exit-select>
         {/* Inbox List */}
         <div className={`
           flex-1 overflow-y-auto
@@ -682,11 +811,15 @@ const NotificationsInbox = () => {
             </div>
           ) : filteredNotifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-gray-400">
-              <Bell className="w-12 h-12 mb-3 opacity-30" />
-              <p>{searchQuery ? 'No matching notifications' : 'No notifications yet'}</p>
+              {viewArchived ? (
+                <Archive className="w-12 h-12 mb-3 opacity-30" />
+              ) : (
+                <Bell className="w-12 h-12 mb-3 opacity-30" />
+              )}
+              <p>{searchQuery ? 'No matching notifications' : viewArchived ? 'No archived items' : 'No notifications yet'}</p>
             </div>
           ) : (
-            <div>
+            <div data-select-area>
               {filteredNotifications.map(notification => (
                 <div key={notification.id} className="flex items-center">
                   {/* Select checkbox */}
@@ -694,6 +827,7 @@ const NotificationsInbox = () => {
                     <button
                       onClick={() => toggleSelection(notification.id)}
                       className="pl-4 py-3"
+                      data-testid={`select-${notification.id}`}
                     >
                       {selectedIds.has(notification.id) ? (
                         <CheckSquare className="w-5 h-5 text-pink-400" />
@@ -716,10 +850,12 @@ const NotificationsInbox = () => {
                       onClick={() => handleNotificationClick(notification)}
                       onMarkRead={() => handleSingleMarkRead(notification)}
                       onMarkUnread={() => handleSingleMarkUnread(notification)}
-                      onArchive={() => handleSingleArchive(notification)}
+                      onArchive={viewArchived ? undefined : () => handleSingleArchive(notification)}
+                      onUnarchive={viewArchived ? () => handleSingleUnarchive(notification) : undefined}
                       showPetName={petFilter === 'all'}
                       isSelected={selectedIds.has(notification.id)}
                       selectMode={selectMode}
+                      isArchived={viewArchived}
                     />
                   </div>
                 </div>
