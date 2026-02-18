@@ -42,7 +42,8 @@ def auth_token():
         json={"email": TEST_EMAIL, "password": TEST_PASSWORD}
     )
     if response.status_code == 200:
-        token = response.json().get("token")
+        data = response.json()
+        token = data.get("access_token") or data.get("token")
         if token:
             return token
     pytest.skip("Authentication failed - skipping tests")
