@@ -15283,6 +15283,13 @@ Has {pet_name}'s {entity} sensitivity changed, or should I treat {entity} as str
             
             logger.info(f"[CONFLICT-PROMPT] Injected conflict prompt for entity '{entity}'")
         
+        # Ensure conversation_contract exists (Section 11.2 of PET_OS_BEHAVIOR_BIBLE)
+        response_data = ensure_conversation_contract(
+            response_data, 
+            pillar=pillar,
+            ticket_id=response_data.get("ticket_id")
+        )
+        
         return response_data
         
     except Exception as e:
