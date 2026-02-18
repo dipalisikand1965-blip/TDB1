@@ -24,7 +24,33 @@ const HelpModal = ({
   onOrderHelp,
   onConciergeChat
 }) => {
+  const [expandedFaq, setExpandedFaq] = useState(null);
+  
   if (!isOpen) return null;
+  
+  // FAQ data with mental model copy
+  const faqs = [
+    {
+      id: 'replies',
+      question: 'Where do I see replies from Concierge?',
+      answer: 'In Services. That\'s your request thread.'
+    },
+    {
+      id: 'chat',
+      question: 'What is Chat for then?',
+      answer: 'Chat is where you ask. If it needs action, Mira opens a tracked request in Services.'
+    },
+    {
+      id: 'details',
+      question: 'How do I add details after I\'ve asked?',
+      answer: 'Reply inside the Services thread so Concierge sees it instantly.'
+    },
+    {
+      id: 'badge',
+      question: 'What does the badge mean?',
+      answer: 'A badge on Services means Concierge has replied and you haven\'t opened it yet.'
+    }
+  ];
   
   const handleOrderHelp = () => {
     onClose();
