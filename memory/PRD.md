@@ -114,28 +114,43 @@ When no chat intents exist, Mira still shows intelligent picks based on:
 
 ### ✅ FIXED (Feb 18, 2026): Member Notification Bug
 - **Problem:** Users didn't receive notifications when sending concierge requests
-- **Root Cause:** Three endpoints were missing member notification creation:
-  - `/api/concierge/picks-request` - Already had notifications ✅
-  - `/api/concierge/mira-request` - **FIXED** (was missing)
-  - `/api/mira/vault/send-to-concierge` - **FIXED** (was missing)
+- **Root Cause:** Multiple endpoints missing member notification creation
 - **Fix Applied:**
-  - Added `user_email` field to `MiraRecommendationRequest` model
-  - Added member notification creation to both endpoints
-  - Frontend `MiraOSModal.jsx` now passes `user_email` to backend
+  - Added member notification to `central_signal_flow.py` (centralized fix)
+  - Fixed individual endpoints that didn't use central flow
+  - Frontend now passes `user_email` to all concierge endpoints
 - **Files Changed:**
-  - `/app/backend/concierge_routes.py` (added notification to mira-request)
-  - `/app/backend/mira_routes.py` (added notification to vault endpoint)
-  - `/app/frontend/src/components/mira-os/MiraOSModal.jsx` (pass user_email)
+  - `/app/backend/central_signal_flow.py` (CENTRAL FIX - step 4 added)
+  - `/app/backend/concierge_routes.py`
+  - `/app/backend/mira_routes.py`
+  - `/app/frontend/src/components/mira-os/MiraOSModal.jsx`
 
-### 1. Intent Capture Not Working (P1)
-- **Collection `user_learn_intents` is EMPTY**
-- Chat messages not storing intents for timely picks
-- **Location:** `mira_routes.py` lines 4365-4390, `learn_intent_bridge.py`
+### ✅ FIXED (Feb 18, 2026): City Not Persisted (P2)
+- **Problem:** Pet profile had `city: null`
+- **Fix Applied:**
+  - Added `city` and `pincode` fields to `PetProfileUpdate` model
+  - Updated onboarding to save city from parent to pet
+  - Ran migration to backfill city from owner to pets
+- **Files Changed:**
+  - `/app/backend/models.py`
+  - `/app/backend/auth_routes.py`
 
-### 2. City Not Persisted (P2)
-- Pet profile has `city: null`
-- Mumbai showing from browser geolocation only
-- **Need:** Add city field to onboarding
+### ✅ IMPLEMENTED (Feb 18, 2026): Outlook-Style Inbox Drawer
+- Created `ConciergeInboxDrawer.jsx` component
+- Modified `NotificationBell.jsx` to open drawer instead of navigating
+- Added `/api/service_desk/tickets/{id}/reply` endpoint for member replies
+- **Files Created/Changed:**
+  - `/app/frontend/src/components/Mira/ConciergeInboxDrawer.jsx` (NEW)
+  - `/app/frontend/src/components/Mira/NotificationBell.jsx` (MODIFIED)
+  - `/app/backend/mira_service_desk.py` (ADDED member_reply endpoint)
+
+### 1. Intent Capture (P1) - VERIFIED WORKING
+- **Status:** NOT A BUG - Intent capture IS working
+- **Evidence:** `user_learn_intents` collection has data, test message captured "health/tick" intent at 16:53:10
+- **Collection:** `user_learn_intents` has 3+ records
+
+### 2. Pet Memory Allergy Test (P3)
+- Logic for "Health-First Safety Rule" not investigated
 
 ---
 
