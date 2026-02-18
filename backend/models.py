@@ -335,6 +335,8 @@ class PetProfileUpdate(BaseModel):
     gotcha_date: Optional[str] = None
     age_years: Optional[int] = None
     age_months: Optional[int] = None
+    city: Optional[str] = None  # Pet's city (inherits from owner)
+    pincode: Optional[str] = None  # Pet's pincode
     soul: Optional[PetSoul] = None
     celebrations: Optional[List[PetCelebration]] = None
     preferences: Optional[PetPreferences] = None
