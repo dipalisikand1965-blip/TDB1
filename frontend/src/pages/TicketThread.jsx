@@ -191,14 +191,17 @@ const TicketDetailsSheet = ({ ticket, onClose }) => {
   );
 };
 
-const TicketThread = () => {
-  const { ticketId } = useParams();
+const TicketThread = ({ ticketIdProp, isEmbedded = false, onClose }) => {
+  const { ticketId: ticketIdParam } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, token } = useAuth();
   
+  // Use prop if provided (embedded mode), otherwise use URL param
+  const ticketId = ticketIdProp || ticketIdParam;
+  
   const highlightEventId = searchParams.get('event');
-  const isEmbed = searchParams.get('embed') === 'true';
+  const isEmbed = isEmbedded || searchParams.get('embed') === 'true';
   
   // State
   const [ticket, setTicket] = useState(null);
