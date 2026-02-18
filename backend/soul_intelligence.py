@@ -98,23 +98,43 @@ def get_known_fields(pet_soul: Dict) -> Dict[str, Any]:
         if val:
             known[field] = val
     
-    # Health fields
+    # Health fields - handle both dict and list formats
     health = pet_soul.get("health", {})
-    if health.get("allergies"):
-        known["allergies"] = health["allergies"]
-    if health.get("medical_conditions"):
-        known["medical_conditions"] = health["medical_conditions"]
-    if health.get("sensitive_stomach"):
-        known["sensitive_stomach"] = health["sensitive_stomach"]
+    if isinstance(health, list):
+        # If health is a list, it might be health conditions
+        if health:
+            known["health_conditions"] = health
+    elif isinstance(health, dict):
+        if health.get("allergies"):
+            known["allergies"] = health["allergies"]
+        if health.get("medical_conditions"):
+            known["medical_conditions"] = health["medical_conditions"]
+        if health.get("sensitive_stomach"):
+            known["sensitive_stomach"] = health["sensitive_stomach"]
     
-    # Preferences
+    # Check for sensitivities directly on pet_soul (common format)
+    sensitivities = pet_soul.get("sensitivities", [])
+    if sensitivities:
+        known["sensitivities"] = sensitivities
+    
+    # Preferences - handle both dict and list formats
     prefs = pet_soul.get("preferences", {})
-    if prefs.get("favorite_treats"):
-        known["favorite_treats"] = prefs["favorite_treats"]
-    if prefs.get("dislikes"):
-        known["dislikes"] = prefs["dislikes"]
-    if prefs.get("diet_type"):
-        known["diet_type"] = prefs["diet_type"]
+    if isinstance(prefs, list):
+        # If preferences is a list, store as favorites
+        if prefs:
+            known["favorites"] = prefs
+    elif isinstance(prefs, dict):
+        if prefs.get("favorite_treats"):
+            known["favorite_treats"] = prefs["favorite_treats"]
+        if prefs.get("dislikes"):
+            known["dislikes"] = prefs["dislikes"]
+        if prefs.get("diet_type"):
+            known["diet_type"] = prefs["diet_type"]
+    
+    # Check for favorites directly on pet_soul (common format)
+    favorites = pet_soul.get("favorites", [])
+    if favorites and "favorites" not in known:
+        known["favorites"] = favorites
     
     # Personality - handle both dict and list formats
     personality = pet_soul.get("personality", {})
