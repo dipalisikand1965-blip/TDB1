@@ -855,24 +855,18 @@ const NotificationsInbox = () => {
           )}
         </div>
         
-        {/* Desktop: Thread Panel - Render component directly (no iframe) */}
+        {/* Desktop: Thread Panel - Render component directly */}
         {isDesktop && selectedTicketId && (
           <div className="flex-1 bg-[#0a0a14] overflow-y-auto">
-            <Suspense fallback={
-              <div className="flex items-center justify-center h-full">
-                <Loader2 className="w-8 h-8 animate-spin text-pink-400" />
-              </div>
-            }>
-              <TicketThread 
-                ticketIdProp={selectedTicketId} 
-                isEmbedded={true}
-                onClose={() => {
-                  const newParams = new URLSearchParams(searchParams);
-                  newParams.delete('ticketId');
-                  setSearchParams(newParams);
-                }}
-              />
-            </Suspense>
+            <TicketThread 
+              ticketIdProp={selectedTicketId} 
+              isEmbedded={true}
+              onClose={() => {
+                const newParams = new URLSearchParams(searchParams);
+                newParams.delete('ticketId');
+                setSearchParams(newParams);
+              }}
+            />
           </div>
         )}
         
