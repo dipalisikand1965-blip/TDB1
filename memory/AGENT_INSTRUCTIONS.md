@@ -7,9 +7,34 @@
 
 Every agent MUST read these files in order before starting:
 1. `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` - The Law
-2. `/app/memory/AGENT_INSTRUCTIONS.md` - This file (QA protocols)
-3. `/app/memory/PRD.md` - Product requirements & changelog
-4. `/app/memory/QUICK_REPLIES_AUDIT_FRAMEWORK.md` - Chip validation
+2. `/app/memory/ONE_SPINE_SPEC.md` - Canonical ticket system spec (Bug naming, Mental model copy, 5 Hard Proofs)
+3. `/app/memory/ONE_SPINE_AUDIT_REPORT.md` - Latest audit status & issues
+4. `/app/memory/AGENT_INSTRUCTIONS.md` - This file (QA protocols)
+5. `/app/memory/PRD.md` - Product requirements & changelog
+6. `/app/memory/QUICK_REPLIES_AUDIT_FRAMEWORK.md` - Chip validation
+
+---
+
+# BUG NAMING CONVENTION (From ONE_SPINE_SPEC.md)
+
+**Member-facing label (never scary):** "Syncing history"
+- Subtext: "Some older requests may appear gradually. New requests are always tracked."
+
+**Internal / engineering name:** "Ticket ownership mismatch (parent_id back-compat)"
+- Or shorter: "Ownership contract mismatch"
+
+**QA shorthand:** "Spine ownership drift"
+
+---
+
+# MENTAL MODEL COPY (Use Everywhere)
+
+**Core Sentence:**
+> Chat is where you ask. Services is where it gets done.
+> Any request you create becomes a tracked thread in Services, where you and Concierge message each other.
+
+**Follow-on Line:**
+> If you want to add details or change timing, reply inside the Services thread so Concierge sees it immediately.
 
 ---
 
