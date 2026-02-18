@@ -996,12 +996,36 @@ async def resolve_ticket(ticket_id: str, resolution_note: Optional[str] = None):
         }
     }
     
-    result = await db.mira_conversations.update_one(
+    # Also prepare update for mira_tickets (uses messages[] instead of conversation[])
+    mira_tickets_update = {
+        "$set": {
+            "status": "resolved",
+            "resolved_at": now.isoformat(),
+            "updated_at": now.isoformat()
+        },
+        "$push": {
+            "messages": {
+                "sender": "system",
+                "source": "Service_Desk",
+                "content": f"Ticket resolved. {resolution_note or ''}".strip(),
+                "timestamp": now.isoformat()
+            }
+        }
+    }
+    
+    # Try mira_tickets first (canonical spine collection)
+    result = await db.mira_tickets.update_one(
+        {"ticket_id": ticket_id},
+        mira_tickets_update
+    )
+    
+    # Also try mira_conversations (for legacy/dual storage)
+    legacy_result = await db.mira_conversations.update_one(
         {"ticket_id": ticket_id},
         update_doc
     )
     
-    if result.matched_count == 0:
+    if result.matched_count == 0 and legacy_result.matched_count == 0:
         raise HTTPException(status_code=404, detail=f"Ticket {ticket_id} not found")
     
     # ═══════════════════════════════════════════════════════════════════════════
