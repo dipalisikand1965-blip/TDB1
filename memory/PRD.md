@@ -70,6 +70,15 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 | Pet avatar in cards | ✅ Added |
 | My Account link | ✅ Added |
 
+### Ticket-to-Soul Enrichment: ✅ COMPLETE
+
+| Feature | Status |
+|---------|--------|
+| Extract learnings from resolved tickets | ✅ Working |
+| Persist to pet's doggy_soul_answers | ✅ Working |
+| Dual-collection support (mira_tickets + mira_conversations) | ✅ Fixed |
+| Test coverage | ✅ Added |
+
 ### Pet Soul Data: ✅ ENRICHED
 
 5 pets enriched with 51 fields each:
