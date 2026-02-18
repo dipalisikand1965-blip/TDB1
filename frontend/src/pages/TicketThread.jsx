@@ -196,17 +196,17 @@ const TicketDetailsSheet = ({ ticket, onClose }) => {
   );
 };
 
-const TicketThread = ({ ticketIdProp, isEmbedded = false, onClose }) => {
+const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicketUpdate }) => {
   const { ticketId: ticketIdParam } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, token } = useAuth();
   
-  // Use prop if provided (embedded mode), otherwise use URL param
+  // Use prop if provided (split mode), otherwise use URL param (full mode)
   const ticketId = ticketIdProp || ticketIdParam;
   
   const highlightEventId = searchParams.get('event');
-  const isEmbed = isEmbedded || searchParams.get('embed') === 'true';
+  const isSplitMode = mode === "split";
   
   // State
   const [ticket, setTicket] = useState(null);
@@ -215,7 +215,11 @@ const TicketThread = ({ ticketIdProp, isEmbedded = false, onClose }) => {
   const [error, setError] = useState(null);
   const [showActions, setShowActions] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const [isReplyExpanded, setIsReplyExpanded] = useState(false);
+  
+  // Reply composer state
+  const [replyText, setReplyText] = useState('');
+  const [pendingMessages, setPendingMessages] = useState([]); // Optimistic UI
+  const inputRef = useRef(null);
   
   const messagesEndRef = useRef(null);
   const highlightRef = useRef(null);
