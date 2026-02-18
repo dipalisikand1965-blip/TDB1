@@ -262,20 +262,30 @@ async def handoff_to_spine(
         
         ticket_id = result.get("ticket_id")
         action = result.get("action", "created")
+        needs_pet_selection = result.get("needs_pet_selection", False)
         
         # Verify canonical format
         if ticket_id and check_for_spine_violation(ticket_id):
             log_spine_violation(route_name, ticket_id, f"Non-canonical ID returned from spine at {endpoint}")
         
-        logger.info(f"[SPINE-HELPER] {route_name}:{endpoint} → {ticket_id} ({action}) | pillar={normalized_pillar} category={category}")
+        logger.info(f"[SPINE-HELPER] {route_name}:{endpoint} → {ticket_id} ({action}) | pillar={normalized_pillar} category={category} pet={pet_name}")
         
-        return {
+        response = {
             "success": True,
             "ticket_id": ticket_id,
             "action": action,
             "deep_link": f"/services?ticket_id={ticket_id}",
-            "message": result.get("message", f"Ticket {action} successfully")
+            "message": result.get("message", f"Ticket {action} successfully"),
+            "pet_id": result.get("ticket", {}).get("pet_id"),
+            "pet_name": result.get("ticket", {}).get("pet_name"),
         }
+        
+        # If pet selection is needed, include prompt
+        if needs_pet_selection:
+            response["needs_pet_selection"] = True
+            response["message"] = "Which pet is this for?"
+        
+        return response
         
     except Exception as e:
         logger.error(f"[SPINE-HELPER] FAILED at {route_name}:{endpoint} | Error: {e}")
