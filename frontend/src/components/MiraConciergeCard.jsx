@@ -241,7 +241,7 @@ const MiraConciergeCards = ({
       
       if (response.ok) {
         const data = await response.json();
-        toast.success(`Request sent to Concierge!`, {
+        toast.success(`Request sent to Concierge®!`, {
           description: `We'll source "${recommendation.title}" for ${petName}`,
           duration: 4000
         });
@@ -289,7 +289,7 @@ const MiraConciergeCards = ({
       
       if (response.ok) {
         const data = await response.json();
-        toast.success(`${selected.length} items sent to Concierge!`, {
+        toast.success(`${selected.length} items sent to Concierge®!`, {
           description: `We'll prepare everything for ${petName}`,
           duration: 4000
         });
