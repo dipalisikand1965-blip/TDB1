@@ -39,7 +39,7 @@ class PetSyncData(BaseModel):
 
 class SyncRequest(BaseModel):
     """Request to sync pets from source environment"""
-    source_url: str  # e.g., "https://inbox-overhaul-1.preview.emergentagent.com"
+    source_url: str  # e.g., "https://reply-composer.preview.emergentagent.com"
     user_email: str
     user_password: str
     sync_soul_data: bool = True

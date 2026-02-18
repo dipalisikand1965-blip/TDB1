@@ -152,7 +152,7 @@ tip_card = {
 # 🔑 CREDENTIALS
 
 - **Emergent LLM Key**: `sk-emergent-cEb0eF956Fa6741A31`
-- **Preview URL**: `https://inbox-overhaul-1.preview.emergentagent.com`
+- **Preview URL**: `https://reply-composer.preview.emergentagent.com`
 
 ---
 

@@ -15,7 +15,7 @@
 - **User:** `dipali@clubconcierge.in` / `test123`
 - **Admin:** `aditya` / `lola4304`
 - **Test URL:** `/mira-demo?debug=1`
-- **API URL:** `https://inbox-overhaul-1.preview.emergentagent.com`
+- **API URL:** `https://reply-composer.preview.emergentagent.com`
 
 ---
 

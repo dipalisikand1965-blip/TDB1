@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://inbox-overhaul-1.preview.emergentagent.com
+https://reply-composer.preview.emergentagent.com
 ```
 
 ---

@@ -7,7 +7,7 @@ import requests
 import os
 
 # Get base URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://inbox-overhaul-1.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://reply-composer.preview.emergentagent.com')
 
 
 class TestYouTubeAPI:

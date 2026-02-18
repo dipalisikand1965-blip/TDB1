@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://inbox-overhaul-1.preview.emergentagent.com
+https://reply-composer.preview.emergentagent.com
 
 ---
 
