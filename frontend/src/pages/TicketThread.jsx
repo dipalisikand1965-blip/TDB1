@@ -589,20 +589,21 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
           </div>
         )}
         
-        {/* Messages */}
-        {messages.length === 0 ? (
+        {/* Messages (including optimistic pending messages) */}
+        {allMessages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-48 text-gray-400">
             <p className="text-sm">No messages yet</p>
             <p className="text-xs mt-1">Start the conversation below</p>
           </div>
         ) : (
-          messages.map((msg, idx) => {
+          allMessages.map((msg, idx) => {
             const isUser = msg.sender === 'member' || msg.sender === 'user' || msg.sender === user?.email;
             const isSystem = msg.isSystem || msg.type === 'system' || msg.type === 'status_change';
             const isHighlighted = msg.id === highlightEventId;
+            const isPending = msg.status === 'sending' || msg.status === 'failed';
             
             // Smart timestamp: only show if gap > 10 minutes from previous
-            const prevMsg = messages[idx - 1];
+            const prevMsg = allMessages[idx - 1];
             const timestamp = formatTimestamp(msg.timestamp || msg.created_at, prevMsg?.timestamp || prevMsg?.created_at);
             
             if (isSystem) {
@@ -616,6 +617,8 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
                   isUser={isUser}
                   showTimestamp={timestamp}
                   isHighlighted={isHighlighted}
+                  isPending={isPending}
+                  onRetry={msg.status === 'failed' ? () => handleRetryMessage(msg) : undefined}
                 />
               </div>
             );
@@ -624,15 +627,16 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
         <div ref={messagesEndRef} />
       </div>
       
-      {/* Reply Section */}
+      {/* Reply Section - Apple-clear Composer */}
       {isResolved ? (
         // Resolved ticket: show Reopen button
-        <div className="p-4 border-t border-gray-800/50 bg-[#0d0d1a]">
+        <div className="p-4 border-t border-gray-800/50 bg-[#0d0d1a] flex-shrink-0">
           <div className="flex items-center justify-center gap-3">
             <span className="text-sm text-gray-400">This ticket is resolved</span>
             <button
               onClick={handleReopenTicket}
               className="flex items-center gap-2 px-4 py-2 bg-pink-500 text-white rounded-full text-sm font-medium"
+              data-testid="reopen-ticket-btn"
             >
               <RotateCcw className="w-4 h-4" />
               Reopen Ticket
@@ -640,13 +644,38 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
           </div>
         </div>
       ) : (
-        // Open ticket: show reply composer
-        <ReplySheet
-          ticketId={ticketId}
-          onSend={handleSendReply}
-          isExpanded={isReplyExpanded}
-          onExpandChange={setIsReplyExpanded}
-        />
+        // Open ticket: Apple-clear inline composer
+        <div className="p-3 border-t border-gray-800/50 bg-[#0d0d1a] flex-shrink-0">
+          <div className="flex items-end gap-2">
+            <textarea
+              ref={inputRef}
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type a message... (Enter to send)"
+              className="flex-1 bg-gray-800/50 border border-gray-700/50 rounded-2xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50 resize-none min-h-[44px] max-h-32"
+              rows={1}
+              data-testid="reply-input"
+            />
+            <button
+              onClick={handleSendReply}
+              disabled={!replyText.trim()}
+              className={`
+                p-2.5 rounded-full transition-all flex-shrink-0
+                ${replyText.trim() 
+                  ? 'bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 text-white' 
+                  : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                }
+              `}
+              data-testid="send-reply-btn"
+            >
+              <Send className="w-5 h-5" />
+            </button>
+          </div>
+          <p className="text-[10px] text-gray-600 text-center mt-1.5">
+            Press Enter to send • Shift+Enter for new line
+          </p>
+        </div>
       )}
       
       {/* Ticket Details Sheet */}
@@ -654,14 +683,11 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
         <TicketDetailsSheet ticket={ticket} onClose={() => setShowDetails(false)} />
       )}
       
-      {/* Backdrop */}
-      {(showActions || isReplyExpanded) && (
+      {/* Backdrop for actions menu */}
+      {showActions && (
         <div 
           className="fixed inset-0 bg-black/30 z-40"
-          onClick={() => {
-            setShowActions(false);
-            setIsReplyExpanded(false);
-          }}
+          onClick={() => setShowActions(false)}
         />
       )}
     </div>
