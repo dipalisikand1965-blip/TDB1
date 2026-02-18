@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://mira-soul-learn.preview.emergentagent.com
+**Preview URL:** https://soul-enrichment.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

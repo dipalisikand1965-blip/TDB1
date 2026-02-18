@@ -2,102 +2,89 @@
 
 **Reasoning for Summary decisions:**
 
-*   **Prioritizing User-Facing Bugs:** The summary prioritizes the  as the most critical issue (P0). Although a code fix was implemented, it wasn't deployed or verified, making it the most immediate and impactful task for the next agent to prevent a broken user experience.
-*   **Clarifying Environment Discrepancies:** A significant portion of the session was spent debugging differences between Preview and Production. The summary dedicates a Critical Info section to explain that the **codebases can be synced via deployment, but the databases are separate and require a custom-built API**. This context is vital to prevent the next agent from repeating the same debugging cycle.
-*   **Framing New Features as In-Progress:** The Ticket-to-Soul Auto-Enrichment system was a major development. The summary frames it not as a complete feature but as an IN PROGRESS task, clearly outlining that the backend framework is built but requires full end-to-end testing and verification to be considered done.
-*   **Capturing Unfinished Audits and Gaps:** The session involved several audits (Pet Context, Mobile, Notifications). The summary captures the status of each, noting that the Pet Context audit is complete, but the Mobile audit was started but not finished, and the Notification audit revealed concrete gaps (like the missing All Pets toggle) that are now listed as pending issues.
-*   **Actionable Next Steps:** The summary provides a clear, logical sequence for the next agent: 1) Deploy and verify the critical bug fix. 2) Complete the in-progress Soul Enrichment feature. 3) Address the pending UI/UX gaps identified in the audits. This provides a structured path forward.
+*   **Prioritizing the Blocker:** The summary designates the non-functional LEARN tab as the top-priority issue (P0). This is a critical blocker preventing access to a core application feature, and the user explicitly directed the agent to fix this before any other task.
+*   **Structuring User-Requested UI/UX Changes:** The user provided specific, actionable UI feedback for the Test Scenarios panel and the Concierge replied banner. These have been captured as high-priority upcoming tasks, clearly referencing the user's directive and the agent's proposed implementation plan.
+*   **Confirming Critical Flow Completion:** A significant part of the session was dedicated to fixing and verifying the Uniform Service Flow for the Send to Concierge action. The summary marks this as Completed but also retains the underlying technical concept as Critical Info to ensure the next agent understands this non-negotiable architectural principle.
+*   **Capturing Investigation State:** The agent had begun investigating the LEARN tab bug by inspecting several files (, ). The summary provides this context in the Last working item and Next debug checklist to prevent the next agent from starting the debugging process from scratch.
+*   **Deferring Non-Critical Work:** The user explicitly stated to fix the LEARN tab *before* implementing the UI/UX changes. The summary reflects this by placing the LEARN tab fix in the Pending/In progress Issue list and the UI changes in the Upcoming and Future Tasks section, respecting the user's prioritization.
 
 ---
 
 **original_problem_statement:**
 The user's core vision is a Golden Standard Communication System centered around an AI named Mira, guided by internal design bibles. A key architectural rule is the Uniform Service Flow, where all actions consolidate into a single Service Desk Ticket spine. The primary user mental model is: **Chat is where you ask. Services is where it gets done.**
 
-Recent user directives have expanded requirements to include:
-1.  **Full Data Parity:** The user expects the Preview environment to perfectly mirror the Production environment, both in code and data. Any discrepancies must be resolved.
-2.  **Comprehensive System Audits:** The user requires full-site audits to ensure all features developed over the project's history are present and functional on the live production site ().
-3.  **Continuous Learning:** The AI, Mira, must learn from all interactions, including service tickets. Learnings from resolved tickets should be automatically persisted into the pet's Soul profile to enhance future interactions and prevent re-asking known facts.
+Recent user directives include:
+1.  **Display Enriched Learnings:** Ensure facts learned from resolved service tickets (Ticket-to-Soul) are visible and highlighted in the pet's profile modal (MOJO).
+2.  **Enforce Uniform Service Flow:** The Send to Concierge action from chat must silently create a service ticket and admin notification in the background.
+3.  **Conduct Mobile Audit:** Perform a comprehensive 20-point audit of the mobile experience and report the findings.
+4.  **Implement UI/UX Improvements:** Address specific feedback regarding the Test Scenarios panel and the Concierge replied banner to improve mobile usability.
+5.  **Fix Core Functionality:** Ensure all main navigation tabs, specifically the LEARN tab, are functional.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a React/FastAPI/MongoDB stack. The One Spine ticketing system, core notification framework, and user-facing UI are established.
+The application is a React/FastAPI/MongoDB stack. The core One Spine ticketing system and Ticket-to-Soul data enrichment pipeline are functional.
 
-This session accomplished several key objectives:
-1.  **Production Deployment Parity:** A major issue where production was running old code was diagnosed and resolved. The agent identified a stale build and guided the user through a Replace deployment, successfully syncing the production code with the latest changes. All Concierge® branding updates are now live.
-2.  **Data Discrepancy Resolution:** A difference in data between Preview and Production was identified as being due to separate databases. A custom admin API endpoint () was created and successfully used to sync pet and soul data from the preview environment to the production environment.
-3.  **Ticket-to-Soul Enrichment Framework:** The backend framework for a new Ticket → Soul Auto-Enrichment feature was designed and implemented. This system uses an LLM to extract key facts from resolved tickets to persist into the pet's soul profile ().
-4.  **System Audits:** Audits were conducted for Pet Context (complete), Mobile Specs (in progress), and the Notification system, which revealed several gaps and a critical bug.
+This session accomplished several critical tasks:
+1.  **Send to Concierge Flow Fixed:** The flow was re-engineered to correctly create admin and member notifications in the background upon handoff, fulfilling the Uniform Service Flow requirement. Admins now see these requests in their dashboard.
+2.  **What Mira Learned UI Implemented:** The pet profile modal (MOJO) was updated to display facts learned from resolved service tickets, with a clear From Service Requests attribution.
+3.  **Comprehensive Mobile Audit:** A 20-point mobile audit was successfully conducted on iOS and Android viewports, with a detailed proof pack and screenshots created, verifying the responsiveness of most features.
+4.  **Backend Logic Hardened:** Key endpoints (, , ) were fixed to correctly interact with the primary  collection, improving data integrity.
 
 **Last working item**:
--   Last item agent was working: Designing and implementing the **Ticket → Soul Auto-Enrichment** system. The backend Python module () and the API integration to trigger it on ticket resolution have been created.
+-   Last item agent was working: Investigating why the LEARN tab is inaccessible. The agent was inspecting the frontend navigation components (, ) to find the root cause of the bug.
 -   Status: IN PROGRESS
--   Agent Testing Done: N (The agent tested the extraction component but not the full end-to-end flow of resolving a ticket and verifying the pet's soul was updated).
--   Which testing method agent to use? both
+-   Agent Testing Done: N
+-   Which testing method agent to use? screenshot tool
 -   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Notification Deep-Link Bug (P0)**
-    -   **Description:** Clicking a  notification in the header bell incorrectly redirects to a generic  page instead of deep-linking to the specific ticket thread in the Services tab (e.g., ).
-    -   **Attempted fixes:** A fix was implemented in  to prioritize the  from the notification data. However, this fix has **not been deployed or verified**.
+-   **Issue 1: LEARN Tab is Inaccessible (P0)**
+    -   **Description:** The LEARN tab in the main application navigation is not clickable or accessible, blocking users from the search and learn functionality.
+    -   **Attempted fixes:** The agent began inspecting  and related components but has not yet implemented a fix.
     -   **Next debug checklist:**
-        1.  Verify the fix is still present in .
-        2.  Deploy the latest frontend code to production.
-        3.  Log in as a user with unread notifications.
-        4.  Click a notification and confirm it redirects to the correct  URL.
+        1.  Examine  to understand how the active tab state () is managed.
+        2.  Inspect the  handler and rendering logic for the Learn icon in .
+        3.  Check for any conditional logic (e.g.,  attributes or feature flags) that might be preventing interaction.
+        4.  Implement a fix to ensure the tab becomes clickable and correctly sets the state to render the  component.
+        5.  Verify the implemented behavior against the specifications in .
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Frontend
 
--   **Issue 2: Implement All Pets Toggle for Notifications (P1)**
-    -   **Description:** The notification bell currently only shows notifications for the actively selected pet. There is no UI element to view notifications for all pets at once. This was identified as a gap during the notification system audit.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Frontend
-
--   **Issue 3: Intermittent Personalisation Mismatch (Breed Mention) (P1)**
+-   **Issue 2: Intermittent Personalisation Mismatch (Breed Mention) (P1)**
     -   **Description:** A sporadic issue where Mira might mention the wrong breed. This is an ongoing issue being monitored via logs.
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Backend
 
 **In progress Task List**:
--   **Task 1: Complete and Verify Ticket-to-Soul Enrichment (P0)**
-    -   **Where to resume:** The backend code exists. The task requires a full end-to-end test.
-    -   **Next Steps:**
-        1.  In the mira-demo, select a pet (e.g., Mystique).
-        2.  Create a service ticket containing a new, unique fact about the pet (e.g., Mystique loves to swim in the lake on Tuesdays).
-        3.  Resolve the ticket via an admin action or UI if available.
-        4.  Verify the  function was triggered (check logs).
-        5.  Start a new chat with Mira and ask a question that would prove she learned the fact (e.g., What does Mystique like to do on Tuesdays?).
-    -   **What will be achieved with this?** Fulfills a core user requirement for the AI to learn from service interactions, making it more intelligent over time.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Both
-
--   **Task 2: Complete Mobile Specs Audit & Fixes (P1)**
-    -   **Where to resume:** The agent began fixing mobile tap targets (increasing sizes to  or ) but did not complete a full pass. A full audit against  is still needed.
-    -   **What will be achieved with this?** Ensures the application is fully usable and compliant with design specs on mobile devices.
+-   **Task 1: Complete LEARN Tab Audit and Fix (P0)**
+    -   **Where to resume:** The investigation is focused on the frontend components  and .
+    -   **What will be achieved with this?** This will restore access to the LEARN section, a core feature of the application.
     -   **Status:** IN PROGRESS
     -   **Should Test frontend/backend/both after fix?** Frontend
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
-*   **P0: Implement new 8-10 step soul-capture onboarding experience.**
-*   **P1: Implement General Label for Notifications:** Add a General or No pet linked label in the notification UI for tickets created without pet context.
-*   **P1: Implement Past Chats Panel UI refinements.**
+*   **P0: Implement UI Improvement: Test Scenarios Panel.** Per user request, move the Test Scenarios panel from the main chat view into a bottom sheet, triggered by a less intrusive pill button above the message composer.
+*   **P0: Implement UI Improvement: Concierge Replied Banner.** Per user request, refactor the large purple Concierge replied tile into a compact, single-line banner pinned below the header to reclaim vertical space on mobile.
+*   **P1: Implement All Pets Toggle for Notifications.** Add a UI element to view notifications for all of a user's pets at once.
+*   **P1: Implement new 8-10 step soul-capture onboarding experience.**
+*   **P1: Implement General Label for Notifications.** Add a label for notifications not linked to a specific pet.
 
 **Future Tasks:**
-*   **P2: Legacy Ticket Migration:** Plan and execute the migration of the 43% of legacy tickets that are missing full ownership fields.
+*   **P2: Legacy Ticket Migration:** Plan and execute the migration of legacy tickets missing full ownership fields.
 *   **P2: WhatsApp Webhook Idempotency:** Prevent webhook retries from creating duplicate tickets.
-*   Refactor the monoliths:  and .
+*   Refactor monoliths:  and .
 
 **Completed work in this session**
--   **Concierge® Branding:** Completed a full sweep across the frontend to update Concierge to Concierge® in all user-facing text.
--   **Production Deployment Fixed:** Diagnosed and resolved an issue where the production environment was serving a stale build.
--   **Data Sync API Created:** Built and used a new admin API () to sync pet and soul data from Preview to Production, resolving data discrepancies.
--   **Pet Context Audit:** Confirmed that all primary ticket creation paths correctly handle pet context requirements.
--   **Ticket-to-Soul Framework:** Built the initial backend system to enable Mira to learn from resolved tickets.
--   **Notification System Audit:** Performed a deep-dive analysis of the notification system, identifying a critical bug and functional gaps.
+-   **Send to Concierge Admin Notifications:** Fixed the handoff flow to correctly create background notifications for admins, making the Uniform Service Flow fully functional for this action.
+-   **What Mira Learned UI Integration:** Successfully updated the MOJO pet profile to display facts learned from resolved service tickets.
+-   **Mobile Audit Proof Pack:** Completed a 20-point mobile audit and generated a comprehensive report with screenshots and test results.
+-   **Ticket-to-Soul E2E Verification:** Confirmed the end-to-end flow of a ticket being resolved, a fact being extracted, and the UI being updated with the learned information.
+-   **Backend Ticket Handling:** Corrected several backend endpoints to use the canonical  collection, improving data consistency.
+-   **Documentation Updated:** , , and  were updated.
 
 **Earlier issues found/mentioned but not fixed**
 -   **Pet Memory Allergy Test:** The logic for the Health-First Safety Rule has not been investigated.
@@ -109,65 +96,64 @@ This session accomplished several key objectives:
 **Code Architecture**
 - **/app**
   - **/backend**
-    - **/lib**
-      -  (NEW): Contains logic to extract facts from tickets and update a pet's soul profile.
     - **/routes**
-      -  (NEW): Contains the administrative API for data synchronization.
-      - : Modified to integrate the soul enrichment call upon ticket resolution.
-      - : Modified to include the new  router.
+      - : Modified  to create admin/member notifications.
+      - : Modified  and  to prioritize the  collection.
   - **/frontend**
     - **/src**
       - **/components**
-        - : Modified with a fix for the deep-link navigation bug.
-        - Multiple Components: Numerous components were updated with the Concierge® branding.
-  - **/memory**
-    -  (NEW): Documents the process for syncing data between environments.
-    -  (NEW): Report from the completed audit.
-    - : Updated with progress.
+        - : Modified to add a section for ticket-derived learnings.
+        - : Modified to display facts from  fields.
+        - : Inspected for the LEARN tab bug.
+      - **/pages**
+        - : Inspected for tab state management.
 
 **Key Technical Concepts**
--   **Environment Separation (Code vs. Data):** A critical learning from this session. The **codebase** is synced via deployment, but Preview and Production environments use **separate databases**. This distinction is fundamental to understanding the application's behavior.
--   **Admin Data Synchronization API:** A custom-built FastAPI endpoint () designed to copy data (pets, soul answers) from the preview database to the production database upon user request.
--   **Ticket-to-Soul Auto-Enrichment:** A new backend process that triggers on ticket resolution. It uses an LLM to parse the ticket conversation, extract durable facts about a pet, and write those facts back to the pet's profile ( field), enabling the AI to learn from service interactions.
--   **Calculated vs. Stored Properties:** The  for a pet is not a static field in the database but is calculated dynamically on the backend from the  field within the  collection.
+-   **Silent Background Ticketing:** The Send to Concierge action is now the prime example of the Uniform Service Flow. It initiates a backend process (ticket creation, notifications) without interrupting the user's frontend experience, reinforcing the chat is for asking, services is for doing model.
+-   **Explicit Notification Creation:** Admin notifications are no longer tied to a generic push function. They are now explicitly created as documents in the  collection within the relevant business logic (), ensuring reliability.
+-   **Data Aggregation in UI:** The frontend now demonstrates how to build a unified view from disparate data sources. The What Mira Learned component aggregates facts from both direct conversation insights and learnings extracted from service tickets, presenting them cohesively.
 
 **key DB schema**
--   **:** The  field within this collection was identified as the source of truth for calculating the . The new sync API and soul enrichment system both target this field.
+-   ****: New documents are inserted here upon a Send to Concierge action. Key fields include , , , , and .
+-   ****: Confirmed as the primary collection for all new service tickets. Endpoints were updated to use this collection first.
+-   ****: This object is the target for soul enrichment. The UI now reads keys suffixed with  (e.g., ) from this object to display enriched data.
 
 **All files of reference**
--    (Modified, contains un-deployed fix)
 -    (NEW)
--    (NEW)
+-    (Reference for LEARN tab fix)
 -    (Modified)
--    (NEW)
--    (NEW)
+-    (Modified)
+-    (Modified)
+-    (File to investigate)
+-    (File to investigate)
 
 **Critical Info for New Agent**
--   **PREVIEW vs. PRODUCTION DATABASES ARE SEPARATE:** This was the source of major confusion. Do not assume data is the same. The code can be synced by asking the user to deploy. Data can be synced using the custom admin API (), but this should only be done on explicit user request. The protocol is documented in .
--   **URGENT: DEPLOY NOTIFICATION FIX:** A critical bug prevents notification clicks from deep-linking correctly. A fix has been implemented in  but it **has not been deployed**. Your first action should be to confirm this fix and guide the user to deploy it.
--   **FINISH TICKET-TO-SOUL ENRICHMENT:** A new system for Mira to learn from tickets has been built on the backend. It needs a full end-to-end test and verification to be considered complete. This is a high-priority feature for the user.
--   **SOUL SCORE IS CALCULATED:** Remember that a pet's  is not stored directly. It is calculated by the backend based on the contents of the  field in the  collection. To change the score, you must update the answers.
+-   **FIX THE LEARN TAB FIRST:** Your immediate priority is to fix the inaccessible LEARN tab. This is a hard blocker for a core feature. The user has explicitly requested this be resolved before any other UI work.
+-   **IMPLEMENT UI/UX IMPROVEMENTS NEXT:** Once the LEARN tab is fixed, immediately proceed to implement the two user-requested UI changes: moving Test Scenarios to a bottom sheet and converting the Concierge replied message to a compact banner. These are high-priority tasks to improve mobile usability.
+-   **UNIFORM SERVICE FLOW IS LAW:** The Send to Concierge fix reinforces a critical architectural rule. Any new feature that involves a user making a request that requires action must silently generate a ticket in the  collection and trigger the appropriate background notifications. Do not break this pattern.
+-   **TICKET COLLECTIONS:** Remember there are two ticket collections:  (primary, current) and  (legacy). All new development must write to and read from  first, with fallbacks to  only for handling older data.
 
 **documents and test reports created in this job**
 -   
 -   
--   
+-    (updated)
+-    (updated)
 -    (updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Asked for a full sync of Preview to Production data, confirming the choice. (Status: **Completed**)
-2.  **User**: Confirmed the decision should persist and be documented for future agents. (Status: **Completed**)
-3.  **User**: Reported the preview environment was not opening after the agent made backend changes. (Status: **Resolved**, was a temporary issue)
-4.  **User**: Confirmed deployment was live and instructed the agent to run the data sync and fix mobile specs. (Status: **In Progress**)
-5.  **User**: Asked detailed questions about the notification system's functionality. (Status: **Completed**, agent provided answers and identified gaps)
-6.  **User**: Provided a formatted summary of the notification system and requested confirmation with screenshots/recordings. (Status: **In Progress**, agent investigation revealed a bug)
-7.  **User**: Reported deployment was done but the same data issue persisted, asking the agent to run sync. (Status: **Completed**, sync was run)
-8.  **User**: Confirmed they expected *every single thing* including intelligence to be synced from preview to production. (Status: **Addressed**, led to deeper sync logic)
-9.  **User**: Asked for a full audit of the site, pillars, and onboarding. (Status: **In Progress**)
-10. **User**: After seeing the audit gap, requested a solution for Mira to learn from tickets and test it on mira-demo. (Status: **In Progress**)
+1.  **User**: Requested a handover summary for the next agent. (Status: **Addressed**, this summary is the response).
+2.  **User**: Instructed the agent to prioritize fixing the LEARN tab based on the BIBLE specs before implementing other UI/UX changes. (Status: **In Progress**).
+3.  **User**: Provided specific UI/UX feedback for the Test Scenarios panel and Concierge replied banner, asking for the agent's opinion. (Status: **Addressed**, agent provided recommendations; implementation is pending).
+4.  **User**: Requested a 20-point comprehensive mobile audit. (Status: **Completed**).
+5.  **User**: Confirmed the Send to Concierge fix looked good and asked for a check on preview vs. production sync. (Status: **Completed** via E2E testing).
+6.  **User**: Reported that the Send to Concierge button press did not create a notification or service ticket in the admin backend. (Status: **Completed**, this was the critical bug fixed this session).
+7.  **User**: Confirmed that the E2E Ticket-to-Soul flow demonstration was sufficient. (Status: **Completed**).
+8.  **User**: Asked to proceed with both showing Mystique's MOJO profile and running an E2E test. (Status: **Completed**).
+9.  **User**: Asked to verify that learnings from tickets were visible in the MOJO profile and that the Uniform Service Flow was working everywhere. (Status: **Completed**).
+10. **User**: Confirmed a previous fix and asked to see what Mira learned from tickets highlighted in the pet's profile. (Status: **Completed**).
 
 **Project Health Check:**
--   **Broken:** The notification deep-link functionality is currently broken in production due to a bug that has a local, un-deployed fix.
+-   **Broken:** The LEARN tab is currently non-functional, blocking access to a core feature.
 -   **Mocked:** None.
 
 **3rd Party Integrations**
@@ -180,16 +166,15 @@ This session accomplished several key objectives:
 -   Firebase
 
 **Testing status**
--   **Testing agent used after significant changes:** NO
+-   **Testing agent used after significant changes:** YES, at the beginning of the session.
 -   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** None. The session relied on manual verification via , log checks, and screenshots.
--   **Known regressions:** The notification deep-link functionality regressed and is currently broken in production.
+-   **Test files created:** []
+-   **Known regressions:** None from this session. The LEARN tab issue is a newly prioritized bug.
 
 **Credentials to test flow:**
 -   **User Login:**  / 
--   **Key Pet for Testing:** Mystique
+-   **Admin Login:**  / 
+-   **Key Pets for Testing:** Mystique (has enriched soul data from tickets), Lola (default pet).
 
 **What agent forgot to execute**
--   The agent implemented a fix for the notification deep-link bug but forgot to deploy it and verify with the user that it was resolved.
--   The agent started fixing mobile tap targets but did not complete the full mobile audit and fix pass as requested.
--   The agent proposed adding an All Pets toggle for notifications but did not proceed with the implementation.</analysis>
+-   The agent correctly followed the user's prioritization. The agent was actively debugging the highest priority item (the LEARN tab) when the session concluded. The other requested tasks (UI/UX improvements) were intentionally deferred per the user's instructions.</analysis>
