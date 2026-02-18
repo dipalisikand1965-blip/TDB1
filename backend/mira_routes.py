@@ -4277,6 +4277,32 @@ async def mira_os_understand_with_products(
             contract_mode_result = {"mode": "answer", "detected_intent": "general"}
         
         # ═══════════════════════════════════════════════════════════════════════════
+        # LEARN INTENT BRIDGE - Track conversation topics for LEARN/PICKS/SERVICES
+        # This enables "{petName} might need this" contextual content across OS
+        # ═══════════════════════════════════════════════════════════════════════════
+        db = get_db()
+        if db is not None and logged_in_user is not None and request.pet_context is not None:
+            try:
+                from learn_intent_bridge import process_chat_for_learn_intents
+                user_id = logged_in_user.get("user_id") or logged_in_user.get("email")
+                pet_id = request.pet_context.get("id") or request.pet_context.get("name")
+                
+                logger.info(f"[LEARN BRIDGE OS] user_id={user_id}, pet_id={pet_id}, message={request.input[:50]}...")
+                
+                if user_id and pet_id:
+                    intent_result = await process_chat_for_learn_intents(
+                        db=db,
+                        user_id=user_id,
+                        pet_id=pet_id,
+                        user_message=request.input,
+                        pillar=contract_mode_result.get("detected_intent")
+                    )
+                    if intent_result.get("topics_found"):
+                        logger.info(f"[LEARN BRIDGE OS] Captured intents: {intent_result['topics_found']}")
+            except Exception as learn_intent_err:
+                logger.warning(f"[LEARN BRIDGE OS] Intent capture error: {learn_intent_err}", exc_info=True)
+        
+        # ═══════════════════════════════════════════════════════════════════════════
         # PICKS ENGINE (B6) - Run ONCE at the start for every message
         # This ensures picks auto-refresh on every chat turn
         # ═══════════════════════════════════════════════════════════════════════════
