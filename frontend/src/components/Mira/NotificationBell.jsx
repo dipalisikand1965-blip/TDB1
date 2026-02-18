@@ -1,51 +1,38 @@
 /**
- * NotificationBell - Notification inbox with badge
+ * NotificationBell - Navigate to full-screen Inbox
  * =================================================
- * Shows unread notification count and dropdown inbox
+ * Shows unread notification count badge
+ * Bell tap opens /notifications full-screen inbox
  * 
- * Features:
- * - Real-time unread count badge
- * - Dropdown notification list
- * - Mark as read functionality
- * - Outlook-style inline drawer for thread conversations
+ * NO dropdown. NO drawer. Just badge + navigation.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Bell, X, Check, ChevronRight, Settings, User } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Bell } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../utils/api';
 import hapticFeedback from '../../utils/haptic';
-import ConciergeInboxDrawer from './ConciergeInboxDrawer';
 
 const NotificationBell = ({ userEmail, petId, petName, className = '' }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState([]);
+  const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [activeThreadId, setActiveThreadId] = useState(null);
-  const [activeNotification, setActiveNotification] = useState(null);
-  const dropdownRef = useRef(null);
   
-  // Fetch notifications - filtered by pet if petId/petName is provided
-  const fetchNotifications = async () => {
+  // Fetch unread count only (not full notifications)
+  const fetchUnreadCount = async () => {
     if (!userEmail) return;
     
     try {
-      // Use member_notifications inbox endpoint with optional pet filter
-      let url = `${API_URL}/api/member/notifications/inbox/${encodeURIComponent(userEmail)}?limit=10`;
+      let url = `${API_URL}/api/member/notifications/inbox/${encodeURIComponent(userEmail)}?limit=1`;
       if (petId) {
         url += `&pet_id=${encodeURIComponent(petId)}`;
-      }
-      if (petName) {
-        url += `&pet_name=${encodeURIComponent(petName)}`;
       }
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
-        setNotifications(data.notifications || []);
         setUnreadCount(data.unread || 0);
       }
     } catch (err) {
-      console.log('Could not fetch notifications');
+      console.log('Could not fetch notification count');
     }
   };
   
