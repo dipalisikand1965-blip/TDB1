@@ -5,12 +5,55 @@
  * Mobile-first, premium feel for millennial pet parents.
  * 
  * Section 12.8 from Bible: "The Minimum Onboarding Tooltip (One Step Only)"
+ * 
+ * MENTAL MODEL ANCHOR:
+ * "Chat is where you ask. Services is where it gets done."
+ * 
+ * Platform variants:
+ * - iOS: Shorter, punchier
+ * - Android: Slightly more explanatory
+ * - Web: Full experience
  */
 
 import React, { useState, useEffect } from 'react';
 import { X, MessageCircle, Briefcase, ArrowRight } from 'lucide-react';
 
 const STORAGE_KEY = 'mira_onboarding_tooltip_dismissed';
+
+/**
+ * Detect platform for copy variants
+ */
+const detectPlatform = () => {
+  if (typeof navigator === 'undefined') return 'web';
+  const ua = navigator.userAgent.toLowerCase();
+  if (/iphone|ipad|ipod/.test(ua)) return 'ios';
+  if (/android/.test(ua)) return 'android';
+  return 'web';
+};
+
+/**
+ * Platform-specific copy variants
+ */
+const COPY_VARIANTS = {
+  ios: {
+    // Shorter, punchier for iOS
+    headline: 'Chat is where you ask.',
+    subtext: 'Replies appear in Services.',
+    cta: 'Show me'
+  },
+  android: {
+    // Slightly more explanatory for Android
+    headline: 'Chat is where you ask.',
+    subtext: 'When Concierge handles your request, you\'ll find replies in Services.',
+    cta: 'Show me Services'
+  },
+  web: {
+    // Full experience for web
+    headline: 'Chat is where you ask.',
+    subtext: 'When Concierge replies or handles your request, you\'ll find it in Services.',
+    cta: 'Show me Services'
+  }
+};
 
 /**
  * Check if tooltip has been dismissed before
