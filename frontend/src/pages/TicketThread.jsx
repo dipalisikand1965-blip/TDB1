@@ -25,10 +25,10 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ArrowLeft, MoreHorizontal, Sparkles, User, Clock, 
-  CheckCircle2, AlertCircle, RefreshCw, Info, RotateCcw
+  CheckCircle2, AlertCircle, RefreshCw, Info, RotateCcw,
+  Send, Loader2, X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import ReplySheet from '../components/Mira/ReplySheet';
 import GlobalNav from '../components/Mira/GlobalNav';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
