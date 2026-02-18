@@ -7,46 +7,76 @@
  * 
  * Features:
  * - Full-screen on mobile (no drawers)
- * - Sticky header: Subject + Ticket ID + Status + Pet
- * - Timeline of messages + system events
- * - Bottom composer bar → expands to ReplySheet
- * - Actions menu: Mark unread, Archive, Close ticket
+ * - Tappable sticky header → details sheet
+ * - Deduplicated system events as centered chips
+ * - Message alignment: member right, concierge left
+ * - Smart timestamps (gaps > 10min)
+ * - Resolved ticket: disabled composer + "Reopen" button
+ * - Bottom sheet composer on tap
+ * - Deep-link highlight (auto-scroll + 2s highlight)
+ * - Actions menu: Mark unread, Archive
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, MoreHorizontal, Sparkles, User, Clock, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
+import { 
+  ArrowLeft, MoreHorizontal, Sparkles, User, Clock, 
+  CheckCircle2, AlertCircle, RefreshCw, Info, RotateCcw
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import ReplySheet from '../components/Mira/ReplySheet';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
-// Message bubble component
-const MessageBubble = ({ message, isUser, isHighlighted = false }) => {
-  const formatTime = (dateString) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleTimeString([], { 
-      hour: 'numeric', 
-      minute: '2-digit' 
-    });
-  };
+// Check if two timestamps are within gap minutes
+const withinGap = (ts1, ts2, gapMinutes = 10) => {
+  if (!ts1 || !ts2) return false;
+  const d1 = new Date(ts1);
+  const d2 = new Date(ts2);
+  return Math.abs(d1 - d2) < gapMinutes * 60 * 1000;
+};
 
+// Format timestamp smartly
+const formatTimestamp = (dateString, prevDateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const prevDate = prevDateString ? new Date(prevDateString) : null;
+  
+  // Skip if within 10 minutes of previous
+  if (prevDate && withinGap(dateString, prevDateString, 10)) {
+    return null; // Don't show
+  }
+  
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+  const isYesterday = new Date(now - 86400000).toDateString() === date.toDateString();
+  
+  if (isToday) {
+    return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  } else if (isYesterday) {
+    return `Yesterday ${date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+  }
+  return date.toLocaleDateString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+};
+
+// Message bubble component
+const MessageBubble = ({ message, isUser, showTimestamp, isHighlighted = false }) => {
   return (
     <div 
       className={`
-        flex ${isUser ? 'justify-end' : 'justify-start'} mb-3
-        ${isHighlighted ? 'animate-pulse' : ''}
+        flex ${isUser ? 'justify-end' : 'justify-start'} mb-2
+        ${isHighlighted ? 'animate-highlight' : ''}
       `}
       data-message-id={message.id}
     >
       <div
         className={`
-          max-w-[85%] rounded-2xl px-4 py-2.5
+          max-w-[80%] rounded-2xl px-4 py-2.5
           ${isUser
             ? 'bg-gradient-to-r from-pink-600 to-pink-500 text-white'
             : 'bg-gray-800/80 text-gray-100 border border-gray-700/50'
           }
-          ${isHighlighted ? 'ring-2 ring-blue-400' : ''}
+          ${isHighlighted ? 'ring-2 ring-yellow-400 ring-opacity-75' : ''}
         `}
       >
         {!isUser && (
@@ -56,30 +86,107 @@ const MessageBubble = ({ message, isUser, isHighlighted = false }) => {
           </div>
         )}
         <p className="text-sm whitespace-pre-wrap">{message.content || message.text || message.message}</p>
-        <div className={`flex items-center gap-1.5 mt-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
-          <span className="text-[10px] opacity-60">
-            {formatTime(message.timestamp || message.created_at)}
-          </span>
-        </div>
+        {showTimestamp && (
+          <div className={`flex items-center gap-1.5 mt-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
+            <span className="text-[10px] opacity-60">{showTimestamp}</span>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-// System event component
-const SystemEvent = ({ event }) => {
-  const getEventIcon = () => {
-    switch (event.type) {
-      case 'status_change': return <CheckCircle2 className="w-4 h-4 text-green-400" />;
-      case 'assigned': return <User className="w-4 h-4 text-blue-400" />;
-      default: return <Clock className="w-4 h-4 text-gray-400" />;
+// System event chip (centered, deduplicated)
+const SystemEventChip = ({ event }) => {
+  const getEventStyle = () => {
+    if (event.type === 'status_change' || event.content?.includes('Resolved')) {
+      return 'bg-green-500/10 text-green-400 border-green-500/20';
     }
+    if (event.type === 'assigned') {
+      return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+    }
+    return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+  };
+
+  const getEventText = () => {
+    if (event.content?.includes('Resolved') || event.type === 'status_change') {
+      return 'Status changed: Resolved';
+    }
+    return event.content || event.message || event.description || 'System update';
   };
 
   return (
-    <div className="flex items-center justify-center gap-2 py-3 text-xs text-gray-500">
-      {getEventIcon()}
-      <span>{event.message || event.description}</span>
+    <div className="flex justify-center my-3">
+      <div className={`px-3 py-1 rounded-full text-xs font-medium border ${getEventStyle()}`}>
+        {getEventText()}
+      </div>
+    </div>
+  );
+};
+
+// Ticket details sheet
+const TicketDetailsSheet = ({ ticket, onClose }) => {
+  if (!ticket) return null;
+  
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50" onClick={onClose}>
+      <div 
+        className="absolute bottom-0 left-0 right-0 bg-[#0d0d1a] rounded-t-2xl p-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="w-10 h-1 bg-gray-700 rounded-full mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-white mb-4">Ticket Details</h3>
+        
+        <div className="space-y-3">
+          <div className="flex justify-between">
+            <span className="text-gray-400 text-sm">Ticket ID</span>
+            <span className="text-white text-sm font-mono">{ticket.ticket_id}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400 text-sm">Status</span>
+            <span className={`text-sm px-2 py-0.5 rounded ${
+              ticket.status === 'resolved' ? 'bg-green-500/20 text-green-400' :
+              ticket.status === 'in_progress' ? 'bg-amber-500/20 text-amber-400' :
+              'bg-blue-500/20 text-blue-400'
+            }`}>
+              {ticket.status?.replace('_', ' ') || 'Open'}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400 text-sm">Pet</span>
+            <span className="text-white text-sm">{ticket.pet_name || 'General'}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400 text-sm">Pillar</span>
+            <span className="text-white text-sm capitalize">{ticket.pillar || 'General'}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400 text-sm">Created</span>
+            <span className="text-white text-sm">
+              {ticket.created_at ? new Date(ticket.created_at).toLocaleDateString() : 'N/A'}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400 text-sm">Last Updated</span>
+            <span className="text-white text-sm">
+              {ticket.updated_at ? new Date(ticket.updated_at).toLocaleDateString() : 'N/A'}
+            </span>
+          </div>
+          {ticket.assignee && (
+            <div className="flex justify-between">
+              <span className="text-gray-400 text-sm">Assignee</span>
+              <span className="text-white text-sm">{ticket.assignee}</span>
+            </div>
+          )}
+        </div>
+        
+        <button
+          onClick={onClose}
+          className="w-full mt-6 py-3 bg-gray-800 text-white font-medium rounded-full"
+        >
+          Close
+        </button>
+      </div>
     </div>
   );
 };
@@ -99,6 +206,7 @@ const TicketThread = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showActions, setShowActions] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const [isReplyExpanded, setIsReplyExpanded] = useState(false);
   
   const messagesEndRef = useRef(null);
@@ -107,7 +215,9 @@ const TicketThread = () => {
   // Scroll to bottom or highlighted event
   useEffect(() => {
     if (highlightEventId && highlightRef.current) {
-      highlightRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => {
+        highlightRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 500);
     } else if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
@@ -121,8 +231,7 @@ const TicketThread = () => {
     setError(null);
     
     try {
-      // Try multiple endpoints to find the ticket
-      // 1. Try mira_tickets endpoint (most common)
+      // Try mira_tickets endpoint first (most common)
       let response = await fetch(`${API_URL}/api/mira/tickets/${ticketId}`, {
         headers: {
           'Content-Type': 'application/json',
@@ -131,18 +240,7 @@ const TicketThread = () => {
       });
       
       if (!response.ok) {
-        // 2. Try mira_conversations endpoint (service_desk_router)
         response = await fetch(`${API_URL}/api/service_desk/ticket/${ticketId}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { 'Authorization': `Bearer ${token}` })
-          }
-        });
-      }
-      
-      if (!response.ok) {
-        // 3. Try service_desk_tickets direct lookup
-        response = await fetch(`${API_URL}/api/admin/service-desk/ticket/${ticketId}`, {
           headers: {
             'Content-Type': 'application/json',
             ...(token && { 'Authorization': `Bearer ${token}` })
@@ -155,18 +253,32 @@ const TicketThread = () => {
       }
       
       const data = await response.json();
-      
-      // Handle different response formats
       const ticketData = data.ticket || data;
       setTicket(ticketData);
       
-      // Extract messages from various possible structures
-      const threadMessages = ticketData.messages || 
-                           ticketData.conversation || 
-                           ticketData.thread ||
-                           [];
+      // Extract and deduplicate messages
+      const threadMessages = ticketData.messages || ticketData.conversation || ticketData.thread || [];
       
-      setMessages(threadMessages);
+      // Deduplicate system events (same type + content within 1 minute)
+      const deduped = [];
+      const seenSystemEvents = new Set();
+      
+      for (const msg of threadMessages) {
+        const isSystem = msg.type === 'system' || msg.type === 'status_change' || 
+                        msg.content?.includes('Resolved') || msg.content?.includes('resolved');
+        
+        if (isSystem) {
+          const key = `${msg.type || 'system'}-${msg.content || msg.message}`;
+          if (!seenSystemEvents.has(key)) {
+            seenSystemEvents.add(key);
+            deduped.push({ ...msg, isSystem: true });
+          }
+        } else {
+          deduped.push(msg);
+        }
+      }
+      
+      setMessages(deduped);
       
       // Mark all events in this ticket as read
       if (user?.email) {
@@ -177,7 +289,7 @@ const TicketThread = () => {
             ...(token && { 'Authorization': `Bearer ${token}` })
           },
           body: JSON.stringify({ user_email: user.email })
-        }).catch(err => console.log('Could not mark ticket as read'));
+        }).catch(() => {});
       }
       
     } catch (err) {
@@ -192,8 +304,31 @@ const TicketThread = () => {
     fetchTicket();
   }, [fetchTicket]);
 
+  // Reopen ticket
+  const handleReopenTicket = async () => {
+    try {
+      await fetch(`${API_URL}/api/service_desk/ticket/${ticketId}/status`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify({ status: 'open' })
+      });
+      
+      setTicket(prev => ({ ...prev, status: 'open' }));
+    } catch (err) {
+      console.error('Failed to reopen:', err);
+    }
+  };
+
   // Send reply
   const handleSendReply = async ({ content, attachments }) => {
+    // If ticket is resolved, reopen it first
+    if (ticket?.status === 'resolved') {
+      await handleReopenTicket();
+    }
+    
     const response = await fetch(`${API_URL}/api/service_desk/tickets/${ticketId}/reply`, {
       method: 'POST',
       headers: {
@@ -206,13 +341,11 @@ const TicketThread = () => {
       })
     });
     
-    if (!response.ok) {
-      throw new Error('Failed to send reply');
-    }
+    if (!response.ok) throw new Error('Failed to send reply');
     
     const result = await response.json();
     
-    // Add message to local state immediately
+    // Add message to local state
     setMessages(prev => [...prev, {
       id: result.message_id,
       content,
@@ -223,12 +356,7 @@ const TicketThread = () => {
     return result;
   };
 
-  // Handle actions
-  const handleMarkUnread = async () => {
-    // TODO: Implement mark unread for all events in ticket
-    setShowActions(false);
-  };
-
+  // Actions
   const handleArchive = async () => {
     try {
       await fetch(`${API_URL}/api/member/notifications/ticket/${ticketId}/archive`, {
@@ -257,6 +385,8 @@ const TicketThread = () => {
     return styles[status?.toLowerCase()] || styles.open;
   };
 
+  const isResolved = ticket?.status === 'resolved';
+
   // Loading state
   if (loading) {
     return (
@@ -272,10 +402,7 @@ const TicketThread = () => {
       <div className="min-h-screen bg-[#0a0a14] flex flex-col items-center justify-center text-gray-400">
         <AlertCircle className="w-12 h-12 mb-3 opacity-30" />
         <p>{error}</p>
-        <button 
-          onClick={() => navigate('/notifications')}
-          className="mt-3 text-pink-400 text-sm"
-        >
+        <button onClick={() => navigate('/notifications')} className="mt-3 text-pink-400 text-sm">
           Back to Inbox
         </button>
       </div>
@@ -283,37 +410,50 @@ const TicketThread = () => {
   }
 
   return (
-    <div className={`min-h-screen bg-[#0a0a14] flex flex-col ${isEmbed ? '' : ''}`}>
-      {/* Sticky Header */}
-      <header className="sticky top-0 z-40 bg-[#0d0d1a] border-b border-gray-800/50">
+    <div className={`min-h-screen bg-[#0a0a14] flex flex-col`}>
+      {/* CSS for highlight animation */}
+      <style>{`
+        @keyframes highlightFade {
+          0%, 100% { background-color: transparent; }
+          50% { background-color: rgba(234, 179, 8, 0.2); }
+        }
+        .animate-highlight {
+          animation: highlightFade 2s ease-in-out;
+        }
+      `}</style>
+      
+      {/* Tappable Sticky Header */}
+      <header 
+        className="sticky top-0 z-40 bg-[#0d0d1a] border-b border-gray-800/50 cursor-pointer"
+        onClick={() => setShowDetails(true)}
+      >
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {!isEmbed && (
               <button 
-                onClick={() => navigate('/notifications')}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate('/notifications');
+                }}
                 className="p-2 rounded-full hover:bg-gray-800 flex-shrink-0"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-300" />
               </button>
             )}
-            <div className="min-w-0">
-              <h1 className="text-sm font-semibold text-white truncate">
-                {ticket?.subject || ticket?.title || 'Conversation'}
-              </h1>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <h1 className="text-sm font-semibold text-white truncate">
+                  {ticket?.subject || ticket?.title || 'Conversation'}
+                </h1>
+                <Info className="w-4 h-4 text-gray-500 flex-shrink-0" />
+              </div>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-[10px] text-gray-500 font-mono">
-                  {ticketId}
-                </span>
-                <span className={`
-                  px-1.5 py-0.5 rounded text-[10px] font-medium
-                  ${getStatusStyle(ticket?.status)}
-                `}>
+                <span className="text-[10px] text-gray-500 font-mono">{ticketId}</span>
+                <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${getStatusStyle(ticket?.status)}`}>
                   {ticket?.status?.replace('_', ' ') || 'Open'}
                 </span>
                 {ticket?.pet_name && (
-                  <span className="text-[10px] text-gray-400">
-                    • {ticket.pet_name}
-                  </span>
+                  <span className="text-[10px] text-gray-400">• {ticket.pet_name}</span>
                 )}
               </div>
             </div>
@@ -322,33 +462,26 @@ const TicketThread = () => {
           {/* Actions Menu */}
           <div className="relative">
             <button 
-              onClick={() => setShowActions(!showActions)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowActions(!showActions);
+              }}
               className="p-2 rounded-full hover:bg-gray-800"
             >
               <MoreHorizontal className="w-5 h-5 text-gray-400" />
             </button>
             
             {showActions && (
-              <div className="absolute top-full right-0 mt-1 bg-gray-800 rounded-xl shadow-xl border border-gray-700/50 overflow-hidden min-w-[160px] z-50">
-                <button
-                  onClick={handleMarkUnread}
-                  className="w-full px-4 py-3 text-left text-sm text-gray-200 hover:bg-gray-700/50"
-                >
-                  Mark as unread
-                </button>
+              <div 
+                className="absolute top-full right-0 mt-1 bg-gray-800 rounded-xl shadow-xl border border-gray-700/50 overflow-hidden min-w-[160px] z-50"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <button
                   onClick={handleArchive}
                   className="w-full px-4 py-3 text-left text-sm text-gray-200 hover:bg-gray-700/50"
                 >
                   Archive
                 </button>
-                {ticket?.status !== 'resolved' && (
-                  <button
-                    className="w-full px-4 py-3 text-left text-sm text-gray-200 hover:bg-gray-700/50"
-                  >
-                    Mark resolved
-                  </button>
-                )}
               </div>
             )}
           </div>
@@ -376,24 +509,24 @@ const TicketThread = () => {
           </div>
         ) : (
           messages.map((msg, idx) => {
-            const isUser = msg.sender === 'member' || 
-                          msg.sender === 'user' || 
-                          msg.sender === user?.email;
-            const isSystem = msg.type === 'system' || msg.type === 'status_change';
+            const isUser = msg.sender === 'member' || msg.sender === 'user' || msg.sender === user?.email;
+            const isSystem = msg.isSystem || msg.type === 'system' || msg.type === 'status_change';
             const isHighlighted = msg.id === highlightEventId;
             
+            // Smart timestamp: only show if gap > 10 minutes from previous
+            const prevMsg = messages[idx - 1];
+            const timestamp = formatTimestamp(msg.timestamp || msg.created_at, prevMsg?.timestamp || prevMsg?.created_at);
+            
             if (isSystem) {
-              return <SystemEvent key={msg.id || idx} event={msg} />;
+              return <SystemEventChip key={msg.id || idx} event={msg} />;
             }
             
             return (
-              <div 
-                key={msg.id || idx}
-                ref={isHighlighted ? highlightRef : null}
-              >
+              <div key={msg.id || idx} ref={isHighlighted ? highlightRef : null}>
                 <MessageBubble 
                   message={msg}
                   isUser={isUser}
+                  showTimestamp={timestamp}
                   isHighlighted={isHighlighted}
                 />
               </div>
@@ -403,15 +536,37 @@ const TicketThread = () => {
         <div ref={messagesEndRef} />
       </div>
       
-      {/* Reply Sheet */}
-      <ReplySheet
-        ticketId={ticketId}
-        onSend={handleSendReply}
-        isExpanded={isReplyExpanded}
-        onExpandChange={setIsReplyExpanded}
-      />
+      {/* Reply Section */}
+      {isResolved ? (
+        // Resolved ticket: show Reopen button
+        <div className="p-4 border-t border-gray-800/50 bg-[#0d0d1a]">
+          <div className="flex items-center justify-center gap-3">
+            <span className="text-sm text-gray-400">This ticket is resolved</span>
+            <button
+              onClick={handleReopenTicket}
+              className="flex items-center gap-2 px-4 py-2 bg-pink-500 text-white rounded-full text-sm font-medium"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Reopen Ticket
+            </button>
+          </div>
+        </div>
+      ) : (
+        // Open ticket: show reply composer
+        <ReplySheet
+          ticketId={ticketId}
+          onSend={handleSendReply}
+          isExpanded={isReplyExpanded}
+          onExpandChange={setIsReplyExpanded}
+        />
+      )}
       
-      {/* Backdrop when actions or reply expanded */}
+      {/* Ticket Details Sheet */}
+      {showDetails && (
+        <TicketDetailsSheet ticket={ticket} onClose={() => setShowDetails(false)} />
+      )}
+      
+      {/* Backdrop */}
       {(showActions || isReplyExpanded) && (
         <div 
           className="fixed inset-0 bg-black/30 z-40"
