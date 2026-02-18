@@ -530,12 +530,28 @@ async def append_message(request: AppendMessageRequest):
         }
         logger.info(f"[STEP] Set current step: {request.step_id}")
     
+    # Try mira_conversations first
     result = await db.mira_conversations.update_one(
         {"ticket_id": request.ticket_id},
         update_ops
     )
     
-    if result.matched_count == 0:
+    # Also try mira_tickets (canonical spine - uses messages[] instead of conversation[])
+    mira_tickets_ops = {
+        "$push": {"messages": {
+            "sender": message_entry["sender"],
+            "source": message_entry["source"],
+            "content": message_entry["text"],
+            "timestamp": message_entry["timestamp"]
+        }},
+        "$set": {"updated_at": now.isoformat()}
+    }
+    mira_tickets_result = await db.mira_tickets.update_one(
+        {"ticket_id": request.ticket_id},
+        mira_tickets_ops
+    )
+    
+    if result.matched_count == 0 and mira_tickets_result.matched_count == 0:
         raise HTTPException(status_code=404, detail=f"Ticket {request.ticket_id} not found")
     
     logger.info(f"[SERVICE_DESK] Appended {request.sender} message to ticket: {request.ticket_id}")
