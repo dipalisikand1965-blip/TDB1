@@ -455,7 +455,8 @@ def enrich_item_for_frontend(
     item_type: str, 
     is_saved: bool = False,
     relevance_score: int = 0,
-    pet_name: str = None
+    pet_name: str = None,
+    from_recent_chat: bool = False
 ) -> Dict:
     """Add display info to a Learn item, including personalization."""
     topic_str = item.get("topic", "health")
@@ -476,8 +477,13 @@ def enrich_item_for_frontend(
         "relevance_score": relevance_score,
     }
     
+    # Add "Based on your recent chat" badge if intent matched
+    if from_recent_chat:
+        enriched["from_recent_chat"] = True
+        enriched["relevance_badge"] = "Based on your chat"
+        enriched["is_personalized"] = True
     # Add personalization badge if highly relevant
-    if relevance_score >= 10 and pet_name:
+    elif relevance_score >= 10 and pet_name:
         enriched["relevance_badge"] = f"For {pet_name}"
         enriched["is_personalized"] = True
     elif relevance_score >= 5:
