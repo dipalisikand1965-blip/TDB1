@@ -319,7 +319,7 @@ async def cleanup_expired_intents(db):
     Clean up expired intents from the database.
     Should be called periodically (e.g., daily cron).
     """
-    if not db:
+    if db is None:
         return 0
     
     try:
