@@ -4,6 +4,37 @@
 
 ---
 
+## ⚠️ CRITICAL: DEPLOYMENT BIBLE - READ BEFORE EVERY DEPLOY ⚠️
+
+### 🚨 FRONTEND URL FIX (MUST DO BEFORE EVERY DEPLOYMENT)
+
+**Problem:** Each new Emergent session/fork resets `REACT_APP_BACKEND_URL` to the preview URL. Production will NOT work until this is fixed.
+
+**Fix:** Before deploying to production, ALWAYS run:
+```bash
+# Check current value
+cat /app/frontend/.env | grep REACT_APP_BACKEND_URL
+
+# If it shows preview URL, fix it:
+sed -i 's|REACT_APP_BACKEND_URL=.*|REACT_APP_BACKEND_URL=https://thedoggycompany.in|' /app/frontend/.env
+
+# Restart frontend
+sudo supervisorctl restart frontend
+
+# Then DEPLOY
+```
+
+**Why this happens:** Emergent preview environment uses its own URL. When you fork/start a new session, it resets to preview. Production site (thedoggycompany.in) needs the production URL.
+
+| Environment | REACT_APP_BACKEND_URL |
+|-------------|----------------------|
+| Preview (Emergent) | https://[job-name].preview.emergentagent.com |
+| **Production** | **https://thedoggycompany.in** ← ALWAYS SET THIS BEFORE DEPLOY |
+
+**YOUR WORK IS NOT GONE** - it's just pointing to the wrong backend URL!
+
+---
+
 ## Recent Changes (Feb 18, 2026)
 
 ### ✅ PICKS Panel Dynamic Shelves - COMPLETED
