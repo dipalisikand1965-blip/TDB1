@@ -493,15 +493,25 @@ const ServicesPanel = ({
           {/* ═══════════════════════════════════════════════════════════════ */}
           {timelyServices.length > 0 && (
             <section className="animate-in fade-in-50 duration-300">
-              <div className="mb-3">
-                <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-amber-400" />
-                  {selectedPet?.name || 'Your pet'} might need this
-                </h3>
-                <p className="text-[10px] text-slate-400 mt-0.5">Mira knows what's on your mind</p>
+              <div className="mb-3 flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-amber-400" />
+                    {selectedPet?.name || 'Your pet'} might need this
+                  </h3>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Mira knows what's on your mind</p>
+                </div>
+                {timelyServices.length > 6 && (
+                  <button
+                    onClick={() => setShowAllTimelyServices(!showAllTimelyServices)}
+                    className="text-xs text-amber-400 hover:text-amber-300"
+                  >
+                    {showAllTimelyServices ? 'Less' : 'More'}
+                  </button>
+                )}
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {timelyServices.slice(0, 6).map((service, index) => (
+                {timelyServices.slice(0, showAllTimelyServices ? 8 : 6).map((service, index) => (
                   <button
                     key={service.service_type || index}
                     onClick={() => {
@@ -515,8 +525,8 @@ const ServicesPanel = ({
                       } else {
                         onOpenRequestBuilder?.({ 
                           id: service.service_type,
-                          name: service.service_type.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-                          emoji: '✨'
+                          name: service.display_name || service.service_type,
+                          emoji: service.emoji || '✨'
                         });
                       }
                     }}
@@ -525,11 +535,14 @@ const ServicesPanel = ({
                     <span className="absolute top-1 right-1 text-[9px] px-2 py-0.5 bg-amber-500/80 text-white rounded-full font-semibold">
                       Timely
                     </span>
-                    <div className="text-sm font-medium text-white capitalize mt-3">
-                      {service.service_type.replace(/-/g, ' ')}
+                    <div className="flex items-center gap-2 mt-3">
+                      <span className="text-lg">{service.emoji || '✨'}</span>
+                      <div className="text-sm font-medium text-white">
+                        {service.display_name || service.service_type.replace(/-/g, ' ')}
+                      </div>
                     </div>
                     {service.why_timely && (
-                      <div className="text-[10px] text-amber-300/80 mt-1 line-clamp-1">
+                      <div className="text-[10px] text-amber-300/80 mt-1 line-clamp-1 pl-7">
                         {service.why_timely}
                       </div>
                     )}
