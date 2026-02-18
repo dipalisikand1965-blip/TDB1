@@ -788,8 +788,8 @@ const NotificationsInbox = () => {
       <div className="flex-1 flex overflow-hidden">
         {/* Inbox List */}
         <div className={`
-          flex-1 overflow-y-auto
-          ${isDesktop && selectedTicketId ? 'max-w-md border-r border-gray-800/50' : 'w-full'}
+          overflow-y-auto
+          ${isDesktop && selectedTicketId ? 'w-[400px] flex-shrink-0 border-r border-gray-800/50' : 'flex-1'}
         `}>
           {loading && notifications.length === 0 ? (
             <div className="flex items-center justify-center h-64">
