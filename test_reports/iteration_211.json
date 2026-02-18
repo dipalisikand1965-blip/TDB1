@@ -1,0 +1,105 @@
+{
+  "summary": "Completed Mira OS Voice & Pillar Audit (iteration 211). Found 1 critical backend bug: TRAVEL pillar queries return café/dine content instead of travel guidance. 12/14 tests passed. CELEBRATE pillar now properly engages before handoff. Voice rules (banned first words, soulful openers) working correctly. Emergency triage (TRIAGE_FIRST vs GO_NOW) working correctly.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "/api/mira/chat",
+        "issue": "TRAVEL PILLAR BUG (P1): When user says 'trip to Goa', pillar is correctly detected as 'travel' BUT response returns café/dine content ('Here are a few places... arrange a table... confirm pet policies with the café'). Root cause: Line 11984 in mira_routes.py hardcodes place_type_to_search='restaurant' instead of using pillar context.",
+        "priority": "CRITICAL",
+        "root_cause": "In mira_routes.py line 11984, place_type_to_search is hardcoded to 'restaurant' when user mentions a location (like 'Goa'). Should use pillar to determine: travel→hotel, dine→restaurant, care→vet",
+        "fix_location": "/app/backend/mira_routes.py lines 11971-11990",
+        "suggested_fix": "Replace line 11984 with pillar-aware logic: if pillar == 'travel': place_type_to_search = 'hotel' elif pillar == 'dine': place_type_to_search = 'restaurant'"
+      }
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "OnboardingTooltip",
+        "issue": "Onboarding tooltip (z-[9998] overlay) intercepts all pointer events, making automated testing difficult. Requires force=True on clicks.",
+        "selector": "div.fixed.inset-0.bg-black/40",
+        "priority": "LOW",
+        "workaround": "Use force=True on clicks or dismiss with 'Got it' button"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "features_tested": {
+    "celebrate_pillar_engagement": {
+      "status": "PASS",
+      "details": "CELEBRATE pillar now properly asks clarifying questions before handoff. Response: 'Oh, Lola's lucky to have you thinking about a celebration... What kind of celebration are you thinking of?'"
+    },
+    "travel_pillar_detection": {
+      "status": "PASS",
+      "details": "Pillar correctly detected as 'travel' for trip/travel queries"
+    },
+    "travel_pillar_response": {
+      "status": "FAIL",
+      "details": "Response content incorrect - shows café/restaurant content instead of travel guidance. Bug confirmed."
+    },
+    "breed_substitution": {
+      "status": "PASS",
+      "details": "Mira uses soul-first approach, mentions Lola's profile traits, no wrong breed substitution observed"
+    },
+    "voice_banned_first_words": {
+      "status": "PASS",
+      "details": "No responses started with banned phrases like 'Great idea', 'That sounds lovely', 'Absolutely'"
+    },
+    "voice_soulful_openers": {
+      "status": "PASS",
+      "details": "Responses use soulful openers like 'Oh, Lola's lucky to have...', 'Looking out for Lola's...'"
+    },
+    "emergency_triage_first": {
+      "status": "PASS",
+      "details": "'I'm scared, Lola ate something weird' triggers calm triage questions, not immediate panic"
+    },
+    "emergency_go_now": {
+      "status": "PASS",
+      "details": "'ate chocolate' triggers immediate emergency response with urgent language"
+    },
+    "icon_state_api": {
+      "status": "PASS",
+      "details": "/api/os/icon-state returns valid counts for services, today, picks, learn (requires auth)"
+    }
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_mira_os_voice_audit_211.py",
+    "/app/test_reports/pytest/pytest_mira_voice_audit_211.xml"
+  ],
+  "action_items": [
+    "CRITICAL: Fix TRAVEL pillar response in mira_routes.py line 11984 - use pillar context to determine place_type_to_search (travel→hotel, dine→restaurant)",
+    "OPTIONAL: Consider adding guard clause at line 11971 to skip location-response handling if pillar is 'travel' (let travel-specific flow handle it)"
+  ],
+  "critical_code_review_comments": [
+    "mira_routes.py line 11984 - TODO comment says 'Get from session context if available' but pillar is already detected at line 11629 and available. This is the root cause of the travel bug.",
+    "Line 11971 condition fires when user mentions a city (like 'Goa') without place search keywords, treating it as a 'location response' to a previous question rather than a new travel query",
+    "Voice rules in system prompt (lines 9012-9040) are properly enforced - banned first words and soulful openers working"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_mira_os_voice_audit_211.py"
+  ],
+  "success_rate": {
+    "backend": "85% (12/14 tests passed, 2 failed)",
+    "frontend": "100% (UI loads correctly, all features accessible)"
+  },
+  "test_credentials": {
+    "user_login": "dipali@clubconcierge.in / test123",
+    "pet": "Lola (pet-e6348b13c975), breed: Shih Tzu"
+  },
+  "seed_data_creation": "No seed data created",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "TRAVEL pillar bug requires code fix in mira_routes.py around line 11984. After fix, re-run test_mira_os_voice_audit_211.py::TestTravelPillar::test_travel_not_dine_response to verify. All other voice/pillar features are working correctly. CELEBRATE pillar engagement is now fixed. Emergency triage two-tier system (TRIAGE_FIRST vs GO_NOW) working.",
+  "rca_of_the_issue": {
+    "bug": "TRAVEL pillar returns café/dine content",
+    "reproduction_steps": [
+      "1. Login as dipali@clubconcierge.in",
+      "2. Send message: 'I am planning a trip to Goa with Lola'",
+      "3. Observe response mentions 'arrange a table' and 'café' instead of travel/hotel"
+    ],
+    "root_cause": "In mira_routes.py, when user mentions a city (Goa is in INDIAN_CITIES list at line 11828), the code detects user_mentioned_location='Goa' and enters the location-response handling path at line 11971. At line 11984, place_type_to_search is hardcoded to 'restaurant' without checking the detected pillar (which is correctly set to 'travel' at line 11629).",
+    "mitigation": "Update line 11984 to use pillar-aware logic: if pillar == 'travel': place_type_to_search = 'hotel', elif pillar == 'dine': place_type_to_search = 'restaurant', else: place_type_to_search = detected_place_search or 'restaurant'"
+  }
+}
