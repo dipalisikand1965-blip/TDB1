@@ -231,5 +231,6 @@ async def create_signal(
     return {
         "notification_id": notification_id,
         "ticket_id": ticket_id,
-        "inbox_id": inbox_id
+        "inbox_id": inbox_id,
+        "member_notification_id": member_notif_id if customer_email else None
     }
