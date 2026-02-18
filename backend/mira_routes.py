@@ -6181,6 +6181,22 @@ Would you like me to find vets or pet pharmacies near you, or shall I have your 
         if picks_engine_data.get("pillar"):
             response_data["pillar"] = picks_engine_data["pillar"]
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # ADD INTENT-DRIVEN DYNAMIC CARDS TO RESPONSE
+        # "{Pet} needs this" - MIRA's intelligent recommendations for CONCIERGE
+        # These are Concierge-sourced items (no price) based on detected intent
+        # ═══════════════════════════════════════════════════════════════════════════
+        if intent_driven_data.get("has_recommendations"):
+            response_data["intent_driven"] = {
+                "intent": intent_driven_data.get("intent"),
+                "intent_display": intent_driven_data.get("intent_display"),
+                "shelf_title": intent_driven_data.get("shelf_title"),
+                "picks": intent_driven_data.get("picks", []),
+                "services": intent_driven_data.get("services", []),
+                "has_recommendations": True
+            }
+            logger.info(f"[RESPONSE] Added intent-driven cards: {intent_driven_data.get('shelf_title')}")
+        
         return response_data
     except Exception as e:
         logger.error(f"Mira OS understand-with-products error: {e}")
