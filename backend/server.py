@@ -6775,7 +6775,19 @@ async def book_service(
     
     await db.tickets.insert_one(ticket)
     
-    # Send admin notification
+    now = get_utc_timestamp()
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    
+    # ==================== STEP 2: SERVICE DESK TICKET ====================
+    await db.service_desk_tickets.insert_one({
+        **ticket,
+        "ticket_id": ticket_id,
+        "customer_name": contact_name,
+        "customer_phone": contact_phone,
+        "customer_email": contact_email
+    })
+    
+    # ==================== STEP 3: ADMIN NOTIFICATION ====================
     await create_admin_notification(
         notification_type="service_booking",
         title=f"🎫 New Service Booking: {service.get('name')}",
@@ -6794,6 +6806,62 @@ async def book_service(
         }
     )
     logger.info(f"[SERVICE BOOKING] Admin notification sent for ticket {ticket_id}")
+    
+    # ==================== STEP 4: MEMBER NOTIFICATION ====================
+    if contact_email:
+        member_notif_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
+        await db.member_notifications.insert_one({
+            "id": member_notif_id,
+            "user_email": contact_email,
+            "type": "service_booking_received",
+            "title": f"Booking Received: {service.get('name')}",
+            "message": f"Your booking for {service.get('name')} has been submitted. We'll confirm shortly!",
+            "ticket_id": ticket_id,
+            "booking_id": booking_id,
+            "pillar": service.get("pillar"),
+            "link": "/dashboard?tab=requests",
+            "read": False,
+            "created_at": now
+        })
+    
+    # ==================== STEP 5: PILLAR REQUEST ====================
+    await db.pillar_requests.insert_one({
+        "id": f"PR-{uuid.uuid4().hex[:8].upper()}",
+        "ticket_id": ticket_id,
+        "booking_id": booking_id,
+        "pillar": service.get("pillar"),
+        "type": "service_booking",
+        "service_id": service_id,
+        "service_name": service.get("name"),
+        "customer_name": contact_name,
+        "customer_email": contact_email,
+        "pet_id": pet_id,
+        "status": "pending",
+        "preferred_date": preferred_date,
+        "created_at": now
+    })
+    
+    # ==================== STEP 6: CHANNEL INTAKES ====================
+    await db.channel_intakes.insert_one({
+        "id": f"CI-{uuid.uuid4().hex[:8].upper()}",
+        "ticket_id": ticket_id,
+        "booking_id": booking_id,
+        "notification_id": notification_id,
+        "channel": "web",
+        "request_type": "service_booking",
+        "pillar": service.get("pillar"),
+        "status": "new",
+        "urgency": "high",
+        "customer_name": contact_name,
+        "customer_email": contact_email,
+        "customer_phone": contact_phone,
+        "pet_name": pet_info.get("name") if pet_info else None,
+        "preview": f"Service Booking: {service.get('name')}",
+        "message": f"Booking for {service.get('name')} on {preferred_date or 'TBD'}",
+        "created_at": now,
+        "updated_at": now
+    })
+    logger.info(f"[SERVICE BOOKING] Full unified flow completed for {ticket_id}")
     
     return {
         "success": True,
