@@ -41,9 +41,10 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 | 1 | `/app/memory/AGENT_MASTER_PROTOCOL.md` | **THE MASTER PROTOCOL** - Read first |
 | 2 | `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` | The Law - Design specification |
 | 3 | `/app/memory/ONE_SPINE_SPEC.md` | Ticket system spec, 5 Hard Proofs |
-| 4 | `/app/memory/ONE_SPINE_AUDIT_REPORT.md` | Latest One Spine audit |
-| 5 | `/app/memory/NOTIFICATION_SYSTEM_AUDIT.md` | Notification system audit |
-| 6 | `/app/memory/PRD.md` | This file - Product requirements |
+| 4 | `/app/memory/LEARN_BIBLE.md` | LEARN OS Layer specification |
+| 5 | `/app/memory/ONE_SPINE_AUDIT_REPORT.md` | Latest One Spine audit |
+| 6 | `/app/memory/NOTIFICATION_SYSTEM_AUDIT.md` | Notification system audit |
+| 7 | `/app/memory/PRD.md` | This file - Product requirements |
 
 ---
 
@@ -79,6 +80,19 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 | Dual-collection support (mira_tickets + mira_conversations) | ✅ Fixed |
 | Test coverage | ✅ Added |
 
+### LEARN Tab: ✅ WORKING (Verified Feb 18, 2026)
+
+| Feature | Status |
+|---------|--------|
+| Tab navigation | ✅ Working |
+| Home view with personalization | ✅ Working |
+| Topic chips | ✅ Working |
+| "For your pet" shelf | ✅ Working |
+| Guide detail view | ✅ Working |
+| "Do this now" checklist | ✅ Working |
+| "Watch for" warnings | ✅ Working |
+| Action bar ("Ask Mira") | ✅ Working |
+
 ### Pet Soul Data: ✅ ENRICHED
 
 5 pets enriched with 51 fields each:
@@ -87,6 +101,14 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 ---
 
 ## What's Been Implemented
+
+### February 18, 2026 (Session 4 - Current)
+
+1. **LEARN Tab Bug Investigation** - ✅ VERIFIED WORKING
+   - Tab navigation functioning correctly
+   - Personalization loading: `{enabled: true, pet_tags: Array(3), breed_tags: Array(2)}`
+   - Bible-compliant detail view structure confirmed
+   - Console logs clean, no JavaScript errors
 
 ### February 18, 2026 (Session 3)
 
@@ -144,6 +166,9 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 - [x] ~~Agent Master Protocol~~ ✅ DONE
 - [x] ~~Notification Deep-Link Fix~~ ✅ DONE (Session 3)
 - [x] ~~Ticket-to-Soul Enrichment~~ ✅ DONE (Session 3)
+- [x] ~~Fix LEARN Tab~~ ✅ VERIFIED WORKING (Session 4)
+- [ ] **UI Improvement: "Test Scenarios" Panel** - Move to bottom sheet triggered by pill button
+- [ ] **UI Improvement: "Concierge Replied" Banner** - Convert to compact single-line banner
 - [ ] **Soul-Capture Onboarding** - 8-10 step experience
 
 ### P1 - High Priority
@@ -195,6 +220,8 @@ Enriched Pets:
 | POST `/api/service_desk/resolve_ticket/{ticket_id}` | Resolve ticket + trigger Soul enrichment |
 | POST `/api/service_desk/append_message` | Add message to ticket (dual-writes to both collections) |
 | GET `/api/member/notifications/inbox/{email}` | Bell notifications (supports ?pet_id filter) |
+| GET `/api/os/learn/home` | LEARN home data with personalization |
+| GET `/api/os/learn/topic/{topic_id}` | LEARN topic content |
 
 ---
 
@@ -205,14 +232,18 @@ Enriched Pets:
 - `/app/backend/mira_service_desk.py` - Service desk, concierge_reply, resolve_ticket
 - `/app/backend/utils/service_ticket_spine.py` - Ticket creation
 - `/app/backend/ticket_soul_enrichment.py` - Ticket → Soul auto-enrichment
+- `/app/backend/learn_os_routes.py` - LEARN OS Layer endpoints
 
 ### Frontend
 - `/app/frontend/src/pages/MiraDemoPage.jsx` - Main UI
 - `/app/frontend/src/components/Mira/NotificationBell.jsx` - Bell icon
+- `/app/frontend/src/components/Mira/PetOSNavigation.jsx` - OS navigation tabs
+- `/app/frontend/src/components/Mira/LearnPanel.jsx` - LEARN panel
 
 ### Documentation
 - `/app/memory/AGENT_MASTER_PROTOCOL.md` - **THE MASTER PROTOCOL**
 - `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` - The Law
+- `/app/memory/LEARN_BIBLE.md` - LEARN OS Layer specification
 
 ---
 
