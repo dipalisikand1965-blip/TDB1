@@ -231,6 +231,7 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
   const ticketId = ticketIdProp || ticketIdParam;
   
   const highlightEventId = searchParams.get('event');
+  const returnTo = searchParams.get('returnTo');
   const isSplitMode = mode === "split";
   
   // State
@@ -248,6 +249,23 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
   
   const messagesEndRef = useRef(null);
   const highlightRef = useRef(null);
+  
+  // Back button handler
+  const handleBack = () => {
+    if (onClose) {
+      // Split mode: call onClose to clear ticket selection
+      onClose();
+    } else if (returnTo) {
+      // Full mode with returnTo: navigate to specified path
+      navigate(returnTo);
+    } else if (window.history.length > 1) {
+      // Full mode with history: go back
+      navigate(-1);
+    } else {
+      // Full mode fallback: go to mira-demo
+      navigate('/mira-demo');
+    }
+  };
 
   // Scroll to bottom or highlighted event
   useEffect(() => {
