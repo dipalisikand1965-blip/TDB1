@@ -705,6 +705,64 @@ Run these to catch tone regressions:
 
 ---
 
+# 15. QUICK REPLIES AUDIT
+
+> **Full audit details:** `/app/memory/QUICK_REPLIES_AUDIT_FRAMEWORK.md`
+
+## 15.1 Contract Structure
+
+| Test | Expected | Pass/Fail |
+|------|----------|-----------|
+| Every response has `conversation_contract` | Required | |
+| `mode` is valid enum | answer/clarify/places/learn/ticket/handoff | |
+| `quick_replies` is array | Not null | |
+
+## 15.2 Chip Count by Mode
+
+| Mode | Min Chips | Max Chips | Must Include |
+|------|-----------|-----------|--------------|
+| `clarify` | 3 | 6 | Cancel/defer option |
+| `places` | 3 | 6 | Refine + Change area |
+| `ticket` | 3 | 6 | Open request + View in Services |
+| `learn` | 3 | 6 | Show more |
+
+## 15.3 Location Consent Gate (CRITICAL)
+
+| Test | Expected | Pass/Fail |
+|------|----------|-----------|
+| "Pet cafe near me" (no permission) | `mode: clarify`, NO places | |
+| After "Use current location" | `mode: places`, results shown | |
+| Consent chip has `safety.requires_consent: true` | Required | |
+
+## 15.4 Ticket Chip Spine Integration
+
+| Test | Expected | Pass/Fail |
+|------|----------|-----------|
+| Clicking "Open request" chip | Returns `TCK-YYYY-NNNNNN` | |
+| Ticket appears in Services | Visible in inbox | |
+| Icon state updates | `services.active_tickets` incremented | |
+
+## 15.5 Voice Compliance in Chips
+
+| Test | Expected | Pass/Fail |
+|------|----------|-----------|
+| `label` is 1-4 words | Short | |
+| `payload_text` is complete sentence | Ends in punctuation | |
+| `analytics_tag` format | `qr.{domain}.{verb}.{object}` | |
+
+## 15.6 Critical Chip Regression Tests
+
+| Prompt | Expected Chips |
+|--------|----------------|
+| "Pet café near me" | Consent chips first, NO places |
+| "Book grooming tomorrow" | Time chips + Open request |
+| "Plan birthday" | Location chips first |
+| "Find me a vet nearby" | Consent/area chips first |
+| "I'm scared, she ate something" | Triage chips (what + when) |
+| "Trip to Goa with Lola" | Travel chips, NOT café/dine |
+
+---
+
 # HOW TO USE THIS FRAMEWORK
 
 ## For Handover:
