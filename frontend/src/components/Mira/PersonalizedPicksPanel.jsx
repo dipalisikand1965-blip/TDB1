@@ -1520,13 +1520,91 @@ const PersonalizedPicksPanel = ({
               </div>
             )}
             
-            {/* Empty state - shows if no picks and not loading */}
+            {/* ═══════════════════════════════════════════════════════════════ */}
+            {/* CONCIERGE FALLBACK - When no catalogue picks, ALWAYS show      */}
+            {/* "Your Concierge Can Arrange This" cards. NEVER show empty.     */}
+            {/* Per MOJO Bible: Fallback rule requires Concierge Arranges      */}
+            {/* ═══════════════════════════════════════════════════════════════ */}
             {!loading && cataloguePicks.length === 0 && conciergePicks.length === 0 && activePillar !== 'services' && (
-              <div className="text-center py-16">
-                <Gift className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-400">
-                  No picks available for {PILLARS.find(p => p.id === activePillar)?.name || 'this category'} yet.
-                </p>
+              <div className="space-y-6">
+                {/* Concierge Arranges Fallback Section */}
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
+                    <Sparkles className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-white mb-2">
+                    Your Concierge Can Arrange This
+                  </h3>
+                  <p className="text-sm text-gray-400 max-w-md mx-auto">
+                    We don't have catalogue items for {PILLARS.find(p => p.id === activePillar)?.name?.toLowerCase() || 'this'} yet, 
+                    but your Concierge® can source anything for {pet?.name}.
+                  </p>
+                </div>
+                
+                {/* Dynamic Concierge Cards based on pillar */}
+                <div className="grid grid-cols-1 gap-3">
+                  {/* Generate 3 fallback concierge cards based on active pillar */}
+                  {[
+                    { 
+                      name: `Custom ${PILLARS.find(p => p.id === activePillar)?.name || 'Service'} for ${pet?.name}`,
+                      description: `We'll find and arrange the perfect ${activePillar} experience tailored to ${pet?.name}'s preferences.`,
+                      cta: 'Request This'
+                    },
+                    {
+                      name: `${pet?.name}'s Special ${PILLARS.find(p => p.id === activePillar)?.name || 'Experience'}`,
+                      description: `Tell us what you're looking for - we'll source it, vet it, and arrange everything.`,
+                      cta: 'Let's Arrange'
+                    },
+                    {
+                      name: 'Something Else in Mind?',
+                      description: `Your Concierge can source anything for ${pet?.name}. Just describe what you need.`,
+                      cta: 'Tell Us'
+                    }
+                  ].map((fallbackPick, index) => (
+                    <div 
+                      key={`fallback-${index}`}
+                      className={`p-4 rounded-xl bg-gradient-to-br from-purple-900/40 to-pink-900/20 border border-purple-500/30 cursor-pointer hover:border-purple-400 transition-all active:scale-[0.98] ${
+                        isSelected(fallbackPick) ? 'ring-2 ring-pink-500' : ''
+                      }`}
+                      onClick={() => {
+                        hapticFeedback.buttonTap();
+                        toggleSelection({
+                          ...fallbackPick,
+                          id: `concierge-fallback-${activePillar}-${index}`,
+                          pillar: activePillar,
+                          type: 'concierge_fallback'
+                        }, 'concierge');
+                      }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+                          <Sparkles className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="px-2 py-0.5 bg-pink-500/30 text-pink-300 text-xs rounded-full">
+                              Arranged for {pet?.name}
+                            </span>
+                          </div>
+                          <h4 className="font-medium text-white text-sm">{fallbackPick.name}</h4>
+                          <p className="text-xs text-purple-300/80 mt-1">{fallbackPick.description}</p>
+                        </div>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                          isSelected(fallbackPick) ? 'bg-pink-500 text-white' : 'bg-purple-700 text-purple-300'
+                        }`}>
+                          {isSelected(fallbackPick) ? <Check className="w-4 h-4" /> : <span className="text-lg">+</span>}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* CTA to chat with Mira */}
+                <div className="text-center pt-4">
+                  <p className="text-xs text-gray-500">
+                    Or chat with Mira to describe exactly what you need
+                  </p>
+                </div>
               </div>
             )}
             
