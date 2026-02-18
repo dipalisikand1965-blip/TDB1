@@ -779,16 +779,61 @@ async def handoff_to_concierge(request: HandoffToConciergeRequest):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail=f"Ticket {request.ticket_id} not found")
     
-    # Emit notification event (for real-time updates to admin)
+    # ============================================
+    # UNIFORM SERVICE FLOW: Create Admin Notification
+    # Concierge is the hands, Mira is the soul
+    # Every handoff MUST notify admin dashboard
+    # ============================================
+    try:
+        import uuid
+        notification_id = f"notif-{uuid.uuid4().hex[:12]}"
+        
+        # Get ticket details for notification
+        ticket_data = await db.mira_conversations.find_one({"ticket_id": request.ticket_id})
+        if not ticket_data:
+            # Also check mira_tickets
+            ticket_data = await db.mira_tickets.find_one({"ticket_id": request.ticket_id})
+        
+        pet_name = ticket_data.get("pet_name", "Pet") if ticket_data else "Pet"
+        user_email = ticket_data.get("user_email", ticket_data.get("parent_email", "")) if ticket_data else ""
+        pillar = request.pillar or ticket_data.get("pillar", "general") if ticket_data else "general"
+        
+        admin_notification = {
+            "id": notification_id,
+            "type": "handoff_to_concierge",
+            "category": pillar,
+            "title": f"🎫 New Request: {request.request_title or 'Service Request'}",
+            "message": f"Mira handed off a {pillar.title()} request for {pet_name}. Queue: {request.concierge_queue}",
+            "preview": request.latest_mira_summary[:200] if request.latest_mira_summary else "",
+            "ticket_id": request.ticket_id,
+            "queue": request.concierge_queue,
+            "pillar": pillar,
+            "pet_name": pet_name,
+            "customer_email": user_email,
+            "link": f"/admin?tab=servicedesk&ticket={request.ticket_id}",
+            "priority": "high" if request.concierge_queue == "EMERGENCY" else "normal",
+            "created_at": now.isoformat(),
+            "read_at": None,
+            "status": "unread"
+        }
+        
+        await db.admin_notifications.insert_one(admin_notification)
+        logger.info(f"[SERVICE_DESK] ✅ Admin notification created: {notification_id} for ticket {request.ticket_id}")
+        
+    except Exception as e:
+        logger.error(f"[SERVICE_DESK] Failed to create admin notification: {e}")
+    
+    # Emit push notification event (for real-time updates)
     try:
         from push_notification_routes import notify_ticket_update
         await notify_ticket_update(
             ticket_id=request.ticket_id,
-            event_type="handoff_to_concierge",
-            queue=request.concierge_queue
+            user_email=user_email if 'user_email' in dir() else "",
+            update_type="new_ticket",
+            details={"queue": request.concierge_queue, "pillar": pillar}
         )
     except Exception as e:
-        logger.warning(f"Failed to send handoff notification: {e}")
+        logger.warning(f"Failed to send push notification: {e}")
     
     logger.info(f"[SERVICE_DESK] Handoff to Concierge: {request.ticket_id} -> queue {request.concierge_queue}")
     
