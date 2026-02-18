@@ -1380,7 +1380,10 @@ async def get_pillar_picks(
 
 
 @router.get("/top-picks/{pet_id}")
-async def get_top_picks(pet_id: str):
+async def get_top_picks(
+    pet_id: str,
+    authorization: Optional[str] = Header(None)
+):
     """
     Get personalized top picks for a specific pet across all pillars.
     
@@ -1390,6 +1393,11 @@ async def get_top_picks(pet_id: str):
     - Pet's breed
     - Pet's age/life stage
     - Pet's health conditions
+    
+    SOUL INTEGRATION (NEW):
+    - Reads recent chat intents from user_learn_intents
+    - Shows "{petName} might need this" shelf with contextually relevant products
+    - Mira knows - feels intuitive, not "based on your chat"
     """
     global db
     if db is None:
@@ -1408,6 +1416,7 @@ async def get_top_picks(pet_id: str):
     pet_allergies = pet.get("preferences", {}).get("allergies") or []
     pet_size = pet.get("weight_kg")
     pet_breed = pet.get("breed", "Unknown")
+    pet_name = pet.get("name", "Your pet")
     
     size_label = "Unknown"
     if pet_size:
@@ -1423,7 +1432,7 @@ async def get_top_picks(pet_id: str):
     birthday_info = is_pet_birthday_near(pet)
     
     pet_intelligence = {
-        "name": pet.get("name"),
+        "name": pet_name,
         "breed": pet_breed,
         "size": size_label,
         "weight_kg": pet_size,
@@ -1433,6 +1442,45 @@ async def get_top_picks(pet_id: str):
         "birthday_near": birthday_info is not None,
         "days_to_birthday": birthday_info.get("days_until") if birthday_info else None,
     }
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SOUL INTEGRATION: Get timely picks based on recent chat intents
+    # Mira knows what the pet parent is thinking about right now
+    # ═══════════════════════════════════════════════════════════════════════════
+    timely_picks = []
+    timely_context = {"enabled": False, "topics": []}
+    
+    # Extract user_id from token if available
+    user_id = None
+    if authorization:
+        try:
+            import jwt
+            token = authorization.replace("Bearer ", "") if authorization.startswith("Bearer ") else authorization
+            payload = jwt.decode(token, options={"verify_signature": False})
+            user_id = payload.get("sub") or payload.get("user_id")
+        except Exception:
+            pass
+    
+    # Also try to get user_id from pet's owner
+    if not user_id:
+        user_id = pet.get("owner_email") or pet.get("owner_id")
+    
+    if user_id:
+        # Fetch recent intents (last 48 hours)
+        recent_intents = await get_user_recent_intents(db, user_id, pet_id)
+        
+        if recent_intents:
+            timely_context["enabled"] = True
+            timely_context["topics"] = [i["topic"] for i in recent_intents]
+            logger.info(f"[PICKS SOUL] Found {len(recent_intents)} recent intents for {pet_name}: {timely_context['topics']}")
+            
+            # Get timely products matching these intents
+            timely_picks = await get_timely_picks_for_intents(
+                db, recent_intents, pet, pet_allergies, limit=8
+            )
+            
+            if timely_picks:
+                logger.info(f"[PICKS SOUL] Generated {len(timely_picks)} timely picks for {pet_name}")
     
     # Get picks for each pillar
     pillar_picks = {}
@@ -1457,9 +1505,11 @@ async def get_top_picks(pet_id: str):
     return {
         "success": True,
         "pet": pet_intelligence,
+        "timely_picks": timely_picks,  # NEW: "{petName} might need this" shelf
+        "timely_context": timely_context,  # NEW: Context info
         "pillars": pillar_picks,
         "total_picks": total_picks,
-        "generated_at": datetime.utcnow().isoformat(),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "filters_applied": {
             "allergies": pet_allergies,
             "size": size_label,
