@@ -620,6 +620,7 @@ const MiraOSModal = ({
           pillar,
           pet_id: selectedPet?.id,
           pet_name: selectedPet?.name,
+          user_email: user?.email,  // Add user email for member notification
           recommendations: selectedItems.map(item => ({
             title: item.title,
             description: item.description,
