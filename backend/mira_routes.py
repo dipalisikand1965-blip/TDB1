@@ -269,8 +269,6 @@ def filter_banned_openers(response_text: str, pet_name: str = None) -> str:
     if not response_text:
         return response_text
     
-    original = response_text
-    
     # Check if response starts with any banned opener
     for banned in BANNED_OPENERS:
         if response_text.strip().startswith(banned):
