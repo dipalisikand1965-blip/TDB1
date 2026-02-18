@@ -399,6 +399,21 @@ class PetSoulProfile(BaseModel):
     # Soul Moments - auto-captured milestones
     soul_moments: List[Dict] = Field(default_factory=list)
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # P1 FIELDS - MOJO Bible Compliance (Feb 2026)
+    # ═══════════════════════════════════════════════════════════════════════════
+    
+    # Weight History Timeline - Track weight over time
+    weight_history: List[Dict] = Field(default_factory=list)
+    target_weight: Optional[float] = None
+    
+    # Training History & Progress Notes
+    training_history: List[Dict] = Field(default_factory=list)
+    training_summary: Optional[str] = None  # AI-generated summary
+    
+    # Environment & Climate Profile
+    environment: Optional[Dict] = None
+    
     # Notification preferences
     whatsapp_reminders: bool = True
     email_reminders: bool = True
