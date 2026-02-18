@@ -721,11 +721,24 @@ async def concierge_reply_to_ticket(
     
     now = datetime.now(timezone.utc).isoformat()
     
-    # Find ticket
+    # Find ticket - check all possible collections
+    # Priority: service_desk_tickets > mira_tickets > tickets
+    ticket = None
+    collection = None
+    
     ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id})
+    if ticket:
+        collection = "service_desk_tickets"
+    
+    if not ticket:
+        ticket = await db.mira_tickets.find_one({"ticket_id": ticket_id})
+        if ticket:
+            collection = "mira_tickets"
     
     if not ticket:
         ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+        if ticket:
+            collection = "tickets"
         
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
@@ -742,17 +755,39 @@ async def concierge_reply_to_ticket(
         "is_internal": reply.is_internal
     }
     
-    # Add to ticket
-    await db.service_desk_tickets.update_one(
+    # Build update object - includes unread indicator flags
+    update_set = {
+        "updated_at": now,
+        "status": "waiting_on_member" if not reply.is_internal else ticket.get("status")
+    }
+    
+    # Set unread flags for icon-state to detect (non-internal messages only)
+    if not reply.is_internal:
+        update_set["has_unread_concierge_reply"] = True
+        update_set["awaiting_user"] = True
+        update_set["last_concierge_reply_at"] = now
+    
+    # Add to ticket in the correct collection
+    await db[collection].update_one(
         {"ticket_id": ticket_id},
         {
             "$push": {"messages": message_obj},
-            "$set": {
-                "updated_at": now,
-                "status": "waiting_on_member" if not reply.is_internal else ticket.get("status")
-            }
+            "$set": update_set
         }
     )
+    
+    # Also update mira_tickets if this was found in tickets (dual-write sync)
+    if collection == "tickets":
+        mira_ticket = await db.mira_tickets.find_one({"ticket_id": ticket_id})
+        if mira_ticket:
+            await db.mira_tickets.update_one(
+                {"ticket_id": ticket_id},
+                {
+                    "$push": {"messages": message_obj},
+                    "$set": update_set
+                }
+            )
+            logger.info(f"[SPINE-SYNC] Concierge reply also synced to mira_tickets for {ticket_id}")
     
     # Get customer info
     customer_email = ticket.get("member_email") or ticket.get("customer_email")
