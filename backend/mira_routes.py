@@ -21202,6 +21202,37 @@ async def send_picks_to_concierge(request: SendPicksRequest):
         
         logger.info(f"[PICKS → CONCIERGE] Signal created: {signal_result.get('ticket_id')} | {picked_count} picked, {shown_count} shown")
         
+        # ═══════════════════════════════════════════════════════════════════════
+        # CREATE MEMBER NOTIFICATION - User must see confirmation
+        # ═══════════════════════════════════════════════════════════════════════
+        try:
+            member_notification_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
+            user_email = request.member_email.lower() if request.member_email else None
+            pet_name = pet.get('name', 'Pet')
+            
+            if user_email:
+                member_notification = {
+                    "id": member_notification_id,
+                    "type": "picks_request_received",
+                    "title": f"Request Received: {pet_name}",
+                    "message": f"Your {picked_count} pick(s) for {pet_name} have been sent to Concierge®. We'll get back to you soon!",
+                    "pet_name": pet_name,
+                    "pet_id": pet.get('id'),
+                    "user_email": user_email,
+                    "ticket_id": signal_result.get("ticket_id"),
+                    "pillar": request.pillar or "general",
+                    "read": False,
+                    "created_at": get_utc_timestamp(),
+                    "data": {
+                        "thread_url": f"/mira-demo?tab=services&thread={signal_result.get('ticket_id')}",
+                        "picked_count": picked_count
+                    }
+                }
+                await db.member_notifications.insert_one(member_notification)
+                logger.info(f"[PICKS → CONCIERGE] Member notification created: {member_notification_id}")
+        except Exception as notif_error:
+            logger.error(f"[PICKS → CONCIERGE] Failed to create member notification: {notif_error}")
+        
         return {
             "success": True,
             "ticket_id": signal_result.get("ticket_id"),
