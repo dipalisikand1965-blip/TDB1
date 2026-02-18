@@ -4,6 +4,18 @@
 
 ---
 
+## Recent Changes (Feb 18, 2026)
+
+### ✅ PICKS Panel Dynamic Shelves - COMPLETED
+- Updated `PersonalizedPicksPanel.jsx` to render new dynamic shelves:
+  - **Intent-Driven Shelf** - "{Pet} needs this for {Intent}" with Products + Services
+  - **Personalized Shelf** - "✨ Personalized for {Pet}" horizontal scroll
+  - **Celebrate Shelf** - Birthday items with cake designer link
+- All shelves now rendering correctly with proper badges and styling
+- Backend APIs `/api/mira/top-picks/{pet_id}` providing all data
+
+---
+
 ## Original Problem Statement
 
 Create a "Golden Standard Communication System" centered around an AI named "Mira." 
