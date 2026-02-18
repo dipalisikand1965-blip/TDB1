@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://dynamic-shelves.preview.emergentagent.com` |
+| **Preview** | `https://concierge-fix.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |

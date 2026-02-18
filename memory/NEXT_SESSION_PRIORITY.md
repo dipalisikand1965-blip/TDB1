@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://dynamic-shelves.preview.emergentagent.com
+**Preview URL:** https://concierge-fix.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
