@@ -467,25 +467,61 @@ async def _queue_admin_notification(db, ticket: Dict) -> None:
 
 
 async def _queue_member_notification(db, ticket: Dict) -> None:
-    """Queue member notification for new ticket."""
+    """
+    Queue member notification for new ticket.
+    
+    RULE: Every notification MUST have:
+    - ticket_id (REQUIRED - No ticket = no notification)
+    - pet_id (REQUIRED - For per-pet filtering)
+    - user_email (REQUIRED - For ownership)
+    - read (REQUIRED - For badge state)
+    """
     try:
+        import uuid
+        
+        member_email = ticket.get("member", {}).get("email")
+        ticket_id = ticket.get("ticket_id")
+        pet_id = ticket.get("pet_id")
+        pet_name = ticket.get("pet_name")
+        
+        if not member_email or not ticket_id:
+            logger.warning(f"[TICKET-SPINE] Cannot create notification - missing email or ticket_id")
+            return
+        
+        now = datetime.now(timezone.utc)
+        
         await db.member_notifications.insert_one({
+            "id": f"notif_{uuid.uuid4().hex[:12]}",
+            "user_email": member_email.lower(),
+            "ticket_id": ticket_id,              # REQUIRED - Two-way guarantee
+            "pet_id": pet_id,                    # REQUIRED - For per-pet filtering
+            "pet_name": pet_name,                # For display
             "type": "ticket_created",
-            "ticket_id": ticket["ticket_id"],
-            "pillar": ticket["pillar"],
-            "intent": ticket["intent"],
-            "member_email": ticket["member"]["email"],
-            "created_at": ticket["created_at"],
-            "status": "pending",
+            "title": f"Request opened • {ticket_id}",
+            "message": ticket.get("intent", "")[:100],
+            "body": ticket.get("intent", "")[:100],
+            "pillar": ticket.get("pillar"),
+            "read": False,                       # REQUIRED - For badge state
+            "created_at": now.isoformat(),
+            "data": {
+                "ticket_id": ticket_id,
+                "pet_id": pet_id,
+                "pet_name": pet_name,
+                "thread_url": f"/mira-demo?tab=services&ticket={ticket_id}"
+            }
         })
         
         # Update ticket to mark member notified
         await db.tickets.update_one(
-            {"ticket_id": ticket["ticket_id"]},
-            {"$set": {"member_notified": True, "member_notified_at": datetime.now(timezone.utc).isoformat()}}
+            {"ticket_id": ticket_id},
+            {"$set": {"member_notified": True, "member_notified_at": now.isoformat()}}
+        )
+        await db.mira_tickets.update_one(
+            {"ticket_id": ticket_id},
+            {"$set": {"member_notified": True, "member_notified_at": now.isoformat()}}
         )
         
-        logger.info(f"[TICKET-SPINE] Queued member notification for {ticket['ticket_id']}")
+        logger.info(f"[TICKET-SPINE] Queued member notification for {ticket_id} (pet={pet_name})")
     except Exception as e:
         logger.error(f"[TICKET-SPINE] Failed to queue member notification: {e}")
 
