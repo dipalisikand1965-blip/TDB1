@@ -858,6 +858,7 @@ async def concierge_reply(
     Concierge sends a reply in the same thread.
     This appears in the parent's Mira OS chat as a message from Concierge.
     Also sets has_unread_concierge_reply flag for Services badge.
+    Creates member_notification for Bell icon notification.
     """
     db = get_db()
     if db is None:
@@ -913,6 +914,49 @@ async def concierge_reply(
     
     if result.matched_count == 0 and ticket_result.matched_count == 0:
         raise HTTPException(status_code=404, detail=f"Ticket {ticket_id} not found")
+    
+    # ═══════════════════════════════════════════════════════════════════
+    # CREATE MEMBER NOTIFICATION (for Bell icon)
+    # Rule: No ticket_id = no notification. Every notification has ticket_id.
+    # ═══════════════════════════════════════════════════════════════════
+    try:
+        # Get ticket details for notification context
+        ticket = await db.mira_tickets.find_one({"ticket_id": ticket_id})
+        if ticket:
+            member_email = ticket.get("member", {}).get("email") or ticket.get("user_email")
+            pet_id = ticket.get("pet_id")
+            pet_name = ticket.get("pet_name") or ticket.get("pet_context", {}).get("name")
+            
+            if member_email:
+                # Truncate message for preview
+                preview = message[:100] + "..." if len(message) > 100 else message
+                
+                notification = {
+                    "id": f"notif_{uuid.uuid4().hex[:12]}",
+                    "user_email": member_email.lower(),
+                    "ticket_id": ticket_id,  # REQUIRED - Two-way guarantee
+                    "pet_id": pet_id,         # REQUIRED for per-pet filtering
+                    "pet_name": pet_name,
+                    "type": "concierge_reply",
+                    "title": f"Concierge replied • {ticket_id}",
+                    "message": preview,
+                    "body": preview,
+                    "read": False,
+                    "created_at": now.isoformat(),
+                    "data": {
+                        "ticket_id": ticket_id,
+                        "pet_id": pet_id,
+                        "pet_name": pet_name,
+                        "concierge_name": concierge_name,
+                        "thread_url": f"/mira-demo?tab=services&ticket={ticket_id}"
+                    }
+                }
+                
+                await db.member_notifications.insert_one(notification)
+                logger.info(f"[SERVICE_DESK] Created member notification for {member_email}: {ticket_id}")
+    except Exception as e:
+        # Don't fail the reply if notification creation fails
+        logger.error(f"[SERVICE_DESK] Failed to create member notification: {e}")
     
     logger.info(f"[SERVICE_DESK] Concierge {concierge_name} replied to ticket: {ticket_id}")
     
