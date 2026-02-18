@@ -211,12 +211,19 @@ async def get_unified_tickets(db, user_email: str, pet_ids: List[str] = None) ->
                 # This handles the case where concierge replies update mira_tickets
                 # but the ticket was first found in db.tickets
                 # ═══════════════════════════════════════════════════════════════════════
+                mira_has_unread = ticket.get("has_unread_concierge_reply")
+                mira_awaiting = ticket.get("awaiting_user")
+                
+                if mira_has_unread or mira_awaiting:
+                    logger.info(f"[SPINE-SYNC] Merging flags for {ticket_id}: has_unread={mira_has_unread}, awaiting={mira_awaiting}")
+                
                 for existing_ticket in all_tickets:
                     if existing_ticket.get("ticket_id") == ticket_id:
                         # Merge unread/awaiting flags (prefer True over False/None)
-                        if ticket.get("has_unread_concierge_reply"):
+                        if mira_has_unread:
                             existing_ticket["has_unread_concierge_reply"] = True
-                        if ticket.get("awaiting_user"):
+                            logger.info(f"[SPINE-SYNC] Set has_unread_concierge_reply=True for {ticket_id}")
+                        if mira_awaiting:
                             existing_ticket["awaiting_user"] = True
                         # Merge messages if mira_tickets has more
                         mira_msgs = ticket.get("messages") or []
