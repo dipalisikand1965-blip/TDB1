@@ -64,7 +64,7 @@ const MessageBubble = ({ message, isUser, showTimestamp, isHighlighted = false }
   return (
     <div 
       className={`
-        flex ${isUser ? 'justify-end' : 'justify-start'} mb-2
+        flex ${isUser ? 'justify-end' : 'justify-start'} mb-2 px-1
         ${isHighlighted ? 'animate-highlight' : ''}
       `}
       data-message-id={message.id}
@@ -76,7 +76,7 @@ const MessageBubble = ({ message, isUser, showTimestamp, isHighlighted = false }
             ? 'bg-gradient-to-r from-pink-600 to-pink-500 text-white'
             : 'bg-gray-800/80 text-gray-100 border border-gray-700/50'
           }
-          ${isHighlighted ? 'ring-2 ring-yellow-400 ring-opacity-75' : ''}
+          ${isHighlighted ? 'ring-2 ring-yellow-400' : ''}
         `}
       >
         {!isUser && (
