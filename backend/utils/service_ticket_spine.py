@@ -114,9 +114,12 @@ async def create_or_attach_service_ticket(
     member_name: str = None,
     member_id: str = None,
     
-    # === PET ===
+    # === PET (REQUIRED for pet-scoped features) ===
     pet_ids: List[str] = None,
     pet_names: List[str] = None,
+    pet_id: str = None,             # SINGULAR - Primary pet for this ticket
+    pet_name: str = None,           # SINGULAR - Primary pet name
+    pet_context: Dict[str, Any] = None,  # Full pet data for soul intelligence
     
     # === CLASSIFICATION ===
     pillar: str = "general",        # Pillar enum value
@@ -150,12 +153,18 @@ async def create_or_attach_service_ticket(
     - If parent_ticket_id is valid canonical ID → attach to existing ticket
     - If parent_ticket_id is invalid/missing → create new ticket with canonical ID
     
+    PET CONTEXT REQUIREMENT:
+    - pet_id and pet_name are REQUIRED for pet-scoped notifications
+    - If not provided, will attempt auto-resolution from user's pets
+    - If user has multiple pets and none specified, ticket flagged with needs_pet_selection
+    
     Returns:
         {
             "success": True,
             "ticket_id": "TCK-2026-000001",
             "action": "created" | "attached",
-            "ticket": {...full ticket document...}
+            "ticket": {...full ticket document...},
+            "needs_pet_selection": bool  # True if pet context missing and user has multiple pets
         }
     """
     now = datetime.now(timezone.utc)
