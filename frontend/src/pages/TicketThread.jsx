@@ -334,38 +334,91 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
     }
   };
 
-  // Send reply
-  const handleSendReply = async ({ content, attachments }) => {
+  // Send reply with optimistic UI - THE NEW ENDPOINT
+  const handleSendReply = async () => {
+    const text = replyText.trim();
+    if (!text) return;
+    
     // If ticket is resolved, reopen it first
     if (ticket?.status === 'resolved') {
-      await handleReopenTicket();
+      setTicket(prev => ({ ...prev, status: 'open' }));
     }
     
-    const response = await fetch(`${API_URL}/api/service_desk/tickets/${ticketId}/reply`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { 'Authorization': `Bearer ${token}` })
-      },
-      body: JSON.stringify({
-        content,
-        sender_email: user?.email
-      })
-    });
-    
-    if (!response.ok) throw new Error('Failed to send reply');
-    
-    const result = await response.json();
-    
-    // Add message to local state
-    setMessages(prev => [...prev, {
-      id: result.message_id,
-      content,
+    // Create optimistic message with temporary ID
+    const tempId = `temp-${Date.now()}`;
+    const optimisticMessage = {
+      id: tempId,
+      content: text,
+      text: text,
       sender: 'member',
-      timestamp: new Date().toISOString()
-    }]);
+      timestamp: new Date().toISOString(),
+      status: 'sending' // Optimistic UI state
+    };
     
-    return result;
+    // Clear input immediately
+    setReplyText('');
+    
+    // Add to pending messages (optimistic)
+    setPendingMessages(prev => [...prev, optimisticMessage]);
+    
+    try {
+      // Call the NEW canonical endpoint
+      const response = await fetch(`${API_URL}/api/member/tickets/${ticketId}/reply`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          text: text,
+          attachments: []
+        })
+      });
+      
+      if (!response.ok) throw new Error('Failed to send reply');
+      
+      const result = await response.json();
+      
+      // Move from pending to confirmed messages
+      setPendingMessages(prev => prev.filter(m => m.id !== tempId));
+      setMessages(prev => [...prev, {
+        id: result.message_id,
+        content: text,
+        text: text,
+        sender: 'member',
+        timestamp: result.timestamp || new Date().toISOString(),
+        status: 'sent'
+      }]);
+      
+      // Notify parent to refresh if needed
+      onTicketUpdate?.();
+      
+    } catch (err) {
+      console.error('Send failed:', err);
+      // Update optimistic message to failed state
+      setPendingMessages(prev => prev.map(m => 
+        m.id === tempId ? { ...m, status: 'failed', originalText: text } : m
+      ));
+    }
+  };
+
+  // Retry failed message
+  const handleRetryMessage = async (failedMsg) => {
+    // Remove from pending
+    setPendingMessages(prev => prev.filter(m => m.id !== failedMsg.id));
+    // Set text and trigger send
+    setReplyText(failedMsg.originalText || failedMsg.text || failedMsg.content);
+    // Small delay then send
+    setTimeout(() => handleSendReply(), 100);
+  };
+
+  // Handle keyboard in composer
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendReply();
+    }
+    // Shift+Enter allows newline (default behavior)
   };
 
   // Actions
