@@ -12446,8 +12446,209 @@ If not, tell me what {pet_name} ate and the timing, and I'll guide the next step
             "pillar": "care",  # Route to care pillar for follow-up
             "ticket_type": "triage",
             "is_triage": True,
-            "awaiting_triage_response": True
+            "awaiting_triage_response": True,
+            # Section 11.3.6: Emergency triage chips
+            "conversation_contract": {
+                "mode": "clarify",
+                "assistant_message_id": f"MSG-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:5].upper()}",
+                "quick_replies": [
+                    {"id": "QR-EMG-01", "label": "Chocolate", "payload_text": "Chocolate.", "intent_type": "emergency_triage", "action": "none", "action_args": {}, "analytics_tag": "qr.emergency.what"},
+                    {"id": "QR-EMG-02", "label": "Medicine", "payload_text": "Medicine or pills.", "intent_type": "emergency_triage", "action": "none", "action_args": {}, "analytics_tag": "qr.emergency.what"},
+                    {"id": "QR-EMG-03", "label": "Grapes/raisins", "payload_text": "Grapes or raisins.", "intent_type": "emergency_triage", "action": "none", "action_args": {}, "analytics_tag": "qr.emergency.what"},
+                    {"id": "QR-EMG-04", "label": "Plant", "payload_text": "A plant.", "intent_type": "emergency_triage", "action": "none", "action_args": {}, "analytics_tag": "qr.emergency.what"},
+                    {"id": "QR-EMG-05", "label": "Not sure", "payload_text": "I'm not sure what.", "intent_type": "emergency_triage", "action": "none", "action_args": {}, "analytics_tag": "qr.emergency.what"},
+                    {"id": "QR-EMG-06", "label": "Go to vet now", "payload_text": "I want to go to the vet now.", "intent_type": "emergency_go_now", "action": "none", "action_args": {}, "analytics_tag": "qr.emergency.gonow"}
+                ],
+                "actions": []
+            }
         }
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # 5.1 CELEBRATE PILLAR - Engage in soulful conversation BEFORE ticket
+    # Section 0.05.5A: Must include joy + one vivid specific + follow-up question
+    # DO NOT immediately create service ticket - ask location/size first
+    # ═══════════════════════════════════════════════════════════════════════════
+    if pillar == "celebrate":
+        # Check if this is initial celebration request or a follow-up
+        is_initial_celebrate = not existing_ticket or existing_ticket.get("pillar") != "celebrate"
+        celebrate_stage = None
+        
+        if is_initial_celebrate or not existing_ticket.get("ai_context", {}).get("celebrate_stage"):
+            # Initial request - ask about location (Stage 1)
+            celebrate_stage = "location"
+            celebrate_response = f"""Oh, a celebration for {pet_name}! They're going to absolutely love this.
+
+I can already picture {pet_name}'s excitement. Let me help make this perfect.
+
+**First question:** Where would you like to celebrate?
+
+This helps me tailor everything - from cake options to photo spots."""
+            
+            # Update ticket with celebrate stage
+            await update_mira_ticket(session_id, {
+                "ai_context.celebrate_stage": "location",
+                "ai_context.celebrate_type": "birthday" if "birthday" in user_message.lower() else "celebration"
+            })
+            
+            # Add AI response to ticket
+            await add_message_to_ticket(session_id, {
+                "type": "mira_response",
+                "content": celebrate_response,
+                "sender": "mira",
+                "channel": request.source,
+                "is_internal": False,
+                "mode": "celebrate_engage"
+            })
+            
+            return add_picks_to_response({
+                "success": True,
+                "response": celebrate_response,
+                "session_id": session_id,
+                "ticket_id": ticket_id,
+                "pillar": pillar,
+                "ticket_type": "advisory",  # Not a service ticket yet
+                "celebrate_stage": "location",
+                "awaiting_celebrate_details": True,
+                # Section 11.3.4A: Celebration location chips
+                "conversation_contract": {
+                    "mode": "clarify",
+                    "assistant_message_id": f"MSG-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:5].upper()}",
+                    "quick_replies": [
+                        {"id": "QR-CEL-01", "label": "At home", "payload_text": "At home.", "intent_type": "answer_option", "action": "none", "action_args": {}, "analytics_tag": "qr.celebrate.location"},
+                        {"id": "QR-CEL-02", "label": "Pet café", "payload_text": "At a pet café.", "intent_type": "answer_option", "action": "none", "action_args": {}, "analytics_tag": "qr.celebrate.location"},
+                        {"id": "QR-CEL-03", "label": "Garden/outdoor", "payload_text": "In a garden or outdoor space.", "intent_type": "answer_option", "action": "none", "action_args": {}, "analytics_tag": "qr.celebrate.location"},
+                        {"id": "QR-CEL-04", "label": "Hotel staycation", "payload_text": "A hotel staycation.", "intent_type": "answer_option", "action": "none", "action_args": {}, "analytics_tag": "qr.celebrate.location"},
+                        {"id": "QR-CEL-05", "label": "Not sure yet", "payload_text": "I'm not sure yet.", "intent_type": "answer_option", "action": "none", "action_args": {}, "analytics_tag": "qr.celebrate.location"}
+                    ],
+                    "actions": []
+                },
+                "follow_ups": [
+                    {"text": "At home", "type": "location"},
+                    {"text": "Pet café", "type": "location"},
+                    {"text": "Garden/outdoor", "type": "location"}
+                ],
+                "products": [],
+                "nearby_places": None
+            })
+        
+        # Check for Stage 2 - Party size (if location was provided)
+        elif existing_ticket.get("ai_context", {}).get("celebrate_stage") == "location":
+            # User provided location - now ask about party size
+            celebrate_stage = "size"
+            location_provided = user_message
+            
+            celebrate_response = f"""Perfect! {location_provided.strip('.')} sounds wonderful for {pet_name}.
+
+**Next question:** How big are we thinking?
+
+This helps me know if we need a photographer, extra treats for guests, or just an intimate celebration."""
+            
+            # Update ticket with celebrate stage and location
+            await update_mira_ticket(session_id, {
+                "ai_context.celebrate_stage": "size",
+                "ai_context.celebrate_location": location_provided
+            })
+            
+            # Add AI response to ticket
+            await add_message_to_ticket(session_id, {
+                "type": "mira_response",
+                "content": celebrate_response,
+                "sender": "mira",
+                "channel": request.source,
+                "is_internal": False,
+                "mode": "celebrate_engage"
+            })
+            
+            return add_picks_to_response({
+                "success": True,
+                "response": celebrate_response,
+                "session_id": session_id,
+                "ticket_id": ticket_id,
+                "pillar": pillar,
+                "ticket_type": "advisory",
+                "celebrate_stage": "size",
+                "awaiting_celebrate_details": True,
+                # Section 11.3.4B: Party size chips
+                "conversation_contract": {
+                    "mode": "clarify",
+                    "assistant_message_id": f"MSG-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:5].upper()}",
+                    "quick_replies": [
+                        {"id": "QR-CEL-S1", "label": "Just us", "payload_text": "Just us, no other dogs.", "intent_type": "answer_option", "action": "none", "action_args": {}, "analytics_tag": "qr.celebrate.size"},
+                        {"id": "QR-CEL-S2", "label": "Small (under 6)", "payload_text": "Small, under 6 pups.", "intent_type": "answer_option", "action": "none", "action_args": {}, "analytics_tag": "qr.celebrate.size"},
+                        {"id": "QR-CEL-S3", "label": "Medium (6-12)", "payload_text": "Medium, 6 to 12 pups.", "intent_type": "answer_option", "action": "none", "action_args": {}, "analytics_tag": "qr.celebrate.size"},
+                        {"id": "QR-CEL-S4", "label": "Big party", "payload_text": "A big party with lots of dogs.", "intent_type": "answer_option", "action": "none", "action_args": {}, "analytics_tag": "qr.celebrate.size"},
+                        {"id": "QR-CEL-S5", "label": "Not sure yet", "payload_text": "I'm not sure yet.", "intent_type": "answer_option", "action": "none", "action_args": {}, "analytics_tag": "qr.celebrate.size"}
+                    ],
+                    "actions": []
+                },
+                "follow_ups": [
+                    {"text": "Just us", "type": "size"},
+                    {"text": "Small party", "type": "size"},
+                    {"text": "Big party", "type": "size"}
+                ],
+                "products": [],
+                "nearby_places": None
+            })
+        
+        # Check for Stage 3 - Execution (if size was provided)
+        elif existing_ticket.get("ai_context", {}).get("celebrate_stage") == "size":
+            # User provided size - now offer execution options
+            celebrate_stage = "execution"
+            size_provided = user_message
+            location_stored = existing_ticket.get("ai_context", {}).get("celebrate_location", "your chosen spot")
+            
+            celebrate_response = f"""Amazing! {size_provided.strip('.')} at {location_stored.strip('.')} - {pet_name} is going to have the best day.
+
+**What would you like me to arrange?**
+
+I can help with any of these - or all of them! Just let me know what excites you."""
+            
+            # Update ticket with celebrate stage and size
+            await update_mira_ticket(session_id, {
+                "ai_context.celebrate_stage": "execution",
+                "ai_context.celebrate_size": size_provided
+            })
+            
+            # Add AI response to ticket
+            await add_message_to_ticket(session_id, {
+                "type": "mira_response",
+                "content": celebrate_response,
+                "sender": "mira",
+                "channel": request.source,
+                "is_internal": False,
+                "mode": "celebrate_execute"
+            })
+            
+            return add_picks_to_response({
+                "success": True,
+                "response": celebrate_response,
+                "session_id": session_id,
+                "ticket_id": ticket_id,
+                "pillar": pillar,
+                "ticket_type": "advisory",
+                "celebrate_stage": "execution",
+                "ready_for_handoff": True,
+                # Section 11.3.4C: Celebration execution chips
+                "conversation_contract": {
+                    "mode": "handoff",
+                    "assistant_message_id": f"MSG-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:5].upper()}",
+                    "quick_replies": [
+                        {"id": "QR-CEL-E1", "label": "Custom cake", "payload_text": "I want a custom cake.", "intent_type": "detail_request", "action": "none", "action_args": {}, "analytics_tag": "qr.celebrate.exec"},
+                        {"id": "QR-CEL-E2", "label": "Photographer", "payload_text": "I want a photographer.", "intent_type": "detail_request", "action": "none", "action_args": {}, "analytics_tag": "qr.celebrate.exec"},
+                        {"id": "QR-CEL-E3", "label": "Party setup", "payload_text": "I want party setup help.", "intent_type": "detail_request", "action": "none", "action_args": {}, "analytics_tag": "qr.celebrate.exec"},
+                        {"id": "QR-CEL-E4", "label": "Open request", "payload_text": "Open a request for this.", "intent_type": "handoff_concierge", "action": "create_ticket", "action_args": {"pillar": "celebrate"}, "analytics_tag": "qr.ticket.open"},
+                        {"id": "QR-CEL-E5", "label": "View in Services", "payload_text": "Open Services.", "intent_type": "open_services", "action": "open_layer", "action_args": {"layer": "services"}, "analytics_tag": "qr.nav.services"}
+                    ],
+                    "actions": []
+                },
+                "follow_ups": [
+                    {"text": "Custom cake", "type": "execute"},
+                    {"text": "Photographer", "type": "execute"},
+                    {"text": "Open request", "type": "execute"}
+                ],
+                "products": [],
+                "nearby_places": None
+            })
     
     # 5.5 Handle EMERGENCY immediately (GO_NOW tier)
     if pillar == "emergency":
