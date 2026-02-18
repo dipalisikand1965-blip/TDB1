@@ -4,9 +4,18 @@
 
 ---
 
-## ⚠️ CRITICAL: Read AGENT_MASTER_PROTOCOL.md First
+## ⛔ CRITICAL: Complete Handover Protocol First
 
-Every agent MUST read `/app/memory/AGENT_MASTER_PROTOCOL.md` before any work.
+**STEP 1:** Read `/app/memory/MANDATORY_HANDOVER_PROTOCOL.md`
+**STEP 2:** Paste STATE SNAPSHOT at session start
+**STEP 3:** Confirm NON-NEGOTIABLES
+**STEP 4:** Read this file (PRD.md)
+
+---
+
+## ⚠️ Then Read Technical Protocol
+
+`/app/memory/AGENT_MASTER_PROTOCOL.md` - Full technical reference
 
 ---
 
