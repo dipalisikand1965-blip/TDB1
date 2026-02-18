@@ -507,15 +507,28 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
     );
   }
 
-  // Error state
+  // Error state - with Retry button (never blank rule)
   if (error) {
     return (
       <div className={`${isSplitMode ? 'h-full' : 'min-h-screen'} bg-[#0a0a14] flex flex-col items-center justify-center text-gray-400`}>
         <AlertCircle className="w-12 h-12 mb-3 opacity-30" />
         <p>{error}</p>
-        <button onClick={() => isSplitMode ? onClose?.() : navigate('/notifications')} className="mt-3 text-pink-400 text-sm">
-          {isSplitMode ? 'Close' : 'Back to Inbox'}
-        </button>
+        <div className="flex gap-3 mt-3">
+          <button 
+            onClick={fetchTicket} 
+            className="px-4 py-2 bg-pink-500 text-white rounded-full text-sm font-medium"
+            data-testid="retry-load-btn"
+          >
+            Retry
+          </button>
+          <button 
+            onClick={handleBack} 
+            className="px-4 py-2 bg-gray-700 text-white rounded-full text-sm"
+            data-testid="error-back-btn"
+          >
+            {isSplitMode ? 'Close' : 'Back'}
+          </button>
+        </div>
       </div>
     );
   }
