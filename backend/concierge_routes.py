@@ -799,8 +799,34 @@ async def create_general_concierge_request(request: ConciergeGeneralRequest):
     await db.channel_intakes.insert_one(inbox_doc)
     logger.info(f"[UNIFIED FLOW] STEP 3 COMPLETE: Unified Inbox entry created: {inbox_id}")
     
-    # ==================== STEP 4: CONTEXTUAL (already done - concierge_requests) ====================
-    logger.info(f"[UNIFIED FLOW] COMPLETE: {request_id} | Flow: Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id}) → Context(concierge_requests)")
+    # ==================== STEP 4: MEMBER NOTIFICATION (MANDATORY) ====================
+    # User must see confirmation in their notification bell
+    if request.email:
+        try:
+            member_notification_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
+            member_notification = {
+                "id": member_notification_id,
+                "type": "concierge_request_received",
+                "title": f"Request Received: {request.experience_name or request.pillar.capitalize()}",
+                "message": f"Your {request.pillar.capitalize()} request has been sent to Concierge®. We'll get back to you soon!",
+                "user_email": request.email.lower(),
+                "ticket_id": ticket_id,
+                "request_id": request_id,
+                "pillar": request.pillar,
+                "read": False,
+                "created_at": now.isoformat(),
+                "data": {
+                    "thread_url": f"/mira-demo?tab=services&thread={ticket_id}",
+                    "experience_name": request.experience_name
+                }
+            }
+            await db.member_notifications.insert_one(member_notification)
+            logger.info(f"[UNIFIED FLOW] STEP 4 COMPLETE: Member notification created: {member_notification_id}")
+        except Exception as notif_error:
+            logger.error(f"[UNIFIED FLOW] Failed to create member notification: {notif_error}")
+    
+    # ==================== STEP 5: CONTEXTUAL (already done - concierge_requests) ====================
+    logger.info(f"[UNIFIED FLOW] COMPLETE: {request_id} | Flow: Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id}) → MemberNotif → Context(concierge_requests)")
     
     return {
         "success": True,
