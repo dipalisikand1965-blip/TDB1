@@ -740,7 +740,7 @@ async def handoff_to_concierge(request: HandoffToConciergeRequest):
         update_set["request_title"] = request.request_title
         logger.info(f"[HANDOFF] User updated title to: {request.request_title}")
     
-    # Update the ticket
+    # Update the ticket in mira_conversations
     result = await db.mira_conversations.update_one(
         {"ticket_id": request.ticket_id},
         {
@@ -776,7 +776,43 @@ async def handoff_to_concierge(request: HandoffToConciergeRequest):
         }
     )
     
-    if result.matched_count == 0:
+    # Also update mira_tickets (canonical spine collection) - uses messages[] not conversation[]
+    mira_tickets_result = await db.mira_tickets.update_one(
+        {"ticket_id": request.ticket_id},
+        {
+            "$set": update_set,
+            "$push": {
+                "messages": {
+                    "$each": [
+                        {
+                            "sender": "system",
+                            "source": "Mira_OS",
+                            "content": f"Handoff to pet Concierge® – queue {request.concierge_queue}.",
+                            "timestamp": now.isoformat(),
+                            "meta": {
+                                "type": "handoff",
+                                "queue": request.concierge_queue,
+                                "pillar": request.pillar,
+                                "summary": request.latest_mira_summary
+                            }
+                        },
+                        {
+                            "sender": "mira",
+                            "source": "Mira_OS",
+                            "content": mira_closing_line,
+                            "timestamp": now.isoformat(),
+                            "meta": {
+                                "type": "handoff_closure",
+                                "is_clarifying_question": False
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    )
+    
+    if result.matched_count == 0 and mira_tickets_result.matched_count == 0:
         raise HTTPException(status_code=404, detail=f"Ticket {request.ticket_id} not found")
     
     # ============================================
