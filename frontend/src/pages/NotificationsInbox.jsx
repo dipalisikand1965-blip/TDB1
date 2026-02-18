@@ -6,20 +6,22 @@
  * Features:
  * - Full-screen list (no dropdown)
  * - Search inside inbox (subject, pet, messages)
- * - Select mode + bulk actions (mark read/unread, archive)
+ * - Select mode + bulk actions (mark read/unread, archive - NO delete)
  * - Tabs: Primary / Updates / All
  * - Pet filter: Active Pet / All Pets
- * - Filter sheet: Status, Pet, Type
- * - iOS Mail-style rows with unread indicators
+ * - Filter sheet: Status, Pet, Type (with active indicator)
+ * - iOS Mail-style rows with swipe actions
+ * - Dedupe/group repeated events (30-60s window)
  * - Desktop: Split view (list left, thread right)
  * - Every row opens a ticket thread
+ * - Unread count = NotificationEvents (not tickets)
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ArrowLeft, Bell, Filter, Search, X, Check, Square, 
-  CheckSquare, RefreshCw, MoreHorizontal, Archive, Mail, MailOpen
+  CheckSquare, RefreshCw, Archive, Mail, MailOpen
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import InboxRow from '../components/Mira/InboxRow';
@@ -33,6 +35,36 @@ const TABS = [
   { id: 'all', label: 'All' }
 ];
 
+// Group events within time window (60 seconds)
+const groupEvents = (notifications) => {
+  const grouped = [];
+  const seen = new Map(); // ticket_id -> latest notification
+  
+  for (const notif of notifications) {
+    const key = `${notif.ticket_id}-${notif.type}`;
+    const existing = seen.get(key);
+    
+    if (existing) {
+      // Check if within 60 second window
+      const existingTime = new Date(existing.created_at);
+      const currentTime = new Date(notif.created_at);
+      const diffSeconds = Math.abs(existingTime - currentTime) / 1000;
+      
+      if (diffSeconds < 60) {
+        // Group: increment count on existing
+        existing.groupCount = (existing.groupCount || 1) + 1;
+        continue;
+      }
+    }
+    
+    // New entry or outside window
+    seen.set(key, notif);
+    grouped.push(notif);
+  }
+  
+  return grouped;
+};
+
 const NotificationsInbox = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -40,7 +72,6 @@ const NotificationsInbox = () => {
   
   // State
   const [notifications, setNotifications] = useState([]);
-  const [filteredNotifications, setFilteredNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('primary');
@@ -55,8 +86,8 @@ const NotificationsInbox = () => {
   
   // Filter sheet state
   const [showFilterSheet, setShowFilterSheet] = useState(false);
-  const [statusFilter, setStatusFilter] = useState('all'); // all, open, waiting, resolved
-  const [typeFilter, setTypeFilter] = useState('all'); // all, requests, replies, approvals, announcements
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
   
   // Select mode state
   const [selectMode, setSelectMode] = useState(false);
@@ -65,6 +96,9 @@ const NotificationsInbox = () => {
   // Desktop split view
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
+
+  // Check if any filters are active
+  const hasActiveFilters = statusFilter !== 'all' || typeFilter !== 'all' || petFilter !== 'all';
 
   // Check screen size
   useEffect(() => {
@@ -129,7 +163,8 @@ const NotificationsInbox = () => {
       
       const data = await response.json();
       setNotifications(data.notifications || []);
-      setUnreadCount(data.unread || 0); // This is NotificationEvents count, not tickets
+      // Unread count = NotificationEvents count (NOT tickets)
+      setUnreadCount(data.unread || 0);
       
     } catch (err) {
       console.error('Error fetching notifications:', err);
@@ -143,8 +178,8 @@ const NotificationsInbox = () => {
     fetchNotifications();
   }, [fetchNotifications]);
 
-  // Apply local filters (search, status, type)
-  useEffect(() => {
+  // Apply local filters + grouping + search
+  const filteredNotifications = useMemo(() => {
     let filtered = [...notifications];
     
     // Search filter
@@ -166,7 +201,7 @@ const NotificationsInbox = () => {
     // Type filter
     if (typeFilter !== 'all') {
       const typeMap = {
-        requests: ['picks_request_received', 'mira_request_received', 'vault_request_received', 'service_request_received'],
+        requests: ['picks_request_received', 'mira_request_received', 'vault_request_received', 'service_request_received', 'experience_request_received', 'concierge_request_received'],
         replies: ['concierge_reply'],
         approvals: ['approval_needed', 'payment_needed'],
         announcements: ['announcement']
@@ -174,24 +209,18 @@ const NotificationsInbox = () => {
       filtered = filtered.filter(n => typeMap[typeFilter]?.includes(n.type));
     }
     
-    setFilteredNotifications(filtered);
+    // Group events within 60s window
+    return groupEvents(filtered);
   }, [notifications, searchQuery, statusFilter, typeFilter]);
 
   // Handle notification click
   const handleNotificationClick = async (notification) => {
     if (selectMode) {
-      // Toggle selection
-      const newSelected = new Set(selectedIds);
-      if (newSelected.has(notification.id)) {
-        newSelected.delete(notification.id);
-      } else {
-        newSelected.add(notification.id);
-      }
-      setSelectedIds(newSelected);
+      toggleSelection(notification.id);
       return;
     }
     
-    // Mark as read immediately
+    // Mark as read immediately - this is a NotificationEvent, reduces count by 1
     if (!notification.read) {
       try {
         await fetch(`${API_URL}/api/member/notifications/${notification.id}/read`, {
@@ -202,7 +231,7 @@ const NotificationsInbox = () => {
           }
         });
         
-        // Update local state immediately
+        // Update local state INSTANTLY
         setNotifications(prev => prev.map(n => 
           n.id === notification.id ? { ...n, read: true } : n
         ));
@@ -223,33 +252,82 @@ const NotificationsInbox = () => {
     }
   };
 
-  // Bulk actions
-  const handleBulkMarkRead = async (read) => {
-    const ids = Array.from(selectedIds);
-    for (const id of ids) {
-      try {
-        await fetch(`${API_URL}/api/member/notifications/${id}/${read ? 'read' : 'unread'}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
-        });
-      } catch (err) {
-        console.error('Failed to update:', err);
-      }
+  // Selection helpers
+  const toggleSelection = (id) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
     }
-    
-    setNotifications(prev => prev.map(n => 
-      selectedIds.has(n.id) ? { ...n, read } : n
-    ));
-    
-    const affectedUnread = notifications.filter(n => selectedIds.has(n.id) && !n.read).length;
-    setUnreadCount(prev => read ? Math.max(0, prev - affectedUnread) : prev + ids.length - affectedUnread);
-    
+    setSelectedIds(newSelected);
+  };
+
+  const selectAll = () => {
+    setSelectedIds(new Set(filteredNotifications.map(n => n.id)));
+  };
+
+  const clearSelection = () => {
     setSelectedIds(new Set());
     setSelectMode(false);
   };
 
+  // Bulk actions
+  const handleBulkMarkRead = async () => {
+    const ids = Array.from(selectedIds);
+    let successCount = 0;
+    
+    for (const id of ids) {
+      try {
+        await fetch(`${API_URL}/api/member/notifications/${id}/read`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
+        });
+        successCount++;
+      } catch (err) {
+        console.error('Failed to mark read:', err);
+      }
+    }
+    
+    // Update local state
+    const affectedUnread = notifications.filter(n => selectedIds.has(n.id) && !n.read).length;
+    setNotifications(prev => prev.map(n => 
+      selectedIds.has(n.id) ? { ...n, read: true } : n
+    ));
+    setUnreadCount(prev => Math.max(0, prev - affectedUnread));
+    
+    clearSelection();
+  };
+
+  const handleBulkMarkUnread = async () => {
+    const ids = Array.from(selectedIds);
+    let successCount = 0;
+    
+    for (const id of ids) {
+      try {
+        await fetch(`${API_URL}/api/member/notifications/${id}/unread`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
+        });
+        successCount++;
+      } catch (err) {
+        console.error('Failed to mark unread:', err);
+      }
+    }
+    
+    // Update local state
+    const affectedRead = notifications.filter(n => selectedIds.has(n.id) && n.read).length;
+    setNotifications(prev => prev.map(n => 
+      selectedIds.has(n.id) ? { ...n, read: false } : n
+    ));
+    setUnreadCount(prev => prev + affectedRead);
+    
+    clearSelection();
+  };
+
   const handleBulkArchive = async () => {
     const ids = Array.from(selectedIds);
+    
     for (const id of ids) {
       try {
         await fetch(`${API_URL}/api/member/notifications/${id}/archive`, {
@@ -261,12 +339,62 @@ const NotificationsInbox = () => {
       }
     }
     
-    setNotifications(prev => prev.filter(n => !selectedIds.has(n.id)));
+    // Remove from list (Archive = hide from inbox)
     const affectedUnread = notifications.filter(n => selectedIds.has(n.id) && !n.read).length;
+    setNotifications(prev => prev.filter(n => !selectedIds.has(n.id)));
     setUnreadCount(prev => Math.max(0, prev - affectedUnread));
     
-    setSelectedIds(new Set());
-    setSelectMode(false);
+    clearSelection();
+  };
+
+  // Single row actions (from swipe)
+  const handleSingleMarkRead = async (notification) => {
+    try {
+      await fetch(`${API_URL}/api/member/notifications/${notification.id}/read`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
+      });
+      setNotifications(prev => prev.map(n => 
+        n.id === notification.id ? { ...n, read: true } : n
+      ));
+      if (!notification.read) {
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (err) {
+      console.error('Failed to mark read:', err);
+    }
+  };
+
+  const handleSingleMarkUnread = async (notification) => {
+    try {
+      await fetch(`${API_URL}/api/member/notifications/${notification.id}/unread`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
+      });
+      setNotifications(prev => prev.map(n => 
+        n.id === notification.id ? { ...n, read: false } : n
+      ));
+      if (notification.read) {
+        setUnreadCount(prev => prev + 1);
+      }
+    } catch (err) {
+      console.error('Failed to mark unread:', err);
+    }
+  };
+
+  const handleSingleArchive = async (notification) => {
+    try {
+      await fetch(`${API_URL}/api/member/notifications/${notification.id}/archive`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
+      });
+      setNotifications(prev => prev.filter(n => n.id !== notification.id));
+      if (!notification.read) {
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (err) {
+      console.error('Failed to archive:', err);
+    }
   };
 
   // Get pet name for notification
@@ -276,67 +404,92 @@ const NotificationsInbox = () => {
     return pet?.name || 'General';
   };
 
+  // Reset filters
+  const resetFilters = () => {
+    setStatusFilter('all');
+    setTypeFilter('all');
+    setPetFilter('all');
+    setShowFilterSheet(false);
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0a14] flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-[#0d0d1a] border-b border-gray-800/50">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => navigate(-1)}
-              className="p-2 rounded-full hover:bg-gray-800 lg:hidden"
-            >
-              <ArrowLeft className="w-5 h-5 text-gray-300" />
+        {/* Select mode header */}
+        {selectMode ? (
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-3">
+              <button onClick={clearSelection} className="p-2 rounded-full hover:bg-gray-800">
+                <X className="w-5 h-5 text-gray-300" />
+              </button>
+              <span className="text-white font-medium">{selectedIds.size} selected</span>
+            </div>
+            <button onClick={selectAll} className="text-pink-400 text-sm font-medium">
+              Select All
             </button>
-            <div>
-              <h1 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Bell className="w-5 h-5 text-pink-400" />
-                Inbox
-              </h1>
-              <p className="text-xs text-gray-400">
-                {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}
-              </p>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => navigate(-1)}
+                className="p-2 rounded-full hover:bg-gray-800 lg:hidden"
+              >
+                <ArrowLeft className="w-5 h-5 text-gray-300" />
+              </button>
+              <div>
+                <h1 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <Bell className="w-5 h-5 text-pink-400" />
+                  Inbox
+                </h1>
+                <p className="text-xs text-gray-400">
+                  {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-1">
+              <button 
+                onClick={() => {
+                  setSelectMode(true);
+                  setSelectedIds(new Set());
+                }}
+                className="p-2 rounded-full hover:bg-gray-800 text-gray-400"
+              >
+                <CheckSquare className="w-5 h-5" />
+              </button>
+              
+              <button 
+                onClick={() => setShowSearch(!showSearch)}
+                className={`p-2 rounded-full ${showSearch ? 'bg-blue-500/20 text-blue-400' : 'hover:bg-gray-800 text-gray-400'}`}
+              >
+                <Search className="w-5 h-5" />
+              </button>
+              
+              <button 
+                onClick={fetchNotifications}
+                className="p-2 rounded-full hover:bg-gray-800"
+              >
+                <RefreshCw className={`w-5 h-5 text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+              </button>
+              
+              {/* Filter button with active indicator */}
+              <button 
+                onClick={() => setShowFilterSheet(true)}
+                className="p-2 rounded-full hover:bg-gray-800 relative"
+              >
+                <Filter className="w-5 h-5 text-gray-400" />
+                {hasActiveFilters && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-pink-500 rounded-full" />
+                )}
+              </button>
             </div>
           </div>
-          
-          <div className="flex items-center gap-1">
-            {/* Select button */}
-            <button 
-              onClick={() => {
-                setSelectMode(!selectMode);
-                setSelectedIds(new Set());
-              }}
-              className={`p-2 rounded-full ${selectMode ? 'bg-pink-500/20 text-pink-400' : 'hover:bg-gray-800 text-gray-400'}`}
-            >
-              {selectMode ? <X className="w-5 h-5" /> : <CheckSquare className="w-5 h-5" />}
-            </button>
-            
-            {/* Search toggle */}
-            <button 
-              onClick={() => setShowSearch(!showSearch)}
-              className={`p-2 rounded-full ${showSearch ? 'bg-blue-500/20 text-blue-400' : 'hover:bg-gray-800 text-gray-400'}`}
-            >
-              <Search className="w-5 h-5" />
-            </button>
-            
-            <button 
-              onClick={fetchNotifications}
-              className="p-2 rounded-full hover:bg-gray-800"
-            >
-              <RefreshCw className={`w-5 h-5 text-gray-400 ${loading ? 'animate-spin' : ''}`} />
-            </button>
-            
-            <button 
-              onClick={() => setShowFilterSheet(true)}
-              className="p-2 rounded-full hover:bg-gray-800"
-            >
-              <Filter className="w-5 h-5 text-gray-400" />
-            </button>
-          </div>
-        </div>
+        )}
         
         {/* Search Input */}
-        {showSearch && (
+        {showSearch && !selectMode && (
           <div className="px-4 pb-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
@@ -349,10 +502,7 @@ const NotificationsInbox = () => {
                 autoFocus
               />
               {searchQuery && (
-                <button 
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
-                >
+                <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2">
                   <X className="w-4 h-4 text-gray-500" />
                 </button>
               )}
@@ -361,27 +511,27 @@ const NotificationsInbox = () => {
         )}
         
         {/* Tabs + Pet Filter */}
-        <div className="flex items-center justify-between px-4 pb-3">
-          <div className="flex gap-1">
-            {TABS.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`
-                  px-3 py-1.5 rounded-full text-xs font-medium transition-all
-                  ${activeTab === tab.id 
-                    ? 'bg-blue-500 text-white' 
-                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
-                  }
-                `}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-          
-          {/* Pet Filter Dropdown */}
-          <div className="relative">
+        {!selectMode && (
+          <div className="flex items-center justify-between px-4 pb-3">
+            <div className="flex gap-1">
+              {TABS.map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`
+                    px-3 py-1.5 rounded-full text-xs font-medium transition-all
+                    ${activeTab === tab.id 
+                      ? 'bg-blue-500 text-white' 
+                      : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
+                    }
+                  `}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            
+            {/* Pet Filter Dropdown */}
             <button
               onClick={() => setPetFilter(petFilter === 'active' ? 'all' : 'active')}
               className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-gray-800/50 text-gray-400 hover:bg-gray-800"
@@ -390,35 +540,32 @@ const NotificationsInbox = () => {
               <span className="text-[10px]">▾</span>
             </button>
           </div>
-        </div>
+        )}
         
         {/* Bulk Actions Bar */}
         {selectMode && selectedIds.size > 0 && (
-          <div className="flex items-center justify-between px-4 py-2 bg-gray-800/50 border-t border-gray-700/30">
-            <span className="text-sm text-gray-300">{selectedIds.size} selected</span>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => handleBulkMarkRead(true)}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-gray-700/50 text-gray-300 hover:bg-gray-700"
-              >
-                <MailOpen className="w-4 h-4" />
-                Mark Read
-              </button>
-              <button
-                onClick={() => handleBulkMarkRead(false)}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-gray-700/50 text-gray-300 hover:bg-gray-700"
-              >
-                <Mail className="w-4 h-4" />
-                Mark Unread
-              </button>
-              <button
-                onClick={handleBulkArchive}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-gray-700/50 text-gray-300 hover:bg-gray-700"
-              >
-                <Archive className="w-4 h-4" />
-                Archive
-              </button>
-            </div>
+          <div className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-800/50 border-t border-gray-700/30">
+            <button
+              onClick={handleBulkMarkRead}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
+            >
+              <MailOpen className="w-4 h-4" />
+              Mark Read
+            </button>
+            <button
+              onClick={handleBulkMarkUnread}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-amber-500/20 text-amber-400 hover:bg-amber-500/30"
+            >
+              <Mail className="w-4 h-4" />
+              Mark Unread
+            </button>
+            <button
+              onClick={handleBulkArchive}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-500/20 text-gray-400 hover:bg-gray-500/30"
+            >
+              <Archive className="w-4 h-4" />
+              Archive
+            </button>
           </div>
         )}
       </header>
@@ -431,21 +578,28 @@ const NotificationsInbox = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="w-10 h-1 bg-gray-700 rounded-full mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-white mb-4">Filters</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">Filters</h3>
+              {hasActiveFilters && (
+                <button onClick={resetFilters} className="text-pink-400 text-sm">
+                  Reset
+                </button>
+              )}
+            </div>
             
             {/* Status Filter */}
             <div className="mb-4">
-              <p className="text-xs text-gray-500 mb-2">Status</p>
+              <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Status</p>
               <div className="flex flex-wrap gap-2">
-                {['all', 'open', 'waiting', 'resolved'].map(status => (
+                {['all', 'open', 'in_progress', 'waiting', 'resolved'].map(status => (
                   <button
                     key={status}
                     onClick={() => setStatusFilter(status)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium ${
-                      statusFilter === status ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400'
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      statusFilter === status ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
                     }`}
                   >
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                    {status === 'in_progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}
                   </button>
                 ))}
               </div>
@@ -453,14 +607,14 @@ const NotificationsInbox = () => {
             
             {/* Type Filter */}
             <div className="mb-4">
-              <p className="text-xs text-gray-500 mb-2">Type</p>
+              <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Type</p>
               <div className="flex flex-wrap gap-2">
                 {['all', 'requests', 'replies', 'approvals', 'announcements'].map(type => (
                   <button
                     key={type}
                     onClick={() => setTypeFilter(type)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium ${
-                      typeFilter === type ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400'
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      typeFilter === type ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
                     }`}
                   >
                     {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -471,12 +625,12 @@ const NotificationsInbox = () => {
             
             {/* Pet Filter */}
             <div className="mb-6">
-              <p className="text-xs text-gray-500 mb-2">Pet</p>
+              <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Pet</p>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setPetFilter('all')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium ${
-                    petFilter === 'all' ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400'
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    petFilter === 'all' ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
                   }`}
                 >
                   All Pets
@@ -488,8 +642,8 @@ const NotificationsInbox = () => {
                       setPetFilter('active');
                       setActivePet(pet);
                     }}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium ${
-                      petFilter === 'active' && activePet?.id === pet.id ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400'
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      petFilter === 'active' && activePet?.id === pet.id ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
                     }`}
                   >
                     {pet.name}
@@ -538,16 +692,8 @@ const NotificationsInbox = () => {
                   {/* Select checkbox */}
                   {selectMode && (
                     <button
-                      onClick={() => {
-                        const newSelected = new Set(selectedIds);
-                        if (newSelected.has(notification.id)) {
-                          newSelected.delete(notification.id);
-                        } else {
-                          newSelected.add(notification.id);
-                        }
-                        setSelectedIds(newSelected);
-                      }}
-                      className="pl-4"
+                      onClick={() => toggleSelection(notification.id)}
+                      className="pl-4 py-3"
                     >
                       {selectedIds.has(notification.id) ? (
                         <CheckSquare className="w-5 h-5 text-pink-400" />
@@ -558,11 +704,22 @@ const NotificationsInbox = () => {
                   )}
                   <div className="flex-1">
                     <InboxRow
-                      notification={notification}
+                      notification={{
+                        ...notification,
+                        // Show group count if grouped
+                        title: notification.groupCount > 1 
+                          ? `${notification.title} (${notification.groupCount})`
+                          : notification.title
+                      }}
                       petName={getPetName(notification)}
                       isUnread={!notification.read}
                       onClick={() => handleNotificationClick(notification)}
+                      onMarkRead={() => handleSingleMarkRead(notification)}
+                      onMarkUnread={() => handleSingleMarkUnread(notification)}
+                      onArchive={() => handleSingleArchive(notification)}
                       showPetName={petFilter === 'all'}
+                      isSelected={selectedIds.has(notification.id)}
+                      selectMode={selectMode}
                     />
                   </div>
                 </div>
