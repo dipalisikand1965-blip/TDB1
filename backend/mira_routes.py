@@ -8760,6 +8760,23 @@ If Soul data is sparse, ASK targeted questions. Do NOT assume from breed.
             # Get doggy soul answers for additional profile data
             doggy_soul = pet.get('doggy_soul_answers', {})
             
+            # ═══════════════════════════════════════════════════════════════════════════
+            # SEALED FACTS BLOCK - DO NOT ALTER (Breed Guardrail)
+            # ═══════════════════════════════════════════════════════════════════════════
+            pet_context += f"""
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ SEALED FACTS FOR {pet_name.upper()} (DO NOT ALTER, INFER, OR SUBSTITUTE)   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Pet Name: {pet_name}                                                        │
+│ Breed: {breed}                                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ BREED MENTION RULE:                                                         │
+│ • If you mention breed, you MUST use exactly: "{breed}"                     │
+│ • NEVER infer, guess, or substitute a different breed                       │
+│ • NEVER say "as a [other breed]" or "[other breed]s typically..."          │
+│ • If unsure, omit breed mention entirely (Pet First doctrine)               │
+└─────────────────────────────────────────────────────────────────────────────┘
+"""
             pet_context += f"\n{pet_name} - {breed}\n"
             pet_context += f"- Species: {pet.get('species', 'dog')}, Gender: {pet.get('gender', 'unknown')}\n"
             
