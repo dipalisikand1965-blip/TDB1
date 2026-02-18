@@ -82,12 +82,27 @@ When no chat intents exist, Mira still shows intelligent picks based on:
 
 ## 🔴 CRITICAL BUGS TO FIX
 
-### 1. Intent Capture Not Working
+### ✅ FIXED (Feb 18, 2026): Member Notification Bug
+- **Problem:** Users didn't receive notifications when sending concierge requests
+- **Root Cause:** Three endpoints were missing member notification creation:
+  - `/api/concierge/picks-request` - Already had notifications ✅
+  - `/api/concierge/mira-request` - **FIXED** (was missing)
+  - `/api/mira/vault/send-to-concierge` - **FIXED** (was missing)
+- **Fix Applied:**
+  - Added `user_email` field to `MiraRecommendationRequest` model
+  - Added member notification creation to both endpoints
+  - Frontend `MiraOSModal.jsx` now passes `user_email` to backend
+- **Files Changed:**
+  - `/app/backend/concierge_routes.py` (added notification to mira-request)
+  - `/app/backend/mira_routes.py` (added notification to vault endpoint)
+  - `/app/frontend/src/components/mira-os/MiraOSModal.jsx` (pass user_email)
+
+### 1. Intent Capture Not Working (P1)
 - **Collection `user_learn_intents` is EMPTY**
 - Chat messages not storing intents for timely picks
 - **Location:** `mira_routes.py` lines 4365-4390, `learn_intent_bridge.py`
 
-### 2. City Not Persisted
+### 2. City Not Persisted (P2)
 - Pet profile has `city: null`
 - Mumbai showing from browser geolocation only
 - **Need:** Add city field to onboarding
