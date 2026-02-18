@@ -860,6 +860,8 @@ async def membership_onboard(data: MembershipOnboardRequest):
                 "owner_email": data.parent.email,
                 "owner_name": data.parent.name,
                 "owner_id": user_id,
+                "city": data.parent.city,  # Pet inherits owner's city
+                "pincode": data.parent.pincode,  # Pet inherits owner's pincode
                 "identity": {
                     "name": pet_data.name,
                     "breed": pet_data.breed,
