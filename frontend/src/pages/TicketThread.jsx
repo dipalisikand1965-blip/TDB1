@@ -442,6 +442,9 @@ const TicketThread = ({ ticketIdProp, isEmbedded = false, onClose }) => {
         }
       `}</style>
       
+      {/* Global Navigation - only show when not embedded */}
+      {!isEmbed && <GlobalNav />}
+      
       {/* Tappable Sticky Header */}
       <header 
         className="sticky top-0 z-40 bg-[#0d0d1a] border-b border-gray-800/50 cursor-pointer"
