@@ -280,8 +280,12 @@ const NotificationsInbox = () => {
         // Desktop: update URL param, render inline
         selectTicket(ticketId);
       } else {
-        // Mobile: navigate to full-screen thread
-        navigate(`/tickets/${ticketId}${notification.id ? `?event=${notification.id}` : ''}`);
+        // Mobile: navigate to full-screen thread with returnTo
+        const currentPath = `/notifications${viewArchived ? '?view=archive' : ''}`;
+        const eventParam = notification.id ? `event=${notification.id}` : '';
+        const returnToParam = `returnTo=${encodeURIComponent(currentPath)}`;
+        const params = [eventParam, returnToParam].filter(Boolean).join('&');
+        navigate(`/tickets/${ticketId}?${params}`);
       }
     }
   };
