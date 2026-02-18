@@ -857,12 +857,11 @@ const NotificationsInbox = () => {
         
         {/* Desktop: Thread Panel - Use iframe for isolation */}
         {isDesktop && selectedTicketId && (
-          <div className="flex-1 bg-[#0a0a14]" data-testid="thread-panel">
+          <div className="flex-1 flex flex-col bg-[#0a0a14]" data-testid="thread-panel">
             <iframe
               src={`/tickets/${selectedTicketId}?embed=true`}
-              className="w-full h-full border-0"
+              className="flex-1 w-full border-0"
               title="Ticket Thread"
-              style={{ minHeight: 'calc(100vh - 150px)' }}
             />
           </div>
         )}
