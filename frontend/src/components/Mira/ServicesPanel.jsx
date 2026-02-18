@@ -345,6 +345,7 @@ const ServicesPanel = ({
   const [showTicketDetail, setShowTicketDetail] = useState(false);
   const [timelyServices, setTimelyServices] = useState([]);
   const [timelyContext, setTimelyContext] = useState({ enabled: false, topics: [] });
+  const [showAllTimelyServices, setShowAllTimelyServices] = useState(false);
   
   // Fetch data
   const fetchData = useCallback(async () => {
