@@ -3,6 +3,24 @@
 
 ---
 
+# ⛔ STOP - COMPLETE HANDOVER PROTOCOL FIRST
+
+**Before reading this file, complete:**
+`/app/memory/MANDATORY_HANDOVER_PROTOCOL.md`
+
+That file contains:
+1. Required reading order
+2. STATE SNAPSHOT template (paste at session start)
+3. NON-NEGOTIABLES confirmation
+4. PROOF STANDARD requirements
+5. NEXT AGENT TASK template
+6. MID-TASK HANDOVER template
+
+**This file (AGENT_MASTER_PROTOCOL.md) is the technical reference.**
+**MANDATORY_HANDOVER_PROTOCOL.md is the process enforcement.**
+
+---
+
 # ⛔ STOP - READ THIS ENTIRE DOCUMENT FIRST
 
 **This is not optional.** Every agent working on this codebase MUST:
