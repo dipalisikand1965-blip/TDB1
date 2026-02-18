@@ -13,6 +13,65 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 2. **"Health-First Safety Rule"** - Health facts override preferences
 3. **Mental Model**: "Chat is where you ask. Services is where it gets done."
 
+### Architecture Philosophy:
+- **MIRA = The Brain** - Understands pet, detects intent, generates recommendations
+- **CONCIERGE = The Hands** - Executes, arranges, fulfills
+- **Pet First Doctrine** - Everything is for THAT pet. "{Pet} needs this."
+
+---
+
+## 🧠 NEW: Intent-Driven Dynamic Cards Engine
+
+**The Missing Piece: MIRA (Brain) → CONCIERGE (Hands)**
+
+When user says "I want to house train Lola":
+- OLD: Show generic products from catalogue
+- NEW: Generate **dynamic Concierge cards** for exactly what the pet needs
+
+### How It Works:
+```
+User Message: "I want to house train Lola"
+    ↓
+MIRA detects intent: "house_training"
+    ↓
+Generates Dynamic Cards:
+    PICKS: Pee Pads, Training Treats, Enzymatic Cleaner (Concierge-sourced, no price)
+    SERVICES: Dog Trainer, Puppy School, Home Visit Training (Concierge-arranged)
+    ↓
+Shelf Title: "Lola needs this for House Training"
+Badge: "For Lola", "Lola needs this"
+```
+
+### Key Features:
+- **No Price** - Concierge sources these (not from catalogue)
+- **Always Personalized** - "{Pet} needs this for {Intent}"
+- **Breed-Aware** - "Perfect for Malteses like Lola"
+- **Intent Categories**: house_training, grooming, health_check, travel, food, boarding, walking, birthday, anxiety, etc.
+
+### API Endpoint:
+```
+POST /api/mira/intent-driven-cards
+{
+  "message": "I want to house train Lola",
+  "pet_name": "Lola",
+  "pet_id": "pet-xxx",
+  "pet_context": {"breed": "Maltese"}
+}
+
+Returns:
+{
+  "success": true,
+  "intent": "house_training",
+  "shelf_title": "Lola needs this for House Training",
+  "picks": [...],  // Concierge-sourced (no price)
+  "services": [...] // Concierge-arranged
+}
+```
+
+### Files:
+- `/app/backend/intent_driven_cards.py` - Core engine
+- `/app/backend/mira_routes.py` - API endpoint
+
 ---
 
 ## 🧠 Mira Soul Integration - COMPLETE
@@ -24,62 +83,75 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 | **LEARN** | "{petName} might need this" guides | ✅ Working |
 | **PICKS** | "{petName} might need this" products | ✅ Working |
 | **SERVICES** | "{petName} might need this" services | ✅ Working |
-
-**How It Works:**
-1. User chats about topic (e.g., "travel") → Intent captured
-2. Intent stored in `user_learn_intents` collection (48hr TTL)
-3. LEARN, PICKS, SERVICES all read from same store
-4. Each shows "{petName} might need this" shelf with "Timely" badge
-5. Soul-aware reasons like "Lola's travel arrangements"
-
-**Files:**
-- `/app/backend/learn_intent_bridge.py` - Intent extraction
-- `/app/backend/learn_os_routes.py` - LEARN integration
-- `/app/backend/app/api/top_picks_routes.py` - PICKS integration  
-- `/app/backend/services_routes.py` - SERVICES integration
+| **INTENT** | Dynamic Concierge cards | ✅ NEW |
 
 ---
 
-## 🔧 OS Flow Audit - February 2026
+## Current System Status
 
-**Overall OS Flow Score: 90/100**
-
-### OS Layer Flow Verified:
-```
-MOJO (identity) → TODAY (urgency) → PICKS (curation) → LEARN (confidence)
-         ↓              ↓                ↓                    ↓
-         └──────────────┴────────────────┴────────────────────┘
-                                    ↓
-                            CONCIERGE (judgment)
-                                    ↓
-                            SERVICES (execution)
-                                    ↓
-                            TICKET SPINE (TCK-*)
-```
-
-### Fixes Applied This Session:
-
-| Gap | Status | Fix |
-|-----|--------|-----|
-| **P0: Banned Opener Filter** | ✅ FIXED | Post-processing filter removes corporate openers |
-| **P0: PICKS Concierge Fallback** | ✅ FIXED | Shows "Concierge Arranges" instead of empty state |
-| **P0: LEARN Icon State** | ✅ FIXED | Now checks timely content + personalized content |
-| **P1: Icon State System** | ✅ VERIFIED | Full OFF/ON/PULSE working |
-
-### Documents Created:
-- `/app/memory/MOJO_GAP_ANALYSIS_FEB2026.md` - MOJO Bible compliance
-- `/app/memory/OS_FLOW_AUDIT_FEB2026.md` - Complete OS flow analysis
+| System | Status |
+|--------|--------|
+| One Spine | ✅ CERTIFIED |
+| Notification System | ✅ FIXED |
+| Ticket-to-Soul Enrichment | ✅ COMPLETE |
+| LEARN Tab | ✅ WORKING |
+| Soul Integration (LEARN/PICKS/SERVICES) | ✅ COMPLETE |
+| Banned Opener Filter | ✅ IMPLEMENTED |
+| PICKS Concierge Fallback | ✅ IMPLEMENTED |
+| Intent-Driven Dynamic Cards | ✅ NEW - IMPLEMENTED |
+| Uniform Service Flow | ✅ 95% COMPLETE |
 
 ---
 
-## 🔧 MOJO Bible Gap Analysis - February 2026
+## Prioritized Backlog
 
-**Overall MOJO Score: 77/100**
+### P0 - Critical
+- [x] ~~Soul Integration - LEARN~~ ✅
+- [x] ~~Soul Integration - PICKS~~ ✅
+- [x] ~~Soul Integration - SERVICES~~ ✅
+- [x] ~~Banned Opener Filter~~ ✅
+- [x] ~~PICKS Concierge Fallback~~ ✅
+- [x] ~~Intent-Driven Dynamic Cards Engine~~ ✅ NEW
+- [ ] **UI: "Test Scenarios" Panel** - Move to bottom sheet
+- [ ] **UI: "Concierge Replied" Banner** - Compact banner
 
-### Gaps Fixed This Session:
+### P1 - High Priority
+- [ ] **Frontend Integration** - Wire intent-driven cards to PICKS/SERVICES panels
+- [ ] **TODAY Soul Integration** - Contextual TODAY content
+- [ ] **"All pets" toggle** in notifications
+- [ ] **Soul-Capture Onboarding** - 8-10 steps
 
-| Gap | Status | Fix |
-|-----|--------|-----|
+### P2 - Medium Priority
+- [ ] WhatsApp Webhook Idempotency
+- [ ] Legacy Ticket Migration
+- [ ] Weight History Timeline
+- [ ] Training History & Progress Notes
+
+---
+
+## Test Credentials
+
+```
+Email: dipali@clubconcierge.in
+Password: test123
+URL: /mira-demo
+
+Admin: aditya@thedoggycompany.in / lola4304
+```
+
+---
+
+## Key API Endpoints
+
+| Endpoint | Purpose |
+|----------|---------|
+| POST `/api/mira/chat` | Main chat |
+| POST `/api/mira/intent-driven-cards` | **NEW** - Get dynamic cards for intent |
+| GET `/api/os/learn/home?pet_id=X` | LEARN panel content |
+| GET `/api/mira/top-picks/{pet_id}` | PICKS panel content |
+| GET `/api/os/services/launchers?pet_id=X` | SERVICES panel content |
+
+---
 | **P0: Banned Opener Filter** | ✅ FIXED | Post-processing filter removes "Great idea!", "I'd be happy to" etc. |
 | **P0: PICKS Concierge Fallback** | ✅ FIXED | Shows "Concierge Arranges" cards instead of empty state |
 | **P1: Icon State System** | ✅ VERIFIED | Already implemented in `useIconState.js` |
