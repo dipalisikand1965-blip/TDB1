@@ -199,7 +199,34 @@ async def create_signal(
     await _db.channel_intakes.insert_one(inbox_doc)
     logger.info(f"[CENTRAL FLOW] ✓ Inbox: {inbox_id}")
     
-    logger.info(f"[CENTRAL FLOW] COMPLETE: {pillar}/{action_type} | N:{notification_id} → T:{ticket_id} → I:{inbox_id}")
+    # ==================== 4. MEMBER NOTIFICATION ====================
+    # User must see confirmation in their notification bell
+    if customer_email:
+        try:
+            member_notif_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
+            member_notif_doc = {
+                "id": member_notif_id,
+                "type": f"{pillar}_{action_type}_received",
+                "title": f"Request Received: {pet_name or title}",
+                "message": f"Your {pillar.capitalize()} request has been sent to Concierge®. We'll get back to you soon!",
+                "pet_name": pet_name,
+                "pet_id": pet_id,
+                "user_email": customer_email.lower(),
+                "ticket_id": ticket_id,
+                "pillar": pillar,
+                "read": False,
+                "created_at": now,
+                "data": {
+                    "thread_url": f"/mira-demo?tab=services&thread={ticket_id}",
+                    "action_type": action_type
+                }
+            }
+            await _db.member_notifications.insert_one(member_notif_doc)
+            logger.info(f"[CENTRAL FLOW] ✓ Member Notification: {member_notif_id}")
+        except Exception as e:
+            logger.error(f"[CENTRAL FLOW] ✗ Member notification failed: {e}")
+    
+    logger.info(f"[CENTRAL FLOW] COMPLETE: {pillar}/{action_type} | N:{notification_id} → T:{ticket_id} → I:{inbox_id} → M:{member_notif_id if customer_email else 'skipped'}")
     
     return {
         "notification_id": notification_id,
