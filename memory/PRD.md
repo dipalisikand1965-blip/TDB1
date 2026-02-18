@@ -145,20 +145,42 @@ When no chat intents exist, Mira still shows intelligent picks based on:
 - **Desktop**: Split view (inbox left, thread right)
 - **Mobile**: Full-screen transitions (no drawers)
 - **Reply**: Bottom sheet composer with attachments
-- **Actions**: Mark read/unread, Archive
+- **Actions**: Mark read/unread, Archive/Unarchive
 - **Bell**: Navigates to /notifications (no dropdown)
+
+### ✅ COMPLETED (Feb 18, 2026): Inbox Advanced Features
+- **Select Mode**: Checkbox button enters select mode
+  - Header shows "X selected" with X to exit
+  - "Select All" button
+  - Bulk action bar: Mark Read, Mark Unread, Archive (NO Delete)
+  - Clicking rows toggles selection
+- **Archive View**: Toggle button switches to archived items
+  - Shows "Unarchive" instead of "Archive" in bulk actions
+  - Swipe reveals "Restore" action
+- **Filter Sheet**: Status (All/Open/In Progress/Waiting/Resolved), Type (Requests/Replies/Approvals/Announcements), Pet filter
+- **TCK ID Line**: Every row shows ticket ID (TCK-2026-000040, etc.) for trackability
+- **Event Grouping**: Repeated events within 60s grouped as "Title (3)"
+- **Swipe Actions**: Left swipe → Archive/Restore, Right swipe → Mark Read/Unread
+- **Deep-link Highlight**: /tickets/:id?event=:eventId scrolls and highlights message
+
+**Backend Bulk Endpoints Added:**
+- `POST /api/member/notifications/bulk/read` - Bulk mark read
+- `POST /api/member/notifications/bulk/unread` - Bulk mark unread
+- `POST /api/member/notifications/bulk/archive` - Bulk archive
+- `POST /api/member/notifications/bulk/unarchive` - Bulk unarchive
+- `POST /api/member/notifications/{id}/unarchive` - Single unarchive
 
 **Files Created:**
 - `/app/frontend/src/pages/NotificationsInbox.jsx`
 - `/app/frontend/src/pages/TicketThread.jsx`
 - `/app/frontend/src/components/Mira/ReplySheet.jsx`
 - `/app/frontend/src/components/Mira/InboxRow.jsx`
-- `/app/memory/UNIFIED_INFLOW_BIBLE.md`
+- `/app/memory/UNIFIED_INFLOW_DOCTRINE.md`
 
 **Files Modified:**
 - `/app/frontend/src/components/Mira/NotificationBell.jsx` (simplified to badge + navigate)
-- `/app/frontend/src/App.js` (added routes)
-- `/app/backend/server.py` (added inbox action endpoints)
+- `/app/frontend/src/App.jsx` (added routes)
+- `/app/backend/server.py` (added inbox action endpoints and bulk endpoints)
 
 ### 1. Intent Capture (P1) - VERIFIED WORKING
 - **Status:** NOT A BUG - Intent capture IS working
