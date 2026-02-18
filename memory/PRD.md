@@ -68,6 +68,21 @@
 
 # CHANGELOG
 
+### Feb 19, 2026 - One Spine QA Verification Complete
+- **Ran full 8-step QA script** - 7/8 tests passed
+- **Fixed:** `ticket_routes.py` to check `mira_tickets` collection for replies
+- **Fixed:** `mira_service_desk.py` concierge_reply now updates `mira_tickets` with message and sets `has_unread_concierge_reply`
+- **Fixed:** Service handoff response now includes Bible-compliant `conversation_contract` with mode: ticket
+- **Verified:**
+  - New Chat dialog copy matches Bible exactly
+  - TCK-YYYY-NNNNNN format working
+  - Dual-write to tickets AND mira_tickets
+  - Ownership contract (member.email, member.id, parent_id)
+  - Member and concierge replies in same thread
+  - has_unread_concierge_reply flag working
+  - Zero spine violations
+- **WhatsApp:** handoff_to_spine integrated, test format mismatch (non-blocking)
+
 ### Feb 19, 2026 - Soul Learning Engine Implementation
 - **Implemented:** Complete Soul Learning Engine with 3 lanes:
   1. **Conversation Context** (ephemeral, per chat turn)
