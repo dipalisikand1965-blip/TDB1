@@ -4,12 +4,17 @@ Top Picks API - Personalized picks for each pet across all pillars
 
 This endpoint powers the "Top Picks for [Pet]" panel that shows
 intelligent, pet-aware recommendations across all pillars.
+
+SOUL INTEGRATION (NEW):
+- Reads from user_learn_intents to know what the pet parent is thinking about
+- Shows "{petName} might need this" shelf with contextually relevant picks
+- Mira knows the soul - no explicit "based on your chat" messaging
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from typing import Optional, Dict, Any, List
 import logging
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 logger = logging.getLogger(__name__)
@@ -23,6 +28,73 @@ def set_top_picks_db(database: AsyncIOMotorDatabase):
     global db
     db = database
     logger.info("Top Picks routes initialized with database")
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# INTENT TO PILLAR/CATEGORY MAPPING - Mira knows what the pet needs
+# Maps LEARN intents to PICKS pillars and product categories
+# ═══════════════════════════════════════════════════════════════════════════════
+INTENT_TO_PICKS_MAPPING = {
+    "grooming": {
+        "pillar": "care",
+        "categories": ["grooming", "shampoo", "brush", "nail", "coat", "spa"],
+        "tags": ["grooming", "coat-care", "hygiene", "spa"],
+        "boost": 25
+    },
+    "health": {
+        "pillar": "care",
+        "categories": ["health", "supplement", "vitamin", "wellness", "medical"],
+        "tags": ["health", "wellness", "supplement", "vet"],
+        "boost": 25
+    },
+    "food": {
+        "pillar": "dine",
+        "categories": ["food", "treats", "nutrition", "meal", "diet"],
+        "tags": ["food", "nutrition", "treats", "meal"],
+        "boost": 25
+    },
+    "travel": {
+        "pillar": "travel",
+        "categories": ["carrier", "travel", "transport", "car", "flight"],
+        "tags": ["travel", "carrier", "transport", "adventure"],
+        "boost": 25
+    },
+    "boarding": {
+        "pillar": "stay",
+        "categories": ["boarding", "hotel", "kennel", "daycare"],
+        "tags": ["boarding", "stay", "kennel", "daycare"],
+        "boost": 25
+    },
+    "behaviour": {
+        "pillar": "fit",
+        "categories": ["training", "behaviour", "anxiety", "calming"],
+        "tags": ["training", "behaviour", "calming", "anxiety"],
+        "boost": 25
+    },
+    "puppies": {
+        "pillar": "care",
+        "categories": ["puppy", "teething", "training", "essentials"],
+        "tags": ["puppy", "young", "essentials", "training"],
+        "boost": 20
+    },
+    "senior": {
+        "pillar": "care",
+        "categories": ["senior", "joint", "mobility", "comfort", "orthopedic"],
+        "tags": ["senior", "joint", "mobility", "comfort"],
+        "boost": 20
+    },
+    "seasonal": {
+        "pillar": "care",
+        "categories": ["seasonal", "monsoon", "summer", "winter"],
+        "tags": ["seasonal", "weather", "protection"],
+        "boost": 15
+    },
+    "emergency": {
+        "pillar": "care",
+        "categories": ["first-aid", "emergency", "safety"],
+        "tags": ["emergency", "safety", "first-aid"],
+        "boost": 30
+    }
+}
 
 # Pillars to include in Top Picks (excluding Adopt & Farewell)
 INCLUDED_PILLARS = [
