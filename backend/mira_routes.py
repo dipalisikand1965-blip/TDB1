@@ -21206,12 +21206,13 @@ async def send_picks_to_concierge(request: SendPicksRequest):
         # ═══════════════════════════════════════════════════════════════════════
         # CREATE MEMBER NOTIFICATION - User must see confirmation
         # ═══════════════════════════════════════════════════════════════════════
+        db = get_db()
         try:
             member_notification_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
             user_email = request.member_email.lower() if request.member_email else None
             pet_name = pet.get('name', 'Pet')
             
-            if user_email:
+            if user_email and db:
                 member_notification = {
                     "id": member_notification_id,
                     "type": "picks_request_received",
