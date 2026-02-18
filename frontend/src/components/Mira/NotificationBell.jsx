@@ -190,16 +190,17 @@ const NotificationBell = ({ userEmail, petId, petName, className = '' }) => {
                   onClick={() => {
                     if (!notification.read) markAsRead(notification.id);
                     // Handle notification click - navigate to relevant page
-                    // For concierge_reply notifications, go to Concierge tab
-                    if (notification.type === 'concierge_reply') {
-                      // Navigate to Mira Demo with Concierge tab open
+                    // For concierge_reply notifications, go to Services tab with ticket
+                    if (notification.type === 'concierge_reply' && notification.ticket_id) {
+                      // Navigate to Services tab with ticket thread open
                       const url = new URL(window.location.href);
                       url.pathname = '/mira-demo';
-                      url.searchParams.set('tab', 'concierge');
-                      if (notification.thread_id) {
-                        url.searchParams.set('thread', notification.thread_id);
-                      }
+                      url.searchParams.set('tab', 'services');
+                      url.searchParams.set('ticket', notification.ticket_id);
                       window.location.href = url.toString();
+                    } else if (notification.data?.thread_url) {
+                      // Use provided thread URL
+                      window.location.href = notification.data.thread_url;
                     } else if (notification.data?.url || notification.link) {
                       window.location.href = notification.data?.url || notification.link;
                     }
