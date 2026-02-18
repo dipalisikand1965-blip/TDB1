@@ -1466,3 +1466,186 @@ async def get_breed_products(breed: str, limit: int = Query(6, ge=1, le=20)):
         "count": len(products),
         "message": f"Perfect for {breed}s!" if products else None
     }
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# P1 ENDPOINTS - MOJO Bible Compliance (Feb 2026)
+# Weight History, Training Progress, Environment/Climate
+# ═══════════════════════════════════════════════════════════════════════════
+
+@pet_soul_router.get("/profile/{pet_id}/weight-history")
+async def get_weight_history(pet_id: str):
+    """Get pet's weight history timeline"""
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "weight_history": 1, "identity": 1, "target_weight": 1})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    history = pet.get("weight_history", [])
+    current_weight = pet.get("identity", {}).get("weight")
+    target_weight = pet.get("target_weight")
+    
+    # Calculate trend if we have enough data
+    trend = None
+    if len(history) >= 2:
+        recent = history[-1].get("weight", 0)
+        previous = history[-2].get("weight", 0)
+        if recent > previous:
+            trend = "gaining"
+        elif recent < previous:
+            trend = "losing"
+        else:
+            trend = "stable"
+    
+    return {
+        "pet_id": pet_id,
+        "current_weight": current_weight,
+        "target_weight": target_weight,
+        "history": history,
+        "trend": trend,
+        "total_entries": len(history)
+    }
+
+
+@pet_soul_router.post("/profile/{pet_id}/weight-history")
+async def add_weight_entry(pet_id: str, entry: WeightEntry):
+    """Add a new weight entry to the timeline"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    entry_dict = entry.model_dump()
+    
+    # Also update current weight in identity
+    update_data = {
+        "$push": {"weight_history": entry_dict},
+        "$set": {
+            "identity.weight": entry.weight,
+            "identity.weight_unit": entry.unit,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+    }
+    
+    # If this is a target weight entry, update target
+    if entry.is_target:
+        update_data["$set"]["target_weight"] = entry.weight
+    
+    await db.pets.update_one({"id": pet_id}, update_data)
+    
+    return {"success": True, "entry": entry_dict}
+
+
+@pet_soul_router.get("/profile/{pet_id}/training-history")
+async def get_training_history(pet_id: str):
+    """Get pet's training progress and history"""
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "training_history": 1, "training_summary": 1, "identity": 1})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    history = pet.get("training_history", [])
+    
+    # Calculate stats
+    mastered = [h for h in history if h.get("status") == "mastered"]
+    in_progress = [h for h in history if h.get("status") == "in_progress"]
+    not_started = [h for h in history if h.get("status") == "not_started"]
+    
+    return {
+        "pet_id": pet_id,
+        "pet_name": pet.get("identity", {}).get("name", "Pet"),
+        "history": history,
+        "summary": pet.get("training_summary"),
+        "stats": {
+            "mastered": len(mastered),
+            "in_progress": len(in_progress),
+            "not_started": len(not_started),
+            "total": len(history)
+        },
+        "mastered_skills": [h.get("skill") for h in mastered],
+        "current_focus": [h.get("skill") for h in in_progress]
+    }
+
+
+@pet_soul_router.post("/profile/{pet_id}/training-history")
+async def add_training_progress(pet_id: str, note: TrainingProgressNote):
+    """Add or update training progress for a skill"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    history = pet.get("training_history", [])
+    note_dict = note.model_dump()
+    
+    # Check if skill already exists, update it
+    existing_index = next((i for i, h in enumerate(history) if h.get("skill") == note.skill), None)
+    
+    if existing_index is not None:
+        # Update existing entry
+        history[existing_index] = note_dict
+    else:
+        # Add new entry
+        if not note.started_at:
+            note_dict["started_at"] = datetime.now(timezone.utc).isoformat()
+        history.append(note_dict)
+    
+    # If mastered, set mastered_at
+    if note.status == "mastered" and not note_dict.get("mastered_at"):
+        note_dict["mastered_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.pets.update_one({"id": pet_id}, {"$set": {
+        "training_history": history,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }})
+    
+    return {"success": True, "skill": note.skill, "status": note.status}
+
+
+@pet_soul_router.get("/profile/{pet_id}/environment")
+async def get_environment_profile(pet_id: str):
+    """Get pet's environment and climate profile"""
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "environment": 1, "identity": 1})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    environment = pet.get("environment", {})
+    breed = pet.get("identity", {}).get("breed", "")
+    
+    # Get breed-specific climate info from breed_knowledge
+    from breed_knowledge import get_breed_knowledge
+    breed_data = get_breed_knowledge(breed)
+    climate_suitability = breed_data.get("climate_suitability", {}) if breed_data else {}
+    
+    return {
+        "pet_id": pet_id,
+        "environment": environment,
+        "breed_climate_info": climate_suitability,
+        "seasonal_risks": environment.get("seasonal_risks", [])
+    }
+
+
+@pet_soul_router.post("/profile/{pet_id}/environment")
+async def update_environment_profile(pet_id: str, environment: EnvironmentProfile):
+    """Update pet's environment and climate profile"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    env_dict = environment.model_dump()
+    
+    # Auto-calculate seasonal risks based on city/climate
+    seasonal_risks = []
+    climate_zone = environment.climate_zone or ""
+    
+    if climate_zone in ["tropical", "subtropical"]:
+        seasonal_risks.extend(["monsoon_flooding", "high_humidity_skin_issues", "mosquito_diseases"])
+    if climate_zone in ["tropical", "arid"]:
+        seasonal_risks.extend(["summer_heat_stroke", "paw_burns_hot_pavement", "dehydration"])
+    if not environment.has_ac and climate_zone in ["tropical", "subtropical", "arid"]:
+        seasonal_risks.append("heat_stress_no_ac")
+    
+    env_dict["seasonal_risks"] = list(set(seasonal_risks))
+    
+    await db.pets.update_one({"id": pet_id}, {"$set": {
+        "environment": env_dict,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }})
+    
+    return {"success": True, "environment": env_dict, "seasonal_risks": env_dict["seasonal_risks"]}
