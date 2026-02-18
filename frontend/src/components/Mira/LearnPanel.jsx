@@ -679,12 +679,12 @@ const LearnPanel = ({
         ) : view === 'home' ? (
           // Home View
           <>
-            {/* Based on Your Chat - Conversation context shelf (NEW) */}
+            {/* Timely for Pet - Contextual shelf (Mira knows what's relevant right now) */}
             {homeData.from_your_chat?.length > 0 && (
               <ContentShelf
-                title="Based on your chat"
+                title={`${homeData.pet_name || petName} might need this`}
                 items={homeData.from_your_chat}
-                icon={Brain}
+                icon={Heart}
                 onItemClick={handleItemClick}
               />
             )}
