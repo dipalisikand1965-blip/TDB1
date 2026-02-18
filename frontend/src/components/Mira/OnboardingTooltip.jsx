@@ -44,13 +44,13 @@ const COPY_VARIANTS = {
   android: {
     // Slightly more explanatory for Android
     headline: 'Chat is where you ask.',
-    subtext: 'When Concierge handles your request, you\'ll find replies in Services.',
+    subtext: 'When Concierge® handles your request, you\'ll find replies in Services.',
     cta: 'Show me Services'
   },
   web: {
     // Full experience for web
     headline: 'Chat is where you ask.',
-    subtext: 'When Concierge replies or handles your request, you\'ll find it in Services.',
+    subtext: 'When Concierge® replies or handles your request, you\'ll find it in Services.',
     cta: 'Show me Services'
   }
 };
