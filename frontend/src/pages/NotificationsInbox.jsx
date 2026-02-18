@@ -20,7 +20,7 @@
  * - Global Dashboard | Inbox navigation
  */
 
-import React, { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ArrowLeft, Bell, Filter, Search, X, 
@@ -30,9 +30,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import InboxRow from '../components/Mira/InboxRow';
 import GlobalNav from '../components/Mira/GlobalNav';
-
-// Lazy load TicketThread to avoid circular dependency issues
-const TicketThread = lazy(() => import('./TicketThread'));
+import TicketThread from './TicketThread';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
