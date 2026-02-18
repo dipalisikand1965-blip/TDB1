@@ -194,6 +194,7 @@ When no chat intents exist, Mira still shows intelligent picks based on:
 - `POST /api/member/notifications/bulk/archive` - Bulk archive
 - `POST /api/member/notifications/bulk/unarchive` - Bulk unarchive
 - `POST /api/member/notifications/{id}/unarchive` - Single unarchive
+- `POST /api/member/tickets/{ticket_id}/reply` - **NEW: Canonical member reply endpoint**
 
 **Files Created:**
 - `/app/frontend/src/pages/NotificationsInbox.jsx`
@@ -205,7 +206,7 @@ When no chat intents exist, Mira still shows intelligent picks based on:
 **Files Modified:**
 - `/app/frontend/src/components/Mira/NotificationBell.jsx` (simplified to badge + navigate)
 - `/app/frontend/src/App.jsx` (added routes)
-- `/app/backend/server.py` (added inbox action endpoints and bulk endpoints)
+- `/app/backend/server.py` (added inbox action endpoints, bulk endpoints, and member reply endpoint)
 
 ### 1. Intent Capture (P1) - VERIFIED WORKING
 - **Status:** NOT A BUG - Intent capture IS working
@@ -221,12 +222,13 @@ When no chat intents exist, Mira still shows intelligent picks based on:
 
 ### P1 - High Priority
 1. 📱 **Add "Inbox" to Mobile Bottom Navigation** - Add a new tab to bottom nav for quick access to /notifications
-2. 🔍 **Verify Chat Intent Capture Bug** - Test multi-turn conversations to ensure intents persist to `user_learn_intents`
-3. 🎨 **Build UI for Pet Soul Fields** - Weight History charts, Training Progress tracker in MojoProfileModal.jsx
+2. 🎛️ **Implement Global Navigation** - Add `Dashboard | Inbox` segmented control to `/dashboard/*`, `/notifications`, `/tickets/:id`, `/my-pets`
+3. 🐾 **Add "My Pets" Shortcut from Dashboard** - Visible link to `/my-pets`
+4. 🎨 **Build UI for Pet Soul Fields** - Weight History charts, Training Progress tracker in MojoProfileModal.jsx
 
 ### P2 - Medium Priority
 1. 📡 **Implement WebSockets for Real-Time Updates** - Inbox and thread should update without manual refresh
-2. 📊 **Pet City Persistence Verification** - Confirm city saves correctly during onboarding
+2. 🔍 **Verify Chat Intent Capture Bug** - Test multi-turn conversations to ensure intents persist to `user_learn_intents`
 
 ### Future/Backlog
 1. 🔄 **Rebuild Soul Onboarding Flow** - Expand to capture more pet data
