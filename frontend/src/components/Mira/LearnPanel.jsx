@@ -321,6 +321,9 @@ const LearnPanel = ({
         setHomeData(data);
         setTopics(data.topics || []);
         console.log('[LEARN] Home loaded, personalization:', data.personalization);
+        if (data.conversation_context?.enabled) {
+          console.log('[LEARN] Conversation context active, recent topics:', data.conversation_context.recent_topics);
+        }
       }
     } catch (err) {
       console.error('[LEARN] Error fetching home:', err);
