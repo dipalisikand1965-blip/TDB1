@@ -207,19 +207,23 @@ const NotificationBell = ({ userEmail, petId, petName, className = '' }) => {
                   `}
                   onClick={() => {
                     if (!notification.read) markAsRead(notification.id);
-                    // Handle notification click - navigate to relevant page
-                    // For concierge_reply notifications, go to Services tab with ticket
-                    if (notification.type === 'concierge_reply' && notification.ticket_id) {
-                      // Navigate to Services tab with ticket thread open
-                      const url = new URL(window.location.href);
-                      url.pathname = '/mira-demo';
-                      url.searchParams.set('tab', 'services');
-                      url.searchParams.set('ticket', notification.ticket_id);
-                      window.location.href = url.toString();
-                    } else if (notification.data?.thread_url) {
-                      // Use provided thread URL
+                    // Handle notification click - navigate to Services thread
+                    // Priority: thread_url in data > construct from ticket_id > fallback link
+                    
+                    // 1. Use thread_url if provided (most reliable)
+                    if (notification.data?.thread_url) {
                       window.location.href = notification.data.thread_url;
-                    } else if (notification.data?.url || notification.link) {
+                      return;
+                    }
+                    
+                    // 2. For concierge_reply with ticket_id, construct URL
+                    if ((notification.type === 'concierge_reply' || notification.type === 'ticket_created') && notification.ticket_id) {
+                      window.location.href = `/mira-demo?tab=services&ticket=${notification.ticket_id}`;
+                      return;
+                    }
+                    
+                    // 3. Fallback to any provided URL
+                    if (notification.data?.url || notification.link) {
                       window.location.href = notification.data?.url || notification.link;
                     }
                   }}
