@@ -500,7 +500,7 @@ async def get_current_pet_intent(db, pet_id: str) -> Optional[Dict]:
     Get the current active intent for a pet.
     Used by PICKS and SERVICES panels to show intent-driven content.
     """
-    if not db or not pet_id:
+    if db is None or not pet_id:
         return None
     
     try:
