@@ -6,8 +6,8 @@
  * Extracted from MiraDemoPage.jsx - Stage 5 Refactoring
  */
 
-import React from 'react';
-import { X, Package, MessageSquare } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Package, MessageSquare, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 
 /**
  * HelpModal Component
