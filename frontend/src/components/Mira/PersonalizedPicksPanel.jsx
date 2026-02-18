@@ -624,7 +624,7 @@ const ConfirmationModal = ({
               <MessageSquare className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-white">Send to Concierge</h3>
+              <h3 className="font-bold text-white">Send to Concierge®</h3>
               <p className="text-sm text-purple-300">For {petName}</p>
             </div>
           </div>

@@ -442,7 +442,7 @@ const MiraSearchPanel = ({
                 onClick={handleConciergeClick}
                 className="px-4 py-2 bg-purple-500 text-white text-sm font-semibold rounded-lg hover:bg-purple-600"
               >
-                Talk to Concierge
+                Talk to Concierge®
               </button>
             </div>
           )}
