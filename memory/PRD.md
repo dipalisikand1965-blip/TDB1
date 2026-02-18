@@ -70,7 +70,36 @@ Returns:
 
 ### Files:
 - `/app/backend/intent_driven_cards.py` - Core engine
-- `/app/backend/mira_routes.py` - API endpoint
+- `/app/backend/personalized_products.py` - Personalized products engine
+- `/app/backend/mira_routes.py` - API endpoints + Concierge sync fix
+- `/app/backend/app/api/top_picks_routes.py` - Personalized shelf
+- `/app/memory/INTENT_ENGINE_BIBLE.md` - **CANONICAL** documentation
+
+---
+
+## 🎁 NEW: Personalized Products Shelf
+
+**"Personalized for {Pet}"** - ALWAYS shown proactively in PICKS:
+
+| Product | Description | Badge |
+|---------|-------------|-------|
+| ☕ Custom Photo Mug | Pet's face on mug | For Lola |
+| 🥤 Photo Coaster Set | Photo coasters | For Lola |
+| 🎀 Custom Name Bandana | Embroidered name | For Lola |
+| 🖼️ AI Pet Portrait | Artistic portrait | For Lola |
+| 🏷️ Custom Collar Tag | Engraved tag | For Lola |
+| 🧸 Lookalike Plush | Custom plush toy | For Lola |
+
+**All go to Concierge** - no fixed price, Concierge creates.
+
+---
+
+## 🎂 NEW: Celebrate Integration
+
+When birthday intent detected:
+- Shows **"Celebrate {Pet}'s Birthday"** shelf
+- Includes **Design Your Cake** → links to `/celebrate` tool
+- Party kits, photo banners, birthday outfits
 
 ---
 
@@ -84,6 +113,8 @@ Returns:
 | **PICKS** | "{petName} might need this" products | ✅ Working |
 | **SERVICES** | "{petName} might need this" services | ✅ Working |
 | **INTENT** | Dynamic Concierge cards | ✅ NEW |
+| **PERSONALIZED** | Photo products shelf | ✅ NEW |
+| **CELEBRATE** | Birthday shelf + cake tool | ✅ NEW |
 
 ---
 
