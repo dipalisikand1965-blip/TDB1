@@ -525,6 +525,10 @@ async def get_learn_home(
     - Ranks content based on pet's life stage, explicit sensitivities, behaviour signals
     - Breed tags only influence grooming/travel/handling content, NEVER health
     - Diversity filter prevents echo chamber (max 2 items per primary tag)
+    
+    CONVERSATION CONTEXT (NEW):
+    - Boosts content matching recent chat intents (+15 score)
+    - Shows "Based on your recent chat" badge on contextually relevant items
     """
     db = get_db()
     if db is None:
@@ -544,6 +548,13 @@ async def get_learn_home(
     
     # Get user feedback for user feedback penalty (per user + per pet)
     user_feedback = await get_user_feedback(db, user_id, pet_id) if user_id else {}
+    
+    # ===== CONVERSATION CONTEXT: Fetch recent intents =====
+    recent_intents = []
+    if user_id:
+        recent_intents = await get_recent_user_intents(db, user_id, pet_id)
+        if recent_intents:
+            logger.info(f"[LEARN HOME] Found {len(recent_intents)} recent intents: {[i['topic'] for i in recent_intents]}")
     
     # ===== PERSONALIZATION: Fetch pet profile =====
     pet_profile = None
