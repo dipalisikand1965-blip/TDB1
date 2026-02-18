@@ -216,6 +216,98 @@ def ensure_conversation_contract(response: dict, pillar: str = None, ticket_id: 
     return response
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# BANNED OPENER FILTER (MOJO Bible P0 - Voice Compliance)
+# Post-processes LLM responses to remove banned corporate openers.
+# These phrases make Mira sound robotic instead of soulful.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+BANNED_OPENERS = [
+    "Great idea!", "Great idea.", "Great idea,",
+    "That's a great idea!", "That's a great idea.",
+    "Great question!", "Great question.",
+    "That sounds wonderful!", "That sounds wonderful.",
+    "That sounds lovely!", "That sounds lovely.",
+    "That sounds great!", "That sounds great.",
+    "I'd be happy to", "I'd be happy to help",
+    "I would be happy to", "I would be happy to help",
+    "Absolutely!", "Absolutely,",
+    "Sure!", "Sure,", "Sure thing!",
+    "Of course!", "Of course,",
+    "No problem!", "No problem,",
+    "Certainly!", "Certainly,",
+    "Good thinking!", "Good thinking,",
+    "What a great", "How exciting!",
+]
+
+SOULFUL_REPLACEMENTS = {
+    "Great idea": "I love that you're thinking about",
+    "That sounds wonderful": "Oh",
+    "That sounds lovely": "Oh",
+    "That sounds great": "Oh",
+    "I'd be happy to": "Let me",
+    "I would be happy to": "Let me",
+    "Absolutely": "Yes",
+    "Sure thing": "Yes",
+    "Of course": "Yes",
+    "No problem": "Yes",
+    "Certainly": "Yes",
+    "Good thinking": "I love that",
+    "What a great": "Oh",
+    "How exciting": "Oh how lovely",
+}
+
+
+def filter_banned_openers(response_text: str, pet_name: str = None) -> str:
+    """
+    Filter banned corporate openers from Mira's responses.
+    Replaces them with soulful alternatives.
+    
+    This is a POST-PROCESSING filter - the system prompt should prevent these,
+    but this acts as a safety net for any that slip through.
+    """
+    if not response_text:
+        return response_text
+    
+    original = response_text
+    
+    # Check if response starts with any banned opener
+    for banned in BANNED_OPENERS:
+        if response_text.strip().startswith(banned):
+            # Find replacement
+            for key, replacement in SOULFUL_REPLACEMENTS.items():
+                if banned.startswith(key):
+                    # Replace opener
+                    response_text = response_text.strip()[len(banned):].strip()
+                    
+                    # Add soulful opener based on pet context
+                    if pet_name:
+                        # Pet-aware soulful opener
+                        openers = [
+                            f"Oh, for {pet_name} - ",
+                            f"Since I know {pet_name}, ",
+                            f"I know {pet_name} - ",
+                        ]
+                        import random
+                        response_text = random.choice(openers) + response_text
+                    else:
+                        # Generic soulful opener
+                        response_text = replacement + " " + response_text
+                    
+                    logger.info(f"[VOICE FILTER] Replaced banned opener: '{banned}' → soulful")
+                    break
+            break
+    
+    # Also check for any banned phrase mid-sentence (less aggressive)
+    # Only log, don't replace mid-sentence
+    for banned in BANNED_OPENERS:
+        if banned.lower() in response_text.lower() and not response_text.startswith("Oh"):
+            logger.debug(f"[VOICE FILTER] Found banned phrase mid-sentence: '{banned}' (not replaced)")
+    
+    return response_text
+
+
+
 # Import Soul-First Response Generation Logic
 try:
     from soul_first_logic import (
