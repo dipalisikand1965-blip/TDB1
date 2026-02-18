@@ -210,8 +210,8 @@
 }
 
 .mp-pet-option .mp-pet-avatar {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
 }
 
 /* Mobile: Full width dropdown */
@@ -253,6 +253,8 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  min-height: 44px; /* Accessibility: minimum tap target */
+  min-width: 44px;  /* Accessibility: minimum tap target */
 }
 
 .mp-dock-btn:hover {
