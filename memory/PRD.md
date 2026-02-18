@@ -67,6 +67,34 @@ sudo supervisorctl restart frontend
 
 ## Recent Changes (Feb 18, 2026)
 
+### ✅ P1 GLOBALNAV + MOBILE INBOX - COMPLETED (20:15 UTC)
+**GlobalNav & Mobile navigation implemented per acceptance checklist:**
+
+1. **GlobalNav (Dashboard | Inbox)** appears on all required pages:
+   - `/dashboard` and `/dashboard/*` → Dashboard active
+   - `/my-pets` → Dashboard active
+   - `/notifications` and `/notifications?view=archive` → Inbox active
+   - `/tickets/:id` → Inbox active
+   - Labels always visible (not icon-only on mobile)
+   - Badge count = unread notification events
+
+2. **Mobile Bottom Nav: Inbox Tab**
+   - `data-testid="mobile-nav-inbox"` routes to `/notifications`
+   - From Inbox tap ticket → opens `/tickets/:id` full-screen
+   - Back navigation works: thread → inbox → dashboard
+
+3. **Back Button in TicketThread Header**
+   - Split mode: clears selection, preserves view param
+   - Full mode: uses `?returnTo` if present, else `navigate(-1)`, else `/mira-demo`
+
+4. **"Never Blank" Rule**
+   - Error states show Retry + Close buttons
+   - No empty white panes on failure
+
+**Files Changed:**
+- `/app/frontend/src/components/Mira/GlobalNav.jsx` - Fixed active states, labels always visible
+- `/app/frontend/src/pages/TicketThread.jsx` - Added handleBack() with proper fallback logic, Retry button
+
 ### ✅ OPTION A REFACTOR - COMPLETED (19:55 UTC)
 **The "One True Flow" for Inbox & Ticket Reply is now implemented:**
 
