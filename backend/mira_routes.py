@@ -11106,10 +11106,25 @@ async def mira_chat(
             pets = [selected_pet]
             logger.info(f"[PET LOAD] Loaded {selected_pet.get('name')} directly - Mira now knows this pet")
     
-    # FALLBACK: If no selected_pet but pet_context provided in request, use it
-    # This supports anonymous users or testing without database
+    # ENHANCED FALLBACK: If pet_context provided, try to load full soul data by name
+    # This ensures we get full database data even when only pet_context is sent
     if not selected_pet and request.pet_context:
-        selected_pet = request.pet_context
+        pet_name = request.pet_context.get("name")
+        pet_id = request.pet_context.get("id")
+        
+        # Try to load from database first
+        if pet_id or pet_name:
+            loaded_pet = await load_pet_soul(pet_id or pet_name)
+            if loaded_pet and loaded_pet.get("name"):
+                # Found in database - use full soul data
+                selected_pet = loaded_pet
+                logger.info(f"[PET LOAD] Loaded full soul for {pet_name} from database")
+            else:
+                # Not in database - use provided context (anonymous/testing)
+                selected_pet = request.pet_context
+                logger.info(f"[PET LOAD] Using pet_context directly for {pet_name} (not in database)")
+        else:
+            selected_pet = request.pet_context
     
     # ═══════════════════════════════════════════════════════════════════════════
     # INSIGHT EXTRACTION - Learn from user's messages (runs in background)
