@@ -375,6 +375,92 @@ async def create_or_attach_service_ticket(
         })
         
         logger.info(f"[TICKET-SPINE] Created ticket {ticket_id} in tickets + mira_tickets")
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # UNIFORM SERVICE FLOW: service_desk_tickets (for admin service desk)
+        # ═══════════════════════════════════════════════════════════════════════════
+        try:
+            await db.service_desk_tickets.insert_one({
+                "id": ticket_id,
+                "ticket_id": ticket_id,
+                "type": intent_type,
+                "category": pillar,
+                "sub_category": category,
+                "subject": intent[:200] if intent else "",
+                "description": intent,
+                "status": "open",
+                "priority": "high" if urgency == "critical" else ("medium" if urgency == "high" else "normal"),
+                "urgency": urgency,
+                "channel": channel,
+                "pillar": pillar,
+                "source": source_route,
+                "customer_name": member_name,
+                "customer_email": member_email,
+                "pet_id": pet_id,
+                "pet_name": pet_name,
+                "pet_ids": pet_ids or [],
+                "pet_names": pet_names or [],
+                "created_at": now_iso,
+                "updated_at": now_iso,
+                "assigned_to": None,
+            })
+            logger.info(f"[TICKET-SPINE] Created service_desk_ticket {ticket_id}")
+        except Exception as e:
+            logger.error(f"[TICKET-SPINE] Failed to create service_desk_ticket: {e}")
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # UNIFORM SERVICE FLOW: pillar_requests (for pillar analytics)
+        # ═══════════════════════════════════════════════════════════════════════════
+        try:
+            import uuid as uuid_module
+            await db.pillar_requests.insert_one({
+                "id": f"PR-{uuid_module.uuid4().hex[:8].upper()}",
+                "ticket_id": ticket_id,
+                "pillar": pillar,
+                "type": intent_type,
+                "category": category,
+                "user_email": member_email,
+                "customer_name": member_name,
+                "pet_id": pet_id,
+                "pet_name": pet_name,
+                "pet_ids": pet_ids or [],
+                "status": "pending",
+                "source": source_route,
+                "channel": channel,
+                "created_at": now_iso
+            })
+            logger.info(f"[TICKET-SPINE] Created pillar_request for {pillar}")
+        except Exception as e:
+            logger.error(f"[TICKET-SPINE] Failed to create pillar_request: {e}")
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # UNIFORM SERVICE FLOW: channel_intakes (for unified inbox)
+        # ═══════════════════════════════════════════════════════════════════════════
+        try:
+            import uuid as uuid_module
+            await db.channel_intakes.insert_one({
+                "id": f"CI-{uuid_module.uuid4().hex[:8].upper()}",
+                "ticket_id": ticket_id,
+                "thread_id": thread_id,
+                "channel": channel,
+                "request_type": intent_type,
+                "pillar": pillar,
+                "category": category,
+                "status": "new",
+                "urgency": urgency,
+                "customer_name": member_name,
+                "customer_email": member_email,
+                "pet_id": pet_id,
+                "pet_name": pet_name,
+                "preview": intent[:200] if intent else "",
+                "message": intent,
+                "source": source_route,
+                "created_at": now_iso,
+                "updated_at": now_iso
+            })
+            logger.info(f"[TICKET-SPINE] Created channel_intake for {channel}")
+        except Exception as e:
+            logger.error(f"[TICKET-SPINE] Failed to create channel_intake: {e}")
     
     elif action == "attached":
         # Update existing ticket with new activity
