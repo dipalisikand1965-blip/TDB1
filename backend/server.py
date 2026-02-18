@@ -13962,13 +13962,22 @@ async def get_member_notifications_by_email(
     user_email: str,
     limit: int = Query(20, le=100),
     pet_id: str = Query(None, description="Filter notifications by pet ID"),
-    pet_name: str = Query(None, description="Filter notifications by pet name")
+    pet_name: str = Query(None, description="Filter notifications by pet name"),
+    category: str = Query(None, description="Filter by category: primary, updates, all"),
+    archived: bool = Query(False, description="Include archived notifications")
 ):
     """Get notifications for a member by email (public endpoint for polling)
-    Optionally filter by pet_id or pet_name for per-pet notifications"""
+    Optionally filter by pet_id, pet_name, or category for inbox tabs"""
     email = user_email.lower()
     
     query = {"user_email": email}
+    
+    # Exclude archived unless explicitly requested
+    if not archived:
+        query["$or"] = [
+            {"archived": {"$exists": False}},
+            {"archived": False}
+        ]
     
     # Filter by pet_id if provided
     if pet_id:
@@ -13980,10 +13989,16 @@ async def get_member_notifications_by_email(
         # Also filter by pet name in title if pet_name provided
         if pet_name:
             pet_filters.append({"title": {"$regex": pet_name, "$options": "i"}})
-        query["$or"] = pet_filters
+        query["$and"] = query.get("$and", []) + [{"$or": pet_filters}]
     elif pet_name:
         # Filter by pet name in title only
         query["title"] = {"$regex": pet_name, "$options": "i"}
+    
+    # Filter by category (Primary = concierge replies, Updates = status changes, etc)
+    if category == "primary":
+        query["type"] = {"$in": ["concierge_reply", "picks_request_received", "mira_request_received", "vault_request_received"]}
+    elif category == "updates":
+        query["type"] = {"$in": ["status_change", "approval_needed", "payment_needed", "announcement"]}
     
     # Get from member_notifications collection
     notifications = await db.member_notifications.find(
@@ -13991,7 +14006,11 @@ async def get_member_notifications_by_email(
         {"_id": 0}
     ).sort("created_at", -1).limit(limit).to_list(limit)
     
-    unread = await db.member_notifications.count_documents({**query, "read": False})
+    # Count unread (excluding archived)
+    unread_query = {"user_email": email, "read": False}
+    if not archived:
+        unread_query["$or"] = [{"archived": {"$exists": False}}, {"archived": False}]
+    unread = await db.member_notifications.count_documents(unread_query)
     
     return {
         "notifications": notifications,
