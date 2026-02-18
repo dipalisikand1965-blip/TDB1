@@ -110,13 +110,17 @@ const ContentCard = memo(({ item, onClick, onSave }) => {
           position: 'absolute',
           top: '-8px',
           right: '12px',
-          background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
+          background: item.from_recent_chat 
+            ? 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'  // Blue for chat context
+            : 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',  // Purple for pet personalization
           color: 'white',
           fontSize: '10px',
           fontWeight: 600,
           padding: '3px 8px',
           borderRadius: '8px',
-          boxShadow: '0 2px 8px rgba(168, 85, 247, 0.4)'
+          boxShadow: item.from_recent_chat 
+            ? '0 2px 8px rgba(59, 130, 246, 0.4)'
+            : '0 2px 8px rgba(168, 85, 247, 0.4)'
         }}>
           {item.relevance_badge}
         </span>
