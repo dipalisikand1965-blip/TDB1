@@ -20854,6 +20854,36 @@ async def send_tip_card_to_concierge(request: SendTipCardRequest):
         
         logger.info(f"[TIP CARD → CONCIERGE] Signal created: {signal_result.get('ticket_id')} | Type: {request.card_type}")
         
+        # ═══════════════════════════════════════════════════════════════════════
+        # CREATE MEMBER NOTIFICATION - User must see confirmation
+        # ═══════════════════════════════════════════════════════════════════════
+        try:
+            member_notification_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
+            user_email = request.member_email.lower() if request.member_email else None
+            
+            if user_email:
+                member_notification = {
+                    "id": member_notification_id,
+                    "type": "tip_card_request_received",
+                    "title": f"Request Received: {request.card_type.replace('_', ' ').title()}",
+                    "message": f"Your {request.card_type.replace('_', ' ')} for {pet_name} has been sent to Concierge®. We'll get back to you soon!",
+                    "pet_name": pet_name,
+                    "pet_id": pet.get('id'),
+                    "user_email": user_email,
+                    "ticket_id": signal_result.get("ticket_id"),
+                    "pillar": request.pillar or "general",
+                    "read": False,
+                    "created_at": get_utc_timestamp(),
+                    "data": {
+                        "thread_url": f"/mira-demo?tab=services&thread={signal_result.get('ticket_id')}",
+                        "card_type": request.card_type
+                    }
+                }
+                await db.member_notifications.insert_one(member_notification)
+                logger.info(f"[TIP CARD → CONCIERGE] Member notification created: {member_notification_id}")
+        except Exception as notif_error:
+            logger.error(f"[TIP CARD → CONCIERGE] Failed to create member notification: {notif_error}")
+        
         return {
             "success": True,
             "ticket_id": signal_result.get("ticket_id"),
