@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://timely-shelf.preview.emergentagent.com
+https://dynamic-shelves.preview.emergentagent.com
 ```
 
 ---

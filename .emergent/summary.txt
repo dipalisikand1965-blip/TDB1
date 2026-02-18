@@ -2,159 +2,156 @@
 
 **Reasoning for Summary decisions:**
 
-*   **Prioritizing the Blocker:** The summary designates the non-functional LEARN tab as the top-priority issue (P0). This is a critical blocker preventing access to a core application feature, and the user explicitly directed the agent to fix this before any other task.
-*   **Structuring User-Requested UI/UX Changes:** The user provided specific, actionable UI feedback for the Test Scenarios panel and the Concierge replied banner. These have been captured as high-priority upcoming tasks, clearly referencing the user's directive and the agent's proposed implementation plan.
-*   **Confirming Critical Flow Completion:** A significant part of the session was dedicated to fixing and verifying the Uniform Service Flow for the Send to Concierge action. The summary marks this as Completed but also retains the underlying technical concept as Critical Info to ensure the next agent understands this non-negotiable architectural principle.
-*   **Capturing Investigation State:** The agent had begun investigating the LEARN tab bug by inspecting several files (, ). The summary provides this context in the Last working item and Next debug checklist to prevent the next agent from starting the debugging process from scratch.
-*   **Deferring Non-Critical Work:** The user explicitly stated to fix the LEARN tab *before* implementing the UI/UX changes. The summary reflects this by placing the LEARN tab fix in the Pending/In progress Issue list and the UI changes in the Upcoming and Future Tasks section, respecting the user's prioritization.
+*   **Elevating the New Architecture:** The session evolved from fixing specific gaps to defining a new core philosophy: MIRA is the brains, CONCIERGE is the hands. This led to two major backend features: Intent-Driven Dynamic Cards and Proactive Personalized Products. The summary heavily prioritizes explaining this new paradigm, as it's the most critical context for the next agent.
+*   **Defining the Immediate Blocker:** The agent successfully built the backend for the new dynamic shelves in the PICKS panel, but the user's request for a screenshot revealed that the frontend () was not updated to render them. This is a clear, actionable, and high-priority Last working item.
+*   **Carrying Over Incomplete Work:** The initial task from the previous handover was to audit the MOJO (Pet Profile) bible. This was started but quickly superseded by user-directed audits and feature development. This, along with other UI tasks from the previous session, is moved to Upcoming and Future Tasks to prevent them from being lost.
+*   **Capturing Critical Fixes:** The agent performed a deep audit of the Unified Service Flow and discovered/fixed critical gaps in the central  and other endpoints. It also fixed the intent capture mechanism, which was a major bug. These are listed under Completed work to provide a full picture of the session's achievements and prevent re-investigation.
+*   **Structuring for Action:** The summary is structured to guide the next agent directly to the immediate problem (frontend rendering for PICKS), provide the necessary context on the new backend architecture, and then list the other pending tasks in a clear priority order.
 
 ---
 
 **original_problem_statement:**
-The user's core vision is a Golden Standard Communication System centered around an AI named Mira, guided by internal design bibles. A key architectural rule is the Uniform Service Flow, where all actions consolidate into a single Service Desk Ticket spine. The primary user mental model is: **Chat is where you ask. Services is where it gets done.**
-
-Recent user directives include:
-1.  **Display Enriched Learnings:** Ensure facts learned from resolved service tickets (Ticket-to-Soul) are visible and highlighted in the pet's profile modal (MOJO).
-2.  **Enforce Uniform Service Flow:** The Send to Concierge action from chat must silently create a service ticket and admin notification in the background.
-3.  **Conduct Mobile Audit:** Perform a comprehensive 20-point audit of the mobile experience and report the findings.
-4.  **Implement UI/UX Improvements:** Address specific feedback regarding the Test Scenarios panel and the Concierge replied banner to improve mobile usability.
-5.  **Fix Core Functionality:** Ensure all main navigation tabs, specifically the LEARN tab, are functional.
+The user's core vision is a Golden Standard Communication System centered around an AI named Mira, guided by internal design bibles. This session introduced a new, critical architectural directive:
+1.  **Mira is the Brains, Concierge is the Hands:** Mira must deeply understand user intent and the pet's soul (context) to dynamically generate solution-oriented Concierge Cards for products and services, rather than just pulling from a static catalog.
+2.  **Proactive Personalization:** The system should proactively offer personalized products (e.g., mugs, coasters with the pet's photo) without waiting for the user to ask.
+3.  **Flawless Service Flow:** The Uniform Service Flow (User Request → Service Desk Ticket → Notifications → etc.) must be 100% implemented across all user entry points.
+4.  **Concierge Tab Sync:** Any request that goes to the concierge must be visible to the user in the main header's Concierge tab.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a React/FastAPI/MongoDB stack. The core One Spine ticketing system and Ticket-to-Soul data enrichment pipeline are functional.
+The application is a React/FastAPI/MongoDB stack. This session introduced two major backend architectural features, solidifying the Mira=Brains, Concierge=Hands philosophy:
 
-This session accomplished several critical tasks:
-1.  **Send to Concierge Flow Fixed:** The flow was re-engineered to correctly create admin and member notifications in the background upon handoff, fulfilling the Uniform Service Flow requirement. Admins now see these requests in their dashboard.
-2.  **What Mira Learned UI Implemented:** The pet profile modal (MOJO) was updated to display facts learned from resolved service tickets, with a clear From Service Requests attribution.
-3.  **Comprehensive Mobile Audit:** A 20-point mobile audit was successfully conducted on iOS and Android viewports, with a detailed proof pack and screenshots created, verifying the responsiveness of most features.
-4.  **Backend Logic Hardened:** Key endpoints (, , ) were fixed to correctly interact with the primary  collection, improving data integrity.
+1.  **Intent-Driven Dynamic Cards Engine:** When a user expresses an intent in chat (e.g., I want to house train Mojo), Mira no longer just shows static catalog items. Instead, a new engine () dynamically generates relevant Concierge Pick and Concierge Service cards (e.g., Pee Pads for Lola, Dog Trainer for House Training). These are served via a new  endpoint and are intended to be displayed in the PICKS and SERVICES panels under a dynamic shelf like **Lola needs this for House Training**.
+
+2.  **Proactive Personalized Products Engine:** A new, always-on feature () generates mockups of personalized merchandise. It's designed to pull the pet's photo from their profile and create mockups for items like mugs, coasters, and bandanas. These are served via  and are meant to be displayed in a new, permanent shelf in the PICKS panel titled **✨ Personalized for Lola**.
+
+The backend APIs for these features are complete and tested. However, the frontend has not yet been updated to display these new dynamic shelves.
 
 **Last working item**:
--   Last item agent was working: Investigating why the LEARN tab is inaccessible. The agent was inspecting the frontend navigation components (, ) to find the root cause of the bug.
+-   Last item agent was working: The agent was attempting to verify the implementation of the new Personalized for {Pet} and Intent-Driven shelves. The user requested a screenshot of the PICKS panel. The screenshot showed that while the backend was correctly providing the data for these new shelves, the frontend component  was not rendering them.
 -   Status: IN PROGRESS
 -   Agent Testing Done: N
--   Which testing method agent to use? screenshot tool
+-   Which testing method agent to use? Frontend testing agent
 -   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: LEARN Tab is Inaccessible (P0)**
-    -   **Description:** The LEARN tab in the main application navigation is not clickable or accessible, blocking users from the search and learn functionality.
-    -   **Attempted fixes:** The agent began inspecting  and related components but has not yet implemented a fix.
+-   **Issue 1: Frontend Not Rendering New PICKS Shelves (P0)**
+    -   **Description:** The  component is not rendering the new Personalized for {Pet} and Intent-Driven shelves, even though the backend APIs ( and ) are returning the correct data.
     -   **Next debug checklist:**
-        1.  Examine  to understand how the active tab state () is managed.
-        2.  Inspect the  handler and rendering logic for the Learn icon in .
-        3.  Check for any conditional logic (e.g.,  attributes or feature flags) that might be preventing interaction.
-        4.  Implement a fix to ensure the tab becomes clickable and correctly sets the state to render the  component.
-        5.  Verify the implemented behavior against the specifications in .
+        1.  Examine .
+        2.  Verify how the data from the main PICKS API () is being processed.
+        3.  Add the logic to parse the  and  arrays from the API response.
+        4.  Create new sub-components or modify the existing layout to render these new shelf types with their respective cards.
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Frontend
 
--   **Issue 2: Intermittent Personalisation Mismatch (Breed Mention) (P1)**
+-   **Issue 2: Intermittent Personalisation Mismatch (Breed Mention) (P2)**
     -   **Description:** A sporadic issue where Mira might mention the wrong breed. This is an ongoing issue being monitored via logs.
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Backend
 
 **In progress Task List**:
--   **Task 1: Complete LEARN Tab Audit and Fix (P0)**
-    -   **Where to resume:** The investigation is focused on the frontend components  and .
-    -   **What will be achieved with this?** This will restore access to the LEARN section, a core feature of the application.
+-   **Task 1: Implement UI for New PICKS Shelves (P0)**
+    -   **Where to resume:** Modify  to render the new dynamic shelves.
+    -   **What will be achieved with this?** The user will be able to see the new proactive personalized products and the intent-driven recommendations in the UI, completing the core feature loop.
     -   **Status:** IN PROGRESS
     -   **Should Test frontend/backend/both after fix?** Frontend
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
-*   **P0: Implement UI Improvement: Test Scenarios Panel.** Per user request, move the Test Scenarios panel from the main chat view into a bottom sheet, triggered by a less intrusive pill button above the message composer.
-*   **P0: Implement UI Improvement: Concierge Replied Banner.** Per user request, refactor the large purple Concierge replied tile into a compact, single-line banner pinned below the header to reclaim vertical space on mobile.
-*   **P1: Implement All Pets Toggle for Notifications.** Add a UI element to view notifications for all of a user's pets at once.
-*   **P1: Implement new 8-10 step soul-capture onboarding experience.**
-*   **P1: Implement General Label for Notifications.** Add a label for notifications not linked to a specific pet.
+*   **P0: Assess MOJO (Pet Profile) and Align with Bible.** This was the original task from the last handover but was superseded. The agent needs to read  and assess the current .
+*   **P1: Integrate  Tool.** When a user expresses a birthday or party intent, Mira should offer a direct link to the  cake designer tool. The backend logic exists, but the frontend link needs to be confirmed.
+*   **P1: Implement UI Improvement: Test Scenarios Panel.** Move the panel into a bottom sheet triggered by a pill button.
+*   **P1: Implement UI Improvement: Concierge Replied Banner.** Refactor the large tile into a compact banner.
 
 **Future Tasks:**
 *   **P2: Legacy Ticket Migration:** Plan and execute the migration of legacy tickets missing full ownership fields.
 *   **P2: WhatsApp Webhook Idempotency:** Prevent webhook retries from creating duplicate tickets.
-*   Refactor monoliths:  and .
+*   Refactor monoliths:  (partially addressed but still large) and .
+*   Implement All Pets Toggle for Notifications.
+*   Implement new 8-10 step soul-capture onboarding experience.
 
 **Completed work in this session**
--   **Send to Concierge Admin Notifications:** Fixed the handoff flow to correctly create background notifications for admins, making the Uniform Service Flow fully functional for this action.
--   **What Mira Learned UI Integration:** Successfully updated the MOJO pet profile to display facts learned from resolved service tickets.
--   **Mobile Audit Proof Pack:** Completed a 20-point mobile audit and generated a comprehensive report with screenshots and test results.
--   **Ticket-to-Soul E2E Verification:** Confirmed the end-to-end flow of a ticket being resolved, a fact being extracted, and the UI being updated with the learned information.
--   **Backend Ticket Handling:** Corrected several backend endpoints to use the canonical  collection, improving data consistency.
--   **Documentation Updated:** , , and  were updated.
+-   **Uniform Service Flow Audit & Fix:** Audited all service entry points and fixed critical gaps in the central , ensuring all requests now correctly create entries in , , and .
+-   **Intent Capture Fixed:** Fixed a critical bug where chat messages were being processed by an endpoint () that was not calling the intent capture bridge. The bridge is now correctly integrated.
+-   **Concierge Tab Sync Fixed:** Fixed an issue where concierge requests from chat created a  but not a , causing them to be invisible in the user-facing Concierge tab. Both are now created.
+-   **Banned Opener Filter:** Implemented a backend filter in  to strip canned opening phrases from Mira's responses.
+-   **LEARN Icon State Fixed:** The icon state logic in  now correctly accounts for available content (guides/videos), not just unread insights.
+-   **NEW Backend Feature: Intent-Driven Dynamic Cards:** Created the backend engine and API to dynamically generate concierge pick/service cards based on chat intent.
+-   **NEW Backend Feature: Proactive Personalized Products:** Created the backend engine and API to proactively generate mockups of personalized products using the pet's photo.
+-   **NEW Documentation:** Created  to document the new architectural philosophy.
 
 **Earlier issues found/mentioned but not fixed**
 -   **Pet Memory Allergy Test:** The logic for the Health-First Safety Rule has not been investigated.
 -   **Legacy Ticket Ownership Gap:** 43% of legacy tickets still lack complete ownership fields.
 
 **Known issue recurrence from previous fork**
--   **Breed Substitution Bug:** This recurring issue remains instrumented for monitoring.
+-   **Breed Substitution Bug:** This recurring issue remains instrumented for monitoring. No work was done on it in this session.
 
 **Code Architecture**
 - **/app**
   - **/backend**
+    - **/helpers**
+      - : **(NEW)** Engine for generating dynamic product/service recommendations from user intent.
+      - : **(NEW)** Engine for generating proactive personalized product mockups.
+      - : **(HEAVILY MODIFIED)** Central service flow logic, now includes all required collection insertions.
     - **/routes**
-      - : Modified  to create admin/member notifications.
-      - : Modified  and  to prioritize the  collection.
+      - : **(HEAVILY MODIFIED)** Added endpoints for new engines, fixed intent capture flow, and fixed concierge tab sync.
+      - : **(MODIFIED)** API now includes data from the new personalized and intent-driven engines.
+      - : **(MODIFIED)** API now includes data from the intent-driven services engine.
   - **/frontend**
     - **/src**
-      - **/components**
-        - : Modified to add a section for ticket-derived learnings.
-        - : Modified to display facts from  fields.
-        - : Inspected for the LEARN tab bug.
-      - **/pages**
-        - : Inspected for tab state management.
+      - **/components/PetOS**
+        - : **(NEEDS MODIFICATION)** The target file for the next agent to implement the UI for the new dynamic shelves.
 
 **Key Technical Concepts**
--   **Silent Background Ticketing:** The Send to Concierge action is now the prime example of the Uniform Service Flow. It initiates a backend process (ticket creation, notifications) without interrupting the user's frontend experience, reinforcing the chat is for asking, services is for doing model.
--   **Explicit Notification Creation:** Admin notifications are no longer tied to a generic push function. They are now explicitly created as documents in the  collection within the relevant business logic (), ensuring reliability.
--   **Data Aggregation in UI:** The frontend now demonstrates how to build a unified view from disparate data sources. The What Mira Learned component aggregates facts from both direct conversation insights and learnings extracted from service tickets, presenting them cohesively.
+-   **Mira=Brains, Concierge=Hands:** The new core architectural principle. Mira's role is to deeply understand intent and context to generate dynamic solutions, which are then presented as Concierge Arranges items for fulfillment.
+-   **Intent-Driven Dynamic Cards:** Instead of matching keywords to a static catalog, this system generates temporary, context-specific Concierge Pick/Service cards in response to a user's stated need (e.g., generating a Dog Trainer card for a house training intent).
+-   **Proactive Personalized Products:** A new, always-on feature that aims to increase engagement by showing users mockups of products (mugs, coasters) featuring their own pet's photo.
 
 **key DB schema**
--   ****: New documents are inserted here upon a Send to Concierge action. Key fields include , , , , and .
--   ****: Confirmed as the primary collection for all new service tickets. Endpoints were updated to use this collection first.
--   ****: This object is the target for soul enrichment. The UI now reads keys suffixed with  (e.g., ) from this object to display enriched data.
+-   ** (new, conceptual):** A schema was designed to map intents to recommended picks and services. This logic is currently implemented in  rather than a separate collection.
+-   ** (existing, logic fixed):** Now correctly populated from chat-initiated concierge requests, making them visible in the UI.
 
 **All files of reference**
--    (NEW)
--    (Reference for LEARN tab fix)
--    (Modified)
--    (Modified)
--    (Modified)
--    (File to investigate)
--    (File to investigate)
+-    **(NEXT TARGET)**
+-    (New Engine)
+-    (New Engine)
+-    (Critical Flow Fix)
+-    (Major Changes)
+-    (API for Picks Panel)
+-    (New Documentation)
+-    (For upcoming task)
 
 **Critical Info for New Agent**
--   **FIX THE LEARN TAB FIRST:** Your immediate priority is to fix the inaccessible LEARN tab. This is a hard blocker for a core feature. The user has explicitly requested this be resolved before any other UI work.
--   **IMPLEMENT UI/UX IMPROVEMENTS NEXT:** Once the LEARN tab is fixed, immediately proceed to implement the two user-requested UI changes: moving Test Scenarios to a bottom sheet and converting the Concierge replied message to a compact banner. These are high-priority tasks to improve mobile usability.
--   **UNIFORM SERVICE FLOW IS LAW:** The Send to Concierge fix reinforces a critical architectural rule. Any new feature that involves a user making a request that requires action must silently generate a ticket in the  collection and trigger the appropriate background notifications. Do not break this pattern.
--   **TICKET COLLECTIONS:** Remember there are two ticket collections:  (primary, current) and  (legacy). All new development must write to and read from  first, with fallbacks to  only for handling older data.
+-   **IMMEDIATE PRIORITY IS FRONTEND:** Your first and only goal is to update the frontend PICKS panel. The backend is ready and providing the data. Modify  to render the  and  shelves.
+-   **UNDERSTAND THE NEW PARADIGM:** The Mira=Brains, Concierge=Hands concept is a fundamental shift. Review the  and the new helper files (, ) to understand this new architecture. All new features should align with this.
+-   **MOJO AUDIT IS STILL PENDING:** The original task to audit the Pet Profile against its bible is still outstanding and should be the next major task after the PICKS panel is fixed.
 
 **documents and test reports created in this job**
 -   
 -   
--    (updated)
--    (updated)
--    (updated)
+-   
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Requested a handover summary for the next agent. (Status: **Addressed**, this summary is the response).
-2.  **User**: Instructed the agent to prioritize fixing the LEARN tab based on the BIBLE specs before implementing other UI/UX changes. (Status: **In Progress**).
-3.  **User**: Provided specific UI/UX feedback for the Test Scenarios panel and Concierge replied banner, asking for the agent's opinion. (Status: **Addressed**, agent provided recommendations; implementation is pending).
-4.  **User**: Requested a 20-point comprehensive mobile audit. (Status: **Completed**).
-5.  **User**: Confirmed the Send to Concierge fix looked good and asked for a check on preview vs. production sync. (Status: **Completed** via E2E testing).
-6.  **User**: Reported that the Send to Concierge button press did not create a notification or service ticket in the admin backend. (Status: **Completed**, this was the critical bug fixed this session).
-7.  **User**: Confirmed that the E2E Ticket-to-Soul flow demonstration was sufficient. (Status: **Completed**).
-8.  **User**: Asked to proceed with both showing Mystique's MOJO profile and running an E2E test. (Status: **Completed**).
-9.  **User**: Asked to verify that learnings from tickets were visible in the MOJO profile and that the Uniform Service Flow was working everywhere. (Status: **Completed**).
-10. **User**: Confirmed a previous fix and asked to see what Mira learned from tickets highlighted in the pet's profile. (Status: **Completed**).
+1.  **User**: Asked the agent to summarize everything for the next agent. (Status: **Completed**)
+2.  **User**: Asked for a screenshot of the new features and an audit of edge cases and deployment readiness. (Status: **In Progress** - screenshot revealed UI gap)
+3.  **User**: Approved the plan to fix the Concierge tab sync and implement the proactive personalized products feature. (Status: **Completed**)
+4.  **User**: Identified a gap where chat-to-concierge requests don't show in the Concierge tab and requested proactive personalized product mockups in PICKS. (Status: **Completed**)
+5.  **User**: Said YES to implementing the intent-driven system, emphasizing the personalization (Lola needs this). (Status: **Completed**)
+6.  **User**: Confirmed that Mojo is a placeholder for any pet and elaborated on the Mira=Brains, Concierge=Hands vision, asking for intent to be more strongly wired into PICKS and SERVICES. (Status: **Completed**)
+7.  **User**: Sent test query: I want to house train Mojo and asked for a report with screenshots and gaps. (Status: **Completed**, revealed intent capture bug)
+8.  **User**: Asked for an audit of the Uniform Service Flow to ensure it's 100% in place. (Status: **Completed**)
+9.  **User**: Asked for an audit of the flow between all OS tabs (MOJO, PICKS, SERVICES, etc.). (Status: **Completed**)
+10. **User**: Said fx ll (fix all) after the agent presented the MOJO gap analysis. (Status: **Completed**)
 
 **Project Health Check:**
--   **Broken:** The LEARN tab is currently non-functional, blocking access to a core feature.
--   **Mocked:** None.
+-   **Broken:** None.
+-   **Mocked/Incomplete:** The UI for the PICKS panel is incomplete; it does not render the new dynamic shelves provided by the backend.
 
 **3rd Party Integrations**
 -   Google Places
@@ -166,15 +163,17 @@ This session accomplished several critical tasks:
 -   Firebase
 
 **Testing status**
--   **Testing agent used after significant changes:** YES, at the beginning of the session.
+-   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** []
--   **Known regressions:** None from this session. The LEARN tab issue is a newly prioritized bug.
+-   **Known regressions:** None.
 
 **Credentials to test flow:**
 -   **User Login:**  / 
 -   **Admin Login:**  / 
--   **Key Pets for Testing:** Mystique (has enriched soul data from tickets), Lola (default pet).
+-   **Key Pets for Testing:** Mystique (), Lola ().
 
 **What agent forgot to execute**
--   The agent correctly followed the user's prioritization. The agent was actively debugging the highest priority item (the LEARN tab) when the session concluded. The other requested tasks (UI/UX improvements) were intentionally deferred per the user's instructions.</analysis>
+-   The agent did not use the  tool at the start of the session to confirm its plan.
+-   The original high-priority task (auditing the MOJO bible) was started but then left incomplete as the agent was redirected to other audits and feature requests.
+-   The agent did not fully complete the user's request for a screenshot and report; it identified the UI gap but did not proceed to fix it before the session ended.</analysis>

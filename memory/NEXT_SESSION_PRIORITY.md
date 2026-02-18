@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://timely-shelf.preview.emergentagent.com
+**Preview URL:** https://dynamic-shelves.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

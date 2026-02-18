@@ -229,7 +229,7 @@ useSession: sessionId, setSessionId, sessionRecovered, setSessionRecovered
 
 - **Email**: `dipali@clubconcierge.in`
 - **Password**: `lola4304`
-- **Preview URL**: `https://timely-shelf.preview.emergentagent.com`
+- **Preview URL**: `https://dynamic-shelves.preview.emergentagent.com`
 
 ---
 

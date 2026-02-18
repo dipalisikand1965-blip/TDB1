@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://timely-shelf.preview.emergentagent.com
+https://dynamic-shelves.preview.emergentagent.com
 
 ---
 

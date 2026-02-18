@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://timely-shelf.preview.emergentagent.com/mira-demo**
+**https://dynamic-shelves.preview.emergentagent.com/mira-demo**
 
 ---
 
