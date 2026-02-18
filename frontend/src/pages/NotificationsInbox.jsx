@@ -785,7 +785,7 @@ const NotificationsInbox = () => {
       )}
       
       {/* Content - Split View on Desktop */}
-      <div className="flex-1 flex overflow-hidden" style={{ height: 'calc(100vh - 140px)' }}>
+      <div className="flex-1 flex overflow-hidden">
         {/* Inbox List */}
         <div className={`
           overflow-y-auto
