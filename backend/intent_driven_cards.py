@@ -466,7 +466,7 @@ async def get_intent_driven_recommendations(
     result["has_recommendations"] = len(result["picks"]) > 0 or len(result["services"]) > 0
     
     # Step 5: Store the intent for cross-panel awareness
-    if db and pet_id and result["has_recommendations"]:
+    if db is not None and pet_id and result["has_recommendations"]:
         try:
             await db.user_learn_intents.update_one(
                 {"pet_id": pet_id},
