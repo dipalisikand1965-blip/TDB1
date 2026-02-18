@@ -11,7 +11,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, X, Check, ChevronRight, Settings } from 'lucide-react';
+import { Bell, X, Check, ChevronRight, Settings, User } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import hapticFeedback from '../../utils/haptic';
 
