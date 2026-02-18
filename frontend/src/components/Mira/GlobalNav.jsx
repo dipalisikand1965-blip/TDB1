@@ -1,13 +1,13 @@
 /**
  * GlobalNav - Dashboard | Inbox segmented control
  * 
- * Appears on: /notifications, /tickets/:id, /dashboard, /my-pets
+ * Appears on: /notifications, /tickets/:id, /dashboard/*, /my-pets
  * 
- * Behavior:
- * - Tap Dashboard → /dashboard
- * - Tap Inbox → /notifications
- * - Bell badge shows unread count
- * - Optional: Active Pet pill links to /my-pets
+ * Active states:
+ * - Dashboard active: /dashboard, /dashboard/*, /my-pets
+ * - Inbox active: /notifications, /notifications?view=archive, /tickets/*
+ * 
+ * Badge truth: Inbox badge count = unread notification events (single source)
  */
 
 import React from 'react';
@@ -23,14 +23,19 @@ const GlobalNav = ({
   const location = useLocation();
   
   // Determine active tab based on current path
+  // Inbox active: /notifications, /notifications?view=archive, /tickets/*
   const isInboxActive = location.pathname.startsWith('/notifications') || 
                         location.pathname.startsWith('/tickets');
+  
+  // Dashboard active: /dashboard, /dashboard/*, /my-pets
   const isDashboardActive = location.pathname === '/dashboard' || 
-                            location.pathname === '/my-pets';
+                            location.pathname.startsWith('/dashboard/') ||
+                            location.pathname === '/my-pets' ||
+                            location.pathname.startsWith('/my-pets/');
 
   return (
     <div className="flex items-center justify-between px-4 py-2 bg-[#0d0d1a] border-b border-gray-800/50">
-      {/* Segmented Control: Dashboard | Inbox */}
+      {/* Segmented Control: Dashboard | Inbox - Labels always visible */}
       <div className="flex bg-gray-800/50 rounded-full p-1">
         <button
           onClick={() => navigate('/dashboard')}
@@ -44,7 +49,7 @@ const GlobalNav = ({
           data-testid="global-nav-dashboard"
         >
           <LayoutDashboard className="w-4 h-4" />
-          <span className="hidden sm:inline">Dashboard</span>
+          <span>Dashboard</span>
         </button>
         
         <button
@@ -59,7 +64,7 @@ const GlobalNav = ({
           data-testid="global-nav-inbox"
         >
           <Inbox className="w-4 h-4" />
-          <span className="hidden sm:inline">Inbox</span>
+          <span>Inbox</span>
           {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center bg-pink-500 text-white text-[10px] font-bold rounded-full px-1">
               {unreadCount > 99 ? '99+' : unreadCount}
