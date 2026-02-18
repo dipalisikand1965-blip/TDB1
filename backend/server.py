@@ -14103,6 +14103,56 @@ async def archive_ticket_notifications(ticket_id: str, user_email: str = None):
     return {"success": True, "count": result.modified_count, "ticket_id": ticket_id}
 
 
+@api_router.post("/member/notifications/{notification_id}/unarchive")
+async def unarchive_notification(notification_id: str):
+    """Unarchive a notification (restore to inbox)"""
+    result = await db.member_notifications.update_one(
+        {"id": notification_id},
+        {"$set": {"archived": False}, "$unset": {"archived_at": ""}}
+    )
+    return {"success": result.modified_count > 0, "notification_id": notification_id}
+
+
+@api_router.post("/member/notifications/bulk/read")
+async def bulk_mark_read(notification_ids: List[str] = Body(...)):
+    """Bulk mark notifications as read"""
+    result = await db.member_notifications.update_many(
+        {"id": {"$in": notification_ids}},
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": True, "count": result.modified_count}
+
+
+@api_router.post("/member/notifications/bulk/unread")
+async def bulk_mark_unread(notification_ids: List[str] = Body(...)):
+    """Bulk mark notifications as unread"""
+    result = await db.member_notifications.update_many(
+        {"id": {"$in": notification_ids}},
+        {"$set": {"read": False}, "$unset": {"read_at": ""}}
+    )
+    return {"success": True, "count": result.modified_count}
+
+
+@api_router.post("/member/notifications/bulk/archive")
+async def bulk_archive(notification_ids: List[str] = Body(...)):
+    """Bulk archive notifications"""
+    result = await db.member_notifications.update_many(
+        {"id": {"$in": notification_ids}},
+        {"$set": {"archived": True, "archived_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": True, "count": result.modified_count}
+
+
+@api_router.post("/member/notifications/bulk/unarchive")
+async def bulk_unarchive(notification_ids: List[str] = Body(...)):
+    """Bulk unarchive notifications"""
+    result = await db.member_notifications.update_many(
+        {"id": {"$in": notification_ids}},
+        {"$set": {"archived": False}, "$unset": {"archived_at": ""}}
+    )
+    return {"success": True, "count": result.modified_count}
+
+
 @api_router.get("/member/requests")
 async def get_member_requests(
     current_user: dict = Depends(get_current_user),
