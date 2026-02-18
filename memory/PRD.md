@@ -275,6 +275,11 @@ First-visit tooltip anchored to Services tab:
   - Test 5: "Find canine acupuncturist" → `mode='handoff'`, bespoke intent ✓
   - Location Consent Gate: "near me" without permission → clarify with chips ✓
   - Frontend: Quick reply chips rendering correctly based on contract mode
+- [x] **CELEBRATE Pillar Multi-Step Flow Fix** - 3-step conversation now works (Feb 19, 2026)
+  - Fixed condition at line 12486 to check `ai_context.celebrate_stage` instead of `pillar`
+  - Added `pillar: "celebrate"` to ticket update for consistency
+  - Test report: `/app/test_reports/iteration_212.json` - 8/8 tests passed
+- [x] **Emergency Triage Chips Verified** - 6 chips working (Feb 19, 2026)
 - [x] **Spine Helper Created** (`/app/backend/utils/spine_helper.py`)
   - `handoff_to_spine()` - single entry point for all route migrations
   - Enforces canonical TCK-YYYY-NNNNNN format
@@ -296,11 +301,13 @@ First-visit tooltip anchored to Services tab:
 - **Do not enable the flag for production until all ticket-creating intakes route through the canonical helper.**
 
 ### P1 (High Priority) - Next Tasks
-- [ ] **Legacy Ticket Migration** - 134 tickets with non-canonical IDs need migration to TCK-* format
+- [ ] **Breed Substitution Bug Investigation** - Sporadic issue where wrong breed may appear in responses (needs reproduction)
+- [ ] **Legacy Ticket Migration** - 134+ tickets with non-canonical IDs need migration to TCK-* format
 - [x] **Refine "Legacy Data Detected" label** - Changed to "Syncing history" in UI ✅ (Feb 17, 2026)
 - [ ] Implement PICKS material change logic (Bible Section 2.4)
 - [ ] Connect LEARN items to icon state
 - [ ] Provide 60-second screen recording proof (verify PULSE → ON transitions)
+- [ ] **Frontend Quick Reply Integration** - Verify chips render correctly and handle all `action` types
 
 ### P2 (Medium Priority)
 - [ ] WhatsApp Webhook Idempotency - Store/check `source.provider_message_id` to prevent duplicate tickets
