@@ -2181,18 +2181,32 @@ const MiraDemoPage = () => {
   const extractQuickReplies = useCallback((miraData) => {
     if (!miraData) return [];
     
-    // First, check if backend provided quick_replies
-    const backendReplies = miraData.response?.quick_replies;
-    if (backendReplies && backendReplies.length > 0) {
-      return backendReplies.map(r => ({
-        text: r,
-        value: r
+    // BIBLE COMPLIANCE: Read from conversation_contract.quick_replies (Section 11.2)
+    // This is the canonical location for deterministic chips
+    const contractReplies = miraData.conversation_contract?.quick_replies;
+    if (contractReplies && contractReplies.length > 0) {
+      return contractReplies.map(r => ({
+        id: r.id || `qr-${Math.random().toString(36).substr(2, 9)}`,
+        text: r.label,
+        value: r.payload_text || r.label,
+        intent_type: r.intent_type,
+        action: r.action,
+        action_args: r.action_args
       }));
     }
     
-    const message = miraData.response?.message || '';
+    // Fallback: Check legacy quick_replies location
+    const backendReplies = miraData.response?.quick_replies || miraData.quick_replies;
+    if (backendReplies && backendReplies.length > 0) {
+      return backendReplies.map(r => ({
+        text: typeof r === 'string' ? r : r.label,
+        value: typeof r === 'string' ? r : (r.payload_text || r.label)
+      }));
+    }
+    
+    const message = miraData.response?.message || miraData.response || '';
     const intent = miraData.understanding?.intent || '';
-    const messageLower = message.toLowerCase();
+    const messageLower = typeof message === 'string' ? message.toLowerCase() : '';
     
     // Only show chips if there's a question being asked
     if (!message.includes('?')) return [];
