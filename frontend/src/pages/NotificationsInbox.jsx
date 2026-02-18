@@ -855,13 +855,18 @@ const NotificationsInbox = () => {
           )}
         </div>
         
-        {/* Desktop: Thread Panel - Use iframe for isolation */}
+        {/* Desktop: Thread Panel - Direct component rendering (Option A - No iframe) */}
         {isDesktop && selectedTicketId && (
-          <div className="flex-1 bg-[#0a0a14]" data-testid="thread-panel">
-            <iframe
-              src={`/tickets/${selectedTicketId}?embed=true`}
-              className="w-full h-full border-0"
-              title="Ticket Thread"
+          <div className="flex-1 bg-[#0a0a14] overflow-hidden" data-testid="thread-panel">
+            <TicketThread 
+              ticketId={selectedTicketId}
+              mode="split"
+              onClose={() => {
+                const newParams = new URLSearchParams(searchParams);
+                newParams.delete('ticketId');
+                setSearchParams(newParams);
+              }}
+              onTicketUpdate={fetchNotifications}
             />
           </div>
         )}
