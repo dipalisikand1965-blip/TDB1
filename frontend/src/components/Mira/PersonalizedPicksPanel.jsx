@@ -703,6 +703,7 @@ const PersonalizedPicksPanel = ({
   onClose,
   pet,
   token,
+  userEmail,
   onSendSuccess, // Callback when picks are sent successfully - adds message to chat
   // NEW: Engine picks props (B6)
   enginePicks = [],        // Pre-computed picks from picks engine
