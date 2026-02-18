@@ -116,12 +116,19 @@ def get_known_fields(pet_soul: Dict) -> Dict[str, Any]:
     if prefs.get("diet_type"):
         known["diet_type"] = prefs["diet_type"]
     
-    # Personality
+    # Personality - handle both dict and list formats
     personality = pet_soul.get("personality", {})
-    if personality.get("anxiety_triggers"):
-        known["anxiety_triggers"] = personality["anxiety_triggers"]
-    if personality.get("behavior_with_dogs"):
-        known["behavior_with_dogs"] = personality["behavior_with_dogs"]
+    if isinstance(personality, list):
+        # If personality is a list of traits, store them as traits
+        if personality:
+            known["personality_traits"] = personality
+    elif isinstance(personality, dict):
+        if personality.get("anxiety_triggers"):
+            known["anxiety_triggers"] = personality["anxiety_triggers"]
+        if personality.get("behavior_with_dogs"):
+            known["behavior_with_dogs"] = personality["behavior_with_dogs"]
+        if personality.get("traits"):
+            known["personality_traits"] = personality["traits"]
     
     # Travel
     travel = pet_soul.get("travel", {})
