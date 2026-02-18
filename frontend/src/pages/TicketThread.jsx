@@ -122,8 +122,8 @@ const TicketThread = () => {
     
     try {
       // Try multiple endpoints to find the ticket
-      // 1. Try mira_conversations endpoint (service_desk_router)
-      let response = await fetch(`${API_URL}/api/service_desk/ticket/${ticketId}`, {
+      // 1. Try mira_tickets endpoint (most common)
+      let response = await fetch(`${API_URL}/api/mira/tickets/${ticketId}`, {
         headers: {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
@@ -131,8 +131,8 @@ const TicketThread = () => {
       });
       
       if (!response.ok) {
-        // 2. Try service_desk_tickets direct lookup
-        response = await fetch(`${API_URL}/api/admin/service-desk/ticket/${ticketId}`, {
+        // 2. Try mira_conversations endpoint (service_desk_router)
+        response = await fetch(`${API_URL}/api/service_desk/ticket/${ticketId}`, {
           headers: {
             'Content-Type': 'application/json',
             ...(token && { 'Authorization': `Bearer ${token}` })
@@ -141,8 +141,8 @@ const TicketThread = () => {
       }
       
       if (!response.ok) {
-        // 3. Try mira_tickets
-        response = await fetch(`${API_URL}/api/mira/tickets/${ticketId}`, {
+        // 3. Try service_desk_tickets direct lookup
+        response = await fetch(`${API_URL}/api/admin/service-desk/ticket/${ticketId}`, {
           headers: {
             'Content-Type': 'application/json',
             ...(token && { 'Authorization': `Bearer ${token}` })
