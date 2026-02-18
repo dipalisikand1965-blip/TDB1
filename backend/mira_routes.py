@@ -11144,6 +11144,32 @@ async def mira_chat(
             "missing_profile_fields": picks_response_data.get("missing_profile_fields", []),
             "picks_debug": picks_response_data.get("picks_debug")
         })
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # BREED MENTION DETECTOR - Instrumentation for intermittent mismatch tracking
+        # Status: "Intermittent personalisation mismatch (breed mention) — instrumented"
+        # ═══════════════════════════════════════════════════════════════════════════
+        try:
+            from utils.breed_mention_detector import log_breed_mention_check
+            response_text = response_dict.get("response", "")
+            if response_text and selected_pet:
+                log_breed_mention_check(
+                    response_text=response_text,
+                    active_pet_id=selected_pet.get("id", "unknown"),
+                    active_pet_name=selected_pet.get("name", "unknown"),
+                    active_pet_breed=selected_pet.get("breed") or selected_pet.get("identity", {}).get("breed", ""),
+                    request_context={
+                        "session_id": session_id,
+                        "ticket_id": response_dict.get("ticket_id"),
+                        "conversation_id": session_id,
+                        "mode": response_dict.get("conversation_contract", {}).get("mode") if response_dict.get("conversation_contract") else None,
+                        "pillar": response_dict.get("pillar"),
+                        "user_message": user_message
+                    }
+                )
+        except Exception as breed_check_err:
+            logger.debug(f"[BREED-CHECK] Non-critical error in breed mention check: {breed_check_err}")
+        
         # Ensure conversation_contract exists (Section 11.2)
         return ensure_conversation_contract(
             response_dict, 
