@@ -323,6 +323,42 @@ class CelebrationDay(BaseModel):
     custom_name: Optional[str] = None
 
 
+# ═══════════════════════════════════════════════════════════════════════════
+# P1 DATA MODELS - MOJO Bible Compliance (Feb 2026)
+# ═══════════════════════════════════════════════════════════════════════════
+
+class WeightEntry(BaseModel):
+    """Single weight measurement entry for timeline"""
+    weight: float  # in kg
+    unit: str = Field(default="kg")
+    recorded_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    source: str = Field(default="manual")  # manual, vet_visit, auto
+    notes: Optional[str] = None
+    is_target: bool = False  # If this is a target weight
+
+
+class TrainingProgressNote(BaseModel):
+    """Training progress note entry"""
+    skill: str  # e.g., "sit", "stay", "leash walking", "potty training"
+    status: str = Field(default="in_progress")  # not_started, in_progress, mastered
+    started_at: Optional[str] = None
+    mastered_at: Optional[str] = None
+    notes: Optional[str] = None
+    trainer: Optional[str] = None  # "self", "professional", trainer name
+    updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+
+class EnvironmentProfile(BaseModel):
+    """Pet's living environment and climate context (for seasonal risks)"""
+    city: Optional[str] = None
+    climate_zone: Optional[str] = None  # tropical, subtropical, temperate, arid
+    housing_type: Optional[str] = None  # apartment, house_with_yard, villa
+    has_ac: bool = False
+    outdoor_access: Optional[str] = None  # none, balcony, yard, large_garden
+    seasonal_risks: List[str] = Field(default_factory=list)  # monsoon_risks, summer_heat, etc.
+    updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+
 class DoggyAnswer(BaseModel):
     """A single answer to a Doggy Soul question"""
     question_id: str
