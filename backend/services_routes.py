@@ -454,7 +454,8 @@ async def get_service_launchers(
         "timely_services": timely_services,  # NEW: Soul-aware service suggestions
         "timely_context": timely_context,  # NEW: Context info
         "pet_name": pet_name,
-        "source": "database" if launchers != FEATURED_SERVICES else "static"
+        "source": "database" if launchers != FEATURED_SERVICES else "static",
+        # Intent-driven services will be added separately via get_intent_driven_services endpoint
     }
 
 
