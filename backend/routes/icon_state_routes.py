@@ -249,8 +249,11 @@ async def get_services_counts(db, user_email: str, pet_ids: List[str] = None) ->
         
         active_tickets += 1
         
-        # Check if awaiting user action
+        # Check if awaiting user action - either by status OR by explicit flag
         if status in AWAITING_USER_STATUSES:
+            awaiting_you += 1
+        elif ticket.get("has_unread_concierge_reply") or ticket.get("awaiting_user"):
+            # Explicit flag set by concierge reply
             awaiting_you += 1
     
     return {
