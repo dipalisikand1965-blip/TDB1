@@ -518,6 +518,58 @@ const LearnedFactsContent = memo(({ pet, apiUrl, token, onInsightAction }) => {
   const learnedFacts = pet?.learned_facts || [];
   const conversationInsights = pet?.conversation_insights || [];
   
+  // ============================================
+  // TICKET-DERIVED LEARNINGS (from resolved service requests)
+  // Fields: food_allergies_from_tickets, preferences_from_tickets, 
+  //         anxiety_triggers_from_tickets, grooming_notes_from_tickets
+  // ============================================
+  const soulAnswers = pet?.doggy_soul_answers || {};
+  const ticketLearnings = [];
+  
+  // Extract ticket-derived learnings into displayable format
+  if (soulAnswers.food_allergies_from_tickets?.length) {
+    soulAnswers.food_allergies_from_tickets.forEach(item => {
+      ticketLearnings.push({ 
+        category: 'health', 
+        content: `Allergic to ${item}`, 
+        source: 'service_request',
+        icon: '⚠️'
+      });
+    });
+  }
+  if (soulAnswers.preferences_from_tickets?.length) {
+    soulAnswers.preferences_from_tickets.forEach(item => {
+      ticketLearnings.push({ 
+        category: 'loves', 
+        content: `Loves ${item}`, 
+        source: 'service_request',
+        icon: '❤️'
+      });
+    });
+  }
+  if (soulAnswers.anxiety_triggers_from_tickets?.length) {
+    soulAnswers.anxiety_triggers_from_tickets.forEach(item => {
+      ticketLearnings.push({ 
+        category: 'anxiety', 
+        content: `Gets scared of ${item}`, 
+        source: 'service_request',
+        icon: '😰'
+      });
+    });
+  }
+  if (soulAnswers.grooming_notes_from_tickets?.length) {
+    soulAnswers.grooming_notes_from_tickets.forEach(item => {
+      ticketLearnings.push({ 
+        category: 'preferences', 
+        content: item, 
+        source: 'service_request',
+        icon: '✂️'
+      });
+    });
+  }
+  
+  const hasTicketLearnings = ticketLearnings.length > 0;
+  
   // Group facts by category
   const groupedFacts = learnedFacts.reduce((acc, fact) => {
     const cat = fact.category || 'other';
