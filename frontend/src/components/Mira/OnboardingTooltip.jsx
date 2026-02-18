@@ -184,12 +184,18 @@ const OnboardingTooltip = ({
               </div>
             </div>
             
-            {/* Main copy - Human, direct */}
+            {/* Main copy - Human, direct - Platform-specific */}
             <h4 className="text-white font-semibold text-base mb-1.5">
-              Chat is where you ask.
+              {copy.headline}
             </h4>
             <p className="text-slate-400 text-sm leading-relaxed">
-              When Concierge replies or handles your request, you'll find it in <span className="text-amber-400 font-medium">Services</span>.
+              {copy.subtext.includes('Services') ? (
+                <>
+                  {copy.subtext.split('Services')[0]}
+                  <span className="text-amber-400 font-medium">Services</span>
+                  {copy.subtext.split('Services')[1]}
+                </>
+              ) : copy.subtext}
             </p>
             
             {/* Actions */}
@@ -199,7 +205,7 @@ const OnboardingTooltip = ({
                 className="flex-1 px-4 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-500 hover:to-purple-500 transition-all shadow-lg shadow-purple-500/25 active:scale-[0.98]"
                 data-testid="onboarding-show-me"
               >
-                Show me Services
+                {copy.cta}
               </button>
               <button
                 onClick={handleDismiss}
