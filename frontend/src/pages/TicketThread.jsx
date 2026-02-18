@@ -554,23 +554,17 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
       >
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            {/* Back button: show in full mode OR split mode with onClose */}
-            {(!isSplitMode || onClose) && (
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (onClose) {
-                    onClose();
-                  } else {
-                    navigate('/notifications');
-                  }
-                }}
-                className="p-2 rounded-full hover:bg-gray-800 flex-shrink-0"
-                data-testid="thread-back-btn"
-              >
-                <ArrowLeft className="w-5 h-5 text-gray-300" />
-              </button>
-            )}
+            {/* Back button: always visible */}
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                handleBack();
+              }}
+              className="p-2 rounded-full hover:bg-gray-800 flex-shrink-0"
+              data-testid="thread-back-btn"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-300" />
+            </button>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <h1 className="text-sm font-semibold text-white truncate">
