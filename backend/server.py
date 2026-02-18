@@ -6679,6 +6679,40 @@ Customer Message:
     })
     logger.info(f"[CONCIERGE GOAL] Admin notification created: {notification_id}")
     
+    # ==================== STEP 3: PILLAR REQUEST ====================
+    await db.pillar_requests.insert_one({
+        "id": f"PR-{secrets.token_hex(4).upper()}",
+        "ticket_id": ticket_id,
+        "request_id": request_id,
+        "pillar": payload.pillar,
+        "type": payload.request_type,
+        "pet_name": payload.pet_name,
+        "status": "pending",
+        "source": payload.source,
+        "created_at": now
+    })
+    logger.info(f"[CONCIERGE GOAL] Pillar request created for {payload.pillar}")
+    
+    # ==================== STEP 4: CHANNEL INTAKES ====================
+    channel_intake_id = f"CI-{secrets.token_hex(4).upper()}"
+    await db.channel_intakes.insert_one({
+        "id": channel_intake_id,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "channel": payload.source,
+        "request_type": payload.request_type,
+        "pillar": payload.pillar,
+        "status": "new",
+        "urgency": "medium",
+        "pet_name": payload.pet_name,
+        "preview": f"{payload.request_label} - {payload.pet_name or 'Pet'}",
+        "message": payload.message,
+        "created_at": now,
+        "updated_at": now
+    })
+    logger.info(f"[CONCIERGE GOAL] Channel intake created: {channel_intake_id}")
+    
     return {
         "success": True,
         "request_id": request_id,
