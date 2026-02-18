@@ -241,6 +241,54 @@ async def create_or_attach_service_ticket(
         derived_parent_id = derived_member_id
     
     # ═══════════════════════════════════════════════════════════════════════════
+    # STEP 1.6: RESOLVE PET CONTEXT (CRITICAL for pet-scoped notifications)
+    # Rule: If user is in a pet context, pet_id and pet_name are MANDATORY
+    # ═══════════════════════════════════════════════════════════════════════════
+    
+    resolved_pet_id = pet_id
+    resolved_pet_name = pet_name
+    resolved_pet_context = pet_context
+    needs_pet_selection = False
+    
+    # Try to resolve from pet_ids/pet_names arrays if singular not provided
+    if not resolved_pet_id and pet_ids and len(pet_ids) > 0:
+        resolved_pet_id = pet_ids[0]
+    if not resolved_pet_name and pet_names and len(pet_names) > 0:
+        resolved_pet_name = pet_names[0]
+    
+    # Try to resolve from pet_context dict
+    if not resolved_pet_id and pet_context:
+        resolved_pet_id = pet_context.get("id") or pet_context.get("pet_id")
+    if not resolved_pet_name and pet_context:
+        resolved_pet_name = pet_context.get("name") or pet_context.get("pet_name")
+    
+    # If pet context still missing, attempt auto-resolution from user's pets
+    if member_email and (not resolved_pet_id or not resolved_pet_name):
+        user_pets = await db.pets.find(
+            {"owner_email": member_email.lower()},
+            {"_id": 0, "id": 1, "name": 1, "breed": 1}
+        ).to_list(length=10)
+        
+        if len(user_pets) == 1:
+            # User has exactly one pet - auto-attach
+            resolved_pet_id = resolved_pet_id or user_pets[0].get("id")
+            resolved_pet_name = resolved_pet_name or user_pets[0].get("name")
+            if not resolved_pet_context:
+                resolved_pet_context = user_pets[0]
+            logger.info(f"[TICKET-SPINE] Auto-attached single pet: {resolved_pet_name} ({resolved_pet_id})")
+        elif len(user_pets) > 1 and not resolved_pet_id:
+            # User has multiple pets and none specified - flag for selection
+            needs_pet_selection = True
+            logger.warning(f"[TICKET-SPINE] Pet context missing for multi-pet user: {member_email} - needs_pet_selection=True")
+        elif len(user_pets) == 0:
+            # User has no pets - this is unusual but allowed
+            logger.warning(f"[TICKET-SPINE] User {member_email} has no pets - proceeding without pet context")
+    
+    # Log if pet context is missing (for debugging)
+    if not resolved_pet_id or not resolved_pet_name:
+        logger.warning(f"[TICKET-SPINE] [SPINE-PET-CONTEXT-MISSING] ticket={ticket_id} pet_id={resolved_pet_id} pet_name={resolved_pet_name}")
+    
+    # ═══════════════════════════════════════════════════════════════════════════
     # STEP 2: Build ticket document
     # ═══════════════════════════════════════════════════════════════════════════
     
@@ -265,9 +313,13 @@ async def create_or_attach_service_ticket(
         # === LEGACY BACK-COMPAT ===
         "parent_id": derived_parent_id,  # For services/inbox backward compatibility
         
-        # === PET ===
-        "pet_ids": pet_ids or [],
-        "pet_names": pet_names or [],
+        # === PET (REQUIRED for per-pet filtering) ===
+        "pet_id": resolved_pet_id,           # SINGULAR - Primary pet for this ticket
+        "pet_name": resolved_pet_name,       # SINGULAR - Primary pet name
+        "pet_context": resolved_pet_context, # Full pet data for personalization
+        "pet_ids": pet_ids or ([resolved_pet_id] if resolved_pet_id else []),
+        "pet_names": pet_names or ([resolved_pet_name] if resolved_pet_name else []),
+        "needs_pet_selection": needs_pet_selection,  # True if pet must be selected
         
         # === STATUS ===
         "status": "placed",
