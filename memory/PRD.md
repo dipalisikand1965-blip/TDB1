@@ -67,6 +67,27 @@ sudo supervisorctl restart frontend
 
 ## Recent Changes (Feb 18, 2026)
 
+### ✅ NOTIFICATION END-TO-END NAVIGATION - FIXED (20:40 UTC)
+**Full navigation flow now works correctly:**
+
+1. **Bell Click** passes `returnTo` param:
+   - From `/mira-demo` → `/notifications?returnTo=%2Fmira-demo`
+   - User can always get back to where they came from
+
+2. **Back Button Chain** works end-to-end:
+   - `/mira-demo` → bell → `/notifications` → row → `/tickets/:id` → back → `/notifications` → back → `/mira-demo`
+
+3. **Error State** (never blank rule):
+   - Shows "Ticket not found" with Retry + Back buttons
+   - Back button uses `returnTo` param correctly
+
+**Files Changed:**
+- `/app/frontend/src/components/Mira/NotificationBell.jsx` - Now passes `returnTo` with current path
+- `/app/frontend/src/pages/NotificationsInbox.jsx` - Added `handleBack()` using `returnTo`, passes `returnTo` when opening tickets
+- `/app/frontend/src/pages/TicketThread.jsx` - `handleBack()` with fallback chain: `onClose()` → `returnTo` → `navigate(-1)` → `/mira-demo`
+
+**Known Issue:** Some notification rows reference orphan tickets (TKT-SHOP-*, TKT-MIRA-*) that don't exist in service_desk_tickets. These correctly show the error state with Retry/Back buttons.
+
 ### ✅ P1 GLOBALNAV + MOBILE INBOX - COMPLETED (20:15 UTC)
 **GlobalNav & Mobile navigation implemented per acceptance checklist:**
 
