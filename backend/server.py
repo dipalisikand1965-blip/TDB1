@@ -16454,6 +16454,12 @@ set_icon_state_db(db)
 app.include_router(icon_state_router)  # Icon State at /api/os/icon-state
 logger.info("Icon State API routes initialized (Unified Service Flow)")
 
+# Admin Sync API - Sync data between Preview and Production environments
+from admin_sync_routes import sync_router, set_database as set_sync_db
+set_sync_db(db)
+app.include_router(sync_router)  # Admin Sync at /api/admin/sync/*
+logger.info("Admin Sync API routes initialized (Preview ↔ Production sync)")
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
