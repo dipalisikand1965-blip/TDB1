@@ -12484,11 +12484,15 @@ If not, tell me what {pet_name} ate and the timing, and I'll guide the next step
     if pillar == "celebrate":
         # Check if this is initial celebration request or a follow-up
         is_initial_celebrate = not existing_ticket or existing_ticket.get("pillar") != "celebrate"
+        current_celebrate_stage = existing_ticket.get("ai_context", {}).get("celebrate_stage") if existing_ticket else None
         celebrate_stage = None
         
-        if is_initial_celebrate or not existing_ticket.get("ai_context", {}).get("celebrate_stage"):
+        logger.info(f"[CELEBRATE-DEBUG] is_initial={is_initial_celebrate}, current_stage={current_celebrate_stage}, ticket_exists={bool(existing_ticket)}")
+        
+        if is_initial_celebrate or not current_celebrate_stage:
             # Initial request - ask about location (Stage 1)
             celebrate_stage = "location"
+            logger.info(f"[CELEBRATE-DEBUG] Entering Stage 1 (location)")
             celebrate_response = f"""Oh, a celebration for {pet_name}! They're going to absolutely love this.
 
 I can already picture {pet_name}'s excitement. Let me help make this perfect.
