@@ -148,7 +148,7 @@ class TestHealthFirstSafetyRule:
         }
         
         response = session.post(f"{BASE_URL}/api/mira/chat", json={
-            "input": "Can you recommend some chicken treats for Mystique?",
+            "message": "Can you recommend some chicken treats for Mystique?",
             "session_id": f"test-chicken-allergy-{int(time.time())}",
             "pet_context": pet_context,
             "pet_id": mystique_pet.get("id")
@@ -190,7 +190,7 @@ class TestHealthFirstSafetyRule:
         }
         
         response = session.post(f"{BASE_URL}/api/mira/chat", json={
-            "input": "What food would be good for Meister? He's a senior with health issues.",
+            "message": "What food would be good for Meister? He's a senior with health issues.",
             "session_id": f"test-heart-diet-{int(time.time())}",
             "pet_context": pet_context,
             "pet_id": meister_pet.get("id")
@@ -247,7 +247,7 @@ class TestEmergencyTriage:
         }
         
         response = session.post(f"{BASE_URL}/api/mira/chat", json={
-            "input": "Lola ate chocolate! What do I do?",
+            "message": "Lola ate chocolate! What do I do?",
             "session_id": f"test-emergency-{int(time.time())}",
             "pet_context": pet_context,
             "pet_id": lola_pet.get("id")
@@ -319,7 +319,7 @@ class TestPersonalizationAndActivities:
         }
         
         response = session.post(f"{BASE_URL}/api/mira/chat", json={
-            "input": "What activities would be good for Bruno this weekend?",
+            "message": "What activities would be good for Bruno this weekend?",
             "session_id": f"test-activities-{int(time.time())}",
             "pet_context": pet_context,
             "pet_id": bruno_pet.get("id")
@@ -383,7 +383,7 @@ class TestFearAnxietyAwareness:
         }
         
         response = session.post(f"{BASE_URL}/api/mira/chat", json={
-            "input": "I want to travel with Meister. What options do we have?",
+            "message": "I want to travel with Meister. What options do we have?",
             "session_id": f"test-travel-anxiety-{int(time.time())}",
             "pet_context": pet_context,
             "pet_id": meister_pet.get("id")
@@ -443,7 +443,7 @@ class TestSoulLearning:
         }
         
         response = session.post(f"{BASE_URL}/api/mira/chat", json={
-            "input": f"Tell me about {any_pet.get('name')}'s health needs",
+            "message": f"Tell me about {any_pet.get('name')}'s health needs",
             "session_id": f"test-memory-trace-{int(time.time())}",
             "pet_context": pet_context,
             "pet_id": any_pet.get("id")
@@ -511,7 +511,7 @@ class TestCelebratePillar:
         }
         
         response = session.post(f"{BASE_URL}/api/mira/chat", json={
-            "input": "I want to plan a birthday party for Lola! She loves meeting other dogs.",
+            "message": "I want to plan a birthday party for Lola! She loves meeting other dogs.",
             "session_id": f"test-celebrate-{int(time.time())}",
             "pet_context": pet_context,
             "pet_id": lola_pet.get("id")
@@ -577,7 +577,7 @@ class TestTravelPillarJointFriendly:
         }
         
         response = session.post(f"{BASE_URL}/api/mira/chat", json={
-            "input": "I want to plan a trip with Luna. She has hip dysplasia.",
+            "message": "I want to plan a trip with Luna. She has hip dysplasia.",
             "session_id": f"test-travel-joint-{int(time.time())}",
             "pet_context": pet_context,
             "pet_id": luna_pet.get("id")
