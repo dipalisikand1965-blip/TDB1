@@ -71,13 +71,32 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 
 ## Audit Status: One Spine
 
-| Proof | Status | Notes |
-|-------|--------|-------|
-| 1. Canonical Ticket (TCK-) | ✅ PASS | 37 TCK tickets created |
-| 2. Services Visibility | ✅ PASS | Tickets appear immediately |
-| 3. Ownership Fields | ⚠️ 57% | Fixed for new tickets |
-| 4. Two-Way Replies | ✅ PASS | Both member & concierge in same thread |
-| 5. Unread Indicator | ✅ PASS | Field now on all tickets |
+### Re-Audit Results (Feb 18, 2026)
+
+**Test:** Created 3 fresh tickets from different entry points
+
+| Test | Ticket ID | Status |
+|------|-----------|--------|
+| Chat Entry | TCK-2026-000038 | ✅ All proofs pass |
+| Picks Entry | TCK-2026-000039 | ✅ All proofs pass |
+
+**5 Hard Proofs - All PASS:**
+
+| Proof | Status | Evidence |
+|-------|--------|----------|
+| 1. Canonical TCK Format | ✅ PASS | `TCK-2026-000038` matches `^TCK-\d{4}-\d{6}$` |
+| 2. Services Visibility | ✅ PASS | Ticket in `mira_tickets` collection |
+| 3a. member.email | ✅ PASS | `dipali@clubconcierge.in` |
+| 3b. member.id | ✅ PASS | `a152181a-2f81-4323-8...` |
+| 3c. parent_id | ✅ PASS | `a152181a-2f81-4323-8...` |
+| 4. Two-Way Replies | ✅ PASS | Concierge reply appended to same thread |
+| 5. Unread Indicator | ✅ PASS | `has_unread_concierge_reply: true` after reply |
+
+**One Spine Status: ✅ CERTIFIED for new tickets**
+
+### Legacy Data Status
+- TCK tickets with ownership: 57% (covered by unified query)
+- `has_unread_concierge_reply` field: 100% (backfilled)
 
 ---
 
