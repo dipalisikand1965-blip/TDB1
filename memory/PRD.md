@@ -103,12 +103,12 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 ## Prioritized Backlog
 
 ### P0 - Critical
-- [ ] **Re-run One Spine audit** to verify ownership fix
+- [x] **Re-run One Spine audit** - ✅ CERTIFIED (Feb 18, 2026)
 - [ ] **Soul-Capture Onboarding** - 8-10 step experience
 
 ### P1 - High Priority
 - [ ] **Mobile Specs Audit** - Typography & tap targets vs Bible
-- [ ] **Help Section** - Add mental model copy
+- [x] **Help Section** - Added FAQ with mental model copy
 - [ ] **Monitor Breed Bug** - Check logs for `[BREED MISMATCH]`
 
 ### P2 - Medium Priority
