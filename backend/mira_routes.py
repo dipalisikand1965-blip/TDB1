@@ -21407,6 +21407,41 @@ async def send_vault_to_concierge(request: UnifiedVaultRequest):
         
         logger.info(f"[VAULT → CONCIERGE] {request.vault_type} | Ticket: {signal_result.get('ticket_id')} | Pet: {pet_name}")
         
+        # ═══════════════════════════════════════════════════════════════════════
+        # CREATE MEMBER NOTIFICATION - So user sees it in their notification bell
+        # ═══════════════════════════════════════════════════════════════════════
+        try:
+            import uuid
+            db = get_db()
+            member_notification_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
+            user_email = request.member_email.lower() if request.member_email else None
+            
+            if user_email:
+                member_notification = {
+                    "id": member_notification_id,
+                    "type": "vault_request_received",
+                    "title": f"Request Received: {pet_name}",
+                    "message": f"Your {request.vault_type.replace('_', ' ')} request for {pet_name} has been sent to Concierge®. We'll get back to you soon!",
+                    "pet_name": pet_name,
+                    "pet_id": pet.get('id') if pet else None,
+                    "user_email": user_email,
+                    "ticket_id": signal_result.get("ticket_id"),
+                    "pillar": request.pillar or "general",
+                    "vault_type": request.vault_type,
+                    "read": False,
+                    "created_at": get_utc_timestamp(),
+                    "data": {
+                        "thread_url": f"/mira-demo?tab=services&thread={signal_result.get('ticket_id')}",
+                        "vault_type": request.vault_type
+                    }
+                }
+                await db.member_notifications.insert_one(member_notification)
+                logger.info(f"[VAULT → CONCIERGE] Created member notification: {member_notification_id} for {pet_name}")
+            else:
+                logger.warning(f"[VAULT → CONCIERGE] No member_email provided, skipping member notification")
+        except Exception as notif_error:
+            logger.error(f"[VAULT → CONCIERGE] Failed to create member notification: {notif_error}")
+        
         return {
             "success": True,
             "vault_type": request.vault_type,
