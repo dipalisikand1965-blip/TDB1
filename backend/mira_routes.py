@@ -12483,8 +12483,9 @@ If not, tell me what {pet_name} ate and the timing, and I'll guide the next step
     # ═══════════════════════════════════════════════════════════════════════════
     if pillar == "celebrate":
         # Check if this is initial celebration request or a follow-up
-        is_initial_celebrate = not existing_ticket or existing_ticket.get("pillar") != "celebrate"
+        # FIX: Check ai_context.celebrate_stage instead of pillar field, since we track stage there
         current_celebrate_stage = existing_ticket.get("ai_context", {}).get("celebrate_stage") if existing_ticket else None
+        is_initial_celebrate = not existing_ticket or not current_celebrate_stage
         celebrate_stage = None
         
         logger.info(f"[CELEBRATE-DEBUG] is_initial={is_initial_celebrate}, current_stage={current_celebrate_stage}, ticket_exists={bool(existing_ticket)}")
