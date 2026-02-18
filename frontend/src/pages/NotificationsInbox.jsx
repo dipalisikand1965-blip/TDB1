@@ -5,17 +5,22 @@
  * 
  * Features:
  * - Full-screen list (no dropdown)
+ * - Search inside inbox (subject, pet, messages)
+ * - Select mode + bulk actions (mark read/unread, archive)
  * - Tabs: Primary / Updates / All
  * - Pet filter: Active Pet / All Pets
+ * - Filter sheet: Status, Pet, Type
  * - iOS Mail-style rows with unread indicators
- * - Swipe actions: Mark read/unread, Archive
  * - Desktop: Split view (list left, thread right)
  * - Every row opens a ticket thread
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Bell, Filter, MoreHorizontal, Check, Archive, RefreshCw } from 'lucide-react';
+import { 
+  ArrowLeft, Bell, Filter, Search, X, Check, Square, 
+  CheckSquare, RefreshCw, MoreHorizontal, Archive, Mail, MailOpen
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import InboxRow from '../components/Mira/InboxRow';
 
@@ -35,6 +40,7 @@ const NotificationsInbox = () => {
   
   // State
   const [notifications, setNotifications] = useState([]);
+  const [filteredNotifications, setFilteredNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('primary');
@@ -42,9 +48,21 @@ const NotificationsInbox = () => {
   const [activePet, setActivePet] = useState(null);
   const [pets, setPets] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [showPetFilter, setShowPetFilter] = useState(false);
   
-  // Desktop split view - selected ticket
+  // Search state
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Filter sheet state
+  const [showFilterSheet, setShowFilterSheet] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all'); // all, open, waiting, resolved
+  const [typeFilter, setTypeFilter] = useState('all'); // all, requests, replies, approvals, announcements
+  
+  // Select mode state
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  
+  // Desktop split view
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
 
@@ -88,7 +106,7 @@ const NotificationsInbox = () => {
     setError(null);
     
     try {
-      let url = `${API_URL}/api/member/notifications/inbox/${encodeURIComponent(user.email)}?limit=50`;
+      let url = `${API_URL}/api/member/notifications/inbox/${encodeURIComponent(user.email)}?limit=100`;
       
       // Add pet filter
       if (petFilter === 'active' && activePet?.id) {
@@ -111,7 +129,7 @@ const NotificationsInbox = () => {
       
       const data = await response.json();
       setNotifications(data.notifications || []);
-      setUnreadCount(data.unread || 0);
+      setUnreadCount(data.unread || 0); // This is NotificationEvents count, not tickets
       
     } catch (err) {
       console.error('Error fetching notifications:', err);
@@ -125,8 +143,54 @@ const NotificationsInbox = () => {
     fetchNotifications();
   }, [fetchNotifications]);
 
+  // Apply local filters (search, status, type)
+  useEffect(() => {
+    let filtered = [...notifications];
+    
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(n => 
+        n.title?.toLowerCase().includes(query) ||
+        n.message?.toLowerCase().includes(query) ||
+        n.pet_name?.toLowerCase().includes(query) ||
+        n.ticket_id?.toLowerCase().includes(query)
+      );
+    }
+    
+    // Status filter
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(n => n.ticket_status === statusFilter);
+    }
+    
+    // Type filter
+    if (typeFilter !== 'all') {
+      const typeMap = {
+        requests: ['picks_request_received', 'mira_request_received', 'vault_request_received', 'service_request_received'],
+        replies: ['concierge_reply'],
+        approvals: ['approval_needed', 'payment_needed'],
+        announcements: ['announcement']
+      };
+      filtered = filtered.filter(n => typeMap[typeFilter]?.includes(n.type));
+    }
+    
+    setFilteredNotifications(filtered);
+  }, [notifications, searchQuery, statusFilter, typeFilter]);
+
   // Handle notification click
   const handleNotificationClick = async (notification) => {
+    if (selectMode) {
+      // Toggle selection
+      const newSelected = new Set(selectedIds);
+      if (newSelected.has(notification.id)) {
+        newSelected.delete(notification.id);
+      } else {
+        newSelected.add(notification.id);
+      }
+      setSelectedIds(newSelected);
+      return;
+    }
+    
     // Mark as read immediately
     if (!notification.read) {
       try {
@@ -152,54 +216,57 @@ const NotificationsInbox = () => {
     const ticketId = notification.ticket_id;
     if (ticketId) {
       if (isDesktop) {
-        // Desktop: Show in split view
         setSelectedTicketId(ticketId);
       } else {
-        // Mobile: Navigate to full-screen thread
         navigate(`/tickets/${ticketId}${notification.event_id ? `?event=${notification.event_id}` : ''}`);
       }
     }
   };
 
-  // Handle mark as read/unread
-  const handleMarkRead = async (notification, read) => {
-    try {
-      await fetch(`${API_URL}/api/member/notifications/${notification.id}/${read ? 'read' : 'unread'}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        }
-      });
-      
-      setNotifications(prev => prev.map(n => 
-        n.id === notification.id ? { ...n, read } : n
-      ));
-      setUnreadCount(prev => read ? Math.max(0, prev - 1) : prev + 1);
-    } catch (err) {
-      console.error('Failed to update read status:', err);
+  // Bulk actions
+  const handleBulkMarkRead = async (read) => {
+    const ids = Array.from(selectedIds);
+    for (const id of ids) {
+      try {
+        await fetch(`${API_URL}/api/member/notifications/${id}/${read ? 'read' : 'unread'}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
+        });
+      } catch (err) {
+        console.error('Failed to update:', err);
+      }
     }
+    
+    setNotifications(prev => prev.map(n => 
+      selectedIds.has(n.id) ? { ...n, read } : n
+    ));
+    
+    const affectedUnread = notifications.filter(n => selectedIds.has(n.id) && !n.read).length;
+    setUnreadCount(prev => read ? Math.max(0, prev - affectedUnread) : prev + ids.length - affectedUnread);
+    
+    setSelectedIds(new Set());
+    setSelectMode(false);
   };
 
-  // Handle archive
-  const handleArchive = async (notification) => {
-    try {
-      await fetch(`${API_URL}/api/member/notifications/${notification.id}/archive`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        }
-      });
-      
-      // Remove from list (Archive = hide from inbox)
-      setNotifications(prev => prev.filter(n => n.id !== notification.id));
-      if (!notification.read) {
-        setUnreadCount(prev => Math.max(0, prev - 1));
+  const handleBulkArchive = async () => {
+    const ids = Array.from(selectedIds);
+    for (const id of ids) {
+      try {
+        await fetch(`${API_URL}/api/member/notifications/${id}/archive`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
+        });
+      } catch (err) {
+        console.error('Failed to archive:', err);
       }
-    } catch (err) {
-      console.error('Failed to archive:', err);
     }
+    
+    setNotifications(prev => prev.filter(n => !selectedIds.has(n.id)));
+    const affectedUnread = notifications.filter(n => selectedIds.has(n.id) && !n.read).length;
+    setUnreadCount(prev => Math.max(0, prev - affectedUnread));
+    
+    setSelectedIds(new Set());
+    setSelectMode(false);
   };
 
   // Get pet name for notification
@@ -232,15 +299,35 @@ const NotificationsInbox = () => {
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            {/* Select button */}
+            <button 
+              onClick={() => {
+                setSelectMode(!selectMode);
+                setSelectedIds(new Set());
+              }}
+              className={`p-2 rounded-full ${selectMode ? 'bg-pink-500/20 text-pink-400' : 'hover:bg-gray-800 text-gray-400'}`}
+            >
+              {selectMode ? <X className="w-5 h-5" /> : <CheckSquare className="w-5 h-5" />}
+            </button>
+            
+            {/* Search toggle */}
+            <button 
+              onClick={() => setShowSearch(!showSearch)}
+              className={`p-2 rounded-full ${showSearch ? 'bg-blue-500/20 text-blue-400' : 'hover:bg-gray-800 text-gray-400'}`}
+            >
+              <Search className="w-5 h-5" />
+            </button>
+            
             <button 
               onClick={fetchNotifications}
               className="p-2 rounded-full hover:bg-gray-800"
             >
               <RefreshCw className={`w-5 h-5 text-gray-400 ${loading ? 'animate-spin' : ''}`} />
             </button>
+            
             <button 
-              onClick={() => setShowPetFilter(!showPetFilter)}
+              onClick={() => setShowFilterSheet(true)}
               className="p-2 rounded-full hover:bg-gray-800"
             >
               <Filter className="w-5 h-5 text-gray-400" />
@@ -248,64 +335,178 @@ const NotificationsInbox = () => {
           </div>
         </div>
         
-        {/* Tabs */}
-        <div className="flex gap-1 px-4 pb-3">
-          {TABS.map(tab => (
+        {/* Search Input */}
+        {showSearch && (
+          <div className="px-4 pb-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search tickets, pets, messages..."
+                className="w-full bg-gray-800/50 border border-gray-700/50 rounded-full pl-10 pr-10 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50"
+                autoFocus
+              />
+              {searchQuery && (
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                >
+                  <X className="w-4 h-4 text-gray-500" />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+        
+        {/* Tabs + Pet Filter */}
+        <div className="flex items-center justify-between px-4 pb-3">
+          <div className="flex gap-1">
+            {TABS.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`
+                  px-3 py-1.5 rounded-full text-xs font-medium transition-all
+                  ${activeTab === tab.id 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
+                  }
+                `}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          
+          {/* Pet Filter Dropdown */}
+          <div className="relative">
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`
-                px-4 py-1.5 rounded-full text-sm font-medium transition-all
-                ${activeTab === tab.id 
-                  ? 'bg-blue-500 text-white' 
-                  : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
-                }
-              `}
+              onClick={() => setPetFilter(petFilter === 'active' ? 'all' : 'active')}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-gray-800/50 text-gray-400 hover:bg-gray-800"
             >
-              {tab.label}
+              {petFilter === 'active' ? (activePet?.name || 'Active Pet') : 'All Pets'}
+              <span className="text-[10px]">▾</span>
             </button>
-          ))}
+          </div>
         </div>
         
-        {/* Pet Filter Dropdown */}
-        {showPetFilter && (
-          <div className="absolute top-full left-0 right-0 bg-[#0d0d1a] border-b border-gray-800/50 px-4 py-3 z-50">
-            <p className="text-xs text-gray-500 mb-2">Filter by pet</p>
-            <div className="flex gap-2 flex-wrap">
+        {/* Bulk Actions Bar */}
+        {selectMode && selectedIds.size > 0 && (
+          <div className="flex items-center justify-between px-4 py-2 bg-gray-800/50 border-t border-gray-700/30">
+            <span className="text-sm text-gray-300">{selectedIds.size} selected</span>
+            <div className="flex items-center gap-2">
               <button
-                onClick={() => {
-                  setPetFilter('active');
-                  setShowPetFilter(false);
-                }}
-                className={`
-                  px-3 py-1.5 rounded-full text-sm transition-all
-                  ${petFilter === 'active' 
-                    ? 'bg-pink-500 text-white' 
-                    : 'bg-gray-800/50 text-gray-400'
-                  }
-                `}
+                onClick={() => handleBulkMarkRead(true)}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-gray-700/50 text-gray-300 hover:bg-gray-700"
               >
-                {activePet?.name || 'Active Pet'}
+                <MailOpen className="w-4 h-4" />
+                Mark Read
               </button>
               <button
-                onClick={() => {
-                  setPetFilter('all');
-                  setShowPetFilter(false);
-                }}
-                className={`
-                  px-3 py-1.5 rounded-full text-sm transition-all
-                  ${petFilter === 'all' 
-                    ? 'bg-pink-500 text-white' 
-                    : 'bg-gray-800/50 text-gray-400'
-                  }
-                `}
+                onClick={() => handleBulkMarkRead(false)}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-gray-700/50 text-gray-300 hover:bg-gray-700"
               >
-                All Pets
+                <Mail className="w-4 h-4" />
+                Mark Unread
+              </button>
+              <button
+                onClick={handleBulkArchive}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-gray-700/50 text-gray-300 hover:bg-gray-700"
+              >
+                <Archive className="w-4 h-4" />
+                Archive
               </button>
             </div>
           </div>
         )}
       </header>
+      
+      {/* Filter Sheet */}
+      {showFilterSheet && (
+        <div className="fixed inset-0 z-50 bg-black/50" onClick={() => setShowFilterSheet(false)}>
+          <div 
+            className="absolute bottom-0 left-0 right-0 bg-[#0d0d1a] rounded-t-2xl p-4 max-h-[70vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-10 h-1 bg-gray-700 rounded-full mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-white mb-4">Filters</h3>
+            
+            {/* Status Filter */}
+            <div className="mb-4">
+              <p className="text-xs text-gray-500 mb-2">Status</p>
+              <div className="flex flex-wrap gap-2">
+                {['all', 'open', 'waiting', 'resolved'].map(status => (
+                  <button
+                    key={status}
+                    onClick={() => setStatusFilter(status)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium ${
+                      statusFilter === status ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400'
+                    }`}
+                  >
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Type Filter */}
+            <div className="mb-4">
+              <p className="text-xs text-gray-500 mb-2">Type</p>
+              <div className="flex flex-wrap gap-2">
+                {['all', 'requests', 'replies', 'approvals', 'announcements'].map(type => (
+                  <button
+                    key={type}
+                    onClick={() => setTypeFilter(type)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium ${
+                      typeFilter === type ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400'
+                    }`}
+                  >
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Pet Filter */}
+            <div className="mb-6">
+              <p className="text-xs text-gray-500 mb-2">Pet</p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setPetFilter('all')}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium ${
+                    petFilter === 'all' ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400'
+                  }`}
+                >
+                  All Pets
+                </button>
+                {pets.map(pet => (
+                  <button
+                    key={pet.id}
+                    onClick={() => {
+                      setPetFilter('active');
+                      setActivePet(pet);
+                    }}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium ${
+                      petFilter === 'active' && activePet?.id === pet.id ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400'
+                    }`}
+                  >
+                    {pet.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <button
+              onClick={() => setShowFilterSheet(false)}
+              className="w-full py-3 bg-pink-500 text-white font-medium rounded-full"
+            >
+              Apply Filters
+            </button>
+          </div>
+        </div>
+      )}
       
       {/* Content */}
       <div className="flex-1 flex">
@@ -321,29 +522,50 @@ const NotificationsInbox = () => {
           ) : error ? (
             <div className="flex flex-col items-center justify-center h-64 text-gray-400">
               <p>{error}</p>
-              <button 
-                onClick={fetchNotifications}
-                className="mt-3 text-pink-400 text-sm"
-              >
+              <button onClick={fetchNotifications} className="mt-3 text-pink-400 text-sm">
                 Try again
               </button>
             </div>
-          ) : notifications.length === 0 ? (
+          ) : filteredNotifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-gray-400">
               <Bell className="w-12 h-12 mb-3 opacity-30" />
-              <p>No notifications yet</p>
+              <p>{searchQuery ? 'No matching notifications' : 'No notifications yet'}</p>
             </div>
           ) : (
             <div>
-              {notifications.map(notification => (
-                <InboxRow
-                  key={notification.id}
-                  notification={notification}
-                  petName={getPetName(notification)}
-                  isUnread={!notification.read}
-                  onClick={() => handleNotificationClick(notification)}
-                  showPetName={petFilter === 'all'}
-                />
+              {filteredNotifications.map(notification => (
+                <div key={notification.id} className="flex items-center">
+                  {/* Select checkbox */}
+                  {selectMode && (
+                    <button
+                      onClick={() => {
+                        const newSelected = new Set(selectedIds);
+                        if (newSelected.has(notification.id)) {
+                          newSelected.delete(notification.id);
+                        } else {
+                          newSelected.add(notification.id);
+                        }
+                        setSelectedIds(newSelected);
+                      }}
+                      className="pl-4"
+                    >
+                      {selectedIds.has(notification.id) ? (
+                        <CheckSquare className="w-5 h-5 text-pink-400" />
+                      ) : (
+                        <Square className="w-5 h-5 text-gray-500" />
+                      )}
+                    </button>
+                  )}
+                  <div className="flex-1">
+                    <InboxRow
+                      notification={notification}
+                      petName={getPetName(notification)}
+                      isUnread={!notification.read}
+                      onClick={() => handleNotificationClick(notification)}
+                      showPetName={petFilter === 'all'}
+                    />
+                  </div>
+                </div>
               ))}
             </div>
           )}
