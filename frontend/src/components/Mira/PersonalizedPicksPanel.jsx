@@ -1271,15 +1271,25 @@ const PersonalizedPicksPanel = ({
                 {/* ═══════════════════════════════════════════════════════════════ */}
                 {picksData?.timely_picks?.length > 0 && (
                   <div className="mb-6">
-                    <div className="mb-3">
-                      <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-amber-400" />
-                        {pet?.name} might need this
-                      </h3>
-                      <p className="text-xs text-gray-500 mt-1">Mira knows what's on your mind</p>
+                    <div className="mb-3 flex items-center justify-between">
+                      <div>
+                        <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-amber-400" />
+                          {pet?.name} might need this
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-1">Mira knows what's on your mind</p>
+                      </div>
+                      {picksData.timely_picks.length > 4 && (
+                        <button
+                          onClick={() => setShowAllTimely(!showAllTimely)}
+                          className="text-xs text-amber-400 hover:text-amber-300 font-medium"
+                        >
+                          {showAllTimely ? 'Show less' : `See all ${picksData.timely_picks.length}`}
+                        </button>
+                      )}
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                      {picksData.timely_picks.slice(0, 4).map((pick, index) => (
+                      {picksData.timely_picks.slice(0, showAllTimely ? 8 : 4).map((pick, index) => (
                         <div 
                           key={pick.id || `timely-${index}`}
                           className={`p-3 rounded-xl bg-gradient-to-br from-amber-900/30 to-orange-900/20 border border-amber-500/30 cursor-pointer hover:border-amber-400/50 transition-all active:scale-[0.98] ${
