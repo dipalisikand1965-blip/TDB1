@@ -194,10 +194,21 @@ When no chat intents exist, Mira still shows intelligent picks based on:
 
 ## 📋 UPCOMING TASKS (Priority Order)
 
-1. 🔧 **Fix intent capture** - Debug DB storage
-2. 📍 **Add city to pet profile** - Onboarding update  
-3. 📬 **Build Concierge Inbox** - Outlook-style drawer (see `/app/memory/CONCIERGE_INBOX_SPEC.md`)
-4. 🎨 **P1 Frontend UIs** - Weight chart, training tracker in MojoProfileModal
+### P1 - High Priority
+1. 📱 **Add "Inbox" to Mobile Bottom Navigation** - Add a new tab to bottom nav for quick access to /notifications
+2. 🔍 **Verify Chat Intent Capture Bug** - Test multi-turn conversations to ensure intents persist to `user_learn_intents`
+3. 🎨 **Build UI for Pet Soul Fields** - Weight History charts, Training Progress tracker in MojoProfileModal.jsx
+
+### P2 - Medium Priority
+1. 📡 **Implement WebSockets for Real-Time Updates** - Inbox and thread should update without manual refresh
+2. 📊 **Pet City Persistence Verification** - Confirm city saves correctly during onboarding
+
+### Future/Backlog
+1. 🔄 **Rebuild Soul Onboarding Flow** - Expand to capture more pet data
+2. 📦 **Legacy Ticket Migration** - Migrate legacy tickets missing ownership fields
+3. 🔗 **WhatsApp Webhook Idempotency** - Prevent duplicate tickets from webhook retries
+4. 🧹 **Refactor Monoliths** - Break down `mira_routes.py` and `MiraDemoPage.jsx`
+5. 🗑️ **Remove Deprecated Components** - Delete `ConciergeInboxDrawer.jsx` after verification
 
 ---
 
