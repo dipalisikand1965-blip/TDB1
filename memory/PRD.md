@@ -4,6 +4,25 @@
 ### Original Problem Statement
 Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mira" that manages pet care, services, and communication. The system must strictly adhere to the PET_OS_BEHAVIOR_BIBLE v1.1 which defines exact behavioral rules for navigation, icon states, and chat continuity.
 
+---
+
+## CHANGELOG (Dec 2025)
+
+### Dec 17, 2025 - TRAVEL Pillar Bug Fix
+- **Fixed:** TRAVEL pillar queries ("trip to Goa") now return hotel/travel content instead of café/restaurant content
+- **Root cause:** Line 11984 in `mira_routes.py` hardcoded `place_type_to_search = "restaurant"` without considering detected pillar
+- **Solution:** Made place type selection pillar-aware (travel→hotel, dine→restaurant, care→vet, enjoy→park)
+- **Also fixed:** Action text now pillar-appropriate ("check availability for your dates" vs "arrange a table")
+- **Test:** All pillar responses now match their context
+
+### Previous Session - Voice Overhaul (Feb 17, 2026)
+- CELEBRATE pillar now engages in soulful conversation before ticket creation
+- Emergency two-tier system: TRIAGE_FIRST vs GO_NOW implemented
+- Banned first words enforced ("Great idea", "That sounds lovely" etc.)
+- Soulful openers required ("Oh, [Pet]...", "Since I know [Pet]...")
+
+---
+
 ### User Personas
 1. **Pet Parents** - Primary users who interact with Mira to manage their pet's care
 2. **Concierge Team** - Human agents who handle service requests
