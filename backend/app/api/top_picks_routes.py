@@ -1772,12 +1772,56 @@ async def get_top_picks(
     except Exception as intent_err:
         logger.warning(f"[PICKS] Intent-driven cards error: {intent_err}")
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PERSONALIZED PRODUCTS - "Personalized for {Pet}" shelf
+    # ALWAYS shown proactively - unique items featuring the pet
+    # All go to Concierge for fulfillment (no fixed price)
+    # ═══════════════════════════════════════════════════════════════════════════
+    personalized_shelf = {
+        "shelf_title": f"Personalized for {pet_name}",
+        "shelf_subtitle": "Unique items featuring your pet",
+        "products": [],
+        "has_products": False
+    }
+    
+    try:
+        from personalized_products import get_personalized_shelf
+        personalized_shelf = await get_personalized_shelf(
+            db=db,
+            pet_id=actual_pet_id,
+            pet_name=pet_name,
+            limit=6
+        )
+        logger.info(f"[PICKS] Personalized shelf: {len(personalized_shelf.get('products', []))} products for {pet_name}")
+    except Exception as personalized_err:
+        logger.warning(f"[PICKS] Personalized products error: {personalized_err}")
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # CELEBRATE SHELF - Shown when birthday intent detected
+    # Links to /celebrate cake designer tool
+    # ═══════════════════════════════════════════════════════════════════════════
+    celebrate_shelf = None
+    if intent_driven.get("intent") == "birthday":
+        try:
+            from personalized_products import get_celebrate_shelf
+            celebrate_shelf = await get_celebrate_shelf(
+                db=db,
+                pet_id=actual_pet_id,
+                pet_name=pet_name,
+                occasion="birthday"
+            )
+            logger.info(f"[PICKS] Celebrate shelf generated for {pet_name}'s birthday")
+        except Exception as celebrate_err:
+            logger.warning(f"[PICKS] Celebrate shelf error: {celebrate_err}")
+    
     return {
         "success": True,
         "pet": pet_intelligence,
         "timely_picks": timely_picks,  # "{petName} might need this" shelf (from catalogue)
         "timely_context": timely_context,  # Context info
-        "intent_driven": intent_driven,  # NEW: Dynamic Concierge cards based on intent
+        "intent_driven": intent_driven,  # Dynamic Concierge cards based on intent
+        "personalized": personalized_shelf,  # NEW: "Personalized for {Pet}" shelf (always shown)
+        "celebrate": celebrate_shelf,  # NEW: Celebrate shelf (when birthday intent)
         "pillars": pillar_picks,
         "total_picks": total_picks,
         "generated_at": datetime.now(timezone.utc).isoformat(),
