@@ -246,7 +246,7 @@ async def get_recent_user_intents(
     
     Returns list of topics with confidence, ordered by recency.
     """
-    if not db or not user_id:
+    if db is None or not user_id:
         return []
     
     try:
