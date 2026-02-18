@@ -134,3 +134,18 @@
 
 *Total Canonical Bibles: ~25 core documents*
 *Total Memory Files: 159 (including audits, handovers, etc.)*
+
+---
+
+## INTENT ENGINE BIBLE (NEW - February 2026)
+**File:** `/app/memory/INTENT_ENGINE_BIBLE.md`
+
+The master doctrine for Intent-Driven Dynamic Cards:
+- MIRA (Brain) → CONCIERGE (Hands) architecture
+- Intent detection keywords and categories
+- Dynamic picks and services specification
+- Concierge Tab sync doctrine
+- API specifications
+- Golden rules for all future agents
+
+**CANONICAL - All agents MUST follow this Bible.**
