@@ -8,39 +8,22 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 2. **"Health-First Safety Rule"** - Pet health facts always override conflicting preferences
 3. **Mental Model**: "Chat is where you ask. Services is where it gets done."
 
-## Product Requirements
+## Key Documentation
 
-### 1. Mental Model Reinforcement
-All UI copy, notifications, and interaction flows must guide users to ask in Chat and manage execution/replies in Services.
-
-### 2. Uniform Service Flow
-Enforce single ticket backbone (`TCK-*` IDs) for all service requests.
-
-### 3. Picks Fallback Logic
-If Mira cannot find a matching product, the "Picks" panel must fall back to "Concierge Arranges" flow.
-
-### 4. Deterministic UI Contracts
-Frontend renders strictly based on `conversation_contract` from backend, including `mode` and `quick_replies`.
-
-### 5. Explicit Location Consent
-For "near me" queries, system must ask for consent before triggering geolocation.
-
-### 6. Reply Guardrail
-Prevent users from replying to open tickets in main Chat view by nudging them to Services thread.
-
-### 7. Consistent Ownership
-Ticket ownership derived from unified identity model.
-
-### 8. Pet First, Breed Second Doctrine
-Personalization logic prioritizes pet's individual traits over breed characteristics.
+| Document | Purpose |
+|----------|---------|
+| `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` | The Law - Design specification |
+| `/app/memory/ONE_SPINE_SPEC.md` | Ticket system spec, bug naming, 5 Hard Proofs |
+| `/app/memory/ONE_SPINE_AUDIT_REPORT.md` | Latest audit status |
+| `/app/memory/AGENT_INSTRUCTIONS.md` | QA protocols |
 
 ---
 
 ## Pet Soul Data Architecture (51 Fields)
 
 ### Field Categories:
-| Category | Fields | Weight (Proposed) |
-|----------|--------|-------------------|
+| Category | Fields | Weight |
+|----------|--------|--------|
 | **Identity** | name, breed, age, weight, size, gender | 5% |
 | **Health** | allergies, medical_conditions, sensitive_stomach, dietary_restrictions, medications, vaccination_status, spayed_neutered, last_vet_visit | 30% |
 | **Personality** | general_nature, energy_level, stranger_reaction, behavior_with_dogs, behavior_with_humans, separation_anxiety | 15% |
@@ -57,79 +40,66 @@ Personalization logic prioritizes pet's individual traits over breed characteris
 
 ### Session: Feb 18, 2026
 
-#### ✅ Pet Soul Enrichment Complete
-- **5 pets enriched** with comprehensive 50+ field data
-- **Mystique**: Senior Shihtzu, arthritis, chicken/wheat allergy (85% soul score)
-- **Lola**: Young Maltese, energetic, beef/corn allergy (78% soul score)
-- **Meister**: Senior Shih Tzu, heart condition, severe anxiety (92% soul score)
-- **Bruno**: Young Labrador, high energy, loves swimming (65% soul score)
-- **Luna**: Golden Retriever, hip dysplasia, grain allergy (88% soul score)
+#### ✅ One Spine Specification & Audit
+- Created comprehensive `/app/memory/ONE_SPINE_SPEC.md` with:
+  - Bug naming conventions (member-facing vs internal)
+  - Mental model copy to use everywhere
+  - 5 Hard Proofs for verification
+  - Complete QA script
+- Created `/app/memory/ONE_SPINE_AUDIT_REPORT.md` with full audit results
+- Updated `/app/memory/AGENT_INSTRUCTIONS.md` with spec references
 
-#### ✅ All Pillars Tested & Verified
-| Pillar | Test | Result |
-|--------|------|--------|
-| Health-First Safety | Chicken treats for Mystique | ✅ Allergy acknowledged |
-| Health-First Safety | Food for Meister | ✅ Heart condition considered |
-| Emergency Triage | Chocolate emergency | ✅ Immediate vet guidance |
-| Personalization | Activities for Bruno | ✅ Active recommendations |
-| Fear/Anxiety | Travel for Meister | ✅ No flight suggestions |
-| Soul Learning | Memory trace | ✅ `_memory_trace` returned |
-| Celebrate | Birthday for Lola | ✅ Uses preferences |
-| Travel | Trip for Luna | ✅ Joint-friendly suggestions |
+#### ✅ Fixed Ownership Bug
+- `UnifiedPicksVault.jsx` - Now passes `token` and `user` to API calls
+- `MiraDemoPage.jsx` - Added `user` prop to UnifiedPicksVault
 
-#### Previous Session Accomplishments:
-- **CELEBRATE Pillar Logic Fix** - Multi-step conversation flow
-- **Pet Soul Data Loading Fix** - Complete pet soul data loads from database
-- **Soul Learning Engine** - Extracts and saves durable facts from conversations
-- **Breed Substitution Bug Instrumentation** - Monitoring system active
-- **Full "One Spine" QA Verification** - Ticketing flow verified
+#### ✅ Database Backfill
+- Added `has_unread_concierge_reply` field to all 2,113 tickets
+- TCK tickets with member.email: 57% (historical data)
+
+#### ✅ Pet Soul Enrichment
+- 5 pets enriched with 50+ fields each
+- All pillars tested and verified (Health-First, Emergency, Personalization, etc.)
+
+#### ✅ Previous Session Work
+- CELEBRATE Pillar Logic Fix
+- Soul Learning Engine Implementation
+- Breed Substitution Bug Instrumentation
+- Full "One Spine" QA Verification
+
+---
+
+## Audit Status: One Spine
+
+| Proof | Status | Notes |
+|-------|--------|-------|
+| 1. Canonical Ticket (TCK-) | ✅ PASS | 37 TCK tickets created |
+| 2. Services Visibility | ✅ PASS | Tickets appear immediately |
+| 3. Ownership Fields | ⚠️ 57% | Fixed for new tickets |
+| 4. Two-Way Replies | ✅ PASS | Both member & concierge in same thread |
+| 5. Unread Indicator | ✅ PASS | Field now on all tickets |
 
 ---
 
 ## Prioritized Backlog
 
 ### P0 - Critical
-- [ ] **Recalibrate Soul Score** - Use 51-field framework with weighted categories
-- [ ] **Soul-Capture Onboarding** - 8-10 step experience covering critical fields
-- [ ] Perform Exhaustive Audit using `/app/memory/EXHAUSTIVE_AUDIT_FRAMEWORK.md`
+- [ ] **Re-run One Spine audit** to verify ownership fix
+- [ ] **Soul-Capture Onboarding** - 8-10 step experience
 
 ### P1 - High Priority
-- [ ] **Mobile Specs Audit** - Verify UI against Bible specs
-- [ ] **Monitor Breed Bug** - Check logs for `[BREED MISMATCH]` alerts
-- [ ] **UI Pet Context Switching** - Auto-switch context when asking about different pet
-- [ ] Past Chats Panel UI implementation
+- [ ] **Mobile Specs Audit** - Typography & tap targets vs Bible
+- [ ] **Help Section** - Add mental model copy
+- [ ] **Monitor Breed Bug** - Check logs for `[BREED MISMATCH]`
 
 ### P2 - Medium Priority
-- [ ] **WhatsApp Webhook Idempotency** - Use `source.provider_message_id`
-- [ ] **Pet Memory Allergy Test** - Verify Health-First Safety Rule logic
-- [ ] Legacy Ticket Migration (134+ tickets to `TCK-*` format)
+- [ ] **WhatsApp Webhook Idempotency**
+- [ ] **Legacy Ticket Migration** - 134+ tickets to `TCK-*` format
 
 ### P3 - Backlog
-- [ ] Refactor `mira_routes.py` (20k+ lines monolith)
+- [ ] Refactor `mira_routes.py` (20k+ lines)
 - [ ] Refactor `MiraDemoPage.jsx`
-- [ ] Picks Engine enhancements
 - [ ] Push notification system
-
----
-
-## Key Files Reference
-
-### Backend
-- `/app/backend/routes/mira_routes.py` - Main Mira chat logic
-- `/app/backend/soul_intelligence.py` - Pet soul data handling (SOUL_FIELD_MAPPING)
-- `/app/backend/utils/soul_learning_engine.py` - Conversation learning
-- `/app/backend/utils/breed_mention_detector.py` - Breed bug monitoring
-- `/app/backend/scripts/enrich_pet_souls.py` - Pet enrichment script
-
-### Tests
-- `/app/backend/tests/test_pet_soul_enriched_data.py` - Comprehensive soul data tests
-
-### Frontend
-- `/app/frontend/src/pages/MiraDemoPage.jsx` - Main Mira UI
-
-### Documentation
-- `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` - Design specification
-- `/app/memory/AGENT_INSTRUCTIONS.md` - Mandatory QA protocol
 
 ---
 
@@ -138,6 +108,29 @@ Personalization logic prioritizes pet's individual traits over breed characteris
 - **Password:** test123
 - **Test Pets:** Mystique, Lola, Meister, Bruno, Luna (all enriched)
 - **Debug URL:** `/mira-demo?debug=1`
+
+---
+
+## Key Files Reference
+
+### Specifications
+- `/app/memory/ONE_SPINE_SPEC.md` - 5 Hard Proofs, QA script
+- `/app/memory/ONE_SPINE_AUDIT_REPORT.md` - Current audit status
+- `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` - The Law
+
+### Backend
+- `/app/backend/utils/service_ticket_spine.py` - Canonical ticket creation
+- `/app/backend/utils/spine_helper.py` - Route adapter
+- `/app/backend/routes/mira_routes.py` - Main chat logic
+
+### Frontend
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - Main UI
+- `/app/frontend/src/components/PicksVault/UnifiedPicksVault.jsx` - Picks display
+- `/app/frontend/src/components/Mira/OnboardingTooltip.jsx` - Mental model UI
+
+### Tests
+- `/app/backend/tests/test_pet_soul_enriched_data.py` - Soul data tests
+- `/app/backend/scripts/enrich_pet_souls.py` - Pet enrichment script
 
 ---
 
