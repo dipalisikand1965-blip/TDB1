@@ -28,27 +28,37 @@ const HelpModal = ({
   
   if (!isOpen) return null;
   
-  // FAQ data with mental model copy
+  // FAQ data with mental model copy (member-facing)
   const faqs = [
     {
       id: 'replies',
       question: 'Where do I see replies from Concierge?',
-      answer: 'In Services. That\'s your request thread.'
+      answer: 'You\'ll see them in Services. Every request becomes a tracked thread there, and that\'s where Concierge replies.'
     },
     {
       id: 'chat',
-      question: 'What is Chat for then?',
-      answer: 'Chat is where you ask. If it needs action, Mira opens a tracked request in Services.'
+      question: 'What is Chat for, then?',
+      answer: 'Chat is where you ask. If it needs action, we open a request and move it into Services so it\'s tracked and handled properly.'
+    },
+    {
+      id: 'notification',
+      question: 'I tapped a notification. Where will it take me?',
+      answer: 'It opens the exact request thread in Services, so you can see the update and reply in the right place.'
+    },
+    {
+      id: 'reply-notification',
+      question: 'Can I reply from the notification itself?',
+      answer: 'Not from the bell dropdown. Tap the notification to open the thread in Services, then reply there.'
     },
     {
       id: 'details',
-      question: 'How do I add details after I\'ve asked?',
-      answer: 'Reply inside the Services thread so Concierge sees it instantly.'
+      question: 'I added details in Chat. Will Concierge see it?',
+      answer: 'If it\'s about an open request, add it in Services so it lands inside the same thread and nothing gets missed.'
     },
     {
       id: 'badge',
-      question: 'What does the badge mean?',
-      answer: 'A badge on Services means Concierge has replied and you haven\'t opened it yet.'
+      question: 'What does the badge on Services mean?',
+      answer: 'It means there\'s an unread update from Concierge for that pet.'
     }
   ];
   
