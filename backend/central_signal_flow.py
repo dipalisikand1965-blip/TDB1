@@ -7,9 +7,13 @@ It creates:
 1. Notification in admin_notifications
 2. Ticket in service_desk_tickets
 3. Entry in channel_intakes (unified inbox)
+4. Member notification in member_notifications (user confirmation)
 
 RULE: Desktop = Mobile = PWA = Any Device
 Every squeak on the site goes through this.
+
+GOLDEN STANDARD:
+User Request → Service Desk Ticket → Admin Notification → MEMBER NOTIFICATION → Channel Intakes
 """
 
 import uuid
