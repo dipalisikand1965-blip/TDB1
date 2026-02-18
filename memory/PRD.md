@@ -1,25 +1,91 @@
 # Mira OS - Product Requirements Document
 ## The Golden Standard Communication System
 
-### Original Problem Statement
-Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mira" that manages pet care, services, and communication. The system must strictly adhere to the PET_OS_BEHAVIOR_BIBLE v1.1 which defines exact behavioral rules for navigation, icon states, and chat continuity.
+---
+
+# ⚠️ MANDATORY AGENT PROTOCOL (READ FIRST)
+
+**EVERY AGENT** working on this codebase MUST complete these steps before making ANY changes:
+
+## Step 1: Read All Bibles and Doctrines
+
+| Document | Path | Purpose |
+|----------|------|---------|
+| **PET_OS_BEHAVIOR_BIBLE** | `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` | Complete system contract, voice rules, quick replies |
+| **Quick Replies Audit** | `/app/memory/QUICK_REPLIES_AUDIT_FRAMEWORK.md` | Chip validation tests |
+| **Comprehensive Audit** | `/app/memory/MIRA_OS_COMPREHENSIVE_AUDIT_FRAMEWORK.md` | Full system audit |
+| **LEARN Bible** | `/app/memory/LEARN_BIBLE.md` | LEARN pillar specifics |
+| **This PRD** | `/app/memory/PRD.md` | Product requirements |
+
+## Step 2: Understand Core Doctrines
+
+### THE PET FIRST DOCTRINE (Supreme Law)
+> **Mira knows the pet's SOUL. Breed is secondary.**
+
+- Individual traits override breed generalizations
+- Pet profile data is source of truth
+- Personalization is intimate, not templated
+- The pet is a family member, not a species
+
+### THE VOICE CONTRACT (Section 0.05)
+- **BANNED OPENERS:** "Great idea", "That sounds", "I'd be happy to", "Absolutely", "Sure", "Of course"
+- **REQUIRED OPENERS:** "Oh, for {Pet}...", "Since I know {Pet}...", "Let's take this calmly"
+- Emergency: TRIAGE_FIRST (calm questions) vs GO_NOW (immediate escalation)
+
+### THE QUICK REPLIES CONTRACT (Section 11.2)
+- Every response returns `conversation_contract`
+- Chips are deterministic, not decorative
+- 3-6 chips per clarify mode
+- No Places without consent/area
+- Ticket chips must call spine (`TCK-YYYY-NNNNNN`)
+
+## Step 3: Test Credentials
+
+| What | Value |
+|------|-------|
+| Test URL | `/mira-demo?debug=1` |
+| User Email | `dipali@clubconcierge.in` |
+| Password | `test123` |
+| Test Pet | Lola, Mystique |
+| Admin | `aditya` / `lola4304` |
+
+## Step 4: Warn on Conflicts
+
+**If ANY user request conflicts with the Bible doctrines:**
+1. STOP and warn the user
+2. Quote the specific section that would be violated
+3. Get EXPLICIT permission before proceeding
+4. Document the exception in this PRD
 
 ---
 
-## CHANGELOG (Dec 2025)
+# CHANGELOG
 
-### Dec 17, 2025 - TRAVEL Pillar Bug Fix
+### Feb 18, 2026 - One Spine Unread Indicator Fix
+- **Fixed:** Concierge replies now correctly update `awaiting_you` and `unread_replies` counts
+- **Fixed:** Pet ID filter now includes tickets with null/empty pet_id
+- **Fixed:** Dual-write sync merges flags from mira_tickets to tickets
+- **Fixed:** User viewing ticket clears unread flags
+- **Added:** Section 0.05 (Voice & Tone Contract) to Bible
+- **Added:** Section 11.2 (Quick Replies Contract) to Bible
+- **Added:** Section 11.3 (Copy-Paste Chip Sets) to Bible
+- **Created:** `/app/memory/QUICK_REPLIES_AUDIT_FRAMEWORK.md`
+
+### Feb 17, 2026 - TRAVEL Pillar Bug Fix
 - **Fixed:** TRAVEL pillar queries ("trip to Goa") now return hotel/travel content instead of café/restaurant content
 - **Root cause:** Line 11984 in `mira_routes.py` hardcoded `place_type_to_search = "restaurant"` without considering detected pillar
 - **Solution:** Made place type selection pillar-aware (travel→hotel, dine→restaurant, care→vet, enjoy→park)
-- **Also fixed:** Action text now pillar-appropriate ("check availability for your dates" vs "arrange a table")
-- **Test:** All pillar responses now match their context
 
-### Previous Session - Voice Overhaul (Feb 17, 2026)
+### Feb 17, 2026 - Voice Overhaul
 - CELEBRATE pillar now engages in soulful conversation before ticket creation
 - Emergency two-tier system: TRIAGE_FIRST vs GO_NOW implemented
 - Banned first words enforced ("Great idea", "That sounds lovely" etc.)
 - Soulful openers required ("Oh, [Pet]...", "Since I know [Pet]...")
+
+---
+
+### Original Problem Statement
+Build a "Mojo-First OS" - a pet operating system centered around an AI named "Mira" that manages pet care, services, and communication. The system must strictly adhere to the PET_OS_BEHAVIOR_BIBLE v1.1 which defines exact behavioral rules for navigation, icon states, and chat continuity.
 
 ---
 
