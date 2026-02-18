@@ -1051,6 +1051,29 @@ async def concierge_reply(
                 
                 await db.member_notifications.insert_one(notification)
                 logger.info(f"[SERVICE_DESK] Created member notification for {member_email}: {ticket_id}")
+                
+                # ═══════════════════════════════════════════════════════════════════
+                # SEND PUSH NOTIFICATION (Browser alert when concierge replies)
+                # ═══════════════════════════════════════════════════════════════════
+                try:
+                    from push_notification_routes import send_push_notification
+                    push_result = await send_push_notification(
+                        user_id=member_email,
+                        title=f"Concierge replied",
+                        body=preview,
+                        tag=f"concierge-reply-{ticket_id}",
+                        data={
+                            "type": "concierge_reply",
+                            "ticket_id": ticket_id,
+                            "url": f"/tickets/{ticket_id}"
+                        },
+                        db=db
+                    )
+                    if push_result.get("sent"):
+                        logger.info(f"[SERVICE_DESK] Push notification sent to {member_email}")
+                except Exception as push_err:
+                    # Don't fail the reply if push notification fails
+                    logger.warning(f"[SERVICE_DESK] Push notification failed: {push_err}")
     except Exception as e:
         # Don't fail the reply if notification creation fails
         logger.error(f"[SERVICE_DESK] Failed to create member notification: {e}")
