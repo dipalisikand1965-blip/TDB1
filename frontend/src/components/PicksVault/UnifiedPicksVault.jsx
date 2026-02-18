@@ -828,7 +828,7 @@ const ExpandablePickCard = ({
 // Shows when no catalogue match exists - user can create a Service Desk ticket
 // The "+" action creates a ticket via the Uniform Service Spine
 // ═══════════════════════════════════════════════════════════════════════════════
-const ConciergeArrangeCard = ({ arrange, pet, onCreateTicket }) => {
+const ConciergeArrangeCard = ({ arrange, pet, onCreateTicket, token, user }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [ticketCreated, setTicketCreated] = useState(null);
   const petName = pet?.name || 'your pet';
@@ -847,16 +847,22 @@ const ConciergeArrangeCard = ({ arrange, pet, onCreateTicket }) => {
           hapticFeedback.success();
         }
       } else {
-        // Direct API call as fallback
+        // Direct API call as fallback - MUST include auth for ownership
         const response = await fetch(`${API_URL}/api/mira/picks/concierge-arrange`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
+          },
           body: JSON.stringify({
             pet_id: pet?.id,
             pet_name: petName,
             pillar: arrange.pillar || 'care',
             intent: arrange.intent,
             original_request: arrange.original_request || arrange.intent,
+            member_email: user?.email,
+            member_name: user?.name,
+            member_id: user?.id,
             pet_constraints: arrange.pet_constraints || [],
             source: 'picks_concierge_fallback'
           })
