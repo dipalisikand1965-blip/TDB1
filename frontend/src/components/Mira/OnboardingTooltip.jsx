@@ -93,8 +93,12 @@ const OnboardingTooltip = ({
   onOpenServices
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [platform, setPlatform] = useState('web');
   
   useEffect(() => {
+    // Detect platform on mount
+    setPlatform(detectPlatform());
+    
     // Only show if:
     // 1. User is logged in
     // 2. Haven't dismissed before
@@ -109,6 +113,8 @@ const OnboardingTooltip = ({
     
     return () => clearTimeout(timer);
   }, [isLoggedIn]);
+  
+  const copy = COPY_VARIANTS[platform] || COPY_VARIANTS.web;
   
   const handleDismiss = () => {
     setIsVisible(false);
