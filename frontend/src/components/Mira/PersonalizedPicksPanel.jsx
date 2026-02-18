@@ -916,6 +916,8 @@ const PersonalizedPicksPanel = ({
         },
         body: JSON.stringify({
           pet_name: pet?.name,
+          pet_id: pet?.id,
+          user_email: userEmail,
           selected_items: [itemWithMeta],
           additional_notes: '',
           timestamp: new Date().toISOString()
