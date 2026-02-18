@@ -23,6 +23,7 @@ import MemoryTimeline from '../components/MemoryTimeline';
 import PetPassCard from '../components/PetPassCard';
 import { resolvePetAvatar, getPetPhotoUrl } from '../utils/petAvatar';
 import BreedSelector from '../components/BreedSelector';
+import GlobalNav from '../components/Mira/GlobalNav';
 
 // Persona icons mapping
 const PERSONA_ICONS = {
