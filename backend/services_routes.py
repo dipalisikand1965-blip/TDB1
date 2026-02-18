@@ -344,18 +344,23 @@ def get_timely_services_for_intents(intents: List[Dict], pet_name: str) -> List[
         if not mapping:
             continue
         
+        emoji = mapping.get("emoji", "✨")
+        
         for service_type in mapping["service_types"]:
             if service_type not in seen_types:
                 seen_types.add(service_type)
+                display_name = format_service_name(service_type)
                 timely_services.append({
                     "service_type": service_type,
+                    "display_name": display_name,  # Pretty name
+                    "emoji": emoji,
                     "is_timely": True,
                     "timely_badge": "Timely",
                     "why_timely": f"{pet_name}'s {mapping['why_timely']}",
                     "matched_topic": topic
                 })
     
-    return timely_services[:6]  # Max 6 timely services
+    return timely_services[:8]  # Max 8 timely services
 
 
 # ============================================
