@@ -194,6 +194,7 @@ async def store_user_intent(
     Intents are stored with TTL and used to personalize LEARN content.
     """
     if db is None or not user_id or not topics:
+        logger.warning(f"[LEARN BRIDGE] store_user_intent early return: db={db is None}, user_id={user_id}, topics={len(topics) if topics else 0}")
         return False
     
     try:
@@ -212,8 +213,10 @@ async def store_user_intent(
                 "expires_at": expires_at
             }
             
+            logger.info(f"[LEARN BRIDGE] Attempting upsert for topic '{topic_data['topic']}'")
+            
             # Upsert - update if same user/pet/topic exists recently
-            await db.user_learn_intents.update_one(
+            result = await db.user_learn_intents.update_one(
                 {
                     "user_id": user_id,
                     "pet_id": pet_id,
@@ -226,6 +229,7 @@ async def store_user_intent(
                 },
                 upsert=True
             )
+            logger.info(f"[LEARN BRIDGE] Upsert result: matched={result.matched_count}, modified={result.modified_count}, upserted_id={result.upserted_id}")
         
         logger.info(f"[LEARN BRIDGE] Stored {len(topics)} intent(s) for user {user_id}, pet {pet_id}: {[t['topic'] for t in topics]}")
         return True
