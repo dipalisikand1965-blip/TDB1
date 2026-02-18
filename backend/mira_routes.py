@@ -11261,16 +11261,19 @@ async def mira_chat(
                     intent=response_dict.get("pillar")
                 )
                 
-                # Add memory trace to response (for debugging/QA)
+                # Add memory trace to response with Bible-compliant field names
+                # Bible Section F requires: known_fields_used, new_enrichments_detected, 
+                # saved_enrichments, rejected_enrichments
                 response_dict["_memory_trace"] = {
-                    "memory_used": memory_trace.get("memory_used", [])[:10],  # Limit for response size
-                    "new_enrichments_saved": memory_trace.get("new_enrichments_saved", []),
-                    "not_saved_reason": memory_trace.get("not_saved_reason", [])[:3]  # Limit
+                    "known_fields_used": memory_trace.get("known_fields_used", [])[:15],
+                    "new_enrichments_detected": memory_trace.get("new_enrichments_detected", []),
+                    "saved_enrichments": memory_trace.get("saved_enrichments", []),
+                    "rejected_enrichments": memory_trace.get("rejected_enrichments", [])[:5]
                 }
-                logger.info(f"[SOUL-LEARNING] Memory trace added to response: {len(response_dict.get('_memory_trace', {}).get('memory_used', []))} fields")
+                logger.info(f"[SOUL-LEARNING] Memory trace added: {len(response_dict['_memory_trace']['known_fields_used'])} known, {len(response_dict['_memory_trace']['saved_enrichments'])} saved")
                 
                 # Actually save new enrichments to the pet's soul
-                new_enrichments = memory_trace.get("new_enrichments_saved", [])
+                new_enrichments = memory_trace.get("saved_enrichments", [])
                 pet_id = selected_pet.get("id")
                 if new_enrichments and pet_id:
                     import asyncio
