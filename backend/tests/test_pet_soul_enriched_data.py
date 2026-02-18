@@ -46,8 +46,9 @@ class TestAuthAndPets:
         })
         assert response.status_code == 200, f"Login failed: {response.text}"
         data = response.json()
-        assert "token" in data, "No token in response"
-        return data["token"]
+        token = data.get("token") or data.get("access_token")
+        assert token, "No token in response"
+        return token
     
     @pytest.fixture(scope="class")
     def api_client(self, auth_token):
@@ -103,7 +104,7 @@ class TestHealthFirstSafetyRule:
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
-        return response.json().get("token")
+        return response.json().get("token") or response.json().get("access_token")
     
     @pytest.fixture(scope="class")
     def mystique_pet(self, auth_token):
@@ -217,7 +218,7 @@ class TestEmergencyTriage:
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
-        return response.json().get("token")
+        return response.json().get("token") or response.json().get("access_token")
     
     @pytest.fixture(scope="class")
     def lola_pet(self, auth_token):
@@ -285,7 +286,7 @@ class TestPersonalizationAndActivities:
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
-        return response.json().get("token")
+        return response.json().get("token") or response.json().get("access_token")
     
     @pytest.fixture(scope="class")
     def bruno_pet(self, auth_token):
@@ -346,7 +347,7 @@ class TestFearAnxietyAwareness:
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
-        return response.json().get("token")
+        return response.json().get("token") or response.json().get("access_token")
     
     @pytest.fixture(scope="class")
     def meister_pet(self, auth_token):
@@ -413,7 +414,7 @@ class TestSoulLearning:
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
-        return response.json().get("token")
+        return response.json().get("token") or response.json().get("access_token")
     
     @pytest.fixture(scope="class")
     def any_pet(self, auth_token):
@@ -476,7 +477,7 @@ class TestCelebratePillar:
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
-        return response.json().get("token")
+        return response.json().get("token") or response.json().get("access_token")
     
     @pytest.fixture(scope="class")
     def lola_pet(self, auth_token):
@@ -542,7 +543,7 @@ class TestTravelPillarJointFriendly:
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
-        return response.json().get("token")
+        return response.json().get("token") or response.json().get("access_token")
     
     @pytest.fixture(scope="class")
     def luna_pet(self, auth_token):
@@ -604,7 +605,7 @@ class TestPetSoulEndpoint:
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
-        return response.json().get("token")
+        return response.json().get("token") or response.json().get("access_token")
     
     @pytest.fixture(scope="class")
     def any_pet(self, auth_token):
