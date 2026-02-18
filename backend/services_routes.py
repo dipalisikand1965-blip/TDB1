@@ -195,6 +195,85 @@ def enrich_ticket_for_frontend(ticket: Dict) -> Dict:
     }
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# SOUL INTEGRATION HELPERS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+async def get_user_recent_intents_for_services(db, user_id: str, pet_id: str = None, hours: int = 48) -> List[Dict]:
+    """
+    Get user's recent LEARN intents for service recommendations.
+    Same shared intent store as LEARN and PICKS - Mira knows!
+    """
+    if db is None or not user_id:
+        return []
+    
+    try:
+        now = datetime.now(timezone.utc)
+        cutoff = now - timedelta(hours=hours)
+        
+        # Resolve email to UUID if needed
+        resolved_user_id = user_id
+        if "@" in user_id:
+            user_doc = await db.users.find_one({"email": user_id}, {"id": 1})
+            if user_doc and user_doc.get("id"):
+                resolved_user_id = user_doc["id"]
+        
+        query = {
+            "user_id": resolved_user_id,
+            "created_at": {"$gte": cutoff}
+        }
+        
+        if pet_id:
+            query["pet_id"] = pet_id
+        
+        intents = await db.user_learn_intents.find(
+            query,
+            {"_id": 0, "topic": 1, "confidence": 1, "created_at": 1}
+        ).sort("created_at", -1).to_list(10)
+        
+        # Dedupe by topic
+        seen = set()
+        unique = []
+        for intent in intents:
+            if intent["topic"] not in seen:
+                seen.add(intent["topic"])
+                unique.append(intent)
+        
+        return unique
+        
+    except Exception as e:
+        logger.error(f"[SERVICES SOUL] Failed to get intents: {e}")
+        return []
+
+
+def get_timely_services_for_intents(intents: List[Dict], pet_name: str) -> List[Dict]:
+    """
+    Generate service recommendations based on recent chat intents.
+    Returns services with 'is_timely' flag and soul-aware 'why_timely' reason.
+    """
+    timely_services = []
+    seen_types = set()
+    
+    for intent in intents:
+        topic = intent.get("topic")
+        mapping = INTENT_TO_SERVICE_MAPPING.get(topic)
+        if not mapping:
+            continue
+        
+        for service_type in mapping["service_types"]:
+            if service_type not in seen_types:
+                seen_types.add(service_type)
+                timely_services.append({
+                    "service_type": service_type,
+                    "is_timely": True,
+                    "timely_badge": "Timely",
+                    "why_timely": f"{pet_name}'s {mapping['why_timely']}",
+                    "matched_topic": topic
+                })
+    
+    return timely_services[:6]  # Max 6 timely services
+
+
 # ============================================
 # ROUTES
 # ============================================
