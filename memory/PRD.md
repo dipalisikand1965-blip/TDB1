@@ -1,6 +1,6 @@
 # Pet Soul - Mira OS Product Requirements Document
 
-**Last Updated:** February 18, 2026 (17:05 UTC)
+**Last Updated:** February 18, 2026 (19:55 UTC)
 
 ---
 
@@ -66,6 +66,31 @@ sudo supervisorctl restart frontend
 ---
 
 ## Recent Changes (Feb 18, 2026)
+
+### ✅ OPTION A REFACTOR - COMPLETED (19:55 UTC)
+**The "One True Flow" for Inbox & Ticket Reply is now implemented:**
+
+1. **No More iframe** - Desktop split view now renders `<TicketThread mode="split" />` directly
+   - URL-driven state with `?ticketId=XXX`
+   - Deep-linking works correctly
+   - Component rendered inline, not in iframe
+
+2. **New Backend Endpoint - THE CANONICAL REPLY ENDPOINT**
+   - `POST /api/member/tickets/:ticketId/reply`
+   - Writes to `service_desk_tickets` FIRST (data spine enforced)
+   - Syncs to `mira_tickets` and `mira_conversations`
+   - Creates `admin_notification` for concierge
+
+3. **"Apple-clear" Reply UX**
+   - Visible Send button (paper plane icon)
+   - `Enter` to send, `Shift+Enter` for newline
+   - Optimistic UI: instant bubble with "Sending..." status
+   - Failure state: "Not sent. Tap to retry."
+
+**Files Changed:**
+- `/app/backend/server.py` - Added new endpoint at lines 14169-14263
+- `/app/frontend/src/pages/NotificationsInbox.jsx` - Removed iframe, renders TicketThread directly
+- `/app/frontend/src/pages/TicketThread.jsx` - Added mode prop, optimistic UI, new reply flow
 
 ### ✅ PICKS Panel Dynamic Shelves - COMPLETED
 - Updated `PersonalizedPicksPanel.jsx` to render new dynamic shelves:
