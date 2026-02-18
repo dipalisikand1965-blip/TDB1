@@ -2,6 +2,8 @@
  * NotificationsInbox - Full-screen iOS Mail-style inbox
  * 
  * Routes: /notifications
+ * Query params: ?view=archive (toggle archived view)
+ *               ?ticketId=XXX (desktop split view - selected ticket)
  * 
  * Features:
  * - Full-screen list (no dropdown)
@@ -12,10 +14,10 @@
  * - Filter sheet: Status, Pet, Type (with active indicator)
  * - iOS Mail-style rows with swipe actions
  * - Dedupe/group repeated events (30-60s window)
- * - Desktop: Split view (list left, thread right)
+ * - Desktop: Split view (list left, thread right) - renders TicketThread inline
  * - Every row opens a ticket thread
  * - Unread count = NotificationEvents (not tickets)
- * - Archived view toggle
+ * - Global Dashboard | Inbox navigation
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
@@ -27,6 +29,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import InboxRow from '../components/Mira/InboxRow';
+import GlobalNav from '../components/Mira/GlobalNav';
+import TicketThread from './TicketThread';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -40,9 +44,8 @@ const TABS = [
 // Group events within time window (60 seconds) for same ticket+type
 const groupEvents = (notifications) => {
   const grouped = [];
-  const ticketGroups = new Map(); // ticket_id-type -> { notif, count, ids }
+  const ticketGroups = new Map();
   
-  // Sort by created_at descending first
   const sorted = [...notifications].sort((a, b) => 
     new Date(b.created_at) - new Date(a.created_at)
   );
@@ -56,7 +59,6 @@ const groupEvents = (notifications) => {
       const currentTime = new Date(notif.created_at);
       const diffSeconds = Math.abs(existingTime - currentTime) / 1000;
       
-      // Group if within 60 second window
       if (diffSeconds < 60) {
         existing.count++;
         existing.ids.push(notif.id);
@@ -64,13 +66,11 @@ const groupEvents = (notifications) => {
       }
     }
     
-    // New group or outside window
     const group = { notif, count: 1, ids: [notif.id] };
     ticketGroups.set(key, group);
     grouped.push(group);
   }
   
-  // Return notifications with group counts
   return grouped.map(g => ({
     ...g.notif,
     groupCount: g.count,
@@ -80,15 +80,19 @@ const groupEvents = (notifications) => {
 
 const NotificationsInbox = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user, token } = useAuth();
+  
+  // URL-based state for archive view and selected ticket
+  const viewArchived = searchParams.get('view') === 'archive';
+  const selectedTicketId = searchParams.get('ticketId');
   
   // State
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('primary');
-  const [petFilter, setPetFilter] = useState('active'); // 'active' | 'all'
+  const [petFilter, setPetFilter] = useState('active');
   const [activePet, setActivePet] = useState(null);
   const [pets, setPets] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -102,15 +106,11 @@ const NotificationsInbox = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   
-  // Archive view state
-  const [viewArchived, setViewArchived] = useState(false);
-  
   // Select mode state
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
   
-  // Desktop split view
-  const [selectedTicketId, setSelectedTicketId] = useState(null);
+  // Desktop detection
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
 
   // Check if any filters are active
@@ -123,19 +123,25 @@ const NotificationsInbox = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Exit select mode when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (selectMode && !e.target.closest('[data-select-area]')) {
-        // Only exit if clicking on backdrop areas
-        if (e.target.closest('[data-exit-select]')) {
-          clearSelection();
-        }
-      }
-    };
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [selectMode]);
+  // Toggle archive view via URL param
+  const toggleArchiveView = () => {
+    const newParams = new URLSearchParams(searchParams);
+    if (viewArchived) {
+      newParams.delete('view');
+    } else {
+      newParams.set('view', 'archive');
+    }
+    newParams.delete('ticketId'); // Clear selected ticket when toggling
+    setSearchParams(newParams);
+    setSelectedIds(new Set());
+  };
+
+  // Select ticket for desktop split view
+  const selectTicket = (ticketId) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('ticketId', ticketId);
+    setSearchParams(newParams);
+  };
 
   // Fetch user's pets
   useEffect(() => {
@@ -172,17 +178,14 @@ const NotificationsInbox = () => {
     try {
       let url = `${API_URL}/api/member/notifications/inbox/${encodeURIComponent(user.email)}?limit=100`;
       
-      // Add archived filter
       if (viewArchived) {
         url += `&archived=true`;
       }
       
-      // Add pet filter
       if (petFilter === 'active' && activePet?.id) {
         url += `&pet_id=${activePet.id}`;
       }
       
-      // Add tab filter
       if (activeTab !== 'all') {
         url += `&category=${activeTab}`;
       }
@@ -198,7 +201,6 @@ const NotificationsInbox = () => {
       
       const data = await response.json();
       setNotifications(data.notifications || []);
-      // Unread count = NotificationEvents count (NOT tickets)
       setUnreadCount(data.unread || 0);
       
     } catch (err) {
@@ -217,7 +219,6 @@ const NotificationsInbox = () => {
   const filteredNotifications = useMemo(() => {
     let filtered = [...notifications];
     
-    // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(n => 
@@ -228,12 +229,10 @@ const NotificationsInbox = () => {
       );
     }
     
-    // Status filter
     if (statusFilter !== 'all') {
       filtered = filtered.filter(n => n.ticket_status === statusFilter);
     }
     
-    // Type filter
     if (typeFilter !== 'all') {
       const typeMap = {
         requests: ['picks_request_received', 'mira_request_received', 'vault_request_received', 'service_request_received', 'experience_request_received', 'concierge_request_received'],
@@ -244,7 +243,6 @@ const NotificationsInbox = () => {
       filtered = filtered.filter(n => typeMap[typeFilter]?.includes(n.type));
     }
     
-    // Group events within 60s window
     return groupEvents(filtered);
   }, [notifications, searchQuery, statusFilter, typeFilter]);
 
@@ -255,7 +253,7 @@ const NotificationsInbox = () => {
       return;
     }
     
-    // Mark as read immediately - this is a NotificationEvent, reduces count by 1
+    // Mark as read immediately
     if (!notification.read) {
       try {
         await fetch(`${API_URL}/api/member/notifications/${notification.id}/read`, {
@@ -266,7 +264,6 @@ const NotificationsInbox = () => {
           }
         });
         
-        // Update local state INSTANTLY
         setNotifications(prev => prev.map(n => 
           n.id === notification.id ? { ...n, read: true } : n
         ));
@@ -280,8 +277,10 @@ const NotificationsInbox = () => {
     const ticketId = notification.ticket_id;
     if (ticketId) {
       if (isDesktop) {
-        setSelectedTicketId(ticketId);
+        // Desktop: update URL param, render inline
+        selectTicket(ticketId);
       } else {
+        // Mobile: navigate to full-screen thread
         navigate(`/tickets/${ticketId}${notification.id ? `?event=${notification.id}` : ''}`);
       }
     }
@@ -307,7 +306,7 @@ const NotificationsInbox = () => {
     setSelectMode(false);
   };
 
-  // Bulk actions using new bulk endpoints
+  // Bulk actions
   const handleBulkMarkRead = async () => {
     const ids = Array.from(selectedIds);
     if (ids.length === 0) return;
@@ -323,7 +322,6 @@ const NotificationsInbox = () => {
       });
       
       if (response.ok) {
-        // Update local state
         const affectedUnread = notifications.filter(n => selectedIds.has(n.id) && !n.read).length;
         setNotifications(prev => prev.map(n => 
           selectedIds.has(n.id) ? { ...n, read: true } : n
@@ -352,7 +350,6 @@ const NotificationsInbox = () => {
       });
       
       if (response.ok) {
-        // Update local state
         const affectedRead = notifications.filter(n => selectedIds.has(n.id) && n.read).length;
         setNotifications(prev => prev.map(n => 
           selectedIds.has(n.id) ? { ...n, read: false } : n
@@ -381,7 +378,6 @@ const NotificationsInbox = () => {
       });
       
       if (response.ok) {
-        // Remove from list (Archive = hide from inbox)
         const affectedUnread = notifications.filter(n => selectedIds.has(n.id) && !n.read).length;
         setNotifications(prev => prev.filter(n => !selectedIds.has(n.id)));
         setUnreadCount(prev => Math.max(0, prev - affectedUnread));
@@ -408,7 +404,6 @@ const NotificationsInbox = () => {
       });
       
       if (response.ok) {
-        // Remove from archived view
         setNotifications(prev => prev.filter(n => !selectedIds.has(n.id)));
       }
     } catch (err) {
@@ -418,7 +413,7 @@ const NotificationsInbox = () => {
     clearSelection();
   };
 
-  // Single row actions (from swipe)
+  // Single row actions
   const handleSingleMarkRead = async (notification) => {
     try {
       await fetch(`${API_URL}/api/member/notifications/${notification.id}/read`, {
@@ -480,14 +475,12 @@ const NotificationsInbox = () => {
     }
   };
 
-  // Get pet name for notification
   const getPetName = (notification) => {
     if (notification.pet_name) return notification.pet_name;
     const pet = pets.find(p => p.id === notification.pet_id);
     return pet?.name || 'General';
   };
 
-  // Reset filters
   const resetFilters = () => {
     setStatusFilter('all');
     setTypeFilter('all');
@@ -497,7 +490,14 @@ const NotificationsInbox = () => {
 
   return (
     <div className="min-h-screen bg-[#0a0a14] flex flex-col">
-      {/* Header */}
+      {/* Global Navigation: Dashboard | Inbox */}
+      <GlobalNav 
+        unreadCount={unreadCount} 
+        activePetName={activePet?.name}
+        onPetClick={() => navigate('/my-pets')}
+      />
+      
+      {/* Inbox Header */}
       <header className="sticky top-0 z-40 bg-[#0d0d1a] border-b border-gray-800/50">
         {/* Select mode header */}
         {selectMode ? (
@@ -541,14 +541,12 @@ const NotificationsInbox = () => {
             </div>
             
             <div className="flex items-center gap-1">
-              {/* Archive/Inbox toggle */}
+              {/* Archive/Inbox toggle - same URL, different view param */}
               <button 
-                onClick={() => {
-                  setViewArchived(!viewArchived);
-                  setSelectedIds(new Set());
-                }}
+                onClick={toggleArchiveView}
                 className={`p-2 rounded-full ${viewArchived ? 'bg-pink-500/20 text-pink-400' : 'hover:bg-gray-800 text-gray-400'}`}
                 data-testid="toggle-archive-view"
+                title={viewArchived ? 'Back to Inbox' : 'View Archive'}
               >
                 {viewArchived ? <Inbox className="w-5 h-5" /> : <Archive className="w-5 h-5" />}
               </button>
@@ -580,7 +578,6 @@ const NotificationsInbox = () => {
                 <RefreshCw className={`w-5 h-5 text-gray-400 ${loading ? 'animate-spin' : ''}`} />
               </button>
               
-              {/* Filter button with active indicator */}
               <button 
                 onClick={() => setShowFilterSheet(true)}
                 className="p-2 rounded-full hover:bg-gray-800 relative"
@@ -640,7 +637,6 @@ const NotificationsInbox = () => {
               ))}
             </div>
             
-            {/* Pet Filter Dropdown */}
             <button
               onClick={() => setPetFilter(petFilter === 'active' ? 'all' : 'active')}
               className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-gray-800/50 text-gray-400 hover:bg-gray-800"
@@ -696,7 +692,7 @@ const NotificationsInbox = () => {
       
       {/* Filter Sheet */}
       {showFilterSheet && (
-        <div className="fixed inset-0 z-50 bg-black/50" onClick={() => setShowFilterSheet(false)} data-exit-select>
+        <div className="fixed inset-0 z-50 bg-black/50" onClick={() => setShowFilterSheet(false)}>
           <div 
             className="absolute bottom-0 left-0 right-0 bg-[#0d0d1a] rounded-t-2xl p-4 max-h-[70vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
@@ -711,7 +707,6 @@ const NotificationsInbox = () => {
               )}
             </div>
             
-            {/* Status Filter */}
             <div className="mb-4">
               <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Status</p>
               <div className="flex flex-wrap gap-2">
@@ -730,7 +725,6 @@ const NotificationsInbox = () => {
               </div>
             </div>
             
-            {/* Type Filter */}
             <div className="mb-4">
               <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Type</p>
               <div className="flex flex-wrap gap-2">
@@ -749,7 +743,6 @@ const NotificationsInbox = () => {
               </div>
             </div>
             
-            {/* Pet Filter */}
             <div className="mb-6">
               <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Pet</p>
               <div className="flex flex-wrap gap-2">
@@ -791,8 +784,8 @@ const NotificationsInbox = () => {
         </div>
       )}
       
-      {/* Content */}
-      <div className="flex-1 flex" data-exit-select>
+      {/* Content - Split View on Desktop */}
+      <div className="flex-1 flex overflow-hidden">
         {/* Inbox List */}
         <div className={`
           flex-1 overflow-y-auto
@@ -822,7 +815,6 @@ const NotificationsInbox = () => {
             <div data-select-area>
               {filteredNotifications.map(notification => (
                 <div key={notification.id} className="flex items-center">
-                  {/* Select checkbox */}
                   {selectMode && (
                     <button
                       onClick={() => toggleSelection(notification.id)}
@@ -840,7 +832,6 @@ const NotificationsInbox = () => {
                     <InboxRow
                       notification={{
                         ...notification,
-                        // Show group count if grouped
                         title: notification.groupCount > 1 
                           ? `${notification.title} (${notification.groupCount})`
                           : notification.title
@@ -853,7 +844,7 @@ const NotificationsInbox = () => {
                       onArchive={viewArchived ? undefined : () => handleSingleArchive(notification)}
                       onUnarchive={viewArchived ? () => handleSingleUnarchive(notification) : undefined}
                       showPetName={petFilter === 'all'}
-                      isSelected={selectedIds.has(notification.id)}
+                      isSelected={selectedIds.has(notification.id) || selectedTicketId === notification.ticket_id}
                       selectMode={selectMode}
                       isArchived={viewArchived}
                     />
@@ -864,14 +855,29 @@ const NotificationsInbox = () => {
           )}
         </div>
         
-        {/* Desktop: Thread Panel */}
+        {/* Desktop: Thread Panel - Render component directly (no iframe) */}
         {isDesktop && selectedTicketId && (
           <div className="flex-1 bg-[#0a0a14] overflow-hidden">
-            <iframe
-              src={`/tickets/${selectedTicketId}?embed=true`}
-              className="w-full h-full border-0"
-              title="Ticket Thread"
+            <TicketThread 
+              ticketIdProp={selectedTicketId} 
+              isEmbedded={true}
+              onClose={() => {
+                const newParams = new URLSearchParams(searchParams);
+                newParams.delete('ticketId');
+                setSearchParams(newParams);
+              }}
             />
+          </div>
+        )}
+        
+        {/* Desktop: Empty state when no ticket selected */}
+        {isDesktop && !selectedTicketId && (
+          <div className="flex-1 bg-[#0a0a14] flex items-center justify-center text-gray-500">
+            <div className="text-center">
+              <Inbox className="w-16 h-16 mx-auto mb-4 opacity-30" />
+              <p className="text-lg">Select a conversation</p>
+              <p className="text-sm mt-1">Choose from the list on the left</p>
+            </div>
           </div>
         )}
       </div>
