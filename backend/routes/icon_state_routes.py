@@ -699,9 +699,11 @@ def compute_icon_state(tab: str, counts: Dict, is_active: bool = False) -> str:
         return "OFF"
     
     elif tab == "learn":
-        if counts.get("pending_insights", 0) > 0:
+        # PULSE: Pending insights OR new timely content matching chat
+        if counts.get("pending_insights", 0) > 0 or counts.get("timely_content", 0) > 0:
             return "PULSE"
-        elif counts.get("learned_facts", 0) > 0:
+        # ON: Has personalized content OR learned facts
+        elif counts.get("has_content", 0) > 0 or counts.get("learned_facts", 0) > 0:
             return "ON"
         return "OFF"
     
