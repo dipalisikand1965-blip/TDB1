@@ -65,7 +65,10 @@ const formatTimestamp = (dateString, prevDateString) => {
 };
 
 // Message bubble component
-const MessageBubble = ({ message, isUser, showTimestamp, isHighlighted = false }) => {
+const MessageBubble = ({ message, isUser, showTimestamp, isHighlighted = false, isPending = false, onRetry }) => {
+  const isSending = message.status === 'sending';
+  const isFailed = message.status === 'failed';
+  
   return (
     <div 
       className={`
@@ -73,15 +76,19 @@ const MessageBubble = ({ message, isUser, showTimestamp, isHighlighted = false }
         ${isHighlighted ? 'animate-highlight' : ''}
       `}
       data-message-id={message.id}
+      data-testid={`message-${message.id}`}
     >
       <div
         className={`
           max-w-[80%] rounded-2xl px-4 py-2.5
           ${isUser
-            ? 'bg-gradient-to-r from-pink-600 to-pink-500 text-white'
+            ? isFailed 
+              ? 'bg-red-900/50 text-white border border-red-500/50'
+              : 'bg-gradient-to-r from-pink-600 to-pink-500 text-white'
             : 'bg-gray-800/80 text-gray-100 border border-gray-700/50'
           }
           ${isHighlighted ? 'ring-2 ring-yellow-400' : ''}
+          ${isSending ? 'opacity-70' : ''}
         `}
       >
         {!isUser && (
@@ -91,11 +98,29 @@ const MessageBubble = ({ message, isUser, showTimestamp, isHighlighted = false }
           </div>
         )}
         <p className="text-sm whitespace-pre-wrap">{message.content || message.text || message.message}</p>
-        {showTimestamp && (
-          <div className={`flex items-center gap-1.5 mt-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
+        
+        {/* Status indicator for optimistic UI */}
+        <div className={`flex items-center gap-1.5 mt-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
+          {isSending && (
+            <span className="text-[10px] opacity-70 flex items-center gap-1">
+              <Loader2 className="w-3 h-3 animate-spin" />
+              Sending...
+            </span>
+          )}
+          {isFailed && (
+            <button 
+              onClick={onRetry}
+              className="text-[10px] text-red-300 flex items-center gap-1 hover:text-red-200"
+              data-testid="retry-message-btn"
+            >
+              <AlertCircle className="w-3 h-3" />
+              Not sent. Tap to retry.
+            </button>
+          )}
+          {!isPending && showTimestamp && (
             <span className="text-[10px] opacity-60">{showTimestamp}</span>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
