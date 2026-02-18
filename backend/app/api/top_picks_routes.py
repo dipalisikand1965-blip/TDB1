@@ -1666,9 +1666,12 @@ async def get_top_picks(
     if not user_id:
         user_id = pet.get("owner_email") or pet.get("owner_id")
     
+    # Get the actual pet_id from the database (not the input parameter which might be a name)
+    actual_pet_id = pet.get("id") or pet.get("name")
+    
     if user_id:
         # Fetch recent intents (last 48 hours)
-        recent_intents = await get_user_recent_intents(db, user_id, pet_id)
+        recent_intents = await get_user_recent_intents(db, user_id, actual_pet_id)
         
         if recent_intents:
             timely_context["enabled"] = True
