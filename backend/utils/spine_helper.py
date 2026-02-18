@@ -203,14 +203,22 @@ async def handoff_to_spine(
     member_name = user.get("name", "")
     member_phone = user.get("phone", "")
     
-    # Extract pet info
+    # Extract pet info (CRITICAL for pet-scoped notifications)
+    pet_id = None
+    pet_name = None
     pet_ids = []
     pet_names = []
+    pet_context = None
+    
     if pet:
-        if pet.get("id"):
-            pet_ids.append(pet["id"])
-        if pet.get("name"):
-            pet_names.append(pet["name"])
+        pet_id = pet.get("id") or pet.get("pet_id")
+        pet_name = pet.get("name") or pet.get("pet_name")
+        if pet_id:
+            pet_ids.append(pet_id)
+        if pet_name:
+            pet_names.append(pet_name)
+        # Store full pet context for personalization
+        pet_context = pet
     
     # Enhance payload with route metadata
     enhanced_payload = {
