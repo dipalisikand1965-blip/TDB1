@@ -18299,7 +18299,14 @@ async def get_personalization_stats(pet_id: str):
     # LEGACY STATS (for backward compatibility)
     # ═══════════════════════════════════════════════════════════════════
     favorites = pet.get("favorites", {})
-    if favorites.get("treats"):
+    # Handle favorites being a list (e.g., ["Belly rubs", "Soft toys"]) or dict
+    if isinstance(favorites, list) and favorites:
+        stats.append({
+            "icon": "🦴",
+            "text": f"{pet_name} loves {favorites[0]}",
+            "type": "favorite"
+        })
+    elif isinstance(favorites, dict) and favorites.get("treats"):
         stats.append({
             "icon": "🦴",
             "text": f"{pet_name} loves {favorites['treats'][0] if isinstance(favorites['treats'], list) else favorites['treats']}",
