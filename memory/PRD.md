@@ -142,6 +142,8 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 - [x] ~~One Spine certification~~ ✅ DONE
 - [x] ~~Notification system fixes~~ ✅ DONE
 - [x] ~~Agent Master Protocol~~ ✅ DONE
+- [x] ~~Notification Deep-Link Fix~~ ✅ DONE (Session 3)
+- [x] ~~Ticket-to-Soul Enrichment~~ ✅ DONE (Session 3)
 - [ ] **Soul-Capture Onboarding** - 8-10 step experience
 
 ### P1 - High Priority
