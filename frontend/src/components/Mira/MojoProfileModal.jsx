@@ -967,14 +967,14 @@ const LearnedFactsContent = memo(({ pet, apiUrl, token, onInsightAction }) => {
       )}
       
       {/* Source Attribution */}
-      {(learnedFacts.length > 0 || pendingCount > 0) && (
+      {(learnedFacts.length > 0 || pendingCount > 0 || hasTicketLearnings) && (
         <div style={{ 
           marginTop: 16, paddingTop: 12, 
           borderTop: '1px solid rgba(255,255,255,0.05)',
           fontSize: 11, color: 'rgba(255,255,255,0.4)'
         }}>
           <Sparkles size={10} style={{ display: 'inline', marginRight: 4 }} />
-          Learned from your conversations with Mira & Concierge®
+          Learned from your conversations with Mira & Service Requests
         </div>
       )}
     </div>
