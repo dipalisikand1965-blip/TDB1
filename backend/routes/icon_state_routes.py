@@ -206,6 +206,7 @@ async def get_unified_tickets(db, user_email: str, pet_ids: List[str] = None) ->
             # Dedupe check - but MERGE key fields if duplicate
             if ticket_id in seen_ticket_ids:
                 stats["duplicates_skipped"] += 1
+                logger.info(f"[SPINE-DEBUG] Duplicate found: {ticket_id}, checking for merge")
                 # ═══════════════════════════════════════════════════════════════════════
                 # SPINE-SYNC: Merge important flags from mira_tickets into existing ticket
                 # This handles the case where concierge replies update mira_tickets
