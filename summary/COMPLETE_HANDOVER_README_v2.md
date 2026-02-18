@@ -47,13 +47,13 @@ OPENWEATHER_API_KEY: 53f54942766320a15584e440644000e3
 
 ## Frontend Environment
 ```
-REACT_APP_BACKEND_URL: https://concierge-fix.preview.emergentagent.com
+REACT_APP_BACKEND_URL: https://inbox-overhaul-1.preview.emergentagent.com
 REACT_APP_RAZORPAY_KEY_ID: rzp_test_1234567890abcdef
 ```
 
 ## Preview URL
 ```
-https://concierge-fix.preview.emergentagent.com
+https://inbox-overhaul-1.preview.emergentagent.com
 ```
 
 ---
