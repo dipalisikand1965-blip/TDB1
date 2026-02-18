@@ -202,8 +202,9 @@ Enriched Pets:
 
 ### Backend
 - `/app/backend/mira_routes.py` - Main chat
-- `/app/backend/mira_service_desk.py` - Service desk, concierge_reply
+- `/app/backend/mira_service_desk.py` - Service desk, concierge_reply, resolve_ticket
 - `/app/backend/utils/service_ticket_spine.py` - Ticket creation
+- `/app/backend/ticket_soul_enrichment.py` - Ticket → Soul auto-enrichment
 
 ### Frontend
 - `/app/frontend/src/pages/MiraDemoPage.jsx` - Main UI
