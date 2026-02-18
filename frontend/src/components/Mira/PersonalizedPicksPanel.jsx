@@ -21,7 +21,7 @@ import {
   ShoppingBag, RefreshCw, Info, Package, ChevronDown, ChevronUp,
   Gift, Cake, Utensils, Stethoscope, Plane, Scissors, GraduationCap,
   Hotel, HeartPulse, Star, AlertCircle, MessageSquare, Shield, Thermometer,
-  Leaf, Zap
+  Leaf, Zap, Clock, CheckCircle
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import hapticFeedback from '../../utils/haptic';
