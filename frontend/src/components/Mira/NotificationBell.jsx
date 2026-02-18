@@ -150,8 +150,21 @@ const NotificationBell = ({ userEmail, petId, petName, className = '' }) => {
         >
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b border-purple-500/20">
-            <h3 className="text-sm font-semibold text-white">Notifications</h3>
+            <h3 className="text-sm font-semibold text-white">
+              Notifications {petName ? `• ${petName}` : ''}
+            </h3>
             <div className="flex items-center gap-2">
+              {/* My Account Link */}
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  window.location.href = '/profile';
+                }}
+                className="p-1 rounded hover:bg-white/10"
+                title="My Account"
+              >
+                <User size={14} className="text-purple-400" />
+              </button>
               {unreadCount > 0 && (
                 <button
                   onClick={markAllRead}
