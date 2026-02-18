@@ -590,20 +590,31 @@ async def get_learn_home(
         {"_id": 0}
     ).to_list(50)
     
-    # Score and sort content by relevance (with safety rules)
+    # Score and sort content by relevance (with safety rules + intent boost)
     scored_content = []
+    intent_matched_items = set()  # Track items boosted by conversation context
+    
     for guide in all_guides:
         score, primary_tag = calculate_relevance_score(
             guide, pet_tags, breed_tags, 
             topic=guide.get("topic"),
             user_feedback=user_feedback
         )
+        
+        # Apply intent boost from recent conversation
+        intent_boost, matched_intent = calculate_intent_boost(guide, recent_intents)
+        if intent_boost > 0:
+            score += intent_boost
+            intent_matched_items.add(guide.get("id"))
+            logger.info(f"[LEARN HOME] Intent boost +{intent_boost} for guide '{guide.get('title')}' (matched: {matched_intent.get('topic')})")
+        
         scored_content.append({
             "item": guide,
             "type": "guide",
             "score": score,
             "primary_tag": primary_tag,
-            "is_featured": guide.get("is_featured", False)
+            "is_featured": guide.get("is_featured", False),
+            "intent_matched": guide.get("id") in intent_matched_items
         })
     
     for video in all_videos:
@@ -612,12 +623,21 @@ async def get_learn_home(
             topic=video.get("topic"),
             user_feedback=user_feedback
         )
+        
+        # Apply intent boost from recent conversation
+        intent_boost, matched_intent = calculate_intent_boost(video, recent_intents)
+        if intent_boost > 0:
+            score += intent_boost
+            intent_matched_items.add(video.get("id"))
+            logger.info(f"[LEARN HOME] Intent boost +{intent_boost} for video '{video.get('title')}' (matched: {matched_intent.get('topic')})")
+        
         scored_content.append({
             "item": video,
             "type": "video",
             "score": score,
             "primary_tag": primary_tag,
-            "is_featured": video.get("is_featured", False)
+            "is_featured": video.get("is_featured", False),
+            "intent_matched": video.get("id") in intent_matched_items
         })
     
     # Sort by relevance score (descending), then by sort_rank
