@@ -1506,6 +1506,7 @@ const PersonalizedPicksPanel = ({
                   )}
                 </div>
               </div>
+              </div>
             )}
             
             {/* Empty state - shows if no picks and not loading */}
