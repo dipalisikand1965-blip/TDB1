@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-ticketing.preview.emergentagent.com
+https://mira-soul-learn.preview.emergentagent.com
 ```
 
 ---
