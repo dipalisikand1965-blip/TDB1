@@ -179,7 +179,7 @@ const ConciergeButton = ({
   
   // Size configurations
   const sizeConfig = {
-    small: { button: 'w-10 h-10', text: 'text-sm', badge: 'w-4 h-4 text-[9px]' },
+    small: { button: 'w-11 h-11', text: 'text-sm', badge: 'w-4 h-4 text-[9px]' },
     default: { button: 'w-14 h-14', text: 'text-lg', badge: 'w-5 h-5 text-[10px]' },
     large: { button: 'w-16 h-16', text: 'text-xl', badge: 'w-6 h-6 text-xs' }
   };
@@ -209,7 +209,7 @@ const ConciergeButton = ({
         <button
           onClick={handleOpen}
           disabled={loading}
-          className={`w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors relative ${className}`}
+          className={`w-11 h-11 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors relative ${className}`}
           data-testid="concierge-button-header"
           title="Chat with Concierge®"
         >

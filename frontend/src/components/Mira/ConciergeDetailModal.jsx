@@ -108,7 +108,7 @@ const ConciergeDetailModal = ({
             {/* Close button */}
             <button
               onClick={handleClose}
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-900/80 text-white flex items-center justify-center hover:bg-gray-800 transition-all active:scale-90"
+              className="absolute top-4 right-4 w-11 h-11 rounded-full bg-gray-900/80 text-white flex items-center justify-center hover:bg-gray-800 transition-all active:scale-90"
             >
               <X className="w-5 h-5" />
             </button>
