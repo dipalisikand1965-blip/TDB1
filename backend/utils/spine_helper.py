@@ -243,6 +243,9 @@ async def handoff_to_spine(
             intent_type=intent_type,
             member_email=member_email,
             member_name=member_name,
+            pet_id=pet_id,              # SINGULAR - Primary pet
+            pet_name=pet_name,          # SINGULAR - Primary pet name
+            pet_context=pet_context,    # Full pet data
             pet_ids=pet_ids,
             pet_names=pet_names,
             pillar=normalized_pillar,
