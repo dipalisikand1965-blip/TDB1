@@ -11188,6 +11188,29 @@ async def mira_chat(
         except Exception as insight_err:
             logger.warning(f"[INSIGHTS] Extraction error: {insight_err}")
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # LEARN INTENT BRIDGE - Track conversation topics for LEARN personalization
+    # This enables "Based on your chat" contextual content in LEARN
+    # ═══════════════════════════════════════════════════════════════════════════
+    if db is not None and user and selected_pet:
+        try:
+            from learn_intent_bridge import process_chat_for_learn_intents
+            user_id = user.get("user_id") or user.get("email")
+            pet_id = selected_pet.get("id")
+            
+            if user_id and pet_id:
+                intent_result = await process_chat_for_learn_intents(
+                    db=db,
+                    user_id=user_id,
+                    pet_id=pet_id,
+                    user_message=user_message,
+                    pillar=None  # Will be set later after pillar detection
+                )
+                if intent_result.get("topics_found"):
+                    logger.info(f"[LEARN BRIDGE] Captured intents for LEARN: {intent_result['topics_found']}")
+        except Exception as learn_intent_err:
+            logger.warning(f"[LEARN BRIDGE] Intent capture error: {learn_intent_err}")
+    
     # FALLBACK: If no selected_pet but pet_context provided in request, use it
     if not selected_pet and request.pet_context:
         selected_pet = request.pet_context
