@@ -2071,6 +2071,622 @@ Add to Debug Drawer (when URL has `debug=1`):
 
 ---
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 11.2: QUICK REPLIES CONTRACT
+# Deterministic Chips, Zero Guesswork (This Is Law)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+## 11.2.1 Purpose
+
+Quick Replies are **not decoration**. They are the OS's **deterministic steering wheel**.
+
+They:
+- **Reduce user effort**
+- **Prevent the system from "assuming"**
+- **Make the UI fully contract-driven** (no inference from free text)
+
+## 11.2.2 Hard Rules
+
+1. **Every assistant turn** returns `conversation_contract`
+2. **UI renders only from:**
+   - `conversation_contract.mode`
+   - `quick_replies[]`
+   - `actions[]`
+   - `places_results` / `youtube_results` when applicable
+3. **No Places call** without consent or area
+4. **Chip text is short.** Chip payload is complete.
+5. **`create_ticket` chips** must call the spine (`create_or_attach_service_ticket()` / `handoff_to_spine()`)
+
+## 11.2.3 Contract Schema (Backend → Frontend)
+
+### Required Minimum
+```json
+{
+  "conversation_contract": {
+    "mode": "answer | clarify | places | learn | ticket | handoff",
+    "assistant_message_id": "MSG-YYYYMMDD-NNNNN",
+    "quick_replies": [],
+    "actions": []
+  }
+}
+```
+
+### Full Quick Reply Object (v1)
+```json
+{
+  "id": "QR-001",
+  "label": "Use current location",
+  "payload_text": "Use my current location.",
+  "intent_type": "consent_location",
+  "action": "none | send_message | set_state | open_layer | create_ticket",
+  "action_args": {},
+  "analytics_tag": "qr.location.use_current",
+  "safety": {
+    "requires_consent": true,
+    "consent_key": "geo_location"
+  }
+}
+```
+
+### Field Constraints
+
+| Field | Constraint |
+|-------|------------|
+| `label` | 1–4 words |
+| `payload_text` | Complete sentence, ends in punctuation |
+| `intent_type` | Must be from enum (see 11.2.4) |
+| `action` | Must be from enum (see 11.2.5) |
+| `analytics_tag` | Required, stable |
+| `safety.requires_consent` | `true` only for location/phone/notifications |
+
+## 11.2.4 `intent_type` Enum (v1)
+
+Allowed values only:
+
+| intent_type | Description |
+|-------------|-------------|
+| `answer_option` | Multiple choice answer |
+| `time_window` | Time selection |
+| `location_area` | Area/neighborhood selection |
+| `consent_location` | Geo permission request |
+| `scope` | Scope refinement |
+| `detail_request` | Request more details |
+| `handoff_concierge` | Hand to concierge |
+| `continue_flow` | Continue current flow |
+| `cancel` | Cancel/defer |
+| `open_services` | Navigate to services |
+| `open_picks` | Navigate to picks |
+| `open_today` | Navigate to today |
+| `open_learn` | Navigate to learn |
+| `emergency_triage` | Triage question |
+| `emergency_go_now` | Immediate escalation |
+
+## 11.2.5 `action` Enum (v1)
+
+| action | Description |
+|--------|-------------|
+| `none` | Chip sends `payload_text` as a normal user message |
+| `send_message` | Same, but explicitly logged as chip send |
+| `set_state` | Client state change, e.g., `request_geo_permission=true` |
+| `open_layer` | Opens overlay: services \| picks \| today \| learn \| concierge |
+| `create_ticket` | Calls spine and returns canonical `TCK-YYYY-NNNNNN` |
+
+## 11.2.6 `action_args` Schemas
+
+### A) `open_layer`
+```json
+{ "layer": "services" }
+```
+
+### B) `set_state`
+```json
+{ "key": "request_geo_permission", "value": true }
+```
+
+### C) `create_ticket`
+```json
+{
+  "pillar": "care | celebrate | travel | fit | learn | paperwork | emergency | support | shop",
+  "category": "grooming | vet_visit | boarding | birthday | whatsapp_inquiry | order | ...",
+  "pet_id": "PET-xxxx",
+  "summary": "Book grooming for Lola tomorrow evening",
+  "source": { "channel": "web", "surface": "chat", "origin": "quick_reply" }
+}
+```
+
+## 11.2.7 Chip Requirements by Mode
+
+### `clarify` Mode
+- Must return **3–6 chips**
+- Minimum **2 meaningful choices**
+- **1 cancel / not now**
+- **Never ask more than one question per turn**
+
+### `places` Mode
+- Must return **3–6 chips**
+- At least **1 refine** (e.g., "Open now")
+- At least **1 change area** (e.g., "Change area")
+- **Never show Places without:**
+  - An explicit area, OR
+  - Explicit location consent granted
+
+### `learn` Mode
+- Must return **3–6 chips**
+- "Show me 3 more"
+- "Make this a plan"
+- "Ask Concierge" (if execution is needed)
+
+### `ticket` / `handoff` Mode
+- Must return **3–6 chips**
+- "Open request" (`create_ticket`)
+- "Add 1 detail"
+- "View in Services" (`open_layer`)
+
+## 11.2.8 Canonical Consent Gate (Near Me)
+
+**If user says:** "pet cafe near me" and no permission yet
+
+**Backend returns** `mode="clarify"` with two primary chips:
+1. **Use current location** (requests permission)
+2. **Type an area** (no permission required)
+
+```json
+{
+  "mode": "clarify",
+  "quick_replies": [
+    {
+      "id": "QR-LOC-01",
+      "label": "Use current location",
+      "payload_text": "Use my current location.",
+      "intent_type": "consent_location",
+      "action": "set_state",
+      "action_args": { "key": "request_geo_permission", "value": true },
+      "analytics_tag": "qr.location.use_current",
+      "safety": { "requires_consent": true, "consent_key": "geo_location" }
+    },
+    {
+      "id": "QR-LOC-02",
+      "label": "Type an area",
+      "payload_text": "I'll type the area.",
+      "intent_type": "location_area",
+      "action": "none",
+      "action_args": {},
+      "analytics_tag": "qr.location.type_area",
+      "safety": { "requires_consent": false }
+    }
+  ]
+}
+```
+
+**Client behavior:**
+- If permission granted: send "Use my current location." + attach lat/lng metadata
+- **Only then** may backend return `mode="places"`
+
+## 11.2.9 Analytics Tag Convention
+
+**Format:** `qr.{domain}.{verb}.{object}`
+
+**Examples:**
+- `qr.location.use_current`
+- `qr.location.type_area`
+- `qr.ticket.open_request`
+- `qr.nav.services`
+- `qr.places.refine.open_now`
+
+## 11.2.10 QA Checklist (Quick Replies)
+
+- [ ] Every response includes `conversation_contract.mode`
+- [ ] `clarify` always has 3–6 chips
+- [ ] Places never called before consent/area
+- [ ] Ticket chips always return canonical `TCK-YYYY-NNNNNN`
+- [ ] Chips never disappear due to frontend inference; only contract drives UI
+
+---
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 11.3: COPY-PASTE CHIP SETS (Per Pillar + Per Mode)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+## Rules
+
+1. **Default 3–6 chips**
+2. **Chips must be real choices**, not filler
+3. **One chip set per turn** - don't mix two different decisions in one set
+4. `label` is short; `payload_text` is complete
+5. If execution is needed, include **"Open request"** or **"View in Services"**
+
+---
+
+## 11.3.1 Global Utility Chips (Use Anywhere)
+
+### Navigation
+| Label | Action | Payload |
+|-------|--------|---------|
+| View in Services | `open_layer(services)` | "Open Services." |
+| See Picks | `open_layer(picks)` | "Show Picks." |
+| Open Today | `open_layer(today)` | "Open Today." |
+| Open Learn | `open_layer(learn)` | "Open Learn." |
+
+### Cancel / Defer
+| Label | Payload |
+|-------|---------|
+| Not now | "Not now." |
+| Change topic | "Let's switch topics." |
+| Start over | "Start a fresh chat." |
+
+### Confirmation / Yes-No
+| Label | Payload |
+|-------|---------|
+| Yes | "Yes." |
+| No | "No." |
+| Not sure | "I'm not sure." |
+
+### Execution
+| Label | Action | Payload |
+|-------|--------|---------|
+| Open request | `create_ticket(...)` | "Open a request for this." |
+
+---
+
+## 11.3.2 LOCATION CONSENT SETS (Places Gate)
+
+### A) "Near me" with no consent
+**Mode:** `clarify`
+
+| Label | Action | Payload |
+|-------|--------|---------|
+| Use current location | `set_state(request_geo_permission=true)` | "Use my current location." |
+| Type an area | `none` | "I'll type the area." |
+| Not now | `none` | "Not now." |
+
+### B) Area selection follow-up
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| Koramangala | "Koramangala, Bengaluru." |
+| Indiranagar | "Indiranagar, Bengaluru." |
+| HSR | "HSR Layout, Bengaluru." |
+| Whitefield | "Whitefield, Bengaluru." |
+| Other area | "I'll type a different area." |
+
+### C) Places refine chips
+**Mode:** `places`
+
+| Label | Payload |
+|-------|---------|
+| Open now | "Show only places open now." |
+| Top rated | "Show top rated places." |
+| Closest | "Show closest places." |
+| Change area | "I want a different area." |
+| Open request | "Open a request for this." |
+
+---
+
+## 11.3.3 SERVICES / TICKETING SETS
+
+### When a request is opened (post-ticket)
+**Mode:** `ticket`
+
+| Label | Action | Payload |
+|-------|--------|---------|
+| View in Services | `open_layer(services)` | "Open Services." |
+| Add one detail | `none` | "I want to add one detail." |
+| Change timing | `none` | "I want to change the time." |
+| Cancel request | `none` | "Cancel this request." |
+| Not now | `none` | "Not now." |
+
+### ReplyNudge (user types in Chat but should reply in Services)
+**Mode:** `clarify`
+
+| Label | Action | Payload |
+|-------|--------|---------|
+| Reply in Services | `open_layer(services)` | "Open Services." |
+| Add detail here | `none` | "I'll add the detail here." |
+| Not now | `none` | "Not now." |
+
+---
+
+## 11.3.4 CELEBRATE (Birthday / Party / Milestone)
+
+### A) Birthday planning first question (location)
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| At home | "At home." |
+| Pet café | "At a pet café." |
+| Garden/outdoor | "In a garden or outdoor space." |
+| Hotel staycation | "A hotel staycation." |
+| Not sure | "I'm not sure yet." |
+
+### B) Party size
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| Just us | "Just us, no other dogs." |
+| Small (under 6 pups) | "Small, under 6 pups." |
+| Medium (6–12) | "Medium, 6 to 12 pups." |
+| Big party | "A big party with lots of dogs." |
+| Not sure | "I'm not sure yet." |
+
+### C) Execution options (handoff-ready)
+**Mode:** `ticket` or `handoff`
+
+| Label | Payload |
+|-------|---------|
+| Custom cake | "I want a custom cake." |
+| Photographer | "I want a photographer." |
+| Party setup | "I want party setup help." |
+| Invites & RSVPs | "Help me with invites and RSVPs." |
+| Open request | "Open a request for this." |
+
+---
+
+## 11.3.5 CARE (Vet / Health / Grooming / Boarding)
+
+### A) Find a vet
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| General check-up | "General check-up." |
+| Emergency vet | "Emergency vet." |
+| Dermatology | "Skin or dermatology." |
+| Dental | "Dental care." |
+| Not sure | "I'm not sure what I need." |
+
+### B) Grooming booking
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| Tomorrow | "Tomorrow." |
+| This weekend | "This weekend." |
+| Pick a date | "I'll pick a specific date." |
+| Morning | "Morning slot." |
+| Evening | "Evening slot." |
+
+### C) Boarding preference
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| Home boarding | "Home boarding with a host family." |
+| Kennel | "A kennel or boarding facility." |
+| Pet sitter at home | "A pet sitter at my home." |
+| Day care | "Day care." |
+| Not sure | "I'm not sure yet." |
+
+### D) Vaccine / paperwork prompt
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| I have records | "I have the records." |
+| Need help finding records | "I need help finding records." |
+| Book a vet visit | "Book a vet visit." |
+| Not now | "Not now." |
+
+---
+
+## 11.3.6 EMERGENCY (Triage vs Go-Now)
+
+### A) Triage-first (no toxin keyword yet)
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| Under 30 mins | "Under 30 minutes ago." |
+| 1–3 hours | "1 to 3 hours ago." |
+| Since yesterday | "Since yesterday." |
+| Not sure | "I'm not sure when." |
+| Go to vet now | "I want to go to the vet now." |
+
+### B) "What did they eat?" selector (fast triage)
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| Chocolate | "Chocolate." |
+| Medicine | "Medicine or pills." |
+| Grapes/raisins | "Grapes or raisins." |
+| Plant | "A plant." |
+| Not sure | "I'm not sure what." |
+
+### C) Symptoms check (single turn)
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| Vomiting | "Vomiting." |
+| Diarrhoea | "Diarrhoea." |
+| Lethargic | "Acting lethargic." |
+| Normal right now | "Acting normal right now." |
+| Breathing issue | "Having trouble breathing." |
+
+**Note:** "Breathing issue" routes to **GO_NOW**
+
+---
+
+## 11.3.7 TRAVEL (Pet travel / cab / flight / stay)
+
+### A) Trip type
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| Car trip | "A car trip." |
+| Flight | "Flying." |
+| Train | "Train travel." |
+| Staycation | "A staycation nearby." |
+| Not sure | "I'm not sure yet." |
+
+### B) When
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| Today | "Today." |
+| Tomorrow | "Tomorrow." |
+| This weekend | "This weekend." |
+| Pick a date | "I'll pick a specific date." |
+| Not sure | "I'm not sure when." |
+
+### C) Execution
+**Mode:** `ticket`
+
+| Label | Payload |
+|-------|---------|
+| Open request | "Open a request for this." |
+| Add pet details | "I want to add pet details." |
+| Need checklist | "I need a travel checklist." |
+| Book transport | "Book transport." |
+| View in Services | "Open Services." |
+
+---
+
+## 11.3.8 LEARN (Training / How-to)
+
+### A) Training topic
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| Recall | "Recall training." |
+| Loose leash | "Loose leash walking." |
+| Toilet training | "Toilet training." |
+| Barking | "Stop barking." |
+| Separation anxiety | "Separation anxiety." |
+
+### B) Learn results actions
+**Mode:** `learn`
+
+| Label | Payload |
+|-------|---------|
+| Show 3 more | "Show me 3 more." |
+| Make a 7-day plan | "Make this a 7-day plan." |
+| Save this | "Save this for later." |
+| Ask Concierge | "Ask Concierge for help." |
+| Not now | "Not now." |
+
+### C) Trainer execution handoff
+**Mode:** `ticket`
+
+| Label | Payload |
+|-------|---------|
+| Book a trainer | "Book a trainer." |
+| In-home | "I prefer in-home training." |
+| Group class | "I prefer a group class." |
+| Weekend | "Weekend availability." |
+| View in Services | "Open Services." |
+
+---
+
+## 11.3.9 PICKS (Two-rail decision support)
+
+### A) When Picks exist (browse)
+**Mode:** `answer` or `picks`
+
+| Label | Payload |
+|-------|---------|
+| Show Picks | "Show me Picks." |
+| Filter by Treats | "Show treats." |
+| Filter by Toys | "Show toys." |
+| Filter by Grooming | "Show grooming products." |
+| Open request | "Open a request for something specific." |
+
+### B) When catalogue fails (concierge fallback)
+**Mode:** `handoff`
+
+| Label | Payload |
+|-------|---------|
+| Open request | "Open a request for this." |
+| Tell me budget | "I'll share my budget." |
+| Tell me timing | "I'll share timing." |
+| Share allergies | "Let me share allergies." |
+| Not now | "Not now." |
+
+---
+
+## 11.3.10 PAPERWORK (Insurance / Vet certificates / Admin)
+
+### A) Insurance request
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| New policy | "I want a new policy." |
+| Claim help | "I need help with a claim." |
+| Compare plans | "Compare plans for me." |
+| Upload document | "I'll upload a document." |
+| Not sure | "I'm not sure what I need." |
+
+### B) Document collection
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| Vaccination record | "Vaccination record." |
+| Microchip | "Microchip certificate." |
+| Prescription | "Prescription." |
+| Invoice | "Invoice or receipt." |
+| Not sure | "I'm not sure which document." |
+
+### C) Execution
+**Mode:** `ticket`
+
+| Label | Payload |
+|-------|---------|
+| Open request | "Open a request for this." |
+| Upload now | "I'll upload now." |
+| Remind me later | "Remind me later." |
+| View in Services | "Open Services." |
+| Not now | "Not now." |
+
+---
+
+## 11.3.11 SUPPORT (WhatsApp / App help / Account)
+
+### A) Account help
+**Mode:** `clarify`
+
+| Label | Payload |
+|-------|---------|
+| Login issue | "I have a login issue." |
+| Payment | "Payment problem." |
+| Notifications | "Notification settings." |
+| Orders | "Order status." |
+| Other | "Something else." |
+
+### B) WhatsApp handoff
+**Mode:** `ticket`
+
+| Label | Payload |
+|-------|---------|
+| Open support request | "Open a support request." |
+| Share screenshot | "I'll share a screenshot." |
+| Call me | "Please call me." |
+| View in Services | "Open Services." |
+| Not now | "Not now." |
+
+---
+
+## 11.3.12 QA: Chip Library Regression Tests
+
+**Run these after any change:**
+
+| Test | Expected Chips |
+|------|----------------|
+| "Pet café near me" | Must show consent chips first |
+| "Book grooming tomorrow" | Must offer time chips + Open request |
+| "Plan birthday" | Must offer location chips first |
+| "How to train recall" | Must show learn chips + "Show 3 more" |
+| "I'm scared, she ate something" | Must show triage chips (what + when) |
+
+---
+
 # APPENDIX A: QUICK REFERENCE TABLES
 
 ## A.1 Layer → BACK Behavior
