@@ -341,8 +341,8 @@ class TestVoiceRules:
                 f"{BASE_URL}/api/mira/chat",
                 json={
                     "message": prompt,
-                    "pet_id": TEST_PET_ID,
-                    "pet_name": TEST_PET_NAME
+                    "selected_pet_id": TEST_PET_ID,
+                    "debug": True
                 }
             )
             
@@ -375,8 +375,8 @@ class TestVoiceRules:
             f"{BASE_URL}/api/mira/chat",
             json={
                 "message": "I'm worried about Lola not eating well",
-                "pet_id": TEST_PET_ID,
-                "pet_name": TEST_PET_NAME
+                "selected_pet_id": TEST_PET_ID,
+                "debug": True
             }
         )
         
@@ -419,8 +419,8 @@ class TestEmergencyTriage:
             f"{BASE_URL}/api/mira/chat",
             json={
                 "message": "I'm scared, Lola ate something weird",
-                "pet_id": TEST_PET_ID,
-                "pet_name": TEST_PET_NAME
+                "selected_pet_id": TEST_PET_ID,
+                "debug": True
             }
         )
         
@@ -462,8 +462,8 @@ class TestEmergencyTriage:
             f"{BASE_URL}/api/mira/chat",
             json={
                 "message": "Lola ate a lot of chocolate!",
-                "pet_id": TEST_PET_ID,
-                "pet_name": TEST_PET_NAME
+                "selected_pet_id": TEST_PET_ID,
+                "debug": True
             }
         )
         
