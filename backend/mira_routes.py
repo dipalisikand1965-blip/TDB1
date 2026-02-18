@@ -12354,6 +12354,19 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
         if any(extracted_contact.values()):
             await update_ticket_member_info(session_id, extracted_contact)
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # 3.5 CHECK FOR ACTIVE CONVERSATION FLOWS (before pillar re-routing)
+    # If we're in an active multi-step flow (celebrate, travel, etc.), 
+    # stay in that flow instead of re-routing based on message content
+    # ═══════════════════════════════════════════════════════════════════════════
+    if existing_ticket:
+        active_celebrate_stage = existing_ticket.get("ai_context", {}).get("celebrate_stage")
+        
+        if active_celebrate_stage and active_celebrate_stage in ["location", "size"]:
+            # Force pillar back to celebrate to continue the flow
+            logger.info(f"[CELEBRATE-FLOW] Continuing celebrate flow, stage={active_celebrate_stage}")
+            pillar = "celebrate"
+    
     # 4. Handle FAREWELL/GRIEF with COMFORT mode - before emergency check
     if pillar == "farewell":
         # Check if user said they're "not ready"
