@@ -271,3 +271,57 @@ async def sync_status():
             "GET /api/admin/sync/status"
         ]
     }
+
+
+@sync_router.post("/enrich-from-tickets/{pet_id}")
+async def enrich_soul_from_tickets(pet_id: str, token: str = None):
+    """
+    Manually trigger Soul enrichment from ALL resolved tickets for a pet.
+    Useful for backfilling existing tickets.
+    """
+    await verify_sync_token(token)
+    
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    try:
+        from ticket_soul_enrichment import manually_enrich_from_all_tickets
+        result = await manually_enrich_from_all_tickets(db, pet_id)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@sync_router.post("/test-enrichment/{ticket_id}")
+async def test_enrichment(ticket_id: str, token: str = None):
+    """
+    Test enrichment extraction on a specific ticket without persisting.
+    """
+    await verify_sync_token(token)
+    
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    try:
+        from ticket_soul_enrichment import extract_learnings_from_ticket
+        
+        # Fetch ticket
+        ticket = await db.mira_conversations.find_one({"ticket_id": ticket_id})
+        if not ticket:
+            ticket = await db.mira_tickets.find_one({"ticket_id": ticket_id})
+        
+        if not ticket:
+            raise HTTPException(status_code=404, detail=f"Ticket {ticket_id} not found")
+        
+        learnings = extract_learnings_from_ticket(ticket)
+        
+        return {
+            "ticket_id": ticket_id,
+            "pet_id": ticket.get("pet_id"),
+            "pet_name": ticket.get("pet_name"),
+            "learnings": learnings
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
