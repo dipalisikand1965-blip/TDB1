@@ -1553,7 +1553,7 @@ const PersonalizedPicksPanel = ({
                     {
                       name: `${pet?.name}'s Special ${PILLARS.find(p => p.id === activePillar)?.name || 'Experience'}`,
                       description: `Tell us what you're looking for - we'll source it, vet it, and arrange everything.`,
-                      cta: 'Let's Arrange'
+                      cta: "Let's Arrange"
                     },
                     {
                       name: 'Something Else in Mind?',
