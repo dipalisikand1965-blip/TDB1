@@ -40,6 +40,30 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 
 ---
 
+## 🔧 MOJO Bible Gap Analysis - February 2026
+
+**Overall MOJO Score: 77/100**
+
+### Gaps Fixed This Session:
+
+| Gap | Status | Fix |
+|-----|--------|-----|
+| **P0: Banned Opener Filter** | ✅ FIXED | Post-processing filter removes "Great idea!", "I'd be happy to" etc. |
+| **P0: PICKS Concierge Fallback** | ✅ FIXED | Shows "Concierge Arranges" cards instead of empty state |
+| **P1: Icon State System** | ✅ VERIFIED | Already implemented in `useIconState.js` |
+
+### Files Modified:
+- `/app/backend/mira_routes.py` - Added `filter_banned_openers()` function
+- `/app/frontend/src/components/Mira/PersonalizedPicksPanel.jsx` - Concierge fallback UI
+
+### Remaining Gaps (Not Yet Addressed):
+- P0: Emergency Two-Tier Triage (partially implemented, needs testing)
+- P1: Weight History Timeline
+- P1: Training History & Progress Notes
+- P1: Climate Field & Seasonal Risks
+
+---
+
 ## Current System Status
 
 | System | Status |
@@ -49,6 +73,8 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 | Ticket-to-Soul Enrichment | ✅ COMPLETE |
 | LEARN Tab | ✅ WORKING |
 | Soul Integration (LEARN/PICKS/SERVICES) | ✅ COMPLETE |
+| Banned Opener Filter | ✅ IMPLEMENTED |
+| PICKS Concierge Fallback | ✅ IMPLEMENTED |
 
 ---
 
@@ -58,6 +84,8 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 - [x] ~~Soul Integration - LEARN~~ ✅
 - [x] ~~Soul Integration - PICKS~~ ✅
 - [x] ~~Soul Integration - SERVICES~~ ✅
+- [x] ~~Banned Opener Filter~~ ✅
+- [x] ~~PICKS Concierge Fallback~~ ✅
 - [ ] **UI: "Test Scenarios" Panel** - Move to bottom sheet
 - [ ] **UI: "Concierge Replied" Banner** - Compact banner
 
@@ -65,13 +93,17 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 - [ ] **TODAY Soul Integration** - Contextual TODAY content
 - [ ] **"All pets" toggle** in notifications
 - [ ] **Soul-Capture Onboarding** - 8-10 steps
+- [ ] **Emergency Two-Tier Triage** - Full testing
 
 ### P2 - Medium Priority
 - [ ] WhatsApp Webhook Idempotency
 - [ ] Legacy Ticket Migration
+- [ ] Weight History Timeline
+- [ ] Training History & Progress Notes
 
 ### P3 - Backlog
 - [ ] Refactor monoliths
+- [ ] Climate Field & Seasonal Risks
 
 ---
 
