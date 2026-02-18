@@ -405,7 +405,34 @@ async def create_experience_request(request: ConciergeExperienceRequest):
     await db.channel_intakes.insert_one({k: v for k, v in inbox_entry.items() if k != "_id"})
     logger.info(f"[UNIFIED FLOW] Concierge inbox created: {inbox_id}")
     
-    logger.info(f"[UNIFIED FLOW] COMPLETE: Concierge {request_id} | Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id})")
+    # ==================== STEP 4: MEMBER NOTIFICATION (MANDATORY) ====================
+    # User must see confirmation in their notification bell
+    if request.user_email:
+        try:
+            member_notification_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
+            member_notification = {
+                "id": member_notification_id,
+                "type": "experience_request_received",
+                "title": f"Request Received: {request.experience_title}",
+                "message": f"Your {pillar_title} request for {pet_name} has been sent to Concierge®. We'll get back to you soon!",
+                "pet_name": pet_name,
+                "user_email": request.user_email.lower(),
+                "ticket_id": ticket_id,
+                "request_id": request_id,
+                "pillar": request.pillar,
+                "read": False,
+                "created_at": now_iso,
+                "data": {
+                    "thread_url": f"/mira-demo?tab=services&thread={ticket_id}",
+                    "experience_title": request.experience_title
+                }
+            }
+            await db.member_notifications.insert_one(member_notification)
+            logger.info(f"[UNIFIED FLOW] Member notification created: {member_notification_id}")
+        except Exception as notif_error:
+            logger.error(f"[UNIFIED FLOW] Failed to create member notification: {notif_error}")
+    
+    logger.info(f"[UNIFIED FLOW] COMPLETE: Concierge {request_id} | Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id}) → MemberNotif")
     
     return {
         "success": True,
