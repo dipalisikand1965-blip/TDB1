@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://celebrate-pillar-fix.preview.emergentagent.com
+https://mira-ticketing.preview.emergentagent.com
 ```
 
 ---

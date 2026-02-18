@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://celebrate-pillar-fix.preview.emergentagent.com` |
+| **Preview** | `https://mira-ticketing.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |
