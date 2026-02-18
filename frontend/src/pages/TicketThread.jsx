@@ -419,7 +419,7 @@ const TicketThread = ({ ticketIdProp, isEmbedded = false, onClose }) => {
   }
 
   return (
-    <div className={`min-h-screen bg-[#0a0a14] flex flex-col`}>
+    <div className={`${isEmbed ? 'h-full' : 'min-h-screen'} bg-[#0a0a14] flex flex-col`}>
       {/* CSS for highlight animation - more visible pulse */}
       <style>{`
         @keyframes highlightPulse {
