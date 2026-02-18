@@ -4642,7 +4642,7 @@ const MiraDemoPage = () => {
                 
                 const confirmationMessage = {
                   type: 'mira',
-                  content: `Your ${data.count} personalized pick${data.count > 1 ? 's' : ''} for ${data.petName} have been sent to your Concierge! They're reviewing your selections now and will get back to you shortly to help arrange everything. Is there anything else I can help you with?`,
+                  content: `Your ${data.count} personalized pick${data.count > 1 ? 's' : ''} for ${data.petName} have been sent to your Concierge®! They're reviewing your selections now and will get back to you shortly to help arrange everything. Is there anything else I can help you with?`,
                   timestamp: new Date().toISOString(),
                   metadata: {
                     type: 'picks_confirmation',
