@@ -11218,6 +11218,49 @@ async def mira_chat(
         })
         
         # ═══════════════════════════════════════════════════════════════════════════
+        # SOUL LEARNING ENGINE - Learn from every interaction
+        # Three lanes: Conversation context, Saved intelligence, Execution history
+        # ═══════════════════════════════════════════════════════════════════════════
+        try:
+            from utils.soul_learning_engine import (
+                build_memory_trace, 
+                extract_enrichments_from_message,
+                save_enrichment_to_pet
+            )
+            
+            # Build memory trace for QA/debugging
+            if selected_pet:
+                memory_trace = build_memory_trace(
+                    pet_soul=selected_pet,
+                    message=user_message,
+                    intent=response_dict.get("pillar")
+                )
+                
+                # Add memory trace to response (for debugging/QA)
+                response_dict["_memory_trace"] = {
+                    "memory_used": memory_trace.get("memory_used", [])[:10],  # Limit for response size
+                    "new_enrichments_saved": memory_trace.get("new_enrichments_saved", []),
+                    "not_saved_reason": memory_trace.get("not_saved_reason", [])[:3]  # Limit
+                }
+                
+                # Actually save new enrichments to the pet's soul
+                new_enrichments = memory_trace.get("new_enrichments_saved", [])
+                pet_id = selected_pet.get("id")
+                if new_enrichments and pet_id:
+                    import asyncio
+                    for enrichment in new_enrichments:
+                        asyncio.create_task(save_enrichment_to_pet(
+                            pet_id=pet_id,
+                            field=enrichment.get("field"),
+                            value=enrichment.get("value"),
+                            source=enrichment.get("source", "conversation"),
+                            confidence=enrichment.get("confidence", 0.85)
+                        ))
+                    logger.info(f"[SOUL-LEARNING] Saved {len(new_enrichments)} enrichments for {pet_id}")
+        except Exception as learning_err:
+            logger.debug(f"[SOUL-LEARNING] Non-critical error: {learning_err}")
+        
+        # ═══════════════════════════════════════════════════════════════════════════
         # BREED MENTION DETECTOR - Instrumentation for intermittent mismatch tracking
         # Status: "Intermittent personalisation mismatch (breed mention) — instrumented"
         # ═══════════════════════════════════════════════════════════════════════════
