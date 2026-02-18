@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://reply-composer.preview.emergentagent.com
+https://optimistic-composer.preview.emergentagent.com
 
 ---
 

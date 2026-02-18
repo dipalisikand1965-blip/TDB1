@@ -304,7 +304,7 @@ Test Pets:
 ## Services
 - Backend: Running on port 8001
 - Frontend: Running on port 3000
-- Preview URL: https://reply-composer.preview.emergentagent.com
+- Preview URL: https://optimistic-composer.preview.emergentagent.com
 
 ---
 

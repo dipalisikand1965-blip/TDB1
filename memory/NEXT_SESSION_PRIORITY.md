@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://reply-composer.preview.emergentagent.com
+**Preview URL:** https://optimistic-composer.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

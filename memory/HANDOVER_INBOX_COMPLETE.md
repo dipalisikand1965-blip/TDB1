@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://reply-composer.preview.emergentagent.com
+https://optimistic-composer.preview.emergentagent.com
 ```
 
 ---

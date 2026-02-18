@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://reply-composer.preview.emergentagent.com/mira-demo**
+**https://optimistic-composer.preview.emergentagent.com/mira-demo**
 
 ---
 

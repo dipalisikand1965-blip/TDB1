@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://reply-composer.preview.emergentagent.com
+https://optimistic-composer.preview.emergentagent.com
 ```
 
 ---

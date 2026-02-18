@@ -70,7 +70,7 @@ xl: 32px - Major divisions
 | **Test User** | dipali@clubconcierge.in | test123 |
 | **Admin** | aditya | lola4304 |
 
-**Preview URL:** https://reply-composer.preview.emergentagent.com
+**Preview URL:** https://optimistic-composer.preview.emergentagent.com
 
 ---
 

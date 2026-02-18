@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://reply-composer.preview.emergentagent.com
+**Preview URL:** https://optimistic-composer.preview.emergentagent.com
 
 ---
 
