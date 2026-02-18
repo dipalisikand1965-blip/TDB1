@@ -4366,6 +4366,7 @@ async def mira_os_understand_with_products(
         # This enables "{petName} might need this" contextual content across OS
         # ═══════════════════════════════════════════════════════════════════════════
         db = get_db()
+        logger.info(f"[LEARN BRIDGE DEBUG] db={db is not None}, logged_in_user={logged_in_user is not None}, pet_context={request.pet_context is not None}")
         if db is not None and logged_in_user is not None and request.pet_context is not None:
             try:
                 from learn_intent_bridge import process_chat_for_learn_intents
