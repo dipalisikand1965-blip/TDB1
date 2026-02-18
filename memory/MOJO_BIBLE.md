@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://soul-enrichment.preview.emergentagent.com
+https://timely-shelf.preview.emergentagent.com
 ```
 
 ---

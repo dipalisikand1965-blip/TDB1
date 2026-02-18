@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://soul-enrichment.preview.emergentagent.com
+https://timely-shelf.preview.emergentagent.com
 
 ---
 
