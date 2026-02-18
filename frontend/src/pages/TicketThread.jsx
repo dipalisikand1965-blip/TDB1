@@ -155,13 +155,15 @@ const TicketThread = () => {
       }
       
       const data = await response.json();
-      setTicket(data.ticket || data);
+      
+      // Handle different response formats
+      const ticketData = data.ticket || data;
+      setTicket(ticketData);
       
       // Extract messages from various possible structures
-      const threadMessages = data.messages || 
-                           data.conversation || 
-                           data.ticket?.messages || 
-                           data.ticket?.conversation || 
+      const threadMessages = ticketData.messages || 
+                           ticketData.conversation || 
+                           ticketData.thread ||
                            [];
       
       setMessages(threadMessages);
