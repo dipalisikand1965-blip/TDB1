@@ -147,12 +147,19 @@ async def get_unified_tickets(db, user_email: str, pet_ids: List[str] = None) ->
     }
     
     # Add pet filter if provided
+    # IMPORTANT: Also include tickets with NO pet_id (legacy or missing data)
+    # These should still be counted for the user
     if pet_ids:
         base_query["$and"] = [
             {"$or": [
                 {"pet_ids": {"$in": pet_ids}},
                 {"pet.id": {"$in": pet_ids}},
-                {"pet_id": {"$in": pet_ids}}
+                {"pet_id": {"$in": pet_ids}},
+                # Include tickets with no pet association (legacy)
+                {"pet_id": {"$exists": False}},
+                {"pet_id": None},
+                {"pet_id": ""},
+                {"pet_ids": {"$size": 0}}
             ]}
         ]
     
