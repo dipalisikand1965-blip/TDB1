@@ -210,24 +210,24 @@ const NotificationBell = ({ userEmail, petId, petName, className = '' }) => {
                   `}
                   onClick={() => {
                     if (!notification.read) markAsRead(notification.id);
-                    // Handle notification click - navigate to Services thread
-                    // Priority: thread_url in data > construct from ticket_id > fallback link
                     
-                    // 1. Use thread_url if provided (most reliable)
-                    if (notification.data?.thread_url) {
-                      window.location.href = notification.data.thread_url;
-                      return;
-                    }
+                    // Extract ticket_id from notification data
+                    const ticketId = notification.ticket_id || 
+                                   notification.data?.ticket_id ||
+                                   (notification.data?.thread_url && notification.data.thread_url.split('thread=')[1]);
                     
-                    // 2. For concierge_reply with ticket_id, construct URL
-                    if ((notification.type === 'concierge_reply' || notification.type === 'ticket_created') && notification.ticket_id) {
-                      window.location.href = `/mira-demo?tab=services&ticket=${notification.ticket_id}`;
-                      return;
-                    }
-                    
-                    // 3. Fallback to any provided URL
-                    if (notification.data?.url || notification.link) {
-                      window.location.href = notification.data?.url || notification.link;
+                    if (ticketId) {
+                      // Open the Outlook-style drawer instead of navigating
+                      setActiveThreadId(ticketId);
+                      setActiveNotification(notification);
+                      setIsOpen(false); // Close dropdown
+                    } else {
+                      // Fallback to navigation for notifications without ticket_id
+                      if (notification.data?.thread_url) {
+                        window.location.href = notification.data.thread_url;
+                      } else if (notification.data?.url || notification.link) {
+                        window.location.href = notification.data?.url || notification.link;
+                      }
                     }
                   }}
                 >
