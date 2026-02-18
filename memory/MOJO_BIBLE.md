@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://unified-ticket-spine.preview.emergentagent.com
+https://service-spine-hub.preview.emergentagent.com
 ```
 
 ---

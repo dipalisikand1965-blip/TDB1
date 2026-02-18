@@ -321,4 +321,4 @@ python3 -c "..." # See memory check script
 
 **REMEMBER: MIRA IS THE BRAIN. EVERYTHING SHE LEARNS MUST BE STORED.**
 
-Preview URL: https://unified-ticket-spine.preview.emergentagent.com
+Preview URL: https://service-spine-hub.preview.emergentagent.com

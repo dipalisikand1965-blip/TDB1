@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://unified-ticket-spine.preview.emergentagent.com/mira-demo**
+**https://service-spine-hub.preview.emergentagent.com/mira-demo**
 
 ---
 
