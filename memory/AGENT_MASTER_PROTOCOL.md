@@ -372,14 +372,52 @@ and include your ticket number (TCK-XXXXXX)."
 
 # 7. UI COPY LOCATIONS
 
-| Copy | File | Line |
-|------|------|------|
-| "Chat is where you ask" | `OnboardingTooltip.jsx` | ~Line 50 |
-| "Reply in Services" | `ConciergeConfirmation.jsx` | ~Line 70 |
-| "Services thread" nudge | `ReplyNudge.jsx` | ~Line 40 |
-| Help FAQs | `HelpModal.jsx` | ~Line 30-55 |
-| Unread banner | `MiraDemoPage.jsx` | ~Line 3840 |
-| Services header | `MiraDemoPage.jsx` | Services section |
+## The Anchor Sentence (Use Everywhere)
+> **Chat is where you ask. Services is where it gets done.**
+
+## Platform-Specific Tooltip Variants
+
+### iOS (Shorter, punchier)
+```
+Headline: "Chat is where you ask."
+Subtext: "Replies appear in Services."
+CTA: "Show me"
+```
+
+### Android (Slightly more explanatory)
+```
+Headline: "Chat is where you ask."
+Subtext: "When Concierge handles your request, you'll find replies in Services."
+CTA: "Show me Services"
+```
+
+### Web (Full experience)
+```
+Headline: "Chat is where you ask."
+Subtext: "When Concierge replies or handles your request, you'll find it in Services."
+CTA: "Show me Services"
+```
+
+## UI Microcopy Locations
+
+| Location | Copy | File |
+|----------|------|------|
+| Under chat input | "Ask for anything. If it needs action, we'll open a request and handle it in Services." | `ChatInputBar.jsx` |
+| Confirmation banner | "Request opened • TCK-XXXXXX<br>Reply in Services to add details or change timing." | `ConciergeConfirmation.jsx` |
+| Services header subtitle | "Your execution thread with Concierge. Updates and replies live here." | `ServicesPanel.jsx` |
+| Notification dropdown header | "Updates from Concierge. Tap to open the thread in Services." | `NotificationBell.jsx` |
+| Onboarding tooltip | Platform-specific variants above | `OnboardingTooltip.jsx` |
+
+## Help/FAQ Copy (Member-Facing)
+
+| Question | Answer |
+|----------|--------|
+| Where do I see replies from Concierge? | You'll see them in Services. Every request becomes a tracked thread there, and that's where Concierge replies. |
+| What is Chat for, then? | Chat is where you ask. If it needs action, we open a request and move it into Services so it's tracked and handled properly. |
+| I tapped a notification. Where will it take me? | It opens the exact request thread in Services, so you can see the update and reply in the right place. |
+| Can I reply from the notification itself? | Not from the bell dropdown. Tap the notification to open the thread in Services, then reply there. |
+| I added details in Chat. Will Concierge see it? | If it's about an open request, add it in Services so it lands inside the same thread and nothing gets missed. |
+| What does the badge on Services mean? | It means there's an unread update from Concierge for that pet. |
 
 ---
 
