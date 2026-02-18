@@ -7172,33 +7172,77 @@ async def load_pet_soul(pet_id: str) -> Dict:
         "breed": identity.get("breed") or pet.get("breed"),
         "age": identity.get("age") or pet.get("age"),
         "birth_date": pet.get("birth_date") or pet.get("birthday") or pet.get("dob"),
-        "weight": identity.get("weight") or pet.get("weight_kg"),
+        "weight": identity.get("weight") or pet.get("weight_kg") or pet.get("weight"),
         "size": identity.get("size"),
         "gender": identity.get("gender") or pet.get("gender"),
         "photo_url": pet.get("photo_url"),
-        "allergies": health.get("allergies", []) or preferences.get("allergies", []),
-        "medical_conditions": health.get("medical_conditions", []),
+        # ═══════════════════════════════════════════════════════════════════════════
+        # HEALTH (merge from multiple sources - doggy_soul_answers is authoritative)
+        # ═══════════════════════════════════════════════════════════════════════════
+        "allergies": health.get("allergies", []) or preferences.get("allergies", []) or _parse_allergies(doggy_soul.get("food_allergies")),
+        "medical_conditions": health.get("medical_conditions", []) or _parse_conditions(doggy_soul.get("health_conditions")),
         "dietary_restrictions": health.get("dietary_restrictions", []),
-        "favorite_treats": preferences.get("favorite_treats", []) or doggy_soul.get("favorite_treats"),
-        "dislikes": preferences.get("dislikes", []),
-        "anxiety_triggers": personality.get("anxiety_triggers", []),
+        "sensitivities": pet.get("sensitivities", []),
+        # ═══════════════════════════════════════════════════════════════════════════
+        # PREFERENCES (what the pet likes/dislikes)
+        # ═══════════════════════════════════════════════════════════════════════════
+        "favorite_treats": preferences.get("favorite_treats", []) or doggy_soul.get("favorite_treats") or doggy_soul.get("treat_preference"),
+        "favorite_flavors": preferences.get("favorite_flavors", []),
+        "dislikes": preferences.get("dislikes", []) or pet.get("soul_enrichments", {}).get("dislikes", []),
+        "diet_type": preferences.get("diet_type") or doggy_soul.get("diet_type") or doggy_soul.get("dietary_preference"),
+        "activity_level": preferences.get("activity_level") or doggy_soul.get("energy_level"),
+        # ═══════════════════════════════════════════════════════════════════════════
+        # PERSONALITY (behavioral traits)
+        # ═══════════════════════════════════════════════════════════════════════════
+        "anxiety_triggers": personality.get("anxiety_triggers", []) or doggy_soul.get("anxiety_triggers") or doggy_soul.get("grooming_anxiety_triggers"),
         "behavior_with_dogs": personality.get("behavior_with_dogs") or doggy_soul.get("behavior_with_dogs"),
-        "behavior_with_humans": personality.get("behavior_with_humans"),
-        "handling_sensitivity": care.get("handling_sensitivity") or doggy_soul.get("handling_comfort"),
+        "behavior_with_humans": personality.get("behavior_with_humans") or doggy_soul.get("social_with_people"),
+        "stranger_reaction": doggy_soul.get("stranger_reaction"),
+        "handling_sensitivity": care.get("handling_sensitivity") or doggy_soul.get("handling_comfort") or doggy_soul.get("grooming_tolerance"),
+        "noise_sensitivity": doggy_soul.get("noise_sensitivity") or doggy_soul.get("loud_sounds"),
         "grooming_notes": care.get("grooming_notes"),
-        "travel_style": travel.get("preferred_mode") or doggy_soul.get("usual_travel"),
+        "grooming_preference": doggy_soul.get("grooming_preference"),
+        # ═══════════════════════════════════════════════════════════════════════════
+        # TRAVEL (how the pet travels)
+        # ═══════════════════════════════════════════════════════════════════════════
+        "travel_style": travel.get("preferred_mode") or doggy_soul.get("usual_travel") or doggy_soul.get("travel_readiness"),
         "crate_trained": travel.get("crate_trained") or doggy_soul.get("crate_trained"),
+        "hotel_experience": travel.get("hotel_experience") or doggy_soul.get("hotel_experience"),
+        "stay_preference": doggy_soul.get("stay_preference"),
+        # ═══════════════════════════════════════════════════════════════════════════
+        # SOUL (personality persona)
+        # ═══════════════════════════════════════════════════════════════════════════
         "persona": soul_data.get("persona"),
-        # Energy and temperament from doggy_soul
+        "special_move": soul_data.get("special_move"),
+        "love_language": soul_data.get("love_language"),
+        "personality_tag": soul_data.get("personality_tag"),
+        "dream_life": doggy_soul.get("dream_life"),
+        # ═══════════════════════════════════════════════════════════════════════════
+        # TEMPERAMENT (energy and nature)
+        # ═══════════════════════════════════════════════════════════════════════════
         "energy_level": doggy_soul.get("energy_level"),
-        "temperament": doggy_soul.get("temperament"),
+        "temperament": doggy_soul.get("temperament") or doggy_soul.get("general_nature"),
         "life_stage": doggy_soul.get("life_stage"),
         "food_motivation": doggy_soul.get("food_motivation"),
-        "health_conditions": doggy_soul.get("health_conditions"),
-        "separation_anxiety": doggy_soul.get("separation_anxiety"),
+        "separation_anxiety": doggy_soul.get("separation_anxiety") or doggy_soul.get("alone_time_comfort"),
         "general_nature": doggy_soul.get("general_nature"),
-        # Food allergies from doggy_soul
+        # ═══════════════════════════════════════════════════════════════════════════
+        # TRAINING
+        # ═══════════════════════════════════════════════════════════════════════════
+        "training_level": doggy_soul.get("training_level"),
+        "exercise_needs": doggy_soul.get("exercise_needs") or doggy_soul.get("walks_per_day"),
+        # ═══════════════════════════════════════════════════════════════════════════
+        # CELEBRATIONS
+        # ═══════════════════════════════════════════════════════════════════════════
+        "celebrations": pet.get("celebrations", []),
+        "gotcha_date": pet.get("gotcha_date"),
+        # ═══════════════════════════════════════════════════════════════════════════
+        # ENRICHMENTS (learned from conversations/tickets)
+        # ═══════════════════════════════════════════════════════════════════════════
+        "soul_enrichments": pet.get("soul_enrichments", {}),
+        # Food allergies from doggy_soul (legacy field)
         "food_allergies": doggy_soul.get("food_allergies"),
+        "health_conditions": doggy_soul.get("health_conditions"),
         # Soul score
         "soul_score": round(soul_score, 1),
         "overall_score": round(soul_score, 1),
@@ -7212,6 +7256,34 @@ async def load_pet_soul(pet_id: str) -> Dict:
     }
     
     return {k: v for k, v in soul.items() if v is not None}  # Remove None values but keep 0
+
+
+def _parse_allergies(allergy_str: str) -> list:
+    """Parse allergy string into list (e.g., 'chicken' -> ['chicken'])"""
+    if not allergy_str:
+        return []
+    if isinstance(allergy_str, list):
+        return allergy_str
+    return [a.strip() for a in allergy_str.split(',') if a.strip()]
+
+
+def _parse_conditions(conditions_str: str) -> list:
+    """Parse medical conditions string into list"""
+    if not conditions_str:
+        return []
+    if isinstance(conditions_str, list):
+        return conditions_str
+    # Handle "arthritis, arthritis and we manage it with supplements" -> ["arthritis"]
+    conditions = []
+    for c in conditions_str.split(','):
+        c = c.strip().lower()
+        if c and c not in ['none', 'no', 'n/a']:
+            # Clean up duplicates and notes
+            if ' and ' in c:
+                c = c.split(' and ')[0].strip()
+            if c not in conditions:
+                conditions.append(c)
+    return conditions
 
 def detect_pillar(message: str, current_pillar: str = None) -> str:
     """Detect which pillar the conversation belongs to"""
