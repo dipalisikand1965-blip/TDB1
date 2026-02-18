@@ -12017,8 +12017,15 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
                     elif pet_energy:
                         pet_trait_mention = f"For {pet_name} with {pronoun_possessive} {pet_energy.lower() if isinstance(pet_energy, str) else ''} energy, "
                     
-                    # Build curated response (NOT a list dump)
-                    intro = f"Here are a few places that would suit {pet_name}'s comfort."
+                    # Build curated response (NOT a list dump) - PILLAR-AWARE
+                    if place_type_to_search == "hotel":
+                        intro = f"I found some pet-friendly stays that would work for {pet_name}'s comfort."
+                    elif place_type_to_search == "vet":
+                        intro = f"Here are some trusted vets near {search_location} for {pet_name}."
+                    elif place_type_to_search == "park":
+                        intro = f"Here are some parks and outdoor spaces where {pet_name} can enjoy."
+                    else:
+                        intro = f"Here are a few places that would suit {pet_name}'s comfort."
                     
                     # Format places for display
                     formatted_places = []
@@ -12034,8 +12041,15 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
                             "types": p.get("types", [])
                         })
                     
-                    # Build action options (execution layer - always offer action)
-                    action_text = f"\n\nI can:\n• check availability\n• arrange a table\n• confirm pet policies with the café\n\nWhich would you like me to arrange for {pet_name}?"
+                    # Build action options (execution layer - always offer action) - PILLAR-AWARE
+                    if place_type_to_search == "hotel":
+                        action_text = f"\n\nI can:\n• check availability for your dates\n• confirm their pet policies\n• make a reservation\n\nWhat would you like me to arrange for your trip with {pet_name}?"
+                    elif place_type_to_search == "vet":
+                        action_text = f"\n\nI can:\n• book an appointment\n• check their availability\n• get their contact details\n\nWhat would you like me to arrange for {pet_name}?"
+                    elif place_type_to_search == "park":
+                        action_text = f"\n\nI can:\n• check pet rules and timings\n• find nearby amenities\n• plan a visit\n\nWhat would you like to know for {pet_name}'s outing?"
+                    else:
+                        action_text = f"\n\nI can:\n• check availability\n• arrange a table\n• confirm pet policies with the café\n\nWhich would you like me to arrange for {pet_name}?"
                     
                     return {
                         "success": True,
