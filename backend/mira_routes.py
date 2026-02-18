@@ -11282,7 +11282,7 @@ async def mira_chat(
                         ))
                     logger.info(f"[SOUL-LEARNING] Saved {len(new_enrichments)} enrichments for {pet_id}")
         except Exception as learning_err:
-            logger.debug(f"[SOUL-LEARNING] Non-critical error: {learning_err}")
+            logger.warning(f"[SOUL-LEARNING] Non-critical error: {learning_err}")
         
         # ═══════════════════════════════════════════════════════════════════════════
         # BREED MENTION DETECTOR - Instrumentation for intermittent mismatch tracking
