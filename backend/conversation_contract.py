@@ -409,93 +409,396 @@ def determine_contract_mode(
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# QUICK REPLIES BUILDER
+# CHIP LIBRARY (Section 11.3 of PET_OS_BEHAVIOR_BIBLE.md)
+# Pre-built chip sets per pillar and mode
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def _build_chip(
+    label: str,
+    payload_text: str,
+    intent_type: str = "continue",
+    action: str = "none",
+    action_args: dict = None,
+    analytics_domain: str = "general",
+    requires_consent: bool = False,
+    consent_key: str = None
+) -> dict:
+    """Build a single chip conforming to Section 11.2.3 schema."""
+    import uuid
+    chip_id = f"QR-{uuid.uuid4().hex[:8].upper()}"
+    
+    chip = {
+        "id": chip_id,
+        "label": label,
+        "payload_text": payload_text,
+        "intent_type": intent_type,
+        "action": action,
+        "action_args": action_args or {},
+        "analytics_tag": f"qr.{analytics_domain}.{intent_type.split('_')[0]}"
+    }
+    
+    if requires_consent:
+        chip["safety"] = {
+            "requires_consent": True,
+            "consent_key": consent_key or "unknown"
+        }
+    
+    return chip
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# LOCATION CONSENT CHIPS (Section 11.3.2)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def get_location_consent_chips() -> list:
+    """Section 11.3.2A: Near me with no consent."""
+    return [
+        _build_chip(
+            label="Use current location",
+            payload_text="Use my current location.",
+            intent_type="consent_location",
+            action="set_state",
+            action_args={"key": "request_geo_permission", "value": True},
+            analytics_domain="location",
+            requires_consent=True,
+            consent_key="geo_location"
+        ),
+        _build_chip(
+            label="Type an area",
+            payload_text="I'll type the area.",
+            intent_type="location_area",
+            analytics_domain="location"
+        ),
+        _build_chip(
+            label="Not now",
+            payload_text="Not now.",
+            intent_type="cancel",
+            analytics_domain="nav"
+        )
+    ]
+
+
+def get_places_refine_chips() -> list:
+    """Section 11.3.2C: Places refine chips."""
+    return [
+        _build_chip(label="Open now", payload_text="Show only places open now.", intent_type="scope", analytics_domain="places"),
+        _build_chip(label="Top rated", payload_text="Show top rated places.", intent_type="scope", analytics_domain="places"),
+        _build_chip(label="Closest", payload_text="Show closest places.", intent_type="scope", analytics_domain="places"),
+        _build_chip(label="Change area", payload_text="I want a different area.", intent_type="location_area", analytics_domain="places"),
+        _build_chip(label="Open request", payload_text="Open a request for this.", intent_type="handoff_concierge", action="create_ticket", analytics_domain="ticket")
+    ]
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CELEBRATE PILLAR CHIPS (Section 11.3.4)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def get_celebrate_location_chips() -> list:
+    """Section 11.3.4A: Birthday planning location."""
+    return [
+        _build_chip(label="At home", payload_text="At home.", intent_type="answer_option", analytics_domain="celebrate"),
+        _build_chip(label="Pet café", payload_text="At a pet café.", intent_type="answer_option", analytics_domain="celebrate"),
+        _build_chip(label="Garden/outdoor", payload_text="In a garden or outdoor space.", intent_type="answer_option", analytics_domain="celebrate"),
+        _build_chip(label="Hotel staycation", payload_text="A hotel staycation.", intent_type="answer_option", analytics_domain="celebrate"),
+        _build_chip(label="Not sure", payload_text="I'm not sure yet.", intent_type="answer_option", analytics_domain="celebrate")
+    ]
+
+
+def get_celebrate_size_chips() -> list:
+    """Section 11.3.4B: Party size."""
+    return [
+        _build_chip(label="Just us", payload_text="Just us, no other dogs.", intent_type="answer_option", analytics_domain="celebrate"),
+        _build_chip(label="Small (under 6)", payload_text="Small, under 6 pups.", intent_type="answer_option", analytics_domain="celebrate"),
+        _build_chip(label="Medium (6–12)", payload_text="Medium, 6 to 12 pups.", intent_type="answer_option", analytics_domain="celebrate"),
+        _build_chip(label="Big party", payload_text="A big party with lots of dogs.", intent_type="answer_option", analytics_domain="celebrate"),
+        _build_chip(label="Not sure", payload_text="I'm not sure yet.", intent_type="answer_option", analytics_domain="celebrate")
+    ]
+
+
+def get_celebrate_execution_chips() -> list:
+    """Section 11.3.4C: Celebration execution options."""
+    return [
+        _build_chip(label="Custom cake", payload_text="I want a custom cake.", intent_type="detail_request", analytics_domain="celebrate"),
+        _build_chip(label="Photographer", payload_text="I want a photographer.", intent_type="detail_request", analytics_domain="celebrate"),
+        _build_chip(label="Party setup", payload_text="I want party setup help.", intent_type="detail_request", analytics_domain="celebrate"),
+        _build_chip(label="Open request", payload_text="Open a request for this.", intent_type="handoff_concierge", action="create_ticket", analytics_domain="ticket"),
+        _build_chip(label="View in Services", payload_text="Open Services.", intent_type="open_services", action="open_layer", action_args={"layer": "services"}, analytics_domain="nav")
+    ]
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CARE PILLAR CHIPS (Section 11.3.5)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def get_care_vet_chips() -> list:
+    """Section 11.3.5A: Find a vet."""
+    return [
+        _build_chip(label="General check-up", payload_text="General check-up.", intent_type="answer_option", analytics_domain="care"),
+        _build_chip(label="Emergency vet", payload_text="Emergency vet.", intent_type="answer_option", analytics_domain="care"),
+        _build_chip(label="Dermatology", payload_text="Skin or dermatology.", intent_type="answer_option", analytics_domain="care"),
+        _build_chip(label="Dental", payload_text="Dental care.", intent_type="answer_option", analytics_domain="care"),
+        _build_chip(label="Not sure", payload_text="I'm not sure what I need.", intent_type="answer_option", analytics_domain="care")
+    ]
+
+
+def get_grooming_timing_chips() -> list:
+    """Section 11.3.5B: Grooming booking."""
+    return [
+        _build_chip(label="Tomorrow", payload_text="Tomorrow.", intent_type="time_window", analytics_domain="care"),
+        _build_chip(label="This weekend", payload_text="This weekend.", intent_type="time_window", analytics_domain="care"),
+        _build_chip(label="Pick a date", payload_text="I'll pick a specific date.", intent_type="time_window", analytics_domain="care"),
+        _build_chip(label="Morning", payload_text="Morning slot.", intent_type="time_window", analytics_domain="care"),
+        _build_chip(label="Evening", payload_text="Evening slot.", intent_type="time_window", analytics_domain="care")
+    ]
+
+
+def get_boarding_chips() -> list:
+    """Section 11.3.5C: Boarding preference."""
+    return [
+        _build_chip(label="Home boarding", payload_text="Home boarding with a host family.", intent_type="answer_option", analytics_domain="care"),
+        _build_chip(label="Kennel", payload_text="A kennel or boarding facility.", intent_type="answer_option", analytics_domain="care"),
+        _build_chip(label="Pet sitter", payload_text="A pet sitter at my home.", intent_type="answer_option", analytics_domain="care"),
+        _build_chip(label="Day care", payload_text="Day care.", intent_type="answer_option", analytics_domain="care"),
+        _build_chip(label="Not sure", payload_text="I'm not sure yet.", intent_type="answer_option", analytics_domain="care")
+    ]
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# EMERGENCY PILLAR CHIPS (Section 11.3.6)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def get_emergency_time_chips() -> list:
+    """Section 11.3.6A: Triage-first timing."""
+    return [
+        _build_chip(label="Under 30 mins", payload_text="Under 30 minutes ago.", intent_type="emergency_triage", analytics_domain="emergency"),
+        _build_chip(label="1–3 hours", payload_text="1 to 3 hours ago.", intent_type="emergency_triage", analytics_domain="emergency"),
+        _build_chip(label="Since yesterday", payload_text="Since yesterday.", intent_type="emergency_triage", analytics_domain="emergency"),
+        _build_chip(label="Not sure", payload_text="I'm not sure when.", intent_type="emergency_triage", analytics_domain="emergency"),
+        _build_chip(label="Go to vet now", payload_text="I want to go to the vet now.", intent_type="emergency_go_now", analytics_domain="emergency")
+    ]
+
+
+def get_emergency_what_chips() -> list:
+    """Section 11.3.6B: What did they eat?"""
+    return [
+        _build_chip(label="Chocolate", payload_text="Chocolate.", intent_type="emergency_triage", analytics_domain="emergency"),
+        _build_chip(label="Medicine", payload_text="Medicine or pills.", intent_type="emergency_triage", analytics_domain="emergency"),
+        _build_chip(label="Grapes/raisins", payload_text="Grapes or raisins.", intent_type="emergency_triage", analytics_domain="emergency"),
+        _build_chip(label="Plant", payload_text="A plant.", intent_type="emergency_triage", analytics_domain="emergency"),
+        _build_chip(label="Not sure", payload_text="I'm not sure what.", intent_type="emergency_triage", analytics_domain="emergency")
+    ]
+
+
+def get_emergency_symptoms_chips() -> list:
+    """Section 11.3.6C: Symptoms check."""
+    return [
+        _build_chip(label="Vomiting", payload_text="Vomiting.", intent_type="emergency_triage", analytics_domain="emergency"),
+        _build_chip(label="Diarrhoea", payload_text="Diarrhoea.", intent_type="emergency_triage", analytics_domain="emergency"),
+        _build_chip(label="Lethargic", payload_text="Acting lethargic.", intent_type="emergency_triage", analytics_domain="emergency"),
+        _build_chip(label="Normal now", payload_text="Acting normal right now.", intent_type="emergency_triage", analytics_domain="emergency"),
+        _build_chip(label="Breathing issue", payload_text="Having trouble breathing.", intent_type="emergency_go_now", analytics_domain="emergency")
+    ]
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TRAVEL PILLAR CHIPS (Section 11.3.7)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def get_travel_type_chips() -> list:
+    """Section 11.3.7A: Trip type."""
+    return [
+        _build_chip(label="Car trip", payload_text="A car trip.", intent_type="answer_option", analytics_domain="travel"),
+        _build_chip(label="Flight", payload_text="Flying.", intent_type="answer_option", analytics_domain="travel"),
+        _build_chip(label="Train", payload_text="Train travel.", intent_type="answer_option", analytics_domain="travel"),
+        _build_chip(label="Staycation", payload_text="A staycation nearby.", intent_type="answer_option", analytics_domain="travel"),
+        _build_chip(label="Not sure", payload_text="I'm not sure yet.", intent_type="answer_option", analytics_domain="travel")
+    ]
+
+
+def get_travel_timing_chips() -> list:
+    """Section 11.3.7B: When."""
+    return [
+        _build_chip(label="Today", payload_text="Today.", intent_type="time_window", analytics_domain="travel"),
+        _build_chip(label="Tomorrow", payload_text="Tomorrow.", intent_type="time_window", analytics_domain="travel"),
+        _build_chip(label="This weekend", payload_text="This weekend.", intent_type="time_window", analytics_domain="travel"),
+        _build_chip(label="Pick a date", payload_text="I'll pick a specific date.", intent_type="time_window", analytics_domain="travel"),
+        _build_chip(label="Not sure", payload_text="I'm not sure when.", intent_type="time_window", analytics_domain="travel")
+    ]
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# LEARN PILLAR CHIPS (Section 11.3.8)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def get_learn_topic_chips() -> list:
+    """Section 11.3.8A: Training topic."""
+    return [
+        _build_chip(label="Recall", payload_text="Recall training.", intent_type="answer_option", analytics_domain="learn"),
+        _build_chip(label="Loose leash", payload_text="Loose leash walking.", intent_type="answer_option", analytics_domain="learn"),
+        _build_chip(label="Toilet training", payload_text="Toilet training.", intent_type="answer_option", analytics_domain="learn"),
+        _build_chip(label="Barking", payload_text="Stop barking.", intent_type="answer_option", analytics_domain="learn"),
+        _build_chip(label="Separation anxiety", payload_text="Separation anxiety.", intent_type="answer_option", analytics_domain="learn")
+    ]
+
+
+def get_learn_action_chips() -> list:
+    """Section 11.3.8B: Learn results actions."""
+    return [
+        _build_chip(label="Show 3 more", payload_text="Show me 3 more.", intent_type="continue_flow", analytics_domain="learn"),
+        _build_chip(label="Make a 7-day plan", payload_text="Make this a 7-day plan.", intent_type="detail_request", analytics_domain="learn"),
+        _build_chip(label="Save this", payload_text="Save this for later.", intent_type="continue_flow", analytics_domain="learn"),
+        _build_chip(label="Ask Concierge", payload_text="Ask Concierge for help.", intent_type="handoff_concierge", action="create_ticket", analytics_domain="ticket"),
+        _build_chip(label="Not now", payload_text="Not now.", intent_type="cancel", analytics_domain="nav")
+    ]
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TICKET/SERVICES CHIPS (Section 11.3.3)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def get_ticket_created_chips() -> list:
+    """Section 11.3.3: After a request is opened."""
+    return [
+        _build_chip(label="View in Services", payload_text="Open Services.", intent_type="open_services", action="open_layer", action_args={"layer": "services"}, analytics_domain="nav"),
+        _build_chip(label="Add one detail", payload_text="I want to add one detail.", intent_type="detail_request", analytics_domain="ticket"),
+        _build_chip(label="Change timing", payload_text="I want to change the time.", intent_type="detail_request", analytics_domain="ticket"),
+        _build_chip(label="Not now", payload_text="Not now.", intent_type="cancel", analytics_domain="nav")
+    ]
+
+
+def get_navigation_chips() -> list:
+    """Global utility chips for navigation."""
+    return [
+        _build_chip(label="View in Services", payload_text="Open Services.", intent_type="open_services", action="open_layer", action_args={"layer": "services"}, analytics_domain="nav"),
+        _build_chip(label="See Picks", payload_text="Show Picks.", intent_type="open_picks", action="open_layer", action_args={"layer": "picks"}, analytics_domain="nav"),
+        _build_chip(label="Open Today", payload_text="Open Today.", intent_type="open_today", action="open_layer", action_args={"layer": "today"}, analytics_domain="nav"),
+        _build_chip(label="Open Learn", payload_text="Open Learn.", intent_type="open_learn", action="open_layer", action_args={"layer": "learn"}, analytics_domain="nav")
+    ]
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# QUICK REPLIES BUILDER (Section 11.2)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def build_quick_replies(
     mode: str,
-    context: Dict[str, Any] = None
+    context: Dict[str, Any] = None,
+    pillar: str = None,
+    is_emergency: bool = False,
+    triage_stage: str = None,
+    ticket_id: str = None
 ) -> List[Dict[str, Any]]:
     """
-    Build quick reply chips based on mode and context.
+    Build quick reply chips based on mode, pillar, and context.
     
-    Rules:
-    - 3-6 chips max
-    - Each chip has: id, label, payload_text, intent_type
-    - intent_type: continue | refine | execute
-    - No generic chips - must be grounded in mode + context
+    RULES (Section 11.2.7):
+    - clarify: 3-6 chips, min 2 meaningful choices + 1 cancel
+    - places: 3-6 chips, at least 1 refine + 1 change area
+    - learn: 3-6 chips, "Show 3 more", "Make plan", "Ask Concierge"
+    - ticket/handoff: 3-6 chips, "Open request", "Add detail", "View in Services"
     """
     context = context or {}
     pet_name = context.get("pet_name", "your pet")
-    place_type = context.get("place_type")
-    topic = context.get("topic")
+    clarify_reason = context.get("clarify_reason")
     
     quick_replies = []
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # TICKET CREATED - Always show these chips after ticket creation
+    # ═══════════════════════════════════════════════════════════════════════════
+    if ticket_id:
+        return get_ticket_created_chips()
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # EMERGENCY MODE - Triage chips take precedence
+    # ═══════════════════════════════════════════════════════════════════════════
+    if is_emergency:
+        if triage_stage == "what":
+            return get_emergency_what_chips()
+        elif triage_stage == "when":
+            return get_emergency_time_chips()
+        elif triage_stage == "symptoms":
+            return get_emergency_symptoms_chips()
+        else:
+            return get_emergency_what_chips()  # Default to "what"
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # CLARIFY MODE - Location consent or pillar-specific clarification
+    # ═══════════════════════════════════════════════════════════════════════════
     if mode == "clarify":
-        # Clarification chips
-        clarify_reason = context.get("clarify_reason", "need_location")
+        if clarify_reason in ["need_location", "need_location_consent"]:
+            return get_location_consent_chips()
         
-        if clarify_reason == "need_location":
-            # User didn't provide location and didn't say "near me"
-            quick_replies = [
-                {"id": "qr_use_location", "label": "Use current location", "payload_text": "Use my current location", "intent_type": "continue"},
-                {"id": "qr_type_area", "label": "Type an area", "payload_text": "Let me type the area", "intent_type": "continue"}
-            ]
-        elif clarify_reason == "need_location_consent":
-            # User said "near me" but we don't have location permission
-            # CONSENT GATE: Only show these 2 chips - "Use current location" triggers browser geo
-            quick_replies = [
-                {"id": "qr_use_location", "label": "Use current location", "payload_text": "Use my current location", "intent_type": "continue"},
-                {"id": "qr_type_area", "label": "Type an area", "payload_text": "Let me type the area", "intent_type": "continue"}
+        # Pillar-specific clarification chips
+        if pillar == "celebrate":
+            return get_celebrate_location_chips()
+        elif pillar == "care":
+            service_type = context.get("service_type")
+            if service_type == "grooming":
+                return get_grooming_timing_chips()
+            elif service_type == "vet":
+                return get_care_vet_chips()
+            elif service_type == "boarding":
+                return get_boarding_chips()
+            else:
+                return get_grooming_timing_chips()  # Default care chips
+        elif pillar == "travel":
+            return get_travel_type_chips()
+        elif pillar == "learn":
+            return get_learn_topic_chips()
+        else:
+            # Default clarify chips
+            return [
+                _build_chip(label="Tell me more", payload_text="Tell me more about this.", intent_type="detail_request", analytics_domain="general"),
+                _build_chip(label="Open request", payload_text="Open a request for this.", intent_type="handoff_concierge", action="create_ticket", analytics_domain="ticket"),
+                _build_chip(label="Not now", payload_text="Not now.", intent_type="cancel", analytics_domain="nav")
             ]
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PLACES MODE - Refine and action chips
+    # ═══════════════════════════════════════════════════════════════════════════
     elif mode == "places":
-        # Places result chips
-        quick_replies = [
-            {"id": "qr_call_place", "label": "Call this place", "payload_text": "Call the first place", "intent_type": "execute"},
-            {"id": "qr_directions", "label": "Get directions", "payload_text": "Get directions to the first place", "intent_type": "execute"},
-            {"id": "qr_more_options", "label": "Show more options", "payload_text": "Show me more options", "intent_type": "refine"},
-            {"id": "qr_different_area", "label": "Try different area", "payload_text": "Search in a different area", "intent_type": "refine"}
-        ]
-        
-        if place_type == "vet":
-            quick_replies.insert(2, {"id": "qr_emergency", "label": "Emergency vets only", "payload_text": "Show only emergency vets", "intent_type": "refine"})
+        return get_places_refine_chips()
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # LEARN MODE - Content action chips
+    # ═══════════════════════════════════════════════════════════════════════════
     elif mode == "learn":
-        # Learning/YouTube chips
-        quick_replies = [
-            {"id": "qr_watch_video", "label": "Watch first video", "payload_text": "I'll watch the first video", "intent_type": "execute"},
-            {"id": "qr_more_videos", "label": "More videos", "payload_text": "Show me more videos on this topic", "intent_type": "refine"},
-            {"id": "qr_different_topic", "label": "Different topic", "payload_text": "I want to learn something else", "intent_type": "refine"}
-        ]
-        
-        if topic:
-            quick_replies.append({"id": "qr_advanced", "label": f"Advanced {topic}", "payload_text": f"Show advanced {topic} videos", "intent_type": "refine"})
+        return get_learn_action_chips()
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # TICKET MODE - Execution chips
+    # ═══════════════════════════════════════════════════════════════════════════
     elif mode == "ticket":
-        # Ticket/booking chips
-        quick_replies = [
-            {"id": "qr_book_now", "label": "Book now", "payload_text": "Yes, please book this for me", "intent_type": "execute"},
-            {"id": "qr_more_details", "label": "Tell me more", "payload_text": "Tell me more details first", "intent_type": "continue"},
-            {"id": "qr_different_time", "label": "Different time", "payload_text": "I need a different time", "intent_type": "refine"},
-            {"id": "qr_concierge", "label": "Talk to Concierge", "payload_text": "Connect me with Concierge", "intent_type": "execute"}
-        ]
+        if pillar == "celebrate":
+            return get_celebrate_execution_chips()
+        else:
+            return [
+                _build_chip(label="Book now", payload_text="Yes, please book this for me.", intent_type="execute", action="create_ticket", analytics_domain="ticket"),
+                _build_chip(label="More details", payload_text="Tell me more details first.", intent_type="detail_request", analytics_domain="ticket"),
+                _build_chip(label="Different time", payload_text="I need a different time.", intent_type="time_window", analytics_domain="ticket"),
+                _build_chip(label="Talk to Concierge", payload_text="Connect me with Concierge.", intent_type="handoff_concierge", action="create_ticket", analytics_domain="ticket"),
+                _build_chip(label="Not now", payload_text="Not now.", intent_type="cancel", analytics_domain="nav")
+            ]
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # HANDOFF MODE - Concierge connection chips
+    # ═══════════════════════════════════════════════════════════════════════════
     elif mode == "handoff":
-        # Handoff chips (bespoke/specialist)
-        quick_replies = [
-            {"id": "qr_connect_concierge", "label": "Yes, connect me", "payload_text": "Yes, connect me with Concierge", "intent_type": "execute"},
-            {"id": "qr_more_info", "label": "Tell me more first", "payload_text": "Tell me more about this first", "intent_type": "continue"},
-            {"id": "qr_not_now", "label": "Not right now", "payload_text": "Not right now, thanks", "intent_type": "refine"}
+        return [
+            _build_chip(label="Yes, connect me", payload_text="Yes, connect me with Concierge.", intent_type="handoff_concierge", action="create_ticket", analytics_domain="ticket"),
+            _build_chip(label="Tell me more", payload_text="Tell me more about this first.", intent_type="detail_request", analytics_domain="general"),
+            _build_chip(label="Not right now", payload_text="Not right now, thanks.", intent_type="cancel", analytics_domain="nav")
         ]
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ANSWER MODE - Contextual follow-ups
+    # ═══════════════════════════════════════════════════════════════════════════
     else:  # mode == "answer"
-        # Default answer chips - contextual follow-ups
-        quick_replies = [
-            {"id": "qr_tell_more", "label": "Tell me more", "payload_text": "Tell me more about this", "intent_type": "continue"},
-            {"id": "qr_find_place", "label": "Find a place", "payload_text": f"Help me find a place for {pet_name}", "intent_type": "refine"},
-            {"id": "qr_book_service", "label": "Book a service", "payload_text": f"I want to book a service for {pet_name}", "intent_type": "execute"}
+        return [
+            _build_chip(label="Tell me more", payload_text="Tell me more about this.", intent_type="continue_flow", analytics_domain="general"),
+            _build_chip(label="Find a place", payload_text=f"Help me find a place for {pet_name}.", intent_type="scope", analytics_domain="places"),
+            _build_chip(label="Book a service", payload_text=f"I want to book a service for {pet_name}.", intent_type="handoff_concierge", action="create_ticket", analytics_domain="ticket")
         ]
     
     # Ensure max 6 chips
