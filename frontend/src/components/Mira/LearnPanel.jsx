@@ -672,6 +672,16 @@ const LearnPanel = ({
         ) : view === 'home' ? (
           // Home View
           <>
+            {/* Based on Your Chat - Conversation context shelf (NEW) */}
+            {homeData.from_your_chat?.length > 0 && (
+              <ContentShelf
+                title="Based on your chat"
+                items={homeData.from_your_chat}
+                icon={Brain}
+                onItemClick={handleItemClick}
+              />
+            )}
+            
             {/* For Your Pet - Personalized shelf (Pet First doctrine) */}
             {homeData.for_your_pet?.length > 0 && (
               <ContentShelf
