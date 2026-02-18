@@ -4316,11 +4316,15 @@ async def mira_os_understand_with_products(
             "has_recommendations": False
         }
         
+        logger.info(f"[INTENT-DRIVEN DEBUG] pet_context: {request.pet_context}")
+        
         if request.pet_context:
             try:
                 from intent_driven_cards import get_intent_driven_recommendations
                 pet_name = request.pet_context.get("name", "your pet")
                 pet_id = request.pet_context.get("id")
+                
+                logger.info(f"[INTENT-DRIVEN DEBUG] Calling engine with pet_name={pet_name}, pet_id={pet_id}, msg={request.input[:50]}")
                 
                 intent_driven_data = await get_intent_driven_recommendations(
                     db=db,
@@ -4332,10 +4336,14 @@ async def mira_os_understand_with_products(
                     services_limit=4
                 )
                 
+                logger.info(f"[INTENT-DRIVEN DEBUG] Result: has_recommendations={intent_driven_data.get('has_recommendations')}, intent={intent_driven_data.get('intent')}")
+                
                 if intent_driven_data.get("has_recommendations"):
                     logger.info(f"[INTENT ENGINE] Generated: {len(intent_driven_data['picks'])} picks, {len(intent_driven_data['services'])} services for '{intent_driven_data['intent']}'")
             except Exception as intent_err:
                 logger.warning(f"[INTENT ENGINE] Error: {intent_err}", exc_info=True)
+        else:
+            logger.info(f"[INTENT-DRIVEN DEBUG] No pet_context in request")
         
         # ═══════════════════════════════════════════════════════════════════════════
         # PICKS ENGINE (B6) - Run ONCE at the start for every message
