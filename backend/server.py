@@ -14155,6 +14155,115 @@ async def unarchive_notification(notification_id: str):
     return {"success": result.modified_count > 0, "notification_id": notification_id}
 
 
+
+# ============================================
+# MEMBER TICKET REPLY - THE ONE TRUE FLOW
+# ============================================
+# This is the CANONICAL endpoint for member replies.
+# It writes to service_desk_tickets FIRST, then creates notifications.
+
+class MemberTicketReplyRequest(BaseModel):
+    text: str
+    attachments: Optional[List[str]] = []
+
+@api_router.post("/member/tickets/{ticket_id}/reply")
+async def member_ticket_reply(ticket_id: str, request: MemberTicketReplyRequest):
+    """
+    Member sends a reply to their ticket thread.
+    
+    THE ONE TRUE FLOW:
+    1. Write to service_desk_tickets (canonical source)
+    2. Update mira_tickets + mira_conversations (sync)
+    3. Create admin_notification (alert concierge)
+    4. Return immediately for optimistic UI
+    """
+    now = datetime.now(timezone.utc).isoformat()
+    message_id = f"MSG-{uuid.uuid4().hex[:8].upper()}"
+    
+    message_entry = {
+        "id": message_id,
+        "type": "member_reply",
+        "sender": "member",
+        "source": "inbox_thread",
+        "content": request.text,
+        "text": request.text,
+        "attachments": request.attachments or [],
+        "timestamp": now,
+        "created_at": now
+    }
+    
+    # STEP 1: Write to service_desk_tickets FIRST (canonical)
+    result = await db.service_desk_tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"messages": message_entry},
+            "$set": {
+                "updated_at": now,
+                "has_unread_member_reply": True,
+                "last_member_reply_at": now,
+                "status": "open"  # Re-open if resolved
+            }
+        }
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail=f"Ticket {ticket_id} not found")
+    
+    # STEP 2: Sync to mira_tickets and mira_conversations
+    await db.mira_tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"messages": message_entry},
+            "$set": {"updated_at": now, "has_unread_member_reply": True}
+        }
+    )
+    
+    await db.mira_conversations.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"conversation": message_entry},
+            "$set": {"updated_at": now, "has_unread_member_reply": True}
+        }
+    )
+    
+    # STEP 3: Create admin notification for concierge
+    try:
+        # Get ticket info for notification context
+        ticket = await db.service_desk_tickets.find_one(
+            {"ticket_id": ticket_id},
+            {"_id": 0, "member": 1, "pet": 1, "subject": 1, "pillar": 1}
+        )
+        
+        admin_notif_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+        pet_name = ticket.get("pet", {}).get("name", "") if ticket else ""
+        member_name = ticket.get("member", {}).get("name", "Member") if ticket else "Member"
+        
+        await db.admin_notifications.insert_one({
+            "id": admin_notif_id,
+            "type": "member_reply",
+            "title": f"Reply from {member_name}" + (f" about {pet_name}" if pet_name else ""),
+            "message": request.text[:150] + ("..." if len(request.text) > 150 else ""),
+            "ticket_id": ticket_id,
+            "read": False,
+            "urgency": "medium",
+            "created_at": now,
+            "link": f"/admin?tab=servicedesk&ticket={ticket_id}"
+        })
+        logger.info(f"[MEMBER_REPLY] Admin notification created: {admin_notif_id}")
+    except Exception as e:
+        logger.warning(f"[MEMBER_REPLY] Failed to create admin notification: {e}")
+    
+    logger.info(f"[MEMBER_REPLY] Reply added to ticket {ticket_id}: {message_id}")
+    
+    return {
+        "success": True,
+        "ticket_id": ticket_id,
+        "message_id": message_id,
+        "timestamp": now
+    }
+
+
+
 @api_router.get("/member/requests")
 async def get_member_requests(
     current_user: dict = Depends(get_current_user),
