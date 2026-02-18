@@ -3,7 +3,30 @@
 
 **Purpose:** This document provides a comprehensive audit checklist covering ALL system aspects for QA, handover, and regression testing.
 
-**Last Updated:** February 17, 2026
+**Last Updated:** February 18, 2026
+
+---
+
+# ⚠️ MANDATORY AGENT PROTOCOL
+
+**BEFORE ANY AUDIT OR CHANGE, every agent MUST:**
+
+1. **Read ALL Bible documents:**
+   - `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` (Complete system contract)
+   - `/app/memory/QUICK_REPLIES_AUDIT_FRAMEWORK.md` (Chip validation)
+   - `/app/memory/PRD.md` (Product requirements)
+   - `/app/memory/LEARN_BIBLE.md` (LEARN pillar)
+
+2. **Understand Core Doctrines:**
+   - **PET FIRST DOCTRINE:** Mira knows the pet's SOUL. Breed is secondary.
+   - **VOICE CONTRACT (Section 0.05):** Banned openers, required openers
+   - **QUICK REPLIES CONTRACT (Section 11.2):** Deterministic chips, 3-6 per turn
+
+3. **Test on:** `/mira-demo?debug=1`
+   - User: `dipali@clubconcierge.in` / `test123`
+   - Pets: Lola, Mystique
+
+4. **WARN if any request conflicts with Bible doctrines**
 
 ---
 
@@ -23,6 +46,7 @@
 12. [SECURITY & COMPLIANCE AUDIT](#12-security--compliance-audit)
 13. [DATA INTEGRITY AUDIT](#13-data-integrity-audit)
 14. [REGRESSION TEST SUITE](#14-regression-test-suite)
+15. [QUICK REPLIES AUDIT](#15-quick-replies-audit) ← **NEW**
 
 ---
 
