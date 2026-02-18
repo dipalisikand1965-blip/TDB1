@@ -4303,6 +4303,41 @@ async def mira_os_understand_with_products(
                 logger.warning(f"[LEARN BRIDGE OS] Intent capture error: {learn_intent_err}", exc_info=True)
         
         # ═══════════════════════════════════════════════════════════════════════════
+        # INTENT-DRIVEN DYNAMIC CARDS - MIRA (Brain) → CONCIERGE (Hands)
+        # Generate dynamic recommendations based on what MIRA understands the pet needs
+        # "{Pet} needs this" - Always personalized to THAT pet
+        # ═══════════════════════════════════════════════════════════════════════════
+        intent_driven_data = {
+            "intent": None,
+            "intent_display": None,
+            "shelf_title": None,
+            "picks": [],
+            "services": [],
+            "has_recommendations": False
+        }
+        
+        if request.pet_context:
+            try:
+                from intent_driven_cards import get_intent_driven_recommendations
+                pet_name = request.pet_context.get("name", "your pet")
+                pet_id = request.pet_context.get("id")
+                
+                intent_driven_data = await get_intent_driven_recommendations(
+                    db=db,
+                    user_message=request.input,
+                    pet_name=pet_name,
+                    pet_id=pet_id,
+                    pet_context=request.pet_context,
+                    picks_limit=5,
+                    services_limit=4
+                )
+                
+                if intent_driven_data.get("has_recommendations"):
+                    logger.info(f"[INTENT ENGINE] Generated: {len(intent_driven_data['picks'])} picks, {len(intent_driven_data['services'])} services for '{intent_driven_data['intent']}'")
+            except Exception as intent_err:
+                logger.warning(f"[INTENT ENGINE] Error: {intent_err}", exc_info=True)
+        
+        # ═══════════════════════════════════════════════════════════════════════════
         # PICKS ENGINE (B6) - Run ONCE at the start for every message
         # This ensures picks auto-refresh on every chat turn
         # ═══════════════════════════════════════════════════════════════════════════
