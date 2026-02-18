@@ -74,7 +74,7 @@ const MobileNavBar = () => {
   
   const navItems = [
     { id: 'home', icon: Home, label: 'Home', path: '/' },
-    { id: 'care', icon: Crown, label: 'Care', path: '/services' },
+    { id: 'inbox', icon: Inbox, label: 'Inbox', path: '/notifications' },
     { id: 'mira', icon: Sparkles, label: miraConfig.label, isMira: true },
     { id: 'orders', icon: Package, label: 'Orders', path: '/dashboard?tab=orders' },
     { 
