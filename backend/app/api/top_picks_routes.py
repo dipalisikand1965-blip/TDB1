@@ -1087,6 +1087,150 @@ async def get_user_recent_intents(db, user_id: str, pet_id: str, hours: int = 48
         return []
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# MIRA IS THE SOUL - Smart Fallback Picks
+# When there are no chat intents, Mira still knows what the pet needs based on:
+# 1. Breed characteristics (grooming, exercise, health predispositions)
+# 2. Seasonal/weather context (Mumbai summer = hydration, monsoon = tick prevention)
+# 3. Pet age/life stage (puppy = training, senior = joint care)
+# 4. Profile completeness (prompt to add vaccinations, etc.)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+async def get_smart_fallback_picks(
+    db,
+    pet: Dict,
+    pet_allergies: List[str],
+    limit: int = 6
+) -> List[Dict]:
+    """
+    MIRA'S SOUL INTELLIGENCE - Always have something smart to suggest.
+    Even without explicit chat intents, Mira knows the pet.
+    """
+    from datetime import datetime, timezone
+    from breed_knowledge import get_breed_knowledge
+    
+    pet_name = pet.get("name", "Your pet")
+    breed = pet.get("breed", "")
+    age_months = pet.get("age_months") or 24  # Default to adult
+    
+    # Get breed-specific knowledge
+    breed_data = get_breed_knowledge(breed) if breed else {}
+    
+    # Determine pet's life stage
+    if age_months < 12:
+        life_stage = "puppy"
+    elif age_months > 84:  # 7+ years
+        life_stage = "senior"
+    else:
+        life_stage = "adult"
+    
+    # Get current month for seasonal context
+    current_month = datetime.now(timezone.utc).month
+    
+    # Build smart categories based on context
+    smart_categories = []
+    smart_tags = []
+    why_it_fits_reasons = []
+    
+    # 1. BREED-BASED INTELLIGENCE
+    if breed_data:
+        grooming_needs = breed_data.get("grooming_needs", "medium")
+        exercise_needs = breed_data.get("exercise_needs", "medium")
+        health_predispositions = breed_data.get("health_predispositions", [])
+        
+        if grooming_needs in ["high", "very_high"]:
+            smart_tags.extend(["grooming", "coat care", "brush", "shampoo"])
+            why_it_fits_reasons.append(f"{breed}s need regular grooming for their coat")
+        
+        if exercise_needs in ["high", "very_high"]:
+            smart_tags.extend(["toys", "outdoor", "fetch", "exercise"])
+            why_it_fits_reasons.append(f"{breed}s are active and need mental stimulation")
+        
+        if "joint_issues" in health_predispositions or "hip_dysplasia" in health_predispositions:
+            smart_tags.extend(["joint", "supplement", "mobility"])
+            why_it_fits_reasons.append(f"Supports {pet_name}'s joint health")
+    
+    # 2. LIFE STAGE INTELLIGENCE
+    if life_stage == "puppy":
+        smart_tags.extend(["puppy", "training", "teething", "socialization"])
+        smart_categories.extend(["puppy essentials", "training"])
+        why_it_fits_reasons.append(f"{pet_name} is still growing and learning")
+    elif life_stage == "senior":
+        smart_tags.extend(["senior", "joint", "digestive", "comfort"])
+        smart_categories.extend(["senior care"])
+        why_it_fits_reasons.append(f"Gentle care for {pet_name}'s golden years")
+    
+    # 3. SEASONAL INTELLIGENCE (India-focused)
+    if current_month in [3, 4, 5]:  # March-May = Summer prep
+        smart_tags.extend(["cooling", "hydration", "summer", "paw protection"])
+        why_it_fits_reasons.append("Summer's coming - time to prepare!")
+    elif current_month in [6, 7, 8, 9]:  # June-Sept = Monsoon
+        smart_tags.extend(["tick", "flea", "raincoat", "paw wash", "antifungal"])
+        why_it_fits_reasons.append("Monsoon essentials to keep ticks away")
+    elif current_month in [10, 11]:  # Oct-Nov = Festival season
+        smart_tags.extend(["anxiety", "calming", "treats", "celebration"])
+        why_it_fits_reasons.append("Festival season - keep calm treats ready")
+    elif current_month in [12, 1, 2]:  # Dec-Feb = Winter/Pleasant
+        smart_tags.extend(["outdoor", "travel", "adventure", "jacket"])
+        why_it_fits_reasons.append("Perfect weather for outdoor adventures!")
+    
+    # 4. ALWAYS INCLUDE ESSENTIALS
+    smart_tags.extend(["treats", "dental", "wellness"])
+    
+    if not smart_tags:
+        smart_tags = ["treats", "toys", "wellness", "grooming"]
+        why_it_fits_reasons = [f"Mira's top picks for {pet_name}"]
+    
+    # Query products matching smart tags
+    try:
+        query = {
+            "in_stock": {"$ne": False},
+            "$or": [
+                {"tags": {"$in": smart_tags[:15]}},
+                {"name": {"$regex": "|".join(smart_tags[:10]), "$options": "i"}},
+                {"category": {"$regex": "|".join(smart_categories[:5]), "$options": "i"}} if smart_categories else {"_id": {"$exists": True}}
+            ]
+        }
+        
+        products = await db.unified_products.find(query, {"_id": 0}).limit(30).to_list(30)
+        
+        # Filter allergies and score
+        smart_picks = []
+        for product in products:
+            # Skip allergens
+            product_allergens = [a.lower() for a in (product.get("allergens") or [])]
+            if any(allergy.lower() in product_allergens for allergy in pet_allergies):
+                continue
+            
+            # Calculate score based on tag matches
+            product_tags = [t.lower() for t in (product.get("tags") or [])]
+            product_name = (product.get("name") or "").lower()
+            
+            score = sum(1 for tag in smart_tags if tag.lower() in product_tags or tag.lower() in product_name)
+            
+            if score > 0:
+                # Pick a relevant reason
+                reason = why_it_fits_reasons[0] if why_it_fits_reasons else f"Mira picked this for {pet_name}"
+                
+                smart_picks.append({
+                    "id": product.get("id") or product.get("product_id"),
+                    "name": product.get("name"),
+                    "image_url": product.get("image_url") or product.get("images", [None])[0],
+                    "price": product.get("price"),
+                    "why_it_fits": reason,
+                    "pick_source": "mira_knows",
+                    "score": score
+                })
+        
+        # Sort by score and return top picks
+        smart_picks.sort(key=lambda x: x["score"], reverse=True)
+        return smart_picks[:limit]
+        
+    except Exception as e:
+        logger.error(f"[PICKS SOUL] Smart fallback error: {e}")
+        return []
+
+
 async def get_timely_picks_for_intents(
     db, 
     intents: List[Dict], 
