@@ -1719,11 +1719,65 @@ async def get_top_picks(
     # Calculate total picks
     total_picks = sum(p["total_picks"] for p in pillar_picks.values())
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # INTENT-DRIVEN DYNAMIC CARDS - "{Pet} needs this for {Intent}"
+    # MIRA (Brain) generates these for CONCIERGE (Hands) to fulfill
+    # These are NOT from catalogue - Concierge sources them (no price)
+    # ═══════════════════════════════════════════════════════════════════════════
+    intent_driven = {
+        "has_recommendations": False,
+        "intent": None,
+        "intent_display": None,
+        "shelf_title": None,
+        "picks": [],
+        "services": []
+    }
+    
+    try:
+        from intent_driven_cards import get_current_pet_intent, generate_dynamic_picks, generate_dynamic_services, INTENT_RECOMMENDATIONS
+        
+        # Get current active intent for this pet
+        pet_intent = await get_current_pet_intent(db, actual_pet_id)
+        
+        if pet_intent and pet_intent.get("intent"):
+            intent_key = pet_intent["intent"]
+            intent_display = pet_intent.get("intent_display") or intent_key.replace("_", " ").title()
+            
+            # Generate dynamic picks (Concierge-sourced, no price)
+            dynamic_picks = generate_dynamic_picks(
+                intent=intent_key,
+                pet_name=pet_name,
+                pet_context=pet,
+                limit=5
+            )
+            
+            # Generate dynamic services
+            dynamic_services = generate_dynamic_services(
+                intent=intent_key,
+                pet_name=pet_name,
+                pet_context=pet,
+                limit=4
+            )
+            
+            if dynamic_picks or dynamic_services:
+                intent_driven = {
+                    "has_recommendations": True,
+                    "intent": intent_key,
+                    "intent_display": intent_display,
+                    "shelf_title": f"{pet_name} needs this for {intent_display}",
+                    "picks": dynamic_picks,
+                    "services": dynamic_services
+                }
+                logger.info(f"[PICKS] Intent-driven: {len(dynamic_picks)} picks, {len(dynamic_services)} services for '{intent_key}'")
+    except Exception as intent_err:
+        logger.warning(f"[PICKS] Intent-driven cards error: {intent_err}")
+    
     return {
         "success": True,
         "pet": pet_intelligence,
-        "timely_picks": timely_picks,  # NEW: "{petName} might need this" shelf
-        "timely_context": timely_context,  # NEW: Context info
+        "timely_picks": timely_picks,  # "{petName} might need this" shelf (from catalogue)
+        "timely_context": timely_context,  # Context info
+        "intent_driven": intent_driven,  # NEW: Dynamic Concierge cards based on intent
         "pillars": pillar_picks,
         "total_picks": total_picks,
         "generated_at": datetime.now(timezone.utc).isoformat(),
