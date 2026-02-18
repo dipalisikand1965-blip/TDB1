@@ -19747,6 +19747,78 @@ async def semantic_product_search(request: Request):
     }
 
 
+
+@router.post("/intent-driven-cards")
+async def get_intent_driven_cards(
+    request_body: dict = Body(...)
+):
+    """
+    Get intent-driven dynamic cards based on user message.
+    
+    MIRA (Brain) → Understands what pet needs → Generates recommendations
+    CONCIERGE (Hands) → Fulfills these recommendations
+    
+    "{Pet} needs this for {Intent}" - Always personalized to THAT pet
+    
+    Request:
+    {
+        "message": "I want to house train Lola",
+        "pet_name": "Lola",
+        "pet_id": "pet-123",
+        "pet_context": {"breed": "Maltese", ...}
+    }
+    
+    Returns:
+    {
+        "success": true,
+        "intent": "house_training",
+        "intent_display": "House Training",
+        "shelf_title": "Lola needs this for House Training",
+        "picks": [...],  // Concierge-sourced picks (no price)
+        "services": [...] // Concierge-arranged services
+    }
+    """
+    try:
+        from intent_driven_cards import get_intent_driven_recommendations
+        
+        message = request_body.get("message", "")
+        pet_name = request_body.get("pet_name", "your pet")
+        pet_id = request_body.get("pet_id")
+        pet_context = request_body.get("pet_context", {})
+        
+        logger.info(f"[INTENT-DRIVEN API] Processing: '{message[:50]}...' for {pet_name}")
+        
+        db = get_db()
+        
+        result = await get_intent_driven_recommendations(
+            db=db,
+            user_message=message,
+            pet_name=pet_name,
+            pet_id=pet_id,
+            pet_context=pet_context,
+            picks_limit=5,
+            services_limit=4
+        )
+        
+        if result.get("has_recommendations"):
+            logger.info(f"[INTENT-DRIVEN API] Generated: {len(result.get('picks', []))} picks, {len(result.get('services', []))} services for '{result.get('intent')}'")
+        else:
+            logger.info(f"[INTENT-DRIVEN API] No intent detected for message: '{message[:30]}...'")
+        
+        return {
+            "success": True,
+            **result
+        }
+        
+    except Exception as e:
+        logger.error(f"[INTENT-DRIVEN API] Error: {e}", exc_info=True)
+        return {
+            "success": False,
+            "has_recommendations": False,
+            "message": str(e)
+        }
+
+
 @router.get("/semantic-intents")
 async def get_semantic_intents():
     """
