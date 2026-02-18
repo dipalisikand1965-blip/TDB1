@@ -459,6 +459,81 @@ async def get_service_launchers(
     }
 
 
+@router.get("/intent-driven")
+async def get_intent_driven_services(
+    pet_id: str = Query(..., description="Pet ID"),
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get intent-driven dynamic service recommendations for a pet.
+    
+    MIRA (Brain) → Detects intent from recent chat
+    CONCIERGE (Hands) → Fulfills these service recommendations
+    
+    Returns:
+    - Dynamic services based on current chat intent
+    - "{petName} needs this for {Intent}" shelf
+    - Concierge-arranged services (no fixed price)
+    """
+    db = get_db()
+    if db is None:
+        return {"success": False, "message": "Database not initialized"}
+    
+    # Get pet info
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        pet = await db.pets.find_one({"name": {"$regex": pet_id, "$options": "i"}}, {"_id": 0})
+    
+    if not pet:
+        return {"success": False, "message": f"Pet not found: {pet_id}"}
+    
+    pet_name = pet.get("name", "Your pet")
+    actual_pet_id = pet.get("id") or pet.get("name")
+    
+    # Get intent-driven services
+    try:
+        from intent_driven_cards import get_current_pet_intent, generate_dynamic_services
+        
+        pet_intent = await get_current_pet_intent(db, actual_pet_id)
+        
+        if not pet_intent or not pet_intent.get("intent"):
+            return {
+                "success": True,
+                "has_recommendations": False,
+                "message": "No recent intent detected"
+            }
+        
+        intent_key = pet_intent["intent"]
+        intent_display = pet_intent.get("intent_display") or intent_key.replace("_", " ").title()
+        
+        # Generate dynamic services
+        dynamic_services = generate_dynamic_services(
+            intent=intent_key,
+            pet_name=pet_name,
+            pet_context=pet,
+            limit=6
+        )
+        
+        return {
+            "success": True,
+            "has_recommendations": len(dynamic_services) > 0,
+            "intent": intent_key,
+            "intent_display": intent_display,
+            "shelf_title": f"{pet_name} needs this for {intent_display}",
+            "services": dynamic_services,
+            "pet_name": pet_name
+        }
+        
+    except Exception as e:
+        logger.error(f"[INTENT SERVICES] Error: {e}")
+        return {
+            "success": False,
+            "message": str(e)
+        }
+
+
+
+
 @router.get("/inbox")
 async def get_services_inbox(
     pet_id: Optional[str] = Query(None, description="Filter by pet ID"),
