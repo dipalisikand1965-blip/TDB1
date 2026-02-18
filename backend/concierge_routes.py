@@ -863,6 +863,36 @@ async def create_picks_request(payload: PicksRequestPayload):
             {"$set": {"ticket_id": ticket_id}}
         )
         
+        # ═══════════════════════════════════════════════════════════════════════
+        # CREATE MEMBER NOTIFICATION - So user sees it in their notification bell
+        # This is the missing piece! User should be notified their request was received.
+        # ═══════════════════════════════════════════════════════════════════════
+        try:
+            member_notification_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
+            member_notification = {
+                "id": member_notification_id,
+                "type": "picks_request_received",
+                "title": f"Request Received: {payload.pet_name}",
+                "message": f"Your {len(payload.selected_items)} picks for {payload.pet_name} have been sent to Concierge®. We'll get back to you soon!",
+                "pet_name": payload.pet_name,
+                "pet_id": payload.pet_id if hasattr(payload, 'pet_id') else None,
+                "user_email": payload.user_email if hasattr(payload, 'user_email') else None,
+                "ticket_id": ticket_id,
+                "request_id": request_id,
+                "pillar": primary_pillar,
+                "read": False,
+                "created_at": now.isoformat(),
+                "data": {
+                    "thread_id": signal_result.get("thread_id"),
+                    "thread_url": f"/mira-demo?tab=services&thread={ticket_id}",
+                    "items_count": len(payload.selected_items)
+                }
+            }
+            await db.mira_member_notifications.insert_one(member_notification)
+            logger.info(f"[PICKS REQUEST] Created member notification: {member_notification_id} for {payload.pet_name}")
+        except Exception as notif_error:
+            logger.error(f"[PICKS REQUEST] Failed to create member notification: {notif_error}")
+        
     except Exception as e:
         logger.error(f"[PICKS REQUEST] Failed to create unified signal: {e}")
         ticket_id = request_id
