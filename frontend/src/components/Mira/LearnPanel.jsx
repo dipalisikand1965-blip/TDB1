@@ -138,15 +138,17 @@ const ContentCard = memo(({ item, onClick, onSave }) => {
           </span>
           {item.is_personalized && !item.relevance_badge && (
             <span style={{
-              background: 'rgba(168, 85, 247, 0.2)',
-              color: '#a855f7',
+              background: item.from_recent_chat 
+                ? 'rgba(245, 158, 11, 0.2)'  // Amber for timely
+                : 'rgba(168, 85, 247, 0.2)',
+              color: item.from_recent_chat ? '#f59e0b' : '#a855f7',
               fontSize: '10px',
               fontWeight: 500,
               padding: '2px 6px',
               borderRadius: '4px',
               marginLeft: '4px'
             }}>
-              Relevant
+              {item.from_recent_chat ? 'Timely' : 'For you'}
             </span>
           )}
         </div>
