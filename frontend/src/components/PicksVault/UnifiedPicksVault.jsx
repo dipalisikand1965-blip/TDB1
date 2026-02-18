@@ -1385,6 +1385,7 @@ const UnifiedPicksVault = ({
   onQuickAction,
   onCreateConciergeTicket,
   token,
+  user,
 }) => {
   const [activeTab, setActiveTab] = useState('forPet');
   const [loading, setLoading] = useState(false);
