@@ -36,6 +36,18 @@ User Request
 
 ## ⚠️ CRITICAL: DEPLOYMENT BIBLE - READ BEFORE EVERY DEPLOY ⚠️
 
+### 🚨 ONE COMMAND FIX - RUN BEFORE EVERY DEPLOY
+
+```bash
+bash /app/scripts/prepare-deploy.sh
+```
+
+This script:
+1. ✅ Sets `REACT_APP_BACKEND_URL` to `https://thedoggycompany.in`
+2. ✅ Restarts frontend
+3. ✅ Verifies the change
+4. ✅ Tells you when ready to deploy
+
 ### 🚨 FRONTEND URL FIX (MUST DO BEFORE EVERY DEPLOYMENT)
 
 **Problem:** Each new Emergent session/fork resets `REACT_APP_BACKEND_URL` to the preview URL. Production will NOT work until this is fixed.
