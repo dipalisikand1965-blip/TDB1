@@ -998,6 +998,8 @@ const PersonalizedPicksPanel = ({
         },
         body: JSON.stringify({
           pet_name: pet?.name,
+          pet_id: pet?.id,
+          user_email: userEmail,
           selected_items: [{
             ...pick,
             pick_type: pick.type || pick.pick_type || 'concierge',
