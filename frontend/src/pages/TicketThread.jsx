@@ -1,25 +1,24 @@
 /**
- * TicketThread - Full-screen ticket thread view
+ * TicketThread - Ticket thread view with two modes
  * 
- * Routes: /tickets/:ticketId
+ * Routes: /tickets/:ticketId (full mode)
  * Query params: ?event=:eventId (highlight specific update)
  * 
- * Props (for embedded mode):
- * - ticketIdProp: ticket ID when rendered inside NotificationsInbox
- * - isEmbedded: true when rendered in split view
- * - onClose: callback to close the thread panel
+ * Props:
+ * - ticketId: ticket ID (required in split mode)
+ * - mode: "full" (mobile/standalone) or "split" (desktop inbox pane)
+ * - onClose: callback to close the thread panel (split mode)
+ * - onTicketUpdate: callback when ticket is updated (for parent refresh)
  * 
  * Features:
- * - Full-screen on mobile (no drawers)
- * - Tappable sticky header → details sheet
- * - Deduplicated system events as centered chips
- * - Message alignment: member right, concierge left
- * - Smart timestamps (gaps > 10min)
- * - Resolved ticket: disabled composer + "Reopen" button
- * - Bottom sheet composer on tap
- * - Deep-link highlight (auto-scroll + 2s highlight)
- * - Actions menu: Mark unread, Archive
- * - GlobalNav on full-screen mode (Dashboard | Inbox)
+ * - mode="full": Full-screen with GlobalNav, mobile-first
+ * - mode="split": Embedded in desktop inbox, no GlobalNav, constrained height
+ * - "Apple-clear" Reply UX:
+ *   - Visible Send button (paper plane icon)
+ *   - Enter to send, Shift+Enter for newline
+ *   - Optimistic UI: instant bubble with "Sending..." status
+ *   - Failure state: "Not sent. Tap to retry."
+ * - Uses /api/member/tickets/:ticketId/reply endpoint
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
