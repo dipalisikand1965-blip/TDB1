@@ -11905,7 +11905,7 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
                 "nearby_places": None
             })
         elif missing_info == ["location"]:
-            # Only location is missing
+            # Only location is missing - include conversation_contract
             return add_picks_to_response({
                 "success": True,
                 "response": f"{pet_anchor}\n\nWhich **area** would you like me to search in?",
@@ -11926,7 +11926,19 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
                     {"text": "Use my current location", "type": "location"}
                 ],
                 "products": [],
-                "nearby_places": None
+                "nearby_places": None,
+                # Section 11.2: conversation_contract for deterministic UI
+                "conversation_contract": {
+                    "mode": "clarify",
+                    "assistant_message_id": f"MSG-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:5].upper()}",
+                    "quick_replies": [
+                        {"id": "QR-LOC-01", "label": "Use current location", "payload_text": "Use my current location.", "intent_type": "consent_location", "action": "set_state", "action_args": {"key": "request_geo_permission", "value": True}, "analytics_tag": "qr.location.use_current", "safety": {"requires_consent": True, "consent_key": "geo_location"}},
+                        {"id": "QR-LOC-02", "label": "Koramangala", "payload_text": "Koramangala, Bangalore.", "intent_type": "location_area", "action": "none", "action_args": {}, "analytics_tag": "qr.location.area"},
+                        {"id": "QR-LOC-03", "label": "Indiranagar", "payload_text": "Indiranagar, Bangalore.", "intent_type": "location_area", "action": "none", "action_args": {}, "analytics_tag": "qr.location.area"},
+                        {"id": "QR-LOC-04", "label": "Not now", "payload_text": "Not now.", "intent_type": "cancel", "action": "none", "action_args": {}, "analytics_tag": "qr.nav.cancel"}
+                    ],
+                    "actions": []
+                }
             })
         else:
             # Both missing - ask both in ONE message (max 2 questions)
