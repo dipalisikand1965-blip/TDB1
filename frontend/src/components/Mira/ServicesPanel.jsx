@@ -340,6 +340,8 @@ const ServicesPanel = ({
   const [showMoreLaunchers, setShowMoreLaunchers] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [showTicketDetail, setShowTicketDetail] = useState(false);
+  const [timelyServices, setTimelyServices] = useState([]);
+  const [timelyContext, setTimelyContext] = useState({ enabled: false, topics: [] });
   
   // Fetch data
   const fetchData = useCallback(async () => {
@@ -354,16 +356,22 @@ const ServicesPanel = ({
         'Authorization': `Bearer ${token}`
       };
       
-      // Fetch launchers and inbox in parallel
-      // Note: Don't filter inbox by pet_id - show ALL tickets for user
+      // Fetch launchers (with pet_id for soul context) and inbox in parallel
+      const petIdParam = selectedPetId ? `?pet_id=${selectedPetId}` : '';
       const [launchersRes, inboxRes] = await Promise.all([
-        fetch(`${API_BASE}/api/os/services/launchers`, { headers }),
+        fetch(`${API_BASE}/api/os/services/launchers${petIdParam}`, { headers }),
         fetch(`${API_BASE}/api/os/services/inbox`, { headers })
       ]);
       
       if (launchersRes.ok) {
         const launchersData = await launchersRes.json();
         setLaunchers(launchersData.launchers || []);
+        // Soul integration - timely services
+        setTimelyServices(launchersData.timely_services || []);
+        setTimelyContext(launchersData.timely_context || { enabled: false, topics: [] });
+        if (launchersData.timely_context?.enabled) {
+          console.log('[SERVICES SOUL] Timely context:', launchersData.timely_context.topics);
+        }
       }
       
       if (inboxRes.ok) {
@@ -376,7 +384,7 @@ const ServicesPanel = ({
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, selectedPetId]);
   
   useEffect(() => {
     fetchData();
