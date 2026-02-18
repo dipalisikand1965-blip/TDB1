@@ -22,6 +22,7 @@ import PetAvatar from '../components/PetAvatar';
 import SoulScoreArc from '../components/SoulScoreArc';
 import LivingSoulOrb from '../components/LivingSoulOrb';
 import MemberNotificationBell from '../components/MemberNotificationBell';
+import GlobalNav from '../components/Mira/GlobalNav';
 
 // Lazy load heavy components to improve initial render
 const PawPointsRewards = lazy(() => import('../components/PawPointsRewards'));
