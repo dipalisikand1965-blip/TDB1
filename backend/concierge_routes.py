@@ -433,6 +433,8 @@ class MiraRecommendationRequest(BaseModel):
     type: str  # "mira_recommendation" or "mira_bundle"
     pet_id: Optional[str] = None
     pet_name: Optional[str] = "your pet"
+    user_email: Optional[str] = None  # For member notification
+    pillar: Optional[str] = "general"  # Pillar context
     recommendation: Optional[MiraRecommendation] = None  # Single recommendation
     recommendations: Optional[List[MiraRecommendation]] = None  # Bundle of recommendations
     source: str = "mira_fab"
