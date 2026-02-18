@@ -410,7 +410,7 @@ curl -s "$API_URL/api/pets" -H "Authorization: Bearer $TOKEN" | \
 
 | Purpose | URL |
 |---------|-----|
-| Preview | `https://service-spine-hub.preview.emergentagent.com` |
+| Preview | `https://mira-spine-fix.preview.emergentagent.com` |
 | Mira Demo Page | `/mira-demo` (NOT `/mira`) |
 | Debug Mode | Add `?debug=1` to URL |
 | Admin Panel | `/admin` |

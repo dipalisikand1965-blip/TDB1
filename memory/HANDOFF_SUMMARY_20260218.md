@@ -15,7 +15,7 @@
 - **User:** `dipali@clubconcierge.in` / `test123`
 - **Admin:** `aditya` / `lola4304`
 - **Test URL:** `/mira-demo?debug=1`
-- **API URL:** `https://service-spine-hub.preview.emergentagent.com`
+- **API URL:** `https://mira-spine-fix.preview.emergentagent.com`
 
 ---
 

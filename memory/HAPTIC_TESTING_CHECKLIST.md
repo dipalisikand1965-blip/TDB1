@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://service-spine-hub.preview.emergentagent.com/mira-demo**
+**https://mira-spine-fix.preview.emergentagent.com/mira-demo**
 
 ---
 

@@ -1,13 +1,11 @@
 <analysis>**original_problem_statement:**
-The user's vision is to create a Golden Standard Communication System, centered around an AI named Mira. The development is strictly guided by an internal design document, . A critical architectural rule is the **Uniform Service Flow,** mandating that all service actions create or attach to a single, canonical Service Desk Ticket spine using a  ID format. Another core principle is the **Health-First Safety Rule**, where pet health facts always override conflicting preferences.
-
-The overarching user-facing mental model is: **Chat is where you ask. Services is where it gets done.** The UI must be refined to make this distinction foolproof and intuitive, with a premium, human-centric feel targeted at millennial pet parents, with a strong emphasis on a mobile-first experience for iOS and Android.
+The user's vision is to create a Golden Standard Communication System, centered around an AI named Mira. The development is strictly guided by an internal design document, . A critical architectural rule is the **Uniform Service Flow,** mandating that all service actions create or attach to a single, canonical Service Desk Ticket spine using a  ID format. Another core principle is the **Health-First Safety Rule**, where pet health facts always override conflicting preferences. The overarching user-facing mental model is: **Chat is where you ask. Services is where it gets done.**
 
 **PRODUCT REQUIREMENTS:**
 1.  **Mental Model Reinforcement:** All UI copy, notifications, and interaction flows must guide the user to ask in Chat and manage execution/replies in Services.
 2.  **Uniform Service Flow:** Enforce a single ticket backbone ( IDs) for all service requests.
 3.  **Picks Fallback Logic:** If Mira cannot find a matching product, the Picks panel must fall back to a Concierge Arranges flow.
-4.  **Deterministic UI Contracts:** The frontend must render strictly based on  and  from the backend.
+4.  **Deterministic UI Contracts:** The frontend must render strictly based on  from the backend. This contract includes a  and a set of  (chips) that dictate all user interaction.
 5.  **Explicit Location Consent:** For near me queries, the system must ask for consent before triggering geolocation.
 6.  **Reply Guardrail:** Prevent users from replying to open tickets in the main Chat view by nudging them to the Services thread.
 7.  **Consistent Ownership:** Ensure ticket ownership is derived from a unified identity model across the application.
@@ -16,47 +14,67 @@ The overarching user-facing mental model is: **Chat is where you ask. Services i
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a functional React/FastAPI/MongoDB stack. The agent performed a full audit and confirmed the app is compliant with its core design Bible. During this session, several UI regressions and bugs were fixed. The pet selector in the header was simplified to prevent a modal from opening accidentally. A critical bug was fixed where notifications were not filtering per pet; this is now restored. The loading state for instant AI responses was also fixed to show descriptive text. The agent is currently working on implementing user-specified status indicators.
+The application is a React/FastAPI/MongoDB stack. This session focused on a One Spine audit, which uncovered and led to a fix for a critical dual-write bug preventing unread indicators from syncing correctly. The agent also fixed a major intent mismatch bug in the  pillar.
+
+A significant portion of the session was dedicated to documenting and beginning the implementation of a strict, contract-driven UI. The  was heavily updated with new, non-negotiable rules for Mira's voice, tone, and the structure of Quick Replies (chips). The agent began retrofitting the  into the backend responses and started fixing the  pillar to align with the new multi-turn conversation rules, but this work is incomplete.
 
 **Last working item**:
--   **Last item agent was working:** The agent was attempting to implement the user's request to make the C° (Concierge) and PICKS indicators non-clickable status-only indicators. There has been significant confusion and multiple corrections from the user about the exact location of these indicators. The user's final instruction was to place them on the chat bar, which the agent interpreted as the chat message header bar. The agent believes they made the change in  to make them non-clickable but has not successfully verified this with the user.
--   **Status:** IN PROGRESS
--   **Agent Testing Done:** N
--   **Which testing method agent to use?** Frontend testing agent to verify the final placement and non-interactive behavior of the indicators after confirming the location with the user.
--   **User Testing Done:** N
+-   Last item agent was working: Debugging the multi-step  pillar conversation. The goal is for Mira to ask clarifying questions (location, party size) *before* creating a ticket. The flow works for the first two steps but fails on the third, incorrectly reverting to the first step's questions. The agent was investigating why the  in the ticket's  was not being correctly persisted or read across user turns. The last logs indicated the ticket's stage was not being saved as size before the third user message was processed.
+-   Status: IN PROGRESS
+-   Agent Testing Done: N
+-   Which testing method agent to use? backend testing agent
+-   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: C° and PICKS Indicator Placement and Behavior (P0)**
-    -   **Description:** The user wants the C° and PICKS indicators to be non-clickable status indicators, but their precise location is unclear due to conflicting instructions. The user also wants to remove any clickable versions of these icons that open modals.
-    -   **Attempted fixes:** The agent has attempted to place these indicators in multiple locations (chat input, conversation area, top navigation) and believes the non-clickable logic was added to . These attempts have not been successful or confirmed by the user.
+-   **Issue 1: CELEBRATE Pillar Logic (P0)**
+    -   **Description:** When a user initiates a celebrate flow (e.g., I want to celebrate Lola), Mira should engage in a multi-step conversation about the celebration before creating a ticket. The implementation is partially working but breaks after the second step.
+    -   **Attempted fixes:** The agent created a multi-stage handler in  that uses an  field in the ticket to track progress. The flow fails because the stage is not being correctly persisted or read between user messages. The agent was last seen debugging why the stage was not updating to size in the database before the third message was processed.
     -   **Next debug checklist:**
-        1.  **Confirm the exact location.** Before writing any code, show the user a screenshot and ask them to clarify precisely where on the chat bar the indicators should appear.
-        2.  Review  and its child components (, ) to implement the indicators in the **correct** location.
-        3.  Ensure they are rendered as non-interactive elements (e.g., using  or  instead of , with ).
-        4.  Completely remove any  handlers or components that would render a clickable C°/PICKS icon that opens a modal (e.g., the old  or the logic in  that was opening the ).
-        5.  Verify the fix with a screenshot showing the final implementation.
-    -   **Why fix this issue?** To correctly implement the user's explicit UI/UX requirements and resolve a point of repeated confusion.
+        1.  Verify the database update operation that sets  is completing successfully.
+        2.  Check the  object at the beginning of the third request to confirm it contains .
+        3.  Trace the conditional logic in the  function to understand why it's re-entering the location stage instead of the execution stage.
+    -   **Why fix this issue?** To align the  flow with the soulful conversation first principle and the new Quick Replies contract defined in the Bible.
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Frontend
-
--   **Issue 2: WhatsApp Webhook Idempotency (P2)**
+    -   **Should Test frontend/backend/both after fix?** Backend
+-   **Issue 2: Breed Substitution Bug (P1)**
+    -   **Description:** In some responses, particularly the overwhelm scenario, Mira substitutes the wrong breed (e.g., Maltese instead of the active pet's breed, Shih Tzu).
+    -   **Next debug checklist:**
+        1.  Examine the code responsible for generating the overwhelm response in .
+        2.  Verify how the  variable is being populated from the .
+    -   **Why fix this issue?** To ensure personalization is accurate and maintain user trust, adhering to the Pet First doctrine.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Backend
+-   **Issue 3: WhatsApp Webhook Idempotency (P2)**
     -   **Description:** Webhook retries can create duplicate tickets. The idempotency check should use a unique message ID ().
     -   **Next debug checklist:** Modify the  logic in .
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Backend
+-   **Issue 4: Emergency Triage Missing Quick Replies (P1)**
+    -   **Description:** The emergency triage flow () correctly asks questions but does not return the required  with quick reply chips (e.g., Chocolate, Medicine, Plant) as mandated by the new Bible rules.
+    -   **Next debug checklist:**
+        1.  Locate the  logic in .
+        2.  Integrate the  helper, passing the correct context to generate the emergency triage chips.
+    -   **Why fix this issue?** To make the UI fully contract-driven and improve user experience during a critical flow.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Backend
 
 **In progress Task List**:
--   None.
+-   **Task 1: Full  Implementation (P0)**
+    -   **Where to resume:** The agent has partially implemented the contract by adding it to some return paths in . However, many code paths (like emergency and the main LLM response) still do not consistently return the contract. The  wrapper approach was insufficient due to the code's structure. The next step is to systematically find all return points in  and ensure they include a properly constructed .
+    -   **What will be achieved with this?** A fully deterministic, contract-driven backend that enables the frontend to render UI components like quick replies without guesswork, as required by the product bible.
+    -   **Status:** IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** Backend
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
-*   **P0: Implement new 8-10 step soul-capture onboarding experience.** The user wants a beautiful onboarding flow. Preparatory design and question list documents already exist.
-*   **P1: Implement remaining UI refinements:**
-    *   **Past Chats Panel:** Default to showing the last 3 threads, group headers by Today and Earlier, and fix text contrast.
-    *   **Unread Replies Indicator:** Ensure the  tab badge and individual ticket rows in the Services panel correctly indicate unread replies.
-    *   **Ticket Creation Banner:** After a ticket is created, show a confirmation banner: Request opened • TCK-XXXXXX with a View in Services button.
+*   **P0: Perform Exhaustive Audit:** Use the newly created  and  to conduct a full system audit.
+*   **P0: Implement new 8-10 step soul-capture onboarding experience.**
+*   **P1: Frontend Quick Reply Integration:** Implement the frontend logic in  to render the  array as clickable chips, respecting the  and  for each chip.
+*   **P1: Implement remaining UI refinements:** Past Chats Panel, Ticket Creation Banner.
 *   **P1: Strategic Discussion & Alignment:** Review the  with the user.
 *   **P2: Legacy Ticket Migration:** Plan and execute the migration of 134+ legacy tickets to the canonical  format.
 
@@ -67,10 +85,14 @@ The application is a functional React/FastAPI/MongoDB stack. The agent performed
 *   Implement a push notification system.
 
 **Completed work in this session**
--   **Bible Compliance Audit:** Performed a comprehensive audit of  and confirmed it is compliant with  and .
--   **Pet Selector Simplification:** The pet selector dropdown in the header was fixed to only switch pets, removing the confusing behavior of opening a profile modal on click. ().
--   **Per-Pet Notifications Restored:** Fixed a critical regression where notifications were not filtered by the active pet. This involved updating both the frontend (, ) and the backend ().
--   **Mira Loader Text Fixed:** The instant AI loading state (⚡) now correctly displays text like Finding that for Lola... ().
+-   **Unread Indicator Sync Fix:** Resolved a critical bug where concierge replies did not update the  tab's unread badge count. This was due to a dual-write issue between  and  collections. The fix involved creating a unified ticket fetching function (), adding a  flag to tickets, and correcting the logic in .
+-   **TRAVEL Pillar Bug Fix:** Corrected a severe intent mismatch in  where travel queries (e.g., trip to Goa) were incorrectly handled as restaurant booking requests.
+-   **One Spine Audit:** Performed a detailed audit based on the user's protocol, which successfully identified the unread indicator bug.
+-   **Created Core Doctrine & Audit Frameworks:**
+    -   Massively updated  with user-mandated contracts for Voice/Tone and Quick Replies.
+    -   Created  for general system validation.
+    -   Created  to enforce the new chip contract.
+-   **Updated PRD and System Docs:** Updated  to include a mandatory protocol for all future agents to read the Bible and audit frameworks before starting work.
 
 **Earlier issues found/mentioned but not fixed**
 -   **Pet Memory Allergy Test:** A potential logic issue in the Health-First Safety Rule where a pet with an allergy might not correctly refuse a treat has not been investigated.
@@ -79,93 +101,82 @@ The application is a functional React/FastAPI/MongoDB stack. The agent performed
 -   None.
 
 **Code Architecture**
-Tree structure of the entire codebase
 - **/app**
   - **/backend**
     - **/routes**
-      - 
-    - **/seed**
-      - 
+      -  (Core conversational logic, heavily modified)
+      -  (Modified for unread count fix)
+      -  (Updated with chip library)
+    - **/services**
+        -  (Modified concierge reply endpoint)
     - 
   - **/frontend**
     - **/src**
-      - **/components**
-        - **/mira**
-          - 
-          - 
-          - 
-          - 
-          - 
-          - 
-        - **/ui**
       - **/pages**
-        - 
-      - **/hooks**
-        - 
+        -  (Main application page)
   - **/memory**
-    - 
-    - 
-    - 
-    - 
+    -  (Primary design/behavior bible, heavily updated)
+    -  (NEW: Framework for full system audit)
+    -  (NEW: Framework for Quick Replies audit)
+    -  (Updated with agent protocols)
 
 **Key Technical Concepts**
--   API-Driven UI State Management (Deterministic Contracts)
--   Component-based UI with React hooks for state and side effects.
--   Centralized API hooks ().
--   Backend routing and logic with FastAPI.
--   MongoDB as the database.
+-   **Contract-Driven UI:** The backend must produce a  that deterministically controls the frontend's interactive elements (quick replies).
+-   **Dual-Write Data Synchronization:** Addressed issues stemming from writing to two different database collections ( and ) by creating a unified read layer that merges data.
+-   **Stateful Conversational Flows:** Implementing multi-turn dialogues by storing state () within the ticket's .
+-   **Prompt Engineering:** Continued refinement of LLM prompts in  to control voice, tone, and logical flow.
 
 **key DB schema**
--   ** & :** Core service ticket collections.
+-   ** & :** Core service ticket collections.  is the canonical source of truth, but a dual-write system is in place. Tickets now have  (boolean) and  (object) for stateful conversations.
 -   **:** Stores user profiles and their embedded  array.
--   **:** Content for the LEARN pillar.
--   **:** Stores user notifications, now filterable by pet.
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--   : Main application page, modified for indicators and notification props.
--   : Rewritten for simplified select-only functionality.
--   : Modified to accept  and  for filtering.
--   : Modified the  endpoint to support filtering by pet.
--   : Potentially modified to make indicators non-clickable (needs verification).
--   : Modified to add a text label to the 'instant' loading mode.
--   : The primary design and behavior document.
+-   : Major changes to fix  pillar, attempt  pillar fix, and start implementing .
+-   : Modified to fix unread counts by using a unified ticket source and checking the  flag.
+-   : Modified the concierge reply endpoint to update the correct ticket and set the unread flag.
+-   : Updated with a comprehensive library of chip sets as defined in the bible.
+-   : Heavily updated with new, mandatory contracts for voice, tone, and quick replies.
+-   : Newly created document.
+-   : Newly created document.
+-   : Updated with a protocol for all agents to follow.
 
 **Areas that need refactoring**:
--    is a large god component that should be broken down.
--    is a monolithic file that could be split into logical sub-routers.
+-    is over 20,000 lines and exceptionally difficult to maintain. The multiple, inconsistent return paths make tasks like adding the  extremely brittle. It urgently needs to be broken down into smaller, single-responsibility modules (e.g., pillar handlers, prompt builders, contract builders).
 
 **key api endpoints**
--   : Modified to accept optional  and  query parameters for filtering notifications.
+-   : The primary conversational endpoint. Behavior continues to be modified to support contract-driven UI and stateful conversations.
+-   : Logic was significantly changed to fix an unread count bug.
+-   : Modified to support the unread flag system.
 
 **Critical Info for New Agent**
--   The user is highly detail-oriented about UI/UX. The immediate priority is resolving the C° and PICKS indicator issue. **Do not proceed without getting explicit confirmation from the user on the exact location and behavior.** Use a screenshot to clarify if needed. The user's last instruction was nononono on the chat bar.
--   The user has expressed anxiety about unintended changes. Be transparent and communicative about which files you are modifying and why. Reassure the user you are only touching relevant components.
--   After resolving the indicator issue, move on to the other pending UI refinements (Past Chats, Unread Replies, Ticket Banner) before starting the large P0 onboarding task.
+-   **PROTOCOL: You MUST read the bibles before starting.** The user has mandated that every agent session begins by studying , , and . User requests that conflict with this doctrine must be flagged and confirmed.
+-   **The  pillar fix is your immediate P0 task.** The multi-step conversation is broken. Your starting point is debugging why the  is not being correctly persisted in the database between user messages.
+-   **The  implementation is INCOMPLETE.** Your second priority is to ensure **every** possible response from  includes a valid . This will require carefully tracing all return paths in the massive  file.
 
 **documents and test reports created in this job**
--   None. The agent updated existing documents as per the previous handoff.
+-   
+-   
+-    (updated)
+-    (updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Wants a simple pet selector without a modal. (Status: **Completed**)
-2.  **User**: Confirms a list of other UI changes and asks agent to proceed. (Status: **In Progress**)
-3.  **User**: Prioritizes fixing the C° and PICKS indicators first. (Status: **Acknowledged**)
-4.  **User**: Expresses fear that the agent broke per-pet notifications while making other changes. (Status: **Addressed**)
-5.  **User**: Confirms they want the agent to continue, but to be very careful not to touch unrelated elements. (Status: **Acknowledged**)
-6.  **User**: Points out that per-pet notifications are indeed broken. (Status: **Addressed & Fixed**)
-7.  **User**: Confirms per-pet notifications used to work and asks for them to be added back. (Status: **Completed**)
-8.  **User**: Expresses gratitude for the fix. (Status: **Acknowledged**)
-9.  **User**: Asks about extra clickable C°/PICKS buttons that open modals. (Status: **In Progress**)
-10. **User**: Points out that the AI loading state is missing text. (Status: **Addressed & Fixed**)
-11. **User**: Clarifies they want to remove the clickable C° button that opens a Concierge Help modal. (Status: **In Progress**)
-12. **User**: Gives conflicting instruction to put indicators in the top header. (Status: **Superseded**)
-13. **User**: Corrects again: nononono on the chat bar. (Status: **Pending Action**)
+1.  **User**: Gave an exhaustive definition of the One Spine audit protocol. (Status: **Completed**)
+2.  **User**: Confirmed that fixing the Spine/unread indicator bugs is a critical priority. (Status: **Completed**)
+3.  **User**: Provided extensive, detailed, and non-negotiable rules for Mira's Voice/Tone and a full specification for the Quick Replies contract and chip library. (Status: **Completed**)
+4.  **User**: Instructed the agent to add these new rules to the  and create a new audit framework for them. (Status: **Completed**)
+5.  **User**: Instructed the agent to hardcode a warning for all future agents to read the Bible/doctrines before starting any work. (Status: **Completed**)
+6.  **User**: Approved the plan to start implementing the  on the backend. (Status: **In Progress**)
+7.  **User**: Approved the plan to fix the  pillar logic, add emergency triage chips, and check frontend chip integration. (Status: **In Progress**)
+8.  **User**: Asked for an exhaustive summary for the next agent. (Status: **Pending**)
 
 **Project Health Check:**
--   **Broken:** The placement and behavior of the C° and PICKS indicators are incorrect and do not meet user requirements.
--   **Mocked:** None.
+-   **Broken:**
+    -   The  pillar's multi-step conversation logic is broken.
+    -   The  is only partially implemented, breaking the deterministic UI principle on several flows (e.g., emergency).
+    -   A  bug in some responses still exists.
 
 **3rd Party Integrations**
 -   Google Places
@@ -180,13 +191,14 @@ Tree structure of the entire codebase
 -   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** None
--   **Known regressions:** The agent successfully identified and fixed two regressions during this session (pet selector behavior and per-pet notifications).
+-   **Known regressions:** None new in this session.
 
 **Credentials to test flow:**
 -   **User Login:**  / 
--   **Key Pet for Testing:** Lola (), Mystique
+-   **Key Pet for Testing:** Lola (: ), Mystique
 -   **Test URL:** 
 
 **What agent forgot to execute**
--   The agent has not yet implemented the other UI tasks from the user's list: refining the Past Chats Panel, implementing the Unread Replies Indicator in Services, and adding the Ticket Creation Banner.
--   The Pet Memory Allergy Test logic issue from the initial handoff remains uninvestigated.</analysis>
+-   The agent correctly identified that the emergency triage flow was missing quick replies but did not get to implement the fix.
+-   The  wrapper function () was created but proved insufficient; the agent did not complete the more difficult task of manually adding the contract to all remaining return paths in .
+-   The  and  from previous sessions remain unaddressed.</analysis>
