@@ -39,7 +39,8 @@ All sync endpoints require a token parameter:
 
 ```bash
 # Full sync from Preview to Production
-curl -X POST "https://thedoggycompany.in/api/admin/sync/full-sync?token=sync-preview-to-prod-2026&overwrite=true" \
+curl -X POST "https://thedoggycompany.in/api/admin/env-sync/full-sync?token=sync-preview-to-prod-2026&overwrite=true" \
+  -u "aditya:lola4304" \
   -H "Content-Type: application/json" \
   -d '{
     "source_url": "https://mira-ticketing.preview.emergentagent.com",
@@ -53,7 +54,8 @@ curl -X POST "https://thedoggycompany.in/api/admin/sync/full-sync?token=sync-pre
 
 ```bash
 # Full sync from Production to Preview
-curl -X POST "https://mira-ticketing.preview.emergentagent.com/api/admin/sync/full-sync?token=sync-preview-to-prod-2026&overwrite=true" \
+curl -X POST "https://mira-ticketing.preview.emergentagent.com/api/admin/env-sync/full-sync?token=sync-preview-to-prod-2026&overwrite=true" \
+  -u "aditya:lola4304" \
   -H "Content-Type: application/json" \
   -d '{
     "source_url": "https://thedoggycompany.in",
