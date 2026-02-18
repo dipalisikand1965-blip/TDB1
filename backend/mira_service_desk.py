@@ -857,6 +857,7 @@ async def concierge_reply(
     """
     Concierge sends a reply in the same thread.
     This appears in the parent's Mira OS chat as a message from Concierge.
+    Also sets has_unread_concierge_reply flag for Services badge.
     """
     db = get_db()
     if db is None:
@@ -864,30 +865,62 @@ async def concierge_reply(
     
     now = datetime.now(timezone.utc)
     
+    concierge_message = {
+        "id": str(uuid.uuid4()),
+        "sender": "concierge",
+        "source": "Service_Desk",
+        "content": message,
+        "text": message,
+        "timestamp": now.isoformat(),
+        "meta": {
+            "concierge_name": concierge_name
+        }
+    }
+    
+    # Update mira_conversations
     result = await db.mira_conversations.update_one(
         {"ticket_id": ticket_id},
         {
-            "$push": {
-                "conversation": {
-                    "sender": "concierge",
-                    "source": "Service_Desk",
-                    "text": message,
-                    "timestamp": now.isoformat(),
-                    "meta": {
-                        "concierge_name": concierge_name
-                    }
-                }
-            },
+            "$push": {"conversation": concierge_message},
             "$set": {"updated_at": now.isoformat()}
         }
     )
     
-    if result.matched_count == 0:
+    # Also update mira_tickets (canonical spine) - set unread flag
+    ticket_result = await db.mira_tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"messages": concierge_message},
+            "$set": {
+                "updated_at": now.isoformat(),
+                "has_unread_concierge_reply": True,
+                "last_concierge_reply_at": now.isoformat()
+            }
+        }
+    )
+    
+    # Also update tickets collection (dual-write for compatibility)
+    await db.tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"messages": concierge_message},
+            "$set": {
+                "updated_at": now.isoformat(),
+                "has_unread_concierge_reply": True
+            }
+        }
+    )
+    
+    if result.matched_count == 0 and ticket_result.matched_count == 0:
         raise HTTPException(status_code=404, detail=f"Ticket {ticket_id} not found")
     
     logger.info(f"[SERVICE_DESK] Concierge {concierge_name} replied to ticket: {ticket_id}")
     
-    return {"success": True, "ticket_id": ticket_id}
+    return {
+        "success": True, 
+        "ticket_id": ticket_id,
+        "has_unread_concierge_reply": True
+    }
 
 
 # ============================================
