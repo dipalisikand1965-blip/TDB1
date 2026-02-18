@@ -447,7 +447,11 @@ const TicketThread = ({ ticketIdProp, isEmbedded = false, onClose }) => {
               <button 
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate('/notifications');
+                  if (onClose) {
+                    onClose();
+                  } else {
+                    navigate('/notifications');
+                  }
                 }}
                 className="p-2 rounded-full hover:bg-gray-800 flex-shrink-0"
               >
