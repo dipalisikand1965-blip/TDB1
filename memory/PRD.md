@@ -152,6 +152,7 @@ When no chat intents exist, Mira still shows intelligent picks based on:
 
 | Document | Purpose |
 |----------|---------|
+| `/app/memory/GOLDEN_STANDARD_UNIFIED_FLOW.md` | **MANDATORY** - All endpoints MUST follow this |
 | `/app/memory/DEPLOYMENT_BIBLE.md` | Deploy URL fix |
 | `/app/memory/CONCIERGE_INBOX_SPEC.md` | Outlook-style inbox design |
 | `/app/memory/SOUL_ONBOARDING_REBUILD_PROPOSAL.md` | Onboarding gaps |
