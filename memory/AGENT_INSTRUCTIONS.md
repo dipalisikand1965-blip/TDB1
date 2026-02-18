@@ -1,40 +1,58 @@
 # MIRA OS AGENT INSTRUCTIONS
-## Complete QA Protocol & System Verification Guide
+## ⚠️ REDIRECT: See AGENT_MASTER_PROTOCOL.md
 
 ---
 
-# ⚠️ CRITICAL: READ THIS BEFORE ANY WORK
+# ⛔ STOP - THIS FILE HAS BEEN SUPERSEDED
 
-Every agent MUST read these files in order before starting:
-1. `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` - The Law
-2. `/app/memory/ONE_SPINE_SPEC.md` - Canonical ticket system spec (Bug naming, Mental model copy, 5 Hard Proofs)
-3. `/app/memory/ONE_SPINE_AUDIT_REPORT.md` - Latest audit status & issues
-4. `/app/memory/AGENT_INSTRUCTIONS.md` - This file (QA protocols)
-5. `/app/memory/PRD.md` - Product requirements & changelog
-6. `/app/memory/QUICK_REPLIES_AUDIT_FRAMEWORK.md` - Chip validation
+**The comprehensive protocol is now at:**
+`/app/memory/AGENT_MASTER_PROTOCOL.md`
 
----
-
-# BUG NAMING CONVENTION (From ONE_SPINE_SPEC.md)
-
-**Member-facing label (never scary):** "Syncing history"
-- Subtext: "Some older requests may appear gradually. New requests are always tracked."
-
-**Internal / engineering name:** "Ticket ownership mismatch (parent_id back-compat)"
-- Or shorter: "Ownership contract mismatch"
-
-**QA shorthand:** "Spine ownership drift"
+**Read that file FIRST. It contains:**
+1. Core Architecture
+2. One Spine Rule (5 Hard Proofs)
+3. Mental Model Copy
+4. Notification System
+5. Database Schema
+6. API Endpoints
+7. File Reference Map
+8. Common Failure Modes
+9. Checklist Before Finishing
 
 ---
 
-# MENTAL MODEL COPY (Use Everywhere)
+# QUICK REFERENCE (Full details in AGENT_MASTER_PROTOCOL.md)
 
-**Core Sentence:**
-> Chat is where you ask. Services is where it gets done.
-> Any request you create becomes a tracked thread in Services, where you and Concierge message each other.
+## Files to Read Before ANY Work
 
-**Follow-on Line:**
-> If you want to add details or change timing, reply inside the Services thread so Concierge sees it immediately.
+1. `/app/memory/AGENT_MASTER_PROTOCOL.md` - **THE MASTER PROTOCOL**
+2. `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` - The Law
+3. `/app/memory/ONE_SPINE_SPEC.md` - Ticket system spec
+4. `/app/memory/ONE_SPINE_AUDIT_REPORT.md` - Latest audit
+5. `/app/memory/NOTIFICATION_SYSTEM_AUDIT.md` - Notification audit
+6. `/app/memory/PRD.md` - Product requirements
+
+## The One-Line Spec
+
+> **Chat is where you ask. Services is where it gets done. Notifications simply bring you back to the thread.**
+
+## Test Credentials
+
+```
+Email: dipali@clubconcierge.in
+Password: test123
+URL: /mira-demo?debug=1
+```
+
+## 5 Hard Proofs (Must ALL pass)
+
+1. Canonical ticket created (TCK-YYYY-NNNNNN)
+2. Ticket appears in Services immediately
+3. Ownership fields populated (member.email, member.id, parent_id, pet_id, pet_name)
+4. Two-way replies in same thread
+5. Unread indicator works + notification created
+
+**If ANY proof fails, DO NOT proceed.**
 
 ---
 
