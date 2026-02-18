@@ -9070,6 +9070,15 @@ If Soul data is sparse, ASK targeted questions. Do NOT assume from breed.
     # KNOWN FIELDS section for selected pet
     if selected_pet:
         known_fields_section = format_known_fields_for_prompt(selected_pet)
+        
+        # Add Soul Learning "Never Re-Ask" section
+        try:
+            from utils.soul_learning_engine import get_known_facts_prompt
+            never_reask_section = get_known_facts_prompt(selected_pet)
+            if never_reask_section:
+                known_fields_section += "\n" + never_reask_section
+        except ImportError:
+            pass
     elif pets and len(pets) == 1:
         known_fields_section = format_known_fields_for_prompt(pets[0])
     
