@@ -3842,12 +3842,16 @@ const MiraDemoPage = () => {
             <ConciergeReplyBanner
               hasUnreadReply={true}
               unreadCount={apiCounts.unreadRepliesCount}
-              onOpenServices={() => {
+              petName={pet?.name}
+              ticketId={apiCounts?.latestUnreadTicketId}
+              onOpenServices={(ticketId) => {
+                // Navigate to Services, optionally with specific ticket
                 handleOSTabChange('services');
+                // If ticketId provided, could auto-open that thread
               }}
               onDismiss={() => {
-                // Optional: refetch to update counts
-                refetchIconState?.();
+                // Banner will auto-reappear after 10 minutes or if new reply arrives
+                // No need to refetch - just updating local state
               }}
             />
           )}
