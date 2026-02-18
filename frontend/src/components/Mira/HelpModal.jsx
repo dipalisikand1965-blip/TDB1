@@ -119,6 +119,61 @@ const HelpModal = ({
             </div>
           </button>
         </div>
+        
+        {/* FAQ Section - Mental Model Copy */}
+        <div style={{ padding: '16px', borderTop: '1px solid #e5e7eb' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <HelpCircle size={18} style={{ color: '#8b5cf6' }} />
+            <span style={{ fontWeight: 600, fontSize: 14, color: '#374151' }}>Quick FAQs</span>
+          </div>
+          
+          {faqs.map((faq) => (
+            <div 
+              key={faq.id}
+              style={{ 
+                marginBottom: '8px',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                overflow: 'hidden'
+              }}
+              data-testid={`faq-${faq.id}`}
+            >
+              <button
+                onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  background: expandedFaq === faq.id ? '#f9fafb' : 'white',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  textAlign: 'left'
+                }}
+              >
+                <span style={{ fontWeight: 500, fontSize: 13, color: '#1f2937' }}>{faq.question}</span>
+                {expandedFaq === faq.id ? (
+                  <ChevronUp size={16} style={{ color: '#6b7280' }} />
+                ) : (
+                  <ChevronDown size={16} style={{ color: '#6b7280' }} />
+                )}
+              </button>
+              
+              {expandedFaq === faq.id && (
+                <div style={{ 
+                  padding: '0 12px 12px 12px',
+                  background: '#f9fafb',
+                  fontSize: 13,
+                  color: '#4b5563',
+                  lineHeight: 1.5
+                }}>
+                  {faq.answer}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
