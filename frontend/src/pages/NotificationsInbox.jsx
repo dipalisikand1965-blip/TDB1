@@ -488,6 +488,20 @@ const NotificationsInbox = () => {
     setShowFilterSheet(false);
   };
 
+  // Get returnTo from URL params
+  const returnTo = searchParams.get('returnTo');
+  
+  // Handle back navigation
+  const handleBack = () => {
+    if (returnTo) {
+      navigate(decodeURIComponent(returnTo));
+    } else if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/mira-demo');
+    }
+  };
+
   return (
     <div className="h-screen bg-[#0a0a14] flex flex-col overflow-hidden">
       {/* Global Navigation: Dashboard | Inbox */}
@@ -516,7 +530,7 @@ const NotificationsInbox = () => {
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-3">
               <button 
-                onClick={() => navigate(-1)}
+                onClick={handleBack}
                 className="p-2 rounded-full hover:bg-gray-800 lg:hidden"
                 data-testid="back-btn"
               >
