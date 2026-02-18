@@ -758,6 +758,8 @@ async def create_general_concierge_request(request: ConciergeGeneralRequest):
 class PicksRequestPayload(BaseModel):
     """Request payload for picks from PersonalizedPicksPanel."""
     pet_name: str
+    pet_id: Optional[str] = None
+    user_email: Optional[str] = None
     selected_items: List[Dict[str, Any]]
     additional_notes: Optional[str] = ""
     timestamp: Optional[str] = None
