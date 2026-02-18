@@ -6555,6 +6555,30 @@ Request Details:
     })
     logger.info(f"[SERVICE REQUEST] Pillar request created for {payload.pillar}")
     
+    # ==================== STEP 6: CHANNEL INTAKES ====================
+    # Track the source channel for unified inbox and analytics
+    channel_intake_id = f"CI-{uuid.uuid4().hex[:8].upper()}"
+    await db.channel_intakes.insert_one({
+        "id": channel_intake_id,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
+        "channel": payload.source or "web",
+        "request_type": payload.type,
+        "pillar": payload.pillar,
+        "status": "new",
+        "urgency": urgency,
+        "customer_name": customer_name,
+        "customer_email": customer_email,
+        "customer_phone": customer_phone,
+        "preview": f"{payload.type.replace('_', ' ').title()} - {customer_name}",
+        "message": description[:500] if len(description) > 500 else description,
+        "created_at": now,
+        "updated_at": now
+    })
+    logger.info(f"[SERVICE REQUEST] Channel intake created: {channel_intake_id}")
+    
     return {
         "success": True,
         "request_id": request_id,
