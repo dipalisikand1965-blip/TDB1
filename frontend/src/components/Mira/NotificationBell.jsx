@@ -3,25 +3,32 @@
  * =================================================
  * Shows unread notification count badge
  * Bell tap opens /notifications full-screen inbox
+ * Passes returnTo param so user can come back
  * 
  * NO dropdown. NO drawer. Just badge + navigation.
- * 
- * DEPRECATED: ConciergeInboxDrawer.jsx (don't delete yet, deprecate for cleanup PR)
  */
 
 import React, { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../../utils/api';
 import hapticFeedback from '../../utils/haptic';
 
-const NotificationBell = ({ userEmail, petId, petName, className = '' }) => {
+const NotificationBell = ({ userEmail, petId, petName, className = '', unreadCountProp }) => {
   const navigate = useNavigate();
-  const [unreadCount, setUnreadCount] = useState(0);
+  const location = useLocation();
+  const [unreadCount, setUnreadCount] = useState(unreadCountProp || 0);
   
-  // Fetch unread count only
+  // Use prop if provided (single source of truth), otherwise fetch
+  useEffect(() => {
+    if (unreadCountProp !== undefined) {
+      setUnreadCount(unreadCountProp);
+    }
+  }, [unreadCountProp]);
+  
+  // Fetch unread count only if not provided via prop
   const fetchUnreadCount = async () => {
-    if (!userEmail) return;
+    if (!userEmail || unreadCountProp !== undefined) return;
     
     try {
       let url = `${API_URL}/api/member/notifications/inbox/${encodeURIComponent(userEmail)}?limit=1`;
@@ -38,19 +45,21 @@ const NotificationBell = ({ userEmail, petId, petName, className = '' }) => {
     }
   };
   
-  // Fetch on mount and set up polling
+  // Fetch on mount and set up polling (only if not using prop)
   useEffect(() => {
-    fetchUnreadCount();
-    
-    // Poll every 30 seconds for updates
-    const interval = setInterval(fetchUnreadCount, 30000);
-    return () => clearInterval(interval);
-  }, [userEmail, petId]);
+    if (unreadCountProp === undefined) {
+      fetchUnreadCount();
+      const interval = setInterval(fetchUnreadCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [userEmail, petId, unreadCountProp]);
   
-  // Handle bell click - navigate to full-screen inbox
+  // Handle bell click - navigate to inbox WITH returnTo
   const handleClick = (e) => {
     hapticFeedback.buttonTap(e);
-    navigate('/notifications');
+    // Pass current path as returnTo so user can come back
+    const returnTo = encodeURIComponent(location.pathname);
+    navigate(`/notifications?returnTo=${returnTo}`);
   };
   
   return (
