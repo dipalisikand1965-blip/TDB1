@@ -411,14 +411,25 @@ const TicketThread = () => {
 
   return (
     <div className={`min-h-screen bg-[#0a0a14] flex flex-col`}>
-      {/* CSS for highlight animation */}
+      {/* CSS for highlight animation - more visible pulse */}
       <style>{`
-        @keyframes highlightFade {
-          0%, 100% { background-color: transparent; }
-          50% { background-color: rgba(234, 179, 8, 0.2); }
+        @keyframes highlightPulse {
+          0% { 
+            box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4);
+            background-color: rgba(234, 179, 8, 0.15);
+          }
+          50% { 
+            box-shadow: 0 0 0 8px rgba(234, 179, 8, 0);
+            background-color: rgba(234, 179, 8, 0.25);
+          }
+          100% { 
+            box-shadow: 0 0 0 0 rgba(234, 179, 8, 0);
+            background-color: transparent;
+          }
         }
         .animate-highlight {
-          animation: highlightFade 2s ease-in-out;
+          animation: highlightPulse 2s ease-in-out;
+          border-radius: 12px;
         }
       `}</style>
       
