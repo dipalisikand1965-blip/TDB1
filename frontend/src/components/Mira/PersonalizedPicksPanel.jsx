@@ -1350,7 +1350,7 @@ const PersonalizedPicksPanel = ({
                       <div className="mb-3">
                         <h3 className="text-sm font-semibold text-purple-300 uppercase tracking-wider flex items-center gap-2">
                           <Sparkles className="w-4 h-4 text-purple-400" />
-                          Concierge Arranges for {pet?.name}
+                          Concierge® Arranges for {pet?.name}
                         </h3>
                         <p className="text-xs text-purple-400/70 mt-1">We'll source and arrange everything</p>
                       </div>

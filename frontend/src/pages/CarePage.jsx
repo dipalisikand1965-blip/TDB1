@@ -1608,7 +1608,7 @@ const CarePage = () => {
                 {submitting ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
                 ) : (
-                  <><Send className="w-4 h-4 mr-2" /> Ask Concierge</>
+                  <><Send className="w-4 h-4 mr-2" /> Ask Concierge®</>
                 )}
               </Button>
             </div>

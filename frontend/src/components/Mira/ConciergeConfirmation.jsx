@@ -116,7 +116,7 @@ const ConciergeConfirmation = ({
           
           {/* Luxury subtext */}
           <p className="text-white/80 text-xs ml-13 mb-3 pl-13" style={{ marginLeft: '52px' }}>
-            Replies from Concierge will appear in Services.
+            Replies from Concierge® will appear in Services.
           </p>
           
           {/* CTA Button - "View in Services" */}

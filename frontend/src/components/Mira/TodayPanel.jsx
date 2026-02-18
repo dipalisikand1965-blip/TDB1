@@ -1050,7 +1050,7 @@ const TodayPanel = ({
       'shipped': 'Shipped - on its way',
       'pending': 'Awaiting your confirmation',
       'awaiting_confirmation': 'Awaiting your confirmation',
-      'scheduling': 'Concierge is scheduling',
+      'scheduling': 'Concierge® is scheduling',
       'confirmed': 'Confirmed'
     };
     return texts[status] || status;

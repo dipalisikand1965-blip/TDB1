@@ -268,7 +268,7 @@ const PicksHistoryTab = ({ pet, user }) => {
               variant="outline" 
               className="border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10"
             >
-              Contact Concierge
+              Contact Concierge®
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </div>
