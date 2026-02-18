@@ -428,7 +428,11 @@ async def create_or_attach_service_ticket(
             "intent": ticket_doc["intent"],
             "created_at": ticket_doc["created_at"],
             "source": ticket_doc["source"],
-        }
+            "pet_id": ticket_doc.get("pet_id"),
+            "pet_name": ticket_doc.get("pet_name"),
+        },
+        "needs_pet_selection": needs_pet_selection,
+        "message": "Which pet is this for?" if needs_pet_selection else None
     }
 
 
