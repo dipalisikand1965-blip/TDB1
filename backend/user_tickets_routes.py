@@ -347,9 +347,13 @@ async def get_ticket_detail(ticket_id: str, email: str = Query(...)):
     """
     Get detailed information about a specific ticket.
     Verifies the user owns the ticket.
+    Also clears the unread concierge reply flag when user views.
     """
     if db is None:
         raise HTTPException(status_code=500, detail="Database not connected")
+    
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).isoformat()
     
     # Find ticket with ownership verification
     query = {
@@ -363,13 +367,57 @@ async def get_ticket_detail(ticket_id: str, email: str = Query(...)):
         ]
     }
     
+    ticket = None
+    collection = None
+    
     ticket = await db.service_desk_tickets.find_one(query, {"_id": 0})
+    if ticket:
+        collection = "service_desk_tickets"
+    
+    if not ticket:
+        ticket = await db.mira_tickets.find_one(query, {"_id": 0})
+        if ticket:
+            collection = "mira_tickets"
     
     if not ticket:
         ticket = await db.tickets.find_one(query, {"_id": 0})
+        if ticket:
+            collection = "tickets"
     
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found or access denied")
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # CLEAR UNREAD FLAGS: User is viewing the ticket, mark as read
+    # This updates icon-state counts for awaiting_you and unread_replies
+    # ═══════════════════════════════════════════════════════════════════════════
+    if ticket.get("has_unread_concierge_reply") or ticket.get("awaiting_user"):
+        update_fields = {
+            "has_unread_concierge_reply": False,
+            "awaiting_user": False,
+            "last_user_view_at": now
+        }
+        
+        await db[collection].update_one(
+            {"ticket_id": ticket_id},
+            {"$set": update_fields}
+        )
+        
+        # Sync to mira_tickets if viewing from tickets collection
+        if collection == "tickets":
+            mira_ticket = await db.mira_tickets.find_one({"ticket_id": ticket_id})
+            if mira_ticket:
+                await db.mira_tickets.update_one(
+                    {"ticket_id": ticket_id},
+                    {"$set": update_fields}
+                )
+        
+        # Update the returned ticket to reflect cleared state
+        ticket["has_unread_concierge_reply"] = False
+        ticket["awaiting_user"] = False
+        ticket["last_user_view_at"] = now
+        
+        logger.info(f"[SPINE-READ] Cleared unread flags for ticket {ticket_id} (user viewed)")
     
     return ticket
 
