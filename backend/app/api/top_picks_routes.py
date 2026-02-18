@@ -1032,6 +1032,207 @@ CONCIERGE_SUGGESTIONS = {
     ],
 }
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# SOUL INTEGRATION HELPERS - Mira knows what the pet needs right now
+# ═══════════════════════════════════════════════════════════════════════════════
+
+async def get_user_recent_intents(db, user_id: str, pet_id: str, hours: int = 48) -> List[Dict]:
+    """
+    Get user's recent LEARN intents from the shared intent store.
+    Same data that powers LEARN's "{petName} might need this" shelf.
+    """
+    if db is None or not user_id:
+        return []
+    
+    try:
+        now = datetime.now(timezone.utc)
+        cutoff = now - timedelta(hours=hours)
+        
+        query = {
+            "user_id": user_id,
+            "created_at": {"$gte": cutoff}
+        }
+        
+        # Also filter by pet_id if provided
+        if pet_id:
+            query["pet_id"] = pet_id
+        
+        intents = await db.user_learn_intents.find(
+            query,
+            {"_id": 0, "topic": 1, "confidence": 1, "keyword": 1, "created_at": 1}
+        ).sort("created_at", -1).to_list(10)
+        
+        # Dedupe by topic, keeping most recent
+        seen = set()
+        unique_intents = []
+        for intent in intents:
+            if intent["topic"] not in seen:
+                seen.add(intent["topic"])
+                unique_intents.append(intent)
+        
+        return unique_intents
+        
+    except Exception as e:
+        logger.error(f"[PICKS SOUL] Failed to get intents: {e}")
+        return []
+
+
+async def get_timely_picks_for_intents(
+    db, 
+    intents: List[Dict], 
+    pet: Dict, 
+    pet_allergies: List[str],
+    limit: int = 8
+) -> List[Dict]:
+    """
+    Get products that match the user's recent conversation intents.
+    These become the "{petName} might need this" shelf in PICKS.
+    """
+    if not intents:
+        return []
+    
+    pet_name = pet.get("name", "Your pet")
+    
+    # Collect all relevant categories and tags from intents
+    all_categories = []
+    all_tags = []
+    matched_topics = []
+    
+    for intent in intents:
+        topic = intent.get("topic")
+        mapping = INTENT_TO_PICKS_MAPPING.get(topic)
+        if mapping:
+            all_categories.extend(mapping.get("categories", []))
+            all_tags.extend(mapping.get("tags", []))
+            matched_topics.append(topic)
+    
+    if not all_categories and not all_tags:
+        return []
+    
+    # Remove duplicates
+    all_categories = list(set(all_categories))
+    all_tags = list(set(all_tags))
+    
+    # Build query - match by category OR tags OR name
+    category_regex = "|".join(all_categories[:10])
+    tags_list = all_tags[:10]
+    
+    query = {
+        "in_stock": {"$ne": False},
+        "$or": [
+            {"category": {"$regex": category_regex, "$options": "i"}},
+            {"tags": {"$in": tags_list}},
+            {"name": {"$regex": category_regex, "$options": "i"}},
+        ]
+    }
+    
+    try:
+        products = await db.unified_products.find(query, {"_id": 0}).limit(30).to_list(30)
+        
+        # Score and filter products
+        scored_products = []
+        for product in products:
+            # Skip if allergens match pet's allergies
+            product_allergens = [a.lower() for a in (product.get("allergens") or [])]
+            if any(allergy.lower() in product_allergens for allergy in pet_allergies):
+                continue
+            
+            # Calculate relevance score
+            score = 0
+            product_name = (product.get("name") or "").lower()
+            product_category = (product.get("category") or "").lower()
+            product_tags = [t.lower() for t in (product.get("tags") or [])]
+            
+            for cat in all_categories:
+                if cat.lower() in product_name:
+                    score += 20
+                if cat.lower() in product_category:
+                    score += 15
+            
+            for tag in all_tags:
+                if tag.lower() in product_tags:
+                    score += 10
+                if tag.lower() in product_name:
+                    score += 8
+            
+            if score > 0:
+                # Generate soul-aware "why it fits" reason
+                why_it_fits = generate_timely_reason(product, matched_topics, pet_name)
+                
+                scored_products.append({
+                    **product,
+                    "relevance_score": score,
+                    "is_timely": True,
+                    "timely_badge": "Timely",
+                    "why_it_fits": why_it_fits,
+                    "matched_topics": matched_topics
+                })
+        
+        # Sort by relevance and return top picks
+        scored_products.sort(key=lambda p: p.get("relevance_score", 0), reverse=True)
+        
+        return scored_products[:limit]
+        
+    except Exception as e:
+        logger.error(f"[PICKS SOUL] Failed to get timely picks: {e}")
+        return []
+
+
+def generate_timely_reason(product: Dict, topics: List[str], pet_name: str) -> str:
+    """Generate a soul-aware reason for why this product is timely for the pet."""
+    name = (product.get("name") or "").lower()
+    category = (product.get("category") or "").lower()
+    
+    # Topic-specific reasons
+    if "grooming" in topics:
+        if "brush" in name or "comb" in name:
+            return f"Keep {pet_name}'s coat tangle-free"
+        if "shampoo" in name or "wash" in name:
+            return f"Gentle cleaning for {pet_name}"
+        if "nail" in name:
+            return f"Keep {pet_name}'s nails healthy"
+        return f"Perfect for {pet_name}'s grooming routine"
+    
+    if "travel" in topics:
+        if "carrier" in name or "carrier" in category:
+            return f"Safe travels with {pet_name}"
+        if "bowl" in name:
+            return f"Hydration on the go for {pet_name}"
+        return f"Essential for {pet_name}'s adventures"
+    
+    if "health" in topics:
+        if "supplement" in name or "vitamin" in name:
+            return f"Support {pet_name}'s wellbeing"
+        if "dental" in name or "teeth" in name:
+            return f"Keep {pet_name}'s smile healthy"
+        return f"Health essentials for {pet_name}"
+    
+    if "food" in topics:
+        if "treat" in name:
+            return f"Wholesome rewards for {pet_name}"
+        return f"Nutrition {pet_name} will love"
+    
+    if "behaviour" in topics or "training" in topics:
+        if "calm" in name or "anxiety" in name:
+            return f"Help {pet_name} stay relaxed"
+        if "training" in name:
+            return f"Support {pet_name}'s learning"
+        return f"Positive vibes for {pet_name}"
+    
+    if "senior" in topics:
+        if "joint" in name or "mobility" in name:
+            return f"Comfort for {pet_name}'s golden years"
+        return f"Extra care for {pet_name}"
+    
+    if "puppies" in topics:
+        if "teething" in name:
+            return f"Soothe {pet_name}'s growing teeth"
+        return f"Perfect for young {pet_name}"
+    
+    # Default
+    return f"Recommended for {pet_name}"
+
+
 def get_current_season() -> dict:
     """Get current seasonal event if any."""
     now = datetime.now()
