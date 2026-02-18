@@ -668,17 +668,39 @@ async def get_learn_home(
         # Enrich for frontend (limit to 8)
         for item in diverse_items[:8]:
             item_score = next((c["score"] for c in personalized_candidates if c["item"].get("id") == item.get("id")), 0)
+            is_intent_matched = next((c["intent_matched"] for c in personalized_candidates if c["item"].get("id") == item.get("id")), False)
             item_type = "video" if item.get("youtube_id") else "guide"
             enriched = enrich_item_for_frontend(
                 item, 
                 item_type, 
                 item.get("id") in saved_ids,
                 item_score,
-                pet_name
+                pet_name,
+                from_recent_chat=is_intent_matched
             )
             # Clean up internal field
             enriched.pop("_primary_tag", None)
             for_your_pet.append(enriched)
+    
+    # ===== "Based on your chat" shelf - Intent-boosted content =====
+    from_your_chat = []
+    if recent_intents:
+        # Get items that were boosted by conversation context
+        intent_boosted = [c for c in scored_content if c.get("intent_matched")]
+        for c in intent_boosted[:5]:
+            item = c["item"]
+            enriched = enrich_item_for_frontend(
+                item,
+                c["type"],
+                item.get("id") in saved_ids,
+                c["score"],
+                pet_name,
+                from_recent_chat=True
+            )
+            from_your_chat.append(enriched)
+        
+        if from_your_chat:
+            logger.info(f"[LEARN HOME] 'Based on your chat' shelf: {len(from_your_chat)} items")
     
     # "Start here" shelf - Featured content, also personalized
     start_here = []
@@ -687,18 +709,21 @@ async def get_learn_home(
     featured_items.sort(key=lambda x: (-x["score"], x["item"].get("sort_rank", 100)))
     
     for c in featured_items[:5]:
+        is_intent_matched = c.get("intent_matched", False)
         start_here.append(enrich_item_for_frontend(
             c["item"],
             c["type"],
             c["item"].get("id") in saved_ids,
             c["score"],
-            pet_name
+            pet_name,
+            from_recent_chat=is_intent_matched
         ))
     
     return {
         "success": True,
         "topics": topics,
-        "for_your_pet": for_your_pet,  # NEW: Personalized shelf
+        "from_your_chat": from_your_chat,  # NEW: Based on conversation context
+        "for_your_pet": for_your_pet,  # Personalized shelf
         "start_here": start_here,
         "saved_count": len(saved_ids),
         "pet_name": pet_name,
@@ -706,6 +731,10 @@ async def get_learn_home(
             "enabled": pet_profile is not None,
             "pet_tags": pet_tags if pet_profile else [],
             "breed_tags": breed_tags if pet_profile else [],
+        },
+        "conversation_context": {
+            "enabled": len(recent_intents) > 0,
+            "recent_topics": [i["topic"] for i in recent_intents[:3]] if recent_intents else [],
         }
     }
 
