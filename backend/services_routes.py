@@ -280,13 +280,20 @@ def get_timely_services_for_intents(intents: List[Dict], pet_name: str) -> List[
 
 @router.get("/launchers")
 async def get_service_launchers(
+    pet_id: Optional[str] = Query(None, description="Pet ID for timely context"),
     authorization: Optional[str] = Header(None)
 ):
     """
     Get featured service launchers (8 max visible).
     These are action entry points for the Services tab.
+    
+    SOUL INTEGRATION (NEW):
+    - Checks recent chat intents
+    - Marks matching launchers as 'is_timely'
+    - Returns 'timely_services' shelf for "{petName} might need this"
     """
     db = get_db()
+    launchers = []
     
     # Try to get from service_catalog with is_featured flag
     if db is not None:
@@ -297,19 +304,68 @@ async def get_service_launchers(
             ).sort("sort_rank", 1).limit(8).to_list(8)
             
             if featured:
-                return {
-                    "success": True,
-                    "launchers": featured,
-                    "source": "database"
-                }
+                launchers = featured
         except Exception as e:
             logger.warning(f"[SERVICES] Error fetching launchers from DB: {e}")
     
-    # Fallback to static config
+    # Fallback to static config if no DB launchers
+    if not launchers:
+        launchers = FEATURED_SERVICES.copy()
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SOUL INTEGRATION: Get timely services based on recent chat intents
+    # ═══════════════════════════════════════════════════════════════════════════
+    timely_services = []
+    timely_context = {"enabled": False, "topics": []}
+    pet_name = "Your pet"
+    
+    user = await get_user_from_token_services(authorization)
+    if user and db is not None:
+        user_email = user.get("email") or user.get("sub")
+        user_id = user.get("id") or user.get("user_id")
+        
+        # Get pet name
+        if pet_id:
+            pet = await db.pets.find_one(
+                {"$or": [{"id": pet_id}, {"name": {"$regex": pet_id, "$options": "i"}}]},
+                {"name": 1, "id": 1}
+            )
+            if pet:
+                pet_name = pet.get("name", "Your pet")
+                pet_id = pet.get("id") or pet_id
+        
+        # Get recent intents
+        recent_intents = await get_user_recent_intents_for_services(
+            db, user_email or user_id, pet_id
+        )
+        
+        if recent_intents:
+            timely_context["enabled"] = True
+            timely_context["topics"] = [i["topic"] for i in recent_intents]
+            logger.info(f"[SERVICES SOUL] Found {len(recent_intents)} intents for {pet_name}: {timely_context['topics']}")
+            
+            # Get timely service recommendations
+            timely_services = get_timely_services_for_intents(recent_intents, pet_name)
+            
+            # Also mark matching launchers as timely
+            timely_types = set()
+            for ts in timely_services:
+                timely_types.add(ts["service_type"])
+            
+            for launcher in launchers:
+                launcher_id = launcher.get("id", "").lower()
+                launcher_name = launcher.get("name", "").lower()
+                if any(t in launcher_id or t in launcher_name for t in timely_types):
+                    launcher["is_timely"] = True
+                    launcher["timely_badge"] = "Timely"
+    
     return {
         "success": True,
-        "launchers": FEATURED_SERVICES,
-        "source": "static"
+        "launchers": launchers,
+        "timely_services": timely_services,  # NEW: Soul-aware service suggestions
+        "timely_context": timely_context,  # NEW: Context info
+        "pet_name": pet_name,
+        "source": "database" if launchers != FEATURED_SERVICES else "static"
     }
 
 
