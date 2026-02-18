@@ -193,7 +193,7 @@ async def store_user_intent(
     
     Intents are stored with TTL and used to personalize LEARN content.
     """
-    if not db or not user_id or not topics:
+    if db is None or not user_id or not topics:
         return False
     
     try:
