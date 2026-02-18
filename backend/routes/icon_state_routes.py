@@ -338,13 +338,37 @@ async def get_concierge_counts(db, user_email: str, pet_ids: List[str] = None) -
     
     Concierge is a CHANNEL attached to tickets, not a separate workflow.
     We count:
-    - unread_replies: Concierge messages user hasn't seen (from ticket-linked threads)
+    - unread_replies: Concierge messages user hasn't seen (from ticket-linked threads OR ticket flags)
     - open_threads: Active conversation threads
     """
     unread_replies = 0
     open_threads = 0
     
-    # Query mira_conversations (threads linked to tickets)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SOURCE 1: Check ticket flags directly (has_unread_concierge_reply)
+    # This is the primary source set by concierge_reply_to_ticket endpoint
+    # ═══════════════════════════════════════════════════════════════════════════
+    try:
+        tickets, _ = await get_unified_tickets(db, user_email, pet_ids)
+        for ticket in tickets:
+            status = (ticket.get("status") or "").lower()
+            if status in TERMINAL_STATUSES:
+                continue
+            
+            # Check for unread concierge reply flag
+            if ticket.get("has_unread_concierge_reply"):
+                unread_replies += 1
+            
+            # Count as open thread if has messages
+            if ticket.get("messages") and len(ticket.get("messages", [])) > 0:
+                open_threads += 1
+    except Exception as e:
+        logger.warning(f"[ICON-STATE] Error checking ticket flags: {e}")
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SOURCE 2: Query mira_conversations (threads linked to tickets)
+    # Legacy/supplementary source
+    # ═══════════════════════════════════════════════════════════════════════════
     try:
         query = {
             "$or": [
@@ -362,11 +386,14 @@ async def get_concierge_counts(db, user_email: str, pet_ids: List[str] = None) -
         async for thread in cursor:
             status = (thread.get("status") or "").lower()
             
-            # Count open threads (not resolved/closed)
+            # Count open threads (not resolved/closed) - add to existing count
             if status not in ["resolved", "closed"]:
-                open_threads += 1
+                # Only count if not already counted from tickets
+                thread_ticket_id = thread.get("ticket_id")
+                if not thread_ticket_id:
+                    open_threads += 1
             
-            # Count unread concierge replies
+            # Count unread concierge replies from conversation array
             conversation = thread.get("conversation") or []
             last_user_view = thread.get("last_user_view_at")
             
@@ -392,7 +419,7 @@ async def get_concierge_counts(db, user_email: str, pet_ids: List[str] = None) -
         "unread_replies": unread_replies,
         "open_threads": open_threads,
         "_query": {
-            "thread_collection": "mira_conversations",
+            "thread_collection": "mira_conversations + ticket flags",
             "note": "Threads linked to Service Desk tickets"
         }
     }
