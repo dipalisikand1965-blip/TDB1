@@ -1,121 +1,115 @@
 # Pet Soul - Mira OS Product Requirements Document
 
-## Original Problem Statement
-Create a "Golden Standard Communication System" centered around an AI named "Mira." Development is guided by `PET_OS_BEHAVIOR_BIBLE.md`. 
-
-### Core Architectural Rules:
-1. **"Uniform Service Flow"** - All service actions create/attach to a single canonical "Service Desk Ticket" spine using `TCK-YYYY-NNNNNN` ID format
-2. **"Health-First Safety Rule"** - Pet health facts always override conflicting preferences
-3. **Mental Model**: "Chat is where you ask. Services is where it gets done."
-
-## Key Documentation
-
-| Document | Purpose |
-|----------|---------|
-| `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` | The Law - Design specification |
-| `/app/memory/ONE_SPINE_SPEC.md` | Ticket system spec, bug naming, 5 Hard Proofs |
-| `/app/memory/ONE_SPINE_AUDIT_REPORT.md` | Latest audit status |
-| `/app/memory/AGENT_INSTRUCTIONS.md` | QA protocols |
+**Last Updated:** February 18, 2026
 
 ---
 
-## Pet Soul Data Architecture (51 Fields)
+## ⚠️ CRITICAL: Read AGENT_MASTER_PROTOCOL.md First
 
-### Field Categories:
-| Category | Fields | Weight |
-|----------|--------|--------|
-| **Identity** | name, breed, age, weight, size, gender | 5% |
-| **Health** | allergies, medical_conditions, sensitive_stomach, dietary_restrictions, medications, vaccination_status, spayed_neutered, last_vet_visit | 30% |
-| **Personality** | general_nature, energy_level, stranger_reaction, behavior_with_dogs, behavior_with_humans, separation_anxiety | 15% |
-| **Fears** | anxiety_triggers, loud_sounds, fear_response | 10% |
-| **Preferences** | favorite_treats, favorite_toys, favorite_activities, dislikes, diet_type, food_brand, feeding_schedule | 20% |
-| **Travel** | travel_style, car_comfort, motion_sickness, crate_trained, hotel_experience, flight_experience | 10% |
-| **Training** | training_level, commands_known, leash_behavior, potty_trained, crate_behavior | 5% |
-| **Lifestyle** | daily_routine, sleeping_spot, exercise_needs, grooming_frequency, last_grooming | 3% |
-| **Special** | special_needs, emergency_contact, vet_clinic, do_not_recommend, good_for | 2% |
+Every agent MUST read `/app/memory/AGENT_MASTER_PROTOCOL.md` before any work.
+
+---
+
+## Original Problem Statement
+
+Create a "Golden Standard Communication System" centered around an AI named "Mira." Development is guided by `PET_OS_BEHAVIOR_BIBLE.md`. 
+
+### Core Architectural Rules:
+
+1. **"Uniform Service Flow"** - All service actions create/attach to a single canonical "Service Desk Ticket" spine using `TCK-YYYY-NNNNNN` ID format
+
+2. **"Health-First Safety Rule"** - Pet health facts always override conflicting preferences
+
+3. **Mental Model**: 
+   > "Chat is where you ask. Services is where it gets done. Notifications simply bring you back to the thread."
+
+---
+
+## Documentation Hierarchy
+
+| Priority | Document | Purpose |
+|----------|----------|---------|
+| 1 | `/app/memory/AGENT_MASTER_PROTOCOL.md` | **THE MASTER PROTOCOL** - Read first |
+| 2 | `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` | The Law - Design specification |
+| 3 | `/app/memory/ONE_SPINE_SPEC.md` | Ticket system spec, 5 Hard Proofs |
+| 4 | `/app/memory/ONE_SPINE_AUDIT_REPORT.md` | Latest One Spine audit |
+| 5 | `/app/memory/NOTIFICATION_SYSTEM_AUDIT.md` | Notification system audit |
+| 6 | `/app/memory/PRD.md` | This file - Product requirements |
+
+---
+
+## Current System Status
+
+### One Spine: ✅ CERTIFIED
+
+| Proof | Status |
+|-------|--------|
+| 1. Canonical TCK Format | ✅ PASS |
+| 2. Services Visibility | ✅ PASS |
+| 3. Ownership Fields | ✅ PASS (new tickets) |
+| 4. Two-Way Replies | ✅ PASS |
+| 5. Unread Indicator | ✅ PASS |
+
+### Notification System: ✅ FIXED
+
+| Feature | Status |
+|---------|--------|
+| Bell icon in header | ✅ Working |
+| Per-pet filtering | ✅ Working |
+| Concierge reply → notification | ✅ Fixed |
+| Deep-link to Services | ✅ Fixed |
+| Pet avatar in cards | ✅ Added |
+| My Account link | ✅ Added |
+
+### Pet Soul Data: ✅ ENRICHED
+
+5 pets enriched with 51 fields each:
+- Mystique, Lola, Meister, Bruno, Luna
 
 ---
 
 ## What's Been Implemented
 
-### Session: Feb 18, 2026
+### February 18, 2026
 
-#### ✅ One Spine Specification & Audit
-- Created comprehensive `/app/memory/ONE_SPINE_SPEC.md` with:
-  - Bug naming conventions (member-facing vs internal)
-  - Mental model copy to use everywhere
-  - 5 Hard Proofs for verification
-  - Complete QA script
-- Created `/app/memory/ONE_SPINE_AUDIT_REPORT.md` with full audit results
-- Updated `/app/memory/AGENT_INSTRUCTIONS.md` with spec references
-
-#### ✅ Fixed Ownership Bug
-- `UnifiedPicksVault.jsx` - Now passes `token` and `user` to API calls
-- `MiraDemoPage.jsx` - Added `user` prop to UnifiedPicksVault
-
-#### ✅ Database Backfill
-- Added `has_unread_concierge_reply` field to all 2,113 tickets
-- TCK tickets with member.email: 57% (historical data)
-
-#### ✅ Pet Soul Enrichment
-- 5 pets enriched with 50+ fields each
-- All pillars tested and verified (Health-First, Emergency, Personalization, etc.)
-
-#### ✅ Previous Session Work
-- CELEBRATE Pillar Logic Fix
-- Soul Learning Engine Implementation
-- Breed Substitution Bug Instrumentation
-- Full "One Spine" QA Verification
-
----
-
-## Audit Status: One Spine
-
-### Re-Audit Results (Feb 18, 2026)
-
-**Test:** Created 3 fresh tickets from different entry points
-
-| Test | Ticket ID | Status |
-|------|-----------|--------|
-| Chat Entry | TCK-2026-000038 | ✅ All proofs pass |
-| Picks Entry | TCK-2026-000039 | ✅ All proofs pass |
-
-**5 Hard Proofs - All PASS:**
-
-| Proof | Status | Evidence |
-|-------|--------|----------|
-| 1. Canonical TCK Format | ✅ PASS | `TCK-2026-000038` matches `^TCK-\d{4}-\d{6}$` |
-| 2. Services Visibility | ✅ PASS | Ticket in `mira_tickets` collection |
-| 3a. member.email | ✅ PASS | `dipali@clubconcierge.in` |
-| 3b. member.id | ✅ PASS | `a152181a-2f81-4323-8...` |
-| 3c. parent_id | ✅ PASS | `a152181a-2f81-4323-8...` |
-| 4. Two-Way Replies | ✅ PASS | Concierge reply appended to same thread |
-| 5. Unread Indicator | ✅ PASS | `has_unread_concierge_reply: true` after reply |
-
-**One Spine Status: ✅ CERTIFIED for new tickets**
-
-### Legacy Data Status
-- TCK tickets with ownership: 57% (covered by unified query)
-- `has_unread_concierge_reply` field: 100% (backfilled)
+1. **AGENT_MASTER_PROTOCOL.md** - Comprehensive exhaustive protocol for all agents
+2. **One Spine Re-Audit** - All 5 proofs passing for new tickets
+3. **Notification System Fixes:**
+   - concierge_reply now creates member_notifications
+   - Deep-link goes to Services (not Concierge tab)
+   - Pet avatar + name in notification cards
+   - My Account link in dropdown
+4. **Help Modal FAQs** - Mental model copy added
+5. **Pet Soul Enrichment** - 5 pets with 51 fields each
+6. **Soul Learning Engine** - Active, returns `_memory_trace`
+7. **Breed Bug Instrumentation** - Monitoring via `breed_mention_detector.py`
 
 ---
 
 ## Prioritized Backlog
 
 ### P0 - Critical
-- [x] **Re-run One Spine audit** - ✅ CERTIFIED (Feb 18, 2026)
+
+- [x] ~~One Spine certification~~ ✅ DONE
+- [x] ~~Notification system fixes~~ ✅ DONE
+- [x] ~~Agent Master Protocol~~ ✅ DONE
 - [ ] **Soul-Capture Onboarding** - 8-10 step experience
 
 ### P1 - High Priority
+
+- [ ] **Ensure pet_id/pet_name on ALL tickets** - Some tickets missing pet context
+- [ ] **"All pets" toggle** in notification dropdown
 - [ ] **Mobile Specs Audit** - Typography & tap targets vs Bible
-- [x] **Help Section** - Added FAQ with mental model copy
-- [ ] **Monitor Breed Bug** - Check logs for `[BREED MISMATCH]`
+- [ ] Monitor Breed Bug logs for `[BREED MISMATCH]`
 
 ### P2 - Medium Priority
-- [ ] **WhatsApp Webhook Idempotency**
-- [ ] **Legacy Ticket Migration** - 134+ tickets to `TCK-*` format
+
+- [ ] WhatsApp Webhook Idempotency
+- [ ] Legacy Ticket Migration (134+ to TCK-*)
+- [ ] Gradual backfill of ownership fields
 
 ### P3 - Backlog
+
 - [ ] Refactor `mira_routes.py` (20k+ lines)
 - [ ] Refactor `MiraDemoPage.jsx`
 - [ ] Push notification system
@@ -123,37 +117,52 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 ---
 
 ## Test Credentials
-- **Email:** dipali@clubconcierge.in
-- **Password:** test123
-- **Test Pets:** Mystique, Lola, Meister, Bruno, Luna (all enriched)
-- **Debug URL:** `/mira-demo?debug=1`
+
+```
+Email: dipali@clubconcierge.in
+Password: test123
+URL: /mira-demo?debug=1
+
+Enriched Pets:
+- Mystique (senior, arthritis, chicken/wheat allergy)
+- Lola (young, energetic, beef/corn allergy)
+- Meister (senior, heart condition, severe anxiety)
+- Bruno (young, high energy, loves swimming)
+- Luna (hip dysplasia, grain allergy)
+```
 
 ---
 
-## Key Files Reference
+## Key API Endpoints
 
-### Specifications
-- `/app/memory/ONE_SPINE_SPEC.md` - 5 Hard Proofs, QA script
-- `/app/memory/ONE_SPINE_AUDIT_REPORT.md` - Current audit status
-- `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` - The Law
+| Endpoint | Purpose |
+|----------|---------|
+| POST `/api/mira/chat` | Main chat, creates tickets |
+| GET `/api/mira/tickets` | Get Services tickets |
+| POST `/api/service_desk/concierge_reply` | Concierge sends reply |
+| GET `/api/member/notifications/inbox/{email}` | Bell notifications |
+
+---
+
+## Key Files
 
 ### Backend
-- `/app/backend/utils/service_ticket_spine.py` - Canonical ticket creation
-- `/app/backend/utils/spine_helper.py` - Route adapter
-- `/app/backend/routes/mira_routes.py` - Main chat logic
+- `/app/backend/mira_routes.py` - Main chat
+- `/app/backend/mira_service_desk.py` - Service desk, concierge_reply
+- `/app/backend/utils/service_ticket_spine.py` - Ticket creation
 
 ### Frontend
 - `/app/frontend/src/pages/MiraDemoPage.jsx` - Main UI
-- `/app/frontend/src/components/PicksVault/UnifiedPicksVault.jsx` - Picks display
-- `/app/frontend/src/components/Mira/OnboardingTooltip.jsx` - Mental model UI
+- `/app/frontend/src/components/Mira/NotificationBell.jsx` - Bell icon
 
-### Tests
-- `/app/backend/tests/test_pet_soul_enriched_data.py` - Soul data tests
-- `/app/backend/scripts/enrich_pet_souls.py` - Pet enrichment script
+### Documentation
+- `/app/memory/AGENT_MASTER_PROTOCOL.md` - **THE MASTER PROTOCOL**
+- `/app/memory/PET_OS_BEHAVIOR_BIBLE.md` - The Law
 
 ---
 
 ## 3rd Party Integrations
+
 - Google Places
 - YouTube
 - WhatsApp (Gupshup, Meta)
@@ -161,3 +170,11 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 - Shopify
 - ElevenLabs
 - Firebase
+
+---
+
+## The Rule
+
+> **If you break One Spine, you break the entire user experience.**
+
+Read the protocol. Follow the QA. Every. Single. Time.
