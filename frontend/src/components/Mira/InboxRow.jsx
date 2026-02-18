@@ -5,13 +5,16 @@
  * [Avatar] [Headline (bold) + TCK line + Snippet] [Time]
  * Blue dot for unread
  * 
+ * ALWAYS shows ticket ID line for trackability:
+ * TCK-2026-000123 • Care • Mystique
+ * 
  * Swipe actions:
- * - Left swipe: Archive
+ * - Left swipe: Archive (or Unarchive if in archived view)
  * - Right swipe: Mark read/unread
  */
 
 import React, { useState, useRef } from 'react';
-import { ChevronRight, Archive, Mail, MailOpen } from 'lucide-react';
+import { ChevronRight, Archive, Mail, MailOpen, ArchiveRestore } from 'lucide-react';
 
 const InboxRow = ({ 
   notification,
@@ -21,9 +24,11 @@ const InboxRow = ({
   onMarkRead,
   onMarkUnread,
   onArchive,
+  onUnarchive,
   showPetName = false,
   isSelected = false,
-  selectMode = false
+  selectMode = false,
+  isArchived = false
 }) => {
   const [swipeX, setSwipeX] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
@@ -68,28 +73,53 @@ const InboxRow = ({
     }
   };
 
-  // Build TCK + pillar line
+  // Build TCK + pillar + pet line - ALWAYS show ticket_id for trackability
   const getTicketLine = () => {
     const parts = [];
+    
+    // Always show ticket ID if available
     if (notification.ticket_id) {
       parts.push(notification.ticket_id);
     }
+    
+    // Show pillar
     if (notification.pillar && notification.pillar !== 'general') {
       parts.push(notification.pillar.charAt(0).toUpperCase() + notification.pillar.slice(1));
     }
-    if (showPetName && petName && petName !== 'General') {
+    
+    // Show pet name when filtering all pets or if no ticket ID
+    if ((showPetName || !notification.ticket_id) && petName && petName !== 'General') {
       parts.push(petName);
     }
+    
+    // If still no parts but we have type info, show that
+    if (parts.length === 0 && notification.type) {
+      const typeLabels = {
+        'concierge_reply': 'Concierge Reply',
+        'picks_request_received': 'Request',
+        'mira_request_received': 'Request',
+        'vault_request_received': 'Vault Request',
+        'service_request_received': 'Service Request',
+        'status_change': 'Status Update',
+        'approval_needed': 'Approval Needed',
+        'payment_needed': 'Payment Needed'
+      };
+      const typeLabel = typeLabels[notification.type] || 'Notification';
+      parts.push(typeLabel);
+    }
+    
     return parts.length > 0 ? parts.join(' • ') : null;
   };
 
-  // Build snippet
+  // Build snippet - message content preview
   const getSnippet = () => {
     let snippet = notification.message || notification.body || '';
-    // Don't duplicate pet name in snippet if already showing in ticket line
-    if (!showPetName && petName && petName !== 'General' && !notification.ticket_id) {
-      snippet = `${petName} • ${snippet}`;
+    
+    // Truncate long snippets
+    if (snippet.length > 80) {
+      snippet = snippet.substring(0, 77) + '...';
     }
+    
     return snippet;
   };
 
@@ -114,14 +144,18 @@ const InboxRow = ({
     
     // Trigger action based on swipe distance
     if (swipeX < -60) {
-      // Left swipe - Archive
-      onArchive?.(notification);
+      // Left swipe - Archive or Unarchive
+      if (isArchived && onUnarchive) {
+        onUnarchive(notification);
+      } else if (onArchive) {
+        onArchive(notification);
+      }
     } else if (swipeX > 60) {
       // Right swipe - Toggle read/unread
-      if (isUnread) {
-        onMarkRead?.(notification);
-      } else {
-        onMarkUnread?.(notification);
+      if (isUnread && onMarkRead) {
+        onMarkRead(notification);
+      } else if (onMarkUnread) {
+        onMarkUnread(notification);
       }
     }
     
@@ -130,6 +164,7 @@ const InboxRow = ({
   };
 
   const ticketLine = getTicketLine();
+  const snippet = getSnippet();
 
   return (
     <div 
@@ -141,14 +176,30 @@ const InboxRow = ({
         {/* Right swipe background (mark read/unread) */}
         <div className={`flex-1 flex items-center justify-start pl-4 ${isUnread ? 'bg-blue-500' : 'bg-amber-500'}`}>
           {isUnread ? (
-            <MailOpen className="w-5 h-5 text-white" />
+            <>
+              <MailOpen className="w-5 h-5 text-white" />
+              <span className="ml-2 text-xs text-white font-medium">Read</span>
+            </>
           ) : (
-            <Mail className="w-5 h-5 text-white" />
+            <>
+              <Mail className="w-5 h-5 text-white" />
+              <span className="ml-2 text-xs text-white font-medium">Unread</span>
+            </>
           )}
         </div>
-        {/* Left swipe background (archive) */}
-        <div className="flex-1 flex items-center justify-end pr-4 bg-gray-600">
-          <Archive className="w-5 h-5 text-white" />
+        {/* Left swipe background (archive/unarchive) */}
+        <div className={`flex-1 flex items-center justify-end pr-4 ${isArchived ? 'bg-green-600' : 'bg-gray-600'}`}>
+          {isArchived ? (
+            <>
+              <span className="mr-2 text-xs text-white font-medium">Restore</span>
+              <ArchiveRestore className="w-5 h-5 text-white" />
+            </>
+          ) : (
+            <>
+              <span className="mr-2 text-xs text-white font-medium">Archive</span>
+              <Archive className="w-5 h-5 text-white" />
+            </>
+          )}
         </div>
       </div>
       
@@ -171,7 +222,7 @@ const InboxRow = ({
       >
         {/* Unread indicator */}
         {isUnread && !selectMode && (
-          <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
+          <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" data-testid="unread-indicator" />
         )}
         {!isUnread && !selectMode && <div className="w-2 flex-shrink-0" />}
         
@@ -194,17 +245,19 @@ const InboxRow = ({
             {notification.title}
           </h3>
           
-          {/* TCK + Pillar + Pet line */}
+          {/* TCK + Pillar + Pet line - ALWAYS visible for trackability */}
           {ticketLine && (
-            <p className="text-[10px] text-gray-500 font-mono truncate mt-0.5">
+            <p className="text-[10px] text-gray-500 font-mono truncate mt-0.5" data-testid="ticket-line">
               {ticketLine}
             </p>
           )}
           
           {/* Snippet */}
-          <p className="text-xs text-gray-400 truncate mt-0.5">
-            {getSnippet()}
-          </p>
+          {snippet && (
+            <p className="text-xs text-gray-400 truncate mt-0.5">
+              {snippet}
+            </p>
+          )}
         </div>
         
         {/* Time + Chevron */}
