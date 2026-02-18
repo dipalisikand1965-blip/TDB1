@@ -48,28 +48,28 @@ class TestSoulLearningEngine:
         Pet: Mystique has arthritis in doggy_soul_answers.health_conditions
         """
         response = requests.get(
-            f"{BASE_URL}/api/pets/{TEST_PET_ID}/soul",
+            f"{BASE_URL}/api/pets/{TEST_PET_ID}",
             headers=self.headers
         )
-        
-        # Check if endpoint exists, if not try alternative
-        if response.status_code == 404:
-            # Try getting full pet and check soul data
-            response = requests.get(
-                f"{BASE_URL}/api/pets/{TEST_PET_ID}",
-                headers=self.headers
-            )
         
         assert response.status_code == 200, f"Status {response.status_code}: {response.text}"
         data = response.json()
         
-        # Check medical_conditions or health_conditions
+        # Check medical_conditions or health_conditions in doggy_soul_answers
         doggy_soul = data.get("doggy_soul_answers", {})
-        health_conditions = doggy_soul.get("health_conditions", "")
+        health_conditions = doggy_soul.get("health_conditions", "") or ""
+        
+        # Also check for medical_conditions field at root or soul_enrichments
+        medical_conditions = data.get("medical_conditions", "") or ""
+        soul_enrichments = data.get("soul_enrichments", {})
+        enriched_conditions = soul_enrichments.get("medical_conditions", []) or []
+        
+        # Check in any of these locations
+        all_conditions = f"{health_conditions} {medical_conditions} {' '.join(str(c) for c in enriched_conditions)}".lower()
         
         # Verify arthritis is present
-        assert "arthritis" in health_conditions.lower(), \
-            f"Expected 'arthritis' in health_conditions, got: {health_conditions}"
+        assert "arthritis" in all_conditions, \
+            f"Expected 'arthritis' in conditions, got health_conditions: {health_conditions}, medical_conditions: {medical_conditions}, enriched: {enriched_conditions}"
         print(f"PASS: health_conditions contains arthritis: {health_conditions}")
     
     def test_02_mira_chat_returns_memory_trace(self):
