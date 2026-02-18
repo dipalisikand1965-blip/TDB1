@@ -20862,7 +20862,7 @@ async def send_tip_card_to_concierge(request: SendTipCardRequest):
             member_notification_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
             user_email = request.member_email.lower() if request.member_email else None
             
-            if user_email and db:
+            if user_email and db is not None:
                 member_notification = {
                     "id": member_notification_id,
                     "type": "tip_card_request_received",
