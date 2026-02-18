@@ -11930,6 +11930,7 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
             })
         else:
             # Both missing - ask both in ONE message (max 2 questions)
+            # Include conversation_contract with location consent chips (Section 11.2.8)
             return add_picks_to_response({
                 "success": True,
                 "response": f"{pet_anchor}\n\nBefore I suggest places:\n\n• Which **area** should I search?\n• **Indoor** or **outdoor** seating preferred?",
@@ -11949,7 +11950,19 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
                     {"text": "Indoor cafe, Indiranagar", "type": "location_seating"}
                 ],
                 "products": [],
-                "nearby_places": None
+                "nearby_places": None,
+                # Section 11.2: conversation_contract for deterministic UI
+                "conversation_contract": {
+                    "mode": "clarify",
+                    "assistant_message_id": f"MSG-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:5].upper()}",
+                    "quick_replies": [
+                        {"id": "QR-LOC-01", "label": "Use current location", "payload_text": "Use my current location.", "intent_type": "consent_location", "action": "set_state", "action_args": {"key": "request_geo_permission", "value": True}, "analytics_tag": "qr.location.use_current", "safety": {"requires_consent": True, "consent_key": "geo_location"}},
+                        {"id": "QR-LOC-02", "label": "Outdoor in Koramangala", "payload_text": "Outdoor in Koramangala.", "intent_type": "location_area", "action": "none", "action_args": {}, "analytics_tag": "qr.location.area"},
+                        {"id": "QR-LOC-03", "label": "Indoor in Indiranagar", "payload_text": "Indoor in Indiranagar.", "intent_type": "location_area", "action": "none", "action_args": {}, "analytics_tag": "qr.location.area"},
+                        {"id": "QR-LOC-04", "label": "Not now", "payload_text": "Not now.", "intent_type": "cancel", "action": "none", "action_args": {}, "analytics_tag": "qr.nav.cancel"}
+                    ],
+                    "actions": []
+                }
             })
     
     # ═══════════════════════════════════════════════════════════════════════════
