@@ -15,7 +15,7 @@ from datetime import datetime
 import httpx
 import os
 
-sync_router = APIRouter(prefix="/api/admin/sync", tags=["Admin Sync"])
+sync_router = APIRouter(prefix="/api/admin/env-sync", tags=["Admin Env Sync"])
 
 # Database reference (set by server.py)
 db = None
