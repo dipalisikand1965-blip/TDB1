@@ -14157,6 +14157,49 @@ async def unarchive_notification(notification_id: str):
 
 
 # ============================================
+# GUARDRAIL: NO NOTIFICATION-ONLY OBJECTS
+# ============================================
+# HARD RULE: No admin/member notification may be created unless
+# it references a REAL service_desk_tickets.ticket_id.
+# This prevents orphan notifications that break inbox UX.
+
+async def assert_ticket_exists(ticket_id: str, context: str = "notification") -> dict:
+    """
+    Validate ticket exists before creating any notification.
+    Returns ticket doc if exists, raises HTTPException if not.
+    """
+    if not ticket_id:
+        logger.error(f"[GUARDRAIL VIOLATION] Attempted to create {context} with no ticket_id")
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Cannot create {context}: ticket_id is required (no notification-only objects allowed)"
+        )
+    
+    # Check service_desk_tickets (canonical source)
+    ticket = await db.service_desk_tickets.find_one(
+        {"ticket_id": ticket_id},
+        {"_id": 0, "ticket_id": 1, "member": 1, "pet": 1, "subject": 1, "pillar": 1}
+    )
+    
+    if not ticket:
+        # Also check mira_tickets as fallback
+        ticket = await db.mira_tickets.find_one(
+            {"ticket_id": ticket_id},
+            {"_id": 0, "ticket_id": 1, "member": 1, "pet": 1, "subject": 1, "pillar": 1}
+        )
+    
+    if not ticket:
+        logger.error(f"[GUARDRAIL VIOLATION] Attempted to create {context} for non-existent ticket: {ticket_id}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot create {context}: ticket {ticket_id} does not exist in service_desk_tickets"
+        )
+    
+    logger.info(f"[GUARDRAIL] ✓ Ticket {ticket_id} validated for {context}")
+    return ticket
+
+
+# ============================================
 # MEMBER TICKET REPLY - THE ONE TRUE FLOW
 # ============================================
 # This is the CANONICAL endpoint for member replies.
