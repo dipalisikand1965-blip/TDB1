@@ -487,6 +487,58 @@ const ServicesPanel = ({
       <div className="flex-1 overflow-y-auto">
         <div className="p-4 space-y-6">
           
+          {/* ═══════════════════════════════════════════════════════════════ */}
+          {/* TIMELY SERVICES - "{petName} might need this" (Soul Integration) */}
+          {/* Shows services based on recent chat intents - Mira knows         */}
+          {/* ═══════════════════════════════════════════════════════════════ */}
+          {timelyServices.length > 0 && (
+            <section className="animate-in fade-in-50 duration-300">
+              <div className="mb-3">
+                <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-amber-400" />
+                  {selectedPet?.name || 'Your pet'} might need this
+                </h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">Mira knows what's on your mind</p>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {timelyServices.slice(0, 6).map((service, index) => (
+                  <button
+                    key={service.service_type || index}
+                    onClick={() => {
+                      // Find matching launcher or create a request
+                      const matchingLauncher = launchers.find(l => 
+                        l.id?.toLowerCase().includes(service.service_type) ||
+                        l.name?.toLowerCase().includes(service.service_type)
+                      );
+                      if (matchingLauncher) {
+                        handleLauncherClick(matchingLauncher);
+                      } else {
+                        onOpenRequestBuilder?.({ 
+                          id: service.service_type,
+                          name: service.service_type.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+                          emoji: '✨'
+                        });
+                      }
+                    }}
+                    className="relative p-3 rounded-xl bg-gradient-to-br from-amber-900/40 to-orange-900/30 border border-amber-500/30 hover:border-amber-400/50 transition-all active:scale-[0.98] text-left"
+                  >
+                    <span className="absolute top-1 right-1 text-[9px] px-2 py-0.5 bg-amber-500/80 text-white rounded-full font-semibold">
+                      Timely
+                    </span>
+                    <div className="text-sm font-medium text-white capitalize mt-3">
+                      {service.service_type.replace(/-/g, ' ')}
+                    </div>
+                    {service.why_timely && (
+                      <div className="text-[10px] text-amber-300/80 mt-1 line-clamp-1">
+                        {service.why_timely}
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+          
           {/* Service Launchers */}
           <section>
             <SectionHeader 
