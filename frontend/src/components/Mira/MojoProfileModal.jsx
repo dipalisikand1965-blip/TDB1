@@ -102,11 +102,18 @@ const calculateSectionCompleteness = (sectionId, data) => {
       return Math.round((filled / soulFields.length) * 100);
     }
     case 'learned': {
-      // Learned facts from conversations
+      // Learned facts from conversations AND ticket enrichment
       const factsCount = (data?.learned_facts || []).length;
-      if (factsCount >= 10) return 100;
-      if (factsCount >= 5) return 70;
-      if (factsCount >= 1) return 40;
+      // Count ticket-derived learnings
+      const soulAnswers = data?.doggy_soul_answers || {};
+      const ticketCount = (soulAnswers.food_allergies_from_tickets?.length || 0) +
+                         (soulAnswers.preferences_from_tickets?.length || 0) +
+                         (soulAnswers.anxiety_triggers_from_tickets?.length || 0) +
+                         (soulAnswers.grooming_notes_from_tickets?.length || 0);
+      const totalCount = factsCount + ticketCount;
+      if (totalCount >= 10) return 100;
+      if (totalCount >= 5) return 70;
+      if (totalCount >= 1) return 40;
       return 0;
     }
     case 'trait_graph': {
