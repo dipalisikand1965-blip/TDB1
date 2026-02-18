@@ -892,11 +892,77 @@ const LearnedFactsContent = memo(({ pet, apiUrl, token, onInsightAction }) => {
       )}
       
       {/* Empty state when no facts at all */}
-      {learnedFacts.length === 0 && pendingCount === 0 && (
+      {learnedFacts.length === 0 && pendingCount === 0 && !hasTicketLearnings && (
         <div className="mojo-section-empty" style={{ textAlign: 'center', padding: '8px 16px' }}>
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, margin: 0 }}>
             No confirmed learnings yet. Chat with Mira to teach her about {pet?.name || 'your pet'}!
           </p>
+        </div>
+      )}
+      
+      {/* ============================================
+          TICKET-DERIVED LEARNINGS SECTION
+          Highlighted with Concierge® badge
+          ============================================ */}
+      {hasTicketLearnings && (
+        <div style={{ marginTop: 16, marginBottom: 12 }}>
+          <div style={{ 
+            display: 'flex', alignItems: 'center', gap: 8,
+            marginBottom: 12, paddingLeft: 4 
+          }}>
+            <span style={{ 
+              background: 'linear-gradient(135deg, #8B5CF6, #6366F1)',
+              padding: '3px 8px',
+              borderRadius: 6,
+              fontSize: 10,
+              fontWeight: 700,
+              color: 'white',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+              From Service Requests
+            </span>
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
+              Learned from Concierge®
+            </span>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {ticketLearnings.map((learning, idx) => (
+              <span 
+                key={`ticket-${idx}`}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 4,
+                  padding: '6px 10px',
+                  background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(99, 102, 241, 0.1))',
+                  border: '1px solid rgba(139, 92, 246, 0.3)',
+                  borderRadius: 20,
+                  fontSize: 13,
+                  color: 'rgba(255,255,255,0.9)'
+                }}
+                data-testid={`ticket-learning-${idx}`}
+              >
+                <span style={{ fontSize: 12 }}>{learning.icon}</span>
+                {learning.content}
+                <span style={{ 
+                  fontSize: 10, 
+                  color: '#8B5CF6',
+                  marginLeft: 4 
+                }}>
+                  ✓
+                </span>
+              </span>
+            ))}
+          </div>
+          {soulAnswers.last_ticket_enrichment && (
+            <div style={{ 
+              marginTop: 8, 
+              fontSize: 10, 
+              color: 'rgba(255,255,255,0.35)',
+              paddingLeft: 4
+            }}>
+              Last updated: {new Date(soulAnswers.last_ticket_enrichment).toLocaleDateString()}
+            </div>
+          )}
         </div>
       )}
       
