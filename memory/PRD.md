@@ -71,6 +71,48 @@ Verified existing implementations:
 - ✅ PICKS Concierge Fallback (PersonalizedPicksPanel.jsx lines 1738+)
 - ✅ Icon State System (useIconState.js - OFF/ON/PULSE)
 
+### ✅ Smart Fallback Picks - COMPLETED
+When no chat intents exist, Mira still shows intelligent picks based on:
+- **Breed knowledge** - "Golden Retrievers like Lola love this"
+- **Seasonal context** - Mumbai monsoon = tick prevention
+- **Life stage** - Puppy training, senior joint care
+- **File:** `top_picks_routes.py` function `get_smart_fallback_picks()`
+
+---
+
+## 🔴 CRITICAL BUGS TO FIX
+
+### 1. Intent Capture Not Working
+- **Collection `user_learn_intents` is EMPTY**
+- Chat messages not storing intents for timely picks
+- **Location:** `mira_routes.py` lines 4365-4390, `learn_intent_bridge.py`
+
+### 2. City Not Persisted
+- Pet profile has `city: null`
+- Mumbai showing from browser geolocation only
+- **Need:** Add city field to onboarding
+
+---
+
+## 📋 UPCOMING TASKS (Priority Order)
+
+1. 🔧 **Fix intent capture** - Debug DB storage
+2. 📍 **Add city to pet profile** - Onboarding update  
+3. 📬 **Build Concierge Inbox** - Outlook-style drawer (see `/app/memory/CONCIERGE_INBOX_SPEC.md`)
+4. 🎨 **P1 Frontend UIs** - Weight chart, training tracker in MojoProfileModal
+
+---
+
+## 📁 SPEC DOCUMENTS
+
+| Document | Purpose |
+|----------|---------|
+| `/app/memory/DEPLOYMENT_BIBLE.md` | Deploy URL fix |
+| `/app/memory/CONCIERGE_INBOX_SPEC.md` | Outlook-style inbox design |
+| `/app/memory/SOUL_ONBOARDING_REBUILD_PROPOSAL.md` | Onboarding gaps |
+| `/app/memory/SYSTEMS_INVENTORY.md` | All personalization systems |
+| `/app/memory/AGENT_HANDOFF_FEB18.md` | Full context for next agent |
+
 ---
 
 ## Original Problem Statement
