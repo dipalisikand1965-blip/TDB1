@@ -520,12 +520,13 @@ def build_memory_trace(
     """
     Build a QA trace showing what memory was used and what was saved.
     
-    Returns:
-    {
-        "memory_used": [fields],
-        "new_enrichments_saved": [items],
-        "not_saved_reason": [items]
-    }
+    Bible Section F requires these EXACT fields:
+    - known_fields_used
+    - new_enrichments_detected
+    - saved_enrichments
+    - rejected_enrichments + reason
+    
+    Returns dict matching Bible spec for QA validation.
     """
     # Get recalled fields
     recall_info = get_fields_to_recall(pet_soul, intent)
@@ -545,11 +546,29 @@ def build_memory_trace(
         existing_enrichments=existing_enrichments
     )
     
+    # Build Bible-compliant trace with exact field names
     return {
-        "memory_used": recall_info["memory_used"],
-        "memory_values": recall_info["memory_values"],
-        "new_enrichments_saved": extraction_result["new_enrichments_saved"],
-        "not_saved_reason": extraction_result["not_saved_reason"]
+        # Bible field: known_fields_used
+        "known_fields_used": recall_info["memory_used"],
+        
+        # Bible field: new_enrichments_detected (all detected, before save decision)
+        "new_enrichments_detected": extraction_result["new_enrichments_saved"],
+        
+        # Bible field: saved_enrichments (what will actually be saved)
+        "saved_enrichments": [
+            {"field": e.get("field"), "value": e.get("value"), "source": e.get("source")}
+            for e in extraction_result["new_enrichments_saved"]
+        ],
+        
+        # Bible field: rejected_enrichments + reason
+        "rejected_enrichments": [
+            {"field": e.get("field"), "value": e.get("value"), "reason": e.get("reason")}
+            for e in extraction_result["not_saved_reason"]
+        ],
+        
+        # Additional context (for debugging, not Bible-required)
+        "_memory_values": recall_info["memory_values"],
+        "_intent": intent
     }
 
 
