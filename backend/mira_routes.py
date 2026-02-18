@@ -158,6 +158,64 @@ except ImportError as e:
         intent = ""
         debug = None
 
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CONVERSATION CONTRACT INJECTOR
+# Ensures every response has conversation_contract (Section 11.2)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def ensure_conversation_contract(response: dict, pillar: str = None, ticket_id: str = None) -> dict:
+    """
+    Ensure response has a conversation_contract.
+    If missing, auto-generate based on pillar and context.
+    
+    Section 11.2 of PET_OS_BEHAVIOR_BIBLE.md requires this on EVERY response.
+    """
+    if response.get("conversation_contract"):
+        return response
+    
+    # Determine mode from response context
+    mode = "answer"  # Default
+    
+    if response.get("awaiting"):
+        mode = "clarify"
+    elif response.get("nearby_places"):
+        mode = "places"
+    elif response.get("youtube_results") or response.get("learn_content"):
+        mode = "learn"
+    elif response.get("ticket_id") or ticket_id:
+        mode = "ticket"
+    
+    # Build quick replies based on pillar and mode
+    pillar = pillar or response.get("pillar")
+    pet_name = response.get("pet_context_used", {}).get("name", "your pet")
+    
+    try:
+        from conversation_contract import build_quick_replies
+        quick_replies = build_quick_replies(
+            mode=mode,
+            context={"pet_name": pet_name, "pillar": pillar},
+            pillar=pillar,
+            ticket_id=ticket_id
+        )
+    except Exception as e:
+        logger.warning(f"[CONTRACT] Failed to build quick_replies: {e}")
+        quick_replies = []
+    
+    # Generate message ID
+    from datetime import datetime, timezone
+    message_id = f"MSG-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:5].upper()}"
+    
+    response["conversation_contract"] = {
+        "mode": mode,
+        "assistant_message_id": message_id,
+        "quick_replies": quick_replies,
+        "actions": []
+    }
+    
+    return response
+
+
 # Import Soul-First Response Generation Logic
 try:
     from soul_first_logic import (
