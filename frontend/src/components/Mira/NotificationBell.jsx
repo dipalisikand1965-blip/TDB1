@@ -150,9 +150,14 @@ const NotificationBell = ({ userEmail, petId, petName, className = '' }) => {
         >
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b border-purple-500/20">
-            <h3 className="text-sm font-semibold text-white">
-              Notifications {petName ? `• ${petName}` : ''}
-            </h3>
+            <div>
+              <h3 className="text-sm font-semibold text-white">
+                Notifications {petName ? `• ${petName}` : ''}
+              </h3>
+              <p className="text-xs text-purple-400/70 mt-0.5">
+                Updates from Concierge. Tap to open the thread in Services.
+              </p>
+            </div>
             <div className="flex items-center gap-2">
               {/* My Account Link */}
               <button
