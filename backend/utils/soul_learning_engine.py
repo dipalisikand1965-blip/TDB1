@@ -166,7 +166,10 @@ ENRICHMENT_SAVE_PATTERNS = {
             r"(?:she|he|they) really likes? (.+)",
             r"favorite (?:thing|treat|toy|activity) is (.+)",
             r"goes crazy for (.+)",
-            r"always wants (.+)"
+            r"always wants (.+)",
+            r"(\w+) loves (.+)",  # "Mystique loves swimming"
+            r"loves? to (.+)",    # "loves to swim"
+            r"enjoys (.+)"        # "enjoys swimming"
         ],
         "field": "favorites",
         "is_durable": True
