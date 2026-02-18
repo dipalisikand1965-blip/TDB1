@@ -1795,6 +1795,8 @@ const UnifiedPicksVault = ({
                             arrange={arrange}
                             pet={pet}
                             onCreateTicket={onCreateConciergeTicket}
+                            token={token}
+                            user={user}
                           />
                         ))}
                       </div>
