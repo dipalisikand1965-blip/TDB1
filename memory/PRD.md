@@ -117,7 +117,8 @@ Create a "Golden Standard Communication System" centered around an AI named "Mir
 
 ### P1 - High Priority
 
-- [ ] **Ensure pet_id/pet_name on ALL tickets** - Some tickets missing pet context
+- [x] ~~Ensure pet_id/pet_name on ALL tickets~~ ✅ AUDITED - Working correctly
+- [x] ~~"Concierge®" branding consistency~~ ✅ DONE - 13 files updated
 - [ ] **"All pets" toggle** in notification dropdown
 - [ ] **Mobile Specs Audit** - Typography & tap targets vs Bible
 - [ ] Monitor Breed Bug logs for `[BREED MISMATCH]`
