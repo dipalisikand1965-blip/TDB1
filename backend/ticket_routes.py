@@ -1998,6 +1998,11 @@ async def add_reply(ticket_id: str, reply: TicketReply):
         except:
             pass
     
+    # Try mira_tickets (canonical spine collection)
+    if not ticket:
+        ticket = await db.mira_tickets.find_one({"ticket_id": ticket_id})
+        collection = db.mira_tickets
+    
     # Try service_desk_tickets if not found
     if not ticket:
         ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id})
