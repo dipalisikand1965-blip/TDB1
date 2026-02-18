@@ -42,6 +42,11 @@ from learn_models import (
     LearnTopic, ContentType, RiskLevel,
     SaveLearnRequest, TOPIC_CONFIG
 )
+from learn_intent_bridge import (
+    get_recent_user_intents,
+    calculate_intent_boost,
+    INTENT_BOOST_SCORE
+)
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/os/learn", tags=["learn-os"])
