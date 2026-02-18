@@ -513,19 +513,25 @@ async def get_picks_counts(db, user_email: str, pet_ids: List[str] = None) -> Di
 
 async def get_learn_counts(db, pet_ids: List[str] = None) -> Dict:
     """
-    LEARN tab counts - insights from pet profile.
+    LEARN tab counts - insights from pet profile + available content.
     
     Returns:
     - pending_insights: AI-extracted facts pending review
     - learned_facts: Confirmed facts count
+    - has_content: Whether personalized content exists for this pet
+    - timely_content: Content matching recent chat intents
     """
     pending_insights = 0
     learned_facts = 0
+    has_content = 0
+    timely_content = 0
     
     if not pet_ids:
         return {
             "pending_insights": 0,
             "learned_facts": 0,
+            "has_content": 0,
+            "timely_content": 0,
             "_query": {"note": "No pet_ids provided"}
         }
     
@@ -533,7 +539,7 @@ async def get_learn_counts(db, pet_ids: List[str] = None) -> Dict:
         for pet_id in pet_ids:
             pet = await db.pets.find_one(
                 {"id": pet_id},
-                {"conversation_insights": 1, "learned_facts": 1}
+                {"conversation_insights": 1, "learned_facts": 1, "breed": 1, "age": 1}
             )
             
             if pet:
@@ -546,14 +552,45 @@ async def get_learn_counts(db, pet_ids: List[str] = None) -> Dict:
                 # Count learned facts
                 facts = pet.get("learned_facts") or []
                 learned_facts += len(facts)
+                
+                # Check for breed-specific content
+                breed = pet.get("breed", "").lower()
+                if breed:
+                    content_count = await db.learn_content.count_documents({
+                        "$or": [
+                            {"tags": {"$regex": breed, "$options": "i"}},
+                            {"title": {"$regex": breed, "$options": "i"}}
+                        ]
+                    })
+                    if content_count > 0:
+                        has_content = 1
+        
+        # Check for timely content (from recent chat intents)
+        if pet_ids:
+            # Get user's recent intents (48hr window)
+            from datetime import datetime, timezone, timedelta
+            cutoff = datetime.now(timezone.utc) - timedelta(hours=48)
+            
+            intent_docs = await db.user_learn_intents.find({
+                "pet_id": {"$in": pet_ids},
+                "createdAt": {"$gte": cutoff}
+            }).to_list(length=10)
+            
+            if intent_docs:
+                timely_content = sum(len(doc.get("intents", [])) for doc in intent_docs)
+                if timely_content > 0:
+                    has_content = 1  # Ensure LEARN shows ON when there's timely content
+                    
     except Exception as e:
         logger.warning(f"[ICON-STATE] Error querying pet insights: {e}")
     
     return {
         "pending_insights": pending_insights,
         "learned_facts": learned_facts,
+        "has_content": has_content,
+        "timely_content": timely_content,
         "_query": {
-            "source": "pets.conversation_insights + pets.learned_facts"
+            "source": "pets.conversation_insights + pets.learned_facts + learn_content + user_learn_intents"
         }
     }
 
