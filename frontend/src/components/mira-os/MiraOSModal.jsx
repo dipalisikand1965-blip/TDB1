@@ -636,7 +636,7 @@ const MiraOSModal = ({
         setPendingRequests(prev => prev + 1);
         setSelectedPicks(new Set());
         
-        toast.success(`Sent to Concierge!`, {
+        toast.success(`Sent to Concierge®!`, {
           description: `${selectedItems.length} item(s) for ${selectedPet?.name || 'your pet'}`,
           duration: 4000
         });
@@ -645,7 +645,7 @@ const MiraOSModal = ({
         setMessages(prev => [...prev, {
           id: `confirm-${Date.now()}`,
           role: 'assistant',
-          content: `✅ Perfect! I've sent your request to our Concierge team. They'll prepare ${selectedItems.length > 1 ? 'these items' : 'this'} specially for ${selectedPet?.name || 'your pet'}. Request #${data.request_id || data.ticket_id}`,
+          content: `✅ Perfect! I've sent your request to our Concierge® team. They'll prepare ${selectedItems.length > 1 ? 'these items' : 'this'} specially for ${selectedPet?.name || 'your pet'}. Request #${data.request_id || data.ticket_id}`,
           timestamp: new Date().toISOString()
         }]);
         

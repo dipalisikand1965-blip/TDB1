@@ -353,7 +353,7 @@ const MiraConciergeCards = ({
           ) : (
             <>
               <Sparkles className="w-4 h-4" />
-              Send {selectedIds.size} Picks to Concierge
+              Send {selectedIds.size} Picks to Concierge®
             </>
           )}
         </button>
