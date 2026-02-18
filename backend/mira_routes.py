@@ -12502,10 +12502,12 @@ I can already picture {pet_name}'s excitement. Let me help make this perfect.
 
 This helps me tailor everything - from cake options to photo spots."""
             
-            # Update ticket with celebrate stage
+            # Update ticket with celebrate stage and set pillar to celebrate
             await update_mira_ticket(session_id, {
+                "pillar": "celebrate",  # Set pillar for consistency
                 "ai_context.celebrate_stage": "location",
-                "ai_context.celebrate_type": "birthday" if "birthday" in user_message.lower() else "celebration"
+                "ai_context.celebrate_type": "birthday" if "birthday" in user_message.lower() else "celebration",
+                "ai_context.pillar_detected": "celebrate"
             })
             
             # Add AI response to ticket
