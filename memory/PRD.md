@@ -191,8 +191,10 @@ Enriched Pets:
 |----------|---------|
 | POST `/api/mira/chat` | Main chat, creates tickets |
 | GET `/api/mira/tickets` | Get Services tickets |
-| POST `/api/service_desk/concierge_reply` | Concierge sends reply |
-| GET `/api/member/notifications/inbox/{email}` | Bell notifications |
+| POST `/api/service_desk/concierge_reply` | Concierge sends reply, creates notification with deep-link |
+| POST `/api/service_desk/resolve_ticket/{ticket_id}` | Resolve ticket + trigger Soul enrichment |
+| POST `/api/service_desk/append_message` | Add message to ticket (dual-writes to both collections) |
+| GET `/api/member/notifications/inbox/{email}` | Bell notifications (supports ?pet_id filter) |
 
 ---
 
