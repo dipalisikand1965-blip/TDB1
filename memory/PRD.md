@@ -61,6 +61,29 @@
 
 # CHANGELOG
 
+### Feb 19, 2026 - Soul Learning Engine Implementation
+- **Implemented:** Complete Soul Learning Engine with 3 lanes:
+  1. **Conversation Context** (ephemeral, per chat turn)
+  2. **Saved Pet Intelligence** (durable Soul + Enrichments)
+  3. **Execution History** (tickets/orders → enrichments)
+- **Fixed:** `load_pet_soul()` now correctly propagates:
+  - `medical_conditions` from `doggy_soul_answers.health_conditions` (arthritis now works!)
+  - `sensitivities`, `favorite_flavors`, `diet_type`, `activity_level`
+  - `training_level`, `exercise_needs`, `celebrations`, `gotcha_date`
+- **Added:** `/app/backend/utils/soul_learning_engine.py`
+  - `extract_enrichments_from_message()` - detects durable facts
+  - `save_enrichment_to_pet()` - saves to soul_enrichments
+  - `build_memory_trace()` - QA trace for debugging
+  - `get_known_facts_prompt()` - "Never Re-Ask" rule enforcement
+- **Added:** `_memory_trace` in Mira responses showing:
+  - `memory_used`: fields recalled from Soul
+  - `new_enrichments_saved`: facts learned from conversation
+  - `not_saved_reason`: ephemeral facts not saved
+- **Fixed:** Pet context loading now queries database by name (not just uses provided context)
+- **Verified:** "Mystique hates fireworks" → saved to soul_enrichments.dislikes
+- **Verified:** Mira recalls arthritis, allergies, learned dislikes correctly
+- **Test report:** `/app/test_reports/iteration_213.json` - 8/8 tests passed
+
 ### Feb 19, 2026 - CELEBRATE Pillar Multi-Step Flow Fix
 - **Fixed:** CELEBRATE pillar 3-step conversation flow now works correctly
   - Step 1: Location question ("Where would you like to celebrate?")
