@@ -14045,6 +14045,48 @@ async def mark_all_notifications_read(user_email: str):
 # NOTIFICATION INBOX ACTIONS (iOS Mail-style)
 # ═══════════════════════════════════════════════════════════════════════
 
+# BULK ACTIONS - Must come BEFORE dynamic {notification_id} routes
+@api_router.post("/member/notifications/bulk/read")
+async def bulk_mark_read(notification_ids: List[str] = Body(...)):
+    """Bulk mark notifications as read"""
+    result = await db.member_notifications.update_many(
+        {"id": {"$in": notification_ids}},
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": True, "count": result.modified_count}
+
+
+@api_router.post("/member/notifications/bulk/unread")
+async def bulk_mark_unread(notification_ids: List[str] = Body(...)):
+    """Bulk mark notifications as unread"""
+    result = await db.member_notifications.update_many(
+        {"id": {"$in": notification_ids}},
+        {"$set": {"read": False}, "$unset": {"read_at": ""}}
+    )
+    return {"success": True, "count": result.modified_count}
+
+
+@api_router.post("/member/notifications/bulk/archive")
+async def bulk_archive(notification_ids: List[str] = Body(...)):
+    """Bulk archive notifications"""
+    result = await db.member_notifications.update_many(
+        {"id": {"$in": notification_ids}},
+        {"$set": {"archived": True, "archived_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": True, "count": result.modified_count}
+
+
+@api_router.post("/member/notifications/bulk/unarchive")
+async def bulk_unarchive(notification_ids: List[str] = Body(...)):
+    """Bulk unarchive notifications"""
+    result = await db.member_notifications.update_many(
+        {"id": {"$in": notification_ids}},
+        {"$set": {"archived": False}, "$unset": {"archived_at": ""}}
+    )
+    return {"success": True, "count": result.modified_count}
+
+
+# SINGLE NOTIFICATION ACTIONS
 @api_router.post("/member/notifications/{notification_id}/read")
 async def mark_notification_read_v2(notification_id: str):
     """Mark a single notification as read"""
