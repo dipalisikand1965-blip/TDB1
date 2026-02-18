@@ -11509,7 +11509,9 @@ Is there anything else I can help you with while you wait?"""
             "session_id": session_id,
             "pillar": triggered_service["category"],
             "intent": "service_handoff_confirmed",
+            "ticket_id": ticket_id,  # Bible requires this field
             "service_desk_ticket_id": ticket_id,
+            "ready_for_handoff": True,
             # Service confirmation card data
             "service_confirmation": {
                 "ticket_id": ticket_id,
@@ -11519,6 +11521,17 @@ Is there anything else I can help you with while you wait?"""
                 "status": "pending",
                 "icon": triggered_service["icon"],
                 "message": "Your concierge has received your request and will get back to you."
+            },
+            # Bible-compliant conversation_contract for ticket mode
+            "conversation_contract": {
+                "mode": "ticket",
+                "assistant_message_id": f"MSG-{datetime.now().strftime('%Y%m%d')}-{session_id[:5]}",
+                "quick_replies": [
+                    {"label": "View in Services", "action": "open_layer", "action_args": {"layer": "services"}},
+                    {"label": "Add details", "action": "reply", "payload_text": "I'd like to add more details"},
+                    {"label": "Change timing", "action": "reply", "payload_text": "I need to change the timing"}
+                ],
+                "actions": []
             },
             "follow_ups": [
                 {"text": "Check another place", "type": "action"},
