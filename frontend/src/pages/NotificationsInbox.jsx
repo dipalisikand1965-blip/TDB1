@@ -859,7 +859,7 @@ const NotificationsInbox = () => {
         
         {/* Desktop: Thread Panel - Render component directly (no iframe) */}
         {isDesktop && selectedTicketId && (
-          <div className="flex-1 bg-[#0a0a14] overflow-hidden">
+          <div className="flex-1 bg-[#0a0a14] overflow-y-auto">
             <Suspense fallback={
               <div className="flex items-center justify-center h-full">
                 <Loader2 className="w-8 h-8 animate-spin text-pink-400" />
