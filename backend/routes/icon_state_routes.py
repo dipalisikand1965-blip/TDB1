@@ -203,9 +203,30 @@ async def get_unified_tickets(db, user_email: str, pet_ids: List[str] = None) ->
                 logger.warning(f"[ICON-STATE] Invalid ticket_id in db.mira_tickets: {ticket_id or ticket.get('id')}")
                 continue
             
-            # Dedupe check (already seen in db.tickets takes precedence)
+            # Dedupe check - but MERGE key fields if duplicate
             if ticket_id in seen_ticket_ids:
                 stats["duplicates_skipped"] += 1
+                # ═══════════════════════════════════════════════════════════════════════
+                # SPINE-SYNC: Merge important flags from mira_tickets into existing ticket
+                # This handles the case where concierge replies update mira_tickets
+                # but the ticket was first found in db.tickets
+                # ═══════════════════════════════════════════════════════════════════════
+                for existing_ticket in all_tickets:
+                    if existing_ticket.get("ticket_id") == ticket_id:
+                        # Merge unread/awaiting flags (prefer True over False/None)
+                        if ticket.get("has_unread_concierge_reply"):
+                            existing_ticket["has_unread_concierge_reply"] = True
+                        if ticket.get("awaiting_user"):
+                            existing_ticket["awaiting_user"] = True
+                        # Merge messages if mira_tickets has more
+                        mira_msgs = ticket.get("messages") or []
+                        existing_msgs = existing_ticket.get("messages") or []
+                        if len(mira_msgs) > len(existing_msgs):
+                            existing_ticket["messages"] = mira_msgs
+                        # Prefer more recent status
+                        if ticket.get("status") == "waiting_on_member":
+                            existing_ticket["status"] = "waiting_on_member"
+                        break
                 continue
             
             seen_ticket_ids.add(ticket_id)
