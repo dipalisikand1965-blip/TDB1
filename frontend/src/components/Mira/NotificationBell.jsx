@@ -220,12 +220,23 @@ const NotificationBell = ({ userEmail, petId, petName, className = '' }) => {
                   }}
                 >
                   <div className="flex items-start gap-2">
-                    {/* Unread dot */}
-                    {!notification.read && (
+                    {/* Pet Avatar or Unread dot */}
+                    {notification.pet_name ? (
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 
+                                      flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">
+                        {notification.pet_name.charAt(0).toUpperCase()}
+                      </div>
+                    ) : !notification.read ? (
                       <div className="w-2 h-2 mt-1.5 rounded-full bg-purple-500 flex-shrink-0" />
-                    )}
+                    ) : null}
                     
                     <div className="flex-1 min-w-0">
+                      {/* Pet name tag */}
+                      {notification.pet_name && (
+                        <span className="text-xs text-purple-400 font-medium">
+                          {notification.pet_name}
+                        </span>
+                      )}
                       <h4 className={`text-sm truncate ${!notification.read ? 'font-semibold text-white' : 'text-gray-300'}`}>
                         {notification.title}
                       </h4>
