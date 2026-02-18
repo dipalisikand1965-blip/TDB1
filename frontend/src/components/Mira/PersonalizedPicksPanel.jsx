@@ -1264,7 +1264,70 @@ const PersonalizedPicksPanel = ({
               </div>
             ) : (
               /* TWO COLUMN LAYOUT: Personalized for Pet */
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-6">
+                {/* ═══════════════════════════════════════════════════════════════ */}
+                {/* TIMELY PICKS - "{petName} might need this" (Soul Integration)  */}
+                {/* Shows picks based on recent chat intents - Mira knows           */}
+                {/* ═══════════════════════════════════════════════════════════════ */}
+                {picksData?.timely_picks?.length > 0 && (
+                  <div className="mb-6">
+                    <div className="mb-3">
+                      <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-amber-400" />
+                        {pet?.name} might need this
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-1">Mira knows what's on your mind</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {picksData.timely_picks.slice(0, 4).map((pick, index) => (
+                        <div 
+                          key={pick.id || `timely-${index}`}
+                          className={`p-3 rounded-xl bg-gradient-to-br from-amber-900/30 to-orange-900/20 border border-amber-500/30 cursor-pointer hover:border-amber-400/50 transition-all active:scale-[0.98] ${
+                            isSelected(pick) ? 'ring-2 ring-amber-400' : ''
+                          }`}
+                          onClick={() => {
+                            hapticFeedback.buttonTap();
+                            toggleSelection(pick, 'catalogue');
+                          }}
+                        >
+                          {/* Timely badge */}
+                          <div className="flex justify-end mb-1">
+                            <span className="text-[9px] px-2 py-0.5 bg-amber-500/80 text-white rounded-full font-semibold">
+                              Timely
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-700 flex-shrink-0">
+                              {pick.image_url || pick.image ? (
+                                <img src={pick.image_url || pick.image} alt={pick.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <Package className="w-4 h-4 text-gray-500" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-xs font-medium text-white truncate">{pick.name}</h4>
+                              {pick.why_it_fits && (
+                                <p className="text-[10px] text-amber-300/80 mt-0.5 line-clamp-2">{pick.why_it_fits}</p>
+                              )}
+                              {pick.price && (
+                                <p className="text-xs font-semibold text-amber-400 mt-1">₹{pick.price}</p>
+                              )}
+                            </div>
+                          </div>
+                          {isSelected(pick) && (
+                            <div className="absolute top-2 left-2">
+                              <CheckCircle className="w-4 h-4 text-amber-400" />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* ═══════════════════════════════════════════════════ */}
                 {/* LEFT: MIRA'S PICKS - Handpicked products for this pet */}
                 {/* ═══════════════════════════════════════════════════ */}
