@@ -151,7 +151,7 @@ const ConciergeInboxDrawer = ({
     setMessages(prev => [...prev, optimisticMessage]);
     
     try {
-      const response = await fetch(`${API_URL}/api/service-desk/tickets/${threadId}/reply`, {
+      const response = await fetch(`${API_URL}/api/service_desk/tickets/${threadId}/reply`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -159,7 +159,6 @@ const ConciergeInboxDrawer = ({
         },
         body: JSON.stringify({
           content: messageText,
-          sender: 'member',
           sender_email: userEmail || user?.email
         })
       });
