@@ -526,6 +526,39 @@ async def create_mira_concierge_request(request: MiraRecommendationRequest):
     
     logger.info(f"[MIRA CONCIERGE] Created request {request_id} with {len(all_recs)} recommendations for {request.pet_name}")
     
+    # ═══════════════════════════════════════════════════════════════════════
+    # CREATE MEMBER NOTIFICATION - So user sees it in their notification bell
+    # ═══════════════════════════════════════════════════════════════════════
+    try:
+        member_notification_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
+        user_email = request.user_email.lower() if request.user_email else None
+        
+        if user_email:
+            member_notification = {
+                "id": member_notification_id,
+                "type": "mira_request_received",
+                "title": f"Request Received: {request.pet_name}",
+                "message": f"Your Mira picks ({len(all_recs)} item(s)) for {request.pet_name} have been sent to Concierge®. We'll get back to you soon!",
+                "pet_name": request.pet_name,
+                "pet_id": request.pet_id,
+                "user_email": user_email,
+                "ticket_id": ticket_id,
+                "request_id": request_id,
+                "pillar": request.pillar or "general",
+                "read": False,
+                "created_at": now_iso,
+                "data": {
+                    "thread_url": f"/mira-demo?tab=services&thread={ticket_id}",
+                    "items_count": len(all_recs)
+                }
+            }
+            await db.member_notifications.insert_one(member_notification)
+            logger.info(f"[MIRA CONCIERGE] Created member notification: {member_notification_id} for {request.pet_name}")
+        else:
+            logger.warning(f"[MIRA CONCIERGE] No user_email provided, skipping member notification")
+    except Exception as notif_error:
+        logger.error(f"[MIRA CONCIERGE] Failed to create member notification: {notif_error}")
+    
     return {
         "success": True,
         "request_id": request_id,
