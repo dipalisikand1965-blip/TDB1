@@ -452,10 +452,13 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
 
   const isResolved = ticket?.status === 'resolved';
 
+  // Combine real messages + pending optimistic messages
+  const allMessages = [...messages, ...pendingMessages];
+
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a14] flex items-center justify-center">
+      <div className={`${isSplitMode ? 'h-full' : 'min-h-screen'} bg-[#0a0a14] flex items-center justify-center`}>
         <RefreshCw className="w-6 h-6 animate-spin text-pink-400" />
       </div>
     );
@@ -464,18 +467,18 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0a0a14] flex flex-col items-center justify-center text-gray-400">
+      <div className={`${isSplitMode ? 'h-full' : 'min-h-screen'} bg-[#0a0a14] flex flex-col items-center justify-center text-gray-400`}>
         <AlertCircle className="w-12 h-12 mb-3 opacity-30" />
         <p>{error}</p>
-        <button onClick={() => navigate('/notifications')} className="mt-3 text-pink-400 text-sm">
-          Back to Inbox
+        <button onClick={() => isSplitMode ? onClose?.() : navigate('/notifications')} className="mt-3 text-pink-400 text-sm">
+          {isSplitMode ? 'Close' : 'Back to Inbox'}
         </button>
       </div>
     );
   }
 
   return (
-    <div className={`${isEmbed ? 'h-full overflow-y-auto' : 'min-h-screen'} bg-[#0a0a14] flex flex-col`}>
+    <div className={`${isSplitMode ? 'h-full flex flex-col' : 'min-h-screen flex flex-col'} bg-[#0a0a14]`}>
       {/* CSS for highlight animation - more visible pulse */}
       <style>{`
         @keyframes highlightPulse {
@@ -498,17 +501,18 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
         }
       `}</style>
       
-      {/* Global Navigation - only show when not embedded */}
-      {!isEmbed && <GlobalNav />}
+      {/* Global Navigation - only show in full mode */}
+      {!isSplitMode && <GlobalNav />}
       
       {/* Tappable Sticky Header */}
       <header 
-        className="sticky top-0 z-40 bg-[#0d0d1a] border-b border-gray-800/50 cursor-pointer"
+        className="sticky top-0 z-40 bg-[#0d0d1a] border-b border-gray-800/50 cursor-pointer flex-shrink-0"
         onClick={() => setShowDetails(true)}
       >
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            {!isEmbed && (
+            {/* Back button: show in full mode OR split mode with onClose */}
+            {(!isSplitMode || onClose) && (
               <button 
                 onClick={(e) => {
                   e.stopPropagation();
@@ -518,6 +522,9 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
                     navigate('/notifications');
                   }
                 }}
+                className="p-2 rounded-full hover:bg-gray-800 flex-shrink-0"
+                data-testid="thread-back-btn"
+              >
                 className="p-2 rounded-full hover:bg-gray-800 flex-shrink-0"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-300" />
