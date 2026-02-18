@@ -1699,6 +1699,21 @@ async def get_top_picks(
             if timely_picks:
                 logger.info(f"[PICKS SOUL] Generated {len(timely_picks)} timely picks for {pet_name}")
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # MIRA IS THE SOUL - Smart Fallback when no intents
+    # Mira ALWAYS knows something intelligent to suggest based on:
+    # 1. Breed knowledge (grooming needs, exercise, common health issues)
+    # 2. Seasonal context (summer prep, monsoon safety, winter care)
+    # 3. Pet age/life stage (puppy needs, senior care)
+    # 4. Profile gaps (prompt to complete vaccination records, etc.)
+    # ═══════════════════════════════════════════════════════════════════════════
+    if not timely_picks:
+        timely_picks = await get_smart_fallback_picks(db, pet, pet_allergies, limit=6)
+        if timely_picks:
+            timely_context["enabled"] = True
+            timely_context["source"] = "mira_knows"
+            logger.info(f"[PICKS SOUL] Generated {len(timely_picks)} smart fallback picks for {pet_name}")
+    
     # Get picks for each pillar
     pillar_picks = {}
     for pillar_info in INCLUDED_PILLARS:
