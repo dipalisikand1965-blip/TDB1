@@ -855,17 +855,14 @@ const NotificationsInbox = () => {
           )}
         </div>
         
-        {/* Desktop: Thread Panel - Render component directly */}
+        {/* Desktop: Thread Panel - Use iframe for isolation */}
         {isDesktop && selectedTicketId && (
-          <div className="flex-1 bg-[#0a0a14] h-full overflow-hidden" data-testid="thread-panel">
-            <TicketThread 
-              ticketIdProp={selectedTicketId} 
-              isEmbedded={true}
-              onClose={() => {
-                const newParams = new URLSearchParams(searchParams);
-                newParams.delete('ticketId');
-                setSearchParams(newParams);
-              }}
+          <div className="flex-1 bg-[#0a0a14]" data-testid="thread-panel">
+            <iframe
+              src={`/tickets/${selectedTicketId}?embed=true`}
+              className="w-full h-full border-0"
+              title="Ticket Thread"
+              style={{ minHeight: 'calc(100vh - 150px)' }}
             />
           </div>
         )}
