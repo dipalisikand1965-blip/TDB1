@@ -341,6 +341,13 @@ function AppRouter() {
         <Route path="/payment/success" element={<PaymentSuccess />} />
         <Route path="/welcome" element={<PaymentSuccess />} />
         
+        {/* ═══════════════════════════════════════════════════════════════════
+            NOTIFICATIONS INBOX + TICKET THREAD (iOS Mail-style)
+            Full-screen pages - NO MainLayout wrapper
+            ═══════════════════════════════════════════════════════════════════ */}
+        <Route path="/notifications" element={<ProtectedRoute><NotificationsInbox /></ProtectedRoute>} />
+        <Route path="/tickets/:ticketId" element={<ProtectedRoute><TicketThread /></ProtectedRoute>} />
+        
         {/* Landing Page - Clean, no navbar for immersive experience */}
         <Route path="/" element={<Home />} />
         
