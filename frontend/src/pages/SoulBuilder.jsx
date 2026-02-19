@@ -1,0 +1,1010 @@
+/**
+ * SoulBuilder.jsx
+ * 
+ * THE MAGICAL SOUL BUILDER
+ * A luxury onboarding experience for The Doggy Company
+ * 
+ * Design Inspired by: Luminaire Club Dream Weaver + Mira Demo
+ * Colors: Dark purple/violet theme with pink accents
+ * 
+ * FEATURES:
+ * - One question per screen (iOS golden principles)
+ * - Real-time Soul Score with animated rings
+ * - Personalized with [Pet Name] throughout
+ * - Premium teasing after each answer
+ * - 8 chapters, 51 questions
+ * - Mobile-first, desktop enhanced
+ */
+
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { 
+  ChevronLeft, ChevronRight, X, Camera, Sparkles, 
+  Heart, Paw, Check, Moon, Sun, Zap, Shield,
+  Home, Plane, Utensils, GraduationCap, Star
+} from 'lucide-react';
+import { API_URL } from '../utils/api';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SOUL BUILDER QUESTIONS - Mapped from pet_soul_routes.py
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const CHAPTERS = [
+  {
+    id: 'identity',
+    title: 'Identity & Temperament',
+    emoji: '🎭',
+    description: "Who they are at their core",
+    color: '#8B5CF6', // Purple
+    questions: [
+      { id: 'describe_3_words', question: "What are three words that describe {pet} best?", type: 'text', weight: 3 },
+      { id: 'general_nature', question: "{pet} is generally...", type: 'select', options: ['Calm', 'Curious', 'Playful', 'Shy', 'Guarded', 'Fearful', 'Highly energetic'], weight: 4 },
+      { id: 'stranger_reaction', question: "How does {pet} usually react to strangers?", type: 'select', options: ['Friendly', 'Cautious', 'Indifferent', 'Nervous', 'Protective'], weight: 3 },
+      { id: 'social_with_people', question: "How comfortable is {pet} with new people?", type: 'select', options: ['Very social - loves everyone', 'Friendly after warming up', 'Selective - only certain people', 'Shy with most people', 'Anxious around strangers'], weight: 4 },
+      { id: 'loud_sounds', question: "How does {pet} react to loud sounds?", type: 'select', options: ['Completely fine', 'Mildly anxious', 'Very anxious', 'Needs comfort'], weight: 4 },
+      { id: 'social_preference', question: "{pet} prefers...", type: 'select', options: ['Being around people', 'Being around other dogs', 'Being mostly with you', 'Being mostly independent'], weight: 3 },
+      { id: 'handling_comfort', question: "Is {pet} comfortable being handled?", type: 'select', options: ['Very comfortable', 'Sometimes uncomfortable', 'Highly sensitive'], weight: 3 },
+      { id: 'life_stage', question: "What life stage is {pet} in?", type: 'select', options: ['Puppy (0-1 year)', 'Young adult (1-3 years)', 'Adult (3-7 years)', 'Senior (7+ years)'], weight: 5 }
+    ],
+    confirmation: "Got it. I'll use this to guide how we approach people, handling, and new situations."
+  },
+  {
+    id: 'family',
+    title: 'Family & Pack',
+    emoji: '👨‍👩‍👧‍👦',
+    description: "Their social world",
+    color: '#EC4899', // Pink
+    questions: [
+      { id: 'lives_with', question: "{pet} lives with...", type: 'multi_select', options: ['Adults only', 'Children', 'Other dogs', 'Other pets (cats, birds, etc.)'], weight: 3 },
+      { id: 'kids_at_home', question: "Are there children in your household?", type: 'select', options: ['Yes, young (0-5)', 'Yes, older (6-12)', 'Yes, teenagers', 'No children'], weight: 3 },
+      { id: 'other_pets', question: "Do you have other pets at home?", type: 'select', options: ['Yes, other dogs', 'Yes, cats', 'Yes, other animals', 'Multiple pets', 'No other pets'], weight: 3 },
+      { id: 'behavior_with_dogs', question: "How does {pet} behave with other dogs?", type: 'select', options: ['Loves all dogs', 'Selective friends', 'Nervous', 'Reactive'], weight: 4 },
+      { id: 'most_attached_to', question: "Who is {pet} most attached to?", type: 'select', options: ['Me', 'Partner', 'Children', 'Everyone equally'], weight: 2 },
+      { id: 'attention_seeking', question: "Does {pet} like being the centre of attention?", type: 'select', options: ['Yes', 'Sometimes', 'No'], weight: 2 }
+    ],
+    confirmation: "Perfect. This helps us choose the right social settings and care arrangements."
+  },
+  {
+    id: 'rhythm',
+    title: 'Rhythm & Routine',
+    emoji: '⏰',
+    description: "Their daily patterns",
+    color: '#F59E0B', // Amber
+    questions: [
+      { id: 'morning_routine', question: "What does {pet}'s morning typically look like?", type: 'select', options: ['Early riser, ready to go', 'Slow starter, needs time', 'Excited for breakfast first', 'Morning walk is priority'], weight: 4 },
+      { id: 'feeding_times', question: "When do you typically feed {pet}?", type: 'select', options: ['Once a day', 'Twice a day', 'Three times a day', 'Free feeding (grazing)'], weight: 4 },
+      { id: 'exercise_needs', question: "How much daily exercise does {pet} need?", type: 'select', options: ['Light (15-30 mins)', 'Moderate (30-60 mins)', 'Active (1-2 hours)', 'Very active (2+ hours)'], weight: 4 },
+      { id: 'walks_per_day', question: "How many walks does {pet} need per day?", type: 'select', options: ['1', '2', '3+'], weight: 3 },
+      { id: 'energetic_time', question: "What time of day is {pet} most energetic?", type: 'select', options: ['Morning', 'Afternoon', 'Evening', 'Night'], weight: 2 },
+      { id: 'sleep_location', question: "Where does {pet} usually sleep?", type: 'select', options: ['Your bed', 'Their own bed', 'Crate', 'Sofa or floor'], weight: 2 },
+      { id: 'alone_comfort', question: "Is {pet} used to being left alone?", type: 'select', options: ['Yes, comfortably', 'Sometimes anxious', 'Not at all'], weight: 4 },
+      { id: 'separation_anxiety', question: "Does {pet} have separation anxiety?", type: 'select', options: ['No', 'Mild', 'Moderate', 'Severe'], weight: 5 }
+    ],
+    confirmation: "Noted. This becomes your default schedule for walks, grooming slots, and services."
+  },
+  {
+    id: 'home',
+    title: 'Home Comforts',
+    emoji: '🏠',
+    description: "Where they feel safe",
+    color: '#10B981', // Emerald
+    questions: [
+      { id: 'favorite_spot', question: "Where is {pet}'s favourite spot at home?", type: 'select', options: ['Couch/sofa', 'Their own bed', 'Sunny window', 'Near family members', 'Under furniture', 'Outdoors/garden'], weight: 3 },
+      { id: 'favorite_item', question: "Does {pet} have a favourite item?", type: 'select', options: ['Toy', 'Blanket', 'Bed', 'None'], weight: 2 },
+      { id: 'space_preference', question: "{pet} prefers...", type: 'select', options: ['Quiet spaces', 'Busy spaces', 'Outdoor time', 'Indoor time'], weight: 3 },
+      { id: 'crate_trained', question: "Is {pet} crate-trained?", type: 'select', options: ['Yes', 'No', 'In training'], weight: 4 },
+      { id: 'car_rides', question: "Does {pet} like car rides?", type: 'select', options: ['Loves them', 'Neutral', 'Anxious', 'Gets motion sickness'], weight: 4 }
+    ],
+    confirmation: "Great. This helps us pick the right environment—home visits vs busy places, and travel style."
+  },
+  {
+    id: 'travel',
+    title: 'Travel Style',
+    emoji: '✈️',
+    description: "Adventures together",
+    color: '#3B82F6', // Blue
+    questions: [
+      { id: 'usual_travel', question: "How does {pet} usually travel?", type: 'select', options: ['Car', 'Train', 'Flight (occasionally)', 'Never travels'], weight: 3 },
+      { id: 'hotel_experience', question: "Has {pet} stayed in a hotel before?", type: 'select', options: ['Yes, loved it', 'Yes, but was anxious', 'No'], weight: 3 },
+      { id: 'stay_preference', question: "What kind of stay suits {pet} best?", type: 'select', options: ['Quiet nature hotel', 'Pet-friendly resort', 'City hotel', 'Homestay/villa'], weight: 3 },
+      { id: 'travel_social', question: "During stays, {pet} prefers...", type: 'select', options: ['Private spaces', 'Social pet areas'], weight: 2 }
+    ],
+    confirmation: "Perfect. This shapes travel picks and the kind of properties we suggest."
+  },
+  {
+    id: 'taste',
+    title: 'Taste & Treat',
+    emoji: '🍖',
+    description: "What they love to eat",
+    color: '#EF4444', // Red
+    questions: [
+      { id: 'food_motivation', question: "How food-motivated is {pet}?", type: 'select', options: ['Very - will do anything for food', 'Moderately food motivated', 'Somewhat interested', 'Not very food motivated'], weight: 3 },
+      { id: 'favorite_protein', question: "What is {pet}'s favourite protein?", type: 'select', options: ['Chicken', 'Beef', 'Lamb', 'Fish', 'Pork', 'Vegetarian/Plant-based', 'No preference'], weight: 3 },
+      { id: 'treat_preference', question: "What type of treats does {pet} prefer?", type: 'select', options: ['Soft/chewy', 'Crunchy', 'Freeze-dried', 'Fresh meat', 'Dental chews', 'Fruits/vegetables'], weight: 3 },
+      { id: 'diet_type', question: "Is {pet}'s diet...", type: 'select', options: ['Vegetarian', 'Non-vegetarian', 'Mixed'], weight: 4 },
+      { id: 'food_allergies', question: "Does {pet} have any food allergies?", type: 'multi_select', options: ['No', 'Chicken', 'Beef', 'Grains', 'Dairy', 'Other'], weight: 5 },
+      { id: 'favorite_treats', question: "What treats does {pet} love most?", type: 'multi_select', options: ['Biscuits', 'Jerky', 'Cakes', 'Homemade food', 'Fresh fruits'], weight: 3 },
+      { id: 'sensitive_stomach', question: "Does {pet} have a sensitive stomach?", type: 'select', options: ['Yes', 'No', 'Sometimes'], weight: 4 }
+    ],
+    confirmation: "Noted. We'll use this for safe picks and better food recommendations."
+  },
+  {
+    id: 'training',
+    title: 'Training & Behaviour',
+    emoji: '🎓',
+    description: "How they learn",
+    color: '#6366F1', // Indigo
+    questions: [
+      { id: 'training_level', question: "Is {pet} trained?", type: 'select', options: ['Fully trained', 'Partially trained', 'Not trained'], weight: 3 },
+      { id: 'motivation_type', question: "What motivates {pet} during training?", type: 'select', options: ['Treats/food', 'Praise and attention', 'Toys/play', 'A mix of everything'], weight: 3 },
+      { id: 'behavior_issues', question: "Does {pet} have any behavioural issues?", type: 'multi_select', options: ['None', 'Excessive barking', 'Jumping', 'Pulling leash', 'Resource guarding', 'Aggression', 'Fear-based issues', 'Destructive behaviour'], weight: 4 },
+      { id: 'training_response', question: "{pet} responds best to training with...", type: 'select', options: ['Treats', 'Praise', 'Toys', 'Play'], weight: 3 },
+      { id: 'leash_behavior', question: "Does {pet} pull on the leash?", type: 'select', options: ['Always', 'Sometimes', 'Rarely'], weight: 2 },
+      { id: 'barking', question: "Does {pet} bark often?", type: 'select', options: ['Yes', 'Occasionally', 'Rarely'], weight: 2 }
+    ],
+    confirmation: "Got it. This helps us match the right trainers and routines."
+  },
+  {
+    id: 'horizon',
+    title: 'Long Horizon',
+    emoji: '🌅',
+    description: "Their future with you",
+    color: '#F472B6', // Pink-400
+    questions: [
+      { id: 'health_conditions', question: "Does {pet} have any health conditions?", type: 'multi_select', options: ['None', 'Arthritis', 'Diabetes', 'Heart condition', 'Skin allergies', 'Hip dysplasia', 'Eye problems', 'Other chronic condition'], weight: 5 },
+      { id: 'vet_comfort', question: "How comfortable is {pet} at the vet?", type: 'select', options: ['Very comfortable', 'Slightly nervous', 'Anxious - needs extra handling', 'Very stressed - requires sedation'], weight: 5 },
+      { id: 'grooming_tolerance', question: "How does {pet} handle grooming?", type: 'select', options: ['Loves it', 'Tolerates well', 'Gets anxious', 'Very difficult'], weight: 4 },
+      { id: 'main_wish', question: "What do you want most for {pet}?", type: 'multi_select', options: ['Good health', 'More training', 'More travel experiences', 'More social time with other dogs'], weight: 2 },
+      { id: 'help_needed', question: "Would you like help with...", type: 'multi_select', options: ['Behaviour training', 'Travel planning', 'Grooming routines', 'Diet planning'], weight: 2 },
+      { id: 'dream_life', question: "In one sentence, what kind of life do you want {pet} to have?", type: 'text', weight: 3 },
+      { id: 'celebration_preferences', question: "Which celebrations would you like to celebrate?", type: 'multi_select', options: ['Birthday', 'Gotcha Day', 'Diwali', 'Holi', 'Christmas', 'New Year', "Valentine's Day", 'Raksha Bandhan', 'Independence Day', 'Easter', 'Eid'], weight: 3 }
+    ],
+    confirmation: "Beautiful. This is how we tailor everything to the life you want for {pet}."
+  }
+];
+
+// Calculate total questions
+const TOTAL_QUESTIONS = CHAPTERS.reduce((acc, ch) => acc + ch.questions.length, 0);
+const TOTAL_WEIGHT = CHAPTERS.reduce((acc, ch) => 
+  acc + ch.questions.reduce((qacc, q) => qacc + q.weight, 0), 0);
+
+// Soul Score Tiers
+const SOUL_TIERS = [
+  { min: 0, max: 24, name: 'Curious Pup', emoji: '🐾' },
+  { min: 25, max: 49, name: 'Loyal Companion', emoji: '🌱' },
+  { min: 50, max: 74, name: 'Trusted Guardian', emoji: '🤝' },
+  { min: 75, max: 89, name: 'Pack Leader', emoji: '🐕‍🦺' },
+  { min: 90, max: 100, name: 'Soul Master', emoji: '✨' }
+];
+
+const getTier = (score) => {
+  return SOUL_TIERS.find(t => score >= t.min && score <= t.max) || SOUL_TIERS[0];
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const SoulBuilder = () => {
+  const navigate = useNavigate();
+  
+  // State
+  const [screen, setScreen] = useState('preboarding'); // preboarding, pet-hook, basic-info, chapter-intro, question, chapter-complete, final
+  const [petName, setPetName] = useState('');
+  const [petPhoto, setPetPhoto] = useState(null);
+  const [petPhotoPreview, setPetPhotoPreview] = useState(null);
+  const [detectedBreed, setDetectedBreed] = useState('');
+  const [petData, setPetData] = useState({
+    breed: '',
+    gender: '',
+    birth_date: '',
+    gotcha_date: '',
+    is_neutered: null
+  });
+  
+  const [currentChapter, setCurrentChapter] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [multiSelectValues, setMultiSelectValues] = useState([]);
+  const [textInputValue, setTextInputValue] = useState('');
+  const [miraKnows, setMiraKnows] = useState([]);
+  const [isAnimating, setIsAnimating] = useState(false);
+  
+  const fileInputRef = useRef(null);
+  
+  // Calculate soul score based on answered questions
+  const calculateSoulScore = useCallback(() => {
+    let earnedWeight = 0;
+    Object.keys(answers).forEach(questionId => {
+      CHAPTERS.forEach(chapter => {
+        const question = chapter.questions.find(q => q.id === questionId);
+        if (question && answers[questionId]) {
+          earnedWeight += question.weight;
+        }
+      });
+    });
+    return Math.round((earnedWeight / TOTAL_WEIGHT) * 100);
+  }, [answers]);
+  
+  const soulScore = calculateSoulScore();
+  const tier = getTier(soulScore);
+  
+  // Get current chapter and question
+  const chapter = CHAPTERS[currentChapter];
+  const question = chapter?.questions[currentQuestion];
+  
+  // Replace {pet} with actual pet name
+  const personalize = (text) => {
+    return text.replace(/{pet}/g, petName || 'your pet');
+  };
+  
+  // Handle photo upload with AI breed detection
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setPetPhoto(file);
+    setPetPhotoPreview(URL.createObjectURL(file));
+    
+    // AI Breed Detection
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const response = await fetch(`${API_URL}/api/detect-breed`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.detected_breed) {
+          setDetectedBreed(data.detected_breed);
+          setPetData(prev => ({ ...prev, breed: data.detected_breed }));
+        }
+      }
+    } catch (error) {
+      console.log('Breed detection unavailable');
+    }
+  };
+  
+  // Handle answer selection
+  const handleAnswer = (value) => {
+    if (isAnimating) return;
+    
+    setIsAnimating(true);
+    
+    // Haptic feedback
+    if (navigator.vibrate) navigator.vibrate(10);
+    
+    const questionId = question.id;
+    setAnswers(prev => ({ ...prev, [questionId]: value }));
+    
+    // Add to "Mira knows" list
+    const knowledgeItem = `${personalize(question.question).replace('...', '')}: ${Array.isArray(value) ? value.join(', ') : value}`;
+    setMiraKnows(prev => [...prev.slice(-9), knowledgeItem]);
+    
+    // Move to next question or chapter complete
+    setTimeout(() => {
+      if (currentQuestion < chapter.questions.length - 1) {
+        setCurrentQuestion(prev => prev + 1);
+      } else {
+        setScreen('chapter-complete');
+      }
+      setIsAnimating(false);
+      setMultiSelectValues([]);
+      setTextInputValue('');
+    }, 300);
+  };
+  
+  // Handle multi-select
+  const toggleMultiSelect = (value) => {
+    setMultiSelectValues(prev => 
+      prev.includes(value) 
+        ? prev.filter(v => v !== value)
+        : [...prev, value]
+    );
+  };
+  
+  // Handle skip
+  const handleSkip = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    
+    setTimeout(() => {
+      if (currentQuestion < chapter.questions.length - 1) {
+        setCurrentQuestion(prev => prev + 1);
+      } else {
+        setScreen('chapter-complete');
+      }
+      setIsAnimating(false);
+      setMultiSelectValues([]);
+      setTextInputValue('');
+    }, 200);
+  };
+  
+  // Handle next chapter
+  const handleNextChapter = () => {
+    if (currentChapter < CHAPTERS.length - 1) {
+      setCurrentChapter(prev => prev + 1);
+      setCurrentQuestion(0);
+      setScreen('chapter-intro');
+    } else {
+      setScreen('final');
+    }
+  };
+  
+  // Calculate progress
+  const totalAnswered = Object.keys(answers).length;
+  const chapterProgress = (currentQuestion + 1) / chapter?.questions.length * 100;
+  const overallProgress = ((currentChapter * 100) + chapterProgress) / CHAPTERS.length;
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // RENDER SCREENS
+  // ═══════════════════════════════════════════════════════════════════════════════
+  
+  // PREBOARDING SCREEN
+  if (screen === 'preboarding') {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col items-center justify-center p-6" data-testid="soul-builder-preboarding">
+        {/* Ambient glow */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-purple-500/20 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-1/4 left-1/3 w-[300px] h-[300px] bg-pink-500/20 rounded-full blur-[100px] pointer-events-none" />
+        
+        <div className="relative z-10 max-w-md w-full text-center">
+          {/* Logo */}
+          <div className="mb-8">
+            <div className="w-20 h-20 mx-auto bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+              <Sparkles className="w-10 h-10 text-white" />
+            </div>
+          </div>
+          
+          {/* Title */}
+          <h1 className="text-4xl font-light text-white mb-4">
+            Meet <span className="font-semibold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Mira</span>
+          </h1>
+          
+          <p className="text-white/70 text-lg mb-8">
+            She becomes precise once she knows your pet.
+          </p>
+          
+          {/* Benefits */}
+          <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 mb-8 text-left border border-white/10">
+            <p className="text-white/90 mb-4 text-center">In 6–8 minutes, you'll unlock:</p>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 text-white/80">
+                <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-purple-400" />
+                </div>
+                <span>Picks that actually suit your pet</span>
+              </div>
+              <div className="flex items-center gap-3 text-white/80">
+                <div className="w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center">
+                  <Zap className="w-4 h-4 text-pink-400" />
+                </div>
+                <span>Faster bookings (no repeat questions)</span>
+              </div>
+              <div className="flex items-center gap-3 text-white/80">
+                <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center">
+                  <Shield className="w-4 h-4 text-amber-400" />
+                </div>
+                <span>A concierge who knows your home rules</span>
+              </div>
+            </div>
+          </div>
+          
+          <p className="text-white/50 text-sm mb-6 italic">
+            This isn't a form. It's how Mira learns your pet.
+          </p>
+          
+          {/* CTA */}
+          <button
+            onClick={() => setScreen('pet-hook')}
+            className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            data-testid="start-soul-profile-btn"
+          >
+            Start Soul Profile
+          </button>
+          
+          <button
+            onClick={() => navigate('/')}
+            className="mt-4 text-white/50 hover:text-white/70 transition-colors"
+          >
+            Skip for now
+          </button>
+          
+          <p className="mt-8 text-white/30 text-xs">
+            🔒 We only learn what you explicitly tell us. Edit or delete anytime.
+          </p>
+        </div>
+      </div>
+    );
+  }
+  
+  // PET HOOK SCREEN (Photo + Name)
+  if (screen === 'pet-hook') {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col p-6" data-testid="soul-builder-pet-hook">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <button onClick={() => setScreen('preboarding')} className="text-white/50 hover:text-white">
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button onClick={() => navigate('/')} className="text-white/50 hover:text-white text-sm">
+            Skip for now
+          </button>
+        </div>
+        
+        {/* Ambient glow */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-purple-500/20 rounded-full blur-[120px] pointer-events-none" />
+        
+        <div className="flex-1 flex flex-col items-center justify-center relative z-10">
+          <h2 className="text-2xl text-white mb-2">Let's meet your furry friend!</h2>
+          <p className="text-white/50 mb-8">🐾</p>
+          
+          {/* Photo Upload */}
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            className="relative w-40 h-40 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-2 border-dashed border-white/20 hover:border-purple-400/50 transition-all cursor-pointer flex items-center justify-center mb-6 overflow-hidden group"
+          >
+            {petPhotoPreview ? (
+              <img src={petPhotoPreview} alt="Pet" className="w-full h-full object-cover" />
+            ) : (
+              <div className="text-center">
+                <Camera className="w-8 h-8 text-white/50 mx-auto mb-2 group-hover:text-purple-400 transition-colors" />
+                <span className="text-white/50 text-sm group-hover:text-purple-400 transition-colors">Upload Photo</span>
+              </div>
+            )}
+            
+            {/* Animated ring */}
+            <div className="absolute inset-0 rounded-full border-2 border-purple-400/30 animate-pulse" />
+          </div>
+          
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoUpload}
+            className="hidden"
+          />
+          
+          {detectedBreed && (
+            <div className="flex items-center gap-2 mb-6 px-4 py-2 bg-purple-500/20 rounded-full">
+              <Sparkles className="w-4 h-4 text-purple-400" />
+              <span className="text-purple-300 text-sm">AI detected: {detectedBreed}</span>
+            </div>
+          )}
+          
+          {/* Name Input */}
+          <p className="text-white/70 mb-3">What's their name?</p>
+          <input
+            type="text"
+            value={petName}
+            onChange={(e) => setPetName(e.target.value)}
+            placeholder="Enter name..."
+            className="w-full max-w-xs px-6 py-4 bg-white/5 border border-white/10 rounded-full text-white text-center placeholder-white/30 focus:outline-none focus:border-purple-400/50 focus:bg-white/10 transition-all"
+            data-testid="pet-name-input"
+          />
+        </div>
+        
+        {/* Continue Button */}
+        <div className="mt-auto">
+          <button
+            onClick={() => petName.trim() && setScreen('basic-info')}
+            disabled={!petName.trim()}
+            className={`w-full py-4 px-6 rounded-full font-semibold transition-all ${
+              petName.trim()
+                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50'
+                : 'bg-white/10 text-white/30 cursor-not-allowed'
+            }`}
+            data-testid="continue-btn"
+          >
+            Continue →
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  // BASIC INFO SCREEN
+  if (screen === 'basic-info') {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col p-6" data-testid="soul-builder-basic-info">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <button onClick={() => setScreen('pet-hook')} className="text-white/50 hover:text-white">
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button onClick={() => navigate('/')} className="text-white/50 hover:text-white text-sm">
+            Save & finish later
+          </button>
+        </div>
+        
+        {/* Pet Preview */}
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 overflow-hidden border-2 border-purple-400/30">
+            {petPhotoPreview ? (
+              <img src={petPhotoPreview} alt={petName} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-2xl">🐕</div>
+            )}
+          </div>
+          <div>
+            <h3 className="text-white text-lg font-medium">{petName}</h3>
+            {detectedBreed && <p className="text-purple-400 text-sm">{detectedBreed}</p>}
+          </div>
+        </div>
+        
+        <h2 className="text-xl text-white mb-6">Quick details about {petName}</h2>
+        
+        <div className="space-y-6 flex-1 overflow-y-auto">
+          {/* Breed */}
+          <div>
+            <label className="text-white/70 text-sm mb-2 block">Breed</label>
+            <input
+              type="text"
+              value={petData.breed}
+              onChange={(e) => setPetData(prev => ({ ...prev, breed: e.target.value }))}
+              placeholder="Enter breed..."
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-purple-400/50"
+            />
+          </div>
+          
+          {/* Gender */}
+          <div>
+            <label className="text-white/70 text-sm mb-2 block">Gender</label>
+            <div className="flex gap-3">
+              {['Male', 'Female'].map(g => (
+                <button
+                  key={g}
+                  onClick={() => setPetData(prev => ({ ...prev, gender: g }))}
+                  className={`flex-1 py-3 rounded-xl border transition-all ${
+                    petData.gender === g
+                      ? 'bg-purple-500/20 border-purple-400/50 text-purple-300'
+                      : 'bg-white/5 border-white/10 text-white/70 hover:border-white/20'
+                  }`}
+                >
+                  {g === 'Male' ? '♂️' : '♀️'} {g}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Birthday */}
+          <div>
+            <label className="text-white/70 text-sm mb-2 block">Birthday</label>
+            <input
+              type="date"
+              value={petData.birth_date}
+              onChange={(e) => setPetData(prev => ({ ...prev, birth_date: e.target.value }))}
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-400/50"
+            />
+          </div>
+          
+          {/* Neutered */}
+          <div>
+            <label className="text-white/70 text-sm mb-2 block">Neutered/Spayed?</label>
+            <div className="flex gap-3">
+              {[{ label: 'Yes', value: true }, { label: 'No', value: false }, { label: 'Not sure', value: null }].map(opt => (
+                <button
+                  key={opt.label}
+                  onClick={() => setPetData(prev => ({ ...prev, is_neutered: opt.value }))}
+                  className={`flex-1 py-3 rounded-xl border transition-all ${
+                    petData.is_neutered === opt.value
+                      ? 'bg-purple-500/20 border-purple-400/50 text-purple-300'
+                      : 'bg-white/5 border-white/10 text-white/70 hover:border-white/20'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        {/* Continue Button */}
+        <div className="mt-6">
+          <button
+            onClick={() => {
+              setCurrentChapter(0);
+              setCurrentQuestion(0);
+              setScreen('chapter-intro');
+            }}
+            className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30"
+            data-testid="start-soul-journey-btn"
+          >
+            Start Soul Journey →
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  // CHAPTER INTRO SCREEN
+  if (screen === 'chapter-intro') {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col items-center justify-center p-6" data-testid="soul-builder-chapter-intro">
+        {/* Ambient glow with chapter color */}
+        <div 
+          className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px] rounded-full blur-[120px] pointer-events-none opacity-30"
+          style={{ backgroundColor: chapter.color }}
+        />
+        
+        <div className="relative z-10 text-center">
+          {/* Pet Avatar with Soul Score */}
+          <div className="relative w-32 h-32 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 overflow-hidden">
+              {petPhotoPreview ? (
+                <img src={petPhotoPreview} alt={petName} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-4xl">🐕</div>
+              )}
+            </div>
+            {/* Soul rings */}
+            <div className="absolute -inset-2 rounded-full border-2 border-purple-400/30 animate-pulse" />
+            <div className="absolute -inset-4 rounded-full border border-pink-400/20" />
+            {/* Score badge */}
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white text-sm font-medium">
+              {soulScore}%
+            </div>
+          </div>
+          
+          {/* Chapter Info */}
+          <p className="text-white/50 mb-2">Chapter {currentChapter + 1} of {CHAPTERS.length}</p>
+          
+          <div className="text-5xl mb-4">{chapter.emoji}</div>
+          
+          <h2 className="text-2xl text-white font-medium mb-2">{chapter.title}</h2>
+          <p className="text-white/50 mb-8">{chapter.questions.length} questions about {chapter.description.toLowerCase()}</p>
+          
+          {/* Tier */}
+          <div className="flex items-center justify-center gap-2 mb-8">
+            <span className="text-2xl">{tier.emoji}</span>
+            <span className="text-white/70">{tier.name}</span>
+          </div>
+          
+          {/* Begin Button */}
+          <button
+            onClick={() => setScreen('question')}
+            className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
+            data-testid="begin-chapter-btn"
+          >
+            Begin →
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  // QUESTION SCREEN
+  if (screen === 'question' && question) {
+    const isMultiSelect = question.type === 'multi_select';
+    const isText = question.type === 'text';
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col" data-testid="soul-builder-question">
+        {/* Header */}
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-4">
+            <button 
+              onClick={() => {
+                if (currentQuestion > 0) {
+                  setCurrentQuestion(prev => prev - 1);
+                } else if (currentChapter > 0) {
+                  setCurrentChapter(prev => prev - 1);
+                  setCurrentQuestion(CHAPTERS[currentChapter - 1].questions.length - 1);
+                } else {
+                  setScreen('basic-info');
+                }
+              }} 
+              className="text-white/50 hover:text-white"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button onClick={() => navigate('/')} className="text-white/50 hover:text-white text-sm">
+              Save & finish later
+            </button>
+          </div>
+          
+          {/* Progress Bar */}
+          <div className="mb-2">
+            <div className="flex items-center justify-between text-white/50 text-xs mb-1">
+              <span>Chapter {currentChapter + 1}: {chapter.title}</span>
+              <span>{currentQuestion + 1} of {chapter.questions.length}</span>
+            </div>
+            <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+              <div 
+                className="h-full rounded-full transition-all duration-500"
+                style={{ 
+                  width: `${chapterProgress}%`,
+                  background: `linear-gradient(90deg, ${chapter.color}, #EC4899)`
+                }}
+              />
+            </div>
+          </div>
+        </div>
+        
+        {/* Pet Avatar + Score */}
+        <div className="flex items-center justify-center gap-4 py-4">
+          <div className="relative">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 overflow-hidden border-2 border-purple-400/30">
+              {petPhotoPreview ? (
+                <img src={petPhotoPreview} alt={petName} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-xl">🐕</div>
+              )}
+            </div>
+            <div className="absolute -inset-1 rounded-full border border-purple-400/30 animate-pulse" />
+          </div>
+          <div className="text-center">
+            <p className="text-white text-lg font-medium">Soul Score: {soulScore}%</p>
+            <p className="text-white/50 text-sm">{tier.emoji} {tier.name}</p>
+          </div>
+        </div>
+        
+        {/* Question */}
+        <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
+          <h2 className="text-xl text-white text-center mb-8 max-w-sm">
+            {personalize(question.question)}
+          </h2>
+          
+          {/* Options */}
+          {isText ? (
+            <div className="w-full max-w-sm">
+              <textarea
+                value={textInputValue}
+                onChange={(e) => setTextInputValue(e.target.value)}
+                placeholder="Type your answer..."
+                rows={3}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-purple-400/50 resize-none"
+              />
+              <button
+                onClick={() => textInputValue.trim() && handleAnswer(textInputValue.trim())}
+                disabled={!textInputValue.trim()}
+                className={`w-full mt-4 py-3 rounded-xl font-medium transition-all ${
+                  textInputValue.trim()
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+                    : 'bg-white/10 text-white/30 cursor-not-allowed'
+                }`}
+              >
+                Continue →
+              </button>
+            </div>
+          ) : (
+            <div className="w-full max-w-sm space-y-3">
+              {question.options.map((option, idx) => {
+                const isSelected = isMultiSelect 
+                  ? multiSelectValues.includes(option)
+                  : answers[question.id] === option;
+                  
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => isMultiSelect ? toggleMultiSelect(option) : handleAnswer(option)}
+                    className={`w-full py-4 px-6 rounded-xl border text-left transition-all ${
+                      isSelected
+                        ? 'bg-purple-500/20 border-purple-400/50 text-white'
+                        : 'bg-white/5 border-white/10 text-white/70 hover:border-white/20 hover:bg-white/10'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>{option}</span>
+                      {isSelected && <Check className="w-5 h-5 text-purple-400" />}
+                    </div>
+                  </button>
+                );
+              })}
+              
+              {isMultiSelect && multiSelectValues.length > 0 && (
+                <button
+                  onClick={() => handleAnswer(multiSelectValues)}
+                  className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-xl"
+                >
+                  Done →
+                </button>
+              )}
+            </div>
+          )}
+          
+          {/* Skip */}
+          <button 
+            onClick={handleSkip}
+            className="mt-6 text-white/40 hover:text-white/60 transition-colors"
+          >
+            Skip this
+          </button>
+        </div>
+        
+        {/* Premium Teaser */}
+        <div className="p-4 border-t border-white/5">
+          <div className="flex items-center gap-2 justify-center text-white/40 text-sm">
+            <span>🔒</span>
+            <span>Premium: Mira will remember this forever</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  // CHAPTER COMPLETE SCREEN
+  if (screen === 'chapter-complete') {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col items-center justify-center p-6" data-testid="soul-builder-chapter-complete">
+        {/* Ambient glow */}
+        <div 
+          className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px] rounded-full blur-[120px] pointer-events-none opacity-30"
+          style={{ backgroundColor: chapter.color }}
+        />
+        
+        <div className="relative z-10 text-center max-w-sm">
+          {/* Pet Avatar */}
+          <div className="relative w-28 h-28 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 overflow-hidden">
+              {petPhotoPreview ? (
+                <img src={petPhotoPreview} alt={petName} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-3xl">🐕</div>
+              )}
+            </div>
+            <div className="absolute -inset-2 rounded-full border-2 border-green-400/50" />
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-green-500 rounded-full text-white text-sm font-medium">
+              {soulScore}%
+            </div>
+          </div>
+          
+          {/* Complete Message */}
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Check className="w-6 h-6 text-green-400" />
+            <span className="text-green-400 font-medium">Chapter {currentChapter + 1} Complete!</span>
+          </div>
+          
+          <h2 className="text-2xl text-white mb-2">{chapter.emoji} {chapter.title}</h2>
+          
+          {/* Micro-confirmation */}
+          <div className="bg-white/5 rounded-xl p-4 mb-6 border border-white/10">
+            <p className="text-white/70 italic">"{personalize(chapter.confirmation)}"</p>
+          </div>
+          
+          {/* What Mira Knows */}
+          {miraKnows.length > 0 && (
+            <div className="text-left mb-6">
+              <p className="text-white/50 text-sm mb-2">What Mira now knows:</p>
+              <div className="space-y-1">
+                {miraKnows.slice(-4).map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2 text-white/70 text-sm">
+                    <Check className="w-3 h-3 text-green-400 flex-shrink-0" />
+                    <span className="truncate">{item.split(':')[0]}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Next Chapter Button */}
+          <button
+            onClick={handleNextChapter}
+            className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30"
+            data-testid="next-chapter-btn"
+          >
+            {currentChapter < CHAPTERS.length - 1 
+              ? `Next: ${CHAPTERS[currentChapter + 1].title} →`
+              : 'Complete Soul Profile →'
+            }
+          </button>
+          
+          <button
+            onClick={() => navigate('/')}
+            className="mt-4 text-white/40 hover:text-white/60"
+          >
+            Save & finish later
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  // FINAL COMPLETION SCREEN
+  if (screen === 'final') {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col items-center justify-center p-6" data-testid="soul-builder-final">
+        {/* Celebration glow */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-purple-500/30 rounded-full blur-[150px] pointer-events-none animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/3 w-[300px] h-[300px] bg-pink-500/30 rounded-full blur-[100px] pointer-events-none" />
+        
+        <div className="relative z-10 text-center max-w-sm">
+          {/* Big celebration emoji */}
+          <div className="text-6xl mb-4">🎉</div>
+          
+          {/* Pet Avatar with full rings */}
+          <div className="relative w-36 h-36 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 overflow-hidden">
+              {petPhotoPreview ? (
+                <img src={petPhotoPreview} alt={petName} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-4xl">🐕</div>
+              )}
+            </div>
+            {/* Multiple animated rings */}
+            <div className="absolute -inset-2 rounded-full border-2 border-purple-400/50 animate-pulse" />
+            <div className="absolute -inset-4 rounded-full border border-pink-400/30 animate-pulse" style={{ animationDelay: '0.2s' }} />
+            <div className="absolute -inset-6 rounded-full border border-purple-400/20 animate-pulse" style={{ animationDelay: '0.4s' }} />
+            {/* Score badge */}
+            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white font-bold shadow-lg shadow-purple-500/50">
+              {soulScore}%
+            </div>
+          </div>
+          
+          <h1 className="text-2xl text-white font-medium mb-2">
+            {petName}'s Soul Profile is ready!
+          </h1>
+          
+          {/* Tier */}
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <span className="text-3xl">{tier.emoji}</span>
+            <span className="text-white text-lg">{tier.name}</span>
+          </div>
+          
+          {/* Benefits unlocked */}
+          <div className="bg-white/5 rounded-xl p-5 mb-6 border border-white/10 text-left">
+            <p className="text-white/90 mb-3 text-center">From now on:</p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-white/70">
+                <Check className="w-4 h-4 text-green-400" />
+                <span>Picks will be tailored to {petName} automatically</span>
+              </div>
+              <div className="flex items-center gap-2 text-white/70">
+                <Check className="w-4 h-4 text-green-400" />
+                <span>Services will pre-fill the right details</span>
+              </div>
+              <div className="flex items-center gap-2 text-white/70">
+                <Check className="w-4 h-4 text-green-400" />
+                <span>Concierge will already know what matters</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* To reach 100% */}
+          {soulScore < 100 && (
+            <div className="bg-purple-500/10 rounded-xl p-4 mb-6 border border-purple-400/20 text-left">
+              <p className="text-purple-300 text-sm mb-2">To reach 100%:</p>
+              <div className="space-y-1 text-white/60 text-sm">
+                <div>• Complete Health Vault (+15%)</div>
+                <div>• Upload documents (+10%)</div>
+                <div>• Keep chatting with Mira (+3%)</div>
+              </div>
+            </div>
+          )}
+          
+          {/* Action Buttons */}
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate('/mira-demo')}
+              className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30"
+              data-testid="go-to-today-btn"
+            >
+              Go to Today
+            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="flex-1 py-3 px-4 bg-white/10 text-white rounded-full hover:bg-white/20 transition-colors"
+              >
+                See {petName}'s MOJO
+              </button>
+              <button
+                onClick={() => navigate('/mira-demo')}
+                className="flex-1 py-3 px-4 bg-white/10 text-white rounded-full hover:bg-white/20 transition-colors"
+              >
+                Ask Mira
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  return null;
+};
+
+export default SoulBuilder;
