@@ -295,14 +295,14 @@ const SwipableTabs = ({ tabs, selectedTab, onTabChange }) => {
 };
 
 // ============================================
-// BREED FILTER PILLS - Dark Luxurious Theme
+// BREED FILTER PILLS - Luxurious Light Theme
 // ============================================
 const BreedFilterPills = ({ selectedBreed, onBreedChange, petBreed }) => {
   return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 mb-4">
+    <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 mb-4 border border-purple-100/50 shadow-sm">
       <div className="flex items-center gap-2 mb-3">
-        <PawPrint className="w-5 h-5 text-pink-400" />
-        <h3 className="font-semibold text-white text-sm">Find your breed cake!</h3>
+        <PawPrint className="w-5 h-5 text-purple-500" />
+        <h3 className="font-semibold text-gray-900 text-sm">Find your breed cake!</h3>
       </div>
       <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1">
         {BREED_OPTIONS.map((breed) => (
@@ -312,12 +312,12 @@ const BreedFilterPills = ({ selectedBreed, onBreedChange, petBreed }) => {
               haptic('light');
               onBreedChange(breed);
             }}
-            className={`flex-shrink-0 px-3 py-2 rounded-full text-xs font-medium transition-all ${
+            className={`flex-shrink-0 px-3 py-2 rounded-full text-xs font-medium transition-all shadow-sm ${
               selectedBreed === breed
-                ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg'
+                ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md shadow-pink-500/25'
                 : breed === petBreed
-                  ? 'bg-pink-500/20 border border-pink-500/40 text-pink-300'
-                  : 'bg-white/10 border border-white/10 text-gray-300 active:bg-white/20'
+                  ? 'bg-pink-100 border-2 border-pink-400 text-pink-700'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:border-pink-300 hover:bg-pink-50'
             }`}
           >
             {breed === petBreed && '🐕 '}
@@ -325,6 +325,12 @@ const BreedFilterPills = ({ selectedBreed, onBreedChange, petBreed }) => {
           </button>
         ))}
       </div>
+      {petBreed && (
+        <p className="text-[11px] text-purple-600 mt-2 flex items-center gap-1">
+          <Sparkles className="w-3 h-3" />
+          Auto-selected based on your pet's breed
+        </p>
+      )}
     </div>
   );
 };
