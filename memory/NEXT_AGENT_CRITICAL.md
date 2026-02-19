@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://pillar-magic.preview.emergentagent.com
+https://pet-onboarding.preview.emergentagent.com
 
 ---
 

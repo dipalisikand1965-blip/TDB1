@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://pillar-magic.preview.emergentagent.com/mira-demo**
+**https://pet-onboarding.preview.emergentagent.com/mira-demo**
 
 ---
 
