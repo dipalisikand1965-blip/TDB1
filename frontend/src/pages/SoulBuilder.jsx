@@ -24,6 +24,7 @@ import {
   Home, Plane, Utensils, GraduationCap, Star
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
+import BreedAutocomplete from '../components/BreedAutocomplete';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // SOUL BUILDER QUESTIONS - Mapped from pet_soul_routes.py
