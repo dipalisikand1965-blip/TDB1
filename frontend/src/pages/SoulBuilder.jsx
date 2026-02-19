@@ -696,7 +696,7 @@ const SoulBuilder = () => {
         <div className="flex-1 overflow-y-auto px-4 pb-32">
           <div className="space-y-5">
             
-            {/* Breed - Autocomplete */}
+            {/* Breed - Autocomplete with mutual exclusivity */}
             <div>
               <label className="text-white/70 text-sm mb-2 block">Breed</label>
               
@@ -705,10 +705,7 @@ const SoulBuilder = () => {
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-white/50 text-xs">Suggested:</span>
                   <button 
-                    onClick={() => {
-                      setPetData(prev => ({ ...prev, breed: detectedBreed }));
-                      setBreedSearch(detectedBreed);
-                    }}
+                    onClick={() => handleBreedSelect(detectedBreed)}
                     className="px-3 py-1 bg-purple-500/20 border border-purple-400/30 rounded-full text-purple-300 text-sm hover:bg-purple-500/30 transition-colors"
                   >
                     {detectedBreed}
@@ -720,26 +717,19 @@ const SoulBuilder = () => {
                 <input
                   type="text"
                   value={breedSearch}
-                  onChange={(e) => {
-                    setBreedSearch(e.target.value);
-                    setShowBreedDropdown(true);
-                  }}
+                  onChange={(e) => handleBreedSearchChange(e.target.value)}
                   onFocus={() => setShowBreedDropdown(true)}
                   placeholder="Search breed..."
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-purple-400/50"
                 />
                 
                 {/* Dropdown */}
-                {showBreedDropdown && breedSearch && (
+                {showBreedDropdown && breedSearch && filteredBreeds.length > 0 && (
                   <div className="absolute top-full left-0 right-0 mt-1 bg-[#1a1025] border border-white/10 rounded-xl max-h-48 overflow-y-auto z-20">
                     {filteredBreeds.slice(0, 6).map(breed => (
                       <button
                         key={breed}
-                        onClick={() => {
-                          setPetData(prev => ({ ...prev, breed }));
-                          setBreedSearch(breed);
-                          setShowBreedDropdown(false);
-                        }}
+                        onClick={() => handleBreedSelect(breed)}
                         className="w-full px-4 py-2 text-left text-white/70 hover:bg-white/10 transition-colors first:rounded-t-xl last:rounded-b-xl"
                       >
                         {breed}
@@ -749,16 +739,12 @@ const SoulBuilder = () => {
                 )}
               </div>
               
-              {/* Quick options */}
+              {/* Quick options - mutually exclusive with typed breed */}
               <div className="flex gap-2 mt-2">
-                {['Mixed / Indie', 'Not sure'].map(opt => (
+                {quickBreedOptions.map(opt => (
                   <button
                     key={opt}
-                    onClick={() => {
-                      setPetData(prev => ({ ...prev, breed: opt }));
-                      setBreedSearch(opt);
-                      setShowBreedDropdown(false);
-                    }}
+                    onClick={() => handleQuickBreed(opt)}
                     className={`px-3 py-1 rounded-full text-xs transition-all ${
                       petData.breed === opt
                         ? 'bg-purple-500/30 border border-purple-400/50 text-purple-300'
