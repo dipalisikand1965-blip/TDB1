@@ -407,7 +407,7 @@ const SoulBuilder = () => {
                 <div className="w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center">
                   <Zap className="w-4 h-4 text-pink-400" />
                 </div>
-                <span>Faster bookings (no repeat questions)</span>
+                <span>Faster bookings with fewer questions</span>
               </div>
               <div className="flex items-center gap-3 text-white/80">
                 <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center">
