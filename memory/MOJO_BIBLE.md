@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://optimistic-composer.preview.emergentagent.com
+https://pillar-magic.preview.emergentagent.com
 ```
 
 ---
