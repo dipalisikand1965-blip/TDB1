@@ -1251,8 +1251,23 @@ const SoulBuilder = () => {
         />
         
         <div className="relative z-10 text-center max-w-sm">
-          {/* Pet Avatar */}
+          {/* Pet Avatar with dynamic ring */}
           <div className="relative w-28 h-28 mx-auto mb-6">
+            {/* SVG Ring showing progress */}
+            <svg className="absolute -inset-3 w-[calc(100%+24px)] h-[calc(100%+24px)]" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="56" fill="none" stroke="rgba(34, 197, 94, 0.2)" strokeWidth="3" />
+              <circle 
+                cx="60" cy="60" r="56" 
+                fill="none" 
+                stroke="#22C55E" 
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeDasharray={`${(soulScore / 100) * 352} 352`}
+                transform="rotate(-90 60 60)"
+                style={{ filter: 'drop-shadow(0 0 6px #22C55E)' }}
+              />
+            </svg>
+            
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 overflow-hidden">
               {petPhotoPreview ? (
                 <img src={petPhotoPreview} alt={petName} className="w-full h-full object-cover" />
@@ -1260,7 +1275,6 @@ const SoulBuilder = () => {
                 <div className="w-full h-full flex items-center justify-center text-3xl">🐕</div>
               )}
             </div>
-            <div className="absolute -inset-2 rounded-full border-2 border-green-400/50" />
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-green-500 rounded-full text-white text-sm font-medium">
               {soulScore}%
             </div>
@@ -1269,14 +1283,14 @@ const SoulBuilder = () => {
           {/* Complete Message */}
           <div className="flex items-center justify-center gap-2 mb-4">
             <Check className="w-6 h-6 text-green-400" />
-            <span className="text-green-400 font-medium">Chapter {currentChapter + 1} Complete!</span>
+            <span className="text-green-400 font-medium">Chapter {currentChapter + 1} Complete</span>
           </div>
           
           <h2 className="text-2xl text-white mb-2">{chapter.emoji} {chapter.title}</h2>
           
           {/* Micro-confirmation */}
           <div className="bg-white/5 rounded-xl p-4 mb-6 border border-white/10">
-            <p className="text-white/70 italic">"{personalize(chapter.confirmation)}"</p>
+            <p className="text-white/70 italic text-sm">"{personalize(chapter.confirmation)}"</p>
           </div>
           
           {/* What Mira Knows */}
@@ -1301,14 +1315,14 @@ const SoulBuilder = () => {
             data-testid="next-chapter-btn"
           >
             {currentChapter < CHAPTERS.length - 1 
-              ? `Next: ${CHAPTERS[currentChapter + 1].title} →`
-              : 'Complete Soul Profile →'
+              ? `Next: ${CHAPTERS[currentChapter + 1].title}`
+              : 'Complete Soul Profile'
             }
           </button>
           
           <button
             onClick={() => navigate('/')}
-            className="mt-4 text-white/40 hover:text-white/60"
+            className="mt-4 text-white/30 hover:text-white/50 text-sm"
           >
             Save & finish later
           </button>
