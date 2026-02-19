@@ -579,26 +579,89 @@ const SoulBuilder = () => {
   
   // BASIC INFO SCREEN
   if (screen === 'basic-info') {
-    // Common breeds for autocomplete
+    // Common breeds for autocomplete (excluding quick options)
     const commonBreeds = [
       'Labrador Retriever', 'Golden Retriever', 'German Shepherd', 'Beagle', 
       'Poodle', 'Bulldog', 'Rottweiler', 'Dachshund', 'Shih Tzu', 'Boxer',
       'Siberian Husky', 'Pomeranian', 'Doberman', 'Great Dane', 'Chihuahua',
       'Cocker Spaniel', 'Pug', 'Maltese', 'Border Collie', 'Yorkshire Terrier',
-      'Mixed / Indie', 'Not sure'
+      'French Bulldog', 'Lhasa Apso', 'Indian Spitz', 'Rajapalayam', 'Mudhol Hound'
     ];
     
     const filteredBreeds = commonBreeds.filter(b => 
       b.toLowerCase().includes(breedSearch.toLowerCase())
     );
     
-    // Age options for "Not sure" birthday
+    // Quick breed options - mutually exclusive with typed breed
+    const quickBreedOptions = ['Mixed / Indie', 'Not sure'];
+    
+    // Handle breed selection from search - clears quick options
+    const handleBreedSelect = (breed) => {
+      setPetData(prev => ({ ...prev, breed }));
+      setBreedSearch(breed);
+      setShowBreedDropdown(false);
+    };
+    
+    // Handle quick breed option - clears typed breed
+    const handleQuickBreed = (opt) => {
+      setPetData(prev => ({ ...prev, breed: opt }));
+      setBreedSearch(''); // Clear typed breed
+      setShowBreedDropdown(false);
+    };
+    
+    // Handle breed search input - clears quick options if typing
+    const handleBreedSearchChange = (value) => {
+      setBreedSearch(value);
+      setShowBreedDropdown(true);
+      // If user starts typing, clear quick option selection
+      if (value && quickBreedOptions.includes(petData.breed)) {
+        setPetData(prev => ({ ...prev, breed: '' }));
+      }
+    };
+    
+    // Age options - tightened ranges per feedback
     const ageOptions = [
-      { label: 'Puppy', value: 'puppy', desc: '0-1 year' },
-      { label: 'Young', value: 'young', desc: '1-3 years' },
-      { label: 'Adult', value: 'adult', desc: '3-7 years' },
-      { label: 'Senior', value: 'senior', desc: '7+ years' }
+      { label: 'Puppy', value: 'puppy', desc: '0-12 mo' },
+      { label: 'Young', value: 'young', desc: '1-3 yrs' },
+      { label: 'Adult', value: 'adult', desc: '3-7 yrs' },
+      { label: 'Senior', value: 'senior', desc: '7+ yrs' }
     ];
+    
+    // Handle date type change - clears approximate age
+    const handleDateTypeChange = (type) => {
+      setDateType(type);
+      setBirthdayMode('date'); // Switch to date mode when selecting date type
+      setPetData(prev => ({ ...prev, approximate_age: '' })); // Clear approx age
+    };
+    
+    // Handle approximate age selection - clears dates
+    const handleApproxAgeSelect = (ageValue) => {
+      setPetData(prev => ({ 
+        ...prev, 
+        approximate_age: ageValue, 
+        birth_date: '', 
+        gotcha_date: '' 
+      }));
+    };
+    
+    // Handle switching to approximate mode - clears dates
+    const handleSwitchToApproximate = () => {
+      setBirthdayMode('approximate');
+      setPetData(prev => ({ ...prev, birth_date: '', gotcha_date: '' }));
+    };
+    
+    // Handle switching to date mode - clears approximate
+    const handleSwitchToDateMode = () => {
+      setBirthdayMode('date');
+      setPetData(prev => ({ ...prev, approximate_age: '' }));
+    };
+    
+    // Format date for display (dd/mm/yyyy)
+    const formatDateForDisplay = (isoDate) => {
+      if (!isoDate) return '';
+      const [year, month, day] = isoDate.split('-');
+      return `${day}/${month}/${year}`;
+    };
     
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col" data-testid="soul-builder-basic-info">
