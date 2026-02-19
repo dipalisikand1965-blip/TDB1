@@ -1340,11 +1340,43 @@ const SoulBuilder = () => {
         <div className="absolute bottom-1/4 right-1/3 w-[300px] h-[300px] bg-pink-500/30 rounded-full blur-[100px] pointer-events-none" />
         
         <div className="relative z-10 text-center max-w-sm">
-          {/* Big celebration emoji */}
-          <div className="text-6xl mb-4">🎉</div>
-          
-          {/* Pet Avatar with full rings */}
+          {/* Pet Avatar with full glowing rings */}
           <div className="relative w-36 h-36 mx-auto mb-6">
+            {/* Animated SVG rings */}
+            <svg className="absolute -inset-6 w-[calc(100%+48px)] h-[calc(100%+48px)]" viewBox="0 0 200 200">
+              {/* Outer glow ring */}
+              <circle 
+                cx="100" cy="100" r="94" 
+                fill="none" 
+                stroke="rgba(139, 92, 246, 0.2)" 
+                strokeWidth="2"
+              />
+              {/* Progress ring - full */}
+              <circle 
+                cx="100" cy="100" r="94" 
+                fill="none" 
+                stroke="url(#finalGradient)" 
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeDasharray={`${(soulScore / 100) * 591} 591`}
+                transform="rotate(-90 100 100)"
+                style={{ filter: 'drop-shadow(0 0 8px #8B5CF6)' }}
+              />
+              {/* Inner ring */}
+              <circle 
+                cx="100" cy="100" r="86" 
+                fill="none" 
+                stroke="rgba(236, 72, 153, 0.3)" 
+                strokeWidth="1"
+              />
+              <defs>
+                <linearGradient id="finalGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#8B5CF6" />
+                  <stop offset="100%" stopColor="#EC4899" />
+                </linearGradient>
+              </defs>
+            </svg>
+            
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 overflow-hidden">
               {petPhotoPreview ? (
                 <img src={petPhotoPreview} alt={petName} className="w-full h-full object-cover" />
@@ -1352,10 +1384,7 @@ const SoulBuilder = () => {
                 <div className="w-full h-full flex items-center justify-center text-4xl">🐕</div>
               )}
             </div>
-            {/* Multiple animated rings */}
-            <div className="absolute -inset-2 rounded-full border-2 border-purple-400/50 animate-pulse" />
-            <div className="absolute -inset-4 rounded-full border border-pink-400/30 animate-pulse" style={{ animationDelay: '0.2s' }} />
-            <div className="absolute -inset-6 rounded-full border border-purple-400/20 animate-pulse" style={{ animationDelay: '0.4s' }} />
+            
             {/* Score badge */}
             <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white font-bold shadow-lg shadow-purple-500/50">
               {soulScore}%
@@ -1363,29 +1392,29 @@ const SoulBuilder = () => {
           </div>
           
           <h1 className="text-2xl text-white font-medium mb-2">
-            {petName}'s Soul Profile is ready!
+            {petName}'s Soul Profile is ready
           </h1>
           
           {/* Tier */}
           <div className="flex items-center justify-center gap-2 mb-6">
-            <span className="text-3xl">{tier.emoji}</span>
+            <span className="text-2xl">{tier.emoji}</span>
             <span className="text-white text-lg">{tier.name}</span>
           </div>
           
           {/* Benefits unlocked */}
           <div className="bg-white/5 rounded-xl p-5 mb-6 border border-white/10 text-left">
-            <p className="text-white/90 mb-3 text-center">From now on:</p>
+            <p className="text-white/90 mb-3 text-center text-sm">From now on:</p>
             <div className="space-y-2">
-              <div className="flex items-center gap-2 text-white/70">
-                <Check className="w-4 h-4 text-green-400" />
-                <span>Picks will be tailored to {petName} automatically</span>
+              <div className="flex items-center gap-2 text-white/70 text-sm">
+                <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                <span>Picks will be tailored to {petName}</span>
               </div>
-              <div className="flex items-center gap-2 text-white/70">
-                <Check className="w-4 h-4 text-green-400" />
+              <div className="flex items-center gap-2 text-white/70 text-sm">
+                <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
                 <span>Services will pre-fill the right details</span>
               </div>
-              <div className="flex items-center gap-2 text-white/70">
-                <Check className="w-4 h-4 text-green-400" />
+              <div className="flex items-center gap-2 text-white/70 text-sm">
+                <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
                 <span>Concierge will already know what matters</span>
               </div>
             </div>
@@ -1394,8 +1423,8 @@ const SoulBuilder = () => {
           {/* To reach 100% */}
           {soulScore < 100 && (
             <div className="bg-purple-500/10 rounded-xl p-4 mb-6 border border-purple-400/20 text-left">
-              <p className="text-purple-300 text-sm mb-2">To reach 100%:</p>
-              <div className="space-y-1 text-white/60 text-sm">
+              <p className="text-purple-300 text-sm mb-2">To grow {petName}'s profile:</p>
+              <div className="space-y-1 text-white/60 text-xs">
                 <div>• Complete Health Vault (+15%)</div>
                 <div>• Upload documents (+10%)</div>
                 <div>• Keep chatting with Mira (+3%)</div>
@@ -1415,13 +1444,13 @@ const SoulBuilder = () => {
             <div className="flex gap-3">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="flex-1 py-3 px-4 bg-white/10 text-white rounded-full hover:bg-white/20 transition-colors"
+                className="flex-1 py-3 px-4 bg-white/10 text-white rounded-full hover:bg-white/20 transition-colors text-sm"
               >
                 See {petName}'s MOJO
               </button>
               <button
                 onClick={() => navigate('/mira-demo')}
-                className="flex-1 py-3 px-4 bg-white/10 text-white rounded-full hover:bg-white/20 transition-colors"
+                className="flex-1 py-3 px-4 bg-white/10 text-white rounded-full hover:bg-white/20 transition-colors text-sm"
               >
                 Ask Mira
               </button>
