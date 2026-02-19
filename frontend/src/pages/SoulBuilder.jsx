@@ -559,10 +559,35 @@ const SoulBuilder = () => {
   
   // BASIC INFO SCREEN
   if (screen === 'basic-info') {
+    // Common breeds for autocomplete
+    const commonBreeds = [
+      'Labrador Retriever', 'Golden Retriever', 'German Shepherd', 'Beagle', 
+      'Poodle', 'Bulldog', 'Rottweiler', 'Dachshund', 'Shih Tzu', 'Boxer',
+      'Siberian Husky', 'Pomeranian', 'Doberman', 'Great Dane', 'Chihuahua',
+      'Cocker Spaniel', 'Pug', 'Maltese', 'Border Collie', 'Yorkshire Terrier',
+      'Mixed / Indie', 'Not sure'
+    ];
+    
+    const [showBreedDropdown, setShowBreedDropdown] = useState(false);
+    const [breedSearch, setBreedSearch] = useState(petData.breed || '');
+    const filteredBreeds = commonBreeds.filter(b => 
+      b.toLowerCase().includes(breedSearch.toLowerCase())
+    );
+    
+    // Age options for "Not sure" birthday
+    const ageOptions = [
+      { label: 'Puppy', value: 'puppy', desc: '0-1 year' },
+      { label: 'Young', value: 'young', desc: '1-3 years' },
+      { label: 'Adult', value: 'adult', desc: '3-7 years' },
+      { label: 'Senior', value: 'senior', desc: '7+ years' }
+    ];
+    
+    const [birthdayMode, setBirthdayMode] = useState('date'); // 'date' or 'approximate'
+    
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col p-6" data-testid="soul-builder-basic-info">
+      <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col" data-testid="soul-builder-basic-info">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between p-4 pb-2">
           <button onClick={() => setScreen('pet-hook')} className="text-white/50 hover:text-white">
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -571,100 +596,222 @@ const SoulBuilder = () => {
           </button>
         </div>
         
-        {/* Pet Preview */}
-        <div className="flex items-center gap-4 mb-8">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 overflow-hidden border-2 border-purple-400/30">
+        {/* Pet Header with context */}
+        <div className="flex items-center gap-3 px-4 mb-4">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 overflow-hidden border-2 border-purple-400/30 flex-shrink-0">
             {petPhotoPreview ? (
               <img src={petPhotoPreview} alt={petName} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-2xl">🐕</div>
+              <div className="w-full h-full flex items-center justify-center text-xl">🐕</div>
             )}
           </div>
           <div>
-            <h3 className="text-white text-lg font-medium">{petName}</h3>
-            {detectedBreed && <p className="text-purple-400 text-sm">{detectedBreed}</p>}
+            <h3 className="text-white font-medium">{petName}</h3>
+            <p className="text-white/40 text-xs">Profile 1 of 1</p>
           </div>
         </div>
         
-        <h2 className="text-xl text-white mb-6">Quick details about {petName}</h2>
+        <h2 className="text-lg text-white px-4 mb-4">A few quick details about {petName}</h2>
         
-        <div className="space-y-6 flex-1 overflow-y-auto">
-          {/* Breed */}
-          <div>
-            <label className="text-white/70 text-sm mb-2 block">Breed</label>
-            <input
-              type="text"
-              value={petData.breed}
-              onChange={(e) => setPetData(prev => ({ ...prev, breed: e.target.value }))}
-              placeholder="Enter breed..."
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-purple-400/50"
-            />
-          </div>
-          
-          {/* Gender */}
-          <div>
-            <label className="text-white/70 text-sm mb-2 block">Gender</label>
-            <div className="flex gap-3">
-              {['Male', 'Female'].map(g => (
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto px-4 pb-32">
+          <div className="space-y-5">
+            
+            {/* Breed - Autocomplete */}
+            <div>
+              <label className="text-white/70 text-sm mb-2 block">Breed</label>
+              
+              {/* AI Suggested breed chip */}
+              {detectedBreed && petData.breed !== detectedBreed && (
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-white/50 text-xs">Suggested:</span>
+                  <button 
+                    onClick={() => {
+                      setPetData(prev => ({ ...prev, breed: detectedBreed }));
+                      setBreedSearch(detectedBreed);
+                    }}
+                    className="px-3 py-1 bg-purple-500/20 border border-purple-400/30 rounded-full text-purple-300 text-sm hover:bg-purple-500/30 transition-colors"
+                  >
+                    {detectedBreed}
+                  </button>
+                </div>
+              )}
+              
+              <div className="relative">
+                <input
+                  type="text"
+                  value={breedSearch}
+                  onChange={(e) => {
+                    setBreedSearch(e.target.value);
+                    setShowBreedDropdown(true);
+                  }}
+                  onFocus={() => setShowBreedDropdown(true)}
+                  placeholder="Search breed..."
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-purple-400/50"
+                />
+                
+                {/* Dropdown */}
+                {showBreedDropdown && breedSearch && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-[#1a1025] border border-white/10 rounded-xl max-h-48 overflow-y-auto z-20">
+                    {filteredBreeds.slice(0, 6).map(breed => (
+                      <button
+                        key={breed}
+                        onClick={() => {
+                          setPetData(prev => ({ ...prev, breed }));
+                          setBreedSearch(breed);
+                          setShowBreedDropdown(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-white/70 hover:bg-white/10 transition-colors first:rounded-t-xl last:rounded-b-xl"
+                      >
+                        {breed}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              {/* Quick options */}
+              <div className="flex gap-2 mt-2">
+                {['Mixed / Indie', 'Not sure'].map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => {
+                      setPetData(prev => ({ ...prev, breed: opt }));
+                      setBreedSearch(opt);
+                      setShowBreedDropdown(false);
+                    }}
+                    className={`px-3 py-1 rounded-full text-xs transition-all ${
+                      petData.breed === opt
+                        ? 'bg-purple-500/30 border border-purple-400/50 text-purple-300'
+                        : 'bg-white/5 border border-white/10 text-white/50 hover:text-white/70'
+                    }`}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Gender - Compact segmented control */}
+            <div>
+              <label className="text-white/70 text-sm mb-2 block">Gender</label>
+              <div className="flex bg-white/5 rounded-full p-1 border border-white/10">
+                {['Male', 'Female'].map(g => (
+                  <button
+                    key={g}
+                    onClick={() => setPetData(prev => ({ ...prev, gender: g }))}
+                    className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-all ${
+                      petData.gender === g
+                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-sm'
+                        : 'text-white/50 hover:text-white/70'
+                    }`}
+                  >
+                    {g}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Birthday - with "Not sure" option */}
+            <div>
+              <label className="text-white/70 text-sm mb-2 block">Birthday</label>
+              
+              {/* Mode toggle */}
+              <div className="flex gap-2 mb-2">
                 <button
-                  key={g}
-                  onClick={() => setPetData(prev => ({ ...prev, gender: g }))}
-                  className={`flex-1 py-3 rounded-xl border transition-all ${
-                    petData.gender === g
-                      ? 'bg-purple-500/20 border-purple-400/50 text-purple-300'
-                      : 'bg-white/5 border-white/10 text-white/70 hover:border-white/20'
+                  onClick={() => setBirthdayMode('date')}
+                  className={`px-3 py-1 rounded-full text-xs transition-all ${
+                    birthdayMode === 'date'
+                      ? 'bg-purple-500/30 border border-purple-400/50 text-purple-300'
+                      : 'bg-white/5 border border-white/10 text-white/50'
                   }`}
                 >
-                  {g === 'Male' ? '♂️' : '♀️'} {g}
+                  Exact date
                 </button>
-              ))}
-            </div>
-          </div>
-          
-          {/* Birthday */}
-          <div>
-            <label className="text-white/70 text-sm mb-2 block">Birthday</label>
-            <input
-              type="date"
-              value={petData.birth_date}
-              onChange={(e) => setPetData(prev => ({ ...prev, birth_date: e.target.value }))}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-400/50"
-            />
-          </div>
-          
-          {/* Neutered */}
-          <div>
-            <label className="text-white/70 text-sm mb-2 block">Neutered/Spayed?</label>
-            <div className="flex gap-3">
-              {[{ label: 'Yes', value: true }, { label: 'No', value: false }, { label: 'Not sure', value: null }].map(opt => (
                 <button
-                  key={opt.label}
-                  onClick={() => setPetData(prev => ({ ...prev, is_neutered: opt.value }))}
-                  className={`flex-1 py-3 rounded-xl border transition-all ${
-                    petData.is_neutered === opt.value
-                      ? 'bg-purple-500/20 border-purple-400/50 text-purple-300'
-                      : 'bg-white/5 border-white/10 text-white/70 hover:border-white/20'
+                  onClick={() => setBirthdayMode('approximate')}
+                  className={`px-3 py-1 rounded-full text-xs transition-all ${
+                    birthdayMode === 'approximate'
+                      ? 'bg-purple-500/30 border border-purple-400/50 text-purple-300'
+                      : 'bg-white/5 border border-white/10 text-white/50'
                   }`}
                 >
-                  {opt.label}
+                  Approximate age
                 </button>
-              ))}
+              </div>
+              
+              {birthdayMode === 'date' ? (
+                <input
+                  type="date"
+                  value={petData.birth_date}
+                  onChange={(e) => setPetData(prev => ({ ...prev, birth_date: e.target.value }))}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-400/50"
+                />
+              ) : (
+                <div className="grid grid-cols-4 gap-2">
+                  {ageOptions.map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setPetData(prev => ({ ...prev, approximate_age: opt.value, birth_date: '' }))}
+                      className={`py-3 rounded-xl text-center transition-all ${
+                        petData.approximate_age === opt.value
+                          ? 'bg-purple-500/20 border border-purple-400/50 text-purple-300'
+                          : 'bg-white/5 border border-white/10 text-white/60 hover:border-white/20'
+                      }`}
+                    >
+                      <div className="text-sm font-medium">{opt.label}</div>
+                      <div className="text-xs opacity-60">{opt.desc}</div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
+            
+            {/* Spayed / Neutered - Compact */}
+            <div>
+              <label className="text-white/70 text-sm mb-2 block">Spayed / neutered?</label>
+              <div className="flex gap-2">
+                {[{ label: 'Yes', value: true }, { label: 'No', value: false }, { label: 'Not sure', value: null }].map(opt => (
+                  <button
+                    key={opt.label}
+                    onClick={() => setPetData(prev => ({ ...prev, is_neutered: opt.value }))}
+                    className={`flex-1 py-2.5 rounded-full text-sm font-medium transition-all ${
+                      petData.is_neutered === opt.value
+                        ? 'bg-purple-500/20 border border-purple-400/50 text-purple-300'
+                        : 'bg-white/5 border border-white/10 text-white/60 hover:border-white/20'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
           </div>
         </div>
         
-        {/* Continue Button */}
-        <div className="mt-6">
+        {/* Fixed bottom CTA */}
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f0a19] via-[#0f0a19] to-transparent pt-8">
           <button
             onClick={() => {
               setCurrentChapter(0);
               setCurrentQuestion(0);
               setScreen('chapter-intro');
             }}
-            className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30"
+            className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
             data-testid="start-soul-journey-btn"
           >
-            Start Soul Journey →
+            Continue →
+          </button>
+          <button
+            onClick={() => {
+              setCurrentChapter(0);
+              setCurrentQuestion(0);
+              setScreen('chapter-intro');
+            }}
+            className="w-full py-2 mt-2 text-white/40 text-sm hover:text-white/60 transition-colors"
+          >
+            Skip these details
           </button>
         </div>
       </div>
