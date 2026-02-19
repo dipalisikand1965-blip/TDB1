@@ -1016,79 +1016,11 @@ const CelebrateNewPage = () => {
         handleTabChange(mappedTab);
       }}
     >
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0a14] via-[#12121f] to-[#0a0a14] pb-24">
-      
-      {/* ============================================ */}
-      {/* PERSONALIZED HERO - Celebrate Your Pet */}
-      {/* ============================================ */}
-      <div className="relative overflow-hidden">
-        {/* Magical gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/40 via-pink-900/30 to-violet-900/40" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-pink-500/10 via-transparent to-transparent" />
+    {/* Main Content - Works WITH PillarPageLayout's beautiful hero */}
+    <div className="min-h-screen pb-24">
+      <div className="max-w-6xl mx-auto px-4 pt-4">
         
-        {/* Content */}
-        <div className="relative max-w-6xl mx-auto px-4 py-8">
-          <div className="flex items-center gap-6">
-            {/* Pet Avatar with glow */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full blur-xl opacity-50 animate-pulse" />
-              {petImage ? (
-                <img 
-                  src={petImage} 
-                  alt={petName}
-                  className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-white/20 shadow-2xl"
-                />
-              ) : (
-                <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center border-4 border-white/20 shadow-2xl">
-                  <PawPrint className="w-12 h-12 text-white/80" />
-                </div>
-              )}
-              {/* Sparkle decoration */}
-              <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-amber-400 animate-pulse" />
-            </div>
-            
-            {/* Hero Text */}
-            <div className="flex-1">
-              <p className="text-pink-300/80 text-sm font-medium mb-1">✨ Let's celebrate</p>
-              <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
-                {petName}
-              </h1>
-              <p className="text-gray-300/80 text-sm sm:text-base">
-                {activePet?.breed ? `Your ${activePet.breed}'s special moments deserve magic` : 'Every moment with your pet is worth celebrating'}
-              </p>
-              
-              {/* Quick celebration chips */}
-              <div className="flex flex-wrap gap-2 mt-4">
-                <button
-                  onClick={() => handleTabChange('cakes')}
-                  className="px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-xs text-white/90 hover:bg-white/20 transition-all"
-                >
-                  🎂 Birthday Cake
-                </button>
-                <button
-                  onClick={() => handleTabChange('treats')}
-                  className="px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-xs text-white/90 hover:bg-white/20 transition-all"
-                >
-                  🦴 Special Treats
-                </button>
-                <button
-                  onClick={() => handleTabChange('hampers')}
-                  className="px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-xs text-white/90 hover:bg-white/20 transition-all"
-                >
-                  🎁 Gift Hamper
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* ============================================ */}
-      {/* MAIN CONTENT */}
-      {/* ============================================ */}
-      <div className="max-w-6xl mx-auto px-4 pt-6">
-        
-        {/* PERSONALIZED PICKS - Always show */}
+        {/* PERSONALIZED PICKS - Soul-matched products first */}
         <div className="mb-6">
           <PersonalizedPicks 
             pillar="celebrate" 
