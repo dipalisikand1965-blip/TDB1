@@ -390,7 +390,7 @@ const SoulBuilder = () => {
           </h1>
           
           <p className="text-white/70 text-lg mb-8">
-            She becomes precise once she knows your pet.
+            She becomes uncanny once she knows your pet.
           </p>
           
           {/* Benefits */}
