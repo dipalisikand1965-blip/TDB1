@@ -221,6 +221,10 @@ const SoulBuilder = () => {
   const [showBreedDropdown, setShowBreedDropdown] = useState(false);
   const [breedSearch, setBreedSearch] = useState('');
   const [birthdayMode, setBirthdayMode] = useState('date');
+  const [dateType, setDateType] = useState('birthday'); // 'birthday' | 'gotcha' | 'both'
+  
+  // Track if user has answered at least one question (for showing score vs badge)
+  const hasAnsweredAny = Object.keys(answers).length > 0;
   
   const fileInputRef = useRef(null);
   
