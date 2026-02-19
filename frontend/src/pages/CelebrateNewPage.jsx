@@ -431,23 +431,23 @@ const TrustStats = () => {
 };
 
 // ============================================
-// CUSTOM CAKE CTA
+// CUSTOM CAKE CTA - Dark Luxurious Theme
 // ============================================
 const CustomCakeCTA = () => {
   const navigate = useNavigate();
   return (
     <button
       onClick={() => navigate('/custom-cake')}
-      className="w-full bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-2xl p-4 mb-4 flex items-center gap-4 active:scale-[0.99] transition-transform shadow-lg"
+      className="w-full bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-2xl p-4 mb-4 flex items-center gap-4 active:scale-[0.99] transition-transform shadow-lg shadow-purple-500/20 border border-purple-400/20"
     >
-      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl">
+      <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center text-2xl">
         ✨
       </div>
       <div className="flex-1 text-left">
         <h3 className="font-bold">Design Your Own Cake</h3>
-        <p className="text-sm text-white/80">Custom shapes, flavors & decorations</p>
+        <p className="text-sm text-white/70">Custom shapes, flavors & decorations</p>
       </div>
-      <ArrowRight className="w-5 h-5" />
+      <ArrowRight className="w-5 h-5 text-white/80" />
     </button>
   );
 };
