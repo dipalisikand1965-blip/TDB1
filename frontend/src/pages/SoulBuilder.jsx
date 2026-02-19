@@ -952,12 +952,25 @@ const SoulBuilder = () => {
   if (screen === 'question' && question) {
     const isMultiSelect = question.type === 'multi_select';
     const isText = question.type === 'text';
+    const isThreeWordsQuestion = question.id === 'describe_3_words';
+    
+    // Format question text - shorter, cleaner
+    const formatQuestion = (text) => {
+      let formatted = personalize(text);
+      // Make questions shorter and cleaner
+      if (formatted.startsWith('What are ')) {
+        formatted = formatted.replace('What are ', '');
+      }
+      // Remove trailing "?" for cleaner look, we'll add it back
+      formatted = formatted.replace(/\?$/, '');
+      return formatted + '?';
+    };
     
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col" data-testid="soul-builder-question">
         {/* Header */}
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-4">
+        <div className="p-4 pb-2">
+          <div className="flex items-center justify-between mb-3">
             <button 
               onClick={() => {
                 if (currentQuestion > 0) {
@@ -978,13 +991,13 @@ const SoulBuilder = () => {
             </button>
           </div>
           
-          {/* Progress Bar */}
+          {/* Progress Bar with clear labeling */}
           <div className="mb-2">
             <div className="flex items-center justify-between text-white/50 text-xs mb-1">
-              <span>Chapter {currentChapter + 1}: {chapter.title}</span>
-              <span>{currentQuestion + 1} of {chapter.questions.length}</span>
+              <span className="text-white/70 font-medium">{chapter.title}</span>
+              <span>Question {currentQuestion + 1} of {chapter.questions.length}</span>
             </div>
-            <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
               <div 
                 className="h-full rounded-full transition-all duration-500"
                 style={{ 
@@ -993,57 +1006,110 @@ const SoulBuilder = () => {
                 }}
               />
             </div>
+            {/* Overall progress hint */}
+            <div className="text-white/30 text-xs mt-1 text-right">
+              Chapter {currentChapter + 1} of {CHAPTERS.length}
+            </div>
           </div>
         </div>
         
-        {/* Pet Avatar + Score */}
-        <div className="flex items-center justify-center gap-4 py-4">
+        {/* Pet Avatar + Soul badge - compact */}
+        <div className="flex items-center justify-center gap-3 py-3">
           <div className="relative">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 overflow-hidden border-2 border-purple-400/30">
+            {/* Avatar with dynamic ring */}
+            <svg className="absolute -inset-2 w-[calc(100%+16px)] h-[calc(100%+16px)]" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="37" fill="none" stroke="rgba(139, 92, 246, 0.2)" strokeWidth="2" />
+              {hasAnsweredAny && (
+                <circle 
+                  cx="40" cy="40" r="37" 
+                  fill="none" 
+                  stroke="url(#questionSoulGradient)" 
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeDasharray={`${(soulScore / 100) * 232} 232`}
+                  transform="rotate(-90 40 40)"
+                  className="transition-all duration-500"
+                  style={{ filter: `drop-shadow(0 0 4px ${chapter.color})` }}
+                />
+              )}
+              <defs>
+                <linearGradient id="questionSoulGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#8B5CF6" />
+                  <stop offset="100%" stopColor="#EC4899" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 overflow-hidden">
               {petPhotoPreview ? (
                 <img src={petPhotoPreview} alt={petName} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-xl">🐕</div>
+                <div className="w-full h-full flex items-center justify-center text-lg">🐕</div>
               )}
             </div>
-            <div className="absolute -inset-1 rounded-full border border-purple-400/30 animate-pulse" />
           </div>
-          <div className="text-center">
-            <p className="text-white text-lg font-medium">Soul Score: {soulScore}%</p>
-            <p className="text-white/50 text-sm">{tier.emoji} {tier.name}</p>
+          <div className="text-left">
+            {/* Show "Soul Profile" or "Building profile..." before first answer, then score */}
+            <p className="text-white text-sm font-medium">
+              {hasAnsweredAny ? `Soul Score: ${soulScore}%` : 'Building profile...'}
+            </p>
+            <p className="text-white/40 text-xs">{tier.emoji} {tier.name}</p>
           </div>
         </div>
         
-        {/* Question */}
-        <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
-          <h2 className="text-xl text-white text-center mb-8 max-w-sm">
-            {personalize(question.question)}
+        {/* Question - scrollable area */}
+        <div className="flex-1 flex flex-col px-6 py-4 overflow-y-auto" style={{ paddingBottom: isText ? '180px' : '100px' }}>
+          <h2 className="text-xl text-white text-center mb-6 max-w-sm mx-auto">
+            {formatQuestion(question.question)}
           </h2>
           
           {/* Options */}
           {isText ? (
-            <div className="w-full max-w-sm">
+            <div className="w-full max-w-sm mx-auto">
+              {/* Helper text for "three words" question */}
+              {isThreeWordsQuestion && (
+                <p className="text-white/40 text-sm text-center mb-3">
+                  For example: gentle, curious, affectionate
+                </p>
+              )}
+              
               <textarea
                 value={textInputValue}
                 onChange={(e) => setTextInputValue(e.target.value)}
-                placeholder="Type your answer..."
+                placeholder={isThreeWordsQuestion ? "Type three words..." : "Type your answer..."}
                 rows={3}
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-purple-400/50 resize-none"
+                data-testid="text-input"
               />
-              <button
-                onClick={() => textInputValue.trim() && handleAnswer(textInputValue.trim())}
-                disabled={!textInputValue.trim()}
-                className={`w-full mt-4 py-3 rounded-xl font-medium transition-all ${
-                  textInputValue.trim()
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
-                    : 'bg-white/10 text-white/30 cursor-not-allowed'
-                }`}
-              >
-                Continue →
-              </button>
+              
+              {/* Suggestion chips for "three words" */}
+              {isThreeWordsQuestion && (
+                <div className="flex flex-wrap gap-2 mt-3 justify-center">
+                  {THREE_WORDS_SUGGESTIONS.slice(0, 8).map(word => (
+                    <button
+                      key={word}
+                      onClick={() => {
+                        const currentWords = textInputValue.split(',').map(w => w.trim()).filter(Boolean);
+                        if (currentWords.length < 3 && !currentWords.includes(word)) {
+                          const newValue = currentWords.length > 0 
+                            ? `${textInputValue.trim()}, ${word}`
+                            : word;
+                          setTextInputValue(newValue);
+                        }
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-sm transition-all ${
+                        textInputValue.toLowerCase().includes(word.toLowerCase())
+                          ? 'bg-purple-500/30 border border-purple-400/50 text-purple-300'
+                          : 'bg-white/5 border border-white/10 text-white/50 hover:bg-white/10 hover:text-white/70'
+                      }`}
+                    >
+                      {word}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           ) : (
-            <div className="w-full max-w-sm space-y-3">
+            <div className="w-full max-w-sm mx-auto space-y-3">
               {question.options.map((option, idx) => {
                 const isSelected = isMultiSelect 
                   ? multiSelectValues.includes(option)
@@ -1053,7 +1119,7 @@ const SoulBuilder = () => {
                   <button
                     key={idx}
                     onClick={() => isMultiSelect ? toggleMultiSelect(option) : handleAnswer(option)}
-                    className={`w-full py-4 px-6 rounded-xl border text-left transition-all ${
+                    className={`w-full py-4 px-5 rounded-xl border text-left transition-all ${
                       isSelected
                         ? 'bg-purple-500/20 border-purple-400/50 text-white'
                         : 'bg-white/5 border-white/10 text-white/70 hover:border-white/20 hover:bg-white/10'
@@ -1072,27 +1138,44 @@ const SoulBuilder = () => {
                   onClick={() => handleAnswer(multiSelectValues)}
                   className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-xl"
                 >
-                  Done →
+                  Continue
                 </button>
               )}
             </div>
           )}
           
-          {/* Skip */}
+          {/* Skip - softer wording */}
           <button 
             onClick={handleSkip}
-            className="mt-6 text-white/40 hover:text-white/60 transition-colors"
+            className="mt-6 text-white/30 hover:text-white/50 transition-colors text-sm mx-auto block"
           >
-            Skip this
+            Skip for now
           </button>
         </div>
         
-        {/* Premium Teaser */}
-        <div className="p-4 border-t border-white/5">
-          <div className="flex items-center gap-2 justify-center text-white/40 text-sm">
-            <span>🔒</span>
-            <span>Premium: Mira will remember this forever</span>
+        {/* Fixed bottom area for text input - keyboard safe */}
+        {isText && (
+          <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f0a19] via-[#0f0a19]/95 to-transparent pt-6 safe-area-inset-bottom">
+            <button
+              onClick={() => textInputValue.trim() && handleAnswer(textInputValue.trim())}
+              disabled={!textInputValue.trim()}
+              className={`w-full py-4 rounded-full font-medium transition-all ${
+                textInputValue.trim()
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30'
+                  : 'bg-white/10 text-white/30 cursor-not-allowed'
+              }`}
+              data-testid="continue-btn"
+            >
+              Continue
+            </button>
           </div>
+        )}
+        
+        {/* Footer - Cleaner microcopy, no lock emoji */}
+        <div className="p-4 border-t border-white/5">
+          <p className="text-center text-white/30 text-xs">
+            Saved to {petName}'s profile
+          </p>
         </div>
       </div>
     );
