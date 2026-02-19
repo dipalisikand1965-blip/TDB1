@@ -777,16 +777,16 @@ const SoulBuilder = () => {
               </div>
             </div>
             
-            {/* Birthday / Gotcha Day - with options */}
+            {/* Birthday / Gotcha Day - mutually exclusive with approximate age */}
             <div>
               <label className="text-white/70 text-sm mb-2 block">When did {petName} come into your life?</label>
               
-              {/* Date type selector */}
+              {/* Date type selector: Birthday | Gotcha Day | Both */}
               <div className="flex gap-2 mb-3">
                 <button
-                  onClick={() => setDateType('birthday')}
+                  onClick={() => handleDateTypeChange('birthday')}
                   className={`flex-1 py-2 rounded-full text-sm transition-all ${
-                    dateType === 'birthday'
+                    dateType === 'birthday' && birthdayMode === 'date'
                       ? 'bg-purple-500/30 border border-purple-400/50 text-purple-300'
                       : 'bg-white/5 border border-white/10 text-white/50'
                   }`}
@@ -794,9 +794,9 @@ const SoulBuilder = () => {
                   Birthday
                 </button>
                 <button
-                  onClick={() => setDateType('gotcha')}
+                  onClick={() => handleDateTypeChange('gotcha')}
                   className={`flex-1 py-2 rounded-full text-sm transition-all ${
-                    dateType === 'gotcha'
+                    dateType === 'gotcha' && birthdayMode === 'date'
                       ? 'bg-purple-500/30 border border-purple-400/50 text-purple-300'
                       : 'bg-white/5 border border-white/10 text-white/50'
                   }`}
@@ -804,9 +804,9 @@ const SoulBuilder = () => {
                   Gotcha Day
                 </button>
                 <button
-                  onClick={() => setDateType('both')}
+                  onClick={() => handleDateTypeChange('both')}
                   className={`flex-1 py-2 rounded-full text-sm transition-all ${
-                    dateType === 'both'
+                    dateType === 'both' && birthdayMode === 'date'
                       ? 'bg-purple-500/30 border border-purple-400/50 text-purple-300'
                       : 'bg-white/5 border border-white/10 text-white/50'
                   }`}
@@ -815,59 +815,58 @@ const SoulBuilder = () => {
                 </button>
               </div>
               
-              {/* Mode toggle - Exact vs Approximate */}
-              <div className="flex gap-2 mb-2">
-                <button
-                  onClick={() => setBirthdayMode('date')}
-                  className={`px-3 py-1 rounded-full text-xs transition-all ${
-                    birthdayMode === 'date'
-                      ? 'bg-purple-500/30 border border-purple-400/50 text-purple-300'
-                      : 'bg-white/5 border border-white/10 text-white/50'
-                  }`}
-                >
-                  Exact date
-                </button>
-                <button
-                  onClick={() => setBirthdayMode('approximate')}
-                  className={`px-3 py-1 rounded-full text-xs transition-all ${
-                    birthdayMode === 'approximate'
-                      ? 'bg-purple-500/30 border border-purple-400/50 text-purple-300'
-                      : 'bg-white/5 border border-white/10 text-white/50'
-                  }`}
-                >
-                  Approximate age
-                </button>
-              </div>
+              {/* Approximate age toggle - mutually exclusive with dates */}
+              <button
+                onClick={birthdayMode === 'date' ? handleSwitchToApproximate : handleSwitchToDateMode}
+                className={`w-full mb-3 px-3 py-2 rounded-xl text-xs text-left transition-all ${
+                  birthdayMode === 'approximate'
+                    ? 'bg-purple-500/20 border border-purple-400/50 text-purple-300'
+                    : 'bg-white/5 border border-white/10 text-white/40 hover:text-white/60'
+                }`}
+              >
+                {birthdayMode === 'approximate' 
+                  ? '✓ Using approximate age (tap to enter date instead)'
+                  : "Don't know exact date? Tap to estimate age"
+                }
+              </button>
               
               {birthdayMode === 'date' ? (
                 <div className="space-y-3">
                   {/* Birthday field */}
                   {(dateType === 'birthday' || dateType === 'both') && (
                     <div>
-                      <label className="text-white/40 text-xs mb-1 block">
-                        {dateType === 'both' ? 'Birthday' : ''}
-                      </label>
+                      {dateType === 'both' && (
+                        <label className="text-white/40 text-xs mb-1 block">Birthday</label>
+                      )}
                       <input
                         type="date"
                         value={petData.birth_date}
-                        onChange={(e) => setPetData(prev => ({ ...prev, birth_date: e.target.value }))}
+                        onChange={(e) => setPetData(prev => ({ ...prev, birth_date: e.target.value, approximate_age: '' }))}
                         className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-400/50"
+                        style={{ colorScheme: 'dark' }}
                       />
+                      {petData.birth_date && (
+                        <p className="text-white/30 text-xs mt-1">{formatDateForDisplay(petData.birth_date)}</p>
+                      )}
                     </div>
                   )}
                   
                   {/* Gotcha Day field */}
                   {(dateType === 'gotcha' || dateType === 'both') && (
                     <div>
-                      <label className="text-white/40 text-xs mb-1 block">
-                        {dateType === 'both' ? 'Gotcha Day (adoption date)' : ''}
-                      </label>
+                      {dateType === 'both' && (
+                        <label className="text-white/40 text-xs mb-1 block">Gotcha Day (adoption date)</label>
+                      )}
                       <input
                         type="date"
                         value={petData.gotcha_date}
-                        onChange={(e) => setPetData(prev => ({ ...prev, gotcha_date: e.target.value }))}
+                        onChange={(e) => setPetData(prev => ({ ...prev, gotcha_date: e.target.value, approximate_age: '' }))}
                         className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-400/50"
+                        style={{ colorScheme: 'dark' }}
                       />
+                      {petData.gotcha_date && (
+                        <p className="text-white/30 text-xs mt-1">{formatDateForDisplay(petData.gotcha_date)}</p>
+                      )}
                     </div>
                   )}
                 </div>
@@ -876,7 +875,7 @@ const SoulBuilder = () => {
                   {ageOptions.map(opt => (
                     <button
                       key={opt.value}
-                      onClick={() => setPetData(prev => ({ ...prev, approximate_age: opt.value, birth_date: '' }))}
+                      onClick={() => handleApproxAgeSelect(opt.value)}
                       className={`py-3 rounded-xl text-center transition-all ${
                         petData.approximate_age === opt.value
                           ? 'bg-purple-500/20 border border-purple-400/50 text-purple-300'
