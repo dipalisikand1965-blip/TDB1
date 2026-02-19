@@ -792,7 +792,7 @@ const MiraOSModal = ({
         ref={modalRef}
         className={`
           relative bg-white flex flex-col overflow-hidden
-          w-full h-[100dvh] rounded-t-3xl
+          w-full h-[90dvh] rounded-t-3xl
           sm:w-[420px] sm:h-full sm:rounded-none sm:border-l sm:border-gray-200
           animate-in slide-in-from-bottom sm:slide-in-from-right duration-300
         `}
