@@ -367,7 +367,9 @@ const SoulBuilder = () => {
   // ═══════════════════════════════════════════════════════════════════════════════
   
   // PREBOARDING SCREEN
+  console.log('[SoulBuilder] Current screen:', screen);
   if (screen === 'preboarding') {
+    console.log('[SoulBuilder] Rendering preboarding screen');
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col items-center justify-center p-6" data-testid="soul-builder-preboarding">
         {/* Ambient glow */}
