@@ -194,6 +194,9 @@ const THREE_WORDS_SUGGESTIONS = [
 const SoulBuilder = () => {
   const navigate = useNavigate();
   
+  // DEBUG: Log that component mounted
+  console.log('[SoulBuilder] Component mounted');
+  
   // State
   const [screen, setScreen] = useState('preboarding'); // preboarding, pet-hook, basic-info, chapter-intro, question, chapter-complete, final
   const [petName, setPetName] = useState('');
