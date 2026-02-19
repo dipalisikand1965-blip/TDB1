@@ -157,8 +157,8 @@ const QuickProductTile = ({ product, onTap }) => {
   
   return (
     <div
-      className={`relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden shadow-lg transition-all duration-200 hover:border-pink-500/30 hover:shadow-pink-500/10 ${
-        isPressed ? 'scale-[0.98] shadow-none' : 'active:scale-[0.98]'
+      className={`relative bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:border-pink-200 ${
+        isPressed ? 'scale-[0.98] shadow-md' : 'active:scale-[0.98]'
       }`}
       onTouchStart={() => setIsPressed(true)}
       onTouchEnd={() => setIsPressed(false)}
@@ -166,30 +166,32 @@ const QuickProductTile = ({ product, onTap }) => {
       data-testid={`product-tile-${product._id || product.id}`}
     >
       {/* Image */}
-      <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
+      <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-pink-50 to-purple-50">
         <img
           src={product.image_url || product.image || product.images?.[0] || 'https://via.placeholder.com/200?text=🎂'}
           alt={product.name || product.title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           loading="lazy"
         />
-        {/* Quick Add Button - Glass style */}
+        
+        {/* Quick Add Button - Luxurious style */}
         <button
           onClick={handleAddToCart}
-          className="absolute bottom-2 right-2 w-8 h-8 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform text-white"
+          className="absolute bottom-3 right-3 w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/30 active:scale-90 transition-all text-white hover:shadow-xl hover:shadow-pink-500/40"
           data-testid="quick-add-btn"
         >
-          <span className="text-lg">+</span>
+          <span className="text-xl font-light">+</span>
         </button>
+        
         {/* Badges Row */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
+        <div className="absolute top-2 left-2 flex flex-col gap-1.5">
           {product.is_bestseller && (
-            <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] px-2 border-0">
-              Bestseller
+            <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[10px] px-2.5 py-1 border-0 shadow-md">
+              ⭐ Bestseller
             </Badge>
           )}
           {optionCount > 1 && (
-            <Badge className="bg-black/50 backdrop-blur-sm text-white text-[9px] px-1.5 border border-white/20">
+            <Badge className="bg-white/90 backdrop-blur-sm text-gray-700 text-[9px] px-2 py-0.5 border border-gray-200 shadow-sm">
               {optionCount} options
             </Badge>
           )}
@@ -197,35 +199,49 @@ const QuickProductTile = ({ product, onTap }) => {
         
         {/* With Our Compliments - For cakes */}
         {isCake && (
-          <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm px-2 py-1.5 flex items-center justify-center gap-1 text-[10px] text-white/80">
-            <span className="opacity-60">🎈</span>
-            <span className="font-medium">Complimentary:</span>
-            <span className="text-[9px] text-white/60">Balloons, Candles, Hats</span>
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-3 py-2 pt-6">
+            <div className="flex items-center justify-center gap-1 text-[10px] text-white">
+              <span>🎈</span>
+              <span className="font-medium">With Our Compliments:</span>
+              <span className="text-white/80">Balloons, Candles, Hats</span>
+            </div>
           </div>
         )}
       </div>
       
       {/* Info */}
-      <div className="p-3">
+      <div className="p-4">
         {/* Paw Score if available */}
         {(product.paw_score || product.rating) && (
-          <div className="flex items-center gap-1 mb-1">
-            <PawPrint className="w-3 h-3 fill-amber-400 text-amber-400" />
-            <span className="text-[10px] font-semibold text-gray-300">
-              {(product.paw_score || product.rating * 2).toFixed(1)}/10
-            </span>
+          <div className="flex items-center gap-1.5 mb-2">
+            <div className="flex items-center gap-0.5 bg-amber-50 px-2 py-0.5 rounded-full">
+              <PawPrint className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+              <span className="text-[11px] font-bold text-amber-700">
+                {(product.paw_score || product.rating * 2).toFixed(1)}
+              </span>
+            </div>
+            <span className="text-[10px] text-gray-400">Paw Score</span>
           </div>
         )}
-        <h3 className="font-medium text-sm text-white line-clamp-2 leading-tight min-h-[2.5rem]">
+        
+        <h3 className="font-semibold text-sm text-gray-900 line-clamp-2 leading-snug min-h-[2.5rem] mb-2">
           {product.name || product.title}
         </h3>
-        <div className="flex items-center justify-between mt-2">
-          <span className="font-bold text-base text-white">
-            ₹{product.price?.toLocaleString()}
-          </span>
+        
+        <div className="flex items-center justify-between">
+          <div className="flex items-baseline gap-2">
+            <span className="font-bold text-lg text-gray-900">
+              ₹{product.price?.toLocaleString()}
+            </span>
+            {product.compare_price && product.compare_price > product.price && (
+              <span className="text-xs text-gray-400 line-through">
+                ₹{product.compare_price?.toLocaleString()}
+              </span>
+            )}
+          </div>
           {product.compare_price && product.compare_price > product.price && (
-            <span className="text-xs text-gray-500 line-through">
-              ₹{product.compare_price?.toLocaleString()}
+            <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+              {Math.round((1 - product.price / product.compare_price) * 100)}% OFF
             </span>
           )}
         </div>
