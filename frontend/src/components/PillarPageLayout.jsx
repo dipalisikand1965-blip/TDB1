@@ -372,8 +372,8 @@ const PillarPageLayout = ({
           : children}
       </main>
       
-      {/* Mira Chat Widget */}
-      <MiraChatWidget pillar={pillar} />
+      {/* Mira Chat Widget - hidden when page uses MiraOSTrigger */}
+      {!hideMiraWidget && <MiraChatWidget pillar={pillar} />}
     </div>
   );
 };
