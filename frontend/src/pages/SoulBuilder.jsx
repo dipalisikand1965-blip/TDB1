@@ -423,42 +423,81 @@ const SoulBuilder = () => {
   
   // PET HOOK SCREEN (Photo + Name)
   if (screen === 'pet-hook') {
+    // Mock existing pets for multi-pet support (TODO: fetch from API)
+    const existingPets = []; // Will be populated from user context
+    
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col p-6" data-testid="soul-builder-pet-hook">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-4">
           <button onClick={() => setScreen('preboarding')} className="text-white/50 hover:text-white">
             <ChevronLeft className="w-6 h-6" />
           </button>
           <button onClick={() => navigate('/')} className="text-white/50 hover:text-white text-sm">
-            Skip for now
+            Save & exit
           </button>
         </div>
+        
+        {/* Multi-pet selector (if user has existing pets) */}
+        {existingPets.length > 0 && (
+          <div className="mb-6">
+            <p className="text-white/50 text-sm mb-3 text-center">Who are we building a profile for?</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {existingPets.map(pet => (
+                <button
+                  key={pet.id}
+                  onClick={() => {
+                    setPetName(pet.name);
+                    setPetPhotoPreview(pet.photo);
+                  }}
+                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white/70 hover:bg-white/10 hover:border-purple-400/30 transition-all"
+                >
+                  {pet.name}
+                </button>
+              ))}
+              <button className="px-4 py-2 bg-purple-500/20 border border-purple-400/30 rounded-full text-purple-300">
+                + Add another
+              </button>
+            </div>
+          </div>
+        )}
         
         {/* Ambient glow */}
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-purple-500/20 rounded-full blur-[120px] pointer-events-none" />
         
-        <div className="flex-1 flex flex-col items-center justify-center relative z-10">
-          <h2 className="text-2xl text-white mb-2">Let's meet your furry friend!</h2>
-          <p className="text-white/50 mb-8">🐾</p>
+        <div className="flex-1 flex flex-col items-center justify-center relative z-10 -mt-8">
+          {/* Title - changes when name is entered */}
+          <h2 className="text-2xl text-white mb-6">
+            {petName.trim() ? `Let's begin with ${petName}.` : "Let's meet your pet."}
+          </h2>
           
-          {/* Photo Upload */}
+          {/* Photo Upload - Premium feel */}
           <div 
             onClick={() => fileInputRef.current?.click()}
-            className="relative w-40 h-40 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-2 border-dashed border-white/20 hover:border-purple-400/50 transition-all cursor-pointer flex items-center justify-center mb-6 overflow-hidden group"
+            className="relative w-36 h-36 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-2 border-dashed border-white/20 hover:border-purple-400/50 transition-all cursor-pointer flex items-center justify-center overflow-hidden group"
           >
             {petPhotoPreview ? (
               <img src={petPhotoPreview} alt="Pet" className="w-full h-full object-cover" />
             ) : (
-              <div className="text-center">
+              <div className="text-center px-4">
                 <Camera className="w-8 h-8 text-white/50 mx-auto mb-2 group-hover:text-purple-400 transition-colors" />
-                <span className="text-white/50 text-sm group-hover:text-purple-400 transition-colors">Upload Photo</span>
+                <span className="text-white/60 text-sm group-hover:text-purple-400 transition-colors">Add a photo</span>
               </div>
             )}
             
             {/* Animated ring */}
             <div className="absolute inset-0 rounded-full border-2 border-purple-400/30 animate-pulse" />
           </div>
+          
+          {/* Photo helper text */}
+          <p className="text-white/30 text-xs mt-2 mb-1">Optional, but it helps Mira recognise them</p>
+          
+          {/* Skip photo link */}
+          {!petPhotoPreview && (
+            <button className="text-white/40 text-xs hover:text-white/60 transition-colors mb-4">
+              Skip photo for now
+            </button>
+          )}
           
           <input
             ref={fileInputRef}
@@ -468,39 +507,51 @@ const SoulBuilder = () => {
             className="hidden"
           />
           
+          {/* AI breed detection result */}
           {detectedBreed && (
-            <div className="flex items-center gap-2 mb-6 px-4 py-2 bg-purple-500/20 rounded-full">
+            <div className="flex items-center gap-2 mb-4 px-4 py-2 bg-purple-500/20 rounded-full">
               <Sparkles className="w-4 h-4 text-purple-400" />
               <span className="text-purple-300 text-sm">AI detected: {detectedBreed}</span>
             </div>
           )}
           
-          {/* Name Input */}
-          <p className="text-white/70 mb-3">What's their name?</p>
-          <input
-            type="text"
-            value={petName}
-            onChange={(e) => setPetName(e.target.value)}
-            placeholder="Enter name..."
-            className="w-full max-w-xs px-6 py-4 bg-white/5 border border-white/10 rounded-full text-white text-center placeholder-white/30 focus:outline-none focus:border-purple-400/50 focus:bg-white/10 transition-all"
-            data-testid="pet-name-input"
-          />
+          {/* Name Input - Tighter spacing */}
+          <div className="w-full max-w-xs mt-2">
+            <p className="text-white/70 mb-2 text-center">What do you call them?</p>
+            <input
+              type="text"
+              value={petName}
+              onChange={(e) => setPetName(e.target.value)}
+              placeholder="Name"
+              className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-full text-white text-center placeholder-white/30 focus:outline-none focus:border-purple-400/50 focus:bg-white/10 transition-all"
+              data-testid="pet-name-input"
+            />
+            {/* Micro reassurance */}
+            <p className="text-white/30 text-xs mt-2 text-center">You can edit this anytime.</p>
+          </div>
         </div>
         
-        {/* Continue Button */}
-        <div className="mt-auto">
+        {/* Continue Button - Better states */}
+        <div className="mt-6">
           <button
             onClick={() => petName.trim() && setScreen('basic-info')}
             disabled={!petName.trim()}
-            className={`w-full py-4 px-6 rounded-full font-semibold transition-all ${
+            className={`w-full py-4 px-6 rounded-full font-semibold transition-all duration-300 ${
               petName.trim()
-                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50'
-                : 'bg-white/10 text-white/30 cursor-not-allowed'
+                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/40 hover:shadow-purple-500/60 hover:scale-[1.02] active:scale-[0.98]'
+                : 'bg-white/5 border border-white/10 text-white/30 cursor-not-allowed'
             }`}
             data-testid="continue-btn"
           >
             Continue →
           </button>
+          
+          {/* Add another pet after this */}
+          {petName.trim() && (
+            <p className="text-white/40 text-xs mt-3 text-center">
+              Add another pet after this
+            </p>
+          )}
         </div>
       </div>
     );
