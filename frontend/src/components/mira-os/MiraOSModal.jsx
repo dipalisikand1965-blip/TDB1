@@ -899,8 +899,8 @@ const MiraOSModal = ({
           ))}
         </div>
         
-        {/* Content Area */}
-        <div className="flex-1 overflow-y-auto">
+        {/* Content Area - with safe bottom padding for keyboard */}
+        <div className="flex-1 overflow-y-auto pb-4">
           {/* Picks Tab */}
           {activeTab === 'picks' && (
             <div className="p-4 space-y-3">
