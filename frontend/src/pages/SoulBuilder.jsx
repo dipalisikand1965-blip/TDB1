@@ -728,11 +728,45 @@ const SoulBuilder = () => {
               </div>
             </div>
             
-            {/* Birthday - with "Not sure" option */}
+            {/* Birthday / Gotcha Day - with options */}
             <div>
-              <label className="text-white/70 text-sm mb-2 block">Birthday</label>
+              <label className="text-white/70 text-sm mb-2 block">When did {petName} come into your life?</label>
               
-              {/* Mode toggle */}
+              {/* Date type selector */}
+              <div className="flex gap-2 mb-3">
+                <button
+                  onClick={() => setDateType('birthday')}
+                  className={`flex-1 py-2 rounded-full text-sm transition-all ${
+                    dateType === 'birthday'
+                      ? 'bg-purple-500/30 border border-purple-400/50 text-purple-300'
+                      : 'bg-white/5 border border-white/10 text-white/50'
+                  }`}
+                >
+                  Birthday
+                </button>
+                <button
+                  onClick={() => setDateType('gotcha')}
+                  className={`flex-1 py-2 rounded-full text-sm transition-all ${
+                    dateType === 'gotcha'
+                      ? 'bg-purple-500/30 border border-purple-400/50 text-purple-300'
+                      : 'bg-white/5 border border-white/10 text-white/50'
+                  }`}
+                >
+                  Gotcha Day
+                </button>
+                <button
+                  onClick={() => setDateType('both')}
+                  className={`flex-1 py-2 rounded-full text-sm transition-all ${
+                    dateType === 'both'
+                      ? 'bg-purple-500/30 border border-purple-400/50 text-purple-300'
+                      : 'bg-white/5 border border-white/10 text-white/50'
+                  }`}
+                >
+                  Both
+                </button>
+              </div>
+              
+              {/* Mode toggle - Exact vs Approximate */}
               <div className="flex gap-2 mb-2">
                 <button
                   onClick={() => setBirthdayMode('date')}
@@ -757,12 +791,37 @@ const SoulBuilder = () => {
               </div>
               
               {birthdayMode === 'date' ? (
-                <input
-                  type="date"
-                  value={petData.birth_date}
-                  onChange={(e) => setPetData(prev => ({ ...prev, birth_date: e.target.value }))}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-400/50"
-                />
+                <div className="space-y-3">
+                  {/* Birthday field */}
+                  {(dateType === 'birthday' || dateType === 'both') && (
+                    <div>
+                      <label className="text-white/40 text-xs mb-1 block">
+                        {dateType === 'both' ? 'Birthday' : ''}
+                      </label>
+                      <input
+                        type="date"
+                        value={petData.birth_date}
+                        onChange={(e) => setPetData(prev => ({ ...prev, birth_date: e.target.value }))}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-400/50"
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Gotcha Day field */}
+                  {(dateType === 'gotcha' || dateType === 'both') && (
+                    <div>
+                      <label className="text-white/40 text-xs mb-1 block">
+                        {dateType === 'both' ? 'Gotcha Day (adoption date)' : ''}
+                      </label>
+                      <input
+                        type="date"
+                        value={petData.gotcha_date}
+                        onChange={(e) => setPetData(prev => ({ ...prev, gotcha_date: e.target.value }))}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-400/50"
+                      />
+                    </div>
+                  )}
+                </div>
               ) : (
                 <div className="grid grid-cols-4 gap-2">
                   {ageOptions.map(opt => (
