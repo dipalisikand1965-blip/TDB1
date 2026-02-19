@@ -108,6 +108,7 @@ const PILLAR_SUBCATEGORIES = {
  * @param {boolean} showSubcategories - Whether to show subcategory pills (default: true)
  * @param {boolean} useTabNavigation - If true, tabs update state instead of navigating (default: false)
  * @param {function} onSubcategoryChange - Callback when subcategory changes (for tab mode)
+ * @param {boolean} hideMiraWidget - Hide the MiraChatWidget (use when page has MiraOSTrigger)
  */
 const PillarPageLayout = ({
   pillar,
@@ -117,7 +118,8 @@ const PillarPageLayout = ({
   defaultViewMode = 'products',
   showSubcategories = true,
   useTabNavigation = false,
-  onSubcategoryChange
+  onSubcategoryChange,
+  hideMiraWidget = false
 }) => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
