@@ -206,7 +206,8 @@ const UnifiedCheckout = lazy(() => import("./components/UnifiedCheckout"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const MembershipPage = lazy(() => import("./pages/MembershipPage"));
 const MembershipOnboarding = lazy(() => import("./pages/MembershipOnboarding"));
-const SoulBuilder = lazy(() => import("./pages/SoulBuilder"));
+// DEBUG: Direct import instead of lazy to check for loading issues
+import SoulBuilder from "./pages/SoulBuilder";
 const Policies = lazy(() => import("./pages/Policies"));
 const FAQs = lazy(() => import("./pages/FAQs"));
 const Insights = lazy(() => import("./pages/Insights"));
