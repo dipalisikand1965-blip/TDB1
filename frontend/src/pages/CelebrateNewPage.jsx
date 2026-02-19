@@ -1023,6 +1023,7 @@ const CelebrateNewPage = () => {
       description="Mark the moments that matter to your furry friend"
       showSubcategories={true}
       useTabNavigation={true}
+      hideMiraWidget={true}
       onSubcategoryChange={(subcat) => {
         // Map PillarPageLayout subcategories to our internal tab system
         const tabMapping = {
