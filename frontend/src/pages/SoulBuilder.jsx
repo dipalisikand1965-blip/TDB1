@@ -845,8 +845,42 @@ const SoulBuilder = () => {
         />
         
         <div className="relative z-10 text-center">
-          {/* Pet Avatar with Soul Score */}
+          {/* Pet Avatar with Soul rings - Dynamic glow based on score */}
           <div className="relative w-32 h-32 mx-auto mb-6">
+            {/* Outer animated rings */}
+            <svg className="absolute -inset-4 w-[calc(100%+32px)] h-[calc(100%+32px)]" viewBox="0 0 140 140">
+              {/* Background ring */}
+              <circle 
+                cx="70" cy="70" r="66" 
+                fill="none" 
+                stroke="rgba(139, 92, 246, 0.15)" 
+                strokeWidth="3"
+              />
+              {/* Progress ring - only shows after first answer */}
+              {hasAnsweredAny && (
+                <circle 
+                  cx="70" cy="70" r="66" 
+                  fill="none" 
+                  stroke="url(#soulGradient)" 
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeDasharray={`${(soulScore / 100) * 415} 415`}
+                  transform="rotate(-90 70 70)"
+                  className="transition-all duration-1000"
+                  style={{
+                    filter: soulScore > 0 ? `drop-shadow(0 0 6px ${chapter.color})` : 'none'
+                  }}
+                />
+              )}
+              <defs>
+                <linearGradient id="soulGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#8B5CF6" />
+                  <stop offset="100%" stopColor="#EC4899" />
+                </linearGradient>
+              </defs>
+            </svg>
+            
+            {/* Inner photo container */}
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 overflow-hidden">
               {petPhotoPreview ? (
                 <img src={petPhotoPreview} alt={petName} className="w-full h-full object-cover" />
@@ -854,28 +888,35 @@ const SoulBuilder = () => {
                 <div className="w-full h-full flex items-center justify-center text-4xl">🐕</div>
               )}
             </div>
-            {/* Soul rings */}
-            <div className="absolute -inset-2 rounded-full border-2 border-purple-400/30 animate-pulse" />
-            <div className="absolute -inset-4 rounded-full border border-pink-400/20" />
-            {/* Score badge */}
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white text-sm font-medium">
-              {soulScore}%
+            
+            {/* Soul badge - "Soul Profile" before answers, dynamic score after */}
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white text-sm font-medium whitespace-nowrap">
+              {hasAnsweredAny ? `${soulScore}%` : 'Soul Profile'}
             </div>
           </div>
           
-          {/* Chapter Info */}
-          <p className="text-white/50 mb-2">Chapter {currentChapter + 1} of {CHAPTERS.length}</p>
+          {/* Chapter Info - Cleaner hierarchy */}
+          <p className="text-white/50 text-sm mb-3">
+            Chapter {currentChapter + 1} <span className="text-white/30">of {CHAPTERS.length}</span>
+          </p>
           
+          {/* Chapter emoji - single visual language */}
           <div className="text-5xl mb-4">{chapter.emoji}</div>
           
           <h2 className="text-2xl text-white font-medium mb-2">{chapter.title}</h2>
-          <p className="text-white/50 mb-8">{chapter.questions.length} questions about {chapter.description.toLowerCase()}</p>
           
-          {/* Tier */}
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <span className="text-2xl">{tier.emoji}</span>
-            <span className="text-white/70">{tier.name}</span>
-          </div>
+          {/* Tighter description */}
+          <p className="text-white/50 mb-6">
+            {chapter.questions.length} questions about {chapter.description.toLowerCase().replace('their', petName + "'s").replace('who they are at', petName + "'s")}
+          </p>
+          
+          {/* Tier badge - cleaner, no paw emoji */}
+          {hasAnsweredAny && (
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <span className="text-xl">{tier.emoji}</span>
+              <span className="text-white/70 text-sm">{tier.name}</span>
+            </div>
+          )}
           
           {/* Begin Button */}
           <button
@@ -883,7 +924,24 @@ const SoulBuilder = () => {
             className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
             data-testid="begin-chapter-btn"
           >
-            Begin →
+            Begin
+          </button>
+          
+          {/* Subtle secondary action - reduces anxiety */}
+          <button
+            onClick={() => {
+              // Skip entire chapter
+              const chapterQuestions = chapter.questions;
+              const newAnswers = { ...answers };
+              chapterQuestions.forEach(q => {
+                newAnswers[q.id] = { skipped: true };
+              });
+              setAnswers(newAnswers);
+              handleNextChapter();
+            }}
+            className="block mx-auto mt-4 text-white/30 text-sm hover:text-white/50 transition-colors"
+          >
+            Skip this chapter
           </button>
         </div>
       </div>
