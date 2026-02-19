@@ -169,23 +169,22 @@ const TOTAL_QUESTIONS = CHAPTERS.reduce((acc, ch) => acc + ch.questions.length, 
 const TOTAL_WEIGHT = CHAPTERS.reduce((acc, ch) => 
   acc + ch.questions.reduce((qacc, q) => qacc + q.weight, 0), 0);
 
-// Soul Score Tiers - Premium naming without paw emoji
+// Soul Score Tiers - Premium naming (Curious, Emerging, Attuned, In Bloom, Soulbound)
 const SOUL_TIERS = [
-  { min: 0, max: 24, name: 'Curious', emoji: '✨' },
-  { min: 25, max: 49, name: 'Emerging', emoji: '🌱' },
-  { min: 50, max: 74, name: 'Attuned', emoji: '💫' },
-  { min: 75, max: 89, name: 'In Bloom', emoji: '🌸' },
-  { min: 90, max: 100, name: 'Soulbound', emoji: '💖' }
+  { min: 0, max: 24, name: 'Curious', color: '#A78BFA' },
+  { min: 25, max: 49, name: 'Emerging', color: '#8B5CF6' },
+  { min: 50, max: 74, name: 'Attuned', color: '#EC4899' },
+  { min: 75, max: 89, name: 'In Bloom', color: '#F472B6' },
+  { min: 90, max: 100, name: 'Soulbound', color: '#F9A8D4' }
 ];
 
 const getTier = (score) => {
   return SOUL_TIERS.find(t => score >= t.min && score <= t.max) || SOUL_TIERS[0];
 };
 
-// Suggestion chips for "three words" question
+// Suggestion chips for "three words" question - per user feedback
 const THREE_WORDS_SUGGESTIONS = [
-  'Gentle', 'Curious', 'Playful', 'Calm', 'Alert', 'Sensitive',
-  'Affectionate', 'Independent', 'Loyal', 'Energetic', 'Sweet', 'Brave'
+  'Gentle', 'Curious', 'Playful', 'Calm', 'Alert', 'Sensitive'
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════
