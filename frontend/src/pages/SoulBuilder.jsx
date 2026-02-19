@@ -452,17 +452,35 @@ const SoulBuilder = () => {
   if (screen === 'pet-hook') {
     // Mock existing pets for multi-pet support (TODO: fetch from API)
     const existingPets = []; // Will be populated from user context
+    const totalPets = existingPets.length || 1;
+    const currentPetIndex = 1; // Will be dynamic
     
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col p-6" data-testid="soul-builder-pet-hook">
-        {/* Header */}
+        {/* Header with multi-pet context */}
         <div className="flex items-center justify-between mb-4">
-          <button onClick={() => setScreen('preboarding')} className="text-white/50 hover:text-white">
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <button onClick={() => navigate('/')} className="text-white/50 hover:text-white text-sm">
-            Save & exit
-          </button>
+          <div className="flex items-center gap-3">
+            <button onClick={() => setScreen('preboarding')} className="text-white/50 hover:text-white">
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            {/* Pet context - shows when name entered */}
+            {petName.trim() && (
+              <span className="text-white/50 text-sm">
+                {petName} • Profile {currentPetIndex} of {totalPets}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            {/* Switch/Add pet control */}
+            {petName.trim() && (
+              <button className="text-purple-400 text-sm hover:text-purple-300 transition-colors">
+                Switch / Add pet
+              </button>
+            )}
+            <button onClick={() => navigate('/')} className="text-white/50 hover:text-white text-sm">
+              Save & exit
+            </button>
+          </div>
         </div>
         
         {/* Multi-pet selector (if user has existing pets) */}
@@ -553,12 +571,24 @@ const SoulBuilder = () => {
               className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-full text-white text-center placeholder-white/30 focus:outline-none focus:border-purple-400/50 focus:bg-white/10 transition-all"
               data-testid="pet-name-input"
             />
+            
+            {/* Nickname field - appears after name is entered */}
+            {petName.trim() && (
+              <input
+                type="text"
+                value={petData.nickname || ''}
+                onChange={(e) => setPetData(prev => ({ ...prev, nickname: e.target.value }))}
+                placeholder="Also called... (optional)"
+                className="w-full mt-2 px-6 py-3 bg-white/5 border border-white/10 rounded-full text-white text-center placeholder-white/30 text-sm focus:outline-none focus:border-purple-400/50 focus:bg-white/10 transition-all"
+              />
+            )}
+            
             {/* Micro reassurance */}
             <p className="text-white/30 text-xs mt-2 text-center">You can edit this anytime.</p>
           </div>
         </div>
         
-        {/* Continue Button - Better states */}
+        {/* Continue Button - "Wakes up" when name entered */}
         <div className="mt-6">
           <button
             onClick={() => petName.trim() && setScreen('basic-info')}
