@@ -336,7 +336,7 @@ const BreedFilterPills = ({ selectedBreed, onBreedChange, petBreed }) => {
 };
 
 // ============================================
-// SHAPE FILTER - Dark Luxurious Theme
+// SHAPE FILTER - Luxurious Light Theme
 // ============================================
 const ShapeFilter = ({ selectedShape, onShapeChange }) => {
   return (
@@ -348,10 +348,10 @@ const ShapeFilter = ({ selectedShape, onShapeChange }) => {
             haptic('light');
             onShapeChange(shape.value);
           }}
-          className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all ${
+          className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all shadow-sm ${
             selectedShape === shape.value
-              ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md'
-              : 'bg-white/10 backdrop-blur-sm border border-white/10 text-gray-300 active:bg-white/20'
+              ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md shadow-pink-500/25'
+              : 'bg-white text-gray-600 border border-gray-200 hover:border-pink-300 hover:bg-pink-50'
           }`}
         >
           <span>{shape.emoji}</span>
