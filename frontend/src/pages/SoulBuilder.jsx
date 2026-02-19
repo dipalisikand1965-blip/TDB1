@@ -395,7 +395,7 @@ const SoulBuilder = () => {
           
           {/* Benefits */}
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 mb-8 text-left border border-white/10">
-            <p className="text-white/90 mb-4 text-center">In 6–8 minutes, you'll unlock:</p>
+            <p className="text-white/90 mb-4 text-center">In 6–8 minutes, you'll have:</p>
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-white/80">
                 <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
@@ -413,7 +413,7 @@ const SoulBuilder = () => {
                 <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center">
                   <Shield className="w-4 h-4 text-amber-400" />
                 </div>
-                <span>A Concierge® who already knows your home rules</span>
+                <span>A Concierge® who knows your home rules</span>
               </div>
             </div>
           </div>
@@ -422,25 +422,27 @@ const SoulBuilder = () => {
             This isn't a form. It's how Mira learns your pet.
           </p>
           
-          {/* CTA */}
-          <button
-            onClick={() => setScreen('pet-hook')}
-            className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all hover:scale-[1.02] active:scale-[0.98]"
-            data-testid="start-soul-profile-btn"
-          >
-            Start Soul Profile
-          </button>
+          {/* CTA Block - button + reassurance together */}
+          <div className="mb-6">
+            <button
+              onClick={() => setScreen('pet-hook')}
+              className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              data-testid="start-soul-profile-btn"
+            >
+              Start Soul Profile
+            </button>
+            <p className="mt-2 text-white/40 text-xs text-center">
+              Edit or delete anytime.
+            </p>
+          </div>
           
+          {/* Skip - lower contrast, more spacing */}
           <button
             onClick={() => navigate('/')}
-            className="mt-4 text-white/50 hover:text-white/70 transition-colors"
+            className="text-white/30 hover:text-white/50 transition-colors text-sm"
           >
             Skip for now
           </button>
-          
-          <p className="mt-8 text-white/30 text-xs">
-            🔒 We only learn what you explicitly tell us. Edit or delete anytime.
-          </p>
         </div>
       </div>
     );
