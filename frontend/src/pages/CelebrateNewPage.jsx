@@ -251,7 +251,7 @@ const QuickProductTile = ({ product, onTap }) => {
 };
 
 // ============================================
-// SWIPABLE CATEGORY TABS - Dark Luxurious Theme
+// SWIPABLE CATEGORY TABS - Luxurious Light Theme
 // ============================================
 const SwipableTabs = ({ tabs, selectedTab, onTabChange }) => {
   const scrollRef = useRef(null);
@@ -274,10 +274,10 @@ const SwipableTabs = ({ tabs, selectedTab, onTabChange }) => {
             <button
               key={tab.id}
               onClick={() => handleTabClick(tab.id)}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full font-medium text-sm transition-all duration-200 ${
+              className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full font-medium text-sm transition-all duration-200 shadow-sm ${
                 isSelected
-                  ? `bg-gradient-to-r ${tab.color} text-white shadow-lg shadow-pink-500/30`
-                  : 'bg-white/10 backdrop-blur-sm border border-white/10 text-gray-300 active:bg-white/20'
+                  ? `bg-gradient-to-r ${tab.color} text-white shadow-lg shadow-pink-500/25`
+                  : 'bg-white text-gray-600 border border-gray-200 hover:border-pink-300 hover:bg-pink-50'
               }`}
               style={{ scrollSnapAlign: 'start' }}
               data-testid={`tab-${tab.id}`}
@@ -289,7 +289,7 @@ const SwipableTabs = ({ tabs, selectedTab, onTabChange }) => {
         })}
       </div>
       {/* Fade edges for scroll indication */}
-      <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#0a0a14] to-transparent pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none" />
     </div>
   );
 };
