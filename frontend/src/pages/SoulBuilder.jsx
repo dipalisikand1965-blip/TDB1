@@ -574,8 +574,6 @@ const SoulBuilder = () => {
       'Mixed / Indie', 'Not sure'
     ];
     
-    const [showBreedDropdown, setShowBreedDropdown] = useState(false);
-    const [breedSearch, setBreedSearch] = useState(petData.breed || '');
     const filteredBreeds = commonBreeds.filter(b => 
       b.toLowerCase().includes(breedSearch.toLowerCase())
     );
@@ -587,8 +585,6 @@ const SoulBuilder = () => {
       { label: 'Adult', value: 'adult', desc: '3-7 years' },
       { label: 'Senior', value: 'senior', desc: '7+ years' }
     ];
-    
-    const [birthdayMode, setBirthdayMode] = useState('date'); // 'date' or 'approximate'
     
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col" data-testid="soul-builder-basic-info">
