@@ -401,7 +401,7 @@ const SoulBuilder = () => {
                 <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
                   <Sparkles className="w-4 h-4 text-purple-400" />
                 </div>
-                <span>Picks that actually suit your pet</span>
+                <span>Picks that truly suit your pet</span>
               </div>
               <div className="flex items-center gap-3 text-white/80">
                 <div className="w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center">
