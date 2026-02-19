@@ -413,7 +413,7 @@ const SoulBuilder = () => {
                 <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center">
                   <Shield className="w-4 h-4 text-amber-400" />
                 </div>
-                <span>A concierge who knows your home rules</span>
+                <span>A Concierge® who already knows your home rules</span>
               </div>
             </div>
           </div>
