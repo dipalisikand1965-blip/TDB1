@@ -157,7 +157,7 @@ const QuickProductTile = ({ product, onTap }) => {
   
   return (
     <div
-      className={`relative bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 transition-all duration-200 ${
+      className={`relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden shadow-lg transition-all duration-200 hover:border-pink-500/30 hover:shadow-pink-500/10 ${
         isPressed ? 'scale-[0.98] shadow-none' : 'active:scale-[0.98]'
       }`}
       onTouchStart={() => setIsPressed(true)}
@@ -166,17 +166,17 @@ const QuickProductTile = ({ product, onTap }) => {
       data-testid={`product-tile-${product._id || product.id}`}
     >
       {/* Image */}
-      <div className="aspect-square relative overflow-hidden bg-gray-50">
+      <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
         <img
           src={product.image_url || product.image || product.images?.[0] || 'https://via.placeholder.com/200?text=🎂'}
           alt={product.name || product.title}
           className="w-full h-full object-cover"
           loading="lazy"
         />
-        {/* Quick Add Button - iOS style */}
+        {/* Quick Add Button - Glass style */}
         <button
           onClick={handleAddToCart}
-          className="absolute bottom-2 right-2 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+          className="absolute bottom-2 right-2 w-8 h-8 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform text-white"
           data-testid="quick-add-btn"
         >
           <span className="text-lg">+</span>
@@ -184,12 +184,12 @@ const QuickProductTile = ({ product, onTap }) => {
         {/* Badges Row */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           {product.is_bestseller && (
-            <Badge className="bg-amber-500 text-white text-[10px] px-2">
+            <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] px-2 border-0">
               Bestseller
             </Badge>
           )}
           {optionCount > 1 && (
-            <Badge className="bg-white/90 text-gray-700 text-[9px] px-1.5 backdrop-blur-sm">
+            <Badge className="bg-black/50 backdrop-blur-sm text-white text-[9px] px-1.5 border border-white/20">
               {optionCount} options
             </Badge>
           )}
@@ -197,11 +197,10 @@ const QuickProductTile = ({ product, onTap }) => {
         
         {/* With Our Compliments - For cakes */}
         {isCake && (
-          <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm px-2 py-1.5 flex items-center justify-center gap-1 text-[10px] text-gray-600">
+          <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm px-2 py-1.5 flex items-center justify-center gap-1 text-[10px] text-white/80">
             <span className="opacity-60">🎈</span>
-            <span className="font-medium">With Our Compliments:</span>
-            <span className="opacity-60">🎉</span>
-            <span className="text-[9px] text-gray-500">Balloons, Candles, Party Hats</span>
+            <span className="font-medium">Complimentary:</span>
+            <span className="text-[9px] text-white/60">Balloons, Candles, Hats</span>
           </div>
         )}
       </div>
@@ -211,21 +210,21 @@ const QuickProductTile = ({ product, onTap }) => {
         {/* Paw Score if available */}
         {(product.paw_score || product.rating) && (
           <div className="flex items-center gap-1 mb-1">
-            <PawPrint className="w-3 h-3 fill-amber-500 text-amber-500" />
-            <span className="text-[10px] font-semibold text-gray-700">
+            <PawPrint className="w-3 h-3 fill-amber-400 text-amber-400" />
+            <span className="text-[10px] font-semibold text-gray-300">
               {(product.paw_score || product.rating * 2).toFixed(1)}/10
             </span>
           </div>
         )}
-        <h3 className="font-medium text-sm text-gray-900 line-clamp-2 leading-tight min-h-[2.5rem]">
+        <h3 className="font-medium text-sm text-white line-clamp-2 leading-tight min-h-[2.5rem]">
           {product.name || product.title}
         </h3>
         <div className="flex items-center justify-between mt-2">
-          <span className="font-bold text-base text-gray-900">
+          <span className="font-bold text-base text-white">
             ₹{product.price?.toLocaleString()}
           </span>
           {product.compare_price && product.compare_price > product.price && (
-            <span className="text-xs text-gray-400 line-through">
+            <span className="text-xs text-gray-500 line-through">
               ₹{product.compare_price?.toLocaleString()}
             </span>
           )}
