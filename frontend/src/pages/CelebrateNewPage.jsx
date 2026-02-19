@@ -312,27 +312,9 @@ const BreedFilterPills = ({ selectedBreed, onBreedChange, petBreed }) => {
     </div>
   );
 };
-              selectedBreed === breed
-                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md'
-                : 'bg-white text-gray-600 border border-gray-200 active:bg-gray-50'
-            }`}
-          >
-            {breed}
-          </button>
-        ))}
-      </div>
-      {petBreed && (
-        <p className="text-[11px] text-purple-600 mt-2 flex items-center gap-1">
-          <Sparkles className="w-3 h-3" />
-          Auto-selected based on your pet's breed
-        </p>
-      )}
-    </div>
-  );
-};
 
 // ============================================
-// SHAPE FILTER - iOS Pill Style
+// SHAPE FILTER - Dark Luxurious Theme
 // ============================================
 const ShapeFilter = ({ selectedShape, onShapeChange }) => {
   return (
@@ -347,7 +329,7 @@ const ShapeFilter = ({ selectedShape, onShapeChange }) => {
           className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all ${
             selectedShape === shape.value
               ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md'
-              : 'bg-white text-gray-600 border border-gray-200 active:bg-gray-50'
+              : 'bg-white/10 backdrop-blur-sm border border-white/10 text-gray-300 active:bg-white/20'
           }`}
         >
           <span>{shape.emoji}</span>
