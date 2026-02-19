@@ -199,7 +199,8 @@ const SoulBuilder = () => {
     gender: '',
     birth_date: '',
     gotcha_date: '',
-    is_neutered: null
+    is_neutered: null,
+    approximate_age: ''
   });
   
   const [currentChapter, setCurrentChapter] = useState(0);
@@ -209,6 +210,11 @@ const SoulBuilder = () => {
   const [textInputValue, setTextInputValue] = useState('');
   const [miraKnows, setMiraKnows] = useState([]);
   const [isAnimating, setIsAnimating] = useState(false);
+  
+  // Basic Info screen state
+  const [showBreedDropdown, setShowBreedDropdown] = useState(false);
+  const [breedSearch, setBreedSearch] = useState('');
+  const [birthdayMode, setBirthdayMode] = useState('date');
   
   const fileInputRef = useRef(null);
   
