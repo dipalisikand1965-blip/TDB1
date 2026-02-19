@@ -322,10 +322,14 @@ const SoulBuilder = () => {
     );
   };
   
-  // Handle skip
+  // Handle skip - stores as { skipped: true }
   const handleSkip = () => {
     if (isAnimating) return;
     setIsAnimating(true);
+    
+    // Store as skipped, not missing
+    const questionId = question.id;
+    setAnswers(prev => ({ ...prev, [questionId]: { skipped: true } }));
     
     setTimeout(() => {
       if (currentQuestion < chapter.questions.length - 1) {
