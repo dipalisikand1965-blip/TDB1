@@ -405,26 +405,26 @@ const SmartDiscovery = ({ activeFilter, onFilterChange, onTabChange, activePet }
 };
 
 // ============================================
-// TRUST STATS BANNER
+// TRUST STATS BANNER - Dark Luxurious Theme
 // ============================================
 const TrustStats = () => {
   return (
-    <div className="flex justify-between items-center bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl p-4 mb-4">
+    <div className="flex justify-between items-center bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 mb-4">
       <div className="text-center flex-1">
-        <div className="text-lg font-bold text-gray-900">50+</div>
-        <div className="text-[10px] text-gray-600">Cake Designs</div>
+        <div className="text-lg font-bold text-white">50+</div>
+        <div className="text-[10px] text-gray-400">Cake Designs</div>
       </div>
-      <div className="w-px h-8 bg-gray-200" />
+      <div className="w-px h-8 bg-white/10" />
       <div className="text-center flex-1">
-        <div className="text-lg font-bold text-gray-900 flex items-center justify-center gap-0.5">
-          <Star className="w-4 h-4 text-amber-500 fill-amber-500" />4.9
+        <div className="text-lg font-bold text-white flex items-center justify-center gap-0.5">
+          <Star className="w-4 h-4 text-amber-400 fill-amber-400" />4.9
         </div>
-        <div className="text-[10px] text-gray-600">Avg Rating</div>
+        <div className="text-[10px] text-gray-400">Avg Rating</div>
       </div>
-      <div className="w-px h-8 bg-gray-200" />
+      <div className="w-px h-8 bg-white/10" />
       <div className="text-center flex-1">
-        <div className="text-lg font-bold text-gray-900">2hr</div>
-        <div className="text-[10px] text-gray-600">Fastest Delivery</div>
+        <div className="text-lg font-bold text-white">2hr</div>
+        <div className="text-[10px] text-gray-400">Fastest Delivery</div>
       </div>
     </div>
   );
