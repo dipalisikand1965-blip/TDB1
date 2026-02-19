@@ -279,14 +279,14 @@ const SwipableTabs = ({ tabs, selectedTab, onTabChange }) => {
 };
 
 // ============================================
-// BREED FILTER PILLS - iOS Scrollable
+// BREED FILTER PILLS - Dark Luxurious Theme
 // ============================================
 const BreedFilterPills = ({ selectedBreed, onBreedChange, petBreed }) => {
   return (
-    <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 mb-4">
+    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 mb-4">
       <div className="flex items-center gap-2 mb-3">
-        <PawPrint className="w-5 h-5 text-purple-500" />
-        <h3 className="font-semibold text-gray-900 text-sm">Find your breed cake!</h3>
+        <PawPrint className="w-5 h-5 text-pink-400" />
+        <h3 className="font-semibold text-white text-sm">Find your breed cake!</h3>
       </div>
       <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1">
         {BREED_OPTIONS.map((breed) => (
@@ -297,6 +297,21 @@ const BreedFilterPills = ({ selectedBreed, onBreedChange, petBreed }) => {
               onBreedChange(breed);
             }}
             className={`flex-shrink-0 px-3 py-2 rounded-full text-xs font-medium transition-all ${
+              selectedBreed === breed
+                ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg'
+                : breed === petBreed
+                  ? 'bg-pink-500/20 border border-pink-500/40 text-pink-300'
+                  : 'bg-white/10 border border-white/10 text-gray-300 active:bg-white/20'
+            }`}
+          >
+            {breed === petBreed && '🐕 '}
+            {breed}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
               selectedBreed === breed
                 ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md'
                 : 'bg-white text-gray-600 border border-gray-200 active:bg-gray-50'
