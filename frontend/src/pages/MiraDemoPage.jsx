@@ -2339,25 +2339,26 @@ const MiraDemoPage = () => {
   const extractQuickReplies = useCallback((miraData) => {
     if (!miraData) return [];
     
-    // PRIORITY 1: Check top-level quick_replies - These are CONTEXTUAL conversation chips
-    // This is what makes conversations flow naturally (e.g., "Stick with kibble", "Add home-cooked")
-    const contextualReplies = miraData.quick_replies;
-    if (contextualReplies && contextualReplies.length > 0) {
-      console.log('[QUICK REPLIES] Using contextual quick_replies from API:', contextualReplies);
-      return contextualReplies.map(r => ({
-        text: typeof r === 'string' ? r : r.label,
-        value: typeof r === 'string' ? r : (r.payload_text || r.label)
-      }));
-    }
-    
-    // PRIORITY 2: Check response.quick_replies (nested location)
-    const nestedReplies = miraData.response?.quick_replies;
-    if (nestedReplies && nestedReplies.length > 0) {
-      console.log('[QUICK REPLIES] Using nested response.quick_replies:', nestedReplies);
-      return nestedReplies.map(r => ({
-        text: typeof r === 'string' ? r : r.label,
-        value: typeof r === 'string' ? r : (r.payload_text || r.label)
-      }));
+    try {
+      // PRIORITY 1: Check top-level quick_replies - These are CONTEXTUAL conversation chips
+      // This is what makes conversations flow naturally (e.g., "Stick with kibble", "Add home-cooked")
+      const contextualReplies = miraData.quick_replies;
+      if (contextualReplies && contextualReplies.length > 0) {
+        console.log('[QUICK REPLIES] Using contextual quick_replies from API:', contextualReplies);
+        return contextualReplies.map(r => ({
+          text: typeof r === 'string' ? r : (r.label || r.text || ''),
+          value: typeof r === 'string' ? r : (r.payload_text || r.label || r.text || '')
+        })).filter(r => r.text); // Filter out empty replies
+      }
+      
+      // PRIORITY 2: Check response.quick_replies (nested location)
+      const nestedReplies = miraData.response?.quick_replies;
+      if (nestedReplies && nestedReplies.length > 0) {
+        console.log('[QUICK REPLIES] Using nested response.quick_replies:', nestedReplies);
+        return nestedReplies.map(r => ({
+          text: typeof r === 'string' ? r : (r.label || r.text || ''),
+          value: typeof r === 'string' ? r : (r.payload_text || r.label || r.text || '')
+        })).filter(r => r.text);
     }
     
     // PRIORITY 3: conversation_contract.quick_replies (navigational/generic chips)
