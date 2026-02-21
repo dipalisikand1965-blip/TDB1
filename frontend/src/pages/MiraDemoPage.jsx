@@ -4668,7 +4668,15 @@ const MiraDemoPage = () => {
             if (e.target === e.currentTarget) setShowServicesPanel(false);
           }}
         >
-          <div className="w-full max-w-2xl h-[80vh] bg-slate-900/95 rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+          <div className="w-full max-w-2xl h-[80vh] sm:h-[80vh] h-screen sm:rounded-2xl bg-slate-900/95 border border-white/10 shadow-2xl overflow-hidden relative">
+            {/* Close button - always visible, especially on mobile */}
+            <button 
+              onClick={() => setShowServicesPanel(false)}
+              className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              data-testid="services-close-btn"
+            >
+              <X className="w-5 h-5 text-white" />
+            </button>
             <ServicesPanel
               selectedPet={pet}
               allPets={allPets}
