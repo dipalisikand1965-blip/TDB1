@@ -1127,16 +1127,26 @@ const useChatSubmit = (config) => {
         }));
       }
       
-      const newQuickReplies = generateQuickReplies({
-        pillar: currentPillarForReplies,
-        hasProducts,
-        hasServices,
-        intent: data.understanding?.intent,
-        isAdvisory,
-        petName: pet?.name || 'your pet'
-      });
-      setQuickReplies(newQuickReplies);
-      console.log(`[QUICK REPLIES] Generated ${newQuickReplies.length} suggestions for pillar: ${currentPillarForReplies}`);
+      // CRITICAL FIX: Use contextual quick replies from API response FIRST
+      // Only fall back to pillar-based generic replies if API didn't provide any
+      // This matches MiraOSModal behavior for identical experience
+      if (quickReplies && quickReplies.length > 0) {
+        // Use contextual quick replies from the API response
+        setQuickReplies(quickReplies);
+        console.log(`[QUICK REPLIES] Using ${quickReplies.length} contextual replies from API response`);
+      } else {
+        // Fallback to pillar-based generic replies only when API doesn't provide any
+        const fallbackReplies = generateQuickReplies({
+          pillar: currentPillarForReplies,
+          hasProducts,
+          hasServices,
+          intent: data.understanding?.intent,
+          isAdvisory,
+          petName: pet?.name || 'your pet'
+        });
+        setQuickReplies(fallbackReplies);
+        console.log(`[QUICK REPLIES] Fallback: Generated ${fallbackReplies.length} pillar-based suggestions for: ${currentPillarForReplies}`);
+      }
       
       // Clear skeleton loader
       clearTimeout(skeletonTimer);
