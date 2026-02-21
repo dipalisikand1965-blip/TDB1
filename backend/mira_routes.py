@@ -11650,16 +11650,6 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
         ]
     
     # ═══════════════════════════════════════════════════════════════════════════
-    # PATTERN 14: Emergency/Urgent Questions
-    # ═══════════════════════════════════════════════════════════════════════════
-    elif any(term in response_lower for term in ["emergency", "urgent", "immediately", "right now", "bleeding", "not breathing", "unconscious"]):
-        quick_replies = [
-            build_quick_reply_chip("Find emergency vet", "Find nearest emergency vet!", "execute", domain="emergency"),
-            build_quick_reply_chip("Call vet now", "Help me call a vet.", "execute", domain="emergency"),
-            build_quick_reply_chip("First aid tips", "What should I do first?", "continue", domain="emergency")
-        ]
-    
-    # ═══════════════════════════════════════════════════════════════════════════
     # PATTERN 15: Generic Yes/No or Confirmation Questions (LOWER PRIORITY)
     # Only match if no more specific pattern matched above
     # ═══════════════════════════════════════════════════════════════════════════
