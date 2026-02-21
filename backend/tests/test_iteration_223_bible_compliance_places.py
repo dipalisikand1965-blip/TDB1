@@ -33,7 +33,9 @@ def auth_token():
     )
     if response.status_code == 200:
         data = response.json()
-        return data.get("token") or data.get("access_token")
+        token = data.get("access_token") or data.get("token")
+        print(f"[AUTH] Got token: {token[:30] if token else 'NONE'}...")
+        return token
     pytest.skip(f"Authentication failed: {response.status_code} - {response.text[:200]}")
 
 
@@ -81,12 +83,13 @@ class TestNonLocationIntentsGuardrail:
         data = response.json()
         
         # Places results should be empty or not present
-        places_results = data.get("places_results", [])
-        nearby_places = data.get("nearby_places", [])
+        places_results = data.get("places_results") or []
+        nearby_places_obj = data.get("nearby_places") or {}
+        nearby_places_list = nearby_places_obj.get("places", []) if isinstance(nearby_places_obj, dict) else []
         
         # CRITICAL: Neither should have results - 'reminder'/'checkup' are NON_LOCATION_INTENTS
         assert len(places_results) == 0, f"BIBLE VIOLATION: Places triggered for reminder query! Got {len(places_results)} places"
-        assert len(nearby_places) == 0, f"BIBLE VIOLATION: nearby_places triggered for reminder query! Got {len(nearby_places)} places"
+        assert len(nearby_places_list) == 0, f"BIBLE VIOLATION: nearby_places triggered for reminder query! Got {len(nearby_places_list)} places"
         
         print(f"✓ Health checkup reminder correctly has 0 places_results")
         print(f"  Response mode: {data.get('conversation_contract', {}).get('mode', 'N/A')}")
@@ -108,11 +111,12 @@ class TestNonLocationIntentsGuardrail:
         assert response.status_code == 200
         data = response.json()
         
-        places_results = data.get("places_results", [])
-        nearby_places = data.get("nearby_places", [])
+        places_results = data.get("places_results") or []
+        nearby_places_obj = data.get("nearby_places") or {}
+        nearby_places_list = nearby_places_obj.get("places", []) if isinstance(nearby_places_obj, dict) else []
         
         assert len(places_results) == 0, f"BIBLE VIOLATION: Places triggered for schedule query! Got {len(places_results)} places"
-        assert len(nearby_places) == 0, f"BIBLE VIOLATION: nearby_places triggered for schedule query!"
+        assert len(nearby_places_list) == 0, f"BIBLE VIOLATION: nearby_places triggered for schedule query! Got {len(nearby_places_list)} places"
         
         print(f"✓ Schedule vaccination correctly has 0 places_results")
     
@@ -133,11 +137,13 @@ class TestNonLocationIntentsGuardrail:
         assert response.status_code == 200
         data = response.json()
         
-        places_results = data.get("places_results", [])
-        nearby_places = data.get("nearby_places", [])
+        places_results = data.get("places_results") or []
+        nearby_places_obj = data.get("nearby_places") or {}
+        nearby_places_list = nearby_places_obj.get("places", []) if isinstance(nearby_places_obj, dict) else []
         
         # 'Remind me' contains 'remind' which matches NON_LOCATION_INTENTS
         assert len(places_results) == 0, f"BIBLE VIOLATION: Places triggered for 'remind me' query! Got {len(places_results)} places"
+        assert len(nearby_places_list) == 0, f"BIBLE VIOLATION: nearby_places triggered for 'remind me' query! Got {len(nearby_places_list)} places"
         
         print(f"✓ 'Remind me about vet' correctly has 0 places_results")
 
