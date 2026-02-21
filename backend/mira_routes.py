@@ -2966,30 +2966,10 @@ understand what they mean based on the conversation flow. If we were discussing 
 """
     
     try:
-        # ═══════════════════════════════════════════════════════════════════════════
-        # BUILD COMPREHENSIVE SYSTEM PROMPT (matching /api/mira/chat behavior)
-        # This ensures Mira knows the pet completely with full Pet Soul™ data
-        # ═══════════════════════════════════════════════════════════════════════════
-        if pet_context and pet_context.get("name"):
-            # Use the same detailed prompt builder as /api/mira/chat
-            comprehensive_prompt = build_mira_system_prompt(
-                user=None,  # User context handled separately
-                pets=[pet_context],  # Pass pet as list
-                pillar=page_context,
-                selected_pet=pet_context,
-                conversation_memories=""
-            )
-            system_message = comprehensive_prompt
-            logger.info(f"[UNDERSTAND LLM] Using comprehensive Pet Soul prompt for {pet_context.get('name')}")
-        else:
-            # Fallback to basic prompt if no pet context
-            system_message = MIRA_OS_SYSTEM_PROMPT
-            logger.info(f"[UNDERSTAND LLM] Using basic MIRA_OS_SYSTEM_PROMPT (no pet context)")
-        
         chat = LlmChat(
             api_key=api_key,
             session_id=f"mira-os-{datetime.now().timestamp()}",
-            system_message=system_message
+            system_message=MIRA_OS_SYSTEM_PROMPT
         ).with_model("openai", "gpt-4o")
         
         # "Tell me more" handling - user wants options explained
