@@ -1,13 +1,13 @@
 {
-  "name": "The Doggy Company - Pet Life Operating System",
-  "short_name": "Doggy Company",
-  "description": "India's #1 Pet Life Platform! Premium dog cakes, pet-friendly dining, stays & services. Same-day delivery in Mumbai, Bangalore & Gurgaon.",
-  "start_url": "/",
+  "name": "The Doggy Company - Pet Concierge",
+  "short_name": "Doggy Co",
+  "description": "Your Pet's Life, Thoughtfully Orchestrated. AI-powered Pet Concierge with soul intelligence.",
+  "start_url": "/mira-demo",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#000000",
-  "theme_color": "#00bcd4",
-  "categories": ["food", "shopping", "lifestyle"],
+  "background_color": "#0f0a19",
+  "theme_color": "#8B5CF6",
+  "categories": ["lifestyle", "shopping", "health"],
   "lang": "en-IN",
   "dir": "ltr",
   "scope": "/",
@@ -25,34 +25,33 @@
       "purpose": "any maskable"
     }
   ],
-  "screenshots": [
-    {
-      "src": "doggy-logo.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
-    }
-  ],
   "shortcuts": [
     {
-      "name": "Order Cakes",
-      "short_name": "Cakes",
-      "description": "Browse our delicious dog cakes",
-      "url": "/cakes",
+      "name": "Ask Mira",
+      "short_name": "Mira",
+      "description": "Talk to your pet's AI concierge",
+      "url": "/mira-demo",
       "icons": [{ "src": "doggy-logo.png", "sizes": "192x192" }]
     },
     {
-      "name": "Order Treats",
-      "short_name": "Treats",
-      "description": "Browse healthy dog treats",
-      "url": "/treats",
+      "name": "My Pets",
+      "short_name": "Pets",
+      "description": "View your pet family",
+      "url": "/my-pets",
       "icons": [{ "src": "doggy-logo.png", "sizes": "192x192" }]
     },
     {
-      "name": "Chat with Mira",
-      "short_name": "Mira AI",
-      "description": "Get help from our AI concierge",
-      "url": "/concierge",
+      "name": "Shop",
+      "short_name": "Shop",
+      "description": "Browse products for your pet",
+      "url": "/shop",
+      "icons": [{ "src": "doggy-logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Emergency",
+      "short_name": "SOS",
+      "description": "24/7 pet emergency support",
+      "url": "/emergency",
       "icons": [{ "src": "doggy-logo.png", "sizes": "192x192" }]
     }
   ],
