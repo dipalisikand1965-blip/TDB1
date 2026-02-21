@@ -5031,13 +5031,7 @@ async def mira_os_understand_with_products(
         if is_asking_about_another_pet:
             logger.info("[CONTEXT] User asking about ANOTHER person's pet - will ask clarifying questions")
         
-        # Check conversation history for previous pillar
-        if request.conversation_history and len(request.conversation_history) > 0:
-            # Get the pillar from the most recent exchange
-            for msg in reversed(request.conversation_history):
-                if msg.get('role') == 'user':
-                    previous_pillar = detect_pillar(msg.get('content', ''))
-                    break
+        # Previous pillar already detected above - skip duplicate detection
         
         # Detect topic shift - different pillars that are clearly unrelated
         if previous_pillar and current_pillar:
