@@ -23,77 +23,77 @@ import PillarNav from './PillarNav';
 import SEOHead from './SEOHead';
 import MiraChatWidget from './MiraChatWidget';
 
-// Pillar subcategories configuration
+// Pillar subcategories configuration - with images for visual appeal
 const PILLAR_SUBCATEGORIES = {
   celebrate: [
-    { id: 'cakes', name: 'Birthday Cakes', path: '/celebrate/cakes', emoji: '🎂' },
-    { id: 'breed-cakes', name: 'Breed Cakes', path: '/celebrate/breed-cakes', emoji: '❤️' },
-    { id: 'pupcakes', name: 'Pupcakes & Dognuts', path: '/celebrate/pupcakes', emoji: '✨' },
-    { id: 'treats', name: 'Treats', path: '/celebrate/treats', emoji: '🎁' },
-    { id: 'hampers', name: 'Gift Hampers', path: '/celebrate/hampers', emoji: '🛍️' },
-    { id: 'accessories', name: 'Party Accessories', path: '/celebrate/accessories', emoji: '🎉' }
+    { id: 'cakes', name: 'Birthday Cakes', path: '/celebrate/cakes', emoji: '🎂', image: 'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=200&h=200&fit=crop' },
+    { id: 'breed-cakes', name: 'Breed Cakes', path: '/celebrate/breed-cakes', emoji: '❤️', image: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=200&h=200&fit=crop' },
+    { id: 'pupcakes', name: 'Pupcakes & Dognuts', path: '/celebrate/pupcakes', emoji: '✨', image: 'https://images.unsplash.com/photo-1486427944544-d2c6e30b5d94?w=200&h=200&fit=crop' },
+    { id: 'treats', name: 'Treats', path: '/celebrate/treats', emoji: '🎁', image: 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=200&h=200&fit=crop' },
+    { id: 'hampers', name: 'Gift Hampers', path: '/celebrate/hampers', emoji: '🛍️', image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=200&h=200&fit=crop' },
+    { id: 'accessories', name: 'Party Accessories', path: '/celebrate/accessories', emoji: '🎉', image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=200&h=200&fit=crop' }
   ],
   dine: [
-    { id: 'fresh-meals', name: 'Fresh Meals', path: '/dine/fresh-meals', emoji: '🥩' },
-    { id: 'treats', name: 'Treats', path: '/dine/treats', emoji: '🦴' },
-    { id: 'desi-treats', name: 'Desi Treats', path: '/dine/desi-treats', emoji: '🍖' },
-    { id: 'frozen', name: 'Frozen', path: '/dine/frozen', emoji: '🧊' },
-    { id: 'supplements', name: 'Supplements', path: '/dine/supplements', emoji: '💊' }
+    { id: 'fresh-meals', name: 'Fresh Meals', path: '/dine/fresh-meals', emoji: '🥩', image: 'https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=200&h=200&fit=crop' },
+    { id: 'treats', name: 'Treats', path: '/dine/treats', emoji: '🦴', image: 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=200&h=200&fit=crop' },
+    { id: 'desi-treats', name: 'Desi Treats', path: '/dine/desi-treats', emoji: '🍖', image: 'https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=200&h=200&fit=crop' },
+    { id: 'frozen', name: 'Frozen', path: '/dine/frozen', emoji: '🧊', image: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=200&h=200&fit=crop' },
+    { id: 'supplements', name: 'Supplements', path: '/dine/supplements', emoji: '💊', image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop' }
   ],
   care: [
-    { id: 'grooming', name: 'Grooming', path: '/care/grooming', emoji: '✨' },
-    { id: 'health', name: 'Health', path: '/care/health', emoji: '❤️' },
-    { id: 'supplements', name: 'Supplements', path: '/care/supplements', emoji: '💊' },
-    { id: 'spa', name: 'Spa', path: '/care/spa', emoji: '🛁' }
+    { id: 'grooming', name: 'Grooming', path: '/care/grooming', emoji: '✨', image: 'https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=200&h=200&fit=crop' },
+    { id: 'health', name: 'Health', path: '/care/health', emoji: '❤️', image: 'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=200&h=200&fit=crop' },
+    { id: 'supplements', name: 'Supplements', path: '/care/supplements', emoji: '💊', image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop' },
+    { id: 'spa', name: 'Spa', path: '/care/spa', emoji: '🛁', image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200&h=200&fit=crop' }
   ],
   enjoy: [
-    { id: 'toys', name: 'Toys', path: '/enjoy/toys', emoji: '🎾' },
-    { id: 'chews', name: 'Chews', path: '/enjoy/chews', emoji: '🦴' },
-    { id: 'games', name: 'Games', path: '/enjoy/games', emoji: '🎮' },
-    { id: 'puzzles', name: 'Puzzles', path: '/enjoy/puzzles', emoji: '🧩' }
+    { id: 'toys', name: 'Toys', path: '/enjoy/toys', emoji: '🎾', image: 'https://images.unsplash.com/photo-1535294435445-d7249524ef2e?w=200&h=200&fit=crop' },
+    { id: 'chews', name: 'Chews', path: '/enjoy/chews', emoji: '🦴', image: 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=200&h=200&fit=crop' },
+    { id: 'games', name: 'Games', path: '/enjoy/games', emoji: '🎮', image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop' },
+    { id: 'puzzles', name: 'Puzzles', path: '/enjoy/puzzles', emoji: '🧩', image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop' }
   ],
   travel: [
-    { id: 'carriers', name: 'Carriers', path: '/travel/carriers', emoji: '🎒' },
-    { id: 'car', name: 'Car Accessories', path: '/travel/car', emoji: '🚗' },
-    { id: 'outdoor', name: 'Outdoor Gear', path: '/travel/outdoor', emoji: '⛺' }
+    { id: 'carriers', name: 'Carriers', path: '/travel/carriers', emoji: '🎒', image: 'https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=200&h=200&fit=crop' },
+    { id: 'car', name: 'Car Accessories', path: '/travel/car', emoji: '🚗', image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=200&h=200&fit=crop' },
+    { id: 'outdoor', name: 'Outdoor Gear', path: '/travel/outdoor', emoji: '⛺', image: 'https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=200&h=200&fit=crop' }
   ],
   stay: [
-    { id: 'beds', name: 'Beds', path: '/stay/beds', emoji: '🛏️' },
-    { id: 'mats', name: 'Mats', path: '/stay/mats', emoji: '🧺' },
-    { id: 'kennels', name: 'Kennels', path: '/stay/kennels', emoji: '🏠' },
-    { id: 'bowls', name: 'Bowls', path: '/stay/bowls', emoji: '🥣' }
+    { id: 'beds', name: 'Beds', path: '/stay/beds', emoji: '🛏️', image: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=200&h=200&fit=crop' },
+    { id: 'mats', name: 'Mats', path: '/stay/mats', emoji: '🧺', image: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=200&h=200&fit=crop' },
+    { id: 'kennels', name: 'Kennels', path: '/stay/kennels', emoji: '🏠', image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop' },
+    { id: 'bowls', name: 'Bowls', path: '/stay/bowls', emoji: '🥣', image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop' }
   ],
   fit: [
-    { id: 'leashes', name: 'Leashes', path: '/fit/leashes', emoji: '🦮' },
-    { id: 'harnesses', name: 'Harnesses', path: '/fit/harnesses', emoji: '🎽' },
-    { id: 'collars', name: 'Collars', path: '/fit/collars', emoji: '📿' },
-    { id: 'apparel', name: 'Apparel', path: '/fit/apparel', emoji: '👕' }
+    { id: 'leashes', name: 'Leashes', path: '/fit/leashes', emoji: '🦮', image: 'https://images.unsplash.com/photo-1594005915193-c1ea7b7c2c90?w=200&h=200&fit=crop' },
+    { id: 'harnesses', name: 'Harnesses', path: '/fit/harnesses', emoji: '🎽', image: 'https://images.unsplash.com/photo-1594005915193-c1ea7b7c2c90?w=200&h=200&fit=crop' },
+    { id: 'collars', name: 'Collars', path: '/fit/collars', emoji: '📿', image: 'https://images.unsplash.com/photo-1594005915193-c1ea7b7c2c90?w=200&h=200&fit=crop' },
+    { id: 'apparel', name: 'Apparel', path: '/fit/apparel', emoji: '👕', image: 'https://images.unsplash.com/photo-1583511655826-05700442b6dd?w=200&h=200&fit=crop' }
   ],
   learn: [
-    { id: 'training', name: 'Training Aids', path: '/learn/training', emoji: '🎓' },
-    { id: 'puzzles', name: 'Puzzles', path: '/learn/puzzles', emoji: '🧩' },
-    { id: 'books', name: 'Books', path: '/learn/books', emoji: '📚' }
+    { id: 'training', name: 'Training Aids', path: '/learn/training', emoji: '🎓', image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop' },
+    { id: 'puzzles', name: 'Puzzles', path: '/learn/puzzles', emoji: '🧩', image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop' },
+    { id: 'books', name: 'Books', path: '/learn/books', emoji: '📚', image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=200&h=200&fit=crop' }
   ],
   advisory: [
-    { id: 'nutrition', name: 'Nutrition', path: '/advisory/nutrition', emoji: '🥗' },
-    { id: 'behavior', name: 'Behavior', path: '/advisory/behavior', emoji: '🧠' },
-    { id: 'health', name: 'Health', path: '/advisory/health', emoji: '❤️' }
+    { id: 'nutrition', name: 'Nutrition', path: '/advisory/nutrition', emoji: '🥗', image: 'https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=200&h=200&fit=crop' },
+    { id: 'behavior', name: 'Behavior', path: '/advisory/behavior', emoji: '🧠', image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop' },
+    { id: 'health', name: 'Health', path: '/advisory/health', emoji: '❤️', image: 'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=200&h=200&fit=crop' }
   ],
   emergency: [
-    { id: 'first-aid', name: 'First Aid', path: '/emergency/first-aid', emoji: '🩹' },
-    { id: 'hospitals', name: 'Hospitals', path: '/emergency/hospitals', emoji: '🏥' }
+    { id: 'first-aid', name: 'First Aid', path: '/emergency/first-aid', emoji: '🩹', image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=200&h=200&fit=crop' },
+    { id: 'hospitals', name: 'Hospitals', path: '/emergency/hospitals', emoji: '🏥', image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=200&h=200&fit=crop' }
   ],
   paperwork: [
-    { id: 'registration', name: 'Registration', path: '/paperwork/registration', emoji: '📋' },
-    { id: 'insurance', name: 'Insurance', path: '/paperwork/insurance', emoji: '🛡️' }
+    { id: 'registration', name: 'Registration', path: '/paperwork/registration', emoji: '📋', image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=200&h=200&fit=crop' },
+    { id: 'insurance', name: 'Insurance', path: '/paperwork/insurance', emoji: '🛡️', image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=200&h=200&fit=crop' }
   ],
   farewell: [
-    { id: 'memorial', name: 'Memorial', path: '/farewell/memorial', emoji: '🌈' },
-    { id: 'support', name: 'Support', path: '/farewell/support', emoji: '💕' }
+    { id: 'memorial', name: 'Memorial', path: '/farewell/memorial', emoji: '🌈', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop' },
+    { id: 'support', name: 'Support', path: '/farewell/support', emoji: '💕', image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200&h=200&fit=crop' }
   ],
   adopt: [
-    { id: 'rescue', name: 'Rescue', path: '/adopt/rescue', emoji: '🏠' },
-    { id: 'shelters', name: 'Shelters', path: '/adopt/shelters', emoji: '🐾' }
+    { id: 'rescue', name: 'Rescue', path: '/adopt/rescue', emoji: '🏠', image: 'https://images.unsplash.com/photo-1516222338250-863216ce01ea?w=200&h=200&fit=crop' },
+    { id: 'shelters', name: 'Shelters', path: '/adopt/shelters', emoji: '🐾', image: 'https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=200&h=200&fit=crop' }
   ]
 };
 
