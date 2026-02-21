@@ -2181,27 +2181,49 @@ const MiraDemoPage = () => {
   const extractQuickReplies = useCallback((miraData) => {
     if (!miraData) return [];
     
-    // BIBLE COMPLIANCE: Read from conversation_contract.quick_replies (Section 11.2)
-    // This is the canonical location for deterministic chips
-    const contractReplies = miraData.conversation_contract?.quick_replies;
-    if (contractReplies && contractReplies.length > 0) {
-      return contractReplies.map(r => ({
-        id: r.id || `qr-${Math.random().toString(36).substr(2, 9)}`,
-        text: r.label,
-        value: r.payload_text || r.label,
-        intent_type: r.intent_type,
-        action: r.action,
-        action_args: r.action_args
-      }));
-    }
-    
-    // Fallback: Check legacy quick_replies location
-    const backendReplies = miraData.response?.quick_replies || miraData.quick_replies;
-    if (backendReplies && backendReplies.length > 0) {
-      return backendReplies.map(r => ({
+    // PRIORITY 1: Check top-level quick_replies - These are CONTEXTUAL conversation chips
+    // This is what makes conversations flow naturally (e.g., "Stick with kibble", "Add home-cooked")
+    const contextualReplies = miraData.quick_replies;
+    if (contextualReplies && contextualReplies.length > 0) {
+      console.log('[QUICK REPLIES] Using contextual quick_replies from API:', contextualReplies);
+      return contextualReplies.map(r => ({
         text: typeof r === 'string' ? r : r.label,
         value: typeof r === 'string' ? r : (r.payload_text || r.label)
       }));
+    }
+    
+    // PRIORITY 2: Check response.quick_replies (nested location)
+    const nestedReplies = miraData.response?.quick_replies;
+    if (nestedReplies && nestedReplies.length > 0) {
+      console.log('[QUICK REPLIES] Using nested response.quick_replies:', nestedReplies);
+      return nestedReplies.map(r => ({
+        text: typeof r === 'string' ? r : r.label,
+        value: typeof r === 'string' ? r : (r.payload_text || r.label)
+      }));
+    }
+    
+    // PRIORITY 3: conversation_contract.quick_replies (navigational/generic chips)
+    // Only use these if no contextual chips are available
+    const contractReplies = miraData.conversation_contract?.quick_replies;
+    if (contractReplies && contractReplies.length > 0) {
+      // Filter out purely navigational actions - prefer conversational flow
+      const conversationalContract = contractReplies.filter(r => 
+        r.intent_type !== 'open_services' && 
+        r.intent_type !== 'open_layer' &&
+        r.action !== 'open_layer'
+      );
+      
+      if (conversationalContract.length > 0) {
+        console.log('[QUICK REPLIES] Using filtered conversation_contract:', conversationalContract);
+        return conversationalContract.map(r => ({
+          id: r.id || `qr-${Math.random().toString(36).substr(2, 9)}`,
+          text: r.label,
+          value: r.payload_text || r.label,
+          intent_type: r.intent_type,
+          action: r.action,
+          action_args: r.action_args
+        }));
+      }
     }
     
     const message = miraData.response?.message || miraData.response || '';
