@@ -232,6 +232,7 @@ const MiraDemoPage = () => {
     scheduleVoice,
     isListening,
     voiceError,
+    setVoiceError,  // CRITICAL: Import setter to fix voice toggle error
     voiceSupported,
     toggleListening,
     audioRef
