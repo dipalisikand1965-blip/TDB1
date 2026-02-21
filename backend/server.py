@@ -7341,17 +7341,21 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
         allergies = [a.strip().lower() for a in allergies.split(",") if a.strip()]
     treat_size = preferences.get("treat_size", "") if preferences else ""
     
-    # Determine size category from weight
+    # Determine size category from weight (handle string conversion)
     size_category = "all-sizes"
     if weight:
-        if weight < 10:
-            size_category = "small-dog"
-        elif weight < 25:
-            size_category = "medium-dog"
-        elif weight < 45:
-            size_category = "large-dog"
-        else:
-            size_category = "giant-breed"
+        try:
+            weight_num = float(weight) if isinstance(weight, str) else weight
+            if weight_num < 10:
+                size_category = "small-dog"
+            elif weight_num < 25:
+                size_category = "medium-dog"
+            elif weight_num < 45:
+                size_category = "large-dog"
+            else:
+                size_category = "giant-breed"
+        except (ValueError, TypeError):
+            pass  # Keep default "all-sizes"
     
     # Determine age category from birth date
     age_category = "adult"
