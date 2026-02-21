@@ -12468,56 +12468,56 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
                 
                 # If user requested an allergenic item, intercept and refuse
                 if requested_allergen:
-                pet_name = selected_pet.get("name", "your pet")
-                allergies_str = ", ".join(pet_allergies)
-                
-                # Build safe alternatives based on what was requested
-                safe_alternatives = []
-                if requested_allergen == "chicken":
-                    safe_alternatives = ["turkey", "duck", "fish", "lamb"]
-                elif requested_allergen in ["beef", "lamb"]:
-                    safe_alternatives = ["fish", "turkey", "duck", "venison"]
-                elif requested_allergen == "dairy":
-                    safe_alternatives = ["coconut yogurt", "pumpkin puree", "banana"]
-                elif requested_allergen == "corn":
-                    safe_alternatives = ["sweet potato", "rice", "oats"]
-                elif requested_allergen == "peanuts":
-                    safe_alternatives = ["sunflower seed butter", "pumpkin seeds"]
-                else:
-                    safe_alternatives = ["fish", "turkey", "sweet potato", "pumpkin"]
-                
-                # Remove any alternatives that are also allergens
-                safe_alternatives = [a for a in safe_alternatives if a.lower() not in [al.lower() for al in pet_allergies]]
-                
-                alternatives_str = ", ".join(safe_alternatives[:3]) if safe_alternatives else "hypoallergenic options"
-                
-                intercept_response = f"""I know {pet_name} has **{requested_allergen}** on their strict avoid list, so I can't recommend that.
+                    pet_name = selected_pet.get("name", "your pet")
+                    allergies_str = ", ".join(pet_allergies)
+                    
+                    # Build safe alternatives based on what was requested
+                    safe_alternatives = []
+                    if requested_allergen == "chicken":
+                        safe_alternatives = ["turkey", "duck", "fish", "lamb"]
+                    elif requested_allergen in ["beef", "lamb"]:
+                        safe_alternatives = ["fish", "turkey", "duck", "venison"]
+                    elif requested_allergen == "dairy":
+                        safe_alternatives = ["coconut yogurt", "pumpkin puree", "banana"]
+                    elif requested_allergen == "corn":
+                        safe_alternatives = ["sweet potato", "rice", "oats"]
+                    elif requested_allergen == "peanuts":
+                        safe_alternatives = ["sunflower seed butter", "pumpkin seeds"]
+                    else:
+                        safe_alternatives = ["fish", "turkey", "sweet potato", "pumpkin"]
+                    
+                    # Remove any alternatives that are also allergens
+                    safe_alternatives = [a for a in safe_alternatives if a.lower() not in [al.lower() for al in pet_allergies]]
+                    
+                    alternatives_str = ", ".join(safe_alternatives[:3]) if safe_alternatives else "hypoallergenic options"
+                    
+                    intercept_response = f"""I know {pet_name} has **{requested_allergen}** on their strict avoid list, so I can't recommend that.
 
 Instead, how about **{alternatives_str}**? These are all safe for {pet_name}.
 
 *{pet_name}'s full avoid list: {allergies_str}*
 
 Would you like me to show you safe treats in one of those flavors?"""
-                
-                return {
-                    "success": True,
-                    "response": intercept_response,
-                    "session_id": session_id,
-                    "pillar": "dine",
-                    "intent": "allergen_intercept",
-                    "safety_gate": {
-                        "triggered": True,
-                        "requested_allergen": requested_allergen,
-                        "pet_allergies": pet_allergies,
-                        "suggested_alternatives": safe_alternatives[:3]
-                    },
-                    "conversation_contract": {
-                        "mode": "clarify",
-                        "quick_replies": [
-                            {"id": f"QR-SAFE-1", "label": f"Show {safe_alternatives[0]} treats" if safe_alternatives else "Show safe treats", 
-                             "payload_text": f"Show me {safe_alternatives[0]} treats for {pet_name}" if safe_alternatives else f"Show me safe treats for {pet_name}",
-                             "intent_type": "product_browse", "action": "send_message", "action_args": {},
-                             "analytics_tag": f"qr.safety_gate.alternative.{pet_name.lower()}"},
+                    
+                    return {
+                        "success": True,
+                        "response": intercept_response,
+                        "session_id": session_id,
+                        "pillar": "dine",
+                        "intent": "allergen_intercept",
+                        "safety_gate": {
+                            "triggered": True,
+                            "requested_allergen": requested_allergen,
+                            "pet_allergies": pet_allergies,
+                            "suggested_alternatives": safe_alternatives[:3]
+                        },
+                        "conversation_contract": {
+                            "mode": "clarify",
+                            "quick_replies": [
+                                {"id": f"QR-SAFE-1", "label": f"Show {safe_alternatives[0]} treats" if safe_alternatives else "Show safe treats", 
+                                 "payload_text": f"Show me {safe_alternatives[0]} treats for {pet_name}" if safe_alternatives else f"Show me safe treats for {pet_name}",
+                                 "intent_type": "product_browse", "action": "send_message", "action_args": {},
+                                 "analytics_tag": f"qr.safety_gate.alternative.{pet_name.lower()}"},
                             {"id": "QR-SAFE-2", "label": "Show all safe options",
                              "payload_text": f"What treats are safe for {pet_name}?",
                              "intent_type": "product_browse", "action": "send_message", "action_args": {},
