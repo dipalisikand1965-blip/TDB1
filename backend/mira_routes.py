@@ -6301,8 +6301,8 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 conv_history = request.conversation_history or []
                 engagement_depth = min(len(conv_history), 8) if conv_history else 1
                 
-                # Get current pillar from understanding or intent
-                current_pillar = understanding.get("current_pillar") or intent or ""
+                # Get current pillar - use our previously determined pillar if available
+                score_pillar = current_pillar or understanding.get("current_pillar") or intent or ""
                 
                 await increment_soul_score_on_interaction(
                     pet_id=request.pet_context.get("id"), 
