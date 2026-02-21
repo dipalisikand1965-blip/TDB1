@@ -4210,16 +4210,14 @@ const MiraDemoPage = () => {
                 (() => {
                   const lastMsg = conversationHistory[conversationHistory.length - 1];
                   
-                  // COMPREHENSIVE CHECK: ChatMessage renders QRs from multiple sources
-                  const hasInlineQRs = (
-                    (lastMsg?.quickReplies?.length > 0) ||
-                    (lastMsg?.data?.quick_replies?.length > 0) ||
-                    (lastMsg?.data?.response?.quick_replies?.length > 0) ||
-                    (lastMsg?.data?.conversation_contract?.quick_replies?.length > 0) ||
-                    // Also check the raw message structure
-                    (lastMsg?.quick_replies?.length > 0) ||
-                    (lastMsg?.conversation_contract?.quick_replies?.length > 0)
-                  );
+                  // COMPREHENSIVE CHECK: Match EXACTLY how ChatMessage extracts quick_replies
+                  // ChatMessage.jsx lines 1039-1062 extract from these sources:
+                  const contextualReplies = lastMsg?.data?.quick_replies || lastMsg?.data?.response?.quick_replies || [];
+                  const contractReplies = lastMsg?.data?.conversation_contract?.quick_replies || 
+                                         lastMsg?.data?.response?.conversation_contract?.quick_replies || [];
+                  
+                  // ChatMessage renders QuickReplyChips if EITHER contextual OR filtered contract replies exist
+                  const hasInlineQRs = contextualReplies.length > 0 || contractReplies.length > 0;
                   
                   // Skip rendering if quick replies are already shown inline with the last message
                   if (hasInlineQRs) {
