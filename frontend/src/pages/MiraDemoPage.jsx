@@ -4000,7 +4000,7 @@ const MiraDemoPage = () => {
               // Auto-hide test scenarios after clicking one
               setShowTestScenarios(false);
               localStorage.setItem('mira_test_scenarios_dismissed', 'true');
-            }}}
+            }}
           />
         </Suspense>
       )}
