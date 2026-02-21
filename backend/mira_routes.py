@@ -5800,7 +5800,23 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             )
             
             if places_trigger_allowed:
-                city_for_search = user_city or "Mumbai"
+                # ═══════════════════════════════════════════════════════════════════
+                # LOCATION FIX: Never default to Mumbai. If no city, ask user.
+                # ═══════════════════════════════════════════════════════════════════
+                city_for_search = user_city
+                
+                # If no city available, we should NOT search - should ask user instead
+                if not city_for_search:
+                    logger.info(f"[PLACES] No city available - switching to clarify mode")
+                    # Don't proceed with Places search - let the clarify flow handle it
+                    places_trigger_allowed = False
+                    # Set mode to clarify to ask for location
+                    if not contract_mode_result:
+                        contract_mode_result = {"mode": "clarify"}
+                    else:
+                        contract_mode_result["mode"] = "clarify"
+                        
+            if places_trigger_allowed and city_for_search:
                 db = get_db()
                 
                 if detected_place_type == "vet":
