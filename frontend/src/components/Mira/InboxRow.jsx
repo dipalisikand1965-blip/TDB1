@@ -28,7 +28,8 @@ const InboxRow = ({
   showPetName = false,
   isSelected = false,
   selectMode = false,
-  isArchived = false
+  isArchived = false,
+  className = '' // NEW: Accept custom className for enhanced styling
 }) => {
   const [swipeX, setSwipeX] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
@@ -206,17 +207,18 @@ const InboxRow = ({
         </div>
       </div>
       
-      {/* Row content */}
+      {/* Row content - Enhanced with className prop */}
       <div
         className={`
-          relative flex items-center gap-3 px-4 py-3
+          relative flex items-center gap-3 px-4 py-3.5
           bg-[#0a0a14] border-b border-gray-800/30
-          cursor-pointer transition-all duration-150
-          ${isUnread ? 'bg-blue-500/5' : ''}
+          cursor-pointer transition-all duration-200
+          ${isUnread ? 'bg-gradient-to-r from-pink-500/10 to-purple-500/5 border-l-2 border-l-pink-400' : 'opacity-80 hover:opacity-100'}
           ${isSelected 
             ? 'bg-white/5 border-l-2 border-l-pink-500 shadow-[inset_0_0_20px_rgba(236,72,153,0.05)]' 
             : 'hover:bg-white/[0.02]'
           }
+          ${className}
         `}
         style={{ transform: `translateX(${swipeX}px)` }}
         onClick={() => !isSwiping && onClick?.()}
