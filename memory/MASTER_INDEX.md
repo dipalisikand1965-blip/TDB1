@@ -315,6 +315,29 @@ REACT_APP_BACKEND_URL=https://pet-concierge-v2.preview.emergentagent.com
 
 ---
 
+## 🚀 POST-DEPLOYMENT CHECKLIST
+
+### After Deploying to Production:
+
+1. **Seed Mystique's Data** (so you can verify features):
+   ```bash
+   curl -X POST https://thedoggycompany.com/api/admin/seed-mystique
+   ```
+   This seeds: 5 learned facts, 3 vaccines, 2 meds, 5 timeline events, 4 memories
+
+2. **Verify Everything Works**:
+   - Go to `/mira-demo` and login
+   - Click MOJO tab → Check "What Mira Learned" (should show 5 facts)
+   - Click Pet Vault → Check vaccines & medications
+   - Chat with Mira → Verify personalized responses
+   - Add `?debug=1` to URL → Check debug drawer
+
+3. **Test a Conversation**:
+   - Tell Mira something new about Mystique
+   - Check if it appears in "What Mira Learned"
+
+---
+
 ## 📊 STATISTICS
 
 | Category | Count |
