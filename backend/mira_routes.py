@@ -21597,6 +21597,145 @@ async def get_today_panel(pet_id: str, user: dict = Depends(get_current_user)):
         }
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# NOTIFICATIONS ENDPOINT - User notifications and alerts
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/notifications")
+async def get_notifications(
+    limit: int = 20,
+    unread_only: bool = False,
+    user: dict = Depends(get_current_user)
+):
+    """
+    Get user notifications - ticket updates, reminders, system alerts
+    """
+    db = get_db()
+    if db is None:
+        return {"notifications": [], "unread_count": 0}
+    
+    try:
+        user_email = user.get("email")
+        user_id = user.get("id") or user.get("user_id")
+        
+        notifications = []
+        
+        # 1. Check notifications collection if it exists
+        try:
+            query = {"user_email": user_email}
+            if unread_only:
+                query["read"] = False
+            
+            db_notifications = await db.notifications.find(query).sort("created_at", -1).limit(limit).to_list(length=limit)
+            
+            for notif in db_notifications:
+                notifications.append({
+                    "id": str(notif.get("_id")),
+                    "type": notif.get("type", "system"),
+                    "title": notif.get("title") or notif.get("message", "Notification"),
+                    "message": notif.get("message") or notif.get("body", ""),
+                    "read": notif.get("read", False),
+                    "created_at": notif.get("created_at"),
+                    "link": notif.get("link"),
+                    "pet_id": notif.get("pet_id"),
+                    "ticket_id": notif.get("ticket_id")
+                })
+        except Exception:
+            pass  # Collection might not exist
+        
+        # 2. Generate notifications from ticket status changes
+        recent_tickets = await db.mira_tickets.find({
+            "member.email": user_email,
+            "updated_at": {"$gte": datetime.now(timezone.utc) - timedelta(days=7)}
+        }).sort("updated_at", -1).limit(20).to_list(length=20)
+        
+        for ticket in recent_tickets:
+            status = ticket.get("status", "")
+            if status in ["awaiting_response", "awaiting_you", "resolved", "completed"]:
+                notifications.append({
+                    "id": f"ticket-{ticket.get('ticket_id')}",
+                    "type": "ticket_update",
+                    "title": f"Update on your request",
+                    "message": f"{ticket.get('description', 'Request')[:50]}... - Status: {status}",
+                    "read": False,
+                    "created_at": ticket.get("updated_at"),
+                    "ticket_id": ticket.get("ticket_id"),
+                    "pet_id": ticket.get("pet", {}).get("id")
+                })
+        
+        # 3. Reminder notifications
+        due_reminders = await db.reminders.find({
+            "$or": [
+                {"user_email": user_email},
+                {"member.email": user_email}
+            ],
+            "due_date": {"$lte": datetime.now(timezone.utc) + timedelta(days=1)},
+            "status": {"$nin": ["completed", "dismissed"]}
+        }).limit(10).to_list(length=10)
+        
+        for reminder in due_reminders:
+            notifications.append({
+                "id": f"reminder-{str(reminder.get('_id'))}",
+                "type": "reminder",
+                "title": reminder.get("title") or "Reminder",
+                "message": reminder.get("description", ""),
+                "read": False,
+                "created_at": reminder.get("created_at"),
+                "due_at": reminder.get("due_date"),
+                "pet_id": reminder.get("pet_id") or reminder.get("pet", {}).get("id")
+            })
+        
+        # Sort by created_at descending
+        notifications.sort(key=lambda x: x.get("created_at") or "", reverse=True)
+        
+        # Limit results
+        notifications = notifications[:limit]
+        
+        unread_count = sum(1 for n in notifications if not n.get("read", True))
+        
+        return {
+            "success": True,
+            "notifications": notifications,
+            "unread_count": unread_count,
+            "total": len(notifications)
+        }
+        
+    except Exception as e:
+        logger.error(f"[NOTIFICATIONS] Error: {e}")
+        return {
+            "success": False,
+            "notifications": [],
+            "unread_count": 0,
+            "error": str(e)
+        }
+
+
+@router.post("/notifications/{notification_id}/read")
+async def mark_notification_read(notification_id: str, user: dict = Depends(get_current_user)):
+    """Mark a notification as read"""
+    db = get_db()
+    if db is None:
+        return {"success": False, "error": "Database not available"}
+    
+    try:
+        # Try to update in notifications collection
+        from bson import ObjectId
+        try:
+            result = await db.notifications.update_one(
+                {"_id": ObjectId(notification_id)},
+                {"$set": {"read": True, "read_at": datetime.now(timezone.utc)}}
+            )
+            if result.modified_count > 0:
+                return {"success": True}
+        except:
+            pass
+        
+        return {"success": True, "message": "Notification acknowledged"}
+        
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 @router.get("/picks-history/{pet_id}")
 async def get_picks_history(pet_id: str, limit: int = 20):
     """
