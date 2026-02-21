@@ -7389,6 +7389,19 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
     # Fetch products - get more variety
     products = await db.products_master.find(query, {"_id": 0}).limit(limit * 3).to_list(limit * 3)
     
+    # PRIORITY: Fetch breed-specific cakes first if breed is known
+    if breed:
+        breed_query = {
+            "$or": [
+                {"name": {"$regex": breed, "$options": "i"}},
+                {"tags": {"$elemMatch": {"$regex": breed, "$options": "i"}}},
+                {"description": {"$regex": breed, "$options": "i"}}
+            ]
+        }
+        breed_products = await db.products_master.find(breed_query, {"_id": 0}).limit(20).to_list(20)
+        # Add breed products to the front
+        products = breed_products + [p for p in products if p not in breed_products]
+    
     # If pillar filtered and not enough results, fetch without pillar
     if pillar and len(products) < limit:
         query.pop("pillar", None)
