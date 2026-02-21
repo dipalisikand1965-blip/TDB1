@@ -2364,7 +2364,7 @@ const MiraDemoPage = () => {
     // PRIORITY 3: conversation_contract.quick_replies (navigational/generic chips)
     // Only use these if no contextual chips are available
     const contractReplies = miraData.conversation_contract?.quick_replies;
-    if (contractReplies && contractReplies.length > 0) {
+    if (Array.isArray(contractReplies) && contractReplies.length > 0) {
       // Filter out purely navigational actions - prefer conversational flow
       const conversationalContract = contractReplies.filter(r => 
         r.intent_type !== 'open_services' && 
