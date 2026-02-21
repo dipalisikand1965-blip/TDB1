@@ -1043,8 +1043,40 @@ const TodayPanel = ({
       });
     }
     
+    // ═══════════════════════════════════════════════════════════════════════════
+    // MERGE API DATA (tickets, tasks) WITH LOCAL CALCULATIONS
+    // API items come from /api/mira/today/{pet_id}
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    if (apiTodayData.items && apiTodayData.items.length > 0) {
+      apiTodayData.items.forEach(item => {
+        const apiItem = {
+          id: `api-${item.id}`,
+          icon: item.badge === 'urgent' ? AlertTriangle : 
+                item.badge === 'awaiting_you' ? Bell : Clock,
+          title: item.title,
+          description: item.pet_name ? `For ${item.pet_name}` : null,
+          action: item.badge === 'awaiting_you' ? 'Respond' : 'View',
+          variant: item.badge === 'urgent' ? 'danger' : 
+                   item.badge === 'awaiting_you' ? 'warning' : 'default',
+          pillar: item.pillar,
+          ticketId: item.id,
+          fromApi: true
+        };
+        
+        if (item.badge === 'urgent') {
+          urgent.push(apiItem);
+        } else if (item.badge === 'awaiting_you') {
+          // Add to urgent as "needs your response"
+          urgent.push(apiItem);
+        } else {
+          dueSoon.push(apiItem);
+        }
+      });
+    }
+    
     return { urgent, dueSoon, environment, documents, birthday };
-  }, [pet, weather]);
+  }, [pet, weather, apiTodayData]);
   
   // ═══════════════════════════════════════════════════════════════════════════
   // FETCH WATCHLIST FROM SERVICES API
