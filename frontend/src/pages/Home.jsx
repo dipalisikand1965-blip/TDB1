@@ -439,11 +439,11 @@ const Home = () => {
                   {/* Glowing border effect */}
                   <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 rounded-3xl blur-lg opacity-50" />
                   
-                  {/* Main image */}
+                  {/* Main image - personalized for logged-in users */}
                   <div className="relative rounded-3xl overflow-hidden border border-white/10">
                     <img 
-                      src={BRAND_IMAGES.hero} 
-                      alt="Happy pet" 
+                      src={heroImage} 
+                      alt={heroPetName} 
                       className="w-full h-auto object-cover"
                     />
                     
@@ -458,7 +458,12 @@ const Home = () => {
                         <MiraSoulOrb size="sm" />
                         <div className="flex-1">
                           <p className="text-white font-medium">Mira</p>
-                          <p className="text-white/60 text-sm">I remember that morning walk ritual. The way they light up for chicken jerky. Should I find some for today?</p>
+                          <p className="text-white/60 text-sm">
+                            {primaryPet 
+                              ? `I remember everything about ${heroPetName}. Should I help you find something special today?`
+                              : "I remember that morning walk ritual. The way they light up for chicken jerky. Should I find some for today?"
+                            }
+                          </p>
                         </div>
                       </div>
                     </motion.div>
