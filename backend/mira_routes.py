@@ -4533,9 +4533,10 @@ async def mira_os_understand_with_products(
             }
         
         # Step 1: Get LLM understanding - pass completed_steps for anti-loop
+        # CRITICAL: Use enriched_pet_context (with full soul data) instead of request.pet_context
         understanding = await understand_with_llm(
             user_input=input_for_llm,
-            pet_context=request.pet_context or {},
+            pet_context=enriched_pet_context,  # FIXED: Now has full soul data from load_pet_soul()
             page_context=request.page_context,
             completed_steps=request.completed_steps or [],
             step_history=request.step_history or [],
