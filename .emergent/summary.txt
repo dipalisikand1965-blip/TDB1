@@ -9,175 +9,200 @@ The core of the application is Soul Intelligence, a system designed to understan
 - A gamified  questionnaire that correctly saves answers to the backend.
 - A working checkout flow using Razorpay.
 - A polished, intuitive, and visually appealing user experience on both desktop and mobile.
+- A comprehensive admin backend with full CRUD capabilities for all major data models (products, services, experiences, etc.).
+- All hidden or inactive features (Pet Vault, Reminders, Life Timeline, etc.) should be activated and functional.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is in a stable, running state. A monumental recovery effort has been completed, restoring the entire codebase, seeding a local MongoDB with thousands of records (products, services, pets, stays, restaurants), and integrating all user-provided 3rd party API keys.
+The application is live and deployed at . The previous agent completed a monumental rescue, and the current agent has built upon that by fixing numerous critical bugs, enhancing data intelligence, and activating several powerful, previously hidden features.
 
-In the last session, the agent performed a major UI polish, then conducted an exhaustive bug hunt based on user feedback, fixing numerous data visibility issues across the application. Core functionalities like product/service display, the admin service desk, personalized content (hero image, pet picks), and data loading for Stay, Dine, and Boarding pages are now working correctly. The Mira AI chat has been verified to be using the pet's soul data for personalized recommendations. The user has initiated a deployment and a Single Source of Truth (SSOT) document has been created to ensure continuity.
+Specifically, a critical deployment-blocking CSS build error has been resolved. Issues with service navigation, ticket not found errors in the user's inbox, incorrect product recommendations on pillar pages, and empty sub-category pages have all been fixed.
+
+Furthermore, the agent performed a major data intelligence overhaul:
+- **Categorization**: 636 products and 653 services were automatically re-categorized and assigned to correct pillars.
+- **Image Diversification**: Over 1,700 products were updated with relevant, diverse stock photos, including 153 products that now show breed-specific images (e.g., a Shih Tzu Blanket shows a Shih Tzu).
+- **Feature Activation**: The Pet Vault (health records), Life Timeline, and Mira Memories features were discovered, activated, and seeded with sample data for the user's pet, Mystique.
+- **Admin CRUD**: Full CRUD capabilities for Products, Services, Experiences, and Bundles were verified to exist in the admin panel.
+
+The application is in a much more stable and feature-complete state, though several hidden gem features are built but not yet fully activated.
 
 **Last working item**:
-- **Last item agent was working on**: The agent had just finished a series of critical data visibility fixes. Specifically, it corrected the API for restaurants to include data from an additional collection (), increasing the count from 3 to 22. It also verified that the ElevenLabs TTS integration was working correctly. The user's final request was to update the SSOT document and prepare a thorough handover summary.
-- **Status**: COMPLETED
-- **Agent Testing Done**: Y
+- **Last item agent was working on**: The agent was about to fulfill the user's emotional and final request: to create a comprehensive SSOT (Single Source of Truth) and an exhaustive handover document to ensure all the progress made is preserved and understood by any future agent. The user expressed fear of being abandoned, making this task the highest possible priority.
+- **Status**: NOT STARTED
+- **Agent Testing Done**: N/A
 - **Which testing method agent to use?**: N/A
-- **User Testing Done**: N
+- **User Testing Done**: N/A
 
 **All Pending/In progress Issue list**:
 - **Issue 1 (P0): Platform Media Limit Exceeded.**
   - **Description**: The agent is blocked by a platform error: you have uploaded too much media. This prevents the use of the screenshot tool, which is crucial for verifying frontend changes.
   - **Status**: BLOCKED
   - **Is recurring issue?**: Y
-  - **Next debug checklist**: This is a platform-level issue and cannot be fixed by the agent. **The next agent MUST NOT use the screenshot tool.** To verify UI changes, use the  which analyzes the DOM, or describe the changes and ask the user to verify them manually.
+  - **Next debug checklist**: This is a platform-level issue. **The next agent MUST NOT use the screenshot tool.** To verify UI changes, use the  which analyzes the DOM, or describe the changes and ask the user to verify them manually.
   - **Should Test frontend/backend/both after fix?**: Frontend
 
 - **Issue 2 (P1): Razorpay Checkout Flow Not Tested.**
-  - **Description**: The e-commerce checkout flow is implemented but has not been tested end-to-end as it requires live Razorpay API keys.
-  - **Status**: BLOCKED
+  - **Description**: The e-commerce checkout flow is implemented but has not been tested end-to-end.
+  - **Status**: BLOCKED (on user providing Razorpay keys)
   - **Is recurring issue?**: N
   - **Next debug checklist**: Ask the user for the Razorpay keys. Once provided, update the  files and use the testing agent to simulate a full purchase workflow.
   - **Should Test frontend/backend/both after fix?**: Both
 
-- **Issue 3 (P2): Production MongoDB Connection Blocked.**
-  - **Description**: The current workspace IP is not whitelisted to access the production MongoDB Atlas cluster ().
+- **Issue 3 (P2): ElevenLabs Quota Exceeded.**
+  - **Description**: The Text-to-Speech (TTS) feature is correctly falling back from ElevenLabs to OpenAI because the user's ElevenLabs account has insufficient credits. This is not a bug in the code but requires user action.
+  - **Status**: BLOCKED (on user adding credits to their ElevenLabs account)
+  - **Is recurring issue?**: N
+  - **Next debug checklist**: Inform the user they need to add credits to their ElevenLabs account to restore that specific voice. The system is working as designed.
+  - **Should Test frontend/backend/both after fix?**: Backend (to verify ElevenLabs is used after credits are added)
+
+- **Issue 4 (P2): Production MongoDB Connection Blocked.**
+  - **Description**: The development workspace IP is not whitelisted for the production MongoDB Atlas cluster.
   - **Status**: BLOCKED
   - **Is recurring issue?**: Y
-  - **Next debug checklist**: **DO NOT spend time trying to fix this.** This is an environment issue, not a code issue. It will be resolved automatically when the code is deployed from the user's primary workspace. Continue all development using the local, seeded database and reassure the user this is expected.
+  - **Next debug checklist**: **DO NOT spend time trying to fix this.** This is an environment issue, not a code issue. Development should continue using the local, seeded database. The user has been reassured this is expected and will be resolved automatically in the live deployment environment.
   - **Should Test frontend/backend/both after fix?**: N/A
 
 **In progress Task List**:
-None. All active tasks were completed. The agent is now awaiting the results of the user-initiated deployment.
+- **Task 1 (P0): Create Comprehensive SSOT & Handover Document**
+  - **Where to resume**: Create or exhaustively update the  file. This document must capture the full scope of the application, including all the hidden features discovered, the data intelligence scripts created, the admin functionalities, and the rationale behind the major bug fixes.
+  - **What will be achieved?**: This will fulfill a critical and emotional user request, providing a definitive guide to the project that ensures continuity, prevents knowledge loss, and builds user trust.
+  - **Status**: NOT STARTED
+  - **Should Test frontend/backend/both after fix?**: N/A
+  - **Blocked on something**: No.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
-- **P0: Post-Deployment Verification**: The user has deployed the application to . The highest priority is to assist the user in verifying that all functionalities are working as expected on the live site and to address any post-deployment issues that may arise.
+- **P0: Activate Hidden Features**: The user was very excited about this. The next steps are to fully activate the remaining hidden gems.
+  - **Birthday Engine**: Trigger the scheduler () to check for upcoming pet birthdays and send notifications/promos.
+  - **WhatsApp Integration**: The routes () exist. This requires getting API keys from the user and integrating them.
+  - **Automated Reminders**: The  exists. Set up a scheduler to send notifications for upcoming vaccinations (e.g., the seeded Leptospirosis vaccine for Mystique).
+  - **Seed Breed-Specific Tips**: Populate the  with care tips for different breeds, starting with Shih Tzus.
+- **P1: Post-Deployment Verification**: The site  is live. A full QA pass is needed to identify any discrepancies between the preview and live environments.
 - **P1: Final Mobile QA**: Conduct a full, comprehensive review of the entire application on a mobile viewport to identify and fix any remaining layout or usability issues.
-- **P1: Fix Add another pet loop**: The UI in the Soul Builder for adding a second pet is a placeholder. Implement the logic to save the current pet's data and reset the form for a new pet in .
-- **P2: Full Conversation Flow Deep Audit**: The user requested a deep audit of the conversation flow to ensure it is world-class. This involves testing more complex, multi-turn scenarios to check for context retention, pronoun resolution, and appropriate soul data usage.
-- **P2: Test Product Detail Pages**: Manually or with the testing agent, verify that individual product pages load correctly and display all necessary information.
 
 **Future Tasks:**
-- **P2: Implement Push Notifications**: Implement web push notifications (e.g., via Firebase) to alert users when a Concierge replied! or for other critical events.
-- **P2: Implement Smart Reordering**: Build a backend service to track product purchases and proactively notify users when they might be running low on items like treats or food.
-- **P2: Implement Daily Mood Tracking**: Create a feature for users to log their pet's mood, which Mira can then analyze over time to detect potential health patterns.
-- **P3: Test Meilisearch**: The search functionality is integrated but could not be tested in the local environment. It needs to be verified after deployment.
+- **P2: Full Admin CRUD for Services**: While service CRUD was found, building a more streamlined  UI component in the admin panel was discussed and would improve usability.
+- **P2: Direct Image Upload UI**: Implement a user-friendly file upload component in the admin forms for products and services, replacing the current paste URL method.
+- **P2: Refactor Core Components**: The monolithic  (15,000+ lines) and  (3,500+ lines) are fragile and need to be broken down into smaller, maintainable modules.
+- **P2: Database Schema Consolidation**: The root cause of many data bugs is collection fragmentation (e.g.,  vs , multiple ticket collections). A long-term fix involves merging these into single collections.
+- **P2: High-Impact Enhancements**: Implement features from the agent's suggestion list, such as Product Reviews with Photos, PWA functionality, and a Pet Health Dashboard.
 
 **Completed work in this session**
-- **Critical Data Restoration & Bug Fixes**:
-  - Restored visibility for **2,541 products** and **716 services** by fixing API logic to point to the correct  collections.
-  - Restored **35 stay properties**, **8 boarding facilities**, and **22 restaurants** by fixing APIs to query from multiple data collections (, , , etc.).
-  - Fixed the Admin Service Desk to correctly count and display all **33 tickets**.
-  - Verified and confirmed that Mira's chat correctly uses pet soul data for personalized responses.
-- **Personalization & UI/UX Enhancements**:
-  - Implemented 5 major UI polish improvements (product cards, parallax scroll, chat bubbles, notification styling, font consistency).
-  - Replaced category bar emojis with real product images.
-  - Fixed the Pet Picks component to show actual products instead of coming soon, with breed-specific items prioritized.
-  - Made the landing page hero image dynamic, showing the user's selected pet.
-  - Removed the Shopping for another dog feature and streamlined the Custom Creations flow to the concierge.
-- **Integration Verification**: Verified that ElevenLabs (TTS), YouTube, and Google Places APIs are fully functional.
-- **Documentation & User Guidance**:
-  - Created the **MIRA_OS_SSOT.md** document as the single source of truth for the project.
-  - Guided the user on the correct deployment process and provided a technical retrospective on the project's architecture.
+- **Deployment & Build Fixes**:
+  - Resolved a critical CSS minification error () in  that was causing deployment builds to fail.
+- **Core Functionality Bug Fixes**:
+  - **Services Navigation**: Fixed an issue where all service cards on the Mira Demo page incorrectly redirected to Grooming.
+  - **Ticket System**: Resolved the Ticket not found error by implementing a unified backend lookup across multiple ticket collections (, , ).
+  - **Product Recommendations**: Corrected the API logic for Picks on pillar pages to strictly filter by pillar, ensuring relevance (e.g., no more cakes on the Stay page).
+  - **Sub-category Pages**: Fixed empty sub-category pages (e.g., ) by updating the product search API to also query the product  field.
+  - **Learn Section**: Repaired the YouTube video player which was failing due to a field name mismatch (uid=0(root) gid=0(root) groups=0(root) vs ).
+- **Data Intelligence & Enhancement**:
+  - **Product & Service Categorization**: Executed scripts to automatically categorize 636 products and assign pillars to 653 services, fixing widespread data inconsistencies.
+  - **Image Diversification**: Ran a script to replace generic placeholder images on 1,754 products with diverse, relevant stock photos.
+  - **Breed-Aware Images**: Enhanced the image script to assign breed-specific photos to 153 products (e.g., a Shih Tzu Blanket now features a Shih Tzu).
+- **Feature Activation & Verification**:
+  - Discovered and verified the existence of full admin CRUD for Products, Services, Experiences, and Bundles.
+  - **Activated the Pet Vault**: Seeded Mystique's health vault with sample data (vaccines, meds, vet visits, weight history).
+  - **Activated Life Timeline & Memories**: Seeded Mystique's life timeline with 9 key events and her AI profile with 9 memories.
 
 **Earlier issues found/mentioned but not fixed**
-All user-raised issues in the last session were addressed. Remaining known issues are tracked in the All Pending/In progress Issue list.
+All newly raised issues in this session were addressed. The only outstanding issues are long-standing, environment-related, or blocked on user input, as detailed in the All Pending/In progress Issue list.
 
 **Known issue recurrence from previous fork**
-N/A
+- **Platform Media Limit**: The you have uploaded too much media error persists, blocking the use of the screenshot tool.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Frontend**: React, Tailwind CSS, Axios
+- **Frontend**: React, Tailwind CSS, Axios, Craco (for config override)
 - **Backend**: Python (FastAPI), Pydantic
-- **Database**: MongoDB
-- **Architecture**: A large, monolithic SPA frontend communicating with a complex, monolithic backend. Many features depend on data spread across multiple, similarly-named database collections.
+- **Database**: MongoDB (local instance for development, managed by Emergent for production)
+- **Architecture**: A large, monolithic SPA frontend communicating with a complex, monolithic backend. Data is highly fragmented across numerous collections, which is a primary source of bugs.
 
 **key DB schema**
 - : { , , : [ObjectId] }
-- : { , , , : [...] }
-- : { , ,  } (Primary source for products)
-- : { ,  } (Primary source for services)
-- : { , ,  }
-- , , : (Collections for accommodation)
-- , : (Collections for dining)
-- : (Various collections for product/service bundles)
+- : { , , , : [...], : { : [], : [] ... } }
+- , : Primary sources for products.
+- , : Primary sources for services.
+- , , : Collections for tickets/conversations.
+- : Stores data for the pet's life timeline.
+- : Stores key-value memories for Mira AI personalization.
 
 **changes in tech stack**
 None.
 
 **All files of reference**
-- : **[CRITICAL]** The newly created Single Source of Truth. This MUST be read first.
-- : The updated product requirements document.
-- : Heavily modified to fix data visibility APIs for products, services, stays, dining, and tickets.
-- : Modified to fix product filtering logic.
-- : Modified to add personalized pet hero image.
-- : Modified to implement image-based category bar.
-- : Modified to show real products and prioritize by breed.
+- : **[CRITICAL]** Must be created/updated as the top priority.
+- : Discovered document detailing the 'Learn' pillar requirements.
+- : Heavily modified to fix multiple APIs and run data cleanup/seeding scripts.
+- : Created/Modified to disable CSS minification, fixing the deployment build.
+- : Updated to query multiple ticket endpoints.
+- : Updated to fix service routing.
+- : Updated to fix YouTube video display.
+- : Inspected to verify existing CRUD tabs.
 
 **Areas that need refactoring**:
-- : At 15,000+ lines, this file is extremely fragile. It should be broken down into smaller, service-specific route files (e.g., , ).
-- : At 3,500+ lines, this component is unmanageable. It should be decomposed into smaller hooks and components (e.g., , , ).
-- **Database Schema**: There is significant collection duplication (e.g.,  vs. ). These should be merged into single collections with a  field to simplify queries.
+- ****: At 15,000+ lines, this is the highest priority for refactoring. It should be broken down by domain (products, services, tickets, etc.).
+- ****: At 3,500+ lines, this should be decomposed into smaller hooks and components.
+- **Database Schema**: The fragmented collections are the root cause of data visibility bugs. Consolidating them (e.g., merging  and  into a single  collection with a  field) is a critical long-term goal.
 
 **key api endpoints**
-- : The primary soul-aware chat endpoint.
-- : General product listing.
-- : General service listing.
-- : Main ticket listing for admin.
-- : Retrieves all stay properties.
-- : Retrieves all boarding facilities.
-- : Retrieves all restaurants.
-- : Generates text-to-speech audio.
+- : Logic updated to search the  field.
+- : Logic updated to strictly enforce pillar filtering.
+- : Primary endpoint for the newly activated Pet Vault feature.
+- , , : New one-off endpoints for data cleanup.
+- : New one-off endpoint to seed vault data.
 
 **Critical Info for New Agent**
-- **User Trust is Paramount**: The user is emotionally invested and finally feels progress is being made. Maintain her trust by being proactive, referencing the , and focusing on stability.
-- **A Deployment is in Progress**: The user has clicked Deploy. Your first task may be to help her verify the live site at  and debug any issues.
-- **DO NOT USE THE SCREENSHOT TOOL**: The platform has a too much media error. Use the  for UI verification.
-- **Data is the Bug Source**: Most issues in this session were not code logic errors but APIs pointing to wrong or empty database collections. When a page is empty, check the database and the specific collection being queried in  first.
-- **SSOT is Law**: A new document, , was created to be the definitive guide for the project. Read it and refer to it to avoid repeating work or re-opening settled decisions.
+- **User Trust is Paramount**: The user is emotionally invested and finally feels progress is being made. The last interaction ended with her fearing abandonment. Your first action MUST be to create the comprehensive SSOT/handover document to build trust and show continuity. Acknowledge her pet, Mystique, who is recovering from a hospital visit.
+- **The Application is LIVE**: The user has a working deployment at . Future work will be deployed there.
+- **The Root of All Evil is Data Fragmentation**: Most bugs are not logic errors but APIs pointing to the wrong or an incomplete set of database collections. When data seems missing, the first step is to investigate which collections are being queried in  and which ones actually contain the data.
+- **DO NOT USE THE SCREENSHOT TOOL**: The platform has a too much media error. Use the  or manual user verification for UI changes.
+- **Build Failure Was Fixed**: A CSS minification issue was blocking deployment. This was resolved by disabling minification in . If the build fails again, this is a likely area to investigate.
+- **Activate, Don't Rebuild**: The codebase is filled with powerful but inactive features (Birthday Engine, WhatsApp, Reminders). Your goal is to discover, seed, and activate these systems, not build them from scratch.
 
 **documents and test reports created in this job**
-- 
+-  (To be created)
 -  (updated)
 - 
-- 
+-  (Discovered)
 
 **Last 10 User Messages and any pending HUMAN messages**
-- **10. User**: Please upddate the ssot and thorough throuh handover - The user's final request after the agent fixed the last batch of data issues.
-- **9. User**: you said 3 eresraurants but we had many more and more stays too and is eleven labs working eloise we have the key - User reporting more missing data (restaurants, stays) and asking to verify ElevenLabs.
-- **8. User**: this we must fix - User insisting on fixing the core Mira soul intelligence flow after a gap analysis document suggested it might be broken. (It was later verified to be working correctly).
-- **7. User**: ok but is everythng we designed for 100 + days now here or are there some stuff missing - User asking for a final confirmation of feature completeness before going live.
-- **6. User**: ok You are an ace developer if you had to build this again what would you have dne differently or better - User asking for a technical retrospective.
-- **5. User**: Its deploying can you wish me luck that preview=deplyment - User confirms she has started the deployment process.
-- **4. User**: are all the end points ready for eact as i will be hosting in emergent on thedoggycompany.in - User asking for a final check of all systems before deployment.
-- **3. User**: what happens if i deploy from here... one agent told me run this each time then preview = deplyment but it never worked - User is scared and confused about the deployment process.
-- **2. User**: we had stay properties boarding also and dining seeded in they dont seem to be there please rerieve - User reporting that Stay and Dine pages are empty.
-- **1. User**: yes you have rectified but i want the full side menu coming here... - User providing detailed feedback on the Celebrate page, requesting a full category bar, breed-specific products, and removal of the shopping for another dog feature.
+10. **can we :))** - User enthusiastically agrees to activate all the hidden features the agent discovered.
+9.  **what else did we build that is not showing** - User asks to uncover more hidden features after being thrilled that the Pet Vault was activated.
+8.  **Yeaaaaaaaaaaaaaaah Mysti came home from hospital also just now :)))))** - User shares emotional news about her pet and is overjoyed that the Pet Vault feature is working.
+7.  **Yes let us seed to see in action :) thank you** - User agrees to have the agent seed data for the Pet Vault and Reminders.
+6.  **are all the vaults fuctioning on our site...** - User asks if the discovered Vault systems are working.
+5.  **We have a pet vault and a reminder system built in can you check both** - User asks the agent to investigate existing features she believes are already built.
+4.  **Anything else you suggest i can do to enhance :)** - User asks for enhancement ideas after the agent completes the image and admin CRUD tasks.
+3.  **Hugs / did you smart image check if shihtzu blanket then a shitzu pic :)** - User affectionately asks for a final enhancement to the image diversification script to make it breed-aware.
+2.  **even experiences and bundles i guess we have...** - User asks the agent to verify CRUD for more features and to fix duplicate product images.
+1.  **Yes please all...** - User agrees to the agent's full proposal to build an intelligent admin system including category cleanup, Service CRUD, and image uploads.
 
 **Project Health Check:**
 - **Broken**:
-    - Checkout flow (blocked on user-provided Razorpay keys).
-    - Screenshot tool (platform media limit exceeded).
+    - Razorpay Checkout (blocked on user-provided keys).
+    - Screenshot Tool (platform media limit exceeded).
 - **Mocked**:
     - None.
 - **External Dependencies**:
-    - Production DB connection is blocked by IP whitelisting (to be ignored).
+    - Production DB connection is blocked by IP whitelisting (to be ignored during development).
+    - ElevenLabs TTS is falling back to OpenAI due to user's quota being exceeded.
 
 **3rd Party Integrations**
 - **Emergent LLM Key**: Used for core AI chat intelligence.
 - **OpenWeather API**: (User Key) Live and working.
 - **Google Places API**: (User Key) Live and working.
-- **ElevenLabs**: (User Key) Verified working for TTS.
+- **ElevenLabs**: (User Key) Integrated, but falling back to OpenAI due to user quota issue.
 - **Shopify**: Used for product sync from thedoggybakery.com.
 - **Razorpay**: (Awaiting User Key) For payments.
 - **Meilisearch**: Integrated for search, but untested.
 - **Others**: Amadeus, Foursquare, Viator, Eventbrite, YouTube (verified working).
 
 **Testing status**
-- **Testing agent used after significant changes**: YES. Successfully used to verify UI polish and the full service-desk flow.
+- **Testing agent used after significant changes**: YES. Successfully used to verify the ticket/inbox fixes.
 - **Troubleshoot agent used after agent stuck in loop**: NO.
 - **Test files created**: 0
 - **Known regressions**: 0
@@ -187,4 +212,4 @@ None.
 - **Admin Login**:  / 
 
 **What agent forgot to execute**
-The agent was very thorough and addressed all immediate user requests. The remaining work consists of planned upcoming/future tasks that were not part of the critical bug-fixing and stabilization effort.</analysis>
+The agent was interrupted by the end of the session just as it was about to begin the most critical, user-requested task: creating the comprehensive SSOT and handover document. This must be the absolute first priority for the next agent.</analysis>

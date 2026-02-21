@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://pet-os-live.preview.emergentagent.com
+https://pet-concierge-v2.preview.emergentagent.com
 ```
 
 ---

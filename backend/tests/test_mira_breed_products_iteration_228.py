@@ -13,7 +13,7 @@ import os
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://pet-os-live.preview.emergentagent.com"
+    BASE_URL = "https://pet-concierge-v2.preview.emergentagent.com"
 
 ADMIN_USERNAME = "aditya"
 ADMIN_PASSWORD = "lola4304"
