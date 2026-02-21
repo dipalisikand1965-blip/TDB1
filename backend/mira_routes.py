@@ -21719,11 +21719,15 @@ async def get_notifications(
 
 
 @router.post("/notifications/{notification_id}/read")
-async def mark_notification_read(notification_id: str, user: dict = Depends(get_current_user)):
+async def mark_notification_read(notification_id: str, authorization: Optional[str] = Header(None)):
     """Mark a notification as read"""
     db = get_db()
     if db is None:
         return {"success": False, "error": "Database not available"}
+    
+    user = await get_user_from_token(authorization)
+    if not user:
+        return {"success": False, "error": "Unauthorized"}
     
     try:
         # Try to update in notifications collection
