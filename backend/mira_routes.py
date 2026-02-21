@@ -5788,7 +5788,18 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             # ALSO skip if conversation_contract says mode=clarify (need location consent)
             contract_says_clarify = contract_mode_result and contract_mode_result.get("mode") == "clarify"
             
-            if detected_place_type and (is_location_query or user_city) and not skip_places_for_clarification and not contract_says_clarify:
+            # ═══════════════════════════════════════════════════════════════════════════════
+            # BIBLE GUARDRAIL: Places ONLY triggers when user EXPLICITLY asks for location
+            # Having user_city alone is NOT enough - user must ask for nearby/location results
+            # ═══════════════════════════════════════════════════════════════════════════════
+            places_trigger_allowed = (
+                detected_place_type and 
+                is_location_query and  # User MUST explicitly ask (removed user_city fallback!)
+                not skip_places_for_clarification and 
+                not contract_says_clarify
+            )
+            
+            if places_trigger_allowed:
                 city_for_search = user_city or "Mumbai"
                 db = get_db()
                 
