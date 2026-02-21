@@ -12191,22 +12191,16 @@ Is there anything else I can help you with while you wait?"""
                               "gi issues", "digestive", "throwing up", "vomiting", "diarrhea"]
     is_allergy_first = any(trigger in user_msg_lower for trigger in allergy_first_triggers)
     
-    # Check if we have allergy data in memory
-    has_allergy_data = selected_pet and (
-        selected_pet.get("food_allergies") or 
-        selected_pet.get("doggy_soul_answers", {}).get("food_allergies")
-    )
-    known_allergies = None
-    if has_allergy_data:
-        allergies = selected_pet.get("food_allergies") or selected_pet.get("doggy_soul_answers", {}).get("food_allergies")
-        if isinstance(allergies, list) and allergies:
-            known_allergies = ", ".join(allergies)
-        elif isinstance(allergies, str) and allergies:
-            known_allergies = allergies
+    # ═══════════════════════════════════════════════════════════════════════════
+    # FOOD SAFETY GATE - Use canonical allergy extraction
+    # "Memory is only real if it changes behaviour immediately."
+    # ═══════════════════════════════════════════════════════════════════════════
+    known_allergies = get_pet_allergies_display(selected_pet) if selected_pet else None
+    has_allergy_data = bool(known_allergies)
     
     # GOLD FLOW: New meal plan request - ask diet type + weight first
     if is_meal_plan_request and not awaiting:
-        logger.info(f"[MEAL PLAN] New request for {pet_name}, asking diet type + weight first")
+        logger.info(f"[MEAL PLAN] New request for {pet_name}, allergies on file: {known_allergies or 'none'}")
         
         # Set conversation state
         try:
@@ -12220,10 +12214,9 @@ Is there anything else I can help you with while you wait?"""
         except Exception as e:
             logger.warning(f"[CONV STATE] Could not save state: {e}")
         
-        # Build response - allergies mentioned only as one-liner at end (unless allergy-first trigger)
-        allergy_line = ""
+        # Build response - NEVER ask about allergies if we have them on file
         if known_allergies:
-            allergy_line = f"\n\n*I already have {pet_name}'s allergies on file ({known_allergies}) — I'll filter around those.*"
+            allergy_line = f"\n\n*I already have {pet_name}'s allergies on file (**{known_allergies}**) — I'll filter around those.*"
         else:
             allergy_line = f"\n\nIf {pet_name} has any allergies or sensitivities, tell me and I'll filter everything."
         
