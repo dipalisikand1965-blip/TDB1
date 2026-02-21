@@ -275,15 +275,15 @@ const PillarPageLayout = ({
                     setSelectedSubcategory(null);
                     onSubcategoryChange?.(null);
                   }}
-                  className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-sm transition-all ${
+                  className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-2xl font-medium text-xs sm:text-sm transition-all min-w-[80px] ${
                     !selectedSubcategory
                       ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                      : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                      : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-purple-300'
                   }`}
                   data-testid="all-subcategories"
                 >
-                  <span>✨</span>
-                  <span>All {pillar.charAt(0).toUpperCase() + pillar.slice(1)}</span>
+                  <span className="text-xl">✨</span>
+                  <span className="whitespace-nowrap text-center leading-tight">All {pillar.charAt(0).toUpperCase() + pillar.slice(1)}</span>
                 </button>
                 {subcategories.map((subcat) => (
                   useTabNavigation ? (
