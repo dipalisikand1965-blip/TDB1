@@ -1,3 +1,8 @@
+/* ============================================
+   GLOBAL FONT CONSISTENCY - WORLD CLASS UI
+   Consistent typography across all pages
+   ============================================ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
