@@ -262,7 +262,6 @@ const PillarPageLayout = ({
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
         onSearchSubmit={handleSearchSubmit}
-        shoppingForOther={shoppingForOther}
         hideSearchBar={true}
       />
       
