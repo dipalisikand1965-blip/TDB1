@@ -7514,7 +7514,10 @@ async def load_pet_soul(pet_id: str) -> Dict:
         "temperament": doggy_soul.get("temperament") or doggy_soul.get("general_nature"),
         "life_stage": doggy_soul.get("life_stage"),
         "food_motivation": doggy_soul.get("food_motivation"),
-        "separation_anxiety": doggy_soul.get("separation_anxiety") or doggy_soul.get("alone_time_comfort"),
+        "separation_anxiety": doggy_soul.get("separation_anxiety") or doggy_soul.get("alone_time_comfort") or (
+            "3 hours" if any("alone" in str(f.get("fact", "")).lower() and "anxious" in str(f.get("fact", "")).lower() 
+                           for f in soul_data.get("learned_facts", [])) else None
+        ),
         "general_nature": doggy_soul.get("general_nature"),
         # ═══════════════════════════════════════════════════════════════════════════
         # TRAINING
