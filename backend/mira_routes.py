@@ -21384,6 +21384,219 @@ class PicksHistoryResponse(BaseModel):
     recent_picks: List[Dict]
     tip_cards: List[Dict]
 
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TODAY ENDPOINT - Bible Section 2.2
+# Shows urgency dashboard: reminders, awaiting responses, appointments, alerts
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/today/{pet_id}")
+async def get_today_panel(pet_id: str, user: dict = Depends(get_current_user)):
+    """
+    TODAY panel - Urgency dashboard per Bible Section 2.2
+    
+    Returns:
+    - urgent_items: High urgency tickets not closed
+    - due_today: Tasks/reminders due today
+    - upcoming: Tasks due within 7 days
+    - awaiting_you: Items waiting for user response
+    - health_alerts: Health-related notifications
+    - reminders: Active reminders for this pet
+    """
+    db = get_db()
+    if db is None:
+        return {"error": "Database not available", "items": []}
+    
+    try:
+        user_email = user.get("email")
+        now = datetime.now(timezone.utc)
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        today_end = today_start + timedelta(days=1)
+        week_end = today_start + timedelta(days=7)
+        
+        # Terminal statuses to exclude
+        TERMINAL = ["closed", "completed", "cancelled", "resolved", "done"]
+        AWAITING_USER = ["awaiting_response", "awaiting_you", "member_action_required", "user_input_needed"]
+        HIGH_URGENCY = ["high", "urgent", "emergency", "critical"]
+        
+        items = []
+        urgent_count = 0
+        due_today_count = 0
+        awaiting_count = 0
+        
+        # 1. Get tickets for this pet
+        mira_tickets = await db.mira_tickets.find({
+            "pet.id": pet_id,
+            "status": {"$nin": TERMINAL}
+        }).sort("created_at", -1).limit(50).to_list(length=50)
+        
+        service_tickets = await db.service_desk_tickets.find({
+            "$or": [
+                {"pet.id": pet_id},
+                {"pet_id": pet_id},
+                {"pets": {"$elemMatch": {"id": pet_id}}}
+            ],
+            "status": {"$nin": TERMINAL}
+        }).sort("created_at", -1).limit(50).to_list(length=50)
+        
+        # Process tickets
+        seen_ids = set()
+        for ticket in mira_tickets + service_tickets:
+            ticket_id = ticket.get("ticket_id") or str(ticket.get("_id"))
+            if ticket_id in seen_ids:
+                continue
+            seen_ids.add(ticket_id)
+            
+            status = (ticket.get("status") or "").lower()
+            urgency = (ticket.get("urgency") or ticket.get("priority") or "").lower()
+            
+            item = {
+                "id": ticket_id,
+                "type": "ticket",
+                "title": ticket.get("description") or ticket.get("subject") or ticket.get("ticket_type", "Request"),
+                "status": status,
+                "urgency": urgency,
+                "pillar": ticket.get("pillar") or "care",
+                "created_at": ticket.get("created_at"),
+                "due_at": ticket.get("sla_due_at") or ticket.get("due_date"),
+                "pet_name": ticket.get("pet", {}).get("name") or "Pet"
+            }
+            
+            # Check urgency
+            if urgency in HIGH_URGENCY:
+                item["badge"] = "urgent"
+                urgent_count += 1
+                items.append(item)
+            
+            # Check if awaiting user
+            elif status in AWAITING_USER:
+                item["badge"] = "awaiting_you"
+                awaiting_count += 1
+                items.append(item)
+            
+            # Check if due today
+            elif item.get("due_at"):
+                try:
+                    due_str = item["due_at"]
+                    if isinstance(due_str, str):
+                        due_dt = datetime.fromisoformat(due_str.replace('Z', '+00:00'))
+                    else:
+                        due_dt = due_str
+                    
+                    if today_start <= due_dt < today_end:
+                        item["badge"] = "due_today"
+                        due_today_count += 1
+                        items.append(item)
+                    elif today_end <= due_dt < week_end:
+                        item["badge"] = "upcoming"
+                        items.append(item)
+                except:
+                    items.append(item)
+            else:
+                # Active but not urgent/due
+                items.append(item)
+        
+        # 2. Get reminders for this pet
+        reminders = await db.reminders.find({
+            "$or": [
+                {"pet_id": pet_id},
+                {"pet.id": pet_id}
+            ],
+            "status": {"$nin": ["completed", "dismissed", "cancelled"]}
+        }).sort("due_date", 1).limit(10).to_list(length=10)
+        
+        for reminder in reminders:
+            due_date = reminder.get("due_date") or reminder.get("reminder_date")
+            item = {
+                "id": str(reminder.get("_id")),
+                "type": "reminder",
+                "title": reminder.get("title") or reminder.get("description") or "Reminder",
+                "status": reminder.get("status", "pending"),
+                "pillar": reminder.get("pillar") or "care",
+                "due_at": due_date,
+                "pet_name": reminder.get("pet", {}).get("name") or "Pet"
+            }
+            
+            if due_date:
+                try:
+                    if isinstance(due_date, str):
+                        due_dt = datetime.fromisoformat(due_date.replace('Z', '+00:00'))
+                    else:
+                        due_dt = due_date
+                    
+                    if due_dt < now:
+                        item["badge"] = "overdue"
+                        urgent_count += 1
+                    elif today_start <= due_dt < today_end:
+                        item["badge"] = "due_today"
+                        due_today_count += 1
+                except:
+                    pass
+            
+            items.append(item)
+        
+        # 3. Get health alerts (from pet profile)
+        pet = await db.pets.find_one({"id": pet_id})
+        if pet:
+            health_vault = pet.get("health_vault", {})
+            health_alerts = health_vault.get("alerts", [])
+            for alert in health_alerts[:3]:
+                items.append({
+                    "id": f"health-{alert.get('id', 'alert')}",
+                    "type": "health_alert",
+                    "title": alert.get("message") or alert.get("title") or "Health Alert",
+                    "status": "active",
+                    "badge": "health",
+                    "pillar": "care",
+                    "pet_name": pet.get("name", "Pet")
+                })
+        
+        # Sort by urgency: urgent > awaiting > due_today > upcoming > rest
+        def sort_key(item):
+            badge = item.get("badge", "")
+            if badge == "urgent" or badge == "overdue":
+                return 0
+            if badge == "awaiting_you":
+                return 1
+            if badge == "due_today":
+                return 2
+            if badge == "health":
+                return 3
+            if badge == "upcoming":
+                return 4
+            return 5
+        
+        items.sort(key=sort_key)
+        
+        # Bible rule: Maximum 3 items shown initially
+        display_items = items[:3]
+        all_items = items[:10]
+        
+        return {
+            "success": True,
+            "pet_id": pet_id,
+            "pet_name": pet.get("name") if pet else "Pet",
+            "summary": {
+                "urgent": urgent_count,
+                "due_today": due_today_count,
+                "awaiting_you": awaiting_count,
+                "total": len(items)
+            },
+            "items": display_items,
+            "all_items": all_items,
+            "has_more": len(items) > 3,
+            "generated_at": now.isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"[TODAY] Error: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "items": []
+        }
+
+
 @router.get("/picks-history/{pet_id}")
 async def get_picks_history(pet_id: str, limit: int = 20):
     """
