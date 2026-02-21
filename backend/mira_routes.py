@@ -9990,6 +9990,8 @@ Example: "I need treats for Mojo"
 {pillar_context}
 {pillar_tone}
 
+{build_allergy_context_injection(selected_pet, selected_pet.get("name") if selected_pet else None) if selected_pet else ""}
+
 ═══════════════════════════════════════════════════════════════════════════════
 1) SCOPE OF MIRA'S AUTHORITY
 ═══════════════════════════════════════════════════════════════════════════════
