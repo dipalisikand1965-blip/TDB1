@@ -4132,6 +4132,19 @@ const MiraDemoPage = () => {
                 </div>
               )}
               
+              {/* Dietary Context Chip - Shows in food flows when pet has allergies */}
+              {showDietaryContext && (
+                <DietaryContextChip
+                  pet={pet}
+                  isExpanded={dietaryContextExpanded}
+                  onToggle={() => setDietaryContextExpanded(!dietaryContextExpanded)}
+                  onEdit={() => {
+                    // Open pet profile editor
+                    navigate(`/pet/${pet.id}/edit`);
+                  }}
+                />
+              )}
+              
               {/* Older Messages (Collapsible) - Using ChatMessage component */}
               {showOlderMessages && conversationHistory.slice(0, -VISIBLE_MESSAGE_COUNT).map((msg, idx) => (
                 <div key={`old-${idx}`} style={{ opacity: 0.7 }}>
