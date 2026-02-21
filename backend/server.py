@@ -15279,6 +15279,7 @@ async def seed_production_data():
 
 
 @api_router.post("/admin/seed-mystique")
+@api_router.get("/admin/seed-mystique")  # Also allow GET for easy browser access
 async def seed_mystique_data():
     """
     Seeds comprehensive data for Mystique (Dipali's Shih Tzu).
