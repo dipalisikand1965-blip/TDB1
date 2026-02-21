@@ -1562,7 +1562,11 @@ const SoulBuilder = () => {
           {/* Action Buttons */}
           <div className="space-y-3">
             <button
-              onClick={() => navigate('/mira-demo')}
+              onClick={async () => {
+                // Save all answers before navigating
+                await saveSoulAnswers(answers);
+                navigate('/mira-demo');
+              }}
               className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30"
               data-testid="go-to-today-btn"
             >
