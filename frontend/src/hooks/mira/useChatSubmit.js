@@ -304,12 +304,37 @@ const useChatSubmit = (config) => {
           input: inputQuery,
           pet_id: pet.id,
           pet_context: {
+            // Core identity
+            id: pet.id,
             name: pet.name,
-            breed: pet.breed,
-            age: pet.age,
-            traits: pet.traits,
-            sensitivities: pet.sensitivities,
-            favorites: pet.favorites,
+            breed: pet.breed || pet.identity?.breed,
+            age: pet.age || pet.identity?.age,
+            weight: pet.weight || pet.identity?.weight,
+            birthday: pet.birthday || pet.identity?.birthday,
+            gender: pet.gender || pet.identity?.gender,
+            
+            // Health & Allergies - CRITICAL for personalization
+            allergies: pet.allergies || pet.health?.allergies || [],
+            sensitivities: pet.sensitivities || pet.health?.sensitivities || [],
+            medical_conditions: pet.medical_conditions || pet.health?.conditions || [],
+            
+            // Preferences & Favorites
+            preferences: pet.preferences || pet.food_preferences || {},
+            favorites: pet.favorites || {},
+            favorite_treats: pet.favorite_treats || pet.preferences?.favorite_treats || [],
+            dietary_restrictions: pet.dietary_restrictions || pet.food_preferences?.restrictions || [],
+            
+            // Personality & Behavior
+            personality: pet.personality || pet.behavior?.personality,
+            traits: pet.traits || [],
+            activity_level: pet.activity_level || pet.behavior?.activity_level,
+            temperament: pet.temperament || pet.behavior?.temperament,
+            
+            // Soul data
+            soul_score: pet.soul_score || pet.soulScore,
+            soul_data: pet.soul_data || pet.soulData || {},
+            
+            // Location
             city: pet?.city || pet?.location?.city || userCity || 'Mumbai',
             location: { city: pet?.city || pet?.location?.city || userCity || 'Mumbai' }
           },
