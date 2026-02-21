@@ -447,15 +447,18 @@ Located in the MOJO profile modal, shows:
 
 ### P0 - Immediate
 - [x] Fix ObjectId serialization in my-pets
+- [x] Fix ObjectId serialization in /pets/{pet_id}
 - [x] Verify Pet Vault functioning
 - [x] Verify Birthday Engine
 - [x] Create SSOT document
+- [x] Soul Learning from Conversations → writes to learned_facts
 
 ### P1 - Near Term
 - [ ] Activate WhatsApp (needs keys)
 - [ ] Test Razorpay checkout (needs keys)
 - [ ] Enable automated vaccination reminders
 - [ ] Full mobile QA pass
+- [ ] Debug drawer accessibility verification
 
 ### P2 - Future
 - [ ] Refactor server.py into modules
