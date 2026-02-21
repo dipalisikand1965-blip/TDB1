@@ -11686,7 +11686,9 @@ async def mira_chat(
             "concierge": picks_response_data.get("concierge", {}),
             "safety_override": picks_response_data.get("safety_override", {}),
             "missing_profile_fields": picks_response_data.get("missing_profile_fields", []),
-            "picks_debug": picks_response_data.get("picks_debug")
+            "picks_debug": picks_response_data.get("picks_debug"),
+            # BIBLE SECTION 2.3: Return pillar for frontend picks panel auto-switching
+            "pillar": picks_response_data.get("pillar") or response_dict.get("pillar")
         })
         
         # ═══════════════════════════════════════════════════════════════════════════
