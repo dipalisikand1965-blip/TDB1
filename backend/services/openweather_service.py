@@ -279,10 +279,16 @@ async def get_pet_activity_recommendation(city: str) -> Dict[str, Any]:
     weather = await get_weather_by_city(city)
     
     if not weather:
-        return {
-            "success": False,
-            "error": "Could not fetch weather data"
-        }
+        # Use fallback weather estimates when no API key
+        from services.openweather_service import get_fallback_weather
+        fallback = get_fallback_weather(city)
+        if fallback:
+            weather = _process_fallback_to_advisory(fallback)
+        else:
+            return {
+                "success": False,
+                "error": "Could not fetch weather data"
+            }
     
     advisory = weather.get("pet_advisory", {})
     
