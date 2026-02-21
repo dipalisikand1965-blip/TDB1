@@ -4500,14 +4500,14 @@ async def mira_os_understand_with_products(
         # Get user's pets for name matching
         db = get_db()
         user_pets = []
-        if request.pet_context and request.pet_context.get("name"):
-            # Use pet from request context
-            user_pets = [request.pet_context]
+        if enriched_pet_context and enriched_pet_context.get("name"):
+            # Use pet from enriched context (with full soul data)
+            user_pets = [enriched_pet_context]
         
         picks_intent = detect_personalized_picks_intent(request.input, user_pets)
         
         if picks_intent.get("is_picks_request"):
-            pet_name = picks_intent.get("pet_name") or request.pet_context.get("name") if request.pet_context else None
+            pet_name = picks_intent.get("pet_name") or enriched_pet_context.get("name") if enriched_pet_context else None
             pet_id = request.pet_id or (request.pet_context.get("id") if request.pet_context else None)
             
             logger.info(f"[PICKS VAULT] 🎁 Opening picks vault for: {pet_name}")
