@@ -734,13 +734,25 @@ const PersonalizedPicksPanel = ({
   const scrollRef = useRef(null);
   const undoTimeoutRef = useRef(null);
   
-  // AUTO PILLAR SWITCH: When enginePillar changes, switch to it
+  // AUTO PILLAR SWITCH: When enginePillar changes, switch to it ONLY on initial load
+  // DO NOT override user's manual tab selection!
+  const [userHasSelectedPillar, setUserHasSelectedPillar] = useState(false);
+  
   useEffect(() => {
-    if (enginePillar && enginePillar !== activePillar && enginePillar !== 'general') {
-      console.log(`[PICKS PANEL] Auto-switching pillar: ${activePillar} → ${enginePillar}`);
+    // Only auto-switch if user hasn't manually selected a pillar yet
+    if (enginePillar && enginePillar !== 'general' && !userHasSelectedPillar) {
+      console.log(`[PICKS PANEL] Initial pillar from engine: ${enginePillar}`);
       setActivePillar(enginePillar);
     }
-  }, [enginePillar, activePillar]);
+  }, [enginePillar]); // Removed activePillar from deps to prevent fighting
+  
+  // Track when user manually selects a pillar
+  const handlePillarSelect = (pillarId) => {
+    setUserHasSelectedPillar(true);
+    setActivePillar(pillarId);
+    setShowAllCatalogue(false);
+    setShowAllConcierge(false);
+  };
   
   // Get "Updated just now" text
   const getUpdatedText = () => {
