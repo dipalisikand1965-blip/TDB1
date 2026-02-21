@@ -297,23 +297,65 @@ const SoulBuilder = () => {
     if (navigator.vibrate) navigator.vibrate(10);
     
     const questionId = question.id;
-    setAnswers(prev => ({ ...prev, [questionId]: value }));
+    const newAnswers = { ...answers, [questionId]: value };
+    setAnswers(newAnswers);
     
     // Add to "Mira knows" list
     const knowledgeItem = `${personalize(question.question).replace('...', '')}: ${Array.isArray(value) ? value.join(', ') : value}`;
     setMiraKnows(prev => [...prev.slice(-9), knowledgeItem]);
+    
+    // Auto-save answers to backend every 5 answers
+    if (Object.keys(newAnswers).length % 5 === 0) {
+      saveSoulAnswers(newAnswers);
+    }
     
     // Move to next question or chapter complete
     setTimeout(() => {
       if (currentQuestion < chapter.questions.length - 1) {
         setCurrentQuestion(prev => prev + 1);
       } else {
+        // Save at end of each chapter
+        saveSoulAnswers(newAnswers);
         setScreen('chapter-complete');
       }
       setIsAnimating(false);
       setMultiSelectValues([]);
       setTextInputValue('');
     }, 300);
+  };
+  
+  // Save soul answers to backend
+  const saveSoulAnswers = async (currentAnswers) => {
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
+      if (!token) return;
+      
+      const payload = {
+        pet_name: petName,
+        breed: petData.breed || detectedBreed,
+        gender: petData.gender,
+        birth_date: petData.birth_date,
+        soul_answers: currentAnswers,
+        soul_score: soulScore,
+        pet_data: petData
+      };
+      
+      const response = await fetch(`${API_URL}/api/pet-soul/save-answers`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      if (response.ok) {
+        console.log('[SoulBuilder] Answers saved to backend');
+      }
+    } catch (error) {
+      console.log('[SoulBuilder] Save error (non-blocking):', error.message);
+    }
+  };
   };
   
   // Handle multi-select
