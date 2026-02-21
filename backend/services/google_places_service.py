@@ -384,16 +384,58 @@ async def search_pet_stores_in_city(city: str, max_results: int = 10) -> List[Di
 async def search_pet_friendly_restaurants(city: str, max_results: int = 10) -> List[Dict[str, Any]]:
     """
     Search for pet-friendly restaurants, cafes, and outdoor dining in a city.
-    Works WORLDWIDE - not limited to India.
-    
-    Args:
-        city: City name (any city worldwide)
-        max_results: Maximum results
-        
-    Returns:
-        List of pet-friendly restaurants
+    Falls back to database if no Google Places API key.
     """
-    # Try multiple search strategies for best results
+    # FALLBACK: Check database first for curated pet-friendly restaurants
+    if not GOOGLE_PLACES_API_KEY:
+        try:
+            from motor.motor_asyncio import AsyncIOMotorClient
+            import os
+            client = AsyncIOMotorClient(os.environ.get('MONGO_URL', 'mongodb://localhost:27017'))
+            db_name = os.environ.get('DB_NAME', 'test_database')
+            db = client[db_name]
+            
+            query = {}
+            if city:
+                query["$or"] = [
+                    {"city": {"$regex": city, "$options": "i"}},
+                    {"address": {"$regex": city, "$options": "i"}},
+                    {"location": {"$regex": city, "$options": "i"}}
+                ]
+            
+            restaurants = await db.pet_friendly_restaurants.find(query, {"_id": 0}).limit(max_results).to_list(max_results)
+            
+            if restaurants:
+                # Format to match expected structure
+                formatted = []
+                for r in restaurants:
+                    formatted.append({
+                        "id": r.get("id", r.get("name", "")),
+                        "name": r.get("name", ""),
+                        "address": r.get("address", r.get("location", "")),
+                        "rating": float(r.get("rating", 4.0) or 4.0),
+                        "phone": r.get("phone", ""),
+                        "pet_friendly": True,
+                        "pet_friendly_source": "curated_database",
+                        "place_type": "restaurant",
+                        "pet_policy": r.get("pet_policy", "Pet-friendly outdoor seating"),
+                        "city": city
+                    })
+                logger.info(f"[PLACES] Found {len(formatted)} restaurants from database for {city}")
+                return formatted
+            
+            # If no city match, return ALL restaurants as general results
+            all_restaurants = await db.pet_friendly_restaurants.find({}, {"_id": 0}).limit(max_results).to_list(max_results)
+            if all_restaurants:
+                formatted = [{"id": r.get("name",""), "name": r.get("name",""), "address": r.get("address",""), "rating": float(r.get("rating",4.0) or 4.0), "pet_friendly": True, "pet_friendly_source": "curated_database", "place_type": "restaurant", "city": city} for r in all_restaurants]
+                logger.info(f"[PLACES] No city match for {city}, returning {len(formatted)} general restaurants")
+                return formatted
+                
+            client.close()
+        except Exception as e:
+            logger.warning(f"[PLACES] Database fallback error: {e}")
+    
+    # GOOGLE PLACES: Try API if key available
     all_results = []
     seen_ids = set()
     
@@ -413,7 +455,6 @@ async def search_pet_friendly_restaurants(city: str, max_results: int = 10) -> L
         for place in results:
             if place.get("id") not in seen_ids:
                 seen_ids.add(place.get("id"))
-                # Add pet-friendly flags
                 place["pet_friendly"] = True
                 place["pet_friendly_source"] = "google_search"
                 place["place_type"] = "restaurant"
