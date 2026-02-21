@@ -240,7 +240,7 @@ const PillarHero = ({
   const replaceName = (text) => text.replace(/{name}/g, petName);
   
   return (
-    <div className={`relative overflow-hidden bg-gradient-to-r ${config.gradient} text-white`}>
+    <div ref={heroRef} className={`relative overflow-hidden bg-gradient-to-r ${config.gradient} text-white`}>
       {/* Background Image with Subtle Parallax Effect */}
       {heroImages.length > 0 && (
         <div className="absolute inset-0 pillar-parallax-container">
@@ -248,7 +248,7 @@ const PillarHero = ({
             src={heroImages[heroIndex]}
             alt="Background"
             className="w-full h-[120%] object-cover opacity-20 transition-opacity duration-1000 pillar-parallax-bg"
-            style={{ transform: 'translateY(var(--parallax-offset, 0px))' }}
+            style={{ transform: `translateY(${parallaxOffset}px)` }}
           />
           <div className={`absolute inset-0 bg-gradient-to-r ${config.gradient} opacity-80`} />
         </div>
