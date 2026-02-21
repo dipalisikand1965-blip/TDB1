@@ -11228,7 +11228,8 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
             "Just want to spoil them"
         ]
     
-    elif any(term in response_lower for term in ["cake", "treats", "what kind", "flavor", "preference"]):
+    # Flavor/Type preference (only when asking about specific flavors, not general treat usage)
+    elif any(term in response_lower for term in ["cake flavor", "treat flavor", "what flavor", "which flavor", "flavor preference", "classic or"]):
         quick_replies = [
             "Classic flavors",
             "Something special/unique",
