@@ -220,6 +220,27 @@ const SoulBuilder = () => {
   const [miraKnows, setMiraKnows] = useState([]);
   const [isAnimating, setIsAnimating] = useState(false);
   
+  // Multi-pet support
+  const [existingPets, setExistingPets] = useState([]);
+  
+  useEffect(() => {
+    const fetchPets = async () => {
+      try {
+        const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
+        if (!token) return;
+        const resp = await fetch(`${API_URL}/api/pets/my-pets`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          const pets = Array.isArray(data) ? data : data.pets || [];
+          setExistingPets(pets);
+        }
+      } catch (e) { /* ignore */ }
+    };
+    fetchPets();
+  }, []);
+  
   // Basic Info screen state
   const [showBreedDropdown, setShowBreedDropdown] = useState(false);
   const [breedSearch, setBreedSearch] = useState('');
