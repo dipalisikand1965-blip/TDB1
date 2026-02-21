@@ -1276,8 +1276,9 @@ const PersonalizedPicksPanel = ({
                 {/* ═══════════════════════════════════════════════════════════════ */}
                 {/* TIMELY PICKS - "{petName} might need this" (Soul Integration)  */}
                 {/* Shows picks based on recent chat intents - Mira knows           */}
+                {/* ONLY show when NO specific pillar tab is selected (shows during contextual conversations) */}
                 {/* ═══════════════════════════════════════════════════════════════ */}
-                {picksData?.timely_picks?.length > 0 && (
+                {(!activePillar || activePillar === 'all' || activePillar === 'general') && picksData?.timely_picks?.length > 0 && (
                   <div className="mb-6">
                     <div className="mb-3 flex items-center justify-between">
                       <div>
