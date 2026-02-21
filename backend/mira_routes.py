@@ -12439,15 +12439,20 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
     # "Memory is only real if it changes behaviour immediately."
     # If user requests an item containing known allergens, REFUSE and suggest alternatives
     # ═══════════════════════════════════════════════════════════════════════════
-    if selected_pet and has_known_allergies(selected_pet):
+    logger.info(f"[FOOD SAFETY GATE] Checking: selected_pet={selected_pet is not None}")
+    if selected_pet:
         pet_allergies = get_pet_allergies(selected_pet)
-        user_msg_lower = user_message.lower() if user_message else ""
+        logger.info(f"[FOOD SAFETY GATE] Pet allergies found: {pet_allergies}")
         
-        # Check if user is requesting an allergenic item
-        food_keywords = ["treat", "food", "cake", "snack", "kibble", "meal", "recipe", "give", "feed", "recommend"]
-        is_food_request = any(kw in user_msg_lower for kw in food_keywords)
-        
-        if is_food_request:
+        if pet_allergies:  # has_known_allergies check inlined
+            user_msg_lower = user_message.lower() if user_message else ""
+            
+            # Check if user is requesting an allergenic item
+            food_keywords = ["treat", "food", "cake", "snack", "kibble", "meal", "recipe", "give", "feed", "recommend"]
+            is_food_request = any(kw in user_msg_lower for kw in food_keywords)
+            logger.info(f"[FOOD SAFETY GATE] is_food_request={is_food_request}, msg='{user_msg_lower[:50]}'")
+            
+            if is_food_request:
             # Check if any allergen is mentioned in the request
             requested_allergen = None
             for allergen in pet_allergies:
