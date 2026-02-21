@@ -2,40 +2,44 @@
 ## December 2025
 
 ## Quick Stats
-- 82 pages, 322 components, 2,541 products, 716 services
-- 38+ fixes applied this session
+- 82 pages, 322 components
+- **2,541 products**, **716 services**
+- **35 stay properties**, **8 boarding facilities**
+- **3 restaurants**, **5 dine bundles**
 - All APIs passing ✅
-- 97% ready for go-live
+- 98% ready for go-live
 
 ## Latest Session Fixes:
 
 **1. Category Bar — EXPANDED ✅**
-- Added ALL subcategories: Birthday Cakes, Breed Cakes, Mini Cakes, Pupcakes & Dognuts, Desi Treats, Treats & Biscuits, Gift Hampers, Party Accessories, DIY Cake Kits, Custom Creations, Gift Cards
-- All using REAL Shopify product images
-- Scrollable on mobile
+- All 11 subcategories with Shopify product images
+- Custom Creations flows to /mira-demo concierge
 
-**2. "Shopping for another dog" — REMOVED ✅**
-- Removed from both PillarPageLayout and PersonalizedPicks
-- Cleaner UI focused on selected pet
+**2. Pet Picks — BREED-SPECIFIC ✅**
+- Mystique (Shih Tzu) sees Shih Tzu cakes FIRST
+- +40 scoring for breed-specific cakes
 
-**3. Pet Picks — BREED-SPECIFIC ✅**
-- Backend now prioritizes breed-specific products
-- Mystique (Shih Tzu) sees: Shih Tzu Cake, Shih Tzu Birthday Bandana, etc. FIRST
-- Higher scoring for breed matches (+40 for breed cakes!)
+**3. Stay Properties — FIXED ✅**
+- Combined `stay_properties` + `pet_friendly_stays`
+- 35 total properties now showing
+- Includes luxury resorts (Leela Goa, W Goa, Taj, etc.)
 
-**4. Custom Creations — FLOWS TO CONCIERGE ✅**
-- "Custom Creations" category now links to /mira-demo?custom=true
-- Custom mugs, AI portraits, personalized items flow to Mira concierge
+**4. Boarding Facilities — FIXED ✅**
+- All 8 facilities from `stay_boarding_facilities`
+- Proper pagination and deduplication
+
+**5. Restaurants & Bundles — VERIFIED ✅**
+- 3 pet-friendly restaurants
+- 5 dine bundles active
 
 ## Credentials
 - User: dipali@clubconcierge.in / test123
 - Admin: aditya / lola4304
 
 ## Deployment Ready
-- ✅ All APIs functional
-- ✅ Breed-specific recommendations working
-- ✅ Category bar expanded with all subcategories
-- ✅ Custom products flow to concierge
+- ✅ All data collections active
+- ✅ Breed-specific recommendations
+- ✅ Stay/Boarding/Dining working
+- ✅ Bundles rendering
 
 ## For Mystique. For every pet who can't speak.
-
