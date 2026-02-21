@@ -11478,7 +11478,17 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
         ]
     
     # ═══════════════════════════════════════════════════════════════════════════
-    # PATTERN 3: Health/Wellness Questions
+    # PATTERN 3: EMERGENCY/URGENT (HIGHEST PRIORITY - Check BEFORE health)
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["emergency", "urgent", "immediately", "right now", "bleeding", "not breathing", "unconscious", "poisoned", "choking"]):
+        quick_replies = [
+            build_quick_reply_chip("Find emergency vet", "Find nearest emergency vet!", "execute", domain="emergency"),
+            build_quick_reply_chip("Call vet now", "Help me call a vet.", "execute", domain="emergency"),
+            build_quick_reply_chip("First aid tips", "What should I do first?", "continue", domain="emergency")
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 4: Health/Wellness Questions
     # ═══════════════════════════════════════════════════════════════════════════
     elif any(term in response_lower for term in ["weight", "overweight", "underweight", "body condition"]):
         quick_replies = [
