@@ -21609,7 +21609,7 @@ async def get_today_panel(pet_id: str, authorization: Optional[str] = Header(Non
 async def get_notifications(
     limit: int = 20,
     unread_only: bool = False,
-    user: dict = Depends(get_current_user)
+    authorization: Optional[str] = Header(None)
 ):
     """
     Get user notifications - ticket updates, reminders, system alerts
@@ -21617,6 +21617,10 @@ async def get_notifications(
     db = get_db()
     if db is None:
         return {"notifications": [], "unread_count": 0}
+    
+    user = await get_user_from_token(authorization)
+    if not user:
+        return {"notifications": [], "unread_count": 0, "error": "Unauthorized"}
     
     try:
         user_email = user.get("email")
