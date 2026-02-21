@@ -866,6 +866,11 @@ const NotificationsInbox = () => {
                       isSelected={selectedIds.has(notification.id) || selectedTicketId === notification.ticket_id}
                       selectMode={selectMode}
                       isArchived={viewArchived}
+                      /* Enhanced read/unread contrast */
+                      className={!notification.read 
+                        ? 'bg-gradient-to-r from-pink-500/10 to-purple-500/5 border-l-2 border-l-pink-500' 
+                        : 'bg-transparent opacity-75 hover:opacity-100'
+                      }
                     />
                   </div>
                 </div>

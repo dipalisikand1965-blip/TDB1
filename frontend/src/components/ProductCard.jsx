@@ -381,7 +381,8 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
         onClick={() => setShowModal(true)}
         data-testid={`product-card-${product.id}`}
       >
-        <div className="relative overflow-hidden aspect-square">
+        {/* MOBILE: Larger images (h-44 = 176px vs h-40 = 160px) */}
+      <div className="relative overflow-hidden aspect-[4/5] sm:aspect-square">
           <img
             src={productImage}
             alt={product.name}

@@ -225,17 +225,31 @@ const PillarHero = ({
   
   return (
     <div className={`relative overflow-hidden bg-gradient-to-r ${config.gradient} text-white`}>
-      {/* Background Image */}
+      {/* Background Image with Subtle Parallax Effect */}
       {heroImages.length > 0 && (
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 pillar-parallax-container">
           <img 
             src={heroImages[heroIndex]}
             alt="Background"
-            className="w-full h-full object-cover opacity-20 transition-opacity duration-1000"
+            className="w-full h-[120%] object-cover opacity-20 transition-opacity duration-1000 pillar-parallax-bg"
+            style={{ transform: 'translateY(var(--parallax-offset, 0px))' }}
           />
           <div className={`absolute inset-0 bg-gradient-to-r ${config.gradient} opacity-80`} />
         </div>
       )}
+      
+      {/* Parallax scroll effect script */}
+      <style>{`
+        .pillar-parallax-container {
+          overflow: hidden;
+        }
+        @media (prefers-reduced-motion: no-preference) {
+          .pillar-parallax-bg {
+            will-change: transform;
+            transition: transform 0.1s ease-out;
+          }
+        }
+      `}</style>
       
       {/* Floating decorations */}
       <div className="absolute top-6 sm:top-10 left-4 sm:left-10 text-3xl sm:text-4xl animate-bounce opacity-50">🎈</div>

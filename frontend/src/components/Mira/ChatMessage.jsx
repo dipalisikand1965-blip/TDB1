@@ -111,7 +111,7 @@ const FormattedText = ({ children, className = '' }) => {
       <ReactMarkdown
         components={{
           p: ({ children }) => (
-            <p className="mb-2 last:mb-0 leading-relaxed text-white/95">
+            <p className="mb-2.5 last:mb-0 leading-relaxed text-white/95" style={{ letterSpacing: '0.01em' }}>
               {children}
             </p>
           ),
@@ -304,13 +304,20 @@ const generateWhyForPet = (product, pet) => {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /**
- * UserMessage Component
+ * UserMessage Component - Softer, more elegant styling
  */
 const UserMessage = ({ content, isOld = false }) => (
   <div className="mp-msg-user" data-testid="user-message">
     <div 
       className="mp-bubble-user" 
-      style={isOld ? { fontSize: '13px' } : {}}
+      style={{
+        ...(isOld ? { fontSize: '13px' } : {}),
+        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.9) 0%, rgba(168, 85, 247, 0.85) 100%)',
+        borderRadius: '20px 20px 6px 20px',
+        padding: '12px 16px',
+        boxShadow: '0 2px 8px rgba(139, 92, 246, 0.2)',
+        backdropFilter: 'blur(8px)',
+      }}
     >
       {content}
     </div>
