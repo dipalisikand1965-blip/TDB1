@@ -11520,7 +11520,20 @@ async def create_pet_profile(pet: PetProfileCreate, current_user: dict = Depends
 @api_router.get("/pets/my-pets")
 async def get_my_pets(current_user: dict = Depends(get_current_user)):
     """Get pets for the logged-in user"""
-    pets = await db.pets.find({"owner_email": current_user["email"]}, {"_id": 0}).to_list(50)
+    from bson import ObjectId
+    
+    def sanitize_objectids(obj):
+        """Recursively convert ObjectId to string"""
+        if isinstance(obj, ObjectId):
+            return str(obj)
+        elif isinstance(obj, dict):
+            return {k: sanitize_objectids(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [sanitize_objectids(item) for item in obj]
+        return obj
+    
+    pets_raw = await db.pets.find({"owner_email": current_user["email"]}, {"_id": 0}).to_list(50)
+    pets = [sanitize_objectids(p) for p in pets_raw]
     
     # Calculate overall_score using the same weighted scoring as /api/pet-score/{id}/score_state
     # This ensures consistency across all frontend components
