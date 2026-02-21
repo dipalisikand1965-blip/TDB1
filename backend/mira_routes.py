@@ -11317,13 +11317,32 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
         if or_match:
             choice1 = or_match.group(1).strip().title()
             choice2 = or_match.group(2).strip().title()
-            quick_replies = [choice1, choice2, "Both"]
+            quick_replies = [
+                build_quick_reply_chip(choice1, f"{choice1}.", "refine", domain="general"),
+                build_quick_reply_chip(choice2, f"{choice2}.", "refine", domain="general"),
+                build_quick_reply_chip("Both", "Both.", "refine", domain="general")
+            ]
     
-    # If we found quick replies, always add "Something else" option
+    # If we found quick replies, ensure they're all Bible-compliant chips
     if quick_replies:
-        quick_replies.append("Something else")
+        # Convert any string replies to full chip objects
+        compliant_replies = []
+        for reply in quick_replies:
+            if isinstance(reply, str):
+                # Convert string to full chip
+                compliant_replies.append(build_quick_reply_chip(reply, f"{reply}.", "continue", domain="general"))
+            elif isinstance(reply, dict):
+                # Already a chip object
+                compliant_replies.append(reply)
+        
+        # BIBLE COMPLIANCE: Always add cancel/defer option (Section 11.3)
+        if not any(r.get("label", "").lower() in ["something else", "not now", "cancel"] for r in compliant_replies):
+            compliant_replies.append(build_quick_reply_chip("Something else", "Something else.", "continue", domain="general"))
+        
+        # BIBLE COMPLIANCE: Max 6 chips, min 3 for clarify mode
+        return compliant_replies[:6]
     
-    return quick_replies[:4]  # Max 4 options
+    return quick_replies
 
 def needs_research(message: str) -> bool:
     """Check if the message requires web research for factual information"""
