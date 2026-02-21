@@ -11140,7 +11140,17 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
     # ═══════════════════════════════════════════════════════════════════════════
     # PATTERN 1: Food/Diet Questions
     # ═══════════════════════════════════════════════════════════════════════════
-    if any(term in response_lower for term in ["everyday meals", "regular meals", "treats/snacks", "treats or snacks", "occasional treats"]):
+    
+    # HIGHEST PRIORITY: Training vs Chew/Occupy patterns (must be checked FIRST)
+    # These are the most specific patterns for treat usage questions
+    if any(term in response_lower for term in ["training & frequent rewards", "training/rewards", "training or chew", "chew/occupy", "chew/snack", "snack time", "occupy time", "frequent rewards", "training treats", "reward treats"]):
+        quick_replies = [
+            "Training/rewards",
+            "Chew/occupy time",
+            "Both"
+        ]
+    
+    elif any(term in response_lower for term in ["everyday meals", "regular meals", "treats/snacks", "treats or snacks", "occasional treats"]):
         quick_replies = [
             f"Regular meals for {pet_ref}",
             "Treats & snacks",
