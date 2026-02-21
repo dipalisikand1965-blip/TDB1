@@ -15,7 +15,7 @@
 - **User:** `dipali@clubconcierge.in` / `test123`
 - **Admin:** `aditya` / `lola4304`
 - **Test URL:** `/mira-demo?debug=1`
-- **API URL:** `https://doggy-soul-app.preview.emergentagent.com`
+- **API URL:** `https://mira-soul-sync-1.preview.emergentagent.com`
 
 ---
 

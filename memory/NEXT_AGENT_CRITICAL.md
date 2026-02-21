@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://doggy-soul-app.preview.emergentagent.com
+https://mira-soul-sync-1.preview.emergentagent.com
 
 ---
 

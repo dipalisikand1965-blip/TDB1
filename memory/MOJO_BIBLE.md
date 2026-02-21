@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://doggy-soul-app.preview.emergentagent.com
+https://mira-soul-sync-1.preview.emergentagent.com
 ```
 
 ---

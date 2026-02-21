@@ -304,7 +304,7 @@ Test Pets:
 ## Services
 - Backend: Running on port 8001
 - Frontend: Running on port 3000
-- Preview URL: https://doggy-soul-app.preview.emergentagent.com
+- Preview URL: https://mira-soul-sync-1.preview.emergentagent.com
 
 ---
 

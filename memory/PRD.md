@@ -151,6 +151,6 @@ See `/app/memory/BIBLE_INDEX.md` for complete list.
 
 ## URLs
 
-- **Preview**: https://doggy-soul-app.preview.emergentagent.com
+- **Preview**: https://mira-soul-sync-1.preview.emergentagent.com
 - **Production**: https://thedoggycompany.in
 - **Sync**: Use "Replace deployment" on Emergent platform

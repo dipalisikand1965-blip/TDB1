@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://doggy-soul-app.preview.emergentagent.com
+**Preview URL:** https://mira-soul-sync-1.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
