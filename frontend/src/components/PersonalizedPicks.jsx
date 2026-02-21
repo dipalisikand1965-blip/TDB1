@@ -244,15 +244,24 @@ const PersonalizedPicks = ({
         }
       } catch (err) {
         console.debug('Failed to fetch recommendations:', err);
-        // Fallback to general recommendations
+        // Fallback to pillar-specific products from product-box
         try {
-          const res = await fetch(`${API_URL}/api/products?limit=${maxProducts}&is_recommended=true`);
+          const res = await fetch(`${API_URL}/api/product-box/products?limit=${maxProducts}&pillar=${pillar}`);
           if (res.ok) {
             const data = await res.json();
             setRecommendations(data.products || []);
           }
         } catch (e) {
-          console.debug('Fallback also failed:', e);
+          // Final fallback - get any products
+          try {
+            const finalRes = await fetch(`${API_URL}/api/product-box/products?limit=${maxProducts}`);
+            if (finalRes.ok) {
+              const finalData = await finalRes.json();
+              setRecommendations(finalData.products || []);
+            }
+          } catch (finalErr) {
+            console.debug('All fallbacks failed:', finalErr);
+          }
         }
       } finally {
         setLoading(false);
