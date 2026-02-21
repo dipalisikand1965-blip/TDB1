@@ -13801,6 +13801,22 @@ Pick one, and I'll give you a simple starting point! 🐾"""
             user_city = city.title()
             break
     
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # BIBLE SECTION 0.07 GUARDRAIL: PLACES NEVER FIRES FOR NON-LOCATION INTENTS
+    # This is a DUPLICATE GUARD to match lines 5726-5736 (same logic, different code path)
+    # ═══════════════════════════════════════════════════════════════════════════════
+    NON_LOCATION_INTENTS_2 = [
+        "reminder", "checkup", "schedule", "health check", "vaccination", 
+        "appointment", "book", "set up", "follow up", "note", "add to",
+        "tell the vet", "mention to", "remind me", "alert me"
+    ]
+    is_non_location_intent_2 = any(intent in message_lower for intent in NON_LOCATION_INTENTS_2)
+    
+    # If it's a non-location intent, BLOCK Places API entirely
+    if is_non_location_intent_2 and detected_place_type:
+        logger.info(f"[PLACES GUARD 2] Blocked Places - non-location intent detected in: '{message_lower[:50]}...'")
+        detected_place_type = None  # Clear to prevent Places lookup
+    
     if detected_place_type and (is_location_query or user_city):
         try:
             # Fetch nearby places
