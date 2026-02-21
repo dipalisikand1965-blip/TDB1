@@ -1215,7 +1215,7 @@ const PersonalizedPicksPanel = ({
                       hapticFeedback.buttonTap();
                       handlePillarSelect(pillar.id);
                     }}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-full whitespace-nowrap text-sm transition-all flex-shrink-0 ${
                       activePillar === pillar.id
                         ? `bg-gradient-to-r ${pillar.gradient} text-white shadow-lg`
                         : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
