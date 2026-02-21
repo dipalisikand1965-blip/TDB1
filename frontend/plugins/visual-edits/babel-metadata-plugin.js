@@ -1718,8 +1718,8 @@ const babelMetadataPlugin = ({ types: t }) => {
       // Add metadata attributes to React components (capitalized JSX)
       JSXElement(jsxPath, state) {
         // Skip large/complex files to prevent babel crashes
-        const filename = state.filename || '';
-        if (EXCLUDED_FILES.some(f => filename.endsWith(f))) return;
+        const currentFile = state.filename || '';
+        if (EXCLUDED_FILES.some(f => currentFile.endsWith(f))) return;
 
         const openingElement = jsxPath.node.openingElement;
         if (!openingElement?.name) return;
