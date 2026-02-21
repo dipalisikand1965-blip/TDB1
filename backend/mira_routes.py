@@ -4988,8 +4988,26 @@ async def mira_os_understand_with_products(
         # TOPIC SHIFT DETECTION - Detect when conversation changes topic
         # If user switches from Travel to Health, reset context
         # ═══════════════════════════════════════════════════════════════════════════
-        current_pillar = detect_pillar(request.input)
+        
+        # First check conversation history for previous pillar
         previous_pillar = None
+        if request.conversation_history and len(request.conversation_history) > 0:
+            for msg in reversed(request.conversation_history):
+                if msg.get('role') == 'user':
+                    prev = detect_pillar(msg.get('content', ''))
+                    if prev != 'advisory':  # Only use meaningful previous pillars
+                        previous_pillar = prev
+                        break
+        
+        # Detect current pillar - pass previous as context for follow-ups
+        current_pillar = detect_pillar(request.input, current_pillar=previous_pillar)
+        
+        # If current detected as default "advisory" but we have a previous pillar,
+        # this is likely a follow-up ("show me cheaper", "book that one") — keep previous pillar
+        if current_pillar == 'advisory' and previous_pillar and previous_pillar != 'advisory':
+            current_pillar = previous_pillar
+            logger.info(f"[PILLAR] Follow-up detected, keeping previous pillar: {previous_pillar}")
+        
         topic_shift_detected = False
         
         # ═══════════════════════════════════════════════════════════════════════════
