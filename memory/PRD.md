@@ -34,11 +34,16 @@ The user, Dipali, founder of a premium pet concierge service, wants to build a "
    - **File**: `/app/frontend/src/components/Mira/PersonalizedPicksPanel.jsx` lines 744-772
    - **Test Result**: VERIFIED WORKING (iteration_225.json)
 
-6. **Quick Reply Duplication** ✅ FIXED (Session 5 - February 21, 2026)
-   - **Issue**: Quick replies appeared both inline AND at bottom of screen
-   - **Fix**: Updated duplicate check in MiraDemoPage.jsx to match ChatMessage.jsx extraction logic
-   - **File**: `/app/frontend/src/pages/MiraDemoPage.jsx` lines 4207-4245
-   - **Test Result**: VERIFIED WORKING - "Skipping bottom section - already rendered inline with message"
+6. **Quick Reply System Overhaul** ✅ FIXED (Session 5 - February 21, 2026)
+   - **Issue 1**: Quick replies appeared in BOTH header bar AND message body (duplicate)
+   - **Issue 2**: Quick replies showed generic options ("Yes, please", "Tell me more") instead of contextual options matching the question
+   - **Fix 1**: Removed bottom quick replies from MiraDemoPage.jsx AND disabled body chips in ChatMessage.jsx - now ONLY header bar shows quick replies
+   - **Fix 2**: Enhanced `generate_intelligent_quick_replies` in backend with patterns for sweet/savoury, size, and improved "X or Y?" extraction
+   - **Files**: 
+     - `/app/frontend/src/pages/MiraDemoPage.jsx` lines 4201-4205 (comment only)
+     - `/app/frontend/src/components/Mira/ChatMessage.jsx` lines 1141-1149 (commented out QuickReplyChips)
+     - `/app/backend/mira_routes.py` lines 11555-11630 (improved pattern matching)
+   - **Test Result**: VERIFIED WORKING - Header shows contextual options, body chips = 0
 
 7. **Build a Brilliant Onboarding** - Design and build the new, single-flow "Soul Builder." (BACKLOG)
 
