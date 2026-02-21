@@ -335,14 +335,15 @@ class TestPlacesResultsFieldConsistency:
         assert response.status_code == 200
         data = response.json()
         
-        places_results = data.get("places_results", [])
-        nearby_places = data.get("nearby_places", [])
+        places_results = data.get("places_results") or []
+        nearby_places_obj = data.get("nearby_places") or {}
+        nearby_places_list = nearby_places_obj.get("places", []) if isinstance(nearby_places_obj, dict) else []
         
         print(f"  places_results: {len(places_results)} items")
-        print(f"  nearby_places: {len(nearby_places)} items")
+        print(f"  nearby_places: {len(nearby_places_list)} items")
         
         # At least one should have results for a valid location query
-        total = len(places_results) + len(nearby_places)
+        total = len(places_results) + len(nearby_places_list)
         
         if total > 0:
             print(f"✓ Valid location query returned {total} places")
