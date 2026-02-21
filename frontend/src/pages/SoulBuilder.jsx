@@ -377,7 +377,6 @@ const SoulBuilder = () => {
       console.log('[SoulBuilder] Save error (non-blocking):', error.message);
     }
   };
-  };
   
   // Handle multi-select
   const toggleMultiSelect = (value) => {
