@@ -11431,9 +11431,32 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
     # ═══════════════════════════════════════════════════════════════════════════
     # PATTERN 2: Allergy/Sensitivity Questions (more specific - only when ASKING)
     # Only match if Mira is explicitly ASKING about allergies, not just mentioning them
+    # IMPORTANT: Do NOT match if allergies are just mentioned in context (e.g., "I know Lola's allergies")
     # ═══════════════════════════════════════════════════════════════════════════
-    elif any(term in response_lower for term in ["does .* have allergies", "any allergies", "allergies i should know", "sensitive to anything", "allergic to anything"]) or \
-         (any(term in response_lower for term in ["allergies", "allergic"]) and "?" in response_text[-100:] and "allergy" not in response_lower[:200]):
+    is_asking_about_allergies = (
+        any(term in response_lower for term in [
+            "does .* have allergies", 
+            "any allergies i should know",
+            "any allergies?",
+            "sensitive to anything?", 
+            "allergic to anything?",
+            "tell me about allergies",
+            "let me know about allergies"
+        ]) or
+        # Only if the question mark is IMMEDIATELY after allergy mention (within 30 chars)
+        (
+            "allergi" in response_lower and 
+            "?" in response_text and 
+            response_lower.find("?") - response_lower.rfind("allergi") < 30 and
+            response_lower.rfind("allergi") > response_lower.find("?") - 40 and
+            # Exclude "I know" patterns
+            "i know" not in response_lower[:response_lower.rfind("allergi")] and
+            "i have" not in response_lower[:response_lower.rfind("allergi")] and
+            "has allergies to" not in response_lower
+        )
+    )
+    
+    if is_asking_about_allergies:
         quick_replies = [
             f"No allergies for {pet_ref}",
             "Yes, has food allergies",
