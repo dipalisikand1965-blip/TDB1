@@ -12,6 +12,9 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
 - **Pillar Pages**: 15 themed pages (Celebrate, Care, Dine, Stay, etc.)
 - **E-commerce**: Products from The Doggy Bakery via Shopify sync
 - **Voice**: TTS support with ElevenLabs (primary) and OpenAI (fallback)
+- **Pet Vault**: Complete health records management (vaccines, meds, vet visits)
+- **Birthday Engine**: Celebration detection with promotional capabilities
+- **Breed Knowledge**: Personalized tips based on pet breed
 
 ### User Personas
 1. **Pet Parents (Members)**: Primary users who use Mira for pet care, services, and shopping
@@ -34,13 +37,22 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
 - [x] **Services Tab Fix** - All service cards link to correct topics
 - [x] **Ticket Not Found Fix** - Multi-endpoint ticket fetching
 - [x] **Ticket Reply** - Verified working with optimistic UI
+- [x] **My Pets Page** - Fixed ObjectId serialization, shows 8 pets with soul scores
+- [x] **Dashboard Page** - All 15+ tabs working correctly
+- [x] **Pet Vault** - Verified vaccines, medications, vet visits, weight history
+- [x] **Birthday Engine** - 3 upcoming celebrations detected (Luna's bday in 22 days)
+- [x] **Breed Tips** - Shih Tzu specific tips active
+- [x] **SSOT Document** - Created comprehensive /app/memory/MIRA_OS_SSOT.md
+- [x] **Engagement System** - 400 Paw Points, streaks working
 
 ### 🔴 Blocked
 - [ ] Razorpay Checkout - Awaiting API keys from user
 - [ ] Screenshot tool - Platform media limit exceeded
+- [ ] WhatsApp Integration - Awaiting API keys
 
 ### 🟠 In Progress
 - [ ] Post-deployment verification at thedoggycompany.in
+- [ ] Automated vaccination reminders setup
 
 ---
 
