@@ -186,8 +186,8 @@ class TestPlacesLocationFix(TestAuthSetup):
         data = response.json()
         
         # Check that response doesn't have Mumbai-based places
-        nearby_places = data.get("nearby_places", [])
-        places_results = data.get("conversation_contract", {}).get("places_results", [])
+        nearby_places = data.get("nearby_places") or []
+        places_results = data.get("conversation_contract", {}).get("places_results") or []
         
         # If places are returned, they should be from user's actual city, not Mumbai
         all_places = nearby_places + places_results
@@ -223,8 +223,8 @@ class TestPlacesLocationFix(TestAuthSetup):
         data = response.json()
         
         # Should have 0 places for non-location intent
-        nearby_places = data.get("nearby_places", [])
-        places_results = data.get("conversation_contract", {}).get("places_results", [])
+        nearby_places = data.get("nearby_places") or []
+        places_results = data.get("conversation_contract", {}).get("places_results") or []
         
         total_places = len(nearby_places) + len(places_results)
         assert total_places == 0, f"Health checkup should not return places, got {total_places}"
