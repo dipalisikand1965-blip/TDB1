@@ -11600,7 +11600,57 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
         ]
     
     # ═══════════════════════════════════════════════════════════════════════════
-    # PATTERN 11: Generic Yes/No or Confirmation Questions (LOWER PRIORITY)
+    # PATTERN 11: Travel Planning Questions
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["travel", "trip", "vacation", "holiday", "journey", "flying", "road trip"]):
+        quick_replies = [
+            build_quick_reply_chip("Domestic trip", "It's a domestic trip.", "refine", domain="travel"),
+            build_quick_reply_chip("International", "It's an international trip.", "refine", domain="travel"),
+            build_quick_reply_chip("Not decided yet", "I haven't decided yet.", "continue", domain="travel")
+        ]
+    
+    elif any(term in response_lower for term in ["car or flight", "drive or fly", "road trip or fly", "how are you traveling"]):
+        quick_replies = [
+            build_quick_reply_chip("By car", "We'll be driving.", "refine", domain="travel"),
+            build_quick_reply_chip("By flight", "We'll be flying.", "refine", domain="travel"),
+            build_quick_reply_chip("Train/Bus", "By train or bus.", "refine", domain="travel"),
+            build_quick_reply_chip("Not sure", "Not decided yet.", "continue", domain="travel")
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 12: Training Questions
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["training", "obedience", "behavior", "commands", "tricks"]):
+        quick_replies = [
+            build_quick_reply_chip("Basic obedience", "Basic obedience training.", "refine", domain="learn"),
+            build_quick_reply_chip("Specific behavior", "Fix a specific behavior issue.", "refine", domain="learn"),
+            build_quick_reply_chip("Fun tricks", "Teach some fun tricks!", "refine", domain="learn"),
+            build_quick_reply_chip("Not sure", "Help me decide.", "continue", domain="learn")
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 13: Boarding/Daycare Questions
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["boarding", "daycare", "pet sitting", "pet sitter", "kennel", "leave them"]):
+        quick_replies = [
+            build_quick_reply_chip("Daycare", "Just for the day.", "refine", domain="stay"),
+            build_quick_reply_chip("Overnight boarding", "Need overnight stay.", "refine", domain="stay"),
+            build_quick_reply_chip("In-home sitter", "Someone to visit home.", "refine", domain="stay"),
+            build_quick_reply_chip("Not sure", "Help me choose.", "continue", domain="stay")
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 14: Emergency/Urgent Questions
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["emergency", "urgent", "immediately", "right now", "bleeding", "not breathing", "unconscious"]):
+        quick_replies = [
+            build_quick_reply_chip("Find emergency vet", "Find nearest emergency vet!", "execute", domain="emergency"),
+            build_quick_reply_chip("Call vet now", "Help me call a vet.", "execute", domain="emergency"),
+            build_quick_reply_chip("First aid tips", "What should I do first?", "continue", domain="emergency")
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 15: Generic Yes/No or Confirmation Questions (LOWER PRIORITY)
     # Only match if no more specific pattern matched above
     # ═══════════════════════════════════════════════════════════════════════════
     elif any(term in response_lower for term in ["shall i", "should i", "want me to", "does that sound", "is that okay"]) and " or " not in response_lower:
