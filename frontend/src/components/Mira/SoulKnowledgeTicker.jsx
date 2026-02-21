@@ -189,7 +189,11 @@ const SoulKnowledgeTicker = ({
       <div 
         className={`soul-knowledge-ticker ${className} ${isGlowing ? 'ticker-glowing' : ''}`}
         onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
+        onMouseLeave={() => {
+          setIsPaused(false);
+          // Safety: force unpause after 3 seconds in case mouseleave doesn't fire
+          setTimeout(() => setIsPaused(false), 3000);
+        }}
         data-testid="soul-knowledge-ticker"
       >
         {/* Soul Score Badge - Left side, always visible - Opens MOJO Profile Modal */}
