@@ -453,6 +453,26 @@ const MiraDemoPage = () => {
   } = useProactiveAlerts(pet);
   
   // ═══════════════════════════════════════════════════════════════════════════════
+  // DIETARY CONTEXT CHIP - Shows active pet allergies in food flows
+  // "Memory is only real if it changes behaviour immediately."
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const [showDietaryContext, setShowDietaryContext] = useState(false);
+  const [dietaryContextExpanded, setDietaryContextExpanded] = useState(false);
+  
+  // Auto-show dietary context chip in food-related conversations
+  useEffect(() => {
+    const lastMessage = conversationHistory[conversationHistory.length - 1];
+    const messageContent = (lastMessage?.content || '').toLowerCase();
+    
+    const foodKeywords = ['treat', 'food', 'meal', 'diet', 'kibble', 'nutrition', 'eat', 'feed', 'snack', 'cake'];
+    const isFoodRelated = foodKeywords.some(kw => messageContent.includes(kw));
+    
+    // Show if in food flow AND pet has allergies
+    const petAllergies = getPetAllergies(pet);
+    setShowDietaryContext(isFoodRelated && petAllergies.length > 0);
+  }, [conversationHistory, pet]);
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
   // TOAST - For commit action confirmations (Bible Section 1.5)
   // ═══════════════════════════════════════════════════════════════════════════════
   const { toast } = useToast();
