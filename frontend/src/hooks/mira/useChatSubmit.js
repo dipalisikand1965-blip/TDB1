@@ -69,6 +69,7 @@ const useChatSubmit = (config) => {
     setConversationStage,
     
     // Processing State
+    isProcessing,  // Added to check if request is already in progress
     setIsProcessing,
     setShowSkeleton,
     setIsTyping,
