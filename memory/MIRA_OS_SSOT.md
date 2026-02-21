@@ -505,6 +505,36 @@ curl -s "$API_URL/api/breed/tips?breed=Shih%20Tzu" | python3 -m json.tool
 |------|--------|---------|
 | 2026-02-21 | Agent | Initial SSOT creation |
 | 2026-02-21 | Agent | Fixed ObjectId serialization, verified all hidden features |
+| 2026-02-21 | Agent (Session 2) | Fixed Soul Learning from conversations, added learned_facts population |
+| 2026-02-21 | Agent (Session 2) | Added Debug & Testing Tools section, Document Vault documentation |
+
+---
+
+## Soul Learning Data Flow
+
+```
+User Message (e.g., "Mystique loves chicken jerky")
+       ↓
+/api/mira/os/understand-with-products
+       ↓
+extract_soul_data_from_response() [soul_first_logic.py]
+       ↓
+Extracts: {favorite_treats: "chicken jerky", category: "diet"}
+       ↓
+write_soul_data_to_pet() [soul_first_logic.py]
+       ↓
+Updates MongoDB:
+  - doggy_soul_answers.favorite_treats = "chicken jerky"
+  - doggy_soul_meta.favorite_treats = {source: "mira", confidence: 85%}
+  - learned_facts.push({category: "loves", content: "Loves chicken jerky"})
+       ↓
+Recalculates Soul Score
+       ↓
+Data visible in:
+  - MOJO tab (learned facts)
+  - mira-demo header (soul score ring)
+  - Pet profile API
+```
 
 ---
 
