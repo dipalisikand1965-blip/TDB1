@@ -13846,7 +13846,7 @@ Pick one, and I'll give you a simple starting point! 🐾"""
                 # Fetch nearby places using user's actual city
                 city_for_search = user_city
             
-            if detected_place_type == "vet":
+                if detected_place_type == "vet":
                 # Check if emergency
                 is_emergency_vet = any(word in message_lower for word in ["emergency", "urgent", "immediately", "now", "asap", "critical"])
                 
