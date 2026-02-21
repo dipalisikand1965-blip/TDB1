@@ -356,23 +356,6 @@ const PillarPageLayout = ({
                 ))}
               </div>
             </div>
-              </button>
-            </div>
-          )}
-          
-          {/* If no subcategories, just show the "shopping for other" link */}
-          {(!showSubcategories || subcategories.length === 0) && (
-            <div className="flex items-center justify-end px-4 py-3">
-              <button 
-                onClick={() => setShoppingForOther(!shoppingForOther)}
-                className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-400 hover:text-gray-600 transition-all"
-                data-testid="shopping-for-other"
-              >
-                <PawPrint className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Shopping for another dog?</span>
-                <span className="sm:hidden">🐕</span>
-              </button>
-            </div>
           )}
         </div>
       </div>
@@ -389,9 +372,7 @@ const PillarPageLayout = ({
               searchQuery,
               selectedSubcategory,
               subcategories,
-              shoppingForOther,
               setActivePet: setCurrentPet,
-              setShoppingForOther,
               setSelectedSubcategory
             })
           : children}
