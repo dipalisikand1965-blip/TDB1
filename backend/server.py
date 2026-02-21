@@ -11649,10 +11649,22 @@ async def list_pet_profiles(
 @api_router.get("/pets/{pet_id}")
 async def get_pet_profile(pet_id: str):
     """Get a specific pet profile"""
+    from bson import ObjectId
+    
+    def sanitize_objectids(obj):
+        """Recursively convert ObjectId to string"""
+        if isinstance(obj, ObjectId):
+            return str(obj)
+        elif isinstance(obj, dict):
+            return {k: sanitize_objectids(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [sanitize_objectids(item) for item in obj]
+        return obj
+    
     pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
-    return pet
+    return sanitize_objectids(pet)
 
 
 @api_router.put("/pets/{pet_id}")
