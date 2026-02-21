@@ -2836,10 +2836,24 @@ async def understand_with_llm(
         # Check profile completeness - CRITICAL for OS behavior
         sensitivities = pet_context.get('sensitivities', []) or []
         allergies = pet_context.get('allergies', []) or []
-        health_conditions = pet_context.get('health_conditions', []) or []
-        preferences = pet_context.get('favorites', []) or []
-        traits = pet_context.get('traits', []) or []
+        health_conditions = pet_context.get('health_conditions', []) or pet_context.get('medical_conditions', []) or []
+        preferences = pet_context.get('favorites', []) or pet_context.get('favorite_treats', []) or []
+        traits = pet_context.get('traits', []) or pet_context.get('personality', []) or []
         learned_facts = pet_context.get('learned_facts', []) or []
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # NEW: Extract full soul data for richer personalization
+        # ═══════════════════════════════════════════════════════════════════════════
+        anxiety_triggers = pet_context.get('anxiety_triggers', []) or []
+        dislikes = pet_context.get('dislikes', []) or []
+        behavior_with_dogs = pet_context.get('behavior_with_dogs', '')
+        behavior_with_humans = pet_context.get('behavior_with_humans', '')
+        separation_anxiety = pet_context.get('separation_anxiety', '')
+        noise_sensitivity = pet_context.get('noise_sensitivity', '')
+        love_language = pet_context.get('love_language', '')
+        personality_tag = pet_context.get('personality_tag', '')
+        energy_level = pet_context.get('energy_level', '')
+        handling_sensitivity = pet_context.get('handling_sensitivity', '')
         
         # Determine what's missing
         missing_data = []
@@ -2853,19 +2867,42 @@ async def understand_with_llm(
         profile_status = "COMPLETE" if not missing_data else f"INCOMPLETE - missing: {', '.join(missing_data)}"
         
         # Build PET-FIRST context (individual pet data BEFORE breed data)
+        # Now includes FULL BEHAVIORAL DATA from Pet Soul
         pet_info = f"""
 ═══════════════════════════════════════════════════════════
 🐾 THIS PET (USE THIS FIRST - NOT BREED GENERALIZATIONS):
 ═══════════════════════════════════════════════════════════
 Name: {pet_name}
 Age: {pet_context.get('age', 'Unknown')}
-What we KNOW about {pet_name} specifically:
+Soul Score: {pet_context.get('soul_score', 'Unknown')}%
+
+🔹 PERSONALITY & BEHAVIOR (USE THIS DATA!):
 - Personality traits: {', '.join(traits) if traits else 'Still learning about them'}
+- Personality tag: {personality_tag or 'Unknown'}
+- Energy level: {energy_level or 'Unknown'}
+- Love language: {love_language or 'Unknown'}
+- With other dogs: {behavior_with_dogs or 'Unknown'}
+- With humans: {behavior_with_humans or 'Unknown'}
+- Handling/touch: {handling_sensitivity or 'Unknown'}
+
+🔹 WHAT MAKES {pet_name.upper()} ANXIOUS:
+- Anxiety triggers: {', '.join(anxiety_triggers) if anxiety_triggers else 'None identified yet'}
+- Separation anxiety: {separation_anxiety or 'Not specified'}
+- Noise sensitivity: {noise_sensitivity or 'Not specified'}
+
+🔹 HEALTH & SAFETY:
 - Food sensitivities: {', '.join(sensitivities) if sensitivities else 'None known yet'}
 - Known allergies: {', '.join(allergies) if allergies else 'None specified'}
+- Health conditions: {', '.join(health_conditions) if health_conditions else 'None specified'}
+
+🔹 PREFERENCES:
 - Favorites: {', '.join(preferences) if preferences else 'Still discovering'}
-- Learned facts: {', '.join([f.get('content', '') for f in learned_facts[:3]]) if learned_facts else 'None yet'}
-- Profile completeness: {profile_status}
+- Dislikes: {', '.join(dislikes) if dislikes else 'None specified'}
+
+🔹 LEARNED FROM CONVERSATIONS:
+{chr(10).join(['- ' + (f.get('fact', '') or f.get('content', '')) for f in learned_facts[:5]]) if learned_facts else '- None yet'}
+
+Profile completeness: {profile_status}
 
 ⚠️ CRITICAL RULE: Always talk about {pet_name} as an INDIVIDUAL first.
 DO NOT say "As a {breed_name}..." or "{breed_name}s are typically..."
