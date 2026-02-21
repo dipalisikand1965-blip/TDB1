@@ -84,6 +84,16 @@ This document is the CANONICAL source of truth for all Mira decisions, guardrail
 - **Fix**: Skip Places if no city, set mode='clarify'
 - **Status**: FIXED
 
+### 3.4 Picks Panel Wrong Products (Feb 2026)
+- **Issue**: Celebrate tab showing "Training Treats" and grooming items
+- **Root Cause**: `intent_driven` and `personalized` sections showed REGARDLESS of pillar tab
+- **Fix**: Added pillar filter conditions:
+  - `intent_driven` only shows when `(!activePillar || activePillar === 'all' || activePillar === 'general')`
+  - `personalized` only shows when `(!activePillar || activePillar === 'all' || activePillar === 'general' || activePillar === 'celebrate')`
+  - `timely_picks` only shows when `(!activePillar || activePillar === 'all' || activePillar === 'general')`
+- **File**: `PersonalizedPicksPanel.jsx` lines 1280, 1355, 1450
+- **Status**: FIXED
+
 ---
 
 ## SECTION 4: DECISION LOG
