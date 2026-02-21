@@ -464,8 +464,8 @@ const MembershipOnboarding = () => {
         });
         navigate(`/membership/payment?${params.toString()}`);
       } else {
-        // If free or already processed, go to my-pets
-        navigate('/my-pets');
+        // Free plan or already processed → go to Soul Builder to deepen the profile
+        navigate('/soul-builder');
       }
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
