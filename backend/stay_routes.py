@@ -464,9 +464,9 @@ async def get_boarding_facilities(
     
     projection = {"_id": 0}
     
-    # Query both collections and combine results
-    facilities_1 = await db.stay_boarding_facilities.find(query, projection).skip(skip).limit(limit).to_list(limit)
-    facilities_2 = await db.pet_boarding.find(active_query, projection).skip(skip).limit(limit).to_list(limit)
+    # Query both collections and combine results - get all first, then paginate
+    facilities_1 = await db.stay_boarding_facilities.find(query, projection).to_list(500)
+    facilities_2 = await db.pet_boarding.find(active_query, projection).to_list(500)
     
     # Combine and deduplicate by name+city
     seen = set()
@@ -482,6 +482,9 @@ async def get_boarding_facilities(
     
     total = len(combined)
     
+    # Apply pagination
+    paginated = combined[skip:skip + limit]
+    
     # Get cities and types for filters from both collections
     cities_1 = await db.stay_boarding_facilities.distinct("city")
     cities_2 = await db.pet_boarding.distinct("city", {"status": "active"})
@@ -492,7 +495,7 @@ async def get_boarding_facilities(
     types = list(set(types_1 + types_2)) or ["Home-style", "Premium", "Private", "Luxury"]
     
     return {
-        "facilities": combined[:limit],
+        "facilities": paginated,
         "total": total,
         "cities": sorted(cities),
         "boarding_types": types
