@@ -216,7 +216,7 @@ const InboxRow = ({
           ${isUnread ? 'bg-gradient-to-r from-pink-500/10 to-purple-500/5 border-l-2 border-l-pink-400' : 'opacity-80 hover:opacity-100'}
           ${isSelected 
             ? 'bg-white/5 border-l-2 border-l-pink-500 shadow-[inset_0_0_20px_rgba(236,72,153,0.05)]' 
-            : 'hover:bg-white/[0.02]'
+            : 'hover:bg-white/5'
           }
           ${className}
         `}
