@@ -293,30 +293,42 @@ const PillarPageLayout = ({
                         setSelectedSubcategory(subcat.id);
                         onSubcategoryChange?.(subcat.id);
                       }}
-                      className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-sm transition-all ${
+                      className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-2xl font-medium text-xs sm:text-sm transition-all min-w-[80px] ${
                         selectedSubcategory === subcat.id
                           ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                          : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                          : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-purple-300'
                       }`}
                       data-testid={`subcat-${subcat.id}`}
                     >
-                      <span>{subcat.emoji}</span>
-                      <span className="whitespace-nowrap">{subcat.name}</span>
+                      {subcat.image ? (
+                        <div className="w-12 h-12 rounded-lg overflow-hidden mb-1">
+                          <img src={subcat.image} alt={subcat.name} className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <span className="text-lg">{subcat.emoji}</span>
+                      )}
+                      <span className="whitespace-nowrap text-center leading-tight">{subcat.name}</span>
                     </button>
                   ) : (
                     <Link
                       key={subcat.id}
                       to={subcat.path}
                       onClick={() => setSelectedSubcategory(subcat.id)}
-                      className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-sm transition-all ${
+                      className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-2xl font-medium text-xs sm:text-sm transition-all min-w-[80px] ${
                         selectedSubcategory === subcat.id
                           ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                          : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                          : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-purple-300'
                       }`}
                       data-testid={`subcat-${subcat.id}`}
                     >
-                      <span>{subcat.emoji}</span>
-                      <span className="whitespace-nowrap">{subcat.name}</span>
+                      {subcat.image ? (
+                        <div className="w-12 h-12 rounded-lg overflow-hidden mb-1">
+                          <img src={subcat.image} alt={subcat.name} className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <span className="text-lg">{subcat.emoji}</span>
+                      )}
+                      <span className="whitespace-nowrap text-center leading-tight">{subcat.name}</span>
                     </Link>
                   )
                 ))}
