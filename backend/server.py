@@ -2918,12 +2918,32 @@ async def chat_with_mira_legacy(request: ChatRequest):
 - Weight: {identity.get('weight', pet.get('weight', 'Not specified'))}
 """
                         # Add allergies (CRITICAL for recommendations) - PUT FIRST
-                        allergies = preferences.get('allergies', pet.get('allergies', []))
-                        if allergies:
-                            if isinstance(allergies, list) and allergies:
-                                pet_soul_context += f"- ⚠️ ALLERGIES: {', '.join(allergies)} - NEVER recommend products with these!\n"
-                            elif isinstance(allergies, str) and allergies and allergies.lower() != 'none':
-                                pet_soul_context += f"- ⚠️ ALLERGIES: {allergies} - NEVER recommend products with these!\n"
+                        # BIBLE COMPLIANCE: Merge allergies from ALL sources - preferences, doggy_soul_answers, root level
+                        all_allergies = set()
+                        
+                        # Source 1: preferences.allergies
+                        pref_allergies = preferences.get('allergies', [])
+                        if isinstance(pref_allergies, list):
+                            all_allergies.update([a for a in pref_allergies if a and str(a).lower() != 'none'])
+                        elif pref_allergies and str(pref_allergies).lower() != 'none':
+                            all_allergies.add(str(pref_allergies))
+                        
+                        # Source 2: doggy_soul_answers.allergies or food_allergies
+                        soul_allergies = doggy_soul.get('allergies', doggy_soul.get('food_allergies', []))
+                        if isinstance(soul_allergies, list):
+                            all_allergies.update([a for a in soul_allergies if a and str(a).lower() not in ['none', 'unknown']])
+                        elif soul_allergies and str(soul_allergies).lower() not in ['none', 'unknown']:
+                            all_allergies.add(str(soul_allergies))
+                        
+                        # Source 3: Root level pet.allergies
+                        root_allergies = pet.get('allergies', [])
+                        if isinstance(root_allergies, list):
+                            all_allergies.update([a for a in root_allergies if a and str(a).lower() != 'none'])
+                        elif root_allergies and str(root_allergies).lower() != 'none':
+                            all_allergies.add(str(root_allergies))
+                        
+                        if all_allergies:
+                            pet_soul_context += f"- ⚠️ ALLERGIES: {', '.join(sorted(all_allergies))} - NEVER recommend products with these!\n"
                         
                         # Add preferences (for personalized recommendations)
                         if preferences:
