@@ -51,7 +51,7 @@ class TestBibleComplianceIteration222:
         response = self.session.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "What treats should I give Lola?",
             "session_id": f"test-dine-pillar-{int(time.time())}",
-            "pet_id": "pet-e6348b13c975"
+            "selected_pet_id": "pet-e6348b13c975"
         })
         
         assert response.status_code == 200, f"API returned {response.status_code}: {response.text}"
@@ -69,7 +69,7 @@ class TestBibleComplianceIteration222:
         response = self.session.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Show me some treats for my dog",
             "session_id": f"test-dine-picks-{int(time.time())}",
-            "pet_id": "pet-e6348b13c975"
+            "selected_pet_id": "pet-e6348b13c975"
         })
         
         assert response.status_code == 200
@@ -100,7 +100,7 @@ class TestBibleComplianceIteration222:
         response = self.session.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "I need a vet for Lola",  # Vet without location triggers clarify mode
             "session_id": f"test-qr-schema-{int(time.time())}",
-            "pet_id": "pet-e6348b13c975"
+            "selected_pet_id": "pet-e6348b13c975"
         })
         
         assert response.status_code == 200
@@ -153,7 +153,7 @@ class TestBibleComplianceIteration222:
         response = self.session.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "Find me a vet",  # No location = clarify mode expected
             "session_id": f"test-clarify-{int(time.time())}",
-            "pet_id": "pet-e6348b13c975"
+            "selected_pet_id": "pet-e6348b13c975"
         })
         
         assert response.status_code == 200
@@ -225,7 +225,7 @@ class TestBibleComplianceIteration222:
         chat_response = self.session.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "What are Lola's allergies? List them all.",
             "session_id": f"test-allergies-{int(time.time())}",
-            "pet_id": "pet-e6348b13c975"
+            "selected_pet_id": "pet-e6348b13c975"
         })
         
         assert chat_response.status_code == 200
@@ -278,7 +278,7 @@ class TestOSContextAllergyMerging:
         response = self.session.post(f"{BASE_URL}/api/mira/chat", json={
             "message": "What food is safe for Lola given her allergies?",
             "session_id": f"test-safety-gates-{int(time.time())}",
-            "pet_id": "pet-e6348b13c975"
+            "selected_pet_id": "pet-e6348b13c975"
         })
         
         assert response.status_code == 200
