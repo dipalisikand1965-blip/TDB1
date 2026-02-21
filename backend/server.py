@@ -7906,6 +7906,86 @@ async def get_related_products(product_id: str, limit: int = 4, pillar: str = No
     }
 
 
+
+# ==================== SOUL BUILDER SAVE ENDPOINT ====================
+
+@api_router.post("/pet-soul/save-answers")
+async def save_soul_builder_answers(request: Request, authorization: Optional[str] = Header(None)):
+    """
+    Save soul answers from the Soul Builder gamified questionnaire.
+    Creates or updates a pet with all soul answers.
+    """
+    try:
+        user = await get_user_from_token(authorization)
+        if not user:
+            raise HTTPException(status_code=401, detail="Authentication required")
+        
+        data = await request.json()
+        pet_name = data.get("pet_name", "")
+        soul_answers = data.get("soul_answers", {})
+        soul_score = data.get("soul_score", 0)
+        pet_data = data.get("pet_data", {})
+        
+        if not pet_name:
+            raise HTTPException(status_code=400, detail="Pet name required")
+        
+        # Find or create pet
+        existing_pet = await db.pets.find_one({
+            "name": {"$regex": f"^{pet_name}$", "$options": "i"},
+            "owner_email": user.get("email", "").lower()
+        })
+        
+        pet_id = existing_pet.get("id") if existing_pet else f"pet-{uuid.uuid4().hex[:12]}"
+        
+        # Build update document
+        update = {
+            "id": pet_id,
+            "name": pet_name,
+            "owner_email": user.get("email", "").lower(),
+            "doggy_soul_answers": soul_answers,
+            "soul_score": soul_score,
+            "overall_score": soul_score,
+            "breed": pet_data.get("breed") or data.get("breed", ""),
+            "gender": pet_data.get("gender", ""),
+            "birth_date": pet_data.get("birth_date", ""),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Extract key fields from answers into structured data
+        if soul_answers.get("food_allergies"):
+            update.setdefault("health", {})["allergies"] = [soul_answers["food_allergies"]] if isinstance(soul_answers["food_allergies"], str) else soul_answers["food_allergies"]
+        if soul_answers.get("separation_anxiety"):
+            update.setdefault("personality", {})["separation_anxiety"] = soul_answers["separation_anxiety"]
+        if soul_answers.get("loud_sounds"):
+            update.setdefault("personality", {})["noise_sensitivity"] = soul_answers["loud_sounds"]
+        if soul_answers.get("handling_comfort"):
+            update.setdefault("care", {})["handling_sensitivity"] = soul_answers["handling_comfort"]
+        
+        # Upsert pet
+        await db.pets.update_one({"id": pet_id}, {"$set": update}, upsert=True)
+        
+        # Link pet to user
+        await db.users.update_one(
+            {"email": user.get("email", "").lower()},
+            {"$addToSet": {"pets": pet_id, "pet_ids": pet_id}}
+        )
+        
+        logger.info(f"[SOUL BUILDER] Saved {len(soul_answers)} answers for {pet_name} (score: {soul_score}%)")
+        
+        return {
+            "success": True,
+            "pet_id": pet_id,
+            "pet_name": pet_name,
+            "answers_saved": len(soul_answers),
+            "soul_score": soul_score
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[SOUL BUILDER] Save error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ==================== PET SOUL BACKFILL ====================
 
 @api_router.post("/admin/backfill-pet-soul-answers")
