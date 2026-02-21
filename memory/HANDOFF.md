@@ -1,85 +1,110 @@
 # HANDOFF FOR NEXT AGENT
 ## Session: February 21, 2026
-## Priority: Ensure /mira-demo follows ALL MIRA Bibles
+## Priority: Full MIRA Bible Compliance
 
 ---
 
 ## 🎯 WHAT WAS ACCOMPLISHED
 
-### ✅ P0 - Quick Replies Fix (COMPLETE)
-- **Issue 1**: Quick replies showed generic "View in Services" instead of contextual "Stick with kibble"
-- **Fix**: Changed priority order in 3 frontend files to use contextual replies first
-- **Issue 2**: Quick replies showed "No allergies for Lola" when Mira asked about training vs snacks
-- **Root Cause**: Backend pattern matching too broad - "lamb allergy" mention triggered allergy chips
-- **Fix**: Added "training/rewards" pattern BEFORE allergy pattern in `mira_routes.py` line 11155-11162
-- **Verified**: Now shows "Training/rewards", "Chew/snack time", "Both"
+### ✅ P0 - Quick Replies Full Schema (COMPLETE)
+- **Gap Identified**: Quick replies were simple strings, missing Bible-required schema
+- **Bible Requirement (Section 11.2)**: Each chip must have id, label, payload_text, intent_type, action, action_args, analytics_tag
+- **Fix Applied**: 
+  - Created `build_quick_reply_chip()` helper function in `mira_routes.py`
+  - Updated `generate_intelligent_quick_replies()` to return full schema
+  - Added auto-conversion of string replies to chip objects
+- **Verified**: API now returns:
+  ```json
+  {
+    "id": "QR-ABC12345",
+    "label": "Training/rewards",
+    "payload_text": "I want training/reward treats for Lola.",
+    "intent_type": "refine",
+    "action": "send_message",
+    "action_args": {},
+    "analytics_tag": "qr.dine.training_rewards"
+  }
+  ```
 
-### ✅ P0 - Voice Error Fix (COMPLETE)
-- **Issue**: `setVoiceError is not defined` - clicking voice button crashed the app
-- **Root Cause**: `setVoiceError` used in MiraDemoPage but not exported from useVoice hook
-- **Fix**: Added `setVoiceError` to exports in `useVoice.js` and import in `MiraDemoPage.jsx`
-- **Verified**: Voice button works without error
+### ✅ P0 - Quick Reply Pattern Matching (COMPLETE)
+- **Gap**: Patterns too broad - "lamb allergy" triggered allergy chips when Mira asked about training/chew
+- **Fix**: Reordered patterns - training/chew pattern now FIRST (highest priority)
+- **Verified**: Now shows "Training/rewards", "Chew/occupy time" for treat questions
 
-### ✅ P1 - Soul Score Fix (COMPLETE)
-- **Issue**: Dashboard showed 56% instead of actual 62%
-- **Fix**: Backend uses `max(stored_score, calculated_score)` to preserve conversation growth
-- **Verified**: API now returns correct 62%
+### ✅ P0 - Voice Errors Fixed (COMPLETE)
+- **Errors**: `setVoiceError is not defined`, `setIsListening is not defined`
+- **Fix**: Exported both setters from `useVoice.js`, imported in `MiraDemoPage.jsx`
+- **Verified**: No JavaScript errors on voice button click
 
-### ✅ Allergy Merging Fix (COMPLETE)
-- **Issue**: Backend only loaded `preferences.allergies`, missing `doggy_soul_answers.allergies`
-- **Fix**: Merge from all 3 sources in `server.py` lines 2918-2945
-- **Verified**: Lola's beef, corn, Dairy allergies now all loaded
+### ✅ P1 - Soul Score (COMPLETE)
+- **Fix**: Uses `max(stored_score, calculated_score)` to preserve conversation growth
 
----
-
-## 📋 REMAINING TASKS (Priority Order)
-
-### P1 - Picks Contextuality
-- Picks panel sometimes shows items from previous context (Travel items for Treats query)
-- Needs investigation in frontend `miraPicks` state management
-
-### P2 - Voice Testing
-- Voice works but needs comprehensive testing per MIRA_VOICE_RULES
-- Verify voice stops on tile click, no overlap on rapid clicks
-
-### P2 - MongoDB Sync
-- Preview uses local MongoDB, production uses Atlas cluster
-- Network restriction prevents direct connection from preview
-- Solution: Click "Replace deployment" to sync code + DB
-
-### P3 - Soul Builder Completion
-- `/app/frontend/src/pages/SoulBuilder.jsx` is incomplete
+### ✅ P1 - Allergy Merging (COMPLETE)
+- **Fix**: Merges allergies from 3 sources (preferences, doggy_soul_answers, root)
 
 ---
 
-## 🔑 CRITICAL INFO
+## 📋 REMAINING GAPS (from /app/memory/MIRA_DEMO_GAP_ANALYSIS.md)
 
-### Files Changed This Session
-- `/app/frontend/src/hooks/mira/useVoice.js` - Added setVoiceError export
-- `/app/frontend/src/pages/MiraDemoPage.jsx` - Import setVoiceError
-- `/app/frontend/src/components/Mira/ChatMessage.jsx` - Fixed contextual reply priority
-- `/app/backend/mira_routes.py` - Added training/rewards pattern before allergy pattern
-- `/app/backend/server.py` - Allergy merging, soul score max()
+### P1 - Not Yet Fixed:
+1. **Conversation Contract Structure** - Response should wrap in `conversation_contract` with `mode`
+2. **Mode-Specific Rendering** - Show/hide products, places based on mode
+3. **Pillar-Specific Chip Sets** - Use predefined CELEBRATE, CARE, DINE chips from Bible
 
-### Test Credentials
+### P2 - Not Yet Fixed:
+4. **Location Consent Gate** - Must show consent chips before Places API
+5. **Banned Openers** - Post-process to remove "Great question", "Absolutely", etc.
+6. **Ticket ID Format** - Should be `TCK-YYYY-NNNNNN`
+
+### P3 - Not Yet Fixed:
+7. **Analytics Tags** - Need frontend to log chip clicks
+8. **Full Pillar Coverage** - All 10 pillars need specific chip sets
+
+---
+
+## 🔑 CRITICAL FILES CHANGED
+
+### Backend:
+- `/app/backend/mira_routes.py`:
+  - Added `build_quick_reply_chip()` helper (lines 11116-11137)
+  - Updated `generate_intelligent_quick_replies()` to return full schema (lines 11138-11350)
+  - Training pattern moved to TOP (lines 11168-11175)
+
+### Frontend:
+- `/app/frontend/src/hooks/mira/useVoice.js` - Export setVoiceError, setIsListening
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - Import both setters
+- `/app/frontend/src/components/Mira/ChatMessage.jsx` - Contextual > Contract priority
+
+---
+
+## 📚 BIBLES TO READ
+
+| Bible | Purpose | Critical Sections |
+|-------|---------|-------------------|
+| PET_OS_BEHAVIOR_BIBLE.md | Master Bible (80KB) | Section 11: Quick Replies |
+| QUICK_REPLIES_AUDIT_FRAMEWORK.md | Audit checklist | All sections |
+| MIRA_FORMATTING_GUIDE.md | Text formatting | Bold, lists, headers |
+| MIRA_CONVERSATION_RULES.md | Conversation flow | Pre-convo checklist |
+| MOJO_BIBLE.md | Pet persona | Tone, voice rules |
+
+---
+
+## 🧪 TEST CREDENTIALS
+
 - **User**: `dipali@clubconcierge.in` / `test123`
 - **Admin**: `aditya` / `lola4304`
 
-### URLs
-- **Preview**: `https://doggy-soul-app.preview.emergentagent.com`
-- **Production**: `https://thedoggycompany.in`
+---
+
+## ⚠️ DO NOT BREAK
+
+1. **Quick Reply Schema** - Must include id, label, payload_text, intent_type, analytics_tag
+2. **Training Pattern Priority** - Must be checked BEFORE allergy pattern
+3. **Voice Exports** - setVoiceError + setIsListening must be exported
+4. **Max 6 Chips** - Bible mandates maximum
+5. **Cancel Option** - Each reply set needs a "Something else" or "Not now"
 
 ---
 
-## ⚠️ DO NOT BREAK THESE
-
-1. **Quick Reply Priority**: Contextual > Contract (changed in 3 files)
-2. **Training Pattern**: Must come BEFORE allergy pattern in mira_routes.py
-3. **Voice Error Handling**: setVoiceError must be exported from useVoice
-4. **Soul Score**: Uses max(stored, calculated)
-5. **Allergy Merging**: All 3 sources merged
-
----
-
-*User wants preview = production always*
-*Click "Replace deployment" on Emergent to sync*
+*Gap Analysis document: `/app/memory/MIRA_DEMO_GAP_ANALYSIS.md`*
+*Full audit required before production deploy*
