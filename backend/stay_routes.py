@@ -361,13 +361,16 @@ async def get_stay_properties(
     limit: int = 50,
     skip: int = 0
 ):
-    """Get all live stay properties (public)"""
-    query = {"status": "live"}
+    """Get all live stay properties (public) - combines stay_properties and pet_friendly_stays"""
+    query = {}
+    
+    # Status filter - include properties without status field
+    query["$or"] = [{"status": "live"}, {"status": {"$exists": False}}]
     
     if city:
         query["city"] = {"$regex": city, "$options": "i"}
     if property_type:
-        query["property_type"] = property_type
+        query["$or"] = [{"property_type": property_type}, {"type": property_type}]
     if min_rating:
         query["paw_rating.overall"] = {"$gte": min_rating}
     if max_pet_fee:
@@ -389,16 +392,38 @@ async def get_stay_properties(
         "incident_history": 0
     }
     
-    properties = await db.stay_properties.find(query, projection).skip(skip).limit(limit).to_list(limit)
-    total = await db.stay_properties.count_documents(query)
+    # Query from multiple collections
+    properties_from_stay = await db.stay_properties.find(query, projection).to_list(500)
+    properties_from_pfs = await db.pet_friendly_stays.find(query, projection).to_list(500)
+    
+    # Combine and dedupe by name
+    all_properties = []
+    seen_names = set()
+    
+    for p in properties_from_stay + properties_from_pfs:
+        name = p.get('name', '')
+        if name and name not in seen_names:
+            seen_names.add(name)
+            # Normalize fields
+            if 'property_type' not in p and 'type' in p:
+                p['property_type'] = p['type']
+            if 'image' not in p and 'image_url' in p:
+                p['image'] = p['image_url']
+            all_properties.append(p)
+    
+    # Apply pagination
+    total = len(all_properties)
+    properties = all_properties[skip:skip + limit]
     
     # Get cities for filter
-    cities = await db.stay_properties.distinct("city", {"status": "live"})
+    cities_from_stay = await db.stay_properties.distinct("city")
+    cities_from_pfs = await db.pet_friendly_stays.distinct("city")
+    cities = list(set(cities_from_stay + cities_from_pfs))
     
     return {
         "properties": properties,
         "total": total,
-        "cities": cities,
+        "cities": sorted(cities),
         "property_types": ["resort", "hotel", "villa", "farmstay", "homestay"]
     }
 
