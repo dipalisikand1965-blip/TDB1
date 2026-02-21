@@ -88,9 +88,48 @@ const TestimonialCard = ({ quote, name, pet, image }) => (
 );
 
 const Home = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
   const [activeFeature, setActiveFeature] = useState(0);
+  const [userPets, setUserPets] = useState([]);
+  const [primaryPet, setPrimaryPet] = useState(null);
+
+  // Fetch user's pets for personalized hero image
+  useEffect(() => {
+    if (token) {
+      const fetchPets = async () => {
+        try {
+          const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/pets/my-pets`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const pets = data.pets || [];
+            setUserPets(pets);
+            // Set primary pet (first one with an image, or just first one)
+            const petWithImage = pets.find(p => p.image || p.photo_url);
+            setPrimaryPet(petWithImage || pets[0] || null);
+          }
+        } catch (err) {
+          console.error('Failed to fetch pets:', err);
+        }
+      };
+      fetchPets();
+    }
+  }, [token]);
+
+  // Get hero image - user's pet if logged in and has image, otherwise default
+  const getHeroImage = () => {
+    if (primaryPet) {
+      return primaryPet.image || 
+             (primaryPet.photo_url ? `${process.env.REACT_APP_BACKEND_URL}${primaryPet.photo_url}` : null) ||
+             BRAND_IMAGES.goldenRetriever;
+    }
+    return BRAND_IMAGES.goldenRetriever;
+  };
+
+  const heroImage = getHeroImage();
+  const heroPetName = primaryPet?.name || 'Your beloved pet';
 
   // Auto-rotate features
   useEffect(() => {
