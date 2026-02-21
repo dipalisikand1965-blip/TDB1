@@ -4209,9 +4209,17 @@ const MiraDemoPage = () => {
                 // If so, don't duplicate here at the bottom
                 (() => {
                   const lastMsg = conversationHistory[conversationHistory.length - 1];
-                  const hasInlineQRs = lastMsg?.data?.quick_replies?.length > 0 || 
-                                       lastMsg?.data?.conversation_contract?.quick_replies?.length > 0 ||
-                                       lastMsg?.quickReplies?.length > 0;
+                  
+                  // COMPREHENSIVE CHECK: ChatMessage renders QRs from multiple sources
+                  const hasInlineQRs = (
+                    (lastMsg?.quickReplies?.length > 0) ||
+                    (lastMsg?.data?.quick_replies?.length > 0) ||
+                    (lastMsg?.data?.response?.quick_replies?.length > 0) ||
+                    (lastMsg?.data?.conversation_contract?.quick_replies?.length > 0) ||
+                    // Also check the raw message structure
+                    (lastMsg?.quick_replies?.length > 0) ||
+                    (lastMsg?.conversation_contract?.quick_replies?.length > 0)
+                  );
                   
                   // Skip rendering if quick replies are already shown inline with the last message
                   if (hasInlineQRs) {
