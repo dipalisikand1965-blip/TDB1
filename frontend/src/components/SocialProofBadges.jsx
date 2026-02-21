@@ -30,9 +30,21 @@ const useAnimatedCounter = (target, duration = 2000) => {
   return count;
 };
 
-// Main Stats Banner - Subtle animated counter
-export const FitnessJourneyCounter = ({ className = '' }) => {
+// Main Stats Banner - Context-aware counter
+export const FitnessJourneyCounter = ({ className = '', pillar = '' }) => {
   const journeyCount = useAnimatedCounter(847);
+  
+  // Pillar-specific messaging instead of always "fitness journeys"
+  const pillarLabels = {
+    fit: 'fitness journeys started',
+    care: 'pets cared for',
+    stay: 'pawcations booked',
+    enjoy: 'happy playdates',
+    celebrate: 'celebrations planned',
+    dine: 'meals enjoyed',
+    travel: 'trips completed',
+  };
+  const label = pillarLabels[pillar] || 'pet families served';
   
   return (
     <motion.div 
@@ -49,7 +61,7 @@ export const FitnessJourneyCounter = ({ className = '' }) => {
         ))}
       </div>
       <span className="text-sm text-teal-700">
-        <span className="font-bold">{journeyCount.toLocaleString()}</span> fitness journeys started
+        <span className="font-bold">{journeyCount.toLocaleString()}</span> {label}
       </span>
       <motion.div
         animate={{ scale: [1, 1.2, 1] }}
