@@ -4377,7 +4377,7 @@ async def mira_os_understand_with_products(
                 # Process the conversation contract
                 contract_result = await process_conversation_contract(
                     message=request.input,
-                    pet_context=request.pet_context,
+                    pet_context=enriched_pet_context,  # Use enriched context with full soul data
                     has_location_permission=has_location_permission
                 )
                 contract_mode_result = contract_result.get("mode_result", {})
