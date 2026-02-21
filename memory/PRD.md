@@ -1,5 +1,5 @@
 # Pet Soul Platform - Product Requirements Document
-## Last Updated: February 21, 2026 (Session 3)
+## Last Updated: February 21, 2026 (Session 4)
 
 ---
 
@@ -21,11 +21,17 @@ The user, Dipali, founder of a premium pet concierge service, wants to build a "
    - Intercept unsafe ingredient requests with alternatives
    - UI dietary context chip in food flows
 
-4. **Build a Brilliant Onboarding** - Design and build the new, single-flow "Soul Builder." (BACKLOG)
+4. **Core Panel Endpoints** ✅ COMPLETE (Session 4)
+   - TODAY endpoint with urgency dashboard
+   - NOTIFICATIONS endpoint for user alerts
+   - Location fix - no more Mumbai default
+   - Places guardrail for non-location intents
 
-5. **Unify the "Mira" Experience** - Consolidate the three different "Mira" implementations into one. (BACKLOG)
+5. **Build a Brilliant Onboarding** - Design and build the new, single-flow "Soul Builder." (BACKLOG)
 
-6. **Make Pillar Pages Magical** - Apply the new template from `/celebrate-new` to all other pillar pages. (BACKLOG)
+6. **Unify the "Mira" Experience** - Consolidate the three different "Mira" implementations into one. (BACKLOG)
+
+7. **Make Pillar Pages Magical** - Apply the new template from `/celebrate-new` to all other pillar pages. (BACKLOG)
 
 ---
 
