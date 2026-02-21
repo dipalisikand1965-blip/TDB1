@@ -45,11 +45,22 @@ The user, Dipali, founder of a premium pet concierge service, wants to build a "
      - `/app/backend/mira_routes.py` lines 11555-11630 (improved pattern matching)
    - **Test Result**: VERIFIED WORKING - Header shows contextual options, body chips = 0
 
-7. **Build a Brilliant Onboarding** - Design and build the new, single-flow "Soul Builder." (BACKLOG)
+7. **"I'm having a moment" Error Fix** ✅ FIXED (Session 5 - February 21, 2026)
+   - **Issue**: Error message appeared AFTER every successful response, breaking conversation flow
+   - **Root Cause**: `TypeError: Nn.filter is not a function` - `.filter()` was being called on non-array values
+   - **Fix 1**: Added `Array.isArray()` checks before all `.filter()` calls in `useChatSubmit.js`
+   - **Fix 2**: Added `Array.isArray(contractReplies)` check in `extractQuickReplies` in `MiraDemoPage.jsx`
+   - **Fix 3**: Added `isProcessing` guard to prevent duplicate API submissions
+   - **Files**: 
+     - `/app/frontend/src/hooks/mira/useChatSubmit.js` lines 1005-1008, 169-177
+     - `/app/frontend/src/pages/MiraDemoPage.jsx` line 2367
+   - **Test Result**: VERIFIED WORKING - No more error messages after successful responses
 
-8. **Unify the "Mira" Experience** - Consolidate the three different "Mira" implementations into one. (BACKLOG)
+8. **Build a Brilliant Onboarding** - Design and build the new, single-flow "Soul Builder." (BACKLOG)
 
-9. **Make Pillar Pages Magical** - Apply the new template from `/celebrate-new` to all other pillar pages. (BACKLOG)
+9. **Unify the "Mira" Experience** - Consolidate the three different "Mira" implementations into one. (BACKLOG)
+
+10. **Make Pillar Pages Magical** - Apply the new template from `/celebrate-new` to all other pillar pages. (BACKLOG)
 
 ---
 
