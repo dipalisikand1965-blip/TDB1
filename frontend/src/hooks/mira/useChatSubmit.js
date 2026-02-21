@@ -1003,8 +1003,9 @@ const useChatSubmit = (config) => {
       }
       
       // QUICK REPLIES
-      const hasProducts = newProducts.length > 0 || (picksEngineData?.filter(p => p.pick_type === 'product').length > 0);
-      const hasServices = newServices.length > 0 || (picksEngineData?.filter(p => ['booking', 'concierge'].includes(p.pick_type)).length > 0);
+      const picksArray = Array.isArray(picksEngineData) ? picksEngineData : [];
+      const hasProducts = newProducts.length > 0 || (picksArray.filter(p => p.pick_type === 'product').length > 0);
+      const hasServices = newServices.length > 0 || (picksArray.filter(p => ['booking', 'concierge'].includes(p.pick_type)).length > 0);
       const isAdvisory = !hasProducts && !hasServices && miraResponseText.length > 100;
       const currentPillarForReplies = data.current_pillar || data.pillar || 'general';
       
