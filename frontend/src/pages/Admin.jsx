@@ -10,6 +10,7 @@ import { Switch } from '../components/ui/switch';
 import { Textarea } from '../components/ui/textarea';
 import { toast } from '../hooks/use-toast';
 import ProductManager from '../components/ProductManager';
+import ServiceManager from '../components/ServiceManager';
 import CollectionManager from '../components/CollectionManager';
 import ReviewsManager from '../components/ReviewsManager';
 import AutoshipManager from '../components/AutoshipManager';
