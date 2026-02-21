@@ -2816,6 +2816,7 @@ const MiraDemoPage = () => {
     setConversationStage,
     
     // Processing State
+    isProcessing,  // Added to prevent duplicate submissions
     setIsProcessing,
     setShowSkeleton,
     setIsTyping,
