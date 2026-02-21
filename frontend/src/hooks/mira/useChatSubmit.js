@@ -163,6 +163,15 @@ const useChatSubmit = (config) => {
     if (!inputQuery.trim()) return;
     
     // ═══════════════════════════════════════════════════════════════════
+    // DUPLICATE REQUEST GUARD: Prevent multiple simultaneous submissions
+    // This prevents the "I'm having a moment" error from double submissions
+    // ═══════════════════════════════════════════════════════════════════
+    if (isProcessing) {
+      console.warn('[MIRA] Blocked duplicate submission - already processing');
+      return;
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════
     // VOICE SYNC FIX: Stop any playing voice when user sends new message
     // ═══════════════════════════════════════════════════════════════════
     if (voiceTimeoutRef?.current) {
