@@ -73,10 +73,22 @@ User wants a full audit of thedoggycompany.in - a massive pet life platform buil
 - User: dipali@clubconcierge.in / test123
 - Admin: aditya / lola4304 (needs email format)
 
+## Codebase Access (Feb 21, 2026)
+- GitHub repo: dipalisikand1965-blip/TDB1 (branch: tdb123, made public)
+- Cloned to /tmp/tdb_code — full 68MB codebase analyzed
+- 200+ memory/bible docs, 100+ backend files, full frontend
+
+## Root Cause Found (from MIRA_COMPLETE_GAP_ANALYSIS_FEB21.md)
+- `/api/mira/os/understand-with-products` does NOT call `load_pet_soul()`
+- `/api/mira/chat` DOES call it — that's why Pillar Mira works but Mira Demo doesn't
+- This single missing call causes ALL the soul/personality/memory gaps
+
 ## Next Tasks
-1. Get the actual codebase into this workspace (user needs to share the project)
-2. Fix backend intermittent 502s (likely server resource/deployment issue)
-3. Fix CORS for pet-engage-hub.emergent.host
+1. Fix load_pet_soul() call in mira_routes.py (line ~4285) — THE ROOT CAUSE
+2. Fix duplicate quick reply chips in MiraDemoPage.jsx
+3. Fix SERVICES tab redirect (should be in-page)
+4. Fix backend intermittent 502s (likely server resource/deployment issue)
+5. Fix CORS for pet-engage-hub.emergent.host
 4. Fix duplicate quick reply chips in Mira Demo chat
 5. Fix SERVICES tab redirect (should be in-page)
 6. Fix Concierge tab data loading
