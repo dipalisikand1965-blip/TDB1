@@ -14025,7 +14025,7 @@ async def get_member_notifications_by_email(
     
     # Filter by category (Primary = concierge replies, Updates = status changes, etc)
     if category == "primary":
-        query["type"] = {"$in": ["concierge_reply", "picks_request_received", "mira_request_received", "vault_request_received"]}
+        query["type"] = {"$in": ["concierge_reply", "picks_request_received", "mira_request_received", "vault_request_received", "request_received", "service_request_received"]}
     elif category == "updates":
         query["type"] = {"$in": ["status_change", "approval_needed", "payment_needed", "announcement"]}
     
