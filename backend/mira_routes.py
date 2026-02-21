@@ -11113,12 +11113,37 @@ def get_pillar_quick_prompts(pillar: str) -> List[Dict[str, str]]:
     }
     return prompts.get(pillar, prompts["advisory"])
 
-def generate_intelligent_quick_replies(response_text: str, pet_name: str = None, pet_data: dict = None) -> List[str]:
+def build_quick_reply_chip(label: str, payload_text: str = None, intent_type: str = "continue", 
+                          action: str = "send_message", action_args: dict = None, 
+                          domain: str = "general") -> dict:
+    """
+    Build a Bible-compliant quick reply chip with full schema.
+    
+    Per PET_OS_BEHAVIOR_BIBLE Section 11.2:
+    Each chip MUST include id, label, payload_text, intent_type, action, action_args, analytics_tag
+    """
+    import uuid
+    chip_id = f"QR-{uuid.uuid4().hex[:8].upper()}"
+    
+    return {
+        "id": chip_id,
+        "label": label,
+        "payload_text": payload_text or f"{label}.",
+        "intent_type": intent_type,  # continue, refine, execute, consent_location
+        "action": action,  # none, send_message, set_state, open_layer, create_ticket
+        "action_args": action_args or {},
+        "analytics_tag": f"qr.{domain}.{label.lower().replace(' ', '_').replace('/', '_')}"
+    }
+
+def generate_intelligent_quick_replies(response_text: str, pet_name: str = None, pet_data: dict = None) -> List[dict]:
     """
     MIRA INTELLIGENCE: Generate dynamic, pet-first quick replies based on the conversation.
     
-    This is the BRAINS of Mira - not hardcoded frontend patterns, but intelligent
-    analysis of what Mira is asking and what makes sense for THIS specific pet.
+    BIBLE COMPLIANCE (PET_OS_BEHAVIOR_BIBLE Section 11.3):
+    - Max 6 chips per response
+    - Each chip MUST include full schema (id, label, payload_text, intent_type, action, action_args, analytics_tag)
+    - Chips must be real choices, not filler
+    - Include at least one cancel/defer option
     
     Args:
         response_text: Mira's response text
@@ -11126,7 +11151,7 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
         pet_data: Full pet profile data for personalization
         
     Returns:
-        List of 2-4 contextual quick reply strings
+        List of 3-6 Bible-compliant quick reply objects
     """
     if not response_text:
         return []
