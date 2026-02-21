@@ -291,7 +291,24 @@ const PillarPageLayout = ({
                   <span className="whitespace-nowrap text-center leading-tight">All {pillar.charAt(0).toUpperCase() + pillar.slice(1)}</span>
                 </button>
                 {subcategories.map((subcat) => (
-                  useTabNavigation ? (
+                  subcat.isCustom ? (
+                    // Custom creations flow to Mira concierge
+                    <Link
+                      key={subcat.id}
+                      to="/mira-demo?custom=true"
+                      className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-2xl font-medium text-xs sm:text-sm transition-all min-w-[80px] bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-300 text-purple-700 hover:from-purple-200 hover:to-pink-200`}
+                      data-testid={`subcat-${subcat.id}`}
+                    >
+                      {subcat.image ? (
+                        <div className="w-12 h-12 rounded-lg overflow-hidden mb-1 ring-2 ring-purple-400">
+                          <img src={subcat.image} alt={subcat.name} className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <span className="text-lg">{subcat.emoji}</span>
+                      )}
+                      <span className="whitespace-nowrap text-center leading-tight">{subcat.name}</span>
+                    </Link>
+                  ) : useTabNavigation ? (
                     <button
                       key={subcat.id}
                       onClick={() => {
@@ -338,16 +355,7 @@ const PillarPageLayout = ({
                   )
                 ))}
               </div>
-              
-              {/* Shopping for other dog link - Right aligned */}
-              <button 
-                onClick={() => setShoppingForOther(!shoppingForOther)}
-                className="flex-shrink-0 flex items-center gap-1.5 text-xs sm:text-sm text-gray-400 hover:text-gray-600 transition-all ml-2"
-                data-testid="shopping-for-other"
-              >
-                <PawPrint className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Shopping for another dog?</span>
-                <span className="sm:hidden">🐕</span>
+            </div>
               </button>
             </div>
           )}
