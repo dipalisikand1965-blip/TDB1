@@ -292,8 +292,24 @@ const PersonalizedPicks = ({
     return null;
   }
 
-  // Show a minimal version if no recommendations but has pets (encourage browsing)
+  // Show a minimal version if no recommendations but has pets - try to fetch fallback products
   if (!loading && recommendations.length === 0) {
+    // Try to fetch some products for this pillar as a last resort
+    const fetchFallback = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/product-box/products?limit=8&pillar=${pillar}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.products && data.products.length > 0) {
+            setRecommendations(data.products);
+          }
+        }
+      } catch (e) {
+        console.debug('Fallback fetch failed:', e);
+      }
+    };
+    fetchFallback();
+    
     return (
       <div className={`mb-8 bg-gradient-to-r ${config.gradient} rounded-2xl p-4 sm:p-6 border ${config.border} ${className}`}>
         <div className="flex items-center gap-3">
@@ -310,7 +326,7 @@ const PersonalizedPicks = ({
           )}
           <div>
             <h3 className={`font-bold text-base sm:text-lg ${config.accent}`}>
-              {config.emoji} Perfect picks for {selectedPet?.name || 'your pet'} coming soon!
+              {config.emoji} Loading picks for {selectedPet?.name || 'your pet'}...
             </h3>
             <p className={`text-xs sm:text-sm ${config.accent} opacity-70`}>
               Based on {selectedPet?.breed || 'your pet'}'s profile • Browse our collection below
