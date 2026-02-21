@@ -62,9 +62,9 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
   const [voiceEnabled, setVoiceEnabledState] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('mira_voice_enabled');
-      // Default to TRUE (on) - Mira should speak by default for premium experience
-      // User can mute if needed, preference persists
-      return saved !== null ? saved === 'true' : true;
+      // Default to FALSE (off) - Voice should be opt-in, not forced
+      // User can enable it, preference persists
+      return saved !== null ? saved === 'true' : false;
     }
     return true;
   });
