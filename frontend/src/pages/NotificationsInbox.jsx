@@ -900,6 +900,11 @@ const NotificationsInbox = () => {
           </div>
         )}
       </div>
+      
+      {/* Mobile Bottom Navigation */}
+      <div className="lg:hidden">
+        <MobileNavBar />
+      </div>
     </div>
   );
 };
