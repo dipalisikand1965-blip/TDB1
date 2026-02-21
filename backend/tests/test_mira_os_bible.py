@@ -32,8 +32,9 @@ class TestMiraAuthentication:
         })
         assert response.status_code == 200, f"Login failed: {response.text}"
         data = response.json()
-        assert "token" in data, "No token in response"
-        return data["token"]
+        # API returns access_token, not token
+        assert "access_token" in data, f"No access_token in response: {data}"
+        return data["access_token"]
     
     def test_login_success(self, auth_token):
         """Verify login works with test credentials"""
@@ -53,7 +54,7 @@ class TestMiraOSUnderstandWithProducts:
             "password": TEST_PASSWORD
         })
         assert response.status_code == 200
-        return response.json()["token"]
+        return response.json()["access_token"]
     
     @pytest.fixture(scope="class")
     def user_pets(self, auth_token):
