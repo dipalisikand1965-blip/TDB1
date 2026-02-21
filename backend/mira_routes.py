@@ -4286,6 +4286,34 @@ async def mira_os_understand_with_products(
         # Get user from authorization header for ticket creation
         logged_in_user = await get_user_from_token(authorization)
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # CRITICAL FIX: Load full Pet Soul from database
+        # This is what makes /mira-demo as intelligent as MiraOSModal (BETA)
+        # Without this, Mira only knows what the frontend sends (limited context)
+        # With this, Mira knows EVERYTHING: anxiety triggers, personality, preferences
+        # ═══════════════════════════════════════════════════════════════════════════
+        enriched_pet_context = request.pet_context or {}
+        
+        pet_identifier = None
+        if request.pet_id:
+            pet_identifier = request.pet_id
+        elif request.pet_context:
+            pet_identifier = request.pet_context.get("id") or request.pet_context.get("name")
+        
+        if pet_identifier:
+            try:
+                loaded_soul = await load_pet_soul(pet_identifier)
+                
+                if loaded_soul and loaded_soul.get("name"):
+                    # Merge: Database soul data takes priority, frontend adds any missing fields
+                    # This ensures we have ALL 55+ soul questions, behavioral traits, etc.
+                    enriched_pet_context = {**(request.pet_context or {}), **loaded_soul}
+                    logger.info(f"[SOUL LOAD] ✅ Enriched pet context for {loaded_soul.get('name')} with full soul data (soul_score: {loaded_soul.get('soul_score', 'N/A')}%)")
+                else:
+                    logger.warning(f"[SOUL LOAD] ⚠️ Could not load soul for {pet_identifier}, using frontend context only")
+            except Exception as soul_load_err:
+                logger.warning(f"[SOUL LOAD] ⚠️ Error loading soul: {soul_load_err}")
+        
         # ============================================
         # SESSION PERSISTENCE - Load conversation from database
         # ============================================
