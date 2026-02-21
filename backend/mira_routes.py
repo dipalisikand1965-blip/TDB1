@@ -13833,10 +13833,18 @@ Pick one, and I'll give you a simple starting point! 🐾"""
         logger.info(f"[PLACES GUARD 2] Blocked Places - non-location intent detected in: '{message_lower[:50]}...'")
         detected_place_type = None  # Clear to prevent Places lookup
     
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # LOCATION FIX: Never default to Mumbai. If no city, don't search - ask user.
+    # ═══════════════════════════════════════════════════════════════════════════════
     if detected_place_type and (is_location_query or user_city):
-        try:
-            # Fetch nearby places
-            city_for_search = user_city or "Mumbai"  # Default to Mumbai if no city found
+        # If no city available, skip Places search entirely
+        if not user_city:
+            logger.info(f"[PLACES] No city available - skipping Places search, will ask user")
+            detected_place_type = None  # Clear to skip Places lookup
+        else:
+            try:
+                # Fetch nearby places using user's actual city
+                city_for_search = user_city
             
             if detected_place_type == "vet":
                 # Check if emergency
