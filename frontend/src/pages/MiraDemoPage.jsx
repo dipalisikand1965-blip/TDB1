@@ -2386,10 +2386,12 @@ const MiraDemoPage = () => {
     
     const message = miraData.response?.message || miraData.response || '';
     const intent = miraData.understanding?.intent || '';
-    const messageLower = typeof message === 'string' ? message.toLowerCase() : '';
+    // Ensure message is a string before string operations
+    const messageStr = typeof message === 'string' ? message : '';
+    const messageLower = messageStr.toLowerCase();
     
     // Only show chips if there's a question being asked
-    if (!message.includes('?')) return [];
+    if (!messageStr.includes('?')) return [];
     
     const quickReplies = [];
     
