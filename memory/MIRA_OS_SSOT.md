@@ -1,6 +1,6 @@
 # MIRA OS - Single Source of Truth (SSOT)
 ## The Doggy Company Pet Operating System
-**Last Updated:** February 21, 2026  
+**Last Updated:** February 21, 2026 (Session 2)  
 **Live Site:** https://thedoggycompany.com  
 **Preview:** https://pet-concierge-v2.preview.emergentagent.com
 
@@ -15,9 +15,10 @@
 6. [Admin Capabilities](#admin-capabilities)
 7. [Integration Status](#integration-status)
 8. [Feature Activation Guide](#feature-activation-guide)
-9. [Testing Credentials](#testing-credentials)
-10. [Known Issues & Blockers](#known-issues--blockers)
-11. [Enhancement Roadmap](#enhancement-roadmap)
+9. [Debug & Testing Tools](#debug--testing-tools)
+10. [Testing Credentials](#testing-credentials)
+11. [Known Issues & Blockers](#known-issues--blockers)
+12. [Enhancement Roadmap](#enhancement-roadmap)
 
 ---
 
@@ -28,9 +29,10 @@ MIRA OS is a sophisticated "Pet Operating System" built to provide personalized,
 ### Core Philosophy: Soul Intelligence
 Every pet has a unique "soul" - their personality, preferences, health needs, and life story. MIRA learns this soul through:
 - **Soul Builder**: 27-question weighted questionnaire measuring profile completeness
-- **Conversations**: AI learns preferences through natural chat
+- **Conversations**: AI learns preferences through natural chat → writes to `learned_facts` array
 - **Health Vault**: Comprehensive medical records and reminders
 - **Life Timeline**: Capturing precious moments and milestones
+- **Document Vault**: Secure storage for pet documents (paperwork pillar)
 
 ### The 15 Pillars of Pet Life
 1. **Celebrate** - Birthdays, gotcha days, special occasions
@@ -43,7 +45,7 @@ Every pet has a unique "soul" - their personality, preferences, health needs, an
 8. **Play** - Toys, entertainment
 9. **Shop** - Products, accessories
 10. **Emergency** - Urgent care, crisis support
-11. **Paperwork** - Documents, registrations
+11. **Paperwork** - Documents, registrations, Document Vault
 12. **Advisory** - Expert consultations
 13. **Adopt** - Adoption services
 14. **Farewell** - End-of-life services
