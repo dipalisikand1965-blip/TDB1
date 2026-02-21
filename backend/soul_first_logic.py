@@ -1106,6 +1106,69 @@ async def write_soul_data_to_pet(
             "soul_enrichment_categories": {"$each": extracted.data_categories}
         }
         
+        # ═══════════════════════════════════════════════════════════════════
+        # ADD TO learned_facts ARRAY - Makes learnings visible in MOJO tab
+        # ═══════════════════════════════════════════════════════════════════
+        learned_fact_entries = []
+        
+        if extracted.coat_type:
+            learned_fact_entries.append({
+                "id": f"coat-{datetime.now(timezone.utc).timestamp()}",
+                "category": "preferences",
+                "content": f"Has {extracted.coat_type} coat",
+                "source": "mira_conversation",
+                "confidence": 85,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            })
+        
+        if extracted.grooming_preference:
+            pref_text = "prefers grooming at salon/spa" if extracted.grooming_preference == "salon" else "prefers home grooming"
+            learned_fact_entries.append({
+                "id": f"groom-{datetime.now(timezone.utc).timestamp()}",
+                "category": "preferences",
+                "content": pref_text,
+                "source": "mira_conversation",
+                "confidence": 85,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            })
+        
+        if extracted.favorite_treats:
+            learned_fact_entries.append({
+                "id": f"treats-{datetime.now(timezone.utc).timestamp()}",
+                "category": "loves",
+                "content": f"Loves {extracted.favorite_treats}",
+                "source": "mira_conversation",
+                "confidence": 85,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            })
+        
+        if extracted.dietary_preferences:
+            learned_fact_entries.append({
+                "id": f"diet-{datetime.now(timezone.utc).timestamp()}",
+                "category": "preferences",
+                "content": f"Prefers {extracted.dietary_preferences} diet",
+                "source": "mira_conversation",
+                "confidence": 85,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            })
+        
+        if extracted.food_allergies and "none_confirmed" not in extracted.food_allergies:
+            for allergen in extracted.food_allergies:
+                learned_fact_entries.append({
+                    "id": f"allergy-{datetime.now(timezone.utc).timestamp()}",
+                    "category": "health",
+                    "content": f"Allergic to {allergen}",
+                    "source": "mira_conversation",
+                    "confidence": 90,  # Higher confidence for safety-critical data
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                })
+        
+        if learned_fact_entries:
+            if "$addToSet" not in update_doc:
+                update_doc["$addToSet"] = {}
+            update_doc["$addToSet"]["learned_facts"] = {"$each": learned_fact_entries}
+            logger.info(f"[SOUL-FIRST] Adding {len(learned_fact_entries)} learned facts to pet profile")
+        
         result = await db.pets.update_one(
             {"id": pet_id},
             update_doc
