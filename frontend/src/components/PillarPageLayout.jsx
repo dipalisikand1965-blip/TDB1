@@ -146,7 +146,6 @@ const PillarPageLayout = ({
   const [viewMode, setViewMode] = useState(defaultViewMode);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-  const [shoppingForOther, setShoppingForOther] = useState(false);
   
   // Read category from URL params on mount (for tab highlighting after redirects)
   useEffect(() => {
