@@ -49,7 +49,7 @@ class TestBibleComplianceIteration222:
     def test_treats_question_returns_dine_pillar(self):
         """P0: When user asks about treats, backend MUST return pillar='dine' in response"""
         response = self.session.post(f"{BASE_URL}/api/mira/chat", json={
-            "input": "What treats should I give Lola?",
+            "message": "What treats should I give Lola?",
             "session_id": f"test-dine-pillar-{int(time.time())}",
             "pet_id": "pet-e6348b13c975"
         })
@@ -67,7 +67,7 @@ class TestBibleComplianceIteration222:
     def test_treats_picks_contain_dine_pillar_items(self):
         """P0: Picks array should contain items with pillar='dine' for treat questions, NOT Travel"""
         response = self.session.post(f"{BASE_URL}/api/mira/chat", json={
-            "input": "Show me some treats for my dog",
+            "message": "Show me some treats for my dog",
             "session_id": f"test-dine-picks-{int(time.time())}",
             "pet_id": "pet-e6348b13c975"
         })
@@ -98,7 +98,7 @@ class TestBibleComplianceIteration222:
     def test_quick_replies_bible_compliant_schema(self):
         """P1: Quick replies MUST have Bible-compliant format with full schema"""
         response = self.session.post(f"{BASE_URL}/api/mira/chat", json={
-            "input": "I need a vet for Lola",  # Vet without location triggers clarify mode
+            "message": "I need a vet for Lola",  # Vet without location triggers clarify mode
             "session_id": f"test-qr-schema-{int(time.time())}",
             "pet_id": "pet-e6348b13c975"
         })
@@ -151,7 +151,7 @@ class TestBibleComplianceIteration222:
     def test_vet_clarify_mode_without_location(self):
         """Conversation_contract.mode should be 'clarify' for vet without location"""
         response = self.session.post(f"{BASE_URL}/api/mira/chat", json={
-            "input": "Find me a vet",  # No location = clarify mode expected
+            "message": "Find me a vet",  # No location = clarify mode expected
             "session_id": f"test-clarify-{int(time.time())}",
             "pet_id": "pet-e6348b13c975"
         })
@@ -223,7 +223,7 @@ class TestBibleComplianceIteration222:
         
         # Now test that Mira chat returns ALL allergies
         chat_response = self.session.post(f"{BASE_URL}/api/mira/chat", json={
-            "input": "What are Lola's allergies? List them all.",
+            "message": "What are Lola's allergies? List them all.",
             "session_id": f"test-allergies-{int(time.time())}",
             "pet_id": "pet-e6348b13c975"
         })
@@ -276,7 +276,7 @@ class TestOSContextAllergyMerging:
         """OS context safety gates should include merged allergies from all sources"""
         # Send a dine/food related message to trigger safety gates
         response = self.session.post(f"{BASE_URL}/api/mira/chat", json={
-            "input": "What food is safe for Lola given her allergies?",
+            "message": "What food is safe for Lola given her allergies?",
             "session_id": f"test-safety-gates-{int(time.time())}",
             "pet_id": "pet-e6348b13c975"
         })
