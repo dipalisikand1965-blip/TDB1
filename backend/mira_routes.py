@@ -4471,11 +4471,11 @@ async def mira_os_understand_with_products(
             "pillar": None
         }
         
-        if PICKS_ENGINE_AVAILABLE and request.pet_context:
+        if PICKS_ENGINE_AVAILABLE and enriched_pet_context:
             try:
                 picks_result = await run_picks_engine(
                     message=request.input,
-                    pet=request.pet_context,
+                    pet=enriched_pet_context,  # Use enriched context with full soul data for better picks
                     session_id=request.session_id,
                     debug=False,
                     max_picks=8
