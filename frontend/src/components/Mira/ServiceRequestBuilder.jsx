@@ -255,8 +255,12 @@ const ServiceRequestBuilder = ({
   const [success, setSuccess] = useState(false);
 
   // Extract service type - handle both direct service.id and LEARN context service.type
-  const serviceType = service?.id || service?.type || 'general';
-  const config = SERVICE_CONFIGS[serviceType] || SERVICE_CONFIGS.grooming;
+  // Also handle hyphenated service types from timely_services
+  const rawServiceType = service?.id || service?.type || 'general';
+  // Normalize service type: 'vet-consult' stays as-is, 'Vet Consultation' becomes 'vet-consult'
+  const serviceType = rawServiceType.toLowerCase().replace(/\s+/g, '-');
+  // Use matching config or fall back to general (not grooming)
+  const config = SERVICE_CONFIGS[serviceType] || SERVICE_CONFIGS.general;
   
   // Check if coming from LEARN layer
   const hasLearnContext = service?.prefill?.learn_context?.source_layer === 'learn';
