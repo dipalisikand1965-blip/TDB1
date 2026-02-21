@@ -358,7 +358,9 @@ const useChatSubmit = (config) => {
       
       const data = await response.json();
       
-      // UI ACTION HANDLER
+      console.log('[MIRA CHAT] Response received:', data.success ? 'success' : 'failed');
+      
+      // UI ACTION HANDLER (for backwards compatibility)
       if (data.ui_action?.type === 'open_picks_vault') {
         console.log('[UI ACTION] Opening Personalized Picks Panel for:', data.ui_action.pet_name);
         setShowTopPicksPanel(true);
@@ -384,7 +386,11 @@ const useChatSubmit = (config) => {
         console.log('[SOUL SCORE] Updated to:', newScore);
       }
       
-      let miraResponseText = data.response?.message || "I'm here to help!";
+      // Handle response - /api/mira/chat returns `response` directly as string
+      // while /api/mira/os/understand-with-products returns `response.message`
+      let miraResponseText = typeof data.response === 'string' 
+        ? data.response 
+        : (data.response?.message || data.message || "I'm here to help!");
       
       // MEMORY WHISPER
       if (memoryContext?.relevant_memory) {
