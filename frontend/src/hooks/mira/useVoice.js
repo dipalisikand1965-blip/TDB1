@@ -366,8 +366,9 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
     
     // Voice Input (Speech Recognition)
     isListening,
+    setIsListening,  // CRITICAL: Export setter for voice state management
     voiceError,
-    setVoiceError,  // CRITICAL: Export setter for error handling in parent component
+    setVoiceError,   // CRITICAL: Export setter for error handling in parent component
     voiceSupported,
     toggleListening,
     
