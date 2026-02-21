@@ -972,9 +972,23 @@ const PersonalizedPicksPanel = ({
   };
   
   // Get current pillar data
+  // ══════════════════════════════════════════════════════════════════════════════
+  // PILLAR DATA EXTRACTION (CRITICAL - this is where the rendering data comes from)
+  // The activePillar state determines which pillar's products are shown
+  // ══════════════════════════════════════════════════════════════════════════════
   const currentPillarData = picksData?.pillars?.[activePillar] || { picks: [], concierge_picks: [] };
   const cataloguePicks = currentPillarData.picks || [];
   const conciergePicks = currentPillarData.concierge_picks || [];
+  
+  // Debug: Log which pillar is being rendered (remove after confirming fix works)
+  useEffect(() => {
+    if (isOpen && picksData) {
+      console.log(`[PICKS PANEL RENDER] activePillar: ${activePillar}, cataloguePicks: ${cataloguePicks.length}, conciergePicks: ${conciergePicks.length}`);
+      if (cataloguePicks.length > 0) {
+        console.log(`[PICKS PANEL RENDER] First catalogue pick: ${cataloguePicks[0]?.name}`);
+      }
+    }
+  }, [isOpen, activePillar, cataloguePicks.length, conciergePicks.length, picksData]);
   
   // ═══════════════════════════════════════════════════════════════════════════
   // TASK CREATION WITH 5-SECOND UNDO (Phase 3)
