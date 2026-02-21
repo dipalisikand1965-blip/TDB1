@@ -9405,22 +9405,17 @@ If Soul data is sparse, ASK targeted questions. Do NOT assume from breed.
             if weight:
                 pet_context += f"- Weight: {weight}kg\n"
             
-            # Allergies (CRITICAL - NEVER recommend items with these)
-            # Check multiple sources for allergies
-            allergies = (
-                preferences.get('allergies', []) or 
-                health.get('allergies', []) or 
-                pet.get('allergies', []) or 
-                doggy_soul.get('food_allergies', '').split(',') if doggy_soul.get('food_allergies') else [] or
-                pet.get('health_vault', {}).get('allergies', [])
-            )
-            # Extract allergen names if they're objects
-            if allergies and isinstance(allergies, list) and len(allergies) > 0:
-                if isinstance(allergies[0], dict):
-                    allergies = [a.get('allergen', a.get('name', '')) for a in allergies if a]
-                allergies = [a.strip() for a in allergies if a and a.strip()]
+            # ═══════════════════════════════════════════════════════════════════
+            # ALLERGIES - FOOD SAFETY GATE (CANONICAL SOURCE OF TRUTH)
+            # "Memory is only real if it changes behaviour immediately."
+            # ═══════════════════════════════════════════════════════════════════
+            allergies = get_pet_allergies(pet)
             if allergies:
-                pet_context += f"- ⚠️ ALLERGIES (NEVER RECOMMEND): {', '.join(allergies)}\n"
+                allergies_str = ', '.join(allergies)
+                pet_context += f"- ⚠️ STRICT AVOID (ALLERGIES): **{allergies_str}**\n"
+                pet_context += f"  → NEVER recommend foods/treats containing: {allergies_str}\n"
+                pet_context += f"  → NEVER ask 'any allergies?' - you already have them\n"
+                pet_context += f"  → If user requests allergenic item, REFUSE and suggest safe alternatives\n"
             
             # Favorite flavors/treats
             fav_flavors = preferences.get('favorite_flavors', [])
