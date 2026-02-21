@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Inbox } from 'lucide-react';
+import { LayoutDashboard, Inbox, Sparkles } from 'lucide-react';
 
 const GlobalNav = ({ 
   unreadCount = 0,
@@ -23,19 +23,19 @@ const GlobalNav = ({
   const location = useLocation();
   
   // Determine active tab based on current path
-  // Inbox active: /notifications, /notifications?view=archive, /tickets/*
   const isInboxActive = location.pathname.startsWith('/notifications') || 
                         location.pathname.startsWith('/tickets');
   
-  // Dashboard active: /dashboard, /dashboard/*, /my-pets
   const isDashboardActive = location.pathname === '/dashboard' || 
                             location.pathname.startsWith('/dashboard/') ||
                             location.pathname === '/my-pets' ||
                             location.pathname.startsWith('/my-pets/');
 
+  const isMiraActive = location.pathname === '/mira-demo';
+
   return (
     <div className="flex items-center justify-between px-4 py-2 bg-[#0d0d1a] border-b border-gray-800/50">
-      {/* Segmented Control: Dashboard | Inbox - Labels always visible */}
+      {/* Segmented Control: Dashboard | Inbox | Ask Mira */}
       <div className="flex bg-gray-800/50 rounded-full p-1">
         <button
           onClick={() => navigate('/dashboard')}
@@ -70,6 +70,21 @@ const GlobalNav = ({
               {unreadCount > 99 ? '99+' : unreadCount}
             </span>
           )}
+        </button>
+
+        <button
+          onClick={() => navigate('/mira-demo')}
+          className={`
+            flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all
+            ${isMiraActive 
+              ? 'bg-gradient-to-r from-pink-500/20 to-purple-500/20 text-white' 
+              : 'text-gray-400 hover:text-gray-200'
+            }
+          `}
+          data-testid="global-nav-mira"
+        >
+          <Sparkles className="w-4 h-4 text-pink-400" />
+          <span>Ask Mira</span>
         </button>
       </div>
       
