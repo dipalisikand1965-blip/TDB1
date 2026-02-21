@@ -159,7 +159,7 @@ class TestPetVaultFromMira:
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
-        return response.json()["token"]
+        return response.json()["access_token"]
     
     @pytest.fixture(scope="class")
     def user_pets(self, auth_token):
@@ -204,7 +204,7 @@ class TestSoulScore:
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
-        return response.json()["token"]
+        return response.json()["access_token"]
     
     def test_pets_have_soul_scores(self, auth_token):
         """Verify pets have soul scores"""
@@ -257,7 +257,7 @@ class TestPetSwitching:
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
-        return response.json()["token"]
+        return response.json()["access_token"]
     
     @pytest.fixture(scope="class")
     def user_pets(self, auth_token):
@@ -343,7 +343,7 @@ class TestBirthdayEngine:
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
-        return response.json()["token"]
+        return response.json()["access_token"]
     
     def test_birthday_engine_upcoming(self, auth_token):
         """Test Birthday Engine upcoming celebrations"""
@@ -380,7 +380,7 @@ class TestMiraDemoPage:
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
-        return response.json()["token"]
+        return response.json()["access_token"]
     
     def test_mira_chat_api_works(self, auth_token):
         """Test Mira chat API used by mira-demo"""
