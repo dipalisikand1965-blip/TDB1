@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://premium-pet-platform.preview.emergentagent.com
+https://doggy-soul-app.preview.emergentagent.com
 
 ---
 

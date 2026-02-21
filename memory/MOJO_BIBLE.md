@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://premium-pet-platform.preview.emergentagent.com
+https://doggy-soul-app.preview.emergentagent.com
 ```
 
 ---
