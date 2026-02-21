@@ -4198,51 +4198,11 @@ const MiraDemoPage = () => {
                 petName={pet.name}
               />
               
-              {/* QUICK REPLIES - Contextual suggestions after Mira's response
-                  IMPORTANT: Only show if:
-                  1. Not processing AND
-                  2. quickReplies exist AND
-                  3. Last message doesn't already have inline quick_replies (avoid duplication)
+              {/* BOTTOM QUICK REPLIES - REMOVED
+                  Per user decision: Keep only TOP quick replies in the header bar.
+                  This removes duplication and provides cleaner iOS-style UI.
+                  The header QuickReplies component handles all quick reply display.
               */}
-              {!isProcessing && quickReplies.length > 0 && conversationHistory.length > 0 && (
-                // Check if last message already has quick_replies rendered inline (ChatMessage handles those)
-                // If so, don't duplicate here at the bottom
-                (() => {
-                  const lastMsg = conversationHistory[conversationHistory.length - 1];
-                  
-                  // COMPREHENSIVE CHECK: Match EXACTLY how ChatMessage extracts quick_replies
-                  // ChatMessage.jsx lines 1039-1062 extract from these sources:
-                  const contextualReplies = lastMsg?.data?.quick_replies || lastMsg?.data?.response?.quick_replies || [];
-                  const contractReplies = lastMsg?.data?.conversation_contract?.quick_replies || 
-                                         lastMsg?.data?.response?.conversation_contract?.quick_replies || [];
-                  
-                  // ChatMessage renders QuickReplyChips if EITHER contextual OR filtered contract replies exist
-                  const hasInlineQRs = contextualReplies.length > 0 || contractReplies.length > 0;
-                  
-                  // Skip rendering if quick replies are already shown inline with the last message
-                  if (hasInlineQRs) {
-                    console.log('[QUICK REPLIES] Skipping bottom section - already rendered inline with message');
-                    return null;
-                  }
-                  
-                  return (
-                    <QuickReplies
-                      replies={quickReplies}
-                      onReply={(action) => {
-                        setQuickReplies([]); // Clear after use
-                        
-                        // If "Send to Concierge" action, show summary first
-                        if (action.toLowerCase().includes('send') && action.toLowerCase().includes('concierge')) {
-                          showHandoffSummary();
-                        } else {
-                          handleQuickReply(action);
-                        }
-                      }}
-                      show={true}
-                    />
-                  );
-                })()
-              )}
               
               {/* STATUS INDICATORS - Non-clickable, passive status display
                   Shows C° (Concierge) and PICKS counts when there's activity
