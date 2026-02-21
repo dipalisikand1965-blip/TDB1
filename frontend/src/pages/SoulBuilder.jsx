@@ -492,28 +492,6 @@ const SoulBuilder = () => {
   
   // PET HOOK SCREEN (Photo + Name)
   if (screen === 'pet-hook') {
-    // Multi-pet support - fetch existing pets from user context
-    const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
-    const [existingPets, setExistingPets] = useState([]);
-    
-    // Fetch existing pets on mount
-    useEffect(() => {
-      const fetchPets = async () => {
-        try {
-          if (!token) return;
-          const resp = await fetch(`${API_URL}/api/pets/my-pets`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-          if (resp.ok) {
-            const data = await resp.json();
-            const pets = Array.isArray(data) ? data : data.pets || [];
-            setExistingPets(pets);
-          }
-        } catch (e) { /* ignore */ }
-      };
-      fetchPets();
-    }, [token]);
-    
     const totalPets = Math.max(existingPets.length, 1);
     const currentPetIndex = existingPets.length + 1; // New pet being added
     
