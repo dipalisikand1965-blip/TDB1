@@ -13847,28 +13847,28 @@ Pick one, and I'll give you a simple starting point! 🐾"""
                 city_for_search = user_city
             
                 if detected_place_type == "vet":
-                # Check if emergency
-                is_emergency_vet = any(word in message_lower for word in ["emergency", "urgent", "immediately", "now", "asap", "critical"])
-                
-                if is_emergency_vet:
-                    vets = await db.vet_clinics.find(
-                        {"city": {"$regex": city_for_search, "$options": "i"}, "is_24_hours": True, "verified": True},
-                        {"_id": 0}
-                    ).sort("rating", -1).limit(3).to_list(3)
-                else:
-                    vets = await db.vet_clinics.find(
-                        {"city": {"$regex": city_for_search, "$options": "i"}, "verified": True},
-                        {"_id": 0}
-                    ).sort([("is_24_hours", -1), ("rating", -1)]).limit(3).to_list(3)
-                
-                if vets:
-                    nearby_places_data = {"type": "vet_clinics", "places": vets, "city": city_for_search, "is_emergency": is_emergency_vet}
-                    nearby_places_context = f"\n\nNEARBY VET CLINICS IN {city_for_search.upper()}:\n"
-                    for v in vets:
-                        nearby_places_context += f"- {v['name']} ({v['area']}) - {'24/7 EMERGENCY' if v.get('is_24_hours') else 'Regular hours'} - Phone: {v['phone']} - Rating: {v.get('rating', 'N/A')}/5\n"
-                    nearby_places_context += "\nUse this information to help the user find a vet. Include phone numbers and highlight 24/7 options."
+                    # Check if emergency
+                    is_emergency_vet = any(word in message_lower for word in ["emergency", "urgent", "immediately", "now", "asap", "critical"])
+                    
+                    if is_emergency_vet:
+                        vets = await db.vet_clinics.find(
+                            {"city": {"$regex": city_for_search, "$options": "i"}, "is_24_hours": True, "verified": True},
+                            {"_id": 0}
+                        ).sort("rating", -1).limit(3).to_list(3)
+                    else:
+                        vets = await db.vet_clinics.find(
+                            {"city": {"$regex": city_for_search, "$options": "i"}, "verified": True},
+                            {"_id": 0}
+                        ).sort([("is_24_hours", -1), ("rating", -1)]).limit(3).to_list(3)
+                    
+                    if vets:
+                        nearby_places_data = {"type": "vet_clinics", "places": vets, "city": city_for_search, "is_emergency": is_emergency_vet}
+                        nearby_places_context = f"\n\nNEARBY VET CLINICS IN {city_for_search.upper()}:\n"
+                        for v in vets:
+                            nearby_places_context += f"- {v['name']} ({v['area']}) - {'24/7 EMERGENCY' if v.get('is_24_hours') else 'Regular hours'} - Phone: {v['phone']} - Rating: {v.get('rating', 'N/A')}/5\n"
+                        nearby_places_context += "\nUse this information to help the user find a vet. Include phone numbers and highlight 24/7 options."
             
-            elif detected_place_type == "restaurant":
+                elif detected_place_type == "restaurant":
                 restaurants = await db.restaurants.find(
                     {"city": {"$regex": city_for_search, "$options": "i"}, "verified": True},
                     {"_id": 0}
