@@ -4,7 +4,7 @@
  * Makes the pet the HERO of every page with emotional Mira messages!
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Heart, Sparkles, PawPrint, ChevronDown } from 'lucide-react';
@@ -183,8 +183,24 @@ const PillarHero = ({
   const { token } = useAuth();
   const [activePet, setActivePet] = useState(null);
   const [heroIndex, setHeroIndex] = useState(0);
+  const heroRef = useRef(null);
+  const [parallaxOffset, setParallaxOffset] = useState(0);
   
   const config = PILLAR_CONFIG[pillar] || PILLAR_CONFIG.celebrate;
+  
+  // Subtle parallax effect on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!heroRef.current) return;
+      const rect = heroRef.current.getBoundingClientRect();
+      const scrollProgress = Math.max(0, Math.min(1, -rect.top / rect.height));
+      // Subtle parallax: move background slightly slower than scroll
+      setParallaxOffset(scrollProgress * 40);
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   
   // Fetch user's pets
   useEffect(() => {
