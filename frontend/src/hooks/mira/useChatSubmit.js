@@ -316,55 +316,61 @@ const useChatSubmit = (config) => {
           session_id: sessionId,
           source: 'mira_demo',
           current_pillar: pillar || 'mira-demo',
-          selected_pet_id: pet.id,
+          selected_pet_id: pet?.id || 'unknown',
           // FULL PET CONTEXT - Critical for personalization!
           pet_context: {
             // Core identity
-            id: pet.id,
-            name: pet.name,
-            breed: pet.breed || pet.identity?.breed,
-            age: pet.age || pet.identity?.age,
-            weight: pet.weight || pet.identity?.weight,
-            birthday: pet.birthday || pet.identity?.birthday,
-            gender: pet.gender || pet.identity?.gender,
-            species: pet.species || 'dog',
+            id: pet?.id || 'unknown',
+            name: pet?.name || 'your pet',
+            breed: pet?.breed || pet?.identity?.breed || '',
+            age: pet?.age || pet?.identity?.age || '',
+            weight: pet?.weight || pet?.identity?.weight || '',
+            birthday: pet?.birthday || pet?.identity?.birthday || '',
+            gender: pet?.gender || pet?.identity?.gender || '',
+            species: pet?.species || 'dog',
             
             // Health & Allergies - CRITICAL for personalization
-            allergies: pet.allergies || pet.health?.allergies || [],
-            sensitivities: pet.sensitivities || pet.health?.sensitivities || [],
-            medical_conditions: pet.medical_conditions || pet.health?.conditions || [],
+            allergies: pet?.allergies || pet?.health?.allergies || [],
+            sensitivities: pet?.sensitivities || pet?.health?.sensitivities || [],
+            medical_conditions: pet?.medical_conditions || pet?.health?.conditions || [],
             
             // Preferences & Favorites
-            preferences: pet.preferences || pet.food_preferences || {},
-            favorites: pet.favorites || {},
-            favorite_treats: pet.favorite_treats || pet.preferences?.favorite_treats || [],
-            dietary_restrictions: pet.dietary_restrictions || pet.food_preferences?.restrictions || [],
+            preferences: pet?.preferences || pet?.food_preferences || {},
+            favorites: pet?.favorites || {},
+            favorite_treats: pet?.favorite_treats || pet?.preferences?.favorite_treats || [],
+            dietary_restrictions: pet?.dietary_restrictions || pet?.food_preferences?.restrictions || [],
             
             // Personality & Behavior - For that personal touch
-            personality: pet.personality || pet.behavior?.personality,
-            traits: pet.traits || [],
-            activity_level: pet.activity_level || pet.behavior?.activity_level,
-            temperament: pet.temperament || pet.behavior?.temperament,
+            personality: pet?.personality || pet?.behavior?.personality || '',
+            traits: pet?.traits || [],
+            activity_level: pet?.activity_level || pet?.behavior?.activity_level || '',
+            temperament: pet?.temperament || pet?.behavior?.temperament || '',
             
             // Soul data - The heart of personalization
-            soul_score: pet.soul_score || pet.soulScore,
-            soul_data: pet.soul_data || pet.soulData || {},
-            doggy_soul_answers: pet.doggy_soul_answers || {},
+            soul_score: pet?.soul_score || pet?.soulScore || 0,
+            soul_data: pet?.soul_data || pet?.soulData || {},
+            doggy_soul_answers: pet?.doggy_soul_answers || {},
             
             // Location
             city: pet?.city || pet?.location?.city || userCity || 'Mumbai',
             location: { city: pet?.city || pet?.location?.city || userCity || 'Mumbai' }
           },
-          pet_name: pet.name,
-          pet_breed: pet.breed || pet.identity?.breed,
+          pet_name: pet?.name || 'your pet',
+          pet_breed: pet?.breed || pet?.identity?.breed || '',
           // Additional context for enhanced responses
           ticket_id: ticketId,
           conversation_history: conversationHistory.slice(-10).map(m => ({
             role: m.type === 'user' ? 'user' : 'assistant',
-            content: m.content
+            content: m.content || ''
           }))
         })
       });
+      
+      // Check for HTTP errors BEFORE trying to parse JSON
+      if (!response.ok) {
+        console.error('[MIRA CHAT] HTTP error:', response.status, response.statusText);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
       
       const data = await response.json();
       
