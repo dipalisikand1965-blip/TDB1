@@ -1,5 +1,5 @@
 # Pet Soul Platform - Product Requirements Document
-## Last Updated: February 21, 2026 (Session 4)
+## Last Updated: February 21, 2026 (Session 5)
 
 ---
 
@@ -27,77 +27,82 @@ The user, Dipali, founder of a premium pet concierge service, wants to build a "
    - Location fix - no more Mumbai default
    - Places guardrail for non-location intents
 
-5. **Build a Brilliant Onboarding** - Design and build the new, single-flow "Soul Builder." (BACKLOG)
+5. **PICKS Panel Tab Switching** ✅ FIXED (Session 5 - February 21, 2026)
+   - **Issue**: Clicking pillar tabs (Celebrate, Care, Dine) showed wrong products
+   - **Root Cause**: State management conflict - useState for userHasSelectedPillar caused stale closures
+   - **Fix**: Changed to useRef for userSelectedPillarRef - immediate effect on click, no stale closures
+   - **File**: `/app/frontend/src/components/Mira/PersonalizedPicksPanel.jsx` lines 744-772
+   - **Test Result**: VERIFIED WORKING (iteration_225.json)
 
-6. **Unify the "Mira" Experience** - Consolidate the three different "Mira" implementations into one. (BACKLOG)
+6. **Quick Reply Duplication** ✅ FIXED (Session 5 - February 21, 2026)
+   - **Issue**: Quick replies appeared both inline AND at bottom of screen
+   - **Fix**: Updated duplicate check in MiraDemoPage.jsx to match ChatMessage.jsx extraction logic
+   - **File**: `/app/frontend/src/pages/MiraDemoPage.jsx` lines 4207-4245
+   - **Test Result**: VERIFIED WORKING - "Skipping bottom section - already rendered inline with message"
 
-7. **Make Pillar Pages Magical** - Apply the new template from `/celebrate-new` to all other pillar pages. (BACKLOG)
+7. **Build a Brilliant Onboarding** - Design and build the new, single-flow "Soul Builder." (BACKLOG)
+
+8. **Unify the "Mira" Experience** - Consolidate the three different "Mira" implementations into one. (BACKLOG)
+
+9. **Make Pillar Pages Magical** - Apply the new template from `/celebrate-new` to all other pillar pages. (BACKLOG)
 
 ---
 
 ## What's Been Implemented
 
-### Session 3: February 21, 2026 (CURRENT)
+### Session 5: February 21, 2026 (CURRENT)
 
-#### P0 - Food Safety Gate System ✅ (NEW FEATURE)
-*"Memory is only real if it changes behaviour immediately."*
+#### P0 - PICKS Panel Tab Switching Fix ✅ (CRITICAL RECURRING BUG - FINALLY FIXED)
+*This was a recurring bug across 3+ sessions that caused significant user frustration.*
 
-**Backend Functions Added** (`/app/backend/mira_routes.py` lines 162-280):
-- `get_pet_allergies(pet)`: Canonical source of truth - merges allergies from ALL 8 sources
-- `get_pet_allergies_display(pet)`: Returns comma-separated string for UI
-- `has_known_allergies(pet)`: Boolean check for allergy existence
-- `food_safety_gate(pet, items)`: Filters products containing allergens
-- `build_allergy_context_injection(pet)`: LLM prompt injection block
+**Problem**: When user clicked a pillar tab (e.g., "Celebrate"), the panel showed products from wrong context (e.g., grooming items instead of celebration items).
 
-**Unsafe Ingredient Intercept** (lines 12437-12534):
-- Detects food requests containing known allergens
-- Returns `intent: "allergen_intercept"` with `safety_gate` data
-- Suggests safe alternatives (e.g., chicken → turkey, duck, fish)
-- Bible-compliant quick replies for alternative exploration
+**Root Cause Analysis**:
+- Previous implementation used `useState(userHasSelectedPillar)` to track user tab clicks
+- This caused stale closure issues - the useEffect checking `userHasSelectedPillar` would sometimes read stale values
+- When `enginePillar` prop updated (from chat responses), the effect would override user's selection
 
-**Test Results:** All 3 scenarios pass ✅
+**Fix Applied**:
+```javascript
+// OLD (buggy):
+const [userHasSelectedPillar, setUserHasSelectedPillar] = useState(false);
 
-#### P0 - Places API Guardrail Fix ✅
-**Issue**: "Health checkup reminder" triggered Places API showing vet clinics
-**Root Cause**: TWO Places detection paths - only first had NON_LOCATION_INTENTS guard
-**Fix**: Added `NON_LOCATION_INTENTS_2` guard at lines 13808-13815
-**Result**: Non-location intents (reminder, schedule, checkup) now blocked from Places
+// NEW (working):
+const userSelectedPillarRef = useRef(false);
 
-**Test Results (iteration_223.json):**
-- ✅ "Health checkup reminder" → 0 places
-- ✅ "Schedule vaccination" → 0 places  
-- ✅ "Find vets near me" → mode='clarify' (asks for location first)
+// Effect now resets ref when panel closes
+useEffect(() => {
+  if (!isOpen) {
+    userSelectedPillarRef.current = false;
+  }
+}, [isOpen]);
 
-#### P1 - Duplicate Quick Replies Fix ✅
-**Issue**: Quick replies showing at BOTH top (contextual) AND bottom
-**Fix**: Bottom QuickReplies component now checks if last message has inline quick_replies
-**File**: `/app/frontend/src/pages/MiraDemoPage.jsx` lines 4201-4232
+// Handler immediately sets ref (no async setState)
+const handlePillarSelect = (pillarId) => {
+  userSelectedPillarRef.current = true; // Immediate!
+  setActivePillar(pillarId);
+};
+```
 
-#### Icon State System ✅ (VERIFIED WORKING)
-**Location**: `/app/frontend/src/hooks/mira/useIconState.js`
-- THREE STATES: OFF (muted), ON (lit), PULSE (animated + badge)
-- Active tab override: No PULSE while inside tab
-- Pet switch: Reset all states to OFF, then recalculate
+**Test Results (iteration_225.json)**:
+- Celebrate tab → Shows: Go Bananas Box, Berry Much Love Box, Googly Ghoul Dognuts ✅
+- Care tab → Shows: Eye Care Drops, Grooming Schedule Guide ✅
+- Dine tab → Shows: Mutton & Veggies Meal, Chicken & Veggies Meal ✅
 
-### Session 2: February 21, 2026
+#### P1 - Quick Reply Duplication Fix ✅
+**Problem**: Quick replies appeared both inline (in ChatMessage) AND at bottom (in MiraDemoPage).
 
-#### P0 - Picks Panel Pillar Fix ✅
-- **Issue**: Picks panel showed wrong pillar items
-- **Fix**: Added `"pillar"` to `add_picks_to_response()` return
+**Root Cause**: The duplication check in MiraDemoPage didn't exactly match how ChatMessage extracts quick replies.
 
-#### P0 - Allergy Consolidation Fix ✅
-- **Issue**: Backend took FIRST non-empty allergy source
-- **Fix**: Created `_extract_allergy_list()` that MERGES all sources
+**Fix Applied**: Updated the hasInlineQRs check to match ChatMessage.jsx extraction paths:
+```javascript
+const contextualReplies = lastMsg?.data?.quick_replies || lastMsg?.data?.response?.quick_replies || [];
+const contractReplies = lastMsg?.data?.conversation_contract?.quick_replies || 
+                       lastMsg?.data?.response?.conversation_contract?.quick_replies || [];
+const hasInlineQRs = contextualReplies.length > 0 || contractReplies.length > 0;
+```
 
-### Session 1: February 21, 2026
-
-#### P0 - Quick Replies Fix ✅
-- **Issue**: Quick reply buttons showed generic navigational options instead of contextual conversation options
-- **Fix**: Changed priority order in `useChatSubmit.js`, `MiraDemoPage.jsx`, `ChatMessage.jsx`
-- **Result**: Now shows "Stick with kibble", "Add home-cooked" etc.
-
-#### P1 - Soul Score Display Fix ✅
-- **Issue**: Dashboard showed 56% instead of actual 62%
+**Test Result**: Console confirms "Skipping bottom section - already rendered inline with message" ✅
 - **Fix**: Backend now uses `max(stored_score, calculated_score)`
 - **Result**: Soul growth from conversations properly reflected
 
