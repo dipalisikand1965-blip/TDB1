@@ -11207,15 +11207,24 @@ async def get_my_pets(current_user: dict = Depends(get_current_user)):
     
     # Calculate overall_score using the same weighted scoring as /api/pet-score/{id}/score_state
     # This ensures consistency across all frontend components
+    # IMPORTANT: Use the stored score if it's higher (conversation-based growth)
     for pet in pets:
+        # Get the stored overall_score (may have grown through conversations)
+        stored_score = pet.get("overall_score", 0) or 0
+        
         answers = pet.get("doggy_soul_answers", {}) or pet.get("soul_answers", {})
         if answers:
             # Use the weighted scoring system (single source of truth)
             score_data = calculate_pet_soul_score(answers)
-            pet["overall_score"] = score_data["total_score"]
+            calculated_score = score_data["total_score"]
+            
+            # Use the HIGHER of stored vs calculated score
+            # This ensures conversation-based soul growth is reflected
+            pet["overall_score"] = max(stored_score, calculated_score)
             pet["score_tier"] = score_data["tier"]["key"] if score_data["tier"] else "newcomer"
         else:
-            pet["overall_score"] = 0
+            # No answers yet, use stored score (from conversations) or 0
+            pet["overall_score"] = stored_score
             pet["score_tier"] = "newcomer"
     
     return {"pets": pets}
