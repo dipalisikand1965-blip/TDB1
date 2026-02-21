@@ -31,6 +31,7 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
+import { MiraOSTrigger } from '../components/mira-os';
 
 // Lazy load Soul Explainer for footer link
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
