@@ -6612,6 +6612,39 @@ Would you like me to find vets or pet pharmacies near you, or shall I have your 
             }
             logger.info(f"[RESPONSE] Added intent-driven cards: {intent_driven_data.get('shelf_title')}")
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # SOUL LEARNING: Extract data from user messages and write to pet profile
+        # This implements "Ask, Store, Recommend" - Mira learns from EVERY interaction
+        # ═══════════════════════════════════════════════════════════════════════════
+        if SOUL_FIRST_AVAILABLE and enriched_pet_context and request.input:
+            try:
+                pet_id_for_write = enriched_pet_context.get("id")
+                pet_name_for_write = enriched_pet_context.get("name", "pet")
+                
+                # Extract data from user's message
+                extracted_data = extract_soul_data_from_response(request.input, pet_name_for_write)
+                
+                # Check if we extracted meaningful data
+                if extracted_data and extracted_data.data_categories:
+                    logger.info(f"[SOUL-FIRST] Extracted from '{request.input[:50]}...': categories={extracted_data.data_categories}")
+                    
+                    # Write back to pet profile
+                    from motor.motor_asyncio import AsyncIOMotorClient
+                    import os
+                    client = AsyncIOMotorClient(os.environ.get('MONGO_URL', 'mongodb://localhost:27017'))
+                    db_for_write = client[os.environ.get('DB_NAME', 'pet_concierge')]
+                    
+                    write_success = await write_soul_data_to_pet(db_for_write, pet_id_for_write, extracted_data)
+                    
+                    if write_success:
+                        logger.info(f"[SOUL-FIRST] ✅ Wrote soul data for {pet_name_for_write}: {extracted_data.data_categories}")
+                        response_data["soul_updated"] = True
+                        response_data["soul_update_categories"] = extracted_data.data_categories
+                    
+                    client.close()
+            except Exception as soul_err:
+                logger.warning(f"[SOUL-FIRST] Error in soul extraction/write: {soul_err}")
+        
         return response_data
     except Exception as e:
         logger.error(f"Mira OS understand-with-products error: {e}")
