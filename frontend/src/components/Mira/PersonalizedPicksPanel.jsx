@@ -1182,10 +1182,7 @@ const PersonalizedPicksPanel = ({
                     key={pillar.id}
                     onClick={() => {
                       hapticFeedback.buttonTap();
-                      setActivePillar(pillar.id);
-                      // Reset "show all" when changing pillars
-                      setShowAllCatalogue(false);
-                      setShowAllConcierge(false);
+                      handlePillarSelect(pillar.id);
                     }}
                     className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
                       activePillar === pillar.id
