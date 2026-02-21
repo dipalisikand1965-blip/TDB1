@@ -244,7 +244,7 @@ const InboxRow = ({
         {/* Content */}
         <div className="flex-1 min-w-0">
           {/* Headline - bold if unread */}
-          <h3 className={`text-sm truncate ${isUnread ? 'font-semibold text-white' : 'font-medium text-gray-200'}`}>
+          <h3 className={`text-sm sm:truncate line-clamp-2 sm:line-clamp-1 ${isUnread ? 'font-semibold text-white' : 'font-medium text-gray-200'}`}>
             {notification.title}
           </h3>
           
