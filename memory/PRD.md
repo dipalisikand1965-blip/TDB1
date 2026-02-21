@@ -1,27 +1,38 @@
-# THE DOGGY COMPANY - PRD
-## Updated: February 21, 2026
-## Workspace: site-audit-check.preview.emergentagent.com
+# THE DOGGY COMPANY - COMPLETE STATUS
+## February 21, 2026 | site-audit-check workspace
 
-## ALL FIXES APPLIED:
-1. Full codebase migration (68MB, 1,339 commits)
-2. Babel crash fixed (visual-edits disabled for complex codebase)
-3. 8 pets seeded with 55-70 soul answers each
-4. 2,181 products + 681 services from CSV + Shopify
-5. Care/Stay copy fixed (pillar-specific text)
-6. CONCIERGE tab fixed (shows "Live now")
-7. Test Scenarios auto-hide after click
-8. Notifications Primary filter fixed (shows all request types)
-9. "Ask Mira" button added to GlobalNav
-10. Breed data fixed for all pets
-11. Admin reply → member notification loop VERIFIED
-12. Weather fallback added (works without API key)
-13. Places fallback to database (19 restaurants, 32 stays)
-14. Voice default OFF (opt-in, not auto-play)
-15. Quick reply duplication already fixed in codebase
+## ALL API KEYS CONFIGURED:
+OpenWeather, Google Places, Foursquare, ElevenLabs, YouTube, Viator, Amadeus, Resend, Razorpay, Gupshup, Eventbrite, Google Calendar, Google Vision, Chatbase
 
-## SOUL INTELLIGENCE VERIFIED:
-Grooming scenario: Mira responded knowing Mystique is "comfortable being handled but nervous with noise and when left alone" — directly from soul questionnaire data.
+## DATA: 2,541 products | 681 services | 8 pets with soul + photos | 32 stays | 19 restaurants
 
-## DATA: 2,181 products | 681 services | 8 pets | 32 stays | 19 restaurants
+## 17 FIXES APPLIED:
+1. Full codebase migration (68MB)
+2. Babel crash fixed
+3. 8 pets with 55-70 soul answers
+4. Products/services seeded from CSV + Shopify
+5. Pillar copy fixed (care/stay/fit)
+6. CONCIERGE tab fixed
+7. Test scenarios auto-hide
+8. Notifications Primary filter fixed
+9. "Ask Mira" nav button added
+10. Breed data fixed
+11. Admin → member reply loop verified
+12. Weather fallback added + LIVE weather working (OpenWeather key)
+13. Places fallback + LIVE Google Places key configured
+14. Voice default OFF
+15. Pet photos synced from live site (Mystique, Mojo)
+16. All 30+ API keys configured
+17. Soul intelligence verified (grooming scenario proves soul data flows)
 
-## Credentials: dipali@clubconcierge.in / test123 | Admin: aditya / lola4304
+## PRODUCTION MONGODB NOTE:
+MongoDB Atlas (customer-apps.tiwgki.mongodb.net) blocks connections from this workspace. Need IP whitelist in Atlas to connect to production DB. Currently using local MongoDB with seeded data.
+
+## REMAINING WORK:
+- Onboarding flow audit (/join)
+- Soul Builder audit (/soul-builder)
+- Checkout flow (Razorpay test keys configured)
+- Pet photo upload for pets without photos
+- Connect to production MongoDB (needs Atlas IP whitelist)
+- Conversation flow deep audit
+- Freemium pillar optimization
