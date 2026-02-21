@@ -515,7 +515,7 @@ const CarePage = () => {
       {/* ==================== SOCIAL PROOF BANNER ==================== */}
       <div className="bg-white border-b border-gray-100 py-3">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
-          <FitnessJourneyCounter />
+          <FitnessJourneyCounter pillar="care" />
           <RotatingSocialProof 
             petName={userPets[0]?.name} 
             breedName={userPets[0]?.breed} 
