@@ -11550,30 +11550,72 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
         ]
     
     # ═══════════════════════════════════════════════════════════════════════════
-    # PATTERN 8: Generic Yes/No or Confirmation Questions
+    # PATTERN 9: Cake/Food Style Preferences (sweet vs savoury, etc.)
     # ═══════════════════════════════════════════════════════════════════════════
-    elif any(term in response_lower for term in ["shall i", "would you like", "should i", "want me to", "does that sound", "is that okay"]):
+    elif any(term in response_lower for term in ["sweet-style", "savoury-style", "sweet style", "savoury style", "sweet or savoury", "fruity or meaty"]):
         quick_replies = [
-            "Yes, please!",
-            "Tell me more first",
-            "Let's try something else"
+            build_quick_reply_chip("Sweet-style", f"Sweet-style for {pet_ref} please!", "refine", domain="celebrate"),
+            build_quick_reply_chip("Savoury-style", f"Savoury-style for {pet_ref} please!", "refine", domain="celebrate"),
+            build_quick_reply_chip("Surprise me", "Surprise me with your recommendation!", "refine", domain="celebrate"),
+            build_quick_reply_chip("Tell me more", "What's the difference between them?", "continue", domain="celebrate")
         ]
     
     # ═══════════════════════════════════════════════════════════════════════════
-    # FALLBACK: Check if there's any question being asked
+    # PATTERN 10: Size/Quantity Questions
     # ═══════════════════════════════════════════════════════════════════════════
-    elif "?" in response_text:
-        # Extract choice-based questions: "X or Y?"
+    elif any(term in response_lower for term in ["what size", "how big", "small or large", "mini or regular", "size preference"]):
+        quick_replies = [
+            build_quick_reply_chip("Small/Mini", "Small or mini size.", "refine", domain="general"),
+            build_quick_reply_chip("Medium/Regular", "Medium or regular size.", "refine", domain="general"),
+            build_quick_reply_chip("Large", "Large size.", "refine", domain="general"),
+            build_quick_reply_chip("Not sure", "Not sure, what do you recommend?", "continue", domain="general")
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 11: Generic Yes/No or Confirmation Questions (LOWER PRIORITY)
+    # Only match if no more specific pattern matched above
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["shall i", "should i", "want me to", "does that sound", "is that okay"]) and " or " not in response_lower:
+        quick_replies = [
+            build_quick_reply_chip("Yes, please!", "Yes, please!", "execute", domain="general"),
+            build_quick_reply_chip("Tell me more", "Tell me more about this.", "continue", domain="general"),
+            build_quick_reply_chip("Something else", "Let's try something else.", "continue", domain="general")
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # FALLBACK: Intelligent extraction of "X or Y?" choices from any question
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif "?" in response_text and " or " in response_lower:
         import re
-        or_match = re.search(r'(?:do you want|prefer|looking for|asking about)\s+([^,?]+?)(?:\s*,?\s*or\s+|\s+or\s+)([^?]+?)\?', response_lower)
-        if or_match:
-            choice1 = or_match.group(1).strip().title()
-            choice2 = or_match.group(2).strip().title()
-            quick_replies = [
-                build_quick_reply_chip(choice1, f"{choice1}.", "refine", domain="general"),
-                build_quick_reply_chip(choice2, f"{choice2}.", "refine", domain="general"),
-                build_quick_reply_chip("Both", "Both.", "refine", domain="general")
-            ]
+        
+        # IMPROVED: Better regex to extract choices from "Would you like X or Y?" patterns
+        # Handles: "sweet-style (description) or savoury-style (description)?"
+        patterns = [
+            # Pattern 1: "Would you like X or Y?"
+            r'(?:would you like|do you want|prefer|would you prefer)\s*(?:the\s+)?(?:cake\s+to\s+be\s+)?(?:more\s+)?[:\s]*([a-z\-]+(?:\s*\([^)]+\))?)\s+or\s+([a-z\-]+(?:\s*\([^)]+\))?)',
+            # Pattern 2: Simple "X or Y?" at end of sentence
+            r':\s*([a-z\-]+(?:\s*\([^)]+\))?)\s+or\s+([a-z\-]+(?:\s*\([^)]+\))?)\s*\?',
+            # Pattern 3: "more X or more Y?"
+            r'more\s+([a-z\-]+)\s+or\s+(?:more\s+)?([a-z\-]+)',
+        ]
+        
+        for pattern in patterns:
+            or_match = re.search(pattern, response_lower)
+            if or_match:
+                choice1 = or_match.group(1).strip()
+                choice2 = or_match.group(2).strip()
+                
+                # Clean up choices - remove parenthetical descriptions for labels but keep for payload
+                choice1_label = re.sub(r'\s*\([^)]+\)', '', choice1).strip().title()
+                choice2_label = re.sub(r'\s*\([^)]+\)', '', choice2).strip().title()
+                
+                quick_replies = [
+                    build_quick_reply_chip(choice1_label, f"I'd like {choice1_label}.", "refine", domain="general"),
+                    build_quick_reply_chip(choice2_label, f"I'd like {choice2_label}.", "refine", domain="general"),
+                    build_quick_reply_chip("Tell me more", "What's the difference?", "continue", domain="general"),
+                    build_quick_reply_chip("Surprise me", "Surprise me with your recommendation!", "refine", domain="general")
+                ]
+                break
     
     # If we found quick replies, ensure they're all Bible-compliant chips
     if quick_replies:
