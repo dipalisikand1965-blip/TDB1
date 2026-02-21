@@ -28,7 +28,9 @@ const MiraVideoFrame = memo(({ item, onComplete }) => {
   const [showVideo, setShowVideo] = useState(false);
   const [watchedPercent, setWatchedPercent] = useState(0);
   
-  const youtubeUrl = `https://www.youtube.com/embed/${item.youtube_id}?autoplay=1&rel=0`;
+  // Handle different field names: youtube_id, video_id, or id
+  const videoId = item.youtube_id || item.video_id || item.id;
+  const youtubeUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
   
   return (
     <div className="mira-video-frame" data-testid="mira-video-frame">
@@ -37,10 +39,10 @@ const MiraVideoFrame = memo(({ item, onComplete }) => {
         <div className="video-before-frame">
           <div className="video-thumbnail" onClick={() => setShowVideo(true)}>
             <img 
-              src={`https://img.youtube.com/vi/${item.youtube_id}/maxresdefault.jpg`} 
+              src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`} 
               alt={item.title}
               onError={(e) => {
-                e.target.src = `https://img.youtube.com/vi/${item.youtube_id}/hqdefault.jpg`;
+                e.target.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
               }}
             />
             <div className="video-play-overlay">
