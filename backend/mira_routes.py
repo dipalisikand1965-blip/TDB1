@@ -12453,20 +12453,21 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
             logger.info(f"[FOOD SAFETY GATE] is_food_request={is_food_request}, msg='{user_msg_lower[:50]}'")
             
             if is_food_request:
-            # Check if any allergen is mentioned in the request
-            requested_allergen = None
-            for allergen in pet_allergies:
-                # Check for exact match and variations
-                variations = [allergen, f"{allergen} ", f" {allergen}", f"{allergen}s", f"{allergen}-based"]
-                for variant in variations:
-                    if variant in user_msg_lower:
-                        requested_allergen = allergen
+                # Check if any allergen is mentioned in the request
+                requested_allergen = None
+                for allergen in pet_allergies:
+                    # Check for exact match and variations
+                    variations = [allergen, f"{allergen} ", f" {allergen}", f"{allergen}s", f"{allergen}-based"]
+                    for variant in variations:
+                        if variant in user_msg_lower:
+                            requested_allergen = allergen
+                            logger.info(f"[FOOD SAFETY GATE] ⚠️ ALLERGEN DETECTED: {allergen}")
+                            break
+                    if requested_allergen:
                         break
+                
+                # If user requested an allergenic item, intercept and refuse
                 if requested_allergen:
-                    break
-            
-            # If user requested an allergenic item, intercept and refuse
-            if requested_allergen:
                 pet_name = selected_pet.get("name", "your pet")
                 allergies_str = ", ".join(pet_allergies)
                 
