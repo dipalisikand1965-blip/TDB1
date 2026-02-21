@@ -1448,8 +1448,10 @@ const PersonalizedPicksPanel = ({
                 {/* PERSONALIZED SHELF - "✨ Personalized for {Pet}"                    */}
                 {/* ALWAYS shown proactively - unique items with pet's photo           */}
                 {/* Concierge creates these (mugs, coasters, blankets, etc.)           */}
+                {/* These are CELEBRATE items - show on general view OR celebrate tab  */}
                 {/* ═══════════════════════════════════════════════════════════════════ */}
-                {picksData?.personalized?.has_products && (
+                {(!activePillar || activePillar === 'all' || activePillar === 'general' || activePillar === 'celebrate') && 
+                 picksData?.personalized?.has_products && (
                   <div className="mb-6">
                     <div className="mb-3">
                       <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
