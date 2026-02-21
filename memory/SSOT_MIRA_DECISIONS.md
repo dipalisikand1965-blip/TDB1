@@ -86,12 +86,13 @@ This document is the CANONICAL source of truth for all Mira decisions, guardrail
 
 ### 3.4 Picks Panel Wrong Products (Feb 2026)
 - **Issue**: Celebrate tab showing "Training Treats" and grooming items
-- **Root Cause**: `intent_driven` and `personalized` sections showed REGARDLESS of pillar tab
-- **Fix**: Added pillar filter conditions:
-  - `intent_driven` only shows when `(!activePillar || activePillar === 'all' || activePillar === 'general')`
-  - `personalized` only shows when `(!activePillar || activePillar === 'all' || activePillar === 'general' || activePillar === 'celebrate')`
-  - `timely_picks` only shows when `(!activePillar || activePillar === 'all' || activePillar === 'general')`
-- **File**: `PersonalizedPicksPanel.jsx` lines 1280, 1355, 1450
+- **Root Cause 1**: `intent_driven` and `personalized` sections showed REGARDLESS of pillar tab
+- **Root Cause 2**: useEffect was **fighting against user's tab selection** - `activePillar` dependency caused re-render loop that reset to `enginePillar`
+- **Fix 1**: Added pillar filter conditions to hide non-relevant sections
+- **Fix 2**: Added `userHasSelectedPillar` state to track manual selection
+- **Fix 3**: Created `handlePillarSelect()` function that sets flag + changes pillar
+- **Fix 4**: Removed `activePillar` from useEffect deps to stop fighting
+- **File**: `PersonalizedPicksPanel.jsx` lines 737-751, 1173
 - **Status**: FIXED
 
 ---
