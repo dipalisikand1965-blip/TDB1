@@ -6307,7 +6307,7 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 await increment_soul_score_on_interaction(
                     pet_id=request.pet_context.get("id"), 
                     interaction_type=interaction_type,
-                    pillar=current_pillar,
+                    pillar=score_pillar,
                     learning_type=learning_type,
                     engagement_depth=engagement_depth
                 )
