@@ -306,18 +306,30 @@ async def get_restaurants(
     petMenu: Optional[str] = None,
     featured: Optional[bool] = None
 ):
-    """Get all pet-friendly restaurants (public)"""
+    """Get all pet-friendly restaurants (public) - combines restaurants and pet_friendly_restaurants"""
     query = {}
     
     if city:
-        query["city"] = city
+        query["city"] = {"$regex": city, "$options": "i"}
     if petMenu:
         query["petMenuAvailable"] = petMenu
     if featured:
         query["featured"] = True
     
-    restaurants = await db.restaurants.find(query, {"_id": 0}).to_list(100)
-    return {"restaurants": restaurants}
+    # Query both collections
+    restaurants_1 = await db.restaurants.find(query, {"_id": 0}).to_list(500)
+    restaurants_2 = await db.pet_friendly_restaurants.find(query, {"_id": 0}).to_list(500)
+    
+    # Combine and dedupe by name
+    seen_names = set()
+    combined = []
+    for r in restaurants_1 + restaurants_2:
+        name = r.get('name', '')
+        if name and name not in seen_names:
+            seen_names.add(name)
+            combined.append(r)
+    
+    return {"restaurants": combined, "total": len(combined)}
 
 
 @dine_router.get("/dine/restaurants/{restaurant_id}")
