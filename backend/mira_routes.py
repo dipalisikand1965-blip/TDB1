@@ -11504,11 +11504,25 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
     # ═══════════════════════════════════════════════════════════════════════════
     # PATTERN 4: Birthday/Celebration Questions
     # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["at home", "inviting guests", "quiet celebration", "small gathering", "intimate", "big party"]):
+        quick_replies = [
+            build_quick_reply_chip("Quiet at home", "A quiet celebration at home.", "refine", domain="celebrate"),
+            build_quick_reply_chip("Inviting guests", "I'm thinking of inviting guests.", "refine", domain="celebrate"),
+            build_quick_reply_chip("Not sure yet", "I'm not sure yet, help me decide.", "continue", domain="celebrate")
+        ]
+    
+    elif any(term in response_lower for term in ["active and playful", "cosy celebration", "playful birthday", "quiet celebration", "simpler celebration"]):
+        quick_replies = [
+            build_quick_reply_chip("Active & playful", "An active, playful celebration.", "refine", domain="celebrate"),
+            build_quick_reply_chip("Quiet & cosy", "A quieter, cosy celebration.", "refine", domain="celebrate"),
+            build_quick_reply_chip("Mix of both", "Maybe a mix of both.", "refine", domain="celebrate")
+        ]
+    
     elif any(term in response_lower for term in ["birthday", "gotcha day", "celebration", "special occasion", "party"]):
         quick_replies = [
-            f"Yes, {pet_ref}'s birthday!",
-            "Gotcha day celebration",
-            "Just want to spoil them"
+            build_quick_reply_chip(f"Yes, {pet_ref}'s birthday!", f"Yes, it's {pet_ref}'s birthday!", "refine", domain="celebrate"),
+            build_quick_reply_chip("Gotcha day", "It's a gotcha day celebration.", "refine", domain="celebrate"),
+            build_quick_reply_chip("Just spoil them", "I just want to spoil them!", "refine", domain="celebrate")
         ]
     
     # Flavor/Type preference (only when asking about specific flavors, not general treat usage)
