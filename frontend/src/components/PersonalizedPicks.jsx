@@ -429,31 +429,20 @@ const PersonalizedPicks = ({
             ))}
           </div>
           
-          {/* Footer Actions */}
-          <div className="mt-4 pt-4 border-t border-opacity-30 flex items-center justify-between" style={{ borderColor: 'currentColor' }}>
-            <p className={`text-sm ${config.accent}`}>
-              <Gift className="w-4 h-4 inline mr-1" />
-              Shopping for another pet? 
-            </p>
-            <div className="flex items-center gap-3">
-              <button 
-                onClick={() => navigate(`/shop?pillar=${pillar}`)}
-                className={`text-sm font-medium ${config.accent} hover:opacity-80 underline`}
-              >
-                Browse Full Collection →
-              </button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setSelectedPet(null);
-                  setRecommendations([]);
-                }}
-                className={`text-xs ${config.border} hover:opacity-80`}
-              >
-                Clear
-              </Button>
-            </div>
+          {/* Footer Actions - Simplified */}
+          <div className="mt-4 pt-4 border-t border-opacity-30 flex items-center justify-end gap-3" style={{ borderColor: 'currentColor' }}>
+            <button 
+              onClick={() => navigate(`/${pillar}?category=custom`)}
+              className={`text-sm font-medium ${config.accent} hover:opacity-80 flex items-center gap-1`}
+            >
+              ✨ Custom for {selectedPet?.name} →
+            </button>
+            <button 
+              onClick={() => navigate(`/shop?pillar=${pillar}`)}
+              className={`text-sm font-medium ${config.accent} hover:opacity-80 underline`}
+            >
+              Browse All →
+            </button>
           </div>
         </>
       )}
