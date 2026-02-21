@@ -1223,6 +1223,9 @@ const useChatSubmit = (config) => {
       
     } catch (error) {
       console.error('Mira error:', error);
+      console.error('Mira error stack:', error.stack);
+      console.error('Mira error name:', error.name);
+      console.error('Mira error message:', error.message);
       clearTimeout(skeletonTimer);
       setShowSkeleton(false);
       setIsTyping(false);
