@@ -11154,6 +11154,17 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
             "Mix of both"
         ]
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 1.5: Treat Usage Questions (BEFORE allergy check!)
+    # When Mira asks "Training or Chew/Snack?" - this must match FIRST
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["training/rewards", "training or", "chew/snack", "snack time", "training treats", "reward treats", "for training"]):
+        quick_replies = [
+            "Training/rewards",
+            "Chew/snack time",
+            "Both"
+        ]
+    
     elif any(term in response_lower for term in ["how many times", "feeding schedule", "how often", "meals per day"]):
         quick_replies = [
             "2 meals a day",
@@ -11162,9 +11173,11 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
         ]
     
     # ═══════════════════════════════════════════════════════════════════════════
-    # PATTERN 2: Allergy/Sensitivity Questions
+    # PATTERN 2: Allergy/Sensitivity Questions (more specific - only when ASKING)
+    # Only match if Mira is explicitly ASKING about allergies, not just mentioning them
     # ═══════════════════════════════════════════════════════════════════════════
-    elif any(term in response_lower for term in ["allergies", "allergic to", "sensitive to", "sensitivities"]):
+    elif any(term in response_lower for term in ["does .* have allergies", "any allergies", "allergies i should know", "sensitive to anything", "allergic to anything"]) or \
+         (any(term in response_lower for term in ["allergies", "allergic"]) and "?" in response_text[-100:] and "allergy" not in response_lower[:200]):
         quick_replies = [
             f"No allergies for {pet_ref}",
             "Yes, has food allergies",
