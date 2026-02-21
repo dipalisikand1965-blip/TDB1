@@ -954,6 +954,7 @@ const CelebratePage = () => {
           />
         </Suspense>
       )}
+      <MiraOSTrigger pillar="celebrate" position="bottom-left" />
     </PillarPageLayout>
   );
 };
