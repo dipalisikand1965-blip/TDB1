@@ -31,7 +31,7 @@ The user, Dipali, founder of a premium pet concierge service, wants to build a "
 
 ## What's Been Implemented
 
-### Session 3: February 21, 2026
+### Session 3: February 21, 2026 (CURRENT)
 
 #### P0 - Food Safety Gate System ✅ (NEW FEATURE)
 *"Memory is only real if it changes behaviour immediately."*
@@ -49,24 +49,29 @@ The user, Dipali, founder of a premium pet concierge service, wants to build a "
 - Suggests safe alternatives (e.g., chicken → turkey, duck, fish)
 - Bible-compliant quick replies for alternative exploration
 
-**Prompt Injection** (line 9990):
-- Injects `ACTIVE_PET`, `STRICT_AVOID`, `DO_NOT_SUGGEST` into every LLM call
-- Rules: Never ask allergies, refuse allergenic items, acknowledge known allergies
+**Test Results:** All 3 scenarios pass ✅
 
-**Meal Plan Memory** (lines 12190-12234):
-- Shows "I already have Lola's allergies on file (beef, chicken, corn, dairy, lamb)"
-- Never asks "any allergies?" when profile has them
+#### P0 - Places API Guardrail Fix ✅
+**Issue**: "Health checkup reminder" triggered Places API showing vet clinics
+**Root Cause**: TWO Places detection paths - only first had NON_LOCATION_INTENTS guard
+**Fix**: Added `NON_LOCATION_INTENTS_2` guard at lines 13808-13815
+**Result**: Non-location intents (reminder, schedule, checkup) now blocked from Places
 
-**Frontend Dietary Context Chip** (`/app/frontend/src/pages/MiraDemoPage.jsx`):
-- `getPetAllergies()` utility mirrors backend logic
-- `DietaryContextChip` component shows active allergies in food flows
-- Auto-appears when conversation mentions food/treats
-- Collapsible, shows all strict avoids
+**Test Results (iteration_223.json):**
+- ✅ "Health checkup reminder" → 0 places
+- ✅ "Schedule vaccination" → 0 places  
+- ✅ "Find vets near me" → mode='clarify' (asks for location first)
 
-**Test Results:**
-- ✅ "chicken treats" → INTERCEPTED, suggests turkey/duck/fish
-- ✅ "turkey treats" → PASSES THROUGH (no intercept)
-- ✅ Meal plan → Shows allergies on file, never asks again
+#### P1 - Duplicate Quick Replies Fix ✅
+**Issue**: Quick replies showing at BOTH top (contextual) AND bottom
+**Fix**: Bottom QuickReplies component now checks if last message has inline quick_replies
+**File**: `/app/frontend/src/pages/MiraDemoPage.jsx` lines 4201-4232
+
+#### Icon State System ✅ (VERIFIED WORKING)
+**Location**: `/app/frontend/src/hooks/mira/useIconState.js`
+- THREE STATES: OFF (muted), ON (lit), PULSE (animated + badge)
+- Active tab override: No PULSE while inside tab
+- Pet switch: Reset all states to OFF, then recalculate
 
 ### Session 2: February 21, 2026
 
