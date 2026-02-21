@@ -1188,9 +1188,9 @@ const useChatSubmit = (config) => {
           content: miraResponseText
         }, {
           label: lifeState,
-          chips_offered: quickReplies.map(r => r.text),
+          chips_offered: quickReplies?.map(r => r?.text || r?.label || '').filter(Boolean) || [],
           product_suggestions: shouldShowProducts ? 
-            data.response?.products?.slice(0, 5).map(p => ({ sku: p.id, name: p.name })) : [],
+            (data.response?.products?.slice(0, 5).map(p => ({ sku: p.id, name: p.name })) || []) : [],
           step_id: miraStepId,
           is_clarifying_question: isNewClarifyingQuestion
         });
