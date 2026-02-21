@@ -1029,9 +1029,26 @@ const MiraMessageBody = ({
   
   // ═══════════════════════════════════════════════════════════════════════════
   // CONVERSATION CONTRACT (Phase 5) - Quick Replies
+  // PRIORITY: Use contextual quick_replies over generic conversation_contract ones
+  // This ensures conversational flow (e.g., "Stick with kibble") over navigational (e.g., "View in Services")
   // ═══════════════════════════════════════════════════════════════════════════
   const conversationContract = msg.data?.conversation_contract || msg.data?.response?.conversation_contract || {};
-  const quickReplies = conversationContract.quick_replies || [];
+  
+  // CRITICAL: Check for contextual quick_replies FIRST - these are conversational
+  // Only fall back to conversation_contract.quick_replies (navigational) if no contextual ones exist
+  const contextualReplies = msg.data?.quick_replies || msg.data?.response?.quick_replies || [];
+  const contractReplies = conversationContract.quick_replies || [];
+  
+  // Filter contract replies to remove purely navigational actions when contextual ones exist
+  const filteredContractReplies = contextualReplies.length > 0 
+    ? [] // Don't show contract replies when we have contextual ones
+    : contractReplies.filter(r => 
+        r.intent_type !== 'open_services' && 
+        r.action !== 'open_layer' &&
+        !r.label?.toLowerCase().includes('view in services')
+      );
+  
+  const quickReplies = filteredContractReplies;
   const contractMode = conversationContract.mode || 'answer';
   
   // Check if message has context that warrants showing picks hint
