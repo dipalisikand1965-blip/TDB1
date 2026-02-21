@@ -1,5 +1,5 @@
 # Pet Soul Platform - Product Requirements Document
-## Last Updated: February 21, 2026 (Session 2)
+## Last Updated: February 21, 2026 (Session 3)
 
 ---
 
@@ -15,39 +15,68 @@ The user, Dipali, founder of a premium pet concierge service, wants to build a "
 
 2. **Achieve Full Bible Compliance** ✅ COMPLETE (100%) - All chat interactions comply with PET_OS_BEHAVIOR_BIBLE.md
 
-3. **Build a Brilliant Onboarding** - Design and build the new, single-flow "Soul Builder." (IN PROGRESS)
+3. **Food Safety Gate** ✅ COMPLETE - "Memory is only real if it changes behaviour immediately"
+   - Unified allergy extraction from all sources
+   - Never ask "any allergies?" if already known
+   - Intercept unsafe ingredient requests with alternatives
+   - UI dietary context chip in food flows
 
-4. **Unify the "Mira" Experience** - Consolidate the three different "Mira" implementations into one. (BACKLOG)
+4. **Build a Brilliant Onboarding** - Design and build the new, single-flow "Soul Builder." (BACKLOG)
 
-5. **Make Pillar Pages Magical** - Apply the new template from `/celebrate-new` to all other pillar pages. (BACKLOG)
+5. **Unify the "Mira" Experience** - Consolidate the three different "Mira" implementations into one. (BACKLOG)
 
-6. **Fix Core Bugs** ✅ COMPLETE - Quick replies, soul score, pillar switching, allergy merging all fixed.
+6. **Make Pillar Pages Magical** - Apply the new template from `/celebrate-new` to all other pillar pages. (BACKLOG)
 
 ---
 
 ## What's Been Implemented
 
+### Session 3: February 21, 2026
+
+#### P0 - Food Safety Gate System ✅ (NEW FEATURE)
+*"Memory is only real if it changes behaviour immediately."*
+
+**Backend Functions Added** (`/app/backend/mira_routes.py` lines 162-280):
+- `get_pet_allergies(pet)`: Canonical source of truth - merges allergies from ALL 8 sources
+- `get_pet_allergies_display(pet)`: Returns comma-separated string for UI
+- `has_known_allergies(pet)`: Boolean check for allergy existence
+- `food_safety_gate(pet, items)`: Filters products containing allergens
+- `build_allergy_context_injection(pet)`: LLM prompt injection block
+
+**Unsafe Ingredient Intercept** (lines 12437-12534):
+- Detects food requests containing known allergens
+- Returns `intent: "allergen_intercept"` with `safety_gate` data
+- Suggests safe alternatives (e.g., chicken → turkey, duck, fish)
+- Bible-compliant quick replies for alternative exploration
+
+**Prompt Injection** (line 9990):
+- Injects `ACTIVE_PET`, `STRICT_AVOID`, `DO_NOT_SUGGEST` into every LLM call
+- Rules: Never ask allergies, refuse allergenic items, acknowledge known allergies
+
+**Meal Plan Memory** (lines 12190-12234):
+- Shows "I already have Lola's allergies on file (beef, chicken, corn, dairy, lamb)"
+- Never asks "any allergies?" when profile has them
+
+**Frontend Dietary Context Chip** (`/app/frontend/src/pages/MiraDemoPage.jsx`):
+- `getPetAllergies()` utility mirrors backend logic
+- `DietaryContextChip` component shows active allergies in food flows
+- Auto-appears when conversation mentions food/treats
+- Collapsible, shows all strict avoids
+
+**Test Results:**
+- ✅ "chicken treats" → INTERCEPTED, suggests turkey/duck/fish
+- ✅ "turkey treats" → PASSES THROUGH (no intercept)
+- ✅ Meal plan → Shows allergies on file, never asks again
+
 ### Session 2: February 21, 2026
 
 #### P0 - Picks Panel Pillar Fix ✅
-- **Issue**: Picks panel showed wrong pillar items (e.g., "Travel" when user asked about "Treats")
-- **Root Cause**: `pillar` was in `picks_response_data` but not added to `response_dict.update()` in `add_picks_to_response()`
-- **Fix**: Added `"pillar": picks_response_data.get("pillar") or response_dict.get("pillar")` to the update dict
-- **Result**: Asking about treats now returns `pillar: "dine"` with 8 Dine picks (0 Travel picks)
-- **File**: `/app/backend/mira_routes.py` line 11684-11691
+- **Issue**: Picks panel showed wrong pillar items
+- **Fix**: Added `"pillar"` to `add_picks_to_response()` return
 
-#### P0 - Allergy Consolidation Fix ✅ (Enhanced)
-- **Issue**: Backend took FIRST non-empty allergy source instead of MERGING all sources
-- **Fix**: Created `_extract_allergy_list()` that merges + normalizes comma-separated values
-- **Sources Merged**: `preferences.allergies`, `doggy_soul_answers.allergies`, `doggy_soul_answers.food_allergies`, `known_allergies`, `health_vault.allergies`
-- **Result**: Lola's allergies now correctly show: beef, corn, lamb, dairy, peanuts (all merged)
-- **File**: `/app/backend/mira_routes.py` line 415-430, 433-450
-
-#### P1 - Quick Replies Bible Compliance ✅
-- **Verified**: All quick replies have full schema per Section 11.2.3
-  - `id`, `label`, `payload_text`, `intent_type`, `action`, `action_args`, `analytics_tag`
-- **Verified**: Location consent gate works (`mode="clarify"` before showing Places)
-- **Verified**: Conversation contract mode returned correctly
+#### P0 - Allergy Consolidation Fix ✅
+- **Issue**: Backend took FIRST non-empty allergy source
+- **Fix**: Created `_extract_allergy_list()` that MERGES all sources
 
 ### Session 1: February 21, 2026
 
