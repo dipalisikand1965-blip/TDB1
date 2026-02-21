@@ -125,6 +125,7 @@ const CHAPTERS = [
       { id: 'diet_type', question: "Is {pet}'s diet...", type: 'select', options: ['Vegetarian', 'Non-vegetarian', 'Mixed'], weight: 4 },
       { id: 'food_allergies', question: "Does {pet} have any food allergies?", type: 'multi_select', options: ['No', 'Chicken', 'Beef', 'Grains', 'Dairy', 'Other'], weight: 5 },
       { id: 'favorite_treats', question: "What treats does {pet} love most?", type: 'multi_select', options: ['Biscuits', 'Jerky', 'Cakes', 'Homemade food', 'Fresh fruits'], weight: 3 },
+      { id: 'diet_type', question: "What type of diet is {pet} on?", type: 'select', options: ['Kibble/dry food', 'Wet food', 'Raw diet', 'Home-cooked', 'Mixed (dry + wet)', 'Grain-free', 'Prescription diet'], weight: 3 },
       { id: 'sensitive_stomach', question: "Does {pet} have a sensitive stomach?", type: 'select', options: ['Yes', 'No', 'Sometimes'], weight: 4 }
     ],
     confirmation: "Noted. We'll use this for safe picks and better food recommendations."
