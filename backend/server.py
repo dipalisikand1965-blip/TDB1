@@ -7393,27 +7393,43 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
     # Fetch products - get more variety
     products = await db.products_master.find(query, {"_id": 0}).limit(limit * 3).to_list(limit * 3)
     
-    # PRIORITY: Fetch breed-specific cakes first if breed is known
-    if breed:
-        breed_query = {
+    # DOCTRINE: Pillar-first, then Pet-first (breed), then general
+    # When on a pillar page, ONLY show products from that pillar
+    # Breed matching happens WITHIN the pillar context
+    
+    # Fetch breed-specific products WITHIN the pillar if breed is known
+    if breed and pillar:
+        breed_pillar_query = {
+            "pillar": pillar,
             "$or": [
                 {"name": {"$regex": breed, "$options": "i"}},
                 {"tags": {"$elemMatch": {"$regex": breed, "$options": "i"}}},
                 {"description": {"$regex": breed, "$options": "i"}}
             ]
         }
-        breed_products = await db.products_master.find(breed_query, {"_id": 0}).limit(20).to_list(20)
-        # Add breed products to the front
-        products = breed_products + [p for p in products if p not in breed_products]
+        breed_pillar_products = await db.products_master.find(breed_pillar_query, {"_id": 0}).limit(10).to_list(10)
+        # Add breed-specific pillar products to the front
+        products = breed_pillar_products + [p for p in products if p.get('id') not in [bp.get('id') for bp in breed_pillar_products]]
     
-    # If pillar filtered and not enough results, fetch without pillar
-    if pillar and len(products) < limit:
-        query.pop("pillar", None)
-        additional = await db.products_master.find(query, {"_id": 0}).limit(limit * 2).to_list(limit * 2)
-        products.extend([p for p in additional if p not in products])
+    # If pillar specified but no products found, create concierge suggestion cards
+    # (Per doctrine: "If a product is not there we create non-priced concierge cards")
+    if pillar and len(products) == 0:
+        # Create concierge suggestion cards for this pillar
+        concierge_suggestions = [
+            {
+                "id": f"concierge-{pillar}-1",
+                "name": f"Custom {pillar.title()} Request for {pet.get('name', 'Your Pet')}",
+                "description": f"Can't find what you need? Let our concierge help find the perfect {pillar} solution for {pet.get('name', 'your pet')}.",
+                "price": None,
+                "is_concierge": True,
+                "pillar": pillar,
+                "cta": "Ask Mira"
+            }
+        ]
+        products = concierge_suggestions
     
-    # Also get celebrate products (cakes, treats) if pillar is celebrate or dine
-    if not pillar or pillar in ["celebrate", "dine"]:
+    # ONLY add celebrate products for celebrate/dine pillars (not when pillar is missing)
+    if pillar and pillar in ["celebrate", "dine"]:
         celebrate_products = await db.celebrate_products.find({}, {"_id": 0}).limit(10).to_list(10)
         products.extend(celebrate_products)
     
