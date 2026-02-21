@@ -6181,12 +6181,16 @@ async def get_public_products(
         else:
             query = pan_india_query
     elif category and not collection:
-        # Search in both category field AND tags array (case-insensitive)
+        # Search in category field, tags array, AND name (case-insensitive)
+        # This allows subcategory pages like /fit/leashes to find products with "leash" in their name
         category_regex = {"$regex": f"^{category}$", "$options": "i"}
+        category_contains = {"$regex": category, "$options": "i"}
         category_query = {
             "$or": [
                 {"category": category_regex},
-                {"tags": category_regex}
+                {"tags": category_regex},
+                {"name": category_contains},  # Also search in product name
+                {"subcategory": category_regex}  # And subcategory field
             ]
         }
         if query:
