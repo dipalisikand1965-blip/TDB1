@@ -5717,6 +5717,24 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             # 2. User has hint words AND conversation has developed (at least 1 exchange)
             is_location_query = is_explicit_location_request or (has_location_hint and has_conversation_context)
             
+            # ═══════════════════════════════════════════════════════════════════════════════
+            # BIBLE SECTION 0.07 GUARDRAIL: PLACES NEVER FIRES BEFORE CONSENT/LOCATION INPUT
+            # This is a REGRESSION GUARD - Places must NEVER auto-trigger
+            # ═══════════════════════════════════════════════════════════════════════════════
+            
+            # Intents that should NEVER trigger Places even if vet/groomer keywords appear
+            NON_LOCATION_INTENTS = [
+                "reminder", "checkup", "schedule", "health check", "vaccination", 
+                "appointment", "book", "set up", "follow up", "note", "add to",
+                "tell the vet", "mention to", "remind me", "alert me"
+            ]
+            is_non_location_intent = any(intent in user_input_lower for intent in NON_LOCATION_INTENTS)
+            
+            # If it's a non-location intent, BLOCK Places API entirely
+            if is_non_location_intent:
+                detected_place_type = None
+                logger.info(f"[PLACES GUARD] Blocked Places - non-location intent detected in: '{user_input_lower[:50]}...'")
+            
             # Weather detection
             WEATHER_KEYWORDS = ["weather", "walk", "outside", "outdoor", "hot", "cold", "rain", "sunny", "good day", "safe to go", "can i take"]
             is_weather_query = any(kw in user_input_lower for kw in WEATHER_KEYWORDS)
