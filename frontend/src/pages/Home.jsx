@@ -276,8 +276,8 @@ const Home = () => {
                   <div className="absolute inset-0 rounded-full p-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500">
                     <div className="w-full h-full rounded-full overflow-hidden bg-[#0f0720]">
                       <img 
-                        src={BRAND_IMAGES.goldenRetriever} 
-                        alt="Your beloved pet" 
+                        src={heroImage} 
+                        alt={heroPetName} 
                         className="w-full h-full object-cover"
                       />
                       {/* Subtle soul overlay on the image */}
@@ -294,7 +294,7 @@ const Home = () => {
                   className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 px-6 py-2.5 rounded-full shadow-lg shadow-purple-500/30"
                 >
                   <span className="text-white font-bold text-sm flex items-center gap-1">
-                    ✨ This is YOUR pet ❤️
+                    ✨ {primaryPet ? heroPetName : 'This is YOUR pet'} ❤️
                   </span>
                 </motion.div>
               </motion.div>
