@@ -1133,7 +1133,12 @@ const MiraMessageBody = ({
       {/* ═══════════════════════════════════════════════════════════════════════════
           CONVERSATION CONTRACT (Phase 5) - Quick Reply Chips
           Deterministic rendering based on conversation_contract.quick_replies
+          
+          NOTE: Quick replies are shown in the HEADER only (per user decision).
+          This body section is DISABLED to prevent duplicate quick replies.
+          The header MiraMessageHeader component handles all quick reply display.
       ═══════════════════════════════════════════════════════════════════════════ */}
+      {/* REMOVED: QuickReplyChips rendering - quick replies now only shown in header
       {quickReplies.length > 0 && onQuickReplyClick && (
         <QuickReplyChips
           quickReplies={quickReplies}
@@ -1141,6 +1146,7 @@ const MiraMessageBody = ({
           contractMode={contractMode}
         />
       )}
+      */}
     </div>
   );
 };
