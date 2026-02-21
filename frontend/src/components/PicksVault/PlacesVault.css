@@ -1,0 +1,227 @@
+/**
+ * PLACES VAULT STYLES
+ */
+
+.plv-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(180deg, #1f1f3a 0%, #1a1a30 100%);
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.plv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.plv-header-left { display: flex; align-items: center; gap: 12px; }
+
+.plv-icon-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.plv-header-text h2 { margin: 0; font-size: 18px; font-weight: 600; }
+.plv-header-text p { margin: 4px 0 0; font-size: 13px; color: rgba(255, 255, 255, 0.6); }
+
+.plv-close-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: none; color: #ffffff; cursor: pointer;
+}
+
+.plv-content { flex: 1; overflow-y: auto; padding: 16px; }
+
+.plv-places-list { margin-bottom: 16px; }
+
+.plv-place-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.plv-place-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.plv-place-item.plv-place-selected {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.5);
+}
+
+.plv-place-image {
+  position: relative;
+  width: 72px; height: 72px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.plv-place-image img { width: 100%; height: 100%; object-fit: cover; }
+
+.plv-place-placeholder {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #4a4a6a 0%, #3d3d5a 100%);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 24px;
+}
+
+.plv-pet-badge {
+  position: absolute;
+  bottom: 4px; left: 4px;
+  padding: 2px 6px;
+  background: rgba(34, 197, 94, 0.9);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.plv-place-info { flex: 1; min-width: 0; }
+.plv-place-name { 
+  display: block; 
+  font-size: 15px; 
+  font-weight: 600; 
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+.plv-place-meta { display: flex; gap: 12px; margin-top: 4px; }
+.plv-place-rating, .plv-place-distance {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 13px; color: rgba(255, 255, 255, 0.8);
+}
+.plv-place-rating svg { color: #f59e0b; }
+.plv-place-policy { 
+  display: block; 
+  font-size: 12px; 
+  color: #4ade80; 
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+.plv-select-btn {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  border: none; color: #ffffff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 24px; font-weight: 300;
+}
+
+.plv-select-btn-active { background: #22c55e; }
+
+.plv-reservation-option { margin-bottom: 16px; }
+
+.plv-reservation-toggle {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #ffffff; cursor: pointer;
+}
+
+.plv-reservation-toggle.plv-active {
+  background: rgba(168, 85, 247, 0.1);
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.plv-checkbox {
+  width: 22px; height: 22px; border-radius: 6px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.plv-checkbox.plv-checked { background: #a855f7; border-color: #a855f7; }
+
+.plv-reservation-fields {
+  display: flex; flex-direction: column; gap: 12px;
+  margin-bottom: 16px;
+  animation: plv-slide-in 0.3s ease;
+}
+
+@keyframes plv-slide-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.plv-field-row { display: flex; gap: 12px; }
+.plv-field-row input, .plv-reservation-fields select {
+  flex: 1; padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #ffffff; font-size: 14px;
+}
+
+.plv-refresh-btn {
+  width: 100%; padding: 14px;
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px; cursor: pointer;
+}
+
+.plv-footer {
+  padding: 16px 20px 24px;
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.plv-footer-message { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+.plv-concierge-icon {
+  width: 36px; height: 36px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 600;
+}
+.plv-footer-text { display: flex; flex-direction: column; gap: 4px; }
+.plv-footer-title { font-size: 14px; font-weight: 500; }
+.plv-footer-subtitle { font-size: 13px; color: rgba(255, 255, 255, 0.5); }
+
+.plv-send-btn {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border: none; border-radius: 28px;
+  color: #ffffff; font-size: 16px; font-weight: 600; cursor: pointer;
+}
+
+.plv-confirmation {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 48px 24px; height: 100%;
+}
+
+.plv-confirmation-icon {
+  width: 80px; height: 80px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #ffffff; margin-bottom: 24px;
+}
+
+.plv-confirmation h2 { margin: 0 0 8px; font-size: 24px; }
+.plv-confirmation p { margin: 0 0 24px; font-size: 16px; color: rgba(255, 255, 255, 0.6); }
+.plv-btn { padding: 14px 28px; border-radius: 24px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.plv-btn-primary { background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%); border: none; color: #ffffff; }
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .plv-footer { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+}

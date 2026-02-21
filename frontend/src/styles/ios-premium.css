@@ -1,0 +1,662 @@
+/**
+ * iOS PREMIUM EXPERIENCE
+ * Apple App Store Quality Standards
+ * "Make pet parents go wowowowowo"
+ * 
+ * Layers on top of mira-prod.css
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&family=SF+Pro+Text:wght@400;500;600&display=swap');
+
+/* ========================================
+   iOS PREMIUM ROOT VARIABLES
+   ======================================== */
+:root {
+  /* iOS System Colors */
+  --ios-blue: #007AFF;
+  --ios-green: #34C759;
+  --ios-indigo: #5856D6;
+  --ios-orange: #FF9500;
+  --ios-pink: #FF2D55;
+  --ios-purple: #AF52DE;
+  --ios-red: #FF3B30;
+  --ios-teal: #5AC8FA;
+  --ios-yellow: #FFCC00;
+  
+  /* Premium Mira Colors */
+  --premium-glow: rgba(168, 85, 247, 0.4);
+  --premium-pink-glow: rgba(236, 72, 153, 0.35);
+  
+  /* Spring Physics */
+  --spring-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --spring-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --spring-ios: cubic-bezier(0.4, 0, 0, 1);
+  
+  /* Touch & Tap */
+  --tap-scale: 0.97;
+  --tap-duration: 0.1s;
+  
+  /* Safe Areas */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+/* ========================================
+   PREMIUM TYPOGRAPHY - SF Pro Feel
+   ======================================== */
+.mira-prod,
+.mira-prod * {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* iOS-style dynamic type */
+@media (max-width: 480px) {
+  .mira-prod {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  /* Tighter line heights on mobile */
+  .mp-card-text,
+  .formatted-text {
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+  }
+  
+  /* Premium headings */
+  .mp-welcome-title,
+  .hero-title {
+    letter-spacing: -0.02em;
+    font-weight: 800;
+  }
+}
+
+/* ========================================
+   TOUCH INTERACTIONS - iOS Native Feel
+   ======================================== */
+
+/* Universal tap state for ALL interactive elements */
+.mp-chip,
+.mp-dock-btn,
+.mp-test-chip,
+.mp-welcome-chip,
+.quick-chip,
+.trait-chip,
+.mp-product-add,
+.mp-btn-send,
+.mp-btn-mic,
+.mp-btn-voice,
+.mp-btn-photo,
+.soul-journey-btn,
+.history-btn,
+.mp-concierge-btn,
+.mp-service-card,
+.mp-experience-card,
+.mp-dynamic-card,
+.mp-remembered-card,
+.mp-product-tile,
+.mp-header-tile,
+.mp-header-help,
+.mp-header-picks,
+.mp-header-picks-icon,
+.mp-header-insight-icon,
+.mira-love-card,
+.mp-feedback-btn,
+button {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+
+/* Active/Pressed state - iOS spring feel */
+.mp-chip:active,
+.mp-dock-btn:active,
+.mp-test-chip:active,
+.mp-welcome-chip:active,
+.quick-chip:active,
+.trait-chip:active,
+.mp-product-add:active,
+.soul-journey-btn:active,
+.history-btn:active,
+.mp-concierge-btn:active,
+.mp-service-card:active,
+.mp-experience-card:active,
+.mp-remembered-card:active,
+.mira-love-card:active,
+button:active:not(:disabled) {
+  transform: scale(var(--tap-scale)) !important;
+  transition: transform var(--tap-duration) var(--spring-ios) !important;
+}
+
+/* Send button special active state */
+.mp-btn-send:active:not(:disabled),
+.mp-btn-mic:active,
+.mp-btn-voice:active,
+.mp-btn-photo:active {
+  transform: scale(0.9) !important;
+  transition: transform 0.08s var(--spring-ios) !important;
+}
+
+/* Product tile active state */
+.mp-product-tile:active {
+  transform: scale(0.98) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ========================================
+   SPRING ANIMATIONS - Apple Physics
+   ======================================== */
+
+/* Entrance animations with spring */
+@keyframes ios-slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ios-scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ios-bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Apply spring animations to elements */
+.mp-msg-mira {
+  animation: ios-slide-up 0.4s var(--spring-smooth) forwards;
+}
+
+.mp-msg-user {
+  animation: ios-slide-up 0.3s var(--spring-smooth) forwards;
+}
+
+.mp-product-tile {
+  animation: ios-scale-in 0.35s var(--spring-smooth) forwards;
+}
+
+.mp-chip,
+.quick-chip {
+  animation: ios-scale-in 0.3s var(--spring-smooth) forwards;
+}
+
+/* Staggered chip animation */
+.quick-chips .quick-chip:nth-child(1) { animation-delay: 0.05s; }
+.quick-chips .quick-chip:nth-child(2) { animation-delay: 0.1s; }
+.quick-chips .quick-chip:nth-child(3) { animation-delay: 0.15s; }
+.quick-chips .quick-chip:nth-child(4) { animation-delay: 0.2s; }
+.quick-chips .quick-chip:nth-child(5) { animation-delay: 0.25s; }
+
+/* ========================================
+   GLASSMORPHISM - Premium Depth
+   ======================================== */
+
+/* Enhanced glass effect for cards */
+.mp-card {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(35, 22, 62, 0.85);
+}
+
+/* Glass header */
+.mp-card-header {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* Premium glass buttons */
+.mp-header-tile,
+.mp-header-help,
+.mp-header-insight-icon,
+.mp-header-picks-icon {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ========================================
+   KEYBOARD & INPUT - iOS Optimization
+   ======================================== */
+
+/* Prevent zoom on input focus (iOS) */
+.mp-input,
+input,
+textarea,
+select {
+  font-size: 16px !important; /* Prevents iOS zoom */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* iOS keyboard pushes content */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .mp-composer {
+    padding-bottom: calc(24px + var(--safe-bottom));
+  }
+}
+
+/* Better input focus states */
+.mp-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.3);
+}
+
+.mp-input-row:focus-within {
+  border-color: var(--mira-pink);
+  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
+}
+
+/* ========================================
+   SCROLLING - Native iOS Feel
+   ======================================== */
+
+/* Smooth momentum scrolling */
+.mp-messages,
+.mp-card-header,
+.quick-chips {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbars on mobile */
+@media (max-width: 768px) {
+  .mp-messages::-webkit-scrollbar,
+  .mp-card-header::-webkit-scrollbar,
+  .quick-chips::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .mp-messages,
+  .mp-card-header,
+  .quick-chips {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Overscroll behavior */
+.mp-messages {
+  overscroll-behavior: contain;
+}
+
+/* ========================================
+   NAVIGATION DOCK - iOS Tab Bar Feel
+   ======================================== */
+
+@media (max-width: 768px) {
+  .mp-dock {
+    padding: 8px 12px;
+    gap: 6px;
+    justify-content: center;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .mp-dock-btn {
+    min-width: 44px; /* iOS touch target */
+    min-height: 44px;
+    padding: 10px 14px;
+    font-size: 13px;
+    border-radius: 22px;
+  }
+  
+  .mp-dock-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* ========================================
+   WELCOME SCREEN - Hero Experience
+   ======================================== */
+
+/* Premium avatar glow on mobile */
+@media (max-width: 768px) {
+  .hero-avatar-container,
+  .mp-welcome-avatar {
+    filter: drop-shadow(0 0 30px rgba(168, 85, 247, 0.4));
+  }
+  
+  .hero-title,
+  .mp-welcome-title {
+    font-size: 32px;
+    line-height: 1.1;
+  }
+  
+  .hero-subtitle,
+  .mp-welcome-subtitle {
+    font-size: 15px;
+    padding: 0 8px;
+  }
+}
+
+/* ========================================
+   PRODUCT CARDS - Premium Touch
+   ======================================== */
+
+@media (max-width: 480px) {
+  .mp-products-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  
+  .mp-product-tile {
+    border-radius: 14px;
+  }
+  
+  .mp-product-img {
+    height: 100px;
+  }
+  
+  .mp-product-content {
+    padding: 10px 12px;
+  }
+  
+  .mp-product-name {
+    font-size: 13px;
+    -webkit-line-clamp: 2;
+  }
+  
+  .mp-product-price {
+    font-size: 14px;
+  }
+  
+  .mp-product-add {
+    padding: 10px 12px;
+    font-size: 12px;
+    min-height: 44px; /* iOS touch target */
+  }
+}
+
+/* ========================================
+   CHAT BUBBLES - Premium Feel
+   ======================================== */
+
+/* User bubble - More prominent gradient */
+.mp-bubble-user {
+  background: linear-gradient(135deg, #ec4899 0%, #d946ef 50%, #8b5cf6 100%);
+  box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+}
+
+/* Mira bubble - Premium glass */
+.mp-card {
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 10px 40px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 480px) {
+  .mp-bubble-user {
+    max-width: 85%;
+    font-size: 15px;
+    padding: 12px 16px;
+    border-radius: 20px 20px 4px 20px;
+  }
+  
+  .mp-card {
+    border-radius: 16px;
+  }
+}
+
+/* ========================================
+   QUICK CHIPS - iOS Button Feel
+   ======================================== */
+
+@media (max-width: 480px) {
+  .quick-chips,
+  .mp-chips {
+    gap: 10px;
+    padding: 0 4px;
+  }
+  
+  .quick-chip,
+  .mp-chip {
+    padding: 12px 18px;
+    font-size: 14px;
+    min-height: 44px; /* iOS touch target */
+    border-radius: 22px;
+  }
+  
+  .chip-icon,
+  .mp-chip span {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   COMPOSER - iOS Message Bar Feel
+   ======================================== */
+
+@media (max-width: 480px) {
+  .mp-composer {
+    padding: 12px 8px 20px;
+    background: linear-gradient(180deg, transparent 0%, rgba(15, 7, 32, 0.98) 20%);
+  }
+  
+  .mp-input-row {
+    padding: 4px;
+    border-radius: 24px;
+    min-height: 52px;
+  }
+  
+  .mp-input {
+    padding: 14px 12px;
+    font-size: 16px;
+  }
+  
+  .mp-btn-mic,
+  .mp-btn-voice,
+  .mp-btn-photo,
+  .mp-btn-send {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 22px;
+  }
+  
+  .mp-btn-send {
+    background: linear-gradient(135deg, #ec4899, #a855f7);
+  }
+}
+
+/* ========================================
+   HAPTIC FEEDBACK VISUAL INDICATORS
+   For elements that trigger haptics
+   ======================================== */
+
+/* Pulse animation for interactive elements */
+@keyframes haptic-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(236, 72, 153, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
+}
+
+/* Add subtle glow on tap for premium feel */
+.haptic-feedback:active {
+  animation: haptic-pulse 0.3s ease-out;
+}
+
+/* Success state glow */
+@keyframes success-glow {
+  0% { box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.6); }
+  50% { box-shadow: 0 0 20px 5px rgba(52, 199, 89, 0.3); }
+  100% { box-shadow: 0 0 0 0 rgba(52, 199, 89, 0); }
+}
+
+/* ========================================
+   LOADING & THINKING STATES
+   ======================================== */
+
+/* Premium loading dots */
+.mp-loading-dot {
+  background: linear-gradient(135deg, #ec4899, #a855f7);
+}
+
+/* Shimmer effect for loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ========================================
+   NOTCH & SAFE AREA HANDLING
+   ======================================== */
+
+@supports (padding: env(safe-area-inset-top)) {
+  /* Header safe area */
+  .mp-header {
+    padding-top: calc(16px + var(--safe-top));
+  }
+  
+  /* Composer safe area */
+  .mp-composer {
+    padding-bottom: calc(24px + var(--safe-bottom));
+    padding-left: calc(8px + var(--safe-left));
+    padding-right: calc(8px + var(--safe-right));
+  }
+  
+  /* Messages area */
+  .mp-messages {
+    padding-left: calc(16px + var(--safe-left));
+    padding-right: calc(16px + var(--safe-right));
+  }
+}
+
+/* ========================================
+   DARK MODE ENHANCEMENTS
+   ======================================== */
+
+/* OLED black for deep blacks */
+@media (prefers-color-scheme: dark) {
+  .mira-prod {
+    background: linear-gradient(180deg, 
+      #0a0412 0%, 
+      #120822 50%,
+      #1a0f35 100%
+    );
+  }
+}
+
+/* ========================================
+   REDUCED MOTION - Accessibility
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ========================================
+   FOCUS STATES - Accessibility
+   ======================================== */
+
+/* Visible focus for keyboard navigation */
+.mp-chip:focus-visible,
+.mp-dock-btn:focus-visible,
+.mp-btn-send:focus-visible,
+.quick-chip:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--mira-pink);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   PORTRAIT LOCK EXPERIENCE
+   ======================================== */
+
+@media (orientation: landscape) and (max-height: 500px) {
+  /* Compact mode for landscape on phones */
+  .mp-welcome {
+    padding: 16px;
+  }
+  
+  .hero-avatar-container,
+  .mp-welcome-avatar {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .mp-composer {
+    padding: 8px;
+  }
+}
+
+/* ========================================
+   SELECTION STATES
+   ======================================== */
+
+/* Custom text selection color */
+::selection {
+  background: rgba(236, 72, 153, 0.3);
+  color: white;
+}
+
+::-moz-selection {
+  background: rgba(236, 72, 153, 0.3);
+  color: white;
+}
+
+/* ========================================
+   SMOOTH PAGE TRANSITIONS
+   ======================================== */
+
+.mira-prod {
+  opacity: 1;
+  animation: page-fade-in 0.4s var(--spring-smooth);
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,1672 @@
+"""
+PAPERWORK Pillar Routes - Pet Document Vault & Management
+Secure storage for identity, medical, travel, insurance, care & legal documents
+Complete CRUD with Reminder Engine, Service Desk, Notifications, and Pet Soul integration
+"""
+
+from fastapi import APIRouter, HTTPException, Query, UploadFile, File, Form
+from fastapi.responses import StreamingResponse
+from typing import Optional, List, Dict, Any
+from datetime import datetime, timezone, timedelta
+import uuid
+import logging
+import os
+import csv
+import io
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter(prefix="/api/paperwork", tags=["paperwork"])
+
+# Import canonical ticket spine helper (SINGLE ENTRY POINT for all tickets)
+from utils.spine_helper import handoff_to_spine
+
+
+def get_db():
+    from server import db
+    return db
+
+
+# Document Categories with sub-categories
+DOCUMENT_CATEGORIES = {
+    "identity": {
+        "name": "Identity & Safety",
+        "icon": "Shield",
+        "color": "from-blue-600 to-indigo-700",
+        "description": "Core identity documents for your pet",
+        "subcategories": [
+            {"id": "adoption", "name": "Adoption Papers", "required": True},
+            {"id": "registration", "name": "Registration Certificate", "required": False},
+            {"id": "microchip", "name": "Microchip Certificate", "required": True},
+            {"id": "passport", "name": "Pet Passport", "required": False},
+            {"id": "ownership", "name": "Proof of Ownership", "required": False}
+        ]
+    },
+    "medical": {
+        "name": "Medical & Health",
+        "icon": "Heart",
+        "color": "from-red-500 to-rose-600",
+        "description": "Health records, vaccinations & medical history",
+        "subcategories": [
+            {"id": "vaccination", "name": "Vaccination Records", "required": True, "has_reminder": True},
+            {"id": "deworming", "name": "Deworming History", "required": False, "has_reminder": True},
+            {"id": "tick_flea", "name": "Tick & Flea Schedule", "required": False, "has_reminder": True},
+            {"id": "health_checkup", "name": "Annual Health Check-up", "required": False, "has_reminder": True},
+            {"id": "sterilisation", "name": "Sterilisation Certificate", "required": False},
+            {"id": "vet_notes", "name": "Vet Consultation Notes", "required": False},
+            {"id": "lab_reports", "name": "Lab Reports", "required": False},
+            {"id": "xrays_scans", "name": "X-rays / Scans", "required": False},
+            {"id": "prescriptions", "name": "Prescriptions", "required": False},
+            {"id": "chronic_conditions", "name": "Chronic Condition Records", "required": False}
+        ]
+    },
+    "travel": {
+        "name": "Travel Documents",
+        "icon": "Plane",
+        "color": "from-cyan-500 to-blue-600",
+        "description": "Travel certificates and relocation papers",
+        "subcategories": [
+            {"id": "airline_cert", "name": "Airline Travel Certificate", "required": False},
+            {"id": "health_cert_travel", "name": "Health Certificate for Travel", "required": False, "has_reminder": True},
+            {"id": "relocation", "name": "Pet Relocation Documents", "required": False},
+            {"id": "train_bus", "name": "Train/Bus Approvals", "required": False},
+            {"id": "import_export", "name": "Import/Export Papers", "required": False}
+        ]
+    },
+    "insurance": {
+        "name": "Insurance & Financial",
+        "icon": "FileText",
+        "color": "from-emerald-500 to-green-600",
+        "description": "Insurance policies and financial records",
+        "subcategories": [
+            {"id": "policy", "name": "Insurance Policy Document", "required": False, "has_reminder": True},
+            {"id": "claims", "name": "Claims History", "required": False},
+            {"id": "premium_receipts", "name": "Premium Payment Receipts", "required": False}
+        ]
+    },
+    "care": {
+        "name": "Care & Training",
+        "icon": "Sparkles",
+        "color": "from-purple-500 to-violet-600",
+        "description": "Grooming, training and care records",
+        "subcategories": [
+            {"id": "grooming", "name": "Grooming History", "required": False},
+            {"id": "training_cert", "name": "Training Certificates", "required": False},
+            {"id": "behaviour", "name": "Behaviour Assessment Reports", "required": False},
+            {"id": "walker_sitter", "name": "Walker/Sitter Records", "required": False}
+        ]
+    },
+    "legal": {
+        "name": "Legal & Compliance",
+        "icon": "Scale",
+        "color": "from-amber-500 to-orange-600",
+        "description": "Licenses, registrations and legal documents",
+        "subcategories": [
+            {"id": "municipality", "name": "Municipality Registration", "required": False, "has_reminder": True},
+            {"id": "license", "name": "License / Tags", "required": False, "has_reminder": True},
+            {"id": "breeder_cert", "name": "Breeder Certificate", "required": False}
+        ]
+    }
+}
+
+REMINDER_CHANNELS = ["email", "whatsapp", "both", "app"]
+
+# Insurance Services under Paperwork - "Insure" pillar
+INSURANCE_SERVICES = {
+    "quote_request": {
+        "name": "Get Insurance Quote",
+        "icon": "🛡️",
+        "description": "Get quotes from multiple pet insurance providers",
+        "typical_response_time": "24-48 hours",
+        "requires": ["pet_age", "breed", "health_conditions"]
+    },
+    "policy_review": {
+        "name": "Policy Review",
+        "icon": "📋",
+        "description": "Expert review of your current pet insurance policy",
+        "typical_response_time": "2-3 days",
+        "requires": ["current_policy"]
+    },
+    "claim_assistance": {
+        "name": "Claim Assistance",
+        "icon": "📝",
+        "description": "Help filing and tracking insurance claims",
+        "typical_response_time": "Same day",
+        "requires": ["policy_number", "claim_details"]
+    },
+    "renewal_reminder": {
+        "name": "Renewal Management",
+        "icon": "🔔",
+        "description": "Get reminded before your policy expires",
+        "typical_response_time": "Automated",
+        "requires": ["policy_expiry_date"]
+    },
+    "compare_plans": {
+        "name": "Compare Plans",
+        "icon": "⚖️",
+        "description": "Side-by-side comparison of insurance plans",
+        "typical_response_time": "24 hours",
+        "requires": ["coverage_needs", "budget"]
+    }
+}
+
+
+# ==================== FILE UPLOAD ENDPOINT ====================
+
+# Ensure upload directory exists
+UPLOAD_DIR = "/app/uploads/documents"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+@router.post("/upload-file")
+async def upload_file(
+    file: UploadFile = File(...)
+):
+    """Upload a file and return its URL"""
+    try:
+        # Validate file
+        if not file.filename:
+            raise HTTPException(status_code=400, detail="No file provided")
+        
+        # Generate unique filename
+        file_ext = file.filename.split('.')[-1].lower() if '.' in file.filename else 'bin'
+        unique_filename = f"{uuid.uuid4().hex}_{file.filename}"
+        file_path = os.path.join(UPLOAD_DIR, unique_filename)
+        
+        # Save file
+        contents = await file.read()
+        with open(file_path, 'wb') as f:
+            f.write(contents)
+        
+        # Return URL (relative path that can be served)
+        file_url = f"/api/paperwork/files/{unique_filename}"
+        
+        logger.info(f"File uploaded: {unique_filename}, size: {len(contents)} bytes")
+        
+        return {
+            "success": True,
+            "file_url": file_url,
+            "filename": file.filename,
+            "size": len(contents),
+            "content_type": file.content_type
+        }
+    except Exception as e:
+        logger.error(f"File upload error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
+
+
+@router.get("/files/{filename}")
+async def get_file(filename: str):
+    """Serve uploaded file"""
+    file_path = os.path.join(UPLOAD_DIR, filename)
+    
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    # Determine content type
+    ext = filename.split('.')[-1].lower() if '.' in filename else ''
+    content_types = {
+        'pdf': 'application/pdf',
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'png': 'image/png',
+        'gif': 'image/gif',
+        'doc': 'application/msword',
+        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    }
+    content_type = content_types.get(ext, 'application/octet-stream')
+    
+    def iterfile():
+        with open(file_path, 'rb') as f:
+            yield from f
+    
+    return StreamingResponse(iterfile(), media_type=content_type)
+
+
+# ==================== DOCUMENT MANAGEMENT ====================
+
+@router.post("/documents/upload")
+async def upload_document(
+    pet_id: str = Form(...),
+    category: str = Form(...),
+    subcategory: str = Form(...),
+    document_name: str = Form(...),
+    document_date: Optional[str] = Form(None),
+    expiry_date: Optional[str] = Form(None),
+    notes: Optional[str] = Form(None),
+    reminder_enabled: bool = Form(False),
+    reminder_date: Optional[str] = Form(None),
+    reminder_channel: str = Form("email"),
+    file_url: str = Form(None),  # Pre-uploaded file URL (optional)
+    file: UploadFile = File(None)  # Direct file upload (optional)
+):
+    """Upload a document to the pet's paperwork vault - supports both URL and direct file upload"""
+    db = get_db()
+    
+    # Handle direct file upload
+    actual_file_url = file_url
+    file_type = "unknown"
+    
+    if file and file.filename:
+        # Direct file upload
+        try:
+            file_ext = file.filename.split('.')[-1].lower() if '.' in file.filename else 'bin'
+            unique_filename = f"{uuid.uuid4().hex}_{file.filename}"
+            file_path = os.path.join(UPLOAD_DIR, unique_filename)
+            
+            contents = await file.read()
+            with open(file_path, 'wb') as f:
+                f.write(contents)
+            
+            actual_file_url = f"/api/paperwork/files/{unique_filename}"
+            file_type = file_ext
+            logger.info(f"Document file uploaded: {unique_filename}, size: {len(contents)} bytes")
+        except Exception as e:
+            logger.error(f"File upload error: {e}")
+            raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
+    elif file_url:
+        # URL provided
+        actual_file_url = file_url
+        file_type = file_url.split('.')[-1].lower() if '.' in file_url else "unknown"
+    else:
+        raise HTTPException(status_code=400, detail="Either file or file_url must be provided")
+    
+    doc_id = f"DOC-{uuid.uuid4().hex[:8].upper()}"
+    
+    document = {
+        "id": doc_id,
+        "pet_id": pet_id,
+        "category": category,
+        "subcategory": subcategory,
+        "document_name": document_name,
+        "file_url": actual_file_url,
+        "file_type": file_type,
+        "document_date": document_date,
+        "expiry_date": expiry_date,
+        "notes": notes,
+        "status": "active",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.paperwork_documents.insert_one({k: v for k, v in document.items() if k != "_id"})
+    
+    # Create reminder if enabled
+    if reminder_enabled and reminder_date:
+        reminder = {
+            "id": f"REM-{uuid.uuid4().hex[:8].upper()}",
+            "document_id": doc_id,
+            "pet_id": pet_id,
+            "type": "document_expiry",
+            "title": f"Document Reminder: {document_name}",
+            "description": f"Reminder for {DOCUMENT_CATEGORIES.get(category, {}).get('subcategories', [{}])[0].get('name', subcategory)}",
+            "reminder_date": reminder_date,
+            "channel": reminder_channel,
+            "repeat": False,
+            "status": "pending",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.paperwork_reminders.insert_one({k: v for k, v in reminder.items() if k != "_id"})
+    
+    # Update Pet Soul with document info
+    await db.pets.update_one(
+        {"id": pet_id},
+        {
+            "$push": {
+                "soul.documents": {
+                    "document_id": doc_id,
+                    "category": category,
+                    "subcategory": subcategory,
+                    "name": document_name,
+                    "added_at": datetime.now(timezone.utc).isoformat()
+                }
+            },
+            "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+        }
+    )
+    
+    logger.info(f"Document {doc_id} uploaded for pet {pet_id}")
+    
+    return {
+        "message": "Document uploaded successfully",
+        "document_id": doc_id,
+        "document": document
+    }
+
+
+@router.get("/documents/{pet_id}")
+async def get_pet_documents(
+    pet_id: str,
+    category: Optional[str] = None,
+    subcategory: Optional[str] = None
+):
+    """Get all documents for a pet, optionally filtered by category"""
+    db = get_db()
+    
+    query = {"pet_id": pet_id, "status": "active"}
+    if category:
+        query["category"] = category
+    if subcategory:
+        query["subcategory"] = subcategory
+    
+    documents = await db.paperwork_documents.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    
+    # Group by category
+    grouped = {}
+    for cat_id, cat_info in DOCUMENT_CATEGORIES.items():
+        grouped[cat_id] = {
+            "name": cat_info["name"],
+            "icon": cat_info["icon"],
+            "color": cat_info["color"],
+            "documents": [d for d in documents if d["category"] == cat_id],
+            "subcategories": cat_info["subcategories"]
+        }
+    
+    return {
+        "pet_id": pet_id,
+        "total_documents": len(documents),
+        "documents_by_category": grouped,
+        "all_documents": documents
+    }
+
+
+@router.get("/documents/{pet_id}/{doc_id}")
+async def get_document(pet_id: str, doc_id: str):
+    """Get a specific document"""
+    db = get_db()
+    
+    document = await db.paperwork_documents.find_one(
+        {"id": doc_id, "pet_id": pet_id}, 
+        {"_id": 0}
+    )
+    
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    # Get associated reminders
+    reminders = await db.paperwork_reminders.find(
+        {"document_id": doc_id},
+        {"_id": 0}
+    ).to_list(10)
+    
+    document["reminders"] = reminders
+    
+    return document
+
+
+@router.put("/documents/{pet_id}/{doc_id}")
+async def update_document(pet_id: str, doc_id: str, update_data: dict):
+    """Update a document"""
+    db = get_db()
+    
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    update_data.pop("id", None)
+    update_data.pop("_id", None)
+    update_data.pop("pet_id", None)
+    
+    result = await db.paperwork_documents.update_one(
+        {"id": doc_id, "pet_id": pet_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    return {"message": "Document updated"}
+
+
+@router.delete("/documents/{pet_id}/{doc_id}")
+async def delete_document(pet_id: str, doc_id: str):
+    """Soft delete a document"""
+    db = get_db()
+    
+    result = await db.paperwork_documents.update_one(
+        {"id": doc_id, "pet_id": pet_id},
+        {"$set": {"status": "deleted", "deleted_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    # Remove from Pet Soul
+    await db.pets.update_one(
+        {"id": pet_id},
+        {"$pull": {"soul.documents": {"document_id": doc_id}}}
+    )
+    
+    return {"message": "Document deleted"}
+
+
+# ==================== ADMIN DOCUMENT VAULT ====================
+
+@router.get("/admin/documents")
+async def get_all_documents(
+    skip: int = 0,
+    limit: int = 50,
+    category: str = None,
+    status: str = "active",
+    search: str = None
+):
+    """Admin endpoint to view all uploaded documents across all pets"""
+    db = get_db()
+    
+    # Build query
+    query = {}
+    if status and status != "all":
+        query["status"] = status
+    if category:
+        query["category"] = category
+    if search:
+        query["$or"] = [
+            {"document_name": {"$regex": search, "$options": "i"}},
+            {"pet_id": {"$regex": search, "$options": "i"}},
+            {"notes": {"$regex": search, "$options": "i"}}
+        ]
+    
+    # Get documents
+    documents = await db.paperwork_documents.find(
+        query, 
+        {"_id": 0}
+    ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    # Get total count
+    total = await db.paperwork_documents.count_documents(query)
+    
+    # Get stats
+    stats = {
+        "total": await db.paperwork_documents.count_documents({"status": "active"}),
+        "by_category": {}
+    }
+    
+    # Count by category
+    for cat in ["identity", "medical", "travel", "insurance", "care", "legal"]:
+        stats["by_category"][cat] = await db.paperwork_documents.count_documents({
+            "status": "active",
+            "category": cat
+        })
+    
+    # Enrich with pet info
+    enriched_docs = []
+    for doc in documents:
+        pet = await db.pets.find_one({"id": doc.get("pet_id")}, {"_id": 0, "name": 1, "breed": 1, "user_id": 1})
+        enriched_doc = {**doc}
+        if pet:
+            enriched_doc["pet_name"] = pet.get("name", "Unknown")
+            enriched_doc["pet_breed"] = pet.get("breed", "Unknown")
+            # Get owner info
+            user = await db.users.find_one({"id": pet.get("user_id")}, {"_id": 0, "name": 1, "email": 1})
+            if user:
+                enriched_doc["owner_name"] = user.get("name", "Unknown")
+                enriched_doc["owner_email"] = user.get("email", "")
+        enriched_docs.append(enriched_doc)
+    
+    return {
+        "documents": enriched_docs,
+        "total": total,
+        "skip": skip,
+        "limit": limit,
+        "stats": stats
+    }
+
+
+@router.get("/admin/documents/{doc_id}")
+async def get_document_details(doc_id: str):
+    """Admin endpoint to get full document details"""
+    db = get_db()
+    
+    document = await db.paperwork_documents.find_one({"id": doc_id}, {"_id": 0})
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    # Get pet info
+    pet = await db.pets.find_one({"id": document.get("pet_id")}, {"_id": 0, "name": 1, "breed": 1, "user_id": 1, "birth_date": 1})
+    if pet:
+        document["pet_name"] = pet.get("name", "Unknown")
+        document["pet_breed"] = pet.get("breed", "Unknown")
+        document["pet_dob"] = pet.get("birth_date", "")
+        
+        # Get owner info
+        user = await db.users.find_one({"id": pet.get("user_id")}, {"_id": 0, "name": 1, "email": 1, "phone": 1})
+        if user:
+            document["owner_name"] = user.get("name", "Unknown")
+            document["owner_email"] = user.get("email", "")
+            document["owner_phone"] = user.get("phone", "")
+    
+    return document
+
+
+# ==================== REMINDERS ====================
+
+@router.post("/reminders")
+async def create_reminder(reminder_data: dict):
+    """Create a document reminder"""
+    db = get_db()
+    
+    reminder_id = f"REM-{uuid.uuid4().hex[:8].upper()}"
+    
+    reminder = {
+        "id": reminder_id,
+        **reminder_data,
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.paperwork_reminders.insert_one({k: v for k, v in reminder.items() if k != "_id"})
+    
+    return {"message": "Reminder created", "reminder_id": reminder_id}
+
+
+@router.get("/reminders/{pet_id}")
+async def get_pet_reminders(pet_id: str, status: Optional[str] = None):
+    """Get all reminders for a pet"""
+    db = get_db()
+    
+    query = {"pet_id": pet_id}
+    if status:
+        query["status"] = status
+    
+    reminders = await db.paperwork_reminders.find(query, {"_id": 0}).sort("reminder_date", 1).to_list(100)
+    
+    return {"reminders": reminders, "total": len(reminders)}
+
+
+@router.put("/reminders/{reminder_id}")
+async def update_reminder(reminder_id: str, update_data: dict):
+    """Update a reminder"""
+    db = get_db()
+    
+    update_data.pop("id", None)
+    update_data.pop("_id", None)
+    
+    result = await db.paperwork_reminders.update_one(
+        {"id": reminder_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Reminder not found")
+    
+    return {"message": "Reminder updated"}
+
+
+@router.delete("/reminders/{reminder_id}")
+async def delete_reminder(reminder_id: str):
+    """Delete a reminder"""
+    db = get_db()
+    
+    result = await db.paperwork_reminders.delete_one({"id": reminder_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Reminder not found")
+    
+    return {"message": "Reminder deleted"}
+
+
+# ==================== QUICK ACCESS (FOR MIRA & CONCIERGE) ====================
+
+@router.get("/quick-access/{pet_id}")
+async def get_quick_access_documents(pet_id: str):
+    """Get essential documents for Mira/Concierge - one click access"""
+    db = get_db()
+    
+    # Get all active documents
+    documents = await db.paperwork_documents.find(
+        {"pet_id": pet_id, "status": "active"},
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Get pet info
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    
+    # Organize for quick access
+    quick_access = {
+        "pet_id": pet_id,
+        "pet_name": pet.get("name") if pet else "Unknown",
+        "identity": {
+            "microchip": next((d for d in documents if d["subcategory"] == "microchip"), None),
+            "registration": next((d for d in documents if d["subcategory"] == "registration"), None),
+            "adoption": next((d for d in documents if d["subcategory"] == "adoption"), None)
+        },
+        "medical": {
+            "latest_vaccination": next((d for d in documents if d["subcategory"] == "vaccination"), None),
+            "health_checkup": next((d for d in documents if d["subcategory"] == "health_checkup"), None),
+            "prescriptions": [d for d in documents if d["subcategory"] == "prescriptions"][:3]
+        },
+        "travel": {
+            "health_certificate": next((d for d in documents if d["subcategory"] == "health_cert_travel"), None),
+            "airline_cert": next((d for d in documents if d["subcategory"] == "airline_cert"), None)
+        },
+        "insurance": {
+            "policy": next((d for d in documents if d["subcategory"] == "policy"), None)
+        },
+        "total_documents": len(documents),
+        "last_updated": max([d["updated_at"] for d in documents]) if documents else None
+    }
+    
+    return quick_access
+
+
+# ==================== DOCUMENT REQUESTS ====================
+
+@router.post("/request")
+async def create_document_request(request_data: dict):
+    """
+    Create a document assistance request via UNIFORM SERVICE FLOW.
+    MIGRATED to handoff_to_spine() per Bible Section 12.0.
+    """
+    db = get_db()
+    
+    request_id = f"PAPER-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    request_type = request_data.get("request_type", "document_organization")
+    pet_name = request_data.get("pet_name", "Pet")
+    user_name = request_data.get("user_name", "Customer")
+    description = request_data.get("description", "")
+    
+    # Build intent
+    intent = f"Paperwork {request_type.replace('_', ' ').title()} for {pet_name}. {description[:100]}"
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # HANDOFF TO SPINE - Single canonical ticket creation
+    # ═══════════════════════════════════════════════════════════════════════════
+    spine_result = await handoff_to_spine(
+        db=db,
+        route_name="paperwork_routes.py",
+        endpoint="/paperwork/request",
+        pillar="paperwork",
+        category=request_type,
+        intent=intent,
+        user={
+            "email": request_data.get("user_email"),
+            "name": user_name,
+            "phone": request_data.get("user_phone")
+        },
+        pet={
+            "id": request_data.get("pet_id"),
+            "name": pet_name,
+            "breed": request_data.get("pet_breed")
+        },
+        payload={
+            "request_id": request_id,
+            "request_type": request_type,
+            "description": description,
+            "documents_needed": request_data.get("documents_needed", []),
+            "notes": request_data.get("notes", "")
+        },
+        channel="web",
+        urgency=request_data.get("urgency", "normal"),
+        created_by="member",
+        notify_admin=True,
+        notify_member=True,
+        tags=["paperwork", request_type]
+    )
+    
+    if not spine_result.get("success"):
+        logger.error(f"[PAPERWORK] Spine handoff failed: {spine_result.get('error')}")
+        raise HTTPException(status_code=500, detail="Failed to create service ticket")
+    
+    canonical_ticket_id = spine_result["ticket_id"]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SAVE TO paperwork_requests collection (pillar-specific record)
+    # ═══════════════════════════════════════════════════════════════════════════
+    doc_request = {
+        "id": request_id,
+        "ticket_id": canonical_ticket_id,  # Link to canonical ticket
+        "request_type": request_type,
+        "status": "pending",
+        "priority": request_data.get("priority", "normal"),
+        
+        # Pet Details
+        "pet_id": request_data.get("pet_id"),
+        "pet_name": pet_name,
+        
+        # User Details
+        "user_id": request_data.get("user_id"),
+        "user_name": user_name,
+        "user_email": request_data.get("user_email"),
+        "user_phone": request_data.get("user_phone"),
+        
+        # Request Details
+        "description": description,
+        "documents_needed": request_data.get("documents_needed", []),
+        "urgency": request_data.get("urgency", "normal"),
+        "notes": request_data.get("notes", ""),
+        
+        # Tracking
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.paperwork_requests.insert_one({k: v for k, v in doc_request.items() if k != "_id"})
+    
+    logger.info(f"[SPINE-MIGRATED] paperwork_routes.py:/paperwork/request → {canonical_ticket_id} | pillar=paperwork category={request_type}")
+    
+    return {
+        "message": "Document request submitted successfully",
+        "request_id": request_id,
+        "ticket_id": canonical_ticket_id,
+        "deep_link": spine_result.get("deep_link")
+    }
+
+
+@router.get("/requests")
+async def get_paperwork_requests(
+    status: Optional[str] = None,
+    request_type: Optional[str] = None,
+    limit: int = 50
+):
+    """Get all paperwork requests"""
+    db = get_db()
+    
+    query = {}
+    if status:
+        query["status"] = status
+    if request_type:
+        query["request_type"] = request_type
+    
+    requests = await db.paperwork_requests.find(query, {"_id": 0}).sort("created_at", -1).to_list(limit)
+    
+    return {"requests": requests, "total": len(requests)}
+
+
+@router.put("/requests/{request_id}")
+async def update_paperwork_request(request_id: str, update_data: dict):
+    """Update a paperwork request"""
+    db = get_db()
+    
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    update_data.pop("id", None)
+    update_data.pop("_id", None)
+    
+    result = await db.paperwork_requests.update_one(
+        {"id": request_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    return {"message": "Request updated"}
+
+
+# ==================== INSURE SERVICES ====================
+
+@router.get("/insure/services")
+async def get_insurance_services():
+    """Get available insurance services under Paperwork/Insure"""
+    return {
+        "services": INSURANCE_SERVICES,
+        "pillar": "paperwork",
+        "sub_pillar": "insure",
+        "description": "Pet insurance assistance and management services"
+    }
+
+
+@router.post("/insure/request")
+async def create_insurance_request(request_data: dict):
+    """
+    Create an insurance assistance request via UNIFORM SERVICE FLOW.
+    MIGRATED to handoff_to_spine() per Bible Section 12.0.
+    """
+    db = get_db()
+    
+    request_id = f"INS-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    service_type = request_data.get("service_type", "quote_request")
+    pet_name = request_data.get("pet_name", "Pet")
+    user_name = request_data.get("user_name", "Customer")
+    description = request_data.get("description", "")
+    
+    # Get service config
+    service_config = INSURANCE_SERVICES.get(service_type, {})
+    service_name = service_config.get("name", service_type.replace("_", " ").title())
+    
+    # Build intent
+    intent = f"Insurance {service_name} for {pet_name}. {description[:100]}"
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # HANDOFF TO SPINE - Single canonical ticket creation
+    # ═══════════════════════════════════════════════════════════════════════════
+    spine_result = await handoff_to_spine(
+        db=db,
+        route_name="paperwork_routes.py",
+        endpoint="/paperwork/insure/request",
+        pillar="paperwork",
+        category=f"insure_{service_type}",
+        intent=intent,
+        user={
+            "email": request_data.get("user_email"),
+            "name": user_name,
+            "phone": request_data.get("user_phone")
+        },
+        pet={
+            "id": request_data.get("pet_id"),
+            "name": pet_name,
+            "breed": request_data.get("pet_breed")
+        },
+        payload={
+            "request_id": request_id,
+            "service_type": service_type,
+            "current_policy": request_data.get("current_policy"),
+            "policy_number": request_data.get("policy_number"),
+            "coverage_needs": request_data.get("coverage_needs", []),
+            "budget_range": request_data.get("budget_range"),
+            "health_conditions": request_data.get("health_conditions", []),
+            "description": description,
+            "notes": request_data.get("notes", "")
+        },
+        channel="web",
+        urgency=request_data.get("priority", "normal"),
+        created_by="member",
+        notify_admin=True,
+        notify_member=True,
+        tags=["insurance", "insure", service_type, "paperwork"]
+    )
+    
+    if not spine_result.get("success"):
+        logger.error(f"[INSURE] Spine handoff failed: {spine_result.get('error')}")
+        raise HTTPException(status_code=500, detail="Failed to create service ticket")
+    
+    canonical_ticket_id = spine_result["ticket_id"]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SAVE TO insurance_requests collection (pillar-specific record)
+    # ═══════════════════════════════════════════════════════════════════════════
+    ins_request = {
+        "id": request_id,
+        "ticket_id": canonical_ticket_id,  # Link to canonical ticket
+        "service_type": service_type,
+        "status": "pending",
+        "priority": request_data.get("priority", "normal"),
+        
+        # Pet Details
+        "pet_id": request_data.get("pet_id"),
+        "pet_name": pet_name,
+        "pet_breed": request_data.get("pet_breed"),
+        "pet_age": request_data.get("pet_age"),
+        
+        # User Details
+        "user_id": request_data.get("user_id"),
+        "user_name": user_name,
+        "user_email": request_data.get("user_email"),
+        "user_phone": request_data.get("user_phone"),
+        
+        # Insurance Details
+        "current_policy": request_data.get("current_policy"),
+        "policy_number": request_data.get("policy_number"),
+        "coverage_needs": request_data.get("coverage_needs", []),
+        "budget_range": request_data.get("budget_range"),
+        "health_conditions": request_data.get("health_conditions", []),
+        
+        # Request Details
+        "description": description,
+        "notes": request_data.get("notes", ""),
+        
+        # Tracking
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.insurance_requests.insert_one({k: v for k, v in ins_request.items() if k != "_id"})
+    
+    logger.info(f"[SPINE-MIGRATED] paperwork_routes.py:/paperwork/insure/request → {canonical_ticket_id} | pillar=paperwork category=insure_{service_type}")
+    
+    return {
+        "message": "Insurance request created successfully",
+        "request_id": request_id,
+        "estimated_response": service_config.get("typical_response_time", "24-48 hours"),
+        "ticket_id": canonical_ticket_id,
+        "deep_link": spine_result.get("deep_link")
+    }
+
+
+@router.get("/insure/requests")
+async def get_insurance_requests(
+    status: Optional[str] = None,
+    service_type: Optional[str] = None,
+    limit: int = 50
+):
+    """Get all insurance requests"""
+    db = get_db()
+    
+    query = {}
+    if status:
+        query["status"] = status
+    if service_type:
+        query["service_type"] = service_type
+    
+    requests = await db.insurance_requests.find(query, {"_id": 0}).sort("created_at", -1).to_list(limit)
+    
+    return {"requests": requests, "total": len(requests)}
+
+
+# ==================== PRODUCTS ====================
+
+@router.get("/products")
+async def get_paperwork_products(
+    product_type: Optional[str] = None,
+    in_stock: bool = True,
+    limit: int = 50
+):
+    """Get paperwork products"""
+    db = get_db()
+    
+    query = {"category": "paperwork"}
+    if product_type:
+        query["product_type"] = product_type
+    if in_stock:
+        query["in_stock"] = True
+    
+    products = await db.products_master.find(query, {"_id": 0}).to_list(limit)
+    
+    return {"products": products, "total": len(products)}
+
+
+@router.post("/admin/products")
+async def create_paperwork_product(product_data: dict):
+    """Create a new paperwork product"""
+    db = get_db()
+    
+    product = {
+        "id": f"paper-{uuid.uuid4().hex[:8]}",
+        **product_data,
+        "category": "paperwork",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.products_master.insert_one({k: v for k, v in product.items() if k != "_id"})
+    
+    return {"message": "Product created", "product_id": product["id"]}
+
+
+# Product CSV Export/Import (Must come BEFORE {product_id} routes)
+
+@router.get("/admin/products/export-csv")
+async def export_paperwork_products_csv():
+    """Export paperwork products to CSV"""
+    db = get_db()
+    
+    products = await db.paperwork_products.find({}).to_list(length=1000)
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    writer.writerow([
+        "id", "name", "description", "price", "original_price", "category",
+        "document_type", "image", "tags", "in_stock", "paw_reward_points"
+    ])
+    
+    for p in products:
+        writer.writerow([
+            p.get("id", ""),
+            p.get("name", ""),
+            p.get("description", ""),
+            p.get("price", 0),
+            p.get("original_price", ""),
+            p.get("category", ""),
+            p.get("document_type", ""),
+            p.get("image", ""),
+            "|".join(p.get("tags", [])),
+            p.get("in_stock", True),
+            p.get("paw_reward_points", 0)
+        ])
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=paperwork_products.csv"}
+    )
+
+
+@router.post("/admin/products/import-csv")
+async def import_paperwork_products_csv(file: UploadFile = File(...)):
+    """Import paperwork products from CSV"""
+    db = get_db()
+    
+    content = await file.read()
+    decoded = content.decode("utf-8")
+    reader = csv.DictReader(io.StringIO(decoded))
+    
+    imported = 0
+    updated = 0
+    
+    for row in reader:
+        product_id = row.get("id") or f"paper-{uuid.uuid4().hex[:8]}"
+        
+        product_doc = {
+            "id": product_id,
+            "pillar": "paperwork",
+            "name": row.get("name", ""),
+            "description": row.get("description", ""),
+            "price": float(row.get("price", 0)),
+            "original_price": float(row["original_price"]) if row.get("original_price") else None,
+            "category": row.get("category", "products"),
+            "document_type": row.get("document_type", ""),
+            "image": row.get("image", ""),
+            "tags": row.get("tags", "").split("|") if row.get("tags") else [],
+            "in_stock": row.get("in_stock", "true").lower() == "true",
+            "paw_reward_points": int(row.get("paw_reward_points", 0)),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        existing = await db.paperwork_products.find_one({"id": product_id})
+        if existing:
+            await db.paperwork_products.update_one({"id": product_id}, {"$set": product_doc})
+            updated += 1
+        else:
+            product_doc["created_at"] = datetime.now(timezone.utc).isoformat()
+            await db.paperwork_products.insert_one(product_doc)
+            imported += 1
+    
+    return {"message": f"Imported {imported} new, updated {updated} products"}
+
+
+@router.put("/admin/products/{product_id}")
+async def update_paperwork_product(product_id: str, product_data: dict):
+    """Update a paperwork product"""
+    db = get_db()
+    
+    product_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    product_data.pop("id", None)
+    product_data.pop("_id", None)
+    
+    result = await db.products_master.update_one({"id": product_id}, {"$set": product_data})
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"message": "Product updated"}
+
+
+@router.delete("/admin/products/{product_id}")
+async def delete_paperwork_product(product_id: str):
+    """Delete a paperwork product"""
+    db = get_db()
+    
+    result = await db.products_master.delete_one({"id": product_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"message": "Product deleted"}
+
+
+# ==================== BUNDLES ====================
+
+@router.get("/bundles")
+async def get_paperwork_bundles(category: Optional[str] = None, limit: int = 20):
+    """Get paperwork bundles including Insure bundles"""
+    db = get_db()
+    
+    query = {"$or": [{"is_active": True}, {"active": True}]}
+    if category:
+        query = {"$and": [query, {"category": category}]}
+    
+    bundles = await db.paperwork_bundles.find(query, {"_id": 0}).to_list(limit)
+    
+    return {"bundles": bundles, "total": len(bundles)}
+
+
+@router.post("/admin/bundles")
+async def create_paperwork_bundle(bundle_data: dict):
+    """Create a new paperwork bundle"""
+    db = get_db()
+    
+    bundle = {
+        "id": f"paper-bundle-{uuid.uuid4().hex[:8]}",
+        **bundle_data,
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.paperwork_bundles.insert_one({k: v for k, v in bundle.items() if k != "_id"})
+    
+    return {"message": "Bundle created", "bundle_id": bundle["id"]}
+
+
+# Bundle CSV Export/Import (Must come BEFORE {bundle_id} routes)
+
+@router.get("/admin/bundles/export-csv")
+async def export_paperwork_bundles_csv():
+    """Export paperwork bundles to CSV"""
+    db = get_db()
+    
+    bundles = await db.paperwork_bundles.find({}).to_list(length=500)
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    writer.writerow([
+        "id", "name", "description", "price", "original_price", "items",
+        "is_recommended", "paw_reward_points"
+    ])
+    
+    for b in bundles:
+        writer.writerow([
+            b.get("id", ""),
+            b.get("name", ""),
+            b.get("description", ""),
+            b.get("price", 0),
+            b.get("original_price", ""),
+            "|".join(b.get("items", [])),
+            b.get("is_recommended", True),
+            b.get("paw_reward_points", 0)
+        ])
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=paperwork_bundles.csv"}
+    )
+
+
+@router.post("/admin/bundles/import-csv")
+async def import_paperwork_bundles_csv(file: UploadFile = File(...)):
+    """Import paperwork bundles from CSV"""
+    db = get_db()
+    
+    content = await file.read()
+    decoded = content.decode("utf-8")
+    reader = csv.DictReader(io.StringIO(decoded))
+    
+    imported = 0
+    updated = 0
+    
+    for row in reader:
+        bundle_id = row.get("id") or f"paper-bundle-{uuid.uuid4().hex[:8]}"
+        
+        bundle_doc = {
+            "id": bundle_id,
+            "pillar": "paperwork",
+            "name": row.get("name", ""),
+            "description": row.get("description", ""),
+            "price": float(row.get("price", 0)),
+            "original_price": float(row["original_price"]) if row.get("original_price") else None,
+            "items": row.get("items", "").split("|") if row.get("items") else [],
+            "is_recommended": row.get("is_recommended", "true").lower() == "true",
+            "paw_reward_points": int(row.get("paw_reward_points", 0)),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        existing = await db.paperwork_bundles.find_one({"id": bundle_id})
+        if existing:
+            await db.paperwork_bundles.update_one({"id": bundle_id}, {"$set": bundle_doc})
+            updated += 1
+        else:
+            bundle_doc["created_at"] = datetime.now(timezone.utc).isoformat()
+            await db.paperwork_bundles.insert_one(bundle_doc)
+            imported += 1
+    
+    return {"message": f"Imported {imported} new, updated {updated} bundles"}
+
+
+@router.put("/admin/bundles/{bundle_id}")
+async def update_paperwork_bundle(bundle_id: str, bundle_data: dict):
+    """Update a paperwork bundle"""
+    db = get_db()
+    
+    bundle_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    bundle_data.pop("id", None)
+    bundle_data.pop("_id", None)
+    
+    result = await db.paperwork_bundles.update_one({"id": bundle_id}, {"$set": bundle_data})
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    return {"message": "Bundle updated"}
+
+
+@router.delete("/admin/bundles/{bundle_id}")
+async def delete_paperwork_bundle(bundle_id: str):
+    """Delete a paperwork bundle"""
+    db = get_db()
+    
+    result = await db.paperwork_bundles.delete_one({"id": bundle_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    return {"message": "Bundle deleted"}
+
+
+# ==================== SETTINGS ====================
+
+@router.get("/admin/settings")
+async def get_paperwork_settings():
+    """Get paperwork pillar settings"""
+    db = get_db()
+    
+    settings = await db.app_settings.find_one({"key": "paperwork_settings"}, {"_id": 0})
+    
+    if not settings:
+        return {
+            "paw_rewards": {
+                "enabled": True,
+                "points_per_document_upload": 5,
+                "points_per_complete_folder": 25,
+                "bonus_points_all_folders_complete": 100
+            },
+            "birthday_perks": {
+                "enabled": True,
+                "discount_percent": 15,
+                "free_document_organization": True
+            },
+            "reminders": {
+                "enabled": True,
+                "default_channel": "email",
+                "days_before_expiry": [30, 7, 1],
+                "repeat_reminders": True
+            },
+            "notifications": {
+                "email_enabled": True,
+                "sms_enabled": False,
+                "whatsapp_enabled": True
+            },
+            "service_desk": {
+                "auto_create_ticket": True,
+                "default_priority": "normal"
+            },
+            "quick_access": {
+                "enabled_for_mira": True,
+                "enabled_for_concierge": True,
+                "enabled_for_travel": True,
+                "enabled_for_emergency": True
+            }
+        }
+    
+    return settings.get("value", {})
+
+
+@router.put("/admin/settings")
+async def update_paperwork_settings(settings: Dict[str, Any]):
+    """Update paperwork settings"""
+    db = get_db()
+    
+    await db.app_settings.update_one(
+        {"key": "paperwork_settings"},
+        {"$set": {"key": "paperwork_settings", "value": settings, "updated_at": datetime.now(timezone.utc).isoformat()}},
+        upsert=True
+    )
+    
+    return {"success": True, "message": "Settings updated"}
+
+
+# ==================== STATS ====================
+
+@router.get("/admin/stats")
+async def get_paperwork_stats():
+    """Get paperwork pillar statistics"""
+    db = get_db()
+    
+    total_documents = await db.paperwork_documents.count_documents({"status": "active"})
+    total_requests = await db.paperwork_requests.count_documents({})
+    pending_requests = await db.paperwork_requests.count_documents({"status": "pending"})
+    pending_reminders = await db.paperwork_reminders.count_documents({"status": "pending"})
+    
+    # By category
+    category_breakdown = {}
+    for cat_id in DOCUMENT_CATEGORIES.keys():
+        category_breakdown[cat_id] = await db.paperwork_documents.count_documents({"category": cat_id, "status": "active"})
+    
+    total_products = await db.products_master.count_documents({"category": "paperwork"})
+    total_bundles = await db.paperwork_bundles.count_documents({"is_active": True})
+    
+    # Pets with documents
+    pets_with_docs = await db.paperwork_documents.distinct("pet_id", {"status": "active"})
+    
+    return {
+        "total_documents": total_documents,
+        "total_requests": total_requests,
+        "pending_requests": pending_requests,
+        "pending_reminders": pending_reminders,
+        "by_category": category_breakdown,
+        "total_products": total_products,
+        "total_bundles": total_bundles,
+        "pets_with_documents": len(pets_with_docs)
+    }
+
+
+# ==================== CONFIG ====================
+
+@router.get("/categories")
+async def get_document_categories():
+    """Get all document categories and subcategories"""
+    return {
+        "categories": DOCUMENT_CATEGORIES,
+        "reminder_channels": REMINDER_CHANNELS
+    }
+
+
+@router.get("/config")
+async def get_paperwork_config():
+    """Get paperwork pillar configuration for frontend"""
+    db = get_db()
+    
+    doc_count = await db.paperwork_documents.count_documents({"status": "active"})
+    product_count = await db.products_master.count_documents({"category": "paperwork"})
+    
+    return {
+        "categories": DOCUMENT_CATEGORIES,
+        "reminder_channels": REMINDER_CHANNELS,
+        "document_count": doc_count,
+        "product_count": product_count,
+        "enabled": True
+    }
+
+
+# ==================== SEED DATA ====================
+
+@router.post("/admin/seed")
+async def seed_paperwork_data():
+    """Seed paperwork pillar with sample products and bundles"""
+    db = get_db()
+    
+    # Sample Products
+    default_products = [
+        # Identity & Safety Products
+        {
+            "id": "paper-qr-tag",
+            "name": "Smart QR ID Tag",
+            "description": "Durable QR code tag that links to your pet's digital profile. Waterproof and scratch-resistant.",
+            "price": 499,
+            "compare_price": 699,
+            "category": "paperwork",
+            "product_type": "identity",
+            "tags": ["paperwork", "identity", "qr", "tag", "safety"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 8,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "paper-engraved-tag",
+            "name": "Premium Engraved Collar Tag",
+            "description": "Stainless steel tag with pet name and owner contact. Choose from bone, heart, or paw shapes.",
+            "price": 349,
+            "compare_price": 449,
+            "category": "paperwork",
+            "product_type": "identity",
+            "tags": ["paperwork", "identity", "tag", "engraved"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 5,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 20
+        },
+        {
+            "id": "paper-smart-id-card",
+            "name": "Digital Pet ID Card",
+            "description": "Printable + digital ID card with photo, microchip, and emergency contacts. App access included.",
+            "price": 299,
+            "compare_price": 399,
+            "category": "paperwork",
+            "product_type": "identity",
+            "tags": ["paperwork", "identity", "digital", "card"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 5,
+            "is_birthday_perk": False
+        },
+        # Medical Organization Products
+        {
+            "id": "paper-health-wallet",
+            "name": "Digital Health Record Wallet",
+            "description": "Organized digital vault for all medical records with vaccine tracker and reminder calendar.",
+            "price": 599,
+            "compare_price": 799,
+            "category": "paperwork",
+            "product_type": "medical",
+            "tags": ["paperwork", "medical", "digital", "health"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 10,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "paper-health-folder",
+            "name": "TDC Health File Folder",
+            "description": "Premium branded folder with dividers for vaccination, vet notes, lab reports, and prescriptions.",
+            "price": 449,
+            "compare_price": 599,
+            "category": "paperwork",
+            "product_type": "medical",
+            "tags": ["paperwork", "medical", "folder", "physical"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 7,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "paper-vaccine-booklet",
+            "name": "Vaccination Booklet Holder",
+            "description": "Waterproof holder for vaccination booklet with reminder card slots.",
+            "price": 249,
+            "compare_price": 349,
+            "category": "paperwork",
+            "product_type": "medical",
+            "tags": ["paperwork", "medical", "vaccination", "holder"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 4,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "paper-waterproof-sleeve",
+            "name": "Waterproof Document Sleeve",
+            "description": "Clear, waterproof sleeve for important documents. Perfect for travel and emergencies.",
+            "price": 199,
+            "compare_price": 299,
+            "category": "paperwork",
+            "product_type": "medical",
+            "tags": ["paperwork", "waterproof", "sleeve", "travel"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 3,
+            "is_birthday_perk": False
+        },
+        # Travel Documentation Products
+        {
+            "id": "paper-travel-doc-kit",
+            "name": "TDC Travel Document Kit",
+            "description": "Complete kit: checklist, vaccine summary template, health cert holder, microchip sleeve, and document pouch.",
+            "price": 899,
+            "compare_price": 1199,
+            "category": "paperwork",
+            "product_type": "travel",
+            "tags": ["paperwork", "travel", "kit", "documents"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 15,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 15
+        },
+        {
+            "id": "paper-travel-pouch",
+            "name": "Travel Document Pouch",
+            "description": "Compact, organized pouch for airline/rail documents, health certificates, and travel permits.",
+            "price": 399,
+            "compare_price": 549,
+            "category": "paperwork",
+            "product_type": "travel",
+            "tags": ["paperwork", "travel", "pouch", "airline"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 6,
+            "is_birthday_perk": False
+        },
+        # Emergency Products
+        {
+            "id": "paper-emergency-wallet",
+            "name": "Emergency Document Wallet",
+            "description": "Waterproof wallet with slots for vet details, emergency contacts, microchip info, and photo ID.",
+            "price": 349,
+            "compare_price": 449,
+            "category": "paperwork",
+            "product_type": "emergency",
+            "tags": ["paperwork", "emergency", "wallet", "safety"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 6,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "paper-lost-pet-kit",
+            "name": "Lost Pet Alert Kit",
+            "description": "QR tag, printable poster templates, step-by-step checklist, helpline template, and community alert draft.",
+            "price": 599,
+            "compare_price": 799,
+            "category": "paperwork",
+            "product_type": "emergency",
+            "tags": ["paperwork", "emergency", "lost", "alert"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 10,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "paper-emergency-contact-card",
+            "name": "Emergency Contact Cards (Pack of 5)",
+            "description": "Laminated cards with pet photo, owner details, vet info, and medical alerts. Attach to collar, carrier, or wallet.",
+            "price": 199,
+            "compare_price": 299,
+            "category": "paperwork",
+            "product_type": "emergency",
+            "tags": ["paperwork", "emergency", "contact", "cards"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 4,
+            "is_birthday_perk": False
+        },
+        # Insurance & Compliance
+        {
+            "id": "paper-insurance-organizer",
+            "name": "Pet Insurance Document Organizer",
+            "description": "Folder with sections for policy, claims, receipts. Includes renewal reminder setup.",
+            "price": 349,
+            "compare_price": 449,
+            "category": "paperwork",
+            "product_type": "insurance",
+            "tags": ["paperwork", "insurance", "organizer", "policy"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 6,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "paper-compliance-checklist",
+            "name": "Annual Compliance Checklist",
+            "description": "Digital + printable checklist for licenses, registrations, vaccinations, and renewals.",
+            "price": 149,
+            "compare_price": 199,
+            "category": "paperwork",
+            "product_type": "legal",
+            "tags": ["paperwork", "compliance", "checklist", "annual"],
+            "pet_sizes": ["small", "medium", "large"],
+            "in_stock": True,
+            "paw_reward_points": 3,
+            "is_birthday_perk": False
+        }
+    ]
+    
+    # Sample Bundles
+    default_bundles = [
+        {
+            "id": "paper-bundle-starter",
+            "name": "Paw Papers Starter Pack",
+            "description": "For new pet parents. TDC Health File Folder, QR ID tag, Digital Health Wallet access, first vaccination reminder setup, and printable emergency contact sheet.",
+            "items": ["paper-health-folder", "paper-qr-tag", "paper-health-wallet", "paper-emergency-contact-card"],
+            "includes_service": True,
+            "service_type": "document_organization",
+            "price": 1299,
+            "original_price": 1646,
+            "paw_reward_points": 30,
+            "is_recommended": True,
+            "is_birthday_perk": False,
+            "for_new_pet_parents": True,
+            "is_active": True
+        },
+        {
+            "id": "paper-bundle-travel",
+            "name": "Travel Ready Pack",
+            "description": "For travelers. Travel Document Kit, waterproof document sleeve, QR ID tag, digital travel checklist, and auto-reminder for vaccines before travel.",
+            "items": ["paper-travel-doc-kit", "paper-waterproof-sleeve", "paper-qr-tag"],
+            "includes_service": True,
+            "service_type": "travel_document_prep",
+            "price": 1499,
+            "original_price": 1797,
+            "paw_reward_points": 35,
+            "is_recommended": True,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 15,
+            "is_active": True
+        },
+        {
+            "id": "paper-bundle-emergency",
+            "name": "Emergency & Lost Pet Pack",
+            "description": "For peace of mind. Emergency document wallet, QR ID tag, lost pet poster template, step-by-step checklist, and digital alert setup in app.",
+            "items": ["paper-emergency-wallet", "paper-qr-tag", "paper-lost-pet-kit"],
+            "includes_service": True,
+            "service_type": "emergency_prep",
+            "price": 1199,
+            "original_price": 1447,
+            "paw_reward_points": 28,
+            "is_recommended": True,
+            "is_birthday_perk": False,
+            "is_active": True
+        },
+        {
+            "id": "paper-bundle-lifetime",
+            "name": "Lifetime Health File",
+            "description": "Premium package. Digital Health Vault setup, physical health file, annual reminder calendar, vaccine tracker, upload slots for all records, and concierge-assisted document organization.",
+            "items": ["paper-health-wallet", "paper-health-folder", "paper-vaccine-booklet", "paper-waterproof-sleeve"],
+            "includes_service": True,
+            "service_type": "full_document_management",
+            "price": 1999,
+            "original_price": 2496,
+            "paw_reward_points": 50,
+            "is_recommended": True,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 20,
+            "is_premium": True,
+            "is_active": True
+        },
+        {
+            "id": "paper-bundle-digital",
+            "name": "Digital Document Suite",
+            "description": "Go paperless. Digital Health Wallet, Smart ID Card, compliance checklist, and full app access with unlimited document uploads.",
+            "items": ["paper-health-wallet", "paper-smart-id-card", "paper-compliance-checklist"],
+            "includes_service": False,
+            "price": 899,
+            "original_price": 1047,
+            "paw_reward_points": 20,
+            "is_recommended": False,
+            "is_birthday_perk": False,
+            "is_active": True
+        }
+    ]
+    
+    # Insert data
+    for product in default_products:
+        product["created_at"] = datetime.now(timezone.utc).isoformat()
+        product["updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.products_master.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+    
+    for bundle in default_bundles:
+        bundle["created_at"] = datetime.now(timezone.utc).isoformat()
+        bundle["updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.paperwork_bundles.update_one({"id": bundle["id"]}, {"$set": bundle}, upsert=True)
+    
+    logger.info(f"Seeded PAPERWORK pillar: {len(default_products)} products, {len(default_bundles)} bundles")
+    
+    return {
+        "message": "PAPERWORK pillar data seeded successfully",
+        "products_seeded": len(default_products),
+        "bundles_seeded": len(default_bundles)
+    }
+
+

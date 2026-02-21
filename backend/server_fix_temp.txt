@@ -1,0 +1,2 @@
+            ).limit(remaining).to_list(remaining)
+            related_products.extend(treats)

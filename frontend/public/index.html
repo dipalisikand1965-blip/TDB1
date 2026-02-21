@@ -2,27 +2,354 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#000000" />
-        <meta name="description" content="A product of emergent.sh" />
+        <link rel="icon" href="%PUBLIC_URL%/logo-new.png" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+        <meta name="theme-color" content="#722282" />
+        
+        <!-- iOS PWA specific meta tags -->
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Doggy Co" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="format-detection" content="telephone=no" />
+        
+        <!-- Primary SEO Meta Tags -->
+        <meta name="title" content="The Doggy Company | Pet Life Operating System | India's #1 Pet Platform" />
+        <meta name="description" content="India's #1 Pet Life Platform! Premium dog cakes, pet-friendly dining, stays & services. Same-day delivery in Mumbai, Bangalore & Gurgaon. 45,000+ happy pet parents." />
+        <meta name="keywords" content="dog cakes, dog birthday cake, dog treats, pet bakery, dog food, healthy dog treats, custom dog cake, dog party, pet birthday, pet-friendly restaurants, pet hotels, pet boarding, dog bakery Mumbai, dog bakery Bangalore, dog bakery Gurgaon, fresh dog meals, dog celebration, pet treats India, breed cake, pawsome cake, doggo cake, dog cupcakes, puppy treats, dog cake delivery, pet cake near me, dog birthday party, dog safe cake, homemade dog treats" />
+        <meta name="author" content="The Doggy Company" />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="googlebot" content="index, follow" />
+        <meta name="bingbot" content="index, follow" />
+        <link rel="canonical" href="https://thedoggycompany.in/" />
+        
+        <!-- Preconnect to external domains for performance -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet" />
-        <!--
-        manifest.json provides metadata used when your web app is installed on a
-        user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-        -->
-        <!--
-        Notice the use of %PUBLIC_URL% in the tags above.
-        It will be replaced with the URL of the `public` folder during the build.
-        Only files inside the `public` folder can be referenced from the HTML.
-
-        Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-        work correctly both with client-side routing and a non-root public URL.
-        Learn how to configure a non-root public URL by running `npm run build`.
-        -->
-        <title>Emergent | Fullstack App</title>
-        <script>window.addEventListener("error",function(e){if(e.error instanceof DOMException&&e.error.name==="DataCloneError"&&e.message&&e.message.includes("PerformanceServerTiming")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
+        <link rel="preconnect" href="https://thedoggybakery.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://thedoggycompany.in/" />
+        <meta property="og:title" content="The Doggy Company | Pet Life Operating System | India's #1 Pet Platform" />
+        <meta property="og:description" content="Premium dog birthday cakes, pet-friendly dining, stays & services. Same-day delivery in Mumbai, Bangalore & Gurgaon. 45,000+ happy pet parents trust us!" />
+        <meta property="og:image" content="https://thedoggybakery.com/cdn/shop/files/TDB_Logo_1.3.5-1.png?v=1718969706" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="The Doggy Company - Pet Life Operating System" />
+        <meta property="og:site_name" content="The Doggy Company" />
+        <meta property="og:locale" content="en_IN" />
+        <meta property="fb:app_id" content="" />
+        
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@thedoggycompany" />
+        <meta name="twitter:creator" content="@thedoggycompany" />
+        <meta name="twitter:url" content="https://thedoggycompany.in/" />
+        <meta name="twitter:title" content="The Doggy Company | Pet Life Operating System" />
+        <meta name="twitter:description" content="India's #1 Pet Platform! Premium cakes, pet-friendly dining, stays & services. Same-day delivery. 45,000+ happy pet parents!" />
+        <meta name="twitter:image" content="https://thedoggybakery.com/cdn/shop/files/TDB_Logo_1.3.5-1.png?v=1718969706" />
+        <meta name="twitter:image:alt" content="The Doggy Company Logo" />
+        
+        <!-- Additional SEO & Geo Tags -->
+        <meta name="geo.region" content="IN" />
+        <meta name="geo.placename" content="Mumbai, Bangalore, Gurgaon, India" />
+        <meta name="ICBM" content="19.0760, 72.8777" />
+        <meta name="rating" content="General" />
+        <meta name="revisit-after" content="3 days" />
+        <meta name="distribution" content="global" />
+        <meta name="language" content="English" />
+        <meta name="coverage" content="India" />
+        <meta name="target" content="all" />
+        <meta name="HandheldFriendly" content="True" />
+        <meta name="MobileOptimized" content="320" />
+        
+        <!-- Verification Tags (add your codes here) -->
+        <meta name="google-site-verification" content="" />
+        <meta name="msvalidate.01" content="" />
+        <meta name="yandex-verification" content="" />
+        <meta name="p:domain_verify" content="" />
+        
+        <!-- Mobile App Meta -->
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="The Doggy Company" />
+        <meta name="application-name" content="The Doggy Company" />
+        <meta name="format-detection" content="telephone=yes" />
+        
+        <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo-new.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/logo-new.png" />
+        <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+        
+        <!-- Alternate language/region (for future expansion) -->
+        <link rel="alternate" hreflang="en-in" href="https://thedoggycompany.in/" />
+        <link rel="alternate" hreflang="x-default" href="https://thedoggycompany.in/" />
+        
+        <!-- Structured Data / JSON-LD for Rich Snippets -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "@id": "https://thedoggycompany.in/#business",
+            "name": "The Doggy Bakery",
+            "alternateName": ["TDB", "Doggy Bakery", "The Doggy Company"],
+            "url": "https://thedoggycompany.in/",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://thedoggybakery.com/cdn/shop/files/TDB_Logo_1.3.5-1.png",
+                "width": 512,
+                "height": 512
+            },
+            "image": [
+                "https://thedoggybakery.com/cdn/shop/files/TDB_Logo_1.3.5-1.png",
+                "https://thedoggybakery.com/cdn/shop/files/TDB_cakes_6_6c84dc0e-24b7-49f0-a5f9-0027610924db.png"
+            ],
+            "description": "India's #1 dog bakery offering premium dog birthday cakes, healthy treats & fresh meals. Same-day delivery in Mumbai, Bangalore & Gurgaon.",
+            "telephone": "+91-9663185747",
+            "email": "woof@thedoggybakery.in",
+            "priceRange": "₹300 - ₹3000",
+            "currenciesAccepted": "INR",
+            "paymentAccepted": "Cash, UPI, Credit Card, Debit Card",
+            "openingHoursSpecification": [
+                {
+                    "@type": "OpeningHoursSpecification",
+                    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+                    "opens": "09:00",
+                    "closes": "21:00"
+                }
+            ],
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Multiple Locations",
+                "addressLocality": "Mumbai, Bangalore, Gurgaon",
+                "addressRegion": "Maharashtra, Karnataka, Haryana",
+                "postalCode": "400001",
+                "addressCountry": "IN"
+            },
+            "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": "19.0760",
+                "longitude": "72.8777"
+            },
+            "areaServed": [
+                {"@type": "City", "name": "Mumbai", "sameAs": "https://en.wikipedia.org/wiki/Mumbai"},
+                {"@type": "City", "name": "Bangalore", "sameAs": "https://en.wikipedia.org/wiki/Bangalore"},
+                {"@type": "City", "name": "Bengaluru"},
+                {"@type": "City", "name": "Gurgaon", "sameAs": "https://en.wikipedia.org/wiki/Gurgaon"},
+                {"@type": "City", "name": "Gurugram"},
+                {"@type": "Country", "name": "India"}
+            ],
+            "hasOfferCatalog": {
+                "@type": "OfferCatalog",
+                "name": "Dog Cakes & Treats Menu",
+                "itemListElement": [
+                    {
+                        "@type": "OfferCatalog",
+                        "name": "Dog Birthday Cakes",
+                        "itemListElement": [
+                            {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Doggo Cake", "description": "Classic dog birthday cake"}},
+                            {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Pawsome Cake", "description": "Premium celebration cake"}},
+                            {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Custom Breed Cakes", "description": "Personalized breed-shaped cakes"}}
+                        ]
+                    },
+                    {
+                        "@type": "OfferCatalog",
+                        "name": "Dog Treats",
+                        "itemListElement": [
+                            {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Chicken Jerky"}},
+                            {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Training Treats"}},
+                            {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Desi Doggy Sweets"}}
+                        ]
+                    },
+                    {
+                        "@type": "OfferCatalog",
+                        "name": "Fresh Meals",
+                        "itemListElement": [
+                            {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Fresh Dog Food", "description": "Home-cooked fresh meals"}}
+                        ]
+                    }
+                ]
+            },
+            "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.9",
+                "reviewCount": "45000",
+                "bestRating": "5",
+                "worstRating": "1"
+            },
+            "review": [
+                {
+                    "@type": "Review",
+                    "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"},
+                    "author": {"@type": "Person", "name": "Happy Pet Parent"},
+                    "reviewBody": "Amazing dog cakes! My furry baby loved it. Same-day delivery was perfect."
+                }
+            ],
+            "sameAs": [
+                "https://www.instagram.com/thedoggybakery/",
+                "https://www.facebook.com/thedoggybakery/",
+                "https://thedoggybakery.com/"
+            ],
+            "potentialAction": [
+                {
+                    "@type": "OrderAction",
+                    "target": {
+                        "@type": "EntryPoint",
+                        "urlTemplate": "https://thedoggycompany.in/cakes",
+                        "actionPlatform": ["http://schema.org/DesktopWebPlatform", "http://schema.org/MobileWebPlatform"]
+                    },
+                    "deliveryMethod": ["http://purl.org/goodrelations/v1#DeliveryModePickUp", "http://purl.org/goodrelations/v1#DeliveryModeOwnFleet"]
+                },
+                {
+                    "@type": "SearchAction",
+                    "target": "https://thedoggycompany.in/search?q={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                }
+            ]
+        }
+        </script>
+        
+        <!-- Product Collection Schema -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": "Best Selling Dog Cakes",
+            "description": "Our most popular dog birthday cakes and treats",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "item": {
+                        "@type": "Product",
+                        "name": "Doggo Cake",
+                        "image": "https://thedoggybakery.com/cdn/shop/files/TDB_cakes_6_6c84dc0e-24b7-49f0-a5f9-0027610924db.png",
+                        "description": "Classic dog birthday cake made with wholesome ingredients",
+                        "brand": {"@type": "Brand", "name": "The Doggy Bakery"},
+                        "offers": {
+                            "@type": "Offer",
+                            "price": "650",
+                            "priceCurrency": "INR",
+                            "availability": "https://schema.org/InStock",
+                            "seller": {"@type": "Organization", "name": "The Doggy Bakery"}
+                        }
+                    }
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "item": {
+                        "@type": "Product",
+                        "name": "Pawsome Cake",
+                        "description": "Premium celebration cake for dogs",
+                        "brand": {"@type": "Brand", "name": "The Doggy Bakery"},
+                        "offers": {
+                            "@type": "Offer",
+                            "price": "750",
+                            "priceCurrency": "INR",
+                            "availability": "https://schema.org/InStock"
+                        }
+                    }
+                }
+            ]
+        }
+        </script>
+        
+        <!-- FAQ Structured Data -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {
+                    "@type": "Question",
+                    "name": "Do you offer same-day delivery for dog cakes?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes! We offer same-day delivery in Mumbai, Bangalore and Gurgaon for all orders placed before 6:00 PM. Pan-India delivery is available for select treats and cakes within 3-5 business days."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Are your dog cakes safe for dogs to eat?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Absolutely! All our cakes and treats are made with 100% dog-safe, human-grade ingredients. We use no sugar, no preservatives, no xylitol, no chocolate, and no harmful additives. Every recipe is vet-approved."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Can I order a custom dog birthday cake?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes! We offer custom breed cakes, personalized cakes with your pet's name and photo, and themed party boxes. Use our Custom Cake Designer or chat with Mira AI for assistance."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "What areas do you deliver to?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "We offer same-day delivery in Mumbai, Bangalore (Bengaluru), and Gurgaon (Gurugram). For Pan-India delivery, we ship select treats and packaged items across India."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "How long do dog cakes last?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Our fresh dog cakes should be consumed within 3-4 days when refrigerated. For best taste and freshness, we recommend serving within 24-48 hours of delivery."
+                    }
+                }
+            ]
+        }
+        </script>
+        
+        <!-- Breadcrumb Schema -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://thedoggycompany.in/"},
+                {"@type": "ListItem", "position": 2, "name": "Dog Cakes", "item": "https://thedoggycompany.in/cakes"},
+                {"@type": "ListItem", "position": 3, "name": "Dog Treats", "item": "https://thedoggycompany.in/treats"},
+                {"@type": "ListItem", "position": 4, "name": "Pan India Delivery", "item": "https://thedoggycompany.in/pan-india"}
+            ]
+        }
+        </script>
+        
+        <!-- Organization Schema -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "The Doggy Bakery",
+            "url": "https://thedoggycompany.in/",
+            "logo": "https://thedoggybakery.com/cdn/shop/files/TDB_Logo_1.3.5-1.png",
+            "foundingDate": "2020",
+            "founders": [{"@type": "Person", "name": "The Doggy Bakery Team"}],
+            "description": "India's #1 dog bakery offering premium cakes, treats & fresh meals",
+            "contactPoint": [
+                {
+                    "@type": "ContactPoint",
+                    "telephone": "+91-9663185747",
+                    "contactType": "customer service",
+                    "availableLanguage": ["English", "Hindi"],
+                    "areaServed": "IN"
+                }
+            ],
+            "sameAs": [
+                "https://www.instagram.com/thedoggybakery/",
+                "https://www.facebook.com/thedoggybakery/"
+            ]
+        }
+        </script>
+        
+        <title>The Doggy Company | Pet Life Operating System | India's #1 Pet Platform</title>
         <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
         <!--
         These two scripts have been added for the Visual Edits, please do not edit or remove them
@@ -66,116 +393,48 @@
             target="_blank"
             href="https://app.emergent.sh/?utm_source=emergent-badge"
             style="
-                display: inline-flex !important;
-                box-sizing: border-box;
-                width: 178px;
-                height: 40px;
-                padding: 8px 12px 8px 12px;
+                display: flex !important;
                 align-items: center !important;
-                gap: 8px;
-                border-radius: 50px !important;
-                background: #000 !important;
                 position: fixed !important;
-                bottom: 16px;
-                right: 16px;
+                bottom: 20px;
+                right: 20px;
                 text-decoration: none;
+                padding: 6px 10px;
                 font-family: -apple-system, BlinkMacSystemFont,
                     &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell,
                     &quot;Open Sans&quot;, &quot;Helvetica Neue&quot;,
                     sans-serif !important;
                 font-size: 12px !important;
                 z-index: 9999 !important;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+                border-radius: 8px !important;
+                background-color: #ffffff !important;
+                border: 1px solid rgba(255, 255, 255, 0.25) !important;
             "
         >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M15.5702 8.13142C15.7729 8.0412 16.0007 8.18878 15.9892 8.4103C15.8374 11.3192 14.0965 14.0405 11.2531 15.3065C8.40964 16.5725 5.2224 16.0453 2.95912 14.2117C2.78676 14.072 2.82955 13.804 3.03219 13.7137L4.95677 12.8568C5.04866 12.8159 5.15446 12.823 5.24204 12.8725C6.73377 13.7153 8.59176 13.8649 10.2772 13.1145C11.9626 12.3641 13.0947 10.8833 13.4665 9.21075C13.4883 9.11256 13.5539 9.02918 13.6457 8.98827L15.5702 8.13142Z" fill="white"/>
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M15.3066 4.74698L15.5067 5.19653C15.5759 5.35178 15.5061 5.53366 15.3508 5.60278L1.29992 11.8586C1.14467 11.9278 0.962794 11.8579 0.893675 11.7027L0.701732 11.2716L0.693457 11.2531C-1.10317 7.21778 0.711626 2.49007 4.74692 0.693443C8.78221 -1.10318 13.51 0.711693 15.3066 4.74698ZM2.82356 8.55367C2.63552 8.63739 2.41991 8.51617 2.40853 8.31065C2.28373 6.05724 3.53858 3.85787 5.72286 2.88536C7.90715 1.91286 10.3813 2.45199 11.9724 4.05256C12.1175 4.19854 12.0633 4.43988 11.8753 4.5236L2.82356 8.55367Z" fill="white"/>
-            </svg>
-            <p
-                style="
-                    color: #FFF !important;
-                    font-family: 'Inter', sans-serif !important;
-                    font-size: 13px !important;
-                    font-style: normal !important;
-                    font-weight: 600 !important;
-                    line-height: 20px !important;
-                    margin: 0 !important;
-                    white-space: nowrap !important;
-                "
+            <div
+                style="display: flex; flex-direction: row; align-items: center"
             >
-                Made with Emergent
-            </p>
+                <img
+                    style="width: 20px; height: 20px; margin-right: 8px"
+                    src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4"
+                />
+                <p
+                    style="
+                        color: #000000;
+                        font-family: -apple-system, BlinkMacSystemFont,
+                            &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu,
+                            Cantarell, &quot;Open Sans&quot;,
+                            &quot;Helvetica Neue&quot;, sans-serif !important;
+                        font-size: 12px !important;
+                        align-items: center;
+                        margin-bottom: 0;
+                    "
+                >
+                    Made with Emergent
+                </p>
+            </div>
         </a>
-        <script>
-            !(function (t, e) {
-                var o, n, p, r;
-                e.__SV ||
-                    ((window.posthog = e),
-                    (e._i = []),
-                    (e.init = function (i, s, a) {
-                        function g(t, e) {
-                            var o = e.split(".");
-                            2 == o.length && ((t = t[o[0]]), (e = o[1])),
-                                (t[e] = function () {
-                                    t.push(
-                                        [e].concat(
-                                            Array.prototype.slice.call(
-                                                arguments,
-                                                0,
-                                            ),
-                                        ),
-                                    );
-                                });
-                        }
-                        ((p = t.createElement("script")).type =
-                            "text/javascript"),
-                            (p.crossOrigin = "anonymous"),
-                            (p.async = !0),
-                            (p.src =
-                                s.api_host.replace(
-                                    ".i.posthog.com",
-                                    "-assets.i.posthog.com",
-                                ) + "/static/array.js"),
-                            (r =
-                                t.getElementsByTagName(
-                                    "script",
-                                )[0]).parentNode.insertBefore(p, r);
-                        var u = e;
-                        for (
-                            void 0 !== a ? (u = e[a] = []) : (a = "posthog"),
-                                u.people = u.people || [],
-                                u.toString = function (t) {
-                                    var e = "posthog";
-                                    return (
-                                        "posthog" !== a && (e += "." + a),
-                                        t || (e += " (stub)"),
-                                        e
-                                    );
-                                },
-                                u.people.toString = function () {
-                                    return u.toString(1) + ".people (stub)";
-                                },
-                                o =
-                                    "init me ws ys ps bs capture je Di ks register register_once register_for_session unregister unregister_for_session Ps getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty Es $s createPersonProfile Is opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing Ss debug xs getPageViewId captureTraceFeedback captureTraceMetric".split(
-                                        " ",
-                                    ),
-                                n = 0;
-                            n < o.length;
-                            n++
-                        )
-                            g(u, o[n]);
-                        e._i.push([i, s, a]);
-                    }),
-                    (e.__SV = 1));
-            })(document, window.posthog || []);
-            posthog.init("phc_xAvL2Iq4tFmANRE7kzbKwaSqp1HJjN7x48s3vr0CMjs", {
-                api_host: "https://us.i.posthog.com",
-                person_profiles: "identified_only", // or 'always' to create profiles for anonymous users as well,
-                session_recording: {
-                    recordCrossOriginIframes: true,
-                    capturePerformance: false,
-                },
-            });
-        </script>
+        <!-- Posthog script removed to prevent runtime errors -->
     </body>
 </html>
