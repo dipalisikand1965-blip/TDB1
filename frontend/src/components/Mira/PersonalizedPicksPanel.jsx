@@ -734,21 +734,38 @@ const PersonalizedPicksPanel = ({
   const scrollRef = useRef(null);
   const undoTimeoutRef = useRef(null);
   
-  // AUTO PILLAR SWITCH: When enginePillar changes, switch to it ONLY on initial load
-  // DO NOT override user's manual tab selection!
-  const [userHasSelectedPillar, setUserHasSelectedPillar] = useState(false);
+  // ══════════════════════════════════════════════════════════════════════════════
+  // PILLAR STATE MANAGEMENT (CRITICAL - DO NOT MODIFY WITHOUT READING BIBLE)
+  // 
+  // The user's tab click MUST ALWAYS take precedence over the engine pillar.
+  // Use a ref to track user selection - refs persist across re-renders and don't 
+  // cause stale closure issues like useState can in effects.
+  // ══════════════════════════════════════════════════════════════════════════════
+  const userSelectedPillarRef = useRef(false);
   
+  // Reset user selection tracking when panel closes
   useEffect(() => {
-    // Only auto-switch if user hasn't manually selected a pillar yet
-    if (enginePillar && enginePillar !== 'general' && !userHasSelectedPillar) {
-      console.log(`[PICKS PANEL] Initial pillar from engine: ${enginePillar}`);
+    if (!isOpen) {
+      userSelectedPillarRef.current = false;
+    }
+  }, [isOpen]);
+  
+  // AUTO PILLAR SWITCH: When enginePillar changes, switch ONLY if user hasn't selected a tab
+  useEffect(() => {
+    // Only auto-switch if:
+    // 1. Panel is open
+    // 2. User hasn't manually selected a pillar in this session
+    // 3. Engine pillar is valid
+    if (isOpen && !userSelectedPillarRef.current && enginePillar && enginePillar !== 'general') {
+      console.log(`[PICKS PANEL] Auto-switching to engine pillar: ${enginePillar}`);
       setActivePillar(enginePillar);
     }
-  }, [enginePillar]); // Removed activePillar from deps to prevent fighting
+  }, [isOpen, enginePillar]);
   
-  // Track when user manually selects a pillar
+  // Track when user manually selects a pillar - this LOCKS the pillar for this session
   const handlePillarSelect = (pillarId) => {
-    setUserHasSelectedPillar(true);
+    console.log(`[PICKS PANEL] User clicked pillar tab: ${pillarId} (locking)`);
+    userSelectedPillarRef.current = true; // Use ref for immediate effect
     setActivePillar(pillarId);
     setShowAllCatalogue(false);
     setShowAllConcierge(false);
