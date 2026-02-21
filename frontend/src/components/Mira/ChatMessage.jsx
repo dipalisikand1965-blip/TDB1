@@ -1048,7 +1048,18 @@ const MiraMessageBody = ({
         !r.label?.toLowerCase().includes('view in services')
       );
   
-  const quickReplies = filteredContractReplies;
+  // CRITICAL FIX: Use contextual replies when they exist, otherwise use filtered contract replies
+  // This ensures Mira's question-specific chips (e.g., "Everyday training treats") are shown
+  const quickReplies = contextualReplies.length > 0 
+    ? contextualReplies.map(r => ({
+        id: `qr-ctx-${Math.random().toString(36).substr(2, 9)}`,
+        label: typeof r === 'string' ? r : r.label || r.text,
+        payload_text: typeof r === 'string' ? r : (r.payload_text || r.value || r.label || r.text),
+        intent_type: 'contextual_reply',
+        action: 'none',
+        action_args: {}
+      }))
+    : filteredContractReplies;
   const contractMode = conversationContract.mode || 'answer';
   
   // Check if message has context that warrants showing picks hint
