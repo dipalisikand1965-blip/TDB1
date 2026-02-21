@@ -11164,17 +11164,6 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
             "Mix of both"
         ]
     
-    # ═══════════════════════════════════════════════════════════════════════════
-    # PATTERN 1.5: Treat Usage Questions (BEFORE allergy check!)
-    # When Mira asks "Training or Chew/Snack?" - this must match FIRST
-    # ═══════════════════════════════════════════════════════════════════════════
-    elif any(term in response_lower for term in ["training/rewards", "training or", "chew/snack", "snack time", "training treats", "reward treats", "for training"]):
-        quick_replies = [
-            "Training/rewards",
-            "Chew/snack time",
-            "Both"
-        ]
-    
     elif any(term in response_lower for term in ["how many times", "feeding schedule", "how often", "meals per day"]):
         quick_replies = [
             "2 meals a day",
