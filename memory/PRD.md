@@ -70,7 +70,7 @@ sudo supervisorctl restart frontend
 
 | Environment | REACT_APP_BACKEND_URL |
 |-------------|----------------------|
-| Preview (Emergent) | https://pet-onboarding.preview.emergentagent.com |
+| Preview (Emergent) | https://premium-pet-platform.preview.emergentagent.com |
 | **Production** | **https://thedoggycompany.in** ← ALWAYS SET THIS BEFORE DEPLOY |
 
 **YOUR WORK IS NOT GONE** - it's just pointing to the wrong backend URL!

@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://pet-onboarding.preview.emergentagent.com
+https://premium-pet-platform.preview.emergentagent.com
 
 ---
 
