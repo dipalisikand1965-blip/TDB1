@@ -738,21 +738,22 @@ const ShopPage = () => {
   const filteredProducts = useMemo(() => {
     let result = allProducts;
     
-    // "For You" / "recommended" - Personalize based on pet OR show popular products
+    // "For You" / "recommended" - Personalize based on pet OR show ALL products when no pet
     if (selectedPillar === 'recommended') {
       if (!selectedPet) {
-        // No pet selected - show popular/featured products (celebrate pillar items are great gifts)
-        result = result.filter(p => 
-          p.pillar === 'celebrate' || 
-          p.primary_pillar === 'celebrate' || 
-          p.pillars?.includes('celebrate') ||
-          p.pillar === 'dine' ||
-          p.primary_pillar === 'dine'
-        ).slice(0, 50);
-        // If still no products, show first 50 of all
-        if (result.length === 0) {
-          result = allProducts.slice(0, 50);
-        }
+        // No pet selected - show ALL products sorted by category diversity
+        // Prioritize celebrate/dine categories at the top, but include everything
+        result = [...allProducts].sort((a, b) => {
+          const catA = (a.category || '').toLowerCase();
+          const catB = (b.category || '').toLowerCase();
+          // Boost cakes, treats, toys to the top
+          const priorityCats = ['cakes', 'treats', 'toys', 'dognuts', 'birthday', 'party'];
+          const aIsPriority = priorityCats.some(c => catA.includes(c));
+          const bIsPriority = priorityCats.some(c => catB.includes(c));
+          if (aIsPriority && !bIsPriority) return -1;
+          if (!aIsPriority && bIsPriority) return 1;
+          return 0;
+        });
       } else {
       const petBreedLower = (selectedPet.breed || '').toLowerCase();
       const petSize = selectedPet.size?.toLowerCase() || '';
