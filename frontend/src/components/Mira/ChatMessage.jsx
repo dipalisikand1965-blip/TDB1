@@ -1036,14 +1036,16 @@ const MiraMessageBody = ({
   
   // CRITICAL: Check for contextual quick_replies FIRST - these are conversational
   // Only fall back to conversation_contract.quick_replies (navigational) if no contextual ones exist
-  const contextualReplies = msg.data?.quick_replies || msg.data?.response?.quick_replies || [];
-  const contractReplies = conversationContract.quick_replies || [];
+  const contextualReplies = Array.isArray(msg.data?.quick_replies) ? msg.data.quick_replies 
+    : Array.isArray(msg.data?.response?.quick_replies) ? msg.data.response.quick_replies 
+    : [];
+  const contractReplies = Array.isArray(conversationContract.quick_replies) ? conversationContract.quick_replies : [];
   
   // Filter contract replies to remove purely navigational actions when contextual ones exist
   const filteredContractReplies = contextualReplies.length > 0 
     ? [] // Don't show contract replies when we have contextual ones
     : contractReplies.filter(r => 
-        r.intent_type !== 'open_services' && 
+        r && r.intent_type !== 'open_services' && 
         r.action !== 'open_layer' &&
         !r.label?.toLowerCase().includes('view in services')
       );
