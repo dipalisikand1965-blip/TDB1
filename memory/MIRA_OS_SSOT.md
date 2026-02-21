@@ -382,6 +382,33 @@ Auth: Bearer <admin-token>
 
 ---
 
+## Debug & Testing Tools
+
+### Debug Drawer (Proof Panel)
+**URL**: Add `?debug=1` to any mira-demo URL
+**Example**: `https://thedoggycompany.com/mira-demo?debug=1`
+
+Shows:
+- Raw API counts for each OS layer
+- Icon state computations (OFF/ON/PULSE)
+- Client vs Server state comparison
+- Data flow verification
+
+### What Mira Learned (MOJO Tab)
+Located in the MOJO profile modal, shows:
+- **learned_facts array**: Facts extracted from conversations
+- **conversation_insights**: Pending insights awaiting user confirmation
+- **ticket_learnings**: Data extracted from resolved service requests
+
+### Document Vault
+**Location**: Paperwork pillar page
+**Components**: 
+- `PaperworkPage.jsx` - Main page
+- `DocumentsTab.jsx` - Documents listing
+- `PaperworkManager.jsx` - Admin CRUD
+
+---
+
 ## Testing Credentials
 
 ### Member Account
