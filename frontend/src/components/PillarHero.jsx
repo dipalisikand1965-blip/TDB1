@@ -251,9 +251,9 @@ const PillarHero = ({
         }
       `}</style>
       
-      {/* Floating decorations */}
-      <div className="absolute top-6 sm:top-10 left-4 sm:left-10 text-3xl sm:text-4xl animate-bounce opacity-50">🎈</div>
-      <div className="absolute top-12 sm:top-20 right-4 sm:right-20 text-2xl sm:text-3xl animate-pulse opacity-50">🎉</div>
+      {/* Floating decorations - Enhanced with subtle movement */}
+      <div className="absolute top-6 sm:top-10 left-4 sm:left-10 text-3xl sm:text-4xl animate-bounce opacity-50" style={{ animationDuration: '3s' }}>🎈</div>
+      <div className="absolute top-12 sm:top-20 right-4 sm:right-20 text-2xl sm:text-3xl animate-pulse opacity-50" style={{ animationDuration: '2s' }}>🎉</div>
       
       <div className="relative max-w-6xl mx-auto px-4 py-8 sm:py-12 lg:py-16">
         <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-10">
