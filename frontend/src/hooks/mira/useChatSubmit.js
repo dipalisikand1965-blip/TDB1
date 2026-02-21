@@ -415,11 +415,11 @@ const useChatSubmit = (config) => {
         }
       }
       
-      // Extract contextual quick replies
+      // Extract contextual quick replies - handle both response formats
       const quickReplies = extractQuickReplies(data);
       
       // Check if Mira's response has a new clarifying question
-      let miraStepId = data.response?.step_id || detectStepId(miraResponseText);
+      let miraStepId = (typeof data.response === 'object' ? data.response?.step_id : null) || detectStepId(miraResponseText);
       
       if (miraStepId) {
         console.log('[STEP] Detected step_id:', miraStepId);
@@ -442,7 +442,9 @@ const useChatSubmit = (config) => {
       }
       
       // MIRA DOCTRINE: Show products when AI decides they're relevant
-      let shouldShowProducts = data.response?.products?.length > 0;
+      // Handle both response formats
+      const products = data.products || (typeof data.response === 'object' ? data.response?.products : null) || [];
+      let shouldShowProducts = products.length > 0;
       
       // COMFORT MODE - Be the Great Mother, not a salesman
       const inComfortMode = isComfortMode(inputQuery, conversationHistory);
