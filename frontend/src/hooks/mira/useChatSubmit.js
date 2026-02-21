@@ -1256,7 +1256,7 @@ const useChatSubmit = (config) => {
     MAX_CLARIFYING_QUESTIONS, miraPicks, hapticFeedback, notificationSounds, createOrAttachTicket,
     routeIntent, fetchConversationMemory, fetchMoodContext, saveConversationMemory,
     fetchTrainingVideos, fetchTravelHotels, fetchTravelAttractions, setQuery, setConversationHistory,
-    setIsProcessing, setShowSkeleton, setMiraMode, setCurrentTicket, setCurrentStep,
+    isProcessing, setIsProcessing, setShowSkeleton, setMiraMode, setCurrentTicket, setCurrentStep,
     setClarifyingQuestionCount, setQuickReplies, setMiraPicks, setActiveVaultData, setVaultUserMessage,
     setShowVault, setShowTopPicksPanel, setShowInsightsPanel, setLastShownProducts, setLastSearchContext,
     setActiveMemoryContext, setSoulScoreUpdated, setPet, setProactiveAlerts, setShowConversationEndBanner,
