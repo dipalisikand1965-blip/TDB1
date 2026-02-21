@@ -61,6 +61,13 @@ const webpackConfig = {
         ],
       };
 
+      // Disable CSS minification to avoid cssnano regex issues
+      if (webpackConfig.optimization && webpackConfig.optimization.minimizer) {
+        webpackConfig.optimization.minimizer = webpackConfig.optimization.minimizer.filter(
+          (plugin) => plugin.constructor.name !== 'CssMinimizerPlugin'
+        );
+      }
+
       // Add health check plugin to webpack if enabled
       if (config.enableHealthCheck && healthPluginInstance) {
         webpackConfig.plugins.push(healthPluginInstance);
