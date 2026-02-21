@@ -660,6 +660,71 @@ const TodayPanel = ({
     };
   }, [isOpen, pet?.id, apiUrl, token]);
   
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FETCH TODAY DATA FROM API (Tickets, Tasks, Active Requests)
+  // This supplements the local pet profile calculations (vaccinations, grooming)
+  // ═══════════════════════════════════════════════════════════════════════════
+  
+  const [apiTodayData, setApiTodayData] = useState({ items: [], summary: {} });
+  const [isLoadingApi, setIsLoadingApi] = useState(false);
+  
+  useEffect(() => {
+    const abortController = new AbortController();
+    
+    const fetchTodayData = async () => {
+      if (!isOpen || !pet?.id) return;
+      
+      // Skip for demo pets
+      const isDemoPet = pet.id === 'demo-pet' || pet.id === 'demo';
+      if (isDemoPet) return;
+      
+      setIsLoadingApi(true);
+      
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        
+        const url = `${apiUrl}/api/mira/today/${encodeURIComponent(pet.id)}`;
+        console.log('[TODAY] Fetching today data from API:', url);
+        
+        const response = await fetch(url, { 
+          headers,
+          signal: abortController.signal 
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('[TODAY] API data received:', {
+            items: data.items?.length || 0,
+            urgent: data.summary?.urgent_count || 0,
+            awaiting: data.summary?.awaiting_count || 0
+          });
+          setApiTodayData({
+            items: data.items || [],
+            summary: data.summary || {}
+          });
+          setLastUpdated(new Date());
+        } else {
+          console.log('[TODAY] API request failed:', response.status);
+        }
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          console.log('[TODAY] API fetch aborted');
+        } else {
+          console.error('[TODAY] Error fetching today data:', err.message);
+        }
+      } finally {
+        setIsLoadingApi(false);
+      }
+    };
+    
+    fetchTodayData();
+    
+    return () => {
+      abortController.abort();
+    };
+  }, [isOpen, pet?.id, apiUrl, token]);
+  
   // Handler for Learn nudge primary action (Let Mira do it → Services)
   const handleLearnNudgePrimary = (nudge) => {
     if (onOpenServices && nudge.primary_cta) {
