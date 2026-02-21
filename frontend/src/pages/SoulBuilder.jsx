@@ -1586,7 +1586,6 @@ const SoulBuilder = () => {
           <div className="space-y-3">
             <button
               onClick={async () => {
-                // Save all answers before navigating
                 await saveSoulAnswers(answers);
                 navigate('/mira-demo');
               }}
@@ -1595,6 +1594,29 @@ const SoulBuilder = () => {
             >
               Go to Today
             </button>
+            
+            {/* Add another pet */}
+            <button
+              onClick={async () => {
+                await saveSoulAnswers(answers);
+                // Reset state for a new pet
+                setPetName('');
+                setPetPhoto(null);
+                setPetPhotoPreview(null);
+                setDetectedBreed('');
+                setPetData({ breed: '', gender: '', birth_date: '', gotcha_date: '', is_neutered: null, approximate_age: '' });
+                setCurrentChapter(0);
+                setCurrentQuestion(0);
+                setAnswers({});
+                setMiraKnows([]);
+                setScreen('pet-hook');
+              }}
+              className="w-full py-3 px-6 border-2 border-purple-500/50 text-purple-300 font-medium rounded-full hover:bg-purple-500/10 transition-colors"
+              data-testid="add-another-pet-btn"
+            >
+              + Add Another Pet's Soul Profile
+            </button>
+            
             <div className="flex gap-3">
               <button
                 onClick={() => navigate('/dashboard')}
