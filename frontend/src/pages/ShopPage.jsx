@@ -565,8 +565,8 @@ const ProductCard = ({ product, petName, breed, isPetPick, index }) => {
       onMouseLeave={() => setIsHovered(false)}
       data-testid={`product-card-${product.id}`}
     >
-      {/* Image */}
-      <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+      {/* Image - Mobile: taller (4/5), Desktop: square */}
+      <div className="relative aspect-[4/5] sm:aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
         <img
           src={image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400'}
           alt={title}
