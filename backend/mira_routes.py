@@ -11591,12 +11591,12 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
         # IMPROVED: Better regex to extract choices from "Would you like X or Y?" patterns
         # Handles: "sweet-style (description) or savoury-style (description)?"
         patterns = [
-            # Pattern 1: "Would you like X or Y?"
-            r'(?:would you like|do you want|prefer|would you prefer)\s*(?:the\s+)?(?:cake\s+to\s+be\s+)?(?:more\s+)?[:\s]*([a-z\-]+(?:\s*\([^)]+\))?)\s+or\s+([a-z\-]+(?:\s*\([^)]+\))?)',
-            # Pattern 2: Simple "X or Y?" at end of sentence
-            r':\s*([a-z\-]+(?:\s*\([^)]+\))?)\s+or\s+([a-z\-]+(?:\s*\([^)]+\))?)\s*\?',
-            # Pattern 3: "more X or more Y?"
-            r'more\s+([a-z\-]+)\s+or\s+(?:more\s+)?([a-z\-]+)',
+            # Pattern 1: "Would you like X or Y?" - multi-word support
+            r'(?:would you like|do you want|prefer|would you prefer)\s+(?:it\s+)?(?:to\s+be\s+)?(?:at\s+)?(?:the\s+)?([a-z\-\s]+?)\s+or\s+(?:at\s+)?(?:the\s+)?([a-z\-\s]+?)\s*\?',
+            # Pattern 2: "Do you prefer X or Y?" - capture phrases not just words
+            r'(?:do you prefer|would you prefer)\s+([^?]+?)\s+or\s+([^?]+?)\s*\?',
+            # Pattern 3: Style choices with parenthetical descriptions
+            r'(?:more\s*)?:?\s*([a-z\-]+(?:\s*\([^)]+\))?)\s+or\s+([a-z\-]+(?:\s*\([^)]+\))?)\s*\?',
         ]
         
         for pattern in patterns:
@@ -11605,9 +11605,15 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
                 choice1 = or_match.group(1).strip()
                 choice2 = or_match.group(2).strip()
                 
-                # Clean up choices - remove parenthetical descriptions for labels but keep for payload
+                # Clean up choices - remove parenthetical descriptions for labels
                 choice1_label = re.sub(r'\s*\([^)]+\)', '', choice1).strip().title()
                 choice2_label = re.sub(r'\s*\([^)]+\)', '', choice2).strip().title()
+                
+                # Skip if choices are too short or same
+                if len(choice1_label) < 2 or len(choice2_label) < 2:
+                    continue
+                if choice1_label.lower() == choice2_label.lower():
+                    continue
                 
                 quick_replies = [
                     build_quick_reply_chip(choice1_label, f"I'd like {choice1_label}.", "refine", domain="general"),
