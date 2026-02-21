@@ -293,16 +293,21 @@ const useChatSubmit = (config) => {
         await syncToServiceDesk(currentTicket.id, userMessage);
       }
       
-      // STEP 3: Get Mira's response
-      const response = await fetch(`${API_URL}/api/mira/os/understand-with-products`, {
+      // STEP 3: Get Mira's response - Using /api/mira/chat for beautiful structured responses
+      // This is the same endpoint as MiraOSModal (BETA widget) for consistent experience
+      const response = await fetch(`${API_URL}/api/mira/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token && { Authorization: `Bearer ${token}` })
         },
         body: JSON.stringify({
-          input: inputQuery,
-          pet_id: pet.id,
+          message: inputQuery,
+          session_id: sessionId,
+          source: 'mira_demo',
+          current_pillar: pillar || 'mira-demo',
+          selected_pet_id: pet.id,
+          // FULL PET CONTEXT - Critical for personalization!
           pet_context: {
             // Core identity
             id: pet.id,
@@ -312,6 +317,7 @@ const useChatSubmit = (config) => {
             weight: pet.weight || pet.identity?.weight,
             birthday: pet.birthday || pet.identity?.birthday,
             gender: pet.gender || pet.identity?.gender,
+            species: pet.species || 'dog',
             
             // Health & Allergies - CRITICAL for personalization
             allergies: pet.allergies || pet.health?.allergies || [],
@@ -324,36 +330,29 @@ const useChatSubmit = (config) => {
             favorite_treats: pet.favorite_treats || pet.preferences?.favorite_treats || [],
             dietary_restrictions: pet.dietary_restrictions || pet.food_preferences?.restrictions || [],
             
-            // Personality & Behavior
+            // Personality & Behavior - For that personal touch
             personality: pet.personality || pet.behavior?.personality,
             traits: pet.traits || [],
             activity_level: pet.activity_level || pet.behavior?.activity_level,
             temperament: pet.temperament || pet.behavior?.temperament,
             
-            // Soul data
+            // Soul data - The heart of personalization
             soul_score: pet.soul_score || pet.soulScore,
             soul_data: pet.soul_data || pet.soulData || {},
+            doggy_soul_answers: pet.doggy_soul_answers || {},
             
             // Location
             city: pet?.city || pet?.location?.city || userCity || 'Mumbai',
             location: { city: pet?.city || pet?.location?.city || userCity || 'Mumbai' }
           },
-          page_context: 'mira-demo',
-          session_id: sessionId,
-          include_products: true,
-          pillar: pillar,
-          conversation_stage: conversationStage,
+          pet_name: pet.name,
+          pet_breed: pet.breed || pet.identity?.breed,
+          // Additional context for enhanced responses
           ticket_id: ticketId,
-          completed_steps: completedSteps,
-          step_history: stepHistory.map(s => ({ step_id: s.step_id, answer: s.answer })),
           conversation_history: conversationHistory.slice(-10).map(m => ({
             role: m.type === 'user' ? 'user' : 'assistant',
             content: m.content
-          })),
-          user_asking_for_more_info: askingForMoreInfo,
-          current_step: currentStep?.step_id || null,
-          last_shown_items: lastShownProducts,
-          last_search_context: lastSearchContext
+          }))
         })
       });
       
