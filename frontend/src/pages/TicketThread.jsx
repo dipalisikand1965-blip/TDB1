@@ -278,7 +278,7 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
     }
   }, [messages, highlightEventId]);
 
-  // Fetch ticket data
+  // Fetch ticket data - tries multiple endpoints for robustness
   const fetchTicket = useCallback(async () => {
     if (!ticketId) return;
     
@@ -286,24 +286,35 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
     setError(null);
     
     try {
-      // Try mira_tickets endpoint first (most common)
-      let response = await fetch(`${API_URL}/api/mira/tickets/${ticketId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        }
-      });
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` })
+      };
       
-      if (!response.ok) {
-        response = await fetch(`${API_URL}/api/service_desk/ticket/${ticketId}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { 'Authorization': `Bearer ${token}` })
+      // Try endpoints in order of most likely to succeed
+      const endpoints = [
+        `${API_URL}/api/mira/tickets/${ticketId}`,      // Mira tickets (most common)
+        `${API_URL}/api/tickets/${ticketId}`,           // Unified tickets endpoint
+        `${API_URL}/api/service_desk/ticket/${ticketId}` // Service desk tickets
+      ];
+      
+      let response = null;
+      let lastError = null;
+      
+      for (const endpoint of endpoints) {
+        try {
+          response = await fetch(endpoint, { headers });
+          if (response.ok) {
+            console.log(`[TicketThread] Found ticket at: ${endpoint}`);
+            break;
           }
-        });
+        } catch (err) {
+          lastError = err;
+          console.log(`[TicketThread] Endpoint failed: ${endpoint}`, err);
+        }
       }
       
-      if (!response.ok) {
+      if (!response || !response.ok) {
         throw new Error('Ticket not found');
       }
       
