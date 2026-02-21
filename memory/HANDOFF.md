@@ -7,73 +7,63 @@
 ## 🎯 WHAT WAS ACCOMPLISHED
 
 ### ✅ P0 - Quick Replies Fix (COMPLETE)
-- **Issue**: Quick replies showed generic "View in Services", "Add one detail" instead of contextual "Stick with kibble", "Add home-cooked"
-- **Root Cause**: `ChatMessage.jsx` and `useChatSubmit.js` prioritized `conversation_contract.quick_replies` over contextual `quick_replies`
-- **Fix Applied**: Changed priority order in 3 files to use contextual replies first
-- **Verified**: Testing agent confirmed 100% pass
+- **Issue 1**: Quick replies showed generic "View in Services" instead of contextual "Stick with kibble"
+- **Fix**: Changed priority order in 3 frontend files to use contextual replies first
+- **Issue 2**: Quick replies showed "No allergies for Lola" when Mira asked about training vs snacks
+- **Root Cause**: Backend pattern matching too broad - "lamb allergy" mention triggered allergy chips
+- **Fix**: Added "training/rewards" pattern BEFORE allergy pattern in `mira_routes.py` line 11155-11162
+- **Verified**: Now shows "Training/rewards", "Chew/snack time", "Both"
+
+### ✅ P0 - Voice Error Fix (COMPLETE)
+- **Issue**: `setVoiceError is not defined` - clicking voice button crashed the app
+- **Root Cause**: `setVoiceError` used in MiraDemoPage but not exported from useVoice hook
+- **Fix**: Added `setVoiceError` to exports in `useVoice.js` and import in `MiraDemoPage.jsx`
+- **Verified**: Voice button works without error
 
 ### ✅ P1 - Soul Score Fix (COMPLETE)
 - **Issue**: Dashboard showed 56% instead of actual 62%
-- **Root Cause**: `/api/pets/my-pets` recalculated score instead of using stored value
-- **Fix Applied**: Use `max(stored_score, calculated_score)` to preserve conversation-based growth
+- **Fix**: Backend uses `max(stored_score, calculated_score)` to preserve conversation growth
 - **Verified**: API now returns correct 62%
 
 ### ✅ Allergy Merging Fix (COMPLETE)
 - **Issue**: Backend only loaded `preferences.allergies`, missing `doggy_soul_answers.allergies`
-- **Root Cause**: Single source for allergies in server.py
-- **Fix Applied**: Merge from preferences + doggy_soul_answers + root level
+- **Fix**: Merge from all 3 sources in `server.py` lines 2918-2945
 - **Verified**: Lola's beef, corn, Dairy allergies now all loaded
-
-### ✅ Comprehensive Audit (COMPLETE)
-- Ran full audit against all MIRA Bibles
-- **Result**: 95% backend / 100% frontend compliance
-- **Key Bibles Checked**: MIRA_BIBLE, MIRA_DOCTRINE, MIRA_CONVERSATION_RULES, MIRA_VOICE_RULES, PROFILE_FIRST_DOCTRINE
 
 ---
 
 ## 📋 REMAINING TASKS (Priority Order)
 
-### P1 - Voice Testing
-Voice integration works but needs thorough testing:
-- Verify voice stops on tile click
-- Verify voice stops when user starts typing
-- Verify no voice overlap on rapid tile clicks
-- Test ElevenLabs → OpenAI fallback
+### P1 - Picks Contextuality
+- Picks panel sometimes shows items from previous context (Travel items for Treats query)
+- Needs investigation in frontend `miraPicks` state management
 
-### P2 - Soul Builder Completion
-`/app/frontend/src/pages/SoulBuilder.jsx` is incomplete:
-- Build backend endpoints for saving progress
-- Implement "Save & finish later" feature
-- Integrate with main onboarding flow
+### P2 - Voice Testing
+- Voice works but needs comprehensive testing per MIRA_VOICE_RULES
+- Verify voice stops on tile click, no overlap on rapid clicks
 
-### P3 - Mira Component Unification
-Consolidate three Mira implementations into one:
-- `MiraDemoPage.jsx` (main)
-- `MiraOSModal.jsx` (BETA widget)
-- `MiraChatWidget.jsx` (legacy FAB)
+### P2 - MongoDB Sync
+- Preview uses local MongoDB, production uses Atlas cluster
+- Network restriction prevents direct connection from preview
+- Solution: Click "Replace deployment" to sync code + DB
 
-### Future
-- Apply `/celebrate-new` template to all pillar pages
-- Implement read receipts for messages
-- Refactor `server.py` monolith
+### P3 - Soul Builder Completion
+- `/app/frontend/src/pages/SoulBuilder.jsx` is incomplete
 
 ---
 
 ## 🔑 CRITICAL INFO
 
+### Files Changed This Session
+- `/app/frontend/src/hooks/mira/useVoice.js` - Added setVoiceError export
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - Import setVoiceError
+- `/app/frontend/src/components/Mira/ChatMessage.jsx` - Fixed contextual reply priority
+- `/app/backend/mira_routes.py` - Added training/rewards pattern before allergy pattern
+- `/app/backend/server.py` - Allergy merging, soul score max()
+
 ### Test Credentials
 - **User**: `dipali@clubconcierge.in` / `test123`
 - **Admin**: `aditya` / `lola4304`
-
-### Key Files
-- **Chat Logic**: `/app/frontend/src/hooks/mira/useChatSubmit.js`
-- **Main UI**: `/app/frontend/src/pages/MiraDemoPage.jsx`
-- **Backend Chat**: `/app/backend/server.py` (lines 2700-3200)
-
-### Bible Locations
-- `/app/memory/MIRA_BIBLE.md` - Core principles
-- `/app/memory/MIRA_DOCTRINE.md` - Voice, tone, behavior
-- `/app/memory/BIBLE_INDEX.md` - All bibles indexed
 
 ### URLs
 - **Preview**: `https://doggy-soul-app.preview.emergentagent.com`
@@ -81,31 +71,13 @@ Consolidate three Mira implementations into one:
 
 ---
 
-## ⚠️ DO NOT BREAK
+## ⚠️ DO NOT BREAK THESE
 
-1. **Quick Replies**: Contextual replies work - don't revert priority order
-2. **Soul Score**: Using max() for score - don't change calculation logic
-3. **Allergy Merging**: Three sources merged - don't remove any
-4. **Voice Hooks**: `voiceTimeoutRef`, `skipNextVoice()` - critical for voice sync
-
----
-
-## 📁 CONTEXT FILES CREATED
-
-- `/app/memory/PRD.md` - Product requirements
-- `/app/memory/CONTEXT.md` - Technical context
-- `/app/memory/HANDOFF.md` - This file
-
----
-
-## 🧪 VERIFICATION BEFORE DEPLOY
-
-Before clicking "Replace deployment":
-1. Log in as test user
-2. Send food query → Verify allergies mentioned
-3. Check quick replies → Should be contextual
-4. Check soul score → Should show 62%
-5. Toggle voice → Should work without errors
+1. **Quick Reply Priority**: Contextual > Contract (changed in 3 files)
+2. **Training Pattern**: Must come BEFORE allergy pattern in mira_routes.py
+3. **Voice Error Handling**: setVoiceError must be exported from useVoice
+4. **Soul Score**: Uses max(stored, calculated)
+5. **Allergy Merging**: All 3 sources merged
 
 ---
 
