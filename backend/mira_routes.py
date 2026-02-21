@@ -11163,37 +11163,40 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
     pet_ref = pet_name or "your pet"
     
     # ═══════════════════════════════════════════════════════════════════════════
-    # PATTERN 1: Food/Diet Questions
+    # PATTERN 1: Food/Diet Questions (BIBLE Section 11.3.6 - Dine Pillar)
     # ═══════════════════════════════════════════════════════════════════════════
     
     # HIGHEST PRIORITY: Training vs Chew/Occupy patterns (must be checked FIRST)
-    # These are the most specific patterns for treat usage questions
     if any(term in response_lower for term in ["training & frequent rewards", "training/rewards", "training or chew", "chew/occupy", "chew/snack", "snack time", "occupy time", "frequent rewards", "training treats", "reward treats"]):
         quick_replies = [
-            "Training/rewards",
-            "Chew/occupy time",
-            "Both"
+            build_quick_reply_chip("Training/rewards", f"I want training/reward treats for {pet_ref}.", "refine", domain="dine"),
+            build_quick_reply_chip("Chew/occupy time", f"I want chew or occupy treats for {pet_ref}.", "refine", domain="dine"),
+            build_quick_reply_chip("Both", f"I want both training and chew treats for {pet_ref}.", "refine", domain="dine"),
+            build_quick_reply_chip("Something else", "Something else.", "continue", domain="dine")
         ]
     
     elif any(term in response_lower for term in ["everyday meals", "regular meals", "treats/snacks", "treats or snacks", "occasional treats"]):
         quick_replies = [
-            f"Regular meals for {pet_ref}",
-            "Treats & snacks",
-            "Both - meals and treats"
+            build_quick_reply_chip(f"Regular meals", f"I'm looking for regular meals for {pet_ref}.", "refine", domain="dine"),
+            build_quick_reply_chip("Treats & snacks", f"I'm looking for treats and snacks for {pet_ref}.", "refine", domain="dine"),
+            build_quick_reply_chip("Both", f"I want both meals and treats for {pet_ref}.", "refine", domain="dine"),
+            build_quick_reply_chip("Something else", "Something else.", "continue", domain="dine")
         ]
     
     elif any(term in response_lower for term in ["kibble", "dry food", "home-cooked", "homemade", "wet food"]):
         quick_replies = [
-            "Stick with kibble",
-            "Add home-cooked",
-            "Mix of both"
+            build_quick_reply_chip("Stick with kibble", "I want to stick with kibble.", "refine", domain="dine"),
+            build_quick_reply_chip("Add home-cooked", "I want to add home-cooked food.", "refine", domain="dine"),
+            build_quick_reply_chip("Mix of both", "I want a mix of both.", "refine", domain="dine"),
+            build_quick_reply_chip("Something else", "Something else.", "continue", domain="dine")
         ]
     
     elif any(term in response_lower for term in ["how many times", "feeding schedule", "how often", "meals per day"]):
         quick_replies = [
-            "2 meals a day",
-            "3 meals a day", 
-            "Free feeding"
+            build_quick_reply_chip("2 meals a day", "2 meals a day.", "refine", domain="dine"),
+            build_quick_reply_chip("3 meals a day", "3 meals a day.", "refine", domain="dine"),
+            build_quick_reply_chip("Free feeding", "Free feeding throughout the day.", "refine", domain="dine"),
+            build_quick_reply_chip("Something else", "Something else.", "continue", domain="dine")
         ]
     
     # ═══════════════════════════════════════════════════════════════════════════
