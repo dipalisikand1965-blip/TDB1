@@ -6592,7 +6592,9 @@ Would you like me to find vets or pet pharmacies near you, or shall I have your 
         response_data["missing_profile_fields"] = picks_engine_data.get("missing_profile_fields", [])
         if picks_engine_data.get("pillar") and picks_engine_data["pillar"] != "advisory":
             response_data["pillar"] = picks_engine_data["pillar"]
-        # Keep the conversation-context pillar for follow-ups (don't let picks override to "advisory")
+        # Ensure pillar is never None - fall back to current_pillar from conversation context
+        if not response_data.get("pillar") or response_data.get("pillar") == "advisory":
+            response_data["pillar"] = current_pillar or "care"
         
         # ═══════════════════════════════════════════════════════════════════════════
         # ADD INTENT-DRIVEN DYNAMIC CARDS TO RESPONSE
