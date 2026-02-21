@@ -25,17 +25,37 @@ import {
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL || '';
 
-// Service-specific configs
+// Service-specific configs - Expanded to match backend timely services
 const SERVICE_CONFIGS = {
   grooming: {
     title: 'Book Grooming',
     subtitle: 'Bath, haircut, nail trim & more',
     presets: ['Full grooming', 'Bath only', 'Nail trim', 'Hair styling'],
   },
+  spa: {
+    title: 'Book Spa Service',
+    subtitle: 'Relaxation & pampering',
+    presets: ['Full spa day', 'Bath & massage', 'Coat conditioning', 'Skin treatment'],
+  },
+  bath: {
+    title: 'Book Bath',
+    subtitle: 'Professional bath service',
+    presets: ['Basic bath', 'Medicated bath', 'Flea treatment bath', 'De-shedding treatment'],
+  },
   training: {
     title: 'Book Training',
     subtitle: 'Behaviour & obedience sessions',
     presets: ['Basic obedience', 'Puppy training', 'Behaviour correction', 'Agility'],
+  },
+  obedience: {
+    title: 'Book Obedience Training',
+    subtitle: 'Basic commands & discipline',
+    presets: ['Basic commands', 'Leash training', 'House training', 'Recall training'],
+  },
+  'puppy-training': {
+    title: 'Book Puppy Training',
+    subtitle: 'Foundation training for puppies',
+    presets: ['Socialization', 'Basic commands', 'Potty training', 'Bite inhibition'],
   },
   boarding: {
     title: 'Book Boarding',
@@ -43,10 +63,70 @@ const SERVICE_CONFIGS = {
     presets: ['Day boarding', 'Overnight stay', 'Extended stay'],
     hasDateRange: true,
   },
+  daycare: {
+    title: 'Book Daycare',
+    subtitle: 'Daytime care & socialization',
+    presets: ['Half day', 'Full day', 'Weekly package'],
+  },
+  'pet-sitting': {
+    title: 'Book Pet Sitting',
+    subtitle: 'In-home care for your pet',
+    presets: ['Drop-in visit', 'Half day sitting', 'Full day sitting'],
+  },
+  // Health & Vet services - Match backend timely_services
+  'vet-consult': {
+    title: 'Book Vet Consultation',
+    subtitle: 'Professional veterinary advice',
+    presets: ['Health concern', 'Second opinion', 'Follow-up visit', 'New symptom'],
+    hasUrgency: true,
+  },
+  'health-checkup': {
+    title: 'Book Health Checkup',
+    subtitle: 'Comprehensive health assessment',
+    presets: ['Annual checkup', 'Senior wellness', 'Puppy checkup', 'General wellness'],
+    hasUrgency: true,
+  },
+  vaccination: {
+    title: 'Book Vaccination',
+    subtitle: 'Essential immunizations',
+    presets: ['Rabies vaccine', 'DHPP vaccine', 'Bordetella', 'Annual boosters'],
+    hasUrgency: true,
+  },
+  wellness: {
+    title: 'Book Wellness Check',
+    subtitle: 'Preventive health care',
+    presets: ['Routine wellness', 'Weight management', 'Nutritional consult', 'Skin check'],
+    hasUrgency: true,
+  },
+  'dental-care': {
+    title: 'Book Dental Care',
+    subtitle: 'Oral health services',
+    presets: ['Dental cleaning', 'Dental checkup', 'Tooth extraction', 'Bad breath treatment'],
+    hasUrgency: true,
+  },
+  'lab-tests': {
+    title: 'Book Lab Tests',
+    subtitle: 'Diagnostic testing',
+    presets: ['Blood work', 'Urinalysis', 'Fecal test', 'Allergy testing'],
+    hasUrgency: true,
+  },
   vet_visit: {
     title: 'Book Vet Visit',
     subtitle: 'Health check & medical care',
     presets: ['Routine checkup', 'Vaccination', 'Dental care', 'Health concern'],
+    hasUrgency: true,
+  },
+  // Emergency services
+  'emergency-vet': {
+    title: 'Emergency Vet',
+    subtitle: 'Urgent medical attention',
+    presets: ['Emergency visit', 'After-hours care', 'Critical care'],
+    hasUrgency: true,
+  },
+  'urgent-care': {
+    title: 'Urgent Care',
+    subtitle: 'Same-day medical attention',
+    presets: ['Injury', 'Sudden illness', 'Allergic reaction', 'Pain management'],
     hasUrgency: true,
   },
   walking: {
@@ -69,6 +149,34 @@ const SERVICE_CONFIGS = {
     subtitle: 'Relocation & transport',
     presets: ['City taxi', 'Airport transfer', 'Inter-city travel'],
     hasDestination: true,
+  },
+  'pet-taxi': {
+    title: 'Book Pet Taxi',
+    subtitle: 'Safe pet transport',
+    presets: ['One-way trip', 'Round trip', 'Vet visit pickup'],
+  },
+  transport: {
+    title: 'Book Pet Transport',
+    subtitle: 'Professional pet relocation',
+    presets: ['City transport', 'Airport pickup', 'Inter-city transfer'],
+    hasDestination: true,
+  },
+  // Food & Nutrition
+  'custom-meals': {
+    title: 'Order Custom Meals',
+    subtitle: 'Personalized pet food',
+    presets: ['Fresh meals', 'Prescription diet', 'Home-cooked', 'Raw diet'],
+  },
+  'nutrition-consult': {
+    title: 'Book Nutrition Consult',
+    subtitle: 'Diet & nutrition advice',
+    presets: ['Diet plan', 'Weight management', 'Allergy-friendly diet', 'Senior nutrition'],
+  },
+  // General fallback
+  general: {
+    title: 'Service Request',
+    subtitle: 'Tell us what you need',
+    presets: ['Care service', 'Health service', 'Grooming service', 'Other'],
   },
 };
 
