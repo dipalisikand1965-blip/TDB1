@@ -31,6 +31,7 @@ import { useAuth } from '../context/AuthContext';
 import InboxRow from '../components/Mira/InboxRow';
 import GlobalNav from '../components/Mira/GlobalNav';
 import TicketThread from './TicketThread';
+import MobileNavBar from '../components/MobileNavBar';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
