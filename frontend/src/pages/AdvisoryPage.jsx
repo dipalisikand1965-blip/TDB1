@@ -690,6 +690,7 @@ const AdvisoryPage = () => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="advisory" position="bottom-left" />
+      <MiraOSTrigger pillar="advisory" position="bottom-left" />
     </PillarPageLayout>
   );
 };
