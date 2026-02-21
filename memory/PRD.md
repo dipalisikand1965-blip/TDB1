@@ -56,7 +56,29 @@ User wants a full audit of thedoggycompany.in - a massive pet life platform buil
 - P3: Standardize pillar page structure
 - P3: Add loading states for API failures
 
+## Mira Demo Deep Audit (Feb 21, 2026)
+- Login works but intermittent 502s (~40% failure rate)
+- AI Chat WORKS: Personalized responses, memory whispers, voice, contextual quick replies
+- PICKS tab: Broken (empty until chat activates), then shows 7 items
+- SERVICES tab: BUG - navigates away to /shop instead of in-page
+- CONCIERGE tab: "Failed to load concierge data"
+- LEARN tab: Works but categories are empty shells
+- DUPLICATE quick reply chips in chat (same options rendered twice)
+- Voice auto-plays without user consent
+- CORS error: pet-engage-hub.emergent.host blocks icon-state API
+- Backend intelligence EXISTS (mira_intelligence, soul, memory, proactive) but not fully surfaced
+- Missing: Proactive alerts, soul ticker, nudges, persistent sessions
+
+## Credentials
+- User: dipali@clubconcierge.in / test123
+- Admin: aditya / lola4304 (needs email format)
+
 ## Next Tasks
 1. Get the actual codebase into this workspace (user needs to share the project)
-2. Fix backend deployment
-3. Begin Mira unification (Phase 2 from roadmap)
+2. Fix backend intermittent 502s (likely server resource/deployment issue)
+3. Fix CORS for pet-engage-hub.emergent.host
+4. Fix duplicate quick reply chips in Mira Demo chat
+5. Fix SERVICES tab redirect (should be in-page)
+6. Fix Concierge tab data loading
+7. Surface proactive alerts, soul ticker, nudges from backend
+8. Begin Mira unification (Phase 2 from roadmap)
