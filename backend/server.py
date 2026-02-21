@@ -5333,6 +5333,112 @@ async def bulk_import_products(products: List[dict], username: str = Depends(ver
     return {"message": f"Imported {len(products)} products"}
 
 
+# ==================== SERVICES CRUD ROUTES ====================
+
+@admin_router.get("/services")
+async def admin_get_services(
+    username: str = Depends(verify_admin),
+    skip: int = 0,
+    limit: int = 100,
+    pillar: Optional[str] = None,
+    category: Optional[str] = None
+):
+    """Get all services for admin management"""
+    query = {}
+    if pillar:
+        query["pillar"] = pillar
+    if category:
+        query["category"] = category
+    
+    services = await db.services_master.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
+    total = await db.services_master.count_documents(query)
+    
+    return {"services": services, "total": total}
+
+
+@admin_router.get("/services/{service_id}")
+async def admin_get_service(service_id: str, username: str = Depends(verify_admin)):
+    """Get a single service by ID"""
+    service = await db.services_master.find_one({"id": service_id}, {"_id": 0})
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    return service
+
+
+@admin_router.post("/services")
+async def admin_create_service(service: dict, username: str = Depends(verify_admin)):
+    """Create a new service"""
+    if "id" not in service:
+        service["id"] = f"svc-{uuid.uuid4().hex[:12]}"
+    
+    service["created_at"] = get_utc_timestamp()
+    service["updated_at"] = get_utc_timestamp()
+    service["created_by"] = username
+    
+    # Ensure required fields
+    service.setdefault("in_stock", True)
+    service.setdefault("pillar", "care")
+    service.setdefault("category", "other")
+    
+    await db.services_master.insert_one(service)
+    
+    # Remove _id before returning
+    service.pop("_id", None)
+    
+    logger.info(f"[Admin] Service created: {service['id']} by {username}")
+    return {"message": "Service created successfully", "service": service}
+
+
+@admin_router.put("/services/{service_id}")
+async def admin_update_service(service_id: str, updates: dict, username: str = Depends(verify_admin)):
+    """Update an existing service"""
+    updates["updated_at"] = get_utc_timestamp()
+    updates["updated_by"] = username
+    
+    # Don't allow changing the ID
+    updates.pop("id", None)
+    updates.pop("_id", None)
+    
+    result = await db.services_master.update_one(
+        {"id": service_id},
+        {"$set": updates}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    logger.info(f"[Admin] Service updated: {service_id} by {username}")
+    return {"message": "Service updated successfully"}
+
+
+@admin_router.delete("/services/{service_id}")
+async def admin_delete_service(service_id: str, username: str = Depends(verify_admin)):
+    """Delete a service"""
+    result = await db.services_master.delete_one({"id": service_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    logger.info(f"[Admin] Service deleted: {service_id} by {username}")
+    return {"message": "Service deleted successfully"}
+
+
+@admin_router.post("/services/bulk-import")
+async def admin_bulk_import_services(services: List[dict], username: str = Depends(verify_admin)):
+    """Bulk import services"""
+    for service in services:
+        if "id" not in service:
+            service["id"] = f"svc-{uuid.uuid4().hex[:12]}"
+        service["created_at"] = get_utc_timestamp()
+        service["updated_at"] = get_utc_timestamp()
+        service["created_by"] = username
+    
+    if services:
+        await db.services_master.insert_many(services)
+    
+    return {"message": f"Imported {len(services)} services"}
+
+
 # ==================== APP SETTINGS & FULFILMENT ROUTES ====================
 
 @admin_router.get("/settings")
