@@ -3997,7 +3997,10 @@ const MiraDemoPage = () => {
             onScenarioClick={(id, query) => {
               setActiveScenario(id);
               handleQuickReply(query);
-            }}
+              // Auto-hide test scenarios after clicking one
+              setShowTestScenarios(false);
+              localStorage.setItem('mira_test_scenarios_dismissed', 'true');
+            }}}
           />
         </Suspense>
       )}
