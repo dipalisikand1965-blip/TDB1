@@ -14409,6 +14409,7 @@ Give generic advice appropriate for any pet unless user provides specific detail
         # UNIVERSAL DATA WRITE-BACK: Extract Soul data from EVERY user message
         # This is the "Ask, Store, Recommend" doctrine - Mira learns from EVERY interaction
         # ═══════════════════════════════════════════════════════════════════════════
+        logger.info(f"[SOUL-FIRST] Checking: SOUL_FIRST_AVAILABLE={SOUL_FIRST_AVAILABLE}, selected_pet={selected_pet is not None}")
         if SOUL_FIRST_AVAILABLE and selected_pet:
             try:
                 pet_id = selected_pet.get("id")
@@ -14416,6 +14417,7 @@ Give generic advice appropriate for any pet unless user provides specific detail
                 
                 # ALWAYS extract data from user messages - not just after questions
                 # This captures allergies, preferences, health info mentioned naturally
+                logger.info(f"[SOUL-FIRST] Extracting from message: '{user_message[:100]}...'")
                 extracted_data = extract_soul_data_from_response(user_message, pet_name_for_extract)
                 
                 # Check if we extracted meaningful data
