@@ -7535,7 +7535,13 @@ async def load_pet_soul(pet_id: str) -> Dict:
         # ═══════════════════════════════════════════════════════════════════════════
         # HEALTH (merge from multiple sources - doggy_soul_answers is authoritative)
         # ═══════════════════════════════════════════════════════════════════════════
-        "allergies": health.get("allergies", []) or preferences.get("allergies", []) or _parse_allergies(doggy_soul.get("food_allergies")),
+        # BIBLE COMPLIANCE: MERGE allergies from ALL sources (not just first non-empty)
+        "allergies": list(set(
+            (health.get("allergies") or []) + 
+            (preferences.get("allergies") or []) + 
+            (_parse_allergies(doggy_soul.get("food_allergies")) or []) +
+            (_parse_allergies(doggy_soul.get("allergies")) or [])
+        )),
         "medical_conditions": health.get("medical_conditions", []) or _parse_conditions(doggy_soul.get("health_conditions")),
         "dietary_restrictions": health.get("dietary_restrictions", []),
         "sensitivities": pet.get("sensitivities", []),
