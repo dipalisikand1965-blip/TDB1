@@ -6348,14 +6348,20 @@ async def get_services(
             {"tags": {"$regex": breed_lower, "$options": "i"}}
         ]
     
-    # Get total count for pagination
-    total_count = await db.services.count_documents(query)
+    # Try services_master first (main collection with 700+ services), fallback to services
+    services_collection = db.services_master
+    total_count = await services_collection.count_documents(query)
+    
+    # If services_master is empty, try services collection
+    if total_count == 0:
+        services_collection = db.services
+        total_count = await services_collection.count_documents(query)
     
     # Calculate skip for pagination
     skip = (page - 1) * limit
     
     # Query with pagination
-    services = await db.services.find(
+    services = await services_collection.find(
         query, 
         {"_id": 0}
     ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
