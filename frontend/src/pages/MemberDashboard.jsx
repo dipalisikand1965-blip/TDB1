@@ -1006,7 +1006,7 @@ const MemberDashboard = () => {
             </div>
             
             {/* Tablet/Mobile Tab Navigation - Scrollable */}
-            <div className="lg:hidden">
+            <div className="lg:hidden relative">
               <TabsList className="backdrop-blur-xl bg-slate-900/80 border border-white/10 shadow-xl p-1.5 rounded-xl flex overflow-x-auto gap-1 scrollbar-hide touch-pan-x">
                 <TabsTrigger value="overview" data-testid="mobile-tab-overview" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
                   <Home className="w-3.5 h-3.5" /> Home
@@ -1034,6 +1034,8 @@ const MemberDashboard = () => {
                   <Settings className="w-3.5 h-3.5" /> Settings
                 </TabsTrigger>
               </TabsList>
+              {/* Scroll indicator - fade hint that more tabs exist */}
+              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#0d0d1a] to-transparent pointer-events-none rounded-r-xl" />
             </div>
           </div>
 
