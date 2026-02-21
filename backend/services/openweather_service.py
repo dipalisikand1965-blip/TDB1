@@ -405,3 +405,55 @@ def get_fallback_weather(city: str) -> Optional[Dict[str, Any]]:
         "city": matched_city,
         "is_estimate": True
     }
+
+
+def _process_fallback_to_advisory(fallback: Dict) -> Dict[str, Any]:
+    """Convert fallback weather data to the same format as real weather with advisory"""
+    temp = fallback.get("temperature", 28)
+    
+    # Generate pet advisory based on temperature
+    if temp < 10:
+        safety = "caution"
+        walk_ok = True
+        walk_msg = "Cold weather - use a coat for small/short-haired dogs"
+        warnings = ["Cold weather - keep walks shorter"]
+    elif temp <= 25:
+        safety = "good"
+        walk_ok = True
+        walk_msg = "Great weather for walks!"
+        warnings = []
+    elif temp <= 32:
+        safety = "caution"
+        walk_ok = True
+        walk_msg = "Short walks OK with precautions"
+        warnings = ["Warm weather - carry water"]
+    elif temp <= 38:
+        safety = "danger"
+        walk_ok = True
+        walk_msg = "Walk only in early morning or late evening"
+        warnings = ["Hot weather - test pavement with back of hand", "Carry water and take breaks"]
+    else:
+        safety = "danger"
+        walk_ok = False
+        walk_msg = "Too hot for walks - stay indoors"
+        warnings = ["Extreme heat - avoid pavement entirely", "Risk of heatstroke"]
+    
+    return {
+        "temperature": temp,
+        "feels_like": fallback.get("feels_like", temp + 1),
+        "condition": fallback.get("condition", "Clear"),
+        "description": fallback.get("description", ""),
+        "humidity": fallback.get("humidity", 55),
+        "city": fallback.get("city", ""),
+        "pet_advisory": {
+            "safety_level": safety,
+            "walk_ok": walk_ok,
+            "walk_message": walk_msg,
+            "warnings": warnings,
+            "recommendations": [
+                "Walk in early morning or late evening" if temp > 30 else "Great time for a walk!",
+                "Carry water on walks" if temp > 25 else "Enjoy the outdoors!",
+            ]
+        },
+        "is_estimate": True
+    }
