@@ -1,241 +1,33 @@
-# Pet Soul Platform - Product Requirements Document
-## Last Updated: February 21, 2026 (Session 5)
+# THE DOGGY COMPANY - PRD
+## Updated: February 21, 2026
 
----
+## What Was Done
+- Full site audit of thedoggycompany.in (15 pillars, 3 Miras, APIs, console errors)
+- Deep Mira Demo audit (all 5 tabs, chat, voice, soul data)
+- **Cloned full TDB1 codebase (68MB, 200+ docs, 100+ backend files) into this workspace**
+- **Got the entire Doggy Company platform running locally** (backend + frontend)
+- Seeded Mystique pet with full soul data (allergies, personality, anxiety triggers, favorites)
+- Fixed babel-metadata-plugin crash for complex codebase (disabled visual-edits)
+- **Verified soul data loading**: Chicken allergy badge shows, personalized responses work
 
-## Original Problem Statement
+## What's Working in This Workspace
+- Homepage, all pillar pages, Mira Demo
+- Login: dipali@clubconcierge.in / test123
+- Chat AI with soul-aware responses
+- Picks populate after chat (+7 items)
+- Soul score (87%) displays
+- Allergy warnings ("Strict avoids: chicken")
+- Voice TTS responses
 
-The user, Dipali, founder of a premium pet concierge service, wants to build a "soul" for pets through a digital platform. Key pillars are a "magical" and gamified "Soul Builder" onboarding, unifying the multiple "Mira" chat implementations into a single superior experience, and improving the overall UI/UX to feel "premium."
+## Remaining Issues to Fix
+1. Duplicate quick reply chips (verify - may already be fixed in this version)
+2. SERVICES tab redirects to /shop instead of in-page
+3. CONCIERGE tab "Failed to load" 
+4. Test scenarios don't auto-hide after use
+5. Voice auto-plays without consent
+6. CORS for pet-engage-hub icon-state API (only affects live domain)
 
----
-
-## Core Requirements (Non-Negotiable)
-
-1. **Fix Mira's Intelligence & UX** ✅ COMPLETE - The main demo chat (`/mira-demo`) is now identical in intelligence, tone, format, and functionality to the superior `Mira OS BETA` experience.
-
-2. **Achieve Full Bible Compliance** ✅ COMPLETE (100%) - All chat interactions comply with PET_OS_BEHAVIOR_BIBLE.md
-
-3. **Food Safety Gate** ✅ COMPLETE - "Memory is only real if it changes behaviour immediately"
-   - Unified allergy extraction from all sources
-   - Never ask "any allergies?" if already known
-   - Intercept unsafe ingredient requests with alternatives
-   - UI dietary context chip in food flows
-
-4. **Core Panel Endpoints** ✅ COMPLETE (Session 4)
-   - TODAY endpoint with urgency dashboard
-   - NOTIFICATIONS endpoint for user alerts
-   - Location fix - no more Mumbai default
-   - Places guardrail for non-location intents
-
-5. **PICKS Panel Tab Switching** ✅ FIXED (Session 5 - February 21, 2026)
-   - **Issue**: Clicking pillar tabs (Celebrate, Care, Dine) showed wrong products
-   - **Root Cause**: State management conflict - useState for userHasSelectedPillar caused stale closures
-   - **Fix**: Changed to useRef for userSelectedPillarRef - immediate effect on click, no stale closures
-   - **File**: `/app/frontend/src/components/Mira/PersonalizedPicksPanel.jsx` lines 744-772
-   - **Test Result**: VERIFIED WORKING (iteration_225.json)
-
-6. **Quick Reply System Overhaul** ✅ FIXED (Session 5 - February 21, 2026)
-   - **Issue 1**: Quick replies appeared in BOTH header bar AND message body (duplicate)
-   - **Issue 2**: Quick replies showed generic options ("Yes, please", "Tell me more") instead of contextual options matching the question
-   - **Fix 1**: Removed bottom quick replies from MiraDemoPage.jsx AND disabled body chips in ChatMessage.jsx - now ONLY header bar shows quick replies
-   - **Fix 2**: Enhanced `generate_intelligent_quick_replies` in backend with patterns for sweet/savoury, size, and improved "X or Y?" extraction
-   - **Files**: 
-     - `/app/frontend/src/pages/MiraDemoPage.jsx` lines 4201-4205 (comment only)
-     - `/app/frontend/src/components/Mira/ChatMessage.jsx` lines 1141-1149 (commented out QuickReplyChips)
-     - `/app/backend/mira_routes.py` lines 11555-11630 (improved pattern matching)
-   - **Test Result**: VERIFIED WORKING - Header shows contextual options, body chips = 0
-
-7. **"I'm having a moment" Error Fix** ✅ FIXED (Session 5 - February 21, 2026)
-   - **Issue**: Error message appeared AFTER every successful response, breaking conversation flow
-   - **Root Cause**: `TypeError: Nn.filter is not a function` - `.filter()` was being called on non-array values
-   - **Fix 1**: Added `Array.isArray()` checks before all `.filter()` calls in `useChatSubmit.js`
-   - **Fix 2**: Added `Array.isArray(contractReplies)` check in `extractQuickReplies` in `MiraDemoPage.jsx`
-   - **Fix 3**: Added `isProcessing` guard to prevent duplicate API submissions
-   - **Files**: 
-     - `/app/frontend/src/hooks/mira/useChatSubmit.js` lines 1005-1008, 169-177
-     - `/app/frontend/src/pages/MiraDemoPage.jsx` line 2367
-   - **Test Result**: VERIFIED WORKING - No more error messages after successful responses
-
-8. **Build a Brilliant Onboarding** - Design and build the new, single-flow "Soul Builder." (BACKLOG)
-
-9. **Unify the "Mira" Experience** - Consolidate the three different "Mira" implementations into one. (BACKLOG)
-
-10. **Make Pillar Pages Magical** - Apply the new template from `/celebrate-new` to all other pillar pages. (BACKLOG)
-
----
-
-## What's Been Implemented
-
-### Session 5: February 21, 2026 (CURRENT)
-
-#### P0 - PICKS Panel Tab Switching Fix ✅ (CRITICAL RECURRING BUG - FINALLY FIXED)
-*This was a recurring bug across 3+ sessions that caused significant user frustration.*
-
-**Problem**: When user clicked a pillar tab (e.g., "Celebrate"), the panel showed products from wrong context (e.g., grooming items instead of celebration items).
-
-**Root Cause Analysis**:
-- Previous implementation used `useState(userHasSelectedPillar)` to track user tab clicks
-- This caused stale closure issues - the useEffect checking `userHasSelectedPillar` would sometimes read stale values
-- When `enginePillar` prop updated (from chat responses), the effect would override user's selection
-
-**Fix Applied**:
-```javascript
-// OLD (buggy):
-const [userHasSelectedPillar, setUserHasSelectedPillar] = useState(false);
-
-// NEW (working):
-const userSelectedPillarRef = useRef(false);
-
-// Effect now resets ref when panel closes
-useEffect(() => {
-  if (!isOpen) {
-    userSelectedPillarRef.current = false;
-  }
-}, [isOpen]);
-
-// Handler immediately sets ref (no async setState)
-const handlePillarSelect = (pillarId) => {
-  userSelectedPillarRef.current = true; // Immediate!
-  setActivePillar(pillarId);
-};
-```
-
-**Test Results (iteration_225.json)**:
-- Celebrate tab → Shows: Go Bananas Box, Berry Much Love Box, Googly Ghoul Dognuts ✅
-- Care tab → Shows: Eye Care Drops, Grooming Schedule Guide ✅
-- Dine tab → Shows: Mutton & Veggies Meal, Chicken & Veggies Meal ✅
-
-#### P1 - Quick Reply Duplication Fix ✅
-**Problem**: Quick replies appeared both inline (in ChatMessage) AND at bottom (in MiraDemoPage).
-
-**Root Cause**: The duplication check in MiraDemoPage didn't exactly match how ChatMessage extracts quick replies.
-
-**Fix Applied**: Updated the hasInlineQRs check to match ChatMessage.jsx extraction paths:
-```javascript
-const contextualReplies = lastMsg?.data?.quick_replies || lastMsg?.data?.response?.quick_replies || [];
-const contractReplies = lastMsg?.data?.conversation_contract?.quick_replies || 
-                       lastMsg?.data?.response?.conversation_contract?.quick_replies || [];
-const hasInlineQRs = contextualReplies.length > 0 || contractReplies.length > 0;
-```
-
-**Test Result**: Console confirms "Skipping bottom section - already rendered inline with message" ✅
-- **Fix**: Backend now uses `max(stored_score, calculated_score)`
-- **Result**: Soul growth from conversations properly reflected
-
-#### P1 - Voice Functionality Fix ✅
-- **Issue**: Multiple JS errors (`setVoiceError`, `setIsListening` not defined)
-- **Fix**: Exported missing functions from `useVoice.js` hook
-- **Result**: Voice enabled by default, works seamlessly
-
-#### Comprehensive MIRA Bible Audit ✅
-- **Result**: 100% backend / 100% frontend compliance (upgraded from 95%/100%)
-- **Verified**: Profile-First, Memory First, Never Dead End, Voice Integration
-
----
-
-## Prioritized Backlog
-
-### P1 (High Priority)
-- [ ] **Voice Testing** - Comprehensive test per MIRA_VOICE_RULES
-- [ ] **Soul Builder Completion** - Finish `SoulBuilder.jsx` with backend endpoints
-
-### P2 (Medium Priority)
-- [ ] **Unify Mira Components** - Consolidate MiraDemoPage, MiraOSModal, MiraChatWidget
-
-### P3 (Future)
-- [ ] Rebuild `/mira-demo` using `MiraOSModal` as base
-- [ ] Implement "Read Receipts" for messages
-- [ ] Refactor `backend/server.py` monolith
-- [ ] Apply `/celebrate-new` template to pillar pages
-
----
-
-## Code Architecture
-
-```
-/app
-├── backend/
-│   └── server.py        # Monolithic FastAPI (~12,000 lines)
-├── frontend/
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── MiraDemoPage.jsx    # Main chat (~4000 lines)
-│   │   │   ├── MemberDashboard.jsx # User dashboard
-│   │   │   └── SoulBuilder.jsx     # Onboarding (incomplete)
-│   │   ├── hooks/mira/
-│   │   │   ├── useChatSubmit.js    # Chat logic
-│   │   │   └── useVoice.js         # Voice integration
-│   │   └── components/
-│   │       ├── Mira/               # Chat components
-│   │       └── mira-os/            # OS modal components
-└── memory/                         # 159 bible/doctrine files
-```
-
----
-
-## Key API Endpoints
-
-| Endpoint | Purpose | Notes |
-|----------|---------|-------|
-| `/api/mira/chat` | Main chat | Uses pet context, returns contextual quick replies |
-| `/api/pets/my-pets` | Get user's pets | Now uses max(stored, calculated) for score |
-| `/api/tts/generate` | Text-to-speech | ElevenLabs primary, OpenAI fallback |
-
----
-
-## Database Schema
-
-- **Collection**: `pets`
-  - `overall_score`: Soul percentage (grows with conversations)
-  - `doggy_soul_answers`: Profile data from onboarding
-  - `preferences`: Food, activity, care preferences
-  - `soul.learned_facts`: Facts learned from conversations
-
-- **Collection**: `users`
-  - Standard auth fields + pet ownership
-
-- **Collection**: `mira_memories`
-  - Conversation history for context
-
----
-
-## Test Credentials
-
-| Role | Email | Password |
-|------|-------|----------|
-| User | dipali@clubconcierge.in | test123 |
-| Admin | aditya | lola4304 |
-
----
-
-## 3rd Party Integrations
-
-| Service | Purpose | Key Location |
-|---------|---------|--------------|
-| ElevenLabs | Voice TTS | ELEVENLABS_API_KEY in .env |
-| OpenAI | LLM + TTS fallback | EMERGENT_LLM_KEY |
-| Google Places | Location services | GOOGLE_PLACES_API_KEY |
-| Resend | Email | RESEND_API_KEY |
-| Firebase | Auth fallback | FIREBASE_* keys |
-
----
-
-## MIRA Bible Compliance
-
-All changes MUST comply with:
-
-1. **MIRA_BIBLE** - Memory First, Never Dead End, Catalogue First
-2. **MIRA_DOCTRINE** - Voice tone, execution classification
-3. **MIRA_CONVERSATION_RULES** - Pre-conversation checklist
-4. **MIRA_VOICE_RULES** - Voice sync, skip on interaction
-5. **PROFILE_FIRST_DOCTRINE** - Use pet data, not breed assumptions
-
-See `/app/memory/BIBLE_INDEX.md` for complete list.
-
----
-
-## URLs
-
-- **Preview**: https://mira-bible-v1.preview.emergentagent.com
-- **Production**: https://thedoggycompany.in
-- **Sync**: Use "Replace deployment" on Emergent platform
+## Key Files
+- Backend: /app/backend/server.py (807KB), /app/backend/mira_routes.py
+- Frontend: /app/frontend/src/pages/MiraDemoPage.jsx (211KB)
+- Bibles: /app/memory/MIRA_BIBLE.md, DIPALI_VISION.md, MOJO_BIBLE.md
