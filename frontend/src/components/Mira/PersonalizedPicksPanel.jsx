@@ -1350,8 +1350,10 @@ const PersonalizedPicksPanel = ({
                 {/* INTENT-DRIVEN SHELF - "{Pet} needs this for {Intent}"              */}
                 {/* Dynamic cards from MIRA brain based on chat intent                  */}
                 {/* Concierge-sourced (no price) - "Concierge will arrange"            */}
+                {/* ONLY show when NO specific pillar is selected (general/all view)   */}
                 {/* ═══════════════════════════════════════════════════════════════════ */}
-                {picksData?.intent_driven?.has_recommendations && (
+                {(!activePillar || activePillar === 'all' || activePillar === 'general') && 
+                 picksData?.intent_driven?.has_recommendations && (
                   <div className="mb-6">
                     <div className="mb-3">
                       <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
