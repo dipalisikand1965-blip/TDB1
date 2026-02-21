@@ -160,6 +160,165 @@ except ImportError as e:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# FOOD SAFETY GATE - Core Allergy/Dietary Memory System
+# "Memory is only real if it changes behaviour immediately."
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def get_pet_allergies(pet: dict) -> List[str]:
+    """
+    CANONICAL SOURCE OF TRUTH for pet's dietary constraints.
+    Merges allergies from ALL sources and normalizes them.
+    
+    Sources checked (in priority order):
+    1. preferences.allergies
+    2. known_allergies (root level)
+    3. allergies (root level)
+    4. doggy_soul_answers.allergies
+    5. doggy_soul_answers.food_allergies
+    6. health_vault.allergies
+    7. insights.key_flags.allergy_list
+    
+    Returns: List of lowercase, deduplicated allergy strings
+    """
+    if not pet:
+        return []
+    
+    def _extract_allergy_items(val):
+        """Extract allergy strings from various formats, splitting comma-separated values"""
+        if not val:
+            return []
+        if isinstance(val, list):
+            result = []
+            for item in val:
+                if isinstance(item, dict):
+                    allergen = item.get("allergen", item.get("name", "")).strip()
+                    for a in allergen.split(","):
+                        if a.strip():
+                            result.append(a.strip().lower())
+                elif isinstance(item, str) and item.strip():
+                    for a in item.split(","):
+                        if a.strip():
+                            result.append(a.strip().lower())
+            return result
+        if isinstance(val, str) and val.strip():
+            return [a.strip().lower() for a in val.split(",") if a.strip()]
+        return []
+    
+    # Collect from ALL sources
+    all_sources = [
+        (pet.get("preferences") or {}).get("allergies"),
+        pet.get("known_allergies"),
+        pet.get("allergies"),
+        pet.get("food_allergies"),
+        (pet.get("doggy_soul_answers") or {}).get("allergies"),
+        (pet.get("doggy_soul_answers") or {}).get("food_allergies"),
+        (pet.get("health_vault") or {}).get("allergies"),
+        pet.get("insights", {}).get("key_flags", {}).get("allergy_list")
+    ]
+    
+    # Merge and dedupe
+    merged = set()
+    for source in all_sources:
+        for allergy in _extract_allergy_items(source):
+            if allergy:
+                merged.add(allergy)
+    
+    return sorted(list(merged))
+
+
+def get_pet_allergies_display(pet: dict) -> str:
+    """Get allergies as a comma-separated display string for UI/prompts"""
+    allergies = get_pet_allergies(pet)
+    if not allergies:
+        return ""
+    return ", ".join(allergies)
+
+
+def has_known_allergies(pet: dict) -> bool:
+    """Check if pet has ANY allergies on record"""
+    return len(get_pet_allergies(pet)) > 0
+
+
+def food_safety_gate(pet: dict, candidate_items: list, ingredient_field: str = "ingredients") -> list:
+    """
+    FOOD SAFETY GATE - Filter out items containing pet's allergens.
+    
+    Args:
+        pet: Pet profile dict
+        candidate_items: List of product/treat/food dicts
+        ingredient_field: Field name containing ingredients (default: "ingredients")
+        
+    Returns:
+        List of safe items (allergens filtered out)
+    """
+    allergies = get_pet_allergies(pet)
+    if not allergies:
+        return candidate_items  # No allergies = no filtering needed
+    
+    safe_items = []
+    for item in candidate_items:
+        # Check ingredients field
+        ingredients_raw = item.get(ingredient_field, "") or item.get("description", "") or ""
+        if isinstance(ingredients_raw, list):
+            ingredients = " ".join(str(i) for i in ingredients_raw).lower()
+        else:
+            ingredients = str(ingredients_raw).lower()
+        
+        # Also check name/title for obvious allergen keywords
+        name = (item.get("name", "") or item.get("title", "")).lower()
+        
+        # Check for allergen matches
+        is_safe = True
+        for allergen in allergies:
+            # Check exact match and common variations
+            variations = [allergen, allergen + "s", allergen[:-1] if allergen.endswith("s") else None]
+            variations = [v for v in variations if v]
+            
+            for variant in variations:
+                if variant in ingredients or variant in name:
+                    is_safe = False
+                    break
+            if not is_safe:
+                break
+        
+        if is_safe:
+            safe_items.append(item)
+    
+    return safe_items
+
+
+def build_allergy_context_injection(pet: dict, pet_name: str = None) -> str:
+    """
+    Build a structured allergy context block for LLM prompt injection.
+    
+    This ensures the model KNOWS about allergies without asking.
+    """
+    allergies = get_pet_allergies(pet)
+    name = pet_name or pet.get("name", "this pet")
+    
+    if not allergies:
+        return ""
+    
+    allergies_list = ", ".join(allergies)
+    
+    return f"""
+═══════════════════════════════════════════════════════════════════════════════
+ACTIVE PET DIETARY CONSTRAINTS (STRICT - DO NOT ASK, ALREADY KNOWN):
+═══════════════════════════════════════════════════════════════════════════════
+ACTIVE_PET = {name}
+STRICT_AVOID = [{allergies_list}]
+DO_NOT_SUGGEST = Any food/treat containing: {allergies_list}
+
+RULES:
+1. NEVER ask "any allergies?" - you already have them
+2. NEVER suggest items containing these ingredients
+3. If user requests an item on the avoid list, REFUSE politely and offer safe alternatives
+4. Acknowledge known allergies with: "Since I know {name} avoids {allergies_list}..."
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # CONVERSATION CONTRACT INJECTOR
 # Ensures every response has conversation_contract (Section 11.2)
 # ═══════════════════════════════════════════════════════════════════════════════
