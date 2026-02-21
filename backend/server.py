@@ -15278,6 +15278,108 @@ async def seed_production_data():
     }
 
 
+@api_router.post("/admin/seed-mystique")
+async def seed_mystique_data():
+    """
+    Seeds comprehensive data for Mystique (Dipali's Shih Tzu).
+    Run this after deployment to verify all features work.
+    
+    Seeds: Learned Facts, Pet Vault, Life Timeline, Mira Memories
+    """
+    from datetime import timedelta
+    
+    # Find Mystique
+    mystique = await db.pets.find_one({"name": "Mystique"})
+    if not mystique:
+        raise HTTPException(status_code=404, detail="Mystique not found! Create her first via the app.")
+    
+    pet_id = mystique.get("id") or str(mystique.get("_id"))
+    results = {}
+    
+    # 1. SEED LEARNED FACTS
+    learned_facts = [
+        {"id": f"fact-coat-{get_utc_timestamp()}", "category": "preferences", "content": "Has a beautiful long fluffy coat", "source": "mira_conversation", "confidence": 90, "created_at": get_utc_timestamp()},
+        {"id": f"fact-groom-{get_utc_timestamp()}", "category": "preferences", "content": "Loves being groomed at the spa", "source": "mira_conversation", "confidence": 85, "created_at": get_utc_timestamp()},
+        {"id": f"fact-treat-{get_utc_timestamp()}", "category": "loves", "content": "Goes crazy for chicken jerky treats", "source": "mira_conversation", "confidence": 95, "created_at": get_utc_timestamp()},
+        {"id": f"fact-food-{get_utc_timestamp()}", "category": "preferences", "content": "Prefers wet food over dry", "source": "mira_conversation", "confidence": 80, "created_at": get_utc_timestamp()},
+        {"id": f"fact-allergy-{get_utc_timestamp()}", "category": "health", "content": "Allergic to beef - avoid beef products", "source": "mira_conversation", "confidence": 95, "created_at": get_utc_timestamp()}
+    ]
+    await db.pets.update_one({"id": pet_id}, {"$set": {"learned_facts": learned_facts}})
+    results["learned_facts"] = len(learned_facts)
+    
+    # 2. SEED PET VAULT
+    vault = {
+        "vaccines": [
+            {"id": "vax-rabies", "vaccine_name": "Rabies", "date_given": "2024-01-15", "next_due_date": "2025-01-15", "vet_name": "Dr. Sharma", "reminder_enabled": True},
+            {"id": "vax-dhpp", "vaccine_name": "DHPP", "date_given": "2024-02-01", "next_due_date": "2025-02-01", "vet_name": "Dr. Sharma", "reminder_enabled": True},
+            {"id": "vax-lepto", "vaccine_name": "Leptospirosis", "date_given": "2024-03-10", "next_due_date": "2025-03-10", "vet_name": "Dr. Patel", "reminder_enabled": True}
+        ],
+        "medications": [
+            {"id": "med-heartgard", "medication_name": "HeartGard Plus", "dosage": "1 tablet", "frequency": "Monthly", "reason": "Heartworm prevention"},
+            {"id": "med-nexgard", "medication_name": "NexGard", "dosage": "1 chewable", "frequency": "Monthly", "reason": "Flea & tick prevention"}
+        ],
+        "vet_visits": [
+            {"id": "visit-2024", "visit_date": "2024-11-15", "vet_name": "Dr. Sharma", "clinic_name": "Pet Care Mumbai", "reason": "Annual checkup", "diagnosis": "Healthy", "weight_kg": 6.5}
+        ],
+        "weight_history": [
+            {"date": "2024-01-01", "weight_kg": 6.2},
+            {"date": "2024-06-01", "weight_kg": 6.4},
+            {"date": "2024-11-01", "weight_kg": 6.5}
+        ]
+    }
+    await db.pets.update_one({"id": pet_id}, {"$set": {"vault": vault}})
+    results["vault"] = f"{len(vault['vaccines'])} vaccines, {len(vault['medications'])} meds, {len(vault['vet_visits'])} visits"
+    
+    # 3. SEED LIFE TIMELINE
+    timeline_events = [
+        {"pet_id": pet_id, "event_type": "birth", "title": "Mystique was born!", "date": "2020-03-15", "emoji": "🐣", "created_at": get_utc_timestamp()},
+        {"pet_id": pet_id, "event_type": "gotcha", "title": "Joined the family!", "date": "2020-06-01", "emoji": "🏠", "created_at": get_utc_timestamp()},
+        {"pet_id": pet_id, "event_type": "milestone", "title": "First grooming", "date": "2020-07-15", "emoji": "✂️", "created_at": get_utc_timestamp()},
+        {"pet_id": pet_id, "event_type": "birthday", "title": "1st Birthday!", "date": "2021-03-15", "emoji": "🎂", "created_at": get_utc_timestamp()},
+        {"pet_id": pet_id, "event_type": "health", "title": "Clean bill of health", "date": "2024-11-15", "emoji": "💚", "created_at": get_utc_timestamp()}
+    ]
+    await db.mira_life_timeline_events.delete_many({"pet_id": pet_id})
+    await db.mira_life_timeline_events.insert_many(timeline_events)
+    results["timeline_events"] = len(timeline_events)
+    
+    # 4. SEED MIRA MEMORIES
+    memories = [
+        {"pet_id": pet_id, "key": "favorite_treat", "value": "chicken jerky", "source": "conversation", "created_at": get_utc_timestamp()},
+        {"pet_id": pet_id, "key": "grooming_preference", "value": "loves spa", "source": "conversation", "created_at": get_utc_timestamp()},
+        {"pet_id": pet_id, "key": "personality", "value": "drama queen", "source": "soul_builder", "created_at": get_utc_timestamp()},
+        {"pet_id": pet_id, "key": "food_allergy", "value": "beef", "source": "conversation", "created_at": get_utc_timestamp()}
+    ]
+    await db.mira_memories.delete_many({"pet_id": pet_id})
+    await db.mira_memories.insert_many(memories)
+    results["mira_memories"] = len(memories)
+    
+    # 5. UPDATE SOUL ANSWERS
+    await db.pets.update_one({"id": pet_id}, {"$set": {
+        "doggy_soul_answers.coat_type": "long",
+        "doggy_soul_answers.grooming_preference": "salon",
+        "doggy_soul_answers.favorite_treats": "chicken jerky",
+        "doggy_soul_answers.food_allergies": ["beef"],
+        "celebrations": [
+            {"occasion": "birthday", "date": "03-15", "is_recurring": True},
+            {"occasion": "gotcha_day", "date": "06-01", "is_recurring": True}
+        ]
+    }})
+    results["soul_updated"] = True
+    
+    return {
+        "success": True,
+        "message": "🐕 Mystique data seeded successfully!",
+        "pet_id": pet_id,
+        "results": results,
+        "verification_urls": {
+            "mojo_tab": "/mira-demo → Click MOJO tab",
+            "pet_vault": f"/api/pet-vault/{pet_id}/summary",
+            "timeline": f"/api/pet-soul/profile/{pet_id}/life-timeline",
+            "learned_facts": f"/api/pets/{pet_id}"
+        }
+    }
+
+
 # ==================== CORE DATA SEEDING ====================
 
 @admin_router.post("/migration/seed-core-data")
