@@ -833,7 +833,7 @@ def extract_soul_data_from_response(
     # ═══════════════════════════════════════════════════════════════════
     
     home_patterns = ["at home", "home visit", "home grooming", "prefer home", "at my place"]
-    salon_patterns = ["salon", "groomer", "shop", "professional", "take him", "take her", "bring"]
+    salon_patterns = ["salon", "groomer", "shop", "professional", "take him", "take her", "bring", "spa", "grooming spa", "pet spa"]
     
     if any(p in message_lower for p in home_patterns):
         extracted.grooming_preference = "home"
