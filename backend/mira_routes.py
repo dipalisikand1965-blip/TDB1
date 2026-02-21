@@ -21391,7 +21391,7 @@ class PicksHistoryResponse(BaseModel):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 @router.get("/today/{pet_id}")
-async def get_today_panel(pet_id: str, user: dict = Depends(get_current_user)):
+async def get_today_panel(pet_id: str, authorization: Optional[str] = Header(None)):
     """
     TODAY panel - Urgency dashboard per Bible Section 2.2
     
@@ -21406,6 +21406,10 @@ async def get_today_panel(pet_id: str, user: dict = Depends(get_current_user)):
     db = get_db()
     if db is None:
         return {"error": "Database not available", "items": []}
+    
+    user = await get_user_from_token(authorization)
+    if not user:
+        return {"error": "Unauthorized", "items": []}
     
     try:
         user_email = user.get("email")
