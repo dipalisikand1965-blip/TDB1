@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-soul-sync-1.preview.emergentagent.com
+https://mira-bible-v1.preview.emergentagent.com
 ```
 
 ---

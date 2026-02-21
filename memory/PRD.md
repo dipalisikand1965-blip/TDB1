@@ -215,6 +215,6 @@ See `/app/memory/BIBLE_INDEX.md` for complete list.
 
 ## URLs
 
-- **Preview**: https://mira-soul-sync-1.preview.emergentagent.com
+- **Preview**: https://mira-bible-v1.preview.emergentagent.com
 - **Production**: https://thedoggycompany.in
 - **Sync**: Use "Replace deployment" on Emergent platform
