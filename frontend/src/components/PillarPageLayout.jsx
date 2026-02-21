@@ -28,10 +28,15 @@ const PILLAR_SUBCATEGORIES = {
   celebrate: [
     { id: 'cakes', name: 'Birthday Cakes', path: '/celebrate/cakes', emoji: '🎂', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/products/WhatsAppImage2022-05-13at3.24.11PM.jpg?v=1655357921' },
     { id: 'breed-cakes', name: 'Breed Cakes', path: '/celebrate/breed-cakes', emoji: '❤️', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Untitled_design_17.png?v=1723638766' },
+    { id: 'mini-cakes', name: 'Mini Cakes', path: '/celebrate/mini-cakes', emoji: '🧁', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/7_dfd55b51-8b3d-4a5f-b99d-84a6b251e275.png?v=1746685342' },
     { id: 'pupcakes', name: 'Pupcakes & Dognuts', path: '/celebrate/pupcakes', emoji: '✨', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Designer_5.png?v=1761639445' },
-    { id: 'treats', name: 'Treats', path: '/celebrate/treats', emoji: '🎁', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Untitleddesign-2026-01-17T110113.430.png?v=1768627888' },
-    { id: 'hampers', name: 'Gift Hampers', path: '/celebrate/hampers', emoji: '🛍️', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Untitleddesign-2026-01-20T122636.295.png?v=1768892215' },
-    { id: 'accessories', name: 'Party Accessories', path: '/celebrate/accessories', emoji: '🎉', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/products/FC144498-711C-42A4-8867-99638A34FB8C.png?v=1656737324' }
+    { id: 'desi-treats', name: 'Desi Treats', path: '/celebrate/desi-treats', emoji: '🪔', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/UntitledDesign-5-Edited.png?v=1759234529' },
+    { id: 'treats', name: 'Treats & Biscuits', path: '/celebrate/treats', emoji: '🦴', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Untitleddesign-2026-01-17T110113.430.png?v=1768627888' },
+    { id: 'hampers', name: 'Gift Hampers', path: '/celebrate/hampers', emoji: '🎁', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Untitleddesign-2026-01-20T122636.295.png?v=1768892215' },
+    { id: 'accessories', name: 'Party Accessories', path: '/celebrate/accessories', emoji: '🎉', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/products/FC144498-711C-42A4-8867-99638A34FB8C.png?v=1656737324' },
+    { id: 'diy', name: 'DIY Cake Kits', path: '/celebrate/diy', emoji: '🎨', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/IMG_7843.jpg?v=1729504729' },
+    { id: 'custom', name: 'Custom Creations', path: '/celebrate/custom', emoji: '✏️', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/products/treatjar2_1.jpg?v=1599218328', isCustom: true },
+    { id: 'gift-cards', name: 'Gift Cards', path: '/celebrate/gift-cards', emoji: '💳', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Watercolour-Background-Night-Sky-Postcard.jpg?v=1706442619' }
   ],
   dine: [
     { id: 'fresh-meals', name: 'Fresh Meals', path: '/dine/fresh-meals', emoji: '🥩' },
