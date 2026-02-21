@@ -169,6 +169,142 @@ const calculateHealthScore = (pet) => {
   return Math.round((filled / healthFields.length) * 100);
 };
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// UTILITY: Get pet allergies from all sources (mirrors backend logic)
+// "Memory is only real if it changes behaviour immediately."
+// ═══════════════════════════════════════════════════════════════════════════════
+const getPetAllergies = (pet) => {
+  if (!pet) return [];
+  
+  const extractAllergies = (val) => {
+    if (!val) return [];
+    if (Array.isArray(val)) {
+      const result = [];
+      val.forEach(item => {
+        if (typeof item === 'object') {
+          const allergen = item.allergen || item.name || '';
+          allergen.split(',').forEach(a => {
+            if (a.trim()) result.push(a.trim().toLowerCase());
+          });
+        } else if (typeof item === 'string' && item.trim()) {
+          item.split(',').forEach(a => {
+            if (a.trim()) result.push(a.trim().toLowerCase());
+          });
+        }
+      });
+      return result;
+    }
+    if (typeof val === 'string' && val.trim()) {
+      return val.split(',').map(a => a.trim().toLowerCase()).filter(Boolean);
+    }
+    return [];
+  };
+  
+  const soulAnswers = pet.doggy_soul_answers || {};
+  const preferences = pet.preferences || {};
+  const healthVault = pet.health_vault || {};
+  
+  // Merge from ALL sources
+  const allSources = [
+    preferences.allergies,
+    pet.known_allergies,
+    pet.allergies,
+    pet.food_allergies,
+    soulAnswers.allergies,
+    soulAnswers.food_allergies,
+    healthVault.allergies,
+    (pet.insights?.key_flags?.allergy_list)
+  ];
+  
+  const merged = new Set();
+  allSources.forEach(source => {
+    extractAllergies(source).forEach(a => merged.add(a));
+  });
+  
+  return Array.from(merged).sort();
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPONENT: Dietary Context Chip - Shows active pet's allergies
+// Collapsible sticky chip that appears in food-related flows
+// ═══════════════════════════════════════════════════════════════════════════════
+const DietaryContextChip = ({ pet, isExpanded, onToggle, onEdit }) => {
+  const allergies = getPetAllergies(pet);
+  
+  if (!allergies.length) return null;
+  
+  const petName = pet?.name || 'Pet';
+  const petWeight = pet?.doggy_soul_answers?.weight || pet?.weight_kg || pet?.identity?.weight;
+  const petBreed = pet?.breed || pet?.identity?.breed || '';
+  
+  return (
+    <div className="mb-3 mx-auto max-w-xl" data-testid="dietary-context-chip">
+      <button
+        onClick={onToggle}
+        className={`w-full px-3 py-2 rounded-lg border transition-all ${
+          isExpanded 
+            ? 'bg-amber-500/10 border-amber-500/30' 
+            : 'bg-zinc-800/50 border-zinc-700/50 hover:border-amber-500/30'
+        }`}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-amber-400">⚠️</span>
+            <span className="text-sm text-zinc-300">
+              <span className="font-medium">{petName}</span>
+              {petWeight && <span className="text-zinc-500"> ({petWeight}kg)</span>}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-amber-400/80">
+              {allergies.length} avoid{allergies.length !== 1 ? 's' : ''}
+            </span>
+            <span className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
+              ▼
+            </span>
+          </div>
+        </div>
+        
+        {!isExpanded && (
+          <div className="mt-1 text-xs text-zinc-500 text-left">
+            Strict avoids: {allergies.slice(0, 3).join(', ')}
+            {allergies.length > 3 && ` +${allergies.length - 3} more`}
+          </div>
+        )}
+      </button>
+      
+      {isExpanded && (
+        <div className="mt-2 p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-zinc-500 uppercase tracking-wider">Strict Avoids</span>
+            {onEdit && (
+              <button 
+                onClick={onEdit}
+                className="text-xs text-amber-400 hover:text-amber-300"
+              >
+                Edit
+              </button>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {allergies.map((allergen, i) => (
+              <span 
+                key={i}
+                className="px-2 py-0.5 text-xs bg-red-500/20 text-red-300 rounded-full border border-red-500/30"
+              >
+                {allergen}
+              </span>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-zinc-500 italic">
+            All food recommendations are automatically filtered against these.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const MiraDemoPage = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
