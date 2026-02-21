@@ -115,6 +115,9 @@ const InboxRow = ({
   const getSnippet = () => {
     let snippet = notification.message || notification.body || '';
     
+    // Strip markdown formatting (** bold **, * italic *, etc.)
+    snippet = snippet.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1').replace(/__(.*?)__/g, '$1');
+    
     // Truncate long snippets
     if (snippet.length > 80) {
       snippet = snippet.substring(0, 77) + '...';
