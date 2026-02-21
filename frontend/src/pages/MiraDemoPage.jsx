@@ -2650,6 +2650,10 @@ const MiraDemoPage = () => {
     }
     
     return quickReplies;
+    } catch (error) {
+      console.error('[QUICK REPLIES] Error extracting quick replies:', error);
+      return [];
+    }
   }, []);
   
   // Helper: Split message to highlight the question part
