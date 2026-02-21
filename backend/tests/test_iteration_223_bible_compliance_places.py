@@ -182,16 +182,17 @@ class TestFindVetsNearMeRequiresClarify:
         # 2. mode='places' if location was resolved
         # The key is: if mode='answer', verify that places were actually provided
         
-        places_results = data.get("places_results", [])
-        nearby_places = data.get("nearby_places", [])
+        places_results = data.get("places_results") or []
+        nearby_places_obj = data.get("nearby_places") or {}
+        nearby_places_list = nearby_places_obj.get("places", []) if isinstance(nearby_places_obj, dict) else []
         
         print(f"  Mode: {mode}")
         print(f"  places_results count: {len(places_results)}")
-        print(f"  nearby_places count: {len(nearby_places)}")
+        print(f"  nearby_places count: {len(nearby_places_list)}")
         
         # If mode is 'answer' but no places, that's a problem
         if mode == "answer":
-            has_places = len(places_results) > 0 or len(nearby_places) > 0
+            has_places = len(places_results) > 0 or len(nearby_places_list) > 0
             if not has_places:
                 print("⚠️ Mode is 'answer' but no places provided - might need clarify mode instead")
         
@@ -220,12 +221,13 @@ class TestFindVetsNearMeRequiresClarify:
         
         # For a generic 'find a groomer' without location context,
         # per BIBLE, we should NOT auto-trigger Places
-        places_results = data.get("places_results", [])
-        nearby_places = data.get("nearby_places", [])
+        places_results = data.get("places_results") or []
+        nearby_places_obj = data.get("nearby_places") or {}
+        nearby_places_list = nearby_places_obj.get("places", []) if isinstance(nearby_places_obj, dict) else []
         
         # If no explicit location in query, places should NOT trigger
         # (skip_places_for_clarification should apply)
-        total_places = len(places_results) + len(nearby_places)
+        total_places = len(places_results) + len(nearby_places_list)
         
         print(f"  Mode: {mode}")
         print(f"  Total places: {total_places}")
