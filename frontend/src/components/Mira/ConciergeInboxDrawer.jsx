@@ -84,17 +84,17 @@ const ConciergeInboxDrawer = ({
       setError(null);
       
       try {
-        // Fetch thread from service desk - try multiple collections
-        let response = await fetch(`${API_URL}/api/service_desk/ticket/${threadId}`, {
+        // Fetch thread from concierge or service desk - try multiple collections
+        let response = await fetch(`${API_URL}/api/os/concierge/thread/${threadId}`, {
           headers: {
             'Content-Type': 'application/json',
             ...(token && { 'Authorization': `Bearer ${token}` })
           }
         });
         
-        // If not found in mira_conversations, try service_desk_tickets
+        // If not found in concierge threads, try service_desk_tickets
         if (!response.ok) {
-          response = await fetch(`${API_URL}/api/admin/service-desk/ticket/${threadId}`, {
+          response = await fetch(`${API_URL}/api/service-desk/tickets/${threadId}`, {
             headers: {
               'Content-Type': 'application/json',
               ...(token && { 'Authorization': `Bearer ${token}` })
