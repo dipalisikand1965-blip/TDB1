@@ -789,8 +789,9 @@ async def list_tickets(
     all_tickets = all_tickets[:limit]
     
     # Get total count from both collections
-    total1 = await db.tickets.count_documents(query) if query else 0
-    total2 = await db.service_desk_tickets.count_documents(query) if query else 0
+    total1 = await db.tickets.count_documents(query)
+    sdt_count_query = {**query, "ticket_id": {"$exists": True, "$ne": None, "$nin": ["", None]}} if query else {"ticket_id": {"$exists": True, "$ne": None, "$nin": ["", None]}}
+    total2 = await db.service_desk_tickets.count_documents(sdt_count_query)
     total = total1 + total2
     
     return {
