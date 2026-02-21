@@ -10,7 +10,7 @@ import base64
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://pet-concierge-qa.preview.emergentagent.com"
+    BASE_URL = "https://pet-os-live.preview.emergentagent.com"
 
 # Admin credentials
 ADMIN_USER = "aditya"
