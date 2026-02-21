@@ -409,30 +409,45 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
                     logger.warning(f"[OS CONTEXT] Birthday parse error: {e}")
         
             # 2. SAFETY GATES - Get allergies, health constraints
-            # Check multiple allergy field locations
-            doggy_soul_allergies = pet.get("doggy_soul_answers", {}).get("food_allergies", "")
-            if isinstance(doggy_soul_allergies, list):
-                # Already a list, use as is
-                pass
-            elif isinstance(doggy_soul_allergies, str) and doggy_soul_allergies:
-                doggy_soul_allergies = [a.strip() for a in doggy_soul_allergies.split(",") if a.strip()]
-            else:
-                doggy_soul_allergies = []
+            # BIBLE COMPLIANCE: MERGE allergies from ALL sources (not just first non-empty)
+            # This ensures Lola's allergies from both preferences.allergies AND doggy_soul_answers.allergies are combined
             
-            allergies = (
-                pet.get("allergies") or 
-                pet.get("known_allergies") or 
-                (pet.get("preferences") or {}).get("allergies") or
-                (pet.get("health_vault") or {}).get("allergies") or
-                (pet.get("insights", {}).get("key_flags", {}).get("allergy_list")) or
-                doggy_soul_allergies or
-                []
-            )
+            def _extract_allergy_list(val):
+                """Extract allergy list from various formats"""
+                if not val:
+                    return []
+                if isinstance(val, list):
+                    # Handle list of objects or strings
+                    result = []
+                    for item in val:
+                        if isinstance(item, dict):
+                            result.append(item.get("allergen", item.get("name", "")).strip().lower())
+                        elif isinstance(item, str) and item.strip():
+                            result.append(item.strip().lower())
+                    return result
+                if isinstance(val, str) and val.strip():
+                    return [a.strip().lower() for a in val.split(",") if a.strip()]
+                return []
             
-            # Extract allergy items if it's a list of objects
-            if allergies and isinstance(allergies, list) and len(allergies) > 0:
-                if isinstance(allergies[0], dict):
-                    allergies = [a.get("allergen", a.get("name", "")) for a in allergies if a]
+            # Collect allergies from ALL sources
+            all_allergy_sources = [
+                pet.get("allergies"),
+                pet.get("known_allergies"),
+                (pet.get("preferences") or {}).get("allergies"),
+                (pet.get("health_vault") or {}).get("allergies"),
+                pet.get("insights", {}).get("key_flags", {}).get("allergy_list"),
+                pet.get("doggy_soul_answers", {}).get("food_allergies"),
+                pet.get("doggy_soul_answers", {}).get("allergies")
+            ]
+            
+            # MERGE and dedupe all allergies (case-insensitive)
+            merged_allergies = set()
+            for source in all_allergy_sources:
+                for allergy in _extract_allergy_list(source):
+                    if allergy:
+                        merged_allergies.add(allergy)
+            
+            allergies = list(merged_allergies)
             
             health_flags = pet.get("health_conditions") or pet.get("health_flags") or []
             diet_restrictions = pet.get("dietary_restrictions") or []
