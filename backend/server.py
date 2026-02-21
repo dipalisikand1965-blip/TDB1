@@ -7467,24 +7467,26 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
         if age_category == "senior" and any(word in name_lower or word in tags for word in ["senior", "joint", "mobility", "gentle"]):
             score += 12
         
-        # Breed-specific bonus - PRIORITIZE breed cakes and products
+        # Breed-specific bonus - only within pillar context
         if breed:
             breed_words = breed.lower().split()
             breed_clean = breed.lower().replace(" ", "")  # "shih tzu" -> "shihtzu"
             
             for bw in breed_words:
                 if bw in tags or bw in name_lower:
-                    score += 25  # Higher breed match bonus
+                    score += 15  # Moderate breed match bonus
             
-            # Special bonus for breed cakes (e.g., "Shih Tzu Cake", "Labrador cake")
+            # Special bonus for breed products ONLY if matching pillar or no pillar filter
+            # Cakes get bonus only on celebrate/dine pillars
             if "cake" in name_lower or category in ["cakes", "breed-cakes"]:
-                for bw in breed_words:
-                    if bw in name_lower:
-                        score += 40  # Massive bonus for breed-specific cakes
+                if not pillar or pillar in ["celebrate", "dine"]:
+                    for bw in breed_words:
+                        if bw in name_lower:
+                            score += 30  # Bonus for breed-specific cakes on celebrate pillar
             
             # Check for breed in product name variations
             if breed_clean in name_lower.replace(" ", ""):
-                score += 30
+                score += 15
         
         # Personality-based bonus
         if personality:
