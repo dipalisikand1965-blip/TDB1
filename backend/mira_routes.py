@@ -413,17 +413,24 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
             # This ensures Lola's allergies from both preferences.allergies AND doggy_soul_answers.allergies are combined
             
             def _extract_allergy_list(val):
-                """Extract allergy list from various formats"""
+                """Extract allergy list from various formats - ALWAYS splits comma-separated values"""
                 if not val:
                     return []
                 if isinstance(val, list):
-                    # Handle list of objects or strings
+                    # Handle list of objects or strings - ALSO split comma-separated strings within list
                     result = []
                     for item in val:
                         if isinstance(item, dict):
-                            result.append(item.get("allergen", item.get("name", "")).strip().lower())
+                            allergen = item.get("allergen", item.get("name", "")).strip()
+                            # Split if comma-separated
+                            for a in allergen.split(","):
+                                if a.strip():
+                                    result.append(a.strip().lower())
                         elif isinstance(item, str) and item.strip():
-                            result.append(item.strip().lower())
+                            # Split comma-separated strings within list items
+                            for a in item.split(","):
+                                if a.strip():
+                                    result.append(a.strip().lower())
                     return result
                 if isinstance(val, str) and val.strip():
                     return [a.strip().lower() for a in val.split(",") if a.strip()]
