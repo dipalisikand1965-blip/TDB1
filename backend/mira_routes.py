@@ -7530,6 +7530,10 @@ async def load_pet_soul(pet_id: str) -> Dict:
         # ENRICHMENTS (learned from conversations/tickets)
         # ═══════════════════════════════════════════════════════════════════════════
         "soul_enrichments": pet.get("soul_enrichments", {}),
+        # Learned facts from conversations (key for personalization!)
+        "learned_facts": soul_data.get("learned_facts", []) or pet.get("learned_facts", []),
+        # Preferences learned from interactions
+        "preferences_learned": soul_data.get("preferences_learned", {}),
         # Food allergies from doggy_soul (legacy field)
         "food_allergies": doggy_soul.get("food_allergies"),
         "health_conditions": doggy_soul.get("health_conditions"),
