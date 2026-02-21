@@ -4308,7 +4308,21 @@ async def mira_os_understand_with_products(
                     # Merge: Database soul data takes priority, frontend adds any missing fields
                     # This ensures we have ALL 55+ soul questions, behavioral traits, etc.
                     enriched_pet_context = {**(request.pet_context or {}), **loaded_soul}
+                    
+                    # Log key soul fields for debugging
+                    soul_fields = {
+                        "dislikes": loaded_soul.get("dislikes"),
+                        "learned_facts": len(loaded_soul.get("learned_facts", [])),
+                        "separation_anxiety": loaded_soul.get("separation_anxiety"),
+                        "allergies": loaded_soul.get("allergies"),
+                        "sensitivities": loaded_soul.get("sensitivities"),
+                        "anxiety_triggers": loaded_soul.get("anxiety_triggers"),
+                        "behavior_with_dogs": loaded_soul.get("behavior_with_dogs"),
+                        "personality_tag": loaded_soul.get("personality_tag"),
+                        "love_language": loaded_soul.get("love_language"),
+                    }
                     logger.info(f"[SOUL LOAD] ✅ Enriched pet context for {loaded_soul.get('name')} with full soul data (soul_score: {loaded_soul.get('soul_score', 'N/A')}%)")
+                    logger.info(f"[SOUL LOAD] Key fields: {soul_fields}")
                 else:
                     logger.warning(f"[SOUL LOAD] ⚠️ Could not load soul for {pet_identifier}, using frontend context only")
             except Exception as soul_load_err:
