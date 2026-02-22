@@ -530,6 +530,121 @@ const SoulBuilder = () => {
     );
   };
   
+  // Generate "What Mira Knows" synopsis from answers - CANONICAL PROFILE
+  const generateMiraSynopsis = useCallback(() => {
+    const allAnswers = answers;
+    const synopsis = [];
+    
+    // Appetite / Food preferences
+    if (allAnswers.favorite_protein) {
+      synopsis.push({ icon: '🍖', text: `Loves ${allAnswers.favorite_protein}` });
+    }
+    if (allAnswers.food_allergies && !allAnswers.food_allergies.includes('none')) {
+      const allergies = Array.isArray(allAnswers.food_allergies) ? allAnswers.food_allergies.join(', ') : allAnswers.food_allergies;
+      synopsis.push({ icon: '⚠️', text: `Allergic to ${allergies}` });
+    }
+    
+    // Tummy / Health
+    if (allAnswers.sensitive_stomach === 'Yes' || allAnswers.health_conditions?.includes('sensitive_stomach')) {
+      synopsis.push({ icon: '🤢', text: 'Sensitive tummy' });
+    }
+    if (allAnswers.health_conditions && !allAnswers.health_conditions.includes('none')) {
+      const conditions = Array.isArray(allAnswers.health_conditions) ? allAnswers.health_conditions.filter(c => c !== 'sensitive_stomach') : [];
+      if (conditions.length > 0) {
+        synopsis.push({ icon: '💊', text: `Health: ${conditions.join(', ')}` });
+      }
+    }
+    
+    // Energy / Exercise
+    if (allAnswers.exercise_needs) {
+      synopsis.push({ icon: '⚡', text: `${allAnswers.exercise_needs} energy` });
+    }
+    
+    // Stranger comfort
+    if (allAnswers.stranger_reaction) {
+      synopsis.push({ icon: '👋', text: `${allAnswers.stranger_reaction} with strangers` });
+    }
+    
+    // Separation anxiety
+    if (allAnswers.separation_anxiety === 'yes' || allAnswers.separation_anxiety === 'Severe' || allAnswers.separation_anxiety === 'Moderate') {
+      synopsis.push({ icon: '💔', text: 'Needs company when alone' });
+    }
+    
+    // Travel comfort
+    if (allAnswers.car_rides) {
+      synopsis.push({ icon: '🚗', text: `${allAnswers.car_rides} car rides` });
+    }
+    
+    // Grooming
+    if (allAnswers.grooming_tolerance) {
+      synopsis.push({ icon: '✂️', text: `${allAnswers.grooming_tolerance} grooming` });
+    }
+    
+    // Temperament
+    if (allAnswers.general_nature || allAnswers.temperament) {
+      synopsis.push({ icon: '🎭', text: `${allAnswers.general_nature || allAnswers.temperament} personality` });
+    }
+    
+    return synopsis.slice(0, 6); // Max 6 bullets as per spec
+  }, [answers]);
+  
+  // Get top 3 traits from answers
+  const getTopTraits = useCallback(() => {
+    const traits = [];
+    if (answers.general_nature || answers.temperament) traits.push(answers.general_nature || answers.temperament);
+    if (answers.exercise_needs) traits.push(`${answers.exercise_needs} energy`);
+    if (answers.stranger_reaction) traits.push(`${answers.stranger_reaction} with people`);
+    return traits.slice(0, 3);
+  }, [answers]);
+  
+  // Navigate to Pet Home with active pet context
+  const navigateToPetHome = async () => {
+    setIsSaving(true);
+    try {
+      // Save all progress first
+      const saved = await saveSoulAnswers(answers);
+      if (!saved) {
+        console.error('[SoulBuilder] Failed to save, showing toast');
+        // Show error toast but still navigate
+        import('sonner').then(({ toast }) => {
+          toast.error("Couldn't save progress. Please try again.");
+        });
+        return;
+      }
+      
+      // Navigate with pet context
+      const petId = currentPetId;
+      if (petId) {
+        window.location.href = `/pet-home?active_pet=${petId}`;
+      } else {
+        window.location.href = '/pet-home';
+      }
+    } catch (error) {
+      console.error('[SoulBuilder] Navigation error:', error);
+      import('sonner').then(({ toast }) => {
+        toast.error("Couldn't open Home. Retry.");
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  
+  // Get unanswered questions (excluding already answered ones)
+  const getUnansweredQuestions = useCallback(() => {
+    const unanswered = [];
+    CHAPTERS.forEach(ch => {
+      ch.questions.forEach(q => {
+        // Check if question is already answered (from DB or current session)
+        const isAnswered = answeredQuestionIds.has(q.id) || 
+          (answers[q.id] && !(typeof answers[q.id] === 'object' && answers[q.id].skipped));
+        if (!isAnswered) {
+          unanswered.push({ ...q, chapterId: ch.id, chapterTitle: ch.title });
+        }
+      });
+    });
+    return unanswered;
+  }, [answeredQuestionIds, answers]);
+  
   // Handle skip - stores as { skipped: true }
   const handleSkip = () => {
     if (isAnimating) return;
