@@ -94,6 +94,28 @@ const CelebratePage = () => {
     const fetchDynamicPicks = async () => {
       if (!activePet?.name || !token) return;
       
+      // Icon name to emoji mapping
+      const iconToEmoji = {
+        'cake': '🎂',
+        'utensils': '🍽️',
+        'party-popper': '🎉',
+        'camera': '📸',
+        'gift': '🎁',
+        'heart': '💜',
+        'star': '⭐',
+        'sparkles': '✨',
+        'mug': '☕',
+        'coaster': '🎁',
+        'bandana': '🎀',
+        'portrait': '🖼️',
+        'tag': '🏷️',
+        'plush': '🧸',
+        'paw': '🐾',
+        'bone': '🦴',
+        'balloon': '🎈',
+        'confetti': '🎊'
+      };
+      
       try {
         const response = await fetch(
           `${API_URL}/api/mira/top-picks/${encodeURIComponent(activePet.name)}`,
@@ -113,7 +135,7 @@ const CelebratePage = () => {
           // Add concierge picks (personalized items)
           if (data.pillars?.celebrate?.concierge_picks) {
             celebratePicks.push(...data.pillars.celebrate.concierge_picks.slice(0, 3).map(p => ({
-              icon: p.icon || '✨',
+              icon: iconToEmoji[p.icon] || p.icon || '✨',
               name: p.name
             })));
           }
