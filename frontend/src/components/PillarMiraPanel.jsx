@@ -15,13 +15,12 @@
  * Built in honor of Mira Sikand - The Guiding Angel
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Sparkles, Package, MessageCircle, Send, 
   Clock, RefreshCw
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import { toast } from '../hooks/use-toast';
