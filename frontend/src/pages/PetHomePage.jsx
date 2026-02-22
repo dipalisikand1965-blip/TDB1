@@ -235,6 +235,10 @@ const PetHomePage = () => {
           return;
         }
         
+        // Check for active_pet in URL query params
+        const urlParams = new URLSearchParams(window.location.search);
+        const activePetId = urlParams.get('active_pet');
+        
         // Fetch user data
         const userRes = await fetch(`${API_URL}/api/auth/me`, {
           headers: { 'Authorization': `Bearer ${token}` }
@@ -261,7 +265,15 @@ const PetHomePage = () => {
           setPets(petsData);
           
           if (petsData.length > 0) {
-            const primaryPet = petsData[0];
+            // If active_pet ID provided in URL, select that pet
+            let primaryPet = petsData[0];
+            if (activePetId) {
+              const foundPet = petsData.find(p => p.id === activePetId || p._id === activePetId);
+              if (foundPet) {
+                primaryPet = foundPet;
+                console.log('[PetHome] Selected pet from URL param:', primaryPet.name);
+              }
+            }
             setSelectedPet(primaryPet);
             updatePetContext(primaryPet);
           }
@@ -293,7 +305,7 @@ const PetHomePage = () => {
     };
     
     fetchData();
-  }, [navigate]);
+  }, [navigate, updatePetContext]);
   
   // Update context when pet changes
   const updatePetContext = useCallback((pet) => {
