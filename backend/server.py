@@ -19062,3 +19062,98 @@ async def bulk_add_product_images(username: str = Depends(verify_admin)):
         "products_collection": len(products_without_images),
         "unified_products_collection": len(unified_without_images)
     }
+
+
+# ==================== MISSING ENDPOINTS FOR 100% BACKEND COVERAGE ====================
+
+@api_router.get("/membership/profile")
+async def get_membership_profile(authorization: str = Header(...)):
+    """
+    Get the current user's membership profile.
+    Alias for /api/auth/me for backward compatibility.
+    """
+    try:
+        token = authorization.split(" ")[1]
+        decoded = jwt.decode(token, os.environ.get("JWT_SECRET", "your-secret-key"), algorithms=["HS256"])
+        user_email = decoded.get("sub") or decoded.get("user_id")
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    user = await db.users.find_one({"email": user_email}, {"_id": 0, "password": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Get membership details
+    membership = user.get("membership", {})
+    
+    return {
+        "success": True,
+        "profile": {
+            "id": user.get("id"),
+            "name": user.get("full_name") or user.get("name"),
+            "email": user.get("email"),
+            "phone": user.get("phone"),
+            "membership_tier": user.get("membership_tier", membership.get("tier", "free")),
+            "membership_status": membership.get("status", "active"),
+            "paw_points": user.get("paw_points", 0),
+            "pets": user.get("pets", []),
+            "created_at": user.get("created_at"),
+            "addresses": user.get("addresses", [])
+        }
+    }
+
+
+@api_router.get("/tickets/my-tickets")
+async def get_user_tickets(
+    authorization: str = Header(...),
+    status: Optional[str] = None,
+    limit: int = 20
+):
+    """
+    Get all tickets for the current user.
+    Alias for /api/mira/my-tickets for backward compatibility.
+    """
+    try:
+        token = authorization.split(" ")[1]
+        decoded = jwt.decode(token, os.environ.get("JWT_SECRET", "your-secret-key"), algorithms=["HS256"])
+        user_email = decoded.get("sub") or decoded.get("user_id")
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    user = await db.users.find_one({"email": user_email}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user_id = user.get("id") or user.get("email")
+    
+    # Build query
+    query = {
+        "$or": [
+            {"member.id": user_id},
+            {"member.email": user_email},
+            {"user_id": user_id},
+            {"customer_email": user_email}
+        ]
+    }
+    if status:
+        query["status"] = status
+    
+    # Get tickets from multiple collections
+    service_tickets = await db.service_desk_tickets.find(
+        query, {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    mira_tickets = await db.mira_tickets.find(
+        {"$or": [{"user_id": user_id}, {"user_email": user_email}]},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Combine and sort
+    all_tickets = service_tickets + mira_tickets
+    all_tickets.sort(key=lambda x: x.get("created_at", datetime.min), reverse=True)
+    
+    return {
+        "success": True,
+        "tickets": all_tickets[:limit],
+        "count": len(all_tickets[:limit])
+    }
