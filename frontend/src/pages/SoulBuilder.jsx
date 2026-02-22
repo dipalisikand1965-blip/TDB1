@@ -823,7 +823,8 @@ const SoulBuilder = () => {
   
   // Check if user has existing pets (coming from "Keep Teaching Mira")
   const hasExistingPet = existingPets.length > 0;
-  const primaryPet = existingPets[0];
+  // Use currentPet (URL-specified) if available, otherwise fall back to first pet
+  const primaryPet = currentPet || existingPets[0];
   // Use the canonical soul score from the database
   const currentSoulScore = primaryPet?.overall_score || soulScore || 0;
   
