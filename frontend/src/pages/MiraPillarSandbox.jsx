@@ -486,24 +486,35 @@ const MiraPillarSandbox = () => {
           MIRA MODAL (Full Mira-Demo Experience)
           ═══════════════════════════════════════════════════════════════════════ */}
       {showMiraModal && (
-        <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm">
-          <div className="w-full h-full relative">
-            {/* Close button */}
-            <button
-              onClick={() => setShowMiraModal(false)}
-              className="absolute top-4 right-4 z-[100] w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors touch-manipulation"
-              data-testid="close-mira-modal"
+        <div 
+          className="fixed inset-0 z-[9999]"
+          style={{ 
+            height: '100dvh',
+            width: '100vw',
+            overflow: 'hidden'
+          }}
+        >
+          {/* Close button - fixed position so it's always visible */}
+          <button
+            onClick={() => setShowMiraModal(false)}
+            className="fixed top-4 right-4 z-[10000] w-12 h-12 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/70 transition-colors touch-manipulation border border-white/20"
+            data-testid="close-mira-modal"
+          >
+            <span className="text-white text-2xl font-light">×</span>
+          </button>
+          
+          {/* Full MiraDemoPage - takes entire viewport */}
+          <Suspense fallback={<MiraLoader />}>
+            <div 
+              style={{ 
+                height: '100dvh',
+                width: '100vw',
+                overflow: 'hidden'
+              }}
             >
-              <span className="text-white text-2xl font-light">×</span>
-            </button>
-            
-            {/* Full MiraDemoPage */}
-            <Suspense fallback={<MiraLoader />}>
-              <div className="w-full h-full">
-                <MiraDemoPage />
-              </div>
-            </Suspense>
-          </div>
+              <MiraDemoPage />
+            </div>
+          </Suspense>
         </div>
       )}
     </div>
