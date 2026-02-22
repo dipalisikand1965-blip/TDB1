@@ -1237,16 +1237,26 @@ const MiraChatWidget = ({
       {/* Chat container - MOBILE RESPONSIVE */}
       {/* Mobile: Full width, rounded top only, from bottom */}
       {/* Desktop: Side drawer, full height, fixed width on right edge */}
-      <div className={`
-        w-full sm:w-[400px] lg:w-[420px]
-        bg-white shadow-2xl overflow-hidden flex flex-col transition-all duration-300
-        rounded-t-2xl sm:rounded-none sm:border-l sm:border-gray-200
-        ${isMinimized ? 'h-16 sm:h-full' : 'h-[80vh] max-h-[calc(100vh-env(safe-area-inset-bottom)-env(safe-area-inset-top))] sm:h-full'}
-      `}>
+      <div 
+        className={`
+          w-full sm:w-[400px] lg:w-[420px]
+          bg-white shadow-2xl overflow-hidden flex flex-col transition-all duration-300
+          rounded-t-2xl sm:rounded-none sm:border-l sm:border-gray-200
+          ${isMinimized ? 'h-16 sm:h-full' : 'h-[85vh] sm:h-full'}
+        `}
+        style={{ 
+          maxHeight: 'calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))',
+          WebkitOverflowScrolling: 'touch'
+        }}
+      >
         {/* iOS Safe Area: Add padding at bottom for home indicator */}
         <style>{`
           @supports (padding-bottom: env(safe-area-inset-bottom)) {
             .mira-input-safe { padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)); }
+          }
+          @supports (-webkit-touch-callout: none) {
+            /* iOS specific fix for input focus */
+            .mira-chat-messages { -webkit-overflow-scrolling: touch; }
           }
         `}</style>
         {/* Header */}
