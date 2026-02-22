@@ -877,24 +877,36 @@ const MiraOSModal = ({
           </div>
         )}
         
-        {/* Tab Bar */}
+        {/* Tab Bar - Now Pet-First and Pillar-Aware */}
         <div className="flex border-b">
           {[
-            { id: 'picks', label: 'Picks', icon: <Sparkles className="w-4 h-4" /> },
-            { id: 'chat', label: 'Concierge®', icon: <MessageSquare className="w-4 h-4" /> },
-            { id: 'services', label: 'Services', icon: <Package className="w-4 h-4" /> }
+            { 
+              id: 'picks', 
+              label: selectedPet ? `${selectedPet.name}'s Picks` : 'Picks', 
+              icon: <Sparkles className="w-4 h-4" /> 
+            },
+            { 
+              id: 'chat', 
+              label: 'Chat with Mira', 
+              icon: <MessageSquare className="w-4 h-4" /> 
+            },
+            { 
+              id: 'services', 
+              label: selectedPet ? `${selectedPet.name}'s Services` : 'Services', 
+              icon: <Package className="w-4 h-4" /> 
+            }
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               data-testid={`mira-os-tab-${tab.id}`}
-              className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-3 text-xs sm:text-sm font-medium transition-colors flex items-center justify-center gap-1 sm:gap-1.5 ${
                 activeTab === tab.id 
                   ? 'text-purple-600 border-b-2 border-purple-600' 
                   : 'text-gray-500'
               }`}
             >
-              {tab.icon} {tab.label}
+              {tab.icon} <span className="truncate max-w-[80px] sm:max-w-none">{tab.label}</span>
             </button>
           ))}
         </div>
