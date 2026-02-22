@@ -1819,6 +1819,7 @@ const MiraChatWidget = ({
           pet={selectedPet}
           token={token}
           userEmail={user?.email}
+          pillar={pillar} // Lock to current pillar - hide other pillar tabs
           enginePillar={pillar} // Pre-filter to current pillar
           onSendSuccess={(data) => {
             // Add confirmation message to chat
