@@ -718,6 +718,45 @@ async def verify_payment(request: PaymentVerifyRequest):
     }
 
 
+@router.get("/profile")
+async def get_membership_profile(authorization: str = Header(...)):
+    """
+    Get the current user's membership profile.
+    Returns user details including membership tier, paw points, and pets.
+    """
+    db = get_db()
+    
+    try:
+        token = authorization.split(" ")[1]
+        decoded = jwt.decode(token, os.environ.get("JWT_SECRET", "your-secret-key"), algorithms=["HS256"])
+        user_email = decoded.get("sub") or decoded.get("user_id")
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    user = await db.users.find_one({"email": user_email}, {"_id": 0, "password": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Get membership details
+    membership = user.get("membership", {})
+    
+    return {
+        "success": True,
+        "profile": {
+            "id": user.get("id"),
+            "name": user.get("full_name") or user.get("name"),
+            "email": user.get("email"),
+            "phone": user.get("phone"),
+            "membership_tier": user.get("membership_tier", membership.get("tier", "free")),
+            "membership_status": membership.get("status", "active"),
+            "paw_points": user.get("paw_points", 0),
+            "pets": user.get("pets", []),
+            "created_at": user.get("created_at"),
+            "addresses": user.get("addresses", [])
+        }
+    }
+
+
 @router.get("/status")
 async def get_membership_status(email: str):
     """Get user's membership status"""
