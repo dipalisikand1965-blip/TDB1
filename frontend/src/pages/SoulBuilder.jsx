@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   ChevronLeft, ChevronRight, X, Camera, Sparkles, 
   Heart, Paw, Check, Moon, Sun, Zap, Shield,
-  Home, Plane, Utensils, GraduationCap, Star
+  Home, Plane, Utensils, GraduationCap, Star, PawPrint
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import BreedAutocomplete from '../components/BreedAutocomplete';
