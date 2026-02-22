@@ -1726,7 +1726,7 @@ const PropertyDetailsModal = ({ property, onClose, onBookNow, getBadgeColor, Paw
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-16rem)]">
           {/* Quick Stats */}
           <div className="flex flex-wrap items-center gap-4 mb-6">
-            <PawRatingDisplay rating={property.paw_rating?.overall || 0} />
+            <PawRatingDisplay rating={property.paw_rating?.overall} pawRating={property.paw_rating} />
             <span className="text-sm text-gray-500">|</span>
             <span className="text-sm font-medium text-gray-700 capitalize">
               {property.property_type}
