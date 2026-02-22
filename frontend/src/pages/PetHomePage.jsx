@@ -154,20 +154,20 @@ const PetSelector = ({ pets, selectedPet, onPetChange }) => {
             key={pet.id}
             onClick={() => onPetChange(pet)}
             data-testid={`pet-select-${pet.name?.toLowerCase()}`}
-            className={`flex items-center gap-2 px-3 py-2 rounded-full whitespace-nowrap transition-all ${
+            className={`flex items-center gap-2 px-3 py-2 rounded-full whitespace-nowrap transition-all flex-shrink-0 ${
               isSelected 
                 ? 'bg-pink-500/20 border border-pink-500 text-white' 
                 : 'bg-slate-800 border border-slate-700 text-slate-300 hover:border-slate-600'
             }`}
           >
             {pet.photo ? (
-              <img src={pet.photo} alt={pet.name} className="w-6 h-6 rounded-full object-cover" />
+              <img src={pet.photo} alt={pet.name} className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
             ) : (
-              <PawPrint className="w-4 h-4" />
+              <PawPrint className="w-4 h-4 flex-shrink-0" />
             )}
             <span className="text-sm font-medium">{pet.name}</span>
             {/* Show soul score badge */}
-            <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+            <span className={`text-xs px-1.5 py-0.5 rounded-full flex-shrink-0 ${
               petScore >= 50 
                 ? 'bg-emerald-500/30 text-emerald-300' 
                 : petScore > 0 
@@ -182,10 +182,10 @@ const PetSelector = ({ pets, selectedPet, onPetChange }) => {
       <button
         onClick={() => window.location.href = '/join'}
         data-testid="add-pet-selector-btn"
-        className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-800 border border-dashed border-slate-600 text-slate-400 hover:border-pink-500 hover:text-pink-400 whitespace-nowrap"
+        className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-800 border border-dashed border-slate-600 text-slate-400 hover:border-pink-500 hover:text-pink-400 whitespace-nowrap flex-shrink-0"
       >
         <Plus className="w-4 h-4" />
-        <span className="text-sm">Add Pet</span>
+        <span className="text-sm">Add</span>
       </button>
     </div>
   );
