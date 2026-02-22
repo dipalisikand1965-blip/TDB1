@@ -1341,7 +1341,7 @@ const MiraChatWidget = ({
                   data-testid="pet-picks-pill"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Pet Picks</span>
+                  <span>{selectedPet.name}'s Picks</span>
                 </button>
               )}
               
