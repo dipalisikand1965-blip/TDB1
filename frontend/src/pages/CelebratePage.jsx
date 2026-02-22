@@ -33,7 +33,7 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import PersonalizedPicksPanel from '../components/Mira/PersonalizedPicksPanel';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { usePillar } from '../context/PillarContext';
+import { usePillarContext } from '../context/PillarContext';
 import { toast } from 'sonner';
 import { MiraOSTrigger } from '../components/mira-os';
 
