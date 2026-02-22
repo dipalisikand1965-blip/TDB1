@@ -1279,7 +1279,7 @@ const MemberDashboard = () => {
                   {/* CTA Button */}
                   {currentPet.overall_score < 100 && (
                     <Button
-                      onClick={() => navigate(`/pet/${currentPet.id}?tab=personality`)}
+                      onClick={() => navigate(`/soul-builder?petId=${currentPet.id}&continue=true`)}
                       className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-6 py-3 rounded-full font-semibold shadow-lg shadow-purple-500/30"
                       data-testid="grow-soul-btn"
                     >
