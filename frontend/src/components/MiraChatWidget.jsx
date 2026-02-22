@@ -1715,9 +1715,9 @@ const MiraChatWidget = ({
               </div>
             )}
             
-            {/* Input Area - iOS Safe Area - Fixed positioning for mobile keyboards */}
+            {/* Input Area - iOS Safe Area - Fixed at bottom */}
             <div 
-              className="p-3 border-t bg-white shrink-0 mira-input-safe sticky bottom-0 z-10" 
+              className="p-3 border-t bg-white flex-none mira-input-safe" 
               style={{ 
                 paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))',
                 WebkitTransform: 'translateZ(0)', /* iOS rendering fix */
