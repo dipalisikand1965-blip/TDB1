@@ -1286,8 +1286,19 @@ const MiraChatWidget = ({
             </button>
             {/* Close */}
             <button
-              onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                e.preventDefault();
+                setIsOpen(false); 
+              }}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                setIsOpen(false);
+              }}
               className="w-11 h-11 sm:w-9 sm:h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 rounded-full flex items-center justify-center bg-white/20 hover:bg-white/30 transition-colors touch-manipulation active:scale-95"
+              style={{ WebkitTapHighlightColor: 'transparent' }}
+              data-testid="mira-widget-close"
             >
               <X className="w-5 h-5" />
             </button>
