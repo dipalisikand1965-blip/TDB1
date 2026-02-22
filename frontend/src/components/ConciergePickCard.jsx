@@ -66,6 +66,7 @@ const ConciergePickCard = ({
     setIsSubmitting(true);
     
     if (onArrange) {
+      // Custom handler provided
       await onArrange({
         pet,
         pillar,
@@ -73,8 +74,26 @@ const ConciergePickCard = ({
         description,
         soulReason: getPersonalizationMessage()
       });
+    } else if (addToCart) {
+      // Add to cart (default behavior)
+      addConciergeRequest({
+        pillar,
+        title,
+        petName: pet.name,
+        petId: pet.id,
+        soulReason: soulReason || '',
+        description,
+        icon
+      });
+      
+      toast({
+        title: `✨ Added to Cart`,
+        description: `${title} for ${pet.name}`,
+      });
+      
+      setIsCartOpen(true);
     } else {
-      // Default: Navigate to Mira with context
+      // Navigate to Mira with context
       const context = encodeURIComponent(
         `I'd like help with "${title}" for ${pet.name}. ${getPersonalizationMessage()}`
       );
