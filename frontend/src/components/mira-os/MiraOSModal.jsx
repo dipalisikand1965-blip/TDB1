@@ -1066,13 +1066,57 @@ const MiraOSModal = ({
             </div>
           )}
           
-          {/* Services Tab */}
+          {/* Services Tab - Pillar-Specific Concierge Services */}
           {activeTab === 'services' && (
-            <div className="p-4">
-              <div className="text-center py-8 text-gray-500">
-                <Package className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p>Services for {pillar} coming soon...</p>
+            <div className="p-4 space-y-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Package className="w-5 h-5 text-purple-500" />
+                <div>
+                  <h3 className="font-bold text-gray-900">
+                    {selectedPet?.name || 'Your'}'s {config.name} Services
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    Bespoke concierge services for {config.name.toLowerCase()}
+                  </p>
+                </div>
               </div>
+              
+              {/* Pillar-specific service cards */}
+              {PILLAR_SERVICES[pillar]?.map((service, idx) => (
+                <div 
+                  key={idx}
+                  className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white flex-shrink-0">
+                      {service.icon}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900">{service.title}</h4>
+                      <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                      <p className="text-xs text-purple-600 mt-2">
+                        Perfect for {selectedPet?.name || 'your pet'}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      // Add to concierge requests and switch to chat
+                      sendMessage(`I'd like to request ${service.title} for ${selectedPet?.name || 'my pet'}`);
+                      setActiveTab('chat');
+                    }}
+                    className="w-full mt-3 py-2.5 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-medium flex items-center justify-center gap-2"
+                  >
+                    <HandHeart className="w-4 h-4" />
+                    Let Mira Arrange This
+                  </button>
+                </div>
+              )) || (
+                <div className="text-center py-8 text-gray-500">
+                  <Package className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                  <p>No services available for {config.name} yet</p>
+                </div>
+              )}
             </div>
           )}
         </div>
