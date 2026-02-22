@@ -3,7 +3,7 @@ Membership Routes for The Doggy Company
 Handles membership purchase, management, and benefits
 """
 
-from fastapi import APIRouter, HTTPException, Request, Depends
+from fastapi import APIRouter, HTTPException, Request, Depends, Header
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
@@ -13,6 +13,7 @@ import razorpay
 import hmac
 import hashlib
 import logging
+import jwt
 
 # Initialize router
 router = APIRouter(prefix="/api/membership", tags=["Membership"])
