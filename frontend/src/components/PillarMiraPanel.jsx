@@ -491,32 +491,27 @@ const PillarMiraPanel = ({
           
           {/* Content */}
           <div className="flex-1 overflow-y-auto">
-            {/* Picks Tab */}
+            {/* Picks Tab - Now shows Concierge Picks (bespoke, creates tickets) */}
             {activeTab === 'picks' && (
-              <div className="p-4">
+              <div className="p-4 space-y-3">
                 <p className="text-sm text-gray-600 mb-4">
-                  {config.name} picks curated for {selectedPet?.name || 'your pet'}'s soul
+                  Concierge® creates these for {selectedPet?.name || 'your pet'} - handpicked based on their soul
                 </p>
                 
-                {loading ? (
-                  <div className="flex items-center justify-center py-12">
-                    <RefreshCw className="w-6 h-6 animate-spin text-purple-500" />
-                  </div>
-                ) : picks.length > 0 ? (
-                  <div className="grid grid-cols-2 gap-3">
-                    {picks.slice(0, 6).map((pick, idx) => (
-                      <ProductCard
-                        key={pick.id || idx}
-                        pick={pick}
-                        pet={selectedPet}
-                        onAddToCart={handleAddToCart}
-                      />
-                    ))}
-                  </div>
-                ) : (
+                {conciergePicks.map((pick, idx) => (
+                  <ConciergePickCard
+                    key={pick.id || idx}
+                    pick={pick}
+                    pet={selectedPet}
+                    pillar={pillar}
+                    onRequest={handleServiceRequest}
+                  />
+                ))}
+                
+                {conciergePicks.length === 0 && (
                   <div className="text-center py-12 text-gray-500">
                     <Sparkles className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                    <p>No picks yet. Chat with Mira to get personalized recommendations!</p>
+                    <p>Chat with Mira to get personalized picks!</p>
                   </div>
                 )}
               </div>
