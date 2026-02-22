@@ -8131,6 +8131,11 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
     """
     Save soul answers from the Soul Builder gamified questionnaire.
     Creates or updates a pet with all soul answers.
+    
+    CANONICAL PROFILE UPDATE:
+    - This is THE single source of truth for "What Mira knows"
+    - Answers are MERGED, never replaced (unless explicitly editing)
+    - All surfaces read from this canonical profile
     """
     try:
         user = await get_user_from_token(authorization)
@@ -8139,44 +8144,78 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
         
         data = await request.json()
         pet_name = data.get("pet_name", "")
-        soul_answers = data.get("soul_answers", {})
+        pet_id_from_request = data.get("pet_id")
+        new_soul_answers = data.get("soul_answers", {})
         soul_score = data.get("soul_score", 0)
         pet_data = data.get("pet_data", {})
+        answered_question_ids = data.get("answered_question_ids", [])
         
         if not pet_name:
             raise HTTPException(status_code=400, detail="Pet name required")
         
-        # Find or create pet
-        existing_pet = await db.pets.find_one({
-            "name": {"$regex": f"^{pet_name}$", "$options": "i"},
-            "owner_email": user.get("email", "").lower()
-        })
+        # Find existing pet by ID first, then by name
+        existing_pet = None
+        if pet_id_from_request:
+            existing_pet = await db.pets.find_one({
+                "id": pet_id_from_request,
+                "owner_email": user.get("email", "").lower()
+            })
+        
+        if not existing_pet:
+            existing_pet = await db.pets.find_one({
+                "name": {"$regex": f"^{pet_name}$", "$options": "i"},
+                "owner_email": user.get("email", "").lower()
+            })
         
         pet_id = existing_pet.get("id") if existing_pet else f"pet-{uuid.uuid4().hex[:12]}"
+        
+        # CRITICAL: Merge existing answers with new ones (NEVER overwrite, only add)
+        # This ensures questions are NEVER repeated - they're tracked and excluded
+        existing_answers = existing_pet.get("doggy_soul_answers", {}) if existing_pet else {}
+        merged_answers = {**existing_answers}
+        
+        for key, value in new_soul_answers.items():
+            # Only add if not already answered (unless it's a skipped question being re-answered)
+            if key not in merged_answers or (isinstance(merged_answers.get(key), dict) and merged_answers[key].get('skipped')):
+                merged_answers[key] = value
+            elif value and not (isinstance(value, dict) and value.get('skipped')):
+                # Update if new value is not skipped
+                merged_answers[key] = value
         
         # Build update document
         update = {
             "id": pet_id,
             "name": pet_name,
             "owner_email": user.get("email", "").lower(),
-            "doggy_soul_answers": soul_answers,
+            "doggy_soul_answers": merged_answers,
             "soul_score": soul_score,
             "overall_score": soul_score,
-            "breed": pet_data.get("breed") or data.get("breed", ""),
-            "gender": pet_data.get("gender", ""),
-            "birth_date": pet_data.get("birth_date", ""),
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "breed": pet_data.get("breed") or data.get("breed", "") or (existing_pet.get("breed") if existing_pet else ""),
+            "gender": pet_data.get("gender", "") or (existing_pet.get("gender") if existing_pet else ""),
+            "birth_date": pet_data.get("birth_date", "") or (existing_pet.get("birth_date") if existing_pet else ""),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            # Track which questions have been answered (for deduplication)
+            "answered_question_ids": list(set(
+                (existing_pet.get("answered_question_ids", []) if existing_pet else []) + 
+                answered_question_ids + 
+                [k for k, v in merged_answers.items() if v and not (isinstance(v, dict) and v.get('skipped'))]
+            ))
         }
         
-        # Extract key fields from answers into structured data
-        if soul_answers.get("food_allergies"):
-            update.setdefault("health", {})["allergies"] = [soul_answers["food_allergies"]] if isinstance(soul_answers["food_allergies"], str) else soul_answers["food_allergies"]
-        if soul_answers.get("separation_anxiety"):
-            update.setdefault("personality", {})["separation_anxiety"] = soul_answers["separation_anxiety"]
-        if soul_answers.get("loud_sounds"):
-            update.setdefault("personality", {})["noise_sensitivity"] = soul_answers["loud_sounds"]
-        if soul_answers.get("handling_comfort"):
-            update.setdefault("care", {})["handling_sensitivity"] = soul_answers["handling_comfort"]
+        # Extract key fields from answers into structured data for quick access
+        if merged_answers.get("food_allergies"):
+            allergies = merged_answers["food_allergies"]
+            update.setdefault("health", {})["allergies"] = [allergies] if isinstance(allergies, str) else allergies
+        if merged_answers.get("separation_anxiety"):
+            update.setdefault("personality", {})["separation_anxiety"] = merged_answers["separation_anxiety"]
+        if merged_answers.get("loud_sounds"):
+            update.setdefault("personality", {})["noise_sensitivity"] = merged_answers["loud_sounds"]
+        if merged_answers.get("handling_comfort"):
+            update.setdefault("care", {})["handling_sensitivity"] = merged_answers["handling_comfort"]
+        if merged_answers.get("general_nature") or merged_answers.get("temperament"):
+            update.setdefault("personality", {})["temperament"] = merged_answers.get("general_nature") or merged_answers.get("temperament")
+        if merged_answers.get("exercise_needs"):
+            update.setdefault("care", {})["exercise_needs"] = merged_answers["exercise_needs"]
         
         # Upsert pet
         await db.pets.update_one({"id": pet_id}, {"$set": update}, upsert=True)
@@ -8187,14 +8226,16 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
             {"$addToSet": {"pets": pet_id, "pet_ids": pet_id}}
         )
         
-        logger.info(f"[SOUL BUILDER] Saved {len(soul_answers)} answers for {pet_name} (score: {soul_score}%)")
+        logger.info(f"[SOUL BUILDER] Saved/merged {len(new_soul_answers)} answers for {pet_name} (total: {len(merged_answers)}, score: {soul_score}%)")
         
         return {
             "success": True,
             "pet_id": pet_id,
             "pet_name": pet_name,
-            "answers_saved": len(soul_answers),
-            "soul_score": soul_score
+            "answers_saved": len(new_soul_answers),
+            "total_answers": len(merged_answers),
+            "soul_score": soul_score,
+            "answered_question_ids": update["answered_question_ids"]
         }
     except HTTPException:
         raise
