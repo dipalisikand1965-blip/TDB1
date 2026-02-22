@@ -676,7 +676,7 @@ const MiraMeetsYourPet = () => {
           </div>
           
           {/* Breed Detection */}
-          {breedDetected && !breedConfirmed && (
+          {breedDetected && !breedConfirmed && !showBreedSelector && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -700,6 +700,32 @@ const MiraMeetsYourPet = () => {
                   Change
                 </button>
               </div>
+            </motion.div>
+          )}
+          
+          {/* No breed detected - show breed input */}
+          {!breedDetected && !breedConfirmed && !showBreedSelector && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 text-center"
+            >
+              <p className="text-slate-400 mb-2">What kind of dog is this?</p>
+              <button
+                onClick={() => setShowBreedSelector(true)}
+                className="px-6 py-2 bg-slate-800 text-white rounded-full font-medium border border-slate-700"
+              >
+                Select Breed
+              </button>
+              <button
+                onClick={() => {
+                  setBreedDetected('Mixed / Indie');
+                  setBreedConfirmed(true);
+                }}
+                className="ml-3 px-6 py-2 text-slate-400 hover:text-white"
+              >
+                Mixed / Not sure
+              </button>
             </motion.div>
           )}
           
