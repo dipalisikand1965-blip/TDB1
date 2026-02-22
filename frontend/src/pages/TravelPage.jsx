@@ -479,6 +479,25 @@ const TravelPage = () => {
       <div className="py-10 bg-gradient-to-b from-white to-purple-50/30">
         <div className="max-w-6xl mx-auto px-4">
           <PersonalizedPicks pillar="travel" />
+          
+          {/* Concierge Pick Card - Travel coordination */}
+          {selectedPets && selectedPets.length > 0 && (
+            <div className="mt-6">
+              <ConciergePickCard
+                pet={{
+                  name: selectedPets[0]?.name || 'your pet',
+                  breed: selectedPets[0]?.breed,
+                  soulTraits: selectedPets[0]?.personality_traits || []
+                }}
+                pillar="travel"
+                title={CONCIERGE_PRESETS.travel.title}
+                icon={CONCIERGE_PRESETS.travel.icon}
+                description={CONCIERGE_PRESETS.travel.description}
+                soulReason={selectedPets[0]?.car_anxiety ? 'who gets nervous during travel' : ''}
+                responseTime="2 hours"
+              />
+            </div>
+          )}
         </div>
       </div>
 
