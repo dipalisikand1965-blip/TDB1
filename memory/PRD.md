@@ -155,6 +155,18 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
    - Fixed across ALL pillar pages: Stay, Dine, Care, Fit, Travel, Learn, etc.
    - Files: All pillar pages
 
+8. **Chat Messages Going Under Header** - Conversation text hidden behind fixed elements
+   - Restructured MiraChatWidget with proper flex layout
+   - Fixed sections (pet selector, product cards, quick actions) have `flex-none shrink-0`
+   - Messages area has `flex-1 min-h-0 overflow-y-auto` for independent scrolling
+   - Files: `MiraChatWidget.jsx`
+
+9. **Stay Page Paw Ratings Showing 0.0** - Property cards showing empty ratings
+   - Added `calculateOverallPawRating` function to compute from individual scores
+   - Function calculates average of: comfort, safety, freedom, care, joy
+   - Updated `PawRatingDisplay` to accept `pawRating` prop for calculation
+   - Files: `StayPage.jsx`
+
 ---
 
 ## Test Credentials
