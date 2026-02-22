@@ -333,6 +333,8 @@ const SoulBuilder = () => {
         }
       } catch (e) { 
         console.error('[SoulBuilder] Error fetching pets:', e);
+      } finally {
+        setIsLoadingPets(false);
       }
     };
     fetchPets();
