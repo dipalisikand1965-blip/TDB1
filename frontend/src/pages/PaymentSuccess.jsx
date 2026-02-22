@@ -207,22 +207,22 @@ const PaymentSuccess = () => {
             className="space-y-3"
           >
             <Button 
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/soul-builder')}
               className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 py-6 text-lg rounded-xl font-semibold shadow-lg shadow-pink-500/30"
-              data-testid="go-to-dashboard-btn"
+              data-testid="start-soul-profile-btn"
             >
-              Go to My Dashboard
+              Start {petName || "Your Pet"}'s Soul Profile
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             
             <Button 
-              onClick={() => navigate('/ask-mira')}
+              onClick={() => navigate('/mira-demo')}
               variant="outline"
               className="w-full border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white py-6 text-lg rounded-xl"
               data-testid="chat-with-mira-btn"
             >
               <MessageCircle className="w-5 h-5 mr-2" />
-              Chat with Mira
+              Chat with Mira First
             </Button>
           </motion.div>
 
