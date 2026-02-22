@@ -30,7 +30,7 @@ import PartyPlanningWizard from '../components/PartyPlanningWizard';
 import PawmeterDisplay, { PawmeterBadge } from '../components/PawmeterDisplay';
 import SoulScoreArc from '../components/SoulScoreArc';
 import PillarPageLayout from '../components/PillarPageLayout';
-import PillarMiraPanel from '../components/PillarMiraPanel';
+import PersonalizedPicksPanel from '../components/Mira/PersonalizedPicksPanel';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
