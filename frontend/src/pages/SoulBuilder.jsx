@@ -549,18 +549,21 @@ const SoulBuilder = () => {
       }
       
       // Calculate score from all answers (including pre-existing ones)
+      // DOCTRINE: Only scoring questions count (weight > 0 and scoring: true)
       const allAnswers = { ...answers, ...currentAnswers };
       let earnedWeight = 0;
       Object.keys(allAnswers).forEach(questionId => {
         CHAPTERS.forEach(chapter => {
           const question = chapter.questions.find(q => q.id === questionId);
-          if (question && allAnswers[questionId] && 
+          // ONLY count SCORING questions
+          if (question && question.scoring && allAnswers[questionId] && 
               !(typeof allAnswers[questionId] === 'object' && allAnswers[questionId].skipped)) {
             earnedWeight += question.weight;
           }
         });
       });
-      const calculatedScore = Math.round((earnedWeight / TOTAL_WEIGHT) * 100);
+      // DOCTRINE: TOTAL_WEIGHT = 100, score is earned/100
+      const calculatedScore = Math.min(Math.round((earnedWeight / TOTAL_WEIGHT) * 100), 100);
       
       const payload = {
         pet_id: currentPetId,
