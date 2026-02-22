@@ -18,8 +18,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  X, Sparkles, Package, MessageCircle, Send, ChevronDown,
-  ShoppingCart, Heart, Clock, RefreshCw, Mic, MicOff
+  X, Sparkles, Package, MessageCircle, Send, 
+  Clock, RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
