@@ -426,6 +426,14 @@ const CelebratePage = () => {
               responseTime="2 hours"
               addToCart={false}
               onArrange={() => setIsPillarPanelOpen(true)}
+              miniPicks={[
+                { icon: '☕', name: 'Photo Mug' },
+                { icon: '🎁', name: 'Photo Coaster' },
+                { icon: '🎀', name: 'Name Bandana' },
+                { icon: '🖼️', name: 'AI Portrait' },
+                { icon: '🏷️', name: 'Collar Tag' },
+                { icon: '🧸', name: 'Lookalike Plush' }
+              ]}
             />
           </div>
         )}
