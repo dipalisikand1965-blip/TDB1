@@ -565,6 +565,27 @@ const StayPage = () => {
       <section className="py-6 bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4">
           <PersonalizedPicks pillar="stay" maxProducts={6} />
+          
+          {/* Concierge Pick Card - Personalized boarding service */}
+          {userPets && userPets[0] && (
+            <div className="mt-6">
+              <ConciergePickCard
+                pet={{
+                  name: userPets[0].name,
+                  breed: userPets[0].breed,
+                  photo: userPets[0].photo_url,
+                  soulTraits: userPets[0].personality_traits || []
+                }}
+                pillar="stay"
+                title={CONCIERGE_PRESETS.stay.title}
+                icon={CONCIERGE_PRESETS.stay.icon}
+                description={CONCIERGE_PRESETS.stay.description}
+                soulReason={userPets[0].separation_anxiety ? 'who needs extra comfort when away from home' : ''}
+                responseTime="2 hours"
+              />
+            </div>
+          )}
+          
           <PetJourneyRecommendations 
             currentPillar="stay"
           />
