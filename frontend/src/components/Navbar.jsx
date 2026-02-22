@@ -679,7 +679,7 @@ const Navbar = () => {
             </button>
             
             {/* Center: Logo + Company Name */}
-            <Link to="/" className="flex items-center gap-1.5" data-testid="navbar-logo">
+            <Link to={user ? "/pet-home" : "/"} className="flex items-center gap-1.5" data-testid="navbar-logo">
               <div className="h-8 w-8 bg-white rounded-lg p-1 flex items-center justify-center">
                 <img src="/logo-new.png" alt="The Doggy Company" className="h-6 w-6 object-contain" />
               </div>
