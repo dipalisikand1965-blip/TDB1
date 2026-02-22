@@ -499,14 +499,122 @@ const SoulBuilder = () => {
   const chapterProgress = (currentQuestion + 1) / chapter?.questions.length * 100;
   const overallProgress = ((currentChapter * 100) + chapterProgress) / CHAPTERS.length;
   
+  // Check if user has existing pets (coming from "Keep Teaching Mira")
+  const hasExistingPet = existingPets.length > 0;
+  const primaryPet = existingPets[0];
+  const currentSoulScore = primaryPet?.overall_score || 0;
+  
   // ═══════════════════════════════════════════════════════════════════════════════
   // RENDER SCREENS
   // ═══════════════════════════════════════════════════════════════════════════════
   
-  // PREBOARDING SCREEN
+  // PREBOARDING SCREEN - Different for new users vs existing users
   console.log('[SoulBuilder] Current screen:', screen);
   if (screen === 'preboarding') {
-    console.log('[SoulBuilder] Rendering preboarding screen');
+    console.log('[SoulBuilder] Rendering preboarding screen, hasExistingPet:', hasExistingPet);
+    
+    // EXISTING USER - Show what Mira already knows
+    if (hasExistingPet && primaryPet) {
+      return (
+        <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col items-center justify-center p-6" data-testid="soul-builder-returning">
+          {/* Ambient glow */}
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-purple-500/20 rounded-full blur-[120px] pointer-events-none" />
+          
+          <div className="relative z-10 max-w-md w-full text-center">
+            {/* Pet Photo & Soul Ring */}
+            <div className="relative w-32 h-32 mx-auto mb-6">
+              {primaryPet.photo ? (
+                <img src={primaryPet.photo} alt={primaryPet.name} className="w-full h-full rounded-full object-cover border-4 border-purple-500/50" />
+              ) : (
+                <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                  <PawPrint className="w-12 h-12 text-white" />
+                </div>
+              )}
+              {/* Soul Score Badge */}
+              <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-bold px-3 py-1 rounded-full">
+                {Math.round(currentSoulScore)}% Soul
+              </div>
+            </div>
+            
+            {/* Title */}
+            <h1 className="text-3xl font-light text-white mb-2">
+              Mira knows <span className="font-semibold text-purple-400">{primaryPet.name}</span>
+            </h1>
+            
+            <p className="text-white/70 text-lg mb-6">
+              {currentSoulScore < 30 
+                ? "Let's help her learn more!" 
+                : currentSoulScore < 70 
+                  ? "Good progress! Keep going to unlock better picks."
+                  : "Almost there! A few more questions for perfect picks."}
+            </p>
+            
+            {/* What Mira Already Knows */}
+            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 mb-6 text-left border border-white/10">
+              <p className="text-white/90 mb-3 text-sm font-medium">What Mira knows so far:</p>
+              <div className="space-y-2">
+                {primaryPet.breed && (
+                  <div className="flex items-center gap-2 text-white/70 text-sm">
+                    <Check className="w-4 h-4 text-green-400" />
+                    <span>{primaryPet.breed}</span>
+                  </div>
+                )}
+                {primaryPet.gender && (
+                  <div className="flex items-center gap-2 text-white/70 text-sm">
+                    <Check className="w-4 h-4 text-green-400" />
+                    <span>{primaryPet.gender === 'boy' ? 'Boy' : primaryPet.gender === 'girl' ? 'Girl' : primaryPet.gender}</span>
+                  </div>
+                )}
+                {primaryPet.doggy_soul_answers?.temperament && (
+                  <div className="flex items-center gap-2 text-white/70 text-sm">
+                    <Check className="w-4 h-4 text-green-400" />
+                    <span>{primaryPet.doggy_soul_answers.temperament} personality</span>
+                  </div>
+                )}
+                {primaryPet.doggy_soul_answers?.exercise_needs && (
+                  <div className="flex items-center gap-2 text-white/70 text-sm">
+                    <Check className="w-4 h-4 text-green-400" />
+                    <span>{primaryPet.doggy_soul_answers.exercise_needs} exercise needs</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <p className="text-white/50 text-sm mb-6">
+              The more Mira knows, the better her picks for {primaryPet.name}
+            </p>
+            
+            {/* CTA */}
+            <div className="space-y-3">
+              <button
+                onClick={() => {
+                  // Pre-fill pet data and skip to questions
+                  setPetName(primaryPet.name);
+                  setPetPhotoPreview(primaryPet.photo);
+                  setCurrentChapter(0);
+                  setCurrentQuestion(0);
+                  setScreen('chapter-intro');
+                }}
+                className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
+                data-testid="continue-learning-btn"
+              >
+                Let Mira Learn More
+              </button>
+              
+              <button
+                onClick={() => navigate('/pet-home')}
+                className="w-full py-3 px-6 bg-white/10 text-white/70 font-medium rounded-full hover:bg-white/20 transition-all"
+                data-testid="skip-to-home-btn"
+              >
+                Go to {primaryPet.name}'s Home
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    // NEW USER - Original "Meet Mira" screen
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col items-center justify-center p-6" data-testid="soul-builder-preboarding">
         {/* Ambient glow */}
@@ -559,7 +667,7 @@ const SoulBuilder = () => {
             This isn't a form. It's how Mira learns your pet.
           </p>
           
-          {/* CTA Block - button + reassurance together */}
+          {/* CTA Block */}
           <div className="mb-6">
             <button
               onClick={() => setScreen('pet-hook')}
@@ -573,10 +681,11 @@ const SoulBuilder = () => {
             </p>
           </div>
           
-          {/* Skip - lower contrast, more spacing */}
+          {/* Skip - goes to Pet Home */}
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/pet-home')}
             className="text-white/30 hover:text-white/50 transition-colors text-sm"
+            data-testid="skip-for-now-btn"
           >
             Skip for now
           </button>
