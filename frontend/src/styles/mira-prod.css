@@ -62,6 +62,24 @@
 }
 
 /* ========================================
+   STICKY HEADER CONTAINER
+   Groups Soul Ticker, Header, and Navigation
+   Stays fixed at top when scrolling
+   ======================================== */
+.mira-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, 
+    var(--mira-bg-dark) 0%, 
+    var(--mira-bg-dark) 90%,
+    rgba(15, 7, 32, 0.95) 100%
+  );
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ========================================
    HEADER - Centered
    ======================================== */
 .mp-header {
