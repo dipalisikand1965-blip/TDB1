@@ -220,6 +220,115 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
   };
 
+  // ==================== CONCIERGE REQUEST FUNCTIONS ====================
+  
+  /**
+   * Add a concierge request to the cart
+   * @param {Object} request - The concierge request object
+   * @param {string} request.pillar - Which pillar (celebrate, dine, etc.)
+   * @param {string} request.title - Service title
+   * @param {string} request.petName - Pet name
+   * @param {string} request.petId - Pet ID
+   * @param {string} request.soulReason - Personalization reason
+   * @param {string} request.description - Service description
+   * @param {string} request.icon - Emoji icon
+   */
+  const addConciergeRequest = useCallback((request) => {
+    const requestId = `concierge-${request.pillar}-${request.petId}-${Date.now()}`;
+    
+    setConciergeRequests(prev => {
+      // Check if similar request already exists
+      const exists = prev.some(r => 
+        r.pillar === request.pillar && 
+        r.petId === request.petId &&
+        r.title === request.title
+      );
+      
+      if (exists) {
+        return prev; // Don't add duplicate
+      }
+      
+      return [...prev, {
+        requestId,
+        ...request,
+        createdAt: new Date().toISOString(),
+        status: 'pending' // pending, submitted, responded
+      }];
+    });
+    
+    setIsCartOpen(true);
+  }, []);
+
+  const removeConciergeRequest = useCallback((requestId) => {
+    setConciergeRequests(prev => prev.filter(r => r.requestId !== requestId));
+  }, []);
+
+  const clearConciergeRequests = useCallback(() => {
+    setConciergeRequests([]);
+  }, []);
+
+  /**
+   * Submit all concierge requests - creates tickets and notifies
+   */
+  const submitConciergeRequests = useCallback(async () => {
+    if (conciergeRequests.length === 0) return { success: false, message: 'No requests to submit' };
+    
+    try {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      const results = [];
+      
+      for (const request of conciergeRequests) {
+        // Create a service desk ticket for each request
+        const ticketData = {
+          title: `${request.title} for ${request.petName}`,
+          description: `${request.soulReason}\n\n${request.description}`,
+          pillar: request.pillar,
+          pet_id: request.petId,
+          pet_name: request.petName,
+          source: 'concierge_cart',
+          priority: 'normal',
+          type: 'concierge_request',
+          status: 'open'
+        };
+        
+        const response = await fetch(`${API_URL}/api/tickets`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : ''
+          },
+          body: JSON.stringify(ticketData)
+        });
+        
+        if (response.ok) {
+          const ticket = await response.json();
+          results.push({ success: true, requestId: request.requestId, ticketId: ticket.id || ticket.ticket_id });
+        } else {
+          results.push({ success: false, requestId: request.requestId, error: 'Failed to create ticket' });
+        }
+      }
+      
+      // Clear submitted requests
+      const successfulIds = results.filter(r => r.success).map(r => r.requestId);
+      setConciergeRequests(prev => prev.filter(r => !successfulIds.includes(r.requestId)));
+      
+      return { 
+        success: true, 
+        message: `${successfulIds.length} concierge request(s) submitted`,
+        tickets: results.filter(r => r.success)
+      };
+    } catch (error) {
+      console.error('Error submitting concierge requests:', error);
+      return { success: false, message: error.message };
+    }
+  }, [conciergeRequests]);
+
+  const getConciergeCount = useCallback(() => {
+    return conciergeRequests.length;
+  }, [conciergeRequests]);
+
   const getCartTotal = () => {
     return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
