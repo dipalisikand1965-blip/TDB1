@@ -110,6 +110,12 @@ const StayPage = () => {
   const [heroIndex, setHeroIndex] = useState(0);
   const [userPets, setUserPets] = useState([]);
   const [selectedPets, setSelectedPets] = useState([]);
+  
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   const [filters, setFilters] = useState({
     city: '',
     propertyType: '',
