@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://mira-dine-proto.preview.emergentagent.com
+https://mira-sandbox-1.preview.emergentagent.com
 
 ---
 

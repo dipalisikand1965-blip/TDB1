@@ -2,7 +2,7 @@
 ## The Doggy Company Pet Operating System
 **Last Updated:** February 21, 2026 (Session 3)  
 **Live Site:** https://thedoggycompany.com  
-**Preview:** https://mira-dine-proto.preview.emergentagent.com
+**Preview:** https://mira-sandbox-1.preview.emergentagent.com
 
 ---
 

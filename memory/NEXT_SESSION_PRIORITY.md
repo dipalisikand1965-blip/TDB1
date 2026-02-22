@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://mira-dine-proto.preview.emergentagent.com
+**Preview URL:** https://mira-sandbox-1.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
