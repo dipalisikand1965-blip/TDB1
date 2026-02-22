@@ -475,7 +475,6 @@ const CelebratePage = () => {
       description="Mark the moments that matter to your furry friend"
       useTabNavigation={true}
       onSubcategoryChange={handleSubcategoryChange}
-      hideMiraWidget={true}
     >
 
       {/* Personalized Picks for User's Pet */}
