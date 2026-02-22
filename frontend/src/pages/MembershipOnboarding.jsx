@@ -514,9 +514,11 @@ const MembershipOnboarding = () => {
 
       // Redirect to payment with order details
       if (data.payment_url) {
+        toast.success('Account created! Redirecting to payment...');
         window.location.href = data.payment_url;
       } else if (data.order_id) {
         // Navigate to payment page with order details
+        toast.success('Account created! Complete payment to activate Pet Pass.');
         const petName = petsData[0]?.name || '';
         const petBreed = petsData[0]?.breed || '';
         const params = new URLSearchParams({
@@ -531,6 +533,7 @@ const MembershipOnboarding = () => {
         navigate(`/membership/payment?${params.toString()}`);
       } else {
         // Free plan or already processed → go to Soul Builder to deepen the profile
+        toast.success('Welcome! Let\'s build your pet\'s soul profile.');
         navigate('/soul-builder');
       }
     } catch (err) {
