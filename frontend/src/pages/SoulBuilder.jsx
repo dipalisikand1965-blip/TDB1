@@ -304,6 +304,9 @@ const SoulBuilder = () => {
   // Current pet ID (for canonical updates)
   const [currentPetId, setCurrentPetId] = useState(null);
   
+  // Current working pet object (for displaying correct score)
+  const [currentPet, setCurrentPet] = useState(null);
+  
   // Multi-pet support
   const [existingPets, setExistingPets] = useState([]);
   
