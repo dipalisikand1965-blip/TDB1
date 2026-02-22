@@ -588,8 +588,8 @@ const MiraMeetsYourPet = () => {
         
         toast.success(`${petName} has been added to your family!`);
         
-        // Navigate to dashboard
-        window.location.href = '/dashboard';
+        // Navigate to Pet Home (the landing page)
+        window.location.href = '/pet-home';
         return;
       }
       
