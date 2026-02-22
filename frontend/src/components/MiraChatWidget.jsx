@@ -1776,7 +1776,7 @@ const MiraChatWidget = ({
                 </button>
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
       
