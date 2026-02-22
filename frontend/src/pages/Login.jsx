@@ -16,8 +16,8 @@ const Login = () => {
   const location = useLocation();
   const { toast } = useToast();
   
-  // Get the return path from location state (set by ProtectedRoute) or default to /dashboard
-  const from = location.state?.from || '/dashboard';
+  // Get the return path from location state (set by ProtectedRoute) or default to /pet-home
+  const from = location.state?.from || '/pet-home';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
