@@ -712,10 +712,16 @@ const PersonalizedPicksPanel = ({
   safetyOverride = null,   // Emergency/caution state
   lastUpdated = null,      // For "Updated just now"
   // NEW: Conversation context for context-aware picks
-  conversationContext = null // { topic: "goa trip", destination: "Goa" }
+  conversationContext = null, // { topic: "goa trip", destination: "Goa" }
+  // NEW: Single pillar mode - when on a pillar page, show ONLY that pillar (no tabs for others)
+  pillar = null            // If set, locks to this pillar and hides other pillar tabs
 }) => {
-  // Use engine pillar if provided, otherwise default to celebrate
-  const [activePillar, setActivePillar] = useState(enginePillar || 'celebrate');
+  // Determine initial pillar: locked pillar > engine pillar > celebrate
+  const initialPillar = pillar || enginePillar || 'celebrate';
+  const [activePillar, setActivePillar] = useState(initialPillar);
+  
+  // If pillar is locked, always use it
+  const isPillarLocked = Boolean(pillar);
   const [picksData, setPicksData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
