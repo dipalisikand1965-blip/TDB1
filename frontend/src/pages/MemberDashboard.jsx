@@ -1101,17 +1101,17 @@ const MemberDashboard = () => {
                   </div>
                 </div>
                 
-                {/* All Pets Grid - Responsive for all devices */}
-                <div className={`grid gap-3 md:gap-4 lg:gap-6 ${
+                {/* All Pets Grid - Responsive for all devices - Fixed mobile spacing */}
+                <div className={`grid ${
                   pets.length === 1 
-                    ? 'grid-cols-1 max-w-xs mx-auto' 
+                    ? 'grid-cols-1 max-w-[200px] mx-auto' 
                     : pets.length === 2 
-                      ? 'grid-cols-2 max-w-md mx-auto gap-4' 
+                      ? 'grid-cols-2 max-w-sm mx-auto gap-3 md:gap-4' 
                       : pets.length <= 3 
-                        ? 'grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-4' 
+                        ? 'grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4' 
                         : pets.length <= 4 
-                          ? 'grid-cols-2 md:grid-cols-4 gap-3' 
-                          : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3'
+                          ? 'grid-cols-2 md:grid-cols-4 gap-2.5 md:gap-3' 
+                          : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 md:gap-3'
                 }`}>
                 {pets.map((pet) => {
                   const score = Math.round(pet.overall_score || 0);
@@ -1122,13 +1122,14 @@ const MemberDashboard = () => {
                   return (
                     <div 
                       key={pet.id}
-                      className={`relative bg-black/20 backdrop-blur-md rounded-xl md:rounded-2xl p-3 md:p-4 text-center cursor-pointer transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] border ${
+                      className={`relative bg-black/20 backdrop-blur-md rounded-xl p-2.5 md:p-4 text-center cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border touch-manipulation ${
                         isSelected 
-                          ? 'border-white/30 bg-black/40 scale-[1.02] shadow-lg shadow-white/10' 
+                          ? 'border-white/30 bg-black/40 shadow-lg shadow-white/10' 
                           : needsAttention 
                             ? 'border-yellow-400/50 hover:border-yellow-400/70 hover:bg-black/30' 
                             : 'border-white/10 hover:border-white/20 hover:bg-black/30'
                       }`}
+                      style={{ minWidth: 0 }} /* Prevent grid blowout */
                       onClick={() => navigate(`/pet/${pet.id}`)}
                       data-testid={`pet-card-${pet.name?.toLowerCase()}`}
                     >
