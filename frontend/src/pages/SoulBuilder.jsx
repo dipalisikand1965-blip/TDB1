@@ -2180,23 +2180,32 @@ const SoulBuilder = () => {
           >
             {currentChapter < CHAPTERS.length - 1 
               ? `Next: ${CHAPTERS[currentChapter + 1].title}`
-              : 'Complete Soul Profile'
+              : 'See What Mira Knows'
             }
           </button>
           
           <button
-            onClick={() => navigate('/')}
+            onClick={handleSaveAndExit}
+            disabled={isSaving}
             className="mt-4 text-white/30 hover:text-white/50 text-sm"
           >
-            Save & finish later
+            {isSaving ? 'Saving...' : 'Save & exit'}
           </button>
         </div>
       </div>
     );
   }
   
-  // FINAL COMPLETION SCREEN
+  // FINAL COMPLETION SCREEN - Redirect to KNOW_MIRA_SUMMARY
+  // The "final" screen should now go to the compulsory summary checkpoint
   if (screen === 'final') {
+    // Redirect to know_mira_summary
+    setScreen('know_mira_summary');
+    return null;
+  }
+  
+  // LEGACY FINAL SCREEN (keeping for backwards compatibility but should not be reached)
+  if (screen === 'final_legacy') {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col items-center justify-center p-6" data-testid="soul-builder-final">
         {/* Celebration glow */}
