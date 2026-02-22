@@ -18,6 +18,7 @@ import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
 import PetJourneyRecommendations from '../components/PetJourneyRecommendations';
 import PersonalizedPicks from '../components/PersonalizedPicks';
+import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import PillarPageLayout from '../components/PillarPageLayout';
 // FitPage-style engagement components
