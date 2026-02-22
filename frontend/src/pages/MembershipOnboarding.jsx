@@ -1945,15 +1945,104 @@ const MembershipOnboarding = () => {
                     </Button>
                   </div>
                   
-                  {/* Skip Payment for Demo Mode */}
+                  {/* Skip Payment for Demo Mode - Creates account and auto-logins */}
                   <div className="text-center mt-4">
                     <button
                       type="button"
-                      onClick={() => navigate('/my-pets')}
-                      className="text-sm text-slate-400 hover:text-pink-400 underline"
+                      disabled={loading}
+                      onClick={async () => {
+                        setLoading(true);
+                        setError('');
+                        
+                        try {
+                          // First create the account
+                          const response = await fetch(`${getApiUrl()}/api/membership/onboard`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              parent: {
+                                name: parentData.name,
+                                email: parentData.email,
+                                phone: parentData.phone,
+                                whatsapp: parentData.whatsapp,
+                                address: parentData.address,
+                                city: parentData.city,
+                                pincode: parentData.pincode,
+                                password: parentData.password,
+                                preferred_contact: parentData.preferredContact,
+                                notifications: parentData.notifications,
+                                accepted_terms: parentData.acceptTerms,
+                                accepted_privacy: parentData.acceptPrivacy
+                              },
+                              pets: petsData.map(pet => ({
+                                name: pet.name,
+                                breed: pet.breed,
+                                gender: pet.gender,
+                                birth_date: pet.birth_date,
+                                gotcha_date: pet.gotcha_date,
+                                weight: pet.weight ? parseFloat(pet.weight) : null,
+                                weight_unit: pet.weight_unit,
+                                is_neutered: pet.is_neutered,
+                                species: 'dog',
+                                celebrations: pet.celebrations || [],
+                                doggy_soul_answers: {
+                                  food_allergies: pet.food_allergies,
+                                  health_conditions: pet.health_conditions,
+                                  temperament: pet.temperament,
+                                  grooming_tolerance: pet.grooming_tolerance,
+                                }
+                              })),
+                              plan_type: 'demo', // Mark as demo mode
+                              pet_count: petsData.length
+                            })
+                          });
+                          
+                          const data = await response.json();
+                          
+                          if (!response.ok) {
+                            throw new Error(data.detail || 'Failed to create account');
+                          }
+                          
+                          console.log('[Demo Mode] Account created:', data);
+                          
+                          // Now auto-login with the new credentials
+                          const loginResponse = await fetch(`${getApiUrl()}/api/auth/login`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              email: parentData.email,
+                              password: parentData.password
+                            })
+                          });
+                          
+                          const loginData = await loginResponse.json();
+                          
+                          if (loginResponse.ok && loginData.access_token) {
+                            // Store the auth token
+                            localStorage.setItem('token', loginData.access_token);
+                            localStorage.setItem('user', JSON.stringify(loginData.user));
+                            
+                            toast.success(`Welcome ${parentData.name}! Let's build ${petsData[0]?.name || 'your pet'}'s soul profile.`);
+                            
+                            // Navigate to Soul Builder
+                            navigate('/soul-builder');
+                          } else {
+                            throw new Error('Auto-login failed. Please login manually.');
+                          }
+                          
+                        } catch (err) {
+                          const errorMsg = err.message || 'Something went wrong';
+                          setError(errorMsg);
+                          toast.error(errorMsg);
+                          console.error('[Demo Mode] Error:', err);
+                        } finally {
+                          setLoading(false);
+                        }
+                      }}
+                      className="text-sm text-slate-400 hover:text-pink-400 underline disabled:opacity-50"
                       data-testid="skip-payment-btn"
                     >
-                      Skip Payment (Demo Mode)
+                      {loading ? 'Creating account...' : 'Skip Payment (Demo Mode)'}
                     </button>
                   </div>
                   
