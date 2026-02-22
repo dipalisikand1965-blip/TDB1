@@ -740,6 +740,11 @@ const PersonalizedPicksPanel = ({
   const scrollRef = useRef(null);
   const undoTimeoutRef = useRef(null);
   
+  // Get pillar info - either locked pillar or all pillars
+  const displayPillars = isPillarLocked 
+    ? PILLARS.filter(p => p.id === pillar)
+    : PILLARS;
+  
   // ══════════════════════════════════════════════════════════════════════════════
   // PILLAR STATE MANAGEMENT (CRITICAL - DO NOT MODIFY WITHOUT READING BIBLE)
   // 
