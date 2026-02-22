@@ -18,6 +18,7 @@
  * - Instant "Mira now knows..." feedback after every answer
  * - Soul ring grows in real-time
  * - ALL questions compulsory (no skip)
+ * - Supports adding pets to existing accounts (skip parent info if logged in)
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
@@ -47,6 +48,20 @@ import {
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+// Check if user is already logged in
+const getExistingAuth = () => {
+  const token = localStorage.getItem('tdb_auth_token');
+  const user = localStorage.getItem('user');
+  if (token && user) {
+    try {
+      return { token, user: JSON.parse(user) };
+    } catch {
+      return null;
+    }
+  }
+  return null;
+};
 
 // Soul Questions - 13 core questions for 30-35% soul score
 const SOUL_QUESTIONS = [
