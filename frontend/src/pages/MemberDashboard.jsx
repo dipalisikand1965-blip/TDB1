@@ -1301,7 +1301,7 @@ const MemberDashboard = () => {
             orders={orders}
             user={user}
             selectedPetId={selectedPetId}
-            onNavigateToPet={(petId) => navigate(`/pet/${petId}?tab=personality`)}
+            onNavigateToPet={(petId) => navigate(`/soul-builder?petId=${petId}&continue=true`)}
             onOpenExplainer={() => {}}
           />
         </div>
