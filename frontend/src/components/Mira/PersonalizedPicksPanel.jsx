@@ -748,6 +748,8 @@ const PersonalizedPicksPanel = ({
     ? PILLARS.filter(p => p.id === pillar)
     : PILLARS;
   
+  console.log('[PersonalizedPicksPanel] displayPillars:', displayPillars.map(p => p.id), 'count:', displayPillars.length);
+  
   // ══════════════════════════════════════════════════════════════════════════════
   // PILLAR STATE MANAGEMENT (CRITICAL - DO NOT MODIFY WITHOUT READING BIBLE)
   // 
