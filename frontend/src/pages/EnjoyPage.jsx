@@ -115,6 +115,11 @@ const EnjoyPage = () => {
   const navigate = useNavigate();
   const formRef = useRef(null);
   
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   const [experiences, setExperiences] = useState([]);
   const [featuredExperiences, setFeaturedExperiences] = useState([]);
   const [products, setProducts] = useState([]);
