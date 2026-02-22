@@ -999,16 +999,17 @@ const CelebratePage = () => {
         <span>Ask Mira</span>
       </button>
       
-      {/* Pillar Mira Panel - Simplified 2-tab panel for Celebrate */}
-      <PillarMiraPanel
+      {/* Personalized Picks Panel - Locked to Celebrate pillar (no other pillar tabs shown) */}
+      <PersonalizedPicksPanel
         isOpen={isPillarPanelOpen}
         onClose={() => setIsPillarPanelOpen(false)}
         pillar="celebrate"
-        pets={userPets}
-        selectedPetId={activePet?.id}
-        onPetChange={(petId) => {
-          const pet = userPets.find(p => p.id === petId);
-          if (pet) setActivePet(pet);
+        pet={activePet}
+        token={token}
+        userEmail={user?.email}
+        onSendSuccess={(data) => {
+          console.log('[CelebratePage] Picks sent:', data);
+          setIsPillarPanelOpen(false);
         }}
       />
     </PillarPageLayout>
