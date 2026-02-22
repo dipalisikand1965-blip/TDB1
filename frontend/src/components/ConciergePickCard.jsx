@@ -182,6 +182,39 @@ const ConciergePickCard = ({
           )}
         </div>
 
+        {/* Mini Picks Preview - Shows what's inside the FAB panel */}
+        {miniPicks && miniPicks.length > 0 && (
+          <div className="mb-4">
+            <p className="text-xs text-purple-300/70 mb-2 uppercase tracking-wide">What Mira will arrange</p>
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              {miniPicks.slice(0, 5).map((pick, idx) => (
+                <div 
+                  key={idx}
+                  className="flex-shrink-0 w-16 text-center"
+                >
+                  <div 
+                    className="w-12 h-12 mx-auto rounded-xl flex items-center justify-center text-xl mb-1"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: '1px solid rgba(139, 92, 246, 0.3)'
+                    }}
+                  >
+                    {pick.icon || pick.emoji || '✨'}
+                  </div>
+                  <p className="text-[10px] text-gray-300 leading-tight line-clamp-2">
+                    {pick.name || pick.title}
+                  </p>
+                </div>
+              ))}
+              {miniPicks.length > 5 && (
+                <div className="flex-shrink-0 w-12 flex items-center justify-center">
+                  <span className="text-xs text-purple-400">+{miniPicks.length - 5}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* CTA Button */}
         <button
           onClick={handleArrangeClick}
