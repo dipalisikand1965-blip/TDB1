@@ -241,7 +241,9 @@ const PetHomePage = () => {
         });
         
         if (petsRes.ok) {
-          const petsData = await petsRes.json();
+          const petsResponse = await petsRes.json();
+          // API returns {pets: [...]} so extract the array
+          const petsData = Array.isArray(petsResponse) ? petsResponse : (petsResponse.pets || []);
           setPets(petsData);
           
           if (petsData.length > 0) {
