@@ -859,6 +859,24 @@ const AdoptPage = () => {
         </DialogContent>
       </Dialog>
       
+      {/* Concierge Pick Card - Adoption matching */}
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <ConciergePickCard
+          pet={{
+            name: 'your future companion',
+            breed: '',
+            photo: null,
+            soulTraits: []
+          }}
+          pillar="adopt"
+          title={CONCIERGE_PRESETS.adopt.title}
+          icon={CONCIERGE_PRESETS.adopt.icon}
+          description={CONCIERGE_PRESETS.adopt.description}
+          soulReason="that matches your lifestyle"
+          responseTime="24 hours"
+        />
+      </div>
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="adopt" position="bottom-left" />
       
