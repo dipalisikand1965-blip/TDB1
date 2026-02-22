@@ -28,7 +28,54 @@ import { toast } from '../hooks/use-toast';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
-// Pillar-specific services configuration
+// Pillar-specific Concierge Picks - These are bespoke, not cart items
+// These match CONCIERGE_SUGGESTIONS from the backend
+const PILLAR_CONCIERGE_PICKS = {
+  celebrate: [
+    { 
+      id: 'custom-birthday-cake',
+      icon: '🎂', 
+      title: 'Custom Allergy-Safe Birthday Cake', 
+      description: "Made to your pet's diet rules, portioned for a safe celebration",
+      spec_chip: 'Allergy-safe',
+      tags: ['Popular']
+    },
+    { 
+      id: 'pupcuterie-board',
+      icon: '🍽️', 
+      title: 'Pup-cuterie Grazing Board', 
+      description: 'A fun, photo-worthy spread with dog-safe bites only',
+      spec_chip: 'Ingredient-controlled',
+      tags: ['Gourmet']
+    },
+    { 
+      id: 'party-setup',
+      icon: '🎉', 
+      title: 'At-Home Party Set-Up', 
+      description: 'Turns your home into a pet-safe celebration zone in 30 minutes',
+      spec_chip: 'Pet-safe decor',
+      tags: []
+    },
+    { 
+      id: 'pet-photographer',
+      icon: '📸', 
+      title: 'Pet Photographer + Shoot', 
+      description: "A calm, fast shoot designed around your pet's attention span",
+      spec_chip: '30-45 min',
+      tags: ['Trending']
+    },
+    { 
+      id: 'personalised-bandana',
+      icon: '💜', 
+      title: 'Personalised Bandana/Charm', 
+      description: "A keepsake with your pet's name and your contact, sized perfectly",
+      spec_chip: 'Custom text',
+      tags: ['Meaningful']
+    }
+  ]
+};
+
+// Pillar-specific services configuration  
 const PILLAR_SERVICES = {
   celebrate: [
     { 
