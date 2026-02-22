@@ -247,10 +247,10 @@ const CelebratePage = () => {
           const data = await response.json();
           const pets = data.pets || [];
           setUserPets(pets);
-          if (pets.length > 0) {
-            setActivePet(pets[0]);
-            // Fetch soul data
-            const soulRes = await fetch(`${API_URL}/api/pets/${pets[0].id}/soul`, {
+          // Note: activePet now comes from PillarContext (synced with global pet selector)
+          // Fetch soul data for the currently selected pet
+          if (activePet?.id) {
+            const soulRes = await fetch(`${API_URL}/api/pets/${activePet.id}/soul`, {
               headers: { Authorization: `Bearer ${token}` }
             });
             if (soulRes.ok) {
