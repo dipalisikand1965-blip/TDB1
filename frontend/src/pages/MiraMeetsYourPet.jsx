@@ -1486,6 +1486,15 @@ const MiraMeetsYourPet = () => {
         animate={{ opacity: 1, scale: 1 }}
         className="min-h-screen flex flex-col items-center justify-center p-6"
       >
+        {/* Back button */}
+        <button
+          onClick={() => setScreen('soul')}
+          className="absolute top-4 left-4 p-2 rounded-full bg-slate-800 hover:bg-slate-700"
+          data-testid="payoff-back-btn"
+        >
+          <ChevronLeft className="w-5 h-5 text-white" />
+        </button>
+        
         {/* Glowing soul ring */}
         <motion.div
           initial={{ scale: 0.8 }}
