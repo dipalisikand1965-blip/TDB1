@@ -408,7 +408,7 @@ const CelebratePage = () => {
       <div className="max-w-6xl mx-auto px-4 pt-6">
         <PersonalizedPicks pillar="celebrate" maxProducts={6} />
         
-        {/* Concierge Pick Card - Always show after products */}
+        {/* Concierge Pick Card - Opens the FAB panel for full experience */}
         {activePet && (
           <div className="mt-6">
             <ConciergePickCard
@@ -425,24 +425,12 @@ const CelebratePage = () => {
               description={CONCIERGE_PRESETS.celebrate.description}
               soulReason={getSoulBasedReason(activePet, 'celebrate')}
               responseTime="2 hours"
+              addToCart={false}
+              onArrange={() => setIsPillarPanelOpen(true)}
             />
           </div>
         )}
       </div>
-
-      {/* ═══════════════════════════════════════════════════════════════════════════
-          MIRA'S PICKS FOR {PET} - Soul-aware recommendations
-          Products from catalogue + Concierge curated services
-          Refreshes based on: chat intents, seasonal, birthday, soul data
-          ═══════════════════════════════════════════════════════════════════════════ */}
-      {activePet && (
-        <div className="max-w-6xl mx-auto px-4">
-          <PillarPicksSection 
-            pillar="celebrate" 
-            pet={activePet}
-          />
-        </div>
-      )}
 
       {/* Elevated Concierge® Experiences */}
       <div className="max-w-6xl mx-auto px-4 py-10 sm:py-16">
