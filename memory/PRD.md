@@ -53,6 +53,12 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
 
 - [x] **Score Consistency Bug Fix** - Soul score matches everywhere
 
+- [x] **"Keep Teaching Mira" Button Fixed** (Feb 22, 2026)
+  - Now properly creates account/pet first, then navigates with pet context
+  - Uses `?pet={id}&continue=true` params so SoulBuilder knows which pet and to go directly to KNOW_MORE_START
+  - No more "Meet Mira" new user screen for returning users
+  - Files: `MiraMeetsYourPet.jsx`, `SoulBuilder.jsx`
+
 ### ✅ Completed (Feb 21, 2026)
 - [x] Critical data restoration (2,541 products, 716 services, 35 stays, 22 restaurants)
 - [x] Admin Service Desk ticket display fix (33 tickets)
