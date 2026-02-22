@@ -27,8 +27,20 @@ import { API_URL } from '../utils/api';
 import BreedAutocomplete from '../components/BreedAutocomplete';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SOUL BUILDER QUESTIONS - Mapped from pet_soul_routes.py
+// SOUL BUILDER QUESTIONS - Following Soul Score Doctrine (8 Golden Pillars)
+// TOTAL SCORING WEIGHT: 100 points (26 canonical fields)
+// Non-scoring fields: captured for Mira context but DON'T affect score
 // ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * SOUL SCORE DOCTRINE (from /app/memory/CANONICAL_ANSWER_SYSTEM.md):
+ * - 26 canonical scoring fields = 100 total points
+ * - Non-scoring fields are saved but don't affect score
+ * - Score = (earned_points / 100) * 100
+ * 
+ * SCORING fields are marked with `scoring: true`
+ * NON-SCORING fields are marked with `scoring: false` (Mira uses these for context)
+ */
 
 const CHAPTERS = [
   {
@@ -36,18 +48,198 @@ const CHAPTERS = [
     title: 'Identity & Temperament',
     emoji: '🎭',
     description: "Who they are at their core",
-    color: '#8B5CF6', // Purple
+    color: '#8B5CF6',
+    // Pillar 1: 15 points total (per doctrine)
     questions: [
-      { id: 'describe_3_words', question: "What are three words that describe {pet} best?", type: 'text', weight: 3 },
-      { id: 'general_nature', question: "{pet} is generally...", type: 'select', options: ['Calm', 'Curious', 'Playful', 'Shy', 'Guarded', 'Fearful', 'Highly energetic'], weight: 4 },
-      { id: 'stranger_reaction', question: "How does {pet} usually react to strangers?", type: 'select', options: ['Friendly', 'Cautious', 'Indifferent', 'Nervous', 'Protective'], weight: 3 },
-      { id: 'social_with_people', question: "How comfortable is {pet} with new people?", type: 'select', options: ['Very social - loves everyone', 'Friendly after warming up', 'Selective - only certain people', 'Shy with most people', 'Anxious around strangers'], weight: 4 },
-      { id: 'loud_sounds', question: "How does {pet} react to loud sounds?", type: 'select', options: ['Completely fine', 'Mildly anxious', 'Very anxious', 'Needs comfort'], weight: 4 },
-      { id: 'social_preference', question: "{pet} prefers...", type: 'select', options: ['Being around people', 'Being around other dogs', 'Being mostly with you', 'Being mostly independent'], weight: 3 },
-      { id: 'handling_comfort', question: "Is {pet} comfortable being handled?", type: 'select', options: ['Very comfortable', 'Sometimes uncomfortable', 'Highly sensitive'], weight: 3 },
-      { id: 'life_stage', question: "What life stage is {pet} in?", type: 'select', options: ['Puppy (0-1 year)', 'Young adult (1-3 years)', 'Adult (3-7 years)', 'Senior (7+ years)'], weight: 5 }
+      // SCORING: temperament = 8 points (maps from general_nature OR describe_3_words)
+      { id: 'general_nature', question: "{pet} is generally...", type: 'select', options: ['Calm', 'Curious', 'Playful', 'Shy', 'Guarded', 'Fearful', 'Highly energetic'], weight: 8, scoring: true, canonicalField: 'temperament' },
+      // SCORING: life_stage = 5 points
+      { id: 'life_stage', question: "What life stage is {pet} in?", type: 'select', options: ['Puppy (0-1 year)', 'Young adult (1-3 years)', 'Adult (3-7 years)', 'Senior (7+ years)'], weight: 5, scoring: true, canonicalField: 'life_stage' },
+      // SCORING: noise_sensitivity = 4 points
+      { id: 'loud_sounds', question: "How does {pet} react to loud sounds?", type: 'select', options: ['Completely fine', 'Mildly anxious', 'Very anxious', 'Needs comfort'], weight: 4, scoring: true, canonicalField: 'noise_sensitivity' },
+      // SCORING: social_with_people = 4 points
+      { id: 'stranger_reaction', question: "How does {pet} usually react to strangers?", type: 'select', options: ['Friendly', 'Cautious', 'Indifferent', 'Nervous', 'Protective'], weight: 4, scoring: true, canonicalField: 'social_with_people' },
+      // NON-SCORING: describe_3_words (Mira context only)
+      { id: 'describe_3_words', question: "What are three words that describe {pet} best?", type: 'text', weight: 0, scoring: false },
+      // NON-SCORING: social_preference (Mira context only)
+      { id: 'social_preference', question: "{pet} prefers...", type: 'select', options: ['Being around people', 'Being around other dogs', 'Being mostly with you', 'Being mostly independent'], weight: 0, scoring: false }
     ],
     confirmation: "Got it. I'll use this to guide how we approach people, handling, and new situations."
+  },
+  {
+    id: 'family',
+    title: 'Family & Pack',
+    emoji: '👨‍👩‍👧‍👦',
+    description: "Their social world",
+    color: '#EC4899',
+    // Pillar 2: 9 points total (doctrine: other_pets=2, kids_at_home=1, social_with_dogs=4, primary_bond=2)
+    questions: [
+      // SCORING: social_with_dogs = 4 points
+      { id: 'behavior_with_dogs', question: "How does {pet} behave with other dogs?", type: 'select', options: ['Loves all dogs', 'Selective friends', 'Nervous', 'Reactive'], weight: 4, scoring: true, canonicalField: 'social_with_dogs' },
+      // SCORING: other_pets = 2 points
+      { id: 'other_pets', question: "Do you have other pets at home?", type: 'select', options: ['Yes, other dogs', 'Yes, cats', 'Yes, other animals', 'Multiple pets', 'No other pets'], weight: 2, scoring: true, canonicalField: 'other_pets' },
+      // SCORING: primary_bond = 2 points
+      { id: 'most_attached_to', question: "Who is {pet} most attached to?", type: 'select', options: ['Me', 'Partner', 'Children', 'Everyone equally'], weight: 2, scoring: true, canonicalField: 'primary_bond' },
+      // SCORING: kids_at_home = 1 point
+      { id: 'kids_at_home', question: "Are there children in your household?", type: 'select', options: ['Yes, young (0-5)', 'Yes, older (6-12)', 'Yes, teenagers', 'No children'], weight: 1, scoring: true, canonicalField: 'kids_at_home' },
+      // NON-SCORING: lives_with (Mira context)
+      { id: 'lives_with', question: "{pet} lives with...", type: 'multi_select', options: ['Adults only', 'Children', 'Other dogs', 'Other pets (cats, birds, etc.)'], weight: 0, scoring: false },
+      // NON-SCORING: attention_seeking (Mira context)
+      { id: 'attention_seeking', question: "Does {pet} like being the centre of attention?", type: 'select', options: ['Yes', 'Sometimes', 'No'], weight: 0, scoring: false }
+    ],
+    confirmation: "Perfect. This helps us choose the right social settings and care arrangements."
+  },
+  {
+    id: 'rhythm',
+    title: 'Rhythm & Routine',
+    emoji: '⏰',
+    description: "Their daily patterns",
+    color: '#F59E0B',
+    // Pillar 3: 11 points total (doctrine: alone_time_comfort=5, exercise_needs=2, feeding_times=2, morning_routine=2)
+    questions: [
+      // SCORING: alone_time_comfort = 5 points (maps from separation_anxiety OR alone_comfort)
+      { id: 'separation_anxiety', question: "Does {pet} have separation anxiety?", type: 'select', options: ['No', 'Mild', 'Moderate', 'Severe'], weight: 5, scoring: true, canonicalField: 'alone_time_comfort' },
+      // SCORING: exercise_needs = 2 points
+      { id: 'exercise_needs', question: "How much daily exercise does {pet} need?", type: 'select', options: ['Light (15-30 mins)', 'Moderate (30-60 mins)', 'Active (1-2 hours)', 'Very active (2+ hours)'], weight: 2, scoring: true, canonicalField: 'exercise_needs' },
+      // SCORING: feeding_times = 2 points
+      { id: 'feeding_times', question: "When do you typically feed {pet}?", type: 'select', options: ['Once a day', 'Twice a day', 'Three times a day', 'Free feeding (grazing)'], weight: 2, scoring: true, canonicalField: 'feeding_times' },
+      // SCORING: morning_routine = 2 points
+      { id: 'morning_routine', question: "What does {pet}'s morning typically look like?", type: 'select', options: ['Early riser, ready to go', 'Slow starter, needs time', 'Excited for breakfast first', 'Morning walk is priority'], weight: 2, scoring: true, canonicalField: 'morning_routine' },
+      // NON-SCORING: walks_per_day (Mira context)
+      { id: 'walks_per_day', question: "How many walks does {pet} need per day?", type: 'select', options: ['1', '2', '3+'], weight: 0, scoring: false },
+      // NON-SCORING: energetic_time (Mira context)
+      { id: 'energetic_time', question: "What time of day is {pet} most energetic?", type: 'select', options: ['Morning', 'Afternoon', 'Evening', 'Night'], weight: 0, scoring: false },
+      // NON-SCORING: sleep_location (Mira context)
+      { id: 'sleep_location', question: "Where does {pet} usually sleep?", type: 'select', options: ['Your bed', 'Their own bed', 'Crate', 'Sofa or floor'], weight: 0, scoring: false }
+    ],
+    confirmation: "Noted. This becomes your default schedule for walks, grooming slots, and services."
+  },
+  {
+    id: 'home',
+    title: 'Home Comforts',
+    emoji: '🏠',
+    description: "Where they feel safe",
+    color: '#10B981',
+    // Pillar 4: 6 points total (doctrine: car_comfort=4, favorite_spot=2)
+    questions: [
+      // SCORING: car_comfort = 4 points
+      { id: 'car_rides', question: "Does {pet} like car rides?", type: 'select', options: ['Loves them', 'Neutral', 'Anxious', 'Gets motion sickness'], weight: 4, scoring: true, canonicalField: 'car_comfort' },
+      // SCORING: favorite_spot = 2 points
+      { id: 'favorite_spot', question: "Where is {pet}'s favourite spot at home?", type: 'select', options: ['Couch/sofa', 'Their own bed', 'Sunny window', 'Near family members', 'Under furniture', 'Outdoors/garden'], weight: 2, scoring: true, canonicalField: 'favorite_spot' },
+      // NON-SCORING: favorite_item (Mira context)
+      { id: 'favorite_item', question: "Does {pet} have a favourite item?", type: 'select', options: ['Toy', 'Blanket', 'Bed', 'None'], weight: 0, scoring: false },
+      // NON-SCORING: space_preference (Mira context)
+      { id: 'space_preference', question: "{pet} prefers...", type: 'select', options: ['Quiet spaces', 'Busy spaces', 'Outdoor time', 'Indoor time'], weight: 0, scoring: false },
+      // NON-SCORING: crate_trained (Mira context)
+      { id: 'crate_trained', question: "Is {pet} crate-trained?", type: 'select', options: ['Yes', 'No', 'In training'], weight: 0, scoring: false }
+    ],
+    confirmation: "Great. This helps us pick the right environment—home visits vs busy places, and travel style."
+  },
+  {
+    id: 'travel',
+    title: 'Travel Style',
+    emoji: '✈️',
+    description: "Adventures together",
+    color: '#3B82F6',
+    // Pillar 5: 3 points total (doctrine: travel_readiness=3)
+    questions: [
+      // SCORING: travel_readiness = 3 points
+      { id: 'usual_travel', question: "How does {pet} usually travel?", type: 'select', options: ['Car', 'Train', 'Flight (occasionally)', 'Never travels'], weight: 3, scoring: true, canonicalField: 'travel_readiness' },
+      // NON-SCORING: hotel_experience (Mira context)
+      { id: 'hotel_experience', question: "Has {pet} stayed in a hotel before?", type: 'select', options: ['Yes, loved it', 'Yes, but was anxious', 'No'], weight: 0, scoring: false },
+      // NON-SCORING: stay_preference (Mira context)
+      { id: 'stay_preference', question: "What kind of stay suits {pet} best?", type: 'select', options: ['Quiet nature hotel', 'Pet-friendly resort', 'City hotel', 'Homestay/villa'], weight: 0, scoring: false },
+      // NON-SCORING: travel_social (Mira context)
+      { id: 'travel_social', question: "During stays, {pet} prefers...", type: 'select', options: ['Private spaces', 'Social pet areas'], weight: 0, scoring: false }
+    ],
+    confirmation: "Perfect. This shapes travel picks and the kind of properties we suggest."
+  },
+  {
+    id: 'taste',
+    title: 'Taste & Treat',
+    emoji: '🍖',
+    description: "What they love to eat",
+    color: '#EF4444',
+    // Pillar 6: 19 points total (doctrine: food_allergies=10, food_motivation=3, favorite_protein=3, treat_preference=3)
+    questions: [
+      // SCORING: food_allergies = 10 points (HIGHEST - SAFETY CRITICAL)
+      { id: 'food_allergies', question: "Does {pet} have any food allergies?", type: 'multi_select', options: ['None', 'Chicken', 'Beef', 'Grains', 'Dairy', 'Fish', 'Lamb', 'Other'], weight: 10, scoring: true, canonicalField: 'food_allergies' },
+      // SCORING: food_motivation = 3 points
+      { id: 'food_motivation', question: "How food-motivated is {pet}?", type: 'select', options: ['Very - will do anything for food', 'Moderately food motivated', 'Somewhat interested', 'Not very food motivated'], weight: 3, scoring: true, canonicalField: 'food_motivation' },
+      // SCORING: favorite_protein = 3 points
+      { id: 'favorite_protein', question: "What is {pet}'s favourite protein?", type: 'select', options: ['Chicken', 'Beef', 'Lamb', 'Fish', 'Pork', 'Vegetarian/Plant-based', 'No preference'], weight: 3, scoring: true, canonicalField: 'favorite_protein' },
+      // SCORING: treat_preference = 3 points
+      { id: 'treat_preference', question: "What type of treats does {pet} prefer?", type: 'select', options: ['Soft/chewy', 'Crunchy', 'Freeze-dried', 'Fresh meat', 'Dental chews', 'Fruits/vegetables'], weight: 3, scoring: true, canonicalField: 'treat_preference' },
+      // NON-SCORING: diet_type (Mira context)
+      { id: 'diet_type', question: "What type of diet is {pet} on?", type: 'select', options: ['Kibble/dry food', 'Wet food', 'Raw diet', 'Home-cooked', 'Mixed (dry + wet)', 'Grain-free', 'Prescription diet'], weight: 0, scoring: false },
+      // NON-SCORING: sensitive_stomach (Mira context)
+      { id: 'sensitive_stomach', question: "Does {pet} have a sensitive stomach?", type: 'select', options: ['Yes', 'No', 'Sometimes'], weight: 0, scoring: false }
+    ],
+    confirmation: "Noted. We'll use this for safe picks and better food recommendations."
+  },
+  {
+    id: 'training',
+    title: 'Training & Behaviour',
+    emoji: '🎓',
+    description: "How they learn",
+    color: '#6366F1',
+    // Pillar 7: 11 points total (doctrine: energy_level=6, behavior_issues=3, training_level=3, motivation_type=2) - Note: energy_level was moved here
+    questions: [
+      // SCORING: energy_level = 6 points
+      { id: 'energy_level', question: "What is {pet}'s energy level?", type: 'select', options: ['Very high - always on the go', 'High - needs lots of activity', 'Moderate - balanced', 'Low - couch potato', 'Very low - senior pace'], weight: 6, scoring: true, canonicalField: 'energy_level' },
+      // SCORING: behavior_issues = 3 points
+      { id: 'behavior_issues', question: "Does {pet} have any behavioural issues?", type: 'multi_select', options: ['None', 'Excessive barking', 'Jumping', 'Pulling leash', 'Resource guarding', 'Aggression', 'Fear-based issues', 'Destructive behaviour'], weight: 3, scoring: true, canonicalField: 'behavior_issues' },
+      // SCORING: training_level = 3 points
+      { id: 'training_level', question: "Is {pet} trained?", type: 'select', options: ['Fully trained', 'Partially trained', 'Not trained'], weight: 3, scoring: true, canonicalField: 'training_level' },
+      // SCORING: motivation_type = 2 points
+      { id: 'motivation_type', question: "What motivates {pet} during training?", type: 'select', options: ['Treats/food', 'Praise and attention', 'Toys/play', 'A mix of everything'], weight: 2, scoring: true, canonicalField: 'motivation_type' },
+      // NON-SCORING: leash_behavior (Mira context)
+      { id: 'leash_behavior', question: "Does {pet} pull on the leash?", type: 'select', options: ['Always', 'Sometimes', 'Rarely'], weight: 0, scoring: false },
+      // NON-SCORING: barking (Mira context)
+      { id: 'barking', question: "Does {pet} bark often?", type: 'select', options: ['Yes', 'Occasionally', 'Rarely'], weight: 0, scoring: false }
+    ],
+    confirmation: "Got it. This helps us match the right trainers and routines."
+  },
+  {
+    id: 'horizon',
+    title: 'Long Horizon',
+    emoji: '🌅',
+    description: "Health & future care",
+    color: '#F472B6',
+    // Pillar 8: 17 points total (doctrine: health_conditions=8, vet_comfort=5, grooming_tolerance=4)
+    questions: [
+      // SCORING: health_conditions = 8 points (CRITICAL - SAFETY)
+      { id: 'health_conditions', question: "Does {pet} have any health conditions?", type: 'multi_select', options: ['None', 'Arthritis', 'Diabetes', 'Heart condition', 'Skin allergies', 'Hip dysplasia', 'Eye problems', 'Epilepsy', 'Other chronic condition'], weight: 8, scoring: true, canonicalField: 'health_conditions' },
+      // SCORING: vet_comfort = 5 points
+      { id: 'vet_comfort', question: "How comfortable is {pet} at the vet?", type: 'select', options: ['Very comfortable', 'Slightly nervous', 'Anxious - needs extra handling', 'Very stressed - requires sedation'], weight: 5, scoring: true, canonicalField: 'vet_comfort' },
+      // SCORING: grooming_tolerance = 4 points
+      { id: 'grooming_tolerance', question: "How does {pet} handle grooming?", type: 'select', options: ['Loves it', 'Tolerates well', 'Gets anxious', 'Very difficult'], weight: 4, scoring: true, canonicalField: 'grooming_tolerance' },
+      // NON-SCORING: vaccination_status (Mira context - important but separate tracking)
+      { id: 'vaccination_status', question: "Is {pet} up to date on vaccinations?", type: 'select', options: ['Yes, fully vaccinated', 'Partially vaccinated', 'Overdue', 'Not sure'], weight: 0, scoring: false },
+      // NON-SCORING: spayed_neutered (Mira context)
+      { id: 'spayed_neutered', question: "Is {pet} spayed/neutered?", type: 'select', options: ['Yes', 'No', 'Planning to', 'Not applicable'], weight: 0, scoring: false },
+      // NON-SCORING: medications (Mira context)
+      { id: 'medications', question: "Is {pet} currently on any medications?", type: 'select', options: ['No medications', 'Yes, daily medication', 'Yes, occasional medication', 'Yes, supplements only'], weight: 0, scoring: false },
+      // NON-SCORING: main_wish (Mira context)
+      { id: 'main_wish', question: "What do you want most for {pet}?", type: 'multi_select', options: ['Good health', 'More training', 'More travel experiences', 'More social time with other dogs'], weight: 0, scoring: false },
+      // NON-SCORING: celebration_preferences (Mira context)
+      { id: 'celebration_preferences', question: "Which celebrations would you like to celebrate?", type: 'multi_select', options: ['Birthday', 'Gotcha Day', 'Diwali', 'Holi', 'Christmas', 'New Year', "Valentine's Day", 'Raksha Bandhan'], weight: 0, scoring: false }
+    ],
+    confirmation: "Beautiful. This is how we tailor everything to the life you want for {pet}."
+  }
+];
+
+// Calculate totals - ONLY scoring questions count towards soul score
+const TOTAL_QUESTIONS = CHAPTERS.reduce((acc, ch) => acc + ch.questions.length, 0);
+const SCORING_QUESTIONS = CHAPTERS.reduce((acc, ch) => 
+  acc + ch.questions.filter(q => q.scoring).length, 0);
+const TOTAL_WEIGHT = CHAPTERS.reduce((acc, ch) => 
+  acc + ch.questions.reduce((qacc, q) => qacc + (q.scoring ? q.weight : 0), 0), 0);
+
+// Verify doctrine compliance
+console.log('[SoulBuilder] Total Questions:', TOTAL_QUESTIONS);
+console.log('[SoulBuilder] Scoring Questions:', SCORING_QUESTIONS, '(doctrine: 26)');
+console.log('[SoulBuilder] Total Weight:', TOTAL_WEIGHT, '(doctrine: 100)');
   },
   {
     id: 'family',
