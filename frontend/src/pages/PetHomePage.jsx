@@ -139,7 +139,7 @@ const TabNavigation = ({ activeTab, onTabChange }) => {
   );
 };
 
-// Pet Selector Component (for multi-pet)
+// Pet Selector Component (for multi-pet) - Shows each pet's soul score
 const PetSelector = ({ pets, selectedPet, onPetChange }) => {
   if (!pets || pets.length <= 1) return null;
   
@@ -147,10 +147,13 @@ const PetSelector = ({ pets, selectedPet, onPetChange }) => {
     <div className="flex gap-2 overflow-x-auto pb-2 px-4 -mx-4 scrollbar-hide">
       {pets.map(pet => {
         const isSelected = selectedPet?.id === pet.id;
+        const petScore = Math.round(pet.overall_score || 0);
+        
         return (
           <button
             key={pet.id}
             onClick={() => onPetChange(pet)}
+            data-testid={`pet-select-${pet.name?.toLowerCase()}`}
             className={`flex items-center gap-2 px-3 py-2 rounded-full whitespace-nowrap transition-all ${
               isSelected 
                 ? 'bg-pink-500/20 border border-pink-500 text-white' 
@@ -163,11 +166,22 @@ const PetSelector = ({ pets, selectedPet, onPetChange }) => {
               <PawPrint className="w-4 h-4" />
             )}
             <span className="text-sm font-medium">{pet.name}</span>
+            {/* Show soul score badge */}
+            <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+              petScore >= 50 
+                ? 'bg-emerald-500/30 text-emerald-300' 
+                : petScore > 0 
+                  ? 'bg-amber-500/30 text-amber-300'
+                  : 'bg-slate-600 text-slate-400'
+            }`}>
+              {petScore}%
+            </span>
           </button>
         );
       })}
       <button
         onClick={() => window.location.href = '/join'}
+        data-testid="add-pet-selector-btn"
         className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-800 border border-dashed border-slate-600 text-slate-400 hover:border-pink-500 hover:text-pink-400 whitespace-nowrap"
       >
         <Plus className="w-4 h-4" />
