@@ -203,7 +203,9 @@ const SoulBuilder = () => {
   console.log('[SoulBuilder] Component mounted');
   
   // State
-  const [screen, setScreen] = useState('preboarding'); // preboarding, pet-hook, basic-info, chapter-intro, question, chapter-complete, final
+  // Screens: preboarding, pet-hook, basic-info, chapter-intro, question, chapter-complete, 
+  //          know_mira_summary (COMPULSORY checkpoint), know_more_start, final
+  const [screen, setScreen] = useState('preboarding');
   const [petName, setPetName] = useState('');
   const [petPhoto, setPetPhoto] = useState(null);
   const [petPhotoPreview, setPetPhotoPreview] = useState(null);
@@ -224,6 +226,13 @@ const SoulBuilder = () => {
   const [textInputValue, setTextInputValue] = useState('');
   const [miraKnows, setMiraKnows] = useState([]);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  // Track questions already answered (from DB) - NEVER repeat these
+  const [answeredQuestionIds, setAnsweredQuestionIds] = useState(new Set());
+  
+  // Current pet ID (for canonical updates)
+  const [currentPetId, setCurrentPetId] = useState(null);
   
   // Multi-pet support
   const [existingPets, setExistingPets] = useState([]);
