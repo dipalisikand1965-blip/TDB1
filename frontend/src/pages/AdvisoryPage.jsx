@@ -694,6 +694,26 @@ const AdvisoryPage = () => {
         maxServices={8}
       />
       
+      {/* Concierge Pick Card - Expert consultation */}
+      {userPets && userPets[0] && (
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <ConciergePickCard
+            pet={{
+              name: userPets[0].name,
+              breed: userPets[0].breed,
+              photo: userPets[0].photo_url,
+              soulTraits: userPets[0].personality_traits || []
+            }}
+            pillar="advisory"
+            title={CONCIERGE_PRESETS.advisory.title}
+            icon={CONCIERGE_PRESETS.advisory.icon}
+            description={CONCIERGE_PRESETS.advisory.description}
+            soulReason=""
+            responseTime="4 hours"
+          />
+        </div>
+      )}
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="advisory" position="bottom-left" />
       <MiraOSTrigger pillar="advisory" position="bottom-left" />
