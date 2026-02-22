@@ -248,6 +248,12 @@ const SoulBuilder = () => {
           setIsLoadingPets(false);
           return;
         }
+        
+        // Check for URL params (pet ID and continue flag from "Keep Teaching Mira")
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetPetId = urlParams.get('pet');
+        const shouldContinue = urlParams.get('continue') === 'true';
+        
         const resp = await fetch(`${API_URL}/api/pets/my-pets`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -259,7 +265,15 @@ const SoulBuilder = () => {
           // If user just signed up and has a pet, auto-load that pet's data
           // This handles the case where they come from onboarding
           if (pets.length >= 1) {
-            const pet = pets[0];
+            // If specific pet ID passed in URL, use that; otherwise use first pet
+            let pet = pets[0];
+            if (targetPetId) {
+              const foundPet = pets.find(p => p.id === targetPetId || p._id === targetPetId);
+              if (foundPet) {
+                pet = foundPet;
+                console.log('[SoulBuilder] Using pet from URL param:', pet.name);
+              }
+            }
             console.log('[SoulBuilder] Auto-loading pet from onboarding:', pet.name);
             
             // Store pet ID for canonical updates
