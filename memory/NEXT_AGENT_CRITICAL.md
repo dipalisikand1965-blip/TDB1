@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://mira-legacy.preview.emergentagent.com
+https://soul-aware-picks.preview.emergentagent.com
 
 ---
 

@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://mira-legacy.preview.emergentagent.com
+**Preview URL:** https://soul-aware-picks.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

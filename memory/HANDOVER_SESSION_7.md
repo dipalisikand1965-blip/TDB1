@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://mira-legacy.preview.emergentagent.com
+https://soul-aware-picks.preview.emergentagent.com
 
 ---
 

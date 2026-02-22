@@ -13,7 +13,7 @@ from datetime import datetime
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://mira-legacy.preview.emergentagent.com"
+    BASE_URL = "https://soul-aware-picks.preview.emergentagent.com"
 
 
 class TestAuthLogin:
