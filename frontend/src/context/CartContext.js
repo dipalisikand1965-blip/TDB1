@@ -394,6 +394,7 @@ export const CartProvider = ({ children }) => {
 
   return (
     <CartContext.Provider value={{
+      // Product cart
       cartItems,
       addToCart,
       removeFromCart,
@@ -401,11 +402,25 @@ export const CartProvider = ({ children }) => {
       clearCart,
       getCartTotal,
       getCartCount,
+      
+      // Concierge requests
+      conciergeRequests,
+      addConciergeRequest,
+      removeConciergeRequest,
+      clearConciergeRequests,
+      submitConciergeRequests,
+      getConciergeCount,
+      
+      // Cart UI
       isCartOpen,
       setIsCartOpen,
+      
+      // User tracking
       captureEmail,
       markCartConverted,
       userEmail,
+      
+      // Autoship
       autoshipSummary
     }}>
       {children}
