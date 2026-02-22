@@ -167,6 +167,15 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
    - Updated `PawRatingDisplay` to accept `pawRating` prop for calculation
    - Files: `StayPage.jsx`
 
+10. **Stay Page Property Card Image Overlap** - Photo container overlapping content below
+    - Rewrote PropertyCard component with proper card structure
+    - Image header: fixed height (150px mobile, 180px desktop) with `overflow-hidden`
+    - Content section: separate div with `bg-white` background, no negative margins
+    - Card wrapper: `overflow-hidden rounded-2xl`
+    - Badges: Limited to 4 with +N indicator for overflow
+    - CTA buttons: Always visible at bottom with `mt-auto`
+    - Files: `StayPage.jsx`
+
 ---
 
 ## Test Credentials
