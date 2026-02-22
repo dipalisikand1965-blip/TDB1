@@ -1977,7 +1977,7 @@ const SoulBuilder = () => {
                 stroke="url(#summaryGradient)" 
                 strokeWidth="4"
                 strokeLinecap="round"
-                strokeDasharray={`${(soulScore / 100) * 415} 415`}
+                strokeDasharray={`${(currentSoulScore / 100) * 415} 415`}
                 transform="rotate(-90 70 70)"
                 style={{ filter: 'drop-shadow(0 0 8px #8B5CF6)' }}
               />
@@ -1999,7 +1999,7 @@ const SoulBuilder = () => {
             
             {/* Soul Score Badge */}
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white font-bold text-sm shadow-lg">
-              {soulScore}% Soul
+              {currentSoulScore}% Soul
             </div>
           </div>
           
