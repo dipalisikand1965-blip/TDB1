@@ -281,8 +281,6 @@ const PillarMiraPanel = ({
   
   const [activeTab, setActiveTab] = useState('picks');
   const [selectedPet, setSelectedPet] = useState(null);
-  const [picks, setPicks] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   
@@ -299,39 +297,6 @@ const PillarMiraPanel = ({
       setSelectedPet(pet);
     }
   }, [pets, selectedPetId]);
-  
-  // Fetch pillar-specific picks
-  const fetchPicks = useCallback(async () => {
-    if (!selectedPet) return;
-    
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `${API_URL}/api/mira/top-picks/${encodeURIComponent(selectedPet.name)}/pillar/${pillar}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` })
-          }
-        }
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        setPicks(data.picks || []);
-      }
-    } catch (err) {
-      console.error('[PillarMiraPanel] Error fetching picks:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedPet, pillar, token]);
-  
-  useEffect(() => {
-    if (isOpen && selectedPet) {
-      fetchPicks();
-    }
-  }, [isOpen, selectedPet, fetchPicks]);
   
   // Handle pet change
   const handlePetChange = (petId) => {
