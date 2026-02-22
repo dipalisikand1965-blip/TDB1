@@ -19,6 +19,7 @@ import MiraPicksCarousel from '../components/MiraPicksCarousel';
 import PetJourneyRecommendations from '../components/PetJourneyRecommendations';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
+import { getSoulBasedReason } from '../utils/petSoulInference';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import PillarPageLayout from '../components/PillarPageLayout';
 // FitPage-style engagement components
@@ -581,7 +582,7 @@ const StayPage = () => {
                 title={CONCIERGE_PRESETS.stay.title}
                 icon={CONCIERGE_PRESETS.stay.icon}
                 description={CONCIERGE_PRESETS.stay.description}
-                soulReason={userPets[0].separation_anxiety ? 'who needs extra comfort when away from home' : ''}
+                soulReason={getSoulBasedReason(userPets[0], 'stay')}
                 responseTime="2 hours"
               />
             </div>
