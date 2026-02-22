@@ -595,8 +595,13 @@ const MiraMeetsYourPet = () => {
         
         toast.success(`${petName} has been added to your family!`);
         
-        // Navigate to Pet Home (the landing page)
-        window.location.href = '/pet-home';
+        // Navigate to Pet Home with active pet context
+        const petId = data.pet_id || data.id;
+        if (petId) {
+          window.location.href = `/pet-home?active_pet=${petId}`;
+        } else {
+          window.location.href = '/pet-home';
+        }
         return;
       }
       
@@ -655,9 +660,14 @@ const MiraMeetsYourPet = () => {
         
         toast.success(`Welcome! ${petName}'s home is ready.`);
         
-        // Force reload to ensure AuthContext picks up the new token
-        // Navigate to Pet Home (the landing page)
-        window.location.href = '/pet-home';
+        // Navigate to Pet Home with active pet context
+        // The pet ID should be in the onboard response
+        const petId = data.pet_id || data.pets?.[0]?.id;
+        if (petId) {
+          window.location.href = `/pet-home?active_pet=${petId}`;
+        } else {
+          window.location.href = '/pet-home';
+        }
       } else {
         // Account created but login failed - redirect to login
         toast.info('Account created! Please login.');
