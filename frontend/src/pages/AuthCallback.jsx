@@ -33,9 +33,9 @@ const AuthCallback = () => {
         // Exchange session_id for user data via backend
         await loginWithGoogle(sessionId);
         
-        // Clear the hash from URL and navigate to dashboard
+        // Clear the hash from URL and navigate to pet home
         window.history.replaceState(null, '', window.location.pathname);
-        navigate('/dashboard', { replace: true });
+        navigate('/pet-home', { replace: true });
       } catch (error) {
         console.error('Google auth failed:', error);
         navigate('/login');
