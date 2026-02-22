@@ -18,10 +18,10 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense, memo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   Mic, MicOff, Send, MessageCircle, Package, Calendar, 
-  HelpCircle, Heart, Sparkles, ChevronDown, ChevronUp, ChevronRight,
+  HelpCircle, Heart, Sparkles, ChevronDown, ChevronUp, ChevronRight, ChevronLeft,
   ShoppingBag, PawPrint, Bot, History, Plus, Check, Search,
   ThumbsUp, ThumbsDown, X, Phone, Mail, MessageSquare, AlertCircle,
   Star, Crown, Gift, Volume2, VolumeX, Wand2, ArrowRight, ExternalLink, Shield,
