@@ -436,7 +436,8 @@ const CelebratePage = () => {
                 name: activePet.name,
                 breed: activePet.breed,
                 photo: activePet.photo_url,
-                soulTraits: activePet.personality_traits || []
+                soulTraits: activePet.personality_traits || [],
+                id: activePet.id
               }}
               pillar="celebrate"
               title={CONCIERGE_PRESETS.celebrate.title}
