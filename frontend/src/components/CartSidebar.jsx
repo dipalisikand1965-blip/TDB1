@@ -85,9 +85,13 @@ const CartSidebar = () => {
                   <ShoppingBag className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <span className="text-lg font-bold">Your Cart</span>
-                  {itemCount > 0 && (
-                    <p className="text-xs text-gray-500 font-normal">{itemCount} item{itemCount !== 1 ? 's' : ''}</p>
+                  <span className="text-lg font-bold">Your Requests</span>
+                  {totalItems > 0 && (
+                    <p className="text-xs text-gray-500 font-normal">
+                      {itemCount > 0 && `${itemCount} product${itemCount !== 1 ? 's' : ''}`}
+                      {itemCount > 0 && conciergeCount > 0 && ' • '}
+                      {conciergeCount > 0 && `${conciergeCount} concierge`}
+                    </p>
                   )}
                 </div>
               </div>
