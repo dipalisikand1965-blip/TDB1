@@ -1241,8 +1241,14 @@ const MiraChatWidget = ({
         w-full sm:w-[400px] lg:w-[420px]
         bg-white shadow-2xl overflow-hidden flex flex-col transition-all duration-300
         rounded-t-2xl sm:rounded-none sm:border-l sm:border-gray-200
-        ${isMinimized ? 'h-16 sm:h-full' : 'h-[85vh] sm:h-full'}
+        ${isMinimized ? 'h-16 sm:h-full' : 'h-[80vh] max-h-[calc(100vh-env(safe-area-inset-bottom)-env(safe-area-inset-top))] sm:h-full'}
       `}>
+        {/* iOS Safe Area: Add padding at bottom for home indicator */}
+        <style>{`
+          @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .mira-input-safe { padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)); }
+          }
+        `}</style>
         {/* Header */}
         <div 
           className={`bg-gradient-to-r ${config.color} text-white p-3 sm:p-4 cursor-pointer flex items-center justify-between shrink-0`}
