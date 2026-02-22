@@ -225,6 +225,95 @@ const PetHomePage = () => {
     }
   };
   
+  // Generate proactive alerts based on pet data
+  const generateAlerts = useCallback((petData) => {
+    const newAlerts = [];
+    
+    // Birthday alert
+    if (petData.birth_date) {
+      const birthDate = new Date(petData.birth_date);
+      const today = new Date();
+      const nextBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+      if (nextBirthday < today) {
+        nextBirthday.setFullYear(today.getFullYear() + 1);
+      }
+      const daysUntil = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
+      
+      if (daysUntil <= 30) {
+        newAlerts.push({
+          id: 'birthday',
+          type: 'celebration',
+          icon: Cake,
+          title: daysUntil === 0 ? `Happy Birthday ${petData.name}!` : `${petData.name}'s birthday is in ${daysUntil} days`,
+          action: '/celebrate',
+          actionLabel: 'Plan celebration'
+        });
+      }
+    }
+    
+    // Low soul score - encourage more learning
+    const score = petData.overall_score || 0;
+    if (score < 50) {
+      newAlerts.push({
+        id: 'soul-low',
+        type: 'insight',
+        icon: Sparkles,
+        title: 'Help Mira understand your pet better',
+        action: '/soul-builder',
+        actionLabel: 'Grow Soul'
+      });
+    }
+    
+    // Health reminder if no vet visits logged
+    if (!petData.last_vet_visit) {
+      newAlerts.push({
+        id: 'health-check',
+        type: 'health',
+        icon: Stethoscope,
+        title: 'Schedule a wellness check',
+        action: '/care',
+        actionLabel: 'Book visit'
+      });
+    }
+    
+    setAlerts(newAlerts.slice(0, 3));
+  }, []);
+  
+  // Update context when pet changes - MUST be defined BEFORE useEffect that uses it
+  const updatePetContext = useCallback((pet) => {
+    // USE the pet's overall_score from database (same as Dashboard shows)
+    // This is the authoritative soul score calculated by the backend
+    const dbScore = pet.overall_score || 0;
+    
+    // Fallback: calculate from answers if no overall_score
+    const soulAnswers = pet.doggy_soul_answers || {};
+    const answeredCount = Object.keys(soulAnswers).filter(k => soulAnswers[k]).length;
+    const calculatedScore = Math.min(Math.round((answeredCount / 51) * 100), 100);
+    
+    // Prefer database score, fallback to calculated
+    setSoulScore(Math.round(dbScore) || calculatedScore || 0);
+    
+    // Extract traits from soul answers or pet data
+    const extractedTraits = [];
+    if (soulAnswers.temperament || soulAnswers.general_nature) {
+      extractedTraits.push(soulAnswers.temperament || soulAnswers.general_nature);
+    }
+    if (soulAnswers.stranger_reaction) {
+      extractedTraits.push(`${soulAnswers.stranger_reaction} with strangers`);
+    }
+    if (soulAnswers.exercise_needs) {
+      extractedTraits.push(`${soulAnswers.exercise_needs} energy`);
+    }
+    // Fallback traits from pet profile
+    if (extractedTraits.length === 0 && pet.temperament) {
+      extractedTraits.push(pet.temperament);
+    }
+    setTraits(extractedTraits.slice(0, 3));
+    
+    // Generate alerts
+    generateAlerts(pet);
+  }, [generateAlerts]);
+  
   // Fetch pet and user data
   useEffect(() => {
     const fetchData = async () => {
