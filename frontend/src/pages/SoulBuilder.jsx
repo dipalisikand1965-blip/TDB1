@@ -439,20 +439,44 @@ const SoulBuilder = () => {
     }, 300);
   };
   
-  // Save soul answers to backend
-  const saveSoulAnswers = async (currentAnswers) => {
+  // Save soul answers to backend - CANONICAL SOURCE UPDATE
+  // This updates the single source of truth that all surfaces read from
+  const saveSoulAnswers = async (currentAnswers, navigateAfter = null) => {
     try {
-      const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
-      if (!token) return;
+      setIsSaving(true);
+      const token = localStorage.getItem('tdb_auth_token') || localStorage.getItem('token') || localStorage.getItem('auth_token');
+      if (!token) {
+        console.log('[SoulBuilder] No token, skipping save');
+        return false;
+      }
+      
+      // Calculate score from all answers (including pre-existing ones)
+      const allAnswers = { ...answers, ...currentAnswers };
+      let earnedWeight = 0;
+      Object.keys(allAnswers).forEach(questionId => {
+        CHAPTERS.forEach(chapter => {
+          const question = chapter.questions.find(q => q.id === questionId);
+          if (question && allAnswers[questionId] && 
+              !(typeof allAnswers[questionId] === 'object' && allAnswers[questionId].skipped)) {
+            earnedWeight += question.weight;
+          }
+        });
+      });
+      const calculatedScore = Math.round((earnedWeight / TOTAL_WEIGHT) * 100);
       
       const payload = {
+        pet_id: currentPetId,
         pet_name: petName,
         breed: petData.breed || detectedBreed,
         gender: petData.gender,
         birth_date: petData.birth_date,
-        soul_answers: currentAnswers,
-        soul_score: soulScore,
-        pet_data: petData
+        soul_answers: allAnswers,
+        soul_score: calculatedScore,
+        pet_data: petData,
+        // Mark which questions have been answered (for deduplication)
+        answered_question_ids: Object.keys(allAnswers).filter(k => 
+          allAnswers[k] && !(typeof allAnswers[k] === 'object' && allAnswers[k].skipped)
+        )
       };
       
       const response = await fetch(`${API_URL}/api/pet-soul/save-answers`, {
@@ -465,10 +489,35 @@ const SoulBuilder = () => {
       });
       
       if (response.ok) {
-        console.log('[SoulBuilder] Answers saved to backend');
+        const result = await response.json();
+        console.log('[SoulBuilder] Answers saved to canonical source. Score:', calculatedScore);
+        
+        // Update local state with the server-confirmed pet ID
+        if (result.pet_id) {
+          setCurrentPetId(result.pet_id);
+        }
+        
+        // Navigate after successful save if requested
+        if (navigateAfter === 'pet-home') {
+          // Navigate with pet context
+          const petId = result.pet_id || currentPetId;
+          if (petId) {
+            window.location.href = `/pet-home?active_pet=${petId}`;
+          } else {
+            window.location.href = '/pet-home';
+          }
+        }
+        
+        return true;
+      } else {
+        console.error('[SoulBuilder] Save failed:', await response.text());
+        return false;
       }
     } catch (error) {
-      console.log('[SoulBuilder] Save error (non-blocking):', error.message);
+      console.error('[SoulBuilder] Save error:', error.message);
+      return false;
+    } finally {
+      setIsSaving(false);
     }
   };
   
