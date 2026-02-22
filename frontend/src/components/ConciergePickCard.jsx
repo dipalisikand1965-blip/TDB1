@@ -44,6 +44,7 @@ const ConciergePickCard = ({
   className = ''
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { addConciergeRequest, setIsCartOpen } = useCart();
   const [isHovered, setIsHovered] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
