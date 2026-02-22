@@ -339,8 +339,9 @@ function AppRouter() {
         <Route path="/membership" element={<MembershipPage />} />
         
         {/* Pet Soul Onboarding - Full 4-step flow with celebrations */}
-        <Route path="/pet-soul-onboard" element={<MembershipOnboarding />} />
-        <Route path="/join" element={<MembershipOnboarding />} />
+        <Route path="/pet-soul-onboard" element={<MiraMeetsYourPet />} />
+        <Route path="/join" element={<MiraMeetsYourPet />} />
+        <Route path="/join-old" element={<MembershipOnboarding />} />
         
         {/* NEW: Magical Soul Builder - 8-chapter onboarding */}
         <Route path="/soul-builder" element={<SoulBuilder />} />
