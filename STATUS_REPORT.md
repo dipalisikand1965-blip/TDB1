@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://mira-sandbox-1.preview.emergentagent.com
+**Preview URL:** https://pet-home-hub.preview.emergentagent.com
 
 ---
 

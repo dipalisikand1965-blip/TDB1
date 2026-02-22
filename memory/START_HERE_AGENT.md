@@ -179,7 +179,7 @@ curl "$API_URL/api/pet-soul/profile/pet-99a708f1722a/quick-questions"
 
 ## 🚀 PREVIEW URL
 ```
-https://mira-sandbox-1.preview.emergentagent.com
+https://pet-home-hub.preview.emergentagent.com
 ```
 
 Key pages:

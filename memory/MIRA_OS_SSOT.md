@@ -2,7 +2,7 @@
 ## The Doggy Company Pet Operating System
 **Last Updated:** December 2025 (Session 4 - HANDOVER)  
 **Live Site:** https://thedoggycompany.com  
-**Preview:** https://mira-sandbox-1.preview.emergentagent.com
+**Preview:** https://pet-home-hub.preview.emergentagent.com
 
 ---
 

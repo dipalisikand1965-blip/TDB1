@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-sandbox-1.preview.emergentagent.com
+https://pet-home-hub.preview.emergentagent.com
 ```
 
 ---

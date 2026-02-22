@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://mira-sandbox-1.preview.emergentagent.com` |
+| **Preview** | `https://pet-home-hub.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |
