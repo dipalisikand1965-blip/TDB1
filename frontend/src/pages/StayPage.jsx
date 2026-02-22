@@ -1634,7 +1634,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, onViewDetails, o
       <div className="p-2 sm:p-3 flex flex-col flex-grow">
         {/* Paw Rating */}
         <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-          <PawRatingDisplay rating={property.paw_rating?.overall || 0} />
+          <PawRatingDisplay rating={property.paw_rating?.overall} pawRating={property.paw_rating} />
           {property.pet_policy?.pet_fee_per_night > 0 && (
             <span className="text-[10px] sm:text-sm text-gray-600">
               ₹{property.pet_policy.pet_fee_per_night}/night
