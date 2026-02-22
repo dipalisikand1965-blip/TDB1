@@ -18,6 +18,7 @@ import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import ProductCard from '../components/ProductCard';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
+import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import {
   Shield, Heart, Plane, FileText, Sparkles, Scale, Upload, Download,
   Folder, FolderOpen, File, Eye, Trash2, Bell, Calendar, Clock,
