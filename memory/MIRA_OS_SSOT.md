@@ -1,474 +1,331 @@
 # MIRA OS - Single Source of Truth (SSOT)
 ## The Doggy Company Pet Operating System
-**Last Updated:** December 2025 (Session 4)  
+**Last Updated:** December 2025 (Session 4 - HANDOVER)  
 **Live Site:** https://thedoggycompany.com  
 **Preview:** https://mira-sandbox-1.preview.emergentagent.com
 
 ---
 
-## Quick Links
-| Document | Purpose |
-|----------|---------|
-| [MASTER_INDEX.md](./MASTER_INDEX.md) | Complete system directory |
-| [MIRA_BIBLE.md](./MIRA_BIBLE.md) | AI personality & behavior |
-| [ONE_SPINE_SPEC.md](./ONE_SPINE_SPEC.md) | Architecture spec |
-| [PRD.md](./PRD.md) | Product requirements |
+## 🚨 CRITICAL HANDOVER - READ THIS FIRST
+
+### Session 4 Status: IN PROGRESS - NEW ONBOARDING BUILT BUT NEEDS FIXES
+
+**What was accomplished:**
+- Built new "Mira Meets Your Pet" onboarding component (`/app/frontend/src/pages/MiraMeetsYourPet.jsx`)
+- Replaced old 4-step form at `/join` route
+- Created tap-game style soul questions (13 questions currently)
+- Added real-time soul score ring
+- Added "Mira now knows..." feedback after each answer
+
+**What is NOT working (must fix):**
+1. "See Jenny's Home" button throws error: "Failed to execute 'json' on 'Response': body stream already read"
+2. Several UX issues identified by user testing (see below)
 
 ---
 
-## 🚀 SESSION 4 PRIORITY: "MIRA MEETS YOUR PET" ONBOARDING
+## 🐛 BUGS TO FIX (Priority Order)
 
-### The Vision
-World-class, never-done-before pet onboarding that feels like **magic, not forms**.
-- Under 3 minutes to Pet Home with ~30-35% soul score
-- One question per screen (tap game, not questionnaire)
-- Instant "Mira now knows..." feedback after every answer
-- Soul ring grows in real-time
-- Stop anytime, continue later
+### P0 - CRITICAL (Fix immediately)
 
-### The Flow
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│  STEP 1: PHOTO HOOK (30 sec)                                            │
-│  ─────────────────────────────────────────────────────────────────────  │
-│  • Upload pet photo                                                     │
-│  • AI breed detection: "Mira thinks Golden Retriever" [Confirm][Change] │
-│  • "What's their name?" → Mystique                                      │
-│  • "Do you have a pet name for them?" → Misty                          │
-├─────────────────────────────────────────────────────────────────────────┤
-│  STEP 2: PARENT INFO (60 sec)                                           │
-│  ─────────────────────────────────────────────────────────────────────  │
-│  One clean screen (not multi-step form):                                │
-│  • Name, Email, Phone, WhatsApp                                         │
-│  • City (for shipping/services)                                         │
-│  • Password                                                             │
-│  • Notification preferences (quick toggles)                             │
-│  • Terms & Privacy (one checkbox)                                       │
-├─────────────────────────────────────────────────────────────────────────┤
-│  STEP 3: SOUL GAME (2-3 min)                                            │
-│  ─────────────────────────────────────────────────────────────────────  │
-│  15 core questions, one per screen, tap chips:                          │
-│  1. Gender (Male/Female)                                                │
-│  2. Birthday or Gotcha Day (date picker)                                │
-│  3. Life stage (Puppy/Adult/Senior)                                     │
-│  4. General nature (Playful/Calm/Curious/Shy)                           │
-│  5. Stranger reaction (Friendly/Cautious/Nervous)                       │
-│  6. Food allergies (None/Chicken/Grains/etc.)                           │
-│  7. Favorite protein (Chicken/Lamb/Fish/etc.)                           │
-│  8. Exercise needs (Low/Medium/High)                                    │
-│  9. Health conditions (None/Allergies/Arthritis/etc.)                   │
-│  10. Grooming tolerance (Loves it/Tolerates/Hates it)                   │
-│  11. Separation anxiety (Yes/No/Sometimes)                              │
-│  12. Lives with (Just me/Family/Roommates)                              │
-│  13. Other pets (None/Dogs/Cats/Both)                                   │
-│  14. Spayed/Neutered (Yes/No/Not sure)                                  │
-│  15. What do you want most for {Pet}? (Free text)                       │
-│                                                                         │
-│  After each answer: "✨ Mira now knows: {one fact}"                     │
-│  Progress: Soul ring grows from 0% → ~35%                               │
-├─────────────────────────────────────────────────────────────────────────┤
-│  STEP 4: PAYOFF REVEAL (10 sec)                                         │
-│  ─────────────────────────────────────────────────────────────────────  │
-│  • Soul ring glowing at 35%                                             │
-│  • "Here's what Mira knows about Misty:" (5 bullets)                    │
-│  • [See Misty's Home →] [Keep Teaching Mira]                            │
-├─────────────────────────────────────────────────────────────────────────┤
-│  STEP 5: PET HOME (Default Landing)                                     │
-│  ─────────────────────────────────────────────────────────────────────  │
-│  A) Pet Hero: Avatar + Name + Breed + Soul Ring + 3 Traits              │
-│  B) "What would you like to do for Misty?" → Pillar shortcuts           │
-│  C) Picks button (sticky top): "Picks for Misty (3)"                    │
-│  D) Proactive alerts: Birthday/Vaccine/Grooming                         │
-│  E) Open Requests strip: "You have X open requests"                     │
-│  F) Talk to Mira CTA (fixed bottom)                                     │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+| Bug | File | Issue | Fix Required |
+|-----|------|-------|--------------|
+| **API Error on Submit** | `MiraMeetsYourPet.jsx` line ~567 | "Failed to execute 'json' on 'Response': body stream already read" | Response body is being read twice. Check `handleFinalSubmit` function - likely calling `.json()` twice on same response |
+| **Pet Home doesn't exist** | N/A | After successful submit, redirects to `/member-dashboard` but should go to new Pet Home page | Need to build `/pet-home` page OR fix redirect |
+
+### P1 - USER FEEDBACK (Must implement)
+
+| Issue | Current | Required | File to Change |
+|-------|---------|----------|----------------|
+| **Gender before Name** | Gender asked in Soul Game | Ask gender RIGHT AFTER photo, BEFORE name. So we can say "What's his name?" not "their name" | `MiraMeetsYourPet.jsx` - move gender to photo screen |
+| **Auto breed detection** | Not triggering reliably | Should auto-trigger when photo uploaded. If fails, show "What kind of dog is this?" | `MiraMeetsYourPet.jsx` - check `handlePhotoUpload` function |
+| **City field** | Dropdown with limited cities | Should be text input that allows ANY city (user could be from anywhere) | `MiraMeetsYourPet.jsx` - change from `<select>` to `<input>` |
+| **Full address needed** | Only city captured | Need full address field for shipping (House/Flat, Street, Landmark) | `MiraMeetsYourPet.jsx` - add address textarea to parent info |
+| **Birthday date capture** | Only asks "do you know birthday?" | Need actual date picker to capture the date. Also Gotcha Day option | `MiraMeetsYourPet.jsx` - add date picker component |
+| **Main goal multi-select** | Single select | User should select MULTIPLE goals for their pet | `MiraMeetsYourPet.jsx` - already changed to multiSelect: true, verify it works |
+| **Payoff shows wrong name** | Shows nickname in wrong place | "Here's what Mira knows about Muah" - should show pet name not nickname | `MiraMeetsYourPet.jsx` - fix in `renderPayoffScreen` |
+
+### P2 - ENHANCEMENTS
+
+| Issue | Details |
+|-------|---------|
+| **"Keep Teaching Mira" flow** | Should go to Soul Builder (`/soul-builder`) for remaining 38 questions. Currently broken. |
+| **No Skip option** | User said "till here compulsory (no skip)" - remove skip buttons from core flow |
+| **Progressive reveal** | User suggested: 15 questions → payoff → choice → 15 more → payoff → choice. Create milestone system. |
+
+---
+
+## 📋 COMPLETE FLOW SPECIFICATION (User Approved)
 
 ### Entry Points
-| Entry | Flow |
-|-------|------|
-| New user | Login/Signup → Mira Meets Your Pet |
-| Existing user adding pet | Pet switcher → "Add pet" → Mira Meets Your Pet |
+- **New user**: `/join` → Mira Meets Your Pet
+- **Existing user adding pet**: Pet switcher → "Add pet" → Mira Meets Your Pet
 
-### UI Rules
-- **One question per screen** - Never show a long form
-- **Tap to answer** - 3-6 chips per question
-- **Always visible**: Soul ring %, "Mira knows {Pet}", Skip button
-- **Microfeedback**: "Mira now knows: {fact}" after every answer
-- **Stop anytime**: Exit returns to Pet Home; continue later via "Grow Soul"
+### The Flow (MUST IMPLEMENT EXACTLY)
 
-### Breed Detection Rules
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  SCREEN 1: PHOTO UPLOAD                                                      │
+│  ───────────────────────────────────────────────────────────────────────────│
+│  • "Let Mira meet your pet"                                                  │
+│  • Upload photo button                                                       │
+│  • After upload: AI breed detection auto-triggers                            │
+│  • Show: "Mira thinks [Breed]" with [Confirm] [Change] buttons              │
+│  • If detection fails: "What kind of dog is this?" [Select Breed] [Mixed]   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  SCREEN 2: GENDER (Right after photo, BEFORE name)                           │
+│  ───────────────────────────────────────────────────────────────────────────│
+│  • "Is this a boy or girl?"                                                  │
+│  • [Boy ♂️] [Girl ♀️] tap chips                                              │
+│  • This enables gendered language in next screens                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  SCREEN 3: NAME + NICKNAME                                                   │
+│  ───────────────────────────────────────────────────────────────────────────│
+│  • "What's his/her name?" (use gender from previous screen)                  │
+│  • Text input for name                                                       │
+│  • "Do you have a pet name for [Name]?" (optional nickname)                  │
+│  • [Continue] button                                                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  SCREEN 4: BIRTHDAY/GOTCHA DAY                                               │
+│  ───────────────────────────────────────────────────────────────────────────│
+│  • "When did [Name] come into your life?"                                    │
+│  • [I know the birthday 🎂] → Show date picker                               │
+│  • [I know the Gotcha Day 🏠] → Show date picker                             │
+│  • [Just approximate age] → Show age selector                                │
+│  • MUST capture actual date, not just yes/no                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  SCREEN 5: PARENT INFO (One screen, all fields)                              │
+│  ───────────────────────────────────────────────────────────────────────────│
+│  • Your name                                                                 │
+│  • Email                                                                     │
+│  • Phone                                                                     │
+│  • [✓] WhatsApp same as phone (or separate field)                           │
+│  • Full Address (textarea: House/Flat, Street, Landmark)                     │
+│  • City (TEXT INPUT - allow any city, not dropdown)                          │
+│  • Pincode                                                                   │
+│  • Password                                                                  │
+│  • Notification preferences (3 toggles)                                      │
+│  • [✓] Terms & Privacy                                                       │
+│  • [Let's Go!] button                                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  SCREENS 6-18: SOUL GAME (13 questions, one per screen)                      │
+│  ───────────────────────────────────────────────────────────────────────────│
+│  Format for each:                                                            │
+│  • Top: Soul ring % + "Mira knows [Name]"                                    │
+│  • Middle: Pet photo + Question                                              │
+│  • Bottom: 3-6 tap chips                                                     │
+│  • After answer: "✨ Mira now knows: [fact]" (1.5 sec)                       │
+│  • NO SKIP BUTTONS - all questions compulsory                                │
+│                                                                              │
+│  Questions (in order):                                                       │
+│  1. Life stage (Puppy/Young/Adult/Senior)                                   │
+│  2. Temperament (Playful/Calm/Curious/Shy/Energetic/Protective)             │
+│  3. Stranger reaction (Friendly/Cautious/Nervous/Protective/Indifferent)    │
+│  4. Food allergies (multi-select: None/Chicken/Beef/Grains/Dairy/Fish)      │
+│  5. Favorite protein (Chicken/Lamb/Fish/Beef/Duck/Not sure)                 │
+│  6. Exercise needs (Low/Medium/High/Very High)                              │
+│  7. Health conditions (multi-select: None/Allergies/Arthritis/etc.)         │
+│  8. Grooming tolerance (Loves it/Tolerates/Hates it)                        │
+│  9. Separation anxiety (No/Sometimes/Yes)                                   │
+│  10. Lives with (Just me/Partner/Family/Roommates)                          │
+│  11. Other pets (None/Dogs/Cats/Both/Other)                                 │
+│  12. Spayed/Neutered (Yes/No/Not sure)                                      │
+│  13. Main goals (MULTI-SELECT: Health/Happiness/Training/Social/etc.)       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  SCREEN 19: PAYOFF REVEAL                                                    │
+│  ───────────────────────────────────────────────────────────────────────────│
+│  • Glowing soul ring with percentage (~30-35%)                               │
+│  • "[Name]'s Soul Started!"                                                  │
+│  • "Here's what Mira already knows about [Name]:" (NOT nickname here)        │
+│  • 5 bullet points summarizing answers                                       │
+│  • "Your score will grow as Mira learns more"                                │
+│  • [See [Name]'s Home →] - PRIMARY CTA                                       │
+│  • [Keep Teaching Mira] - Goes to Soul Builder for remaining 38 questions   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  SCREEN 20: PET HOME (Default landing after onboarding)                      │
+│  ───────────────────────────────────────────────────────────────────────────│
+│  • Pet Hero (photo, name, breed, soul ring, 3 traits)                        │
+│  • "What would you like to do for [Name]?" + pillar shortcuts                │
+│  • Picks button (sticky top)                                                 │
+│  • Proactive alerts (birthday/vaccine/etc.)                                  │
+│  • Open requests strip                                                       │
+│  • Talk to Mira CTA                                                          │
+│  • THIS PAGE DOES NOT EXIST YET - NEEDS TO BE BUILT                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📁 KEY FILES
+
+### New Onboarding (Session 4)
+| File | Purpose | Status |
+|------|---------|--------|
+| `/app/frontend/src/pages/MiraMeetsYourPet.jsx` | New onboarding component | Built, needs fixes |
+| `/app/frontend/src/App.js` | Routes - `/join` now points to MiraMeetsYourPet | Updated |
+
+### Existing Files (Reference)
+| File | Purpose |
+|------|---------|
+| `/app/frontend/src/pages/MembershipOnboarding.jsx` | OLD onboarding (kept at `/join-old`) |
+| `/app/frontend/src/pages/SoulBuilder.jsx` | 8-chapter soul questions (51 total) |
+| `/app/frontend/src/pages/MiraDemoPage.jsx` | Full Mira OS/POS interface |
+| `/app/frontend/src/pages/MemberDashboard.jsx` | Current dashboard (NOT Pet Home) |
+| `/app/backend/server.py` | Backend API (15,000+ lines) |
+
+### API Endpoints Used
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /api/membership/onboard` | Creates user + pet account |
+| `POST /api/auth/login` | Auto-login after account creation |
+| `POST /api/pets/detect-breed` | AI breed detection from photo |
+| `GET /api/pets/my-pets` | Fetch user's pets |
+
+---
+
+## 🔧 TECHNICAL NOTES
+
+### The API Error Fix
+The error "Failed to execute 'json' on 'Response': body stream already read" happens when you call `.json()` twice on the same fetch response. 
+
+**Location:** `MiraMeetsYourPet.jsx` → `handleFinalSubmit` function (~line 567)
+
+**Likely cause:**
 ```javascript
-{
-  breed_detected: "Golden Retriever",
-  breed_confirmed: false,        // Always false until user confirms
-  confidence_score: 0.87         // 0-1 scale
+// WRONG - reading body twice
+const data = await response.json();
+if (!response.ok) {
+  throw new Error(data.detail || 'Failed');
 }
-```
-- Confidence >0.7: "Mira thinks {Breed}" + [Confirm][Change]
-- Confidence <0.7: "Looks like {Breed} — confirm?" + [Confirm][Change]
-- Never hard-lock breed without confirm
-
-### Medical Boundaries
-If user selects serious conditions (Diabetes, Heart, Seizures):
-```
-"This is important. Would you like Mira to flag this for 
-your next vet visit or connect you to emergency care?"
-[Note for Vet Visit] [Emergency Help] [Continue]
+// ... later ...
+const loginData = await response.json(); // ERROR - body already read
 ```
 
-### Data Flow (Everything Has a Place)
-| Data | Where Asked | Where Used |
-|------|-------------|-----------|
-| Photo | Step 1 | Everywhere (avatar) |
-| Name + Nickname | Step 1 | Everywhere (formal + casual) |
-| Breed | Step 1 (AI detected) | Breed-specific tips, products |
-| Temperament | Soul Game | Service matching, care notes |
-| Food allergies | Soul Game | Dine filtering, alerts |
-| Health conditions | Soul Game | Care reminders, vet alerts |
-| Exercise needs | Soul Game | Activity recommendations |
-| Grooming tolerance | Soul Game | Service booking prep |
-
-### Pet Home as Default Landing
-| Trigger | Destination |
-|---------|-------------|
-| After onboarding | Pet Home |
-| After login | Pet Home |
-| After pillar visit | Back to Pet Home |
-| Multiple pets | Pet Home with last active pet |
-
-### Living Home Refresh
-| Trigger | What Refreshes |
-|---------|---------------|
-| Soul answer saved | Traits + Picks |
-| Order completed | Alerts |
-| Ticket resolved | Open Requests |
-| Login | Light refresh (alerts check) |
-
-When something changes: "✨ Mira learned something new about {Pet}"
-
----
-
-## 🐛 KNOWN BUGS (Priority Order)
-
-### P0 - Critical (Fix This Session)
-| Bug | Status | Details |
-|-----|--------|---------|
-| Old onboarding flow | 🔴 REPLACE | 4-step form is tedious, duplicate questions |
-| Soul Builder duplicates | 🔴 FIX | Same questions in onboarding AND Soul Builder |
-| After onboarding → wrong page | ✅ FIXED | Now auto-logins and redirects to Soul Builder |
-| User sees other user's data | ✅ FIXED | "Skip Demo" now creates account + auto-login |
-
-### P1 - Important
-| Bug | Status | Details |
-|-----|--------|---------|
-| MiraDemoPage header not sticky | ✅ FIXED | Header now sticks to top in modal |
-| Chat input not visible in modal | ✅ FIXED | Composer fixed to bottom |
-| Card layout overlap on pillars | 🟡 PARTIAL | Fixed on StayPage, need to apply to all |
-
-### P2 - Nice to Have
-| Bug | Status | Details |
-|-----|--------|---------|
-| Platform media limit | BLOCKED | Screenshot tool unusable |
-| Razorpay checkout | BLOCKED | Awaiting API keys |
-| ElevenLabs quota | FALLBACK | Using OpenAI TTS |
-
----
-
-## Session 3 Summary (Feb 21, 2026)
-
-### Critical Fixes Applied:
-
-| Issue | Status | Details |
-|-------|--------|---------|
-| ObjectId Serialization | ✅ Fixed | `/api/pets/my-pets` and `/api/pets/{id}` now sanitize MongoDB ObjectIds |
-| Soul Learning | ✅ Fixed | Conversations now write to `learned_facts` array |
-| Join Form Stuck | ✅ Fixed | Validation logic + toast notifications + error indicators |
-| Mira FAB iOS Scroll | ✅ Fixed | Safe area support + webkit scroll fix |
-| Products Always Showing | ✅ Fixed | Products only appear when user explicitly asks |
-| Voice (British English) | ✅ Fixed | Changed to Charlotte voice (XB0fDUnXU5powFXDhCwa) |
-
-### New Features:
-
-| Feature | Location | Status |
-|---------|----------|--------|
-| DineNewPage (Experimental) | `/dine-new` | ✅ Created |
-| Catalogue vs Concierge Architecture | DineNewPage | ✅ Implemented |
-| Post-Deploy Seeding API | `/api/admin/seed-mystique` | ✅ Ready |
-
----
-
-## Architecture: Catalogue vs Concierge
-
-### The Principle:
-Every pillar page has TWO sections:
-1. **Catalogue (Self-Serve)** - User browses, adds to cart, buys
-2. **Concierge Arranges (Ticket-Based)** - Creates ticket for coordination
-
-### One Spine Rule:
-Every action that's NOT pure self-serve becomes a ticket, tagged with the pillar.
-
-```
-USER ACTION
-     │
-     ├── Self-Serve? → DO IT NOW (no ticket)
-     │
-     └── Needs Coordination? → CREATE TICKET
-                                 ├── pillar: "dine"
-                                 ├── type: "meal_plan_request"
-                                 └── status: "open"
-```
-
-### Applied to Pillars:
-
-| Pillar | Self-Serve Examples | Concierge Examples |
-|--------|--------------------|--------------------|
-| DINE | Browse treats, Buy kibble | Meal plan, Nutrition consult |
-| CARE | View grooming products | Book grooming appointment |
-| CELEBRATE | Buy party supplies | Plan birthday party |
-| STAY | View boarding options | Book boarding |
-| TRAVEL | Buy travel accessories | Arrange pet transport |
-
----
-
-## Mira Components
-
-### 1. MiraAI (`MiraAI.jsx`)
-- **Location**: Global (non-pillar pages)
-- **Purpose**: Floating orb, general chat
-- **Conversation Flow**: Session persistence, pet context, personalized welcome
-
-### 2. MiraChatWidget (`MiraChatWidget.jsx`)
-- **Location**: Pillar pages (via PillarPageLayout)
-- **Purpose**: Embedded pillar-specific chat
-- **Conversation Flow**: 
-  - ✅ Products ONLY when explicitly requested
-  - ✅ Creates tickets for concierge services
-  - ✅ Pillar-aware quick actions
-
-### 3. MiraFloatingButton (`MiraFloatingButton.jsx`)
-- **Status**: Imported but not actively used
-- **Purpose**: Legacy floating button
-
----
-
-## Conversation Flow Fix
-
-### Before:
-"Mystique loves treats" → 6 products shown ❌
-
-### After:
-"Mystique loves treats" → 0 products, natural conversation ✅
-"Show me treat products" → 6 products ✅
-
-### Keywords That Trigger Products:
-```
-EXPLICIT requests only:
-- "show me products", "recommend products"
-- "buy", "purchase", "order"
-- "shopping", "shop for"
-- "what can I get", "what should I buy"
-- "kit", "bundle", "hamper"
-```
-
----
-
-## Database Schema Updates
-
-### Pet Document - New Fields:
+**Fix:**
 ```javascript
+// CORRECT - read once, store result
+const data = await response.json();
+if (!response.ok) {
+  throw new Error(data.detail || 'Failed');
+}
+// Use 'data' variable, don't call .json() again
+```
+
+### Breed Detection
+The breed detection API exists at `POST /api/pets/detect-breed`. It accepts a FormData with a file and returns:
+```json
 {
-  "learned_facts": [
-    {
-      "id": "fact-xxx",
-      "category": "preferences|loves|health",
-      "content": "Loves chicken jerky",
-      "source": "mira_conversation",
-      "confidence": 85,
-      "created_at": "2026-02-21T..."
-    }
-  ],
-  "doggy_soul_answers": {
-    "coat_type": "long",
-    "grooming_preference": "salon",
-    // ... 50+ fields
-  },
-  "doggy_soul_meta": {
-    "coat_type": { "source": "mira_conversation", "confidence": 90 }
-  }
+  "breed": "Golden Retriever",
+  "confidence": 0.87
 }
 ```
 
----
+Store these fields on the pet:
+- `breed_detected`: string
+- `breed_confirmed`: boolean (user must confirm)
+- `breed_confidence`: number (0-1)
 
-## API Endpoints - Key Updates
-
-### Soul Learning:
-```
-POST /api/mira/os/understand-with-products
-- Now extracts soul data from EVERY message
-- Writes to doggy_soul_answers + learned_facts
-- Returns: { soul_updated: true, soul_update_categories: [...] }
-```
-
-### Post-Deploy Seeding:
-```
-GET /api/admin/seed-mystique
-- Seeds: 5 learned facts, 3 vaccines, 2 meds, 5 timeline events
-- Browser-accessible (no auth required)
+### Soul Score Calculation
+Current calculation in `MiraMeetsYourPet.jsx`:
+```javascript
+const calculateSoulScore = useCallback(() => {
+  const answered = Object.keys(answers).length;
+  const total = SOUL_QUESTIONS.length; // 13 questions
+  return Math.round((answered / total) * 35); // Max 35% from onboarding
+}, [answers]);
 ```
 
-### Service Desk Tickets:
-```
-POST /api/service-desk/tickets
-Body: {
-  pillar: "dine",
-  type: "meal_plan_request",
-  title: "Custom Meal Plan",
-  pet_id: "pet-xxx"
-}
-```
+This gives ~2.7% per question. With 13 questions = ~35% max.
 
 ---
 
-## Voice Configuration
+## 🎯 NEXT STEPS (Priority Order)
 
-### Current Voice: Charlotte (British English)
-```python
-# tts_routes.py
-MIRA_VOICE_ID = "XB0fDUnXU5powFXDhCwa"  # Charlotte - British female
-```
+### Immediate (This Session)
+1. **Fix API error** in `handleFinalSubmit` - stop double-reading response body
+2. **Add gender screen** right after photo, before name
+3. **Update name screen** to use "his/her" based on gender
+4. **Add address field** to parent info (textarea for full address)
+5. **Change city** from dropdown to text input
+6. **Add birthday date picker** - capture actual dates
+7. **Fix payoff screen** - show pet name, not nickname, in "Here's what Mira knows about..."
+8. **Remove skip buttons** - make all questions compulsory
+9. **Test full flow** end to end
 
-### Voice Personalities:
-- default: Warm, caring
-- celebration: Excited, joyful
-- health: Calm, reassuring
-- comfort: Soft, empathetic
-- urgent: Clear, attention-grabbing
+### Next Priority
+10. **Build Pet Home page** (`/pet-home`) - the default landing after onboarding
+11. **Connect "Keep Teaching Mira"** to Soul Builder for remaining questions
+12. **Add milestone system** - every 15 questions, show payoff, let user continue or exit
+
+### Future
+- Apply card layout fixes to all pillar pages
+- Build unified Mira architecture for all pillars
+- Activate Birthday Engine, WhatsApp integration
+- Razorpay payment integration
 
 ---
 
-## Testing Credentials
+## 🔑 CREDENTIALS
 
 | Type | Email/Username | Password |
 |------|----------------|----------|
-| Member | dipali@clubconcierge.in | test123 |
+| Member Test | dipali@clubconcierge.in | test123 |
 | Admin | aditya | lola4304 |
 
 ---
 
-## Files Modified This Session
+## 📊 DATABASE COLLECTIONS
 
-### Backend:
-- `server.py` - ObjectId sanitization, seed-mystique endpoint
-- `mira_routes.py` - Product intent detection, soul learning
-- `soul_first_logic.py` - learned_facts population
-- `tts_routes.py` - British voice (Charlotte)
-
-### Frontend:
-- `MembershipOnboarding.jsx` - Form validation + toast
-- `MiraChatWidget.jsx` - iOS scroll fix, safe area
-- `MemberDashboard.jsx` - Grid responsive fix
-- `index.css` - Mobile font scaling
-- `DineNewPage.jsx` - NEW experimental page
+| Collection | Purpose |
+|------------|---------|
+| `users` | User accounts with pets array |
+| `pets` | Pet profiles with soul_answers |
+| `products_master` | 2,541 products |
+| `services_master` | Services catalog |
+| `service_desk_tickets` | Support tickets |
 
 ---
 
-## Experimental: DineNewPage
+## ⚠️ KNOWN BLOCKERS
 
-### Location: `/dine-new`
-### Architecture:
-```
-┌─────────────────────────────────────────────┐
-│  DINE HERO - "What's Mystique craving?"     │
-├─────────────────────────────────────────────┤
-│  QUICK ACTIONS                              │
-│  [Meal Plan*] [Fresh Food] [Treats] [Ask*]  │
-│  (* = creates ticket)                       │
-├─────────────────────────────────────────────┤
-│  📦 SHOP NOW (Self-Serve)                   │
-│  - Fresh Picks for Mystique                 │
-│  - Training Treats                          │
-│  - Smart Tools (calculators, checkers)      │
-├─────────────────────────────────────────────┤
-│  ✨ CONCIERGE ARRANGES (Creates Tickets)    │
-│  - Custom Meal Plan                         │
-│  - Nutrition Consultation                   │
-│  - Allergy & Special Diet                   │
-│  - Fresh Food Subscription                  │
-├─────────────────────────────────────────────┤
-│  📦 PANTRY TRACKER                          │
-│  🍽️ DINING OUT                             │
-└─────────────────────────────────────────────┘
-```
+| Blocker | Impact | Workaround |
+|---------|--------|-----------|
+| Platform media limit | Screenshot tool blocked | Use testing agent or manual testing |
+| Razorpay keys | Payment flow untested | Use "Skip Demo" mode |
+| ElevenLabs quota | TTS limited | Falls back to OpenAI TTS |
 
 ---
 
-## Post-Deployment Checklist
+## 📝 SESSION 4 SUMMARY
 
-### After deploying to production:
+**Started:** Building world-class onboarding to replace old 4-step form
 
-1. **Seed Mystique's data:**
-   ```
-   https://thedoggycompany.com/api/admin/seed-mystique
-   ```
+**Built:**
+- New `MiraMeetsYourPet.jsx` component with photo upload, breed detection, soul game
+- 13-question tap game with real-time soul score
+- "Mira now knows..." feedback after each answer
+- Payoff reveal screen with summary bullets
 
-2. **Verify Soul Learning:**
-   - Go to `/mira-demo`
-   - Chat: "Mystique loves salmon treats"
-   - Check MOJO tab → "What Mira Learned"
+**User Tested and Found:**
+- API error on final submit (response body read twice)
+- Gender should come before name
+- Need full address, not just city
+- Need actual date picker for birthday
+- Main goal should be multi-select
+- No Pet Home page exists yet
 
-3. **Test Conversation Flow:**
-   - Chat: "Hi Mira" → Should NOT show products
-   - Chat: "Show me treat products" → Should show products
-
-4. **Test Join Form:**
-   - Go to `/join`
-   - Fill page 2
-   - Should show errors if fields missing
-   - Button should work when all filled
+**Status:** Component built but needs fixes before it's usable
 
 ---
 
-## Known Issues
+## 🏁 FOR NEXT AGENT
 
-| Issue | Status | Notes |
-|-------|--------|-------|
-| Screenshot tool | BLOCKED | Platform media limit |
-| Razorpay | BLOCKED | Awaiting API keys |
-| WhatsApp | BLOCKED | Awaiting API keys |
-| ElevenLabs | FALLBACK | Using OpenAI TTS (quota exceeded) |
-| Production MongoDB | BLOCKED | IP whitelist (works in prod) |
+1. **Start by reading this SSOT** - it has everything you need
+2. **Fix the P0 bugs first** - API error is blocking the entire flow
+3. **Then fix P1 UX issues** - these are direct user feedback
+4. **Test each fix** before moving on
+5. **Build Pet Home page** once onboarding works
+6. **Update this SSOT** when you make changes
 
----
+The user (Dipali) is highly detail-oriented and emotionally invested in this project (named after her grandmother Mira). She wants "world-class, never-done-before" onboarding. Take her feedback seriously and implement exactly as specified.
 
-## Upcoming Work
-
-### Priority 1: Pillar Page Redesign
-- Validate `/dine-new` experimental page
-- If approved, apply pattern to all pillars
-- Implement Catalogue vs Concierge consistently
-
-### Priority 2: Mobile Polish
-- Care page mobile layout
-- Stay page product alignment
-- Font size consistency
-
-### Priority 3: Feature Activation
-- WhatsApp (needs keys)
-- Razorpay checkout (needs keys)
-- Automated vaccination reminders
-
----
-
-## Document History
-
-| Date | Session | Changes |
-|------|---------|---------|
-| 2026-02-21 | 1 | Initial SSOT creation |
-| 2026-02-21 | 2 | Hidden features verified, ObjectId fixes |
-| 2026-02-21 | 3 | Soul learning, conversation flow, iOS fixes, DineNewPage |
-
----
-
-**This is the Single Source of Truth. Update after every significant change.**
+Good luck! 🐾
