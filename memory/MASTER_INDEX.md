@@ -304,7 +304,7 @@ ADMIN_USERNAME=aditya
 ADMIN_PASSWORD=lola4304
 
 # Frontend (.env)
-REACT_APP_BACKEND_URL=https://pet-home-hub.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://mira-pet-os-1.preview.emergentagent.com
 ```
 
 ### Test Credentials
@@ -359,7 +359,7 @@ REACT_APP_BACKEND_URL=https://pet-home-hub.preview.emergentagent.com
 ## 🚀 DEPLOYMENT
 
 ### Preview Environment
-- URL: https://pet-home-hub.preview.emergentagent.com
+- URL: https://mira-pet-os-1.preview.emergentagent.com
 - Database: Local MongoDB
 - Status: All features working
 

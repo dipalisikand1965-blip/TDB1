@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://pet-home-hub.preview.emergentagent.com
+**Preview URL:** https://mira-pet-os-1.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
