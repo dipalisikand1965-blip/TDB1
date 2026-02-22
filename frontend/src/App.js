@@ -347,6 +347,9 @@ function AppRouter() {
         {/* NEW: Magical Soul Builder - 8-chapter onboarding */}
         <Route path="/soul-builder" element={<SoulBuilder />} />
         
+        {/* Pet Home - Default landing page after onboarding */}
+        <Route path="/pet-home" element={<ProtectedRoute><PetHomePage /></ProtectedRoute>} />
+        
         {/* Membership Payment Page - Cart/Checkout with Razorpay */}
         <Route path="/membership/payment" element={<MembershipPayment />} />
         
