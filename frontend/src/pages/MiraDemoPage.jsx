@@ -3608,6 +3608,28 @@ const MiraDemoPage = () => {
           ═══════════════════════════════════════════════════════════════════ */}
       <div className="mira-sticky-header">
         {/* ═══════════════════════════════════════════════════════════════════
+            BACK TO PILLAR - Shows when user came from a pillar page
+            Helps users return to where they were browsing
+            ═══════════════════════════════════════════════════════════════════ */}
+        {(returnUrl || sourcePillar) && (
+          <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-b border-purple-200/30">
+            <div className="max-w-4xl mx-auto px-4 py-2 flex items-center justify-between">
+              <button
+                onClick={() => navigate(returnUrl || `/${sourcePillar}`)}
+                className="flex items-center gap-2 text-sm font-medium text-purple-600 hover:text-purple-800 transition-colors"
+                data-testid="back-to-pillar-btn"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>Back to {PILLAR_NAMES[sourcePillar] || 'browsing'}</span>
+              </button>
+              <span className="text-xs text-gray-500">
+                Chat with Mira, then return anytime
+              </span>
+            </div>
+          </div>
+        )}
+        
+        {/* ═══════════════════════════════════════════════════════════════════
             MEMORY WHISPER - Subtle notification when Mira recalls past context
             Shows as a small chip above the chat, auto-dismisses
             (Keeping for backward compatibility, but SoulKnowledgeTicker is primary now)
