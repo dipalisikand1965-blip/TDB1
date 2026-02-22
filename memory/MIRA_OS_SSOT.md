@@ -1,6 +1,6 @@
 # MIRA OS - Single Source of Truth (SSOT)
 ## The Doggy Company Pet Operating System
-**Last Updated:** February 21, 2026 (Session 3)  
+**Last Updated:** December 2025 (Session 4)  
 **Live Site:** https://thedoggycompany.com  
 **Preview:** https://mira-sandbox-1.preview.emergentagent.com
 
@@ -13,6 +13,165 @@
 | [MIRA_BIBLE.md](./MIRA_BIBLE.md) | AI personality & behavior |
 | [ONE_SPINE_SPEC.md](./ONE_SPINE_SPEC.md) | Architecture spec |
 | [PRD.md](./PRD.md) | Product requirements |
+
+---
+
+## 🚀 SESSION 4 PRIORITY: "MIRA MEETS YOUR PET" ONBOARDING
+
+### The Vision
+World-class, never-done-before pet onboarding that feels like **magic, not forms**.
+- Under 3 minutes to Pet Home with ~30-35% soul score
+- One question per screen (tap game, not questionnaire)
+- Instant "Mira now knows..." feedback after every answer
+- Soul ring grows in real-time
+- Stop anytime, continue later
+
+### The Flow
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  STEP 1: PHOTO HOOK (30 sec)                                            │
+│  ─────────────────────────────────────────────────────────────────────  │
+│  • Upload pet photo                                                     │
+│  • AI breed detection: "Mira thinks Golden Retriever" [Confirm][Change] │
+│  • "What's their name?" → Mystique                                      │
+│  • "Do you have a pet name for them?" → Misty                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│  STEP 2: PARENT INFO (60 sec)                                           │
+│  ─────────────────────────────────────────────────────────────────────  │
+│  One clean screen (not multi-step form):                                │
+│  • Name, Email, Phone, WhatsApp                                         │
+│  • City (for shipping/services)                                         │
+│  • Password                                                             │
+│  • Notification preferences (quick toggles)                             │
+│  • Terms & Privacy (one checkbox)                                       │
+├─────────────────────────────────────────────────────────────────────────┤
+│  STEP 3: SOUL GAME (2-3 min)                                            │
+│  ─────────────────────────────────────────────────────────────────────  │
+│  15 core questions, one per screen, tap chips:                          │
+│  1. Gender (Male/Female)                                                │
+│  2. Birthday or Gotcha Day (date picker)                                │
+│  3. Life stage (Puppy/Adult/Senior)                                     │
+│  4. General nature (Playful/Calm/Curious/Shy)                           │
+│  5. Stranger reaction (Friendly/Cautious/Nervous)                       │
+│  6. Food allergies (None/Chicken/Grains/etc.)                           │
+│  7. Favorite protein (Chicken/Lamb/Fish/etc.)                           │
+│  8. Exercise needs (Low/Medium/High)                                    │
+│  9. Health conditions (None/Allergies/Arthritis/etc.)                   │
+│  10. Grooming tolerance (Loves it/Tolerates/Hates it)                   │
+│  11. Separation anxiety (Yes/No/Sometimes)                              │
+│  12. Lives with (Just me/Family/Roommates)                              │
+│  13. Other pets (None/Dogs/Cats/Both)                                   │
+│  14. Spayed/Neutered (Yes/No/Not sure)                                  │
+│  15. What do you want most for {Pet}? (Free text)                       │
+│                                                                         │
+│  After each answer: "✨ Mira now knows: {one fact}"                     │
+│  Progress: Soul ring grows from 0% → ~35%                               │
+├─────────────────────────────────────────────────────────────────────────┤
+│  STEP 4: PAYOFF REVEAL (10 sec)                                         │
+│  ─────────────────────────────────────────────────────────────────────  │
+│  • Soul ring glowing at 35%                                             │
+│  • "Here's what Mira knows about Misty:" (5 bullets)                    │
+│  • [See Misty's Home →] [Keep Teaching Mira]                            │
+├─────────────────────────────────────────────────────────────────────────┤
+│  STEP 5: PET HOME (Default Landing)                                     │
+│  ─────────────────────────────────────────────────────────────────────  │
+│  A) Pet Hero: Avatar + Name + Breed + Soul Ring + 3 Traits              │
+│  B) "What would you like to do for Misty?" → Pillar shortcuts           │
+│  C) Picks button (sticky top): "Picks for Misty (3)"                    │
+│  D) Proactive alerts: Birthday/Vaccine/Grooming                         │
+│  E) Open Requests strip: "You have X open requests"                     │
+│  F) Talk to Mira CTA (fixed bottom)                                     │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Entry Points
+| Entry | Flow |
+|-------|------|
+| New user | Login/Signup → Mira Meets Your Pet |
+| Existing user adding pet | Pet switcher → "Add pet" → Mira Meets Your Pet |
+
+### UI Rules
+- **One question per screen** - Never show a long form
+- **Tap to answer** - 3-6 chips per question
+- **Always visible**: Soul ring %, "Mira knows {Pet}", Skip button
+- **Microfeedback**: "Mira now knows: {fact}" after every answer
+- **Stop anytime**: Exit returns to Pet Home; continue later via "Grow Soul"
+
+### Breed Detection Rules
+```javascript
+{
+  breed_detected: "Golden Retriever",
+  breed_confirmed: false,        // Always false until user confirms
+  confidence_score: 0.87         // 0-1 scale
+}
+```
+- Confidence >0.7: "Mira thinks {Breed}" + [Confirm][Change]
+- Confidence <0.7: "Looks like {Breed} — confirm?" + [Confirm][Change]
+- Never hard-lock breed without confirm
+
+### Medical Boundaries
+If user selects serious conditions (Diabetes, Heart, Seizures):
+```
+"This is important. Would you like Mira to flag this for 
+your next vet visit or connect you to emergency care?"
+[Note for Vet Visit] [Emergency Help] [Continue]
+```
+
+### Data Flow (Everything Has a Place)
+| Data | Where Asked | Where Used |
+|------|-------------|-----------|
+| Photo | Step 1 | Everywhere (avatar) |
+| Name + Nickname | Step 1 | Everywhere (formal + casual) |
+| Breed | Step 1 (AI detected) | Breed-specific tips, products |
+| Temperament | Soul Game | Service matching, care notes |
+| Food allergies | Soul Game | Dine filtering, alerts |
+| Health conditions | Soul Game | Care reminders, vet alerts |
+| Exercise needs | Soul Game | Activity recommendations |
+| Grooming tolerance | Soul Game | Service booking prep |
+
+### Pet Home as Default Landing
+| Trigger | Destination |
+|---------|-------------|
+| After onboarding | Pet Home |
+| After login | Pet Home |
+| After pillar visit | Back to Pet Home |
+| Multiple pets | Pet Home with last active pet |
+
+### Living Home Refresh
+| Trigger | What Refreshes |
+|---------|---------------|
+| Soul answer saved | Traits + Picks |
+| Order completed | Alerts |
+| Ticket resolved | Open Requests |
+| Login | Light refresh (alerts check) |
+
+When something changes: "✨ Mira learned something new about {Pet}"
+
+---
+
+## 🐛 KNOWN BUGS (Priority Order)
+
+### P0 - Critical (Fix This Session)
+| Bug | Status | Details |
+|-----|--------|---------|
+| Old onboarding flow | 🔴 REPLACE | 4-step form is tedious, duplicate questions |
+| Soul Builder duplicates | 🔴 FIX | Same questions in onboarding AND Soul Builder |
+| After onboarding → wrong page | ✅ FIXED | Now auto-logins and redirects to Soul Builder |
+| User sees other user's data | ✅ FIXED | "Skip Demo" now creates account + auto-login |
+
+### P1 - Important
+| Bug | Status | Details |
+|-----|--------|---------|
+| MiraDemoPage header not sticky | ✅ FIXED | Header now sticks to top in modal |
+| Chat input not visible in modal | ✅ FIXED | Composer fixed to bottom |
+| Card layout overlap on pillars | 🟡 PARTIAL | Fixed on StayPage, need to apply to all |
+
+### P2 - Nice to Have
+| Bug | Status | Details |
+|-----|--------|---------|
+| Platform media limit | BLOCKED | Screenshot tool unusable |
+| Razorpay checkout | BLOCKED | Awaiting API keys |
+| ElevenLabs quota | FALLBACK | Using OpenAI TTS |
 
 ---
 
