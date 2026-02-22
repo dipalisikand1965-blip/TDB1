@@ -94,11 +94,12 @@ const ConciergePickCard = ({
       
       setIsCartOpen(true);
     } else {
-      // Navigate to Mira with context
+      // Navigate to Mira with context and return URL for easy navigation back
       const context = encodeURIComponent(
         `I'd like help with "${title}" for ${pet.name}. ${getPersonalizationMessage()}`
       );
-      navigate(`/mira-demo?context=${context}&pillar=${pillar}`);
+      const returnUrl = encodeURIComponent(location.pathname);
+      navigate(`/mira-demo?context=${context}&pillar=${pillar}&returnUrl=${returnUrl}`);
     }
     
     setIsSubmitting(false);
