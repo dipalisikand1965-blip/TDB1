@@ -771,7 +771,7 @@ const DinePage = () => {
                     <p className="text-sm text-gray-500 line-clamp-2 mt-1">{bundle.description}</p>
                     <div className="flex items-center justify-between mt-3">
                       <div>
-                        <span className="text-base sm:text-lg font-bold text-green-600">₹{bundle.bundle_price}</span>
+                        <span className="text-base sm:text-lg font-bold text-green-600">₹{bundle.bundle_price || bundle.price || 0}</span>
                         {bundle.original_price > bundle.bundle_price && (
                           <span className="text-xs text-gray-400 line-through ml-1">₹{bundle.original_price}</span>
                         )}
@@ -784,7 +784,7 @@ const DinePage = () => {
                           addToCart({
                             id: bundle.id,
                             name: bundle.name,
-                            price: bundle.bundle_price,
+                            price: bundle.bundle_price || bundle.price,
                             image: bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
                             description: bundle.description,
                             category: 'dine_bundle',
@@ -2083,7 +2083,7 @@ const DineBundleModal = ({ bundle, onClose, addToCart }) => {
       addToCart({
         id: bundle.id,
         name: bundle.name,
-        price: bundle.bundle_price,
+        price: bundle.bundle_price || bundle.price,
         image: bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
         description: bundle.description,
         category: 'dine_bundle',
@@ -2164,7 +2164,7 @@ const DineBundleModal = ({ bundle, onClose, addToCart }) => {
             <div>
               <p className="text-sm text-gray-500">Bundle Price</p>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-green-600">₹{bundle.bundle_price}</span>
+                <span className="text-2xl font-bold text-green-600">₹{bundle.bundle_price || bundle.price || 0}</span>
                 {bundle.original_price > bundle.bundle_price && (
                   <span className="text-lg text-gray-400 line-through">₹{bundle.original_price}</span>
                 )}
