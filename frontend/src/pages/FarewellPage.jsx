@@ -807,6 +807,13 @@ const FarewellPage = () => {
         </div>
       )}
       
+      {/* Mira's Picks for Pet */}
+      {pets && pets[0] && (
+        <div className="max-w-6xl mx-auto px-4">
+          <PillarPicksSection pillar="farewell" pet={pets[0]} />
+        </div>
+      )}
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="farewell" position="bottom-left" />
       
