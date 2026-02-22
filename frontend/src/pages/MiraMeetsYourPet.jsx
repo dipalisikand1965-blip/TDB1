@@ -4,17 +4,20 @@
  * World-class onboarding experience for The Doggy Company
  * 
  * Flow:
- * 1. Photo Hook (30 sec) - Upload photo, AI breed detection, pet name + nickname
- * 2. Parent Info (60 sec) - One clean screen with essentials
- * 3. Soul Game (2-3 min) - 15 tap questions, one per screen
- * 4. Payoff Reveal (10 sec) - Show what Mira learned
- * 5. Pet Home - Default landing
+ * 1. Photo Hook - Upload photo, AI breed detection
+ * 2. Gender (BEFORE name - so we can use his/her)
+ * 3. Name + Nickname
+ * 4. Birthday/Gotcha Day with date picker
+ * 5. Parent Info - One clean screen with essentials
+ * 6. Soul Game - 13 tap questions, one per screen (NO SKIP)
+ * 7. Payoff Reveal - Show what Mira learned
+ * 8. Pet Home - Default landing
  * 
  * Key Principles:
  * - One question per screen (tap game, not questionnaire)
  * - Instant "Mira now knows..." feedback after every answer
  * - Soul ring grows in real-time
- * - Stop anytime, continue later
+ * - ALL questions compulsory (no skip)
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
@@ -23,14 +26,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import {
   Camera,
-  Upload,
   ChevronRight,
   ChevronLeft,
   Sparkles,
   Heart,
   Check,
   X,
-  Dog,
   Calendar,
   Shield,
   Utensils,
@@ -40,13 +41,14 @@ import {
   PawPrint,
   Loader2,
   Eye,
-  EyeOff
+  EyeOff,
+  Cake,
+  Home
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
-// Soul Questions - 15 core questions for 30-35% soul score
-// Gender is asked during photo hook, so questions start after that
+// Soul Questions - 13 core questions for 30-35% soul score
 const SOUL_QUESTIONS = [
   {
     id: 'life_stage',
@@ -58,7 +60,7 @@ const SOUL_QUESTIONS = [
       { value: 'adult', label: 'Adult', emoji: '🦮', desc: '3-7 years' },
       { value: 'senior', label: 'Senior', emoji: '🐕‍🦺', desc: '7+ years' }
     ],
-    miraKnows: (pet, val) => `${pet} is a ${val}!`
+    miraKnows: (pet, val, pronoun) => `${pet} is a ${val}!`
   },
   {
     id: 'temperament',
@@ -227,7 +229,7 @@ const SOUL_QUESTIONS = [
     id: 'main_goal',
     question: "What do you want most for {pet}?",
     icon: Sparkles,
-    multiSelect: true, // Changed to multi-select
+    multiSelect: true,
     options: [
       { value: 'health', label: 'Stay healthy', emoji: '💪' },
       { value: 'happiness', label: 'Be happy', emoji: '😊' },
@@ -242,8 +244,14 @@ const SOUL_QUESTIONS = [
   }
 ];
 
-// Cities for dropdown
-const CITIES = ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 'Pune', 'Ahmedabad', 'Jaipur', 'Goa'];
+// Common dog breeds for search
+const COMMON_BREEDS = [
+  'Labrador Retriever', 'German Shepherd', 'Golden Retriever', 'Beagle', 
+  'Poodle', 'Bulldog', 'Rottweiler', 'Dachshund', 'Boxer', 'Siberian Husky',
+  'Shih Tzu', 'Pomeranian', 'Indie / Indian Pariah', 'Mixed Breed',
+  'Cocker Spaniel', 'Border Collie', 'Doberman', 'Great Dane', 'Pug',
+  'Maltese', 'Yorkshire Terrier', 'Chihuahua', 'Saint Bernard', 'Lhasa Apso'
+];
 
 // Soul Score Ring Component
 const SoulRing = ({ percentage, size = 120, strokeWidth = 8, petName }) => {
@@ -254,7 +262,6 @@ const SoulRing = ({ percentage, size = 120, strokeWidth = 8, petName }) => {
   return (
     <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="transform -rotate-90">
-        {/* Background ring */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -263,7 +270,6 @@ const SoulRing = ({ percentage, size = 120, strokeWidth = 8, petName }) => {
           stroke="rgba(255,255,255,0.1)"
           strokeWidth={strokeWidth}
         />
-        {/* Progress ring */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -296,20 +302,29 @@ const MiraMeetsYourPet = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   
-  // Screen state
-  const [screen, setScreen] = useState('photo'); // photo, parent, soul, payoff
+  // Screen state - ORDER: photo -> gender -> name -> birthday -> parent -> soul -> payoff
+  const [screen, setScreen] = useState('photo');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [detectingBreed, setDetectingBreed] = useState(false);
   
   // Photo & Pet Info
   const [petPhoto, setPetPhoto] = useState(null);
   const [petPhotoPreview, setPetPhotoPreview] = useState(null);
+  const [petGender, setPetGender] = useState(''); // boy or girl
   const [petName, setPetName] = useState('');
   const [petNickname, setPetNickname] = useState('');
   const [breedDetected, setBreedDetected] = useState('');
   const [breedConfirmed, setBreedConfirmed] = useState(false);
   const [breedConfidence, setBreedConfidence] = useState(0);
   const [showBreedSelector, setShowBreedSelector] = useState(false);
+  const [breedSearch, setBreedSearch] = useState('');
+  
+  // Birthday Info
+  const [birthdayType, setBirthdayType] = useState(''); // birthday, gotcha, approximate
+  const [birthdayDate, setBirthdayDate] = useState('');
+  const [gotchaDate, setGotchaDate] = useState('');
+  const [approximateAge, setApproximateAge] = useState('');
   
   // Parent Info
   const [parentData, setParentData] = useState({
@@ -317,7 +332,9 @@ const MiraMeetsYourPet = () => {
     email: '',
     phone: '',
     whatsapp: '',
-    city: '',
+    address: '', // Full address
+    city: '', // Free text now
+    pincode: '',
     password: '',
     acceptTerms: false,
     notifications: {
@@ -336,16 +353,23 @@ const MiraMeetsYourPet = () => {
   const [miraKnowsFact, setMiraKnowsFact] = useState('');
   const [showMiraKnows, setShowMiraKnows] = useState(false);
   
+  // Get pronoun based on gender
+  const getPronoun = useCallback(() => {
+    if (petGender === 'boy') return { subject: 'he', object: 'him', possessive: 'his' };
+    if (petGender === 'girl') return { subject: 'she', object: 'her', possessive: 'her' };
+    return { subject: 'they', object: 'them', possessive: 'their' };
+  }, [petGender]);
+  
   // Calculate soul score
   const calculateSoulScore = useCallback(() => {
     const answered = Object.keys(answers).length;
     const total = SOUL_QUESTIONS.length;
-    return Math.round((answered / total) * 35); // Max 35% from onboarding
+    return Math.round((answered / total) * 35);
   }, [answers]);
   
   const soulScore = calculateSoulScore();
   
-  // Handle photo upload
+  // Handle photo upload - AUTO TRIGGER breed detection
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -355,8 +379,8 @@ const MiraMeetsYourPet = () => {
     reader.onload = (e) => setPetPhotoPreview(e.target.result);
     reader.readAsDataURL(file);
     
-    // Try AI breed detection
-    setLoading(true);
+    // Auto-trigger AI breed detection
+    setDetectingBreed(true);
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -371,12 +395,20 @@ const MiraMeetsYourPet = () => {
         if (data.breed) {
           setBreedDetected(data.breed);
           setBreedConfidence(data.confidence || 0.8);
+          toast.success(`Mira detected: ${data.breed}`);
+        } else {
+          // No breed detected - ask user
+          setShowBreedSelector(true);
         }
+      } else {
+        // API error - ask user manually
+        setShowBreedSelector(true);
       }
     } catch (err) {
-      console.log('Breed detection not available');
+      console.log('Breed detection not available:', err);
+      setShowBreedSelector(true);
     } finally {
-      setLoading(false);
+      setDetectingBreed(false);
     }
   };
   
@@ -444,16 +476,6 @@ const MiraMeetsYourPet = () => {
     }
   };
   
-  // Skip question
-  const handleSkip = () => {
-    setShowMiraKnows(false);
-    if (currentQuestion < SOUL_QUESTIONS.length - 1) {
-      setCurrentQuestion(prev => prev + 1);
-    } else {
-      setScreen('payoff');
-    }
-  };
-  
   // Submit parent info and create account
   const handleParentSubmit = async () => {
     // Validate
@@ -469,8 +491,12 @@ const MiraMeetsYourPet = () => {
       toast.error('Please enter a valid phone number');
       return;
     }
+    if (!parentData.address.trim()) {
+      toast.error('Please enter your full address');
+      return;
+    }
     if (!parentData.city.trim()) {
-      toast.error('Please select your city');
+      toast.error('Please enter your city');
       return;
     }
     if (!parentData.password || parentData.password.length < 6) {
@@ -502,9 +528,9 @@ const MiraMeetsYourPet = () => {
             email: parentData.email,
             phone: parentData.phone,
             whatsapp: parentData.whatsapp || parentData.phone,
-            address: '',
+            address: parentData.address,
             city: parentData.city,
-            pincode: '',
+            pincode: parentData.pincode,
             password: parentData.password,
             preferred_contact: 'whatsapp',
             notifications: parentData.notifications,
@@ -518,9 +544,11 @@ const MiraMeetsYourPet = () => {
             breed_detected: breedDetected,
             breed_confirmed: breedConfirmed,
             breed_confidence: breedConfidence,
-            gender: answers.gender || '',
-            birth_date: '',
-            gotcha_date: '',
+            gender: petGender,
+            birth_date: birthdayType === 'birthday' ? birthdayDate : '',
+            gotcha_date: birthdayType === 'gotcha' ? gotchaDate : '',
+            approximate_age: birthdayType === 'approximate' ? approximateAge : '',
+            birthday_type: birthdayType,
             species: 'dog',
             photo: petPhotoPreview,
             is_neutered: answers.is_neutered === 'yes' ? true : answers.is_neutered === 'no' ? false : null,
@@ -536,7 +564,6 @@ const MiraMeetsYourPet = () => {
               lives_with: answers.lives_with,
               other_pets: answers.other_pets,
               life_stage: answers.life_stage,
-              birthday_type: answers.birthday_type,
               main_goal: answers.main_goal
             }
           }],
@@ -545,6 +572,7 @@ const MiraMeetsYourPet = () => {
         })
       });
       
+      // Read response body ONCE
       const data = await response.json();
       
       if (!response.ok) {
@@ -561,6 +589,7 @@ const MiraMeetsYourPet = () => {
         })
       });
       
+      // Read login response body ONCE
       const loginData = await loginResponse.json();
       
       if (loginResponse.ok && loginData.access_token) {
@@ -569,10 +598,12 @@ const MiraMeetsYourPet = () => {
         
         toast.success(`Welcome! ${petName}'s home is ready.`);
         
-        // Navigate to Pet Home (we'll create this, for now go to dashboard)
-        navigate('/member-dashboard');
+        // Navigate to Pet Home
+        navigate('/pet-home');
       } else {
-        throw new Error('Login failed. Please try logging in manually.');
+        // Account created but login failed - redirect to login
+        toast.info('Account created! Please login.');
+        navigate('/login');
       }
       
     } catch (err) {
@@ -583,6 +614,11 @@ const MiraMeetsYourPet = () => {
       setLoading(false);
     }
   };
+  
+  // Filter breeds for search
+  const filteredBreeds = COMMON_BREEDS.filter(breed => 
+    breed.toLowerCase().includes(breedSearch.toLowerCase())
+  );
   
   // Render Photo Screen
   const renderPhotoScreen = () => (
@@ -614,15 +650,9 @@ const MiraMeetsYourPet = () => {
             onClick={() => fileInputRef.current?.click()}
             className="w-64 h-64 rounded-full border-2 border-dashed border-pink-500/50 flex flex-col items-center justify-center cursor-pointer hover:border-pink-500 hover:bg-pink-500/5 transition-all"
           >
-            {loading ? (
-              <Loader2 className="w-12 h-12 text-pink-500 animate-spin" />
-            ) : (
-              <>
-                <Camera className="w-16 h-16 text-pink-500 mb-4" />
-                <span className="text-pink-500 font-medium">Upload Photo</span>
-                <span className="text-slate-500 text-sm mt-1">or tap to take one</span>
-              </>
-            )}
+            <Camera className="w-16 h-16 text-pink-500 mb-4" />
+            <span className="text-pink-500 font-medium">Upload Photo</span>
+            <span className="text-slate-500 text-sm mt-1">or tap to take one</span>
           </div>
           
           <input
@@ -647,6 +677,8 @@ const MiraMeetsYourPet = () => {
                 setPetPhoto(null);
                 setPetPhotoPreview(null);
                 setBreedDetected('');
+                setBreedConfirmed(false);
+                setShowBreedSelector(false);
               }}
               className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center"
             >
@@ -654,8 +686,20 @@ const MiraMeetsYourPet = () => {
             </button>
           </div>
           
-          {/* Breed Detection */}
-          {breedDetected && !breedConfirmed && !showBreedSelector && (
+          {/* Detecting breed spinner */}
+          {detectingBreed && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center mb-6"
+            >
+              <Loader2 className="w-8 h-8 text-pink-500 animate-spin mx-auto mb-2" />
+              <p className="text-slate-400">Mira is analyzing...</p>
+            </motion.div>
+          )}
+          
+          {/* Breed Detection Result */}
+          {!detectingBreed && breedDetected && !breedConfirmed && !showBreedSelector && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -665,12 +709,15 @@ const MiraMeetsYourPet = () => {
                 {breedConfidence > 0.7 ? 'Mira thinks this is a' : 'Looks like a'}
               </p>
               <p className="text-2xl font-bold text-white mb-4">{breedDetected}</p>
-              <div className="flex gap-3">
+              <div className="flex gap-3 justify-center">
                 <button
-                  onClick={() => setBreedConfirmed(true)}
+                  onClick={() => {
+                    setBreedConfirmed(true);
+                    setScreen('gender'); // Go to gender next
+                  }}
                   className="px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-full font-medium"
                 >
-                  <Check className="w-4 h-4 inline mr-1" /> Confirm
+                  <Check className="w-4 h-4 inline mr-1" /> Correct!
                 </button>
                 <button
                   onClick={() => setShowBreedSelector(true)}
@@ -682,99 +729,67 @@ const MiraMeetsYourPet = () => {
             </motion.div>
           )}
           
-          {/* No breed detected - show breed input */}
-          {!breedDetected && !breedConfirmed && !showBreedSelector && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-6 text-center"
-            >
-              <p className="text-slate-400 mb-2">What kind of dog is this?</p>
-              <button
-                onClick={() => setShowBreedSelector(true)}
-                className="px-6 py-2 bg-slate-800 text-white rounded-full font-medium border border-slate-700"
-              >
-                Select Breed
-              </button>
-              <button
-                onClick={() => {
-                  setBreedDetected('Mixed / Indie');
-                  setBreedConfirmed(true);
-                }}
-                className="ml-3 px-6 py-2 text-slate-400 hover:text-white"
-              >
-                Mixed / Not sure
-              </button>
-            </motion.div>
-          )}
-          
-          {/* Breed Selector */}
-          {showBreedSelector && (
+          {/* No breed detected OR user wants to change - show breed selector */}
+          {!detectingBreed && showBreedSelector && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="mb-6 w-full max-w-sm"
             >
+              <p className="text-slate-400 mb-3 text-center">What kind of dog is this?</p>
               <input
                 type="text"
                 placeholder="Search breed..."
-                value={breedDetected}
-                onChange={(e) => setBreedDetected(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500"
-              />
-              <button
-                onClick={() => {
-                  setBreedConfirmed(true);
-                  setShowBreedSelector(false);
-                }}
-                className="w-full mt-3 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-medium"
-              >
-                Confirm Breed
-              </button>
-            </motion.div>
-          )}
-          
-          {/* Pet Name */}
-          {breedConfirmed && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="w-full max-w-sm"
-            >
-              <p className="text-slate-400 mb-3 text-center">What's their name?</p>
-              <input
-                type="text"
-                placeholder="e.g., Buddy"
-                value={petName}
-                onChange={(e) => setPetName(e.target.value)}
-                className="w-full px-4 py-4 bg-slate-800 border border-slate-700 rounded-xl text-white text-center text-xl placeholder-slate-500 mb-4"
+                value={breedSearch}
+                onChange={(e) => setBreedSearch(e.target.value)}
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 mb-3"
                 autoFocus
               />
               
-              {petName && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                >
-                  <p className="text-slate-400 mb-3 text-center">
-                    Do you have a pet name for {petName}?
-                  </p>
-                  <input
-                    type="text"
-                    placeholder="e.g., Bud, Buddy Bear (optional)"
-                    value={petNickname}
-                    onChange={(e) => setPetNickname(e.target.value)}
-                    className="w-full px-4 py-4 bg-slate-800 border border-slate-700 rounded-xl text-white text-center placeholder-slate-500 mb-6"
-                  />
-                  
+              {/* Breed suggestions */}
+              <div className="max-h-48 overflow-y-auto space-y-1 mb-3">
+                {filteredBreeds.map(breed => (
                   <button
-                    onClick={() => setScreen('parent')}
-                    className="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-pink-500/30"
+                    key={breed}
+                    onClick={() => {
+                      setBreedDetected(breed);
+                      setBreedSearch(breed);
+                    }}
+                    className={`w-full px-4 py-2 text-left rounded-lg transition-all ${
+                      breedDetected === breed 
+                        ? 'bg-pink-500/20 border border-pink-500 text-white' 
+                        : 'bg-slate-800/50 text-slate-300 hover:bg-slate-800'
+                    }`}
                   >
-                    Continue <ChevronRight className="w-5 h-5 inline" />
+                    {breed}
                   </button>
-                </motion.div>
-              )}
+                ))}
+              </div>
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setBreedDetected(breedSearch || 'Mixed Breed');
+                    setBreedConfirmed(true);
+                    setShowBreedSelector(false);
+                    setScreen('gender');
+                  }}
+                  className="flex-1 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-medium"
+                >
+                  Confirm
+                </button>
+                <button
+                  onClick={() => {
+                    setBreedDetected('Mixed / Indie');
+                    setBreedConfirmed(true);
+                    setShowBreedSelector(false);
+                    setScreen('gender');
+                  }}
+                  className="flex-1 py-3 bg-slate-800 text-slate-300 rounded-xl font-medium border border-slate-700"
+                >
+                  Mixed / Not sure
+                </button>
+              </div>
             </motion.div>
           )}
         </>
@@ -782,18 +797,332 @@ const MiraMeetsYourPet = () => {
     </motion.div>
   );
   
+  // Render Gender Screen (BEFORE name)
+  const renderGenderScreen = () => (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="flex flex-col items-center justify-center min-h-screen p-6"
+    >
+      {/* Back button */}
+      <button
+        onClick={() => setScreen('photo')}
+        className="absolute top-4 left-4 p-2 rounded-full bg-slate-800"
+      >
+        <ChevronLeft className="w-5 h-5 text-white" />
+      </button>
+      
+      {/* Pet photo */}
+      <img
+        src={petPhotoPreview}
+        alt="Pet"
+        className="w-32 h-32 rounded-full object-cover border-4 border-pink-500/30 mb-6"
+      />
+      
+      <h2 className="text-2xl font-bold text-white mb-2 text-center">
+        Is this a boy or girl?
+      </h2>
+      <p className="text-slate-400 mb-8 text-center">
+        So Mira knows how to refer to your pet
+      </p>
+      
+      {/* Gender options */}
+      <div className="flex gap-4 mb-8">
+        <button
+          onClick={() => {
+            setPetGender('boy');
+            setScreen('name');
+          }}
+          className={`w-36 h-36 rounded-2xl border-2 flex flex-col items-center justify-center transition-all ${
+            petGender === 'boy' 
+              ? 'border-blue-500 bg-blue-500/20' 
+              : 'border-slate-700 bg-slate-800/50 hover:border-slate-600'
+          }`}
+        >
+          <span className="text-5xl mb-2">♂️</span>
+          <span className="text-white font-medium text-lg">Boy</span>
+        </button>
+        
+        <button
+          onClick={() => {
+            setPetGender('girl');
+            setScreen('name');
+          }}
+          className={`w-36 h-36 rounded-2xl border-2 flex flex-col items-center justify-center transition-all ${
+            petGender === 'girl' 
+              ? 'border-pink-500 bg-pink-500/20' 
+              : 'border-slate-700 bg-slate-800/50 hover:border-slate-600'
+          }`}
+        >
+          <span className="text-5xl mb-2">♀️</span>
+          <span className="text-white font-medium text-lg">Girl</span>
+        </button>
+      </div>
+    </motion.div>
+  );
+  
+  // Render Name Screen (AFTER gender)
+  const renderNameScreen = () => {
+    const pronoun = getPronoun();
+    
+    return (
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        className="flex flex-col items-center justify-center min-h-screen p-6"
+      >
+        {/* Back button */}
+        <button
+          onClick={() => setScreen('gender')}
+          className="absolute top-4 left-4 p-2 rounded-full bg-slate-800"
+        >
+          <ChevronLeft className="w-5 h-5 text-white" />
+        </button>
+        
+        {/* Pet photo */}
+        <img
+          src={petPhotoPreview}
+          alt="Pet"
+          className="w-24 h-24 rounded-full object-cover border-4 border-pink-500/30 mb-6"
+        />
+        
+        <h2 className="text-2xl font-bold text-white mb-2 text-center">
+          What's {pronoun.possessive} name?
+        </h2>
+        <p className="text-slate-400 mb-6 text-center">
+          The name you call {pronoun.object} every day
+        </p>
+        
+        <div className="w-full max-w-sm">
+          <input
+            type="text"
+            placeholder="e.g., Buddy"
+            value={petName}
+            onChange={(e) => setPetName(e.target.value)}
+            className="w-full px-4 py-4 bg-slate-800 border border-slate-700 rounded-xl text-white text-center text-xl placeholder-slate-500 mb-4"
+            autoFocus
+          />
+          
+          {petName && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <p className="text-slate-400 mb-3 text-center">
+                Do you have a pet name for {petName}?
+              </p>
+              <input
+                type="text"
+                placeholder={`e.g., ${petName.slice(0,3)}baby, Little one (optional)`}
+                value={petNickname}
+                onChange={(e) => setPetNickname(e.target.value)}
+                className="w-full px-4 py-4 bg-slate-800 border border-slate-700 rounded-xl text-white text-center placeholder-slate-500 mb-6"
+              />
+              
+              <button
+                onClick={() => setScreen('birthday')}
+                className="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-pink-500/30"
+              >
+                Continue <ChevronRight className="w-5 h-5 inline" />
+              </button>
+            </motion.div>
+          )}
+        </div>
+      </motion.div>
+    );
+  };
+  
+  // Render Birthday Screen
+  const renderBirthdayScreen = () => {
+    const pronoun = getPronoun();
+    
+    return (
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        className="flex flex-col items-center justify-center min-h-screen p-6"
+      >
+        {/* Back button */}
+        <button
+          onClick={() => setScreen('name')}
+          className="absolute top-4 left-4 p-2 rounded-full bg-slate-800"
+        >
+          <ChevronLeft className="w-5 h-5 text-white" />
+        </button>
+        
+        {/* Pet photo & name */}
+        <div className="flex items-center gap-3 mb-6">
+          <img
+            src={petPhotoPreview}
+            alt={petName}
+            className="w-16 h-16 rounded-full object-cover border-2 border-pink-500/30"
+          />
+          <div>
+            <p className="text-white font-medium">{petName}</p>
+            <p className="text-slate-400 text-sm">{breedDetected}</p>
+          </div>
+        </div>
+        
+        <h2 className="text-2xl font-bold text-white mb-2 text-center">
+          When did {petName} come into your life?
+        </h2>
+        <p className="text-slate-400 mb-8 text-center">
+          So Mira can celebrate {pronoun.possessive} special days
+        </p>
+        
+        <div className="w-full max-w-sm space-y-4">
+          {/* Birthday option */}
+          <button
+            onClick={() => setBirthdayType('birthday')}
+            className={`w-full p-4 rounded-xl border text-left transition-all ${
+              birthdayType === 'birthday'
+                ? 'border-pink-500 bg-pink-500/20'
+                : 'border-slate-700 bg-slate-800/50 hover:border-slate-600'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <Cake className="w-6 h-6 text-pink-500" />
+              <div>
+                <span className="text-white font-medium block">I know {pronoun.possessive} birthday</span>
+                <span className="text-slate-400 text-sm">The actual date of birth</span>
+              </div>
+            </div>
+          </button>
+          
+          {birthdayType === 'birthday' && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="pl-4"
+            >
+              <input
+                type="date"
+                value={birthdayDate}
+                onChange={(e) => setBirthdayDate(e.target.value)}
+                max={new Date().toISOString().split('T')[0]}
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
+              />
+            </motion.div>
+          )}
+          
+          {/* Gotcha Day option */}
+          <button
+            onClick={() => setBirthdayType('gotcha')}
+            className={`w-full p-4 rounded-xl border text-left transition-all ${
+              birthdayType === 'gotcha'
+                ? 'border-pink-500 bg-pink-500/20'
+                : 'border-slate-700 bg-slate-800/50 hover:border-slate-600'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <Home className="w-6 h-6 text-purple-500" />
+              <div>
+                <span className="text-white font-medium block">I know the Gotcha Day</span>
+                <span className="text-slate-400 text-sm">When {pronoun.subject} joined your family</span>
+              </div>
+            </div>
+          </button>
+          
+          {birthdayType === 'gotcha' && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="pl-4"
+            >
+              <input
+                type="date"
+                value={gotchaDate}
+                onChange={(e) => setGotchaDate(e.target.value)}
+                max={new Date().toISOString().split('T')[0]}
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
+              />
+            </motion.div>
+          )}
+          
+          {/* Approximate age option */}
+          <button
+            onClick={() => setBirthdayType('approximate')}
+            className={`w-full p-4 rounded-xl border text-left transition-all ${
+              birthdayType === 'approximate'
+                ? 'border-pink-500 bg-pink-500/20'
+                : 'border-slate-700 bg-slate-800/50 hover:border-slate-600'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <Calendar className="w-6 h-6 text-slate-400" />
+              <div>
+                <span className="text-white font-medium block">Just approximate age</span>
+                <span className="text-slate-400 text-sm">That's okay, we'll estimate!</span>
+              </div>
+            </div>
+          </button>
+          
+          {birthdayType === 'approximate' && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="pl-4"
+            >
+              <select
+                value={approximateAge}
+                onChange={(e) => setApproximateAge(e.target.value)}
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
+              >
+                <option value="">Select age</option>
+                <option value="0-6months">Less than 6 months</option>
+                <option value="6-12months">6-12 months</option>
+                <option value="1-2years">1-2 years</option>
+                <option value="2-4years">2-4 years</option>
+                <option value="4-7years">4-7 years</option>
+                <option value="7-10years">7-10 years</option>
+                <option value="10+years">10+ years</option>
+              </select>
+            </motion.div>
+          )}
+          
+          {/* Continue button */}
+          {birthdayType && (
+            <button
+              onClick={() => {
+                if (birthdayType === 'birthday' && !birthdayDate) {
+                  toast.error('Please select the birthday');
+                  return;
+                }
+                if (birthdayType === 'gotcha' && !gotchaDate) {
+                  toast.error('Please select the gotcha day');
+                  return;
+                }
+                if (birthdayType === 'approximate' && !approximateAge) {
+                  toast.error('Please select approximate age');
+                  return;
+                }
+                setScreen('parent');
+              }}
+              className="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-pink-500/30 mt-4"
+            >
+              Continue <ChevronRight className="w-5 h-5 inline" />
+            </button>
+          )}
+        </div>
+      </motion.div>
+    );
+  };
+  
   // Render Parent Info Screen
   const renderParentScreen = () => (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="min-h-screen p-6"
+      className="min-h-screen p-6 pb-24"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <button
-          onClick={() => setScreen('photo')}
+          onClick={() => setScreen('birthday')}
           className="p-2 rounded-full bg-slate-800"
         >
           <ChevronLeft className="w-5 h-5 text-white" />
@@ -859,16 +1188,32 @@ const MiraMeetsYourPet = () => {
             />
           )}
           
-          <select
+          {/* Full Address - NEW */}
+          <textarea
+            placeholder="Full address (House/Flat No., Street, Landmark)"
+            value={parentData.address}
+            onChange={(e) => setParentData(prev => ({ ...prev, address: e.target.value }))}
+            rows={3}
+            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 resize-none"
+          />
+          
+          {/* City - Now free text */}
+          <input
+            type="text"
+            placeholder="City"
             value={parentData.city}
             onChange={(e) => setParentData(prev => ({ ...prev, city: e.target.value }))}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
-          >
-            <option value="">Select city</option>
-            {CITIES.map(city => (
-              <option key={city} value={city}>{city}</option>
-            ))}
-          </select>
+            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500"
+          />
+          
+          {/* Pincode */}
+          <input
+            type="text"
+            placeholder="Pincode"
+            value={parentData.pincode}
+            onChange={(e) => setParentData(prev => ({ ...prev, pincode: e.target.value }))}
+            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500"
+          />
           
           <div className="relative">
             <input
@@ -940,7 +1285,7 @@ const MiraMeetsYourPet = () => {
     </motion.div>
   );
   
-  // Render Soul Game Screen
+  // Render Soul Game Screen (NO SKIP BUTTON)
   const renderSoulScreen = () => {
     const question = SOUL_QUESTIONS[currentQuestion];
     const QuestionIcon = question.icon;
@@ -967,12 +1312,8 @@ const MiraMeetsYourPet = () => {
             <span className="text-slate-400 text-sm">Mira knows {petName}</span>
           </div>
           
-          <button
-            onClick={handleSkip}
-            className="text-slate-500 text-sm"
-          >
-            Skip
-          </button>
+          {/* NO SKIP BUTTON - All questions compulsory */}
+          <div className="w-9" />
         </div>
         
         {/* Progress bar */}
@@ -1063,7 +1404,7 @@ const MiraMeetsYourPet = () => {
     );
   };
   
-  // Render Payoff Screen
+  // Render Payoff Screen (Fix: use petName not nickname in "Here's what Mira knows about")
   const renderPayoffScreen = () => {
     // Generate summary bullets
     const bullets = [];
@@ -1079,6 +1420,9 @@ const MiraMeetsYourPet = () => {
     }
     if (answers.exercise_needs) bullets.push(`Needs ${answers.exercise_needs} exercise`);
     if (answers.separation_anxiety === 'yes') bullets.push('Needs extra comfort when alone');
+    if (answers.main_goal && Array.isArray(answers.main_goal)) {
+      bullets.push(`Goals: ${answers.main_goal.join(', ')}`);
+    }
     
     return (
       <motion.div
@@ -1109,12 +1453,13 @@ const MiraMeetsYourPet = () => {
           {petName}'s Soul Started!
         </h2>
         <p className="text-slate-400 mb-6 text-center">
-          Here's what Mira already knows about {petNickname || petName}:
+          {/* FIX: Use petName, not nickname */}
+          Here's what Mira already knows about {petName}:
         </p>
         
         {/* Bullets */}
         <div className="w-full max-w-sm space-y-2 mb-8">
-          {bullets.slice(0, 5).map((bullet, i) => (
+          {bullets.slice(0, 6).map((bullet, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, x: -20 }}
@@ -1123,7 +1468,7 @@ const MiraMeetsYourPet = () => {
               className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl"
             >
               <Sparkles className="w-4 h-4 text-pink-500 flex-shrink-0" />
-              <span className="text-white">{bullet}</span>
+              <span className="text-white capitalize">{bullet}</span>
             </motion.div>
           ))}
         </div>
@@ -1147,10 +1492,11 @@ const MiraMeetsYourPet = () => {
           </button>
           
           <button
-            onClick={() => setScreen('soul')}
-            className="w-full py-4 bg-slate-800 text-white rounded-xl font-medium border border-slate-700"
+            onClick={() => navigate('/soul-builder')}
+            className="w-full py-4 bg-slate-800 text-white rounded-xl font-medium border border-slate-700 animate-pulse"
           >
-            Keep Teaching Mira
+            <Sparkles className="w-4 h-4 inline mr-2" />
+            Keep Teaching Mira (38 more questions)
           </button>
         </div>
         
@@ -1165,6 +1511,9 @@ const MiraMeetsYourPet = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-purple-950">
       <AnimatePresence mode="wait">
         {screen === 'photo' && renderPhotoScreen()}
+        {screen === 'gender' && renderGenderScreen()}
+        {screen === 'name' && renderNameScreen()}
+        {screen === 'birthday' && renderBirthdayScreen()}
         {screen === 'parent' && renderParentScreen()}
         {screen === 'soul' && renderSoulScreen()}
         {screen === 'payoff' && renderPayoffScreen()}
