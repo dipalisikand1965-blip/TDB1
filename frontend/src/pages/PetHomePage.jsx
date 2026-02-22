@@ -253,14 +253,21 @@ const PetHomePage = () => {
           }
         }
         
-        // Fetch open tickets/requests
-        const ticketsRes = await fetch(`${API_URL}/api/tickets/my-tickets?status=open`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (ticketsRes.ok) {
-          const ticketsData = await ticketsRes.json();
-          setOpenRequests(ticketsData.slice(0, 3));
+        // Fetch open tickets/requests (gracefully handle if endpoint doesn't exist)
+        try {
+          const ticketsRes = await fetch(`${API_URL}/api/tickets/my-tickets?status=open`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          
+          if (ticketsRes.ok) {
+            const ticketsResponse = await ticketsRes.json();
+            // Handle both array and {tickets: [...]} response formats
+            const ticketsData = Array.isArray(ticketsResponse) ? ticketsResponse : (ticketsResponse.tickets || []);
+            setOpenRequests(ticketsData.slice(0, 3));
+          }
+        } catch (ticketErr) {
+          // Tickets endpoint may not exist, that's okay
+          console.debug('Tickets fetch skipped:', ticketErr);
         }
         
       } catch (err) {
