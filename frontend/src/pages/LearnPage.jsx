@@ -509,6 +509,11 @@ const LearnPage = () => {
             />
           </div>
         )}
+        
+        {/* Mira's Picks for Pet */}
+        {userPets && userPets[0] && (
+          <PillarPicksSection pillar="learn" pet={userPets[0]} />
+        )}
       </div>
 
       {/* === ELEVATED CONCIERGE® LEARN EXPERIENCES === */}
