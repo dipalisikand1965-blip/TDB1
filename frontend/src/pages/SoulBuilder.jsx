@@ -1796,6 +1796,279 @@ const SoulBuilder = () => {
     );
   }
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // KNOW_MIRA_SUMMARY SCREEN - COMPULSORY CHECKPOINT (NO SKIPPING)
+  // This is THE canonical summary of what Mira knows about the pet
+  // ═══════════════════════════════════════════════════════════════════════════════
+  if (screen === 'know_mira_summary') {
+    const synopsis = generateMiraSynopsis();
+    const topTraits = getTopTraits();
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col items-center justify-center p-6" data-testid="know-mira-summary">
+        {/* Ambient glow */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-purple-500/20 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-1/3 right-1/4 w-[300px] h-[300px] bg-pink-500/20 rounded-full blur-[100px] pointer-events-none" />
+        
+        <div className="relative z-10 max-w-md w-full">
+          {/* Pet Photo + Soul Ring */}
+          <div className="relative w-32 h-32 mx-auto mb-6">
+            {/* Live Soul Score Ring */}
+            <svg className="absolute -inset-4 w-[calc(100%+32px)] h-[calc(100%+32px)]" viewBox="0 0 140 140">
+              <circle cx="70" cy="70" r="66" fill="none" stroke="rgba(139, 92, 246, 0.15)" strokeWidth="4" />
+              <circle 
+                cx="70" cy="70" r="66" 
+                fill="none" 
+                stroke="url(#summaryGradient)" 
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeDasharray={`${(soulScore / 100) * 415} 415`}
+                transform="rotate(-90 70 70)"
+                style={{ filter: 'drop-shadow(0 0 8px #8B5CF6)' }}
+              />
+              <defs>
+                <linearGradient id="summaryGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#8B5CF6" />
+                  <stop offset="100%" stopColor="#EC4899" />
+                </linearGradient>
+              </defs>
+            </svg>
+            
+            {petPhotoPreview ? (
+              <img src={petPhotoPreview} alt={petName} className="w-full h-full rounded-full object-cover border-4 border-purple-500/30" />
+            ) : (
+              <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                <PawPrint className="w-12 h-12 text-white" />
+              </div>
+            )}
+            
+            {/* Soul Score Badge */}
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white font-bold text-sm shadow-lg">
+              {soulScore}% Soul
+            </div>
+          </div>
+          
+          {/* Title */}
+          <h1 className="text-2xl font-light text-white text-center mb-2">
+            Mira knows <span className="font-semibold text-purple-400">{petName}</span>
+          </h1>
+          
+          {/* Top 3 Traits */}
+          {topTraits.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-2 mb-6">
+              {topTraits.map((trait, i) => (
+                <span key={i} className="px-3 py-1 bg-white/10 rounded-full text-white/80 text-sm capitalize">
+                  {trait}
+                </span>
+              ))}
+            </div>
+          )}
+          
+          {/* Synopsis - What Mira has learned (max 6 bullets) */}
+          <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 mb-6 border border-white/10">
+            <p className="text-white/90 text-sm font-medium mb-4 text-center">What Mira knows so far:</p>
+            <div className="space-y-3">
+              {synopsis.length > 0 ? synopsis.map((item, idx) => (
+                <div key={idx} className="flex items-center gap-3 text-white/70 text-sm">
+                  <span className="text-lg flex-shrink-0">{item.icon}</span>
+                  <span className="capitalize">{item.text}</span>
+                </div>
+              )) : (
+                <p className="text-white/50 text-center text-sm">
+                  {petName}'s profile is just getting started!
+                </p>
+              )}
+            </div>
+          </div>
+          
+          {/* Score growth message */}
+          <p className="text-white/50 text-sm text-center mb-8">
+            Your score will grow as Mira learns more about {petName}
+          </p>
+          
+          {/* Junction Choices - EXACTLY TWO BUTTONS */}
+          <div className="space-y-3">
+            {/* Primary: See Pet's Home */}
+            <button
+              onClick={navigateToPetHome}
+              disabled={isSaving}
+              className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all disabled:opacity-50"
+              data-testid="see-pet-home-btn"
+            >
+              {isSaving ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Saving...
+                </span>
+              ) : (
+                <>See {petName}'s Home</>
+              )}
+            </button>
+            
+            {/* Secondary: Let Mira know more */}
+            <button
+              onClick={() => {
+                // Go to KNOW_MORE_START which shows synopsis then continues questions
+                setScreen('know_more_start');
+              }}
+              className="w-full py-4 px-6 bg-white/10 text-white font-medium rounded-full hover:bg-white/20 transition-all border border-white/10"
+              data-testid="let-mira-know-more-btn"
+            >
+              <Sparkles className="w-4 h-4 inline mr-2" />
+              Let Mira know more
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // KNOW_MORE_START SCREEN - Shows current state before continuing
+  // Soul score STARTS from current persisted score and only goes UP
+  // Questions asked are BEYOND what's already answered
+  // ═══════════════════════════════════════════════════════════════════════════════
+  if (screen === 'know_more_start') {
+    const synopsis = generateMiraSynopsis();
+    const unansweredQuestions = getUnansweredQuestions();
+    const hasMoreQuestions = unansweredQuestions.length > 0;
+    
+    // Find the next chapter/question to continue from
+    const findNextQuestion = () => {
+      for (let chIdx = 0; chIdx < CHAPTERS.length; chIdx++) {
+        const ch = CHAPTERS[chIdx];
+        for (let qIdx = 0; qIdx < ch.questions.length; qIdx++) {
+          const q = ch.questions[qIdx];
+          const isAnswered = answeredQuestionIds.has(q.id) || 
+            (answers[q.id] && !(typeof answers[q.id] === 'object' && answers[q.id].skipped));
+          if (!isAnswered) {
+            return { chapterIndex: chIdx, questionIndex: qIdx };
+          }
+        }
+      }
+      return null;
+    };
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col p-6" data-testid="know-more-start">
+        {/* Header with back */}
+        <div className="flex items-center justify-between mb-6">
+          <button 
+            onClick={() => setScreen('know_mira_summary')}
+            className="p-2 rounded-full bg-white/10 hover:bg-white/20"
+          >
+            <ChevronLeft className="w-5 h-5 text-white" />
+          </button>
+          <button 
+            onClick={handleSaveAndExit}
+            disabled={isSaving}
+            className="text-white/50 hover:text-white text-sm"
+          >
+            {isSaving ? 'Saving...' : 'Save & exit'}
+          </button>
+        </div>
+        
+        {/* Ambient glow */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-purple-500/15 rounded-full blur-[120px] pointer-events-none" />
+        
+        <div className="flex-1 flex flex-col items-center justify-center relative z-10">
+          {/* Pet photo with current score */}
+          <div className="relative w-24 h-24 mb-6">
+            <svg className="absolute -inset-3 w-[calc(100%+24px)] h-[calc(100%+24px)]" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="56" fill="none" stroke="rgba(139, 92, 246, 0.2)" strokeWidth="3" />
+              <circle 
+                cx="60" cy="60" r="56" 
+                fill="none" 
+                stroke="url(#continueGradient)" 
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeDasharray={`${(soulScore / 100) * 352} 352`}
+                transform="rotate(-90 60 60)"
+              />
+              <defs>
+                <linearGradient id="continueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#8B5CF6" />
+                  <stop offset="100%" stopColor="#EC4899" />
+                </linearGradient>
+              </defs>
+            </svg>
+            
+            {petPhotoPreview ? (
+              <img src={petPhotoPreview} alt={petName} className="w-full h-full rounded-full object-cover" />
+            ) : (
+              <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 flex items-center justify-center text-3xl">
+                🐕
+              </div>
+            )}
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white text-xs font-bold">
+              {soulScore}%
+            </div>
+          </div>
+          
+          {/* Title */}
+          <h2 className="text-xl text-white text-center mb-2">
+            Here's what Mira already knows about {petName}
+          </h2>
+          
+          {/* Short synopsis */}
+          <div className="bg-white/5 rounded-xl p-4 mb-6 max-w-sm w-full border border-white/10">
+            {synopsis.slice(0, 4).map((item, idx) => (
+              <div key={idx} className="flex items-center gap-2 text-white/70 text-sm py-1">
+                <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                <span className="capitalize">{item.text}</span>
+              </div>
+            ))}
+            {synopsis.length === 0 && (
+              <p className="text-white/50 text-sm text-center">Just getting started!</p>
+            )}
+          </div>
+          
+          {hasMoreQuestions ? (
+            <>
+              <p className="text-white/50 text-sm mb-6 text-center">
+                {unansweredQuestions.length} more questions to help Mira understand {petName} better
+              </p>
+              
+              {/* Continue button */}
+              <button
+                onClick={() => {
+                  const next = findNextQuestion();
+                  if (next) {
+                    setCurrentChapter(next.chapterIndex);
+                    setCurrentQuestion(next.questionIndex);
+                    setScreen('question');
+                  } else {
+                    // All questions answered
+                    setScreen('know_mira_summary');
+                  }
+                }}
+                className="w-full max-w-sm py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30"
+                data-testid="continue-questions-btn"
+              >
+                Continue
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="text-white/50 text-sm mb-6 text-center">
+                You've answered all available questions!
+              </p>
+              
+              <button
+                onClick={navigateToPetHome}
+                disabled={isSaving}
+                className="w-full max-w-sm py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full"
+                data-testid="go-to-home-btn"
+              >
+                {isSaving ? 'Saving...' : `Go to ${petName}'s Home`}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+  
   // CHAPTER COMPLETE SCREEN
   if (screen === 'chapter-complete') {
     return (
