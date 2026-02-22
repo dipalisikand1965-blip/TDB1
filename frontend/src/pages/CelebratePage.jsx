@@ -485,6 +485,7 @@ const CelebratePage = () => {
         {activePet && (
           <div className="mt-6">
             <ConciergePickCard
+              key={`concierge-card-${activePet.id}`}
               pet={{
                 name: activePet.name,
                 breed: activePet.breed,
