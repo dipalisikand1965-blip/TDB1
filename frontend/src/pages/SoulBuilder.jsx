@@ -202,6 +202,9 @@ const SoulBuilder = () => {
   // DEBUG: Log that component mounted
   console.log('[SoulBuilder] Component mounted');
   
+  // Loading state - wait for pets to load
+  const [isLoadingPets, setIsLoadingPets] = useState(true);
+  
   // State
   // Screens: preboarding, pet-hook, basic-info, chapter-intro, question, chapter-complete, 
   //          know_mira_summary (COMPULSORY checkpoint), know_more_start, final
