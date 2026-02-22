@@ -716,9 +716,6 @@ const PersonalizedPicksPanel = ({
   // NEW: Single pillar mode - when on a pillar page, show ONLY that pillar (no tabs for others)
   pillar = null            // If set, locks to this pillar and hides other pillar tabs
 }) => {
-  // Debug: Log pillar prop
-  console.log('[PersonalizedPicksPanel] pillar prop:', pillar, 'isPillarLocked:', Boolean(pillar));
-  
   // Determine initial pillar: locked pillar > engine pillar > celebrate
   const initialPillar = pillar || enginePillar || 'celebrate';
   const [activePillar, setActivePillar] = useState(initialPillar);
