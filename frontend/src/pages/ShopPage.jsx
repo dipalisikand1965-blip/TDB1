@@ -969,6 +969,26 @@ const ShopPage = () => {
         </div>
       </section>
       
+      {/* Concierge Pick Card - Personal shopping */}
+      {selectedPet && (
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <ConciergePickCard
+            pet={{
+              name: selectedPet.name,
+              breed: selectedPet.breed,
+              photo: selectedPet.photo_url,
+              soulTraits: selectedPet.personality_traits || []
+            }}
+            pillar="shop"
+            title={CONCIERGE_PRESETS.shop.title}
+            icon={CONCIERGE_PRESETS.shop.icon}
+            description={CONCIERGE_PRESETS.shop.description}
+            soulReason=""
+            responseTime="2 hours"
+          />
+        </div>
+      )}
+      
       <MiraChatWidget pillar="shop" isOpen={miraChatOpen} onClose={() => setMiraChatOpen(false)} />
       
       {/* Mira OS Trigger */}
