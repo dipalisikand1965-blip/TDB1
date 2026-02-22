@@ -593,13 +593,14 @@ const MiraMeetsYourPet = () => {
       const loginData = await loginResponse.json();
       
       if (loginResponse.ok && loginData.access_token) {
-        localStorage.setItem('token', loginData.access_token);
+        // Use the correct storage key that AuthContext expects
+        localStorage.setItem('tdb_auth_token', loginData.access_token);
         localStorage.setItem('user', JSON.stringify(loginData.user));
         
         toast.success(`Welcome! ${petName}'s home is ready.`);
         
-        // Navigate to Pet Home
-        navigate('/pet-home');
+        // Force reload to ensure AuthContext picks up the new token
+        window.location.href = '/dashboard';
       } else {
         // Account created but login failed - redirect to login
         toast.info('Account created! Please login.');
