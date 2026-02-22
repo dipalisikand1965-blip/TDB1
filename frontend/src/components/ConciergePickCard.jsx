@@ -12,14 +12,16 @@
  */
 
 import React, { useState } from 'react';
-import { Sparkles, MessageCircle, Clock, Heart, ChevronRight } from 'lucide-react';
+import { Sparkles, MessageCircle, Clock, Heart, ChevronRight, ShoppingCart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { toast } from '../hooks/use-toast';
 
 /**
  * ConciergePickCard - Personalized concierge service card
  * 
  * @param {Object} props
- * @param {Object} props.pet - Pet object { name, breed, photo, soulTraits }
+ * @param {Object} props.pet - Pet object { name, breed, photo, soulTraits, id }
  * @param {string} props.pillar - Which pillar this appears on (celebrate, dine, etc.)
  * @param {string} props.title - Service title (e.g., "Custom Birthday Party")
  * @param {string} props.description - What Mira will arrange
@@ -27,9 +29,10 @@ import { useNavigate } from 'react-router-dom';
  * @param {string} props.soulReason - Why this is recommended based on soul (e.g., "who gets anxious with strangers")
  * @param {Function} props.onArrange - Called when "Let Mira Arrange" is clicked
  * @param {string} props.responseTime - SLA promise (default: "2 hours")
+ * @param {boolean} props.addToCart - If true, adds to cart instead of navigating (default: true)
  */
 const ConciergePickCard = ({
-  pet = { name: 'your pet', breed: '', soulTraits: [] },
+  pet = { name: 'your pet', breed: '', soulTraits: [], id: null },
   pillar = 'celebrate',
   title = 'Custom Service',
   description = '',
@@ -37,9 +40,11 @@ const ConciergePickCard = ({
   soulReason = '',
   onArrange,
   responseTime = '2 hours',
+  addToCart = true,
   className = ''
 }) => {
   const navigate = useNavigate();
+  const { addConciergeRequest, setIsCartOpen } = useCart();
   const [isHovered, setIsHovered] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
