@@ -23,6 +23,7 @@ import MultiPetSelector from '../components/MultiPetSelector';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
+import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
 import {
   Car, Train, Plane, Truck, MapPin, Calendar, Clock, PawPrint,

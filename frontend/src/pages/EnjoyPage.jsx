@@ -23,6 +23,7 @@ import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
+import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
 import ConversationalEntry from '../components/ConversationalEntry';
