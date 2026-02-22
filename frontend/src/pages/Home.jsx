@@ -22,6 +22,7 @@ const BRAND_IMAGES = {
   happyPet: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/s4qmsach_shutterstock_199063937.jpg',
   lifestyle1: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/sj6layzi_shutterstock_504980047%20%282%29.jpg',
   lifestyle2: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/tfel85m7_shutterstock_139089332%20%281%29.jpg',
+  blackLab: 'https://images.unsplash.com/photo-1636320004437-1f34a9babea4?w=200&h=200&fit=crop',
 };
 
 // Mira's Living Soul Orb - Simplified
