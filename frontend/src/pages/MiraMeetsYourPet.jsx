@@ -1554,13 +1554,20 @@ const MiraMeetsYourPet = () => {
         {/* CTAs */}
         <div className="w-full max-w-sm space-y-3">
           <button
-            onClick={handleFinalSubmit}
+            onClick={() => {
+              console.log('[UI] Button clicked!');
+              toast.info('Creating your account...');
+              handleFinalSubmit();
+            }}
             disabled={loading}
             data-testid="see-pet-home-btn"
             className="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-pink-500/30 disabled:opacity-50"
           >
             {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin inline" />
+              <>
+                <Loader2 className="w-5 h-5 animate-spin inline mr-2" />
+                Creating {petName}'s Home...
+              </>
             ) : (
               <>See {petName}'s Home <ChevronRight className="w-5 h-5 inline" /></>
             )}
@@ -1581,7 +1588,15 @@ const MiraMeetsYourPet = () => {
         </div>
         
         {error && (
-          <p className="text-red-400 text-sm mt-4 text-center">{error}</p>
+          <div className="mt-4 p-3 bg-red-500/20 border border-red-500/50 rounded-xl">
+            <p className="text-red-400 text-sm text-center">{error}</p>
+            <button 
+              onClick={() => setError('')}
+              className="text-red-300 text-xs underline mt-1 block mx-auto"
+            >
+              Dismiss
+            </button>
+          </div>
         )}
       </motion.div>
     );
