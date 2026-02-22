@@ -344,7 +344,12 @@ const SoulBuilder = () => {
               console.log('[SoulBuilder] Questions already answered (will not repeat):', [...alreadyAnsweredIds]);
             }
             
-            // Skip to preboarding (which shows KNOW_MIRA_SUMMARY for returning users)
+            // If continue=true from URL, go directly to KNOW_MORE_START
+            // Otherwise show preboarding (which shows KNOW_MIRA_SUMMARY for returning users)
+            if (shouldContinue) {
+              console.log('[SoulBuilder] continue=true, going to know_more_start');
+              setScreen('know_more_start');
+            }
             // The preboarding screen will detect existing pet and show the summary
           }
         }
