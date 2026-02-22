@@ -331,6 +331,9 @@ function AppRouter() {
         {/* MIRA OS - New Header Shell Navigation Page */}
         <Route path="/mira-os" element={<ProtectedRoute requireMembership={true}><MiraOSPage /></ProtectedRoute>} />
         
+        {/* Mira Pillar Sandbox - Test page for unified Mira experience */}
+        <Route path="/mira-pillar-sandbox" element={<MiraPillarSandbox />} />
+        
         {/* Membership Landing Page - NO navbar/footer for clean entry */}
         <Route path="/membership" element={<MembershipPage />} />
         
