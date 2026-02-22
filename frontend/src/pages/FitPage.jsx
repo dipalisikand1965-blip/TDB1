@@ -614,7 +614,7 @@ const FitPage = () => {
               title={CONCIERGE_PRESETS.fit.title}
               icon={CONCIERGE_PRESETS.fit.icon}
               description={CONCIERGE_PRESETS.fit.description}
-              soulReason=""
+              soulReason={getSoulBasedReason(userPets[0], 'fit')}
               responseTime="2 hours"
             />
           </div>

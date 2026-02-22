@@ -449,7 +449,7 @@ const EnjoyPage = () => {
                 title={CONCIERGE_PRESETS.enjoy.title}
                 icon={CONCIERGE_PRESETS.enjoy.icon}
                 description={CONCIERGE_PRESETS.enjoy.description}
-                soulReason=""
+                soulReason={getSoulBasedReason(userPets[0], 'enjoy')}
                 responseTime="2 hours"
               />
             </div>

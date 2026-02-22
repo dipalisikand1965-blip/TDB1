@@ -597,7 +597,7 @@ const CarePage = () => {
                 title={CONCIERGE_PRESETS.care.title}
                 icon={CONCIERGE_PRESETS.care.icon}
                 description={CONCIERGE_PRESETS.care.description}
-                soulReason=""
+                soulReason={getSoulBasedReason(userPets[0], 'care')}
                 responseTime="2 hours"
               />
             </div>
