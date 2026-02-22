@@ -368,7 +368,13 @@ const useChatSubmit = (config) => {
       
       const data = await response.json();
       
-      console.log('[MIRA CHAT] Response received:', data.success ? 'success' : 'failed');
+      // Check if response is valid
+      if (!response.ok) {
+        console.error('[MIRA CHAT] Server error:', response.status, data);
+        throw new Error(`Server error: ${response.status}`);
+      }
+      
+      console.log('[MIRA CHAT] Response received:', data.success !== false ? 'success' : 'failed');
       
       // UI ACTION HANDLER (for backwards compatibility)
       if (data.ui_action?.type === 'open_picks_vault') {
