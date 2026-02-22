@@ -441,17 +441,21 @@ const SoulBuilder = () => {
   const fileInputRef = useRef(null);
   
   // Calculate soul score based on answered questions
+  // Calculate Soul Score - ONLY scoring questions count (doctrine: 100 total points)
   const calculateSoulScore = useCallback(() => {
     let earnedWeight = 0;
     Object.keys(answers).forEach(questionId => {
       CHAPTERS.forEach(chapter => {
         const question = chapter.questions.find(q => q.id === questionId);
-        if (question && answers[questionId]) {
+        // ONLY count if it's a SCORING question (weight > 0 and scoring: true)
+        if (question && question.scoring && answers[questionId] && 
+            !(typeof answers[questionId] === 'object' && answers[questionId].skipped)) {
           earnedWeight += question.weight;
         }
       });
     });
-    return Math.round((earnedWeight / TOTAL_WEIGHT) * 100);
+    // Doctrine: TOTAL_WEIGHT = 100, so score is directly earned points
+    return Math.min(Math.round((earnedWeight / TOTAL_WEIGHT) * 100), 100);
   }, [answers]);
   
   const soulScore = calculateSoulScore();
