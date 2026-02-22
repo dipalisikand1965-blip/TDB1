@@ -985,7 +985,7 @@ const ShopPage = () => {
             title={CONCIERGE_PRESETS.shop.title}
             icon={CONCIERGE_PRESETS.shop.icon}
             description={CONCIERGE_PRESETS.shop.description}
-            soulReason=""
+            soulReason={getSoulBasedReason(selectedPet, 'shop')}
             responseTime="2 hours"
           />
         </div>

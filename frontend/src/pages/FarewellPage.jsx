@@ -800,7 +800,7 @@ const FarewellPage = () => {
             title={CONCIERGE_PRESETS.farewell.title}
             icon={CONCIERGE_PRESETS.farewell.icon}
             description={CONCIERGE_PRESETS.farewell.description}
-            soulReason=""
+            soulReason={getSoulBasedReason(pets[0], 'farewell')}
             responseTime="1 hour"
           />
         </div>
