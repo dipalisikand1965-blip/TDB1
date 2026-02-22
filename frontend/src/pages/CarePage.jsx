@@ -580,6 +580,26 @@ const CarePage = () => {
       <div className="py-10 bg-gradient-to-b from-white to-pink-50/30">
         <div className="max-w-6xl mx-auto px-4">
           <PersonalizedPicks pillar="care" />
+          
+          {/* Concierge Pick Card - Tailored care services */}
+          {userPets && userPets[0] && (
+            <div className="mt-6">
+              <ConciergePickCard
+                pet={{
+                  name: userPets[0].name,
+                  breed: userPets[0].breed,
+                  photo: userPets[0].photo_url,
+                  soulTraits: userPets[0].personality_traits || []
+                }}
+                pillar="care"
+                title={CONCIERGE_PRESETS.care.title}
+                icon={CONCIERGE_PRESETS.care.icon}
+                description={CONCIERGE_PRESETS.care.description}
+                soulReason=""
+                responseTime="2 hours"
+              />
+            </div>
+          )}
         </div>
       </div>
 
