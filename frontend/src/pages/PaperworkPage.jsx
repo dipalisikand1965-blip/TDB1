@@ -948,7 +948,7 @@ const PaperworkPage = () => {
             title={CONCIERGE_PRESETS.paperwork.title}
             icon={CONCIERGE_PRESETS.paperwork.icon}
             description={CONCIERGE_PRESETS.paperwork.description}
-            soulReason=""
+            soulReason={getSoulBasedReason(userPets[0], 'paperwork')}
             responseTime="24 hours"
           />
         </div>

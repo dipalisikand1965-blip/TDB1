@@ -710,7 +710,7 @@ const AdvisoryPage = () => {
             title={CONCIERGE_PRESETS.advisory.title}
             icon={CONCIERGE_PRESETS.advisory.icon}
             description={CONCIERGE_PRESETS.advisory.description}
-            soulReason=""
+            soulReason={getSoulBasedReason(userPets[0], 'advisory')}
             responseTime="4 hours"
           />
         </div>

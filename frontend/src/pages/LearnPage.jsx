@@ -503,7 +503,7 @@ const LearnPage = () => {
               title={CONCIERGE_PRESETS.learn.title}
               icon={CONCIERGE_PRESETS.learn.icon}
               description={CONCIERGE_PRESETS.learn.description}
-              soulReason=""
+              soulReason={getSoulBasedReason(userPets[0], 'learn')}
               responseTime="2 hours"
             />
           </div>

@@ -745,7 +745,7 @@ const EmergencyPage = () => {
             title={CONCIERGE_PRESETS.emergency.title}
             icon={CONCIERGE_PRESETS.emergency.icon}
             description={CONCIERGE_PRESETS.emergency.description}
-            soulReason=""
+            soulReason={getSoulBasedReason(userPets[0], 'emergency')}
             responseTime="Immediate"
           />
         </div>
