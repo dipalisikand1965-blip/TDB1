@@ -349,6 +349,9 @@ const SoulBuilder = () => {
             // Store pet ID for canonical updates
             setCurrentPetId(pet.id || pet._id);
             
+            // Store the full pet object for displaying correct score
+            setCurrentPet(pet);
+            
             // Pre-fill pet info
             setPetName(pet.name || '');
             setPetPhotoPreview(pet.photo || null);
