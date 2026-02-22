@@ -477,7 +477,7 @@ const CelebratePage = () => {
               responseTime="2 hours"
               addToCart={false}
               onArrange={() => setIsPillarPanelOpen(true)}
-              miniPicks={[
+              miniPicks={dynamicPicks.length > 0 ? dynamicPicks : [
                 { icon: '☕', name: 'Photo Mug' },
                 { icon: '🎁', name: 'Photo Coaster' },
                 { icon: '🎀', name: 'Name Bandana' },
