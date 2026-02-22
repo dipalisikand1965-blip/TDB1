@@ -772,7 +772,7 @@ const DinePage = () => {
                     <div className="flex items-center justify-between mt-3">
                       <div>
                         <span className="text-base sm:text-lg font-bold text-green-600">₹{bundle.bundle_price || bundle.price || 0}</span>
-                        {bundle.original_price > bundle.bundle_price && (
+                        {(bundle.original_price > (bundle.bundle_price || bundle.price)) && (
                           <span className="text-xs text-gray-400 line-through ml-1">₹{bundle.original_price}</span>
                         )}
                       </div>
@@ -2165,7 +2165,7 @@ const DineBundleModal = ({ bundle, onClose, addToCart }) => {
               <p className="text-sm text-gray-500">Bundle Price</p>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-bold text-green-600">₹{bundle.bundle_price || bundle.price || 0}</span>
-                {bundle.original_price > bundle.bundle_price && (
+                {(bundle.original_price > (bundle.bundle_price || bundle.price)) && (
                   <span className="text-lg text-gray-400 line-through">₹{bundle.original_price}</span>
                 )}
               </div>
