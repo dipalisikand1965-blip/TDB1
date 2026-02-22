@@ -1025,17 +1025,12 @@ const MembershipOnboarding = () => {
                 </div>
 
                 <Button 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                  type="button"
+                  onClick={() => {
+                    console.log('[MembershipOnboarding] Button clicked');
                     handleNext();
                   }}
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
-                    handleNext();
-                  }}
-                  className="w-full mt-6 mb-6 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 h-14 min-h-[56px] shadow-lg shadow-pink-500/30 transition-all hover:scale-[1.02] text-white font-semibold touch-manipulation active:scale-[0.98]"
-                  style={{ WebkitTapHighlightColor: 'transparent' }}
+                  className="w-full mt-6 mb-6 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 h-14 min-h-[56px] shadow-lg shadow-pink-500/30 transition-all hover:scale-[1.02] text-white font-semibold touch-manipulation active:scale-[0.98] cursor-pointer"
                   data-testid="parent-next-btn"
                 >
                   Continue to Add Your Dog
