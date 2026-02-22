@@ -1538,6 +1538,7 @@ const MiraMeetsYourPet = () => {
           <button
             onClick={handleFinalSubmit}
             disabled={loading}
+            data-testid="see-pet-home-btn"
             className="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-pink-500/30 disabled:opacity-50"
           >
             {loading ? (
@@ -1547,13 +1548,18 @@ const MiraMeetsYourPet = () => {
             )}
           </button>
           
+          {/* Keep Teaching Mira - No numbers, just motivation */}
           <button
             onClick={() => navigate('/soul-builder')}
-            className="w-full py-4 bg-slate-800 text-white rounded-xl font-medium border border-slate-700 animate-pulse"
+            data-testid="keep-teaching-mira-btn"
+            className="w-full py-4 bg-slate-800 text-white rounded-xl font-medium border border-slate-700"
           >
             <Sparkles className="w-4 h-4 inline mr-2" />
-            Keep Teaching Mira ({51 - Object.keys(answers).length} more questions)
+            Keep Teaching Mira
           </button>
+          <p className="text-slate-400 text-xs text-center px-4">
+            The more Mira knows about {petName}, the better she understands {getPronoun().possessive} soul and can assist with personalized recommendations
+          </p>
         </div>
         
         {error && (
