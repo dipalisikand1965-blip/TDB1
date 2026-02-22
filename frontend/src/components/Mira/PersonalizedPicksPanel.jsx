@@ -762,7 +762,14 @@ const PersonalizedPicksPanel = ({
   }, [isOpen]);
   
   // AUTO PILLAR SWITCH: When enginePillar changes, switch ONLY if user hasn't selected a tab
+  // EXCEPTION: If pillar is locked (single pillar mode), never auto-switch
   useEffect(() => {
+    // If pillar is locked, always use it
+    if (isPillarLocked) {
+      setActivePillar(pillar);
+      return;
+    }
+    
     // Only auto-switch if:
     // 1. Panel is open
     // 2. User hasn't manually selected a pillar in this session
@@ -771,7 +778,7 @@ const PersonalizedPicksPanel = ({
       console.log(`[PICKS PANEL] Auto-switching to engine pillar: ${enginePillar}`);
       setActivePillar(enginePillar);
     }
-  }, [isOpen, enginePillar]);
+  }, [isOpen, enginePillar, isPillarLocked, pillar]);
   
   // Track when user manually selects a pillar - this LOCKS the pillar for this session
   const handlePillarSelect = (pillarId) => {
