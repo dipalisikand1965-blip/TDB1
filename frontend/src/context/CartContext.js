@@ -30,6 +30,22 @@ const getStoredCart = () => {
   return [];
 };
 
+// Helper function to get concierge requests from localStorage
+const getStoredConciergeRequests = () => {
+  try {
+    const saved = localStorage.getItem('conciergePendingRequests');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+    }
+  } catch (error) {
+    console.error('Error loading concierge requests from localStorage:', error);
+  }
+  return [];
+};
+
 // Get or create session ID for cart tracking
 const getSessionId = () => {
   let sessionId = localStorage.getItem('cartSessionId');
