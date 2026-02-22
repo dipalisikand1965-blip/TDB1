@@ -316,9 +316,7 @@ const CelebratePage = () => {
           const data = await response.json();
           const pets = data.pets || data || [];
           setUserPets(pets);
-          if (pets.length > 0) {
-            setActivePet(pets[0]);
-          }
+          // Note: activePet now comes from PillarContext
         }
       } catch (error) {
         console.error('[CelebratePage] Error fetching pets:', error);
