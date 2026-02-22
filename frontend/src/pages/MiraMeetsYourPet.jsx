@@ -1349,7 +1349,7 @@ const MiraMeetsYourPet = () => {
         {/* Header */}
         <div className="p-4 flex items-center justify-between">
           <button
-            onClick={() => currentQuestion > 0 ? setCurrentQuestion(prev => prev - 1) : setScreen('parent')}
+            onClick={() => currentQuestion > 0 ? setCurrentQuestion(prev => prev - 1) : setScreen(isAddingPet ? 'birthday' : 'parent')}
             className="p-2 rounded-full bg-slate-800"
           >
             <ChevronLeft className="w-5 h-5 text-white" />
