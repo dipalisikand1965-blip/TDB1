@@ -1375,8 +1375,14 @@ const MiraChatWidget = ({
               </div>
             </div>
             
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {/* Messages - iOS scroll fix */}
+            <div 
+              className="flex-1 overflow-y-auto p-4 space-y-3 overscroll-contain"
+              style={{ 
+                WebkitOverflowScrolling: 'touch',
+                minHeight: 0  // Important for flex scroll on iOS
+              }}
+            >
               {(messages || []).map((msg) => {
                 if (!msg || !msg.id) return null;
                 return (
