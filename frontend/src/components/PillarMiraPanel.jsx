@@ -288,6 +288,7 @@ const PillarMiraPanel = ({
   
   const config = PILLAR_CONFIG[pillar] || PILLAR_CONFIG.celebrate;
   const services = PILLAR_SERVICES[pillar] || [];
+  const conciergePicks = PILLAR_CONCIERGE_PICKS[pillar] || [];
   
   // Set selected pet
   useEffect(() => {
