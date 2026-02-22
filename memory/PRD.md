@@ -107,6 +107,34 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
 
 ---
 
+## Changelog
+
+### December 2025 - Mobile iOS UI/UX Bug Fixes
+
+#### ✅ FIXED: Critical Mobile Bugs (Dec 2025)
+1. **Join-up Form Stuck** - Continue button was unclickable on page 2 of onboarding
+   - Added `onTouchEnd` handlers with `e.preventDefault()` to all Continue buttons
+   - Added `touch-manipulation` CSS class for better touch response
+   - Increased button height to `min-h-[52px]` for larger touch targets
+   - Applied `WebkitTapHighlightColor: transparent` to prevent visual flash
+   - Files: `MembershipOnboarding.jsx`
+
+2. **Mira FAB/Chat Input Stuck on iOS** - Chat input bar hidden/stuck at bottom
+   - Added `sticky bottom-0` positioning to input area
+   - Implemented iOS safe area with `calc(0.75rem + env(safe-area-inset-bottom, 0px))`
+   - Added `WebkitTransform: translateZ(0)` for iOS rendering fix
+   - Set `fontSize: 16px` to prevent iOS zoom on input focus
+   - Added `scrollIntoView` on focus to keep input visible when keyboard opens
+   - Files: `MiraChatWidget.jsx`
+
+3. **Dashboard Layout Scrambled** - Pet avatars overlapping on mobile
+   - Fixed responsive grid classes: `grid-cols-2 gap-2.5 md:gap-3`
+   - Added `minWidth: 0` to prevent grid blowout
+   - Reduced padding for mobile: `p-2.5 md:p-4`
+   - Files: `MemberDashboard.jsx`
+
+---
+
 ## Test Credentials
 - **Member**: dipali@clubconcierge.in / test123
 - **Admin**: aditya / lola4304
