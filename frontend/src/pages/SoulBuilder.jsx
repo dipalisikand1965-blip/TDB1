@@ -265,20 +265,33 @@ const SoulBuilder = () => {
               const existingAnswers = pet.doggy_soul_answers || pet.soul_answers || {};
               const prefilledAnswers = {};
               
-              // Map onboarding field names to Soul Builder question IDs
+              // Map ALL 13 onboarding question IDs to Soul Builder question IDs
+              // Onboarding uses simple IDs, Soul Builder uses same or similar IDs
               const fieldMapping = {
+                // Direct matches (same ID in both)
+                'life_stage': 'life_stage',
+                'stranger_reaction': 'stranger_reaction',
                 'food_allergies': 'food_allergies',
                 'health_conditions': 'health_conditions',
-                'temperament': 'general_nature', // Map to the similar question
-                'grooming_tolerance': 'grooming_tolerance'
+                'exercise_needs': 'exercise_needs',
+                'grooming_tolerance': 'grooming_tolerance',
+                'separation_anxiety': 'separation_anxiety',
+                'lives_with': 'lives_with',
+                'other_pets': 'other_pets',
+                'is_neutered': 'is_neutered',
+                'main_goal': 'main_goal',
+                // Mapped (different ID)
+                'temperament': 'general_nature',
+                'favorite_protein': 'favorite_protein'
               };
               
               Object.keys(existingAnswers).forEach(key => {
                 const value = existingAnswers[key];
-                if (value && value !== 'None' && value !== '') {
+                if (value && value !== 'None' && value !== '' && 
+                    !(Array.isArray(value) && value.length === 0)) {
                   const mappedKey = fieldMapping[key] || key;
                   // Format for Soul Builder (some are multi-select)
-                  if (key === 'food_allergies' || key === 'health_conditions') {
+                  if (['food_allergies', 'health_conditions', 'lives_with', 'main_goal'].includes(key)) {
                     prefilledAnswers[mappedKey] = Array.isArray(value) ? value : [value];
                   } else {
                     prefilledAnswers[mappedKey] = value;
@@ -288,7 +301,7 @@ const SoulBuilder = () => {
               
               if (Object.keys(prefilledAnswers).length > 0) {
                 setAnswers(prefilledAnswers);
-                console.log('[SoulBuilder] Pre-filled answers from onboarding:', prefilledAnswers);
+                console.log('[SoulBuilder] Pre-filled answers from onboarding:', Object.keys(prefilledAnswers).length, 'questions');
               }
             }
             
