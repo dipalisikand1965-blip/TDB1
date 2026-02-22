@@ -1123,8 +1123,8 @@ const StayPage = () => {
                     
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="text-lg font-bold text-green-600">₹{bundle.bundle_price}</span>
-                        {bundle.original_price > bundle.bundle_price && (
+                        <span className="text-lg font-bold text-green-600">₹{bundle.bundle_price || bundle.price || 0}</span>
+                        {(bundle.original_price > (bundle.bundle_price || bundle.price)) && (
                           <span className="text-xs text-gray-400 line-through ml-1">₹{bundle.original_price}</span>
                         )}
                       </div>
@@ -1136,7 +1136,7 @@ const StayPage = () => {
                           addToCart({
                             id: bundle.id,
                             name: bundle.name,
-                            price: bundle.bundle_price,
+                            price: bundle.bundle_price || bundle.price,
                             image: bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
                             description: bundle.description,
                             category: 'stay_bundle',
