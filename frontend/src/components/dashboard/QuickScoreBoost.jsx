@@ -200,7 +200,7 @@ const QuickScoreBoost = ({ pet, onAnswerQuestion }) => {
         <Button 
           variant="ghost" 
           className="text-amber-700 hover:text-amber-800 hover:bg-amber-100"
-          onClick={() => window.location.href = `/pet/${pet?.id}?tab=personality`}
+          onClick={() => window.location.href = `/soul-builder?pet=${pet?.id}&continue=true`}
         >
           View All Questions <ChevronRight className="w-4 h-4 ml-1" />
         </Button>
