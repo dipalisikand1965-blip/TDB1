@@ -130,6 +130,11 @@ const LearnPage = () => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
   
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   const [programs, setPrograms] = useState([]);
   const [featuredPrograms, setFeaturedPrograms] = useState([]);
   const [trainers, setTrainers] = useState([]);
