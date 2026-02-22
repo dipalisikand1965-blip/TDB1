@@ -1296,7 +1296,7 @@ const MiraChatWidget = ({
         
         {/* Content - Hidden when minimized */}
         {!isMinimized && (
-          <>
+          <div className="flex flex-col overflow-hidden" style={{ maxHeight: 'calc(100% - 4rem)' }}>
             {/* Pet Selector + Suggestions Row - Compact */}
             {pets.length > 0 && (
               <div className="px-3 py-2 border-b bg-gray-50 shrink-0">
