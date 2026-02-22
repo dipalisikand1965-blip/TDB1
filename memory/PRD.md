@@ -6,38 +6,59 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
 
 ---
 
-## ✅ FULL AUDIT COMPLETED - February 22, 2026
+## ✅ SESSION 7 - MAJOR IMPLEMENTATION - February 22, 2026
 
-### Session 7 Fixes (February 22, 2026)
+### CONCIERGE DNA DOCUMENTED
+The core DNA of The Doggy Company has been documented:
+- **We are NOT** Chewy, HUFT, or Rover - **We ARE a full-blooded Pet Concierge Company**
+- **Mira is named after Dipali's mother** - The guiding angel whose 75 years of love for dogs lives on
+- **Philosophy**: "No is never an answer for a concierge. Mira tells us what the pet needs - always."
+- **See**: `/app/memory/CONCIERGE_DNA_DOCTRINE.md`
+
+### CONCIERGE PICK CARDS - IMPLEMENTED ON ALL 14 PILLARS ✅
+
+Created `ConciergePickCard.jsx` component and added to ALL pillar pages:
+
+| Pillar | Status | Concierge Service |
+|--------|--------|-------------------|
+| Celebrate | ✅ | Custom Celebration Planning |
+| Dine | ✅ | Personalized Meal Planning |
+| Stay | ✅ | Perfect Boarding Match |
+| Travel | ✅ | Stress-Free Travel Coordination |
+| Care | ✅ | Tailored Care Services |
+| Enjoy | ✅ | Custom Activity Planning |
+| Fit | ✅ | Personal Fitness Program |
+| Learn | ✅ | Custom Training Plan |
+| Paperwork | ✅ | Document Management |
+| Advisory | ✅ | Expert Consultation |
+| Emergency | ✅ | 24/7 Emergency Support |
+| Farewell | ✅ | Compassionate Farewell Planning |
+| Adopt | ✅ | Adoption Matching |
+| Shop | ✅ | Personal Shopping |
+
+**Files Created:**
+- `/app/frontend/src/components/ConciergePickCard.jsx` - The component with presets for all 14 pillars
+
+**Files Modified:**
+- All 14 pillar pages (CelebratePage.jsx, DinePage.jsx, StayPage.jsx, TravelPage.jsx, CarePage.jsx, EnjoyPage.jsx, FitPage.jsx, LearnPage.jsx, PaperworkPage.jsx, AdvisoryPage.jsx, EmergencyPage.jsx, FarewellPage.jsx, AdoptPage.jsx, ShopPage.jsx)
+
+### Logo Navigation Fix ✅
+- Logo now takes logged-in users to `/pet-home` instead of root
+- Modified `Navbar.jsx` lines 682 and 737
+
+### Earlier Bug Fixes (Same Session)
 
 #### 1. "Continue Pet Journey" Navigation Fix
-**Problem:** Dashboard buttons like "Continue Soul Journey" and "Grow Soul" were navigating to `/pet/{id}?tab=personality` (pet profile view) instead of allowing users to continue answering soul questions.
-
-**Solution:** Updated navigation to go to `/soul-builder?pet={id}&continue=true` which shows "What Mira Knows" summary and then continues with unanswered questions.
-
-**Files Changed:**
-- `MemberDashboard.jsx` (line 1304) - `onNavigateToPet` callback
-- `MemberDashboard.jsx` (line 1282) - "Grow Soul" button
-- `OverviewTab.jsx` (line 466) - "Continue Building Soul" button
-- `QuickScoreBoost.jsx` (line 203) - "View All Questions" button
+**Problem:** Dashboard buttons navigating to `/pet/{id}?tab=personality` instead of questionnaire.
+**Solution:** Updated to `/soul-builder?pet={id}&continue=true`
 
 #### 2. Soul Builder Score Display Fix
-**Problem:** Soul score in "What Mira Knows" summary screen was showing calculated score from local state instead of the canonical database score.
+**Problem:** Soul score showing local state instead of DB value.
+**Solution:** Added `currentPet` state for accurate display.
 
-**Solution:** Added `currentPet` state to track URL-specified pet and use `currentSoulScore = primaryPet?.overall_score || soulScore || 0` for display.
-
-**Files Changed:**
-- `SoulBuilder.jsx` - Added `currentPet` state (line 308)
-- `SoulBuilder.jsx` - Updated `primaryPet` to use `currentPet` if available (line 825)
-- `SoulBuilder.jsx` - Updated score display in `know_mira_summary` screen (lines 1980, 2002)
-
-#### 3. Mira Chat Error Handling Improvement
-**Problem:** "I'm having a moment" error message was appearing without context when API calls failed.
-
-**Solution:** Added HTTP response status check before parsing JSON to catch server errors earlier.
-
-**Files Changed:**
-- `useChatSubmit.js` (line 369) - Added response.ok check with error logging
+#### 3. Mira Chat Error Handling
+**Problem:** "I'm having a moment" error without context.
+**Solution:** Added HTTP response status check.
 
 ---
 
@@ -45,17 +66,6 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
 - **Backend**: **100% PASS** (17/17 tests)
 - **Frontend**: 100% pass (all pillar pages, dashboard, pet home, mira demo working)
 - **Mobile Golden Standard**: COMPLIANT
-
----
-
-## Testing Results (Session 7)
-
-| Bug Reported | Status | Resolution |
-|--------------|--------|------------|
-| Pet photo not showing in mira-demo | Cannot Reproduce | Pet "Mars" doesn't exist in DB |
-| "What Mira Knows" should show summary | ✅ WORKING | Soul builder shows summary with `continue=true` |
-| Mira chat "having a moment" error | ✅ WORKING | Chat sends/receives without errors |
-| "Continue Pet Journey" buttons not working | ✅ FIXED | Navigation updated to soul-builder |
 
 ---
 
