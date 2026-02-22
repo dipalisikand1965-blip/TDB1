@@ -17,6 +17,7 @@ import { MiraOSTrigger } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import { getPetPhotoUrl } from '../utils/petAvatar';
+import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import {
   Brain, Heart, Apple, Home, Stethoscope, GraduationCap,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
