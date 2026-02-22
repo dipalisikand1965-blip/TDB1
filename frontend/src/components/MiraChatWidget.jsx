@@ -1688,8 +1688,8 @@ const MiraChatWidget = ({
               </div>
             )}
             
-            {/* Input Area */}
-            <div className="p-3 border-t bg-white shrink-0">
+            {/* Input Area - iOS Safe Area */}
+            <div className="p-3 pb-4 border-t bg-white shrink-0 mira-input-safe" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 1rem))' }}>
               <div className="flex items-center gap-2">
                 {/* Voice Input Button */}
                 {speechSupported && (
