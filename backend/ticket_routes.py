@@ -1842,6 +1842,69 @@ async def get_ticket_analytics():
         }
 
 
+# ============== USER'S OWN TICKETS ==============
+
+@router.get("/my-tickets")
+async def get_my_tickets(
+    authorization: str = Header(...),
+    status: Optional[str] = None,
+    limit: int = 20
+):
+    """
+    Get all tickets for the current authenticated user.
+    """
+    db = get_db()
+    
+    try:
+        token = authorization.split(" ")[1]
+        decoded = jwt.decode(token, os.environ.get("JWT_SECRET", "your-secret-key"), algorithms=["HS256"])
+        user_email = decoded.get("sub") or decoded.get("user_id")
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    user = await db.users.find_one({"email": user_email}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user_id = user.get("id") or user.get("email")
+    
+    # Build query
+    query = {
+        "$or": [
+            {"member.id": user_id},
+            {"member.email": user_email},
+            {"user_id": user_id},
+            {"customer_email": user_email}
+        ]
+    }
+    if status:
+        query["status"] = status
+    
+    # Get tickets from multiple collections
+    service_tickets = await db.service_desk_tickets.find(
+        query, {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    mira_tickets = await db.mira_tickets.find(
+        {"$or": [{"user_id": user_id}, {"user_email": user_email}]},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    regular_tickets = await db.tickets.find(
+        query, {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Combine and sort
+    all_tickets = service_tickets + mira_tickets + regular_tickets
+    all_tickets.sort(key=lambda x: x.get("created_at", datetime.min), reverse=True)
+    
+    return {
+        "success": True,
+        "tickets": all_tickets[:limit],
+        "count": len(all_tickets[:limit])
+    }
+
+
 # ============== SINGLE TICKET ROUTES ==============
 
 @router.get("/{ticket_id}")
