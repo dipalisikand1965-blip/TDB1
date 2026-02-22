@@ -589,6 +589,16 @@ const StayPage = () => {
             </div>
           )}
           
+          {/* ═══════════════════════════════════════════════════════════════════
+              MIRA'S PICKS FOR {PET} - Soul-aware recommendations
+              ═══════════════════════════════════════════════════════════════════ */}
+          {userPets && userPets[0] && (
+            <PillarPicksSection 
+              pillar="stay" 
+              pet={userPets[0]}
+            />
+          )}
+          
           <PetJourneyRecommendations 
             currentPillar="stay"
           />
