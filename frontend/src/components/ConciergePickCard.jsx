@@ -148,56 +148,66 @@ const ConciergePickCard = ({
           </div>
         </div>
 
-        {/* Icon */}
-        <div 
-          className="text-4xl mb-3 w-16 h-16 flex items-center justify-center rounded-2xl"
-          style={{
-            background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%)',
-            border: '1px solid rgba(139, 92, 246, 0.2)'
-          }}
-        >
-          {icon}
-        </div>
-
-        {/* Title */}
-        <h3 className="text-lg font-semibold text-white mb-2">
-          {title}
+        {/* Title - Pet-first with Mira */}
+        <h3 className="text-xl font-semibold text-white mb-2">
+          Mira's Picks for {pet.name}
         </h3>
+        
+        {/* Subtitle */}
+        <p className="text-sm text-purple-200 mb-4">
+          {getPersonalizationMessage()}
+        </p>
 
-        {/* Personalization Message - PET FIRST */}
-        <div 
-          className="p-3 rounded-xl mb-4"
-          style={{
-            background: 'rgba(0, 0, 0, 0.2)',
-            border: '1px solid rgba(139, 92, 246, 0.2)'
-          }}
-        >
-          <p className="text-sm text-purple-200 leading-relaxed">
-            <span className="text-pink-400 font-medium">{getPersonalizationMessage()}</span>
-          </p>
-          {description && (
-            <p className="text-sm text-gray-300 mt-2 italic">
-              "{description}"
-            </p>
-          )}
-        </div>
-
-        {/* Mini Picks Preview - Shows what's inside the FAB panel */}
+        {/* Full Pick Cards - Horizontal scroll like the FAB panel */}
         {miniPicks && miniPicks.length > 0 && (
-          <div className="mb-4">
-            <p className="text-xs text-purple-300/70 mb-2 uppercase tracking-wide">What Mira will arrange</p>
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {miniPicks.slice(0, 5).map((pick, idx) => (
+          <div className="mb-4 -mx-2">
+            <div className="flex gap-3 overflow-x-auto pb-3 px-2 scrollbar-hide">
+              {miniPicks.map((pick, idx) => (
                 <div 
                   key={idx}
-                  className="flex-shrink-0 w-16 text-center"
+                  className="flex-shrink-0 w-36 rounded-xl overflow-hidden"
+                  style={{
+                    background: 'linear-gradient(180deg, rgba(88, 28, 135, 0.8) 0%, rgba(59, 7, 100, 0.9) 100%)',
+                    border: '1px solid rgba(139, 92, 246, 0.3)'
+                  }}
                 >
-                  <div 
-                    className="w-12 h-12 mx-auto rounded-xl flex items-center justify-center text-xl mb-1"
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      border: '1px solid rgba(139, 92, 246, 0.3)'
-                    }}
+                  {/* Icon */}
+                  <div className="h-20 flex items-center justify-center text-4xl bg-gradient-to-b from-purple-900/50 to-transparent">
+                    {pick.icon || '✨'}
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="p-3 pt-0">
+                    <h4 className="text-sm font-semibold text-white mb-1 line-clamp-2 leading-tight">
+                      {pick.name}
+                    </h4>
+                    {pick.description && (
+                      <p className="text-[10px] text-purple-200/80 mb-2 line-clamp-2">
+                        {pick.description}
+                      </p>
+                    )}
+                    <p className="text-[10px] text-pink-300 italic mb-2">Concierge creates</p>
+                    
+                    {/* Create button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onArrange?.();
+                      }}
+                      className="w-full py-1.5 rounded-lg text-[10px] font-medium text-white transition-all"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.6) 0%, rgba(139, 92, 246, 0.6) 100%)',
+                        border: '1px solid rgba(236, 72, 153, 0.4)'
+                      }}
+                    >
+                      Create for {pet.name}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
                   >
                     {pick.icon || pick.emoji || '✨'}
                   </div>
