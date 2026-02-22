@@ -486,6 +486,26 @@ const LearnPage = () => {
       {/* Personalized Picks for User's Pet */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <PersonalizedPicks pillar="learn" maxProducts={6} />
+        
+        {/* Concierge Pick Card - Custom training plan */}
+        {userPets && userPets[0] && (
+          <div className="mt-6">
+            <ConciergePickCard
+              pet={{
+                name: userPets[0].name,
+                breed: userPets[0].breed,
+                photo: userPets[0].photo_url,
+                soulTraits: userPets[0].personality_traits || []
+              }}
+              pillar="learn"
+              title={CONCIERGE_PRESETS.learn.title}
+              icon={CONCIERGE_PRESETS.learn.icon}
+              description={CONCIERGE_PRESETS.learn.description}
+              soulReason=""
+              responseTime="2 hours"
+            />
+          </div>
+        )}
       </div>
 
       {/* === ELEVATED CONCIERGE® LEARN EXPERIENCES === */}
