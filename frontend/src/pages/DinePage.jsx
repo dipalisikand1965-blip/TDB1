@@ -67,6 +67,11 @@ const DinePage = () => {
   const [restaurantsToShow, setRestaurantsToShow] = useState(8);
   const [heroIndex, setHeroIndex] = useState(0);
   
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   // Pet state for personalization
   const [activePet, setActivePet] = useState(null);
   
