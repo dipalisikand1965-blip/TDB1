@@ -145,32 +145,6 @@ const CelebratePage = () => {
     'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80'
   ];
 
-  // Get soul-based reason for concierge card personalization
-  const getSoulReason = () => {
-    if (!activePet) return '';
-    
-    // Check for specific traits from soul data
-    const traits = activePet.personality_traits || [];
-    const answers = activePet.soul_answers || [];
-    
-    // Anxiety traits take priority (safety first - per Mira doctrine)
-    if (traits.includes('anxious') || answers.some(a => a.answer?.includes('anxious'))) {
-      return 'who gets anxious with strangers';
-    }
-    if (traits.includes('calm') || traits.includes('gentle')) {
-      return 'who loves calm environments';
-    }
-    if (traits.includes('social') || traits.includes('friendly')) {
-      return 'who loves meeting new friends';
-    }
-    if (traits.includes('energetic') || traits.includes('playful')) {
-      return 'who has endless energy for fun';
-    }
-    
-    // Fallback to breed-based suggestion
-    return '';
-  };
-
   // Rotate hero images
   useEffect(() => {
     const interval = setInterval(() => {
@@ -444,7 +418,7 @@ const CelebratePage = () => {
               title={CONCIERGE_PRESETS.celebrate.title}
               icon={CONCIERGE_PRESETS.celebrate.icon}
               description={CONCIERGE_PRESETS.celebrate.description}
-              soulReason={getSoulReason()}
+              soulReason={getSoulBasedReason(activePet, 'celebrate')}
               responseTime="2 hours"
             />
           </div>
