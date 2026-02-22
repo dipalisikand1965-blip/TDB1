@@ -1089,22 +1089,25 @@ const SoulBuilder = () => {
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f0a19] via-[#0f0a19] to-transparent pt-8">
           <button
             onClick={() => {
+              console.log('[SoulBuilder] Continue clicked - going to chapter-intro');
               setCurrentChapter(0);
               setCurrentQuestion(0);
               setScreen('chapter-intro');
             }}
             className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
-            data-testid="start-soul-journey-btn"
+            data-testid="continue-to-chapters-btn"
           >
             Continue →
           </button>
           <button
             onClick={() => {
+              console.log('[SoulBuilder] Skip clicked - going to chapter-intro');
               setCurrentChapter(0);
               setCurrentQuestion(0);
               setScreen('chapter-intro');
             }}
             className="w-full py-2 mt-2 text-white/40 text-sm hover:text-white/60 transition-colors"
+            data-testid="skip-details-btn"
           >
             Skip these details
           </button>
