@@ -1307,10 +1307,10 @@ const MiraChatWidget = ({
         
         {/* Content - Hidden when minimized */}
         {!isMinimized && (
-          <div className="flex flex-col overflow-hidden" style={{ maxHeight: 'calc(100% - 4rem)' }}>
+          <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
             {/* Pet Selector + Suggestions Row - Compact */}
             {pets.length > 0 && (
-              <div className="px-3 py-2 border-b bg-gray-50 shrink-0">
+              <div className="px-3 py-2 border-b bg-gray-50 shrink-0 flex-none">
                 <div className="flex items-center gap-2 overflow-x-auto">
                   <span className="text-xs text-gray-500 shrink-0">For:</span>
                   {pets.map(pet => (
@@ -1337,7 +1337,7 @@ const MiraChatWidget = ({
             
             {/* SUGGESTED FOR [PET] - Compact horizontal scroll */}
             {selectedPet && petRecommendations.length > 0 && (
-              <div className="px-3 py-2 border-b bg-gradient-to-r from-purple-50/50 to-pink-50/50 shrink-0">
+              <div className="px-3 py-2 border-b bg-gradient-to-r from-purple-50/50 to-pink-50/50 shrink-0 flex-none">
                 <p className="text-[10px] font-bold text-purple-700 uppercase tracking-wider mb-1.5">
                   ✨ For {selectedPet.name}
                 </p>
@@ -1368,7 +1368,7 @@ const MiraChatWidget = ({
             )}
             
             {/* Quick Actions */}
-            <div className="px-3 py-2 border-b shrink-0">
+            <div className="px-3 py-2 border-b shrink-0 flex-none">
               <div className="flex gap-2 overflow-x-auto">
                 {(quickActions || []).slice(0, 3).map((action, idx) => {
                   if (!action || typeof action !== 'string') return null;
