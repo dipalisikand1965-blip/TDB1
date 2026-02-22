@@ -17,6 +17,7 @@ import AdminQuickEdit from '../components/AdminQuickEdit';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
+import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import {
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,
   ChevronRight, Sparkles, Star, Loader2, Send, ArrowRight, Play,
