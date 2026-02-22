@@ -1586,101 +1586,96 @@ const StayPage = () => {
   );
 };
 
-// Property Card Component
+// Property Card Component - Following proper card structure (no overlap)
 const PropertyCard = ({ property, isFavorite, onToggleFavorite, onViewDetails, onBookNow, getPropertyTypeIcon, getBadgeColor, PawRatingDisplay }) => {
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col h-full" onClick={onViewDetails}>
-      {/* Image - Compact on mobile */}
-      <div className="relative h-28 sm:h-40 flex-shrink-0">
+    <Card 
+      className="overflow-hidden rounded-2xl hover:shadow-lg transition-all duration-300 cursor-pointer flex flex-col" 
+      onClick={onViewDetails}
+    >
+      {/* ========== IMAGE HEADER - Fixed height, self-contained ========== */}
+      <div className="relative h-[150px] sm:h-[180px] overflow-hidden flex-shrink-0">
         <img 
           src={property.image || property.thumbnail || property.photos?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800'} 
           alt={property.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
         
-        {/* Favorite Button */}
+        {/* Gradient overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        
+        {/* Top-left: Property Type Badge */}
+        <div className="absolute top-3 left-3 z-10 flex items-center gap-1 px-2 py-1 bg-white/95 backdrop-blur-sm rounded-lg text-xs font-medium text-gray-700 shadow-sm">
+          {getPropertyTypeIcon(property.property_type)}
+          <span className="hidden sm:inline capitalize">{property.property_type}</span>
+        </div>
+        
+        {/* Top-right: Heart/Favorite */}
         <button 
           onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
-          className="absolute top-1.5 right-1.5 p-1 bg-white/90 rounded-full hover:bg-white transition-colors"
+          className="absolute top-3 right-3 z-10 w-8 h-8 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-sm"
         >
-          <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+          <Heart className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
         </button>
-
-        {/* Property Type Badge - Icon only on mobile */}
-        <div className="absolute top-1.5 left-1.5 flex items-center gap-0.5 px-1.5 py-0.5 bg-white/90 rounded-full text-[9px] sm:text-xs font-medium text-gray-700">
-          {getPropertyTypeIcon(property.property_type)}
-          <span className="hidden sm:inline">{property.property_type?.charAt(0).toUpperCase() + property.property_type?.slice(1)}</span>
-        </div>
-
-        {/* Featured Badge */}
-        {property.featured && (
-          <div className="absolute top-7 sm:top-9 left-1.5 flex items-center gap-0.5 px-1 py-0.5 bg-amber-500 rounded-full text-[8px] sm:text-xs font-medium text-white">
-            <Sparkles className="w-2 h-2 sm:w-3 sm:h-3" />
-            <span className="hidden sm:inline">Featured</span>
-          </div>
-        )}
-
-        {/* Location & Name - Compact */}
-        <div className="absolute bottom-1.5 left-1.5 right-1.5 text-white">
-          <h3 className="font-bold text-xs sm:text-base line-clamp-1">{property.name}</h3>
-          <p className="text-[10px] sm:text-sm opacity-90 flex items-center gap-0.5">
-            <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> {property.city}
+        
+        {/* Bottom overlay: Name & Location - sits ON the image */}
+        <div className="absolute bottom-3 left-3 right-3 z-10 text-white">
+          <h3 className="font-bold text-sm sm:text-base line-clamp-1 drop-shadow-md">{property.name}</h3>
+          <p className="text-xs sm:text-sm opacity-90 flex items-center gap-1 drop-shadow-md">
+            <MapPin className="w-3 h-3" /> {property.city}
           </p>
         </div>
       </div>
 
-      {/* Content - Tight padding */}
-      <div className="p-2 sm:p-3 flex flex-col flex-grow">
-        {/* Paw Rating */}
-        <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+      {/* ========== CONTENT - Separate block with white background ========== */}
+      <div className="p-3 sm:p-4 bg-white flex flex-col flex-grow relative z-0">
+        {/* Row 1: Paw Rating + Price */}
+        <div className="flex items-center justify-between mb-2">
           <PawRatingDisplay rating={property.paw_rating?.overall} pawRating={property.paw_rating} />
           {property.pet_policy?.pet_fee_per_night > 0 && (
-            <span className="text-[10px] sm:text-sm text-gray-600">
+            <span className="text-xs sm:text-sm font-medium text-gray-600">
               ₹{property.pet_policy.pet_fee_per_night}/night
             </span>
           )}
         </div>
 
-        {/* Pet Policy Snapshot - Hidden on mobile for space */}
+        {/* Row 2: Pet Policy Snapshot */}
         {property.pet_policy_snapshot && (
-          <p className="hidden sm:flex text-sm text-gray-600 mb-2 line-clamp-2 items-start gap-1">
-            <Dog className="w-4 h-4 flex-shrink-0 mt-0.5" />
-            {property.pet_policy_snapshot}
+          <p className="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-2 flex items-start gap-1">
+            <Dog className="w-4 h-4 flex-shrink-0 mt-0.5 text-gray-400" />
+            <span>{property.pet_policy_snapshot}</span>
           </p>
         )}
 
-        {/* Badges - Show 2 on mobile */}
-        <div className="flex flex-wrap gap-0.5 sm:gap-1 mb-1.5 sm:mb-2">
-          {property.badges?.slice(0, 2).map((badge, idx) => (
-            <span key={idx} className={`text-[8px] sm:text-xs px-1 sm:px-2 py-0.5 rounded-full ${getBadgeColor(badge)}`}>
-              {badge}
-            </span>
-          ))}
-        </div>
+        {/* Row 3: Badges - Max 2 rows, limit to 4 badges */}
+        {property.badges && property.badges.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-2">
+            {property.badges.slice(0, 4).map((badge, idx) => (
+              <span key={idx} className={`text-[10px] sm:text-xs px-2 py-0.5 rounded-full ${getBadgeColor(badge)}`}>
+                {badge}
+              </span>
+            ))}
+            {property.badges.length > 4 && (
+              <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                +{property.badges.length - 4}
+              </span>
+            )}
+          </div>
+        )}
 
-        {/* Vibe Tags - Hidden on mobile */}
-        <div className="hidden sm:flex flex-wrap gap-1 mb-3">
-          {property.vibe_tags?.slice(0, 3).map((vibe, idx) => (
-            <span key={idx} className="text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded">
-              {vibe}
-            </span>
-          ))}
-        </div>
-
-        {/* CTA - Compact buttons */}
-        <div className="flex gap-1.5 sm:gap-2 mt-auto">
+        {/* Row 4: CTA Buttons - Always visible at bottom */}
+        <div className="flex gap-2 mt-auto pt-2">
           <Button 
             variant="outline" 
             size="sm"
-            className="flex-1 text-[10px] sm:text-xs py-1.5 sm:py-2 h-auto"
+            className="flex-1 text-xs h-9"
             onClick={(e) => { e.stopPropagation(); onViewDetails(); }}
           >
             Details
           </Button>
           <Button 
             size="sm"
-            className="flex-1 bg-green-600 hover:bg-green-700 text-[10px] sm:text-xs py-1.5 sm:py-2 h-auto"
+            className="flex-1 bg-green-600 hover:bg-green-700 text-xs h-9"
             onClick={(e) => { e.stopPropagation(); onBookNow(); }}
           >
             Book
