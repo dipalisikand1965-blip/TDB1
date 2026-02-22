@@ -244,7 +244,10 @@ const SoulBuilder = () => {
     const fetchPets = async () => {
       try {
         const token = localStorage.getItem('tdb_auth_token') || localStorage.getItem('token') || localStorage.getItem('auth_token');
-        if (!token) return;
+        if (!token) {
+          setIsLoadingPets(false);
+          return;
+        }
         const resp = await fetch(`${API_URL}/api/pets/my-pets`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
