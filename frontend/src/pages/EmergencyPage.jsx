@@ -18,6 +18,7 @@ import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
+import PillarPicksSection from '../components/PillarPicksSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import {
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,

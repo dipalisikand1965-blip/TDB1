@@ -24,6 +24,7 @@ import UnifiedHero from '../components/UnifiedHero';
 import PillarNav from '../components/PillarNav';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
+import PillarPicksSection from '../components/PillarPicksSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import {
   Search, Heart, ArrowRight, X, Package, Mic,
