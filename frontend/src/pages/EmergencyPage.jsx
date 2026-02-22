@@ -729,6 +729,26 @@ const EmergencyPage = () => {
         maxServices={8}
       />
       
+      {/* Concierge Pick Card - 24/7 Emergency Support */}
+      {userPets && userPets[0] && (
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <ConciergePickCard
+            pet={{
+              name: userPets[0].name,
+              breed: userPets[0].breed,
+              photo: userPets[0].photo_url,
+              soulTraits: userPets[0].personality_traits || []
+            }}
+            pillar="emergency"
+            title={CONCIERGE_PRESETS.emergency.title}
+            icon={CONCIERGE_PRESETS.emergency.icon}
+            description={CONCIERGE_PRESETS.emergency.description}
+            soulReason=""
+            responseTime="Immediate"
+          />
+        </div>
+      )}
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="emergency" position="bottom-left" />
       
