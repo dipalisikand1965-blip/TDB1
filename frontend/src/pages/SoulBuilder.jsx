@@ -231,7 +231,7 @@ const SoulBuilder = () => {
   useEffect(() => {
     const fetchPets = async () => {
       try {
-        const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
+        const token = localStorage.getItem('tdb_auth_token') || localStorage.getItem('token') || localStorage.getItem('auth_token');
         if (!token) return;
         const resp = await fetch(`${API_URL}/api/pets/my-pets`, {
           headers: { 'Authorization': `Bearer ${token}` }
