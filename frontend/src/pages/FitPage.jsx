@@ -29,6 +29,7 @@ import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import PillarServicesGrid from '../components/PillarServicesGrid';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
 import PersonalizedPicks from '../components/PersonalizedPicks';
+import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 // New engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
 import TransformationStories from '../components/TransformationStories';
