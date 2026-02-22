@@ -1218,30 +1218,32 @@ const PersonalizedPicksPanel = ({
               </button>
             </div>
             
-            {/* Pillar tabs - with active indicator for engine-selected pillar */}
+            {/* Pillar tabs - show only locked pillar in single-pillar mode, or all pillars */}
             <div 
               ref={scrollRef}
               className="flex overflow-x-auto gap-2 px-4 pb-3 scrollbar-hide"
               style={{ WebkitOverflowScrolling: 'touch' }}
             >
-              {PILLARS.map((pillar) => {
-                const isEnginePillar = enginePillar === pillar.id;
+              {displayPillars.map((pillarItem) => {
+                const isEnginePillar = enginePillar === pillarItem.id;
                 return (
                   <button
-                    key={pillar.id}
+                    key={pillarItem.id}
                     onClick={() => {
+                      // In locked mode, don't allow tab switching
+                      if (isPillarLocked) return;
                       hapticFeedback.buttonTap();
-                      handlePillarSelect(pillar.id);
+                      handlePillarSelect(pillarItem.id);
                     }}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-full whitespace-nowrap text-sm transition-all flex-shrink-0 ${
-                      activePillar === pillar.id
-                        ? `bg-gradient-to-r ${pillar.gradient} text-white shadow-lg`
+                      activePillar === pillarItem.id
+                        ? `bg-gradient-to-r ${pillarItem.gradient} text-white shadow-lg`
                         : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                    } ${isEnginePillar && activePillar !== pillar.id ? 'ring-2 ring-purple-500/50' : ''}`}
+                    } ${isEnginePillar && activePillar !== pillarItem.id ? 'ring-2 ring-purple-500/50' : ''} ${isPillarLocked ? 'cursor-default' : ''}`}
                   >
-                    <span className="text-base">{pillar.emoji}</span>
-                    <span className="text-sm font-medium">{pillar.name}</span>
-                    {isEnginePillar && activePillar !== pillar.id && (
+                    <span className="text-base">{pillarItem.emoji}</span>
+                    <span className="text-sm font-medium">{pillarItem.name}</span>
+                    {isEnginePillar && activePillar !== pillarItem.id && (
                       <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
                     )}
                   </button>
