@@ -90,8 +90,8 @@ const MobileNavBar = () => {
   const isActive = (path) => {
     if (!path) return false;
     const basePath = path.split('?')[0];
-    if (basePath === '/') {
-      return location.pathname === '/';
+    if (basePath === '/' || basePath === '/pet-home') {
+      return location.pathname === '/' || location.pathname === '/pet-home';
     }
     // Special handling for inbox - also active on /tickets routes
     if (basePath === '/notifications') {
