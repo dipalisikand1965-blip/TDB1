@@ -79,6 +79,9 @@ const CelebratePage = () => {
   const [viewMode, setViewMode] = useState('products'); // 'products' | 'services'
   const [selectedSubcat, setSelectedSubcat] = useState(null);
   
+  // Pillar Mira Panel state
+  const [isPillarPanelOpen, setIsPillarPanelOpen] = useState(false);
+  
   // Scroll to top when page loads
   useEffect(() => {
     window.scrollTo(0, 0);
