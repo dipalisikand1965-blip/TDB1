@@ -28,7 +28,7 @@ const Register = () => {
         title: "Welcome to the family! 🎉",
         description: "Your account has been created.",
       });
-      navigate('/dashboard');
+      navigate('/pet-home');
     } catch (error) {
       toast({
         variant: "destructive",
