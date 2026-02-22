@@ -73,7 +73,7 @@ const MobileNavBar = () => {
   const miraConfig = PILLAR_MIRA_CONFIG[currentPillar] || PILLAR_MIRA_CONFIG.general;
   
   const navItems = [
-    { id: 'home', icon: Home, label: 'Home', path: '/' },
+    { id: 'home', icon: Home, label: 'Home', path: isAuthenticated ? '/pet-home' : '/' },
     { id: 'inbox', icon: Inbox, label: 'Inbox', path: '/notifications' },
     { id: 'mira', icon: Sparkles, label: miraConfig.label, isMira: true },
     { id: 'orders', icon: Package, label: 'Orders', path: '/dashboard?tab=orders' },
