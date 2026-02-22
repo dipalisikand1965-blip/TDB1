@@ -240,8 +240,65 @@ const SoulBuilder = () => {
           const data = await resp.json();
           const pets = Array.isArray(data) ? data : data.pets || [];
           setExistingPets(pets);
+          
+          // If user just signed up and has a pet, auto-load that pet's data
+          // This handles the case where they come from onboarding
+          if (pets.length === 1) {
+            const pet = pets[0];
+            console.log('[SoulBuilder] Auto-loading pet from onboarding:', pet.name);
+            
+            // Pre-fill pet info
+            setPetName(pet.name || '');
+            setPetPhotoPreview(pet.photo || null);
+            setDetectedBreed(pet.breed || '');
+            setPetData({
+              breed: pet.breed || '',
+              gender: pet.gender || '',
+              birth_date: pet.birth_date || '',
+              gotcha_date: pet.gotcha_date || '',
+              is_neutered: pet.is_neutered,
+              approximate_age: ''
+            });
+            
+            // Pre-fill any existing soul answers from onboarding
+            if (pet.doggy_soul_answers || pet.soul_answers) {
+              const existingAnswers = pet.doggy_soul_answers || pet.soul_answers || {};
+              const prefilledAnswers = {};
+              
+              // Map onboarding field names to Soul Builder question IDs
+              const fieldMapping = {
+                'food_allergies': 'food_allergies',
+                'health_conditions': 'health_conditions',
+                'temperament': 'general_nature', // Map to the similar question
+                'grooming_tolerance': 'grooming_tolerance'
+              };
+              
+              Object.keys(existingAnswers).forEach(key => {
+                const value = existingAnswers[key];
+                if (value && value !== 'None' && value !== '') {
+                  const mappedKey = fieldMapping[key] || key;
+                  // Format for Soul Builder (some are multi-select)
+                  if (key === 'food_allergies' || key === 'health_conditions') {
+                    prefilledAnswers[mappedKey] = Array.isArray(value) ? value : [value];
+                  } else {
+                    prefilledAnswers[mappedKey] = value;
+                  }
+                }
+              });
+              
+              if (Object.keys(prefilledAnswers).length > 0) {
+                setAnswers(prefilledAnswers);
+                console.log('[SoulBuilder] Pre-filled answers from onboarding:', prefilledAnswers);
+              }
+            }
+            
+            // Skip to chapter-intro since pet info is already known
+            setScreen('chapter-intro');
+          }
         }
-      } catch (e) { /* ignore */ }
+      } catch (e) { 
+        console.error('[SoulBuilder] Error fetching pets:', e);
+      }
     };
     fetchPets();
   }, []);
