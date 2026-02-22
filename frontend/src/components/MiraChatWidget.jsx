@@ -1793,6 +1793,32 @@ const MiraChatWidget = ({
           addToCart={addToCart}
         />
       )}
+      
+      {/* Pet Picks Panel - Pillar-specific picks with Send to Concierge flow */}
+      {showPicksPanel && selectedPet && (
+        <PersonalizedPicksPanel
+          isOpen={showPicksPanel}
+          onClose={() => setShowPicksPanel(false)}
+          pet={selectedPet}
+          token={token}
+          userEmail={user?.email}
+          enginePillar={pillar} // Pre-filter to current pillar
+          onSendSuccess={(data) => {
+            // Add confirmation message to chat
+            const confirmMsg = {
+              id: `picks-confirm-${Date.now()}`,
+              role: 'assistant',
+              content: `✅ Perfect! I've sent ${data.count} pick${data.count > 1 ? 's' : ''} for ${data.petName} to your Concierge. They'll review and reach out with next steps. You can track this in your inbox. 💜`,
+              timestamp: new Date().toISOString()
+            };
+            setMessages(prev => [...prev, confirmMsg]);
+            setShowPicksPanel(false);
+            toast.success('Sent to Concierge!', {
+              description: `${data.count} pick${data.count > 1 ? 's' : ''} for ${data.petName}`
+            });
+          }}
+        />
+      )}
     </div>
   );
 };
