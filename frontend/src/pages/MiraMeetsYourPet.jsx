@@ -571,19 +571,24 @@ const MiraMeetsYourPet = () => {
     try {
       // If user is already logged in, just add the pet
       if (isAddingPet) {
+        console.log('[Onboarding] Adding pet for existing user...');
+        const petData = buildPetData();
+        console.log('[Onboarding] Pet data:', petData);
+        
         const response = await fetch(`${API_URL}/api/pets`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${existingAuth.token}`
           },
-          body: JSON.stringify(buildPetData())
+          body: JSON.stringify(petData)
         });
         
         const data = await response.json();
+        console.log('[Onboarding] Add pet response:', data);
         
         if (!response.ok) {
-          throw new Error(data.detail || 'Failed to add pet');
+          throw new Error(data.detail || data.message || 'Failed to add pet');
         }
         
         toast.success(`${petName} has been added to your family!`);
@@ -594,6 +599,7 @@ const MiraMeetsYourPet = () => {
       }
       
       // Otherwise, create new account with pet
+      console.log('[Onboarding] Creating new account...');
       const response = await fetch(`${API_URL}/api/membership/onboard`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -620,9 +626,10 @@ const MiraMeetsYourPet = () => {
       
       // Read response body ONCE
       const data = await response.json();
+      console.log('[Onboarding] Create account response:', data);
       
       if (!response.ok) {
-        throw new Error(data.detail || 'Failed to create account');
+        throw new Error(data.detail || data.message || 'Failed to create account');
       }
       
       // Auto-login
@@ -637,6 +644,7 @@ const MiraMeetsYourPet = () => {
       
       // Read login response body ONCE
       const loginData = await loginResponse.json();
+      console.log('[Onboarding] Login response:', loginData);
       
       if (loginResponse.ok && loginData.access_token) {
         // Use the correct storage key that AuthContext expects
@@ -655,6 +663,7 @@ const MiraMeetsYourPet = () => {
       }
       
     } catch (err) {
+      console.error('[Onboarding] Error:', err);
       const errorMsg = err.message || 'Something went wrong';
       setError(errorMsg);
       toast.error(errorMsg);
