@@ -133,6 +133,28 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
    - Reduced padding for mobile: `p-2.5 md:p-4`
    - Files: `MemberDashboard.jsx`
 
+4. **Dashboard Pet Selector Row** - Second row showing only emojis without pet names
+   - Added `shrink-0` class to prevent text truncation
+   - Reduced gap and padding for mobile: `gap-1.5 px-3 py-2`
+   - Added `max-w-[80px] truncate` for very long names
+   - Files: `MemberDashboard.jsx`
+
+5. **Mira X Button Not Working** - Close button unresponsive on iOS
+   - Added `onTouchEnd` handler with `e.preventDefault()` and `e.stopPropagation()`
+   - Added `data-testid="mira-widget-close"` for testing
+   - Files: `MiraChatWidget.jsx`
+
+6. **Chat Messages Under Header** - Conversation overlapping Mira header
+   - Wrapped content in flex container with `overflow-hidden`
+   - Added `maxHeight: calc(100% - 4rem)` to prevent overflow
+   - Files: `MiraChatWidget.jsx`
+
+7. **Bundle Prices Not Showing** - Bundles showing "₹" without actual price
+   - Fixed field mismatch: API returns `price` but code expected `bundle_price`
+   - Updated to: `₹{bundle.bundle_price || bundle.price || 0}`
+   - Fixed across ALL pillar pages: Stay, Dine, Care, Fit, Travel, Learn, etc.
+   - Files: All pillar pages
+
 ---
 
 ## Test Credentials
