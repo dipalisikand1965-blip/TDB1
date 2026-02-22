@@ -732,6 +732,18 @@ const SoulBuilder = () => {
   // RENDER SCREENS
   // ═══════════════════════════════════════════════════════════════════════════════
   
+  // LOADING SCREEN - Wait for pets to load before deciding which screen to show
+  if (isLoadingPets) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col items-center justify-center p-6">
+        <div className="w-20 h-20 mb-6">
+          <div className="w-full h-full rounded-full border-4 border-purple-500/20 border-t-purple-500 animate-spin" />
+        </div>
+        <p className="text-white/70 text-sm">Loading your pet's profile...</p>
+      </div>
+    );
+  }
+  
   // PREBOARDING SCREEN - Different for new users vs existing users
   console.log('[SoulBuilder] Current screen:', screen);
   if (screen === 'preboarding') {
