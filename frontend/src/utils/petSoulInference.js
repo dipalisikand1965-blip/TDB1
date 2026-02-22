@@ -178,21 +178,21 @@ export const getSoulBasedReason = (pet, pillar) => {
   const preferences = pet.preferences || {};
   const soul = pet.soul || {};
   
-  // Priority soul traits by pillar
+  // Priority soul traits by pillar - includes common field name variations
   const pillarTraitMap = {
-    stay: ['separation_anxiety', 'alone_comfort', 'general_nature', 'social_dog'],
+    stay: ['separation_anxiety', 'alone_comfort', 'temperament', 'general_nature', 'social_dog'],
     travel: ['car_comfort', 'car_anxiety', 'travel_experience', 'motion_sickness'],
-    celebrate: ['stranger_comfort', 'social_gathering', 'noise_sensitivity', 'party_behavior'],
+    celebrate: ['stranger_comfort', 'stranger_reaction', 'social_gathering', 'noise_sensitivity', 'party_behavior', 'temperament'],
     dine: ['food_allergies', 'favorite_flavors', 'eating_habits', 'dietary_restrictions'],
-    care: ['grooming_tolerance', 'vet_anxiety', 'handling_sensitivity', 'medical_conditions'],
-    enjoy: ['energy_level', 'play_style', 'favorite_activities', 'outdoor_preference'],
+    care: ['grooming_tolerance', 'vet_anxiety', 'handling_sensitivity', 'medical_conditions', 'temperament'],
+    enjoy: ['energy_level', 'play_style', 'favorite_activities', 'outdoor_preference', 'temperament'],
     fit: ['exercise_needs', 'energy_level', 'health_conditions', 'mobility'],
-    learn: ['trainability', 'attention_span', 'motivation_type', 'learning_style'],
+    learn: ['trainability', 'attention_span', 'motivation_type', 'learning_style', 'temperament'],
     emergency: ['medical_conditions', 'allergies', 'special_needs', 'emergency_contacts'],
-    advisory: ['behavior_concerns', 'training_needs', 'health_questions'],
+    advisory: ['behavior_concerns', 'training_needs', 'health_questions', 'temperament'],
     paperwork: ['vaccination_status', 'registration', 'insurance'],
-    farewell: ['age', 'health_conditions', 'comfort_needs'],
-    adopt: ['compatibility', 'lifestyle_match'],
+    farewell: ['age', 'health_conditions', 'comfort_needs', 'temperament'],
+    adopt: ['compatibility', 'lifestyle_match', 'temperament'],
     shop: ['favorite_toys', 'preferences', 'allergies']
   };
   
