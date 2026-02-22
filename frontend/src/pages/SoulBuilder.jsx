@@ -729,100 +729,135 @@ const SoulBuilder = () => {
   if (screen === 'preboarding') {
     console.log('[SoulBuilder] Rendering preboarding screen, hasExistingPet:', hasExistingPet);
     
-    // EXISTING USER - Show what Mira already knows
+    // EXISTING USER - Show KNOW_MIRA_SUMMARY style screen with junction choices
     if (hasExistingPet && primaryPet) {
+      const synopsis = generateMiraSynopsis();
+      const topTraits = getTopTraits();
+      
       return (
         <div className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col items-center justify-center p-6" data-testid="soul-builder-returning">
           {/* Ambient glow */}
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-purple-500/20 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute bottom-1/3 right-1/4 w-[300px] h-[300px] bg-pink-500/20 rounded-full blur-[100px] pointer-events-none" />
           
-          <div className="relative z-10 max-w-md w-full text-center">
+          <div className="relative z-10 max-w-md w-full">
             {/* Pet Photo & Soul Ring */}
             <div className="relative w-32 h-32 mx-auto mb-6">
+              {/* Live Soul Score Ring */}
+              <svg className="absolute -inset-4 w-[calc(100%+32px)] h-[calc(100%+32px)]" viewBox="0 0 140 140">
+                <circle cx="70" cy="70" r="66" fill="none" stroke="rgba(139, 92, 246, 0.15)" strokeWidth="4" />
+                <circle 
+                  cx="70" cy="70" r="66" 
+                  fill="none" 
+                  stroke="url(#preboardGradient)" 
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeDasharray={`${(currentSoulScore / 100) * 415} 415`}
+                  transform="rotate(-90 70 70)"
+                  style={{ filter: 'drop-shadow(0 0 8px #8B5CF6)' }}
+                />
+                <defs>
+                  <linearGradient id="preboardGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#8B5CF6" />
+                    <stop offset="100%" stopColor="#EC4899" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              
               {primaryPet.photo ? (
-                <img src={primaryPet.photo} alt={primaryPet.name} className="w-full h-full rounded-full object-cover border-4 border-purple-500/50" />
+                <img src={primaryPet.photo} alt={primaryPet.name} className="w-full h-full rounded-full object-cover border-4 border-purple-500/30" />
               ) : (
                 <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                   <PawPrint className="w-12 h-12 text-white" />
                 </div>
               )}
               {/* Soul Score Badge */}
-              <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-bold px-3 py-1 rounded-full">
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-bold px-4 py-1.5 rounded-full shadow-lg">
                 {Math.round(currentSoulScore)}% Soul
               </div>
             </div>
             
             {/* Title */}
-            <h1 className="text-3xl font-light text-white mb-2">
+            <h1 className="text-2xl font-light text-white text-center mb-2">
               Mira knows <span className="font-semibold text-purple-400">{primaryPet.name}</span>
             </h1>
             
-            <p className="text-white/70 text-lg mb-6">
-              {currentSoulScore < 30 
-                ? "Let's help her learn more!" 
-                : currentSoulScore < 70 
-                  ? "Good progress! Keep going to unlock better picks."
-                  : "Almost there! A few more questions for perfect picks."}
-            </p>
+            {/* Top 3 Traits */}
+            {topTraits.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-2 mb-6">
+                {topTraits.map((trait, i) => (
+                  <span key={i} className="px-3 py-1 bg-white/10 rounded-full text-white/80 text-sm capitalize">
+                    {trait}
+                  </span>
+                ))}
+              </div>
+            )}
             
-            {/* What Mira Already Knows */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 mb-6 text-left border border-white/10">
-              <p className="text-white/90 mb-3 text-sm font-medium">What Mira knows so far:</p>
-              <div className="space-y-2">
-                {primaryPet.breed && (
-                  <div className="flex items-center gap-2 text-white/70 text-sm">
-                    <Check className="w-4 h-4 text-green-400" />
-                    <span>{primaryPet.breed}</span>
+            {/* What Mira Already Knows - Synopsis */}
+            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 mb-6 border border-white/10">
+              <p className="text-white/90 text-sm font-medium mb-4 text-center">What Mira knows so far:</p>
+              <div className="space-y-3">
+                {synopsis.length > 0 ? synopsis.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-3 text-white/70 text-sm">
+                    <span className="text-lg flex-shrink-0">{item.icon}</span>
+                    <span className="capitalize">{item.text}</span>
                   </div>
-                )}
-                {primaryPet.gender && (
-                  <div className="flex items-center gap-2 text-white/70 text-sm">
-                    <Check className="w-4 h-4 text-green-400" />
-                    <span>{primaryPet.gender === 'boy' ? 'Boy' : primaryPet.gender === 'girl' ? 'Girl' : primaryPet.gender}</span>
-                  </div>
-                )}
-                {primaryPet.doggy_soul_answers?.temperament && (
-                  <div className="flex items-center gap-2 text-white/70 text-sm">
-                    <Check className="w-4 h-4 text-green-400" />
-                    <span>{primaryPet.doggy_soul_answers.temperament} personality</span>
-                  </div>
-                )}
-                {primaryPet.doggy_soul_answers?.exercise_needs && (
-                  <div className="flex items-center gap-2 text-white/70 text-sm">
-                    <Check className="w-4 h-4 text-green-400" />
-                    <span>{primaryPet.doggy_soul_answers.exercise_needs} exercise needs</span>
-                  </div>
+                )) : (
+                  <>
+                    {primaryPet.breed && (
+                      <div className="flex items-center gap-3 text-white/70 text-sm">
+                        <span className="text-lg">🐕</span>
+                        <span>{primaryPet.breed}</span>
+                      </div>
+                    )}
+                    {primaryPet.gender && (
+                      <div className="flex items-center gap-3 text-white/70 text-sm">
+                        <span className="text-lg">{primaryPet.gender === 'boy' ? '♂️' : '♀️'}</span>
+                        <span>{primaryPet.gender === 'boy' ? 'Boy' : primaryPet.gender === 'girl' ? 'Girl' : primaryPet.gender}</span>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
             
-            <p className="text-white/50 text-sm mb-6">
-              The more Mira knows, the better her picks for {primaryPet.name}
+            {/* Score growth message */}
+            <p className="text-white/50 text-sm text-center mb-8">
+              Your score will grow as Mira learns more about {primaryPet.name}
             </p>
             
-            {/* CTA */}
+            {/* Junction Choices - EXACTLY TWO BUTTONS */}
             <div className="space-y-3">
+              {/* Primary: See Pet's Home */}
               <button
                 onClick={() => {
-                  // Pre-fill pet data and skip to questions
-                  setPetName(primaryPet.name);
-                  setPetPhotoPreview(primaryPet.photo);
-                  setCurrentChapter(0);
-                  setCurrentQuestion(0);
-                  setScreen('chapter-intro');
+                  const petId = primaryPet.id || primaryPet._id;
+                  if (petId) {
+                    window.location.href = `/pet-home?active_pet=${petId}`;
+                  } else {
+                    window.location.href = '/pet-home';
+                  }
                 }}
                 className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
-                data-testid="continue-learning-btn"
+                data-testid="see-pet-home-btn"
               >
-                Let Mira Learn More
+                See {primaryPet.name}'s Home
               </button>
               
+              {/* Secondary: Let Mira know more */}
               <button
-                onClick={() => navigate('/pet-home')}
-                className="w-full py-3 px-6 bg-white/10 text-white/70 font-medium rounded-full hover:bg-white/20 transition-all"
-                data-testid="skip-to-home-btn"
+                onClick={() => {
+                  // Pre-fill pet data and go to KNOW_MORE_START
+                  setPetName(primaryPet.name);
+                  setPetPhotoPreview(primaryPet.photo);
+                  setCurrentPetId(primaryPet.id || primaryPet._id);
+                  setScreen('know_more_start');
+                }}
+                className="w-full py-4 px-6 bg-white/10 text-white font-medium rounded-full hover:bg-white/20 transition-all border border-white/10"
+                data-testid="let-mira-know-more-btn"
               >
-                Go to {primaryPet.name}'s Home
+                <Sparkles className="w-4 h-4 inline mr-2" />
+                Let Mira know more
               </button>
             </div>
           </div>
