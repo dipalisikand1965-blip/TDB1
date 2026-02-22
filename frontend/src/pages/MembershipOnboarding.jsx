@@ -534,7 +534,12 @@ const MembershipOnboarding = () => {
         navigate('/soul-builder');
       }
     } catch (err) {
-      setError(err.message || 'Something went wrong. Please try again.');
+      const errorMsg = err.message || 'Something went wrong. Please try again.';
+      setError(errorMsg);
+      toast.error(errorMsg);
+      console.error('[MembershipOnboarding] Submit error:', errorMsg);
+      // Scroll to top to show error
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setLoading(false);
     }
