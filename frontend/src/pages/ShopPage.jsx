@@ -992,6 +992,13 @@ const ShopPage = () => {
         </div>
       )}
       
+      {/* Mira's Picks for Pet */}
+      {selectedPet && (
+        <div className="max-w-7xl mx-auto px-4">
+          <PillarPicksSection pillar="shop" pet={selectedPet} />
+        </div>
+      )}
+      
       <MiraChatWidget pillar="shop" isOpen={miraChatOpen} onClose={() => setMiraChatOpen(false)} />
       
       {/* Mira OS Trigger */}
