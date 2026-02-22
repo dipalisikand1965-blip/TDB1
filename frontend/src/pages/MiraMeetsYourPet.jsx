@@ -1552,7 +1552,7 @@ const MiraMeetsYourPet = () => {
             className="w-full py-4 bg-slate-800 text-white rounded-xl font-medium border border-slate-700 animate-pulse"
           >
             <Sparkles className="w-4 h-4 inline mr-2" />
-            Keep Teaching Mira (38 more questions)
+            Keep Teaching Mira ({51 - Object.keys(answers).length} more questions)
           </button>
         </div>
         
