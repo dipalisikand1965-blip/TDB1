@@ -10244,3 +10244,101 @@ input, select, textarea {
   position: relative;
   z-index: 1;
 }
+
+
+/* ========================================
+   MIRA MODAL - Full screen modal from pillar pages
+   Proper sticky header + fixed composer layout
+   ======================================== */
+.mira-modal-overlay {
+  background: var(--mira-bg-dark);
+}
+
+.mira-modal-content {
+  height: 100dvh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* When inside modal, make mira-prod a flex container */
+.mira-modal-content .mira-prod {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* Sticky header container - groups Soul Ticker, Header, and Navigation */
+.mira-modal-content .mira-sticky-header {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(180deg, 
+    var(--mira-bg-dark) 0%, 
+    var(--mira-bg-purple) 100%
+  );
+}
+
+/* Make the Soul Ticker, Header, and Navigation sticky as a group */
+.mira-modal-content .mp-header,
+.mira-modal-content .soul-knowledge-ticker,
+.mira-modal-content .pet-os-navigation {
+  flex-shrink: 0;
+  background: var(--mira-bg-dark);
+}
+
+/* Messages area - scrollable, takes remaining space */
+.mira-modal-content .mp-messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  padding-bottom: 100px; /* Space for fixed composer */
+}
+
+/* Composer - fixed at the bottom of the modal */
+.mira-modal-content .mp-composer {
+  flex-shrink: 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 7, 32, 0.98) 30%);
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+}
+
+/* iOS safe area for modal close button */
+@supports (padding: env(safe-area-inset-top)) {
+  .mira-modal-content .mira-prod {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+/* Hide overlay scrollbars */
+.mira-modal-content .mp-messages::-webkit-scrollbar {
+  width: 4px;
+}
+
+.mira-modal-content .mp-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mira-modal-content .mp-messages::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 4px;
+}
+
+/* Mobile optimizations for modal */
+@media (max-width: 768px) {
+  .mira-modal-content .mp-messages {
+    padding-bottom: 120px; /* More space for mobile keyboard */
+  }
+  
+  .mira-modal-content .mp-composer {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+}
