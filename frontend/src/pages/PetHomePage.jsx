@@ -283,17 +283,33 @@ const PetHomePage = () => {
   
   // Update context when pet changes
   const updatePetContext = useCallback((pet) => {
-    // Calculate soul score from answers
+    // USE the pet's overall_score from database (same as Dashboard shows)
+    // This is the authoritative soul score calculated by the backend
+    const dbScore = pet.overall_score || 0;
+    
+    // Fallback: calculate from answers if no overall_score
     const soulAnswers = pet.doggy_soul_answers || {};
     const answeredCount = Object.keys(soulAnswers).filter(k => soulAnswers[k]).length;
     const calculatedScore = Math.min(Math.round((answeredCount / 51) * 100), 100);
-    setSoulScore(calculatedScore || Math.round(pet.overall_score || 30));
     
-    // Extract traits
+    // Prefer database score, fallback to calculated
+    setSoulScore(Math.round(dbScore) || calculatedScore || 0);
+    
+    // Extract traits from soul answers or pet data
     const extractedTraits = [];
-    if (soulAnswers.temperament) extractedTraits.push(soulAnswers.temperament);
-    if (soulAnswers.exercise_needs) extractedTraits.push(`${soulAnswers.exercise_needs} energy`);
-    if (soulAnswers.stranger_reaction) extractedTraits.push(`${soulAnswers.stranger_reaction} with strangers`);
+    if (soulAnswers.temperament || soulAnswers.general_nature) {
+      extractedTraits.push(soulAnswers.temperament || soulAnswers.general_nature);
+    }
+    if (soulAnswers.stranger_reaction) {
+      extractedTraits.push(`${soulAnswers.stranger_reaction} with strangers`);
+    }
+    if (soulAnswers.exercise_needs) {
+      extractedTraits.push(`${soulAnswers.exercise_needs} energy`);
+    }
+    // Fallback traits from pet profile
+    if (extractedTraits.length === 0 && pet.temperament) {
+      extractedTraits.push(pet.temperament);
+    }
     setTraits(extractedTraits.slice(0, 3));
     
     // Generate alerts
