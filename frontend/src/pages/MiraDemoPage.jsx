@@ -308,6 +308,31 @@ const DietaryContextChip = ({ pet, isExpanded, onToggle, onEdit }) => {
 const MiraDemoPage = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // NAVIGATION CONTEXT - Track where user came from for "Back to Pillar" feature
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const returnUrl = searchParams.get('returnUrl');
+  const sourcePillar = searchParams.get('pillar');
+  
+  // Pillar display names for the back button
+  const PILLAR_NAMES = {
+    celebrate: 'Celebrate',
+    dine: 'Dine',
+    stay: 'Stay',
+    travel: 'Travel',
+    care: 'Care',
+    enjoy: 'Enjoy',
+    fit: 'Fit',
+    learn: 'Learn',
+    paperwork: 'Paperwork',
+    advisory: 'Advisory',
+    emergency: 'Emergency',
+    farewell: 'Farewell',
+    adopt: 'Adopt',
+    shop: 'Shop'
+  };
   
   // ═══════════════════════════════════════════════════════════════════════════════
   // PET MANAGEMENT - Extracted to usePet hook (Stage 1 Refactoring)
