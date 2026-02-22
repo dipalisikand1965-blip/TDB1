@@ -10208,3 +10208,39 @@ input, select, textarea {
   padding-bottom: 120px !important;
 }
 
+
+/* ========================================
+   FIXED HEADER - Always visible at top
+   ======================================== */
+.mira-prod .mp-header,
+.mira-prod .mp-soul-ticker,
+.mira-prod .soul-knowledge-ticker {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 90 !important;
+  background: linear-gradient(180deg, rgba(30, 27, 75, 1) 0%, rgba(30, 27, 75, 0.98) 100%) !important;
+}
+
+/* Make the entire top section sticky */
+.mira-prod > .mp-soul-ticker,
+.mira-prod > div:first-child {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 90 !important;
+}
+
+/* Navigation tabs should also be sticky */
+.mira-prod .mp-nav,
+.mira-prod .mp-tabs {
+  position: sticky !important;
+  top: 60px !important;
+  z-index: 85 !important;
+  background: rgba(30, 27, 75, 0.98) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+/* Ensure scrollable content doesn't overlap sticky elements */
+.mira-prod .mp-content {
+  position: relative;
+  z-index: 1;
+}
