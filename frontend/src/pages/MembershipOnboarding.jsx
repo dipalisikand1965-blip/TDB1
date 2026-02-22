@@ -277,8 +277,44 @@ const MembershipOnboarding = () => {
   const handleNext = () => {
     console.log('[MembershipOnboarding] handleNext called, step:', step);
     
-    if (step === 1 && validateParentForm()) {
-      setStep(2);
+    if (step === 1) {
+      const isValid = validateParentForm();
+      console.log('[MembershipOnboarding] validateParentForm result:', isValid);
+      
+      if (isValid) {
+        setStep(2);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        // Show toast with missing fields
+        const errors = {};
+        if (!parentData.name.trim()) errors.name = 'Name';
+        if (!parentData.email.trim()) errors.email = 'Email';
+        if (!parentData.phone.trim()) errors.phone = 'Phone';
+        if (!parentData.whatsapp.trim()) errors.whatsapp = 'WhatsApp';
+        if (!parentData.address.trim()) errors.address = 'Address';
+        if (!parentData.city.trim()) errors.city = 'City';
+        if (!parentData.pincode.trim()) errors.pincode = 'Pincode';
+        if (!parentData.password) errors.password = 'Password';
+        if (parentData.password !== parentData.confirmPassword) errors.confirmPassword = 'Confirm Password';
+        if (!parentData.acceptTerms) errors.acceptTerms = 'Terms & Conditions';
+        if (!parentData.acceptPrivacy) errors.acceptPrivacy = 'Privacy Policy';
+        
+        const missingFields = Object.values(errors);
+        if (missingFields.length > 0) {
+          toast.error(`Please fill: ${missingFields.slice(0, 3).join(', ')}${missingFields.length > 3 ? ` +${missingFields.length - 3} more` : ''}`);
+        }
+        
+        // Scroll to first error field
+        setTimeout(() => {
+          const firstErrorEl = document.querySelector('.border-red-500, [class*="border-red"]');
+          if (firstErrorEl) {
+            firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else {
+            // Scroll to top if no error element found
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }, 100);
+      }
     } else if (step === 2) {
       const { isValid, errors } = validatePetForms();
       console.log('[MembershipOnboarding] validatePetForms result:', isValid, 'errors:', errors);
