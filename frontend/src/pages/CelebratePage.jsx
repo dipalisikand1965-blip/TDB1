@@ -23,6 +23,7 @@ import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import ProductCard from '../components/ProductCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import ConciergePickCard, { CONCIERGE_PRESETS, SOUL_TRAIT_REASONS } from '../components/ConciergePickCard';
+import { getSoulBasedReason } from '../utils/petSoulInference';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import OccasionBoxBuilder from '../components/OccasionBoxBuilder';
 import PartyPlanningWizard from '../components/PartyPlanningWizard';
