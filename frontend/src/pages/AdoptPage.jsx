@@ -15,6 +15,7 @@ import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
+import { getSoulBasedReason } from '../utils/petSoulInference';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Mail, Users,
   ChevronRight, Sparkles, Search, Filter, Clock, CheckCircle,

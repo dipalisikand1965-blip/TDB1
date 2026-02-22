@@ -23,6 +23,7 @@ import AdminQuickEdit from '../components/AdminQuickEdit';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import { useNavigate } from 'react-router-dom';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
+import { getSoulBasedReason } from '../utils/petSoulInference';
 import {
   Heart, Rainbow, Flower2, Star, Calendar, Phone, Mail, MapPin,
   Clock, ChevronRight, ChevronLeft, Sparkles, Home, CheckCircle, Users,
