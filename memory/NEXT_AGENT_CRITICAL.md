@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://doggy-verified.preview.emergentagent.com
+https://mira-legacy.preview.emergentagent.com
 
 ---
 
