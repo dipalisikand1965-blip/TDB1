@@ -174,6 +174,12 @@ const FarewellPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(false);
