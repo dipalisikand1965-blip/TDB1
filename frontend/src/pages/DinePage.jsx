@@ -283,6 +283,11 @@ const DinePage = () => {
             />
           </div>
         )}
+        
+        {/* Mira's Picks for Pet */}
+        {activePet && (
+          <PillarPicksSection pillar="dine" pet={activePet} />
+        )}
       </div>
 
       {/* Elevated Concierge® Experiences */}
