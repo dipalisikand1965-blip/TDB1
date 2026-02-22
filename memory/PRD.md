@@ -25,6 +25,34 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
 
 ## Implementation Status
 
+### ✅ Completed (Feb 22, 2026) - KNOW_MIRA_SUMMARY System
+- [x] **KNOW_MIRA_SUMMARY Checkpoint** - Compulsory summary screen before junction choices
+  - Shows pet photo, soul score ring (live from DB), "Mira knows {Pet}" title
+  - Top 3 traits displayed as tags
+  - Synopsis of what Mira knows (max 6 bullets)
+  - Exactly TWO junction buttons: "See {Pet}'s Home" and "Let Mira know more"
+  
+- [x] **"See {Pet}'s Home" Navigation** - Button properly navigates with pet context
+  - Navigates to `/pet-home?active_pet={pet_id}`
+  - Pet Home reads URL param and selects correct pet
+
+- [x] **KNOW_MORE_START Screen** - Continuation from current state
+  - Shows current soul score ring (consistent with summary)
+  - "{X} more questions to help Mira understand {Pet} better"
+  - Continue button goes to next UNANSWERED question
+
+- [x] **Question Deduplication** - Questions NEVER repeat
+  - System tracks all answered question IDs
+  - Backend merges answers (never overwrites)
+
+- [x] **Canonical "What Mira Knows" Profile** - Single source of truth
+  - All surfaces read from same `pet.doggy_soul_answers` and `pet.overall_score`
+
+- [x] **Save/Skip Behavior** - Progress always persists
+  - Saves all answers, navigates to Pet Home with active pet context
+
+- [x] **Score Consistency Bug Fix** - Soul score matches everywhere
+
 ### ✅ Completed (Feb 21, 2026)
 - [x] Critical data restoration (2,541 products, 716 services, 35 stays, 22 restaurants)
 - [x] Admin Service Desk ticket display fix (33 tickets)
