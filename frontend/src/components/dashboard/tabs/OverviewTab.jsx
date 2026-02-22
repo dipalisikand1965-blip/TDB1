@@ -463,7 +463,7 @@ const OverviewTab = ({
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md"
                 onClick={() => {
                   if (pet?.id) {
-                    navigate(`/pet/${pet.id}`);
+                    navigate(`/soul-builder?pet=${pet.id}&continue=true`);
                   } else {
                     toast({
                       title: "Unable to load pet profile",
