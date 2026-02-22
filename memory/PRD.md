@@ -201,6 +201,13 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
     - Integrated with Unified Service Flow (creates ticket)
     - Files: `MiraChatWidget.jsx`
 
+14. **Sticky Header in Mira Modal** - Header disappearing on scroll in sandbox modal
+    - Created `.mira-sticky-header` wrapper around header elements
+    - Applied `position: sticky; top: 0;` CSS to keep header at top
+    - Modal-specific CSS in `.mira-modal-content` ensures proper flex layout
+    - Header includes: MemoryWhisper, SoulKnowledgeTicker, mp-header, PetOSNavigation
+    - Files: `MiraDemoPage.jsx`, `MiraPillarSandbox.jsx`, `mira-prod.css`
+
 ---
 
 ## Test Credentials
