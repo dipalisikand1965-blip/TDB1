@@ -683,10 +683,17 @@ const MiraMeetsYourPet = () => {
         <span className="text-2xl font-bold text-white">Mira</span>
       </div>
       
+      {/* Show indicator when adding another pet */}
+      {isAddingPet && (
+        <div className="mb-4 px-4 py-2 bg-pink-500/20 border border-pink-500/30 rounded-full">
+          <span className="text-pink-300 text-sm">Adding another pet to your family</span>
+        </div>
+      )}
+      
       {!petPhotoPreview ? (
         <>
           <h1 className="text-3xl font-bold text-white mb-2 text-center">
-            Let Mira meet your pet
+            {isAddingPet ? 'Add another pet!' : 'Let Mira meet your pet'}
           </h1>
           <p className="text-slate-400 mb-8 text-center">
             Upload a photo and watch the magic happen
