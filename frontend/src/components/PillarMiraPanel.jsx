@@ -134,73 +134,75 @@ const PILLAR_CONFIG = {
 };
 
 /**
- * Product Pick Card
+ * Concierge Pick Card - For bespoke concierge creations (no cart, goes to ticket)
  */
-const ProductCard = ({ pick, pet, onAddToCart }) => {
-  const [isAdding, setIsAdding] = useState(false);
+const ConciergePickCard = ({ pick, pet, pillar, onRequest }) => {
+  const [isRequesting, setIsRequesting] = useState(false);
+  const soulReason = getSoulBasedReason(pet, pillar);
   
-  const handleAdd = async () => {
-    setIsAdding(true);
-    await onAddToCart(pick);
-    setTimeout(() => setIsAdding(false), 500);
+  const handleRequest = async () => {
+    setIsRequesting(true);
+    await onRequest(pick);
+    setTimeout(() => setIsRequesting(false), 500);
   };
   
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="aspect-square bg-gray-50 relative">
-        {pick.image_url || pick.image ? (
-          <img 
-            src={pick.image_url || pick.image} 
-            alt={pick.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-pink-50 to-purple-50">
-            <Package className="w-8 h-8 text-gray-300" />
-          </div>
-        )}
-        
-        {/* For Pet Badge */}
-        {pet?.name && (
-          <div className="absolute top-2 left-2">
-            <span className="px-2 py-0.5 bg-orange-500 text-white text-[10px] font-bold rounded-full">
-              For {pet.name}
+    <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-100 overflow-hidden">
+      {/* Header with badge */}
+      <div className="p-3 pb-0">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-bold rounded-full">
+            <Sparkles className="w-2.5 h-2.5" />
+            CONCIERGE PICK
+          </span>
+          {pick.spec_chip && (
+            <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-medium rounded-full">
+              {pick.spec_chip}
             </span>
-          </div>
-        )}
+          )}
+        </div>
       </div>
       
-      <div className="p-3">
-        <h4 className="font-medium text-gray-900 text-sm line-clamp-2 mb-1">
-          {pick.name}
-        </h4>
+      {/* Icon & Content */}
+      <div className="p-3 pt-0">
+        <div className="flex items-start gap-3">
+          <div className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-2xl flex-shrink-0">
+            {pick.icon}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="font-semibold text-gray-900 text-sm mb-1">{pick.title || pick.name}</h4>
+            <p className="text-xs text-gray-600 line-clamp-2">{pick.description}</p>
+          </div>
+        </div>
         
-        {pick.why_it_fits && (
-          <p className="text-xs text-purple-600 mb-2 line-clamp-1">
-            {pick.why_it_fits}
-          </p>
+        {/* Soul-aware message */}
+        {pet?.name && (
+          <div className="mt-3 p-2 bg-white/60 rounded-lg">
+            <p className="text-xs text-purple-700 font-medium">
+              Designed for {pet.name} {soulReason}
+            </p>
+          </div>
         )}
         
-        <div className="flex items-center justify-between">
-          <span className="font-bold text-gray-900">
-            {pick.price ? `₹${pick.price}` : 'Ask'}
-          </span>
-          
-          <button
-            onClick={handleAdd}
-            disabled={isAdding}
-            className="flex items-center gap-1 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded-full transition-colors disabled:opacity-50"
-          >
-            {isAdding ? (
-              <RefreshCw className="w-3 h-3 animate-spin" />
-            ) : (
-              <>
-                <ShoppingCart className="w-3 h-3" />
-                <span>Add</span>
-              </>
-            )}
-          </button>
-        </div>
+        {/* CTA - Creates ticket, not cart */}
+        <button
+          onClick={handleRequest}
+          disabled={isRequesting}
+          className="w-full mt-3 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-medium flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+        >
+          {isRequesting ? (
+            <RefreshCw className="w-4 h-4 animate-spin" />
+          ) : (
+            <>
+              <MessageCircle className="w-4 h-4" />
+              <span>Create for {pet?.name || 'Pet'}</span>
+            </>
+          )}
+        </button>
+        
+        <p className="text-[10px] text-gray-400 text-center mt-2">
+          Concierge creates • Response within 2 hours
+        </p>
       </div>
     </div>
   );
