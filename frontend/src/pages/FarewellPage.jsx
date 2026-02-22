@@ -792,7 +792,8 @@ const FarewellPage = () => {
               name: pets[0].name,
               breed: pets[0].breed,
               photo: pets[0].photo_url,
-              soulTraits: pets[0].personality_traits || []
+              soulTraits: pets[0].personality_traits || [],
+                id: pets[0].id
             }}
             pillar="farewell"
             title={CONCIERGE_PRESETS.farewell.title}

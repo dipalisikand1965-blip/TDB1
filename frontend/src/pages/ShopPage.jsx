@@ -977,7 +977,8 @@ const ShopPage = () => {
               name: selectedPet.name,
               breed: selectedPet.breed,
               photo: selectedPet.photo_url,
-              soulTraits: selectedPet.personality_traits || []
+              soulTraits: selectedPet.personality_traits || [],
+                id: selectedPet.id
             }}
             pillar="shop"
             title={CONCIERGE_PRESETS.shop.title}

@@ -940,7 +940,8 @@ const PaperworkPage = () => {
               name: userPets[0].name,
               breed: userPets[0].breed,
               photo: userPets[0].photo_url,
-              soulTraits: userPets[0].personality_traits || []
+              soulTraits: userPets[0].personality_traits || [],
+                id: userPets[0].id
             }}
             pillar="paperwork"
             title={CONCIERGE_PRESETS.paperwork.title}
