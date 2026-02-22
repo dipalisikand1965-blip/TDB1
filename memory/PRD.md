@@ -60,15 +60,18 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
   - 13 Soul Questions - ALL compulsory (no skip button)
   - Payoff screen shows pet name (not nickname) in "Here's what Mira knows about..."
   - Fixed JSON error (response body was being read twice)
+  - Fixed localStorage token key (uses 'tdb_auth_token' to match AuthContext)
   - Files: `MiraMeetsYourPet.jsx`
-- [x] **Pet Home Page** - New default landing page after onboarding
-  - Pet Hero with photo, name, breed, soul ring, 3 traits
-  - Pillar shortcuts grid
-  - "See Picks for {Pet}" button
-  - Proactive alerts (birthday, gotcha day, health, soul completion)
-  - Open requests strip
-  - Talk to Mira FAB
-  - Files: `PetHomePage.jsx`
+- [x] **Multi-Pet Support in Onboarding** - Logged-in users can add more pets
+  - Shows "Adding another pet to your family" indicator
+  - Skips parent info section (goes birthday → soul questions)
+  - Uses POST /api/pets endpoint for existing users
+  - Files: `MiraMeetsYourPet.jsx`
+- [x] **Add Pet Button in Dashboard** - Added "Add Pet" card in pet grid
+  - Files: `MemberDashboard.jsx`
+- [x] **Fixed AuthContext localStorage bug** - login/loginWithGoogle now save user to localStorage
+  - Files: `AuthContext.jsx`
+- [x] **Post-onboarding redirects to /dashboard** - New users land on dashboard, not login page
 
 ### 🔴 Blocked
 - [ ] Razorpay Checkout - Awaiting API keys from user
