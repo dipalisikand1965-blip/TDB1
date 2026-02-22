@@ -50,6 +50,26 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
 - [x] **Chat Composer Fixed** - Input bar stays fixed at bottom in both modal and standalone page
 - [x] **Mira Pillar Sandbox Modal** - Full MiraDemoPage modal experience with proper sticky layout
 
+### ✅ Completed (Dec 2025 - Onboarding Overhaul)
+- [x] **New "Mira Meets Your Pet" Onboarding** - Completely rebuilt onboarding flow at `/join`
+  - Photo upload with auto-trigger AI breed detection
+  - Gender screen BEFORE name (enables his/her pronouns)
+  - Birthday/Gotcha Day screen with date pickers
+  - Full address textarea (not just city dropdown)
+  - City as free text input (user can type any city)
+  - 13 Soul Questions - ALL compulsory (no skip button)
+  - Payoff screen shows pet name (not nickname) in "Here's what Mira knows about..."
+  - Fixed JSON error (response body was being read twice)
+  - Files: `MiraMeetsYourPet.jsx`
+- [x] **Pet Home Page** - New default landing page after onboarding
+  - Pet Hero with photo, name, breed, soul ring, 3 traits
+  - Pillar shortcuts grid
+  - "See Picks for {Pet}" button
+  - Proactive alerts (birthday, gotcha day, health, soul completion)
+  - Open requests strip
+  - Talk to Mira FAB
+  - Files: `PetHomePage.jsx`
+
 ### 🔴 Blocked
 - [ ] Razorpay Checkout - Awaiting API keys from user
 - [ ] Screenshot tool - Platform media limit exceeded
