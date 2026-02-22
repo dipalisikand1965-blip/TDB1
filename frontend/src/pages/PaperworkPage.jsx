@@ -932,6 +932,26 @@ const PaperworkPage = () => {
         maxServices={8}
       />
       
+      {/* Concierge Pick Card - Document management */}
+      {userPets && userPets[0] && (
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <ConciergePickCard
+            pet={{
+              name: userPets[0].name,
+              breed: userPets[0].breed,
+              photo: userPets[0].photo_url,
+              soulTraits: userPets[0].personality_traits || []
+            }}
+            pillar="paperwork"
+            title={CONCIERGE_PRESETS.paperwork.title}
+            icon={CONCIERGE_PRESETS.paperwork.icon}
+            description={CONCIERGE_PRESETS.paperwork.description}
+            soulReason=""
+            responseTime="24 hours"
+          />
+        </div>
+      )}
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="paperwork" position="bottom-left" />
       
