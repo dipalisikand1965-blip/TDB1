@@ -27,28 +27,28 @@
 
 ---
 
-## 🐛 BUGS TO FIX (Priority Order)
+## ✅ BUGS FIXED (All P0 and P1 complete)
 
-### P0 - CRITICAL (Fix immediately)
+### P0 - CRITICAL (FIXED)
 
-| Bug | File | Issue | Fix Required |
-|-----|------|-------|--------------|
-| **API Error on Submit** | `MiraMeetsYourPet.jsx` line ~567 | "Failed to execute 'json' on 'Response': body stream already read" | Response body is being read twice. Check `handleFinalSubmit` function - likely calling `.json()` twice on same response |
-| **Pet Home doesn't exist** | N/A | After successful submit, redirects to `/member-dashboard` but should go to new Pet Home page | Need to build `/pet-home` page OR fix redirect |
+| Bug | Status | Fix Applied |
+|-----|--------|-------------|
+| **API Error on Submit** | ✅ FIXED | Response body was being read twice. Fixed in `handleFinalSubmit` - now reads once and stores result |
+| **Pet Home doesn't exist** | ✅ FIXED | Created `/app/frontend/src/pages/PetHomePage.jsx` and added route |
 
-### P1 - USER FEEDBACK (Must implement)
+### P1 - USER FEEDBACK (FIXED)
 
-| Issue | Current | Required | File to Change |
-|-------|---------|----------|----------------|
-| **Gender before Name** | Gender asked in Soul Game | Ask gender RIGHT AFTER photo, BEFORE name. So we can say "What's his name?" not "their name" | `MiraMeetsYourPet.jsx` - move gender to photo screen |
-| **Auto breed detection** | Not triggering reliably | Should auto-trigger when photo uploaded. If fails, show "What kind of dog is this?" | `MiraMeetsYourPet.jsx` - check `handlePhotoUpload` function |
-| **City field** | Dropdown with limited cities | Should be text input that allows ANY city (user could be from anywhere) | `MiraMeetsYourPet.jsx` - change from `<select>` to `<input>` |
-| **Full address needed** | Only city captured | Need full address field for shipping (House/Flat, Street, Landmark) | `MiraMeetsYourPet.jsx` - add address textarea to parent info |
-| **Birthday date capture** | Only asks "do you know birthday?" | Need actual date picker to capture the date. Also Gotcha Day option | `MiraMeetsYourPet.jsx` - add date picker component |
-| **Main goal multi-select** | Single select | User should select MULTIPLE goals for their pet | `MiraMeetsYourPet.jsx` - already changed to multiSelect: true, verify it works |
-| **Payoff shows wrong name** | Shows nickname in wrong place | "Here's what Mira knows about Muah" - should show pet name not nickname | `MiraMeetsYourPet.jsx` - fix in `renderPayoffScreen` |
+| Issue | Status | Fix Applied |
+|-------|--------|-------------|
+| **Gender before Name** | ✅ FIXED | Added gender screen right after photo, before name |
+| **Auto breed detection** | ✅ FIXED | Auto-triggers on photo upload, falls back to manual if API unavailable |
+| **City field** | ✅ FIXED | Changed from dropdown to text input |
+| **Full address needed** | ✅ FIXED | Added textarea for full address (House/Flat, Street, Landmark) |
+| **Birthday date capture** | ✅ FIXED | Added date picker with 3 options (Birthday, Gotcha Day, Approximate) |
+| **Main goal multi-select** | ✅ FIXED | Already implemented, verified working |
+| **Payoff shows wrong name** | ✅ FIXED | Now shows {petName}, not nickname |
 
-### P2 - ENHANCEMENTS
+### P2 - ENHANCEMENTS (Pending)
 
 | Issue | Details |
 |-------|---------|
