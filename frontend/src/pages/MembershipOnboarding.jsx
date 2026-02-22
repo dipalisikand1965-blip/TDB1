@@ -512,6 +512,29 @@ const MembershipOnboarding = () => {
         }
       }
 
+      // Auto-login the new user first
+      try {
+        const loginResponse = await fetch(`${getApiUrl()}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: parentData.email,
+            password: parentData.password
+          })
+        });
+        
+        const loginData = await loginResponse.json();
+        
+        if (loginResponse.ok && loginData.access_token) {
+          localStorage.setItem('token', loginData.access_token);
+          localStorage.setItem('user', JSON.stringify(loginData.user));
+          console.log('[MembershipOnboarding] Auto-login successful for:', parentData.email);
+        }
+      } catch (loginErr) {
+        console.error('[MembershipOnboarding] Auto-login failed:', loginErr);
+        // Continue anyway - user can login manually
+      }
+
       // Redirect to payment with order details
       if (data.payment_url) {
         toast.success('Account created! Redirecting to payment...');
