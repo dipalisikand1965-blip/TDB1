@@ -146,6 +146,7 @@ export const AuthProvider = ({ children }) => {
     // Clear local state first
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem('tdb_session_token');
+    localStorage.removeItem('user');
     setToken(null);
     setUser(null);
     
