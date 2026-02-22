@@ -531,13 +531,69 @@ const MiraMeetsYourPet = () => {
     setScreen('soul');
   };
   
-  // Final submit - create account and pet
+  // Build pet data object
+  const buildPetData = () => ({
+    name: petName,
+    nickname: petNickname,
+    breed: breedConfirmed ? breedDetected : (breedDetected || 'Mixed'),
+    breed_detected: breedDetected,
+    breed_confirmed: breedConfirmed,
+    breed_confidence: breedConfidence,
+    gender: petGender,
+    birth_date: birthdayType === 'birthday' ? birthdayDate : '',
+    gotcha_date: birthdayType === 'gotcha' ? gotchaDate : '',
+    approximate_age: birthdayType === 'approximate' ? approximateAge : '',
+    birthday_type: birthdayType,
+    species: 'dog',
+    photo: petPhotoPreview,
+    is_neutered: answers.is_neutered === 'yes' ? true : answers.is_neutered === 'no' ? false : null,
+    doggy_soul_answers: {
+      temperament: answers.temperament,
+      stranger_reaction: answers.stranger_reaction,
+      food_allergies: answers.food_allergies,
+      favorite_protein: answers.favorite_protein,
+      exercise_needs: answers.exercise_needs,
+      health_conditions: answers.health_conditions,
+      grooming_tolerance: answers.grooming_tolerance,
+      separation_anxiety: answers.separation_anxiety,
+      lives_with: answers.lives_with,
+      other_pets: answers.other_pets,
+      life_stage: answers.life_stage,
+      main_goal: answers.main_goal
+    }
+  });
+  
+  // Final submit - create account and pet (or just add pet if logged in)
   const handleFinalSubmit = async () => {
     setLoading(true);
     setError('');
     
     try {
-      // Create the account with pet
+      // If user is already logged in, just add the pet
+      if (isAddingPet) {
+        const response = await fetch(`${API_URL}/api/pets`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${existingAuth.token}`
+          },
+          body: JSON.stringify(buildPetData())
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.detail || 'Failed to add pet');
+        }
+        
+        toast.success(`${petName} has been added to your family!`);
+        
+        // Navigate to dashboard
+        window.location.href = '/dashboard';
+        return;
+      }
+      
+      // Otherwise, create new account with pet
       const response = await fetch(`${API_URL}/api/membership/onboard`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -556,36 +612,7 @@ const MiraMeetsYourPet = () => {
             accepted_terms: parentData.acceptTerms,
             accepted_privacy: parentData.acceptTerms
           },
-          pets: [{
-            name: petName,
-            nickname: petNickname,
-            breed: breedConfirmed ? breedDetected : (breedDetected || 'Mixed'),
-            breed_detected: breedDetected,
-            breed_confirmed: breedConfirmed,
-            breed_confidence: breedConfidence,
-            gender: petGender,
-            birth_date: birthdayType === 'birthday' ? birthdayDate : '',
-            gotcha_date: birthdayType === 'gotcha' ? gotchaDate : '',
-            approximate_age: birthdayType === 'approximate' ? approximateAge : '',
-            birthday_type: birthdayType,
-            species: 'dog',
-            photo: petPhotoPreview,
-            is_neutered: answers.is_neutered === 'yes' ? true : answers.is_neutered === 'no' ? false : null,
-            doggy_soul_answers: {
-              temperament: answers.temperament,
-              stranger_reaction: answers.stranger_reaction,
-              food_allergies: answers.food_allergies,
-              favorite_protein: answers.favorite_protein,
-              exercise_needs: answers.exercise_needs,
-              health_conditions: answers.health_conditions,
-              grooming_tolerance: answers.grooming_tolerance,
-              separation_anxiety: answers.separation_anxiety,
-              lives_with: answers.lives_with,
-              other_pets: answers.other_pets,
-              life_stage: answers.life_stage,
-              main_goal: answers.main_goal
-            }
-          }],
+          pets: [buildPetData()],
           plan_type: 'demo',
           pet_count: 1
         })
