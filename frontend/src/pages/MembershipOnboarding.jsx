@@ -267,7 +267,10 @@ const MembershipOnboarding = () => {
     });
     
     setPetErrors(errors);
-    return errors.every(e => Object.keys(e).length === 0);
+    
+    // Return both validity and errors for immediate use
+    const isValid = errors.every(e => Object.keys(e).length === 0);
+    return { isValid, errors };
   };
 
   // Handle next step
@@ -277,28 +280,29 @@ const MembershipOnboarding = () => {
     if (step === 1 && validateParentForm()) {
       setStep(2);
     } else if (step === 2) {
-      const isValid = validatePetForms();
-      console.log('[MembershipOnboarding] validatePetForms result:', isValid, 'errors:', petErrors);
+      const { isValid, errors } = validatePetForms();
+      console.log('[MembershipOnboarding] validatePetForms result:', isValid, 'errors:', errors);
       
       if (isValid) {
         setStep(3);
       } else {
-        // Show which pet has errors
-        const errorMessages = petErrors.map((errors, idx) => {
-          const fields = Object.keys(errors);
+        // Show which pet has errors - use the errors array directly (not state)
+        const errorMessages = errors.map((petErrs, idx) => {
+          const fields = Object.keys(petErrs);
           if (fields.length > 0) {
-            return `${petsData[idx]?.name || `Pet ${idx + 1}`}: ${fields.join(', ')} required`;
+            return `${petsData[idx]?.name || `Pet ${idx + 1}`}: ${fields.join(', ')}`;
           }
           return null;
         }).filter(Boolean);
         
         if (errorMessages.length > 0) {
-          // Use toast notification if available, otherwise alert
-          if (typeof toast !== 'undefined') {
-            toast.error(errorMessages.join('\n'));
-          } else {
-            alert('Please fill in all required fields:\n' + errorMessages.join('\n'));
-          }
+          toast.error('Please fill in all required fields:\n' + errorMessages.join('\n'));
+        }
+        
+        // Scroll to first error
+        const firstErrorEl = document.querySelector('.border-red-500');
+        if (firstErrorEl) {
+          firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       }
     } else if (step === 3) {
