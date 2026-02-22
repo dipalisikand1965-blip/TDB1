@@ -228,6 +228,8 @@ const MiraDemoOriginalPage = lazy(() => import("./pages/MiraDemoOriginalPage"));
 const MiraDemoBackupPage = lazy(() => import("./pages/MiraDemoBackupPage"));
 // MiraOSPage - New Header Shell navigation page
 const MiraOSPage = lazy(() => import("./pages/MiraOSPage"));
+// MiraPillarSandbox - Test page for unified Mira on pillar pages
+const MiraPillarSandbox = lazy(() => import("./pages/MiraPillarSandbox"));
 const ConciergeDashboard = lazy(() => import("./pages/ConciergeDashboard"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const CollectionPage = lazy(() => import("./pages/CollectionPage"));
