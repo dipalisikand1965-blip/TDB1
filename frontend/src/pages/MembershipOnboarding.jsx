@@ -271,10 +271,35 @@ const MembershipOnboarding = () => {
 
   // Handle next step
   const handleNext = () => {
+    console.log('[MembershipOnboarding] handleNext called, step:', step);
+    
     if (step === 1 && validateParentForm()) {
       setStep(2);
-    } else if (step === 2 && validatePetForms()) {
-      setStep(3);
+    } else if (step === 2) {
+      const isValid = validatePetForms();
+      console.log('[MembershipOnboarding] validatePetForms result:', isValid, 'errors:', petErrors);
+      
+      if (isValid) {
+        setStep(3);
+      } else {
+        // Show which pet has errors
+        const errorMessages = petErrors.map((errors, idx) => {
+          const fields = Object.keys(errors);
+          if (fields.length > 0) {
+            return `${petsData[idx]?.name || `Pet ${idx + 1}`}: ${fields.join(', ')} required`;
+          }
+          return null;
+        }).filter(Boolean);
+        
+        if (errorMessages.length > 0) {
+          // Use toast notification if available, otherwise alert
+          if (typeof toast !== 'undefined') {
+            toast.error(errorMessages.join('\n'));
+          } else {
+            alert('Please fill in all required fields:\n' + errorMessages.join('\n'));
+          }
+        }
+      }
     } else if (step === 3) {
       // Celebrations step - no validation required, just move forward
       setStep(4);
