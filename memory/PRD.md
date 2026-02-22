@@ -8,10 +8,54 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
 
 ## ✅ FULL AUDIT COMPLETED - February 22, 2026
 
+### Session 7 Fixes (February 22, 2026)
+
+#### 1. "Continue Pet Journey" Navigation Fix
+**Problem:** Dashboard buttons like "Continue Soul Journey" and "Grow Soul" were navigating to `/pet/{id}?tab=personality` (pet profile view) instead of allowing users to continue answering soul questions.
+
+**Solution:** Updated navigation to go to `/soul-builder?pet={id}&continue=true` which shows "What Mira Knows" summary and then continues with unanswered questions.
+
+**Files Changed:**
+- `MemberDashboard.jsx` (line 1304) - `onNavigateToPet` callback
+- `MemberDashboard.jsx` (line 1282) - "Grow Soul" button
+- `OverviewTab.jsx` (line 466) - "Continue Building Soul" button
+- `QuickScoreBoost.jsx` (line 203) - "View All Questions" button
+
+#### 2. Soul Builder Score Display Fix
+**Problem:** Soul score in "What Mira Knows" summary screen was showing calculated score from local state instead of the canonical database score.
+
+**Solution:** Added `currentPet` state to track URL-specified pet and use `currentSoulScore = primaryPet?.overall_score || soulScore || 0` for display.
+
+**Files Changed:**
+- `SoulBuilder.jsx` - Added `currentPet` state (line 308)
+- `SoulBuilder.jsx` - Updated `primaryPet` to use `currentPet` if available (line 825)
+- `SoulBuilder.jsx` - Updated score display in `know_mira_summary` screen (lines 1980, 2002)
+
+#### 3. Mira Chat Error Handling Improvement
+**Problem:** "I'm having a moment" error message was appearing without context when API calls failed.
+
+**Solution:** Added HTTP response status check before parsing JSON to catch server errors earlier.
+
+**Files Changed:**
+- `useChatSubmit.js` (line 369) - Added response.ok check with error logging
+
+---
+
 ### Audit Results Summary
 - **Backend**: **100% PASS** (17/17 tests)
 - **Frontend**: 100% pass (all pillar pages, dashboard, pet home, mira demo working)
 - **Mobile Golden Standard**: COMPLIANT
+
+---
+
+## Testing Results (Session 7)
+
+| Bug Reported | Status | Resolution |
+|--------------|--------|------------|
+| Pet photo not showing in mira-demo | Cannot Reproduce | Pet "Mars" doesn't exist in DB |
+| "What Mira Knows" should show summary | ✅ WORKING | Soul builder shows summary with `continue=true` |
+| Mira chat "having a moment" error | ✅ WORKING | Chat sends/receives without errors |
+| "Continue Pet Journey" buttons not working | ✅ FIXED | Navigation updated to soul-builder |
 
 ---
 
