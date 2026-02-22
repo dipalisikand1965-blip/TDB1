@@ -1694,8 +1694,14 @@ const MiraChatWidget = ({
               </div>
             )}
             
-            {/* Input Area - iOS Safe Area */}
-            <div className="p-3 pb-4 border-t bg-white shrink-0 mira-input-safe" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 1rem))' }}>
+            {/* Input Area - iOS Safe Area - Fixed positioning for mobile keyboards */}
+            <div 
+              className="p-3 border-t bg-white shrink-0 mira-input-safe sticky bottom-0 z-10" 
+              style={{ 
+                paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))',
+                WebkitTransform: 'translateZ(0)', /* iOS rendering fix */
+              }}
+            >
               <div className="flex items-center gap-2">
                 {/* Voice Input Button */}
                 {speechSupported && (
@@ -1706,37 +1712,53 @@ const MiraChatWidget = ({
                         ? 'bg-cyan-500 text-white animate-pulse' 
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
+                    style={{ WebkitTapHighlightColor: 'transparent' }}
                     data-testid="mira-widget-mic"
                   >
                     {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
                   </button>
                 )}
                 
-                {/* Text Input */}
+                {/* Text Input - iOS keyboard-friendly */}
                 <input
                   ref={inputRef}
                   type="text"
+                  inputMode="text"
+                  autoComplete="off"
+                  autoCorrect="on"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                  onFocus={() => {
+                    // Scroll input into view on iOS when keyboard opens
+                    setTimeout(() => {
+                      inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 300);
+                  }}
                   placeholder={isListening ? "Listening..." : "Type your message..."}
                   className={`flex-1 px-4 py-3 min-h-[48px] border rounded-full text-base focus:outline-none focus:ring-2 transition-all ${
                     isListening 
                       ? 'border-cyan-400 ring-2 ring-cyan-400/30' 
                       : 'border-gray-200 focus:ring-purple-500 focus:border-purple-500'
                   }`}
+                  style={{ fontSize: '16px' }} /* Prevents iOS zoom on focus */
                   disabled={isSending}
                 />
                 
                 {/* Send Button */}
                 <button
                   onClick={() => sendMessage()}
+                  onTouchEnd={(e) => {
+                    e.preventDefault();
+                    if (inputValue.trim() && !isSending) sendMessage();
+                  }}
                   disabled={!inputValue.trim() || isSending}
                   className={`w-12 h-12 min-w-[48px] min-h-[48px] rounded-full flex items-center justify-center transition-all shrink-0 touch-manipulation active:scale-95 ${
                     inputValue.trim() && !isSending
                       ? 'bg-purple-600 text-white hover:bg-purple-700'
                       : 'bg-gray-100 text-gray-400'
                   }`}
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
                   data-testid="mira-widget-send"
                 >
                   <Send className="w-5 h-5" />

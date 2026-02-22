@@ -1408,18 +1408,29 @@ const MembershipOnboarding = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-3 mt-6">
+                {/* Navigation Buttons - Mobile-optimized with larger touch targets */}
+                <div className="flex gap-3 mt-6 pb-6">
                   <Button 
                     variant="outline"
                     onClick={handleBack}
-                    className="flex-1 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white"
+                    className="flex-1 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white min-h-[52px] touch-manipulation active:scale-[0.98]"
+                    style={{ WebkitTapHighlightColor: 'transparent' }}
                   >
                     <ChevronLeft className="w-4 h-4 mr-2" />
                     Back
                   </Button>
                   <Button 
-                    onClick={handleNext}
-                    className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-semibold shadow-lg shadow-pink-500/30"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleNext();
+                    }}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      handleNext();
+                    }}
+                    className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-semibold shadow-lg shadow-pink-500/30 min-h-[52px] touch-manipulation active:scale-[0.98]"
+                    style={{ WebkitTapHighlightColor: 'transparent' }}
                     data-testid="pet-next-btn"
                   >
                     Select Celebrations
