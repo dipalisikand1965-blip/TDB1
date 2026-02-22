@@ -89,6 +89,53 @@ const CelebratePage = () => {
     window.scrollTo(0, 0);
   }, []);
   
+  // Fetch dynamic picks for the Concierge Card preview
+  useEffect(() => {
+    const fetchDynamicPicks = async () => {
+      if (!activePet?.name || !token) return;
+      
+      try {
+        const response = await fetch(
+          `${API_URL}/api/mira/top-picks/${encodeURIComponent(activePet.name)}`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          // Get celebrate pillar picks - both concierge and catalogue
+          const celebratePicks = [];
+          
+          // Add concierge picks (personalized items)
+          if (data.pillars?.celebrate?.concierge_picks) {
+            celebratePicks.push(...data.pillars.celebrate.concierge_picks.slice(0, 3).map(p => ({
+              icon: p.icon || '✨',
+              name: p.name
+            })));
+          }
+          
+          // Add catalogue picks 
+          if (data.pillars?.celebrate?.catalogue_picks) {
+            celebratePicks.push(...data.pillars.celebrate.catalogue_picks.slice(0, 3).map(p => ({
+              icon: '🎂',
+              name: p.name
+            })));
+          }
+          
+          setDynamicPicks(celebratePicks.slice(0, 6));
+        }
+      } catch (err) {
+        console.error('[CelebratePage] Error fetching dynamic picks:', err);
+      }
+    };
+    
+    fetchDynamicPicks();
+  }, [activePet?.name, token]);
+  
   // Read category from URL params on mount
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category');
