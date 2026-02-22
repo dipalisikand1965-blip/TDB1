@@ -46,17 +46,8 @@ import {
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 // Soul Questions - 15 core questions for 30-35% soul score
+// Gender is asked during photo hook, so questions start after that
 const SOUL_QUESTIONS = [
-  {
-    id: 'gender',
-    question: "Is {pet} a boy or girl?",
-    icon: Dog,
-    options: [
-      { value: 'male', label: 'Boy', emoji: '♂️' },
-      { value: 'female', label: 'Girl', emoji: '♀️' }
-    ],
-    miraKnows: (pet, val) => `${pet} is a ${val === 'male' ? 'good boy' : 'good girl'}!`
-  },
   {
     id: 'life_stage',
     question: "What life stage is {pet} in?",
@@ -233,24 +224,10 @@ const SOUL_QUESTIONS = [
         : `We'll figure this out`
   },
   {
-    id: 'birthday_type',
-    question: "Do you know {pet}'s birthday?",
-    icon: Calendar,
-    options: [
-      { value: 'birthday', label: 'Yes, their birthday', emoji: '🎂' },
-      { value: 'gotcha', label: 'No, but I know their Gotcha Day', emoji: '🏠', desc: 'Day they came home' },
-      { value: 'approximate', label: 'Just approximate age', emoji: '🤔' }
-    ],
-    miraKnows: (pet, val) => val === 'birthday' 
-      ? `I'll remember ${pet}'s birthday!` 
-      : val === 'gotcha' 
-        ? `Gotcha Day is just as special!` 
-        : `I'll estimate based on age`
-  },
-  {
     id: 'main_goal',
     question: "What do you want most for {pet}?",
     icon: Sparkles,
+    multiSelect: true, // Changed to multi-select
     options: [
       { value: 'health', label: 'Stay healthy', emoji: '💪' },
       { value: 'happiness', label: 'Be happy', emoji: '😊' },
@@ -259,7 +236,9 @@ const SOUL_QUESTIONS = [
       { value: 'adventures', label: 'Adventures', emoji: '🏔️' },
       { value: 'comfort', label: 'Comfort & care', emoji: '🛋️' }
     ],
-    miraKnows: (pet, val) => `${pet}'s goal: ${val}! I'm on it.`
+    miraKnows: (pet, val) => Array.isArray(val) 
+      ? `${pet}'s goals: ${val.join(', ')}! I'm on it.`
+      : `${pet}'s goal: ${val}! I'm on it.`
   }
 ];
 
