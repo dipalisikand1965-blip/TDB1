@@ -165,7 +165,7 @@ const PetSelector = ({ pets, selectedPet, onPetChange }) => {
             ) : (
               <PawPrint className="w-4 h-4 flex-shrink-0" />
             )}
-            <span className="text-sm font-medium">{pet.name}</span>
+            <span className="text-sm font-medium truncate max-w-[80px]">{pet.name}</span>
             {/* Show soul score badge */}
             <span className={`text-xs px-1.5 py-0.5 rounded-full flex-shrink-0 ${
               petScore >= 50 
