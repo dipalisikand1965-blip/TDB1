@@ -1587,12 +1587,112 @@ const MiraMeetsYourPet = () => {
           
           {/* Keep Teaching Mira - No numbers, just motivation */}
           <button
-            onClick={() => navigate('/soul-builder')}
+            onClick={async () => {
+              // First ensure the account is created, then navigate with pet context
+              if (!loading) {
+                setLoading(true);
+                setError('');
+                try {
+                  // If user is already logged in, just add the pet
+                  if (isAddingPet) {
+                    const petData = buildPetData();
+                    const response = await fetch(`${API_URL}/api/pets`, {
+                      method: 'POST',
+                      headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${existingAuth.token}`
+                      },
+                      body: JSON.stringify(petData)
+                    });
+                    
+                    const data = await response.json();
+                    if (!response.ok) {
+                      throw new Error(data.detail || 'Failed to add pet');
+                    }
+                    
+                    toast.success(`${petName} added! Let's teach Mira more.`);
+                    // Navigate to soul builder with pet context
+                    const petId = data.pet_id || data.id;
+                    navigate(`/soul-builder?pet=${petId}&continue=true`);
+                    return;
+                  }
+                  
+                  // Create new account
+                  const response = await fetch(`${API_URL}/api/membership/onboard`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      parent: {
+                        name: parentData.name,
+                        email: parentData.email,
+                        phone: parentData.phone,
+                        whatsapp: parentData.whatsapp || parentData.phone,
+                        address: parentData.address,
+                        city: parentData.city,
+                        pincode: parentData.pincode,
+                        password: parentData.password,
+                        preferred_contact: 'whatsapp',
+                        notifications: parentData.notifications,
+                        accepted_terms: parentData.acceptTerms,
+                        accepted_privacy: parentData.acceptTerms
+                      },
+                      pets: [buildPetData()],
+                      plan_type: 'demo',
+                      pet_count: 1
+                    })
+                  });
+                  
+                  const data = await response.json();
+                  if (!response.ok) {
+                    throw new Error(data.detail || 'Failed to create account');
+                  }
+                  
+                  // Auto-login
+                  const loginResponse = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      email: parentData.email,
+                      password: parentData.password
+                    })
+                  });
+                  
+                  const loginData = await loginResponse.json();
+                  if (loginResponse.ok && loginData.access_token) {
+                    localStorage.setItem('tdb_auth_token', loginData.access_token);
+                    localStorage.setItem('user', JSON.stringify(loginData.user));
+                    
+                    toast.success(`Welcome! Let's teach Mira more about ${petName}.`);
+                    // Navigate to soul builder with pet context
+                    const petId = data.pet_id || data.pets?.[0]?.id;
+                    navigate(`/soul-builder?pet=${petId}&continue=true`);
+                  } else {
+                    navigate('/soul-builder');
+                  }
+                } catch (err) {
+                  console.error('[Onboarding] Error:', err);
+                  setError(err.message || 'Something went wrong');
+                  toast.error(err.message);
+                } finally {
+                  setLoading(false);
+                }
+              }
+            }}
+            disabled={loading}
             data-testid="keep-teaching-mira-btn"
-            className="w-full py-4 bg-slate-800 text-white rounded-xl font-medium border border-slate-700"
+            className="w-full py-4 bg-slate-800 text-white rounded-xl font-medium border border-slate-700 disabled:opacity-50"
           >
-            <Sparkles className="w-4 h-4 inline mr-2" />
-            Keep Teaching Mira
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin inline mr-2" />
+                Creating account...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 inline mr-2" />
+                Keep Teaching Mira
+              </>
+            )}
           </button>
           <p className="text-slate-400 text-xs text-center px-4">
             The more Mira knows about {petName}, the better she understands {getPronoun().possessive} soul and can assist with personalized recommendations
