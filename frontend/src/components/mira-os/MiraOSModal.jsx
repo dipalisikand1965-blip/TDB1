@@ -60,6 +60,84 @@ const PILLAR_CONFIG = {
   }
 };
 
+// Pillar-specific concierge services
+const PILLAR_SERVICES = {
+  celebrate: [
+    { icon: '🎂', title: 'Custom Birthday Party', description: 'Full party planning with venue, cake, guests & photography' },
+    { icon: '🎁', title: 'Gotcha Day Celebration', description: 'Mark the day they joined your family' },
+    { icon: '📸', title: 'Pet Photoshoot', description: 'Professional photography session for your pet' }
+  ],
+  dine: [
+    { icon: '🍽️', title: 'Custom Meal Plan', description: 'Personalized nutrition plan based on soul profile' },
+    { icon: '🎂', title: 'Birthday Cake Order', description: 'Custom cake matching dietary needs' },
+    { icon: '🥘', title: 'Home-Cooked Meals', description: 'Fresh meals delivered weekly' }
+  ],
+  stay: [
+    { icon: '🏨', title: 'Pet Hotel Booking', description: 'Curated stays matching your pet\'s comfort needs' },
+    { icon: '🏠', title: 'Home Sitter', description: 'In-home pet sitting while you\'re away' },
+    { icon: '✈️', title: 'Travel Boarding', description: 'Extended care for long trips' }
+  ],
+  travel: [
+    { icon: '✈️', title: 'Pet Travel Planning', description: 'Complete travel arrangements with pet' },
+    { icon: '🚗', title: 'Pet Taxi', description: 'Safe transport to vet, groomer, or anywhere' },
+    { icon: '📋', title: 'Travel Documents', description: 'Help with pet passports & certificates' }
+  ],
+  care: [
+    { icon: '💊', title: 'Vet Appointment', description: 'Book and coordinate veterinary visits' },
+    { icon: '✂️', title: 'Grooming Session', description: 'Professional grooming based on breed needs' },
+    { icon: '💉', title: 'Vaccination Reminder', description: 'Track and schedule vaccinations' }
+  ],
+  enjoy: [
+    { icon: '🎾', title: 'Playdate Arrangement', description: 'Find compatible playmates' },
+    { icon: '🏃', title: 'Dog Walker', description: 'Regular walks with trusted walkers' },
+    { icon: '🏕️', title: 'Adventure Day', description: 'Curated outdoor experience' }
+  ],
+  fit: [
+    { icon: '🏃', title: 'Fitness Plan', description: 'Exercise routine based on energy level' },
+    { icon: '🏊', title: 'Swimming Session', description: 'Hydrotherapy or fun swim' },
+    { icon: '🧘', title: 'Wellness Check', description: 'Complete health assessment' }
+  ],
+  learn: [
+    { icon: '🎓', title: 'Training Program', description: 'Professional training matching temperament' },
+    { icon: '🐕', title: 'Behavior Consultation', description: 'Address specific behavior concerns' },
+    { icon: '📚', title: 'Puppy School', description: 'Socialization & basic training' }
+  ],
+  shop: [
+    { icon: '🛒', title: 'Personal Shopper', description: 'Curated product selection' },
+    { icon: '📦', title: 'Subscription Box', description: 'Monthly surprises based on preferences' },
+    { icon: '🎁', title: 'Gift Hamper', description: 'Custom gift basket for any occasion' }
+  ],
+  emergency: [
+    { icon: '🚨', title: '24/7 Emergency Support', description: 'Immediate assistance anytime' },
+    { icon: '🏥', title: 'Emergency Vet Coordination', description: 'Quick vet access & transport' },
+    { icon: '📞', title: 'Crisis Helpline', description: 'Immediate phone support' }
+  ],
+  advisory: [
+    { icon: '💬', title: 'Expert Consultation', description: 'Talk to pet specialists' },
+    { icon: '📋', title: 'Health Review', description: 'Comprehensive health assessment' },
+    { icon: '🐾', title: 'Breed Guidance', description: 'Breed-specific care advice' }
+  ],
+  paperwork: [
+    { icon: '📄', title: 'Registration Help', description: 'Pet registration & licensing' },
+    { icon: '🏥', title: 'Insurance Assistance', description: 'Pet insurance guidance' },
+    { icon: '📋', title: 'Document Management', description: 'Organize all pet records' }
+  ],
+  farewell: [
+    { icon: '🌈', title: 'Rainbow Bridge Support', description: 'Compassionate end-of-life care' },
+    { icon: '💐', title: 'Memorial Service', description: 'Honor their memory beautifully' },
+    { icon: '🕊️', title: 'Grief Counseling', description: 'Support during difficult times' }
+  ],
+  adopt: [
+    { icon: '🐕', title: 'Adoption Matching', description: 'Find the perfect companion' },
+    { icon: '🏠', title: 'Home Preparation', description: 'Get ready for your new family member' },
+    { icon: '📋', title: 'Adoption Paperwork', description: 'Navigate adoption process' }
+  ],
+  general: [
+    { icon: '✨', title: 'Concierge Request', description: 'Any request - we make it happen' },
+    { icon: '💬', title: 'Ask Mira', description: 'Get personalized recommendations' }
+  ]
+};
+
 // Concierge state machine
 const CONCIERGE_STATES = {
   idle: 'idle',
