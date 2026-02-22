@@ -8138,7 +8138,18 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
     - All surfaces read from this canonical profile
     """
     try:
-        user = await get_user_from_token(authorization)
+        # Get user from authorization header
+        user = None
+        if authorization:
+            try:
+                token = authorization.replace("Bearer ", "") if authorization.startswith("Bearer ") else authorization
+                payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                email = payload.get("sub")
+                if email:
+                    user = await db.users.find_one({"email": email.lower()})
+            except Exception:
+                pass
+        
         if not user:
             raise HTTPException(status_code=401, detail="Authentication required")
         
