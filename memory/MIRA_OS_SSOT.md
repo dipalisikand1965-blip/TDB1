@@ -2,7 +2,7 @@
 ## The Doggy Company Pet Operating System
 **Last Updated:** February 22, 2026 (Session 6 - FULL AUDIT & FIXES COMPLETE)  
 **Live Site:** https://thedoggycompany.com  
-**Preview:** https://mira-concierge-app.preview.emergentagent.com
+**Preview:** https://doggy-verified.preview.emergentagent.com
 
 ---
 

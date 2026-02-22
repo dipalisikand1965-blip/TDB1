@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://mira-concierge-app.preview.emergentagent.com
+https://doggy-verified.preview.emergentagent.com
 ```
 
 ---

@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://mira-concierge-app.preview.emergentagent.com
+**Preview URL:** https://doggy-verified.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
