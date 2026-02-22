@@ -603,6 +603,11 @@ const CarePage = () => {
               />
             </div>
           )}
+          
+          {/* Mira's Picks for Pet */}
+          {userPets && userPets[0] && (
+            <PillarPicksSection pillar="care" pet={userPets[0]} />
+          )}
         </div>
       </div>
 
