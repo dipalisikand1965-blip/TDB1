@@ -144,7 +144,7 @@ const CartSidebar = () => {
 
         {/* Cart Content */}
         <div className="flex-1 overflow-y-auto">
-          {cartItems.length === 0 ? (
+          {totalItems === 0 ? (
             /* Empty Cart State */
             <div className="flex flex-col items-center justify-center h-full text-center px-6 py-12">
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center mb-6">
@@ -152,7 +152,7 @@ const CartSidebar = () => {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Your cart is empty</h3>
               <p className="text-gray-500 mb-6 max-w-xs">
-                Discover amazing products for your furry friend!
+                Discover amazing products and services for your furry friend!
               </p>
               <Button
                 onClick={() => setIsCartOpen(false)}
@@ -163,9 +163,96 @@ const CartSidebar = () => {
               </Button>
             </div>
           ) : (
-            /* Cart Items List */
-            <div className="p-4 space-y-3">
-              <AnimatePresence>
+            <div className="p-4 space-y-4">
+              {/* ==================== CONCIERGE REQUESTS SECTION ==================== */}
+              {hasConcierge && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                      <MessageCircle className="w-3 h-3 text-white" />
+                    </div>
+                    <h4 className="font-semibold text-gray-900">Concierge Requests</h4>
+                  </div>
+                  
+                  <AnimatePresence>
+                    {conciergeRequests.map((request) => (
+                      <motion.div
+                        key={request.requestId}
+                        initial={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 100 }}
+                        className="relative rounded-xl overflow-hidden"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%)',
+                          border: '1px solid rgba(139, 92, 246, 0.2)'
+                        }}
+                      >
+                        {/* Gold ribbon at top */}
+                        <div className="h-1 bg-gradient-to-r from-amber-400 to-orange-400" />
+                        
+                        <div className="p-4">
+                          {/* Badge and Remove */}
+                          <div className="flex items-start justify-between mb-2">
+                            <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs">
+                              <Sparkles className="w-3 h-3 mr-1" />
+                              CONCIERGE PICK
+                            </Badge>
+                            <button
+                              onClick={() => removeConciergeRequest(request.requestId)}
+                              className="w-6 h-6 rounded-full bg-white/80 hover:bg-red-100 flex items-center justify-center transition-colors"
+                            >
+                              <X className="w-3.5 h-3.5 text-gray-400 hover:text-red-500" />
+                            </button>
+                          </div>
+                          
+                          {/* Title and Icon */}
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-2xl">{request.icon}</span>
+                            <h5 className="font-semibold text-gray-900">{request.title}</h5>
+                          </div>
+                          
+                          {/* Pet-First Personalization */}
+                          <p className="text-sm text-purple-700 mb-2">
+                            Designed for <span className="font-semibold">{request.petName}</span>
+                            {request.soulReason && (
+                              <span className="text-purple-600"> {request.soulReason}</span>
+                            )}
+                          </p>
+                          
+                          {/* Description */}
+                          {request.description && (
+                            <p className="text-xs text-gray-500 italic mb-3">"{request.description}"</p>
+                          )}
+                          
+                          {/* Promise */}
+                          <div className="flex items-center gap-2 text-xs text-gray-400">
+                            <Clock className="w-3 h-3" />
+                            <span>Pet Concierge® will contact you within 2 hours</span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                  
+                  {/* Divider if both sections exist */}
+                  {hasProducts && (
+                    <div className="border-t border-dashed border-purple-200 my-4" />
+                  )}
+                </div>
+              )}
+              
+              {/* ==================== PRODUCTS SECTION ==================== */}
+              {hasProducts && (
+                <div className="space-y-3">
+                  {hasConcierge && (
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                        <Package className="w-3 h-3 text-white" />
+                      </div>
+                      <h4 className="font-semibold text-gray-900">Products</h4>
+                    </div>
+                  )}
+                  
+                  <AnimatePresence>
                 {cartItems.map((item) => (
                   <motion.div
                     key={item.itemId}
