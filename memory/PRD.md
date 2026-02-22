@@ -74,8 +74,10 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
 - [ ] Razorpay Checkout - Awaiting API keys from user
 - [ ] Screenshot tool - Platform media limit exceeded
 - [ ] WhatsApp Integration - Awaiting API keys
+- [ ] AI Breed Detection API - Endpoint doesn't exist; falls back to manual selection
 
 ### 🟠 In Progress
+- [ ] Apply card layout fix to all 15 pillar pages (completed for Stay, Dine)
 - [ ] Post-deployment verification at thedoggycompany.in
 - [ ] Automated vaccination reminders setup
 
