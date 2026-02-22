@@ -18,6 +18,7 @@ import AdminQuickEdit from '../components/AdminQuickEdit';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
+import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import { useNavigate } from 'react-router-dom';
