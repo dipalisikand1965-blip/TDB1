@@ -75,6 +75,11 @@ const CelebratePage = () => {
   const [viewMode, setViewMode] = useState('products'); // 'products' | 'services'
   const [selectedSubcat, setSelectedSubcat] = useState(null);
   
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   // Read category from URL params on mount
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category');
