@@ -913,12 +913,19 @@ const MiraOSModal = ({
         
         {/* Content Area - with safe bottom padding for keyboard */}
         <div className="flex-1 overflow-y-auto pb-4">
-          {/* Picks Tab */}
+          {/* Picks Tab - Pillar-Specific */}
           {activeTab === 'picks' && (
             <div className="p-4 space-y-3">
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="w-5 h-5 text-purple-500" />
-                <h3 className="font-bold text-gray-900">Mira's Picks for {selectedPet?.name || 'You'}</h3>
+                <div>
+                  <h3 className="font-bold text-gray-900">
+                    {selectedPet?.name || 'Your'}'s {config.name} Picks
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    Curated based on {selectedPet?.name || 'your pet'}'s soul + your conversations
+                  </p>
+                </div>
               </div>
               
               {picks.length > 0 ? (
