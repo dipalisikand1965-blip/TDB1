@@ -497,37 +497,39 @@ const MiraMeetsYourPet = () => {
   
   // Submit parent info and create account
   const handleParentSubmit = async () => {
-    // Validate
+    // Validate required fields - show all errors at once
+    const errors = [];
+    
     if (!parentData.name.trim()) {
-      toast.error('Please enter your name');
-      return;
+      errors.push('Please enter your name');
     }
     if (!parentData.email.trim() || !parentData.email.includes('@')) {
-      toast.error('Please enter a valid email');
-      return;
+      errors.push('Please enter a valid email');
     }
     if (!parentData.phone.trim() || parentData.phone.length < 10) {
-      toast.error('Please enter a valid phone number');
-      return;
+      errors.push('Please enter a valid phone number (10+ digits)');
     }
-    if (!parentData.address.trim()) {
-      toast.error('Please enter your full address');
-      return;
-    }
+    // Address is now OPTIONAL
     if (!parentData.city.trim()) {
-      toast.error('Please enter your city');
-      return;
+      errors.push('Please enter your city');
     }
     if (!parentData.password || parentData.password.length < 6) {
-      toast.error('Password must be at least 6 characters');
-      return;
+      errors.push('Password must be at least 6 characters');
     }
     if (!parentData.acceptTerms) {
-      toast.error('Please accept the terms & privacy policy');
+      errors.push('Please accept the terms & privacy policy');
+    }
+    
+    // Show all errors
+    if (errors.length > 0) {
+      errors.forEach(err => toast.error(err));
+      console.log('[Onboarding] Validation failed:', errors);
       return;
     }
     
     // Move to soul game
+    console.log('[Onboarding] Validation passed, moving to soul questions');
+    toast.success('Great! Now let\'s learn about ' + petName);
     setScreen('soul');
   };
   
