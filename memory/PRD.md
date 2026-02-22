@@ -6,7 +6,36 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
 
 ---
 
-## ✅ SESSION 8 - SMART PERSONALIZATION COMPLETE - February 22, 2026
+## ✅ SESSION 8 - CONCIERGE DNA ON PILLAR PAGES - February 22, 2026
+
+### MIRA'S PICKS ON ALL 14 PILLAR PAGES ✅
+
+**What Was Built:**
+Created `PillarPicksSection` component that brings Mira's personalized picks directly to each pillar page.
+
+**Files Created:**
+- `/app/frontend/src/components/PillarPicksSection.jsx` - New component with:
+  - `ProductPickCard` - For catalogue products (direct purchase)
+  - `ConciergePickCard` - For bespoke concierge services
+  - Soul-aware personalization using `getSoulBasedReason()`
+  - Fetches from `/api/mira/top-picks/{pet}/pillar/{pillar}`
+
+**Files Modified:**
+- All 14 pillar pages now have `<PillarPicksSection>`:
+  - CelebratePage, DinePage, StayPage, TravelPage
+  - CarePage, EnjoyPage, FitPage, LearnPage
+  - PaperworkPage, AdvisoryPage, EmergencyPage
+  - FarewellPage, AdoptPage, ShopPage
+
+**What Drives Picks Refresh:**
+| Driver | How It Works |
+|--------|--------------|
+| **Chat Intents** | Mira tracks what you ask about → shows relevant picks within 48 hours |
+| **Seasonal** | Summer/Winter/Monsoon products rotate automatically |
+| **Birthday** | Detects upcoming birthdays → celebrate picks appear |
+| **Pet Soul Data** | Allergies, size, breed, age → filters picks |
+| **Breed Knowledge** | Shih Tzu grooming needs, Labrador exercise, etc. |
+| **Smart Fallback** | When no intents, Mira suggests based on profile gaps |
 
 ### SMARTER CONCIERGE PICK PERSONALIZATION ✅
 
@@ -14,42 +43,6 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
 1. Created centralized `getSoulBasedReason()` utility in `/app/frontend/src/utils/petSoulInference.js`
 2. Updated ALL 14 pillar pages to use the smart personalization utility
 3. Messages now dynamically use soul traits → personality → breed (fallback)
-
-**Example Personalization Messages:**
-- Soul trait: "Designed for Mystique **who can get anxious when left alone**" (from separation_anxiety)
-- Soul trait: "Designed for Mystique **who warms up slowly to new people**" (from stranger_reaction)
-- Temperament: "Designed for Mystique **who is naturally protective**" (from temperament)
-- Breed fallback: "Designed for Mystique **who loves being pampered**" (Shih Tzu)
-
-**Files Created:**
-- `/app/frontend/src/utils/petSoulInference.js` - Smart personalization utility with:
-  - `getSoulBasedReason(pet, pillar)` - Generates personalized message
-  - `BREED_INFERENCES` - 20+ breed-specific fallback messages
-  - `traitToReason()` - Converts soul traits to human-readable phrases
-
-**Files Modified:**
-- All 14 pillar pages now import and use `getSoulBasedReason()`:
-  - CelebratePage.jsx, DinePage.jsx, StayPage.jsx, TravelPage.jsx
-  - CarePage.jsx, EnjoyPage.jsx, FitPage.jsx, LearnPage.jsx
-  - PaperworkPage.jsx, AdvisoryPage.jsx, EmergencyPage.jsx
-  - FarewellPage.jsx, AdoptPage.jsx, ShopPage.jsx
-
-### "BACK TO PILLAR" NAVIGATION ✅
-
-**What Was Done:**
-1. Added `useSearchParams` hook to MiraDemoPage to read `returnUrl` and `pillar` params
-2. Added "Back to [Pillar]" banner at top of MiraDemoPage when coming from a pillar
-3. Updated ConciergePickCard to pass `returnUrl` and `pillar` when navigating to Mira
-
-**Files Modified:**
-- `/app/frontend/src/pages/MiraDemoPage.jsx` - Added back navigation banner
-- `/app/frontend/src/components/ConciergePickCard.jsx` - Passes returnUrl and pillar params
-
-**User Flow:**
-1. User on /stay clicks "Ask Mira" on any element
-2. Navigates to /mira-demo?pillar=stay&returnUrl=%2Fstay
-3. "Back to Stay" banner appears at top
-4. User clicks → Returns to /stay instantly
 
 ---
 
