@@ -15006,23 +15006,42 @@ What would you like to explore? 🐾"""
         # Check if we're in the middle of a kit assembly conversation
         kit_assembly_state = await db.kit_assembly_sessions.find_one({"session_id": session_id}, {"_id": 0})
         
-        # Check if this is a product/kit query - ONLY trigger on explicit product requests
-        # NOT on service booking requests like "book grooming"
-        product_keywords = ["treat", "cake", "food", "toy", "product", "buy", "show me products", 
-                           "recommend products", "suggest products", "kit", "items from shop", 
-                           "specific products", "what products", "shopping", "meal", "fresh meal",
-                           "fresh meals", "snack", "chew", "bowl", "collar", "leash", "bed", "hamper"]
-        service_only_keywords = ["book", "appointment", "schedule", "reserve", "booking"]
+        # Check if this is a product/kit query - ONLY trigger on EXPLICIT product requests
+        # NOT on casual mentions like "she loves treats" or "what food is good"
+        # Products should only appear when user ASKS for shopping/recommendations
         
-        # ==================== EXPLICIT KIT DETECTION ====================
-        # Kit assembly should ONLY trigger when user explicitly says "kit"
-        # And it should MATCH the current pillar context
+        # EXPLICIT product request phrases (user clearly wants to shop/buy)
+        explicit_product_requests = [
+            "show me products", "recommend products", "suggest products", "what products",
+            "buy", "purchase", "order", "add to cart", "shopping", "shop for",
+            "show me some", "what can i get", "what should i buy", "need to buy",
+            "looking for products", "items from shop", "specific products",
+            "recommend some", "suggest some", "hamper", "gift basket"
+        ]
+        
+        # Kit-related keywords (user wants curated collection)
+        kit_keywords = ["kit", "build me a", "assemble", "put together", "curate", "bundle"]
+        
+        # Service-only keywords (user wants booking, not products)
+        service_only_keywords = ["book", "appointment", "schedule", "reserve", "booking", 
+                                 "consultation", "consult", "session", "visit"]
+        
         message_lower = user_message.lower()
-        explicit_kit_keywords = ["kit", "build me a", "assemble", "put together", "curate"]
-        is_explicit_kit_request = any(kw in message_lower for kw in explicit_kit_keywords)
         
-        is_product_query = any(kw in message_lower for kw in product_keywords)
-        is_service_only = any(kw in message_lower for kw in service_only_keywords) and not is_product_query
+        # EXPLICIT kit request detection
+        is_explicit_kit_request = any(kw in message_lower for kw in kit_keywords)
+        
+        # EXPLICIT product request - user must clearly ask for products
+        is_explicit_product_request = any(phrase in message_lower for phrase in explicit_product_requests)
+        
+        # Service-only detection
+        is_service_only = any(kw in message_lower for kw in service_only_keywords) and not is_explicit_product_request
+        
+        # FINAL: Only search products when user EXPLICITLY asks
+        # NOT when they casually mention "food", "treat", "cake", etc.
+        is_product_query = is_explicit_product_request or is_explicit_kit_request
+        
+        logger.info(f"[PRODUCT INTENT] is_product_query={is_product_query}, is_explicit_kit={is_explicit_kit_request}, is_service_only={is_service_only}, message='{message_lower[:50]}...'")
         
         # Analyze conversation context - BUT only for kit details, not triggering
         conversation_history = request.history or []
