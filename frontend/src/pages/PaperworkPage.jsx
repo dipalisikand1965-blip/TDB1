@@ -955,6 +955,13 @@ const PaperworkPage = () => {
         </div>
       )}
       
+      {/* Mira's Picks for Pet */}
+      {userPets && userPets[0] && (
+        <div className="max-w-6xl mx-auto px-4">
+          <PillarPicksSection pillar="paperwork" pet={userPets[0]} />
+        </div>
+      )}
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="paperwork" position="bottom-left" />
       
