@@ -176,6 +176,26 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
     - CTA buttons: Always visible at bottom with `mt-auto`
     - Files: `StayPage.jsx`
 
+11. **Bundle Cards Across Pillars** - Applied same card structure fix
+    - Stay Essentials bundles: Fixed in `StayPage.jsx`
+    - Dine bundles: Fixed in `DinePage.jsx`
+    - Pattern: Fixed image header (150-180px) + separate white content section
+    - Files: `StayPage.jsx`, `DinePage.jsx`
+
+12. **MiraChatWidget 3-Zone Layout** - Chat messages going under header
+    - Implemented proper 3-zone flexbox layout
+    - Zone A (flex-none): Sticky header + pet tabs + quick actions
+    - Zone B (flex-1 overflow-y-auto): Scrollable chat messages ONLY
+    - Zone C (flex-none): Sticky composer at bottom
+    - Files: `MiraChatWidget.jsx`
+
+13. **Pet Picks Pill in MiraChatWidget** - Added pillar-specific picks access
+    - Removed inline product recommendations from header
+    - Added "Pet Picks" pill with glow when picks available
+    - Opens PersonalizedPicksPanel filtered to current pillar
+    - Integrated with Unified Service Flow (creates ticket)
+    - Files: `MiraChatWidget.jsx`
+
 ---
 
 ## Test Credentials
