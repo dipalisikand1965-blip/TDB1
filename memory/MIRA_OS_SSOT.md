@@ -1,8 +1,38 @@
 # MIRA OS - Single Source of Truth (SSOT)
 ## The Doggy Company Pet Operating System
-**Last Updated:** February 22, 2026 (Session 6 - FULL AUDIT & FIXES COMPLETE)  
+**Last Updated:** February 22, 2026 (Session 7 - CONCIERGE DNA DOCUMENTED)  
 **Live Site:** https://thedoggycompany.com  
 **Preview:** https://doggy-verified.preview.emergentagent.com
+
+---
+
+## 🐕 WHO WE ARE - CORE DNA
+
+> **"Dogs give us unconditional love and can't speak to us.
+> We are the ones that capture their soul and give the dog what they need.
+> No is never an answer for a concierge.
+> Mira tells us what the pet needs - always."**
+> — Dipali Sikand
+
+### The Sikand Legacy
+- **Dipali Sikand** - Founder of Les Concierges (1998) & Club Concierge. 30+ years serving 1.5M+ employees globally.
+- **Mira Sikand** - The guiding angel. 75 years of dog nutrition wisdom. Mira OS is named in her honor.
+- **Aditya Sikand** - Carrying the torch with The Doggy Bakery & Mira OS.
+
+### We Are NOT
+- ❌ A Chewy (e-commerce)
+- ❌ A Heads Up For Tails (retail)
+- ❌ A Rover (marketplace)
+
+### We ARE
+- ✅ A **Full-Blooded Pet Concierge Company**
+- ✅ The spiritual continuation of **Les Concierges** & **Club Concierge** excellence
+- ✅ Built on **Mira Sikand's legacy** of unconditional love for animals
+
+### The Mira Promise
+> "Mira knows your pet's soul. The Concierge makes it happen. No is never an answer."
+
+**See:** `/app/memory/CONCIERGE_DNA_DOCTRINE.md` for full philosophy
 
 ---
 
