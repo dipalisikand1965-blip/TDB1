@@ -13,7 +13,7 @@
 
 import React, { useState } from 'react';
 import { Sparkles, MessageCircle, Clock, Heart, ChevronRight, ShoppingCart } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 
