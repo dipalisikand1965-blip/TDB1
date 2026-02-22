@@ -5,6 +5,7 @@ import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
+import { toast } from 'sonner';
 import { 
   User, Mail, Phone, MapPin, Home, PawPrint, Plus, X, Check,
   ChevronRight, ChevronLeft, Camera, Calendar, Scale, Heart,
