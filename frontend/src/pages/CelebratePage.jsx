@@ -81,6 +81,9 @@ const CelebratePage = () => {
   // Pillar Mira Panel state
   const [isPillarPanelOpen, setIsPillarPanelOpen] = useState(false);
   
+  // Dynamic picks for the Concierge Card preview
+  const [dynamicPicks, setDynamicPicks] = useState([]);
+  
   // Scroll to top when page loads
   useEffect(() => {
     window.scrollTo(0, 0);
