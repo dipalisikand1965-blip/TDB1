@@ -1071,16 +1071,6 @@ const CelebratePage = () => {
         </Suspense>
       )}
       
-      {/* Pillar-Specific Mira FAB */}
-      <button
-        onClick={() => setIsPillarPanelOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-full shadow-lg shadow-purple-500/30 hover:shadow-xl hover:scale-105 transition-all"
-        data-testid="pillar-mira-fab"
-      >
-        <Sparkles className="w-5 h-5" />
-        <span>Ask Mira</span>
-      </button>
-      
       {/* Personalized Picks Panel - Locked to Celebrate pillar (no other pillar tabs shown) */}
       <PersonalizedPicksPanel
         isOpen={isPillarPanelOpen}
