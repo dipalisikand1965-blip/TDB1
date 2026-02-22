@@ -317,7 +317,11 @@ const MiraMeetsYourPet = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   
-  // Screen state - ORDER: photo -> gender -> name -> birthday -> parent -> soul -> payoff
+  // Check if user is already logged in (for adding another pet)
+  const existingAuth = getExistingAuth();
+  const isAddingPet = !!existingAuth;
+  
+  // Screen state - ORDER: photo -> gender -> name -> birthday -> parent (skip if logged in) -> soul -> payoff
   const [screen, setScreen] = useState('photo');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -341,7 +345,7 @@ const MiraMeetsYourPet = () => {
   const [gotchaDate, setGotchaDate] = useState('');
   const [approximateAge, setApproximateAge] = useState('');
   
-  // Parent Info
+  // Parent Info (only used for new users)
   const [parentData, setParentData] = useState({
     name: '',
     email: '',
