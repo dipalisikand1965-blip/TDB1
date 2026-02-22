@@ -1,16 +1,30 @@
 import React, { useState } from 'react';
-import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, RefreshCw, Truck, Gift, Info, Tag, ChevronRight, Sparkles, Package } from 'lucide-react';
+import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, RefreshCw, Truck, Gift, Info, Tag, ChevronRight, Sparkles, Package, MessageCircle, Clock, Heart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from './ui/sheet';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from './ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from '../hooks/use-toast';
 
 const CartSidebar = () => {
-  const { cartItems, updateQuantity, removeFromCart, getCartTotal, isCartOpen, setIsCartOpen, autoshipSummary } = useCart();
+  const { 
+    cartItems, 
+    updateQuantity, 
+    removeFromCart, 
+    getCartTotal, 
+    isCartOpen, 
+    setIsCartOpen, 
+    autoshipSummary,
+    // Concierge requests
+    conciergeRequests,
+    removeConciergeRequest,
+    submitConciergeRequests
+  } = useCart();
   const navigate = useNavigate();
   const [removingItem, setRemovingItem] = useState(null);
+  const [submittingConcierge, setSubmittingConcierge] = useState(false);
 
   const handleCheckout = () => {
     setIsCartOpen(false);
@@ -25,8 +39,39 @@ const CartSidebar = () => {
     }, 200);
   };
 
+  const handleSubmitConciergeRequests = async () => {
+    setSubmittingConcierge(true);
+    try {
+      const result = await submitConciergeRequests();
+      if (result.success) {
+        toast({
+          title: "✨ Concierge Requests Submitted!",
+          description: "Your Pet Concierge® will contact you within 2 hours.",
+        });
+      } else {
+        toast({
+          title: "Something went wrong",
+          description: result.message,
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit concierge requests",
+        variant: "destructive"
+      });
+    } finally {
+      setSubmittingConcierge(false);
+    }
+  };
+
   // Calculate item count
   const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const conciergeCount = conciergeRequests?.length || 0;
+  const totalItems = itemCount + conciergeCount;
+  const hasProducts = cartItems.length > 0;
+  const hasConcierge = conciergeCount > 0;
 
   return (
     <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
