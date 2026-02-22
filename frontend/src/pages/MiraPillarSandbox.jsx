@@ -487,31 +487,24 @@ const MiraPillarSandbox = () => {
           ═══════════════════════════════════════════════════════════════════════ */}
       {showMiraModal && (
         <div 
-          className="fixed inset-0 z-[9999]"
+          className="mira-modal-overlay fixed inset-0 z-[9999]"
           style={{ 
             height: '100dvh',
-            width: '100vw',
-            overflow: 'hidden'
+            width: '100vw'
           }}
         >
           {/* Close button - fixed position so it's always visible */}
           <button
             onClick={() => setShowMiraModal(false)}
-            className="fixed top-4 right-4 z-[10000] w-12 h-12 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/70 transition-colors touch-manipulation border border-white/20"
+            className="fixed top-4 right-4 z-[10001] w-12 h-12 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/70 transition-colors touch-manipulation border border-white/20"
             data-testid="close-mira-modal"
           >
             <span className="text-white text-2xl font-light">×</span>
           </button>
           
-          {/* Full MiraDemoPage - takes entire viewport */}
+          {/* Full MiraDemoPage - takes entire viewport with proper scrolling */}
           <Suspense fallback={<MiraLoader />}>
-            <div 
-              style={{ 
-                height: '100dvh',
-                width: '100vw',
-                overflow: 'hidden'
-              }}
-            >
+            <div className="mira-modal-content">
               <MiraDemoPage />
             </div>
           </Suspense>
