@@ -666,26 +666,59 @@ const SoulBuilder = () => {
     }, 200);
   };
   
-  // Handle next chapter
+  // Handle next chapter - with KNOW_MIRA_SUMMARY checkpoint after first completion threshold
   const handleNextChapter = () => {
+    // Count actual answers (not skipped)
+    const actualAnswers = Object.keys(answers).filter(k => 
+      answers[k] && !(typeof answers[k] === 'object' && answers[k].skipped)
+    ).length;
+    
+    // After first chapter OR reaching 10-15 questions, show KNOW_MIRA_SUMMARY (COMPULSORY)
+    const isFirstCheckpoint = currentChapter === 0 || actualAnswers >= 10;
+    
     if (currentChapter < CHAPTERS.length - 1) {
-      setCurrentChapter(prev => prev + 1);
-      setCurrentQuestion(0);
-      setScreen('chapter-intro');
+      // After completing first significant batch, show the compulsory summary
+      if (isFirstCheckpoint && actualAnswers >= 8) {
+        // Save progress before showing summary
+        saveSoulAnswers(answers);
+        setScreen('know_mira_summary');
+      } else {
+        setCurrentChapter(prev => prev + 1);
+        setCurrentQuestion(0);
+        setScreen('chapter-intro');
+      }
     } else {
-      setScreen('final');
+      // Last chapter complete - show final summary (which is also KNOW_MIRA_SUMMARY)
+      saveSoulAnswers(answers);
+      setScreen('know_mira_summary');
+    }
+  };
+  
+  // Handle "Save & Exit" / "Skip for now" - persists progress and goes to Pet Home
+  const handleSaveAndExit = async () => {
+    setIsSaving(true);
+    try {
+      await saveSoulAnswers(answers);
+      navigateToPetHome();
+    } catch (error) {
+      console.error('[SoulBuilder] Save and exit error:', error);
+      // Navigate anyway
+      window.location.href = '/pet-home';
     }
   };
   
   // Calculate progress
-  const totalAnswered = Object.keys(answers).length;
+  const totalAnswered = Object.keys(answers).filter(k => 
+    answers[k] && !(typeof answers[k] === 'object' && answers[k].skipped)
+  ).length;
   const chapterProgress = (currentQuestion + 1) / chapter?.questions.length * 100;
   const overallProgress = ((currentChapter * 100) + chapterProgress) / CHAPTERS.length;
   
   // Check if user has existing pets (coming from "Keep Teaching Mira")
   const hasExistingPet = existingPets.length > 0;
   const primaryPet = existingPets[0];
-  const currentSoulScore = primaryPet?.overall_score || 0;
+  // Use the canonical soul score from the database
+  const currentSoulScore = primaryPet?.overall_score || soulScore || 0;
   
   // ═══════════════════════════════════════════════════════════════════════════════
   // RENDER SCREENS
