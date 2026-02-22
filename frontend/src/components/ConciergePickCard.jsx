@@ -208,22 +208,6 @@ const ConciergePickCard = ({
             </div>
           </div>
         )}
-                  >
-                    {pick.icon || pick.emoji || '✨'}
-                  </div>
-                  <p className="text-[10px] text-gray-300 leading-tight line-clamp-2">
-                    {pick.name || pick.title}
-                  </p>
-                </div>
-              ))}
-              {miniPicks.length > 5 && (
-                <div className="flex-shrink-0 w-12 flex items-center justify-center">
-                  <span className="text-xs text-purple-400">+{miniPicks.length - 5}</span>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* CTA Button */}
         <button
