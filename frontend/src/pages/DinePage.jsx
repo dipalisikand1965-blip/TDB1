@@ -260,6 +260,26 @@ const DinePage = () => {
       {/* Personalized Picks for User's Pet */}
       <div className="max-w-6xl mx-auto px-4 pt-8">
         <PersonalizedPicks pillar="dine" maxProducts={6} />
+        
+        {/* Concierge Pick Card - Personalized dining service */}
+        {activePet && (
+          <div className="mt-6">
+            <ConciergePickCard
+              pet={{
+                name: activePet.name,
+                breed: activePet.breed,
+                photo: activePet.photo_url,
+                soulTraits: activePet.personality_traits || []
+              }}
+              pillar="dine"
+              title={CONCIERGE_PRESETS.dine.title}
+              icon={CONCIERGE_PRESETS.dine.icon}
+              description={CONCIERGE_PRESETS.dine.description}
+              soulReason={activePet.food_allergies ? `who has dietary restrictions` : ''}
+              responseTime="2 hours"
+            />
+          </div>
+        )}
       </div>
 
       {/* Elevated Concierge® Experiences */}
