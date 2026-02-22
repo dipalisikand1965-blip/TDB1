@@ -495,7 +495,7 @@ const TravelPage = () => {
                 title={CONCIERGE_PRESETS.travel.title}
                 icon={CONCIERGE_PRESETS.travel.icon}
                 description={CONCIERGE_PRESETS.travel.description}
-                soulReason={selectedPets[0]?.car_anxiety ? 'who gets nervous during travel' : ''}
+                soulReason={getSoulBasedReason(selectedPets[0], 'travel')}
                 responseTime="2 hours"
               />
             </div>

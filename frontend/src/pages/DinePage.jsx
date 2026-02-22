@@ -277,7 +277,7 @@ const DinePage = () => {
               title={CONCIERGE_PRESETS.dine.title}
               icon={CONCIERGE_PRESETS.dine.icon}
               description={CONCIERGE_PRESETS.dine.description}
-              soulReason={activePet.food_allergies ? `who has dietary restrictions` : ''}
+              soulReason={getSoulBasedReason(activePet, 'dine')}
               responseTime="2 hours"
             />
           </div>
