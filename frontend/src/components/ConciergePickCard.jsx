@@ -30,6 +30,7 @@ import { toast } from '../hooks/use-toast';
  * @param {Function} props.onArrange - Called when "Let Mira Arrange" is clicked
  * @param {string} props.responseTime - SLA promise (default: "2 hours")
  * @param {boolean} props.addToCart - If true, adds to cart instead of navigating (default: true)
+ * @param {Array} props.miniPicks - Array of mini pick previews to show inside the card
  */
 const ConciergePickCard = ({
   pet = { name: 'your pet', breed: '', soulTraits: [], id: null },
@@ -41,6 +42,7 @@ const ConciergePickCard = ({
   onArrange,
   responseTime = '2 hours',
   addToCart = true,
+  miniPicks = [],
   className = ''
 }) => {
   const navigate = useNavigate();
