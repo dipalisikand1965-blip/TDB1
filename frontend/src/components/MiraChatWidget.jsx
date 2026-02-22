@@ -107,6 +107,9 @@ const MiraChatWidget = ({
   const [showCinematicKit, setShowCinematicKit] = useState(false);
   const [cinematicKitData, setCinematicKitData] = useState({ name: '', items: [] });
   
+  // Pet Picks Panel state (PersonalizedPicksPanel for pillar-specific picks)
+  const [showPicksPanel, setShowPicksPanel] = useState(false);
+  
   // Chat state - Initialize empty, will load per-pillar messages in useEffect
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
