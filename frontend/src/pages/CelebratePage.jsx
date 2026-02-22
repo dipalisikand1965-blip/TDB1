@@ -73,9 +73,8 @@ const CelebratePage = () => {
   // Use currentPet from context (syncs with global pet selector)
   const activePet = currentPet;
   
-  // User pets state
+  // User pets state (keep for backwards compat with some components)
   const [userPets, setUserPets] = useState([]);
-  const [activePet, setActivePet] = useState(null);
   const [petSoulData, setPetSoulData] = useState(null);
   
   // Search and view mode
