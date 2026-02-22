@@ -23,6 +23,7 @@ import MiraLoveNote from '../components/MiraLoveNote';
 import UnifiedHero from '../components/UnifiedHero';
 import PillarNav from '../components/PillarNav';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
+import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import {
   Search, Heart, ArrowRight, X, Package, Mic,
   PawPrint, Briefcase, Sparkles, Cake, Stethoscope, 
