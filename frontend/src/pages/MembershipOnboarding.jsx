@@ -1025,10 +1025,12 @@ const MembershipOnboarding = () => {
                   <button
                     key={idx}
                     onClick={() => setActivePetTab(idx)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-colors relative ${
                       activePetTab === idx
                         ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/30'
-                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
+                        : petErrors[idx] && Object.keys(petErrors[idx]).length > 0
+                          ? 'bg-red-900/50 text-red-300 border border-red-500'
+                          : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
                     }`}
                   >
                     {pet.photo_preview ? (
@@ -1037,6 +1039,10 @@ const MembershipOnboarding = () => {
                       <PawPrint className="w-4 h-4" />
                     )}
                     {pet.name || `Dog ${idx + 1}`}
+                    {/* Error indicator dot */}
+                    {petErrors[idx] && Object.keys(petErrors[idx]).length > 0 && activePetTab !== idx && (
+                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                    )}
                     {petsData.length > 1 && (
                       <button
                         onClick={(e) => {
