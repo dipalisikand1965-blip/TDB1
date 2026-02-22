@@ -132,19 +132,21 @@ const CelebratePage = () => {
           // Get celebrate pillar picks - both concierge and catalogue
           const celebratePicks = [];
           
-          // Add concierge picks (personalized items)
+          // Add concierge picks (personalized items) - full data
           if (data.pillars?.celebrate?.concierge_picks) {
-            celebratePicks.push(...data.pillars.celebrate.concierge_picks.slice(0, 3).map(p => ({
+            celebratePicks.push(...data.pillars.celebrate.concierge_picks.slice(0, 4).map(p => ({
               icon: iconToEmoji[p.icon] || p.icon || '✨',
-              name: p.name
+              name: p.name,
+              description: p.description || p.why_it_fits || ''
             })));
           }
           
-          // Add catalogue picks 
+          // Add catalogue picks - full data
           if (data.pillars?.celebrate?.catalogue_picks) {
-            celebratePicks.push(...data.pillars.celebrate.catalogue_picks.slice(0, 3).map(p => ({
+            celebratePicks.push(...data.pillars.celebrate.catalogue_picks.slice(0, 2).map(p => ({
               icon: '🎂',
-              name: p.name
+              name: p.name,
+              description: p.why_it_fits || ''
             })));
           }
           
