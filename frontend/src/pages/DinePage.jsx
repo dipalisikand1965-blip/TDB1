@@ -742,34 +742,39 @@ const DinePage = () => {
               {bundles.map(bundle => (
                 <Card 
                   key={bundle.id} 
-                  className="overflow-hidden hover:shadow-xl transition-all cursor-pointer group"
+                  className="overflow-hidden rounded-2xl hover:shadow-xl transition-all cursor-pointer flex flex-col"
                   onClick={() => setSelectedBundle(bundle)}
                   data-testid={`dine-bundle-${bundle.id}`}
                 >
-                  <div className="relative h-32 md:h-40">
+                  {/* IMAGE HEADER - Fixed height */}
+                  <div className="relative h-[150px] sm:h-[180px] overflow-hidden flex-shrink-0">
                     <img 
                       src={bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800'} 
                       alt={bundle.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     {bundle.discount_percent > 0 && (
-                      <Badge className="absolute top-2 right-2 bg-red-500">
+                      <Badge className="absolute top-3 right-3 z-10 bg-red-500 shadow-sm">
                         {bundle.discount_percent}% OFF
                       </Badge>
                     )}
                     {bundle.featured && (
-                      <Badge className="absolute top-2 left-2 bg-orange-500">
+                      <Badge className="absolute top-3 left-3 z-10 bg-orange-500 shadow-sm">
                         <Sparkles className="w-3 h-3 mr-1" /> Featured
                       </Badge>
                     )}
+                    <div className="absolute bottom-3 left-3 right-3 z-10 text-white">
+                      <h3 className="font-bold text-sm sm:text-base line-clamp-1 drop-shadow-md">{bundle.name}</h3>
+                    </div>
                   </div>
-                  <div className="p-4">
-                    <Badge variant="outline" className="mb-2 text-xs capitalize">
+                  {/* CONTENT - Separate block */}
+                  <div className="p-3 sm:p-4 bg-white flex flex-col flex-grow">
+                    <Badge variant="outline" className="mb-2 text-xs capitalize w-fit">
                       {bundle.category?.replace('_', ' ')}
                     </Badge>
-                    <h3 className="font-semibold text-gray-900 line-clamp-1">{bundle.name}</h3>
-                    <p className="text-sm text-gray-500 line-clamp-2 mt-1">{bundle.description}</p>
-                    <div className="flex items-center justify-between mt-3">
+                    <p className="text-xs sm:text-sm text-gray-500 line-clamp-2 mb-3">{bundle.description}</p>
+                    <div className="flex items-center justify-between mt-auto pt-2">
                       <div>
                         <span className="text-base sm:text-lg font-bold text-green-600">₹{bundle.bundle_price || bundle.price || 0}</span>
                         {(bundle.original_price > (bundle.bundle_price || bundle.price)) && (
@@ -778,7 +783,7 @@ const DinePage = () => {
                       </div>
                       <Button 
                         size="sm" 
-                        className="bg-orange-500 hover:bg-orange-600 text-xs px-2 sm:px-3 h-8 whitespace-nowrap"
+                        className="bg-orange-500 hover:bg-orange-600 text-xs h-9"
                         onClick={(e) => {
                           e.stopPropagation();
                           addToCart({
@@ -793,7 +798,7 @@ const DinePage = () => {
                         }}
                         data-testid={`add-dine-bundle-${bundle.id}`}
                       >
-                        <ShoppingBag className="w-3 h-3 sm:mr-1" /> <span className="hidden sm:inline">Add</span>
+                        <ShoppingBag className="w-3 h-3 mr-1" /> Add
                       </Button>
                     </div>
                   </div>
