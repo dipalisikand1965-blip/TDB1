@@ -1016,7 +1016,7 @@ const Home = () => {
                 quote="Mira remembered that Bruno has a chicken allergy when I was searching for treats. No other app does this!"
                 name="Priya M."
                 pet="Bruno the Labrador"
-                image={BRAND_IMAGES.goldenRetriever}
+                image={BRAND_IMAGES.blackLab}
               />
               <TestimonialCard 
                 quote="Booked a pet-friendly hotel in Goa through the concierge. They even arranged a dog-sitter for our dinner date!"
