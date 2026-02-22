@@ -501,6 +501,11 @@ const TravelPage = () => {
               />
             </div>
           )}
+          
+          {/* Mira's Picks for Pet */}
+          {selectedPets && selectedPets[0] && (
+            <PillarPicksSection pillar="travel" pet={selectedPets[0]} />
+          )}
         </div>
       </div>
 
