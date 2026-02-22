@@ -1,29 +1,105 @@
 # MIRA OS - Single Source of Truth (SSOT)
 ## The Doggy Company Pet Operating System
-**Last Updated:** December 2025 (Session 5 - ONBOARDING COMPLETE)  
+**Last Updated:** February 22, 2026 (Session 6 - FULL AUDIT & FIXES COMPLETE)  
 **Live Site:** https://thedoggycompany.com  
 **Preview:** https://mira-concierge-app.preview.emergentagent.com
 
 ---
 
-## 🎉 SESSION 5 STATUS: ONBOARDING FLOW COMPLETE
+## 🎉 SESSION 6 STATUS: FULL PLATFORM AUDIT COMPLETE
 
-### What was accomplished:
-- ✅ **Fixed ALL 8 user feedback bugs** from previous testing
-- ✅ **Gender before Name** - Now asks gender right after photo, enables his/her pronouns
-- ✅ **Birthday Screen** - 3 options with date pickers (Birthday, Gotcha Day, Approximate Age)
-- ✅ **Full Address** - Textarea added for House/Flat No., Street, Landmark
-- ✅ **City Free Text** - Changed from dropdown to text input
-- ✅ **No Skip Button** - All 13 soul questions are compulsory
-- ✅ **Payoff Fixed** - Shows "Here's what Mira knows about {petName}" (not nickname)
-- ✅ **JSON Error Fixed** - Response body was being read twice
-- ✅ **Pet Home Page Created** - New `/pet-home` route as default landing
+### Critical Fixes Applied This Session:
 
-### What is working:
-- Complete onboarding flow at `/join`
-- Photo → Gender → Name → Birthday → Parent Info → 13 Soul Questions → Payoff → Pet Home
-- Account creation and auto-login
-- Pet Home page with hero, pillar shortcuts, alerts, and Mira CTA
+#### 1. BACKEND - 100% PASS (17/17 tests)
+| Endpoint Added | Location | Purpose |
+|----------------|----------|---------|
+| `/api/membership/profile` | `membership_routes.py` | Returns user profile, paw points, membership tier, pets |
+| `/api/tickets/my-tickets` | `ticket_routes.py` | Returns all user tickets from service_desk, mira_tickets, tickets collections |
+
+#### 2. LOGIN REDIRECT FIX
+| File | Change |
+|------|--------|
+| `Login.jsx` | Default redirect changed from `/dashboard` to `/pet-home` |
+| `AuthCallback.jsx` | Google login redirect changed to `/pet-home` |
+| `Register.jsx` | New registration redirect changed to `/pet-home` |
+
+#### 3. PILLAR PAGES SCROLL-TO-TOP
+All 14 pillar pages now scroll to top on load:
+- `CelebratePage.jsx`, `CarePage.jsx`, `DinePage.jsx`, `StayPage.jsx`
+- `TravelPage.jsx`, `EnjoyPage.jsx`, `FitPage.jsx`, `LearnPage.jsx`
+- `ShopPage.jsx`, `PaperworkPage.jsx`, `AdvisoryPage.jsx`
+- `EmergencyPage.jsx`, `FarewellPage.jsx`, `AdoptPage.jsx`
+
+Also enhanced `App.js` ScrollToTop component with `behavior: 'instant'` and delayed scroll.
+
+#### 4. HOME NAVIGATION FROM PILLARS
+| File | Change |
+|------|--------|
+| `MobileNavBar.jsx` | HOME button now goes to `/pet-home` for authenticated users |
+| `MobileNavBar.jsx` | isActive() updated to highlight HOME on both `/` and `/pet-home` |
+
+#### 5. PET NAME TRUNCATION FIX
+| File | Change |
+|------|--------|
+| `PetHomePage.jsx` | Added `truncate max-w-[80px]` to PetSelector pet names |
+
+---
+
+## ✅ VERIFIED WORKING SYSTEMS
+
+### Paw Points Doctrine - VERIFIED ✅
+```
+API Endpoints:
+- GET /api/paw-points/balance → Returns { balance: 400, lifetime_earned, tier }
+- GET /api/paw-points/history → Returns transaction history
+- POST /api/paw-points/sync-achievements → Syncs user achievements
+
+Display Locations:
+- Dashboard header: "400 Paw Points" badge
+- Paw Points tab: Modal with history
+- Tier display: "Good Boi" tier
+```
+
+### Badges/Achievements System - VERIFIED ✅
+```
+Working Features:
+- Achievement toast: "Soul Guardian - Mystique has reached 75% Soul completion!"
+- Sync endpoint working
+- Badges visible: Curious Pup (+50), Detective Doggo (+100), Adventure Buddy (+250), Loyal Guardian (+500 EPIC)
+```
+
+### Dashboard Tabs - ALL WORKING ✅
+```
+Home | Services | Paw Points | Mira AI | Picks | Bookings (10) | Orders | Quotes | Documents | Autoship | Reviews | Pets | Addresses | Settings | Plan
+```
+
+### Resend Email Integration - CONFIGURED ✅
+```
+API Key: re_fi1hZ47r_PRTTcKUpDsZSScn3fdRWKHPt (in backend/.env)
+Endpoints: /api/auth/forgot-password returns success
+```
+
+### Mira Demo - UNIVERSAL PET DATA ✅
+```
+Soul Context Banner (scrolling tags):
+- 87% SOUL badge
+- "Mystique loves chicken jerky" (food preference)
+- "Mystique is loving/gentle" (personality)
+- "Sensitive to None really" (allergies)
+- "Remembering birthday/gotcha day" (special dates)
+- "Friendly around other dogs" (social)
+- "Mystique the Shih Tzu" (breed)
+- "10 memories with Mystique" (history)
+
+Pet Profile Widget:
+- Photo with soul ring
+- Pet selector dropdown for multi-pet switching
+
+Personalized Content:
+- "For Mystique - Curated for Mystique today"
+- Health checkup reminders
+- Wellness check prompts
+```
 
 ---
 
