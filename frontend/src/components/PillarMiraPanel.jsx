@@ -276,8 +276,7 @@ const PillarMiraPanel = ({
   selectedPetId = null,
   onPetChange = () => {}
 }) => {
-  const { token } = useAuth();
-  const { addToCart, addConciergeRequest, setIsCartOpen } = useCart();
+  const { addConciergeRequest, setIsCartOpen } = useCart();
   
   const [activeTab, setActiveTab] = useState('picks');
   const [selectedPet, setSelectedPet] = useState(null);
@@ -307,32 +306,13 @@ const PillarMiraPanel = ({
     }
   };
   
-  // Handle add to cart
-  const handleAddToCart = async (product) => {
-    addToCart({
-      id: product.id || product.shopify_id,
-      name: product.name,
-      price: product.price,
-      image: product.image_url || product.image,
-      quantity: 1,
-      pillar: pillar,
-      petId: selectedPet?.id,
-      petName: selectedPet?.name
-    });
-    
-    toast({
-      title: "Added to cart",
-      description: `${product.name} added for ${selectedPet?.name || 'your pet'}`,
-    });
-  };
-  
-  // Handle service request
+  // Handle service/pick request - Creates ticket, not cart
   const handleServiceRequest = async (service) => {
     const soulReason = getSoulBasedReason(selectedPet, pillar);
     
     addConciergeRequest({
       id: `concierge-${pillar}-${service.id}-${Date.now()}`,
-      name: service.title,
+      name: service.title || service.name,
       pillar: pillar,
       petId: selectedPet?.id,
       petName: selectedPet?.name,
