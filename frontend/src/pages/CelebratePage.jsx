@@ -66,8 +66,12 @@ const CelebratePage = () => {
   const [heroIndex, setHeroIndex] = useState(0);
   const { addToCart } = useCart();
   const { user, token } = useAuth();
+  const { currentPet, pets: contextPets } = usePillar();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  
+  // Use currentPet from context (syncs with global pet selector)
+  const activePet = currentPet;
   
   // User pets state
   const [userPets, setUserPets] = useState([]);
