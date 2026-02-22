@@ -1223,9 +1223,10 @@ const MiraChatWidget = ({
     );
   }
   
-  // Chat Widget (when open) - RESPONSIVE for mobile
-  // Mobile: Full screen from bottom
-  // Desktop: Side drawer on right (fixed to right edge)
+  // Chat Widget (when open) - PROPER 3-ZONE LAYOUT
+  // Zone A: Sticky header (purple header + pet tabs + quick actions)
+  // Zone B: Scrollable chat messages (ONLY this scrolls)
+  // Zone C: Sticky composer (input bar)
   return (
     <div 
       className={`fixed z-[9999] ${className}
@@ -1234,141 +1235,92 @@ const MiraChatWidget = ({
       `}
       data-testid="mira-chat-widget"
     >
-      {/* Chat container - MOBILE RESPONSIVE */}
-      {/* Mobile: Full width, rounded top only, from bottom */}
-      {/* Desktop: Side drawer, full height, fixed width on right edge */}
+      {/* Chat container - 3-zone flexbox layout */}
       <div 
         className={`
           w-full sm:w-[400px] lg:w-[420px]
-          bg-white shadow-2xl overflow-hidden flex flex-col transition-all duration-300
+          bg-white shadow-2xl flex flex-col
           rounded-t-2xl sm:rounded-none sm:border-l sm:border-gray-200
-          ${isMinimized ? 'h-16 sm:h-full' : 'h-[85vh] sm:h-full'}
+          ${isMinimized ? 'h-16 sm:h-full' : 'h-[85dvh] sm:h-[100dvh]'}
         `}
         style={{ 
-          maxHeight: 'calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))',
-          WebkitOverflowScrolling: 'touch'
+          maxHeight: '100dvh',
+          overflow: 'hidden' // CRITICAL: Container doesn't scroll
         }}
       >
-        {/* iOS Safe Area: Add padding at bottom for home indicator */}
-        <style>{`
-          @supports (padding-bottom: env(safe-area-inset-bottom)) {
-            .mira-input-safe { padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)); }
-          }
-          @supports (-webkit-touch-callout: none) {
-            /* iOS specific fix for input focus */
-            .mira-chat-messages { -webkit-overflow-scrolling: touch; }
-          }
-        `}</style>
-        {/* Header */}
-        <div 
-          className={`bg-gradient-to-r ${config.color} text-white p-3 sm:p-4 cursor-pointer flex items-center justify-between shrink-0`}
-          onClick={() => isMinimized && setIsMinimized(false)}
-        >
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className={`w-9 h-9 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center ${isListening ? 'animate-pulse ring-2 ring-cyan-400' : ''}`}>
-              <PawPrint className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
-            <div>
-              <p className="font-semibold text-sm sm:text-base">Mira</p>
-              <p className="text-[10px] sm:text-xs opacity-80">
-                {isListening ? '🎤 Listening...' : isSpeaking ? '🔊 Speaking...' : 'Pet Concierge®'}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-2">
-            {/* Voice toggle */}
-            <button
-              onClick={(e) => { e.stopPropagation(); setVoiceEnabled(!voiceEnabled); }}
-              className={`w-11 h-11 sm:w-9 sm:h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 rounded-full flex items-center justify-center transition-colors touch-manipulation active:scale-95 ${voiceEnabled ? 'bg-white/20' : 'bg-white/10'}`}
-              title={voiceEnabled ? "Voice ON" : "Voice OFF"}
-            >
-              {voiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
-            </button>
-            {/* Close */}
-            <button
-              onClick={(e) => { 
-                e.stopPropagation(); 
-                e.preventDefault();
-                setIsOpen(false); 
-              }}
-              onTouchEnd={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                setIsOpen(false);
-              }}
-              className="w-11 h-11 sm:w-9 sm:h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 rounded-full flex items-center justify-center bg-white/20 hover:bg-white/30 transition-colors touch-manipulation active:scale-95"
-              style={{ WebkitTapHighlightColor: 'transparent' }}
-              data-testid="mira-widget-close"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-        
-        {/* Content - Hidden when minimized */}
-        {!isMinimized && (
-          <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-            {/* Pet Selector + Suggestions Row - Compact */}
-            {pets.length > 0 && (
-              <div className="px-3 py-2 border-b bg-gray-50 shrink-0 flex-none">
-                <div className="flex items-center gap-2 overflow-x-auto">
-                  <span className="text-xs text-gray-500 shrink-0">For:</span>
-                  {pets.map(pet => (
-                    <button
-                      key={pet.id}
-                      onClick={() => {
-                        setSelectedPet(pet);
-                        trackClick('pet_switch', pet.id, { pillar, from_pet: selectedPet?.id });
-                      }}
-                      className={`px-3 py-2.5 min-h-[40px] rounded-full text-xs flex items-center gap-1.5 transition-all shrink-0 touch-manipulation active:scale-95 ${
-                        selectedPet?.id === pet.id 
-                          ? `bg-gradient-to-r ${config.color} text-white` 
-                          : 'bg-gray-100 text-gray-600'
-                      }`}
-                      data-testid={`pet-select-${pet.id}`}
-                    >
-                      <PawPrint className="w-3 h-3" />
-                      <span className="font-semibold">{pet.name}</span>
-                    </button>
-                  ))}
-                </div>
+        {/* ═══════════════════════════════════════════════════════════════════
+            ZONE A: STICKY TOP STACK (Header + Tabs + Quick Actions)
+            These stay fixed at the top, never scroll
+            ═══════════════════════════════════════════════════════════════════ */}
+        <div className="flex-none" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+          {/* Header */}
+          <div 
+            className={`bg-gradient-to-r ${config.color} text-white p-3 sm:p-4 cursor-pointer flex items-center justify-between`}
+            onClick={() => isMinimized && setIsMinimized(false)}
+          >
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className={`w-9 h-9 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center ${isListening ? 'animate-pulse ring-2 ring-cyan-400' : ''}`}>
+                <PawPrint className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-            )}
-            
-            {/* SUGGESTED FOR [PET] - Compact horizontal scroll */}
-            {selectedPet && petRecommendations.length > 0 && (
-              <div className="px-3 py-2 border-b bg-gradient-to-r from-purple-50/50 to-pink-50/50 shrink-0 flex-none">
-                <p className="text-[10px] font-bold text-purple-700 uppercase tracking-wider mb-1.5">
-                  ✨ For {selectedPet.name}
+              <div>
+                <p className="font-semibold text-sm sm:text-base">Mira</p>
+                <p className="text-[10px] sm:text-xs opacity-80">
+                  {isListening ? '🎤 Listening...' : isSpeaking ? '🔊 Speaking...' : 'Pet Concierge®'}
                 </p>
-                <div className="flex gap-2 overflow-x-auto pb-1">
-                  {petRecommendations.slice(0, 4).map(product => {
-                    const imageUrl = product.image?.startsWith('http') 
-                      ? product.image 
-                      : product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100&h=100&fit=crop';
-                    return (
-                      <div 
-                        key={product.id}
-                        onClick={() => handleProductClick(product)}
-                        className="flex-shrink-0 w-28 bg-white rounded-lg p-2 shadow-sm cursor-pointer border border-purple-100 active:scale-95"
-                      >
-                        <img 
-                          src={imageUrl} 
-                          alt={product.name} 
-                          className="w-full h-16 rounded object-cover mb-1.5"
-                          onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100'; }}
-                        />
-                        <p className="text-xs font-medium text-gray-800 truncate">{product.name}</p>
-                        <p className="text-xs text-purple-600 font-bold">₹{product.price}</p>
-                      </div>
-                    );
-                  })}
-                </div>
               </div>
-            )}
-            
-            {/* Quick Actions */}
-            <div className="px-3 py-2 border-b shrink-0 flex-none">
+            </div>
+            <div className="flex items-center gap-2">
+              {/* Voice toggle */}
+              <button
+                onClick={(e) => { e.stopPropagation(); setVoiceEnabled(!voiceEnabled); }}
+                className={`w-11 h-11 sm:w-9 sm:h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 rounded-full flex items-center justify-center transition-colors touch-manipulation active:scale-95 ${voiceEnabled ? 'bg-white/20' : 'bg-white/10'}`}
+                title={voiceEnabled ? "Voice ON" : "Voice OFF"}
+              >
+                {voiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+              </button>
+              {/* Close */}
+              <button
+                onClick={(e) => { e.stopPropagation(); e.preventDefault(); setIsOpen(false); }}
+                onTouchEnd={(e) => { e.stopPropagation(); e.preventDefault(); setIsOpen(false); }}
+                className="w-11 h-11 sm:w-9 sm:h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 rounded-full flex items-center justify-center bg-white/20 hover:bg-white/30 transition-colors touch-manipulation active:scale-95"
+                style={{ WebkitTapHighlightColor: 'transparent' }}
+                data-testid="mira-widget-close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+          
+          {/* Pet Selector Strip (part of Zone A - sticky) */}
+          {!isMinimized && pets.length > 0 && (
+            <div className="px-3 py-2 border-b bg-gray-50">
+              <div className="flex items-center gap-2 overflow-x-auto">
+                <span className="text-xs text-gray-500 shrink-0">For:</span>
+                {pets.map(pet => (
+                  <button
+                    key={pet.id}
+                    onClick={() => {
+                      setSelectedPet(pet);
+                      trackClick('pet_switch', pet.id, { pillar, from_pet: selectedPet?.id });
+                    }}
+                    className={`px-3 py-2.5 min-h-[40px] rounded-full text-xs flex items-center gap-1.5 transition-all shrink-0 touch-manipulation active:scale-95 ${
+                      selectedPet?.id === pet.id 
+                        ? `bg-gradient-to-r ${config.color} text-white` 
+                        : 'bg-gray-100 text-gray-600'
+                    }`}
+                    data-testid={`pet-select-${pet.id}`}
+                  >
+                    <PawPrint className="w-3 h-3" />
+                    <span className="font-semibold">{pet.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Quick Actions Strip (part of Zone A - sticky) */}
+          {!isMinimized && (quickActions || []).length > 0 && (
+            <div className="px-3 py-2 border-b bg-white">
               <div className="flex gap-2 overflow-x-auto">
                 {(quickActions || []).slice(0, 3).map((action, idx) => {
                   if (!action || typeof action !== 'string') return null;
@@ -1376,12 +1328,7 @@ const MiraChatWidget = ({
                   return (
                     <button
                       key={idx}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        // Send the message directly without relying on state
-                        sendMessage(action);
-                      }}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); sendMessage(action); }}
                       className={`px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap min-h-[44px] touch-manipulation ${
                         isKitAction 
                           ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white active:from-purple-700 active:to-pink-700' 
@@ -1395,15 +1342,21 @@ const MiraChatWidget = ({
                 })}
               </div>
             </div>
-            
-            {/* Messages - Scrollable area that takes remaining space */}
-            <div 
-              className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 overscroll-contain mira-chat-messages"
-              style={{ 
-                WebkitOverflowScrolling: 'touch',
-                touchAction: 'pan-y'  // Allow vertical scroll only
-              }}
-            >
+          )}
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════════════
+            ZONE B: SCROLLABLE CHAT MESSAGES (ONLY this scrolls)
+            flex-1 takes remaining space, overflow-y-auto enables scroll
+            ═══════════════════════════════════════════════════════════════════ */}
+        {!isMinimized && (
+          <div 
+            className="flex-1 overflow-y-auto p-4 space-y-3 mira-chat-messages"
+            style={{ 
+              WebkitOverflowScrolling: 'touch',
+              overscrollBehavior: 'contain'
+            }}
+          >
               {(messages || []).map((msg) => {
                 if (!msg || !msg.id) return null;
                 return (
