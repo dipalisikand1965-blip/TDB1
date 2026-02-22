@@ -25,8 +25,6 @@ import { useCart } from '../context/CartContext';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import { toast } from '../hooks/use-toast';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
-
 // Pillar-specific Concierge Picks - These are bespoke, not cart items
 // These match CONCIERGE_SUGGESTIONS from the backend
 const PILLAR_CONCIERGE_PICKS = {
