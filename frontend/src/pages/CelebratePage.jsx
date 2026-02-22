@@ -427,6 +427,26 @@ const CelebratePage = () => {
       {/* Personalized Picks for User's Pet */}
       <div className="max-w-6xl mx-auto px-4 pt-6">
         <PersonalizedPicks pillar="celebrate" maxProducts={6} />
+        
+        {/* Concierge Pick Card - Always show after products */}
+        {activePet && (
+          <div className="mt-6">
+            <ConciergePickCard
+              pet={{
+                name: activePet.name,
+                breed: activePet.breed,
+                photo: activePet.photo_url,
+                soulTraits: activePet.personality_traits || []
+              }}
+              pillar="celebrate"
+              title={CONCIERGE_PRESETS.celebrate.title}
+              icon={CONCIERGE_PRESETS.celebrate.icon}
+              description={CONCIERGE_PRESETS.celebrate.description}
+              soulReason={getSoulReason()}
+              responseTime="2 hours"
+            />
+          </div>
+        )}
       </div>
 
       {/* Elevated Concierge® Experiences */}
