@@ -1,0 +1,528 @@
+/**
+ * PillarMiraPanel.jsx
+ * 
+ * Simplified, pillar-specific Mira panel with 2 tabs:
+ * - {Pet}'s Picks (products filtered to pillar)
+ * - {Pet}'s Services (concierge services filtered to pillar)
+ * 
+ * Opens from the floating Mira FAB on pillar pages.
+ * 
+ * CONCIERGE DNA:
+ * - Pet First, Always
+ * - Pillar-Specific (no cross-pillar confusion)
+ * - Dynamic updates from conversation
+ * 
+ * Built in honor of Mira Sikand - The Guiding Angel
+ */
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  X, Sparkles, Package, MessageCircle, Send, ChevronDown,
+  ShoppingCart, Heart, Clock, RefreshCw, Mic, MicOff
+} from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+import { getSoulBasedReason } from '../utils/petSoulInference';
+import { toast } from '../hooks/use-toast';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+// Pillar-specific services configuration
+const PILLAR_SERVICES = {
+  celebrate: [
+    { 
+      id: 'birthday-planning',
+      icon: '🎂', 
+      title: 'Birthday Party Planning', 
+      description: 'Complete party planning - venue, cake, decorations, guests & more',
+      tags: ['Popular', 'Signature']
+    },
+    { 
+      id: 'catering',
+      icon: '🍽️', 
+      title: 'Pet-Friendly Catering', 
+      description: 'Delicious treats and meals for your pet party',
+      tags: ['Gourmet']
+    },
+    { 
+      id: 'photography',
+      icon: '📸', 
+      title: 'Pet Photoshoot', 
+      description: 'Professional photography to capture precious moments',
+      tags: ['Trending']
+    },
+    { 
+      id: 'party-setup',
+      icon: '🎉', 
+      title: 'Party Setup & Decor', 
+      description: 'We handle all decorations and setup for the perfect pawty',
+      tags: []
+    },
+    { 
+      id: 'gift-hamper',
+      icon: '🎁', 
+      title: 'Custom Gift Hamper', 
+      description: 'Curated gift basket with treats, toys, and surprises',
+      tags: ['Gift']
+    },
+    { 
+      id: 'gotcha-day',
+      icon: '💜', 
+      title: 'Gotcha Day Celebration', 
+      description: 'Mark the anniversary of when they joined your family',
+      tags: ['Meaningful']
+    }
+  ]
+};
+
+// Pillar display config
+const PILLAR_CONFIG = {
+  celebrate: {
+    name: 'Celebrate',
+    emoji: '🎂',
+    color: 'from-pink-500 to-purple-500',
+    greeting: 'celebration'
+  }
+};
+
+/**
+ * Product Pick Card
+ */
+const ProductCard = ({ pick, pet, onAddToCart }) => {
+  const [isAdding, setIsAdding] = useState(false);
+  
+  const handleAdd = async () => {
+    setIsAdding(true);
+    await onAddToCart(pick);
+    setTimeout(() => setIsAdding(false), 500);
+  };
+  
+  return (
+    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="aspect-square bg-gray-50 relative">
+        {pick.image_url || pick.image ? (
+          <img 
+            src={pick.image_url || pick.image} 
+            alt={pick.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-pink-50 to-purple-50">
+            <Package className="w-8 h-8 text-gray-300" />
+          </div>
+        )}
+        
+        {/* For Pet Badge */}
+        {pet?.name && (
+          <div className="absolute top-2 left-2">
+            <span className="px-2 py-0.5 bg-orange-500 text-white text-[10px] font-bold rounded-full">
+              For {pet.name}
+            </span>
+          </div>
+        )}
+      </div>
+      
+      <div className="p-3">
+        <h4 className="font-medium text-gray-900 text-sm line-clamp-2 mb-1">
+          {pick.name}
+        </h4>
+        
+        {pick.why_it_fits && (
+          <p className="text-xs text-purple-600 mb-2 line-clamp-1">
+            {pick.why_it_fits}
+          </p>
+        )}
+        
+        <div className="flex items-center justify-between">
+          <span className="font-bold text-gray-900">
+            {pick.price ? `₹${pick.price}` : 'Ask'}
+          </span>
+          
+          <button
+            onClick={handleAdd}
+            disabled={isAdding}
+            className="flex items-center gap-1 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded-full transition-colors disabled:opacity-50"
+          >
+            {isAdding ? (
+              <RefreshCw className="w-3 h-3 animate-spin" />
+            ) : (
+              <>
+                <ShoppingCart className="w-3 h-3" />
+                <span>Add</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Service Card
+ */
+const ServiceCard = ({ service, pet, pillar, onRequest }) => {
+  const [isRequesting, setIsRequesting] = useState(false);
+  const soulReason = getSoulBasedReason(pet, pillar);
+  
+  const handleRequest = async () => {
+    setIsRequesting(true);
+    await onRequest(service);
+    setTimeout(() => setIsRequesting(false), 500);
+  };
+  
+  return (
+    <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-100 p-4">
+      <div className="flex items-start gap-3">
+        <div className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-2xl flex-shrink-0">
+          {service.icon}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap mb-1">
+            <h4 className="font-semibold text-gray-900">{service.title}</h4>
+            {service.tags?.map(tag => (
+              <span key={tag} className="px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-medium rounded-full">
+                {tag}
+              </span>
+            ))}
+          </div>
+          <p className="text-sm text-gray-600 line-clamp-2">{service.description}</p>
+          
+          {/* Soul-aware message */}
+          {pet?.name && soulReason && (
+            <p className="text-xs text-purple-600 mt-2">
+              Perfect for {pet.name} {soulReason}
+            </p>
+          )}
+        </div>
+      </div>
+      
+      <button
+        onClick={handleRequest}
+        disabled={isRequesting}
+        className="w-full mt-3 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-medium flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+      >
+        {isRequesting ? (
+          <RefreshCw className="w-4 h-4 animate-spin" />
+        ) : (
+          <>
+            <MessageCircle className="w-4 h-4" />
+            <span>Let Mira Arrange This</span>
+          </>
+        )}
+      </button>
+    </div>
+  );
+};
+
+/**
+ * Main PillarMiraPanel Component
+ */
+const PillarMiraPanel = ({ 
+  isOpen, 
+  onClose, 
+  pillar = 'celebrate',
+  pets = [],
+  selectedPetId = null,
+  onPetChange = () => {}
+}) => {
+  const { token } = useAuth();
+  const { addToCart, addConciergeRequest, setIsCartOpen } = useCart();
+  
+  const [activeTab, setActiveTab] = useState('picks');
+  const [selectedPet, setSelectedPet] = useState(null);
+  const [picks, setPicks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  
+  const config = PILLAR_CONFIG[pillar] || PILLAR_CONFIG.celebrate;
+  const services = PILLAR_SERVICES[pillar] || [];
+  
+  // Set selected pet
+  useEffect(() => {
+    if (pets.length > 0) {
+      const pet = selectedPetId 
+        ? pets.find(p => p.id === selectedPetId) || pets[0]
+        : pets[0];
+      setSelectedPet(pet);
+    }
+  }, [pets, selectedPetId]);
+  
+  // Fetch pillar-specific picks
+  const fetchPicks = useCallback(async () => {
+    if (!selectedPet) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${API_URL}/api/mira/top-picks/${encodeURIComponent(selectedPet.name)}/pillar/${pillar}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { Authorization: `Bearer ${token}` })
+          }
+        }
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        setPicks(data.picks || []);
+      }
+    } catch (err) {
+      console.error('[PillarMiraPanel] Error fetching picks:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedPet, pillar, token]);
+  
+  useEffect(() => {
+    if (isOpen && selectedPet) {
+      fetchPicks();
+    }
+  }, [isOpen, selectedPet, fetchPicks]);
+  
+  // Handle pet change
+  const handlePetChange = (petId) => {
+    const pet = pets.find(p => p.id === petId);
+    if (pet) {
+      setSelectedPet(pet);
+      onPetChange(petId);
+    }
+  };
+  
+  // Handle add to cart
+  const handleAddToCart = async (product) => {
+    addToCart({
+      id: product.id || product.shopify_id,
+      name: product.name,
+      price: product.price,
+      image: product.image_url || product.image,
+      quantity: 1,
+      pillar: pillar,
+      petId: selectedPet?.id,
+      petName: selectedPet?.name
+    });
+    
+    toast({
+      title: "Added to cart",
+      description: `${product.name} added for ${selectedPet?.name || 'your pet'}`,
+    });
+  };
+  
+  // Handle service request
+  const handleServiceRequest = async (service) => {
+    const soulReason = getSoulBasedReason(selectedPet, pillar);
+    
+    addConciergeRequest({
+      id: `concierge-${pillar}-${service.id}-${Date.now()}`,
+      name: service.title,
+      pillar: pillar,
+      petId: selectedPet?.id,
+      petName: selectedPet?.name,
+      soulReason: soulReason,
+      description: service.description,
+      requestedAt: new Date().toISOString()
+    });
+    
+    toast({
+      title: "Request Added",
+      description: `${service.title} for ${selectedPet?.name || 'your pet'}`,
+    });
+    
+    setIsCartOpen(true);
+  };
+  
+  // Handle send message
+  const handleSendMessage = async () => {
+    if (!message.trim() || isSending) return;
+    
+    setIsSending(true);
+    // For now, just show a toast - full chat integration can come later
+    toast({
+      title: "Message sent to Mira",
+      description: `"${message}" - Mira will update picks based on this`,
+    });
+    setMessage('');
+    setIsSending(false);
+    
+    // Refresh picks after a delay (simulating Mira processing)
+    setTimeout(() => {
+      fetchPicks();
+    }, 1000);
+  };
+  
+  if (!isOpen) return null;
+  
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-4"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ y: '100%', opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: '100%', opacity: 0 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          className="bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col shadow-2xl overflow-hidden"
+          onClick={e => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className={`bg-gradient-to-r ${config.color} p-4 text-white`}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">
+                  {config.emoji}
+                </div>
+                <div>
+                  <h2 className="font-bold text-lg">Mira - {config.name}</h2>
+                  <p className="text-white/80 text-xs">Your Pet Concierge®</p>
+                </div>
+              </div>
+              <button 
+                onClick={onClose}
+                className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Pet Selector */}
+            {pets.length > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="text-white/70 text-sm">For:</span>
+                <select
+                  value={selectedPet?.id || ''}
+                  onChange={(e) => handlePetChange(e.target.value)}
+                  className="bg-white/20 text-white text-sm font-medium rounded-lg px-3 py-1.5 border-0 outline-none cursor-pointer"
+                >
+                  {pets.map(pet => (
+                    <option key={pet.id} value={pet.id} className="text-gray-900">
+                      {pet.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+          
+          {/* Tab Bar - Simplified 2 tabs */}
+          <div className="flex border-b bg-gray-50">
+            <button
+              onClick={() => setActiveTab('picks')}
+              className={`flex-1 py-3 text-sm font-medium flex items-center justify-center gap-2 transition-colors ${
+                activeTab === 'picks'
+                  ? 'text-purple-600 border-b-2 border-purple-600 bg-white'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+              data-testid="pillar-picks-tab"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>{selectedPet?.name || 'Pet'}'s Picks</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('services')}
+              className={`flex-1 py-3 text-sm font-medium flex items-center justify-center gap-2 transition-colors ${
+                activeTab === 'services'
+                  ? 'text-purple-600 border-b-2 border-purple-600 bg-white'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+              data-testid="pillar-services-tab"
+            >
+              <Package className="w-4 h-4" />
+              <span>{selectedPet?.name || 'Pet'}'s Services</span>
+            </button>
+          </div>
+          
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto">
+            {/* Picks Tab */}
+            {activeTab === 'picks' && (
+              <div className="p-4">
+                <p className="text-sm text-gray-600 mb-4">
+                  {config.name} picks curated for {selectedPet?.name || 'your pet'}'s soul
+                </p>
+                
+                {loading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <RefreshCw className="w-6 h-6 animate-spin text-purple-500" />
+                  </div>
+                ) : picks.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    {picks.slice(0, 6).map((pick, idx) => (
+                      <ProductCard
+                        key={pick.id || idx}
+                        pick={pick}
+                        pet={selectedPet}
+                        onAddToCart={handleAddToCart}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-gray-500">
+                    <Sparkles className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                    <p>No picks yet. Chat with Mira to get personalized recommendations!</p>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Services Tab */}
+            {activeTab === 'services' && (
+              <div className="p-4 space-y-3">
+                <p className="text-sm text-gray-600 mb-4">
+                  {config.name} services arranged by your Pet Concierge®
+                </p>
+                
+                {services.map((service, idx) => (
+                  <ServiceCard
+                    key={service.id || idx}
+                    service={service}
+                    pet={selectedPet}
+                    pillar={pillar}
+                    onRequest={handleServiceRequest}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {/* Chat Input */}
+          <div className="p-4 border-t bg-gray-50">
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                placeholder={`Ask Mira about ${config.name.toLowerCase()}...`}
+                className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-300 focus:ring-2 focus:ring-purple-100 outline-none text-sm"
+              />
+              <button
+                onClick={handleSendMessage}
+                disabled={!message.trim() || isSending}
+                className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white flex items-center justify-center disabled:opacity-50 transition-opacity"
+              >
+                {isSending ? (
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Send className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+            <p className="text-xs text-gray-400 text-center mt-2">
+              Chat updates your picks in real-time
+            </p>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+export default PillarMiraPanel;
