@@ -486,29 +486,27 @@ const MiraPillarSandbox = () => {
       {/* ═══════════════════════════════════════════════════════════════════════
           MIRA MODAL (Full Mira-Demo Experience)
           ═══════════════════════════════════════════════════════════════════════ */}
-      <Dialog open={showMiraModal} onOpenChange={setShowMiraModal}>
-        <DialogContent className="max-w-full w-full h-[100dvh] p-0 bg-transparent border-none">
-          <Suspense fallback={<MiraLoader />}>
-            {showMiraModal && (
-              <div className="w-full h-full relative">
-                {/* Close button */}
-                <button
-                  onClick={() => setShowMiraModal(false)}
-                  className="absolute top-4 right-4 z-[100] w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
-                >
-                  <span className="text-white text-xl">×</span>
-                </button>
-                
-                {/* Full MiraDemoPage with pillar context */}
-                <MiraDemoPage 
-                  initialPillar="stay"
-                  embedded={true}
-                />
+      {showMiraModal && (
+        <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm">
+          <div className="w-full h-full relative">
+            {/* Close button */}
+            <button
+              onClick={() => setShowMiraModal(false)}
+              className="absolute top-4 right-4 z-[100] w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors touch-manipulation"
+              data-testid="close-mira-modal"
+            >
+              <span className="text-white text-2xl font-light">×</span>
+            </button>
+            
+            {/* Full MiraDemoPage */}
+            <Suspense fallback={<MiraLoader />}>
+              <div className="w-full h-full">
+                <MiraDemoPage />
               </div>
-            )}
-          </Suspense>
-        </DialogContent>
-      </Dialog>
+            </Suspense>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
