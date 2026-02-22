@@ -636,6 +636,11 @@ const ShopPage = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   // State
   const [allProducts, setAllProducts] = useState([]);
   const [pets, setPets] = useState([]);
