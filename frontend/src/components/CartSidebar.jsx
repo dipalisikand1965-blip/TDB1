@@ -377,10 +377,10 @@ const CartSidebar = () => {
         </div>
 
         {/* Footer - Sticky Summary & Checkout */}
-        {cartItems.length > 0 && (
+        {(hasProducts || hasConcierge) && (
           <div className="sticky bottom-0 bg-white border-t shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
-            {/* Autoship Summary */}
-            {autoshipSummary.autoshipCount > 0 && (
+            {/* Autoship Summary - Only show if products */}
+            {hasProducts && autoshipSummary.autoshipCount > 0 && (
               <div className="px-4 pt-3">
                 <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-2.5 border border-purple-100 flex items-center gap-2">
                   <RefreshCw className="w-4 h-4 text-purple-600 flex-shrink-0" />
@@ -391,70 +391,122 @@ const CartSidebar = () => {
               </div>
             )}
             
-            {/* Price Summary */}
-            <div className="p-4 pt-3 space-y-2">
-              {/* Subtotal */}
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>Subtotal</span>
-                <span>₹{autoshipSummary.subtotal?.toLocaleString()}</span>
-              </div>
-              
-              {/* Discount */}
-              {autoshipSummary.autoshipDiscount > 0 && (
-                <div className="flex justify-between text-sm text-green-600">
-                  <span className="flex items-center gap-1">
-                    <Tag className="w-3.5 h-3.5" />
-                    Autoship Discount
-                  </span>
-                  <span>-₹{autoshipSummary.autoshipDiscount?.toLocaleString()}</span>
+            {/* Price Summary - Only show if products */}
+            {hasProducts && (
+              <div className="p-4 pt-3 space-y-2">
+                {/* Subtotal */}
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Products Subtotal</span>
+                  <span>₹{autoshipSummary.subtotal?.toLocaleString()}</span>
                 </div>
-              )}
-              
-              {/* Shipping */}
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>Shipping</span>
-                <span className={autoshipSummary.qualifiesForFreeShipping ? 'text-green-600 font-medium' : ''}>
-                  {autoshipSummary.qualifiesForFreeShipping ? 'FREE' : `₹${autoshipSummary.shippingCost}`}
-                </span>
-              </div>
-              
-              {/* Divider */}
-              <div className="border-t border-dashed my-2" />
-              
-              {/* Total */}
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-gray-900">Total</span>
-                <div className="text-right">
-                  {autoshipSummary.autoshipDiscount > 0 && (
-                    <span className="text-sm text-gray-400 line-through mr-2">
-                      ₹{(autoshipSummary.subtotal + (autoshipSummary.qualifiesForFreeShipping ? 0 : autoshipSummary.shippingCost))?.toLocaleString()}
+                
+                {/* Discount */}
+                {autoshipSummary.autoshipDiscount > 0 && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span className="flex items-center gap-1">
+                      <Tag className="w-3.5 h-3.5" />
+                      Autoship Discount
                     </span>
-                  )}
+                    <span>-₹{autoshipSummary.autoshipDiscount?.toLocaleString()}</span>
+                  </div>
+                )}
+                
+                {/* Shipping */}
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Shipping</span>
+                  <span className={autoshipSummary.qualifiesForFreeShipping ? 'text-green-600 font-medium' : ''}>
+                    {autoshipSummary.qualifiesForFreeShipping ? 'FREE' : `₹${autoshipSummary.shippingCost}`}
+                  </span>
+                </div>
+                
+                {/* Divider */}
+                <div className="border-t border-dashed my-2" />
+                
+                {/* Total */}
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-gray-900">Products Total</span>
                   <span className="text-xl font-bold text-purple-600">
                     ₹{autoshipSummary.finalTotal?.toLocaleString()}
                   </span>
                 </div>
               </div>
-              
-              {/* Savings Badge */}
-              {autoshipSummary.autoshipDiscount > 0 && (
-                <div className="text-center">
-                  <Badge className="bg-green-100 text-green-700 text-xs">
-                    🎉 You're saving ₹{autoshipSummary.autoshipDiscount?.toLocaleString()}!
-                  </Badge>
+            )}
+            
+            {/* Concierge Note */}
+            {hasConcierge && (
+              <div className="px-4 pb-3">
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg p-3 border border-amber-200">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Sparkles className="w-4 h-4 text-amber-600" />
+                    <span className="text-sm font-semibold text-amber-800">
+                      {conciergeCount} Concierge Request{conciergeCount !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  <p className="text-xs text-amber-700">
+                    Your Pet Concierge® will contact you with personalized options and pricing.
+                  </p>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
             
             {/* Checkout Buttons */}
             <div className="px-4 pb-4 space-y-2">
-              <Button
-                onClick={handleCheckout}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 h-12 text-base font-semibold shadow-lg shadow-purple-500/25"
-              >
-                Checkout
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
+              {/* Products Checkout */}
+              {hasProducts && (
+                <Button
+                  onClick={handleCheckout}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 h-12 text-base font-semibold shadow-lg shadow-purple-500/25"
+                >
+                  <ShoppingBag className="w-5 h-5 mr-2" />
+                  Checkout Products (₹{autoshipSummary.finalTotal?.toLocaleString()})
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              )}
+              
+              {/* Concierge Submit */}
+              {hasConcierge && (
+                <Button
+                  onClick={handleSubmitConciergeRequests}
+                  disabled={submittingConcierge}
+                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 h-12 text-base font-semibold shadow-lg shadow-amber-500/25"
+                >
+                  {submittingConcierge ? (
+                    <>
+                      <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-2" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      <MessageCircle className="w-5 h-5 mr-2" />
+                      Submit Concierge Request{conciergeCount !== 1 ? 's' : ''}
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </>
+                  )}
+                </Button>
+              )}
+              
+              {/* Submit All Button - Only if both */}
+              {hasProducts && hasConcierge && (
+                <>
+                  <div className="flex items-center gap-2 my-1">
+                    <div className="flex-1 border-t border-gray-200" />
+                    <span className="text-xs text-gray-400">or</span>
+                    <div className="flex-1 border-t border-gray-200" />
+                  </div>
+                  <Button
+                    onClick={async () => {
+                      await handleSubmitConciergeRequests();
+                      handleCheckout();
+                    }}
+                    variant="outline"
+                    className="w-full h-11 border-purple-200 text-purple-700 hover:bg-purple-50"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Submit All & Checkout
+                  </Button>
+                </>
+              )}
+              
               <Button
                 variant="ghost"
                 onClick={() => setIsCartOpen(false)}
@@ -467,8 +519,8 @@ const CartSidebar = () => {
             {/* Safe Checkout Badge */}
             <div className="px-4 pb-4 pt-0">
               <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
-                <Package className="w-3.5 h-3.5" />
-                <span>Secure checkout • Fast delivery • Easy returns</span>
+                <Heart className="w-3.5 h-3.5 text-pink-400" />
+                <span>Made with love for your furry family</span>
               </div>
             </div>
           </div>
