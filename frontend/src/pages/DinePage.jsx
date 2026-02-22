@@ -22,6 +22,7 @@ import ProductCard from '../components/ProductCard';
 import DiningConciergePicker from '../components/DiningConciergePicker';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
+import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import PillarPageLayout from '../components/PillarPageLayout';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 
