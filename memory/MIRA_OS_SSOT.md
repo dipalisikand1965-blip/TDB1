@@ -147,13 +147,15 @@
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  SCREEN 20: PET HOME (Default landing after onboarding)                      │
 │  ───────────────────────────────────────────────────────────────────────────│
+│  • Tab Navigation: [Pet Home] [Dashboard] [My Pets]                          │
+│  • Pet Selector (for multi-pet accounts)                                     │
 │  • Pet Hero (photo, name, breed, soul ring, 3 traits)                        │
 │  • "What would you like to do for [Name]?" + pillar shortcuts                │
-│  • Picks button (sticky top)                                                 │
+│  • Picks button (sticky)                                                     │
 │  • Proactive alerts (birthday/vaccine/etc.)                                  │
 │  • Open requests strip                                                       │
-│  • Talk to Mira CTA                                                          │
-│  • THIS PAGE DOES NOT EXIST YET - NEEDS TO BE BUILT                         │
+│  • Talk to Mira FAB                                                          │
+│  • ✅ BUILT - /app/frontend/src/pages/PetHomePage.jsx                        │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
