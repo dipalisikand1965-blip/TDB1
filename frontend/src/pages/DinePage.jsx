@@ -269,7 +269,8 @@ const DinePage = () => {
                 name: activePet.name,
                 breed: activePet.breed,
                 photo: activePet.photo_url,
-                soulTraits: activePet.personality_traits || []
+                soulTraits: activePet.personality_traits || [],
+                id: activePet.id
               }}
               pillar="dine"
               title={CONCIERGE_PRESETS.dine.title}

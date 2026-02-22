@@ -487,7 +487,8 @@ const TravelPage = () => {
                 pet={{
                   name: selectedPets[0]?.name || 'your pet',
                   breed: selectedPets[0]?.breed,
-                  soulTraits: selectedPets[0]?.personality_traits || []
+                  soulTraits: selectedPets[0]?.personality_traits || [],
+                id: selectedPets[0]?.id
                 }}
                 pillar="travel"
                 title={CONCIERGE_PRESETS.travel.title}
