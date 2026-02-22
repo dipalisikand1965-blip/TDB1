@@ -1640,108 +1640,107 @@ const MiraChatWidget = ({
               
               <div ref={chatEndRef} />
             </div>
-            
-            {/* Quick Action Tabs (shown when no messages except welcome) */}
-            {messages.length <= 1 && (
-              <div className="px-4 pb-3 shrink-0">
-                <p className="text-xs text-gray-500 mb-2 font-medium">Quick Actions</p>
-                <div className="flex flex-wrap gap-2">
-                  {quickPrompts.map((prompt, idx) => {
-                    // Style "Build Kit" prompts differently
-                    const isKitPrompt = prompt.toLowerCase().includes('build');
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => sendMessage(prompt)}
-                        className={`px-3 py-2 text-xs rounded-full transition-colors font-medium min-h-[44px] touch-manipulation ${
-                          isKitPrompt 
-                            ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-sm hover:from-purple-700 hover:to-pink-700' 
-                            : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200'
-                        }`}
-                        data-testid={`quick-action-${idx}`}
-                      >
-                        {isKitPrompt ? '🎒 ' : ''}{prompt}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-            
-            {/* Input Area - iOS Safe Area - Fixed at bottom */}
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════════
+              ZONE C: STICKY COMPOSER (Input bar - always at bottom)
+              flex-none keeps it from shrinking
+              ═══════════════════════════════════════════════════════════════════ */}
+          {!isMinimized && (
             <div 
-              className="p-3 border-t bg-white flex-none mira-input-safe" 
+              className="flex-none border-t bg-white" 
               style={{ 
-                paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))',
-                WebkitTransform: 'translateZ(0)', /* iOS rendering fix */
+                paddingBottom: 'env(safe-area-inset-bottom, 0px)',
               }}
             >
-              <div className="flex items-center gap-2">
-                {/* Voice Input Button */}
-                {speechSupported && (
-                  <button
-                    onClick={toggleListening}
-                    className={`w-12 h-12 min-w-[48px] min-h-[48px] rounded-full flex items-center justify-center transition-all shrink-0 touch-manipulation active:scale-95 ${
+              {/* Quick Action Tabs (shown when no messages except welcome) */}
+              {messages.length <= 1 && (
+                <div className="px-4 py-3 border-b bg-gray-50/50">
+                  <p className="text-xs text-gray-500 mb-2 font-medium">Quick Actions</p>
+                  <div className="flex flex-wrap gap-2">
+                    {quickPrompts.map((prompt, idx) => {
+                      const isKitPrompt = prompt.toLowerCase().includes('build');
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => sendMessage(prompt)}
+                          className={`px-3 py-2 text-xs rounded-full transition-colors font-medium min-h-[44px] touch-manipulation ${
+                            isKitPrompt 
+                              ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-sm hover:from-purple-700 hover:to-pink-700' 
+                              : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200'
+                          }`}
+                          data-testid={`quick-prompt-${idx}`}
+                        >
+                          {isKitPrompt ? '🎒 ' : ''}{prompt}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              
+              {/* Input Area */}
+              <div className="p-3">
+                <div className="flex items-center gap-2">
+                  {/* Voice Input Button */}
+                  {speechSupported && (
+                    <button
+                      onClick={toggleListening}
+                      className={`w-12 h-12 min-w-[48px] min-h-[48px] rounded-full flex items-center justify-center transition-all shrink-0 touch-manipulation active:scale-95 ${
+                        isListening 
+                          ? 'bg-cyan-500 text-white animate-pulse' 
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                      style={{ WebkitTapHighlightColor: 'transparent' }}
+                      data-testid="mira-widget-mic"
+                    >
+                      {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                    </button>
+                  )}
+                  
+                  {/* Text Input */}
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    inputMode="text"
+                    autoComplete="off"
+                    autoCorrect="on"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                    placeholder={isListening ? "Listening..." : "Type your message..."}
+                    className={`flex-1 px-4 py-3 min-h-[48px] border rounded-full text-base focus:outline-none focus:ring-2 transition-all ${
                       isListening 
-                        ? 'bg-cyan-500 text-white animate-pulse' 
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'border-cyan-400 ring-2 ring-cyan-400/30' 
+                        : 'border-gray-200 focus:ring-purple-500 focus:border-purple-500'
+                    }`}
+                    style={{ fontSize: '16px' }}
+                    disabled={isSending}
+                  />
+                  
+                  {/* Send Button */}
+                  <button
+                    onClick={() => sendMessage()}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      if (inputValue.trim() && !isSending) sendMessage();
+                    }}
+                    disabled={!inputValue.trim() || isSending}
+                    className={`w-12 h-12 min-w-[48px] min-h-[48px] rounded-full flex items-center justify-center transition-all shrink-0 touch-manipulation active:scale-95 ${
+                      inputValue.trim() && !isSending
+                        ? 'bg-purple-600 text-white hover:bg-purple-700'
+                        : 'bg-gray-100 text-gray-400'
                     }`}
                     style={{ WebkitTapHighlightColor: 'transparent' }}
-                    data-testid="mira-widget-mic"
+                    data-testid="mira-widget-send"
                   >
-                    {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                    <Send className="w-5 h-5" />
                   </button>
-                )}
-                
-                {/* Text Input - iOS keyboard-friendly */}
-                <input
-                  ref={inputRef}
-                  type="text"
-                  inputMode="text"
-                  autoComplete="off"
-                  autoCorrect="on"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                  onFocus={() => {
-                    // Scroll input into view on iOS when keyboard opens
-                    setTimeout(() => {
-                      inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 300);
-                  }}
-                  placeholder={isListening ? "Listening..." : "Type your message..."}
-                  className={`flex-1 px-4 py-3 min-h-[48px] border rounded-full text-base focus:outline-none focus:ring-2 transition-all ${
-                    isListening 
-                      ? 'border-cyan-400 ring-2 ring-cyan-400/30' 
-                      : 'border-gray-200 focus:ring-purple-500 focus:border-purple-500'
-                  }`}
-                  style={{ fontSize: '16px' }} /* Prevents iOS zoom on focus */
-                  disabled={isSending}
-                />
-                
-                {/* Send Button */}
-                <button
-                  onClick={() => sendMessage()}
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
-                    if (inputValue.trim() && !isSending) sendMessage();
-                  }}
-                  disabled={!inputValue.trim() || isSending}
-                  className={`w-12 h-12 min-w-[48px] min-h-[48px] rounded-full flex items-center justify-center transition-all shrink-0 touch-manipulation active:scale-95 ${
-                    inputValue.trim() && !isSending
-                      ? 'bg-purple-600 text-white hover:bg-purple-700'
-                      : 'bg-gray-100 text-gray-400'
-                  }`}
-                  style={{ WebkitTapHighlightColor: 'transparent' }}
-                  data-testid="mira-widget-send"
-                >
-                  <Send className="w-5 h-5" />
-                </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
       
       {/* Cinematic Kit Assembly Modal */}
       {showCinematicKit && (
