@@ -1345,7 +1345,7 @@ const SoulBuilder = () => {
           </h2>
           
           {/* Show if already answered from onboarding */}
-          {answers[question.id] && !showMiraReaction && (
+          {answers[question.id] && (
             <div className="mb-4 px-4 py-2 bg-emerald-500/20 border border-emerald-500/30 rounded-xl text-emerald-300 text-sm text-center">
               <Check className="w-4 h-4 inline mr-2" />
               Already answered from onboarding • You can change it below
