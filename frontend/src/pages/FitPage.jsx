@@ -620,6 +620,11 @@ const FitPage = () => {
             />
           </div>
         )}
+        
+        {/* Mira's Picks for Pet */}
+        {userPets && userPets[0] && (
+          <PillarPicksSection pillar="fit" pet={userPets[0]} />
+        )}
       </div>
 
       {/* ==================== CONVERSATIONAL ENTRY + QUICK WIN ==================== */}
