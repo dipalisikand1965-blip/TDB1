@@ -1345,6 +1345,23 @@ const MiraChatWidget = ({
                 </button>
               )}
               
+              {/* Services Pill - Shows pillar-specific concierge services */}
+              {selectedPet && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Send a message asking about services for this pillar
+                    sendMessage(`What ${pillar} services can you arrange for ${selectedPet.name}?`);
+                  }}
+                  className="px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap min-h-[44px] touch-manipulation flex items-center gap-1.5 shrink-0 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-800 border border-amber-200"
+                  data-testid="services-pill"
+                >
+                  <Package className="w-3.5 h-3.5" />
+                  <span>{selectedPet.name}'s Services</span>
+                </button>
+              )}
+              
               {/* Quick Actions */}
               <div className="flex gap-2 overflow-x-auto flex-1">
                 {(quickActions || []).slice(0, 3).map((action, idx) => {
