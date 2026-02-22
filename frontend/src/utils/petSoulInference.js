@@ -242,38 +242,76 @@ export const getSoulBasedReason = (pet, pillar) => {
  */
 const traitToReason = (trait, value, pillar) => {
   const traitMappings = {
-    // Anxiety & Comfort
+    // Anxiety & Comfort - Supporting multiple answer formats
     'separation_anxiety': {
       'Yes': 'who needs extra comfort when away from home',
+      'High': 'who needs extra comfort when away from home',
       'Sometimes': 'who can get anxious when left alone',
-      'No': null
+      'Moderate': 'who can get anxious when left alone',
+      'No': null,
+      'Low': null,
+      'None': null
     },
     'alone_comfort': {
       'Anxious': 'who needs company and reassurance',
+      'Not comfortable': 'who needs company and reassurance',
       'Okay for short periods': 'who does best with check-ins',
-      'Comfortable': null
+      'Okay for Few Hours': 'who does best with check-ins',
+      'Short periods only': 'who does best with check-ins',
+      'Comfortable': null,
+      'Fine alone': null
     },
     'stranger_comfort': {
       'Anxious': 'who prefers familiar faces',
       'Cautious': 'who warms up slowly to new people',
+      'Cautious at first': 'who warms up slowly to new people',
+      'Wary': 'who prefers familiar faces',
+      'Friendly': null
+    },
+    // Also handle 'stranger_reaction' as an alias
+    'stranger_reaction': {
+      'Anxious': 'who prefers familiar faces',
+      'Cautious': 'who warms up slowly to new people',
+      'Cautious at first': 'who warms up slowly to new people',
+      'Wary': 'who prefers familiar faces',
       'Friendly': null
     },
     'car_comfort': {
       'Anxious': 'who gets nervous during travel',
       'Gets sick': 'who needs motion sickness care',
-      'Loves it': 'who loves car rides'
+      'Loves it': 'who loves car rides',
+      'Loves car rides': 'who loves car rides',
+      'Comfortable': 'who enjoys car rides'
     },
     'noise_sensitivity': {
       'Very sensitive': 'who needs quiet, calm environments',
+      'High': 'who needs quiet, calm environments',
       'Somewhat sensitive': 'who prefers peaceful settings',
-      'Not sensitive': null
+      'Moderate': 'who prefers peaceful settings',
+      'Not sensitive': null,
+      'Low': null
+    },
+    
+    // Temperament (common field from soul data)
+    'temperament': {
+      'Protective': 'who is naturally protective',
+      'Playful': 'who loves to play',
+      'Calm': 'who has a calm temperament',
+      'Curious': 'who is always exploring',
+      'Loving': 'who is full of love',
+      'Friendly': 'who loves meeting everyone',
+      'Independent': 'who values their independence',
+      'Energetic': 'who has boundless energy'
     },
     
     // Social
     'social_dog': {
       'Yes': 'who loves meeting other dogs',
+      'Loves them': 'who loves meeting other dogs',
       'Selective': 'who is selective about dog friends',
-      'No': 'who prefers solo attention'
+      'Some dogs': 'who is selective about dog friends',
+      'No': 'who prefers solo attention',
+      'Not interested': 'who prefers solo attention'
     },
     'general_nature': {
       'Protective': 'who is naturally protective',
@@ -281,25 +319,31 @@ const traitToReason = (trait, value, pillar) => {
       'Calm': 'who has a calm temperament',
       'Curious': 'who is always exploring',
       'Loving': 'who is full of love',
+      'Friendly': 'who has a friendly nature',
       'Independent': 'who values their independence'
     },
     
     // Food & Diet
-    'food_allergies': value => value && value !== 'None' ? `who is allergic to ${value}` : null,
+    'food_allergies': value => value && value !== 'None' && value !== 'No' ? `who is allergic to ${value}` : null,
     'favorite_flavors': value => value ? `who loves ${Array.isArray(value) ? value[0] : value}` : null,
     
     // Energy
     'energy_level': {
       'High': 'who has endless energy',
+      'Very High': 'who has endless energy',
       'Medium': 'who enjoys balanced activities',
+      'Moderate': 'who enjoys balanced activities',
       'Low': 'who prefers calm, relaxed activities'
     },
     
     // Training
     'trainability': {
       'Easy': 'who is eager to learn',
+      'Very Trainable': 'who is eager to learn',
       'Moderate': 'who learns at their own pace',
-      'Challenging': 'who needs patient, consistent training'
+      'Moderately Trainable': 'who learns at their own pace',
+      'Challenging': 'who needs patient, consistent training',
+      'Stubborn': 'who needs patient, consistent training'
     }
   };
   
