@@ -207,6 +207,7 @@ const AboutPage = lazy(() => import("./pages/AboutPage"));
 const MembershipPage = lazy(() => import("./pages/MembershipPage"));
 const MembershipOnboarding = lazy(() => import("./pages/MembershipOnboarding"));
 const MiraMeetsYourPet = lazy(() => import("./pages/MiraMeetsYourPet")); // New world-class onboarding
+const PetHomePage = lazy(() => import("./pages/PetHomePage")); // Pet-first landing page after onboarding
 // Soul Builder - 8-chapter onboarding (lazy loaded)
 import SoulBuilder from "./pages/SoulBuilder"; // Direct import for debugging
 const Policies = lazy(() => import("./pages/Policies"));
