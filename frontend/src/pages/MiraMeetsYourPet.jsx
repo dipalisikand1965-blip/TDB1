@@ -646,7 +646,8 @@ const MiraMeetsYourPet = () => {
         toast.success(`Welcome! ${petName}'s home is ready.`);
         
         // Force reload to ensure AuthContext picks up the new token
-        window.location.href = '/dashboard';
+        // Navigate to Pet Home (the landing page)
+        window.location.href = '/pet-home';
       } else {
         // Account created but login failed - redirect to login
         toast.info('Account created! Please login.');
