@@ -67,6 +67,7 @@ export const useCart = () => {
 export const CartProvider = ({ children }) => {
   // Initialize state synchronously from localStorage using lazy initializer
   const [cartItems, setCartItems] = useState(() => getStoredCart());
+  const [conciergeRequests, setConciergeRequests] = useState(() => getStoredConciergeRequests());
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(() => localStorage.getItem('cartUserEmail') || '');
   
