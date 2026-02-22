@@ -1119,7 +1119,8 @@ const MiraMeetsYourPet = () => {
                   toast.error('Please select approximate age');
                   return;
                 }
-                setScreen('parent');
+                // Skip parent info if user is already logged in (adding another pet)
+                setScreen(isAddingPet ? 'soul' : 'parent');
               }}
               className="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-pink-500/30 mt-4"
             >
