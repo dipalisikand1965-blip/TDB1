@@ -74,14 +74,14 @@ VOICE_PERSONALITIES = {
         "similarity_boost": 0.8
     },
     "caring": {
-        "voice_id": "EST9Ui6982FZPSi7gCHi",  # Same voice
+        "voice_id": "XB0fDUnXU5powFXDhCwa",  # Charlotte - British
         "name": "Mira (Professional)",
         "description": "Warm and professional for grooming and care",
         "stability": 0.75,
         "similarity_boost": 0.75
     },
     "informative": {
-        "voice_id": "EST9Ui6982FZPSi7gCHi",  # Same voice
+        "voice_id": "XB0fDUnXU5powFXDhCwa",  # Charlotte - British
         "name": "Mira (Knowledgeable)",
         "description": "Helpful and clear for food and nutrition guidance",
         "stability": 0.8,
