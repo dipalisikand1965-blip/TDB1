@@ -371,6 +371,8 @@ const CartSidebar = () => {
                 ))}
               </AnimatePresence>
             </div>
+              )}
+            </div>
           )}
         </div>
 
