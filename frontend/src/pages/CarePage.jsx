@@ -204,6 +204,11 @@ const CarePage = () => {
   const [requestResult, setRequestResult] = useState(null);
   const [heroIndex, setHeroIndex] = useState(0);
   
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   // Service Booking Modal
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [bookingServiceType, setBookingServiceType] = useState('grooming');
