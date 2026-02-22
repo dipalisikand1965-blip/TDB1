@@ -10188,3 +10188,23 @@ input, select, textarea {
     font-size: 13px;
   }
 }
+
+/* ========================================
+   FIXED COMPOSER - Always visible at bottom
+   ======================================== */
+.mira-prod .mp-composer {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+  background: linear-gradient(180deg, transparent 0%, rgba(30, 27, 75, 0.98) 30%) !important;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* Add bottom padding to content so it does not go under fixed composer */
+.mira-prod .mp-content,
+.mira-prod .mp-conversation {
+  padding-bottom: 120px !important;
+}
+
