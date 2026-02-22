@@ -2037,7 +2037,7 @@ const SoulBuilder = () => {
                 stroke="url(#continueGradient)" 
                 strokeWidth="3"
                 strokeLinecap="round"
-                strokeDasharray={`${(soulScore / 100) * 352} 352`}
+                strokeDasharray={`${(currentSoulScore / 100) * 352} 352`}
                 transform="rotate(-90 60 60)"
               />
               <defs>
@@ -2056,7 +2056,7 @@ const SoulBuilder = () => {
               </div>
             )}
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white text-xs font-bold">
-              {soulScore}%
+              {currentSoulScore}%
             </div>
           </div>
           
