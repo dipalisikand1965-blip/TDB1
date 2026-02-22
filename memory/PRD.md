@@ -45,6 +45,11 @@ The user, Dipali, requested a "full audit" of her website, thedoggycompany.in. T
 - [x] **SSOT Document** - Created comprehensive /app/memory/MIRA_OS_SSOT.md
 - [x] **Engagement System** - 400 Paw Points, streaks working
 
+### ✅ Completed (Dec 2025)
+- [x] **Sticky Header Fix in Mira Modal** - Header (Soul Ticker, Mira logo, navigation) now stays fixed at top when scrolling
+- [x] **Chat Composer Fixed** - Input bar stays fixed at bottom in both modal and standalone page
+- [x] **Mira Pillar Sandbox Modal** - Full MiraDemoPage modal experience with proper sticky layout
+
 ### 🔴 Blocked
 - [ ] Razorpay Checkout - Awaiting API keys from user
 - [ ] Screenshot tool - Platform media limit exceeded
