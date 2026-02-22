@@ -1,25 +1,29 @@
 # MIRA OS - Single Source of Truth (SSOT)
 ## The Doggy Company Pet Operating System
-**Last Updated:** December 2025 (Session 4 - HANDOVER)  
+**Last Updated:** December 2025 (Session 5 - ONBOARDING COMPLETE)  
 **Live Site:** https://thedoggycompany.com  
 **Preview:** https://pet-home-hub.preview.emergentagent.com
 
 ---
 
-## 🚨 CRITICAL HANDOVER - READ THIS FIRST
+## 🎉 SESSION 5 STATUS: ONBOARDING FLOW COMPLETE
 
-### Session 4 Status: IN PROGRESS - NEW ONBOARDING BUILT BUT NEEDS FIXES
+### What was accomplished:
+- ✅ **Fixed ALL 8 user feedback bugs** from previous testing
+- ✅ **Gender before Name** - Now asks gender right after photo, enables his/her pronouns
+- ✅ **Birthday Screen** - 3 options with date pickers (Birthday, Gotcha Day, Approximate Age)
+- ✅ **Full Address** - Textarea added for House/Flat No., Street, Landmark
+- ✅ **City Free Text** - Changed from dropdown to text input
+- ✅ **No Skip Button** - All 13 soul questions are compulsory
+- ✅ **Payoff Fixed** - Shows "Here's what Mira knows about {petName}" (not nickname)
+- ✅ **JSON Error Fixed** - Response body was being read twice
+- ✅ **Pet Home Page Created** - New `/pet-home` route as default landing
 
-**What was accomplished:**
-- Built new "Mira Meets Your Pet" onboarding component (`/app/frontend/src/pages/MiraMeetsYourPet.jsx`)
-- Replaced old 4-step form at `/join` route
-- Created tap-game style soul questions (13 questions currently)
-- Added real-time soul score ring
-- Added "Mira now knows..." feedback after each answer
-
-**What is NOT working (must fix):**
-1. "See Jenny's Home" button throws error: "Failed to execute 'json' on 'Response': body stream already read"
-2. Several UX issues identified by user testing (see below)
+### What is working:
+- Complete onboarding flow at `/join`
+- Photo → Gender → Name → Birthday → Parent Info → 13 Soul Questions → Payoff → Pet Home
+- Account creation and auto-login
+- Pet Home page with hero, pillar shortcuts, alerts, and Mira CTA
 
 ---
 
