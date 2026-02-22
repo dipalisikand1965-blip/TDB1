@@ -1102,47 +1102,63 @@ const StayPage = () => {
               {bundles.slice(0, 8).map((bundle) => (
                 <Card 
                   key={bundle.id} 
-                  className="overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer"
+                  className="overflow-hidden rounded-2xl hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col"
                   onClick={() => setSelectedBundle(bundle)}
                   data-testid={`bundle-card-${bundle.id}`}
                 >
-                  <div className="relative h-40">
+                  {/* ========== IMAGE HEADER - Fixed height, self-contained ========== */}
+                  <div className="relative h-[150px] sm:h-[180px] overflow-hidden flex-shrink-0">
                     <img 
                       src={bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600'} 
                       alt={bundle.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     
+                    {/* Top-left: Discount badge */}
                     {bundle.discount_percent > 0 && (
-                      <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 bg-red-500 rounded-full text-xs font-bold text-white">
+                      <div className="absolute top-3 left-3 z-10 flex items-center gap-1 px-2 py-1 bg-red-500 rounded-lg text-xs font-bold text-white shadow-sm">
                         <Percent className="w-3 h-3" /> {Math.round(bundle.discount_percent)}% OFF
                       </div>
                     )}
                     
+                    {/* Top-right: Featured badge */}
                     {bundle.featured && (
-                      <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-amber-500 rounded-full text-xs font-medium text-white">
+                      <div className="absolute top-3 right-3 z-10 flex items-center gap-1 px-2 py-1 bg-amber-500 rounded-lg text-xs font-medium text-white shadow-sm">
                         <Sparkles className="w-3 h-3" /> Featured
                       </div>
                     )}
                     
-                    <div className="absolute bottom-2 left-2 right-2 text-white">
-                      <h3 className="font-bold text-sm line-clamp-1">{bundle.name}</h3>
+                    {/* Bottom overlay: Name only - sits ON the image */}
+                    <div className="absolute bottom-3 left-3 right-3 z-10 text-white">
+                      <h3 className="font-bold text-sm sm:text-base line-clamp-1 drop-shadow-md">{bundle.name}</h3>
                     </div>
                   </div>
 
-                  <div className="p-3">
-                    <p className="text-xs text-gray-600 line-clamp-2 mb-2">{bundle.description}</p>
+                  {/* ========== CONTENT - Separate block with white background ========== */}
+                  <div className="p-3 sm:p-4 bg-white flex flex-col flex-grow relative z-0">
+                    {/* Description */}
+                    <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mb-2">{bundle.description}</p>
                     
-                    <div className="flex flex-wrap gap-1 mb-2">
-                      {bundle.tags?.slice(0, 2).map((tag, idx) => (
-                        <span key={idx} className="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                    {/* Tags - Max 2 */}
+                    {bundle.tags && bundle.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {bundle.tags.slice(0, 2).map((tag, idx) => (
+                          <span key={idx} className="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full">
+                            {tag}
+                          </span>
+                        ))}
+                        {bundle.tags.length > 2 && (
+                          <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
+                            +{bundle.tags.length - 2}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     
-                    <div className="flex items-center justify-between">
+                    {/* Price & CTA - Always at bottom */}
+                    <div className="flex items-center justify-between mt-auto pt-2">
                       <div>
                         <span className="text-lg font-bold text-green-600">₹{bundle.bundle_price || bundle.price || 0}</span>
                         {(bundle.original_price > (bundle.bundle_price || bundle.price)) && (
@@ -1151,7 +1167,7 @@ const StayPage = () => {
                       </div>
                       <Button 
                         size="sm" 
-                        className="bg-amber-500 hover:bg-amber-600 text-xs"
+                        className="bg-amber-500 hover:bg-amber-600 text-xs h-9"
                         onClick={(e) => {
                           e.stopPropagation();
                           addToCart({
