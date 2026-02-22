@@ -130,6 +130,11 @@ export const CartProvider = ({ children }) => {
     debouncedSaveSnapshot(cartItems);
   }, [cartItems, debouncedSaveSnapshot]);
 
+  // Save concierge requests to localStorage
+  useEffect(() => {
+    localStorage.setItem('conciergePendingRequests', JSON.stringify(conciergeRequests));
+  }, [conciergeRequests]);
+
   // Capture email for abandoned cart recovery
   const captureEmail = useCallback(async (email, name = null) => {
     setUserEmail(email);
