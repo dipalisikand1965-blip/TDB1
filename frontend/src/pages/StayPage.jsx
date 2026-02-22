@@ -445,17 +445,38 @@ const StayPage = () => {
     return colors[badge] || 'bg-gray-100 text-gray-700';
   };
 
-  const PawRatingDisplay = ({ rating }) => (
-    <div className="flex items-center gap-1">
-      {[1, 2, 3, 4, 5].map((paw) => (
-        <PawPrint 
-          key={paw}
-          className={`w-4 h-4 ${paw <= Math.round(rating) ? 'text-amber-500 fill-amber-500' : 'text-gray-300'}`}
-        />
-      ))}
-      <span className="ml-1 font-semibold text-amber-600">{rating?.toFixed(1)}</span>
-    </div>
-  );
+  // Calculate overall paw rating from individual scores
+  const calculateOverallPawRating = (pawRating) => {
+    if (!pawRating) return 0;
+    if (pawRating.overall) return pawRating.overall;
+    
+    // Calculate from individual scores: comfort, safety, freedom, care, joy
+    const scores = [
+      pawRating.comfort,
+      pawRating.safety,
+      pawRating.freedom,
+      pawRating.care,
+      pawRating.joy
+    ].filter(s => s !== undefined && s !== null);
+    
+    if (scores.length === 0) return 0;
+    return scores.reduce((a, b) => a + b, 0) / scores.length;
+  };
+
+  const PawRatingDisplay = ({ rating, pawRating }) => {
+    const displayRating = rating || calculateOverallPawRating(pawRating);
+    return (
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((paw) => (
+          <PawPrint 
+            key={paw}
+            className={`w-4 h-4 ${paw <= Math.round(displayRating) ? 'text-amber-500 fill-amber-500' : 'text-gray-300'}`}
+          />
+        ))}
+        <span className="ml-1 font-semibold text-amber-600">{displayRating?.toFixed(1) || '0.0'}</span>
+      </div>
+    );
+  };
 
   return (
     <PillarPageLayout
