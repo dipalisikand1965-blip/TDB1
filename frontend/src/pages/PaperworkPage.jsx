@@ -39,6 +39,11 @@ const PaperworkPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   const [loading, setLoading] = useState(true);
   const [userPets, setUserPets] = useState([]);
   const [selectedPet, setSelectedPet] = useState(null);
