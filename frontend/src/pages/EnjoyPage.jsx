@@ -455,6 +455,11 @@ const EnjoyPage = () => {
               />
             </div>
           )}
+          
+          {/* Mira's Picks for Pet */}
+          {userPets && userPets[0] && (
+            <PillarPicksSection pillar="enjoy" pet={userPets[0]} />
+          )}
         </div>
       </div>
 
