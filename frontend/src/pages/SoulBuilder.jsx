@@ -252,9 +252,12 @@ const SoulBuilder = () => {
           
           // If user just signed up and has a pet, auto-load that pet's data
           // This handles the case where they come from onboarding
-          if (pets.length === 1) {
+          if (pets.length >= 1) {
             const pet = pets[0];
             console.log('[SoulBuilder] Auto-loading pet from onboarding:', pet.name);
+            
+            // Store pet ID for canonical updates
+            setCurrentPetId(pet.id || pet._id);
             
             // Pre-fill pet info
             setPetName(pet.name || '');
@@ -269,53 +272,60 @@ const SoulBuilder = () => {
               approximate_age: ''
             });
             
-            // Pre-fill any existing soul answers from onboarding
-            if (pet.doggy_soul_answers || pet.soul_answers) {
-              const existingAnswers = pet.doggy_soul_answers || pet.soul_answers || {};
-              const prefilledAnswers = {};
-              
-              // Map ALL 13 onboarding question IDs to Soul Builder question IDs
-              // Onboarding uses simple IDs, Soul Builder uses same or similar IDs
-              const fieldMapping = {
-                // Direct matches (same ID in both)
-                'life_stage': 'life_stage',
-                'stranger_reaction': 'stranger_reaction',
-                'food_allergies': 'food_allergies',
-                'health_conditions': 'health_conditions',
-                'exercise_needs': 'exercise_needs',
-                'grooming_tolerance': 'grooming_tolerance',
-                'separation_anxiety': 'separation_anxiety',
-                'lives_with': 'lives_with',
-                'other_pets': 'other_pets',
-                'is_neutered': 'is_neutered',
-                'main_goal': 'main_goal',
-                // Mapped (different ID)
-                'temperament': 'general_nature',
-                'favorite_protein': 'favorite_protein'
-              };
-              
-              Object.keys(existingAnswers).forEach(key => {
-                const value = existingAnswers[key];
-                if (value && value !== 'None' && value !== '' && 
-                    !(Array.isArray(value) && value.length === 0)) {
-                  const mappedKey = fieldMapping[key] || key;
-                  // Format for Soul Builder (some are multi-select)
-                  if (['food_allergies', 'health_conditions', 'lives_with', 'main_goal'].includes(key)) {
-                    prefilledAnswers[mappedKey] = Array.isArray(value) ? value : [value];
-                  } else {
-                    prefilledAnswers[mappedKey] = value;
-                  }
+            // CRITICAL: Track ALL answered question IDs to prevent repetition
+            // This is the canonical source - questions are UNIQUE across sessions
+            const existingAnswers = pet.doggy_soul_answers || pet.soul_answers || {};
+            const prefilledAnswers = {};
+            const alreadyAnsweredIds = new Set();
+            
+            // Map ALL 13 onboarding question IDs to Soul Builder question IDs
+            const fieldMapping = {
+              'life_stage': 'life_stage',
+              'stranger_reaction': 'stranger_reaction',
+              'food_allergies': 'food_allergies',
+              'health_conditions': 'health_conditions',
+              'exercise_needs': 'exercise_needs',
+              'grooming_tolerance': 'grooming_tolerance',
+              'separation_anxiety': 'separation_anxiety',
+              'lives_with': 'lives_with',
+              'other_pets': 'other_pets',
+              'is_neutered': 'spayed_neutered',
+              'main_goal': 'main_wish',
+              'temperament': 'general_nature',
+              'favorite_protein': 'favorite_protein'
+            };
+            
+            Object.keys(existingAnswers).forEach(key => {
+              const value = existingAnswers[key];
+              if (value && value !== 'None' && value !== '' && 
+                  !(Array.isArray(value) && value.length === 0) &&
+                  !(typeof value === 'object' && value.skipped)) {
+                const mappedKey = fieldMapping[key] || key;
+                
+                // Track this question as answered (never repeat)
+                alreadyAnsweredIds.add(mappedKey);
+                alreadyAnsweredIds.add(key); // Also track original key
+                
+                // Format for Soul Builder
+                if (['food_allergies', 'health_conditions', 'lives_with', 'main_goal', 'main_wish'].includes(key)) {
+                  prefilledAnswers[mappedKey] = Array.isArray(value) ? value : [value];
+                } else {
+                  prefilledAnswers[mappedKey] = value;
                 }
-              });
-              
-              if (Object.keys(prefilledAnswers).length > 0) {
-                setAnswers(prefilledAnswers);
-                console.log('[SoulBuilder] Pre-filled answers from onboarding:', Object.keys(prefilledAnswers).length, 'questions');
               }
+            });
+            
+            // Set answered question IDs to prevent repetition
+            setAnsweredQuestionIds(alreadyAnsweredIds);
+            
+            if (Object.keys(prefilledAnswers).length > 0) {
+              setAnswers(prefilledAnswers);
+              console.log('[SoulBuilder] Pre-filled answers from onboarding:', Object.keys(prefilledAnswers).length, 'questions');
+              console.log('[SoulBuilder] Questions already answered (will not repeat):', [...alreadyAnsweredIds]);
             }
             
-            // Skip to chapter-intro since pet info is already known
-            setScreen('chapter-intro');
+            // Skip to preboarding (which shows KNOW_MIRA_SUMMARY for returning users)
+            // The preboarding screen will detect existing pet and show the summary
           }
         }
       } catch (e) { 
