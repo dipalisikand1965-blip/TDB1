@@ -717,6 +717,13 @@ const AdvisoryPage = () => {
         </div>
       )}
       
+      {/* Mira's Picks for Pet */}
+      {userPets && userPets[0] && (
+        <div className="max-w-6xl mx-auto px-4">
+          <PillarPicksSection pillar="advisory" pet={userPets[0]} />
+        </div>
+      )}
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="advisory" position="bottom-left" />
       <MiraOSTrigger pillar="advisory" position="bottom-left" />
