@@ -784,6 +784,26 @@ const FarewellPage = () => {
         </DialogContent>
       </Dialog>
       
+      {/* Concierge Pick Card - Compassionate farewell planning */}
+      {pets && pets[0] && (
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <ConciergePickCard
+            pet={{
+              name: pets[0].name,
+              breed: pets[0].breed,
+              photo: pets[0].photo_url,
+              soulTraits: pets[0].personality_traits || []
+            }}
+            pillar="farewell"
+            title={CONCIERGE_PRESETS.farewell.title}
+            icon={CONCIERGE_PRESETS.farewell.icon}
+            description={CONCIERGE_PRESETS.farewell.description}
+            soulReason=""
+            responseTime="1 hour"
+          />
+        </div>
+      )}
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="farewell" position="bottom-left" />
       
