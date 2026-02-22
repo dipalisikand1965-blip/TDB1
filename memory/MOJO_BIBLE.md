@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-pet-os-1.preview.emergentagent.com
+https://mira-concierge-app.preview.emergentagent.com
 ```
 
 ---

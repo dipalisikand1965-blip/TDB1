@@ -4,83 +4,73 @@ The core of the application is Soul Intelligence, a system to understand a pet's
 
 **PRODUCT REQUIREMENTS**:
 - **World-Class Onboarding**: A new, magical, gamified onboarding flow (Mira Meets Your Pet) that replaces the old form-based system.
-- **Dynamic Pet Home**: A new default landing page after login that is pet-first and emotion-first, dynamically updating as Mira learns more about the pet.
-- **Catalogue vs. Concierge Architecture**: Clear distinction between self-serve products and human-coordinated services on all pillar pages.
+- **Soul Score Doctrine**: A canonical, 100-point scoring system based on 26 specific weighted questions that serves as a single source of truth for a pet's personality. This score must be reflected consistently everywhere.
+- **What Mira Knows System**: The progressive profiling flow must never repeat questions, must save progress, and must allow users to continue where they left off. Updates to a pet's profile must propagate across all parts of the app (Pet Home, Chat, Admin).
+- **Dynamic Pet Home**: A new default landing page after login that is pet-first and dynamically updates based on the selected pet and their soul score.
 - **Fully functional  page**: Must have soul-aware chat and multi-pet switching.
 - **Stable **: All Arrange requests must generate tickets visible to an admin and member.
-- **Visually Stunning and Functional **: All 15 Pillar Pages must be functional and visually consistent.
-- **Working **: E-commerce functionality using Razorpay needs to be verified.
-- **Activate All Hidden Features**: Pet Vault, Reminders, Life Timeline, Birthday Engine, etc.
+- **Admin & Service Desk Integration**: All new user and pet creations must be visible and tracked in the admin dashboard and service desk.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The agent implemented a new  to serve as the main landing page after login, replacing the old dashboard. This new page includes tab navigation (, , ) and a multi-pet selector that dynamically updates the page content with the selected pet's data and soul score. The agent also heavily modified the onboarding () and progressive profiling () flows to support adding multiple pets, fix crashes, and provide a more contextual experience for returning users. However, the user is extremely frustrated with the quality of the work, as each implementation has introduced new UI/UX bugs that they have had to identify.
+The agent successfully re-architected the  component to fully comply with the user's Soul Score Doctrine. This involved replacing the frontend question-and-weight system with a new one that perfectly mirrors the canonical 100-point logic in . The agent implemented the mandatory What Mira Knows UX flow, including the  and  screens, and fixed all related navigation bugs. The system now correctly handles continuation without repeating questions and updates the  with the active pet's context.
+
+The previous session ended abruptly while the agent was fulfilling the user's final, critical request: to provide end-to-end screenshot proof that a **brand new user** is correctly registered across the entire platform (member dashboard, admin panel, and service desk). The user is extremely frustrated by this interruption.
 
 **Last working item**:
-- **Last item agent was working on**: The user reported three new UI/UX bugs in the latest version and demanded a halt to all work to prepare a handover document, citing the huge issues caused by the agent. The agent was acknowledging these new bugs when the user interrupted.
+- **Last item agent was working on**: Providing screenshot proof of the complete new user onboarding flow. The agent had successfully created a new user via API () and was in the process of capturing screenshots of the admin panel and service desk to show the user's record was created correctly. The user's last message expressed immense frustration at the session ending before this verification was complete.
 - **Status**: IN PROGRESS
-- **Agent Testing Done**: N
-- **Which testing method agent to use?**: Frontend testing agent. The agent MUST first use the screenshot tool to provide visual confirmation of the UI fixes before proceeding to full end-to-end testing with the testing agent. This is critical to regaining user trust.
-- **User Testing Done**: Y
+- **Agent Testing Done**: Y
+- **Which testing method agent to use?**: Manual testing by screenshot tool. The agent MUST resume the verification process exactly where the last agent left off, providing clear screenshots to the user to fulfill their explicit demand and rebuild trust.
+- **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
-- **Issue 1 (P0)**: UI/UX Fixes from Latest User Feedback.
-- **Issue 2 (P1)**: Keep Teaching Mira Logic Repeats Questions.
+- **Issue 1 (P0)**: Complete User-Requested Verification for New Onboarding Flow.
+- **Issue 2 (P1)**: Original UI/UX Fixes from Previous Handoff.
 - **Issue 3 (P2)**: Inconsistent Card Layout Across All Pillar Pages.
 - **Issue 4 (P3)**: Razorpay Checkout Flow Not Tested.
 - **Issue 5 (P4)**: Platform Media Limit Exceeded (Recurring Blocker).
-- **Issue 6 (P4)**: ElevenLabs Quota Exceeded (Recurring Blocker).
-- **Issue 7 (P4)**: Production MongoDB Connection Blocked (Recurring Blocker).
 
 **Issues Detail**:
-- **Issue 1: UI/UX Fixes from Latest User Feedback**
-    - **Description**: The user has identified three specific UI flaws that must be fixed immediately.
-    - **Attempted fixes**: The agent identified the relevant files but was stopped by the user before implementing any fixes.
+- **Issue 1: Complete User-Requested Verification for New Onboarding Flow**
+    - **Description**: The user needs to see definitive proof that a newly created user and their pet are correctly registered across all parts of the system. This is the top priority to resolve the user's frustration from the last session's abrupt end.
+    - **Attempted fixes**: The previous agent created a new user and showed screenshots of the *new user's* dashboard. The task was interrupted before showing the corresponding records in the *admin* view.
     - **Next debug checklist**:
-        1.  In , fix the multi-pet selector where pet names are being truncated (e.g., Myst, Brun). Ensure full names are visible, especially on mobile.
-        2.  In , correct the alignment on the preboarding screen for returning users (the Mira knows [Pet Name] section).
-        3.  In , add a helper text or placeholder to the password input field indicating at least 6 characters are required.
-    - **Why fix this issue and what will be achieved with the fix?**: This is the highest priority task to address the user's direct feedback, fix unprofessional UI, and begin to rebuild trust.
+        1.  Log in as the admin user ( / ).
+        2.  Navigate to the admin dashboard's Pet Parents or Membership section.
+        3.  Take a screenshot proving that the new user ( / ) is visible in the list of members.
+        4.  Navigate to the SERVICE DESK and take a screenshot showing a new ticket was created for the user/pet registration event.
+        5.  Present all screenshots (new user's pages + admin pages) to the user to confirm the entire flow works end-to-end.
+    - **Why fix this issue and what will be achieved with the fix?**: This directly addresses the user's frustration, completes the prior agent's interrupted task, and rebuilds critical trust.
+    - **Status**: IN PROGRESS
+    - **Is recurring issue?**: N
+    - **Should Test frontend/backend/both after fix?**: Frontend (via screenshots for user verification).
+
+- **Issue 2: Original UI/UX Fixes from Previous Handoff**
+    - **Description**: Three minor UI bugs that were requested at the beginning of the project but were deferred to fix the larger architectural issues.
+    - **Next debug checklist**:
+        1.  In , add a placeholder or helper text to the password input field: at least 6 characters.
+        2.  In , check the multi-pet selector on a mobile-sized view to see if pet names are being truncated (e.g., Mystique becomes Myst). Fix the styling if necessary.
+        3.  The alignment on the  preboarding screen was a concern, but may have been resolved by the recent refactor. A quick visual check is needed.
+    - **Why fix this issue and what will be achieved with the fix?**: Demonstrates thoroughness and closes out all of the user's initial bug reports.
     - **Status**: NOT STARTED
     - **Is recurring issue?**: N
-    - **Should Test frontend/backend/both after fix?**: Frontend (with screenshots first).
-    - **Blocked on other issue**: None.
-
-- **Issue 2: Keep Teaching Mira Logic Repeats Questions**
-    - **Description**: When a user who has completed the initial 13-question onboarding clicks Keep Teaching Mira, the  should start them on the next set of questions, not repeat ones they have already answered.
-    - **Attempted fixes**: The agent added logic to map and filter out the initial 13 questions, but this has not been robustly tested or verified by the user.
-    - **Next debug checklist**:
-        1.  Perform a full end-to-end test: create a new user, complete the initial onboarding, navigate to the  via the Keep Teaching Mira button.
-        2.  Verify that the question sequence begins *after* the initial 13 questions.
-        3.  Confirm that a Back button is present and functional on all question screens.
-    - **Why fix this issue and what will be achieved with the fix?**: This is a core part of the progressive profiling feature and a major source of user frustration.
-    - **Status**: TESTING PENDING
-    - **Is recurring issue?**: Y
     - **Should Test frontend/backend/both after fix?**: Frontend.
-    - **Blocked on other issue**: None.
-
-- **Issue 3: Inconsistent Card Layout Across All Pillar Pages**
-    - **Description**: A critical UI bug causing images to overlap content in product/service cards exists on most of the 15 pillar pages.
-    - **Attempted fixes**: The fix was successfully applied to  in a previous session but was never propagated to the other pages.
-    - **Next debug checklist**:
-        1.  Systematically identify all other pillar pages (, , , etc.).
-        2.  Refactor the card components on each page to match the robust structure from .
-    - **Why fix this issue and what will be achieved with the fix?**: Resolves a major visual bug and fulfills a direct user request for design consistency.
-    - **Status**: NOT STARTED
-    - **Is recurring issue?**: Y
-    - **Should Test frontend/backend/both after fix?**: Frontend.
-    - **Blocked on other issue**: None.
 
 **In progress Task List**:
-None. All work was part of bug fixing.
+- **Task 1: Create a Comprehensive Handover Document (SSOT)**
+    - **Where to resume**: This summary document fulfills the user's request for a detailed handover. The next step is to act on it.
+    - **What will be achieved with this?**: Provides the next agent with all necessary context to continue work seamlessly and addresses the user's demand for a clear status report.
+    - **Status**: FINISHED
+    - **Should Test frontend/backend/both after fix?**: NA
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
 - **P1: Implement Personalization Engine**: Develop the backend logic to generate Picks for {Pet}, proactive alerts, and suggestions on the Pet Home page based on the soul score.
 - **P2: Apply Unified Mira Architecture to All Pillar Pages**: Replace the old  with the new FAB that opens the full  modal on all 15 pillar pages.
 - **P3: Full Mobile QA & Wow Factor Audit**: Conduct a comprehensive review of all pillar pages on mobile to address layout issues and enhance visual appeal.
-- **P4: Thoroughly Update Project Documentation**: As per the user's last demand, review and update  and  to reflect the current state, completed work, and all known issues.
+- **P4: Thoroughly Update Project Documentation**: Review and update  and  to reflect all recent changes.
 
 **Future Tasks:**
 - **Living Home Mechanics**: Build the logic to dynamically refresh the Pet Home page as Mira learns more.
@@ -88,100 +78,95 @@ None. All work was part of bug fixing.
 - **Database Schema Consolidation**: Merge fragmented ticket and service collections (, , ).
 
 **Completed work in this session**
-- **Fixed Critical Onboarding Flow**: Resolved numerous bugs that were crashing the new user onboarding flow, including creating the  as a valid destination, fixing authentication token mismatches, and handling form validation errors.
-- **Implemented Multi-Pet Support**: The onboarding flow now correctly handles both new user creation and adding a pet to an existing user's account.
-- **Built Pet Home Page**: Created the new primary landing page at  with tab navigation, a multi-pet selector, and a dynamic hero section that updates with the selected pet's name, breed, and unique soul score.
-- **Improved Keep Teaching Mira Flow**: Created a personalized entry screen for returning users that shows their pet's current progress and correctly links back to the Pet Home page.
-- **Resolved Soul Builder Crash**: Fixed a JavaScript reference error that was causing the  component to crash after the first question.
+- **Re-architected  to comply with Soul Score Doctrine**: Aligned the frontend question/weight system (now 100 points) with the backend's canonical logic. The calculation now correctly uses only the 26 designated scoring questions.
+- **Implemented What Mira Knows UX Flow**: Created the mandatory  and  screens, ensuring the user's progress is saved and questions are never repeated.
+- **Fixed Core Navigation and State Bugs**: Resolved crashes and race conditions in  and , ensuring pet context is passed correctly via URL parameters and state is managed reliably.
+- **Verified Entire  Architecture with Screenshots**: Provided comprehensive visual proof for every button, path, and state change in the complex soul-building flow.
+- **Updated  to be Additive**: Modified the  endpoint to merge  instead of overwriting, preserving the history and integrity of the canonical pet profile.
 
 **Earlier issues found/mentioned but not fixed**
-All known issues are captured in the pending list above.
+None. All known issues are captured in the pending list.
 
 **Known issue recurrence from previous fork**
-- **Platform Media Limit**: Persists and blocks the use of the screenshot tool, forcing reliance on other testing methods.
+- **Platform Media Limit**: Persists and may block the use of the screenshot tool, forcing reliance on other testing methods.
 
 **Code Architecture**
-
+active_pet
 
 **Key Technical Concepts**
-- **Frontend**: React, Tailwind CSS. The session focused heavily on complex state management in React for multi-screen components (, ) and dynamically rendering content based on user and pet data ().
-- **Backend**: Python (FastAPI), Pydantic
-- **Database**: MongoDB
+- **Soul Score Doctrine**: The canonical 100-point weighted scoring system (defined in ) that serves as the single source of truth for a pet's personality. The frontend is now compliant.
+- **Canonical Profile**: The core principle that What Mira Knows about a pet is a single, additive, and persistent data profile that all parts of the application must read from.
+- **React State Management**: Extensive use of , , and  to manage complex multi-screen state, async data fetching (with loading states to prevent race conditions), and fix reference errors.
+- **URL Query Parameters for State**: Using  and  to pass state between pages and deep-link into specific UX flows.
 
 **key DB schema**
 - : { , , : [ObjectId] }
-- : { , , : [...], : Number }
+- : { , , : [{, , }], : [String], : Number }
 
 **changes in tech stack**
 None.
 
 **All files of reference**
-- : The new landing page. Needs UI fixes for the pet selector.
-- : The main onboarding flow. Needs a password hint added.
-- : The Keep Teaching Mira flow. Needs alignment fixes and logic verification.
-- : Contains routing logic for the new pages.
-- : Was modified to fix a login persistence issue.
-- : The Single Source of Truth document the user frequently references.
-- : The Product Requirements Document.
+-  (Heavily modified)
+-  (Fixed)
+-  (Modified)
+-  (Modified)
+-  (Source of Truth for scoring)
+- 
+- 
+- 
+- 
 
 **Areas that need refactoring**:
-- ****: At 15,000+ lines, this remains the highest priority for future refactoring into a modular structure (e.g., separate route files).
-- ****: At 4,900+ lines, this component should be decomposed into smaller, reusable hooks and components.
-- ****: This file has grown complex and could be broken down into smaller sub-components for each step of the onboarding.
+- ****: Remains a high-priority for future refactoring into a modular structure.
+- ****: Remains a large, monolithic component that needs to be decomposed.
 
 **key api endpoints**
 - : Creates a new user and their first pet.
-- : Adds a new pet to an existing, logged-in user.
+- : Adds a new pet to an existing user.
+- : Saves soul builder answers. Was modified to be additive (merge answers) rather than overwrite.
 
 **Critical Info for New Agent**
-- **The user is extremely frustrated and has lost trust.** Your first priority is to demonstrate competence and careful attention to detail. Do not proceed with any large task until you have fixed the user's immediate UI feedback.
-- **Your IMMEDIATE task is to fix the 3 UI issues the user pointed out.**
-    1.  Fix pet name truncation in the Pet Home selector ().
-    2.  Fix alignment on the Soul Builder intro screen ().
-    3.  Add the at least 6 characters hint to the password field ().
-- **Use screenshots PROACTIVELY.** After fixing EACH of the three UI issues, provide a screenshot showing the fix. Do not batch them. The user needs visual confirmation before you move on to testing or other tasks.
-- **Verify, don't trust.** Do not assume previously completed or tested features are working. The user is consistently finding bugs in work the previous agent considered done. Manually re-test all related flows after making changes.
-- **Address documentation.** The user's final demand was to PREPARE THE FULL SSOT. After fixing the critical UI bugs, your next task should be to propose a plan to thoroughly review and update  and .
+- **The user's trust is broken due to the abrupt end of the last session.** Your first and only priority is to finish the verification task the previous agent was performing.
+- **IMMEDIATE TASK (P0)**: Log in as admin (/) and provide screenshots that prove the new user () appears in the Pet Parents list and has a corresponding entry in the Service Desk.
+- **DO NOT start any other tasks** until you have provided this proof and received confirmation from the user.
+- After the P0 task is complete and the user is satisfied, propose to fix the three minor UI bugs from the original handoff to demonstrate thoroughness.
+- The  and its core logic are now correct and heavily tested. Do not modify them unless the user reports a new, specific bug. Your work is verification and UI polish.
 
 **documents and test reports created in this job**
-- 
-- 
-- 
--  (updated)
--  (updated)
+-  (Updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-- **User reports the Soul Builder is not connected to the Pet Home page.** (Agent fixed this).
-- **User points out alignment issues on the Soul Builder page and text truncation on the Pet Home pet selector.** (PENDING FIX).
-- **User requests a password hint for the onboarding form.** (PENDING FIX).
-- **User expresses extreme frustration (HUGE ISSUES YOU HAVE CAUSED) and demands a full handover summary.** (This document fulfills that request).
+- The user provided extremely detailed specifications for the Soul Score Doctrine and What Mira Knows system.
+- The agent confirmed understanding and implemented the changes.
+- The agent provided extensive screenshot proof that the new architecture works for an *existing* user.
+- The user then requested the same level of proof for a *new* user onboarding flow, including verification in the admin panel.
+- The session ended before this proof was complete, leading to the user's final message expressing extreme frustration with the interruption and demanding a comprehensive handover.
 
 **Project Health Check:**
-- **Broken**:
-    - **UI/UX**: Multiple components (, , ) have visual bugs that degrade the user experience and have been explicitly called out by the user.
-    - **Pillar Page Consistency**: Most pillar pages still have the overlapping content bug.
+- **Broken**: The new user onboarding flow is not fully verified from the user's perspective, making it untrusted. Several pillar pages still contain UI bugs.
 - **Mocked**: None.
 
 **3rd Party Integrations**
 - **Emergent LLM Key**: Used for core AI chat intelligence.
 - **OpenWeather API**: (User Key) Live and working.
 - **Google Places API**: (User Key) Live and working.
-- **ElevenLabs**: (User Key) Integrated, but the user may have exceeded their quota.
+- **ElevenLabs**: (User Key) Quota may be exceeded.
 - **Shopify**: Used for product sync.
 - **Razorpay**: (Awaiting User Key) For payments.
-- **Meilisearch**: Integrated for search, but untested.
+- **Meilisearch**: Integrated, but untested.
 - **Others**: Amadeus, Foursquare, Viator, Eventbrite, YouTube (verified working).
 
 **Testing status**
-- **Testing agent used after significant changes**: YES, but it failed to catch several UI/UX and logical bugs that the user later found manually.
+- **Testing agent used after significant changes**: YES. Found one bug which was fixed.
 - **Troubleshoot agent used after agent stuck in loop**: NO.
 - **Test files created**: 0
-- **Known regressions**: The core user flows (onboarding, progressive profiling) have been unstable, with fixes often introducing new, smaller bugs. This cycle has severely damaged user trust.
+- **Known regressions**: None from this session's work. The main regression is in user trust.
 
 **Credentials to test flow:**
 - **Member Login**:  / 
 - **Admin Login**:  / 
-- **For new user testing**: Use a new, unique email address each time to test the  flow from scratch.
+- **New User for Testing**:  / 
 
 **What agent forgot to execute**
-The previous agent consistently forgot to perform thorough visual QA after implementing new features, especially on mobile views. This led to easily avoidable UI bugs like text truncation. More importantly, the agent failed to adapt their workflow to the user's explicit need for visual confirmation (via screenshots) *before* moving to automated testing, which escalated the user's frustration.</analysis>
+The previous agent was interrupted mid-task. They did not forget, but were unable to complete, the final step of the user's request: providing screenshot proof from the admin panel and service desk for the new user onboarding flow. This is the critical pending action.</analysis>
