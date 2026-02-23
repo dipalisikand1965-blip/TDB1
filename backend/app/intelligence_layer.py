@@ -343,23 +343,61 @@ def curate_products(
 def generate_why_for_pet(product: Dict, soul_traits: List[str], breed: str, pet_name: str) -> str:
     """
     Generate a personalized "why this is for {pet}" explanation.
+    Uses persona_affinity from the card to find trait matches.
     """
     reasons = []
     
+    # Get persona_affinity from the card
+    persona_affinity = product.get("persona_affinity", {})
     product_tags = [t.lower() for t in product.get("tags", []) or []]
     
-    # Check trait matches
-    for trait in soul_traits[:2]:  # Top 2 traits
-        trait_lower = trait.lower()
-        if trait_lower in ["elegant", "pampered"] and "premium" in product_tags:
-            reasons.append(f"matches {pet_name}'s elegant taste")
-        elif trait_lower in ["playful", "energetic"] and "fun" in product_tags:
-            reasons.append(f"perfect for {pet_name}'s playful spirit")
-        elif trait_lower == "foodie" and "treat" in product_tags:
-            reasons.append(f"{pet_name} will love this treat")
+    # Map traits to human-readable explanations
+    trait_explanations = {
+        "foodie": f"fits {pet_name}'s foodie personality",
+        "picky": f"designed for {pet_name}'s selective taste",
+        "sensitive_tummy": f"gentle on {pet_name}'s tummy",
+        "anxious": f"calming approach for {pet_name}",
+        "playful": f"matches {pet_name}'s playful energy",
+        "energetic": f"fuels {pet_name}'s active lifestyle",
+        "elegant": f"suits {pet_name}'s refined taste",
+        "pampered": f"the pampering {pet_name} deserves",
+        "social": f"perfect for {pet_name}'s social nature",
+        "senior": f"specially formulated for senior pets like {pet_name}",
+        "health_conscious": f"supports {pet_name}'s health goals",
+        "weight_management": f"helps manage {pet_name}'s weight",
+    }
     
-    # Breed match
-    if breed and breed.lower() in (product.get("name", "") or "").lower():
+    # Check soul traits against persona_affinity
+    for trait in soul_traits[:3]:  # Check top 3 traits
+        trait_lower = trait.lower().replace(" ", "_")
+        
+        # If this trait has high affinity (>= 0.75) in the card, use it
+        if persona_affinity.get(trait_lower, 0) >= 0.75:
+            if trait_lower in trait_explanations:
+                reasons.append(trait_explanations[trait_lower])
+                break
+        
+        # Also check without underscores
+        trait_simple = trait.lower().replace("_", " ").replace("-", " ")
+        for affinity_key, score in persona_affinity.items():
+            if score >= 0.75 and (trait_simple in affinity_key or affinity_key in trait_simple):
+                if affinity_key in trait_explanations:
+                    reasons.append(trait_explanations[affinity_key])
+                    break
+    
+    # Fallback: check product tags (old method)
+    if not reasons:
+        for trait in soul_traits[:2]:
+            trait_lower = trait.lower()
+            if trait_lower in ["elegant", "pampered"] and "premium" in product_tags:
+                reasons.append(f"matches {pet_name}'s elegant taste")
+            elif trait_lower in ["playful", "energetic"] and "fun" in product_tags:
+                reasons.append(f"perfect for {pet_name}'s playful spirit")
+            elif trait_lower == "foodie" and "treat" in product_tags:
+                reasons.append(f"{pet_name} will love this treat")
+    
+    # Breed match as final fallback
+    if not reasons and breed and breed.lower() in (product.get("name", "") or "").lower():
         reasons.append(f"designed for {breed}s")
     
     if reasons:
