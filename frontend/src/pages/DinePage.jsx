@@ -946,7 +946,6 @@ const DinePage = () => {
               </>
             )}
           </div>
-        </div>
         </section>
         {/* END Pet Cafes section */}
 
