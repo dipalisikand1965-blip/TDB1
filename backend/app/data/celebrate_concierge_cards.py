@@ -737,27 +737,6 @@ def generate_why_explanation(card: Dict, pet_name: str, soul_traits: List[str] =
         return f"Great fit for {pet_name}'s celebration"
     
     return f"Curated for {pet_name}"
-        for trait in actual_traits:
-            trait_lower = trait.lower().replace(" ", "_")
-            if trait_lower in trait_explanations:
-                explanation_trait = trait_lower
-                break
-    
-    # Generate the explanation
-    if explanation_trait:
-        readable = trait_explanations[explanation_trait]
-        if card_type == "concierge_product":
-            return f"Designed for {pet_name}'s {readable}"
-        else:
-            return f"Tailored for {pet_name}'s {readable}"
-    
-    # Fallback based on score (still truthful - just less specific)
-    if score >= 80:
-        return f"Highly recommended for {pet_name}"
-    elif score >= 60:
-        return f"Great fit for {pet_name}'s celebration"
-    
-    return f"Curated for {pet_name}"
 
 
 def get_micro_question(pet_data: Dict, answered_questions: List[str] = None) -> Optional[Dict]:
