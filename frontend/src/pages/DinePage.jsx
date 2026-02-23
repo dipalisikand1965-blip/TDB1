@@ -330,6 +330,9 @@ const DinePage = () => {
       useTabNavigation={true}
       onSubcategoryChange={handleTabChange}
     >
+      {/* Main Content with iOS Safe Area Bottom Padding */}
+      <div className="pb-24 theme-dine" data-testid="dine-page">
+      
       {/* ═══════════════════════════════════════════════════════════════════════════════ */}
       {/* TAB CONTENT ROUTING - Render different content based on activeTab             */}
       {/* ═══════════════════════════════════════════════════════════════════════════════ */}
