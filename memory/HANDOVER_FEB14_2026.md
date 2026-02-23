@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://pet-concierge-ai.preview.emergentagent.com` |
+| **Preview** | `https://dine-intelligence.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |

@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://pet-concierge-ai.preview.emergentagent.com
+https://dine-intelligence.preview.emergentagent.com
 ```
 
 ---

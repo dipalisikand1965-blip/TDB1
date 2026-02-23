@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://pet-concierge-ai.preview.emergentagent.com
+**Preview URL:** https://dine-intelligence.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
