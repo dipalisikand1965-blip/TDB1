@@ -65,6 +65,22 @@ def generate_dynamic_picks(
         picks = _generate_enjoy_picks(user_msg_lower, pet_name, pet_context)
     elif pillar == "fit":
         picks = _generate_fit_picks(user_msg_lower, pet_name, pet_context)
+    elif pillar == "learn":
+        picks = _generate_learn_picks(user_msg_lower, pet_name, pet_context)
+    elif pillar == "paperwork":
+        picks = _generate_paperwork_picks(user_msg_lower, pet_name, pet_context)
+    elif pillar == "advisory":
+        picks = _generate_advisory_picks(user_msg_lower, pet_name, pet_context)
+    elif pillar == "emergency":
+        picks = _generate_emergency_picks(user_msg_lower, pet_name, pet_context)
+    elif pillar == "farewell":
+        picks = _generate_farewell_picks(user_msg_lower, pet_name, pet_context)
+    elif pillar == "adopt":
+        picks = _generate_adopt_picks(user_msg_lower, pet_name, pet_context)
+    elif pillar == "shop":
+        picks = _generate_shop_picks(user_msg_lower, pet_name, pet_context)
+    elif pillar == "services":
+        picks = _generate_services_picks(user_msg_lower, pet_name, pet_context)
     else:
         # Generic picks based on keywords
         picks = _generate_generic_picks(user_msg_lower, pet_name, pet_context)
