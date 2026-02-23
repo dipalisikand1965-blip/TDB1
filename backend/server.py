@@ -14710,6 +14710,149 @@ async def clear_member_location(authorization: str = Header(None)):
 
 
 # ============================================
+# API INTEGRATION TESTING ENDPOINTS
+# ============================================
+
+@api_router.get("/test/notification")
+async def test_notification_endpoint(
+    channel: str = "email",  # email, whatsapp, sms
+    authorization: str = Header(None)
+):
+    """
+    Test notification delivery to configured test number/email.
+    
+    Channels: email, whatsapp, sms
+    """
+    from services.api_integration_hub import NotificationDispatcher
+    
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization required")
+    
+    try:
+        token = authorization.replace("Bearer ", "")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_email = payload.get("sub")
+    except:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    # Get user's phone from profile
+    user = await db.users.find_one({"email": user_email}, {"_id": 0})
+    test_phone = os.environ.get("TEST_MOBILE_NUMBER", "919739908844")
+    
+    result = await NotificationDispatcher.send(
+        user_email=user_email,
+        user_phone=test_phone,
+        notification_type="ticket_update",
+        data={
+            "customer_name": user.get("name", "Pet Parent"),
+            "pet_name": "Your Pet",
+            "title": "Test Notification",
+            "message": f"This is a test {channel} notification from Mira OS. If you received this, the integration is working!"
+        },
+        channels=[channel]
+    )
+    
+    return {
+        "success": True,
+        "channel": channel,
+        "sent_to": {
+            "email": user_email if channel == "email" else None,
+            "phone": test_phone if channel in ["whatsapp", "sms"] else None
+        },
+        "result": result
+    }
+
+
+@api_router.get("/test/weather")
+async def test_weather_endpoint(
+    lat: float = 12.9716,  # Bangalore default
+    lng: float = 77.5946,
+    authorization: str = Header(None)
+):
+    """Test OpenWeather API integration"""
+    from services.api_integration_hub import WeatherService
+    
+    weather = await WeatherService.get_current_weather(lat, lng)
+    return {
+        "success": "error" not in weather,
+        "location": {"lat": lat, "lng": lng},
+        "weather": weather
+    }
+
+
+@api_router.get("/test/youtube")
+async def test_youtube_endpoint(
+    query: str = "dog training basics",
+    authorization: str = Header(None)
+):
+    """Test YouTube API integration"""
+    from services.api_integration_hub import YouTubeService
+    
+    videos = await YouTubeService.search_pet_videos(query, max_results=3)
+    return {
+        "success": len(videos) > 0,
+        "query": query,
+        "videos": videos
+    }
+
+
+@api_router.get("/test/events")
+async def test_events_endpoint(
+    city: str = "Bangalore",
+    authorization: str = Header(None)
+):
+    """Test Eventbrite API integration"""
+    from services.api_integration_hub import EventsService
+    
+    events = await EventsService.search_pet_events(city, max_results=5)
+    return {
+        "success": True,
+        "city": city,
+        "events_found": len(events),
+        "events": events
+    }
+
+
+@api_router.get("/test/pillar-data/{pillar}")
+async def test_pillar_data_endpoint(
+    pillar: str,
+    authorization: str = Header(None)
+):
+    """
+    Test combined API data for a pillar.
+    Returns data from all relevant APIs for that pillar.
+    """
+    from services.api_integration_hub import get_pillar_data
+    
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization required")
+    
+    try:
+        token = authorization.replace("Bearer ", "")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_email = payload.get("sub")
+    except:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    # Get user location
+    user = await db.users.find_one({"email": user_email}, {"_id": 0, "location": 1})
+    location = user.get("location", {}) if user else {}
+    
+    lat = location.get("latitude", 12.9716)  # Bangalore default
+    lng = location.get("longitude", 77.5946)
+    city = location.get("city", "Bangalore")
+    
+    data = await get_pillar_data(pillar, lat, lng, city)
+    
+    return {
+        "success": True,
+        "pillar": pillar,
+        "location": {"city": city, "lat": lat, "lng": lng},
+        "data": data
+    }
+
+
+# ============================================
 # GUARDRAIL: NO NOTIFICATION-ONLY OBJECTS
 # ============================================
 # HARD RULE: No admin/member notification may be created unless
