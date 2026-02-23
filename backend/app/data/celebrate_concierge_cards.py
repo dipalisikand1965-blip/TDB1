@@ -461,6 +461,70 @@ def score_card_for_pet(
     return max(0, min(100, score))
 
 
+
+def derive_traits_from_profile(pet_data: Dict[str, Any]) -> List[str]:
+    """
+    Derive personality traits from multiple sources in pet profile.
+    
+    Sources checked:
+    - doggy_soul_answers (travel_anxiety, temperament, etc.)
+    - personality (anxiety_triggers, behavior)
+    - temperament
+    - soul (love_language, etc.)
+    
+    Returns: List of derived trait strings
+    """
+    derived = []
+    
+    # Check doggy_soul_answers for anxiety indicators
+    doggy_soul = pet_data.get("doggy_soul_answers", {}) or {}
+    
+    travel_anxiety = doggy_soul.get("travel_anxiety", "").lower()
+    if travel_anxiety in ["high", "severe", "moderate", "mild"]:
+        derived.append("anxious")
+        derived.append("warms_up_slowly")
+    
+    motion_sickness = doggy_soul.get("motion_sickness", "").lower()
+    if motion_sickness in ["often", "always", "sometimes"]:
+        derived.append("anxious")
+    
+    # Check temperament
+    temperament = pet_data.get("temperament", "").lower() if pet_data.get("temperament") else ""
+    if temperament:
+        if any(t in temperament for t in ["anxious", "nervous", "shy", "fearful"]):
+            derived.append("anxious")
+            derived.append("warms_up_slowly")
+        elif any(t in temperament for t in ["playful", "energetic", "active"]):
+            derived.append("playful")
+            derived.append("energetic")
+        elif any(t in temperament for t in ["calm", "gentle", "relaxed"]):
+            derived.append("calm")
+    
+    # Check personality for anxiety triggers
+    personality = pet_data.get("personality", {}) or {}
+    anxiety_triggers = personality.get("anxiety_triggers", []) or []
+    if anxiety_triggers and len(anxiety_triggers) > 0:
+        derived.append("anxious")
+    
+    # Check behavior with others
+    behavior_dogs = personality.get("behavior_with_dogs", "").lower()
+    behavior_humans = personality.get("behavior_with_humans", "").lower()
+    if any(b in behavior_dogs for b in ["friendly", "social", "playful"]):
+        derived.append("social")
+    if any(b in behavior_humans for b in ["friendly", "social"]):
+        derived.append("social")
+    
+    # Check soul data
+    soul = pet_data.get("soul", {}) or {}
+    love_language = soul.get("love_language", "").lower()
+    if love_language in ["velcro", "clingy"]:
+        derived.append("pampered")
+    
+    # Dedupe and return
+    return list(set(derived))
+
+
+
 def select_concierge_cards(
     pet_data: Dict[str, Any],
     event_context: Optional[Dict] = None,
