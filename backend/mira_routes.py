@@ -12011,6 +12011,25 @@ async def mira_chat(
             }
             if picks_engine_result and picks_engine_result.picks:
                 logger.info(f"[PICKS ENGINE] Early run: {len(picks_engine_result.picks)} picks for pillar={picks_engine_result.pillar}")
+            
+            # DYNAMIC PICKS FALLBACK: If Picks Engine returns empty, use dynamic generator
+            if not picks_response_data.get("picks") and selected_pet:
+                try:
+                    from services.dynamic_picks_generator import generate_dynamic_picks
+                    dynamic_picks = generate_dynamic_picks(
+                        user_message=user_message,
+                        pillar=pillar or "general",
+                        pet_context=selected_pet,
+                        location=user_city,
+                        additional_context={"session_id": session_id}
+                    )
+                    if dynamic_picks:
+                        picks_response_data["picks"] = dynamic_picks
+                        picks_response_data["pillar"] = pillar
+                        logger.info(f"[DYNAMIC PICKS] Generated {len(dynamic_picks)} fallback picks for {pillar}")
+                except Exception as dyn_err:
+                    logger.warning(f"[DYNAMIC PICKS] Fallback failed: {dyn_err}")
+                    
         except Exception as picks_err:
             logger.warning(f"[PICKS ENGINE] Early run failed: {picks_err}")
     
