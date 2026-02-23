@@ -437,6 +437,9 @@ const PetHomePage = () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-purple-950">
+      {/* Main Site Navbar - for navigation to other pillars */}
+      <Navbar />
+      
       {/* Header */}
       <div className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800">
         {/* Top bar with logo and actions */}
