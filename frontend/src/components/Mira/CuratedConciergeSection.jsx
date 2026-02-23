@@ -154,7 +154,7 @@ const FallbackCards = ({ petName, onRetry }) => (
 // QUESTION CARD
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const QuestionCard = ({ card, petId, onAnswerSaved, token }) => {
+const QuestionCard = ({ card, petId, petName, onAnswerSaved, token }) => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -249,6 +249,11 @@ const QuestionCard = ({ card, petId, onAnswerSaved, token }) => {
           );
         })}
       </div>
+
+      {/* Microcopy - helps user understand the purpose */}
+      <p className="text-gray-400 text-xs mt-3 text-center italic">
+        This will refine {petName}'s picks
+      </p>
 
       {/* Error */}
       {error && (
