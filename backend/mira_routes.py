@@ -16746,9 +16746,11 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 logger.info(f"[PICKS ENGINE] Late run: {len(picks_engine_output.picks)} picks, concierge={picks_engine_output.concierge.get('cta_prominence')}")
                 
                 # DYNAMIC PICKS FALLBACK for late run
+                logger.info(f"[DYNAMIC PICKS] Checking fallback: picks_count={len(picks_engine_output.picks)}, has_pet={selected_pet is not None}")
                 if not picks_engine_output.picks and selected_pet:
                     try:
                         from services.dynamic_picks_generator import generate_dynamic_picks
+                        logger.info(f"[DYNAMIC PICKS] Generating for pillar={pillar}, pet={selected_pet.get('name', 'Unknown')}")
                         dynamic_picks = generate_dynamic_picks(
                             user_message=user_message,
                             pillar=pillar or "general",
@@ -16759,8 +16761,12 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                         if dynamic_picks:
                             picks_engine_output.picks = dynamic_picks
                             logger.info(f"[DYNAMIC PICKS] Late run fallback: Generated {len(dynamic_picks)} picks for {pillar}")
+                        else:
+                            logger.warning(f"[DYNAMIC PICKS] Generator returned empty for pillar={pillar}")
                     except Exception as dyn_err:
                         logger.warning(f"[DYNAMIC PICKS] Late run fallback failed: {dyn_err}")
+                        import traceback
+                        logger.warning(traceback.format_exc())
                         
             except Exception as picks_err:
                 logger.error(f"[PICKS ENGINE] Error running pipeline: {picks_err}")
