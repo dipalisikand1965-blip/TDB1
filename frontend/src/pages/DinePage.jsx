@@ -1012,7 +1012,19 @@ const DinePage = () => {
                                 size="sm"
                                 variant="outline"
                                 className="text-xs"
-                                onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cafe.name + ' ' + (cafe.city || selectedNearbyCity))}`, '_blank')}
+                                onClick={() => {
+                                  setSelectedPlace({
+                                    name: cafe.name,
+                                    address: cafe.address || cafe.area || selectedNearbyCity,
+                                    city: cafe.city || selectedNearbyCity,
+                                    rating: cafe.rating,
+                                    phone: cafe.phone,
+                                    lat: cafe.lat,
+                                    lng: cafe.lng
+                                  });
+                                  setMapModalOpen(true);
+                                }}
+                                data-testid={`cafe-map-btn-${idx}`}
                               >
                                 <MapPin className="w-3 h-3" />
                               </Button>
