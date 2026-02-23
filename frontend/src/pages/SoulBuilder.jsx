@@ -2200,7 +2200,7 @@ const SoulBuilder = () => {
               </div>
             )}
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white text-xs font-bold">
-              {currentSoulScore}%
+              {Math.round(currentSoulScore)}%
             </div>
           </div>
           
