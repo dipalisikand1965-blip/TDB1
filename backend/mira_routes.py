@@ -16890,7 +16890,15 @@ async def get_pet_recommendations(
     
     # Build search criteria based on pet profile
     pet_breed = pet.get("breed", "").lower()
-    pet_age = int(pet.get("age", 0)) if pet.get("age") else 0
+    # Handle age which might be stored as "4 years" or just a number
+    raw_age = pet.get("age", 0)
+    if isinstance(raw_age, str):
+        try:
+            pet_age = int(raw_age.split()[0]) if raw_age else 0
+        except (ValueError, IndexError):
+            pet_age = 0
+    else:
+        pet_age = int(raw_age) if raw_age else 0
     pet_size = pet.get("size", "medium").lower()
     pet_health_conditions = pet.get("health_conditions", [])
     
