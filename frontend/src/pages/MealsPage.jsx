@@ -29,7 +29,7 @@ import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import SEOHead from '../components/SEOHead';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
-import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
+import FlowModal from '../components/FlowModal';
 import { usePillarContext } from '../context/PillarContext';
 import {
   Utensils, Leaf, Heart, Star, ChevronRight, Sparkles,
