@@ -471,6 +471,29 @@ const SoulBuilder = () => {
   const chapter = CHAPTERS[currentChapter];
   const question = chapter?.questions[currentQuestion];
   
+  // Helper: Check if a question is already answered
+  const isQuestionAnswered = useCallback((questionId) => {
+    return answeredQuestionIds.has(questionId) || 
+      (answers[questionId] && !(typeof answers[questionId] === 'object' && answers[questionId].skipped));
+  }, [answeredQuestionIds, answers]);
+  
+  // Helper: Find next unanswered question index in current chapter (returns -1 if all answered)
+  const findNextUnansweredInChapter = useCallback((startIndex = 0) => {
+    if (!chapter) return -1;
+    for (let i = startIndex; i < chapter.questions.length; i++) {
+      if (!isQuestionAnswered(chapter.questions[i].id)) {
+        return i;
+      }
+    }
+    return -1; // All questions in chapter answered
+  }, [chapter, isQuestionAnswered]);
+  
+  // Helper: Count unanswered questions in current chapter
+  const countUnansweredInChapter = useCallback(() => {
+    if (!chapter) return 0;
+    return chapter.questions.filter(q => !isQuestionAnswered(q.id)).length;
+  }, [chapter, isQuestionAnswered]);
+  
   // Replace {pet} with actual pet name
   const personalize = (text) => {
     return text.replace(/{pet}/g, petName || 'your pet');
