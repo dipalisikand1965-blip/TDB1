@@ -6,6 +6,48 @@ The user, Dipali, is the founder of a "pet operating system" named Mira, built i
 
 ---
 
+## ✅ SESSION 13 - DINE INTELLIGENCE LAYER COMPLETE - February 23, 2026
+
+### IMPLEMENTED:
+
+**Dine Concierge Card Library (10 cards):**
+| # | Type | Card | Target Persona |
+|---|------|------|----------------|
+| 1 | Product | Weekly Meal Plan | Foodie, weight, senior |
+| 2 | Product | Food Switch Assistant | Sensitive tummy, itchy |
+| 3 | Product | Allergy-Safe Blueprint | Allergy prone, sensitive |
+| 4 | Product | Fresh Subscription Setup | Foodie, health conscious |
+| 5 | Product | Dining Out Kit | Social, anxious, active |
+| 6 | Service | Reserve Pet-Friendly Table | All (broad fit) |
+| 7 | Service | Pet Buddy Meetup | Social, playful |
+| 8 | Service | Private Chef Experience | Elegant, pampered |
+| 9 | Service | "Won't Eat" Rapid Fix | Picky, anxious, senior |
+| 10 | Service | Nutrition Consult Booking | Health conscious |
+
+**Dine Micro-Questions:**
+- "Is {pet} a fast eater or slow grazer?"
+- "Sensitive tummy or iron stomach?"
+- "Calm in cafés or easily overwhelmed?"
+
+**Files Created:**
+- `/app/backend/app/data/dine_concierge_cards.py` - Full card library with persona scoring
+
+**Files Modified:**
+- `/app/backend/app/intelligence_layer.py` - Added `pillar == "dine"` support
+- `/app/frontend/src/pages/DinePage.jsx` - Added CuratedConciergeSection
+
+**API Verification:**
+- Bruno (Labrador): Dining Out Kit, Weekly Meal Plan, Reserve Table
+- Lola (Anxious): Cards with "calm-and-comfortable style" why text
+- Ticket creation: Working with notifications
+
+**Mobile Scroll Fix:**
+- Updated ScrollToTop component with multiple scroll methods
+- Added `history.scrollRestoration = 'manual'` in index.js
+- Pages now open at top on mobile
+
+---
+
 ## ✅ SESSION 12 - INTELLIGENCE LAYER BUGS FIXED - February 23, 2026
 
 ### ISSUES FIXED:
