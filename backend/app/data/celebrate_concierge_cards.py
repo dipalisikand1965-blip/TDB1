@@ -142,9 +142,16 @@ CELEBRATE_CONCIERGE_PRODUCTS: List[Dict[str, Any]] = [
         "description": "Theme-matched backdrop + props + simple setup guide, all pet-safe.",
         "icon": "📸",
         "why_concierge": "Curated for aesthetic + pet comfort",
-        "cta_text": "Create for {pet_name}",
+        "cta_text": "Create photo kit",
         "cta_action": "create_ticket",
         "ticket_category": "celebrate_photo_kit",
+        "why_phrases": {
+            "photo_ready": "Perfect props for camera-ready pups",
+            "elegant": "Sophisticated setup for elegant portraits",
+            "calm": "Minimal props for relaxed posing",
+            "anxious": "Low-stress setup for nervous pets",
+            "default": "Instagram-worthy photo essentials"
+        },
         "ticket_questions": [
             {"id": "setting", "question": "Indoor or outdoor photos?", "type": "choice", "options": ["Indoor", "Outdoor", "Both"]},
             {"id": "style", "question": "Style: glam/elegant vs fun/playful?", "type": "choice", "options": ["Glam/Elegant", "Fun/Playful"]},
