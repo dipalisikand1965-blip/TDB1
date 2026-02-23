@@ -511,17 +511,27 @@ const CuratedConciergeSection = ({
         if (response.ok) {
           const ticketResult = await response.json();
           hapticFeedback.success();
-          toast.success('Request received! Updating your Inbox...', { duration: 2000 });
           
-          // Mark this card as ticket created
+          // Optimistic update: Mark card as received immediately
           setCreatedTickets(prev => ({
             ...prev,
             [card.id]: ticketResult.ticket_id || true
           }));
           
-          // Update notification badge if callback provided
-          if (onNotificationUpdate) {
-            onNotificationUpdate();
+          // Show toast with pending WebSocket confirmation
+          toast.success('Request received — updating your Inbox', { 
+            duration: 3000,
+            description: isConnected ? '' : 'Syncing...'
+          });
+          
+          // If WebSocket is connected, it will confirm via handleWebSocketTicketCreated
+          // If not connected, trigger manual badge update after delay
+          if (!isConnected) {
+            setTimeout(() => {
+              if (onNotificationUpdate) {
+                onNotificationUpdate();
+              }
+            }, 2000);
           }
         } else {
           const errData = await response.json().catch(() => ({}));
