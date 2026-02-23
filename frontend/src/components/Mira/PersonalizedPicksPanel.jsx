@@ -1426,12 +1426,18 @@ const PersonalizedPicksPanel = ({
                               pillar: 'celebrate',
                               source: 'curated_picks_panel',
                               title: ticketData.card_name,
-                              pet_id: ticketData.pet_id,
+                              customer: {
+                                name: userEmail?.split('@')[0] || 'Customer',
+                                email: userEmail || '',
+                                phone: ''
+                              },
                               details: {
                                 card_id: ticketData.card_id,
+                                pet_id: ticketData.pet_id,
                                 pet_name: pet.name,
                               },
                               priority: 'normal',
+                              intent: 'curated_pick'
                             }),
                           });
                           
