@@ -417,6 +417,42 @@ const SoulKnowledgeTicker = ({
                   )}
                 </ul>
               </div>
+              
+              {/* FAVORITES Section */}
+              <div className="expanded-category favorites-section">
+                <h4 className="category-title">
+                  <Heart className="w-3 h-3 inline-block mr-1 text-pink-400" />
+                  FAVORITES
+                </h4>
+                <ul className="category-items">
+                  {favorites.length > 0 ? (
+                    <>
+                      <li className="category-item favorites-item">
+                        <span className="item-icon">♥️</span>
+                        <span className="item-text">{favorites.length} saved picks</span>
+                      </li>
+                      {favorites.slice(0, 2).map((fav, i) => (
+                        <li key={i} className="category-item favorites-item" onClick={() => setShowFavoritesPanel(true)}>
+                          <span className="item-icon">{fav.icon || '⭐'}</span>
+                          <span className="item-text">{fav.title?.substring(0, 25) || 'Saved pick'}...</span>
+                        </li>
+                      ))}
+                      <li 
+                        className="category-item favorites-item help-item"
+                        onClick={() => setShowFavoritesPanel(true)}
+                      >
+                        <span className="item-icon">👀</span>
+                        <span className="item-text">View all favorites</span>
+                      </li>
+                    </>
+                  ) : (
+                    <li className="category-item favorites-item">
+                      <span className="item-icon">💗</span>
+                      <span className="item-text">Tap ♥ to save picks for {petName}</span>
+                    </li>
+                  )}
+                </ul>
+              </div>
             </div>
           )}
           
