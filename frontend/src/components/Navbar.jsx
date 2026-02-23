@@ -953,6 +953,16 @@ const Navbar = () => {
                   </>
                 )}
               </Link>
+              
+              {/* Notification Bell - Only show for logged in users */}
+              {user && (
+                <NotificationBell 
+                  userEmail={user?.email}
+                  petId={primaryPet?.id}
+                  petName={primaryPet?.name}
+                  className="hidden sm:flex"
+                />
+              )}
 
               {/* Pet Soul Score - Multi-Pet Dropdown */}
               {user && allPets.length > 0 && (
