@@ -66,6 +66,7 @@ import OnboardingTooltip from '../components/Mira/OnboardingTooltip';
 import ConciergeReplyBanner from '../components/Mira/ConciergeReplyBanner';
 import NewChatConfirmDialog from '../components/Mira/NewChatConfirmDialog';
 import StarterChips from '../components/Mira/StarterChips';
+import Footer from '../components/Footer';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LAZY LOADED COMPONENTS (Performance Optimization)
