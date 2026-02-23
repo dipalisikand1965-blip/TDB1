@@ -108,9 +108,15 @@ CELEBRATE_CONCIERGE_PRODUCTS: List[Dict[str, Any]] = [
         "description": "Durable, safe, outdoor-ready celebration kit + cleanup essentials for active celebrations.",
         "icon": "🏕️",
         "why_concierge": "Curated for outdoor durability + safety",
-        "cta_text": "Create for {pet_name}",
+        "cta_text": "Create outdoor pack",
         "cta_action": "create_ticket",
         "ticket_category": "celebrate_outdoor",
+        "why_phrases": {
+            "playful": "Adventure-ready for energetic pups",
+            "social": "Party essentials for social butterflies",
+            "energetic": "Built for high-energy celebrations",
+            "default": "Outdoor-ready celebration essentials"
+        },
         "ticket_questions": [
             {"id": "location", "question": "Outdoor location (home terrace/park/café) and date/time?", "type": "text"},
             {"id": "guests", "question": "How many humans + dogs?", "type": "text"},
