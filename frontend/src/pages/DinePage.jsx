@@ -943,26 +943,58 @@ const DinePage = () => {
             </>
           )}
         </section>
-        
+
         {/* ═══════════════════════════════════════════════════════════════════════ */}
-        {/* PET CAFES NEAR ME - With city search */}
+        {/* BUDDY MEETUPS - Connect with pet parents */}
         {/* ═══════════════════════════════════════════════════════════════════════ */}
-        <section className="mt-8 bg-gradient-to-b from-orange-50 to-white py-8 px-4 -mx-4 rounded-2xl">
-          <div className="max-w-full mx-auto">
-            <div className="text-center mb-6">
-              <h3 className="text-xl font-bold text-gray-800 flex items-center justify-center gap-2">
-                <Coffee className="w-5 h-5 text-orange-600" />
-                Pet Cafes Near Me
-              </h3>
-              <p className="text-gray-600 text-sm max-w-xl mx-auto">
-                Search any city worldwide for pet-friendly spots
+        <section className="mt-12">
+          <Card className="p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white overflow-hidden relative">
+            <div className="absolute right-0 top-0 opacity-20">
+              <Users className="w-48 h-48 -mr-12 -mt-12" />
+            </div>
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-2">
+                <Users className="w-6 h-6" />
+                <h3 className="text-xl font-bold">Buddy Meetups</h3>
+                <Badge className="bg-white/20 text-white ml-2">NEW</Badge>
+              </div>
+              <p className="text-white/90 mb-4 max-w-xl text-sm">
+                Schedule visits & connect with fellow pet lovers for playdates!
               </p>
-              
-              {/* City Search Input - Worldwide Support */}
-              <div className="flex flex-col items-center gap-4 mt-4">
-                <div className="flex gap-2 max-w-md w-full">
-                  <div className="relative flex-1">
-                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <div className="flex flex-wrap gap-3">
+                <Button 
+                  size="sm"
+                  className="bg-white text-purple-600 hover:bg-gray-100"
+                  onClick={() => {
+                    if (filteredRestaurants.length > 0) {
+                      setShowBuddyModal(filteredRestaurants[0]);
+                    } else {
+                      alert('Please select a restaurant above to schedule a visit');
+                    }
+                  }}
+                  data-testid="schedule-visit-btn"
+                >
+                  <Calendar className="w-4 h-4 mr-2" /> Schedule Visit
+                </Button>
+                <Button 
+                  size="sm"
+                  variant="outline" 
+                  className="border-white text-white hover:bg-white/20"
+                  onClick={() => {
+                    if (filteredRestaurants.length > 0) {
+                      setShowBuddyModal(filteredRestaurants[0]);
+                    } else {
+                      alert('No restaurants available');
+                    }
+                  }}
+                  data-testid="view-meetups-btn"
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" /> View Meetups
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </section>
                     <Input
                       type="text"
                       placeholder="Enter any city (e.g., Paris, Tokyo, New York...)"
