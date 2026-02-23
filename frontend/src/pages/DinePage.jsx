@@ -961,28 +961,45 @@ const DinePage = () => {
           </section>
         )}
 
-        {/* Dine Accessories Section */}
-        {products.filter(p => p.category === 'dine').length > 0 && (
+        {/* Dine Accessories Section - Now "Dining Products" with Load More */}
+        {products.length > 0 && (
           <section className="mt-12" data-testid="dine-products-section">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                   <ShoppingBag className="w-6 h-6 text-orange-500" />
-                  Dining Accessories
+                  Dining Products
                 </h3>
-                <p className="text-gray-600">Essentials for pet-friendly dining</p>
+                <p className="text-gray-600">Everything for pet-friendly dining</p>
               </div>
-              <Link to="/search?q=dining-accessories">
+              <Link to="/search?q=dine">
                 <Button variant="outline" className="gap-2">
                   View All <ChevronRight className="w-4 h-4" />
                 </Button>
               </Link>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {products.filter(p => p.category === 'dine').slice(0, 10).map((product) => (
+              {products.slice(0, productsToShow).map((product) => (
                 <ProductCard key={product.id} product={product} pillar="dine" />
               ))}
             </div>
+            
+            {/* Load More Button for Products */}
+            {products.length > productsToShow && (
+              <div className="text-center mt-8">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setProductsToShow(prev => prev + 15)}
+                  className="px-8 py-3 rounded-full border-2 border-orange-300 text-orange-600 hover:bg-orange-50"
+                >
+                  Load More Products
+                  <ChevronDown className="w-4 h-4 ml-2" />
+                </Button>
+                <p className="text-xs text-gray-500 mt-2">
+                  Showing {Math.min(productsToShow, products.length)} of {products.length}
+                </p>
+              </div>
+            )}
           </section>
         )}
 
