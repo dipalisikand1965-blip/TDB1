@@ -316,6 +316,7 @@ const SoulRing = ({ percentage, size = 120, strokeWidth = 8, petName }) => {
 const MiraMeetsYourPet = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const isTransitioningRef = useRef(false); // Prevent rapid click race conditions
   
   // Check if user is already logged in (for adding another pet)
   const existingAuth = getExistingAuth();
