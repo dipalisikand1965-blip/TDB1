@@ -496,77 +496,156 @@ const DinePage = () => {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════════════ */}
-        {/* DINE OUT SECTION - Restaurants, Cafes & Buddy Meetups Combined */}
+        {/* DINING PRODUCTS - 3 rows with Load More */}
         {/* ═══════════════════════════════════════════════════════════════════════ */}
-        <section className="mt-8 mb-8">
-          <div className="text-center mb-8">
-            <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-1 mb-4">
-              <Coffee className="w-3 h-3 mr-1 inline" /> Dine Out
-            </Badge>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-              Pet-Friendly Dining & Meetups
-            </h2>
-            <p className="text-gray-600 max-w-xl mx-auto text-sm">
-              Discover restaurants, cafes, and connect with other pet parents
-            </p>
-          </div>
-
-          {/* Pet Buddy Meetups Card */}
-          <Card className="p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white overflow-hidden relative mb-8">
-            <div className="absolute right-0 top-0 opacity-20">
-              <Users className="w-48 h-48 -mr-12 -mt-12" />
-            </div>
-            <div className="relative">
-              <div className="flex items-center gap-2 mb-2">
-                <Users className="w-6 h-6" />
-                <h3 className="text-xl font-bold">Buddy Meetups</h3>
-                <Badge className="bg-white/20 text-white ml-2">NEW</Badge>
+        {products.length > 0 && (
+          <section className="mt-8" data-testid="dine-products-section">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                  <ShoppingBag className="w-6 h-6 text-orange-500" />
+                  Dining Products
+                </h3>
+                <p className="text-gray-600">Everything for pet-friendly dining</p>
               </div>
-              <p className="text-white/90 mb-4 max-w-xl text-sm">
-                Schedule visits & connect with fellow pet lovers for playdates!
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Button 
-                  size="sm"
-                  className="bg-white text-purple-600 hover:bg-gray-100"
-                  onClick={() => {
-                    if (filteredRestaurants.length > 0) {
-                      setShowBuddyModal(filteredRestaurants[0]);
-                    } else {
-                      alert('Please select a restaurant below to schedule a visit');
-                    }
-                  }}
-                  data-testid="schedule-visit-btn"
-                >
-                  <Calendar className="w-4 h-4 mr-2" /> Schedule Visit
+              <Link to="/search?q=dine">
+                <Button variant="outline" className="gap-2">
+                  View All <ChevronRight className="w-4 h-4" />
                 </Button>
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {products.slice(0, productsToShow).map((product) => (
+                <ProductCard key={product.id} product={product} pillar="dine" />
+              ))}
+            </div>
+            
+            {/* Load More Button */}
+            {products.length > productsToShow && (
+              <div className="text-center mt-8">
                 <Button 
-                  size="sm"
                   variant="outline" 
-                  className="border-white text-white hover:bg-white/20"
-                  onClick={() => {
-                    if (filteredRestaurants.length > 0) {
-                      setShowBuddyModal(filteredRestaurants[0]);
-                    } else {
-                      alert('No restaurants available');
-                    }
-                  }}
-                  data-testid="view-meetups-btn"
+                  onClick={() => setProductsToShow(prev => prev + 15)}
+                  className="px-8 py-3 rounded-full border-2 border-orange-300 text-orange-600 hover:bg-orange-50"
                 >
-                  <MessageCircle className="w-4 h-4 mr-2" /> View Meetups
+                  Load More Products
+                  <ChevronDown className="w-4 h-4 ml-2" />
                 </Button>
+                <p className="text-xs text-gray-500 mt-2">
+                  Showing {Math.min(productsToShow, products.length)} of {products.length}
+                </p>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {/* DINE ESSENTIALS - Feeding Tools & Supplements with Sub-sections */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {bundles.length > 0 && (
+          <section className="mt-12" data-testid="dine-essentials-section">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                  <Package className="w-7 h-7 text-orange-500" />
+                  Dine Essentials
+                </h2>
+                <p className="text-gray-600 mt-1">Feeding tools, supplements & gift kits</p>
               </div>
             </div>
-          </Card>
+            
+            {/* Category Pills */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              <Badge className="bg-orange-100 text-orange-700 cursor-pointer hover:bg-orange-200 px-3 py-1">All</Badge>
+              <Badge variant="outline" className="cursor-pointer hover:bg-gray-100 px-3 py-1">
+                <Utensils className="w-3 h-3 mr-1" /> Feeding Tools
+              </Badge>
+              <Badge variant="outline" className="cursor-pointer hover:bg-gray-100 px-3 py-1">
+                <Leaf className="w-3 h-3 mr-1" /> Supplements
+              </Badge>
+              <Badge variant="outline" className="cursor-pointer hover:bg-gray-100 px-3 py-1">
+                <Gift className="w-3 h-3 mr-1" /> Gift Kits
+              </Badge>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {bundles.map(bundle => (
+                <Card 
+                  key={bundle.id} 
+                  className="overflow-hidden rounded-2xl hover:shadow-xl transition-all cursor-pointer flex flex-col"
+                  onClick={() => setSelectedBundle(bundle)}
+                  data-testid={`dine-bundle-${bundle.id}`}
+                >
+                  <div className="relative h-[150px] sm:h-[180px] overflow-hidden flex-shrink-0">
+                    <img 
+                      src={bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800'} 
+                      alt={bundle.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    {bundle.discount_percent > 0 && (
+                      <Badge className="absolute top-3 right-3 z-10 bg-red-500 shadow-sm">
+                        {bundle.discount_percent}% OFF
+                      </Badge>
+                    )}
+                    {bundle.featured && (
+                      <Badge className="absolute top-3 left-3 z-10 bg-orange-500 shadow-sm">
+                        <Sparkles className="w-3 h-3 mr-1" /> Featured
+                      </Badge>
+                    )}
+                    <div className="absolute bottom-3 left-3 right-3 z-10 text-white">
+                      <h3 className="font-bold text-sm sm:text-base line-clamp-1 drop-shadow-md">{bundle.name}</h3>
+                    </div>
+                  </div>
+                  <div className="p-3 sm:p-4 bg-white flex flex-col flex-grow">
+                    <Badge variant="outline" className="mb-2 text-xs capitalize w-fit">
+                      {bundle.category?.replace('_', ' ') || 'Dine Essential'}
+                    </Badge>
+                    <p className="text-xs sm:text-sm text-gray-500 line-clamp-2 mb-3">{bundle.description}</p>
+                    <div className="flex items-center justify-between mt-auto pt-2">
+                      <div>
+                        <span className="text-base sm:text-lg font-bold text-green-600">₹{bundle.bundle_price || bundle.price || 0}</span>
+                        {(bundle.original_price > (bundle.bundle_price || bundle.price)) && (
+                          <span className="text-xs text-gray-400 line-through ml-1">₹{bundle.original_price}</span>
+                        )}
+                      </div>
+                      <Button 
+                        size="sm" 
+                        className="bg-orange-500 hover:bg-orange-600 text-xs h-9"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart({
+                            id: bundle.id,
+                            name: bundle.name,
+                            price: bundle.bundle_price || bundle.price,
+                            image: bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+                            description: bundle.description,
+                            category: 'dine_bundle',
+                            pillar: 'dine'
+                          }, 'Bundle', bundle.category || 'dine', 1);
+                        }}
+                        data-testid={`add-dine-bundle-${bundle.id}`}
+                      >
+                        <ShoppingBag className="w-3 h-3 mr-1" /> Add
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </section>
+        )}
 
-        {/* Concierge® Recommended Restaurants Section */}
-        <div id="restaurants" className="scroll-mt-20">
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {/* CONCIERGE FEATURED RESTAURANTS */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        <section id="restaurants" className="mt-12 scroll-mt-20">
           <div className="mb-6">
-            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <Star className="w-5 h-5 text-amber-500" />
+            <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <Star className="w-6 h-6 text-amber-500" />
               Concierge® Featured Restaurants
             </h3>
-            <p className="text-gray-600 text-sm">Dine out with your furry friend</p>
+            <p className="text-gray-600">Dine out with your furry friend</p>
           </div>
 
           {/* Filters */}
