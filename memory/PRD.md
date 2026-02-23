@@ -238,11 +238,23 @@
 
 ---
 
+## 🔴 P0 - NEXT PRIORITIES (TOMORROW)
+
+| Task | Description | Status |
+|------|-------------|--------|
+| ~~Complete Favorites UI~~ | ~~Wire frontend "Save" button to API, display in pet profile~~ | ✅ DONE |
+| Test Favorites Heart Button | User verification - click heart on picks in mira-demo PICKS tab | 🧪 TO TEST |
+| Configure Google Maps API Key | Add key to env for MapModal iframe embedding | ⚙️ CONFIG |
+| Birthday Countdown Widget | Surface existing backend birthday reminders to dashboard | 📋 READY |
+
+---
+
 ## 🟠 P1 - IMPORTANT
 
 | Task | Description |
 |------|-------------|
 | Replicate Gold Standard Pattern | Apply "Fresh Meals" tab structure to other Dine sub-categories |
+| Allergy Filter on Dine | Auto-filter by soul allergies |
 | Surface Reminders to Dashboard | Show upcoming reminders from backend |
 | Grooming Scheduling UI | Connect to Care pillar |
 
@@ -252,7 +264,7 @@
 
 | Task | Description |
 |------|-------------|
-| User-facing Analytics | "Mystique's favorites" |
+| User-facing Analytics | "Mystique's favorites" dashboard |
 | Activity Timeline | Pet activity log |
 | Food Diary | Meal tracking |
 
@@ -278,10 +290,12 @@
 - ElevenLabs (Voice TTS)
 - OpenAI TTS (Backup)
 - YouTube Data API (Training Videos)
+- Favorites API (Save/Get/Remove picks)
 
 ### Pending Config ⚠️
 - Resend (Domain verification needed)
 - Gupshup (WhatsApp config needed)
+- Google Maps Embed API (Key needed for MapModal)
 
 ### Planned 📋
 - Razorpay
