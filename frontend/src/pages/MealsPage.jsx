@@ -1199,6 +1199,16 @@ const MealsPage = () => {
         token={token}
         entryPoint={flowEntryPoint}
       />
+      
+      {/* Universal Service Button - Quick help from anywhere */}
+      <UniversalServiceButton
+        pillar="dine"
+        pet={activePet}
+        variant="floating"
+        position="bottom-left"
+        label="Need Help?"
+        entryPoint="fresh_meals_page"
+      />
     </div>
   );
 };
