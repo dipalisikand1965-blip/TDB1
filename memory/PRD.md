@@ -25,6 +25,9 @@
 | **Duplicate Soul Questions Fix** | FIXED | SoulBuilder now skips questions already answered during onboarding |
 | **Picks → Chat Flow** | FIXED | Picks from Pet's Picks panel now flow into Mira chat with ticket creation |
 | **Backend Bug** | FIXED | `load_pet_soul` AttributeError on `soul_enrichments` list |
+| **Mira = Soul Mate** | FIXED | Changed Mira's identity from "Pet Concierge®" to "{Pet}'s Soul Mate" |
+| **Error Messages** | FIXED | "High traffic" message now says "Don't worry, the Concierge® is here!" |
+| **Tile Alignment** | FIXED | Pills row now properly scrolls horizontally with consistent layout |
 | **Comprehensive Audit** | DONE | Created `/app/memory/AUDIT.md` and `/app/memory/GAPS_AUDIT.md` |
 | **Score Display Bug** | FIXED | Fixed floating point display issue (87.29999... -> 87%) |
 
