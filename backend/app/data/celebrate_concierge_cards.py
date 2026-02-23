@@ -715,69 +715,52 @@ def get_breed_default_traits(breed: str, size: str) -> List[str]:
 def generate_why_explanation(card: Dict, pet_name: str, soul_traits: List[str] = None) -> str:
     """
     Generate a personalized "why this card" explanation.
-    
-    MUST reference real traits/signals - never hallucinate.
-    PRIORITY: Anxiety/calm traits > Active traits > Elegant traits > Generic
+    Uses card-specific why_phrases if available, otherwise falls back to generic.
     """
     matched = card.get("_matched_traits", [])
     actual_traits = soul_traits or []
-    score = card.get("_score", 0)
+    all_traits = list(set(matched + (actual_traits or [])))
+    
+    # First check for card-specific why_phrases
+    why_phrases = card.get("why_phrases", {})
+    
+    if why_phrases:
+        # Try to find a matching trait
+        for trait in all_traits:
+            trait_lower = trait.lower().replace(" ", "_")
+            if trait_lower in why_phrases:
+                return why_phrases[trait_lower]
+        
+        # Return default phrase for this card
+        return why_phrases.get("default", f"Handpicked for {pet_name}")
+    
+    # Legacy fallback - generic trait explanations
     card_type = card.get("type", "")
     
-    # Map traits to human-readable explanations with priority
-    # PRIORITY ORDER: Anxiety/calm (1) > Active (2) > Elegant (3) > Generic (4)
     trait_explanations = {
-        # Priority 1: Anxious/calm traits (most distinctive)
-        "anxious": {"text": "calm and gentle approach", "priority": 1},
-        "warms_up_slowly": {"text": "quiet-and-cozy style", "priority": 1},
-        "noise_sensitive": {"text": "low-stimulation preference", "priority": 1},
-        "calm": {"text": "peaceful celebration style", "priority": 1},
-        "senior": {"text": "comfort-first needs", "priority": 1},
-        "gentle": {"text": "gentle nature", "priority": 1},
-        
-        # Priority 2: Active/social traits
-        "playful": {"text": "playful energy", "priority": 2},
-        "energetic": {"text": "high-energy spirit", "priority": 2},
-        "social": {"text": "love for socializing", "priority": 2},
-        "adventurous": {"text": "adventurous nature", "priority": 2},
-        
-        # Priority 3: Elegant/pampered traits
-        "elegant": {"text": "elegant taste", "priority": 3},
-        "pampered": {"text": "pampered lifestyle", "priority": 3},
-        "photo_ready": {"text": "photo-ready personality", "priority": 3},
-        
-        # Priority 4: Food traits
-        "foodie": {"text": "love of treats", "priority": 4},
-        "treats_motivated": {"text": "treat motivation", "priority": 4},
+        "anxious": "calm and gentle approach",
+        "warms_up_slowly": "quiet-and-cozy style",
+        "calm": "peaceful celebration style",
+        "senior": "comfort-first needs",
+        "playful": "playful energy",
+        "energetic": "high-energy spirit",
+        "social": "love for socializing",
+        "elegant": "elegant taste",
+        "pampered": "pampered lifestyle",
+        "photo_ready": "photo-ready personality",
+        "foodie": "love of treats",
     }
     
-    # Collect all matched traits with their priorities
-    prioritized_matches = []
-    
-    # Check matched traits first
-    for trait in matched:
+    for trait in all_traits:
         trait_lower = trait.lower().replace(" ", "_")
         if trait_lower in trait_explanations:
-            prioritized_matches.append({
-                "trait": trait_lower,
-                "priority": trait_explanations[trait_lower]["priority"],
-                "text": trait_explanations[trait_lower]["text"]
-            })
+            readable = trait_explanations[trait_lower]
+            if card_type == "concierge_product":
+                return f"Designed for {pet_name}'s {readable}"
+            else:
+                return f"Tailored for {pet_name}'s {readable}"
     
-    # If no matched traits, check actual soul traits
-    if not prioritized_matches and actual_traits:
-        for trait in actual_traits:
-            trait_lower = trait.lower().replace(" ", "_")
-            if trait_lower in trait_explanations:
-                prioritized_matches.append({
-                    "trait": trait_lower,
-                    "priority": trait_explanations[trait_lower]["priority"],
-                    "text": trait_explanations[trait_lower]["text"]
-                })
-    
-    # Sort by priority (lowest number = highest priority) and pick first
-    if prioritized_matches:
-        prioritized_matches.sort(key=lambda x: x["priority"])
+    return f"Curated for {pet_name}"
         best_match = prioritized_matches[0]
         readable = best_match["text"]
         
