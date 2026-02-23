@@ -341,7 +341,13 @@ DINE_CONCIERGE_SERVICES = [
         "icon": "users",
         "description": "We help coordinate a safe, well-matched meetup around your outing plan.",
         "why_concierge": "Matching temperament + timing + rules needs human judgement.",
-        "cta_text": "Coordinate Meetup",
+        "cta_text": "Request meetup",
+        "why_phrases": {
+            "social": "Perfect match for social butterflies",
+            "playful": "Fun playdate with energy-matched buddies",
+            "anxious": "Calm, low-key intro for nervous pets",
+            "default": "Safe, well-matched pet meetup"
+        },
         "default_questions": [
             {
                 "id": "venue_time",
