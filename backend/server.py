@@ -14617,6 +14617,70 @@ async def update_member_location(location: MemberLocationUpdate, authorization: 
         return {"success": False, "message": "User not found or location unchanged"}
 
 
+@api_router.get("/geo/reverse")
+async def reverse_geocode(lat: float, lng: float):
+    """
+    Reverse geocode coordinates to city/state using Google Geocoding API.
+    This provides more accurate location names than free alternatives.
+    """
+    google_api_key = os.environ.get("GOOGLE_PLACES_API_KEY")
+    
+    if not google_api_key:
+        # Fallback to free Nominatim if no Google API key
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    f"https://nominatim.openstreetmap.org/reverse",
+                    params={"lat": lat, "lon": lng, "format": "json"},
+                    headers={"User-Agent": "MiraOS/1.0"},
+                    timeout=5.0
+                )
+                data = response.json()
+                return {
+                    "success": True,
+                    "city": data.get("address", {}).get("city") or data.get("address", {}).get("town") or data.get("address", {}).get("village"),
+                    "state": data.get("address", {}).get("state"),
+                    "country": data.get("address", {}).get("country"),
+                    "source": "nominatim"
+                }
+        except Exception as e:
+            logger.error(f"[GEO] Nominatim reverse geocode failed: {e}")
+            return {"success": False, "error": str(e)}
+    
+    # Use Google Geocoding API for better accuracy
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                "https://maps.googleapis.com/maps/api/geocode/json",
+                params={
+                    "latlng": f"{lat},{lng}",
+                    "key": google_api_key,
+                    "result_type": "locality|administrative_area_level_1|country"
+                },
+                timeout=5.0
+            )
+            data = response.json()
+            
+            if data.get("status") == "OK" and data.get("results"):
+                result = data["results"][0]
+                components = {c["types"][0]: c["long_name"] for c in result.get("address_components", []) if c.get("types")}
+                
+                return {
+                    "success": True,
+                    "city": components.get("locality") or components.get("sublocality") or components.get("administrative_area_level_2"),
+                    "state": components.get("administrative_area_level_1"),
+                    "country": components.get("country"),
+                    "formatted_address": result.get("formatted_address"),
+                    "source": "google"
+                }
+            else:
+                return {"success": False, "error": data.get("status", "Unknown error")}
+                
+    except Exception as e:
+        logger.error(f"[GEO] Google reverse geocode failed: {e}")
+        return {"success": False, "error": str(e)}
+
+
 # ============================================
 # GUARDRAIL: NO NOTIFICATION-ONLY OBJECTS
 # ============================================
