@@ -722,6 +722,413 @@ def _generate_fit_picks(user_msg: str, pet_name: str, pet_context: Dict) -> List
     }]
 
 
+def _generate_learn_picks(user_msg: str, pet_name: str, pet_context: Dict) -> List[Dict]:
+    """Generate picks for LEARN pillar - training, education, behavior"""
+    picks = []
+    
+    # Puppy training
+    if any(kw in user_msg for kw in ["puppy", "young", "new dog", "puppy school"]):
+        picks.append({
+            "type": "service",
+            "category": "puppy_training",
+            "title": f"Puppy School for {pet_name}",
+            "subtitle": "Foundation training for young dogs",
+            "icon": "🐕",
+            "reason": "Set the right foundations early",
+            "cta": "Enroll Now",
+            "service_type": "puppy_school"
+        })
+    
+    # Behavior training
+    if any(kw in user_msg for kw in ["behavior", "behaviour", "aggressive", "bark", "anxiety", "fear"]):
+        picks.append({
+            "type": "service",
+            "category": "behavior",
+            "title": f"Behavior Training for {pet_name}",
+            "subtitle": "Address behavioral challenges",
+            "icon": "🧠",
+            "reason": "Expert behavioral guidance",
+            "cta": "Book Consultation",
+            "service_type": "behavior_training"
+        })
+    
+    # Obedience
+    if any(kw in user_msg for kw in ["obedience", "command", "sit", "stay", "come", "heel"]):
+        picks.append({
+            "type": "service",
+            "category": "obedience",
+            "title": f"Obedience Classes for {pet_name}",
+            "subtitle": "Basic to advanced commands",
+            "icon": "🎓",
+            "reason": "Well-mannered companion",
+            "cta": "View Classes",
+            "service_type": "obedience_training"
+        })
+    
+    return picks if picks else [{
+        "type": "service",
+        "category": "learn_consult",
+        "title": f"Training Consultation for {pet_name}",
+        "subtitle": "Personalized learning plan",
+        "icon": "📚",
+        "reason": f"Help {pet_name} reach their potential",
+        "cta": "Get Started",
+        "service_type": "training_consultation"
+    }]
+
+
+def _generate_paperwork_picks(user_msg: str, pet_name: str, pet_context: Dict) -> List[Dict]:
+    """Generate picks for PAPERWORK pillar - documents, registration, records"""
+    picks = []
+    
+    # Passport
+    if any(kw in user_msg for kw in ["passport", "travel document", "international"]):
+        picks.append({
+            "type": "service",
+            "category": "passport",
+            "title": f"Pet Passport for {pet_name}",
+            "subtitle": "International travel documentation",
+            "icon": "🛂",
+            "reason": "Travel anywhere with your pet",
+            "cta": "Start Application",
+            "service_type": "pet_passport"
+        })
+    
+    # Health records
+    if any(kw in user_msg for kw in ["record", "health record", "medical", "history"]):
+        picks.append({
+            "type": "service",
+            "category": "records",
+            "title": f"Health Records for {pet_name}",
+            "subtitle": "Organize medical history",
+            "icon": "📋",
+            "reason": "All records in one place",
+            "cta": "Upload Records",
+            "service_type": "health_records"
+        })
+    
+    # Registration
+    if any(kw in user_msg for kw in ["registr", "license", "microchip", "kci", "kennel club"]):
+        picks.append({
+            "type": "service",
+            "category": "registration",
+            "title": f"Registration for {pet_name}",
+            "subtitle": "License and official registration",
+            "icon": "📝",
+            "reason": "Official pet documentation",
+            "cta": "Start Registration",
+            "service_type": "pet_registration"
+        })
+    
+    return picks if picks else [{
+        "type": "service",
+        "category": "paperwork_consult",
+        "title": f"Documentation Help for {pet_name}",
+        "subtitle": "Manage all pet paperwork",
+        "icon": "📄",
+        "reason": "Stay organized and compliant",
+        "cta": "Get Help",
+        "service_type": "paperwork_consultation"
+    }]
+
+
+def _generate_advisory_picks(user_msg: str, pet_name: str, pet_context: Dict) -> List[Dict]:
+    """Generate picks for ADVISORY pillar - expert consultation, nutrition, behavior"""
+    picks = []
+    
+    # Nutrition advice
+    if any(kw in user_msg for kw in ["nutrition", "diet", "food advice", "what to feed", "eating"]):
+        picks.append({
+            "type": "service",
+            "category": "nutrition",
+            "title": f"Nutrition Consultation for {pet_name}",
+            "subtitle": "Expert dietary guidance",
+            "icon": "🥗",
+            "reason": "Optimal nutrition plan",
+            "cta": "Book Consult",
+            "service_type": "nutrition_advisory"
+        })
+    
+    # Behavior advice
+    if any(kw in user_msg for kw in ["behavior", "behaviour", "advice", "problem", "issue"]):
+        picks.append({
+            "type": "service",
+            "category": "behavior_advisory",
+            "title": f"Behavior Advisory for {pet_name}",
+            "subtitle": "Expert behavioral guidance",
+            "icon": "🧠",
+            "reason": "Professional insights",
+            "cta": "Get Advice",
+            "service_type": "behavior_advisory"
+        })
+    
+    # General expert consult
+    if any(kw in user_msg for kw in ["expert", "consult", "advice", "help", "question"]):
+        picks.append({
+            "type": "service",
+            "category": "expert",
+            "title": f"Expert Consultation for {pet_name}",
+            "subtitle": "Talk to a pet specialist",
+            "icon": "👨‍⚕️",
+            "reason": "Professional guidance",
+            "cta": "Book Expert",
+            "service_type": "expert_consultation"
+        })
+    
+    return picks if picks else [{
+        "type": "service",
+        "category": "advisory_general",
+        "title": f"Pet Advisory for {pet_name}",
+        "subtitle": "Expert guidance on any topic",
+        "icon": "📋",
+        "reason": f"Get answers for {pet_name}",
+        "cta": "Ask Expert",
+        "service_type": "general_advisory"
+    }]
+
+
+def _generate_emergency_picks(user_msg: str, pet_name: str, pet_context: Dict) -> List[Dict]:
+    """Generate picks for EMERGENCY pillar - urgent care, 24/7 help"""
+    picks = []
+    
+    # 24/7 helpline
+    picks.append({
+        "type": "service",
+        "category": "helpline",
+        "title": "24/7 Emergency Helpline",
+        "subtitle": "Immediate professional guidance",
+        "icon": "📞",
+        "reason": "Help is just a call away",
+        "cta": "Call Now",
+        "service_type": "emergency_helpline",
+        "urgent": True
+    })
+    
+    # Emergency vet
+    if any(kw in user_msg for kw in ["vet", "doctor", "hospital", "clinic"]):
+        picks.append({
+            "type": "service",
+            "category": "emergency_vet",
+            "title": "Emergency Vet Nearby",
+            "subtitle": "Find the nearest emergency clinic",
+            "icon": "🏥",
+            "reason": "Immediate veterinary care",
+            "cta": "Find Vet",
+            "service_type": "emergency_vet",
+            "urgent": True
+        })
+    
+    # First aid
+    if any(kw in user_msg for kw in ["first aid", "hurt", "injured", "bleeding", "choking"]):
+        picks.append({
+            "type": "service",
+            "category": "first_aid",
+            "title": "First Aid Guide",
+            "subtitle": "Step-by-step emergency care",
+            "icon": "🩹",
+            "reason": "Know what to do right now",
+            "cta": "View Guide",
+            "service_type": "first_aid_guide",
+            "urgent": True
+        })
+    
+    return picks
+
+
+def _generate_farewell_picks(user_msg: str, pet_name: str, pet_context: Dict) -> List[Dict]:
+    """Generate picks for FAREWELL pillar - memorial, grief support"""
+    picks = []
+    
+    # Memorial
+    if any(kw in user_msg for kw in ["memorial", "remember", "tribute", "honor"]):
+        picks.append({
+            "type": "service",
+            "category": "memorial",
+            "title": f"Memorial for {pet_name}",
+            "subtitle": "Create a lasting tribute",
+            "icon": "🌈",
+            "reason": "Honor their memory beautifully",
+            "cta": "Create Memorial",
+            "service_type": "pet_memorial"
+        })
+    
+    # Cremation
+    if any(kw in user_msg for kw in ["cremation", "crematorium", "ashes", "urn"]):
+        picks.append({
+            "type": "service",
+            "category": "cremation",
+            "title": "Cremation Services",
+            "subtitle": "Dignified and respectful",
+            "icon": "🕯️",
+            "reason": "Caring final arrangements",
+            "cta": "Learn More",
+            "service_type": "cremation_service"
+        })
+    
+    # Grief support
+    if any(kw in user_msg for kw in ["grief", "loss", "sad", "cope", "support", "miss"]):
+        picks.append({
+            "type": "service",
+            "category": "grief_support",
+            "title": "Grief Support",
+            "subtitle": "You're not alone in this",
+            "icon": "💜",
+            "reason": "Compassionate support",
+            "cta": "Get Support",
+            "service_type": "grief_counseling"
+        })
+    
+    return picks if picks else [{
+        "type": "service",
+        "category": "farewell_general",
+        "title": "Farewell Support",
+        "subtitle": "We're here for you",
+        "icon": "🌈",
+        "reason": "Compassionate care during difficult times",
+        "cta": "Talk to Us",
+        "service_type": "farewell_support"
+    }]
+
+
+def _generate_adopt_picks(user_msg: str, pet_name: str, pet_context: Dict) -> List[Dict]:
+    """Generate picks for ADOPT pillar - adoption, fostering, shelters"""
+    picks = []
+    
+    # Find a pet to adopt
+    if any(kw in user_msg for kw in ["adopt", "adoption", "find pet", "rescue", "looking for"]):
+        picks.append({
+            "type": "service",
+            "category": "adoption",
+            "title": "Find a Pet to Adopt",
+            "subtitle": "Rescue a furry friend",
+            "icon": "🐾",
+            "reason": "Give a pet a forever home",
+            "cta": "Browse Pets",
+            "service_type": "pet_adoption"
+        })
+    
+    # Foster
+    if any(kw in user_msg for kw in ["foster", "temporary", "fostering"]):
+        picks.append({
+            "type": "service",
+            "category": "foster",
+            "title": "Foster a Pet",
+            "subtitle": "Temporary love, lasting impact",
+            "icon": "🏠",
+            "reason": "Save lives through fostering",
+            "cta": "Become Foster",
+            "service_type": "foster_program"
+        })
+    
+    # Shelter
+    if any(kw in user_msg for kw in ["shelter", "rescue center", "ngo"]):
+        picks.append({
+            "type": "service",
+            "category": "shelter",
+            "title": "Find Shelters Near You",
+            "subtitle": "Connect with rescue organizations",
+            "icon": "🏛️",
+            "reason": "Support local shelters",
+            "cta": "Find Shelters",
+            "service_type": "shelter_finder"
+        })
+    
+    return picks if picks else [{
+        "type": "service",
+        "category": "adopt_general",
+        "title": "Adoption Services",
+        "subtitle": "Find your perfect companion",
+        "icon": "❤️",
+        "reason": "Adopt, don't shop",
+        "cta": "Explore",
+        "service_type": "adoption_services"
+    }]
+
+
+def _generate_shop_picks(user_msg: str, pet_name: str, pet_context: Dict) -> List[Dict]:
+    """Generate picks for SHOP pillar - products, accessories, food"""
+    picks = []
+    
+    # Food
+    if any(kw in user_msg for kw in ["food", "kibble", "treat", "snack"]):
+        picks.append({
+            "type": "product",
+            "category": "food",
+            "title": f"Food & Treats for {pet_name}",
+            "subtitle": "Premium nutrition",
+            "icon": "🍖",
+            "reason": f"Curated for {pet_name}'s needs",
+            "cta": "Shop Food",
+            "service_type": "shop_food"
+        })
+    
+    # Toys
+    if any(kw in user_msg for kw in ["toy", "toys", "play", "ball", "chew"]):
+        picks.append({
+            "type": "product",
+            "category": "toys",
+            "title": f"Toys for {pet_name}",
+            "subtitle": "Fun and durable playthings",
+            "icon": "🎾",
+            "reason": "Endless entertainment",
+            "cta": "Shop Toys",
+            "service_type": "shop_toys"
+        })
+    
+    # Accessories
+    if any(kw in user_msg for kw in ["accessor", "collar", "leash", "bed", "bowl"]):
+        picks.append({
+            "type": "product",
+            "category": "accessories",
+            "title": f"Accessories for {pet_name}",
+            "subtitle": "Quality essentials",
+            "icon": "🎀",
+            "reason": "Style meets function",
+            "cta": "Shop Now",
+            "service_type": "shop_accessories"
+        })
+    
+    return picks if picks else [{
+        "type": "product",
+        "category": "shop_general",
+        "title": f"Shop for {pet_name}",
+        "subtitle": "Everything your pet needs",
+        "icon": "🛒",
+        "reason": "Curated pet products",
+        "cta": "Browse Shop",
+        "service_type": "shop_general"
+    }]
+
+
+def _generate_services_picks(user_msg: str, pet_name: str, pet_context: Dict) -> List[Dict]:
+    """Generate picks for SERVICES pillar - all services overview"""
+    picks = []
+    
+    picks.append({
+        "type": "service",
+        "category": "concierge",
+        "title": "Concierge® Services",
+        "subtitle": f"Full-service care for {pet_name}",
+        "icon": "✨",
+        "reason": "White-glove pet care",
+        "cta": "Explore Services",
+        "service_type": "concierge_services"
+    })
+    
+    picks.append({
+        "type": "service",
+        "category": "booking",
+        "title": "Book Any Service",
+        "subtitle": "Care, grooming, training & more",
+        "icon": "📅",
+        "reason": "All services in one place",
+        "cta": "Book Now",
+        "service_type": "service_booking"
+    })
+    
+    return picks
+
+
 def _generate_generic_picks(user_msg: str, pet_name: str, pet_context: Dict) -> List[Dict]:
     """Generate generic picks when pillar is not specific"""
     return [{
