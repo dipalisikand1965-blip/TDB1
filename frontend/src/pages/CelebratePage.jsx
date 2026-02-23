@@ -478,9 +478,11 @@ const CelebratePage = () => {
       useTabNavigation={true}
       onSubcategoryChange={handleSubcategoryChange}
     >
+      {/* Main Content with iOS Safe Area Bottom Padding */}
+      <div className="pb-24 theme-celebrate" data-testid="celebrate-page">
 
       {/* Personalized Picks for User's Pet */}
-      <div className="max-w-6xl mx-auto px-4 pt-6">
+      <div className="max-w-6xl mx-auto px-4 pt-6 section-fade-in stagger-1">
         <PersonalizedPicks pillar="celebrate" maxProducts={6} />
         
         {/* NEW: Curated Concierge Section - Dynamic picks from Intelligence Layer */}
