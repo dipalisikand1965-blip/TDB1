@@ -24433,40 +24433,90 @@ async def submit_question_answer(
     """
     Submit answer to a thin-profile question card.
     
-    Body:
+    Body (from client):
     - pet_id: str
     - question_id: str
     - answer: str
-    - maps_to_trait: str
+    
+    Note: maps_to_trait is looked up from the card library (backend-owned)
     """
-    from app.intelligence_layer import save_question_answer
+    from app.data.celebrate_concierge_cards import CELEBRATE_MICRO_QUESTIONS
     
     try:
         pet_id = request.get("pet_id")
         question_id = request.get("question_id")
         answer = request.get("answer")
-        maps_to_trait = request.get("maps_to_trait")
         
-        if not all([pet_id, question_id, answer, maps_to_trait]):
-            raise HTTPException(status_code=400, detail="Missing required fields")
+        if not all([pet_id, question_id, answer]):
+            raise HTTPException(status_code=400, detail="Missing required fields: pet_id, question_id, answer")
         
-        success = await save_question_answer(
-            db=db,
-            pet_id=pet_id,
-            question_id=question_id,
-            answer=answer,
-            maps_to_trait=maps_to_trait
+        # Look up the question in our card library to get trait mapping
+        question_config = None
+        for q in CELEBRATE_MICRO_QUESTIONS:
+            if q["id"] == question_id:
+                question_config = q
+                break
+        
+        if not question_config:
+            raise HTTPException(status_code=404, detail=f"Question '{question_id}' not found")
+        
+        # Get the traits this answer maps to
+        traits_mapping = question_config.get("maps_to_traits", {})
+        mapped_traits = traits_mapping.get(answer, [])
+        
+        # Save the answer and traits to pet profile
+        pets_collection = db["pets"]
+        
+        update = {
+            "$addToSet": {"answered_questions": question_id},
+            "$set": {
+                f"preferences.{question_id}": answer,
+            }
+        }
+        
+        # Add mapped traits to soul_traits if any
+        if mapped_traits:
+            update["$addToSet"]["soul_traits"] = {"$each": mapped_traits}
+        
+        result = await pets_collection.update_one(
+            {"id": pet_id},
+            update
         )
         
-        if success:
-            return {"success": True, "message": "Answer saved! Mira will use this to personalize your picks."}
+        if result.modified_count > 0 or result.matched_count > 0:
+            # Invalidate cached curated sets for this pet
+            cache_collection = db["curated_picks_cache"]
+            await cache_collection.delete_many({"meta.pet_id": pet_id})
+            
+            logger.info(f"[QUESTION] Saved answer for pet {pet_id}: {question_id}={answer}, traits={mapped_traits}")
+            return {
+                "success": True, 
+                "message": "Answer saved! Mira will use this to personalize your picks.",
+                "mapped_traits": mapped_traits
+            }
         else:
-            raise HTTPException(status_code=500, detail="Failed to save answer")
+            # Try with ObjectId
+            from bson import ObjectId
+            try:
+                result = await pets_collection.update_one(
+                    {"_id": ObjectId(pet_id)},
+                    update
+                )
+                if result.modified_count > 0 or result.matched_count > 0:
+                    cache_collection = db["curated_picks_cache"]
+                    await cache_collection.delete_many({"meta.pet_id": pet_id})
+                    return {"success": True, "message": "Answer saved!"}
+            except:
+                pass
+            
+            raise HTTPException(status_code=404, detail="Pet not found")
             
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"[QUESTION_ANSWER] Error: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 
