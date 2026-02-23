@@ -108,6 +108,55 @@ class NotificationManager:
             })
         except Exception as e:
             logger.error(f"Failed to broadcast stats: {e}")
+    
+    @staticmethod
+    async def emit_member_notification(member_email: str, notification: dict):
+        """Send notification to specific member (for inbox updates)"""
+        # Find member's socket ID
+        for sid, member_info in connected_members.items():
+            if member_info.get('member_email') == member_email:
+                try:
+                    await sio.emit('member:notification', {
+                        **notification,
+                        'timestamp': datetime.now(timezone.utc).isoformat()
+                    }, room=sid)
+                    logger.info(f"Sent notification to member: {member_email}")
+                except Exception as e:
+                    logger.error(f"Failed to send notification to member: {e}")
+                break
+    
+    @staticmethod
+    async def emit_ticket_created_to_member(member_email: str, ticket_data: dict):
+        """Notify member that their ticket was created (for CTA confirmation)"""
+        for sid, member_info in connected_members.items():
+            if member_info.get('member_email') == member_email:
+                try:
+                    await sio.emit('member:ticket_created', {
+                        'ticket_id': ticket_data.get('ticket_id'),
+                        'card_id': ticket_data.get('card_id'),
+                        'status': 'created',
+                        'message': 'Your request has been received',
+                        'timestamp': datetime.now(timezone.utc).isoformat()
+                    }, room=sid)
+                    logger.info(f"Sent ticket created notification to member: {member_email}")
+                except Exception as e:
+                    logger.error(f"Failed to send ticket created to member: {e}")
+                break
+    
+    @staticmethod
+    async def emit_inbox_badge_update(member_email: str, unread_count: int):
+        """Update member's inbox badge count in real-time"""
+        for sid, member_info in connected_members.items():
+            if member_info.get('member_email') == member_email:
+                try:
+                    await sio.emit('member:inbox_badge', {
+                        'unread_count': unread_count,
+                        'timestamp': datetime.now(timezone.utc).isoformat()
+                    }, room=sid)
+                    logger.info(f"Updated inbox badge for member: {member_email} ({unread_count})")
+                except Exception as e:
+                    logger.error(f"Failed to update inbox badge: {e}")
+                break
 
 
 # Socket.IO Event Handlers
