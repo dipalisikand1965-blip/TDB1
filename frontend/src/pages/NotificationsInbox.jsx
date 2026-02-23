@@ -144,7 +144,7 @@ const NotificationsInbox = () => {
     setSearchParams(newParams);
   };
 
-  // Fetch user's pets
+  // Fetch user's pets and sync with global selected pet
   useEffect(() => {
     const fetchPets = async () => {
       if (!user?.email) return;
@@ -157,9 +157,22 @@ const NotificationsInbox = () => {
         });
         if (response.ok) {
           const data = await response.json();
-          setPets(data.pets || []);
-          if (data.pets?.length > 0) {
-            setActivePet(data.pets[0]);
+          const fetchedPets = data.pets || [];
+          setPets(fetchedPets);
+          
+          if (fetchedPets.length > 0) {
+            // Check localStorage for globally selected pet
+            const savedPetId = localStorage.getItem('selectedPetId');
+            if (savedPetId) {
+              const savedPet = fetchedPets.find(p => p.id === savedPetId);
+              if (savedPet) {
+                setActivePet(savedPet);
+              } else {
+                setActivePet(fetchedPets[0]);
+              }
+            } else {
+              setActivePet(fetchedPets[0]);
+            }
           }
         }
       } catch (err) {
@@ -168,6 +181,21 @@ const NotificationsInbox = () => {
     };
     fetchPets();
   }, [user?.email, token]);
+  
+  // Listen for storage events to sync pet selection across tabs/components
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'selectedPetId' && e.newValue) {
+        const selectedPet = pets.find(p => p.id === e.newValue);
+        if (selectedPet) {
+          setActivePet(selectedPet);
+        }
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [pets]);
 
   // Fetch notifications
   const fetchNotifications = useCallback(async () => {
