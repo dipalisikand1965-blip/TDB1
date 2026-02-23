@@ -257,7 +257,23 @@ const DinePage = () => {
       pillar="dine"
       title="Dine - Fresh Pet Meals & Restaurants | The Doggy Company"
       description="Discover nutritious fresh meals and pet-friendly restaurants for your furry friend."
+      useTabNavigation={true}
+      onSubcategoryChange={handleTabChange}
     >
+      {/* ═══════════════════════════════════════════════════════════════════════════════ */}
+      {/* TAB CONTENT ROUTING - Render different content based on activeTab             */}
+      {/* ═══════════════════════════════════════════════════════════════════════════════ */}
+      
+      {/* FRESH MEALS TAB - Gold Standard Implementation */}
+      {activeTab === 'fresh-meals' ? (
+        <FreshMealsTab
+          activePet={activePet}
+          token={token}
+          userEmail={authUser?.email || user?.email}
+        />
+      ) : (
+      /* ALL DINE TAB (default) and other tabs - Original content */
+      <>
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* DINE CONCIERGE LAYER - Intelligence-driven personalized picks */}
       {/* Order: Concierge Layer → Hangouts → Catalogue */}
