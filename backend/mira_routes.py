@@ -24553,3 +24553,166 @@ async def invalidate_curated_cache(
         logger.error(f"[CACHE_INVALIDATE] Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CONCIERGE PICK TICKET CREATION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class ConciergePickTicketCreate(BaseModel):
+    pet_id: str
+    card_id: str
+    card_type: str  # "concierge_product" or "concierge_service"
+    card_name: str
+    pillar: str
+    description: Optional[str] = None
+    why_for_pet: Optional[str] = None
+
+
+@router.post("/concierge-pick/ticket")
+async def create_ticket_from_concierge_pick(
+    data: ConciergePickTicketCreate,
+    request: Request,
+    db=Depends(get_db)
+):
+    """
+    Create a service desk ticket from a concierge pick card.
+    
+    This is called when a user taps the CTA on a Concierge® Product or Service card.
+    The ticket will be created and notifications sent to both admin and member.
+    """
+    try:
+        from datetime import datetime, timezone
+        import uuid
+        
+        # Get user from token
+        auth_header = request.headers.get("authorization", "")
+        if not auth_header.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Not authenticated")
+        
+        token = auth_header.split(" ")[1]
+        from jose import jwt
+        from config import SECRET_KEY, ALGORITHM
+        
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            user_email = payload.get("sub")
+        except Exception as e:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        # Fetch user details
+        user = await db.users.find_one({"email": user_email}, {"_id": 0})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Fetch pet details
+        pet = await db.pets.find_one({"id": data.pet_id}, {"_id": 0})
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet not found")
+        
+        pet_name = pet.get("name", "Pet")
+        
+        # Generate ticket ID
+        now = datetime.now(timezone.utc)
+        ticket_id = f"TKT-{now.strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+        
+        # Build ticket document
+        ticket_doc = {
+            "ticket_id": ticket_id,
+            "member": {
+                "name": user.get("name", user_email.split("@")[0]),
+                "email": user_email,
+                "phone": user.get("phone", ""),
+            },
+            "pet_id": data.pet_id,
+            "pet_name": pet_name,
+            "category": f"{data.pillar}_concierge",
+            "sub_category": data.card_type.replace("concierge_", ""),  # "product" or "service"
+            "urgency": "medium",
+            "description": data.description or f"Request for {data.card_name}",
+            "source": "curated_picks",
+            "source_reference": data.card_id,
+            "card_name": data.card_name,
+            "card_type": data.card_type,
+            "pillar": data.pillar,
+            "why_for_pet": data.why_for_pet,
+            "assigned_to": None,
+            "status": "new",
+            "priority": 3,
+            "messages": [{
+                "id": str(uuid.uuid4()),
+                "type": "ticket_created",
+                "content": f"New {data.card_type.replace('_', ' ').title()} request: {data.card_name} for {pet_name}",
+                "sender": "member",
+                "sender_name": user.get("name", user_email),
+                "channel": "curated_picks",
+                "timestamp": now.isoformat(),
+                "is_internal": False
+            }],
+            "internal_notes": "",
+            "tags": [data.pillar, "curated_pick", data.card_type],
+            "created_at": now.isoformat(),
+            "updated_at": now.isoformat(),
+            "first_response_at": None,
+            "resolved_at": None,
+            "closed_at": None,
+        }
+        
+        # Insert ticket
+        result = await db.service_desk_tickets.insert_one(ticket_doc)
+        ticket_doc["id"] = str(result.inserted_id)
+        
+        # ─── CREATE MEMBER NOTIFICATION ───────────────────────────────────────
+        member_notification = {
+            "id": str(uuid.uuid4()),
+            "user_email": user_email,
+            "type": "ticket_created",
+            "title": f"Request Received: {data.card_name}",
+            "message": f"Your request for {data.card_name} for {pet_name} has been received. We'll be in touch soon!",
+            "metadata": {
+                "ticket_id": ticket_id,
+                "pet_id": data.pet_id,
+                "pet_name": pet_name,
+                "card_id": data.card_id,
+                "pillar": data.pillar
+            },
+            "read": False,
+            "created_at": now.isoformat()
+        }
+        await db.notifications.insert_one(member_notification)
+        
+        # ─── CREATE ADMIN NOTIFICATION ────────────────────────────────────────
+        admin_notification = {
+            "id": str(uuid.uuid4()),
+            "type": "new_concierge_request",
+            "title": f"New Concierge Request: {data.card_name}",
+            "message": f"{user.get('name', user_email)} requested {data.card_name} for {pet_name}",
+            "metadata": {
+                "ticket_id": ticket_id,
+                "user_email": user_email,
+                "pet_id": data.pet_id,
+                "pet_name": pet_name,
+                "card_id": data.card_id,
+                "card_type": data.card_type,
+                "pillar": data.pillar
+            },
+            "read": False,
+            "for_admin": True,
+            "created_at": now.isoformat()
+        }
+        await db.admin_notifications.insert_one(admin_notification)
+        
+        logger.info(f"[CONCIERGE_TICKET] Created ticket {ticket_id} for {pet_name} - {data.card_name}")
+        
+        return {
+            "success": True,
+            "ticket_id": ticket_id,
+            "message": f"Request received for {data.card_name}"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[CONCIERGE_TICKET] Error creating ticket: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
