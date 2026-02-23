@@ -701,6 +701,7 @@ const MiraChatWidget = ({
     // Fix "concierge" pronunciation - "con-see-erzh" for better TTS
     cleanText = cleanText
       .replace(/pet concierge®?/gi, 'pet con-see-erzh')
+      .replace(/soul mate/gi, 'soul-mate')
       .replace(/your concierge®?/gi, 'your con-see-erzh')
       .replace(/our concierge®?/gi, 'our con-see-erzh')
       .replace(/the concierge®?/gi, 'the con-see-erzh')
