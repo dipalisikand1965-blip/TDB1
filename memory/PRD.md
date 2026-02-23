@@ -15,7 +15,21 @@
 
 ## 📋 CURRENT SESSION WORK (Feb 23, 2026)
 
-### ✅ COMPLETED
+### ✅ COMPLETED TODAY
+
+| Task | Status | Files |
+|------|--------|-------|
+| P0: Verify navigation fix (no /inbox redirect) | ✅ VERIFIED | Testing confirmed page stays on `/dine/meals` after CTA click |
+| P1: Update Mira chat quick chips for Fresh Meals | ✅ DONE | `MiraChatWidget.jsx` - Line 308, 1155 |
+| P2: Hero text contrast improvement | ✅ DONE | `MealsPage.jsx` - Stronger gradient overlay |
+| P2: Ask Mira orb size reduction | ✅ DONE | `MiraChatWidget.jsx` - Line 1223 size='sm' |
+| /dine page restructure | ✅ DONE | `DinePage.jsx` - New category cards, combined Dine Out section |
+| Dine Essentials - Feeding Tools seeding | ✅ DONE | 6 new products in `dine_bundles` collection |
+| Dine Essentials - Supplements seeding | ✅ DONE | 6 new products in `dine_bundles` collection |
+| Dine Essentials - Category pills UI | ✅ DONE | `DinePage.jsx` - All, Feeding Tools, Supplements, Gift Kits |
+| Dining Products - Load More | ✅ DONE | `DinePage.jsx` - 3 rows + load more button |
+
+### ✅ PREVIOUSLY COMPLETED
 
 | Task | Status | Files |
 |------|--------|-------|
@@ -23,24 +37,31 @@
 | Phase 1: Fresh Meals UI Fixes | ✅ DONE | `MealsPage.jsx` - petAvoid prop, placeholder |
 | Phase 2: FlowModal Engine | ✅ DONE | `FlowModal.jsx`, `freshMealsFlows.js` |
 | Universal Service Command Hook | ✅ DONE | `useUniversalServiceCommand.js` |
-| Universal Service Button | ✅ DONE | `UniversalServiceButton.jsx` |
 | Fresh Meals Curated Picks (4 cards) | ✅ DONE | `FreshMealsCuratedPicks.jsx`, `fresh_meals_concierge_cards.py` |
 | Removed duplicate floating buttons | ✅ DONE | `MealsPage.jsx` |
-| Disabled auto-navigation to /inbox | ✅ DONE | `FlowModal.jsx`, `FreshMealsCuratedPicks.jsx` |
 
-### 🔴 KNOWN ISSUES (NOT FIXED)
+---
 
-| Issue | Priority | Description | Status |
-|-------|----------|-------------|--------|
-| CTA navigation | P0 | Curated card CTAs still navigate to /inbox instead of staying on page | **BUG - needs fix** |
-| Toast not showing | P1 | Toast "Request sent to Concierge®" may not be visible | **Needs verification** |
-| MiraOrb click area | P2 | "Ask Mira" text click doesn't work, only orb button works | Known behavior |
+## 🗂️ /DINE PAGE STRUCTURE (NEW ORDER)
 
-### ⚠️ WHAT WAS ATTEMPTED BUT NOT VERIFIED WORKING
-
-1. **navigateToInbox: false** - Changed in both `FlowModal.jsx` and `FreshMealsCuratedPicks.jsx` but not verified
-2. **Toast with action button** - Should show "Open request" button but needs testing
-3. **Stay on page behavior** - User reports it still navigates away
+1. **Curated Picks** - Mira's personalized picks for active pet
+2. **Need Dining Help?** - DiningConciergePicker widget
+3. **Elevated Concierge®** - Private Chef, VIP Access, Birthday Package
+4. **Explore Dine Categories** (5 cards):
+   - Fresh Meals → `/dine/meals` (Gold Standard)
+   - Treats → `/celebrate/treats`
+   - Frozen → `/celebrate/treats` (temporary)
+   - Feeding Tools → Dine Essentials section
+   - Supplements → Dine Essentials section
+5. **🍽️ Dine Out Section** (combined):
+   - Buddy Meetups card
+   - Concierge® Featured Restaurants (with Load More)
+   - Pet Cafes Near Me (city search)
+6. **Dine Essentials** (with category pills):
+   - All | Feeding Tools | Supplements | Gift Kits
+   - 17 total products seeded
+7. **Dining Products** - 3 rows + Load More
+8. **Own a Pet-Friendly Restaurant?** - CTA for partners
 
 ---
 
