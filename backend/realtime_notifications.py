@@ -33,8 +33,8 @@ sio = socketio.AsyncServer(
     http_compression=True
 )
 
-# Track connected agents with metadata
-connected_agents: Dict[str, Dict[str, Any]] = {}  # sid -> {agent_id, connected_at, last_heartbeat}
+# Track connected members with metadata
+connected_members: Dict[str, Dict[str, Any]] = {}  # sid -> {member_email, user_id, connected_at, last_heartbeat}
 
 
 class NotificationManager:
