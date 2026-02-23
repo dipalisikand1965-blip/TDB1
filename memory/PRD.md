@@ -11,6 +11,8 @@
 
 **Key Principle**: Every concierge action must create a service desk ticket and trigger real-time notifications, capturing user intent and enabling a premium, consultative service model.
 
+**Voice Configuration**: ElevenLabs Eloise (British English) with OpenAI TTS backup
+
 ---
 
 ## CURRENT SESSION WORK (Feb 23, 2026)
@@ -21,8 +23,28 @@
 |------|--------|---------|
 | **P0 CRITICAL: /join Onboarding Bug** | FIXED | Race condition causing "Oops!" error resolved |
 | **Duplicate Soul Questions Fix** | FIXED | SoulBuilder now skips questions already answered during onboarding |
-| **Comprehensive Audit** | DONE | Created `/app/memory/AUDIT.md` with full feature/API inventory |
+| **Picks → Chat Flow** | FIXED | Picks from Pet's Picks panel now flow into Mira chat with ticket creation |
+| **Backend Bug** | FIXED | `load_pet_soul` AttributeError on `soul_enrichments` list |
+| **Comprehensive Audit** | DONE | Created `/app/memory/AUDIT.md` and `/app/memory/GAPS_AUDIT.md` |
 | **Score Display Bug** | FIXED | Fixed floating point display issue (87.29999... -> 87%) |
+
+### PICKS → CHAT FLOW FIX
+
+**Problem**: When users selected picks from the purple "Pet's Picks" button in Mira chat widget, the selections did not flow back into the chat conversation.
+
+**Solution Implemented**:
+1. Added `onPickClick` callback prop to `PersonalizedPicksPanel`
+2. Added `flowPickToChat()` function to handle single pick → chat flow
+3. Updated `MiniCart` component with "Ask" button for each selected item
+4. `MiraChatWidget` now creates service desk ticket when pick is clicked
+5. Chat receives user message + assistant confirmation with ticket ID
+
+**Files Modified**: 
+- `/app/frontend/src/components/Mira/PersonalizedPicksPanel.jsx`
+- `/app/frontend/src/components/MiraChatWidget.jsx`
+
+**Canonical Flow Now Works**:
+User Intent → Pick Selection → Service Desk Ticket → Admin/Member Notifications → Chat Confirmation
 
 ### DUPLICATE QUESTIONS FIX DETAILS
 
