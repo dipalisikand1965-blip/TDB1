@@ -14681,6 +14681,34 @@ async def reverse_geocode(lat: float, lng: float):
         return {"success": False, "error": str(e)}
 
 
+@api_router.delete("/member/location")
+async def clear_member_location(authorization: str = Header(None)):
+    """
+    Clear member's saved location to force re-detection.
+    Useful when location is incorrect or user has moved.
+    """
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization required")
+    
+    try:
+        token = authorization.replace("Bearer ", "")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_email = payload.get("sub")
+    except Exception as e:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    result = await db.users.update_one(
+        {"email": user_email},
+        {"$unset": {"location": ""}}
+    )
+    
+    if result.modified_count > 0:
+        logger.info(f"[GEO] ✅ Location cleared for {user_email} - will re-detect on next visit")
+        return {"success": True, "message": "Location cleared. Refresh the page to detect your current location."}
+    else:
+        return {"success": False, "message": "No location was saved"}
+
+
 # ============================================
 # GUARDRAIL: NO NOTIFICATION-ONLY OBJECTS
 # ============================================
