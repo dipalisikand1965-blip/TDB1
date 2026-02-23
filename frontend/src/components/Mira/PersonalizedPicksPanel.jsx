@@ -706,6 +706,7 @@ const PersonalizedPicksPanel = ({
   token,
   userEmail,
   onSendSuccess, // Callback when picks are sent successfully - adds message to chat
+  onPickClick,   // NEW: Callback when a pick is clicked - flows into chat conversation
   // NEW: Engine picks props (B6)
   enginePicks = [],        // Pre-computed picks from picks engine
   enginePillar = null,     // Auto-detected pillar from classification
