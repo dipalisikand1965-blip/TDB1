@@ -1065,6 +1065,36 @@ const MyPets = () => {
                                 </div>
                               )}
                               
+                              {/* Saved Favorites */}
+                              {petFavorites[pet.id]?.length > 0 && (
+                                <div>
+                                  <h5 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                    <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
+                                    Saved Favorites ({petFavorites[pet.id].length})
+                                  </h5>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    {petFavorites[pet.id].slice(0, 4).map((fav, idx) => (
+                                      <div 
+                                        key={idx} 
+                                        className="p-3 bg-gradient-to-r from-pink-50 to-red-50 rounded-lg flex items-start gap-2 border border-pink-200"
+                                        data-testid={`favorite-item-${idx}`}
+                                      >
+                                        <span className="text-lg">{fav.icon || '❤️'}</span>
+                                        <div className="flex-1 min-w-0">
+                                          <span className="text-sm text-gray-700 font-medium block truncate">{fav.title}</span>
+                                          <span className="text-xs text-pink-500 capitalize">{fav.pillar}</span>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  {petFavorites[pet.id].length > 4 && (
+                                    <p className="text-xs text-gray-500 mt-2 text-center">
+                                      + {petFavorites[pet.id].length - 4} more favorites
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+                              
                               {/* No knowledge yet */}
                               {(!miraKnowledge[pet.id].soul_knowledge?.length && 
                                 !miraKnowledge[pet.id].memory_knowledge?.length) && (
