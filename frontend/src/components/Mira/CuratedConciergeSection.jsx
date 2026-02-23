@@ -113,7 +113,7 @@ const FallbackCards = ({ petName, onRetry }) => (
           <Cake className="w-5 h-5 text-pink-400" />
         </div>
         <div>
-          <p className="text-xs text-pink-400 font-medium">Concierge Product</p>
+          <p className="text-xs text-pink-400 font-medium">Concierge® Product</p>
           <h4 className="text-white font-semibold">Custom Celebration Cake</h4>
         </div>
       </div>
@@ -130,7 +130,7 @@ const FallbackCards = ({ petName, onRetry }) => (
           <PartyPopper className="w-5 h-5 text-purple-400" />
         </div>
         <div>
-          <p className="text-xs text-purple-400 font-medium">Concierge Service</p>
+          <p className="text-xs text-purple-400 font-medium">Concierge® Service</p>
           <h4 className="text-white font-semibold">Plan Celebration End-to-End</h4>
         </div>
       </div>
