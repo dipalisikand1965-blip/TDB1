@@ -880,6 +880,7 @@ const CelebratePage = () => {
           subtitle="See your personalized price based on your city, pet size, and requirements"
           maxServices={8}
         />
+      </div>
       
       {/* Occasion Box Builder Modal */}
       <OccasionBoxBuilder
