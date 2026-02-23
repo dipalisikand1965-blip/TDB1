@@ -233,7 +233,7 @@
 
 | Task | Description |
 |------|-------------|
-| YouTube Videos (Celebrate/Dine) | Training/celebration content |
+| Replicate Gold Standard Pattern | Apply "Fresh Meals" tab structure to other Dine sub-categories |
 | Surface Reminders to Dashboard | Show upcoming reminders from backend |
 | Grooming Scheduling UI | Connect to Care pillar |
 
