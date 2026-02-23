@@ -59,21 +59,22 @@ const getCardIcon = (card) => {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const SkeletonCard = () => (
-  <div className="rounded-2xl bg-white/5 border border-white/10 p-4 animate-pulse">
-    <div className="flex items-start gap-3">
-      <div className="w-10 h-10 rounded-xl bg-white/10" />
-      <div className="flex-1 space-y-2">
-        <div className="h-4 bg-white/10 rounded w-3/4" />
-        <div className="h-3 bg-white/10 rounded w-full" />
-        <div className="h-3 bg-white/10 rounded w-2/3" />
+  <div className="rounded-xl bg-white/5 border border-white/10 p-3 animate-pulse">
+    <div className="flex items-start gap-2.5">
+      <div className="w-9 h-9 rounded-lg bg-white/10" />
+      <div className="flex-1 space-y-1.5">
+        <div className="h-2 bg-white/10 rounded w-20" />
+        <div className="h-3.5 bg-white/10 rounded w-3/4" />
       </div>
     </div>
-    <div className="mt-4 h-9 bg-white/10 rounded-lg" />
+    <div className="mt-2 h-3 bg-white/10 rounded w-full" />
+    <div className="mt-1.5 h-3 bg-white/10 rounded w-2/3" />
+    <div className="mt-2.5 h-8 bg-white/10 rounded-lg" />
   </div>
 );
 
 const LoadingState = () => (
-  <div className="space-y-3">
+  <div className="space-y-2">
     {[1, 2, 3, 4].map(i => <SkeletonCard key={i} />)}
   </div>
 );
