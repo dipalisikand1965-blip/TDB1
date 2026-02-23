@@ -831,21 +831,21 @@ const CelebratePage = () => {
         )}
       </div>
 
-      {/* Bottom CTA */}
-      <div className="bg-gradient-to-r from-pink-500 to-purple-500 text-white py-10 sm:py-16 px-4">
+      {/* Bottom CTA - Glass Style */}
+      <div className="gradient-celebrate-dark text-white py-12 sm:py-20 px-4 section-fade-in stagger-6" data-testid="celebrate-bottom-cta">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
+          <h2 className="ios-title-1 text-white mb-3 sm:mb-4">
             Ready to Plan the Pawfect Celebration?
           </h2>
-          <p className="text-base sm:text-xl text-pink-100 mb-6 sm:mb-8 px-2">
+          <p className="ios-body text-pink-100 mb-8 sm:mb-10 px-2">
             Let our Celebrate Concierge® create an unforgettable experience for your furry friend.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4 sm:px-0">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 px-4 sm:px-0">
+            {/* Glass Primary Button */}
             <Button 
               size="lg" 
-              className="w-full sm:w-auto bg-white text-pink-600 hover:bg-pink-50 gap-2 h-12 sm:h-11 font-semibold shadow-lg active:scale-95 transition-transform"
+              className="w-full sm:w-auto bg-white/95 backdrop-blur-md text-pink-600 hover:bg-white gap-2 h-14 sm:h-12 font-semibold shadow-xl rounded-full haptic-btn"
               onClick={() => {
-                // Ensure form is pre-filled with current user data when opening
                 if (user) {
                   setConciergeForm(prev => ({
                     ...prev,
@@ -861,8 +861,9 @@ const CelebratePage = () => {
               <Sparkles className="w-5 h-5" />
               Ask Concierge®
             </Button>
+            {/* Glass Secondary Button */}
             <Link to="/celebrate/birthday-cakes" className="w-full sm:w-auto">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white/20 gap-2 h-12 sm:h-11 active:scale-95 transition-transform">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto bg-white/10 backdrop-blur-md border-white/50 text-white hover:bg-white/20 gap-2 h-14 sm:h-12 rounded-full haptic-btn" data-testid="shop-products-btn">
                 <ShoppingBag className="w-5 h-5" />
                 Shop Products
               </Button>
@@ -872,12 +873,13 @@ const CelebratePage = () => {
       </div>
       
       {/* === SERVICE CATALOG WITH PRICING === */}
-      <ServiceCatalogSection 
-        pillar="celebrate"
-        title="Celebrate, Personalised"
-        subtitle="See your personalized price based on your city, pet size, and requirements"
-        maxServices={8}
-      />
+      <div className="section-fade-in" data-testid="celebrate-service-catalog">
+        <ServiceCatalogSection 
+          pillar="celebrate"
+          title="Celebrate, Personalised"
+          subtitle="See your personalized price based on your city, pet size, and requirements"
+          maxServices={8}
+        />
       
       {/* Occasion Box Builder Modal */}
       <OccasionBoxBuilder
