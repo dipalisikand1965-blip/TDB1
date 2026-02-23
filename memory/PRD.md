@@ -6,70 +6,97 @@ The user, Dipali, is the founder of a "pet operating system" named Mira, built i
 
 ---
 
-## ✅ SESSION 17 COMPLETED - February 23, 2026
+## ✅ SESSION 18 COMPLETED - February 23, 2026
 
-### 1. Fixed Mobile Dashboard Header
-**Issue**: Pet dashboard header was scrambled/overflowing on mobile with 12+ pets
-**Fix Applied**:
-- Mobile now shows "12 pets" count instead of all pet names
-- Desktop shows first 4 names + "...+8 more" if many pets
-- "View Soul →" shortened button text on mobile
-- Pet selector pills properly scroll horizontally
+### 1. Auto-Geolocation System (Complete)
+**What was built:**
+- Browser GPS detection on login
+- Google reverse geocoding for city/state
+- Save to user profile (`users.location` in MongoDB)
+- Fallback to IP-based geolocation
+- Session-based (only once per session)
+- Delete/reset endpoint for incorrect locations
 
-**Files Modified**:
-- `/app/frontend/src/pages/MemberDashboard.jsx` (lines 915-930, 1080-1097)
+**APIs Added:**
+- `GET /api/geo/reverse?lat=X&lng=Y` - Reverse geocode using Google
+- `POST /api/member/location` - Save location to profile
+- `DELETE /api/member/location` - Clear saved location
 
-### 2. Concierge Hours Changed to 24/7
-**Issue**: Concierge showed 9 AM - 9 PM hours
-**Fix Applied**:
-- Changed `DEFAULT_CONCIERGE_HOURS.is_24x7` to `true`
-- Updated offline message to "We're always here for you!"
-- Backend cache cleared on restart
+### 2. Location-Aware Intelligence Layer (Complete)
+**What was built:**
+- Curated picks endpoint now accepts Authorization header
+- Extracts user location from token → user profile
+- Passes `user_location` to pillar card selection
+- Service cards show "— available in {city}" in `why_for_pet`
+- Response includes `meta.user_location: {city, state}`
+- Frontend shows "📍 Curated for {city}" badge
 
-**File Modified**:
-- `/app/backend/routes/concierge_os_routes.py` (lines 111-120)
+**Files Modified:**
+- `/app/backend/mira_routes.py` - Added location extraction
+- `/app/backend/app/data/dine_concierge_cards.py` - Location-aware why generation
+- `/app/backend/app/data/celebrate_concierge_cards.py` - Location-aware why generation
+- `/app/frontend/src/components/Mira/CuratedConciergeSection.jsx` - Location badge UI
 
-**API Response Now**:
+### 3. Real-Time Location Suggestions API (Complete)
+**New endpoint:**
+`GET /api/mira/location-suggestions/{pillar}?pet_id=X&event_type=Y`
+
+**Returns real Google Places data:**
+- Dine: Pet-friendly restaurants, cafes, parks
+- Celebrate: Pet bakeries, party venues
+- Care: Veterinary clinics
+- Enjoy: Groomers, pet spas
+
+**Example Response for Bangalore:**
 ```json
 {
-  "is_live": true,
-  "status_text": "Live now",
-  "message": "Your Concierge is ready to help 24/7",
-  "hours_config": { "is_24x7": true }
+  "nearby_restaurants": [
+    {"name": "The Pet People Cafe", "rating": 4.7, "distance_km": 8.5},
+    {"name": "Trippy Goat Cafe", "rating": 4.3, "distance_km": 1.5}
+  ],
+  "nearby_parks": [
+    {"name": "The Weekend Dog Park @ Cubbon Park", "rating": 4.8}
+  ]
 }
 ```
 
-### 3. Audited Inbox & Service Desk Two-Way Communication
-**Verified Working**:
-- Member replies → `service_desk_tickets` + `mira_tickets` + `mira_conversations`
-- Admin replies → `member_notifications` + `concierge_threads` + email
-- WebSocket real-time updates for both directions
-- Optimistic UI on both ends
+### 4. Location Service Module (New)
+**Created:** `/app/backend/services/location_concierge_service.py`
+- `search_nearby_pet_friendly()` - Google Places text search with location bias
+- `get_dine_location_suggestions()` - Dine-specific nearby places
+- `get_celebrate_location_suggestions()` - Celebrate-specific nearby places
+- Haversine distance calculation
+- Open/closed status detection
 
-**Key Endpoints**:
-- `POST /api/member/tickets/{ticket_id}/reply` - Member sends reply
-- `POST /api/tickets/{ticket_id}/reply` - Admin sends reply
-- Both create proper notifications and sync to all relevant collections
+### 5. API Documentation (Complete)
+**Created:** `/app/memory/API_INTEGRATIONS.md`
+- Complete list of configured APIs
+- Pillar-by-pillar API strategy
+- Pet product API research (HUFT, Supertails, Zigly)
+- Pet service API research (PetBacker, Happy Pet Tech)
+- Integration recommendations
 
 ---
 
-## ✅ PREVIOUS SESSIONS (Summary)
+## 📊 API INVENTORY
 
-### Session 16 - Multi-Pet Sync & WebSocket Notifications
-- Pet selection syncs across Dashboard, Dine, Celebrate, Inbox
-- Real-time notification bell updates via WebSocket
-- Optimistic UI on CTA clicks
+### Configured & Ready
+| API | Key Variable | Use Cases |
+|-----|--------------|-----------|
+| Google Places | `GOOGLE_PLACES_API_KEY` | Nearby venues, restaurants, vets |
+| Google Maps | Same | Directions, distance |
+| Google Geocoding | Same | Reverse geocode |
+| OpenWeather | `OPENWEATHER_API_KEY` | Weather alerts |
+| Foursquare | `FOURSQUARE_API_KEY` | Venue details |
+| Amadeus | `AMADEUS_API_KEY` | Travel/hotels |
+| YouTube | `YOUTUBE_API_KEY` | Training videos |
+| Eventbrite | `EVENTBRITE_API_KEY` | Pet events |
 
-### Session 15 - Intelligence Layer & Card Polish
-- Varied `why_for_pet` explanations per card
-- Card-specific `cta_text` (not generic)
-- Nav dropdown z-index fix
-- Restaurant "Oops" error fix
-
-### Session 14 - Concierge Card UI/UX
-- High-contrast design
-- Solid CTAs (pink products, purple services)
-- Golden "why" line styling
+### Need Partnerships
+- HUFT - No public API
+- Supertails - No public API
+- Zigly - Affiliate only (Cuelinks)
+- PetBacker - No public API
 
 ---
 
@@ -80,16 +107,19 @@ The user, Dipali, is the founder of a "pet operating system" named Mira, built i
 | WebSocket notification flow | 🟡 USER VERIFY | Click CTA → Check bell count |
 | Multi-pet sync | 🟡 USER VERIFY | Switch pet → Navigate pages |
 | Mobile scroll-to-top | 🟡 USER VERIFY | Navigate between pages on mobile |
+| Geolocation detection | 🟡 USER VERIFY | Clear cache, login fresh |
 
 ---
 
 ## 🔲 UPCOMING TASKS
 
 ### P0 - Next Sprint
-- Roll out Intelligence Layer to remaining 11 pillars (Stay, Travel, Care, etc.)
-- Each needs: `{pillar}_concierge_cards.py` + integration in `intelligence_layer.py`
+- Display real nearby venues in Dine/Celebrate pages (not just badge)
+- Add "Nearby Pet-Friendly" section with Google Places results
+- Roll out location-aware picks to remaining 11 pillars
 
 ### P1 - High Priority
+- Add distance/travel time to concierge cards
 - Proactive alerts on PetHomePage (birthdays, vaccinations)
 - Razorpay payment integration
 
@@ -100,75 +130,13 @@ The user, Dipali, is the founder of a "pet operating system" named Mira, built i
 
 ---
 
-## ARCHITECTURE
-
-### Frontend Stack
-```
-React 18 + React Router
-TailwindCSS + Shadcn/UI
-Framer Motion (animations)
-Socket.IO Client (WebSocket)
-Context: AuthContext, CartContext, PillarContext
-```
-
-### Backend Stack
-```
-FastAPI (Python)
-MongoDB (MONGO_URL)
-Socket.IO (realtime_notifications.py)
-OpenAI GPT (Mira chat)
-```
-
-### Key Files Reference
-```
-FRONTEND:
-├── /src/pages/MemberDashboard.jsx        # Fixed mobile header
-├── /src/pages/NotificationsInbox.jsx     # Member inbox
-├── /src/pages/TicketThread.jsx           # Conversation view
-├── /src/components/admin/DoggyServiceDesk.jsx  # Admin service desk
-├── /src/context/PillarContext.jsx        # Global pet state
-└── /src/hooks/useMemberSocket.js         # WebSocket hook
-
-BACKEND:
-├── /routes/concierge_os_routes.py        # 24/7 hours config
-├── /ticket_routes.py                      # Two-way reply sync
-├── /server.py                             # Member reply endpoint
-└── /realtime_notifications.py            # WebSocket events
-```
-
-### Key API Endpoints
-```
-GET  /api/os/concierge/status              # Returns is_live: true (24/7)
-POST /api/member/tickets/{id}/reply        # Member sends reply
-POST /api/tickets/{id}/reply               # Admin sends reply
-GET  /api/member/notifications/inbox/{email}  # Get inbox
-POST /api/mira/concierge-pick/ticket       # Create from CTA
-```
-
----
-
-## DATABASE COLLECTIONS
-
-| Collection | Purpose |
-|------------|---------|
-| `pets` | Pet profiles (breed, size, allergies) |
-| `users` | User accounts |
-| `service_desk_tickets` | Canonical ticket store |
-| `mira_tickets` | Ticket spine (synced) |
-| `mira_conversations` | Chat history |
-| `member_notifications` | User inbox |
-| `admin_notifications` | Concierge alerts |
-| `curated_picks_cache` | 30-min cache for picks |
-| `concierge_threads` | Two-way chat threads |
-
----
-
 ## TEST CREDENTIALS
 
 ```
 MEMBER LOGIN:
 Email: dipali@clubconcierge.in
 Password: test123
+Location: Bangalore (manually set)
 
 ADMIN LOGIN:
 Username: aditya
@@ -177,43 +145,5 @@ Password: lola4304
 
 ---
 
-## INTELLIGENCE LAYER OVERVIEW
-
-### How Cards Are Selected
-1. Load all cards for pillar (10 cards each)
-2. Score by persona affinity weights
-3. Derive traits from multiple sources (soul_traits, personality, temperament)
-4. Apply breed defaults if thin profile
-5. Select top 3 products + 2 services
-6. Generate personalized `why_for_pet`
-7. Cache for 30 minutes
-
-### Pillars Implemented
-- ✅ Celebrate
-- ✅ Dine
-- 🔲 Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt
-
----
-
-## WEBSOCKET FLOW
-
-### Member Side
-```
-1. useMemberSocket.js connects on page load
-2. Emits 'register_member' with userEmail
-3. Listens for 'new_notification', 'inbox_badge'
-4. Updates bell count in real-time
-```
-
-### Admin Side
-```
-1. useServiceDeskSocket.js connects
-2. Listens for 'new_ticket', 'member_reply'
-3. Shows toast notifications
-4. Real-time ticket updates
-```
-
----
-
-*Last Updated: February 23, 2026 - End of Session 17*
+*Last Updated: February 23, 2026 - End of Session 18*
 *Preview URL: https://mira-soul.preview.emergentagent.com*
