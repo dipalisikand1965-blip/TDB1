@@ -2043,7 +2043,7 @@ const SoulBuilder = () => {
             
             {/* Soul Score Badge */}
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white font-bold text-sm shadow-lg">
-              {currentSoulScore}% Soul
+              {Math.round(currentSoulScore)}% Soul
             </div>
           </div>
           
