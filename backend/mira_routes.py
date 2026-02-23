@@ -24159,6 +24159,7 @@ async def get_curated_set(
     intent: Optional[str] = None,
     event_type: Optional[str] = None,
     force_refresh: bool = False,
+    authorization: Optional[str] = Header(None),
     db=Depends(get_db)
 ):
     """
@@ -24176,6 +24177,9 @@ async def get_curated_set(
     - intent: Optional user intent context (e.g., "birthday_planning")
     - event_type: Optional event type (e.g., "birthday", "gotcha_day")
     - force_refresh: Skip cache and generate fresh (default: False)
+    
+    Headers:
+    - Authorization: Bearer token to fetch user location for location-aware recommendations
     """
     from app.intelligence_layer import generate_curated_set
     
@@ -24198,6 +24202,24 @@ async def get_curated_set(
         if not pet:
             raise HTTPException(status_code=404, detail="Pet not found")
         
+        # 🌍 LOCATION-AWARE: Try to get user location from token
+        user_location = None
+        if authorization:
+            try:
+                token = authorization.replace("Bearer ", "")
+                import jwt
+                from server import SECRET_KEY
+                payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+                user_email = payload.get("sub")
+                
+                if user_email:
+                    user = await db.users.find_one({"email": user_email}, {"_id": 0, "location": 1})
+                    if user and user.get("location"):
+                        user_location = user["location"]
+                        logger.info(f"[CURATED] 📍 Location-aware mode: {user_location.get('city')}")
+            except Exception as e:
+                logger.debug(f"[CURATED] Could not get user location: {e}")
+        
         # Extract soul traits from doggy_soul_answers
         soul_traits = extract_soul_traits(pet)
         
@@ -24218,7 +24240,9 @@ async def get_curated_set(
             "doggy_soul_answers": pet.get("doggy_soul_answers", {}),
             "personality": pet.get("personality", {}),
             "soul": pet.get("soul", {}),
-            "temperament": pet.get("temperament", "")
+            "temperament": pet.get("temperament", ""),
+            # 🌍 LOCATION-AWARE: Include user location for personalized recommendations
+            "user_location": user_location
         }
         
         # Build intent context
@@ -24244,6 +24268,13 @@ async def get_curated_set(
             db=db,
             use_cache=not force_refresh
         )
+        
+        # Add location context to response if available
+        if user_location:
+            curated_set["meta"]["user_location"] = {
+                "city": user_location.get("city"),
+                "state": user_location.get("state")
+            }
         
         return curated_set
         
