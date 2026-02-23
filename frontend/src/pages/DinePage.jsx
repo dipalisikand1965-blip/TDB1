@@ -57,6 +57,24 @@ const DinePage = () => {
   const { addToCart } = useCart();
   const { user: authUser, token } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
+  // Tab state - Read from URL or default to 'all'
+  const [activeTab, setActiveTab] = useState(() => {
+    const tabFromUrl = searchParams.get('tab');
+    return tabFromUrl || 'all';
+  });
+  
+  // Update URL when tab changes
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId || 'all');
+    if (tabId && tabId !== 'all') {
+      navigate(`/dine?tab=${tabId}`, { replace: true });
+    } else {
+      navigate('/dine', { replace: true });
+    }
+  };
+  
   const [restaurants, setRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [bundles, setBundles] = useState([]);
