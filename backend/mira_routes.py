@@ -12029,9 +12029,14 @@ async def mira_chat(
                 pet_name=pet_name_for_filter
             )
         
+        # Only override picks if the Picks Engine returned results
+        # Otherwise preserve picks that were set by the handler (e.g., celebrate flow)
+        engine_picks = picks_response_data.get("picks", [])
+        existing_picks = response_dict.get("picks", [])
+        
         response_dict.update({
-            "picks": picks_response_data.get("picks", []),
-            "concierge": picks_response_data.get("concierge", {}),
+            "picks": engine_picks if engine_picks else existing_picks,  # Preserve handler-set picks
+            "concierge": picks_response_data.get("concierge", {}) if picks_response_data.get("concierge") else response_dict.get("concierge", {}),
             "safety_override": picks_response_data.get("safety_override", {}),
             "missing_profile_fields": picks_response_data.get("missing_profile_fields", []),
             "picks_debug": picks_response_data.get("picks_debug"),
