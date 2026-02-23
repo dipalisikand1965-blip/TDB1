@@ -526,37 +526,41 @@ export const buildTicketPayload = ({
   flowAnswers,
   draftId,
   entryPoint,
-  constraintsApplied = []
+  constraintsApplied = [],
+  user = null
 }) => {
   return {
-    // Required fields
+    // Required fields for /api/service-requests
     type: schema.ticketType,
     pillar: 'dine',
-    sub_pillar: 'fresh_meals',
-    card_id: schema.id,
-    draft_id: draftId,
-    pet_id: pet?.id,
+    source: 'fresh_meals_flow_modal',
     
-    // Context
-    context_source: 'dine/fresh-meals',
-    entry_point: entryPoint || 'card_cta',
-    
-    // Data
-    plan_builder: {
-      goals: planBuilder?.goals || [],
-      protein: planBuilder?.protein,
-      allergySafe: planBuilder?.allergySafe || false,
-      cadence: planBuilder?.cadence,
-      budget: planBuilder?.budget
+    // REQUIRED: customer info
+    customer: {
+      name: user?.name || 'Member',
+      email: user?.email || '',
+      phone: user?.phone || user?.whatsapp || ''
     },
-    flow_answers: flowAnswers,
     
-    // Metadata
-    constraints_applied: constraintsApplied,
-    metadata: {
+    // REQUIRED: details object
+    details: {
+      sub_pillar: 'fresh_meals',
+      card_id: schema.id,
+      draft_id: draftId,
+      pet_id: pet?.id,
       pet_name: pet?.name,
       pet_breed: pet?.breed,
-      pet_weight: pet?.weight,
+      context_source: 'dine/fresh-meals',
+      entry_point: entryPoint || 'card_cta',
+      plan_builder: {
+        goals: planBuilder?.goals || [],
+        protein: planBuilder?.protein,
+        allergySafe: planBuilder?.allergySafe || false,
+        cadence: planBuilder?.cadence,
+        budget: planBuilder?.budget
+      },
+      flow_answers: flowAnswers,
+      constraints_applied: constraintsApplied,
       allergies: pet?.allergies || pet?.soul_data?.allergies || [],
       schema_id: schema.id,
       schema_title: schema.title
