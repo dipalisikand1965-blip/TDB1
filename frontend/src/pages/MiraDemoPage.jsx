@@ -4966,6 +4966,11 @@ const MiraDemoPage = () => {
         counts={apiCounts}
         activeTab={activeOSTab}
       />
+      
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          FOOTER - Site Footer with navigation and links
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <Footer />
     </div>
   );
 };
