@@ -146,6 +146,35 @@ const DinePage = () => {
     fetchPets();
   }, [token]);
 
+  // Listen for pet selection changes from navbar/other components
+  useEffect(() => {
+    const handlePetChange = (e) => {
+      const newPetId = e.detail?.petId || e.newValue;
+      if (newPetId && userPets.length > 0) {
+        const newPet = userPets.find(p => p.id === newPetId);
+        if (newPet) {
+          setActivePet(newPet);
+        }
+      }
+    };
+
+    // Listen for custom event (same window)
+    window.addEventListener('petSelectionChanged', handlePetChange);
+    
+    // Listen for storage event (cross-tab)
+    const handleStorageChange = (e) => {
+      if (e.key === 'selectedPetId' && e.newValue) {
+        handlePetChange({ detail: { petId: e.newValue } });
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('petSelectionChanged', handlePetChange);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [userPets]);
+
   // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
