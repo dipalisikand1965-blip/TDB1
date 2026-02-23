@@ -523,6 +523,7 @@ const CuratedConciergeSection = ({
           <QuestionCard
             card={data.question_card}
             petId={petId}
+            petName={petName}
             token={token}
             onAnswerSaved={handleAnswerSaved}
           />
