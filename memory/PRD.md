@@ -281,6 +281,21 @@
 
 ## KEY API ENDPOINTS
 
+### Favorites
+```
+GET  /api/favorites/{pet_id}          - Get all favorites for a pet
+POST /api/favorites/add               - Add item to favorites
+POST /api/favorites/remove            - Remove item from favorites
+GET  /api/favorites/{pet_id}/summary  - Get favorites summary by pillar
+```
+
+### YouTube
+```
+GET  /api/mira/youtube/by-topic       - Get videos by training topic
+GET  /api/mira/youtube/by-breed       - Get breed-specific videos
+GET  /api/mira/youtube/videos         - Search videos by query
+```
+
 ### Birthday/Reminders
 ```
 GET  /api/birthday-engine/upcoming     - Get upcoming celebrations
