@@ -46,11 +46,50 @@ const getUser = () => {
   }
 };
 
-// Fresh Meals Categories
-const freshMealsCategories = [
-  { id: 'treats', name: 'Fresh Treats', icon: Utensils, description: 'Vet-approved fresh treats', path: '/celebrate/treats' },
-  { id: 'meals', name: 'Fresh Meals', icon: Coffee, description: 'Nutritious meals & food', path: '/dine/meals' },
-  { id: 'birthday', name: 'Birthday Cakes', icon: Sparkles, description: 'Celebrate with your pet', path: '/celebrate/cakes' },
+// Dine Category Cards - New Structure
+const dineCategories = [
+  { 
+    id: 'fresh-meals', 
+    name: 'Fresh Meals', 
+    icon: Truck, 
+    description: 'Vet-formulated fresh food delivered', 
+    path: '/dine/meals',
+    gradient: 'from-green-500 to-emerald-600',
+    badge: 'Gold Standard'
+  },
+  { 
+    id: 'treats', 
+    name: 'Treats', 
+    icon: Heart, 
+    description: 'Healthy treats & chews', 
+    path: '/celebrate/treats',
+    gradient: 'from-pink-500 to-rose-500'
+  },
+  { 
+    id: 'frozen', 
+    name: 'Frozen', 
+    icon: Sparkles, 
+    description: 'Frozen meals & toppers', 
+    path: '/celebrate/treats', // Temporary redirect
+    gradient: 'from-blue-500 to-cyan-500',
+    badge: 'Coming Soon'
+  },
+  { 
+    id: 'feeding-tools', 
+    name: 'Feeding Tools', 
+    icon: Utensils, 
+    description: 'Bowls, feeders & accessories', 
+    path: '/dine?section=essentials&category=feeding-tools',
+    gradient: 'from-orange-500 to-amber-500'
+  },
+  { 
+    id: 'supplements', 
+    name: 'Supplements', 
+    icon: Leaf, 
+    description: 'Vitamins & nutritional support', 
+    path: '/dine?section=essentials&category=supplements',
+    gradient: 'from-purple-500 to-violet-500'
+  },
 ];
 
 const DinePage = () => {
