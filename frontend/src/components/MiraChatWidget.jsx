@@ -1958,6 +1958,68 @@ const MiraChatWidget = ({
           userEmail={user?.email}
           pillar={pillar} // Lock to current pillar - hide other pillar tabs
           enginePillar={pillar} // Pre-filter to current pillar
+          onPickClick={async (pickData) => {
+            // Flow pick into chat conversation - canonical flow
+            // 1. Add user message showing the pick they're interested in
+            const userMsg = {
+              id: `pick-user-${Date.now()}`,
+              role: 'user',
+              content: `I'm interested in "${pickData.name}" for ${pickData.pet_name}`,
+              timestamp: new Date().toISOString()
+            };
+            setMessages(prev => [...prev, userMsg]);
+            
+            // 2. Create service desk ticket via canonical flow
+            try {
+              const ticketResponse = await fetch(`${getApiUrl()}/api/service-desk/create`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
+                body: JSON.stringify({
+                  type: pickData.pick_type === 'concierge' ? 'concierge_service' : 'product_inquiry',
+                  pillar: pickData.pillar || pillar,
+                  title: pickData.name,
+                  description: pickData.description || pickData.why_it_fits || `Interest in ${pickData.name}`,
+                  pet_id: pickData.pet_id,
+                  pet_name: pickData.pet_name,
+                  pick_data: pickData,
+                  source: 'mira_chat_picks',
+                  channel: 'chat',
+                  user_email: user?.email
+                })
+              });
+              
+              if (ticketResponse.ok) {
+                const ticketData = await ticketResponse.json();
+                const ticketId = ticketData.ticket_id || ticketData.request_id;
+                
+                // 3. Add assistant confirmation to chat
+                const confirmMsg = {
+                  id: `pick-confirm-${Date.now()}`,
+                  role: 'assistant',
+                  content: `✅ Great choice! I've sent your interest in **${pickData.name}** for ${pickData.pet_name} to our Concierge® team. Request #${ticketId}\n\nThey'll reach out shortly with availability and next steps. Is there anything specific you'd like me to tell them about your preferences?`,
+                  timestamp: new Date().toISOString()
+                };
+                setMessages(prev => [...prev, confirmMsg]);
+                
+                toast.success(`Sent to Concierge®!`, {
+                  description: `Request #${ticketId} for ${pickData.pet_name}`
+                });
+              }
+            } catch (err) {
+              console.error('[MiraChat] Pick flow error:', err);
+              // Still add a message even if ticket creation fails
+              const errorMsg = {
+                id: `pick-error-${Date.now()}`,
+                role: 'assistant',
+                content: `I've noted your interest in **${pickData.name}** for ${pickData.pet_name}. Let me connect you with our team. Would you like me to provide more details about this option?`,
+                timestamp: new Date().toISOString()
+              };
+              setMessages(prev => [...prev, errorMsg]);
+            }
+          }}
           onSendSuccess={(data) => {
             // Add confirmation message to chat
             const confirmMsg = {
