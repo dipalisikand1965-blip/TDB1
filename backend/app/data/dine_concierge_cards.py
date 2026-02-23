@@ -391,7 +391,14 @@ DINE_CONCIERGE_SERVICES = [
         "icon": "chef-hat",
         "description": "A curated chef experience with pet-safe courses and human pairing.",
         "why_concierge": "Menu design + chef coordination + venue constraints require concierge execution.",
-        "cta_text": "Book Experience",
+        "cta_text": "Book experience",
+        "why_phrases": {
+            "pampered": "Luxe dining for pampered palates",
+            "foodie": "Gourmet experience for food lovers",
+            "elegant": "Refined menu for sophisticated taste",
+            "sensitive_tummy": "Chef-crafted meals for sensitive tummies",
+            "default": "Private dining for you and your pet"
+        },
         "default_questions": [
             {
                 "id": "location",
