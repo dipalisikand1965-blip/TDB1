@@ -853,17 +853,31 @@ const DinePage = () => {
           </div>
         </section>
 
-        {/* Dine Essentials - Bundles Section */}
+        {/* Dine Essentials - Enhanced with Sub-sections */}
         {bundles.length > 0 && (
           <section className="mt-16" data-testid="dine-essentials-section">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
                   <Package className="w-8 h-8 text-orange-500" />
                   Dine Essentials
                 </h2>
-                <p className="text-gray-600 mt-1">Everything you need for dining out with your furry friend</p>
+                <p className="text-gray-600 mt-1">Everything you need for pet dining & nutrition</p>
               </div>
+            </div>
+            
+            {/* Category Pills */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              <Badge className="bg-orange-100 text-orange-700 cursor-pointer hover:bg-orange-200 px-3 py-1">All</Badge>
+              <Badge variant="outline" className="cursor-pointer hover:bg-gray-100 px-3 py-1">
+                <Utensils className="w-3 h-3 mr-1" /> Feeding Tools
+              </Badge>
+              <Badge variant="outline" className="cursor-pointer hover:bg-gray-100 px-3 py-1">
+                <Leaf className="w-3 h-3 mr-1" /> Supplements
+              </Badge>
+              <Badge variant="outline" className="cursor-pointer hover:bg-gray-100 px-3 py-1">
+                <Gift className="w-3 h-3 mr-1" /> Gift Kits
+              </Badge>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
@@ -899,7 +913,7 @@ const DinePage = () => {
                   {/* CONTENT - Separate block */}
                   <div className="p-3 sm:p-4 bg-white flex flex-col flex-grow">
                     <Badge variant="outline" className="mb-2 text-xs capitalize w-fit">
-                      {bundle.category?.replace('_', ' ')}
+                      {bundle.category?.replace('_', ' ') || 'Dine Essential'}
                     </Badge>
                     <p className="text-xs sm:text-sm text-gray-500 line-clamp-2 mb-3">{bundle.description}</p>
                     <div className="flex items-center justify-between mt-auto pt-2">
