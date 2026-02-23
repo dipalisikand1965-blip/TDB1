@@ -468,8 +468,20 @@ const CuratedConciergeSection = ({
         });
 
         if (response.ok) {
+          const ticketResult = await response.json();
           hapticFeedback.success();
-          toast.success('Request received! Check your Inbox.');
+          toast.success('Request received! Updating your Inbox...', { duration: 2000 });
+          
+          // Mark this card as ticket created
+          setCreatedTickets(prev => ({
+            ...prev,
+            [card.id]: ticketResult.ticket_id || true
+          }));
+          
+          // Update notification badge if callback provided
+          if (onNotificationUpdate) {
+            onNotificationUpdate();
+          }
         } else {
           const errData = await response.json().catch(() => ({}));
           console.error('[CuratedConciergeSection] API error:', errData);
