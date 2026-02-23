@@ -16747,16 +16747,17 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 
                 logger.info(f"[PICKS ENGINE] Late run: {len(picks_engine_output.picks)} picks, concierge={picks_engine_output.concierge.get('cta_prominence')}")
                 
-                # DYNAMIC PICKS FALLBACK for late run
+                # DYNAMIC PICKS FALLBACK for late run - works even without pet context
                 logger.info(f"[DYNAMIC PICKS] Checking fallback: picks_count={len(picks_engine_output.picks)}, has_pet={selected_pet is not None}")
-                if not picks_engine_output.picks and selected_pet:
+                if not picks_engine_output.picks:
                     try:
                         from services.dynamic_picks_generator import generate_dynamic_picks
-                        logger.info(f"[DYNAMIC PICKS] Generating for pillar={pillar}, pet={selected_pet.get('name', 'Unknown')}")
+                        pet_context = selected_pet or {"name": "your pet"}
+                        logger.info(f"[DYNAMIC PICKS] Generating for pillar={pillar}, pet={pet_context.get('name', 'Unknown')}")
                         dynamic_picks = generate_dynamic_picks(
                             user_message=user_message,
                             pillar=pillar or "general",
-                            pet_context=selected_pet,
+                            pet_context=pet_context,
                             location=user_city,
                             additional_context={"session_id": session_id}
                         )
