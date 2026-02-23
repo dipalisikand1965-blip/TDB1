@@ -1540,6 +1540,141 @@ const MiraChatWidget = ({
                       </div>
                     )}
                     
+                    {/* NEARBY PLACES - Restaurants, Vets, Parks from Mira */}
+                    {msg.nearbyPlaces && msg.nearbyPlaces.places && msg.nearbyPlaces.places.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        <p className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1">
+                          {msg.nearbyPlaces.type === 'restaurants' ? '🍽️' : 
+                           msg.nearbyPlaces.type === 'vet_clinics' ? '🏥' : 
+                           msg.nearbyPlaces.type === 'dog_parks' ? '🌳' : 
+                           msg.nearbyPlaces.type === 'stays' ? '🏨' : '📍'}
+                          {msg.nearbyPlaces.type === 'restaurants' ? 'Pet-Friendly Restaurants' : 
+                           msg.nearbyPlaces.type === 'vet_clinics' ? 'Vet Clinics' : 
+                           msg.nearbyPlaces.type === 'dog_parks' ? 'Dog Parks' : 
+                           msg.nearbyPlaces.type === 'stays' ? 'Pet-Friendly Stays' : 'Nearby Places'}
+                          <span className="text-[10px] font-normal ml-1 text-gray-400">({msg.nearbyPlaces.city})</span>
+                        </p>
+                        
+                        {msg.nearbyPlaces.places.slice(0, 4).map((place, placeIdx) => (
+                          <div 
+                            key={place.id || place.name || placeIdx}
+                            className="bg-white rounded-xl p-3 border border-gray-200 haptic-card"
+                          >
+                            {/* Place Image */}
+                            {place.image && (
+                              <div className="w-full h-24 rounded-lg overflow-hidden mb-2">
+                                <img 
+                                  src={place.image} 
+                                  alt={place.name}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => { e.target.style.display = 'none'; }}
+                                />
+                              </div>
+                            )}
+                            
+                            <div className="flex justify-between items-start gap-2">
+                              <div className="flex-1 min-w-0">
+                                <p className="font-bold text-gray-900 text-sm">{place.name}</p>
+                                {place.area && (
+                                  <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                                    <MapPin className="w-3 h-3" /> {place.area}
+                                  </p>
+                                )}
+                                {/* Rating & Price */}
+                                <div className="flex items-center gap-2 mt-1">
+                                  {place.rating && (
+                                    <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium">
+                                      ⭐ {place.rating}
+                                    </span>
+                                  )}
+                                  {place.priceRange && (
+                                    <span className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
+                                      {place.priceRange}
+                                    </span>
+                                  )}
+                                  {place.is_24_hours && (
+                                    <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-medium">
+                                      24/7
+                                    </span>
+                                  )}
+                                </div>
+                                {/* Pet Info */}
+                                {place.pet_policy && (
+                                  <p className="text-xs text-green-600 mt-1">🐕 {place.pet_policy}</p>
+                                )}
+                                {place.highlights && place.highlights[0] && (
+                                  <p className="text-xs text-gray-500 mt-1 italic">{place.highlights[0]}</p>
+                                )}
+                              </div>
+                              
+                              {/* CTA Button - Send to Concierge for reservation */}
+                              <button
+                                onClick={async () => {
+                                  try {
+                                    const response = await fetch(`${getApiUrl()}/api/service-desk/create`, {
+                                      method: 'POST',
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                                      },
+                                      body: JSON.stringify({
+                                        type: msg.nearbyPlaces.type === 'restaurants' ? 'restaurant_reservation' : 
+                                              msg.nearbyPlaces.type === 'vet_clinics' ? 'vet_appointment' : 
+                                              msg.nearbyPlaces.type === 'stays' ? 'stay_booking' : 'place_inquiry',
+                                        pillar: msg.nearbyPlaces.type === 'restaurants' ? 'dine' : 
+                                               msg.nearbyPlaces.type === 'vet_clinics' ? 'care' : 
+                                               msg.nearbyPlaces.type === 'stays' ? 'stay' : 'enjoy',
+                                        title: `${msg.nearbyPlaces.type === 'restaurants' ? 'Reserve' : 'Inquiry'}: ${place.name}`,
+                                        description: `Request for ${place.name} in ${place.area || msg.nearbyPlaces.city}${selectedPet ? ` for ${selectedPet.name}` : ''}`,
+                                        place_data: place,
+                                        pet_id: selectedPet?.id,
+                                        pet_name: selectedPet?.name,
+                                        source: 'mira_chat',
+                                        channel: 'chat'
+                                      })
+                                    });
+                                    
+                                    if (response.ok) {
+                                      const data = await response.json();
+                                      toast.success(`Sent to Concierge®! Ticket #${data.ticket_id || 'created'}`, {
+                                        description: `We'll confirm your ${msg.nearbyPlaces.type === 'restaurants' ? 'reservation' : 'request'} shortly`
+                                      });
+                                      // Add confirmation message
+                                      setMessages(prev => [...prev, {
+                                        id: `place-confirm-${Date.now()}`,
+                                        role: 'assistant',
+                                        content: `✅ Perfect! I've sent your ${msg.nearbyPlaces.type === 'restaurants' ? 'reservation request' : 'inquiry'} for **${place.name}** to our Concierge® team. They'll confirm availability and get back to you shortly!`
+                                      }]);
+                                    }
+                                  } catch (err) {
+                                    console.error('Place booking error:', err);
+                                    toast.error('Unable to send request. Please try again.');
+                                  }
+                                }}
+                                className={`px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap haptic-btn ${
+                                  msg.nearbyPlaces.type === 'restaurants' 
+                                    ? 'bg-orange-500 hover:bg-orange-600 text-white' 
+                                    : msg.nearbyPlaces.type === 'vet_clinics'
+                                    ? 'bg-red-500 hover:bg-red-600 text-white'
+                                    : 'bg-purple-500 hover:bg-purple-600 text-white'
+                                }`}
+                              >
+                                {msg.nearbyPlaces.type === 'restaurants' ? 'Reserve' : 
+                                 msg.nearbyPlaces.type === 'vet_clinics' ? 'Book' : 
+                                 'Send to Concierge®'}
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                        
+                        {/* Verified badge */}
+                        <div className="flex items-center justify-center gap-1 text-xs text-gray-400 mt-2">
+                          <span className="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
+                          Verified by Concierge® • Tap to reserve
+                        </div>
+                      </div>
+                    )}
+                    
                     {/* Quick Book Form (inline service booking) */}
                     {msg.showQuickBookForm && (
                       <div className="mt-3 p-3 bg-white rounded-lg border border-purple-200">
