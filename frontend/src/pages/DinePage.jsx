@@ -1872,6 +1872,27 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
     );
   }
 
+  // Safeguard: if restaurant data is invalid, show error state and close
+  if (!isValidRestaurant) {
+    console.error('[ReservationModal] Invalid restaurant data:', restaurant);
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+        <Card className="max-w-md w-full p-8 text-center" onClick={(e) => e.stopPropagation()}>
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <X className="w-8 h-8 text-red-600" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">Unable to load restaurant</h3>
+          <p className="text-gray-600 mb-4">
+            Please try again or select a different restaurant.
+          </p>
+          <Button className="w-full bg-purple-600 hover:bg-purple-700" onClick={onClose}>
+            Close
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
       <Card className="max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
