@@ -685,9 +685,9 @@ def select_concierge_cards(
     if len(selected_services) < min_services and len(scored_services) >= min_services:
         selected_services = scored_services[:min_services]
     
-    # Generate "why for pet" explanations - MUST pass soul_traits for accurate personalization
+    # Generate "why for pet" explanations with location awareness
     for card in selected_products + selected_services:
-        card["why_for_pet"] = generate_why_explanation(card, pet_name, soul_traits)
+        card["why_for_pet"] = generate_why_explanation(card, pet_name, soul_traits, user_location)
     
     logger.info(f"[CONCIERGE_SELECT] Selected {len(selected_products)} products, {len(selected_services)} services for {pet_name}")
     
