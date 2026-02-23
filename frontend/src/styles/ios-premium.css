@@ -1,662 +1,573 @@
 /**
- * iOS PREMIUM EXPERIENCE
- * Apple App Store Quality Standards
- * "Make pet parents go wowowowowo"
- * 
- * Layers on top of mira-prod.css
+ * iOS Premium Design System
+ * Gold Standard Mobile-First UI/UX
+ * For Mira Pet OS - Celebrate & Dine Pillars
  */
 
-@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&family=SF+Pro+Text:wght@400;500;600&display=swap');
+/* ═══════════════════════════════════════════════════════════════════════════
+   TYPOGRAPHY - SF Pro Style
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ========================================
-   iOS PREMIUM ROOT VARIABLES
-   ======================================== */
-:root {
-  /* iOS System Colors */
-  --ios-blue: #007AFF;
-  --ios-green: #34C759;
-  --ios-indigo: #5856D6;
-  --ios-orange: #FF9500;
-  --ios-pink: #FF2D55;
-  --ios-purple: #AF52DE;
-  --ios-red: #FF3B30;
-  --ios-teal: #5AC8FA;
-  --ios-yellow: #FFCC00;
-  
-  /* Premium Mira Colors */
-  --premium-glow: rgba(168, 85, 247, 0.4);
-  --premium-pink-glow: rgba(236, 72, 153, 0.35);
-  
-  /* Spring Physics */
-  --spring-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  --spring-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --spring-ios: cubic-bezier(0.4, 0, 0, 1);
-  
-  /* Touch & Tap */
-  --tap-scale: 0.97;
-  --tap-duration: 0.1s;
-  
-  /* Safe Areas */
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-left: env(safe-area-inset-left, 0px);
-  --safe-right: env(safe-area-inset-right, 0px);
+.ios-title-large {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
-/* ========================================
-   PREMIUM TYPOGRAPHY - SF Pro Feel
-   ======================================== */
-.mira-prod,
-.mira-prod * {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
+.ios-title-1 {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
-/* iOS-style dynamic type */
-@media (max-width: 480px) {
-  .mira-prod {
-    font-size: 16px; /* Prevent zoom on iOS */
-  }
-  
-  /* Tighter line heights on mobile */
-  .mp-card-text,
-  .formatted-text {
-    line-height: 1.5;
-    letter-spacing: -0.01em;
-  }
-  
-  /* Premium headings */
-  .mp-welcome-title,
-  .hero-title {
-    letter-spacing: -0.02em;
-    font-weight: 800;
-  }
+.ios-title-2 {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
 }
 
-/* ========================================
-   TOUCH INTERACTIONS - iOS Native Feel
-   ======================================== */
+.ios-title-3 {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
 
-/* Universal tap state for ALL interactive elements */
-.mp-chip,
-.mp-dock-btn,
-.mp-test-chip,
-.mp-welcome-chip,
-.quick-chip,
-.trait-chip,
-.mp-product-add,
-.mp-btn-send,
-.mp-btn-mic,
-.mp-btn-voice,
-.mp-btn-photo,
-.soul-journey-btn,
-.history-btn,
-.mp-concierge-btn,
-.mp-service-card,
-.mp-experience-card,
-.mp-dynamic-card,
-.mp-remembered-card,
-.mp-product-tile,
-.mp-header-tile,
-.mp-header-help,
-.mp-header-picks,
-.mp-header-picks-icon,
-.mp-header-insight-icon,
-.mira-love-card,
-.mp-feedback-btn,
-button {
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-  user-select: none;
-  -webkit-user-select: none;
+.ios-headline {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.ios-body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.ios-callout {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.ios-subhead {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.ios-footnote {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.ios-caption {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GLASSMORPHISM CARDS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.glass-card-dark {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card-celebrate {
+  background: rgba(255, 240, 245, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 45, 85, 0.15);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(255, 45, 85, 0.1);
+}
+
+.glass-card-dine {
+  background: rgba(255, 248, 240, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 149, 0, 0.15);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(255, 149, 0, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HAPTIC BUTTON FEEDBACK
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.haptic-btn {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.haptic-btn:active {
+  transform: scale(0.95);
+}
+
+.haptic-card {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.haptic-card:active {
+  transform: scale(0.98);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FLOATING PILL DOCK (Filters)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.pill-dock {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 16px;
+  margin: 0 -16px;
+}
+
+.pill-dock::-webkit-scrollbar {
+  display: none;
+}
+
+.pill-dock {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.pill-item {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  padding: 10px 18px;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #3A3A3C;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  white-space: nowrap;
 }
 
-/* Active/Pressed state - iOS spring feel */
-.mp-chip:active,
-.mp-dock-btn:active,
-.mp-test-chip:active,
-.mp-welcome-chip:active,
-.quick-chip:active,
-.trait-chip:active,
-.mp-product-add:active,
-.soul-journey-btn:active,
-.history-btn:active,
-.mp-concierge-btn:active,
-.mp-service-card:active,
-.mp-experience-card:active,
-.mp-remembered-card:active,
-.mira-love-card:active,
-button:active:not(:disabled) {
-  transform: scale(var(--tap-scale)) !important;
-  transition: transform var(--tap-duration) var(--spring-ios) !important;
+.pill-item:active {
+  transform: scale(0.95);
 }
 
-/* Send button special active state */
-.mp-btn-send:active:not(:disabled),
-.mp-btn-mic:active,
-.mp-btn-voice:active,
-.mp-btn-photo:active {
-  transform: scale(0.9) !important;
-  transition: transform 0.08s var(--spring-ios) !important;
+.pill-item.active {
+  background: linear-gradient(135deg, #1C1C1E 0%, #3A3A3C 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Product tile active state */
-.mp-product-tile:active {
-  transform: scale(0.98) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+.pill-item-celebrate.active {
+  background: linear-gradient(135deg, #FF2D55 0%, #AF52DE 100%);
 }
 
-/* ========================================
-   SPRING ANIMATIONS - Apple Physics
-   ======================================== */
+.pill-item-dine.active {
+  background: linear-gradient(135deg, #FF9500 0%, #FF3B30 100%);
+}
 
-/* Entrance animations with spring */
-@keyframes ios-slide-up {
-  0% {
+/* ═══════════════════════════════════════════════════════════════════════════
+   BENTO GRID LAYOUTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.bento-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 768px) {
+  .bento-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+.bento-featured {
+  grid-column: span 2;
+}
+
+@media (min-width: 768px) {
+  .bento-featured {
+    grid-column: span 2;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SQUIRCLE CARD STYLE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.squircle-card {
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+.squircle-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.1));
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SAFE AREA SPACING
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.ios-safe-bottom {
+  padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 80px);
+}
+
+.ios-safe-top {
+  padding-top: env(safe-area-inset-top, 44px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SMOOTH SECTION TRANSITIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.section-fade-in {
+  animation: sectionFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes sectionFadeIn {
+  from {
     opacity: 0;
     transform: translateY(20px);
   }
-  100% {
+  to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@keyframes ios-scale-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+.stagger-1 { animation-delay: 0ms; }
+.stagger-2 { animation-delay: 80ms; }
+.stagger-3 { animation-delay: 160ms; }
+.stagger-4 { animation-delay: 240ms; }
+.stagger-5 { animation-delay: 320ms; }
+.stagger-6 { animation-delay: 400ms; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CELEBRATE THEME
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.theme-celebrate {
+  --primary: #FF2D55;
+  --secondary: #AF52DE;
+  --background: #FFF0F5;
+  --surface: rgba(255, 255, 255, 0.8);
+  --accent: #FFD700;
 }
 
-@keyframes ios-bounce-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+.gradient-celebrate {
+  background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 99%);
 }
 
-/* Apply spring animations to elements */
-.mp-msg-mira {
-  animation: ios-slide-up 0.4s var(--spring-smooth) forwards;
+.gradient-celebrate-dark {
+  background: linear-gradient(135deg, #FF2D55 0%, #AF52DE 100%);
 }
 
-.mp-msg-user {
-  animation: ios-slide-up 0.3s var(--spring-smooth) forwards;
+/* ═══════════════════════════════════════════════════════════════════════════
+   DINE THEME
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.theme-dine {
+  --primary: #FF9500;
+  --secondary: #FF3B30;
+  --background: #FFF8F0;
+  --surface: rgba(255, 255, 255, 0.9);
+  --accent: #34C759;
 }
 
-.mp-product-tile {
-  animation: ios-scale-in 0.35s var(--spring-smooth) forwards;
+.gradient-dine {
+  background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
 }
 
-.mp-chip,
-.quick-chip {
-  animation: ios-scale-in 0.3s var(--spring-smooth) forwards;
+.gradient-dine-dark {
+  background: linear-gradient(135deg, #FF9500 0%, #FF3B30 100%);
 }
 
-/* Staggered chip animation */
-.quick-chips .quick-chip:nth-child(1) { animation-delay: 0.05s; }
-.quick-chips .quick-chip:nth-child(2) { animation-delay: 0.1s; }
-.quick-chips .quick-chip:nth-child(3) { animation-delay: 0.15s; }
-.quick-chips .quick-chip:nth-child(4) { animation-delay: 0.2s; }
-.quick-chips .quick-chip:nth-child(5) { animation-delay: 0.25s; }
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE OPTIMIZATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ========================================
-   GLASSMORPHISM - Premium Depth
-   ======================================== */
-
-/* Enhanced glass effect for cards */
-.mp-card {
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  background: rgba(35, 22, 62, 0.85);
-}
-
-/* Glass header */
-.mp-card-header {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  background: rgba(0, 0, 0, 0.25);
-}
-
-/* Premium glass buttons */
-.mp-header-tile,
-.mp-header-help,
-.mp-header-insight-icon,
-.mp-header-picks-icon {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-/* ========================================
-   KEYBOARD & INPUT - iOS Optimization
-   ======================================== */
-
-/* Prevent zoom on input focus (iOS) */
-.mp-input,
-input,
-textarea,
-select {
-  font-size: 16px !important; /* Prevents iOS zoom */
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-/* iOS keyboard pushes content */
-@supports (padding: env(safe-area-inset-bottom)) {
-  .mp-composer {
-    padding-bottom: calc(24px + var(--safe-bottom));
-  }
-}
-
-/* Better input focus states */
-.mp-input:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.3);
-}
-
-.mp-input-row:focus-within {
-  border-color: var(--mira-pink);
-  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
-}
-
-/* ========================================
-   SCROLLING - Native iOS Feel
-   ======================================== */
-
-/* Smooth momentum scrolling */
-.mp-messages,
-.mp-card-header,
-.quick-chips {
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-}
-
-/* Hide scrollbars on mobile */
-@media (max-width: 768px) {
-  .mp-messages::-webkit-scrollbar,
-  .mp-card-header::-webkit-scrollbar,
-  .quick-chips::-webkit-scrollbar {
-    display: none;
+@media (max-width: 640px) {
+  .mobile-full-bleed {
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
   
-  .mp-messages,
-  .mp-card-header,
-  .quick-chips {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-}
-
-/* Overscroll behavior */
-.mp-messages {
-  overscroll-behavior: contain;
-}
-
-/* ========================================
-   NAVIGATION DOCK - iOS Tab Bar Feel
-   ======================================== */
-
-@media (max-width: 768px) {
-  .mp-dock {
-    padding: 8px 12px;
-    gap: 6px;
-    justify-content: center;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  .mobile-card-compact {
+    padding: 12px;
   }
   
-  .mp-dock-btn {
-    min-width: 44px; /* iOS touch target */
-    min-height: 44px;
-    padding: 10px 14px;
-    font-size: 13px;
-    border-radius: 22px;
-  }
-  
-  .mp-dock-btn svg {
-    width: 18px;
-    height: 18px;
-  }
-}
-
-/* ========================================
-   WELCOME SCREEN - Hero Experience
-   ======================================== */
-
-/* Premium avatar glow on mobile */
-@media (max-width: 768px) {
-  .hero-avatar-container,
-  .mp-welcome-avatar {
-    filter: drop-shadow(0 0 30px rgba(168, 85, 247, 0.4));
-  }
-  
-  .hero-title,
-  .mp-welcome-title {
-    font-size: 32px;
-    line-height: 1.1;
-  }
-  
-  .hero-subtitle,
-  .mp-welcome-subtitle {
-    font-size: 15px;
-    padding: 0 8px;
-  }
-}
-
-/* ========================================
-   PRODUCT CARDS - Premium Touch
-   ======================================== */
-
-@media (max-width: 480px) {
-  .mp-products-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  
-  .mp-product-tile {
-    border-radius: 14px;
-  }
-  
-  .mp-product-img {
-    height: 100px;
-  }
-  
-  .mp-product-content {
-    padding: 10px 12px;
-  }
-  
-  .mp-product-name {
-    font-size: 13px;
-    -webkit-line-clamp: 2;
-  }
-  
-  .mp-product-price {
+  .mobile-text-sm {
     font-size: 14px;
   }
-  
-  .mp-product-add {
-    padding: 10px 12px;
-    font-size: 12px;
-    min-height: 44px; /* iOS touch target */
-  }
 }
 
-/* ========================================
-   CHAT BUBBLES - Premium Feel
-   ======================================== */
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRODUCT CARD PREMIUM
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-/* User bubble - More prominent gradient */
-.mp-bubble-user {
-  background: linear-gradient(135deg, #ec4899 0%, #d946ef 50%, #8b5cf6 100%);
-  box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+.product-card-premium {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-/* Mira bubble - Premium glass */
-.mp-card {
-  box-shadow: 
-    0 4px 6px rgba(0, 0, 0, 0.1),
-    0 10px 40px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+.product-card-premium:active {
+  transform: scale(0.98);
 }
 
-@media (max-width: 480px) {
-  .mp-bubble-user {
-    max-width: 85%;
-    font-size: 15px;
-    padding: 12px 16px;
-    border-radius: 20px 20px 4px 20px;
-  }
-  
-  .mp-card {
-    border-radius: 16px;
-  }
+.product-card-premium .add-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s, background 0.15s;
 }
 
-/* ========================================
-   QUICK CHIPS - iOS Button Feel
-   ======================================== */
-
-@media (max-width: 480px) {
-  .quick-chips,
-  .mp-chips {
-    gap: 10px;
-    padding: 0 4px;
-  }
-  
-  .quick-chip,
-  .mp-chip {
-    padding: 12px 18px;
-    font-size: 14px;
-    min-height: 44px; /* iOS touch target */
-    border-radius: 22px;
-  }
-  
-  .chip-icon,
-  .mp-chip span {
-    font-size: 16px;
-  }
+.product-card-premium .add-btn:active {
+  transform: scale(0.9);
+  background: #f0f0f0;
 }
 
-/* ========================================
-   COMPOSER - iOS Message Bar Feel
-   ======================================== */
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXPERIENCE CARD PREMIUM (Concierge)
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-@media (max-width: 480px) {
-  .mp-composer {
-    padding: 12px 8px 20px;
-    background: linear-gradient(180deg, transparent 0%, rgba(15, 7, 32, 0.98) 20%);
-  }
-  
-  .mp-input-row {
-    padding: 4px;
-    border-radius: 24px;
-    min-height: 52px;
-  }
-  
-  .mp-input {
-    padding: 14px 12px;
-    font-size: 16px;
-  }
-  
-  .mp-btn-mic,
-  .mp-btn-voice,
-  .mp-btn-photo,
-  .mp-btn-send {
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    border-radius: 22px;
-  }
-  
-  .mp-btn-send {
-    background: linear-gradient(135deg, #ec4899, #a855f7);
-  }
+.experience-card {
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ========================================
-   HAPTIC FEEDBACK VISUAL INDICATORS
-   For elements that trigger haptics
-   ======================================== */
-
-/* Pulse animation for interactive elements */
-@keyframes haptic-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(236, 72, 153, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
+.experience-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
-/* Add subtle glow on tap for premium feel */
-.haptic-feedback:active {
-  animation: haptic-pulse 0.3s ease-out;
+.experience-card-featured {
+  background: linear-gradient(135deg, rgba(255, 45, 85, 0.1), rgba(175, 82, 222, 0.1));
+  border: 1px solid rgba(255, 45, 85, 0.2);
 }
 
-/* Success state glow */
-@keyframes success-glow {
-  0% { box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.6); }
-  50% { box-shadow: 0 0 20px 5px rgba(52, 199, 89, 0.3); }
-  100% { box-shadow: 0 0 0 0 rgba(52, 199, 89, 0); }
+.experience-card-featured-dine {
+  background: linear-gradient(135deg, rgba(255, 149, 0, 0.1), rgba(255, 59, 48, 0.1));
+  border: 1px solid rgba(255, 149, 0, 0.2);
 }
 
-/* ========================================
-   LOADING & THINKING STATES
-   ======================================== */
-
-/* Premium loading dots */
-.mp-loading-dot {
-  background: linear-gradient(135deg, #ec4899, #a855f7);
+/* Icon Container */
+.experience-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* Shimmer effect for loading */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+/* Badge Style */
+.premium-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
-.loading-shimmer {
+.badge-signature {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #1C1C1E;
+}
+
+.badge-popular {
+  background: linear-gradient(135deg, #FF2D55, #FF6B9D);
+  color: white;
+}
+
+.badge-new {
+  background: linear-gradient(135deg, #34C759, #30D158);
+  color: white;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESTAURANT CARD PREMIUM
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.restaurant-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.restaurant-card:active {
+  transform: scale(0.98);
+}
+
+.restaurant-card-image {
+  aspect-ratio: 16/10;
+  object-fit: cover;
+  width: 100%;
+}
+
+.restaurant-card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLL INDICATORS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.scroll-indicator {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 0;
+}
+
+.scroll-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.15);
+  transition: all 0.3s;
+}
+
+.scroll-dot.active {
+  width: 20px;
+  border-radius: 3px;
+  background: var(--primary, #FF2D55);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LOADING STATES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.skeleton-shimmer {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.05) 0%,
-    rgba(255, 255, 255, 0.15) 50%,
-    rgba(255, 255, 255, 0.05) 100%
+    rgba(0, 0, 0, 0.04) 0%,
+    rgba(0, 0, 0, 0.08) 50%,
+    rgba(0, 0, 0, 0.04) 100%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
 
-/* ========================================
-   NOTCH & SAFE AREA HANDLING
-   ======================================== */
-
-@supports (padding: env(safe-area-inset-top)) {
-  /* Header safe area */
-  .mp-header {
-    padding-top: calc(16px + var(--safe-top));
-  }
-  
-  /* Composer safe area */
-  .mp-composer {
-    padding-bottom: calc(24px + var(--safe-bottom));
-    padding-left: calc(8px + var(--safe-left));
-    padding-right: calc(8px + var(--safe-right));
-  }
-  
-  /* Messages area */
-  .mp-messages {
-    padding-left: calc(16px + var(--safe-left));
-    padding-right: calc(16px + var(--safe-right));
-  }
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
-/* ========================================
-   DARK MODE ENHANCEMENTS
-   ======================================== */
+/* ═══════════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-/* OLED black for deep blacks */
-@media (prefers-color-scheme: dark) {
-  .mira-prod {
-    background: linear-gradient(180deg, 
-      #0a0412 0%, 
-      #120822 50%,
-      #1a0f35 100%
-    );
-  }
+.text-gradient-celebrate {
+  background: linear-gradient(135deg, #FF2D55, #AF52DE);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* ========================================
-   REDUCED MOTION - Accessibility
-   ======================================== */
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+.text-gradient-dine {
+  background: linear-gradient(135deg, #FF9500, #FF3B30);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* ========================================
-   FOCUS STATES - Accessibility
-   ======================================== */
-
-/* Visible focus for keyboard navigation */
-.mp-chip:focus-visible,
-.mp-dock-btn:focus-visible,
-.mp-btn-send:focus-visible,
-.quick-chip:focus-visible,
-button:focus-visible {
-  outline: 2px solid var(--mira-pink);
-  outline-offset: 2px;
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-/* ========================================
-   PORTRAIT LOCK EXPERIENCE
-   ======================================== */
-
-@media (orientation: landscape) and (max-height: 500px) {
-  /* Compact mode for landscape on phones */
-  .mp-welcome {
-    padding: 16px;
-  }
-  
-  .hero-avatar-container,
-  .mp-welcome-avatar {
-    width: 100px;
-    height: 100px;
-  }
-  
-  .mp-composer {
-    padding: 8px;
-  }
-}
-
-/* ========================================
-   SELECTION STATES
-   ======================================== */
-
-/* Custom text selection color */
-::selection {
-  background: rgba(236, 72, 153, 0.3);
-  color: white;
-}
-
-::-moz-selection {
-  background: rgba(236, 72, 153, 0.3);
-  color: white;
-}
-
-/* ========================================
-   SMOOTH PAGE TRANSITIONS
-   ======================================== */
-
-.mira-prod {
-  opacity: 1;
-  animation: page-fade-in 0.4s var(--spring-smooth);
-}
-
-@keyframes page-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
