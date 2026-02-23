@@ -875,6 +875,15 @@ const SoulKnowledgeTicker = ({
           border: 1px solid rgba(245, 158, 11, 0.3);
         }
         
+        .favorites-item {
+          background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(236, 72, 153, 0.1));
+          border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+        
+        .favorites-section .category-title {
+          color: #ec4899;
+        }
+        
         /* Action buttons row */
         .expanded-actions-row {
           display: flex;
