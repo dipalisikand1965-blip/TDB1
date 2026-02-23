@@ -467,12 +467,12 @@ const DinePage = () => {
           </Card>
         </section>
 
-        {/* Pet-Friendly Restaurants Section */}
+        {/* Concierge® Recommended Restaurants Section */}
         <section id="restaurants" className="scroll-mt-20">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
               <Coffee className="w-6 h-6 text-orange-500" />
-              Pet-Friendly Restaurants
+              Concierge® Recommended
             </h2>
             <p className="text-gray-600">Dine out with your furry friend</p>
           </div>
