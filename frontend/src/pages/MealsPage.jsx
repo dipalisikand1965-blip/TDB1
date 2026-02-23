@@ -1,9 +1,16 @@
 /**
  * MealsPage.jsx
  * Fresh Pet Meals - Nutritious meals and food subscriptions for pets
+ * 
+ * ARCHITECTURE: Curated Concierge Section ON TOP → Then Catalogue Below
+ * 
+ * GUARDRAILS:
+ * - Canonical Card IDs are FIXED FOREVER: fresh-trial-pack, fresh-weekly-plan, fresh-allergy-safe
+ * - Hero image must be ALLERGY-AWARE (no chicken if pet avoids chicken)
+ * - No catalogue UI if products are empty
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -15,17 +22,73 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
+import { toast as sonnerToast } from 'sonner';
 import ProductCard from '../components/ProductCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import SEOHead from '../components/SEOHead';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
+import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
 import {
   Utensils, Leaf, Heart, Star, ChevronRight, Sparkles,
   Clock, Truck, Shield, CheckCircle, Package, ChevronLeft,
-  Calendar, Award, ShoppingBag, Phone, MessageCircle, Send, X
+  Calendar, Award, ShoppingBag, Phone, MessageCircle, Send, X,
+  AlertCircle, Zap, Scale, Droplet, Fish, Drumstick, Salad, Check, Crown
 } from 'lucide-react';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CANONICAL CARD IDs - GUARDRAIL B: THESE NEVER CHANGE
+// ═══════════════════════════════════════════════════════════════════════════════
+const CANONICAL_CARD_IDS = {
+  TRIAL_PACK: 'fresh-trial-pack',
+  WEEKLY_PLAN: 'fresh-weekly-plan',
+  ALLERGY_SAFE: 'fresh-allergy-safe'
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HERO IMAGES - ALLERGY-AWARE (Rule 1: No restricted ingredients in imagery)
+// ═══════════════════════════════════════════════════════════════════════════════
+const HERO_IMAGES = {
+  default: 'https://static.prod-images.emergentagent.com/jobs/99ab70cf-a57b-46c1-987d-9e895d2af777/images/84cb230bb28acc363cdf69d0a236b1efac3ec8bf0b82c9c8648399580ada71e2.png',
+  noChicken: 'https://static.prod-images.emergentagent.com/jobs/99ab70cf-a57b-46c1-987d-9e895d2af777/images/61266dddd1206782be033035c8f847025fd296df495029a9f402ade7229ddfce.png', // Fish/lamb based
+  noMeat: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1200&q=80' // Vegetarian option
+};
+
+const CARD_IMAGES = {
+  trialPack: 'https://static.prod-images.emergentagent.com/jobs/99ab70cf-a57b-46c1-987d-9e895d2af777/images/12367d24c74c1aba4244ccde37017f2cf701712d58736c46f124d3e30231abba.png',
+  weeklyPlan: 'https://static.prod-images.emergentagent.com/jobs/99ab70cf-a57b-46c1-987d-9e895d2af777/images/415582023c2d4c46c52ccad4c47ce6638d336fa0f5be0a48c548f456d7428717.png',
+  allergySafe: 'https://static.prod-images.emergentagent.com/jobs/99ab70cf-a57b-46c1-987d-9e895d2af777/images/61266dddd1206782be033035c8f847025fd296df495029a9f402ade7229ddfce.png'
+};
+
+// Plan Builder options
+const GOAL_OPTIONS = [
+  { id: 'tummy', label: 'Tummy', icon: Droplet },
+  { id: 'weight', label: 'Weight', icon: Scale },
+  { id: 'energy', label: 'Energy', icon: Zap },
+  { id: 'coat', label: 'Coat', icon: Star },
+  { id: 'picky', label: 'Picky', icon: Heart }
+];
+
+const PROTEIN_OPTIONS = [
+  { id: 'chicken', label: 'Chicken', icon: Drumstick },
+  { id: 'fish', label: 'Fish', icon: Fish },
+  { id: 'mutton', label: 'Mutton', icon: Drumstick },
+  { id: 'veg', label: 'Veg', icon: Salad },
+  { id: 'no-pref', label: 'No preference', icon: Check }
+];
+
+const CADENCE_OPTIONS = [
+  { id: 'trial', label: 'Trial' },
+  { id: 'weekly', label: 'Weekly' },
+  { id: 'monthly', label: 'Monthly' }
+];
+
+const BUDGET_OPTIONS = [
+  { id: 1, label: '₹' },
+  { id: 2, label: '₹₹' },
+  { id: 3, label: '₹₹₹' }
+];
 
 // Meal Categories
 const MEAL_CATEGORIES = [
