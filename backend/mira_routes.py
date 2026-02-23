@@ -24201,6 +24201,9 @@ async def get_curated_set(
         # Extract soul traits from doggy_soul_answers
         soul_traits = extract_soul_traits(pet)
         
+        # Determine age band (for senior comfort modifier)
+        age_band = determine_age_band(pet)
+        
         # Build pet data dict for intelligence layer
         pet_data = {
             "id": pet_id,
@@ -24209,7 +24212,8 @@ async def get_curated_set(
             "size": determine_pet_size(pet),
             "soul_traits": soul_traits,
             "allergies": pet.get("allergies", []) or pet.get("food_allergies", []) or [],
-            "answered_questions": pet.get("answered_questions", [])
+            "answered_questions": pet.get("answered_questions", []),
+            "age_band": age_band
         }
         
         # Build intent context
