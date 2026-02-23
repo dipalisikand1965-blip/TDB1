@@ -27,6 +27,7 @@ import PillarPicksSection from '../components/PillarPicksSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
+import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
 
 // Get user from AuthContext or localStorage
 const getUser = () => {
