@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://dine-intelligence.preview.emergentagent.com
+https://mira-soul.preview.emergentagent.com
 ```
 
 ---

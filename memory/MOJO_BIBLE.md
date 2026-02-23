@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://dine-intelligence.preview.emergentagent.com
+https://mira-soul.preview.emergentagent.com
 ```
 
 ---

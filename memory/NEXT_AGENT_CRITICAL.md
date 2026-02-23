@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://dine-intelligence.preview.emergentagent.com
+https://mira-soul.preview.emergentagent.com
 
 ---
 

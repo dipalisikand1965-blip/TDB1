@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://dine-intelligence.preview.emergentagent.com/mira-demo**
+**https://mira-soul.preview.emergentagent.com/mira-demo**
 
 ---
 
