@@ -299,24 +299,34 @@ Created `ConciergePickCard.jsx` component and added to ALL pillar pages:
 
 ---
 
-## Future Tasks (Prioritized)
+## Pending Tasks (Prioritized)
 
 ### P0 - Critical
-- [ ] Implement true personalization in picks engine (varies by pet soul/breed)
-- [ ] Roll out pillar-specific panel to other 13 pages
+- [x] Fix Dine page CuratedConciergeSection UI/UX (Session 14)
+- [x] Improve why_for_pet personalization (Session 14)
+- [ ] Verify Member Notification Inbox Flow (user needs to confirm)
+- [ ] Mobile Page Scroll Bug (user verification pending)
+- [ ] Navigation Dropdown Style (user verification pending)
 
 ### P1 - High
-- [ ] Proactive alerts on PetHomePage (birthdays, vaccinations)
+- [ ] Roll out Intelligence Layer to remaining 11 pillar pages
+- [ ] Implement proactive alerts on PetHomePage (birthdays, vaccinations)
 - [ ] Razorpay payment integration
 
 ### P2 - Medium
-- [ ] Living Home mechanics on PetHomePage
+- [ ] "Living Home" mechanics on PetHomePage
 - [ ] Notification templates for Product Orders vs Concierge Requests
-- [ ] Refactor `backend/server.py` (currently monolithic)
+- [ ] Refactor `backend/server.py` into smaller modules
 
 ### P3 - Low
 - [ ] Consolidate fragmented ticket collections in database
 
 ---
 
-*Last Updated: February 22, 2026*
+## Test Credentials
+- **Member Login**: `dipali@clubconcierge.in` / `test123`
+- **Admin Login**: `aditya` / `lola4304`
+
+---
+
+*Last Updated: February 23, 2026 - Session 14*
