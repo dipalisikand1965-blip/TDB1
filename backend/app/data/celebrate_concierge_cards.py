@@ -526,9 +526,9 @@ def select_concierge_cards(
     selected_products = scored_products[:products_count]
     selected_services = scored_services[:services_count]
     
-    # Generate "why for pet" explanations
+    # Generate "why for pet" explanations - MUST pass soul_traits for accurate personalization
     for card in selected_products + selected_services:
-        card["why_for_pet"] = generate_why_explanation(card, pet_name)
+        card["why_for_pet"] = generate_why_explanation(card, pet_name, soul_traits)
     
     logger.info(f"[CONCIERGE_SELECT] Selected {len(selected_products)} products, {len(selected_services)} services for {pet_name}")
     
