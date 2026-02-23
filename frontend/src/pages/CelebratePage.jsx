@@ -506,6 +506,7 @@ const CelebratePage = () => {
                 petName={activePet.name}
                 pillar="celebrate"
                 token={token}
+                userEmail={user?.email}
                 onTicketCreate={async (ticketData) => {
                   // Create ticket and show in inbox
                   try {
