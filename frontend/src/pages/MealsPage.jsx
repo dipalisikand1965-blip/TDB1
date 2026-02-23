@@ -169,12 +169,14 @@ const PetControlCenter = ({ pet, planBuilder, onSetPlan, isScrolled }) => {
 const FreshMealsHero = ({ pet }) => {
   // Rule 1: Select hero image based on pet restrictions
   const petAvoid = pet?.allergies || pet?.soul_data?.allergies || [];
-  const avoidsChicken = petAvoid.some(a => a.toLowerCase().includes('chicken'));
-  const avoidsAllMeat = petAvoid.some(a => ['meat', 'non-veg'].includes(a.toLowerCase()));
+  const avoidsChicken = petAvoid.some(a => a?.toLowerCase?.().includes('chicken'));
+  const avoidsAllMeat = petAvoid.some(a => ['meat', 'non-veg'].includes(a?.toLowerCase?.()));
   
   const heroImage = avoidsAllMeat ? HERO_IMAGES.noMeat :
                     avoidsChicken ? HERO_IMAGES.noChicken :
                     HERO_IMAGES.default;
+  
+  const petName = pet?.name || 'Your Pet';
   
   return (
     <div className="relative overflow-hidden rounded-2xl mb-6">
@@ -193,11 +195,11 @@ const FreshMealsHero = ({ pet }) => {
         </Badge>
         
         <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 drop-shadow-lg">
-          Fresh Meals for {pet?.name || 'Your Pet'}
+          Fresh Meals for {petName}
         </h1>
         
         <p className="text-white/95 text-sm md:text-base max-w-lg mb-4 drop-shadow-md">
-          Fresh meals, arranged for {pet?.name || 'your pet'} — allergy-aware, portioned, and delivered.
+          Fresh meals, arranged for {petName} — allergy-aware, portioned, and delivered.
         </p>
         
         {/* Truth badges in pill container for clarity */}
