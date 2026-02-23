@@ -427,18 +427,21 @@ const CuratedConciergeSection = ({
       if (onTicketCreate) {
         await onTicketCreate(ticketData);
       } else {
-        // Default: Create ticket via API
-        const response = await fetch(`${API_URL}/api/tickets`, {
+        // Default: Create ticket via dedicated concierge-pick endpoint
+        const response = await fetch(`${API_URL}/api/mira/concierge-pick/ticket`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            ...ticketData,
-            title: `${card.name} for ${petName}`,
+            pet_id: petId,
+            card_id: card.id,
+            card_type: card.type,
+            card_name: card.name,
+            pillar: pillar,
             description: card.description,
-            status: 'new',
+            why_for_pet: card.why_for_pet,
           }),
         });
 
@@ -446,7 +449,9 @@ const CuratedConciergeSection = ({
           hapticFeedback.success();
           toast.success('Request received! Check your Inbox.');
         } else {
-          throw new Error('Failed to create ticket');
+          const errData = await response.json().catch(() => ({}));
+          console.error('[CuratedConciergeSection] API error:', errData);
+          throw new Error(errData.detail || 'Failed to create ticket');
         }
       }
     } catch (err) {
