@@ -6,6 +6,50 @@ The user, Dipali, is the founder of a "pet operating system" named Mira, built i
 
 ---
 
+## ✅ SESSION 15 - CONCIERGE CARDS UI/UX POLISH + FIXES - February 23, 2026
+
+### IMPLEMENTED:
+
+**1. Nav Dropdown Z-Index Fix:**
+- Updated dropdown z-index from `z-50` to `z-[9999]` in `Navbar.jsx`
+- Reduced PetHomePage sticky header from `z-50` to `z-40`
+- Dropdown now appears correctly over all page content
+
+**2. Restaurant "Oops" Error Fix:**
+- Fixed `dine_routes.py` to generate stable IDs for restaurants missing them
+- Added fallback image for restaurants without images
+- All 22 restaurants now have proper IDs and images
+
+**3. Card-Specific "Why" Text (Varied):**
+- Added `why_phrases` dictionary to all concierge cards in both `dine_concierge_cards.py` and `celebrate_concierge_cards.py`
+- Each card now has trait-specific explanations:
+  - "Gentle transition for sensitive tummies" (not "Curated for Mystique")
+  - "Perfect gear for social butterflies" (not "Curated for Mystique")
+  - "Calming treats + comfort items" (not "Curated for Mystique")
+
+**4. Card-Specific CTA Text (Varied):**
+- Updated `cta_text` for all cards:
+  - "Create plan" / "Start transition" / "Create blueprint" / "Curate kit"
+  - "Request reservation" / "Request meetup" / "Book experience"
+  - "Book photographer" / "Book venue" / "Request quiet plan"
+
+**5. Frontend CuratedConciergeSection Updates:**
+- Added "✨ Handpicked for {Pet}" header with "Updated a moment ago" timestamp
+- Cards use `cta_text` from API response instead of generic "Create for {Pet}"
+- Added `ticketCreated` state to show ✓ Received after ticket creation
+- Reduced card spacing for more compact layout
+
+**Files Modified:**
+- `/app/frontend/src/components/Navbar.jsx` - z-index fix
+- `/app/frontend/src/pages/PetHomePage.jsx` - z-index adjustment
+- `/app/frontend/src/components/Mira/CuratedConciergeSection.jsx` - UI/UX polish
+- `/app/backend/dine_routes.py` - Restaurant ID/image fix
+- `/app/backend/app/data/dine_concierge_cards.py` - why_phrases, cta_text updates
+- `/app/backend/app/data/celebrate_concierge_cards.py` - why_phrases, cta_text updates
+- `/app/backend/app/intelligence_layer.py` - Updated generate_why_for_pet to use why_phrases
+
+---
+
 ## ✅ SESSION 14 - CONCIERGE CARD UI/UX OVERHAUL - February 23, 2026
 
 ### IMPLEMENTED:
