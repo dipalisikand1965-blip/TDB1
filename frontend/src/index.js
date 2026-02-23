@@ -59,6 +59,11 @@ window.addEventListener('error', async (event) => {
 // Initialize version checker FIRST - this will auto-reload if there's a new version
 initVersionChecker();
 
+// Disable browser scroll restoration - we handle it manually
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
