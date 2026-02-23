@@ -1101,19 +1101,19 @@ const Navbar = () => {
                   <ChevronDown className="w-3 h-3 opacity-60" />
                 </Link>
 
-                {/* Beautiful Dropdown Menu - Positioned to not get cut off */}
+                {/* Beautiful Dropdown Menu - Dark theme to match nav */}
                 {pillar.dropdown && activeDropdown === pillar.id && (
                   <div 
-                    className={`absolute top-full ${getDropdownPosition(index)} w-52 bg-white text-gray-800 shadow-2xl rounded-lg py-2 z-50 border border-gray-100`}
+                    className={`absolute top-full ${getDropdownPosition(index)} w-52 bg-slate-800 text-white shadow-2xl rounded-lg py-2 z-50 border border-slate-600`}
                     style={{ minWidth: '200px' }}
                     onMouseEnter={() => handleMouseEnter(pillar.id)}
                     onMouseLeave={handleMouseLeave}
                   >
                     {/* Header */}
-                    <div className="px-4 py-2 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-pink-50">
+                    <div className="px-4 py-2 border-b border-slate-600 bg-slate-700/50">
                       <div className="flex items-center gap-2">
                         <span className="text-lg">{pillar.icon}</span>
-                        <span className="font-bold text-gray-900">{pillar.name}</span>
+                        <span className="font-bold text-white">{pillar.name}</span>
                       </div>
                     </div>
                     {/* Items */}
@@ -1124,19 +1124,19 @@ const Navbar = () => {
                         onClick={() => setActiveDropdown(null)}
                         className={`block px-4 py-2.5 text-sm transition-colors border-l-2 ${
                           item.highlight 
-                            ? 'bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 font-semibold border-purple-500 hover:from-purple-100 hover:to-pink-100' 
-                            : 'hover:bg-purple-50 text-gray-700 hover:text-purple-600 border-transparent hover:border-purple-500'
+                            ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-pink-300 font-semibold border-pink-500 hover:from-purple-500/30 hover:to-pink-500/30' 
+                            : 'hover:bg-slate-700 text-gray-300 hover:text-white border-transparent hover:border-purple-400'
                         }`}
                       >
                         {item.name}
                       </Link>
                     ))}
                     {/* View All Link */}
-                    <div className="px-4 py-2 border-t border-gray-100 mt-1">
+                    <div className="px-4 py-2 border-t border-slate-600 mt-1">
                       <Link
                         to={pillar.path}
                         onClick={() => setActiveDropdown(null)}
-                        className="text-xs font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1"
+                        className="text-xs font-semibold text-pink-400 hover:text-pink-300 flex items-center gap-1"
                       >
                         View All {pillar.name} →
                       </Link>
