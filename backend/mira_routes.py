@@ -24287,6 +24287,112 @@ async def get_curated_set(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/location-suggestions/{pillar}")
+async def get_location_suggestions(
+    pillar: str,
+    authorization: str = Header(None),
+    event_type: Optional[str] = None,
+    pet_id: Optional[str] = None,
+    db=Depends(get_db)
+):
+    """
+    Get real-time location-aware suggestions for a pillar.
+    
+    Uses Google Places API to find actual nearby venues.
+    
+    Pillars supported:
+    - dine: Pet-friendly restaurants, cafes, parks
+    - celebrate: Pet bakeries, party venues, photographers
+    - care: Vets, pet hospitals
+    - enjoy: Groomers, pet spas
+    """
+    from services.location_concierge_service import (
+        get_dine_location_suggestions,
+        get_celebrate_location_suggestions,
+        search_nearby_pet_friendly
+    )
+    
+    # Get user location from token
+    user_location = None
+    if authorization:
+        try:
+            token = authorization.replace("Bearer ", "")
+            import jwt
+            from server import SECRET_KEY
+            payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            user_email = payload.get("sub")
+            
+            if user_email:
+                user = await db.users.find_one({"email": user_email}, {"_id": 0, "location": 1})
+                if user and user.get("location"):
+                    user_location = user["location"]
+        except Exception as e:
+            logger.warning(f"[LOCATION] Could not get user location: {e}")
+    
+    if not user_location or not user_location.get("latitude"):
+        return {
+            "success": False,
+            "error": "Location not available. Please enable location services.",
+            "suggestions": []
+        }
+    
+    latitude = user_location.get("latitude")
+    longitude = user_location.get("longitude")
+    city = user_location.get("city", "your area")
+    
+    # Get pet traits if pet_id provided
+    pet_traits = []
+    if pet_id:
+        pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+        if pet:
+            pet_traits = extract_soul_traits(pet)
+    
+    # Get pillar-specific suggestions
+    if pillar.lower() == "dine":
+        suggestions = await get_dine_location_suggestions(
+            latitude, longitude, city, pet_traits
+        )
+    elif pillar.lower() == "celebrate":
+        suggestions = await get_celebrate_location_suggestions(
+            latitude, longitude, city, pet_traits, event_type
+        )
+    elif pillar.lower() == "care":
+        vets = await search_nearby_pet_friendly(latitude, longitude, "vet", max_results=5)
+        suggestions = {
+            "nearby_vets": vets,
+            "city": city,
+            "suggestions": [{
+                "type": "recommendation",
+                "title": f"Trusted Vets in {city}",
+                "description": "We found verified veterinary clinics near you"
+            }]
+        }
+    elif pillar.lower() == "enjoy":
+        groomers = await search_nearby_pet_friendly(latitude, longitude, "groomer", max_results=5)
+        suggestions = {
+            "nearby_groomers": groomers,
+            "city": city,
+            "suggestions": [{
+                "type": "recommendation",
+                "title": f"Pet Spas in {city}",
+                "description": "Pamper your pet with a grooming session nearby"
+            }]
+        }
+    else:
+        return {
+            "success": False,
+            "error": f"Pillar '{pillar}' not supported for location suggestions",
+            "suggestions": []
+        }
+    
+    return {
+        "success": True,
+        "pillar": pillar,
+        "location": {"city": city, "latitude": latitude, "longitude": longitude},
+        **suggestions
+    }
+
+
 def extract_soul_traits(pet: dict) -> List[str]:
     """
     Extract soul traits from pet's doggy_soul_answers.
