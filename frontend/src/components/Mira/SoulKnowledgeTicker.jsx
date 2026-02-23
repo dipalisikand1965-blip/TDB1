@@ -68,10 +68,20 @@ const SoulKnowledgeTicker = ({
       const headers = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
       
-      const response = await fetch(`${apiUrl}/api/mira/memory/pet/${petId}/what-mira-knows`, { headers });
-      if (response.ok) {
-        const data = await response.json();
+      // Fetch both knowledge and favorites in parallel
+      const [knowledgeRes, favoritesRes] = await Promise.all([
+        fetch(`${apiUrl}/api/mira/memory/pet/${petId}/what-mira-knows`, { headers }),
+        fetch(`${apiUrl}/api/favorites/${petId}`, { headers })
+      ]);
+      
+      if (knowledgeRes.ok) {
+        const data = await knowledgeRes.json();
         setMiraKnowledge(data);
+      }
+      
+      if (favoritesRes.ok) {
+        const favData = await favoritesRes.json();
+        setFavorites(favData.favorites || []);
       }
     } catch (err) {
       console.debug('[TICKER] Could not fetch Mira knowledge:', err);
