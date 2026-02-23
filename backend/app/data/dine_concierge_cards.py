@@ -753,14 +753,18 @@ def derive_traits_from_profile(pet_data: Dict[str, Any]) -> List[str]:
     return list(set(derived))
 
 
-def generate_why_explanation(card: Dict, pet_name: str, soul_traits: List[str] = None) -> str:
+def generate_why_explanation(card: Dict, pet_name: str, soul_traits: List[str] = None, user_location: Dict = None) -> str:
     """
     Generate a personalized "why this card" explanation.
     Uses card-specific why_phrases if available, otherwise falls back to generic.
+    Now includes location awareness for local recommendations.
     """
     matched = card.get("_matched_traits", [])
     actual_traits = soul_traits or []
     all_traits = list(set(matched + actual_traits))
+    
+    # Get city for location-aware messaging
+    city = user_location.get("city") if user_location else None
     
     # Check for card-specific why_phrases
     why_phrases = card.get("why_phrases", {})
@@ -770,10 +774,18 @@ def generate_why_explanation(card: Dict, pet_name: str, soul_traits: List[str] =
         for trait in all_traits:
             trait_lower = trait.lower().replace(" ", "_")
             if trait_lower in why_phrases:
-                return why_phrases[trait_lower]
+                explanation = why_phrases[trait_lower]
+                # Add location context if available and relevant
+                if city and card.get("type") == "service":
+                    if "near" not in explanation.lower() and "local" not in explanation.lower():
+                        explanation = f"{explanation} (available in {city})"
+                return explanation
         
         # Return default phrase for this card
-        return why_phrases.get("default", f"Handpicked for {pet_name}")
+        default_phrase = why_phrases.get("default", f"Handpicked for {pet_name}")
+        if city and card.get("type") == "service":
+            default_phrase = f"{default_phrase} — serving {city}"
+        return default_phrase
     
     # Legacy fallback - generic trait explanations
     trait_explanations = {
@@ -793,8 +805,13 @@ def generate_why_explanation(card: Dict, pet_name: str, soul_traits: List[str] =
     for trait in all_traits:
         trait_lower = trait.lower().replace(" ", "_")
         if trait_lower in trait_explanations:
-            return f"Designed for {pet_name}'s {trait_explanations[trait_lower]}"
+            explanation = f"Designed for {pet_name}'s {trait_explanations[trait_lower]}"
+            if city and card.get("type") == "service":
+                explanation = f"{explanation} — in {city}"
+            return explanation
     
+    if city:
+        return f"Curated for {pet_name} in {city}"
     return f"Curated for {pet_name}"
 
 
