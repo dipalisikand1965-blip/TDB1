@@ -214,7 +214,7 @@ Your feedback helps us maintain the highest care standards.
 
 ⭐ Rate your experience: {review_link}
 
-📸 Share {pet_name}'s glow-up on Instagram and tag @thedoggycompany!
+📸 Share {pet_name}'s glow-up on Instagram and tag @thedoggycompany_!
 
 {upsell_message}
 
