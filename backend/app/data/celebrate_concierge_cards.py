@@ -573,21 +573,79 @@ def get_breed_default_traits(breed: str, size: str) -> List[str]:
     return ["friendly"]  # Universal default
 
 
-def generate_why_explanation(card: Dict, pet_name: str) -> str:
+def generate_why_explanation(card: Dict, pet_name: str, soul_traits: List[str] = None) -> str:
     """
     Generate a personalized "why this card" explanation.
+    
+    MUST reference real traits/signals - never hallucinate.
     """
     matched = card.get("_matched_traits", [])
+    actual_traits = soul_traits or []
     score = card.get("_score", 0)
+    card_type = card.get("type", "")
     
+    # Map traits to human-readable explanations
+    trait_explanations = {
+        # Anxious/calm traits
+        "anxious": "calm and gentle approach",
+        "warms_up_slowly": "quiet-and-cozy style",
+        "noise_sensitive": "low-stimulation preference",
+        "calm": "peaceful celebration style",
+        
+        # Active/social traits
+        "playful": "playful energy",
+        "energetic": "high-energy spirit",
+        "social": "love for socializing",
+        "adventurous": "adventurous nature",
+        
+        # Elegant/pampered traits
+        "elegant": "elegant taste",
+        "pampered": "pampered lifestyle",
+        "photo_ready": "photo-ready personality",
+        
+        # Comfort traits
+        "senior": "comfort-first needs",
+        "gentle": "gentle nature",
+        
+        # Food traits
+        "foodie": "love of treats",
+        "treats_motivated": "treat motivation",
+    }
+    
+    # Priority order: matched traits > actual traits > generic
+    explanation_trait = None
+    
+    # First, try matched traits (traits that specifically matched this card)
     if matched:
-        trait = matched[0].replace("_", " ").title()
-        if card["type"] == "concierge_product":
-            return f"Perfect for {pet_name}'s {trait.lower()} personality"
-        else:
-            return f"Tailored for a {trait.lower()} celebration style"
+        for trait in matched:
+            trait_lower = trait.lower().replace(" ", "_")
+            if trait_lower in trait_explanations:
+                explanation_trait = trait_lower
+                break
     
-    if score >= 70:
+    # If no matched trait, use actual soul traits
+    if not explanation_trait and actual_traits:
+        for trait in actual_traits:
+            trait_lower = trait.lower().replace(" ", "_")
+            if trait_lower in trait_explanations:
+                explanation_trait = trait_lower
+                break
+    
+    # Generate the explanation
+    if explanation_trait:
+        readable = trait_explanations[explanation_trait]
+        if card_type == "concierge_product":
+            return f"Designed for {pet_name}'s {readable}"
+        else:
+            return f"Tailored for {pet_name}'s {readable}"
+    
+    # Fallback based on score (still truthful - just less specific)
+    if score >= 80:
+        return f"Highly recommended for {pet_name}"
+    elif score >= 60:
+        return f"Great fit for {pet_name}'s celebration"
+    
+    return f"Curated for {pet_name}"
         return f"Highly recommended for {pet_name}"
     elif score >= 50:
         return f"Great fit for {pet_name}"
