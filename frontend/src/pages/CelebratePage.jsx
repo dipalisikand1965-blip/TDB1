@@ -473,8 +473,8 @@ const CelebratePage = () => {
   return (
     <PillarPageLayout
       pillar="celebrate"
-      title="Celebrations for Your Pet"
-      description="Mark the moments that matter to your furry friend"
+      title={activePet ? `Celebrations for ${activePet.name}` : "Celebrations for Your Pet"}
+      description={activePet ? `Mark the moments that matter to ${activePet.name}` : "Mark the moments that matter to your furry friend"}
       useTabNavigation={true}
       onSubcategoryChange={handleSubcategoryChange}
     >
