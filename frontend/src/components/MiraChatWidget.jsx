@@ -1971,6 +1971,7 @@ const MiraChatWidget = ({
           pillar={pillar} // Lock to current pillar - hide other pillar tabs
           enginePillar={pillar} // Pre-filter to current pillar
           onPickClick={async (pickData) => {
+            console.log('[MiraChatWidget] onPickClick received:', pickData);
             // Flow pick into chat conversation - canonical flow
             // 1. Add user message showing the pick they're interested in
             const userMsg = {
@@ -1979,6 +1980,7 @@ const MiraChatWidget = ({
               content: `I'm interested in "${pickData.name}" for ${pickData.pet_name}`,
               timestamp: new Date().toISOString()
             };
+            console.log('[MiraChatWidget] Adding user message:', userMsg);
             setMessages(prev => [...prev, userMsg]);
             
             // 2. Create service desk ticket via canonical flow
