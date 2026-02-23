@@ -1128,11 +1128,12 @@ const DinePage = () => {
 // Restaurant Card Component
 const RestaurantCard = ({ restaurant, getPetMenuBadge, getPetPolicyText, featured, onSelect, onBuddy }) => (
   <Card 
-    className={`overflow-hidden hover:shadow-xl transition-all cursor-pointer ${featured ? 'ring-2 ring-orange-400' : ''}`}
+    className={`overflow-hidden hover:shadow-xl transition-all cursor-pointer haptic-card ${featured ? 'ring-2 ring-orange-400' : ''}`}
     data-testid={`restaurant-${restaurant.id}`}
     onClick={() => onSelect(restaurant)}
   >
-    <div className="relative h-32 sm:h-48">
+    {/* Image Container - Fixed aspect ratio */}
+    <div className="relative aspect-[16/10]">
       <img 
         src={restaurant.image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800'} 
         alt={restaurant.name}
@@ -1143,24 +1144,32 @@ const RestaurantCard = ({ restaurant, getPetMenuBadge, getPetPolicyText, feature
           <Star className="w-3 h-3 mr-1" /> Featured
         </Badge>
       )}
-      <div className="absolute bottom-2 left-2 flex gap-1">
-        <Badge className="bg-black/70 text-white text-xs">{restaurant.priceRange || '₹₹'}</Badge>
-        <Badge className="bg-black/70 text-white text-xs flex items-center gap-1">
-          <Star className="w-3 h-3 text-yellow-400" />{restaurant.rating || 4.0}
+      {/* Price & Rating badges - Bottom left overlay */}
+      <div className="absolute bottom-2 left-2 flex gap-1.5">
+        <Badge className="bg-black/80 text-white text-xs px-2 py-0.5 font-medium">{restaurant.priceRange || '₹₹'}</Badge>
+        <Badge className="bg-black/80 text-white text-xs px-2 py-0.5 flex items-center gap-1 font-medium">
+          <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />{restaurant.rating || 4.0}
         </Badge>
       </div>
     </div>
-    <div className="p-3 sm:p-4">
-      <h3 className="font-bold text-sm sm:text-base text-gray-900 mb-1 line-clamp-1">{restaurant.name}</h3>
-      <p className="text-xs sm:text-sm text-gray-500 flex items-center gap-1 mb-2">
-        <MapPin className="w-3 h-3" />
+    
+    {/* Content - Consistent padding and alignment */}
+    <div className="p-4">
+      <h3 className="font-bold text-base text-gray-900 mb-1.5 line-clamp-1">{restaurant.name}</h3>
+      <p className="text-sm text-gray-500 flex items-center gap-1.5 mb-3">
+        <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
         <span className="line-clamp-1">{restaurant.area}</span>
       </p>
+      
+      {/* Footer - Aligned properly */}
       <div className="flex items-center justify-between">
-        <span className="text-xs sm:text-sm text-gray-500 flex items-center gap-1">
-          <Dog className="w-3 h-3" /> Pet Friendly
+        <span className="text-sm text-gray-500 flex items-center gap-1.5">
+          <Dog className="w-4 h-4" /> Pet Friendly
         </span>
-        <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white text-xs sm:text-sm h-7 sm:h-8 px-3">
+        <Button 
+          size="sm" 
+          className="bg-orange-500 hover:bg-orange-600 text-white text-sm h-9 px-4 rounded-lg haptic-btn font-medium"
+        >
           Reserve
         </Button>
       </div>
