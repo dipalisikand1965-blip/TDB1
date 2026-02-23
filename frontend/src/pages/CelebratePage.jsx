@@ -688,26 +688,26 @@ const CelebratePage = () => {
               { step: 3, icon: '🎯', title: 'We Execute', desc: 'Every detail handled' },
               { step: 4, icon: '🎉', title: 'Celebrate!', desc: 'Stress-free magic' }
             ].map((item) => (
-              <Card key={item.step} className="p-3 sm:p-6 text-center bg-white">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-4 bg-pink-100 rounded-full flex items-center justify-center text-xl sm:text-2xl">
+              <Card key={item.step} className="glass-card p-3 sm:p-6 text-center haptic-card" data-testid={`how-it-works-step-${item.step}`}>
+                <div className="experience-icon w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-2 sm:mb-4 text-2xl sm:text-3xl">
                   {item.icon}
                 </div>
-                <div className="text-pink-500 font-bold text-[10px] sm:text-sm mb-1">Step {item.step}</div>
-                <h3 className="font-semibold text-gray-900 text-xs sm:text-base mb-0.5 leading-tight">{item.title}</h3>
-                <p className="text-[10px] sm:text-sm text-gray-600 leading-tight">{item.desc}</p>
+                <div className="text-gradient-celebrate font-bold text-[10px] sm:text-sm mb-1">Step {item.step}</div>
+                <h3 className="ios-headline text-gray-900 text-xs sm:text-base mb-0.5 leading-tight">{item.title}</h3>
+                <p className="ios-caption text-gray-600 leading-tight">{item.desc}</p>
               </Card>
             ))}
           </div>
         </div>
       </div>
 
-      {/* 🎂 SMART CAKE DISCOVERY - Intelligent Filters */}
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-10">
+      {/* 🎂 SMART CAKE DISCOVERY - Floating Pill Dock */}
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-10 section-fade-in stagger-4" data-testid="celebrate-smart-filters">
         <div className="text-center mb-4 sm:mb-6">
-          <h2 className="text-lg sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">
-            🎂 Find the Perfect Cake
+          <h2 className="ios-title-2 text-gray-900 mb-1 sm:mb-2">
+            Find the Perfect Cake
           </h2>
-          <p className="text-xs sm:text-sm text-gray-600">Tap what matters most to you</p>
+          <p className="ios-subhead text-gray-600">Tap what matters most to you</p>
         </div>
         
         {/* Smart Filter Pills - Horizontal scroll on mobile */}
