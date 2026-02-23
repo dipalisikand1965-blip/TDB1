@@ -433,6 +433,7 @@ async def generate_curated_set(
     Generate a complete curated set for a pet/pillar combination.
     
     This is the main entry point for the Intelligence Layer.
+    CONCIERGE LAYER ONLY - no catalogue/ecommerce items.
     
     Args:
         pet_data: Pet profile including soul traits, allergies, breed, size
@@ -443,9 +444,9 @@ async def generate_curated_set(
     
     Returns:
         {
-            "catalogue_picks": [...],  # Products (add to cart)
-            "concierge_picks": [...],  # Services (create ticket)
-            "question_card": {...} or None,
+            "concierge_products": [...],  # 2-3 bespoke deliverables → Ticket
+            "concierge_services": [...],  # 1-2 arrangements → Ticket
+            "question_card": {...} or None,  # 0-1 if profile thin
             "meta": {
                 "generated_at": timestamp,
                 "cache_expires_at": timestamp,
@@ -454,6 +455,8 @@ async def generate_curated_set(
                 "personalization_summary": str
             }
         }
+    
+    Note: Catalogue layer (Shopify SKUs) is handled separately.
     """
     pet_id = pet_data.get("id") or pet_data.get("_id", "unknown")
     
@@ -469,29 +472,29 @@ async def generate_curated_set(
     
     logger.info(f"[INTELLIGENCE] Generating fresh curated set for pet={pet_id}, pillar={pillar}")
     
-    # 1. Fetch products for this pillar from DB
-    products = await fetch_pillar_products(db, pillar)
+    # Get concierge cards from the card library (NOT catalogue products)
+    concierge_products = []
+    concierge_services = []
+    question_card = None
     
-    # 2. Curate products (with allergy filtering)
-    catalogue_picks = curate_products(products, pet_data, pillar, intent_context)
-    
-    # 3. Get services from service cards library
-    from app.data.service_cards import get_celebrate_services_for_pet
-    
-    concierge_picks = []
     if pillar == "celebrate":
-        concierge_picks = get_celebrate_services_for_pet(pet_data, intent_context, limit=3)
+        from app.data.celebrate_concierge_cards import get_celebrate_curated_set
+        
+        curated = get_celebrate_curated_set(pet_data, intent_context)
+        concierge_products = curated.get("concierge_products", [])
+        concierge_services = curated.get("concierge_services", [])
+        question_card = curated.get("question_card")
+    else:
+        # For other pillars, use fallback (to be expanded later)
+        logger.warning(f"[INTELLIGENCE] Pillar '{pillar}' not yet implemented - returning empty")
     
-    # 4. Check for question card (thin profile)
-    question_card = get_question_card(pet_data, pillar)
-    
-    # 5. Build response
+    # Build response
     now = datetime.now(timezone.utc)
     expires_at = now + timedelta(minutes=CACHE_TTL_MINUTES)
     
     curated_set = {
-        "catalogue_picks": catalogue_picks,
-        "concierge_picks": concierge_picks,
+        "concierge_products": concierge_products,
+        "concierge_services": concierge_services,
         "question_card": question_card,
         "meta": {
             "generated_at": now.isoformat(),
@@ -499,11 +502,12 @@ async def generate_curated_set(
             "pet_id": str(pet_id),
             "pillar": pillar,
             "personalization_summary": build_personalization_summary(pet_data),
-            "cache_key": cache_key
+            "cache_key": cache_key,
+            "total_cards": len(concierge_products) + len(concierge_services)
         }
     }
     
-    # 6. Cache the result
+    # Cache the result
     if db is not None:
         await cache_curated_set(db, cache_key, curated_set, expires_at)
     
