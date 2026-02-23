@@ -1,0 +1,63 @@
+{
+  "summary": "Tested multi-pet sync and WebSocket notification flow. Backend APIs working correctly: POST /api/mira/concierge-pick/ticket creates tickets with proper ticket_id format (TKT-*), GET /api/member/notifications/inbox returns notifications with unread count. Frontend localStorage sync working for selectedPetId. CuratedConciergeSection renders with data-testid and CTAs. However, CTA ✓ Received state not showing due to onTicketCreate override in CelebratePage.jsx.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "CelebratePage.jsx CuratedConciergeSection",
+        "issue": "CTA button does not show ✓ Received state after click. The onTicketCreate callback in CelebratePage.jsx (line 510) calls /api/service-requests instead of /api/mira/concierge-pick/ticket, bypassing the optimistic state update in CuratedConciergeSection.jsx",
+        "selector": "[data-testid*=\"concierge-cta\"]",
+        "priority": "MEDIUM"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "CTA → Ticket Creation → State Update",
+        "issue": "Parent callback (onTicketCreate) overrides default behavior, preventing createdTickets state update and WebSocket integration",
+        "affected_selectors": ["[data-testid*=\"concierge-cta\"]"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration_21_websocket_sync.py",
+    "/app/test_reports/pytest/iteration_21_results.xml"
+  ],
+  "action_items": [
+    "Fix CelebratePage.jsx line 510-541: Either remove onTicketCreate callback to use default behavior from CuratedConciergeSection, OR update the callback to call /api/mira/concierge-pick/ticket and return the result to enable state update",
+    "Ensure the onTicketCreate callback returns ticket data (ticket_id) so CuratedConciergeSection can update createdTickets state"
+  ],
+  "critical_code_review_comments": [
+    "CelebratePage.jsx: onTicketCreate callback (line 510-541) calls wrong endpoint (/api/service-requests) and doesn't return ticket_id, preventing optimistic UI update",
+    "The same issue may exist in other pages using CuratedConciergeSection with custom onTicketCreate handlers"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration_21_websocket_sync.py"
+  ],
+  "success_rate": {
+    "backend": "100% (14/14 tests passed)",
+    "frontend": "80% - All features verified except CTA state change"
+  },
+  "seed_data_creation": "Test tickets created during pytest run",
+  "test_credentials": "dipali@clubconcierge.in / test123",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Backend WebSocket emission code verified in mira_routes.py lines 24726-24754. CuratedConciergeSection works correctly when not overridden. The issue is in parent component callbacks. Check if DinePage.jsx has similar issues.",
+  "features_verified": {
+    "backend": {
+      "POST /api/mira/concierge-pick/ticket": "✓ Creates ticket with TKT-* format, returns ticket_id",
+      "GET /api/member/notifications/inbox/{email}": "✓ Returns notifications with unread count, supports pet_id and category filters",
+      "WebSocket emission code": "✓ Verified in mira_routes.py - emit_ticket_created_to_member() and emit_inbox_badge_update() are called"
+    },
+    "frontend": {
+      "localStorage.selectedPetId sync": "✓ Set correctly when pet is selected in navbar/dashboard",
+      "NotificationsInbox": "✓ Shows 53 unread notifications, displays ticket notifications correctly",
+      "MemberDashboard pet selector": "✓ Shows all pets with selection buttons",
+      "CuratedConciergeSection": "✓ Renders with data-testid, shows 'Handpicked for {petName}', 5 concierge cards/CTAs",
+      "CTA ✓ Received state": "✗ Not working due to onTicketCreate override in CelebratePage.jsx"
+    }
+  }
+}
