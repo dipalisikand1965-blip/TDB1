@@ -73,9 +73,16 @@ const generateSessionId = () => {
   return newId;
 };
 
-// Store and retrieve messages from sessionStorage - STORED PER PILLAR
+// Store and retrieve messages - UNIFIED across all pillars for cross-pillar memory
+// Messages now persist across pillar switches so Mira remembers the full conversation
 const getStoredMessages = (pillar) => {
   try {
+    // First try unified storage (cross-pillar)
+    const unified = sessionStorage.getItem('mira_messages_unified');
+    if (unified) {
+      return JSON.parse(unified);
+    }
+    // Fallback to pillar-specific for backward compatibility
     const stored = sessionStorage.getItem(`mira_messages_${pillar}`);
     return stored ? JSON.parse(stored) : [];
   } catch (e) {
@@ -85,6 +92,9 @@ const getStoredMessages = (pillar) => {
 
 const storeMessages = (messages, pillar) => {
   try {
+    // Store in unified storage (cross-pillar memory)
+    sessionStorage.setItem('mira_messages_unified', JSON.stringify(messages));
+    // Also store pillar-specific for backward compatibility
     sessionStorage.setItem(`mira_messages_${pillar}`, JSON.stringify(messages));
   } catch (e) {
     console.debug('Failed to store messages:', e);
