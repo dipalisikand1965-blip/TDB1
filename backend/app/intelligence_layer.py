@@ -461,7 +461,7 @@ async def generate_curated_set(
     cache_key = generate_cache_key(pet_id, pillar, intent_context)
     
     # Check cache if enabled
-    if use_cache and db:
+    if use_cache and db is not None:
         cached = await get_cached_set(db, cache_key)
         if cached:
             logger.info(f"[INTELLIGENCE] Cache hit for {cache_key}")
