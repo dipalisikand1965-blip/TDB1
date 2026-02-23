@@ -24591,7 +24591,11 @@ async def create_ticket_from_concierge_pick(
         
         token = auth_header.split(" ")[1]
         from jose import jwt
-        from config import SECRET_KEY, ALGORITHM
+        
+        # Get SECRET_KEY and ALGORITHM from server module
+        import os
+        SECRET_KEY = os.environ.get("JWT_SECRET", "tdb_super_secret_key_2025_woof")
+        ALGORITHM = "HS256"
         
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
