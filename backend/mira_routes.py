@@ -13847,6 +13847,167 @@ I can help with any of these - or all of them! Just let me know what excites you
                 "products": [],
                 "nearby_places": None
             })
+        
+        # Check for Stage 4 - User provided actual requirements (after execution prompt)
+        elif existing_ticket.get("ai_context", {}).get("celebrate_stage") == "execution":
+            # User told us what they want (e.g., "cake, photographer, presents")
+            logger.info(f"[CELEBRATE-FLOW] User provided requirements: {user_message}")
+            
+            # Parse what user wants
+            user_wants_lower = user_message.lower()
+            requested_items = []
+            
+            # Detect cake requests
+            if any(kw in user_wants_lower for kw in ["cake", "pupcake", "dognut", "birthday cake"]):
+                requested_items.append({
+                    "type": "product",
+                    "category": "cake",
+                    "name": f"Custom Birthday Cake for {pet_name}",
+                    "description": "Dog-safe, flavored to their taste",
+                    "icon": "🎂",
+                    "reason": f"Perfect centerpiece for {pet_name}'s celebration",
+                    "cta": "Design Cake",
+                    "service_type": "birthday_cake"
+                })
+            
+            # Detect photographer requests
+            if any(kw in user_wants_lower for kw in ["photo", "photographer", "shoot", "pictures", "pics"]):
+                location_stored = existing_ticket.get("ai_context", {}).get("celebrate_location", "outdoor")
+                requested_items.append({
+                    "type": "service",
+                    "category": "photography",
+                    "name": f"Pet Photography Session",
+                    "description": f"{location_stored.title()} photoshoot capturing {pet_name}'s special day",
+                    "icon": "📸",
+                    "reason": f"Memories of {pet_name}'s celebration",
+                    "cta": "Book Session",
+                    "service_type": "pet_photography"
+                })
+            
+            # Detect party supplies/gifts/favors
+            if any(kw in user_wants_lower for kw in ["present", "gift", "favor", "favors", "goodie", "goodies", "take away", "takeaway", "party bag"]):
+                requested_items.append({
+                    "type": "product",
+                    "category": "party_favors",
+                    "name": f"Party Favors & Gift Bags",
+                    "description": "Treats and goodies for furry guests",
+                    "icon": "🎁",
+                    "reason": f"Make {pet_name}'s guests feel special",
+                    "cta": "Curate Selection",
+                    "service_type": "party_favors"
+                })
+            
+            # Detect decorations
+            if any(kw in user_wants_lower for kw in ["decor", "decoration", "banner", "balloon"]):
+                requested_items.append({
+                    "type": "product",
+                    "category": "decorations",
+                    "name": f"Birthday Decorations for {pet_name}",
+                    "description": "Banners, balloons, and party setup",
+                    "icon": "🎊",
+                    "reason": f"Set the perfect party mood",
+                    "cta": "Browse Options",
+                    "service_type": "party_decorations"
+                })
+            
+            # Detect party setup/coordination
+            if any(kw in user_wants_lower for kw in ["setup", "coordination", "organize", "plan", "arrange"]):
+                requested_items.append({
+                    "type": "service",
+                    "category": "coordination",
+                    "name": "Full Party Coordination",
+                    "description": "Let our Concierge® handle all the details",
+                    "icon": "✨",
+                    "reason": "Stress-free celebration planning",
+                    "cta": "Get Help",
+                    "service_type": "party_coordination"
+                })
+            
+            # If we detected items, generate personalized picks
+            if requested_items:
+                location_stored = existing_ticket.get("ai_context", {}).get("celebrate_location", "your chosen spot")
+                size_stored = existing_ticket.get("ai_context", {}).get("celebrate_size", "your party")
+                
+                # Build personalized picks for the panel
+                personalized_picks = []
+                for idx, item in enumerate(requested_items):
+                    personalized_picks.append({
+                        "id": f"celebrate-{item['category']}-{pet_name.lower().replace(' ', '-')}-{idx}",
+                        "pick_type": item["type"],
+                        "title": item["name"],
+                        "subtitle": item["description"],
+                        "reason": item["reason"],
+                        "icon": item["icon"],
+                        "cta": item["cta"],
+                        "service_type": item["service_type"],
+                        "category": "celebrate",
+                        "pet_name": pet_name,
+                        "is_personalized": True,
+                        "source": "concierge_curated",
+                        "badge": f"For {pet_name}"
+                    })
+                
+                # Format response with what we understood
+                items_summary = ", ".join([item["name"].split(" for ")[0] for item in requested_items])
+                
+                celebrate_response = f"""Got it! I've noted your request. Our Concierge® is on it and will get back to you with personalized options shortly!
+
+📋 **Request #{ticket_id}** is being processed by our team.
+
+**What you asked for:**
+"""
+                for item in requested_items:
+                    celebrate_response += f"\n• {item['icon']} {item['name']}"
+                
+                celebrate_response += f"""
+
+Our Concierge® will reach out via WhatsApp/Email with curated options. Is there anything else I can help you with in the meantime? 🐾"""
+                
+                # Update ticket with requirements and move to "processing" stage
+                await update_mira_ticket(session_id, {
+                    "ai_context.celebrate_stage": "processing",
+                    "ai_context.requested_items": [item["service_type"] for item in requested_items],
+                    "ai_context.requested_items_detail": requested_items,
+                    "status": "pending_concierge",
+                    "urgency": "normal",
+                    "ticket_type": "service"
+                })
+                
+                # Add AI response to ticket
+                await add_message_to_ticket(session_id, {
+                    "type": "mira_response",
+                    "content": celebrate_response,
+                    "sender": "mira",
+                    "channel": request.source,
+                    "is_internal": False,
+                    "mode": "celebrate_handoff"
+                })
+                
+                return add_picks_to_response({
+                    "success": True,
+                    "response": celebrate_response,
+                    "session_id": session_id,
+                    "ticket_id": ticket_id,
+                    "pillar": pillar,
+                    "ticket_type": "service",
+                    "celebrate_stage": "processing",
+                    "handoff_complete": True,
+                    # Return the dynamically generated picks
+                    "picks": personalized_picks,
+                    "products": personalized_picks,  # Also in products for compatibility
+                    "concierge": {
+                        "show": True,
+                        "mode": "primary",
+                        "reason": "celebration_coordination",
+                        "cta": "View Full Request"
+                    },
+                    "follow_ups": [
+                        {"text": "Add more items", "type": "action"},
+                        {"text": "View in Services", "type": "action"},
+                        {"text": "Something else", "type": "action"}
+                    ],
+                    "nearby_places": None
+                })
     
     # 5.5 Handle EMERGENCY immediately (GO_NOW tier)
     if pillar == "emergency":
