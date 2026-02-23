@@ -63,8 +63,8 @@ def get_resend():
         pass
     return None
 
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
-BUSINESS_EMAIL = os.environ.get("REACT_APP_BUSINESS_EMAIL", "woof@thedoggycompany.in")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "mira@thedoggycompany.com")
+BUSINESS_EMAIL = os.environ.get("REACT_APP_BUSINESS_EMAIL", "concierge@thedoggycompany.com")
 
 async def send_ticket_notification(ticket: dict, notification_type: str = "created"):
     """Send email notification for ticket events"""
