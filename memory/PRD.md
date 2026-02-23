@@ -128,6 +128,37 @@
 **Result**: Users now see restaurant cards with names, ratings, and "Reserve" buttons directly in the Mira chat widget when they search for restaurants.
 
 
+### Celebrate Flow & Dynamic Picks Fix (Feb 23, 2026 - Session 2)
+**Problem**: When users asked for "cake, photographer, presents" in the celebrate flow:
+1. Picks panel showed garbage entries like "First question: Perfect for Mystique"
+2. No dynamically generated picks based on user request
+3. Generic ticket created without actionable items
+
+**Root Cause**: 
+1. The `picks_catalogue` MongoDB collection was empty (0 documents)
+2. The Picks Engine was designed to look up static picks, but the system is meant to be **Concierge-driven** where picks are **dynamically generated** based on conversation intent
+3. The `add_picks_to_response()` function was overwriting handler-set picks with empty Picks Engine results
+
+**Fix Applied**:
+1. Added new handler for `celebrate_stage == "execution"` that parses user requirements
+2. Dynamically generates personalized picks for: cake, photographer, party favors, decorations, coordination
+3. Modified `add_picks_to_response()` to preserve picks set by handlers (not overwrite with empty engine results)
+4. Each pick is personalized with pet name, context-aware descriptions, and actionable CTAs
+
+**Files Modified**:
+- `/app/backend/mira_routes.py`:
+  - Lines 13848-13990: New celebrate requirements handler
+  - Lines 12032-12045: Modified `add_picks_to_response()` to preserve handler picks
+
+**Result**: When user says "cake, photographer, presents", the picks panel now shows:
+- 🎂 Custom Birthday Cake for {Pet} - [Design Cake]
+- 📸 Pet Photography Session - [Book Session]  
+- 🎁 Party Favors & Gift Bags - [Curate Selection]
+
+**Architecture Note**: Picks are now **Concierge-curated in real-time** based on conversation intent, not looked up from a static catalogue. This aligns with the MIRA BIBLE principle: "Concierge creates and fills the picks as per the conversation."
+
+
+
 ---
 
 ## 🔴 P0 - NEXT PRIORITIES
