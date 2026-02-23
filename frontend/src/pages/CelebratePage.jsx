@@ -590,7 +590,7 @@ const CelebratePage = () => {
             />
           </div>
           
-          <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+          <div className="haptic-card section-fade-in stagger-2" data-testid="experience-gotcha-day">
             <ConciergeExperienceCard
               pillar="celebrate"
               title="Gotcha Day Special®"
@@ -606,7 +606,7 @@ const CelebratePage = () => {
             />
           </div>
           
-          <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+          <div className="haptic-card section-fade-in stagger-3" data-testid="experience-pawty-planning">
             <ConciergeExperienceCard
               pillar="celebrate"
               title="Pawty Planning Pro®"
@@ -624,7 +624,7 @@ const CelebratePage = () => {
             />
           </div>
           
-          <div className="animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+          <div className="haptic-card section-fade-in stagger-4" data-testid="experience-puppy-shower">
             <ConciergeExperienceCard
               pillar="celebrate"
               title="Puppy Shower®"
@@ -640,7 +640,7 @@ const CelebratePage = () => {
             />
           </div>
           
-          <div className="animate-fade-in-up" style={{ animationDelay: '400ms' }}>
+          <div className="haptic-card section-fade-in stagger-5" data-testid="experience-pet-wedding">
             <ConciergeExperienceCard
               pillar="celebrate"
               title="Pet Wedding Ceremony®"
@@ -656,7 +656,7 @@ const CelebratePage = () => {
           />
           </div>
           
-          <div className="animate-fade-in-up" style={{ animationDelay: '500ms' }}>
+          <div className="haptic-card section-fade-in stagger-6" data-testid="experience-milestone">
             <ConciergeExperienceCard
               pillar="celebrate"
               title="Milestone Moments®"
@@ -675,9 +675,9 @@ const CelebratePage = () => {
       </div>
 
       {/* How Concierge® Works */}
-      <div className="bg-gradient-to-r from-pink-50 to-purple-50 py-10 sm:py-16">
+      <div className="gradient-celebrate py-10 sm:py-16 section-fade-in stagger-3" data-testid="celebrate-how-it-works">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-gray-900 mb-6 sm:mb-10">
+          <h2 className="ios-title-2 text-center text-gray-900 mb-6 sm:mb-10">
             How Celebrate Concierge® Works
           </h2>
           
