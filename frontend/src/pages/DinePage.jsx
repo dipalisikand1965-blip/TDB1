@@ -6,7 +6,7 @@ import {
   Utensils, Coffee, Pizza, Leaf, Heart, Check, X, AlertCircle,
   Sparkles, ShoppingBag, Truck, Users, Calendar, MessageCircle, Send,
   Bell, Gift, Cake, User, Mail, Package, Percent, PartyPopper,
-  Crown, Wine, ChefHat, Trees, Loader2
+  Crown, Wine, ChefHat, Trees, Loader2, Navigation
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -31,6 +31,7 @@ import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection'
 import NearbyPlacesCarousel from '../components/NearbyPlacesCarousel';
 import { usePillarContext } from '../context/PillarContext';
 import FreshMealsTab from '../components/dine/FreshMealsTab';
+import MapModal from '../components/MapModal';
 
 // Get user from AuthContext or localStorage
 const getUser = () => {
