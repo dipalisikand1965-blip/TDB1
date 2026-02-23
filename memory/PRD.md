@@ -108,6 +108,25 @@
 | Backend pet_age Bug | ✅ FIXED |
 | Comprehensive Audit | ✅ DONE |
 | Full Roadmap | ✅ DONE |
+| **Restaurant Search in Chat (P1)** | ✅ FIXED |
+
+### Restaurant Search Fix Details (Feb 23, 2026 - Session 2)
+**Problem**: When users asked "find me a pet-friendly restaurant in Mumbai", Mira asked for seating preference instead of showing results directly.
+
+**Root Cause**: The `mira_routes.py` code was designed to ask clarifying questions (indoor/outdoor seating) before showing results. When the user explicitly provided a location, the code should skip this step.
+
+**Fix Applied**:
+1. Modified `mira_routes.py` to detect when user provides location explicitly
+2. Added direct Google Places API lookup when location is available
+3. Skip seating preference question - default to "either"
+4. Return `nearby_places` data with restaurant results immediately
+5. Also added Google Places fallback for stays/hotels and restaurants in the main chat flow
+
+**Files Modified**:
+- `/app/backend/mira_routes.py` (lines 13033-13130 - new direct search logic)
+
+**Result**: Users now see restaurant cards with names, ratings, and "Reserve" buttons directly in the Mira chat widget when they search for restaurants.
+
 
 ---
 
