@@ -529,9 +529,9 @@ const CuratedConciergeSection = ({
   }
 
   return (
-    <div className={className}>
+    <div className={className} data-testid="curated-concierge-section">
       {/* Cards in strict order: question → products → services */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         {/* Question Card (if present) - Always first */}
         {data.question_card && (
           <QuestionCard
@@ -566,17 +566,17 @@ const CuratedConciergeSection = ({
         ))}
       </div>
 
-      {/* Footer with updated time */}
+      {/* Footer with updated time - more compact */}
       {getUpdatedText() && (
-        <p className="text-center text-gray-500 text-xs mt-4 flex items-center justify-center gap-1">
-          <Clock className="w-3 h-3" />
+        <p className="text-center text-gray-500 text-[10px] mt-3 flex items-center justify-center gap-1">
+          <Clock className="w-2.5 h-2.5" />
           {getUpdatedText()}
         </p>
       )}
 
       {/* Personalization summary (subtle) */}
       {data.meta?.personalization_summary && (
-        <p className="text-center text-gray-600 text-[10px] mt-1">
+        <p className="text-center text-gray-600 text-[10px] mt-0.5">
           {data.meta.personalization_summary}
         </p>
       )}
