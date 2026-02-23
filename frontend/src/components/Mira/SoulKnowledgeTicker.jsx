@@ -17,8 +17,9 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ChevronRight, Brain, Heart, X, ExternalLink, ArrowRight, Loader2 } from 'lucide-react';
+import { Sparkles, ChevronRight, Brain, Heart, X, ExternalLink, ArrowRight, Loader2, Star } from 'lucide-react';
 import hapticFeedback from '../../utils/haptic';
+import FavoritesPanel from './FavoritesPanel';
 
 // Category colors for visual distinction
 const CATEGORY_STYLES = {
