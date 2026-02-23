@@ -496,7 +496,15 @@ DINE_CONCIERGE_SERVICES = [
         "icon": "stethoscope",
         "description": "We book a nutrition consult and prep the right summary so you get clear outcomes.",
         "why_concierge": "Booking + prep + follow-up plan needs coordination.",
-        "cta_text": "Book Consult",
+        "cta_text": "Book consult",
+        "why_phrases": {
+            "health_conscious": "Expert-led health optimization",
+            "allergy_prone": "Allergy-focused consultation",
+            "senior": "Senior nutrition guidance",
+            "sensitive_tummy": "Gut health specialist consult",
+            "weight_management": "Weight management program",
+            "default": "Expert nutrition consultation"
+        },
         "default_questions": [
             {
                 "id": "goal",
