@@ -21,7 +21,17 @@ DINE_CONCIERGE_PRODUCTS = [
         "icon": "utensils",
         "description": "A 7-day feeding plan built around {pet_name}'s tummy, energy, and routine.",
         "why_concierge": "This is personalised planning, not a catalogue item.",
-        "cta_text": "Create Plan",
+        "cta_text": "Create plan",
+        # Card-specific why phrases based on traits
+        "why_phrases": {
+            "sensitive_tummy": "Gentle meals safe for sensitive tummies",
+            "picky": "Rotates flavors to keep picky eaters engaged",
+            "foodie": "Variety-packed plan for food lovers",
+            "senior": "Nutrient-balanced meals for senior wellness",
+            "weight_management": "Portioned plan for healthy weight goals",
+            "anxious": "Predictable meals for routine-loving pets",
+            "default": "Customized 7-day feeding plan"
+        },
         "default_questions": [
             {
                 "id": "goal",
