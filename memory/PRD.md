@@ -19,21 +19,37 @@
 
 | Task | Status | Details |
 |------|--------|---------|
-| **P0 CRITICAL: /join Onboarding Bug** | FIXED | Race condition causing "Oops! Something went wrong" error resolved |
-| Root Cause Analysis | DONE | Users clicking rapidly through soul questions caused currentQuestion to exceed array bounds |
-| Bug Fix Implementation | DONE | Added isTransitioningRef guard and bounds checking in MiraMeetsYourPet.jsx |
-| Testing Agent Verification | PASS | 100% success rate on both backend and frontend tests |
+| **P0 CRITICAL: /join Onboarding Bug** | FIXED | Race condition causing "Oops!" error resolved |
+| **Duplicate Soul Questions Fix** | FIXED | SoulBuilder now skips questions already answered during onboarding |
+| **Comprehensive Audit** | DONE | Created `/app/memory/AUDIT.md` with full feature/API inventory |
+| **Score Display Bug** | FIXED | Fixed floating point display issue (87.29999... -> 87%) |
 
-### BUG FIX DETAILS
+### DUPLICATE QUESTIONS FIX DETAILS
+
+**Problem**: Users completing `/join` onboarding answered 13 soul questions. When entering SoulBuilder (48 questions), 12 of those were repeated.
+
+**Solution Implemented**:
+1. Added helper functions: `isQuestionAnswered()`, `findNextUnansweredInChapter()`, `countUnansweredInChapter()`
+2. Modified `handleAnswer()` to skip to next UNANSWERED question instead of sequential increment
+3. Modified chapter-intro "Begin" button to start from first unanswered question
+4. Added visual indicator: "✓ X already answered from onboarding"
+5. Button text now shows "Continue (X left)" when some questions are pre-answered
+
+**Files Modified**: `/app/frontend/src/pages/SoulBuilder.jsx`
+
+**Result**: Users with 87% soul score now see "22 more questions to help Mira understand Mystique better" instead of all 48 questions.
+
+---
+
+## ONBOARDING BUG FIX DETAILS
 
 **Root Cause**: When users clicked rapidly on soul question options, multiple setTimeout callbacks could fire, incrementing `currentQuestion` past array bounds (beyond index 12 for 13 questions). This caused `SOUL_QUESTIONS[currentQuestion]` to be undefined, triggering "Cannot read properties of undefined (reading 'icon')" which showed the ErrorBoundary's "Oops!" message.
 
 **Fix Applied**:
-1. Added `isTransitioningRef = useRef(false)` to track if auto-advance timer is pending (line 319)
-2. Added guard in handleSoulAnswer: `if (isTransitioningRef.current) return` (line 477)
-3. Set/reset isTransitioningRef around setTimeout (lines 487, 492)
-4. Added bounds check at start of renderSoulScreen (lines 1381-1387)
-5. Added bounds check at start of handleSoulAnswer (lines 444-448)
+1. Added `isTransitioningRef = useRef(false)` to track if auto-advance timer is pending
+2. Added guard in handleSoulAnswer: `if (isTransitioningRef.current) return`
+3. Set/reset isTransitioningRef around setTimeout
+4. Added bounds check at start of renderSoulScreen and handleSoulAnswer
 
 **File Modified**: `/app/frontend/src/pages/MiraMeetsYourPet.jsx`
 
