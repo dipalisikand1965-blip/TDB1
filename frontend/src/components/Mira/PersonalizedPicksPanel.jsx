@@ -518,6 +518,7 @@ const MiniCart = ({
   selectedItems, 
   onRemove, 
   onSendToConcierge,
+  onAskMira,      // NEW: Flow to chat
   onClear,
   petName 
 }) => {
@@ -548,15 +549,30 @@ const MiniCart = ({
                   className="flex items-center justify-between bg-gray-800/50 rounded-lg p-2"
                 >
                   <span className="text-sm text-white truncate flex-1">{item.name}</span>
-                  <button
-                    onClick={() => {
-                      hapticFeedback.buttonTap();
-                      onRemove(item);
-                    }}
-                    className="ml-2 w-6 h-6 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {/* Ask Mira about this pick */}
+                    {onAskMira && (
+                      <button
+                        onClick={() => {
+                          hapticFeedback.buttonTap();
+                          onAskMira(item);
+                        }}
+                        className="px-2 py-1 text-xs bg-purple-500/20 text-purple-300 rounded-lg flex items-center gap-1 hover:bg-purple-500/30"
+                      >
+                        <MessageSquare className="w-3 h-3" />
+                        Ask
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        hapticFeedback.buttonTap();
+                        onRemove(item);
+                      }}
+                      className="w-6 h-6 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
               ))}
               
