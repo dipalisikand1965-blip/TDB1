@@ -28,6 +28,7 @@ import hapticFeedback from '../../utils/haptic';
 import { onPickSelect } from '../../utils/picksDelights';
 import ConciergeServiceStrip from './ConciergeServiceStrip';
 import ConciergeDetailModal from './ConciergeDetailModal';
+import CuratedConciergeSection from './CuratedConciergeSection';
 import { ProductDetailModal } from '../ProductCard';
 import { createPortal } from 'react-dom';
 
