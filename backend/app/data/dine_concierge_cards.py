@@ -756,62 +756,44 @@ def derive_traits_from_profile(pet_data: Dict[str, Any]) -> List[str]:
 def generate_why_explanation(card: Dict, pet_name: str, soul_traits: List[str] = None) -> str:
     """
     Generate a personalized "why this card" explanation.
-    Priority: Dine-specific traits > general traits
+    Uses card-specific why_phrases if available, otherwise falls back to generic.
     """
     matched = card.get("_matched_traits", [])
     actual_traits = soul_traits or []
-    score = card.get("_score", 0)
-    card_type = card.get("type", "")
+    all_traits = list(set(matched + actual_traits))
     
-    # Trait to readable explanation mapping with priority
+    # Check for card-specific why_phrases
+    why_phrases = card.get("why_phrases", {})
+    
+    if why_phrases:
+        # Try to find a matching trait in the card's why_phrases
+        for trait in all_traits:
+            trait_lower = trait.lower().replace(" ", "_")
+            if trait_lower in why_phrases:
+                return why_phrases[trait_lower]
+        
+        # Return default phrase for this card
+        return why_phrases.get("default", f"Handpicked for {pet_name}")
+    
+    # Legacy fallback - generic trait explanations
     trait_explanations = {
-        # Priority 1: Health/sensitivity traits (most relevant for Dine)
-        "sensitive_tummy": {"text": "sensitive tummy", "priority": 1},
-        "allergy_prone": {"text": "dietary sensitivities", "priority": 1},
-        "itchy": {"text": "skin sensitivities", "priority": 1},
-        "picky": {"text": "selective palate", "priority": 1},
-        "health_concerns": {"text": "health-first approach", "priority": 1},
-        
-        # Priority 2: Behavior traits
-        "anxious": {"text": "calm-and-comfortable style", "priority": 2},
-        "foodie": {"text": "love of food", "priority": 2},
-        "senior": {"text": "senior needs", "priority": 2},
-        
-        # Priority 3: Lifestyle traits
-        "social": {"text": "social nature", "priority": 3},
-        "playful": {"text": "playful energy", "priority": 3},
-        "elegant": {"text": "refined taste", "priority": 3},
-        "pampered": {"text": "pampered lifestyle", "priority": 3},
-        "active": {"text": "active lifestyle", "priority": 3},
+        "sensitive_tummy": "sensitive tummy",
+        "allergy_prone": "dietary sensitivities",
+        "itchy": "skin sensitivities",
+        "picky": "selective palate",
+        "anxious": "calm-and-comfortable style",
+        "foodie": "love of food",
+        "senior": "senior needs",
+        "social": "social nature",
+        "playful": "playful energy",
+        "elegant": "refined taste",
+        "pampered": "pampered lifestyle",
     }
     
-    # Find best matching trait
-    prioritized_matches = []
-    
-    for trait in (matched + actual_traits):
+    for trait in all_traits:
         trait_lower = trait.lower().replace(" ", "_")
         if trait_lower in trait_explanations:
-            prioritized_matches.append({
-                "trait": trait_lower,
-                "priority": trait_explanations[trait_lower]["priority"],
-                "text": trait_explanations[trait_lower]["text"]
-            })
-    
-    if prioritized_matches:
-        prioritized_matches.sort(key=lambda x: x["priority"])
-        best = prioritized_matches[0]
-        readable = best["text"]
-        
-        if card_type == "concierge_product":
-            return f"Designed for {pet_name}'s {readable}"
-        else:
-            return f"Tailored for {pet_name}'s {readable}"
-    
-    # Fallback
-    if score >= 80:
-        return f"Highly recommended for {pet_name}"
-    elif score >= 60:
-        return f"Great fit for {pet_name}"
+            return f"Designed for {pet_name}'s {trait_explanations[trait_lower]}"
     
     return f"Curated for {pet_name}"
 
