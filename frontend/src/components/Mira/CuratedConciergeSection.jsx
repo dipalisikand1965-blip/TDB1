@@ -107,46 +107,46 @@ const ErrorState = ({ onRetry, petName }) => (
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const FallbackCards = ({ petName, onRetry }) => (
-  <div className="space-y-3">
-    <div className="rounded-2xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-500/20 p-4">
-      <div className="flex items-center gap-3 mb-3">
-        <div className="w-10 h-10 rounded-xl bg-pink-500/20 flex items-center justify-center">
-          <Cake className="w-5 h-5 text-pink-400" />
+  <div className="space-y-2">
+    <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+      <div className="flex items-start gap-2.5 mb-2">
+        <div className="w-9 h-9 rounded-lg bg-pink-500/15 flex items-center justify-center">
+          <Cake className="w-4 h-4 text-pink-400" />
         </div>
         <div>
-          <p className="text-xs text-pink-400 font-medium">Concierge® Product</p>
-          <h4 className="text-white font-semibold">Custom Celebration Cake</h4>
+          <p className="text-[10px] uppercase tracking-wide font-semibold text-pink-300 mb-0.5">Concierge® Product</p>
+          <h4 className="text-white font-bold text-sm">Custom Celebration Cake</h4>
         </div>
       </div>
-      <p className="text-gray-400 text-sm mb-3">
+      <p className="text-gray-300 text-xs mb-2">
         A cake designed around {petName}'s preferences and dietary needs.
       </p>
-      <button className="w-full py-2.5 bg-pink-500/20 hover:bg-pink-500/30 text-pink-300 rounded-lg text-sm font-medium transition-colors">
+      <button className="w-full py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg text-sm font-semibold transition-colors">
         Create for {petName}
       </button>
     </div>
-    <div className="rounded-2xl bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/20 p-4">
-      <div className="flex items-center gap-3 mb-3">
-        <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
-          <PartyPopper className="w-5 h-5 text-purple-400" />
+    <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+      <div className="flex items-start gap-2.5 mb-2">
+        <div className="w-9 h-9 rounded-lg bg-purple-500/15 flex items-center justify-center">
+          <PartyPopper className="w-4 h-4 text-purple-400" />
         </div>
         <div>
-          <p className="text-xs text-purple-400 font-medium">Concierge® Service</p>
-          <h4 className="text-white font-semibold">Plan Celebration End-to-End</h4>
+          <p className="text-[10px] uppercase tracking-wide font-semibold text-purple-300 mb-0.5">Concierge® Service</p>
+          <h4 className="text-white font-bold text-sm">Plan Celebration End-to-End</h4>
         </div>
       </div>
-      <p className="text-gray-400 text-sm mb-3">
+      <p className="text-gray-300 text-xs mb-2">
         Let Mira handle everything - theme, cake, moments, coordination.
       </p>
-      <button className="w-full py-2.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded-lg text-sm font-medium transition-colors">
+      <button className="w-full py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm font-semibold transition-colors">
         Request
       </button>
     </div>
     <button
       onClick={onRetry}
-      className="w-full py-2 text-gray-400 hover:text-white text-sm transition-colors"
+      className="w-full py-1.5 text-gray-400 hover:text-white text-xs transition-colors"
     >
-      <RefreshCw className="w-4 h-4 inline mr-1" /> Load personalized picks
+      <RefreshCw className="w-3 h-3 inline mr-1" /> Load personalized picks
     </button>
   </div>
 );
