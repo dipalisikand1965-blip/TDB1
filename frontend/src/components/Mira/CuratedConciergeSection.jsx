@@ -303,7 +303,7 @@ const ConciergeCard = ({ card, petName, onCreateTicket, isLoading }) => {
         </div>
         <div className="flex-1 min-w-0">
           <p className={`text-xs ${labelColorClass} font-medium mb-0.5`}>
-            {isProduct ? 'Concierge Product' : 'Concierge Service'}
+            {isProduct ? 'Concierge® Product' : 'Concierge® Service'}
           </p>
           <h4 className="text-white font-semibold text-sm leading-tight">
             {card.name}
