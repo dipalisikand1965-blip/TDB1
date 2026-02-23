@@ -276,13 +276,15 @@ const DinePage = () => {
             </p>
           </div>
           
-          <CuratedConciergeSection
-            petId={activePet.id}
-            petName={activePet.name}
-            pillar="dine"
-            token={token}
-            className="mb-8"
-          />
+          {/* Dark container for concierge cards */}
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-4 md:p-6 shadow-xl">
+            <CuratedConciergeSection
+              petId={activePet.id}
+              petName={activePet.name}
+              pillar="dine"
+              token={token}
+            />
+          </div>
         </div>
       ) : token && !activePet ? (
         // Loading state while pets are being fetched
