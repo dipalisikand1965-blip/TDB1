@@ -214,6 +214,59 @@ const DinePage = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Detect user's location using geolocation API
+  useEffect(() => {
+    const detectUserLocation = async () => {
+      setIsDetectingLocation(true);
+      
+      // Try to get user's location via browser geolocation
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            try {
+              // Use reverse geocoding to get city name from coordinates
+              const { latitude, longitude } = position.coords;
+              const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`
+              );
+              if (response.ok) {
+                const data = await response.json();
+                const city = data.address?.city || 
+                            data.address?.town || 
+                            data.address?.state_district ||
+                            data.address?.state || 
+                            'Mumbai';
+                setSelectedNearbyCity(city);
+                console.log(`[DinePage] Detected user location: ${city}`);
+              } else {
+                setSelectedNearbyCity('Mumbai'); // Fallback
+              }
+            } catch (err) {
+              console.log('[DinePage] Reverse geocoding failed, using fallback:', err);
+              setSelectedNearbyCity('Mumbai');
+            }
+            setIsDetectingLocation(false);
+          },
+          (error) => {
+            console.log('[DinePage] Geolocation error:', error.message);
+            // Try to get location from user profile if available
+            const userCity = authUser?.city || authUser?.location || 'Mumbai';
+            setSelectedNearbyCity(userCity);
+            setIsDetectingLocation(false);
+          },
+          { timeout: 5000, maximumAge: 300000 } // 5 sec timeout, 5 min cache
+        );
+      } else {
+        // Geolocation not supported - use user profile or default
+        const userCity = authUser?.city || authUser?.location || 'Mumbai';
+        setSelectedNearbyCity(userCity);
+        setIsDetectingLocation(false);
+      }
+    };
+
+    detectUserLocation();
+  }, [authUser]);
+
   // Fetch restaurants and bundles from API
   useEffect(() => {
     const fetchData = async () => {
