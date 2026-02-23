@@ -6,6 +6,43 @@ The user, Dipali, is the founder of a "pet operating system" named Mira, built i
 
 ---
 
+## ✅ SESSION 14 - CONCIERGE CARD UI/UX OVERHAUL - February 23, 2026
+
+### IMPLEMENTED:
+
+**1. Frontend UI/UX Improvements for Concierge Cards:**
+- **High-contrast design**: Card titles now use bold white text on dark backgrounds
+- **Improved labels**: `CONCIERGE® PRODUCT` and `CONCIERGE® SERVICE` in uppercase, bright accent colors
+- **Solid color CTAs**: Pink for products (`Create for {Pet}`), purple for services (`Request`) - no gradients
+- **Compact cards**: Reduced padding from p-4 to p-3, tighter spacing throughout
+- **"Why" line prominent**: Golden accent color (`✦ Designed for Mystique's calm-and-comfortable style`)
+
+**2. Enhanced Trait Derivation (Backend):**
+- Improved `derive_traits_from_profile()` in both `intelligence_layer.py` and `dine_concierge_cards.py`
+- Now extracts traits from: `soul_traits` → `doggy_soul_answers` → `personality` object → `temperament`
+- Mystique now correctly shows traits: `['playful', 'anxious', 'social']` from her `personality.temperament: Friendly` and `personality.separation_anxiety: Moderate`
+
+**3. Better "why_for_pet" Generation:**
+- Uses `persona_affinity` scores to match traits
+- Priority-based explanations: health traits > behavior traits > lifestyle traits
+- Example: "Designed for Mystique's calm-and-comfortable style" instead of generic "Curated for Mystique"
+
+**Files Modified:**
+- `/app/frontend/src/components/Mira/CuratedConciergeSection.jsx` - Complete UI/UX overhaul
+- `/app/frontend/src/pages/DinePage.jsx` - Added dark container wrapper for concierge section
+- `/app/backend/app/intelligence_layer.py` - Added comprehensive `derive_traits_from_pet_data()` function
+- `/app/backend/app/data/dine_concierge_cards.py` - Enhanced `derive_traits_from_profile()`
+
+**API Test Results:**
+```
+Pet: Mystique
+Derived traits: ['playful', 'anxious', 'social']
+Card: Dining-Out Kit Curated for Mystique
+  Why: Designed for Mystique's calm-and-comfortable style
+```
+
+---
+
 ## ✅ SESSION 13 - DINE INTELLIGENCE LAYER COMPLETE - February 23, 2026
 
 ### IMPLEMENTED:
