@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://mira-picks.preview.emergentagent.com
+https://pet-concierge-ai.preview.emergentagent.com
 
 ---
 

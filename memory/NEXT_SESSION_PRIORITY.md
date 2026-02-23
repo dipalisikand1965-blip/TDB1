@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://mira-picks.preview.emergentagent.com
+**Preview URL:** https://pet-concierge-ai.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
