@@ -1080,13 +1080,13 @@ const MiraChatWidget = ({
         errorMessage = "Taking a bit longer than usual. Please check your connection and try again.";
       } else if (error.message?.includes('520') || error.message?.includes('502') || error.message?.includes('503')) {
         console.error('[Mira] Server error:', error.message);
-        errorMessage = "Our servers are experiencing high traffic. Please try again in a moment.";
+        errorMessage = "Don't worry, the Concierge® is here! Let me try that again for you.";
       } else if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
         console.error('[Mira] Network error:', error.message);
-        errorMessage = "Connection issue detected. Please check your internet and try again.";
+        errorMessage = "Don't worry, the Concierge® is here! Please check your connection.";
       } else if (error.message?.includes('API returned')) {
         console.error('[Mira] API error:', error.message);
-        errorMessage = "Something went wrong. Please try again.";
+        errorMessage = "Don't worry, the Concierge® is here! Let me try again.";
       } else {
         console.error('[Mira] Unknown error type:', error.name, error.message);
       }
