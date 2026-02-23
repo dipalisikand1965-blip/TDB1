@@ -319,13 +319,20 @@ CELEBRATE_CONCIERGE_SERVICES: List[Dict[str, Any]] = [
     {
         "id": "celebrate_venue",
         "type": "concierge_service",
-        "name": "Pet-Friendly Venue Reservation + Coordination",
+        "name": "Pet-Friendly Venue Reservation",
         "description": "Reserve the right table and prep staff for {pet_name}'s celebration.",
         "icon": "🍽️",
         "why_concierge": "Venue vetting + pet-specific prep",
-        "cta_text": "Request",
+        "cta_text": "Book venue",
         "cta_action": "create_ticket",
         "ticket_category": "celebrate_venue",
+        "why_phrases": {
+            "social": "Lively venue for social celebrations",
+            "adventurous": "Unique venue for adventurous pets",
+            "playful": "Fun venue for playful gatherings",
+            "calm": "Quiet corner reserved + staff briefed",
+            "default": "Pet-friendly venue + staff briefed"
+        },
         "ticket_questions": [
             {"id": "location", "question": "City/area + preferred time/date?", "type": "text"},
             {"id": "guests", "question": "Number of humans + pets?", "type": "text"},
