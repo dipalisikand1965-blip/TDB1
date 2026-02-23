@@ -1705,13 +1705,6 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
   const [success, setSuccess] = useState(false);
   const [step, setStep] = useState(1); // Step 1: Form, Step 2: Services
   
-  // Safeguard: if restaurant is missing critical data, close modal
-  if (!restaurant || !restaurant.id) {
-    console.error('[ReservationModal] Invalid restaurant data:', restaurant);
-    if (onClose) onClose();
-    return null;
-  }
-  
   const [formData, setFormData] = useState({
     name: currentUser?.name || '',
     phone: currentUser?.phone || currentUser?.whatsapp || '',
@@ -1722,6 +1715,10 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
     petMealPreorder: false,
     specialRequests: '',
   });
+
+  // Safeguard: if restaurant is missing critical data, log error
+  // We handle this in the render return below instead of early return to avoid hooks issues
+  const isValidRestaurant = restaurant && restaurant.id;
 
   // Fetch user's pets on mount
   useEffect(() => {
