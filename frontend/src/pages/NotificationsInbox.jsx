@@ -537,10 +537,16 @@ const NotificationsInbox = () => {
 
   return (
     <div className="h-screen bg-[#0a0a14] flex flex-col overflow-hidden">
-      {/* Global Navigation: Dashboard | Inbox */}
+      {/* Global Navigation: Dashboard | Inbox + Pet Switcher */}
       <GlobalNav 
         unreadCount={unreadCount} 
         activePetName={activePet?.name}
+        activePetId={activePet?.id}
+        pets={pets}
+        onPetSelect={(pet) => {
+          setActivePet(pet);
+          // Re-fetch notifications will happen automatically via useEffect
+        }}
         onPetClick={() => navigate('/my-pets')}
       />
       
