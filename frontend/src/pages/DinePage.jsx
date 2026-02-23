@@ -865,7 +865,9 @@ const DinePage = () => {
               </>
             )}
           </div>
+        </div>
         </section>
+        {/* END OF DINE OUT SECTION */}
 
         {/* Dine Essentials - Enhanced with Sub-sections */}
         {bundles.length > 0 && (
