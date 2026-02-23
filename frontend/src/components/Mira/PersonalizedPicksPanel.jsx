@@ -269,6 +269,22 @@ const ExpandablePickCard = ({
               Ask Mira about this
             </button>
           )}
+          
+          {/* Save to Favorites */}
+          {petId && (
+            <button
+              onClick={handleSaveToFavorites}
+              disabled={savingFavorite}
+              className={`w-full py-2 rounded-xl font-medium text-xs transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 ${
+                localFavorited 
+                  ? 'text-pink-400 bg-pink-500/10 border border-pink-500/30' 
+                  : 'text-gray-400 hover:text-pink-400 bg-gray-800/50 border border-gray-700 hover:border-pink-500/30 hover:bg-pink-500/10'
+              }`}
+            >
+              <Heart className={`w-3.5 h-3.5 ${localFavorited ? 'fill-pink-400' : ''} ${savingFavorite ? 'animate-pulse' : ''}`} />
+              {localFavorited ? 'Saved ♥' : 'Save to Favorites'}
+            </button>
+          )}
         </div>
         
         {/* Expanded Details */}
