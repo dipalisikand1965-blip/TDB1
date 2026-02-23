@@ -446,7 +446,7 @@ const DinePage = () => {
             />
           </div>
           
-          <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+          <div className="haptic-card section-fade-in stagger-3" data-testid="experience-birthday-dining">
             <ConciergeExperienceCard
               pillar="dine"
               title="Birthday Dining Package®"
@@ -469,15 +469,15 @@ const DinePage = () => {
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* DINE CATEGORIES - Quick Navigation Cards */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-8 section-fade-in stagger-3" data-testid="dine-categories-section">
         <section id="categories" className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <h2 className="ios-title-2 text-gray-900 flex items-center gap-2">
                 <UtensilsCrossed className="w-6 h-6 text-orange-500" />
                 Explore Dine
               </h2>
-              <p className="text-gray-600">Fresh food, treats, supplements & more</p>
+              <p className="ios-subhead text-gray-600">Fresh food, treats, supplements & more</p>
             </div>
           </div>
 
@@ -485,15 +485,15 @@ const DinePage = () => {
             {dineCategories.map((cat) => {
               const Icon = cat.icon;
               return (
-                <Link key={cat.id} to={cat.path}>
-                  <Card className={`relative p-4 hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer group overflow-hidden h-full`}>
+                <Link key={cat.id} to={cat.path} data-testid={`dine-category-${cat.id}`}>
+                  <Card className={`glass-card-dine relative p-4 hover:shadow-lg transition-all haptic-card cursor-pointer group overflow-hidden h-full`}>
                     <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-5 group-hover:opacity-10 transition-opacity`} />
                     <div className="relative">
-                      <div className={`p-2.5 bg-gradient-to-br ${cat.gradient} rounded-xl w-fit mb-3`}>
+                      <div className={`experience-icon w-12 h-12 bg-gradient-to-br ${cat.gradient} rounded-2xl mb-3`}>
                         <Icon className="w-5 h-5 text-white" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 text-sm mb-1">{cat.name}</h3>
-                      <p className="text-xs text-gray-500 line-clamp-2">{cat.description}</p>
+                      <h3 className="ios-headline text-gray-900 text-sm mb-1">{cat.name}</h3>
+                      <p className="ios-caption text-gray-500 line-clamp-2">{cat.description}</p>
                       {cat.badge && (
                         <Badge className={`mt-2 text-xs ${cat.badge === 'Gold Standard' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'}`}>
                           {cat.badge}
@@ -514,7 +514,7 @@ const DinePage = () => {
           <section className="mt-8" data-testid="dine-products-section">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <h3 className="ios-title-2 text-gray-900 flex items-center gap-2">
                   <ShoppingBag className="w-6 h-6 text-orange-500" />
                   Dining Products
                 </h3>
