@@ -12013,13 +12013,15 @@ async def mira_chat(
                 logger.info(f"[PICKS ENGINE] Early run: {len(picks_engine_result.picks)} picks for pillar={picks_engine_result.pillar}")
             
             # DYNAMIC PICKS FALLBACK: If Picks Engine returns empty, use dynamic generator
-            if not picks_response_data.get("picks") and selected_pet:
+            # Works even without selected_pet (uses generic pet context)
+            if not picks_response_data.get("picks"):
                 try:
                     from services.dynamic_picks_generator import generate_dynamic_picks
+                    pet_context = selected_pet or {"name": "your pet"}  # Fallback to generic
                     dynamic_picks = generate_dynamic_picks(
                         user_message=user_message,
                         pillar=pillar or "general",
-                        pet_context=selected_pet,
+                        pet_context=pet_context,
                         location=user_city,
                         additional_context={"session_id": session_id}
                     )
