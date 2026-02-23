@@ -309,7 +309,29 @@ const MemberDashboard = () => {
   
   // Tab and Pet Selection State
   const [activeTab, setActiveTab] = useState('overview');
-  const [selectedPetId, setSelectedPetId] = useState(null);
+  const [selectedPetId, setSelectedPetId] = useState(() => {
+    // Initialize from localStorage for global sync
+    return localStorage.getItem('selectedPetId') || null;
+  });
+  
+  // Sync selectedPetId with localStorage
+  useEffect(() => {
+    if (selectedPetId) {
+      localStorage.setItem('selectedPetId', selectedPetId);
+    }
+  }, [selectedPetId]);
+  
+  // Listen for storage events to sync pet selection across tabs/components
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'selectedPetId' && e.newValue) {
+        setSelectedPetId(e.newValue);
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
   
   // Push Notifications Hook
   const { 
