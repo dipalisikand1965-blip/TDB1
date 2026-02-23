@@ -598,11 +598,15 @@ def get_breed_default_traits(breed: str, size: str) -> List[str]:
 def derive_traits_from_profile(pet_data: Dict[str, Any]) -> List[str]:
     """
     Derive personality traits from multiple sources in pet profile.
-    Same logic as Celebrate.
+    Checks: soul_traits > doggy_soul_answers > personality > temperament
     """
     derived = []
     
-    # Check doggy_soul_answers
+    # 1. Direct soul_traits (highest priority)
+    if pet_data.get("soul_traits"):
+        derived.extend(pet_data["soul_traits"])
+    
+    # 2. Check doggy_soul_answers
     doggy_soul = pet_data.get("doggy_soul_answers", {}) or {}
     
     # Food motivation
@@ -622,26 +626,56 @@ def derive_traits_from_profile(pet_data: Dict[str, Any]) -> List[str]:
     if travel_anxiety in ["high", "severe", "moderate", "mild"]:
         derived.append("anxious")
     
-    # Check temperament
-    temperament = pet_data.get("temperament", "").lower() if pet_data.get("temperament") else ""
-    if temperament:
-        if any(t in temperament for t in ["anxious", "nervous", "shy"]):
+    # 3. Check personality object (common in older pet records)
+    personality = pet_data.get("personality", {}) or {}
+    if isinstance(personality, dict):
+        # Check temperament inside personality
+        temperament = personality.get("temperament", "").lower()
+        if temperament:
+            if "friendly" in temperament or "playful" in temperament:
+                derived.append("playful")
+                derived.append("social")
+            elif "calm" in temperament or "gentle" in temperament:
+                derived.append("calm")
+        
+        # Check anxiety indicators
+        anxiety = personality.get("separation_anxiety", "").lower()
+        noise = personality.get("noise_sensitivity", "").lower()
+        if "high" in anxiety or "severe" in anxiety or "moderate" in anxiety:
             derived.append("anxious")
-        elif any(t in temperament for t in ["playful", "energetic", "active"]):
+        if "nervous" in noise:
+            derived.append("anxious")
+        
+        # Check behavior with dogs
+        dog_behavior = personality.get("behavior_with_dogs", "").lower()
+        if "playful" in dog_behavior or "friendly" in dog_behavior:
+            derived.append("social")
+            derived.append("playful")
+        
+        # Check anxiety triggers
+        if personality.get("anxiety_triggers"):
+            derived.append("anxious")
+    
+    # 4. Direct temperament field
+    temperament_direct = pet_data.get("temperament", "").lower() if pet_data.get("temperament") else ""
+    if temperament_direct:
+        if any(t in temperament_direct for t in ["anxious", "nervous", "shy"]):
+            derived.append("anxious")
+        elif any(t in temperament_direct for t in ["playful", "energetic", "active"]):
             derived.append("playful")
             derived.append("social")
-        elif any(t in temperament for t in ["calm", "gentle", "relaxed"]):
+        elif any(t in temperament_direct for t in ["calm", "gentle", "relaxed"]):
             derived.append("calm")
     
-    # Check personality
-    personality = pet_data.get("personality", {}) or {}
-    if personality.get("anxiety_triggers"):
-        derived.append("anxious")
-    
-    # Check soul data
+    # 5. Check soul data
     soul = pet_data.get("soul", {}) or {}
     if soul.get("love_language", "").lower() in ["velcro", "clingy"]:
         derived.append("pampered")
+    
+    # 6. Age check for senior classification
+    age = pet_data.get("age")
+    if age and isinstance(age, (int, float)) and age >= 8:
+        derived.append("senior")
     
     return list(set(derived))
 
