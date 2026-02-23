@@ -323,7 +323,7 @@ ADMIN_USERNAME=aditya
 ADMIN_PASSWORD=lola4304
 
 # Frontend (.env)
-REACT_APP_BACKEND_URL=https://soul-aware-picks.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://mira-picks.preview.emergentagent.com
 ```
 
 ### Test Credentials
@@ -378,7 +378,7 @@ REACT_APP_BACKEND_URL=https://soul-aware-picks.preview.emergentagent.com
 ## 🚀 DEPLOYMENT
 
 ### Preview Environment
-- URL: https://soul-aware-picks.preview.emergentagent.com
+- URL: https://mira-picks.preview.emergentagent.com
 - Database: Local MongoDB
 - Status: All features working
 

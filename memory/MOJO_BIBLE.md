@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://soul-aware-picks.preview.emergentagent.com
+https://mira-picks.preview.emergentagent.com
 ```
 
 ---
