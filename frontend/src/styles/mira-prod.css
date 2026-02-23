@@ -387,6 +387,13 @@
   padding: var(--space-lg) var(--space-xl);
   padding-bottom: 120px; /* Space for fixed composer */
   min-height: 0; /* Important for flex scrolling */
+  position: relative;
+  z-index: 1; /* Below sticky header (z-index: 100) */
+  background: linear-gradient(180deg, 
+    var(--mira-bg-dark) 0%, 
+    var(--mira-bg-purple) 50%,
+    var(--mira-bg-violet) 100%
+  );
 }
 
 .mp-messages-inner {
