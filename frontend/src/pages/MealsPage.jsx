@@ -431,6 +431,11 @@ const MealsPage = () => {
   const navigate = useNavigate();
   const { user, token } = useAuth();
   const { addToCart } = useCart();
+  
+  // Get pet from PillarContext (syncs with global pet selector)
+  const { currentPet, pets: contextPets } = usePillarContext();
+  const activePet = currentPet;
+  
   const [products, setProducts] = useState([]);
   const [bundles, setBundles] = useState([]);
   const [services, setServices] = useState([]);
@@ -457,11 +462,6 @@ const MealsPage = () => {
     cadence: null,
     budget: null
   });
-
-  // Get active pet from user
-  const activePet = useMemo(() => {
-    return user?.pets?.[0] || null;
-  }, [user]);
   
   // Check if pet has allergies
   const petHasAllergies = useMemo(() => {
