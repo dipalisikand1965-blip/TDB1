@@ -1195,6 +1195,16 @@ const DinePage = () => {
         />
       )}
       
+      {/* Map Modal for viewing places - Shows Google Maps embed for Dog Parks */}
+      <MapModal
+        isOpen={mapModalOpen}
+        onClose={() => {
+          setMapModalOpen(false);
+          setSelectedPlace(null);
+        }}
+        place={selectedPlace}
+      />
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="dine" position="bottom-left" />
       </>
