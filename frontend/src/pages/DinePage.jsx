@@ -2770,6 +2770,16 @@ const RestaurantBookingModal = ({ restaurant, onClose, user, activePet }) => {
         position="bottom-right"
         showLabel
       />
+      
+      {/* Map Modal for viewing places */}
+      <MapModal
+        isOpen={mapModalOpen}
+        onClose={() => {
+          setMapModalOpen(false);
+          setSelectedPlace(null);
+        }}
+        place={selectedPlace}
+      />
     </div>
   );
 };
