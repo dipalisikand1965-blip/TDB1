@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://concierge-lab.preview.emergentagent.com
+https://mira-soul-mate.preview.emergentagent.com
 ```
 
 ---

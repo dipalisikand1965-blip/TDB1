@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://concierge-lab.preview.emergentagent.com/mira-demo**
+**https://mira-soul-mate.preview.emergentagent.com/mira-demo**
 
 ---
 
