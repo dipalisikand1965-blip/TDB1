@@ -9,6 +9,7 @@
  * - All CTAs create tickets (no add-to-cart)
  * - Same component used on pillar page and FAB panel
  * - Never empty (server guarantees 3-5 cards)
+ * - WebSocket-powered real-time feedback on ticket creation
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -16,11 +17,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, Gift, Calendar, Camera, Home, PartyPopper,
   Clock, ChevronRight, RefreshCw, AlertCircle, Check,
-  Cake, Package, MessageSquare, Loader2
+  Cake, Package, MessageSquare, Loader2, Utensils, 
+  Shield, MapPin, Users, ChefHat
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import hapticFeedback from '../../utils/haptic';
 import { toast } from 'sonner';
+import { useMemberSocket } from '../../hooks/useMemberSocket';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // FALLBACK ICONS (don't rely on emojis)
