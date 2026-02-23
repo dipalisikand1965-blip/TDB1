@@ -27,7 +27,7 @@ import ReactMarkdown from 'react-markdown';
 import { 
   X, Send, Loader2, Mic, MicOff, Volume2, VolumeX, 
   ChevronDown, Sparkles, PawPrint, MessageCircle, Zap,
-  ArrowLeft, ShoppingCart, Plus, Heart, ShoppingBag, Play, Package
+  ArrowLeft, ShoppingCart, Plus, Heart, ShoppingBag, Play, Package, MapPin
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
