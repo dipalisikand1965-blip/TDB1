@@ -606,17 +606,25 @@ const CuratedConciergeSection = ({
 
   return (
     <div className={className} data-testid="curated-concierge-section">
-      {/* Header with "Handpicked" and "Updated" */}
+      {/* Header with "Handpicked" and "Updated" + sync status */}
       <div className="flex items-center justify-between mb-3">
         <p className="text-sm text-white/80 font-medium">
           ✨ Handpicked for {petName}
         </p>
-        {getUpdatedText() && (
-          <p className="text-[10px] text-gray-500 flex items-center gap-1">
-            <Clock className="w-2.5 h-2.5" />
-            {getUpdatedText()}
-          </p>
-        )}
+        <div className="flex items-center gap-2">
+          {isSyncing && (
+            <span className="text-[10px] text-amber-400 flex items-center gap-1">
+              <Loader2 className="w-2.5 h-2.5 animate-spin" />
+              Syncing...
+            </span>
+          )}
+          {getUpdatedText() && (
+            <p className="text-[10px] text-gray-500 flex items-center gap-1">
+              <Clock className="w-2.5 h-2.5" />
+              {getUpdatedText()}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Cards in strict order: question → products → services */}
