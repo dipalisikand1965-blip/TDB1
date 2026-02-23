@@ -109,14 +109,15 @@ class ConciergeThread(BaseModel):
 # ============================================================================
 
 # Default operating hours (IST) - can be overridden via admin settings
+# NOTE: Concierge is 24/7 by default - always available for members
 DEFAULT_CONCIERGE_HOURS = {
-    "start": 9,   # 9:00 AM IST
-    "end": 21,    # 9:00 PM IST
+    "start": 0,   # 12:00 AM IST (not used when 24x7)
+    "end": 24,    # 12:00 AM IST (not used when 24x7)
     "timezone_offset": 5.5,  # IST is UTC+5:30
     "timezone_name": "IST",
-    "is_24x7": False,  # If True, always online
+    "is_24x7": True,  # Always online - Concierge® is 24/7
     "weekend_hours": None,  # Optional different hours for weekends
-    "offline_message": "Leave a message and we'll respond when we're back"
+    "offline_message": "We're always here for you! Leave a message and we'll respond shortly."
 }
 
 # In-memory cache for settings (refreshed from DB)
