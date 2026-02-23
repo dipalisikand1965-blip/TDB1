@@ -29,13 +29,35 @@ function ScrollToTop() {
   const { pathname } = useLocation();
   
   useEffect(() => {
-    // Scroll immediately
+    // Scroll immediately with multiple methods for maximum compatibility
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    // Also scroll after a short delay in case content loads dynamically
-    const timer = setTimeout(() => {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0; // For Safari
+    
+    // Also scroll after delays for dynamic content loading
+    const timer1 = setTimeout(() => {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    }, 100);
-    return () => clearTimeout(timer);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 50);
+    
+    const timer2 = setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 150);
+    
+    const timer3 = setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 300);
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
   }, [pathname]);
   
   return null;
