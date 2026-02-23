@@ -31,17 +31,32 @@ The user, Dipali, is the founder of a "pet operating system" named Mira, built i
 **4. Dine Card Icons:**
 - Added lucide icons for all dine pillar cards (Utensils, Shield, MapPin, Users, ChefHat)
 
+**5. Pet Switcher Dropdown (NEW):**
+- Redesigned `GlobalNav.jsx` with pet switcher dropdown
+- Click on "● Mystique" pill → Shows dropdown with all pets
+- Pet avatars, names, breeds shown
+- Selected pet marked with ✓
+- "View all pets →" link at bottom
+- Syncs selection to `localStorage` for global state
+- Dispatches `petSelectionChanged` custom event for in-window sync
+
 **Files Created:**
 - `/app/frontend/src/hooks/useMemberSocket.js`
 
 **Files Modified:**
-- `/app/frontend/src/pages/NotificationsInbox.jsx` - localStorage sync
-- `/app/frontend/src/pages/MemberDashboard.jsx` - localStorage sync
+- `/app/frontend/src/pages/NotificationsInbox.jsx` - localStorage sync + GlobalNav pets prop
+- `/app/frontend/src/pages/MemberDashboard.jsx` - localStorage sync + GlobalNav pets prop
 - `/app/frontend/src/components/Mira/CuratedConciergeSection.jsx` - WebSocket integration
+- `/app/frontend/src/components/Mira/GlobalNav.jsx` - Complete rewrite with pet dropdown
 - `/app/frontend/src/pages/DinePage.jsx` - Pass userEmail prop
-- `/app/frontend/src/pages/CelebratePage.jsx` - Pass userEmail prop
+- `/app/frontend/src/pages/CelebratePage.jsx` - Removed custom onTicketCreate, pass userEmail
 - `/app/backend/realtime_notifications.py` - Member WebSocket events
 - `/app/backend/mira_routes.py` - Emit WebSocket after ticket creation
+
+**Dashboard Tabs Clarification:**
+- **Bookings** = Service/concierge requests (celebrations, reservations, etc.)
+- **Orders** = Product purchases from the shop
+- **Inbox** = All notifications (ticket updates, system alerts)
 
 ---
 
