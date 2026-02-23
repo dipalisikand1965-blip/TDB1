@@ -1983,7 +1983,7 @@ const MiraChatWidget = ({
             
             // 2. Create service desk ticket via canonical flow
             try {
-              const ticketResponse = await fetch(`${getApiUrl()}/api/service-desk/create`, {
+              const ticketResponse = await fetch(`${getApiUrl()}/api/service-requests`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -1993,13 +1993,22 @@ const MiraChatWidget = ({
                   type: pickData.pick_type === 'concierge' ? 'concierge_service' : 'product_inquiry',
                   pillar: pickData.pillar || pillar,
                   title: pickData.name,
-                  description: pickData.description || pickData.why_it_fits || `Interest in ${pickData.name}`,
-                  pet_id: pickData.pet_id,
-                  pet_name: pickData.pet_name,
-                  pick_data: pickData,
                   source: 'mira_chat_picks',
-                  channel: 'chat',
-                  user_email: user?.email
+                  customer: {
+                    name: user?.name || 'Customer',
+                    email: user?.email || '',
+                    phone: user?.phone || ''
+                  },
+                  details: {
+                    pet_id: pickData.pet_id,
+                    pet_name: pickData.pet_name,
+                    pick_name: pickData.name,
+                    pick_description: pickData.description || pickData.why_it_fits || `Interest in ${pickData.name}`,
+                    pick_data: pickData,
+                    channel: 'chat'
+                  },
+                  priority: 'normal',
+                  intent: 'pick_interest'
                 })
               });
               
