@@ -28,6 +28,7 @@ import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
+import NearbyPlacesCarousel from '../components/NearbyPlacesCarousel';
 import { usePillarContext } from '../context/PillarContext';
 
 // Get user from AuthContext or localStorage
