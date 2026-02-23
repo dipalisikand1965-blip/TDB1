@@ -357,16 +357,16 @@ const DinePage = () => {
             <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 mb-4">
               <Crown className="w-3 h-3 mr-1 inline" /> Mira's Picks for {activePet.name}
             </Badge>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+            <h2 className="ios-title-2 text-gray-900 mb-2">
               Curated Dining for {activePet.name}
             </h2>
-            <p className="text-gray-600 max-w-xl mx-auto text-sm">
+            <p className="ios-subhead text-gray-600 max-w-xl mx-auto">
               Personalized meal plans, reservations, and dining experiences - all tickets, all concierge.
             </p>
           </div>
           
           {/* Dark container for concierge cards */}
-          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-4 md:p-6 shadow-xl">
+          <div className="glass-card-dark rounded-3xl p-4 md:p-6 shadow-xl">
             <CuratedConciergeSection
               petId={activePet.id}
               petName={activePet.name}
@@ -380,35 +380,39 @@ const DinePage = () => {
         // Loading state while pets are being fetched
         <div className="max-w-6xl mx-auto px-4 pt-8">
           <div className="text-center">
-            <div className="animate-pulse">
-              <div className="h-6 bg-gray-200 rounded w-48 mx-auto mb-4"></div>
-              <div className="h-8 bg-gray-200 rounded w-64 mx-auto mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-80 mx-auto"></div>
+            <div className="glass-card p-6">
+              <div className="h-6 skeleton-shimmer rounded-full w-48 mx-auto mb-4"></div>
+              <div className="h-8 skeleton-shimmer rounded-full w-64 mx-auto mb-2"></div>
+              <div className="h-4 skeleton-shimmer rounded-full w-80 mx-auto"></div>
             </div>
           </div>
         </div>
       ) : null}
       
       {/* Dining Concierge Picker - Rover-style service request widget */}
-      <DiningConciergePicker />
+      <div className="section-fade-in stagger-1" data-testid="dine-concierge-picker">
+        <DiningConciergePicker />
+      </div>
 
       {/* Elevated Concierge® Experiences */}
-      <div className="max-w-6xl mx-auto px-4 py-12">
+      <div className="max-w-6xl mx-auto px-4 py-12 section-fade-in stagger-2" data-testid="dine-experiences-section">
         <div className="text-center mb-10">
-          <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 mb-4">
+          <Badge className="gradient-dine-dark text-white px-4 py-1 mb-4 haptic-btn">
             <Crown className="w-3 h-3 mr-1 inline" /> Elevated Concierge®
           </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+          <h2 className="ios-title-1 text-gray-900 mb-3">
             Dining Experiences, Elevated
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="ios-callout text-gray-600 max-w-2xl mx-auto">
             Beyond reservations. Our Dine Concierge® curates unforgettable pet-friendly dining moments - 
             from private chef experiences to restaurant partnerships.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-          <div className="animate-fade-in-up" style={{ animationDelay: '0ms' }}>
+        {/* Bento Grid Layout */}
+        <div className="bento-grid">
+          {/* Featured Card - Full Width */}
+          <div className="bento-featured haptic-card section-fade-in stagger-1" data-testid="experience-private-chef">
             <ConciergeExperienceCard
               pillar="dine"
               title="Private Chef Experience®"
@@ -426,7 +430,7 @@ const DinePage = () => {
             />
           </div>
           
-          <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+          <div className="haptic-card section-fade-in stagger-2" data-testid="experience-home-dining">
             <ConciergeExperienceCard
               pillar="dine"
               title="Restaurant VIP Access®"
