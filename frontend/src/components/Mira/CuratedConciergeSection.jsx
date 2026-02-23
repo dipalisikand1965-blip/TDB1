@@ -36,6 +36,7 @@ const CARD_TYPE_ICONS = {
 };
 
 const CARD_ID_ICONS = {
+  // Celebrate pillar
   celebrate_custom_cake_design: Cake,
   celebrate_bespoke_box: Gift,
   celebrate_outdoor_pack: PartyPopper,
@@ -46,6 +47,17 @@ const CARD_ID_ICONS = {
   celebrate_photographer: Camera,
   celebrate_venue: Calendar,
   celebrate_quiet_plan: Home,
+  // Dine pillar
+  dine_weekly_meal_plan: Utensils,
+  dine_food_switch_assistant: RefreshCw,
+  dine_allergy_safe_blueprint: Shield,
+  dine_fresh_subscription_setup: Package,
+  dine_dining_out_kit: Package,
+  dine_reserve_pet_friendly_table: MapPin,
+  dine_pet_buddy_meetup_coordination: Users,
+  dine_private_chef_experience: ChefHat,
+  dine_wont_eat_rapid_fix: AlertCircle,
+  dine_nutrition_consult_booking: Calendar,
 };
 
 const getCardIcon = (card) => {
