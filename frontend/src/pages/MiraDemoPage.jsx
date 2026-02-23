@@ -884,24 +884,62 @@ const MiraDemoPage = () => {
     if (!isPageReady) return;
     
     const detectLocation = async () => {
-      // First try browser geolocation
+      // First check if user has a saved location in profile
+      if (user?.location?.city) {
+        setUserCity(user.location.city);
+        console.log('[GEO] ✅ Using saved location from profile:', user.location.city);
+        return; // Don't re-detect if we have a recent saved location
+      }
+      
+      // Otherwise, detect fresh location via browser GPS
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
             const { latitude, longitude } = position.coords;
             setUserGeoLocation({ latitude, longitude });
             
-            // Reverse geocode to get city name
+            // Use our Google reverse geocode API (more reliable)
             try {
               const response = await fetch(
-                `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+                `${API_URL}/api/geo/reverse?lat=${latitude}&lng=${longitude}`
               );
               const data = await response.json();
-              const city = data.address?.city || data.address?.town || data.address?.state || 'Mumbai';
+              const city = data.city || data.state || 'Your Area';
               setUserCity(city);
               console.log('[GEO] ✅ User location detected via GPS:', city);
+              
+              // Save to user profile for future use
+              if (token) {
+                fetch(`${API_URL}/api/member/location`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  },
+                  body: JSON.stringify({
+                    latitude,
+                    longitude,
+                    city: data.city,
+                    state: data.state,
+                    country: data.country,
+                    source: 'mira_demo'
+                  })
+                });
+              }
             } catch (e) {
-              console.log('[GEO] Could not reverse geocode, using default');
+              console.log('[GEO] Could not reverse geocode:', e);
+              // Fallback to Nominatim
+              try {
+                const nomResponse = await fetch(
+                  `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+                  { headers: { 'User-Agent': 'MiraOS/1.0' } }
+                );
+                const nomData = await nomResponse.json();
+                const city = nomData.address?.city || nomData.address?.town || nomData.address?.state || 'Your Area';
+                setUserCity(city);
+              } catch (nomError) {
+                console.log('[GEO] Nominatim fallback also failed');
+              }
             }
           },
           async (error) => {
@@ -915,10 +953,10 @@ const MiraDemoPage = () => {
                 console.log('[GEO] ✅ Location detected via IP:', ipData.city);
               }
             } catch (ipError) {
-              console.log('[GEO] IP geolocation also failed, using default Mumbai');
+              console.log('[GEO] IP geolocation also failed');
             }
           },
-          { enableHighAccuracy: false, timeout: 5000, maximumAge: 600000 }
+          { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
         );
       } else {
         // No geolocation support - try IP fallback
@@ -930,13 +968,13 @@ const MiraDemoPage = () => {
             console.log('[GEO] ✅ Location detected via IP (no GPS):', ipData.city);
           }
         } catch (e) {
-          console.log('[GEO] No location detection available, using default');
+          console.log('[GEO] No location detection available');
         }
       }
     };
     
     detectLocation();
-  }, [isPageReady]);
+  }, [isPageReady, user?.location?.city, token]);
   
   // Cleanup voice on unmount to prevent memory leaks and double voice
   useEffect(() => {
