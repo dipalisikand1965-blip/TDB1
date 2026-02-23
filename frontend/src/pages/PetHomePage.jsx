@@ -441,7 +441,7 @@ const PetHomePage = () => {
       <Navbar />
       
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800">
+      <div className="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800">
         {/* Top bar with logo and actions */}
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
