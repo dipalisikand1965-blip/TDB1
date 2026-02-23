@@ -193,7 +193,12 @@
    - Fetches favorites alongside "What Mira Knows" data
    - Shows saved picks count and preview
 
-**Test Results**: All favorites API endpoints verified working (100% pass rate)
+5. **Integration with MyPets Page**:
+   - Updated fetchMiraKnowledge to also fetch favorites
+   - Added "Saved Favorites" section in expanded "What Mira Knows" panel
+   - Shows up to 4 favorites with pillar badges
+
+**Test Results**: All favorites API endpoints verified working (100% pass rate). Console logs confirm 5 favorites fetched for pet-3661ae55d2e2.
 
 
 ### YouTube Training Videos Verification (Feb 23, 2026 - Session 3)
