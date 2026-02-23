@@ -107,12 +107,24 @@ const MyPets = () => {
     
     setLoadingKnowledge(prev => ({ ...prev, [petId]: true }));
     try {
-      const response = await fetch(`${API_URL}/api/mira/memory/pet/${petId}/what-mira-knows`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
+      // Fetch both knowledge and favorites in parallel
+      const [knowledgeRes, favoritesRes] = await Promise.all([
+        fetch(`${API_URL}/api/mira/memory/pet/${petId}/what-mira-knows`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }),
+        fetch(`${API_URL}/api/favorites/${petId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+      ]);
+      
+      if (knowledgeRes.ok) {
+        const data = await knowledgeRes.json();
         setMiraKnowledge(prev => ({ ...prev, [petId]: data }));
+      }
+      
+      if (favoritesRes.ok) {
+        const favData = await favoritesRes.json();
+        setPetFavorites(prev => ({ ...prev, [petId]: favData.favorites || [] }));
       }
     } catch (error) {
       console.error('Error fetching Mira knowledge:', error);
