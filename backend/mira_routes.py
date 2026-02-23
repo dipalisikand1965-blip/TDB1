@@ -24146,3 +24146,294 @@ async def remove_avoided_product(pet_id: str, product_id: str, db=Depends(get_db
 
 
 
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# INTELLIGENCE LAYER - Curated Set API
+# Dynamic but synced picks for "Picks for {Pet}" feature
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/curated-set/{pet_id}/{pillar}")
+async def get_curated_set(
+    pet_id: str,
+    pillar: str,
+    intent: Optional[str] = None,
+    event_type: Optional[str] = None,
+    force_refresh: bool = False,
+    db=Depends(get_db)
+):
+    """
+    Get a personalized curated set of picks for a pet and pillar.
+    
+    This is the main endpoint for the Intelligence Layer.
+    
+    Returns:
+    - catalogue_picks: Products (add to cart)
+    - concierge_picks: Services (create ticket)
+    - question_card: Optional micro-question if profile is thin
+    - meta: Generation metadata including cache info
+    
+    Query params:
+    - intent: Optional user intent context (e.g., "birthday_planning")
+    - event_type: Optional event type (e.g., "birthday", "gotcha_day")
+    - force_refresh: Skip cache and generate fresh (default: False)
+    """
+    from app.intelligence_layer import generate_curated_set
+    
+    try:
+        # Validate pillar
+        valid_pillars = ["celebrate", "dine", "stay", "travel", "care", "enjoy", "fit", "learn", "shop"]
+        if pillar.lower() not in valid_pillars:
+            raise HTTPException(status_code=400, detail=f"Invalid pillar: {pillar}")
+        
+        # Fetch pet data
+        pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+        if not pet:
+            # Try by _id
+            from bson import ObjectId
+            try:
+                pet = await db.pets.find_one({"_id": ObjectId(pet_id)}, {"_id": 0})
+            except:
+                pass
+        
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet not found")
+        
+        # Extract soul traits from doggy_soul_answers
+        soul_traits = extract_soul_traits(pet)
+        
+        # Build pet data dict for intelligence layer
+        pet_data = {
+            "id": pet_id,
+            "name": pet.get("name", ""),
+            "breed": pet.get("breed", ""),
+            "size": determine_pet_size(pet),
+            "soul_traits": soul_traits,
+            "allergies": pet.get("allergies", []) or pet.get("food_allergies", []) or [],
+            "answered_questions": pet.get("answered_questions", [])
+        }
+        
+        # Build intent context
+        intent_context = None
+        if intent or event_type:
+            intent_context = {
+                "intent": intent,
+                "event_type": event_type
+            }
+            
+            # Check for upcoming events
+            if not event_type:
+                upcoming_event = await check_upcoming_events(db, pet_id)
+                if upcoming_event:
+                    intent_context["event_type"] = upcoming_event["type"]
+                    intent_context["event_days_away"] = upcoming_event["days_away"]
+        
+        # Generate curated set
+        curated_set = await generate_curated_set(
+            pet_data=pet_data,
+            pillar=pillar.lower(),
+            intent_context=intent_context,
+            db=db,
+            use_cache=not force_refresh
+        )
+        
+        return curated_set
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[CURATED_SET] Error generating curated set: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+def extract_soul_traits(pet: dict) -> List[str]:
+    """
+    Extract soul traits from pet's doggy_soul_answers.
+    """
+    traits = []
+    soul_answers = pet.get("doggy_soul_answers", {}) or {}
+    
+    # Direct trait mappings
+    if soul_answers.get("general_nature"):
+        traits.append(soul_answers["general_nature"])
+    if soul_answers.get("temperament"):
+        traits.append(soul_answers["temperament"])
+    if soul_answers.get("stranger_reaction"):
+        reaction = soul_answers["stranger_reaction"]
+        if "friendly" in reaction.lower():
+            traits.append("social")
+        elif "shy" in reaction.lower() or "cautious" in reaction.lower():
+            traits.append("warms_up_slowly")
+    if soul_answers.get("exercise_needs"):
+        needs = soul_answers["exercise_needs"]
+        if "high" in needs.lower():
+            traits.append("energetic")
+        elif "low" in needs.lower():
+            traits.append("calm")
+    if soul_answers.get("food_motivation"):
+        if soul_answers["food_motivation"].lower() in ["very", "highly", "loves"]:
+            traits.append("foodie")
+    
+    # Also check for explicit traits list
+    if pet.get("soul_traits"):
+        traits.extend(pet["soul_traits"])
+    
+    # Deduplicate
+    return list(set(traits))[:5]
+
+
+def determine_pet_size(pet: dict) -> str:
+    """
+    Determine pet size from weight or explicit size field.
+    """
+    if pet.get("size"):
+        return pet["size"].lower()
+    
+    weight = pet.get("weight")
+    if weight:
+        try:
+            w = float(str(weight).replace("kg", "").replace("lbs", "").strip())
+            if w < 10:
+                return "small"
+            elif w < 25:
+                return "medium"
+            else:
+                return "large"
+        except:
+            pass
+    
+    # Guess from breed
+    breed = (pet.get("breed") or "").lower()
+    small_breeds = ["shih tzu", "pomeranian", "chihuahua", "maltese", "yorkie", "toy"]
+    large_breeds = ["labrador", "golden retriever", "german shepherd", "rottweiler", "great dane"]
+    
+    for small in small_breeds:
+        if small in breed:
+            return "small"
+    for large in large_breeds:
+        if large in breed:
+            return "large"
+    
+    return "medium"
+
+
+async def check_upcoming_events(db, pet_id: str) -> Optional[dict]:
+    """
+    Check if pet has any upcoming events (birthday, gotcha day) within 30 days.
+    """
+    try:
+        pet = await db.pets.find_one({"id": pet_id}, {"dob": 1, "gotcha_date": 1, "adoption_date": 1})
+        if not pet:
+            return None
+        
+        today = datetime.now(timezone.utc).date()
+        
+        # Check birthday
+        dob = pet.get("dob")
+        if dob:
+            try:
+                if isinstance(dob, str):
+                    dob = datetime.fromisoformat(dob.replace("Z", "+00:00"))
+                birthday_this_year = dob.replace(year=today.year).date()
+                if birthday_this_year < today:
+                    birthday_this_year = dob.replace(year=today.year + 1).date()
+                days_away = (birthday_this_year - today).days
+                if days_away <= 30:
+                    return {"type": "birthday", "days_away": days_away}
+            except:
+                pass
+        
+        # Check gotcha day
+        gotcha = pet.get("gotcha_date") or pet.get("adoption_date")
+        if gotcha:
+            try:
+                if isinstance(gotcha, str):
+                    gotcha = datetime.fromisoformat(gotcha.replace("Z", "+00:00"))
+                gotcha_this_year = gotcha.replace(year=today.year).date()
+                if gotcha_this_year < today:
+                    gotcha_this_year = gotcha.replace(year=today.year + 1).date()
+                days_away = (gotcha_this_year - today).days
+                if days_away <= 30:
+                    return {"type": "gotcha_day", "days_away": days_away}
+            except:
+                pass
+        
+        return None
+    except:
+        return None
+
+
+@router.post("/curated-set/answer")
+async def submit_question_answer(
+    request: dict,
+    db=Depends(get_db)
+):
+    """
+    Submit answer to a thin-profile question card.
+    
+    Body:
+    - pet_id: str
+    - question_id: str
+    - answer: str
+    - maps_to_trait: str
+    """
+    from app.intelligence_layer import save_question_answer
+    
+    try:
+        pet_id = request.get("pet_id")
+        question_id = request.get("question_id")
+        answer = request.get("answer")
+        maps_to_trait = request.get("maps_to_trait")
+        
+        if not all([pet_id, question_id, answer, maps_to_trait]):
+            raise HTTPException(status_code=400, detail="Missing required fields")
+        
+        success = await save_question_answer(
+            db=db,
+            pet_id=pet_id,
+            question_id=question_id,
+            answer=answer,
+            maps_to_trait=maps_to_trait
+        )
+        
+        if success:
+            return {"success": True, "message": "Answer saved! Mira will use this to personalize your picks."}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to save answer")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[QUESTION_ANSWER] Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/curated-set/cache/{pet_id}")
+async def invalidate_curated_cache(
+    pet_id: str,
+    pillar: Optional[str] = None,
+    db=Depends(get_db)
+):
+    """
+    Invalidate cached curated sets for a pet.
+    Useful when pet profile is updated.
+    """
+    try:
+        cache_collection = db["curated_picks_cache"]
+        
+        query = {"meta.pet_id": pet_id}
+        if pillar:
+            query["meta.pillar"] = pillar
+        
+        result = await cache_collection.delete_many(query)
+        
+        return {
+            "success": True,
+            "deleted_count": result.deleted_count,
+            "message": f"Cleared {result.deleted_count} cached curated sets"
+        }
+    except Exception as e:
+        logger.error(f"[CACHE_INVALIDATE] Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
