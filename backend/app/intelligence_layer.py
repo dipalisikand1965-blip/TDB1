@@ -619,6 +619,16 @@ async def generate_curated_set(
         concierge_services = curated.get("concierge_services", [])
         question_card = curated.get("question_card")
     
+    elif pillar == "fresh_meals" or (pillar == "dine" and intent_context and intent_context.get("sub_pillar") == "fresh_meals"):
+        # Fresh Meals specific cards
+        from app.data.fresh_meals_concierge_cards import select_fresh_meals_cards
+        
+        result = select_fresh_meals_cards(pet_data, max_cards=4)
+        # Split into products and services
+        concierge_products = [c for c in result["cards"] if c.get("type") == "concierge_product"]
+        concierge_services = [c for c in result["cards"] if c.get("type") == "concierge_service"]
+        question_card = None
+    
     else:
         # For other pillars, use fallback (to be expanded later)
         logger.warning(f"[INTELLIGENCE] Pillar '{pillar}' not yet implemented - returning empty")
