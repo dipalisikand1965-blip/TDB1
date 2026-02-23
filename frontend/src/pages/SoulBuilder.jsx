@@ -551,12 +551,16 @@ const SoulBuilder = () => {
       saveSoulAnswers(newAnswers);
     }
     
-    // Move to next question or chapter complete
+    // Move to next UNANSWERED question or chapter complete
+    // This skips questions already answered during onboarding
     setTimeout(() => {
-      if (currentQuestion < chapter.questions.length - 1) {
-        setCurrentQuestion(prev => prev + 1);
+      const nextUnanswered = findNextUnansweredInChapter(currentQuestion + 1);
+      
+      if (nextUnanswered !== -1) {
+        // Found an unanswered question in this chapter
+        setCurrentQuestion(nextUnanswered);
       } else {
-        // Save at end of each chapter
+        // All remaining questions in chapter are answered, go to chapter complete
         saveSoulAnswers(newAnswers);
         setScreen('chapter-complete');
       }
