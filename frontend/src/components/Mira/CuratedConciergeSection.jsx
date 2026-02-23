@@ -206,21 +206,22 @@ const QuestionCard = ({ card, petId, petName, onAnswerSaved, token }) => {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 p-4"
+      className="rounded-xl bg-white/5 border border-amber-500/20 p-3"
+      data-testid="question-card"
     >
-      {/* Header */}
-      <div className="flex items-center gap-2 mb-3">
-        <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
-          <QuestionIcon className="w-4 h-4 text-amber-400" />
+      {/* Header - Compact */}
+      <div className="flex items-center gap-2 mb-2">
+        <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center">
+          <QuestionIcon className="w-3.5 h-3.5 text-amber-400" />
         </div>
-        <p className="text-xs text-amber-400 font-medium">Mira asks</p>
+        <p className="text-[10px] uppercase tracking-wide font-semibold text-amber-300">Mira asks</p>
       </div>
 
-      {/* Question */}
-      <h4 className="text-white font-semibold mb-4">{card.question}</h4>
+      {/* Question - High contrast */}
+      <h4 className="text-white font-bold text-sm mb-3">{card.question}</h4>
 
-      {/* Options */}
-      <div className="grid grid-cols-2 gap-2">
+      {/* Options - Compact grid */}
+      <div className="grid grid-cols-2 gap-1.5">
         {card.options.map((option) => {
           const isSelected = selectedOption === option;
           const isDisabled = (saving || saved) && !isSelected;
@@ -230,39 +231,40 @@ const QuestionCard = ({ card, petId, petName, onAnswerSaved, token }) => {
               key={option}
               onClick={() => handleSelect(option)}
               disabled={isDisabled || saved}
+              data-testid={`question-option-${option.toLowerCase().replace(/\s+/g, '-')}`}
               className={`
-                py-2.5 px-3 rounded-lg text-sm font-medium transition-all
+                py-2 px-2.5 rounded-lg text-xs font-medium transition-all
                 ${isSelected && saved
-                  ? 'bg-green-500/30 text-green-300 border border-green-500/30'
+                  ? 'bg-green-500 text-white'
                   : isSelected
-                    ? 'bg-amber-500/30 text-amber-200 border border-amber-500/30'
+                    ? 'bg-amber-500 text-white'
                     : isDisabled
                       ? 'bg-white/5 text-gray-500 cursor-not-allowed'
-                      : 'bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white'
+                      : 'bg-white/10 text-gray-200 hover:bg-white/20 hover:text-white'
                 }
               `}
             >
-              {isSelected && saved && <Check className="w-3.5 h-3.5 inline mr-1" />}
-              {isSelected && saving && <Loader2 className="w-3.5 h-3.5 inline mr-1 animate-spin" />}
+              {isSelected && saved && <Check className="w-3 h-3 inline mr-1" />}
+              {isSelected && saving && <Loader2 className="w-3 h-3 inline mr-1 animate-spin" />}
               {option}
             </button>
           );
         })}
       </div>
 
-      {/* Microcopy - helps user understand the purpose */}
-      <p className="text-gray-400 text-xs mt-3 text-center italic">
+      {/* Microcopy - subtle */}
+      <p className="text-gray-400 text-[10px] mt-2 text-center">
         This will refine {petName}'s picks
       </p>
 
       {/* Error */}
       {error && (
-        <p className="text-red-400 text-xs mt-2 text-center">{error}</p>
+        <p className="text-red-400 text-xs mt-1.5 text-center">{error}</p>
       )}
 
       {/* Saved confirmation */}
       {saved && (
-        <p className="text-green-400 text-xs mt-2 text-center flex items-center justify-center gap-1">
+        <p className="text-green-400 text-xs mt-1.5 text-center flex items-center justify-center gap-1">
           <Check className="w-3 h-3" /> Saved
         </p>
       )}
