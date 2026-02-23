@@ -1104,6 +1104,7 @@ const Navbar = () => {
                 {/* Beautiful Dropdown Menu - Dark theme to match nav */}
                 {pillar.dropdown && activeDropdown === pillar.id && (
                   <div 
+                    data-testid={`dropdown-${pillar.id}`}
                     className={`absolute top-full ${getDropdownPosition(index)} w-52 shadow-2xl rounded-lg py-2 z-50`}
                     style={{ 
                       minWidth: '200px',
