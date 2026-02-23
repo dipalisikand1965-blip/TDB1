@@ -111,7 +111,7 @@ const DinePage = () => {
     }
   }, [authUser]);
   
-  // Fetch user's pets for personalization
+  // Fetch user's pets for personalization + listen for pet selection changes
   useEffect(() => {
     const fetchPets = async () => {
       if (!token) return;
@@ -122,8 +122,21 @@ const DinePage = () => {
         if (response.ok) {
           const data = await response.json();
           const pets = data.pets || [];
+          setUserPets(pets);
+          
           if (pets.length > 0) {
-            setActivePet(pets[0]);
+            // Check localStorage for globally selected pet
+            const savedPetId = localStorage.getItem('selectedPetId');
+            if (savedPetId) {
+              const savedPet = pets.find(p => p.id === savedPetId);
+              if (savedPet) {
+                setActivePet(savedPet);
+              } else {
+                setActivePet(pets[0]);
+              }
+            } else {
+              setActivePet(pets[0]);
+            }
           }
         }
       } catch (err) {
