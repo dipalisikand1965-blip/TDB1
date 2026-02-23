@@ -129,6 +129,7 @@ const DinePage = () => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [restaurantsToShow, setRestaurantsToShow] = useState(8);
+  const [productsToShow, setProductsToShow] = useState(15); // 3 rows x 5 columns
   const [heroIndex, setHeroIndex] = useState(0);
   
   // Scroll to top when page loads
