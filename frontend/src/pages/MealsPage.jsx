@@ -625,59 +625,135 @@ const MealsPage = () => {
         path="/dine/meals"
       />
       
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 text-white py-12 sm:py-20 px-4 overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <img 
-            src="https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=1200"
-            alt="Fresh Pet Food"
-            className="w-full h-full object-cover"
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* CURATED CONCIERGE SECTION - ON TOP (Logged in users only)              */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {user && activePet ? (
+        <>
+          {/* Pet Control Center - Sticky */}
+          <PetControlCenter 
+            pet={activePet} 
+            planBuilder={planBuilder}
+            onSetPlan={handleSetPlan}
+            isScrolled={isScrolled}
           />
-        </div>
-        
-        {/* Mobile Back Button */}
-        <button 
-          onClick={() => navigate(-1)}
-          className="sm:hidden absolute top-4 left-4 z-10 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
-          aria-label="Go back"
-        >
-          <ChevronLeft className="w-6 h-6 text-white" />
-        </button>
-        
-        <div className="relative max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 backdrop-blur-sm rounded-full mb-4 sm:mb-6">
-            <Utensils className="w-4 sm:w-5 h-4 sm:h-5" />
-            <span className="font-medium text-sm sm:text-base">Fresh Pet Nutrition</span>
+          
+          <div className="max-w-6xl mx-auto px-4 py-6">
+            {/* Fresh Meals Hero - Allergy-aware */}
+            <FreshMealsHero pet={activePet} />
+            
+            {/* Mira's Curated Picks */}
+            {token && (
+              <div className="mb-8">
+                <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-4 md:p-6 shadow-xl">
+                  <CuratedConciergeSection
+                    petId={activePet.id}
+                    petName={activePet.name}
+                    pillar="dine"
+                    subPillar="fresh-meals"
+                    token={token}
+                    userEmail={user?.email}
+                  />
+                </div>
+              </div>
+            )}
+            
+            {/* Plan Builder Row */}
+            <PlanBuilderRow 
+              planBuilder={planBuilder}
+              setPlanBuilder={setPlanBuilder}
+              petHasAllergies={petHasAllergies}
+              petName={activePet.name}
+            />
+            
+            {/* 3 Canonical Concierge Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              {cardOrder.map(card => (
+                <ConciergeProductCard
+                  key={card.id}
+                  cardId={card.id}
+                  title={card.title}
+                  description={card.description}
+                  image={card.image}
+                  cta={card.cta}
+                  recommended={card.recommended}
+                  onCTAClick={handleCardCTA}
+                  petName={activePet.name}
+                />
+              ))}
+            </div>
+            
+            {/* How It Works Strip */}
+            <HowItWorksStrip petName={activePet.name} />
           </div>
           
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-3 sm:mb-4">
-            Fresh Meals
-          </h1>
-          <p className="text-base sm:text-xl md:text-2xl text-orange-100 max-w-2xl mx-auto mb-6 sm:mb-8 px-2">
-            Nutritious, vet-formulated meals made with human-grade ingredients. Delivered fresh.
-          </p>
+          {/* Divider between curated and catalogue */}
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="border-t border-gray-200 my-4" />
+            <p className="text-center text-sm text-gray-500 mb-6">
+              Or browse our catalogue below
+            </p>
+          </div>
+        </>
+      ) : (
+        /* Non-logged in users: Show original hero */
+        <div className="relative bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 text-white py-12 sm:py-20 px-4 overflow-hidden">
+          <div className="absolute inset-0 opacity-20">
+            <img 
+              src="https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=1200"
+              alt="Fresh Pet Food"
+              className="w-full h-full object-cover"
+            />
+          </div>
           
-          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4 sm:px-0">
-            <Button 
-              size="lg" 
-              className="w-full sm:w-auto bg-white text-orange-600 hover:bg-orange-50 gap-2 h-12 sm:h-11 text-base font-semibold shadow-lg"
-              onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
-            >
-              <ShoppingBag className="w-5 h-5" />
-              Shop Fresh Meals
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="w-full sm:w-auto border-white text-white hover:bg-white/20 gap-2 h-12 sm:h-11 text-base"
-              onClick={() => navigate('/meal-plan')}
-            >
-              <Calendar className="w-5 h-5" />
-              Meal Plans
-            </Button>
+          {/* Mobile Back Button */}
+          <button 
+            onClick={() => navigate(-1)}
+            className="sm:hidden absolute top-4 left-4 z-10 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
+            aria-label="Go back"
+          >
+            <ChevronLeft className="w-6 h-6 text-white" />
+          </button>
+          
+          <div className="relative max-w-6xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 backdrop-blur-sm rounded-full mb-4 sm:mb-6">
+              <Utensils className="w-4 sm:w-5 h-4 sm:h-5" />
+              <span className="font-medium text-sm sm:text-base">Fresh Pet Nutrition</span>
+            </div>
+            
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-3 sm:mb-4">
+              Fresh Meals
+            </h1>
+            <p className="text-base sm:text-xl md:text-2xl text-orange-100 max-w-2xl mx-auto mb-6 sm:mb-8 px-2">
+              Nutritious, vet-formulated meals made with human-grade ingredients. Delivered fresh.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4 sm:px-0">
+              <Button 
+                size="lg" 
+                className="w-full sm:w-auto bg-white text-orange-600 hover:bg-orange-50 gap-2 h-12 sm:h-11 text-base font-semibold shadow-lg"
+                onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                <ShoppingBag className="w-5 h-5" />
+                Shop Fresh Meals
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="w-full sm:w-auto border-white text-white hover:bg-white/20 gap-2 h-12 sm:h-11 text-base"
+                onClick={() => navigate('/meal-plan')}
+              >
+                <Calendar className="w-5 h-5" />
+                Meal Plans
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* EXISTING CATALOGUE CONTENT - KEPT BELOW                                */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
 
       {/* Quick Categories */}
       <div className="max-w-6xl mx-auto px-4 -mt-6 sm:-mt-8 relative z-10">
