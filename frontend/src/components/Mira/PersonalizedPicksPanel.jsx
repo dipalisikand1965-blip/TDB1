@@ -137,10 +137,15 @@ const ExpandablePickCard = ({
   onSelect, 
   onViewDetails, // Open product detail modal for catalogue items
   onChatClick,   // NEW: Flow this pick to chat conversation
+  onSaveToFavorites, // NEW: Save to pet's favorites
   petName,
+  petId, // NEW: For favorites
+  isFavorited = false, // NEW: Is this already in favorites
   type = 'catalogue' // 'catalogue' or 'concierge'
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [savingFavorite, setSavingFavorite] = useState(false);
+  const [localFavorited, setLocalFavorited] = useState(isFavorited);
   
   const handleToggle = () => {
     hapticFeedback.buttonTap();
@@ -157,6 +162,26 @@ const ExpandablePickCard = ({
     e.stopPropagation();
     hapticFeedback.buttonTap();
     if (onChatClick) onChatClick(pick);
+  };
+  
+  const handleSaveToFavorites = async (e) => {
+    e.stopPropagation();
+    if (savingFavorite || !petId) return;
+    
+    setSavingFavorite(true);
+    hapticFeedback.buttonTap();
+    
+    try {
+      if (onSaveToFavorites) {
+        await onSaveToFavorites(pick);
+        setLocalFavorited(!localFavorited);
+        hapticFeedback.success();
+      }
+    } catch (err) {
+      console.error('Error saving to favorites:', err);
+    } finally {
+      setSavingFavorite(false);
+    }
   };
 
   const isConcierge = type === 'concierge';
