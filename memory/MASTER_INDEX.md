@@ -323,7 +323,7 @@ ADMIN_USERNAME=aditya
 ADMIN_PASSWORD=lola4304
 
 # Frontend (.env)
-REACT_APP_BACKEND_URL=https://mira-soul-mate.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://mira-personal-pet.preview.emergentagent.com
 ```
 
 ### Test Credentials
@@ -378,7 +378,7 @@ REACT_APP_BACKEND_URL=https://mira-soul-mate.preview.emergentagent.com
 ## 🚀 DEPLOYMENT
 
 ### Preview Environment
-- URL: https://mira-soul-mate.preview.emergentagent.com
+- URL: https://mira-personal-pet.preview.emergentagent.com
 - Database: Local MongoDB
 - Status: All features working
 

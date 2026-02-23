@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-soul-mate.preview.emergentagent.com
+https://mira-personal-pet.preview.emergentagent.com
 ```
 
 ---
