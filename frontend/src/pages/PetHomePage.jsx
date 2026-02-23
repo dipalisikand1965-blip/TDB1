@@ -46,6 +46,7 @@ import {
   Users,
   Dog
 } from 'lucide-react';
+import Navbar from '../components/Navbar';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
