@@ -285,11 +285,18 @@ DINE_CONCIERGE_SERVICES = [
     {
         "id": "dine_reserve_pet_friendly_table",
         "type": "concierge_service",
-        "name": "Reserve a Pet-Friendly Table (Done Right)",
+        "name": "Reserve a Pet-Friendly Table",
         "icon": "map-pin",
         "description": "We reserve the right table and brief the venue so {pet_name} is comfortable.",
         "why_concierge": "Requires coordination, table placement, and staff briefing.",
-        "cta_text": "Reserve Table",
+        "cta_text": "Request reservation",
+        "why_phrases": {
+            "anxious": "Quiet corner + staff briefed for nervous pets",
+            "elegant": "Premium table with VIP treatment",
+            "social": "Lively spot great for social pets",
+            "senior": "Accessible seating for senior comfort",
+            "default": "Table + venue briefed for pets"
+        },
         "default_questions": [
             {
                 "id": "city_area",
