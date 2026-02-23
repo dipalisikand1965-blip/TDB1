@@ -524,7 +524,8 @@ def is_profile_thin(pet_data: Dict) -> bool:
     """
     Check if pet profile is "thin" (missing key information).
     """
-    soul_traits = pet_data.get("soul_traits", []) or []
+    # Use derived traits which checks multiple sources
+    derived_traits = derive_traits_from_pet_data(pet_data)
     
     # Check required fields
     missing_required = []
@@ -532,8 +533,8 @@ def is_profile_thin(pet_data: Dict) -> bool:
         if not pet_data.get(field):
             missing_required.append(field)
     
-    # Check trait count
-    has_few_traits = len(soul_traits) < THIN_PROFILE_THRESHOLDS["missing_traits"]
+    # Check trait count - now using derived traits
+    has_few_traits = len(derived_traits) < THIN_PROFILE_THRESHOLDS["missing_traits"]
     
     return bool(missing_required) or has_few_traits
 
