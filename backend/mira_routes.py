@@ -13033,8 +13033,96 @@ Would you like me to show you safe treats in one of those flavors?"""
         if not missing_info:
             # We have all info - skip to showing results (will be handled by Google Places later)
             pass
-        elif missing_info == ["seating"]:
-            # Only seating is missing - ask ONE question
+        elif missing_info == ["seating"] and effective_location:
+            # ═══════════════════════════════════════════════════════════════════════════
+            # FIX: When user explicitly provides location, DON'T ask for seating - show results
+            # This provides a better UX - user asked for places, give them places!
+            # Seating preference defaults to "either" if not specified
+            # ═══════════════════════════════════════════════════════════════════════════
+            logger.info(f"[PLACES FLOW] User provided location '{effective_location}' - fetching places directly without asking seating preference")
+            
+            try:
+                from services.google_places_service import search_pet_friendly_restaurants, search_pet_friendly_hotels, search_vets_in_city, search_dog_parks_in_city
+                
+                places = []
+                place_type = detected_place_search
+                
+                if place_type == "restaurant":
+                    places = await search_pet_friendly_restaurants(effective_location, max_results=5)
+                elif place_type == "hotel":
+                    places = await search_pet_friendly_hotels(effective_location, max_results=5)
+                elif place_type == "vet":
+                    places = await search_vets_in_city(effective_location, max_results=5)
+                elif place_type == "park":
+                    places = await search_dog_parks_in_city(effective_location, max_results=5)
+                
+                if places and len(places) > 0:
+                    logger.info(f"[PLACES FLOW] Found {len(places)} {place_type}s in {effective_location}")
+                    
+                    # Format places for display
+                    formatted_places = []
+                    for p in places[:5]:
+                        formatted_places.append({
+                            "name": p.get("name"),
+                            "rating": p.get("rating"),
+                            "reviews_count": p.get("reviews_count") or p.get("user_ratings_total"),
+                            "address": p.get("address") or p.get("formattedAddress"),
+                            "phone": p.get("phone"),
+                            "is_open_now": p.get("is_open_now"),
+                            "area": effective_location,
+                            "place_type": place_type
+                        })
+                    
+                    # Build personalized response
+                    place_type_display = {
+                        "restaurant": "pet-friendly restaurants",
+                        "hotel": "pet-friendly stays",
+                        "vet": "veterinary clinics",
+                        "park": "dog parks"
+                    }
+                    intro = f"Here are some {place_type_display.get(place_type, 'places')} in **{effective_location}** for {pet_name}!"
+                    action_text = f"\n\nWould you like me to arrange anything at one of these places for {pet_name}?"
+                    
+                    return add_picks_to_response({
+                        "success": True,
+                        "response": f"{pet_anchor}\n\n{intro}{action_text}",
+                        "session_id": session_id,
+                        "pillar": pillar or "dine",
+                        "intent": "place_results",
+                        "nearby_places": {
+                            "type": place_type + "s" if not place_type.endswith("s") else place_type,
+                            "places": formatted_places,
+                            "city": effective_location,
+                            "source": "google_places"
+                        },
+                        "follow_ups": [
+                            {"text": f"Reserve at {formatted_places[0]['name']}" if formatted_places else "Make a reservation", "type": "action"},
+                            {"text": "Show me more options", "type": "action"},
+                            {"text": "Something else", "type": "action"}
+                        ],
+                        "products": []
+                    })
+                else:
+                    logger.warning(f"[PLACES FLOW] No {place_type}s found in {effective_location}")
+                    # No places found - inform user
+                    return add_picks_to_response({
+                        "success": True,
+                        "response": f"{pet_anchor}\n\nI couldn't find verified pet-friendly {place_type_display.get(place_type, 'places')} in {effective_location}. Would you like me to connect you with your **Concierge®**? They can call ahead and confirm pet policies for any place you're interested in.",
+                        "session_id": session_id,
+                        "pillar": pillar or "dine",
+                        "intent": "place_search_no_results",
+                        "nearby_places": None,
+                        "follow_ups": [
+                            {"text": "Connect to Concierge®", "type": "action"},
+                            {"text": "Try another area", "type": "action"}
+                        ],
+                        "products": []
+                    })
+            except Exception as places_err:
+                logger.error(f"[PLACES FLOW] Error fetching places: {places_err}")
+                # Fall through to ask for seating as fallback
+            
+            # If places fetch failed, ask seating question as fallback
             return add_picks_to_response({
                 "success": True,
                 "response": f"{pet_anchor}\n\nJust one quick detail:\n\n• **Indoor café** or **outdoor seating** preferred?",
