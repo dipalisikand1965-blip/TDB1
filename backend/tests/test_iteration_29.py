@@ -67,12 +67,17 @@ class TestFavoritesAPI:
     
     def test_add_favorite(self, authenticated_client):
         """POST /api/favorites/add - Should add a favorite item"""
+        import uuid
         payload = {
             "pet_id": TEST_PET_ID,
-            "item_id": "test-item-001",
-            "item_type": "product",
-            "pillar": "dine",
-            "name": "Test Favorite Item"
+            "item": {
+                "id": f"test-fav-{uuid.uuid4().hex[:8]}",
+                "title": "TEST_Iteration29_FavItem",
+                "type": "product",
+                "category": "dine",
+                "pillar": "dine",
+                "icon": "🍽️"
+            }
         }
         response = authenticated_client.post(f"{BASE_URL}/api/favorites/add", json=payload)
         # Accept 200, 201, or 409 (already exists)
