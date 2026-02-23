@@ -252,7 +252,6 @@ def select_products_for_bucket(
     Select products for a specific bucket (e.g., cakes_treats, decor_photo).
     """
     bucket_tags = bucket_config["tags"]
-    min_count = bucket_config["min"]
     max_count = bucket_config["max"]
     
     # Filter to products matching bucket tags
