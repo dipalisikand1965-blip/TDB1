@@ -77,8 +77,10 @@ const DinePage = () => {
     window.scrollTo(0, 0);
   }, []);
   
-  // Pet state for personalization
-  const [activePet, setActivePet] = useState(null);
+  // Get pet from PillarContext (syncs with global pet selector)
+  const { currentPet, pets: contextPets } = usePillarContext();
+  const activePet = currentPet;
+  const [userPets, setUserPets] = useState([]);
   
   // Nearby Pet Cafes & Places state (Foursquare + Google Places)
   const [nearbyCafes, setNearbyCafes] = useState([]);
