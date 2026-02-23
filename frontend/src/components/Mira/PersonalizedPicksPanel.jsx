@@ -1334,6 +1334,71 @@ const PersonalizedPicksPanel = ({
             ) : (
               /* TWO COLUMN LAYOUT: Personalized for Pet */
               <div className="space-y-6">
+                {/* ═══════════════════════════════════════════════════════════════════════════ */}
+                {/* NEW: CURATED CONCIERGE SECTION - Intelligence Layer picks for Celebrate    */}
+                {/* Shows 3-5 personalized cards from /api/mira/curated-set                    */}
+                {/* This REPLACES old concierge picks for celebrate pillar                     */}
+                {/* ═══════════════════════════════════════════════════════════════════════════ */}
+                {activePillar === 'celebrate' && pet?.id && token && (
+                  <div className="mb-6">
+                    <div className="mb-3">
+                      <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-pink-400" />
+                        Mira's Picks for {pet?.name}
+                      </h3>
+                      <p className="text-xs text-gray-400 mt-1">Curated celebrations based on {pet?.name}'s personality</p>
+                    </div>
+                    <CuratedConciergeSection
+                      petId={pet.id}
+                      petName={pet.name}
+                      pillar="celebrate"
+                      token={token}
+                      onTicketCreate={async (ticketData) => {
+                        // Create service request
+                        try {
+                          const response = await fetch(`${API_URL}/api/service-requests`, {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              Authorization: `Bearer ${token}`,
+                            },
+                            body: JSON.stringify({
+                              type: ticketData.card_type,
+                              pillar: 'celebrate',
+                              source: 'curated_picks_panel',
+                              title: ticketData.card_name,
+                              pet_id: ticketData.pet_id,
+                              details: {
+                                card_id: ticketData.card_id,
+                                pet_name: pet.name,
+                              },
+                              priority: 'normal',
+                            }),
+                          });
+                          
+                          if (response.ok) {
+                            // Call success callback to add message to chat
+                            onSendSuccess?.({
+                              count: 1,
+                              petName: pet.name,
+                              items: [{
+                                name: ticketData.card_name,
+                                type: ticketData.card_type
+                              }],
+                              additionalNotes: ''
+                            });
+                          } else {
+                            throw new Error('Failed to create request');
+                          }
+                        } catch (err) {
+                          console.error('Error creating ticket:', err);
+                          throw err;
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+                
                 {/* ═══════════════════════════════════════════════════════════════ */}
                 {/* TIMELY PICKS - "{petName} might need this" (Soul Integration)  */}
                 {/* Shows picks based on recent chat intents - Mira knows           */}
