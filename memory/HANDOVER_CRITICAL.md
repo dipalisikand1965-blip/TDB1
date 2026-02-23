@@ -257,7 +257,7 @@ PATH 2: "Let Mira know more"
 # URLs (VERIFIED)
 
 ## Frontend
-- **Base URL**: https://mira-os-preview-4.preview.emergentagent.com
+- **Base URL**: https://pet-intent.preview.emergentagent.com
 - **Login**: /login
 - **Join (Onboarding)**: /join
 - **Pet Home**: /pet-home
@@ -268,7 +268,7 @@ PATH 2: "Let Mira know more"
 - **Admin Service Desk**: /admin/service-desk
 
 ## Backend API
-- **Base**: https://mira-os-preview-4.preview.emergentagent.com/api
+- **Base**: https://pet-intent.preview.emergentagent.com/api
 
 ---
 
@@ -345,7 +345,7 @@ asyncio.run(check())
 "
 
 # Create test user via API
-curl -s -X POST "https://mira-os-preview-4.preview.emergentagent.com/api/membership/onboard" \
+curl -s -X POST "https://pet-intent.preview.emergentagent.com/api/membership/onboard" \
   -H "Content-Type: application/json" \
   -d '{"parent":{"name":"Test","email":"test@test.com","password":"test123",...},"pets":[{...}]}'
 ```

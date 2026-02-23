@@ -2,7 +2,7 @@
 ## The Doggy Company Pet Operating System
 **Last Updated:** February 22, 2026 (Session 7 - CONCIERGE DNA DOCUMENTED)  
 **Live Site:** https://thedoggycompany.com  
-**Preview:** https://mira-os-preview-4.preview.emergentagent.com
+**Preview:** https://pet-intent.preview.emergentagent.com
 
 ---
 

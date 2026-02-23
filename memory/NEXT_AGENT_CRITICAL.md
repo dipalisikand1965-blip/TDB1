@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://mira-os-preview-4.preview.emergentagent.com
+https://pet-intent.preview.emergentagent.com
 
 ---
 
