@@ -6,6 +6,50 @@ The user, Dipali, is the founder of a "pet operating system" named Mira, built i
 
 ---
 
+## ✅ SESSION 12 - INTELLIGENCE LAYER BUGS FIXED - February 23, 2026
+
+### ISSUES FIXED:
+
+1. **✅ why_for_pet text generation** - Now correctly reflects actual pet traits:
+   - Anxious pets (like Lola) get "calm and gentle approach" instead of "elegant"
+   - Added `derive_traits_from_profile()` function to extract traits from multiple sources (doggy_soul_answers, personality, temperament)
+   - Priority-based trait selection: anxiety/calm > active > elegant
+
+2. **✅ Ticket creation flow with notifications**:
+   - New endpoint: `POST /api/mira/concierge-pick/ticket`
+   - Creates ticket in `service_desk_tickets` collection
+   - Creates member notification in `notifications` collection
+   - Creates admin notification in `admin_notifications` collection
+
+3. **✅ Frontend labels updated**:
+   - Now shows "Concierge® Product" and "Concierge® Service" (with ® mark)
+   - Added microcopy "This will refine {pet}'s picks" under question card
+
+4. **✅ Card count guaranteed**: 
+   - Enforced minimum: 2 products + 1 service (3-5 total cards)
+   - Uses `min()` and `max()` to guarantee card counts
+
+### FILES MODIFIED:
+- `/app/backend/app/data/celebrate_concierge_cards.py`:
+  - Added `derive_traits_from_profile()` function
+  - Updated `generate_why_explanation()` with priority-based trait matching
+  - Updated `select_concierge_cards()` with trait derivation and card minimums
+- `/app/backend/mira_routes.py`:
+  - Added `POST /api/mira/concierge-pick/ticket` endpoint (lines 24555-24700)
+  - Updated pet data to include doggy_soul_answers, personality, soul, temperament
+- `/app/frontend/src/components/Mira/CuratedConciergeSection.jsx`:
+  - Updated labels to "Concierge® Product/Service"
+  - Added petName prop to QuestionCard
+  - Added microcopy under question card
+  - Updated ticket creation to use new endpoint
+
+### TEST RESULTS (100% Backend, 95% Frontend):
+- All 13 backend tests passed
+- Frontend labels and personalization verified
+- Microcopy shows conditionally when question_card exists
+
+---
+
 ## ✅ SESSION 11 - CELEBRATE CONCIERGE LAYER COMPLETE - February 23, 2026
 
 ### BACKEND (Phases 1-4) ✅
