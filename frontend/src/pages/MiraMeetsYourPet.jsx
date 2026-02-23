@@ -1364,6 +1364,14 @@ const MiraMeetsYourPet = () => {
   
   // Render Soul Game Screen (NO SKIP BUTTON)
   const renderSoulScreen = () => {
+    // Safety check: if currentQuestion is out of bounds, redirect to payoff
+    if (currentQuestion >= SOUL_QUESTIONS.length) {
+      // This can happen if rapid clicking causes multiple state updates
+      // Safely redirect to payoff screen
+      setTimeout(() => setScreen('payoff'), 0);
+      return null;
+    }
+    
     const question = SOUL_QUESTIONS[currentQuestion];
     const QuestionIcon = question.icon;
     
