@@ -11991,29 +11991,29 @@ async def mira_chat(
         "missing_profile_fields": []
     }
     
-    if PICKS_ENGINE_AVAILABLE and selected_pet:
+    if PICKS_ENGINE_AVAILABLE:
         try:
-            picks_engine_result = await run_picks_engine(
-                message=user_message,
-                pet=selected_pet,
-                session_id=session_id,
-                debug=request.debug if hasattr(request, 'debug') else False,
-                max_picks=8
-            )
-            picks_response_data = {
-                "picks": picks_engine_result.picks if picks_engine_result else [],
-                "concierge": picks_engine_result.concierge if picks_engine_result else {"mode": "always_on", "cta_prominence": "quiet"},
-                "safety_override": picks_engine_result.safety_override if picks_engine_result else {"active": False, "level": "normal"},
-                "missing_profile_fields": picks_engine_result.missing_profile_fields if picks_engine_result else [],
-                "pillar": picks_engine_result.pillar if picks_engine_result else None,
-                "intent": picks_engine_result.intent if picks_engine_result else None,
-                "picks_debug": picks_engine_result.debug if (picks_engine_result and hasattr(request, 'debug') and request.debug) else None
-            }
-            if picks_engine_result and picks_engine_result.picks:
-                logger.info(f"[PICKS ENGINE] Early run: {len(picks_engine_result.picks)} picks for pillar={picks_engine_result.pillar}")
+            if selected_pet:
+                picks_engine_result = await run_picks_engine(
+                    message=user_message,
+                    pet=selected_pet,
+                    session_id=session_id,
+                    debug=request.debug if hasattr(request, 'debug') else False,
+                    max_picks=8
+                )
+                picks_response_data = {
+                    "picks": picks_engine_result.picks if picks_engine_result else [],
+                    "concierge": picks_engine_result.concierge if picks_engine_result else {"mode": "always_on", "cta_prominence": "quiet"},
+                    "safety_override": picks_engine_result.safety_override if picks_engine_result else {"active": False, "level": "normal"},
+                    "missing_profile_fields": picks_engine_result.missing_profile_fields if picks_engine_result else [],
+                    "pillar": picks_engine_result.pillar if picks_engine_result else None,
+                    "intent": picks_engine_result.intent if picks_engine_result else None,
+                    "picks_debug": picks_engine_result.debug if (picks_engine_result and hasattr(request, 'debug') and request.debug) else None
+                }
+                if picks_engine_result and picks_engine_result.picks:
+                    logger.info(f"[PICKS ENGINE] Early run: {len(picks_engine_result.picks)} picks for pillar={picks_engine_result.pillar}")
             
-            # DYNAMIC PICKS FALLBACK: If Picks Engine returns empty, use dynamic generator
-            # Works even without selected_pet (uses generic pet context)
+            # DYNAMIC PICKS FALLBACK: If Picks Engine returns empty OR no selected_pet, use dynamic generator
             if not picks_response_data.get("picks"):
                 try:
                     from services.dynamic_picks_generator import generate_dynamic_picks
