@@ -830,8 +830,16 @@ const MemberDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-purple-950/30 text-slate-100">
-      {/* Global Navigation: Dashboard | Inbox */}
-      <GlobalNav activePetName={currentPet?.name} onPetClick={() => navigate('/my-pets')} />
+      {/* Global Navigation: Dashboard | Inbox + Pet Switcher */}
+      <GlobalNav 
+        activePetName={currentPet?.name} 
+        activePetId={currentPet?.id}
+        pets={allPets}
+        onPetSelect={(pet) => {
+          setSelectedPetId(pet.id);
+        }}
+        onPetClick={() => navigate('/my-pets')} 
+      />
       
       {/* Warm Soul Orb Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
