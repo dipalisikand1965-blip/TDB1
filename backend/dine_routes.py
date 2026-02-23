@@ -307,6 +307,8 @@ async def get_restaurants(
     featured: Optional[bool] = None
 ):
     """Get all pet-friendly restaurants (public) - combines restaurants and pet_friendly_restaurants"""
+    import hashlib
+    
     query = {}
     
     if city:
@@ -320,13 +322,24 @@ async def get_restaurants(
     restaurants_1 = await db.restaurants.find(query, {"_id": 0}).to_list(500)
     restaurants_2 = await db.pet_friendly_restaurants.find(query, {"_id": 0}).to_list(500)
     
-    # Combine and dedupe by name
+    # Combine and dedupe by name, ensure all have IDs
     seen_names = set()
     combined = []
     for r in restaurants_1 + restaurants_2:
         name = r.get('name', '')
         if name and name not in seen_names:
             seen_names.add(name)
+            
+            # Ensure restaurant has an ID
+            if not r.get('id'):
+                # Generate a stable ID from the name
+                name_hash = hashlib.md5(name.encode()).hexdigest()[:8]
+                r['id'] = f"rest-{name_hash}"
+            
+            # Ensure required fields have defaults
+            if not r.get('image'):
+                r['image'] = 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800'
+            
             combined.append(r)
     
     return {"restaurants": combined, "total": len(combined)}
