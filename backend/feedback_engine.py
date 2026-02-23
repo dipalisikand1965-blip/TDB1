@@ -62,7 +62,7 @@ class FeedbackConfig(BaseModel):
 
 # ==================== DEFAULT FEEDBACK CONFIGS ====================
 
-SITE_URL = os.environ.get("SITE_URL", "https://thedoggycompany.in")
+SITE_URL = os.environ.get("SITE_URL", "https://thedoggycompany.com")
 
 DEFAULT_FEEDBACK_CONFIGS = {
     "celebrate": {
