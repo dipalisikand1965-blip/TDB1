@@ -404,7 +404,7 @@ const KitAssemblyManager = () => {
                   description: '',
                   category: 'travel',
                   items: [],
-                  intro_narration: "Hi! I'm Mira, your pet concierge. Let me show you this amazing kit!",
+                  intro_narration: "Hi! I'm Mira, your pet's Soul Mate. Let me show you this amazing kit!",
                   outro_narration: "And that's your complete kit! All items hand-picked with love.",
                   is_active: true,
                   priority: 0
@@ -486,7 +486,7 @@ const KitAssemblyManager = () => {
                   description: '',
                   category: 'travel',
                   items: [],
-                  intro_narration: "Hi! I'm Mira, your pet concierge. Let me show you this amazing kit!",
+                  intro_narration: "Hi! I'm Mira, your pet's Soul Mate. Let me show you this amazing kit!",
                   outro_narration: "And that's your complete kit! All items hand-picked with love.",
                   is_active: true,
                   priority: 0
