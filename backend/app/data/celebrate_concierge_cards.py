@@ -661,53 +661,82 @@ def generate_why_explanation(card: Dict, pet_name: str, soul_traits: List[str] =
     Generate a personalized "why this card" explanation.
     
     MUST reference real traits/signals - never hallucinate.
+    PRIORITY: Anxiety/calm traits > Active traits > Elegant traits > Generic
     """
     matched = card.get("_matched_traits", [])
     actual_traits = soul_traits or []
     score = card.get("_score", 0)
     card_type = card.get("type", "")
     
-    # Map traits to human-readable explanations
+    # Map traits to human-readable explanations with priority
+    # PRIORITY ORDER: Anxiety/calm (1) > Active (2) > Elegant (3) > Generic (4)
     trait_explanations = {
-        # Anxious/calm traits
-        "anxious": "calm and gentle approach",
-        "warms_up_slowly": "quiet-and-cozy style",
-        "noise_sensitive": "low-stimulation preference",
-        "calm": "peaceful celebration style",
+        # Priority 1: Anxious/calm traits (most distinctive)
+        "anxious": {"text": "calm and gentle approach", "priority": 1},
+        "warms_up_slowly": {"text": "quiet-and-cozy style", "priority": 1},
+        "noise_sensitive": {"text": "low-stimulation preference", "priority": 1},
+        "calm": {"text": "peaceful celebration style", "priority": 1},
+        "senior": {"text": "comfort-first needs", "priority": 1},
+        "gentle": {"text": "gentle nature", "priority": 1},
         
-        # Active/social traits
-        "playful": "playful energy",
-        "energetic": "high-energy spirit",
-        "social": "love for socializing",
-        "adventurous": "adventurous nature",
+        # Priority 2: Active/social traits
+        "playful": {"text": "playful energy", "priority": 2},
+        "energetic": {"text": "high-energy spirit", "priority": 2},
+        "social": {"text": "love for socializing", "priority": 2},
+        "adventurous": {"text": "adventurous nature", "priority": 2},
         
-        # Elegant/pampered traits
-        "elegant": "elegant taste",
-        "pampered": "pampered lifestyle",
-        "photo_ready": "photo-ready personality",
+        # Priority 3: Elegant/pampered traits
+        "elegant": {"text": "elegant taste", "priority": 3},
+        "pampered": {"text": "pampered lifestyle", "priority": 3},
+        "photo_ready": {"text": "photo-ready personality", "priority": 3},
         
-        # Comfort traits
-        "senior": "comfort-first needs",
-        "gentle": "gentle nature",
-        
-        # Food traits
-        "foodie": "love of treats",
-        "treats_motivated": "treat motivation",
+        # Priority 4: Food traits
+        "foodie": {"text": "love of treats", "priority": 4},
+        "treats_motivated": {"text": "treat motivation", "priority": 4},
     }
     
-    # Priority order: matched traits > actual traits > generic
-    explanation_trait = None
+    # Collect all matched traits with their priorities
+    prioritized_matches = []
     
-    # First, try matched traits (traits that specifically matched this card)
-    if matched:
-        for trait in matched:
+    # Check matched traits first
+    for trait in matched:
+        trait_lower = trait.lower().replace(" ", "_")
+        if trait_lower in trait_explanations:
+            prioritized_matches.append({
+                "trait": trait_lower,
+                "priority": trait_explanations[trait_lower]["priority"],
+                "text": trait_explanations[trait_lower]["text"]
+            })
+    
+    # If no matched traits, check actual soul traits
+    if not prioritized_matches and actual_traits:
+        for trait in actual_traits:
             trait_lower = trait.lower().replace(" ", "_")
             if trait_lower in trait_explanations:
-                explanation_trait = trait_lower
-                break
+                prioritized_matches.append({
+                    "trait": trait_lower,
+                    "priority": trait_explanations[trait_lower]["priority"],
+                    "text": trait_explanations[trait_lower]["text"]
+                })
     
-    # If no matched trait, use actual soul traits
-    if not explanation_trait and actual_traits:
+    # Sort by priority (lowest number = highest priority) and pick first
+    if prioritized_matches:
+        prioritized_matches.sort(key=lambda x: x["priority"])
+        best_match = prioritized_matches[0]
+        readable = best_match["text"]
+        
+        if card_type == "concierge_product":
+            return f"Designed for {pet_name}'s {readable}"
+        else:
+            return f"Tailored for {pet_name}'s {readable}"
+    
+    # Fallback based on score (still truthful - just less specific)
+    if score >= 80:
+        return f"Highly recommended for {pet_name}"
+    elif score >= 60:
+        return f"Great fit for {pet_name}'s celebration"
+    
+    return f"Curated for {pet_name}"
         for trait in actual_traits:
             trait_lower = trait.lower().replace(" ", "_")
             if trait_lower in trait_explanations:
