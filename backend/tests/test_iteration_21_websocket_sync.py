@@ -35,7 +35,8 @@ class TestConciergePickTicketCreation:
             json={"email": TEST_EMAIL, "password": TEST_PASSWORD}
         )
         assert login_response.status_code == 200, f"Login failed: {login_response.text}"
-        self.token = login_response.json().get("token")
+        # API returns access_token, not token
+        self.token = login_response.json().get("access_token") or login_response.json().get("token")
         self.user = login_response.json().get("user", {})
         self.session.headers.update({
             "Authorization": f"Bearer {self.token}",
@@ -163,7 +164,7 @@ class TestMemberNotificationsInbox:
             json={"email": TEST_EMAIL, "password": TEST_PASSWORD}
         )
         if login_response.status_code == 200:
-            self.token = login_response.json().get("token")
+            self.token = login_response.json().get("access_token") or login_response.json().get("token")
             self.session.headers.update({"Authorization": f"Bearer {self.token}"})
         else:
             self.token = None
@@ -393,7 +394,7 @@ class TestCuratedSetEndpoint:
             json={"email": TEST_EMAIL, "password": TEST_PASSWORD}
         )
         if login_response.status_code == 200:
-            self.token = login_response.json().get("token")
+            self.token = login_response.json().get("access_token") or login_response.json().get("token")
             self.session.headers.update({"Authorization": f"Bearer {self.token}"})
         else:
             self.token = None
