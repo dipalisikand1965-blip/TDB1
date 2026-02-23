@@ -646,11 +646,6 @@ def generate_why_explanation(card: Dict, pet_name: str, soul_traits: List[str] =
         return f"Great fit for {pet_name}'s celebration"
     
     return f"Curated for {pet_name}"
-        return f"Highly recommended for {pet_name}"
-    elif score >= 50:
-        return f"Great fit for {pet_name}"
-    
-    return f"Curated for {pet_name}"
 
 
 def get_micro_question(pet_data: Dict, answered_questions: List[str] = None) -> Optional[Dict]:
