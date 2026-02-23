@@ -17,271 +17,188 @@
 
 ### ✅ COMPLETED TODAY
 
-| Task | Status | Files |
-|------|--------|-------|
-| P0: Verify navigation fix (no /inbox redirect) | ✅ VERIFIED | Testing confirmed page stays on `/dine/meals` after CTA click |
-| P1: Update Mira chat quick chips for Fresh Meals | ✅ DONE | `MiraChatWidget.jsx` - Line 308, 1155 |
-| P2: Hero text contrast improvement | ✅ DONE | `MealsPage.jsx` - Stronger gradient overlay |
-| P2: Ask Mira orb size reduction | ✅ DONE | `MiraChatWidget.jsx` - Line 1223 size='sm' |
-| /dine page restructure | ✅ DONE | `DinePage.jsx` - New category cards, combined Dine Out section |
-| Dine Essentials - Feeding Tools seeding | ✅ DONE | 6 new products in `dine_bundles` collection |
-| Dine Essentials - Supplements seeding | ✅ DONE | 6 new products in `dine_bundles` collection |
-| Dine Essentials - Category pills UI | ✅ DONE | `DinePage.jsx` - All, Feeding Tools, Supplements, Gift Kits |
-| Dining Products - Load More | ✅ DONE | `DinePage.jsx` - 3 rows + load more button |
+| Task | Status | Details |
+|------|--------|---------|
+| P0: Navigation fix verified | ✅ DONE | CTA clicks stay on page, no /inbox redirect |
+| P1: Mira chat chips updated | ✅ DONE | Fresh Meals specific: "Compare Meal Plans", "Ask about ingredients", "Transitioning to fresh" |
+| P2: Hero text contrast | ✅ DONE | Stronger gradient overlay in MealsPage.jsx |
+| P2: Ask Mira orb size | ✅ DONE | Reduced from md to sm |
+| Duplicate "All Dine" tab | ✅ FIXED | Removed from PillarPageLayout subcategories |
+| /Dine page restructure | ✅ DONE | New section order implemented |
+| Dine Essentials seeding | ✅ DONE | 12 new products (6 Feeding Tools + 6 Supplements) |
+| Restaurants Load More | ✅ DONE | Shows 6 initially, load more button added |
 
-### ✅ PREVIOUSLY COMPLETED
+### 🔴 PENDING ISSUES (NEXT AGENT MUST FIX)
 
-| Task | Status | Files |
-|------|--------|-------|
-| Fixed `/dine` page crash | ✅ DONE | `MealsPage.jsx` - removed duplicate JSX |
-| Phase 1: Fresh Meals UI Fixes | ✅ DONE | `MealsPage.jsx` - petAvoid prop, placeholder |
-| Phase 2: FlowModal Engine | ✅ DONE | `FlowModal.jsx`, `freshMealsFlows.js` |
-| Universal Service Command Hook | ✅ DONE | `useUniversalServiceCommand.js` |
-| Fresh Meals Curated Picks (4 cards) | ✅ DONE | `FreshMealsCuratedPicks.jsx`, `fresh_meals_concierge_cards.py` |
-| Removed duplicate floating buttons | ✅ DONE | `MealsPage.jsx` |
+| Issue | Priority | Description | File Location |
+|-------|----------|-------------|---------------|
+| Fresh Pet Meals links broken | P0 | Cards don't link to correct pages | DinePage.jsx lines 49-93 |
+| Tab links incorrect | P1 | Treats/Frozen should go to /celebrate/treats | PillarPageLayout.jsx lines 42-48 |
+| New products not visible | P1 | 17 bundles in API but may not render | DinePage.jsx - check bundles fetch |
 
 ---
 
-## 🗂️ /DINE PAGE STRUCTURE (NEW ORDER)
+## 🗂️ /DINE PAGE STRUCTURE (CONFIRMED ORDER)
 
-1. **Curated Picks** - Mira's personalized picks for active pet
-2. **Need Dining Help?** - DiningConciergePicker widget
-3. **Elevated Concierge®** - Private Chef, VIP Access, Birthday Package
-4. **Explore Dine Categories** (5 cards):
-   - Fresh Meals → `/dine/meals` (Gold Standard)
-   - Treats → `/celebrate/treats`
-   - Frozen → `/celebrate/treats` (temporary)
-   - Feeding Tools → Dine Essentials section
-   - Supplements → Dine Essentials section
-5. **🍽️ Dine Out Section** (combined):
-   - Buddy Meetups card
-   - Concierge® Featured Restaurants (with Load More)
-   - Pet Cafes Near Me (city search)
-6. **Dine Essentials** (with category pills):
-   - All | Feeding Tools | Supplements | Gift Kits
-   - 17 total products seeded
-7. **Dining Products** - 3 rows + Load More
-8. **Own a Pet-Friendly Restaurant?** - CTA for partners
-
----
-
-## 🏗️ ARCHITECTURE
-
-### File Structure
 ```
-/app/
-├── backend/
-│   ├── app/
-│   │   ├── data/
-│   │   │   ├── fresh_meals_concierge_cards.py  # NEW - 4 curated cards
-│   │   │   ├── dine_concierge_cards.py
-│   │   │   └── celebrate_concierge_cards.py
-│   │   └── intelligence_layer.py  # MODIFIED - added fresh_meals support
-│   └── server.py
-│
-├── frontend/
-│   └── src/
-│       ├── components/
-│       │   ├── FlowModal.jsx                    # NEW - Multi-step intake engine
-│       │   ├── UniversalServiceButton.jsx       # NEW - Floating help button
-│       │   ├── FreshMealsCuratedPicks.jsx       # NEW - 4 curated cards display
-│       │   └── mira-os/
-│       │       └── index.js                     # MODIFIED - exports USC
-│       ├── hooks/
-│       │   └── useUniversalServiceCommand.js    # NEW - Central request submission
-│       ├── schemas/
-│       │   └── freshMealsFlows.js               # NEW - 3 flow schemas (5 steps each)
-│       └── pages/
-│           └── MealsPage.jsx                    # MODIFIED - Fresh Meals Gold Standard
-│
-└── memory/
-    ├── PRD.md                                   # THIS FILE
-    └── CHANGELOG.md
-```
-
-### Unified Service Command Flow (INTENDED)
-```
-User Intent (any entry point)
-    ↓
-useUniversalServiceCommand.submitRequest()
-    ↓
-POST /api/service-requests
-    ↓
-Ticket Created (TKT-xxx)
-    ↓
-Admin Notification (service desk queue)
-    ↓
-Member Notification (toast + action button)
-    ↓
-User stays on page (can click "Open request" to view ticket)
-```
-
-### Current Flow (ACTUAL - BUGGY)
-```
-User clicks card CTA
-    ↓
-submitRequest() called
-    ↓
-Ticket created ✅
-    ↓
-Page navigates to /inbox ❌ (should stay on page)
+1. Hero + Pet Control Center
+2. Tab Navigation (All Dine, Fresh Meals, Treats, Chews, Frozen, Feeding Tools, Supplements, Dine Out)
+3. Curated Picks (Mira's personalized picks)
+4. Need Dining Help? (DiningConciergePicker)
+5. Elevated Concierge® (Private Chef, VIP, Birthday Package)
+6. Category Cards Row (Fresh Meals, Treats, Frozen, Feeding Tools, Supplements)
+7. Dining Products (3 rows + Load More)
+8. Dine Essentials (17 products with category pills)
+9. Concierge Featured Restaurants (6 shown + Load More)
+10. Nearby Pet-Friendly Spots (geolocation-based)
+11. Pet Cafes Worldwide (city search)
+12. Buddy Meetups
+13. Own a Pet-Friendly Restaurant? (Partner CTA)
 ```
 
 ---
 
-## 📦 NEW FILES CREATED THIS SESSION
+## 🔗 TAB/LINK ROUTING (MUST FIX)
 
-### 1. `/app/frontend/src/schemas/freshMealsFlows.js`
-- **Purpose**: Schema definitions for FlowModal
-- **Contains**: 
-  - `TRIAL_PACK_SCHEMA` (5 steps)
-  - `WEEKLY_PLAN_SCHEMA` (5 steps)
-  - `ALLERGY_SAFE_SCHEMA` (5 steps)
-  - `resolvePrefill()` helper
-  - `saveDraft()`, `loadDraft()`, `clearDraft()` for localStorage
-  - `buildTicketPayload()` for uniform ticket structure
-
-### 2. `/app/frontend/src/components/FlowModal.jsx`
-- **Purpose**: Reusable multi-step intake wizard
-- **Features**:
-  - Progress bar (step X/5)
-  - Constraint enforcement (blocked proteins disabled)
-  - Draft persistence to localStorage
-  - Resume from previous progress
-  - Ticket creation on final Submit only
-- **BUG**: Still navigates to /inbox after submit
-
-### 3. `/app/frontend/src/hooks/useUniversalServiceCommand.js`
-- **Purpose**: Central hook for ALL service requests
-- **Exports**:
-  - `submitRequest()` - main function
-  - `quickInquiry()` - text-based quick help
-  - `askMira()` - from Mira chat
-  - `searchIntent()` - from search bar
-  - `conciergeRequest()` - from C® button
-  - `ENTRY_POINTS` - enum of all entry points
-  - `REQUEST_TYPES` - enum of request types
-- **Config**: `navigateToInbox` param controls navigation
-
-### 4. `/app/frontend/src/components/UniversalServiceButton.jsx`
-- **Purpose**: Floating "Need Help?" button with quick intake modal
-- **Variants**: floating, inline, minimal, header
-- **Status**: REMOVED from MealsPage (was redundant with C®)
-
-### 5. `/app/frontend/src/components/FreshMealsCuratedPicks.jsx`
-- **Purpose**: Display 4 personalized curated cards
-- **Features**:
-  - Fetches from Intelligence Layer API
-  - Falls back to static cards if API fails
-  - Pet name personalization
-  - Allergy-aware badge
-  - Uses Universal Service Command for submissions
-- **BUG**: Still navigates to /inbox
-
-### 6. `/app/backend/app/data/fresh_meals_concierge_cards.py`
-- **Purpose**: Backend card definitions
-- **Cards**:
-  1. Custom Fresh Meal Plan (product)
-  2. Fresh Food Transition (product, Popular badge)
-  3. Fresh Nutrition Consultation (service, Expert badge)
-  4. Kitchen Partner Introduction (service, Local badge)
-- **Features**:
-  - Persona-based scoring
-  - Why phrases based on traits
-  - Question templates
+| Tab/Card | Current Path | Should Go To |
+|----------|--------------|--------------|
+| Fresh Meals | /dine?tab=fresh-meals | /dine/meals |
+| Treats | /dine?tab=treats | /celebrate/treats |
+| Frozen | /dine?tab=frozen | /celebrate/treats (temp) |
+| Chews | /dine?tab=chews | /dine?tab=chews (keep) |
+| Feeding Tools | /dine?tab=feeding-tools | Scroll to Dine Essentials |
+| Supplements | /dine?tab=supplements | Scroll to Dine Essentials |
+| Dine Out | /dine?tab=dine-out | Scroll to restaurants |
 
 ---
 
-## 🔧 KEY CONFIGURATION
+## 🛒 DINE ESSENTIALS PRODUCTS (SEEDED)
 
-### Credentials
-- **Member Login**: `dipali@clubconcierge.in` / `test123`
-- **Admin Login**: `aditya` / `lola4304`
+### Feeding Tools (6 products)
+1. Slow Feeder Anti-Gulp Bowl - ₹599
+2. Elevated Feeding Station - ₹1299
+3. Smart Auto Feeder Pro - ₹3999
+4. Travel Feeding Kit - ₹899
+5. Interactive Puzzle Feeder Set - ₹1199
+6. No-Spill Water Station - ₹799
 
-### URLs
-- **Frontend**: `https://concierge-pillars.preview.emergentagent.com`
-- **Fresh Meals Page**: `/dine/meals`
-- **Admin Service Desk**: `/admin/service-desk`
-- **API**: `/api/service-requests`
+### Supplements (6 products)
+1. Daily Multivitamin Chews - ₹699
+2. Joint Health Glucosamine+ - ₹1199
+3. Probiotic Digestive Support - ₹899
+4. Omega-3 Fish Oil Soft Gels - ₹799
+5. Calming Stress Relief Chews - ₹649
+6. Dental Health Enzyme Powder - ₹549
 
-### Pet Data (Mystique)
-- Has chicken allergy → triggers constraint enforcement
-- Allergy-safe auto-on when pet has allergies
-- Chicken protein chip disabled on page AND in FlowModal
+### Original Products (5)
+- Pawty Birthday Package, Fine Dining Kit, Adoption Anniversary Special, Gourmet Treats Box, Pet Parent Gift Card
 
----
-
-## 🐛 BUGS TO FIX (PRIORITY ORDER)
-
-### P0: Navigation Bug
-**Problem**: Card CTAs navigate to `/inbox?ticket=xxx` instead of staying on page
-**Location**: 
-- `/app/frontend/src/components/FreshMealsCuratedPicks.jsx` line ~215
-- `/app/frontend/src/components/FlowModal.jsx` line ~513
-**Attempted Fix**: Set `navigateToInbox: false` - NOT VERIFIED WORKING
-**Root Cause**: Need to trace where navigation is happening
-
-### P1: Toast Visibility
-**Problem**: Success toast may not be showing or may be hidden
-**Expected**: "Request sent to Concierge®" with "Open request" action button
-
-### P2: Inbox Page Empty
-**Problem**: `/inbox` page shows footer only, no content
-**Impact**: Users can't see their tickets in inbox
+**Total: 17 products in dine_bundles collection**
 
 ---
 
-## 📝 WHAT USER WANTED (FROM MESSAGES)
+## 🏗️ KEY FILES REFERENCE
 
-1. **Unified Service Command** - ✅ Built but has navigation bug
-2. **Stay on page after submit** - ❌ Still navigates away
-3. **Toast with action button** - ⚠️ Not verified
-4. **Admin can see tickets** - ✅ Verified via API (tickets ARE created)
-5. **MiraOrb leave as is** - ✅ Not touched
-6. **Chips on top = Fresh Meals curated** - ✅ 4 curated cards displayed
+### Frontend
+| File | Purpose |
+|------|---------|
+| `/app/frontend/src/pages/DinePage.jsx` | Main /dine page with all sections |
+| `/app/frontend/src/pages/MealsPage.jsx` | /dine/meals "Gold Standard" page |
+| `/app/frontend/src/components/PillarPageLayout.jsx` | Tab navigation for all pillars |
+| `/app/frontend/src/components/FlowModal.jsx` | Multi-step user intent capture |
+| `/app/frontend/src/hooks/useUniversalServiceCommand.js` | Ticket creation hook |
+| `/app/frontend/src/components/MiraChatWidget.jsx` | AI chat widget with quick chips |
 
----
-
-## 🔜 NEXT STEPS FOR NEW AGENT
-
-1. **FIX THE NAVIGATION BUG** - This is P0
-   - Check if `navigateToInbox: false` is actually being respected
-   - Check `useUniversalServiceCommand.js` line ~170 for navigation logic
-   - May need to remove `navigate()` calls entirely
-
-2. **Verify toast is showing** - Take screenshot after CTA click
-
-3. **Test the full flow**:
-   - Click card CTA
-   - Ticket should be created (verify via `/api/tickets`)
-   - Page should NOT navigate
-   - Toast should appear with "Open request" button
-
-4. **After fixing bugs, continue with**:
-   - Replicate Gold Standard to Treats, Chews, Supplements
-   - Integrate USC into other pillars
+### Backend
+| File | Purpose |
+|------|---------|
+| `/app/backend/dine_routes.py` | Dine API endpoints including /dine/bundles |
+| `/app/backend/scripts/seed_dine_essentials.py` | Seeds feeding tools & supplements |
+| `/app/backend/app/data/fresh_meals_concierge_cards.py` | Curated cards data |
 
 ---
 
-## 📊 TICKETS CREATED (VERIFIED WORKING)
+## 🔧 DEBUG CHECKLIST FOR NEXT AGENT
 
-Recent tickets from API:
-- `TKT-B5022AD3` - Kitchen Partner Introduction (Bruno)
-- `TKT-51FC2FC1` - Fresh Food Transition
-- `TKT-6D262998` - Fresh Nutrition Consultation (Mystique)
+### If products not showing:
+1. Check API: `curl https://concierge-pillars.preview.emergentagent.com/api/dine/bundles`
+2. Verify bundles state in DinePage.jsx (line ~80)
+3. Check if bundles.map() is rendering (line ~570)
 
-**Ticket creation is working correctly. The bug is the UI behavior after creation.**
+### If tabs not linking correctly:
+1. Check PillarPageLayout.jsx lines 42-48 for path values
+2. Update paths to use actual routes not query params
 
----
-
-## 🚨 CRITICAL NOTES
-
-1. **User is frustrated** - They've asked for SSOT/handover multiple times
-2. **Don't navigate away** - This is the main pain point
-3. **Tickets ARE being created** - Backend is working, frontend behavior is the issue
-4. **Test before claiming fixed** - Previous "fixes" weren't verified
+### If duplicate elements appear:
+1. Clear browser cache
+2. Check for duplicate JSX in DinePage.jsx
+3. Verify PillarPageLayout subcategories array
 
 ---
 
-*Document created: Feb 23, 2026*
-*Last working on: Navigation bug in Unified Service Command*
+## 📊 API ENDPOINTS
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/dine/bundles` | GET | Get all dine essentials (17 products) |
+| `/api/dine/restaurants` | GET | Get pet-friendly restaurants |
+| `/api/intelligence/curated-picks` | GET | Get AI-curated recommendations |
+| `/api/service-requests` | POST | Create service desk ticket |
+
+---
+
+## 🔐 TEST CREDENTIALS
+
+- **Member**: dipali@clubconcierge.in / test123
+- **Admin**: aditya / lola4304
+
+---
+
+## 📝 UPCOMING TASKS (PRIORITY ORDER)
+
+### P0 - Critical
+1. Fix Fresh Pet Meals card links (Fresh Treats → /celebrate/treats, Fresh Meals → /dine/meals)
+2. Fix tab navigation links in PillarPageLayout
+3. Verify new products render on frontend
+
+### P1 - Important
+1. Make category pills interactive (filter products on click)
+2. Add admin CRUD for Dine Essentials
+3. CSV upload capability for products
+
+### P2 - Enhancement
+1. Replicate Gold Standard to Treats/Chews tabs
+2. Razorpay checkout integration
+3. Birthday reminders on PetHomePage
+
+---
+
+## 🚀 FUTURE ROADMAP
+
+1. Unify 3 Mira chat interfaces
+2. Gamify PetSoulOnboarding
+3. Roll out Intelligence Layer to remaining 11 pillars
+4. Refactor backend/server.py into modules
+5. Resend domain verification for email notifications
+6. Gupshup configuration for WhatsApp
+
+---
+
+## ⚠️ KNOWN ISSUES
+
+1. **Resend Domain**: thedoggycompany.com needs verification
+2. **Gupshup**: WhatsApp integration needs configuration
+3. **Screenshot Tool**: Sometimes unreliable with login sessions
+
+---
+
+## 📞 HANDOVER NOTES
+
+**USER CONTEXT**: User (Dipali) is very detail-oriented and anxious about context loss. Always confirm understanding before implementing. The project is highly personal - "Mira is the soul" vision.
+
+**CRITICAL**: 
+- Do NOT navigate away from current page after ticket creation
+- Service flow MUST create tickets in service_requests collection
+- All CTAs should use Universal Service Command hook
+
+**Last User Request**: Fix link routing for tabs and Fresh Pet Meals cards, ensure products are visible, update SSOT/PRD.
