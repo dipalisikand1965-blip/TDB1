@@ -2680,9 +2680,6 @@ const RestaurantBookingModal = ({ restaurant, onClose, user, activePet }) => {
         position="bottom-right"
         showLabel
       />
-      
-      {/* Close the theme wrapper */}
-      </div>
     </div>
   );
 };
