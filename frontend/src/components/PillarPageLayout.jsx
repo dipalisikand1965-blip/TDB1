@@ -39,11 +39,14 @@ const PILLAR_SUBCATEGORIES = {
     { id: 'gift-cards', name: 'Gift Cards', path: '/celebrate/gift-cards', emoji: '💳', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Watercolour-Background-Night-Sky-Postcard.jpg?v=1706442619' }
   ],
   dine: [
-    { id: 'fresh-meals', name: 'Fresh Meals', path: '/dine/fresh-meals', emoji: '🥩' },
-    { id: 'treats', name: 'Treats', path: '/dine/treats', emoji: '🦴' },
-    { id: 'desi-treats', name: 'Desi Treats', path: '/dine/desi-treats', emoji: '🍖' },
-    { id: 'frozen', name: 'Frozen', path: '/dine/frozen', emoji: '🧊' },
-    { id: 'supplements', name: 'Supplements', path: '/dine/supplements', emoji: '💊' }
+    { id: 'all', name: 'All Dine', path: '/dine', emoji: '✨', isDefault: true },
+    { id: 'fresh-meals', name: 'Fresh Meals', path: '/dine?tab=fresh-meals', emoji: '🥩', image: 'https://static.prod-images.emergentagent.com/jobs/99ab70cf-a57b-46c1-987d-9e895d2af777/images/84cb230bb28acc363cdf69d0a236b1efac3ec8bf0b82c9c8648399580ada71e2.png' },
+    { id: 'treats', name: 'Treats', path: '/dine?tab=treats', emoji: '🦴' },
+    { id: 'chews', name: 'Chews', path: '/dine?tab=chews', emoji: '🦷' },
+    { id: 'frozen', name: 'Frozen', path: '/dine?tab=frozen', emoji: '🧊' },
+    { id: 'feeding-tools', name: 'Feeding Tools', path: '/dine?tab=feeding-tools', emoji: '🥣' },
+    { id: 'supplements', name: 'Supplements', path: '/dine?tab=supplements', emoji: '💊' },
+    { id: 'dine-out', name: 'Dine Out', path: '/dine?tab=dine-out', emoji: '🍽️' }
   ],
   care: [
     { id: 'grooming', name: 'Grooming', path: '/care/grooming', emoji: '✨' },
