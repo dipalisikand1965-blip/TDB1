@@ -895,6 +895,29 @@ const PersonalizedPicksPanel = ({
     });
   };
   
+  // Flow single pick to chat - creates ticket and adds message to chat
+  const flowPickToChat = async (pick, pickType = 'catalogue') => {
+    if (!onPickClick) return;
+    
+    hapticFeedback.success();
+    
+    // Prepare pick data for chat flow
+    const pickData = {
+      ...pick,
+      pick_type: pickType,
+      pillar: activePillar,
+      pet_name: pet?.name,
+      pet_id: pet?.id,
+      timestamp: new Date().toISOString()
+    };
+    
+    // Call the callback to flow pick into chat
+    onPickClick(pickData);
+    
+    // Close the panel
+    onClose();
+  };
+  
   const isSelected = (item) => {
     return selectedItems.some(i => i.id === item.id || i.name === item.name);
   };
