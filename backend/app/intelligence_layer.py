@@ -377,8 +377,6 @@ def is_profile_thin(pet_data: Dict) -> bool:
     Check if pet profile is "thin" (missing key information).
     """
     soul_traits = pet_data.get("soul_traits", []) or []
-    breed = pet_data.get("breed", "")
-    size = pet_data.get("size", "")
     
     # Check required fields
     missing_required = []
