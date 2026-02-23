@@ -304,8 +304,8 @@ const ConciergeCard = ({ card, petName, onCreateTicket, isLoading, ticketCreated
 
   // Get CTA text from card or use default
   const ctaText = ticketCreated 
-    ? 'View request' 
-    : (card.cta_text || (isProduct ? 'Create' : 'Request'));
+    ? 'Sent to Concierge®' 
+    : (card.cta_text || (isProduct ? 'Send to Concierge®' : 'Send to Concierge®'));
 
   return (
     <motion.div
