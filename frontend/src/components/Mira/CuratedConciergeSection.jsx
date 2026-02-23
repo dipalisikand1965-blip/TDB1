@@ -366,7 +366,15 @@ const CuratedConciergeSection = ({
 
   // Fetch curated set
   const fetchCuratedSet = useCallback(async (forceRefresh = false) => {
-    if (!petId || !token) return;
+    if (!petId) {
+      setLoading(false);
+      return;
+    }
+    
+    if (!token) {
+      // No token yet - keep loading state but don't make API call
+      return;
+    }
 
     setLoading(true);
     setError(null);
