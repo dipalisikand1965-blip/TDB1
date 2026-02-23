@@ -17670,6 +17670,11 @@ set_sync_db(db)
 app.include_router(sync_router)  # Admin Sync at /api/admin/sync/*
 logger.info("Admin Sync API routes initialized (Preview ↔ Production sync)")
 
+# Favorites API routes
+from favorites_routes import router as favorites_router
+app.include_router(favorites_router, prefix="/api")  # Favorites at /api/favorites/*
+logger.info("Favorites API routes initialized")
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
