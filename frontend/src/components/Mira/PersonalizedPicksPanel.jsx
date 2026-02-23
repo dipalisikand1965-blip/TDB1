@@ -932,7 +932,11 @@ const PersonalizedPicksPanel = ({
   
   // Flow single pick to chat - creates ticket and adds message to chat
   const flowPickToChat = async (pick, pickType = 'catalogue') => {
-    if (!onPickClick) return;
+    console.log('[PersonalizedPicksPanel] flowPickToChat called:', { pick, pickType, hasOnPickClick: !!onPickClick });
+    if (!onPickClick) {
+      console.warn('[PersonalizedPicksPanel] onPickClick callback not provided!');
+      return;
+    }
     
     hapticFeedback.success();
     
@@ -945,6 +949,8 @@ const PersonalizedPicksPanel = ({
       pet_id: pet?.id,
       timestamp: new Date().toISOString()
     };
+    
+    console.log('[PersonalizedPicksPanel] Calling onPickClick with:', pickData);
     
     // Call the callback to flow pick into chat
     onPickClick(pickData);
