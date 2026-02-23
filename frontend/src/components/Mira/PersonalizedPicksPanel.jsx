@@ -1857,8 +1857,8 @@ const PersonalizedPicksPanel = ({
                             }`}
                             onClick={() => {
                               hapticFeedback.buttonTap();
-                              // Add/remove from selection (multi-select)
-                              toggleSelection(pick, 'concierge');
+                              // Flow to chat directly for concierge picks
+                              flowPickToChat(pick, 'concierge');
                             }}
                           >
                             <div className="flex items-center gap-3">
