@@ -68,6 +68,7 @@ const MyPets = () => {
   const [miraKnowledge, setMiraKnowledge] = useState({});
   const [loadingKnowledge, setLoadingKnowledge] = useState({});
   const [expandedKnowledge, setExpandedKnowledge] = useState({});
+  const [petFavorites, setPetFavorites] = useState({});
   
   // Health data for each pet
   const [healthData, setHealthData] = useState({});
