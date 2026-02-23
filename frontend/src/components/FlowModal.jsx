@@ -497,22 +497,18 @@ const FlowModal = ({
       // Clear draft on success
       clearDraft(user.id, pet.id);
       
-      // Show success toast
+      // Show success toast with action button (no auto-navigation)
       toast.success('Request sent to Concierge®', {
         description: `Ticket #${data.ticket_id || data.id} created`,
         action: {
           label: 'Open request',
           onClick: () => navigate(`/inbox?ticket=${data.ticket_id || data.id}`)
-        }
+        },
+        duration: 8000  // Keep toast visible longer
       });
       
-      // Close modal and navigate to inbox
+      // Close modal - stay on current page
       onClose();
-      
-      // Navigate to inbox with ticket
-      setTimeout(() => {
-        navigate(`/inbox?ticket=${data.ticket_id || data.id}`);
-      }, 1000);
       
     } catch (error) {
       console.error('[FlowModal] Submit error:', error);
