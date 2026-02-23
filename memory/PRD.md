@@ -6,30 +6,11 @@ The user, Dipali, is the founder of a "pet operating system" named Mira, built i
 
 ---
 
-## ✅ SESSION 11 - CELEBRATE CONCIERGE LIBRARY COMPLETE - February 23, 2026
+## ✅ SESSION 11 - CELEBRATE CONCIERGE LAYER COMPLETE - February 23, 2026
 
-### UI FIXES COMPLETED ✅
+### BACKEND (Phases 1-4) ✅
 
-1. **Chat Scrolling Under Header** - Fixed CSS with solid background and proper z-index
-2. **Soul Score** - Now showing correctly (87% for Mystique)
-3. **PetHomePage Main Navbar** - Added site navigation for pillar access
-4. **MiraDemoPage Footer** - Added footer component
-
-### CELEBRATE CONCIERGE LIBRARY COMPLETE ✅
-
-Built the full 10-card Celebrate Concierge Library with persona-based scoring:
-
-**Files Created:**
-- `/app/backend/app/data/celebrate_concierge_cards.py` - 10-card library (5 products, 5 services)
-- `/app/backend/app/intelligence_layer.py` - Core curation engine
-
-**API Endpoints:**
-- `GET /api/mira/curated-set/{pet_id}/{pillar}` - **Concierge layer ONLY** (no catalogue)
-- `POST /api/mira/curated-set/answer` - Save thin-profile question answers
-- `DELETE /api/mira/curated-set/cache/{pet_id}` - Cache invalidation
-
-**The 10-Card Celebrate Library:**
-
+**10-Card Celebrate Library:**
 | Concierge Products (Bespoke) | Concierge Services (Arrangements) |
 |------------------------------|-----------------------------------|
 | 1. Custom Celebration Cake Design | 6. Plan Celebration End-to-End |
@@ -38,54 +19,45 @@ Built the full 10-card Celebrate Concierge Library with persona-based scoring:
 | 4. Styled Photo Moment Kit | 9. Pet-Friendly Venue Reservation |
 | 5. Keepsake Memory Set | 10. Quiet Celebration Plan |
 
-**Persona-Based Scoring (Tested & Working):**
-| Pet | Type | Top Picks | Why |
-|-----|------|-----------|-----|
-| Mystique (Shih Tzu) | Elegant | Cake Design, At-Home Setup | Warms up slowly, photo-ready |
-| Buddy (Golden Retriever) | Active | Outdoor Pack (99), End-to-End (100) | Playful, energetic, large |
-| Lola (Maltese, thin profile) | Small-elegant | Photo Kit, Cake + **Question Card** | Breed defaults + capture preferences |
-| Senior Dogs | Comfort-first | At-Home Setup, Quiet Plan boosted; Outdoor Pack penalized | Age-aware scoring |
+**Files Created:**
+- `/app/backend/app/data/celebrate_concierge_cards.py` - 10-card library
+- `/app/backend/app/intelligence_layer.py` - Core curation engine
+
+**API Endpoints:**
+- `GET /api/mira/curated-set/{pet_id}/{pillar}` - Concierge layer only
+- `POST /api/mira/curated-set/answer` - Save question answers (backend-owned trait mapping)
+- `DELETE /api/mira/curated-set/cache/{pet_id}` - Cache invalidation
+
+### FRONTEND (Phase 5) ✅
+
+**Files Created:**
+- `/app/frontend/src/components/Mira/CuratedConciergeSection.jsx` - New component
+
+**Updated:**
+- `/app/frontend/src/pages/CelebratePage.jsx` - Integrated CuratedConciergeSection
+- `/app/frontend/src/components/Mira/PersonalizedPicksPanel.jsx` - Added to FAB panel
 
 ### ACCEPTANCE CRITERIA ✅
 
-1. **Celebrate curated layer always returns 3-5 cards (never empty)**, even for thin profiles (micro-question fills the gap + breed/size defaults ensure cards)
-2. **All concierge cards create tickets** - no add-to-cart CTAs
-3. **Persona scoring uses weights, not hard switches** - traits boost/penalize but don't exclude
-4. **Senior Comfort modifier** - boosts comfort/quiet/short cards, penalizes high-stimulation cards
-5. **30-minute caching** - same picks across all UI surfaces within window
+1. ✅ **Celebrate curated layer always returns 3-5 cards** (never empty)
+2. ✅ **Mystique vs Buddy shows different cards**:
+   - Mystique: Cake Design (78), Bespoke Box (72) - elegant picks
+   - Buddy: Outdoor Party Pack (99), Cake Design (74) - active picks
+3. ✅ **Pet switch updates picks** - Confirmed via API testing
+4. ✅ **All CTAs create tickets** - No add-to-cart
+5. ✅ **Senior Comfort modifier** - Boosts comfort/quiet, penalizes chaos
+6. ✅ **30-minute caching** - Same picks across all UI surfaces
+7. ✅ **No emoji dependency** - Lucide icons with card-type fallbacks
+8. ✅ **Question card answer is backend-owned** - Client sends pet_id, question_id, answer only
 
----
+### RENDERING RULES (Phase 5) ✅
 
-## 🔴 NEXT: PHASE 5 - FRONTEND INTEGRATION
-
-### Outcomes (Explicit):
-
-1. **Pillar page and Mira FAB must render the SAME server-returned curated set** for the active pet + pillar
-2. **No client-side recompute** - frontend is a pure renderer of server response
-3. **All CTAs create/attach tickets** - instant "Request received" feedback
-4. **Micro-question persists answer** and triggers re-fetch of curated set
-
-### Implementation:
-
-1. **PersonalizedPicksPanel.jsx** 
-   - Call `/api/mira/curated-set/{pet_id}/celebrate`
-   - Render `concierge_products` cards ("Create for {Pet}")
-   - Render `concierge_services` cards ("Request")
-   - Render `question_card` if present
-
-2. **ConciergePickCard.jsx**
-   - All CTAs create/attach tickets
-   - Show instant "Request received" + ticket in Inbox
-
-3. **Micro-question UI**
-   - One-tap choice
-   - Persists via `POST /curated-set/answer`
-   - Triggers re-fetch
-
-4. **Loading/Empty/Error States**
-   - Loading: Show skeleton cards
-   - Empty: Should NEVER happen (server guarantees 3-5)
-   - Error: Show "Mira is thinking..." with retry
+- Order: question_card → concierge_products → concierge_services (NO reordering)
+- Same component on pillar page and FAB panel
+- Loading: 3-5 skeleton cards
+- Error: "Mira couldn't load picks" + Retry
+- Never empty: Fallback cards + Retry if malformed
+- Footer: "Updated a moment ago"
 
 ---
 - `pets` collection has: breed, size, allergies, health_conditions
