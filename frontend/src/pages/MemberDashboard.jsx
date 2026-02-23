@@ -834,7 +834,7 @@ const MemberDashboard = () => {
       <GlobalNav 
         activePetName={currentPet?.name} 
         activePetId={currentPet?.id}
-        pets={allPets}
+        pets={pets}
         onPetSelect={(pet) => {
           setSelectedPetId(pet.id);
         }}
