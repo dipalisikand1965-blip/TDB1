@@ -522,9 +522,19 @@ def select_concierge_cards(
     scored_products.sort(key=lambda x: x["_score"], reverse=True)
     scored_services.sort(key=lambda x: x["_score"], reverse=True)
     
-    # Select top cards
-    selected_products = scored_products[:products_count]
-    selected_services = scored_services[:services_count]
+    # Select top cards with MINIMUM guarantees (user requirement: 2-3 products + 1-2 services = 3-5 total)
+    # Ensure we always have at least 2 products and 1 service
+    min_products = 2
+    min_services = 1
+    
+    selected_products = scored_products[:max(products_count, min_products)]
+    selected_services = scored_services[:max(services_count, min_services)]
+    
+    # Ensure minimums are met even if scores are low
+    if len(selected_products) < min_products and len(scored_products) >= min_products:
+        selected_products = scored_products[:min_products]
+    if len(selected_services) < min_services and len(scored_services) >= min_services:
+        selected_services = scored_services[:min_services]
     
     # Generate "why for pet" explanations - MUST pass soul_traits for accurate personalization
     for card in selected_products + selected_services:
