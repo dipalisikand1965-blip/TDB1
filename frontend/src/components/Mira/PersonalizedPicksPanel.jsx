@@ -2044,6 +2044,21 @@ const PersonalizedPicksPanel = ({
                                   </p>
                                 )}
                               </div>
+                              {/* Favorite button */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleFavorite(pick);
+                                }}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                                  isFavorited(pick) 
+                                    ? 'bg-pink-500/20 text-pink-400' 
+                                    : 'bg-purple-700/50 text-purple-400 hover:text-pink-400'
+                                }`}
+                                title={isFavorited(pick) ? 'Remove from favorites' : 'Save to favorites'}
+                              >
+                                <Heart className={`w-4 h-4 ${isFavorited(pick) ? 'fill-pink-400' : ''} ${savingFavorite[pick.id] ? 'animate-pulse' : ''}`} />
+                              </button>
                               <div
                                 onClick={(e) => {
                                   e.stopPropagation();
