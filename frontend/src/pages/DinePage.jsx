@@ -1061,7 +1061,17 @@ const DinePage = () => {
                                 size="sm"
                                 variant="outline"
                                 className="w-full text-xs"
-                                onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(park.name + ' ' + (park.city || selectedNearbyCity))}`, '_blank')}
+                                onClick={() => {
+                                  setSelectedPlace({
+                                    name: park.name,
+                                    address: park.address || park.area || selectedNearbyCity,
+                                    city: park.city || selectedNearbyCity,
+                                    lat: park.lat,
+                                    lng: park.lng
+                                  });
+                                  setMapModalOpen(true);
+                                }}
+                                data-testid={`park-map-btn-${idx}`}
                               >
                                 <MapPin className="w-3 h-3 mr-1" /> View on Map
                               </Button>
