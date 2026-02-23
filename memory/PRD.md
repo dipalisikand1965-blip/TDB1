@@ -30,7 +30,9 @@
 | **Tile Alignment** | FIXED | Pills row now properly scrolls horizontally with consistent layout |
 | **Pick → Chat API** | FIXED | Changed endpoint from /api/service-desk/create (404) to /api/service-requests |
 | **Cross-Pillar Memory** | DONE | Messages now persist across pillars via unified sessionStorage |
+| **Backend pet_age Bug** | FIXED | Fixed parsing of age stored as "4 years" string |
 | **Comprehensive Audit** | DONE | Created `/app/memory/AUDIT.md` and `/app/memory/GAPS_AUDIT.md` |
+| **Full Roadmap** | DONE | Created `/app/memory/ROADMAP.md` with complete feature inventory |
 | **Score Display Bug** | FIXED | Fixed floating point display issue (87.29999... -> 87%) |
 
 ### PICKS → CHAT FLOW FIX
