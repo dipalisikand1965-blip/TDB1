@@ -483,6 +483,19 @@ const SoulKnowledgeTicker = ({
         </div>
       )}
       
+      {/* Favorites Panel */}
+      <FavoritesPanel
+        isOpen={showFavoritesPanel}
+        onClose={() => setShowFavoritesPanel(false)}
+        petId={petId}
+        petName={petName}
+        token={token}
+        onFavoriteSelect={(fav) => {
+          console.log('Favorite selected:', fav);
+          setShowFavoritesPanel(false);
+        }}
+      />
+      
       {/* Styles */}
       <style jsx>{`
         .soul-knowledge-ticker {
