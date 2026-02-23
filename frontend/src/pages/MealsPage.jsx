@@ -696,20 +696,21 @@ const MealsPage = () => {
             {/* Fresh Meals Hero - Allergy-aware */}
             <FreshMealsHero pet={activePet} />
             
-            {/* Mira's Fresh Meals Placeholder - Until backend creates fresh_meals_concierge_cards.py */}
+            {/* Mira's Fresh Meals Curated Picks - 4 personalized cards */}
             <div className="mb-8">
               <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-4 md:p-6 shadow-xl">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                {/* Quick CTA Row */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-700">
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
-                      <Sparkles className="w-8 h-8 text-white" />
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
+                      <Sparkles className="w-6 h-6 text-white" />
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-white">
-                        Mira can set a plan for {activePet.name}
+                        Mira's Fresh Picks for {activePet.name}
                       </h3>
                       <p className="text-gray-400 text-sm">
-                        Fresh meals, curated by your Concierge® based on {activePet.name}'s soul profile
+                        Curated based on {activePet.name}'s soul profile
                       </p>
                     </div>
                   </div>
@@ -721,6 +722,19 @@ const MealsPage = () => {
                     <ChevronRight className="w-4 h-4 ml-1" />
                   </Button>
                 </div>
+                
+                {/* Curated Cards */}
+                <FreshMealsCuratedPicks 
+                  pet={activePet}
+                  token={token}
+                  onCardAction={(card) => {
+                    // Open FlowModal for products, or use Universal Service Command for services
+                    if (card.type === 'concierge_product') {
+                      handleCardCTA(CANONICAL_CARD_IDS.TRIAL_PACK, 'curated_pick');
+                    }
+                  }}
+                  className="[&_h3]:hidden" // Hide the section header since we have our own
+                />
               </div>
             </div>
             
