@@ -869,7 +869,7 @@ const KitEditorDialog = ({ open, kit, categories, products, onSave, onClose, onT
                   <Textarea 
                     value={formData.intro_narration || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, intro_narration: e.target.value }))}
-                    placeholder="Hi! I'm Mira, your pet concierge..."
+                    placeholder="Hi! I'm Mira, your pet's Soul Mate..."
                     rows={2}
                     className="flex-1"
                   />
