@@ -6,142 +6,97 @@ The user, Dipali, is the founder of a "pet operating system" named Mira, built i
 
 ---
 
-## 🔴 CURRENT BLOCKER - MUST FIX FIRST
+## ✅ SESSION 17 COMPLETED - February 23, 2026
 
-### Mobile Pet Selector Scrambled (P0)
-**Issue**: On `/dashboard` mobile view, the pet selector pills row overflows and text is scrambled/overlapping.
-**Location**: `/app/frontend/src/pages/MemberDashboard.jsx` around line 1092 (`pets.map`)
-**Fix Needed**: Make pet pills horizontally scrollable with `overflow-x-auto`, add proper spacing, truncate long names.
-
----
-
-## ✅ SESSION 16 COMPLETED - February 23, 2026
-
-### 1. Multi-Pet Sync Across All Pages
-**What**: When user selects a pet from dropdown, ALL pages update to show that pet's data.
-**How**: 
-- `PillarContext.jsx` manages global pet state
-- `localStorage.selectedPetId` persists selection
-- Custom event `petSelectionChanged` syncs in-window
-- Storage event syncs cross-tab
-
-**Files**:
-- `/app/frontend/src/context/PillarContext.jsx` - Global pet state manager
-- `/app/frontend/src/pages/DinePage.jsx` - Now uses `usePillarContext()` 
-- `/app/frontend/src/pages/CelebratePage.jsx` - Already used PillarContext
-- `/app/frontend/src/pages/NotificationsInbox.jsx` - Reads localStorage
-- `/app/frontend/src/pages/MemberDashboard.jsx` - Saves to localStorage
-
-### 2. WebSocket Real-Time Notifications
-**What**: When user clicks concierge CTA, they get instant feedback + inbox badge updates.
-**Flow**:
-1. User clicks CTA → Button shows "Creating..."
-2. API creates ticket → Returns `ticket_id`
-3. Button shows "✓ Received" (optimistic)
-4. Toast: "Request received — updating your Inbox"
-5. WebSocket emits `member:ticket_created` + `member:inbox_badge`
-6. Inbox badge count updates in real-time
-7. Fallback: If no WS in 5s, manual refetch
-
-**Files Created**:
-- `/app/frontend/src/hooks/useMemberSocket.js` - WebSocket hook
+### 1. Fixed Mobile Dashboard Header
+**Issue**: Pet dashboard header was scrambled/overflowing on mobile with 12+ pets
+**Fix Applied**:
+- Mobile now shows "12 pets" count instead of all pet names
+- Desktop shows first 4 names + "...+8 more" if many pets
+- "View Soul →" shortened button text on mobile
+- Pet selector pills properly scroll horizontally
 
 **Files Modified**:
-- `/app/backend/realtime_notifications.py` - Added member events
-- `/app/backend/mira_routes.py` - Emit WS after ticket creation (line ~24730)
+- `/app/frontend/src/pages/MemberDashboard.jsx` (lines 915-930, 1080-1097)
 
-### 3. Pet Switcher Dropdown
-**What**: Click "● Mystique" pill → Dropdown to switch pets
-**Location**: `/app/frontend/src/components/Mira/GlobalNav.jsx`
-**Features**:
-- Pet avatars, names, breeds
-- Selected pet has ✓ checkmark
-- "View all pets →" link
-- Syncs to localStorage + dispatches events
+### 2. Concierge Hours Changed to 24/7
+**Issue**: Concierge showed 9 AM - 9 PM hours
+**Fix Applied**:
+- Changed `DEFAULT_CONCIERGE_HOURS.is_24x7` to `true`
+- Updated offline message to "We're always here for you!"
+- Backend cache cleared on restart
 
-### 4. Notification Bell in Main Header
-**What**: Bell icon with unread count badge in main Navbar
-**Location**: `/app/frontend/src/components/Navbar.jsx`
-**Shows**: Only for logged-in users, between user name and cart
+**File Modified**:
+- `/app/backend/routes/concierge_os_routes.py` (lines 111-120)
 
-### 5. Bug Fixes
-- **"Oops" on Dashboard**: Fixed `allPets` → `pets` variable name
-- **DinePage Pet Sync**: Now uses `PillarContext` instead of own state
+**API Response Now**:
+```json
+{
+  "is_live": true,
+  "status_text": "Live now",
+  "message": "Your Concierge is ready to help 24/7",
+  "hours_config": { "is_24x7": true }
+}
+```
 
----
+### 3. Audited Inbox & Service Desk Two-Way Communication
+**Verified Working**:
+- Member replies → `service_desk_tickets` + `mira_tickets` + `mira_conversations`
+- Admin replies → `member_notifications` + `concierge_threads` + email
+- WebSocket real-time updates for both directions
+- Optimistic UI on both ends
 
-## ✅ SESSION 15 COMPLETED - February 23, 2026
-
-### 1. Nav Dropdown Z-Index Fix
-- Dropdown: `z-[9999]` (was z-50)
-- PetHomePage header: `z-40` (was z-50)
-- File: `/app/frontend/src/components/Navbar.jsx`
-
-### 2. Restaurant "Oops" Error Fix
-- Auto-generate IDs for restaurants missing them
-- Fallback image for restaurants without images
-- File: `/app/backend/dine_routes.py` line ~303
-
-### 3. Varied Card-Specific "Why" Text
-**Before**: Every card said "Curated for Mystique"
-**After**: Each card has trait-specific text:
-- "Gentle transition for sensitive tummies"
-- "Perfect gear for social butterflies"
-- "Calming treats + comfort items"
-
-**How**: Added `why_phrases` dict to each card
-**Files**:
-- `/app/backend/app/data/dine_concierge_cards.py`
-- `/app/backend/app/data/celebrate_concierge_cards.py`
-
-### 4. Varied Card-Specific CTA Text
-**Before**: All buttons said "Create for {Pet}"
-**After**: Card-specific CTAs:
-- "Create plan" / "Start transition" / "Create blueprint"
-- "Request reservation" / "Book experience"
-
-**How**: Added `cta_text` field to each card
-
-### 5. Frontend Updates
-- "✨ Handpicked for {Pet}" header
-- "Updated a moment ago" timestamp
-- Compact card spacing (p-3)
-- File: `/app/frontend/src/components/Mira/CuratedConciergeSection.jsx`
+**Key Endpoints**:
+- `POST /api/member/tickets/{ticket_id}/reply` - Member sends reply
+- `POST /api/tickets/{ticket_id}/reply` - Admin sends reply
+- Both create proper notifications and sync to all relevant collections
 
 ---
 
-## ✅ SESSION 14 COMPLETED - February 23, 2026
+## ✅ PREVIOUS SESSIONS (Summary)
 
-### Concierge Card UI/UX Overhaul
-1. **High-contrast design**: White titles on dark backgrounds
-2. **Solid CTAs**: Pink for products, purple for services (no gradients)
-3. **Golden "why" line**: `✦ Designed for Mystique's calm-and-comfortable style`
-4. **Trait derivation**: Now checks `personality.temperament`, `personality.separation_anxiety`
+### Session 16 - Multi-Pet Sync & WebSocket Notifications
+- Pet selection syncs across Dashboard, Dine, Celebrate, Inbox
+- Real-time notification bell updates via WebSocket
+- Optimistic UI on CTA clicks
+
+### Session 15 - Intelligence Layer & Card Polish
+- Varied `why_for_pet` explanations per card
+- Card-specific `cta_text` (not generic)
+- Nav dropdown z-index fix
+- Restaurant "Oops" error fix
+
+### Session 14 - Concierge Card UI/UX
+- High-contrast design
+- Solid CTAs (pink products, purple services)
+- Golden "why" line styling
 
 ---
 
-## 🔲 PENDING ISSUES
+## 🔲 PENDING USER VERIFICATION
 
-### P0 - Critical
-| Issue | Status | Location |
-|-------|--------|----------|
-| Mobile pet selector scrambled | 🔴 NOT STARTED | MemberDashboard.jsx line ~1092 |
-| Verify notification inbox flow | 🟡 USER VERIFY | /notifications page |
-| Mobile page scroll bug | 🟡 USER VERIFY | All pages |
+| Feature | Status | Test Method |
+|---------|--------|-------------|
+| WebSocket notification flow | 🟡 USER VERIFY | Click CTA → Check bell count |
+| Multi-pet sync | 🟡 USER VERIFY | Switch pet → Navigate pages |
+| Mobile scroll-to-top | 🟡 USER VERIFY | Navigate between pages on mobile |
 
-### P1 - High
-| Task | Status | Notes |
-|------|--------|-------|
-| Roll out Intelligence Layer to 11 more pillars | 🔲 NOT STARTED | Stay, Travel, Care, etc. |
-| Proactive alerts on PetHomePage | 🔲 NOT STARTED | Birthdays, vaccinations |
-| Razorpay integration | 🔲 NOT STARTED | Payment gateway |
+---
 
-### P2 - Medium
-| Task | Status |
-|------|--------|
-| "Living Home" mechanics | 🔲 |
-| Refactor server.py | 🔲 |
-| Notification templates | 🔲 |
+## 🔲 UPCOMING TASKS
+
+### P0 - Next Sprint
+- Roll out Intelligence Layer to remaining 11 pillars (Stay, Travel, Care, etc.)
+- Each needs: `{pillar}_concierge_cards.py` + integration in `intelligence_layer.py`
+
+### P1 - High Priority
+- Proactive alerts on PetHomePage (birthdays, vaccinations)
+- Razorpay payment integration
+
+### P2 - Medium Priority
+- "Living Home" dynamic refresh mechanics
+- Refactor `server.py` into smaller modules
+- Consolidate fragmented database collections
 
 ---
 
@@ -167,37 +122,27 @@ OpenAI GPT (Mira chat)
 ### Key Files Reference
 ```
 FRONTEND:
-├── /src/components/Mira/
-│   ├── CuratedConciergeSection.jsx    # Concierge cards component
-│   ├── GlobalNav.jsx                   # Dashboard nav + pet switcher
-│   └── NotificationBell.jsx            # Bell icon component
-├── /src/components/Navbar.jsx          # Main site navbar
-├── /src/context/PillarContext.jsx      # Global pet state
-├── /src/hooks/useMemberSocket.js       # WebSocket hook
-├── /src/pages/
-│   ├── MemberDashboard.jsx             # Dashboard (has mobile bug)
-│   ├── NotificationsInbox.jsx          # Inbox page
-│   ├── DinePage.jsx                    # Dine pillar
-│   └── CelebratePage.jsx               # Celebrate pillar
+├── /src/pages/MemberDashboard.jsx        # Fixed mobile header
+├── /src/pages/NotificationsInbox.jsx     # Member inbox
+├── /src/pages/TicketThread.jsx           # Conversation view
+├── /src/components/admin/DoggyServiceDesk.jsx  # Admin service desk
+├── /src/context/PillarContext.jsx        # Global pet state
+└── /src/hooks/useMemberSocket.js         # WebSocket hook
 
 BACKEND:
-├── /app/data/
-│   ├── dine_concierge_cards.py         # 10 dine cards
-│   └── celebrate_concierge_cards.py    # 10 celebrate cards
-├── /app/intelligence_layer.py          # Curation engine
-├── realtime_notifications.py           # WebSocket events
-├── mira_routes.py                      # /api/mira/* endpoints
-└── dine_routes.py                      # /api/dine/* endpoints
+├── /routes/concierge_os_routes.py        # 24/7 hours config
+├── /ticket_routes.py                      # Two-way reply sync
+├── /server.py                             # Member reply endpoint
+└── /realtime_notifications.py            # WebSocket events
 ```
 
 ### Key API Endpoints
 ```
-GET  /api/mira/curated-set/{pet_id}/{pillar}  # Get concierge cards
-POST /api/mira/concierge-pick/ticket          # Create ticket from CTA
-POST /api/mira/curated-set/answer             # Save question answer
-GET  /api/pets/my-pets                        # Get user's pets
-GET  /api/dine/restaurants                    # Get restaurants
+GET  /api/os/concierge/status              # Returns is_live: true (24/7)
+POST /api/member/tickets/{id}/reply        # Member sends reply
+POST /api/tickets/{id}/reply               # Admin sends reply
 GET  /api/member/notifications/inbox/{email}  # Get inbox
+POST /api/mira/concierge-pick/ticket       # Create from CTA
 ```
 
 ---
@@ -208,12 +153,13 @@ GET  /api/member/notifications/inbox/{email}  # Get inbox
 |------------|---------|
 | `pets` | Pet profiles (breed, size, allergies) |
 | `users` | User accounts |
-| `service_desk_tickets` | Concierge requests |
-| `member_notifications` | User inbox notifications |
-| `admin_notifications` | Admin alerts |
+| `service_desk_tickets` | Canonical ticket store |
+| `mira_tickets` | Ticket spine (synced) |
+| `mira_conversations` | Chat history |
+| `member_notifications` | User inbox |
+| `admin_notifications` | Concierge alerts |
 | `curated_picks_cache` | 30-min cache for picks |
-| `restaurants` | Pet-friendly restaurants |
-| `pet_friendly_restaurants` | Additional restaurants |
+| `concierge_threads` | Two-way chat threads |
 
 ---
 
@@ -234,118 +180,40 @@ Password: lola4304
 ## INTELLIGENCE LAYER OVERVIEW
 
 ### How Cards Are Selected
-1. **Load all cards** for pillar (10 cards each for celebrate/dine)
-2. **Score by persona affinity** - Each card has `persona_affinity` dict with trait weights
-3. **Derive traits** from multiple sources:
-   - `soul_traits` (direct)
-   - `doggy_soul_answers` (food_motivation, tummy_sensitivity)
-   - `personality` object (temperament, separation_anxiety)
-   - `temperament` field
-4. **Apply breed defaults** if profile is thin
-5. **Select top 3 products + 2 services** (guaranteed 3-5 cards)
-6. **Generate why_for_pet** using `why_phrases` dict
-7. **Cache for 30 minutes**
+1. Load all cards for pillar (10 cards each)
+2. Score by persona affinity weights
+3. Derive traits from multiple sources (soul_traits, personality, temperament)
+4. Apply breed defaults if thin profile
+5. Select top 3 products + 2 services
+6. Generate personalized `why_for_pet`
+7. Cache for 30 minutes
 
-### Card Structure
-```python
-{
-    "id": "dine_weekly_meal_plan",
-    "type": "concierge_product",
-    "name": "Weekly Meal Plan for {pet_name}",
-    "description": "A 7-day feeding plan...",
-    "cta_text": "Create plan",
-    "why_phrases": {
-        "sensitive_tummy": "Gentle meals safe for sensitive tummies",
-        "picky": "Rotates flavors to keep picky eaters engaged",
-        "default": "Customized 7-day feeding plan"
-    },
-    "persona_affinity": {
-        "foodie": 0.9,
-        "picky": 0.85,
-        "anxious": 0.6
-    }
-}
-```
+### Pillars Implemented
+- ✅ Celebrate
+- ✅ Dine
+- 🔲 Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt
 
 ---
 
 ## WEBSOCKET FLOW
 
-### Member Registration
-```javascript
-socket.emit('register_member', { email, user_id });
-// Server: Adds to connected_members dict
-// Server: Emits 'member:registration_success'
+### Member Side
+```
+1. useMemberSocket.js connects on page load
+2. Emits 'register_member' with userEmail
+3. Listens for 'new_notification', 'inbox_badge'
+4. Updates bell count in real-time
 ```
 
-### Ticket Creation → Notification
+### Admin Side
 ```
-1. POST /api/mira/concierge-pick/ticket
-2. Server creates ticket in service_desk_tickets
-3. Server creates notification in member_notifications
-4. Server emits:
-   - 'member:ticket_created' { ticket_id, card_id, status }
-   - 'member:inbox_badge' { unread_count }
-5. Frontend updates UI optimistically
-```
-
----
-
-## NEXT AGENT INSTRUCTIONS
-
-### Immediate Priority: Fix Mobile Pet Selector
-
-1. **View the code**:
-```bash
-grep -n "pets.map" /app/frontend/src/pages/MemberDashboard.jsx
-```
-
-2. **Find the pet pills row** (around line 1092)
-
-3. **Fix with**:
-- Add `overflow-x-auto` to container
-- Add `flex-shrink-0` to each pill
-- Truncate long pet names
-- Add horizontal scroll snap
-
-4. **Test on mobile viewport** (375px width)
-
-### After Mobile Fix
-
-1. Roll out Intelligence Layer to remaining pillars:
-   - Stay, Travel, Care, Enjoy, Fit, Learn
-   - Paperwork, Advisory, Emergency, Farewell, Adopt
-   
-2. Each pillar needs:
-   - New `{pillar}_concierge_cards.py` file
-   - Integration in `intelligence_layer.py`
-   - `CuratedConciergeSection` in pillar page
-
----
-
-## FILES MODIFIED THIS SESSION
-
-```
-CREATED:
-/app/frontend/src/hooks/useMemberSocket.js
-
-MODIFIED:
-/app/frontend/src/components/Navbar.jsx              # NotificationBell added
-/app/frontend/src/components/Mira/GlobalNav.jsx      # Pet switcher dropdown
-/app/frontend/src/components/Mira/CuratedConciergeSection.jsx  # WebSocket + UI
-/app/frontend/src/pages/MemberDashboard.jsx          # Pet sync
-/app/frontend/src/pages/NotificationsInbox.jsx       # Pet sync
-/app/frontend/src/pages/DinePage.jsx                 # Uses PillarContext
-/app/frontend/src/pages/CelebratePage.jsx            # Removed custom onTicketCreate
-/app/backend/realtime_notifications.py               # Member WS events
-/app/backend/mira_routes.py                          # WS emission
-/app/backend/dine_routes.py                          # Restaurant ID fix
-/app/backend/app/data/dine_concierge_cards.py        # why_phrases, cta_text
-/app/backend/app/data/celebrate_concierge_cards.py   # why_phrases, cta_text
-/app/backend/app/intelligence_layer.py               # Trait derivation
+1. useServiceDeskSocket.js connects
+2. Listens for 'new_ticket', 'member_reply'
+3. Shows toast notifications
+4. Real-time ticket updates
 ```
 
 ---
 
-*Last Updated: February 23, 2026 - End of Session 16*
+*Last Updated: February 23, 2026 - End of Session 17*
 *Preview URL: https://mira-soul.preview.emergentagent.com*
