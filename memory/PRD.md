@@ -163,6 +163,58 @@
 **Architecture Note**: Picks are now **Concierge-curated in real-time** based on conversation intent, not looked up from a static catalogue. This aligns with the MIRA BIBLE principle: "Concierge creates and fills the picks as per the conversation."
 
 
+### Save to Favorites Feature (Feb 23, 2026 - Session 3)
+**Feature**: Users can save dynamically generated picks to their pet's profile for future reference.
+
+**Components Added**:
+1. **Backend API** (`/app/backend/favorites_routes.py`):
+   - `GET /api/favorites/{pet_id}` - Get all favorites for a pet
+   - `POST /api/favorites/add` - Add a pick to favorites
+   - `POST /api/favorites/remove` - Remove a favorite
+   - `GET /api/favorites/{pet_id}/summary` - Get favorites summary
+
+2. **Backend Service** (`/app/backend/services/favorites_service.py`):
+   - Complete favorites management logic
+   - Pillar-based categorization
+   - Duplicate detection
+
+3. **Frontend FavoritesPanel** (`/app/frontend/src/components/Mira/FavoritesPanel.jsx`):
+   - New component to display saved favorites
+   - Grouped by pillar with color-coded badges
+   - Remove functionality
+   - Compact and full panel modes
+
+4. **Integration with SoulKnowledgeTicker**:
+   - Added FAVORITES section to expanded panel
+   - Fetches favorites alongside "What Mira Knows" data
+   - Shows saved picks count and preview
+
+**Test Results**: All favorites API endpoints verified working (100% pass rate)
+
+
+### YouTube Training Videos Verification (Feb 23, 2026 - Session 3)
+**Issue Reported**: User reported Learn pillar not showing YouTube videos.
+
+**Investigation Result**: YouTube section EXISTS and WORKS correctly. The section is positioned lower on the Learn page (requires scrolling down past the training categories).
+
+**Features Verified**:
+- 25+ YouTube video cards displaying
+- Topic filters: Basic Training, Puppy Training, Behavior Fixes, Tricks & Fun, Leash Walking, Anxiety Help
+- Breed-specific filter (e.g., "Shih Tzu Tips" for Mystique)
+- API endpoints working: `/api/mira/youtube/by-topic`, `/api/mira/youtube/by-breed`
+
+
+### Google Maps Issue Investigation (Feb 23, 2026 - Session 3)
+**Issue Reported**: User reported "Google Maps blocked" on Dine page.
+
+**Investigation Result**: No embedded Google Maps iframe found on Dine page. The page uses:
+- Google Places API for data (working correctly)
+- Links that open Google Maps in new tab when clicking on places
+- NearbyPlacesCarousel component shows place cards, not embedded maps
+
+**Conclusion**: This issue could not be reproduced. The reported "blocked" message may have been from a different context or browser extension.
+
+
 
 ---
 
