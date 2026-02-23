@@ -704,6 +704,7 @@ const MealsPage = () => {
               setPlanBuilder={setPlanBuilder}
               petHasAllergies={petHasAllergies}
               petName={activePet.name}
+              petAvoid={activePet?.allergies || activePet?.soul_data?.allergies || []}
             />
             
             {/* 3 Canonical Concierge Cards */}
