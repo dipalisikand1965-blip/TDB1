@@ -614,6 +614,157 @@ const DinePage = () => {
           </section>
         )}
 
+        {/* CONCIERGE FEATURED RESTAURANTS */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        <section id="restaurants" className="mt-12 scroll-mt-20">
+          <div className="mb-6">
+            <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <Star className="w-6 h-6 text-amber-500" />
+              Concierge® Featured Restaurants
+            </h3>
+            <p className="text-gray-600">Dine out with your furry friend</p>
+          </div>
+
+          {/* Filters */}
+          <Card className="p-4 mb-6">
+            <div className="flex flex-wrap gap-4">
+              {/* Search */}
+              <div className="flex-1 min-w-[200px]">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input
+                    placeholder="Search restaurants..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                    data-testid="restaurant-search"
+                  />
+                </div>
+              </div>
+
+              {/* City Filter */}
+              <select
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.target.value)}
+                className="px-4 py-2 border rounded-lg text-sm bg-white"
+                data-testid="city-filter"
+              >
+                <option value="all">All Cities</option>
+                {cities.filter(c => c !== 'all').map(city => (
+                  <option key={city} value={city}>{city}</option>
+                ))}
+              </select>
+
+              {/* Pet Menu Filter */}
+              <select
+                value={petMenuFilter}
+                onChange={(e) => setPetMenuFilter(e.target.value)}
+                className="px-4 py-2 border rounded-lg text-sm bg-white"
+                data-testid="pet-menu-filter"
+              >
+                <option value="all">All Restaurants</option>
+                <option value="yes">🍽️ Pet Menu Available</option>
+                <option value="partial">⚠️ Partial Menu</option>
+                <option value="no">🐕 Pet-Friendly Only</option>
+              </select>
+            </div>
+          </Card>
+
+          {isLoading ? (
+            <div className="text-center py-12">
+              <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <p className="mt-4 text-gray-500">Loading restaurants...</p>
+            </div>
+          ) : (
+            <>
+              {/* Featured Restaurants */}
+              {filteredRestaurants.some(r => r.featured) && (
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Star className="w-5 h-5 text-yellow-500" />
+                    Featured
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3 sm:gap-6">
+                    {filteredRestaurants.filter(r => r.featured).map((restaurant) => (
+                      <RestaurantCard 
+                        key={restaurant.id} 
+                        restaurant={restaurant} 
+                        getPetMenuBadge={getPetMenuBadge}
+                        getPetPolicyText={getPetPolicyText}
+                        featured={true}
+                        onSelect={setSelectedRestaurant}
+                        onBuddy={setShowBuddyModal}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* All Restaurants - 2x2 on mobile with Load More */}
+              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+                {filteredRestaurants.filter(r => !r.featured).slice(0, restaurantsToShow).map((restaurant) => (
+                  <RestaurantCard 
+                    key={restaurant.id} 
+                    restaurant={restaurant}
+                    getPetMenuBadge={getPetMenuBadge}
+                    getPetPolicyText={getPetPolicyText}
+                    onSelect={setSelectedRestaurant}
+                    onBuddy={setShowBuddyModal}
+                  />
+                ))}
+              </div>
+              
+              {/* Load More Button */}
+              {filteredRestaurants.filter(r => !r.featured).length > restaurantsToShow && (
+                <div className="text-center mt-8">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setRestaurantsToShow(prev => prev + 8)}
+                    className="px-8 py-3 rounded-full border-2 border-orange-300 text-orange-600 hover:bg-orange-50"
+                  >
+                    Load More Restaurants
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </Button>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Showing {Math.min(restaurantsToShow, filteredRestaurants.filter(r => !r.featured).length)} of {filteredRestaurants.filter(r => !r.featured).length}
+                  </p>
+                </div>
+              )}
+
+              {filteredRestaurants.length === 0 && (
+                <Card className="p-12 text-center">
+                  <Dog className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No restaurants found</h3>
+                  <p className="text-gray-500">Try adjusting your filters or search query</p>
+                </Card>
+              )}
+            </>
+          )}
+        </section>
+
+
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {/* NEARBY PET-FRIENDLY SPOTS - Geolocation Based */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        <section className="mt-12">
+          <NearbyPlacesCarousel
+            pillar="dine"
+            petId={activePet?.id}
+            petName={activePet?.name}
+            token={token}
+            onReserveClick={(place) => {
+              setSelectedRestaurant({
+                id: place.id || `nearby-${place.name}`,
+                name: place.name,
+                address: place.address || 'Address available on request',
+                city: place.city || 'Your City',
+                rating: place.rating,
+                phone: place.phone
+              });
+              setShowBookingModal(true);
+            }}
+          />
+        </section>
         {/* ═══════════════════════════════════════════════════════════════════════ */}
         {/* PET CAFES - City Worldwide Search */}
         {/* ═══════════════════════════════════════════════════════════════════════ */}
@@ -793,136 +944,6 @@ const DinePage = () => {
           </div>
         </section>
 
-        {/* ═══════════════════════════════════════════════════════════════════════ */}
-        {/* CONCIERGE FEATURED RESTAURANTS */}
-        {/* ═══════════════════════════════════════════════════════════════════════ */}
-        <section id="restaurants" className="mt-12 scroll-mt-20">
-          <div className="mb-6">
-            <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <Star className="w-6 h-6 text-amber-500" />
-              Concierge® Featured Restaurants
-            </h3>
-            <p className="text-gray-600">Dine out with your furry friend</p>
-          </div>
-
-          {/* Filters */}
-          <Card className="p-4 mb-6">
-            <div className="flex flex-wrap gap-4">
-              {/* Search */}
-              <div className="flex-1 min-w-[200px]">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <Input
-                    placeholder="Search restaurants..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                    data-testid="restaurant-search"
-                  />
-                </div>
-              </div>
-
-              {/* City Filter */}
-              <select
-                value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value)}
-                className="px-4 py-2 border rounded-lg text-sm bg-white"
-                data-testid="city-filter"
-              >
-                <option value="all">All Cities</option>
-                {cities.filter(c => c !== 'all').map(city => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
-              </select>
-
-              {/* Pet Menu Filter */}
-              <select
-                value={petMenuFilter}
-                onChange={(e) => setPetMenuFilter(e.target.value)}
-                className="px-4 py-2 border rounded-lg text-sm bg-white"
-                data-testid="pet-menu-filter"
-              >
-                <option value="all">All Restaurants</option>
-                <option value="yes">🍽️ Pet Menu Available</option>
-                <option value="partial">⚠️ Partial Menu</option>
-                <option value="no">🐕 Pet-Friendly Only</option>
-              </select>
-            </div>
-          </Card>
-
-          {isLoading ? (
-            <div className="text-center py-12">
-              <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-              <p className="mt-4 text-gray-500">Loading restaurants...</p>
-            </div>
-          ) : (
-            <>
-              {/* Featured Restaurants */}
-              {filteredRestaurants.some(r => r.featured) && (
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Star className="w-5 h-5 text-yellow-500" />
-                    Featured
-                  </h3>
-                  <div className="grid grid-cols-2 gap-3 sm:gap-6">
-                    {filteredRestaurants.filter(r => r.featured).map((restaurant) => (
-                      <RestaurantCard 
-                        key={restaurant.id} 
-                        restaurant={restaurant} 
-                        getPetMenuBadge={getPetMenuBadge}
-                        getPetPolicyText={getPetPolicyText}
-                        featured={true}
-                        onSelect={setSelectedRestaurant}
-                        onBuddy={setShowBuddyModal}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* All Restaurants - 2x2 on mobile with Load More */}
-              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-                {filteredRestaurants.filter(r => !r.featured).slice(0, restaurantsToShow).map((restaurant) => (
-                  <RestaurantCard 
-                    key={restaurant.id} 
-                    restaurant={restaurant}
-                    getPetMenuBadge={getPetMenuBadge}
-                    getPetPolicyText={getPetPolicyText}
-                    onSelect={setSelectedRestaurant}
-                    onBuddy={setShowBuddyModal}
-                  />
-                ))}
-              </div>
-              
-              {/* Load More Button */}
-              {filteredRestaurants.filter(r => !r.featured).length > restaurantsToShow && (
-                <div className="text-center mt-8">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setRestaurantsToShow(prev => prev + 8)}
-                    className="px-8 py-3 rounded-full border-2 border-orange-300 text-orange-600 hover:bg-orange-50"
-                  >
-                    Load More Restaurants
-                    <ChevronDown className="w-4 h-4 ml-2" />
-                  </Button>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Showing {Math.min(restaurantsToShow, filteredRestaurants.filter(r => !r.featured).length)} of {filteredRestaurants.filter(r => !r.featured).length}
-                  </p>
-                </div>
-              )}
-
-              {filteredRestaurants.length === 0 && (
-                <Card className="p-12 text-center">
-                  <Dog className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No restaurants found</h3>
-                  <p className="text-gray-500">Try adjusting your filters or search query</p>
-                </Card>
-              )}
-            </>
-          )}
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════════════════════ */}
         {/* BUDDY MEETUPS - Connect with pet parents */}
         {/* ═══════════════════════════════════════════════════════════════════════ */}
         <section className="mt-12">
