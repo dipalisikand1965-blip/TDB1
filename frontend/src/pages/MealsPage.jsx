@@ -230,7 +230,16 @@ const FreshMealsHero = ({ pet }) => {
 // ═══════════════════════════════════════════════════════════════════════════════
 // PLAN BUILDER ROW - Request capture, NOT filters
 // ═══════════════════════════════════════════════════════════════════════════════
-const PlanBuilderRow = ({ planBuilder, setPlanBuilder, petHasAllergies, petName }) => {
+const PlanBuilderRow = ({ planBuilder, setPlanBuilder, petHasAllergies, petName, petAvoid = [] }) => {
+  
+  // Check if a protein is blocked by pet's avoid list
+  const isProteinBlocked = (proteinId) => {
+    if (!petAvoid || petAvoid.length === 0) return false;
+    return petAvoid.some(avoid => {
+      const avoidLower = avoid?.toLowerCase?.() || '';
+      return avoidLower.includes(proteinId) || proteinId.includes(avoidLower);
+    });
+  };
   
   const handleGoalSelect = (goalId) => {
     const currentGoals = planBuilder.goals || [];
@@ -243,9 +252,26 @@ const PlanBuilderRow = ({ planBuilder, setPlanBuilder, petHasAllergies, petName 
     }
   };
   
+  const handleProteinSelect = (proteinId) => {
+    // Block if protein is in avoid list
+    if (isProteinBlocked(proteinId)) {
+      sonnerToast.error(`${proteinId.charAt(0).toUpperCase() + proteinId.slice(1)} is blocked for ${petName}`);
+      return;
+    }
+    setPlanBuilder(prev => ({ ...prev, protein: prev.protein === proteinId ? null : proteinId }));
+  };
+  
   const handleSingleSelect = (field, value) => {
     setPlanBuilder(prev => ({ ...prev, [field]: prev[field] === value ? null : value }));
   };
+  
+  // Auto-clear blocked protein if it was previously selected
+  React.useEffect(() => {
+    if (planBuilder.protein && isProteinBlocked(planBuilder.protein)) {
+      setPlanBuilder(prev => ({ ...prev, protein: null }));
+      sonnerToast.info(`${planBuilder.protein} was cleared because ${petName} avoids it`);
+    }
+  }, [petAvoid]);
   
   return (
     <div className="bg-gray-50 rounded-xl p-4 mb-6 space-y-4">
@@ -277,17 +303,34 @@ const PlanBuilderRow = ({ planBuilder, setPlanBuilder, petHasAllergies, petName 
         </div>
       </div>
       
-      {/* Protein (single select) */}
+      {/* Protein (single select) - with blocked proteins disabled */}
       <div>
         <label className="text-xs text-gray-500 mb-2 block">Protein preference</label>
         <div className="flex flex-wrap gap-2">
           {PROTEIN_OPTIONS.map(protein => {
             const Icon = protein.icon;
+            const isBlocked = isProteinBlocked(protein.id);
+            const isSelected = planBuilder.protein === protein.id;
             return (
               <button
                 key={protein.id}
-                onClick={() => handleSingleSelect('protein', protein.id)}
+                onClick={() => handleProteinSelect(protein.id)}
+                disabled={isBlocked}
+                title={isBlocked ? `${petName} avoids ${protein.label}` : ''}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-1.5
+                  ${isBlocked 
+                    ? 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed line-through opacity-60' 
+                    : isSelected 
+                      ? 'bg-green-500 text-white' 
+                      : 'bg-white border border-gray-200 text-gray-700 hover:border-green-300'
+                  }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {protein.label}
+                {isBlocked && <X className="w-3 h-3 ml-1" />}
+              </button>
+            );
+          })}
                   ${planBuilder.protein === protein.id ? 'bg-green-500 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:border-green-300'}`}
               >
                 <Icon className="w-3.5 h-3.5" />
