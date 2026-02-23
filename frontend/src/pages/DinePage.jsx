@@ -128,7 +128,7 @@ const DinePage = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [restaurantsToShow, setRestaurantsToShow] = useState(8);
+  const [restaurantsToShow, setRestaurantsToShow] = useState(6); // Show only 6 initially
   const [productsToShow, setProductsToShow] = useState(15); // 3 rows x 5 columns
   const [heroIndex, setHeroIndex] = useState(0);
   
