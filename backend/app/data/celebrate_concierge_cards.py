@@ -75,9 +75,16 @@ CELEBRATE_CONCIERGE_PRODUCTS: List[Dict[str, Any]] = [
         "description": "A personalised box built around {pet_name}'s persona - treats, props, accessories.",
         "icon": "🎁",
         "why_concierge": "Curated to pet personality",
-        "cta_text": "Create for {pet_name}",
+        "cta_text": "Create celebration box",
         "cta_action": "create_ticket",
         "ticket_category": "celebrate_box",
+        "why_phrases": {
+            "elegant": "Curated elegance in a box",
+            "pampered": "Premium picks for pampered pets",
+            "playful": "Fun-packed box for playful pups",
+            "anxious": "Calming treats + comfort items",
+            "default": "Personalized celebration essentials"
+        },
         "ticket_questions": [
             {"id": "vibe", "question": "Playful or elegant vibe?", "type": "choice", "options": ["Playful", "Elegant"]},
             {"id": "food_rules", "question": "Any food rules/allergies?", "type": "text"},
