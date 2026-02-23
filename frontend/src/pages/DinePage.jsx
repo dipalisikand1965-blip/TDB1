@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   UtensilsCrossed, MapPin, Search, Filter, Star, Clock, 
   Dog, Cat, ChevronRight, ChevronDown, ChevronLeft, Phone, Globe, Instagram,
@@ -30,6 +30,7 @@ import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
 import NearbyPlacesCarousel from '../components/NearbyPlacesCarousel';
 import { usePillarContext } from '../context/PillarContext';
+import FreshMealsTab from '../components/dine/FreshMealsTab';
 
 // Get user from AuthContext or localStorage
 const getUser = () => {
