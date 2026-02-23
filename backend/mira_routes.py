@@ -16744,6 +16744,24 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 )
                 
                 logger.info(f"[PICKS ENGINE] Late run: {len(picks_engine_output.picks)} picks, concierge={picks_engine_output.concierge.get('cta_prominence')}")
+                
+                # DYNAMIC PICKS FALLBACK for late run
+                if not picks_engine_output.picks and selected_pet:
+                    try:
+                        from services.dynamic_picks_generator import generate_dynamic_picks
+                        dynamic_picks = generate_dynamic_picks(
+                            user_message=user_message,
+                            pillar=pillar or "general",
+                            pet_context=selected_pet,
+                            location=user_city,
+                            additional_context={"session_id": session_id}
+                        )
+                        if dynamic_picks:
+                            picks_engine_output.picks = dynamic_picks
+                            logger.info(f"[DYNAMIC PICKS] Late run fallback: Generated {len(dynamic_picks)} picks for {pillar}")
+                    except Exception as dyn_err:
+                        logger.warning(f"[DYNAMIC PICKS] Late run fallback failed: {dyn_err}")
+                        
             except Exception as picks_err:
                 logger.error(f"[PICKS ENGINE] Error running pipeline: {picks_err}")
                 picks_engine_output = None
