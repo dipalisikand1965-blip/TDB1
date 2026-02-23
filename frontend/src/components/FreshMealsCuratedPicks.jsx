@@ -195,6 +195,7 @@ const FreshMealsCuratedPicks = ({
     setActiveCardId(card.id);
     
     // Create service request via Universal Service Command
+    // navigateToInbox: false - stay on page, show toast with action button
     const result = await submitRequest({
       type: card.type === 'concierge_product' 
         ? REQUEST_TYPES.FRESH_MEALS_TRIAL 
@@ -212,7 +213,8 @@ const FreshMealsCuratedPicks = ({
       pet,
       entryPoint: ENTRY_POINTS.CARD_CTA,
       intent: `Fresh Meals: ${card.name}`,
-      navigateToInbox: true
+      navigateToInbox: false,  // Stay on page - user can click "Open request" in toast
+      showToast: true
     });
     
     setActiveCardId(null);
