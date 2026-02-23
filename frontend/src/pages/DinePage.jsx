@@ -98,9 +98,13 @@ const DinePage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   
-  // Tab state - Read from URL or default to 'all'
+  // Tab state - Read from URL params (supports both 'tab' and 'category' for different navigation patterns)
   const [activeTab, setActiveTab] = useState(() => {
     const tabFromUrl = searchParams.get('tab');
+    const categoryFromUrl = searchParams.get('category');
+    // Map category param to tab name
+    if (categoryFromUrl === 'feeding-tools') return 'feeding-tools';
+    if (categoryFromUrl === 'supplements') return 'supplements';
     return tabFromUrl || 'all';
   });
   
@@ -113,6 +117,28 @@ const DinePage = () => {
       navigate('/dine', { replace: true });
     }
   };
+  
+  // Listen for URL changes (for category param from card links)
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category');
+    const tabFromUrl = searchParams.get('tab');
+    if (categoryFromUrl === 'feeding-tools') {
+      setActiveTab('feeding-tools');
+    } else if (categoryFromUrl === 'supplements') {
+      setActiveTab('supplements');
+    } else if (tabFromUrl) {
+      setActiveTab(tabFromUrl);
+    }
+    // Scroll to essentials section if section param is present
+    if (searchParams.get('section') === 'essentials') {
+      setTimeout(() => {
+        const essentialsSection = document.querySelector('[data-testid="dine-essentials-section"]');
+        if (essentialsSection) {
+          essentialsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
+    }
+  }, [searchParams]);
   
   const [restaurants, setRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
