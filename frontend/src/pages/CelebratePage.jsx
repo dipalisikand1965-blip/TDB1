@@ -710,9 +710,9 @@ const CelebratePage = () => {
           <p className="ios-subhead text-gray-600">Tap what matters most to you</p>
         </div>
         
-        {/* Smart Filter Pills - Horizontal scroll on mobile */}
+        {/* Smart Filter Pills - Floating Pill Dock with Snap Scroll */}
         <div className="relative">
-          <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide -mx-3 px-3">
+          <div className="pill-dock">
             {[
               { emoji: '🐕', label: 'By Breed', filter: 'breed-cakes', desc: 'Labrador, Pug, GSD...' },
               { emoji: '🎁', label: 'Gift Ready', filter: 'gift-hampers', desc: 'Beautifully packaged' },
@@ -726,37 +726,35 @@ const CelebratePage = () => {
               <Link 
                 key={item.filter}
                 to={`/celebrate/${item.filter}`}
-                className="flex-shrink-0"
+                className="pill-item pill-item-celebrate haptic-btn"
+                data-testid={`filter-${item.filter}`}
               >
-                <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-white border-2 border-pink-200 rounded-full hover:border-pink-400 hover:bg-pink-50 transition-all active:scale-95 cursor-pointer shadow-sm">
-                  <span className="text-lg sm:text-xl">{item.emoji}</span>
-                  <div className="text-left">
-                    <span className="font-semibold text-xs sm:text-sm text-gray-800 block leading-tight">{item.label}</span>
-                    <span className="text-[10px] sm:text-xs text-gray-500 hidden sm:block">{item.desc}</span>
-                  </div>
-                </div>
+                <span className="flex items-center gap-2">
+                  <span className="text-lg">{item.emoji}</span>
+                  <span className="ios-subhead font-medium">{item.label}</span>
+                </span>
               </Link>
             ))}
           </div>
           {/* Scroll indicator for mobile */}
-          <div className="sm:hidden flex justify-center mt-1">
-            <span className="text-[10px] text-gray-400">← Swipe for more →</span>
+          <div className="sm:hidden flex justify-center mt-2">
+            <span className="ios-caption text-gray-400">← Swipe for more →</span>
           </div>
         </div>
         
-        {/* Quick Stats */}
-        <div className="flex justify-center gap-4 sm:gap-8 mt-4 sm:mt-6 text-center">
-          <div>
-            <div className="text-lg sm:text-2xl font-bold text-pink-600">50+</div>
-            <div className="text-[10px] sm:text-xs text-gray-500">Cake Designs</div>
+        {/* Quick Stats - Glass Cards */}
+        <div className="flex justify-center gap-4 sm:gap-8 mt-6 sm:mt-8 text-center">
+          <div className="glass-card px-4 py-3 haptic-card" data-testid="stat-designs">
+            <div className="ios-title-3 text-gradient-celebrate">50+</div>
+            <div className="ios-caption text-gray-500">Cake Designs</div>
           </div>
-          <div>
-            <div className="text-lg sm:text-2xl font-bold text-pink-600">4.9★</div>
-            <div className="text-[10px] sm:text-xs text-gray-500">Avg Rating</div>
+          <div className="glass-card px-4 py-3 haptic-card" data-testid="stat-rating">
+            <div className="ios-title-3 text-gradient-celebrate">4.9★</div>
+            <div className="ios-caption text-gray-500">Avg Rating</div>
           </div>
-          <div>
-            <div className="text-lg sm:text-2xl font-bold text-pink-600">2hr</div>
-            <div className="text-[10px] sm:text-xs text-gray-500">Fastest Delivery</div>
+          <div className="glass-card px-4 py-3 haptic-card" data-testid="stat-delivery">
+            <div className="ios-title-3 text-gradient-celebrate">2hr</div>
+            <div className="ios-caption text-gray-500">Fastest Delivery</div>
           </div>
         </div>
       </div>
