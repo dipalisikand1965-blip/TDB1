@@ -824,6 +824,7 @@ def select_concierge_cards(
     """
     Select the best concierge cards for this pet.
     Returns dict with concierge_products and concierge_services.
+    Now supports location-aware personalization.
     """
     import logging
     logger = logging.getLogger(__name__)
@@ -833,12 +834,14 @@ def select_concierge_cards(
     size = pet_data.get("size", "medium") or "medium"
     age_band = pet_data.get("age_band", "") or ""
     pet_name = pet_data.get("name", "your pet")
+    user_location = pet_data.get("user_location")  # 🌍 Location for personalization
     
     # Derive traits from multiple sources
     derived_traits = derive_traits_from_profile(pet_data)
     all_traits = list(set(soul_traits + derived_traits))
     
-    logger.info(f"[DINE CURATE] Pet: {pet_name}, Soul traits: {soul_traits}, Derived: {derived_traits}, All: {all_traits}")
+    city = user_location.get("city") if user_location else None
+    logger.info(f"[DINE CURATE] Pet: {pet_name}, City: {city}, Soul traits: {soul_traits}, Derived: {derived_traits}")
     
     # If profile is thin, add breed defaults
     if len(all_traits) < 2:
