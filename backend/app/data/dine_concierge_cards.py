@@ -753,6 +753,9 @@ def select_concierge_cards(
     Select the best concierge cards for this pet.
     Returns dict with concierge_products and concierge_services.
     """
+    import logging
+    logger = logging.getLogger(__name__)
+    
     soul_traits = pet_data.get("soul_traits", []) or []
     breed = pet_data.get("breed", "") or ""
     size = pet_data.get("size", "medium") or "medium"
@@ -762,6 +765,8 @@ def select_concierge_cards(
     # Derive traits from multiple sources
     derived_traits = derive_traits_from_profile(pet_data)
     all_traits = list(set(soul_traits + derived_traits))
+    
+    logger.info(f"[DINE CURATE] Pet: {pet_name}, Soul traits: {soul_traits}, Derived: {derived_traits}, All: {all_traits}")
     
     # If profile is thin, add breed defaults
     if len(all_traits) < 2:
