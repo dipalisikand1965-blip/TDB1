@@ -54,6 +54,8 @@ const SoulKnowledgeTicker = ({
   const [showKnowledgeCard, setShowKnowledgeCard] = useState(false);
   const [miraKnowledge, setMiraKnowledge] = useState(null);
   const [loadingKnowledge, setLoadingKnowledge] = useState(false);
+  const [favorites, setFavorites] = useState([]);
+  const [showFavoritesPanel, setShowFavoritesPanel] = useState(false);
   const prevScoreRef = useRef(soulScore);
   const tickerRef = useRef(null);
   
