@@ -267,6 +267,21 @@ const DinePage = () => {
               userEmail={authUser?.email || user?.email}
             />
           </div>
+          
+          {/* Nearby Pet-Friendly Places Carousel */}
+          <div className="mt-8">
+            <NearbyPlacesCarousel
+              pillar="dine"
+              petId={activePet.id}
+              petName={activePet.name}
+              token={token}
+              onReserveClick={(place) => {
+                // Open concierge chat with the place pre-filled
+                console.log('[DINE] Reserve clicked for:', place.name);
+                // Could trigger a modal or navigate to /mira-demo with context
+              }}
+            />
+          </div>
         </div>
       ) : token && !activePet ? (
         // Loading state while pets are being fetched
