@@ -398,9 +398,12 @@ def curate_products(
     4. Return 5-6 top products
     """
     allergies = pet_data.get("allergies", []) or []
-    soul_traits = pet_data.get("soul_traits", []) or []
+    # Use derived traits from multiple sources for better personalization
+    soul_traits = derive_traits_from_pet_data(pet_data)
     breed = pet_data.get("breed", "") or ""
     size = pet_data.get("size", "") or ""
+    
+    logger.info(f"[CURATE] Pet: {pet_data.get('name')}, Derived traits: {soul_traits}")
     
     # SAFETY FIRST
     safe_products, filtered_out = filter_by_allergies(all_products, allergies)
