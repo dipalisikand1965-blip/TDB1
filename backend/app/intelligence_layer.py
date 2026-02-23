@@ -453,15 +453,22 @@ def curate_products(
 def generate_why_for_pet(product: Dict, soul_traits: List[str], breed: str, pet_name: str) -> str:
     """
     Generate a personalized "why this is for {pet}" explanation.
-    Uses persona_affinity from the card to find trait matches.
+    Uses card-specific why_phrases if available, otherwise falls back to generic.
     """
-    reasons = []
+    # First check for card-specific why_phrases
+    why_phrases = product.get("why_phrases", {})
     
-    # Get persona_affinity from the card
-    persona_affinity = product.get("persona_affinity", {})
-    product_tags = [t.lower() for t in product.get("tags", []) or []]
+    if why_phrases:
+        # Try to find a matching trait
+        for trait in soul_traits[:3]:
+            trait_lower = trait.lower().replace(" ", "_")
+            if trait_lower in why_phrases:
+                return why_phrases[trait_lower]
+        
+        # Return default phrase for this card
+        return why_phrases.get("default", f"Handpicked for {pet_name}")
     
-    # Map traits to human-readable explanations
+    # Legacy fallback - use generic trait explanations
     trait_explanations = {
         "foodie": f"fits {pet_name}'s foodie personality",
         "picky": f"designed for {pet_name}'s selective taste",
@@ -477,34 +484,13 @@ def generate_why_for_pet(product: Dict, soul_traits: List[str], breed: str, pet_
         "weight_management": f"helps manage {pet_name}'s weight",
     }
     
-    # Check soul traits against persona_affinity
-    for trait in soul_traits[:3]:  # Check top 3 traits
+    # Find matching trait
+    for trait in soul_traits[:3]:
         trait_lower = trait.lower().replace(" ", "_")
-        
-        # If this trait has high affinity (>= 0.75) in the card, use it
-        if persona_affinity.get(trait_lower, 0) >= 0.75:
-            if trait_lower in trait_explanations:
-                reasons.append(trait_explanations[trait_lower])
-                break
-        
-        # Also check without underscores
-        trait_simple = trait.lower().replace("_", " ").replace("-", " ")
-        for affinity_key, score in persona_affinity.items():
-            if score >= 0.75 and (trait_simple in affinity_key or affinity_key in trait_simple):
-                if affinity_key in trait_explanations:
-                    reasons.append(trait_explanations[affinity_key])
-                    break
+        if trait_lower in trait_explanations:
+            return trait_explanations[trait_lower].capitalize()
     
-    # Fallback: check product tags (old method)
-    if not reasons:
-        for trait in soul_traits[:2]:
-            trait_lower = trait.lower()
-            if trait_lower in ["elegant", "pampered"] and "premium" in product_tags:
-                reasons.append(f"matches {pet_name}'s elegant taste")
-            elif trait_lower in ["playful", "energetic"] and "fun" in product_tags:
-                reasons.append(f"perfect for {pet_name}'s playful spirit")
-            elif trait_lower == "foodie" and "treat" in product_tags:
-                reasons.append(f"{pet_name} will love this treat")
+    return f"Curated for {pet_name}"
     
     # Breed match as final fallback
     if not reasons and breed and breed.lower() in (product.get("name", "") or "").lower():
