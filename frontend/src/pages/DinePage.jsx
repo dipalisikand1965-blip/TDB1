@@ -265,7 +265,7 @@ const DinePage = () => {
       {/* DINE CONCIERGE LAYER - Intelligence-driven personalized picks */}
       {/* Order: Concierge Layer → Hangouts → Catalogue */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {activePet && token && (
+      {activePet && token ? (
         <div className="max-w-6xl mx-auto px-4 pt-8">
           <div className="text-center mb-6">
             <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 mb-4">
@@ -287,7 +287,18 @@ const DinePage = () => {
             className="mb-8"
           />
         </div>
-      )}
+      ) : token && !activePet ? (
+        // Loading state while pets are being fetched
+        <div className="max-w-6xl mx-auto px-4 pt-8">
+          <div className="text-center">
+            <div className="animate-pulse">
+              <div className="h-6 bg-gray-200 rounded w-48 mx-auto mb-4"></div>
+              <div className="h-8 bg-gray-200 rounded w-64 mx-auto mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-80 mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      ) : null}
       
       {/* Legacy Personalized Picks - can be removed once new system is verified */}
       <div className="max-w-6xl mx-auto px-4 pt-8">
