@@ -1079,19 +1079,20 @@ const MemberDashboard = () => {
 
           {/* 🐾 PET SELECTOR - Below nav tabs */}
           {pets.length > 1 && (
-            <div className="mb-6 p-4 bg-slate-900/60 backdrop-blur-xl rounded-xl border border-white/10">
-              <div className="flex items-center justify-between mb-3">
+            <div className="mb-6 p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xl rounded-xl border border-white/10">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
                 <p className="text-xs text-purple-400 font-medium tracking-wider">VIEWING DASHBOARD FOR</p>
                 {currentPet && (
                   <Button 
                     variant="ghost" 
                     size="sm"
                     onClick={() => navigate(`/pet/${currentPet.id}`)}
-                    className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 text-xs h-7"
+                    className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 text-xs h-7 self-start sm:self-auto"
                     data-testid="header-go-to-pet-soul-btn"
                   >
                     <Sparkles className="w-3 h-3 mr-1" />
-                    Go to {currentPet.name}&apos;s Soul Journey →
+                    <span className="hidden sm:inline">Go to {currentPet.name}&apos;s Soul Journey →</span>
+                    <span className="sm:hidden">View Soul →</span>
                   </Button>
                 )}
               </div>
