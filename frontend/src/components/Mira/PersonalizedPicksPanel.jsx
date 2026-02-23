@@ -220,8 +220,9 @@ const ExpandablePickCard = ({
           </div>
         </div>
         
-        {/* Button - ALWAYS visible, separate from scrollable content */}
-        <div className="px-4 pb-4">
+        {/* Buttons - ALWAYS visible, separate from scrollable content */}
+        <div className="px-4 pb-4 space-y-2">
+          {/* Primary: Add to Request */}
           <button
             onClick={handleSelect}
             className={`w-full py-3.5 rounded-xl font-semibold text-sm transition-all active:scale-[0.98] ${
@@ -232,6 +233,17 @@ const ExpandablePickCard = ({
           >
             {isSelected ? '✓ Added' : (pick.cta || 'Request')}
           </button>
+          
+          {/* Secondary: Chat with Mira about this */}
+          {onChatClick && (
+            <button
+              onClick={handleChatClick}
+              className="w-full py-2.5 rounded-xl font-medium text-xs text-purple-300 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-1.5"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              Ask Mira about this
+            </button>
+          )}
         </div>
         
         {/* Expanded Details */}
