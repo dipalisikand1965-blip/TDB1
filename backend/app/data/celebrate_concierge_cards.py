@@ -377,8 +377,13 @@ def score_card_for_pet(
     Returns score 0-100. Higher = better fit.
     
     Uses weights, not hard switches - traits boost but don't exclude.
+    
+    Senior Comfort Modifier:
+    - Boosts: At-Home Setup, Quiet Plan, Keepsake, Photographer (posed)
+    - Penalizes: Outdoor Pack, Venue (unless clearly social)
     """
     score = card.get("default_score", 50)
+    card_id = card.get("id", "")
     
     # 1. Soul trait affinity (biggest weight: +/- 30)
     persona_affinity = card.get("persona_affinity", {})
@@ -410,18 +415,44 @@ def score_card_for_pet(
         if any(b.lower() in breed_lower for b in breed_affinity):
             score += 10
     
-    # 4. Age band adjustments
+    # 4. SENIOR COMFORT MODIFIER (scoring-based, not rule-based)
     if age_band == "senior":
+        # Check if dog is also social/energetic (override penalty)
+        is_still_active = any(t.lower() in ["social", "energetic", "playful"] for t in soul_traits)
+        
+        # Boost comfort-first cards
+        comfort_cards = [
+            "celebrate_home_setup",      # At-Home Setup + Safe Zones
+            "celebrate_quiet_plan",      # Quiet Celebration Plan  
+            "celebrate_keepsake_set",    # Keepsake Memory Set (meaningful for seniors)
+            "celebrate_custom_cake_design",  # Can be adapted to soft/easy texture
+        ]
+        if card_id in comfort_cards:
+            score += 15  # Strong boost for comfort options
+        
+        # Boost photographer but prefer "posed" style
+        if card_id == "celebrate_photographer":
+            score += 10  # Still good, just shorter sessions
+        
+        # Penalize high-stimulation cards (unless dog is still active)
+        high_stimulation_cards = [
+            "celebrate_outdoor_pack",    # Built for chaos - not ideal
+            "celebrate_venue",           # Venue can be tiring
+        ]
+        if card_id in high_stimulation_cards:
+            if is_still_active:
+                score -= 5   # Small penalty - dog can still handle it
+            else:
+                score -= 20  # Larger penalty - prefer home/quiet options
+        
+        # Use persona affinity senior weight if defined
         if "senior" in persona_affinity:
-            score += persona_affinity["senior"] * 15
-        # Reduce score for high-energy options
-        if card.get("id") in ["celebrate_outdoor_pack"]:
-            score -= 15
+            score += persona_affinity["senior"] * 10
     
     # 5. Event context boost
     if event_context:
         event_type = event_context.get("event_type", "")
-        if event_type == "birthday" and "cake" in card.get("id", ""):
+        if event_type == "birthday" and "cake" in card_id:
             score += 10
         days_away = event_context.get("event_days_away", 999)
         if days_away <= 7:  # Within a week
