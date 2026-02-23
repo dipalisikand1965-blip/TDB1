@@ -24721,6 +24721,38 @@ async def create_ticket_from_concierge_pick(
         
         logger.info(f"[CONCIERGE_TICKET] Created ticket {ticket_id} for {pet_name} - {data.card_name}")
         
+        # ─── EMIT WEBSOCKET NOTIFICATION TO MEMBER ─────────────────────────────
+        try:
+            from realtime_notifications import notification_manager
+            
+            # Notify member via WebSocket (for instant CTA feedback)
+            await notification_manager.emit_ticket_created_to_member(
+                member_email=user_email,
+                ticket_data={
+                    'ticket_id': ticket_id,
+                    'card_id': data.card_id,
+                    'card_name': data.card_name,
+                    'pet_name': pet_name
+                }
+            )
+            
+            # Get updated unread count for inbox badge
+            unread_count = await db.member_notifications.count_documents({
+                "user_email": user_email,
+                "read": False
+            })
+            
+            # Update inbox badge count via WebSocket
+            await notification_manager.emit_inbox_badge_update(
+                member_email=user_email,
+                unread_count=unread_count
+            )
+            
+            logger.info(f"[WEBSOCKET] Sent ticket creation notification to {user_email}")
+        except Exception as ws_error:
+            # WebSocket failure is non-critical - ticket was still created
+            logger.warning(f"[WEBSOCKET] Failed to send notification: {ws_error}")
+        
         return {
             "success": True,
             "ticket_id": ticket_id,
