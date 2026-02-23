@@ -179,7 +179,14 @@ DINE_CONCIERGE_PRODUCTS = [
         "icon": "package",
         "description": "We set up recurring fresh meals aligned to {pet_name}'s feeding times and needs.",
         "why_concierge": "This needs coordination, portion logic, and schedule alignment.",
-        "cta_text": "Set Up Subscription",
+        "cta_text": "Set up delivery",
+        "why_phrases": {
+            "foodie": "Fresh variety keeps food lovers excited",
+            "picky": "Curated options for selective eaters",
+            "sensitive_tummy": "Gentle recipes delivered regularly",
+            "senior": "Senior-friendly portions and timing",
+            "default": "Recurring fresh meals, coordinated"
+        },
         "default_questions": [
             {
                 "id": "cadence",
