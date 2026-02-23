@@ -509,6 +509,43 @@ const CelebratePage = () => {
                 userEmail={user?.email}
               />
             </div>
+            
+            {/* TheDoggyBakery Promotion - Pan India Delivery */}
+            <div className="mt-6 bg-gradient-to-r from-amber-50 via-orange-50 to-pink-50 rounded-2xl p-5 sm:p-6 border border-amber-200/50 shadow-sm">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg flex-shrink-0">
+                  <Cake className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-bold text-gray-900 text-base sm:text-lg">TheDoggyBakery</h4>
+                    <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">
+                      Pan India Delivery
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Our in-house artisan bakery crafts fresh, healthy, and delicious cakes & treats 
+                    specially designed for {activePet?.name || 'your pet'}. 100% pet-safe ingredients, no preservatives.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <a 
+                      href="https://thedoggybakery.com" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm"
+                    >
+                      <Cake className="w-4 h-4" />
+                      Order Fresh Cake
+                      <ChevronRight className="w-4 h-4" />
+                    </a>
+                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      Delivers to all major cities
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
