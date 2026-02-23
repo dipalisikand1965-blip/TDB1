@@ -346,11 +346,17 @@ Created `ConciergePickCard.jsx` component and added to ALL pillar pages:
 ## Pending Tasks (Prioritized)
 
 ### P0 - Critical
-- [x] Fix Dine page CuratedConciergeSection UI/UX (Session 14)
-- [x] Improve why_for_pet personalization (Session 14)
-- [ ] Verify Member Notification Inbox Flow (user needs to confirm)
+- [x] Fix Nav dropdown z-index on Pet Home page (Session 15)
+- [x] Fix Restaurant "Oops" error (Session 15)
+- [x] Vary concierge card why_for_pet text (Session 15)
+- [x] Vary concierge card CTA text (Session 15)
+- [ ] **WebSocket notification flow** - When CTA clicked:
+  - Button state → ✓ Received (1-2s)
+  - Toast: "Request received - updating your Inbox"
+  - WebSocket confirms → Update Inbox badge count
+  - Fallback if no WS in 3-5s: Keep ticket, show "Syncing..."
+- [ ] Verify Member Notification Inbox Flow (user verification pending)
 - [ ] Mobile Page Scroll Bug (user verification pending)
-- [ ] Navigation Dropdown Style (user verification pending)
 
 ### P1 - High
 - [ ] Roll out Intelligence Layer to remaining 11 pillar pages
@@ -373,4 +379,4 @@ Created `ConciergePickCard.jsx` component and added to ALL pillar pages:
 
 ---
 
-*Last Updated: February 23, 2026 - Session 14*
+*Last Updated: February 23, 2026 - Session 15*
