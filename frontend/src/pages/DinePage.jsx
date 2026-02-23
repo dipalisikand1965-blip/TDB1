@@ -174,7 +174,12 @@ const DinePage = () => {
   const [nearbyCafes, setNearbyCafes] = useState([]);
   const [nearbyParks, setNearbyParks] = useState([]);
   const [nearbyLoading, setNearbyLoading] = useState(false);
-  const [selectedNearbyCity, setSelectedNearbyCity] = useState('mumbai');
+  const [selectedNearbyCity, setSelectedNearbyCity] = useState('');
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+  
+  // Map modal state
+  const [mapModalOpen, setMapModalOpen] = useState(false);
+  const [selectedPlace, setSelectedPlace] = useState(null);
   
   // Booking modal state for unified Concierge® flow
   const [showBookingModal, setShowBookingModal] = useState(false);
