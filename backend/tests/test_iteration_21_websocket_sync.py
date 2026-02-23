@@ -268,7 +268,7 @@ class TestTicketCreationCreatesNotification:
             json={"email": TEST_EMAIL, "password": TEST_PASSWORD}
         )
         assert login_response.status_code == 200
-        self.token = login_response.json().get("token")
+        self.token = login_response.json().get("access_token") or login_response.json().get("token")
         self.session.headers.update({
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json"
@@ -355,7 +355,7 @@ class TestWebSocketEmissionBackendLogs:
             json={"email": TEST_EMAIL, "password": TEST_PASSWORD}
         )
         assert login_response.status_code == 200
-        self.token = login_response.json().get("token")
+        self.token = login_response.json().get("access_token") or login_response.json().get("token")
         self.session.headers.update({
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json"
