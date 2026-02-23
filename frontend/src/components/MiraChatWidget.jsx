@@ -1054,7 +1054,8 @@ const MiraChatWidget = ({
           ticketId: data.ticket_id,
           kitAssembly: data.kit_assembly,
           handoff: data.handoff,
-          serviceConfirmation: data.service_confirmation
+          serviceConfirmation: data.service_confirmation,
+          nearbyPlaces: data.nearby_places // Restaurant, vet, park results from Mira
         }]);
         
         if (voiceEnabled) {
