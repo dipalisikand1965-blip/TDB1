@@ -1707,13 +1707,30 @@ const SoulBuilder = () => {
             </div>
           )}
           
-          {/* Begin Button */}
+          {/* Show how many questions remain in this chapter */}
+          {countUnansweredInChapter() < chapter.questions.length && (
+            <p className="text-green-400/70 text-sm mb-4">
+              ✓ {chapter.questions.length - countUnansweredInChapter()} already answered from onboarding
+            </p>
+          )}
+          
+          {/* Begin Button - skip to first unanswered question */}
           <button
-            onClick={() => setScreen('question')}
+            onClick={() => {
+              const firstUnanswered = findNextUnansweredInChapter(0);
+              if (firstUnanswered !== -1) {
+                setCurrentQuestion(firstUnanswered);
+                setScreen('question');
+              } else {
+                // All questions answered, skip to chapter complete
+                handleNextChapter();
+              }
+            }}
             className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
             data-testid="begin-chapter-btn"
           >
-            Begin
+            {countUnansweredInChapter() === 0 ? 'Continue' : 
+             countUnansweredInChapter() < chapter.questions.length ? `Continue (${countUnansweredInChapter()} left)` : 'Begin'}
           </button>
           
           {/* Subtle secondary action - reduces anxiety */}
