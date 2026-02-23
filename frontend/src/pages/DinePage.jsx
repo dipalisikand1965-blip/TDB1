@@ -684,18 +684,18 @@ const DinePage = () => {
               )}
             </>
           )}
-        </section>
+        </div>
         
-        {/* Nearby Pet Cafes & Dog Parks Section */}
-        <section className="mt-16 bg-gradient-to-b from-orange-50 to-white py-12 px-4 -mx-4 rounded-2xl">
+        {/* Nearby Pet Cafes & Dog Parks - Part of Dine Out Section */}
+        <div className="mt-8 bg-gradient-to-b from-orange-50 to-white py-8 px-4 -mx-4 rounded-2xl">
           <div className="max-w-full mx-auto">
-            <div className="text-center mb-8">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <Coffee className="w-6 h-6 text-orange-600" />
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Pet-Friendly Hangouts</h2>
-              </div>
-              <p className="text-gray-600 max-w-2xl mx-auto mb-4">
-                Cafes and parks where your furry friend is always welcome - search any city worldwide
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-bold text-gray-800 flex items-center justify-center gap-2">
+                <Coffee className="w-5 h-5 text-orange-600" />
+                Pet Cafes Near Me
+              </h3>
+              <p className="text-gray-600 text-sm max-w-xl mx-auto">
+                Search any city worldwide for pet-friendly spots
               </p>
               
               {/* City Search Input - Worldwide Support */}
