@@ -118,6 +118,113 @@ CELEBRATE_THIN_PROFILE_QUESTIONS = [
 ]
 
 
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TRAIT DERIVATION - Extract traits from multiple pet data sources
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def derive_traits_from_pet_data(pet_data: Dict) -> List[str]:
+    """
+    Derive soul traits from multiple sources in the pet data.
+    Priority: soul_traits > doggy_soul_answers > personality > temperament
+    
+    Returns:
+        List of traits (e.g., ["playful", "anxious", "foodie"])
+    """
+    traits = []
+    
+    # 1. Direct soul_traits (highest priority)
+    if pet_data.get("soul_traits"):
+        traits.extend(pet_data["soul_traits"])
+    
+    # 2. Doggy Soul Answers - extract personality markers
+    doggy_soul = pet_data.get("doggy_soul_answers", {})
+    if doggy_soul:
+        # Map common answers to traits
+        for key, value in doggy_soul.items():
+            if not value:
+                continue
+            value_lower = str(value).lower()
+            
+            # Eating behavior
+            if "food" in key.lower() or "eat" in key.lower():
+                if "love" in value_lower or "excite" in value_lower:
+                    traits.append("foodie")
+                elif "picky" in value_lower or "selective" in value_lower:
+                    traits.append("picky")
+            
+            # Social behavior
+            if "dog" in key.lower() or "social" in key.lower():
+                if "friend" in value_lower or "love" in value_lower or "playful" in value_lower:
+                    traits.append("social")
+                elif "nervous" in value_lower or "anxious" in value_lower:
+                    traits.append("anxious")
+            
+            # Energy/play
+            if "play" in key.lower() or "energy" in key.lower() or "exercise" in key.lower():
+                if "high" in value_lower or "love" in value_lower or "active" in value_lower:
+                    traits.append("playful")
+                    traits.append("energetic")
+    
+    # 3. Personality object (common in older pet records)
+    personality = pet_data.get("personality", {})
+    if isinstance(personality, dict):
+        # Check temperament
+        temperament = personality.get("temperament", "").lower()
+        if "friendly" in temperament or "playful" in temperament:
+            traits.append("playful")
+            traits.append("social")
+        elif "calm" in temperament or "gentle" in temperament:
+            traits.append("elegant")
+        
+        # Check anxiety indicators
+        anxiety = personality.get("separation_anxiety", "").lower()
+        noise = personality.get("noise_sensitivity", "").lower()
+        if "high" in anxiety or "severe" in anxiety or "nervous" in noise:
+            traits.append("anxious")
+        
+        # Check behavior with dogs
+        dog_behavior = personality.get("behavior_with_dogs", "").lower()
+        if "playful" in dog_behavior or "friendly" in dog_behavior:
+            traits.append("social")
+            traits.append("playful")
+    
+    # 4. Direct temperament field
+    temperament_direct = pet_data.get("temperament", "").lower()
+    if temperament_direct:
+        if "playful" in temperament_direct or "energetic" in temperament_direct:
+            traits.append("playful")
+        if "calm" in temperament_direct or "gentle" in temperament_direct:
+            traits.append("elegant")
+        if "anxious" in temperament_direct or "nervous" in temperament_direct:
+            traits.append("anxious")
+    
+    # 5. Check health conditions for senior/special needs
+    health_conditions = pet_data.get("health_conditions", []) or []
+    for condition in health_conditions:
+        condition_lower = condition.lower() if condition else ""
+        if "senior" in condition_lower or "elderly" in condition_lower:
+            traits.append("senior")
+        if "sensitive" in condition_lower or "digestion" in condition_lower:
+            traits.append("sensitive_tummy")
+    
+    # 6. Check age for senior classification
+    age = pet_data.get("age")
+    if age and isinstance(age, (int, float)) and age >= 8:
+        traits.append("senior")
+    
+    # Deduplicate while preserving order
+    seen = set()
+    unique_traits = []
+    for trait in traits:
+        if trait not in seen:
+            seen.add(trait)
+            unique_traits.append(trait)
+    
+    return unique_traits[:6]  # Return top 6 traits
+
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # SAFETY LAYER - Allergy Filtering (MUST run first)
 # ═══════════════════════════════════════════════════════════════════════════════
