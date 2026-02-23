@@ -441,6 +441,12 @@ const MiraMeetsYourPet = () => {
   
   // Handle soul answer
   const handleSoulAnswer = (questionId, value) => {
+    // Safety check: prevent answering if we're past the last question
+    if (currentQuestion >= SOUL_QUESTIONS.length) {
+      setScreen('payoff');
+      return;
+    }
+    
     const question = SOUL_QUESTIONS[currentQuestion];
     
     // Handle multi-select
@@ -467,6 +473,9 @@ const MiraMeetsYourPet = () => {
         setShowMiraKnows(true);
       }
     } else {
+      // Prevent rapid clicks from double-advancing
+      if (isTransitioningRef.current) return;
+      
       setAnswers(prev => ({ ...prev, [questionId]: value }));
       
       // Show Mira knows
@@ -474,9 +483,13 @@ const MiraMeetsYourPet = () => {
       setMiraKnowsFact(fact);
       setShowMiraKnows(true);
       
+      // Mark as transitioning to prevent double-clicks
+      isTransitioningRef.current = true;
+      
       // Auto advance after delay
       setTimeout(() => {
         setShowMiraKnows(false);
+        isTransitioningRef.current = false; // Allow next interaction
         if (currentQuestion < SOUL_QUESTIONS.length - 1) {
           setCurrentQuestion(prev => prev + 1);
         } else {
