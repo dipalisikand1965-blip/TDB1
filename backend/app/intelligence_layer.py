@@ -491,15 +491,6 @@ def generate_why_for_pet(product: Dict, soul_traits: List[str], breed: str, pet_
             return trait_explanations[trait_lower].capitalize()
     
     return f"Curated for {pet_name}"
-    
-    # Breed match as final fallback
-    if not reasons and breed and breed.lower() in (product.get("name", "") or "").lower():
-        reasons.append(f"designed for {breed}s")
-    
-    if reasons:
-        return reasons[0].capitalize()
-    
-    return f"Curated for {pet_name}"
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
