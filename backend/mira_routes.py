@@ -24213,7 +24213,12 @@ async def get_curated_set(
             "soul_traits": soul_traits,
             "allergies": pet.get("allergies", []) or pet.get("food_allergies", []) or [],
             "answered_questions": pet.get("answered_questions", []),
-            "age_band": age_band
+            "age_band": age_band,
+            # Include raw profile data for trait derivation
+            "doggy_soul_answers": pet.get("doggy_soul_answers", {}),
+            "personality": pet.get("personality", {}),
+            "soul": pet.get("soul", {}),
+            "temperament": pet.get("temperament", "")
         }
         
         # Build intent context
