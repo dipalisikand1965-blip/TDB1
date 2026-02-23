@@ -1069,7 +1069,7 @@ const MyPets = () => {
                               )}
                               
                               {/* Saved Favorites */}
-                              {(console.log(`[MyPets] Checking favorites for ${pet.id}:`, petFavorites[pet.id]?.length), petFavorites[pet.id]?.length > 0) && (
+                              {petFavorites[pet.id]?.length > 0 && (
                                 <div>
                                   <h5 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
                                     <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
