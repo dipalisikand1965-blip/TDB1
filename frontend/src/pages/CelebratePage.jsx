@@ -507,39 +507,6 @@ const CelebratePage = () => {
                 pillar="celebrate"
                 token={token}
                 userEmail={user?.email}
-                onTicketCreate={async (ticketData) => {
-                  // Create ticket and show in inbox
-                  try {
-                    const response = await fetch(`${API_URL}/api/service-requests`, {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                      },
-                      body: JSON.stringify({
-                        type: ticketData.card_type,
-                        pillar: 'celebrate',
-                        source: 'curated_picks',
-                        title: ticketData.card_name,
-                        pet_id: ticketData.pet_id,
-                        details: {
-                          card_id: ticketData.card_id,
-                          pet_name: activePet.name,
-                        },
-                        priority: 'normal',
-                      }),
-                    });
-                    
-                    if (response.ok) {
-                      toast.success('Request received! Check your Inbox.');
-                    } else {
-                      throw new Error('Failed to create request');
-                    }
-                  } catch (err) {
-                    toast.error('Could not create request. Please try again.');
-                    throw err;
-                  }
-                }}
               />
             </div>
           </div>
