@@ -1108,8 +1108,8 @@ const Navbar = () => {
                     className={`absolute top-full ${getDropdownPosition(index)} w-52 shadow-2xl rounded-lg py-2 z-50`}
                     style={{ 
                       minWidth: '200px',
-                      backgroundColor: '#1e293b',  // slate-800
-                      border: '1px solid #475569', // slate-600
+                      backgroundColor: '#0f172a',  // slate-900 - very dark
+                      border: '1px solid #334155', // slate-700
                       color: 'white'
                     }}
                     onMouseEnter={() => handleMouseEnter(pillar.id)}
