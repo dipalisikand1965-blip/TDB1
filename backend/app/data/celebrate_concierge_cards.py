@@ -176,9 +176,15 @@ CELEBRATE_CONCIERGE_PRODUCTS: List[Dict[str, Any]] = [
         "description": "Pawprint + name charm + memory note/box concept, curated for {pet_name}.",
         "icon": "💝",
         "why_concierge": "Personalized keepsake creation",
-        "cta_text": "Create for {pet_name}",
+        "cta_text": "Create keepsake",
         "cta_action": "create_ticket",
         "ticket_category": "celebrate_keepsake",
+        "why_phrases": {
+            "senior": "Treasured memories for senior companions",
+            "pampered": "Luxe keepsake for pampered pets",
+            "elegant": "Elegant memory piece",
+            "default": "Personalized memory keepsake"
+        },
         "ticket_questions": [
             {"id": "type", "question": "Keepsake type: pawprint / charm / memory box?", "type": "choice", "options": ["Pawprint", "Charm", "Memory Box", "All"]},
             {"id": "engraving", "question": "Name/engraving text (if any)?", "type": "text"},
