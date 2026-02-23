@@ -262,11 +262,12 @@
 
 ### Active ✅
 - OpenAI GPT (Mira AI)
-- Google Places API (Restaurants)
+- Google Places API (Restaurants, Hotels, Parks)
 - MongoDB (Database)
 - Cloudinary (Images)
 - ElevenLabs (Voice TTS)
 - OpenAI TTS (Backup)
+- YouTube Data API (Training Videos)
 
 ### Pending Config ⚠️
 - Resend (Domain verification needed)
@@ -274,7 +275,6 @@
 
 ### Planned 📋
 - Razorpay
-- YouTube API
 - Google Calendar
 
 ---
