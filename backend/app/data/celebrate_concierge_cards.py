@@ -40,9 +40,17 @@ CELEBRATE_CONCIERGE_PRODUCTS: List[Dict[str, Any]] = [
         "description": "A cake designed around {pet_name} - theme, portion, food rules, timed delivery.",
         "icon": "🎂",
         "why_concierge": "Custom constraints + coordination",
-        "cta_text": "Create for {pet_name}",
+        "cta_text": "Create cake design",
         "cta_action": "create_ticket",
         "ticket_category": "celebrate_cake",
+        "why_phrases": {
+            "elegant": "Instagram-worthy design for elegant pups",
+            "pampered": "Luxe cake for pampered royalty",
+            "foodie": "Irresistible flavors for food lovers",
+            "sensitive_tummy": "Gentle recipe for sensitive tummies",
+            "playful": "Fun design for playful celebrations",
+            "default": "Custom cake tailored to your pet"
+        },
         "ticket_questions": [
             {"id": "occasion", "question": "What's the occasion + date/time?", "type": "text"},
             {"id": "food_rules", "question": "Any food rules (allergies/sensitive tummy) and preferred protein?", "type": "text"},
