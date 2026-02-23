@@ -339,11 +339,13 @@ const DinePage = () => {
       
       {/* FRESH MEALS TAB - Gold Standard Implementation */}
       {activeTab === 'fresh-meals' ? (
+        <>
         <FreshMealsTab
           activePet={activePet}
           token={token}
           userEmail={authUser?.email || user?.email}
         />
+        </>
       ) : (
       /* ALL DINE TAB (default) and other tabs - Original content */
       <>
@@ -352,7 +354,7 @@ const DinePage = () => {
       {/* Order: Concierge Layer → Hangouts → Catalogue */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {activePet && token ? (
-        <div className="max-w-6xl mx-auto px-4 pt-8 pb-4">
+        <div className="max-w-6xl mx-auto px-4 pt-8 pb-4 section-fade-in stagger-1" data-testid="dine-curated-section">
           <div className="text-center mb-6">
             <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 mb-4">
               <Crown className="w-3 h-3 mr-1 inline" /> Mira's Picks for {activePet.name}
