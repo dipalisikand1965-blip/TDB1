@@ -1116,6 +1116,9 @@ const DinePage = () => {
       <AdminQuickEdit pillar="dine" position="bottom-left" />
       </>
       )}
+      
+      {/* Close the theme wrapper */}
+      </div>
     </PillarPageLayout>
   );
 };
