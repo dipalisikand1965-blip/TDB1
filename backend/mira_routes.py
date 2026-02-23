@@ -13993,7 +13993,22 @@ Pick one, and I'll give you a simple starting point! 🐾"""
                         {"_id": 0}
                     ).sort("rating", -1).limit(3).to_list(3)
                     
-                    if restaurants:
+                    # Fallback to Google Places API if no database results
+                    if not restaurants:
+                        try:
+                            from services.google_places_service import search_pet_friendly_restaurants
+                            restaurants = await search_pet_friendly_restaurants(city_for_search, max_results=5)
+                            if restaurants:
+                                nearby_places_data = {"type": "restaurants", "places": restaurants, "city": city_for_search, "source": "google_places"}
+                                nearby_places_context = f"\n\nPET-FRIENDLY RESTAURANTS IN {city_for_search.upper()} (via Google Places):\n"
+                                for r in restaurants:
+                                    open_status = "Open now" if r.get("is_open_now") else "Check hours"
+                                    nearby_places_context += f"- {r['name']} ({r.get('address', '')[:50]}) - {open_status} - Rating: {r.get('rating', 'N/A')}/5\n"
+                                nearby_places_context += "\nRecommend these pet-friendly restaurants. Our Concierge® can confirm pet policies."
+                                logger.info(f"[NEARBY] Found {len(restaurants)} restaurants via Google Places in {city_for_search}")
+                        except Exception as rest_err:
+                            logger.warning(f"[NEARBY] Google Places error for restaurants: {rest_err}")
+                    elif restaurants:
                         nearby_places_data = {"type": "restaurants", "places": restaurants, "city": city_for_search}
                         nearby_places_context = f"\n\nPET-FRIENDLY RESTAURANTS IN {city_for_search.upper()}:\n"
                         for r in restaurants:
