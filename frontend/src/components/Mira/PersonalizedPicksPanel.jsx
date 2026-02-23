@@ -1654,7 +1654,7 @@ const PersonalizedPicksPanel = ({
                           }`}
                           onClick={() => {
                             hapticFeedback.buttonTap();
-                            // If it links to /celebrate, navigate there
+                            // If it links somewhere, navigate there
                             if (product.links_to) {
                               window.location.href = product.links_to;
                             } else {
@@ -1668,14 +1668,16 @@ const PersonalizedPicksPanel = ({
                           <h4 className="text-xs font-medium text-white text-center mb-1">{product.name}</h4>
                           <p className="text-[10px] text-pink-300/80 text-center line-clamp-2">{product.description}</p>
                           <p className="text-[10px] text-gray-500 text-center mt-2 italic">{product.price_display || 'Concierge creates'}</p>
+                          {/* Primary CTA - Flow to Chat */}
                           <button
-                            className={`w-full mt-2 py-1.5 rounded-lg text-[10px] font-medium transition-all ${
-                              isSelected(product)
-                                ? 'bg-pink-500 text-white'
-                                : 'bg-pink-500/20 text-pink-300 hover:bg-pink-500/40'
-                            }`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              hapticFeedback.success();
+                              flowPickToChat(product, 'personalized');
+                            }}
+                            className="w-full mt-2 py-1.5 rounded-lg text-[10px] font-medium transition-all bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:opacity-90"
                           >
-                            {isSelected(product) ? '✓ Added' : (product.cta || `Create for ${pet?.name}`)}
+                            {product.cta || `Create for ${pet?.name}`}
                           </button>
                         </div>
                       ))}
