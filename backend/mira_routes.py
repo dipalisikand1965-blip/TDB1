@@ -14021,7 +14021,21 @@ Pick one, and I'll give you a simple starting point! 🐾"""
                         {"_id": 0}
                     ).sort("rating", -1).limit(3).to_list(3)
                     
-                    if stays:
+                    # Fallback to Google Places API if no database results
+                    if not stays:
+                        try:
+                            from services.google_places_service import search_pet_friendly_hotels
+                            stays = await search_pet_friendly_hotels(city_for_search, max_results=5)
+                            if stays:
+                                nearby_places_data = {"type": "stays", "places": stays, "city": city_for_search, "source": "google_places"}
+                                nearby_places_context = f"\n\nPET-FRIENDLY STAYS IN {city_for_search.upper()} (via Google Places):\n"
+                                for s in stays:
+                                    nearby_places_context += f"- {s['name']} ({s.get('address', '')[:50]}) - Rating: {s.get('rating', 'N/A')}/5\n"
+                                nearby_places_context += "\nRecommend these hotels. Our Concierge® will verify pet policies before booking."
+                                logger.info(f"[NEARBY] Found {len(stays)} stays via Google Places in {city_for_search}")
+                        except Exception as stay_err:
+                            logger.warning(f"[NEARBY] Google Places error for stays: {stay_err}")
+                    elif stays:
                         nearby_places_data = {"type": "stays", "places": stays, "city": city_for_search}
                         nearby_places_context = f"\n\nPET-FRIENDLY STAYS IN {city_for_search.upper()}:\n"
                         for s in stays:
