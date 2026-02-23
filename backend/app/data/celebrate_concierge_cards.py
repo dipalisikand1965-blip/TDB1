@@ -484,9 +484,18 @@ def select_concierge_cards(
     age_band = pet_data.get("age_band", "") or ""
     pet_name = pet_data.get("name", "your pet")
     
-    # If profile is thin, add breed-based default traits
-    if len(soul_traits) < 2:
-        soul_traits = list(soul_traits) + get_breed_default_traits(breed, size)
+    # ENHANCED: Derive traits from multiple sources (doggy_soul_answers, temperament, etc.)
+    derived_traits = derive_traits_from_profile(pet_data)
+    
+    # Merge soul_traits with derived traits
+    all_traits = list(set(soul_traits + derived_traits))
+    
+    # If profile is still thin, add breed-based default traits
+    if len(all_traits) < 2:
+        all_traits = list(all_traits) + get_breed_default_traits(breed, size)
+    
+    # Use merged traits for scoring
+    soul_traits = all_traits
     
     # Score all products
     scored_products = []
