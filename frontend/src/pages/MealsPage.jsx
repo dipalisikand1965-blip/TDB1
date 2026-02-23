@@ -52,7 +52,8 @@ const CANONICAL_CARD_IDS = {
 // ═══════════════════════════════════════════════════════════════════════════════
 const HERO_IMAGES = {
   default: 'https://static.prod-images.emergentagent.com/jobs/99ab70cf-a57b-46c1-987d-9e895d2af777/images/84cb230bb28acc363cdf69d0a236b1efac3ec8bf0b82c9c8648399580ada71e2.png',
-  noChicken: 'https://static.prod-images.emergentagent.com/jobs/99ab70cf-a57b-46c1-987d-9e895d2af777/images/61266dddd1206782be033035c8f847025fd296df495029a9f402ade7229ddfce.png', // Fish/lamb based
+  // Fish/salmon based - clearly NOT chicken
+  noChicken: 'https://static.prod-images.emergentagent.com/jobs/99ab70cf-a57b-46c1-987d-9e895d2af777/images/04c6413f93f0795b99ecf949db068eff7fda67337520ee7eeb58f6568ef825be.png',
   noMeat: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1200&q=80' // Vegetarian option
 };
 
