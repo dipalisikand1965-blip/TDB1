@@ -1105,7 +1105,7 @@ const Navbar = () => {
                 {pillar.dropdown && activeDropdown === pillar.id && (
                   <div 
                     data-testid={`dropdown-${pillar.id}`}
-                    className={`absolute top-full ${getDropdownPosition(index)} w-52 shadow-2xl rounded-lg py-2 z-50`}
+                    className={`absolute top-full ${getDropdownPosition(index)} w-52 shadow-2xl rounded-lg py-2 z-[9999]`}
                     style={{ 
                       minWidth: '200px',
                       backgroundColor: '#0f172a',  // slate-900 - very dark
