@@ -23,7 +23,7 @@ TEST_EMAIL = "dipali@clubconcierge.in"
 TEST_PASSWORD = "test123"
 PET_ID = "pet-3661ae55d2e2"
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def api_client():
     """Shared requests session"""
     session = requests.Session()
@@ -31,7 +31,7 @@ def api_client():
     return session
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def auth_token(api_client):
     """Get authentication token for member user"""
     try:
@@ -47,7 +47,7 @@ def auth_token(api_client):
         pytest.skip(f"Authentication error: {e}")
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def authenticated_client(api_client, auth_token):
     """Session with auth header"""
     api_client.headers.update({"Authorization": f"Bearer {auth_token}"})
@@ -400,27 +400,6 @@ class TestAuthenticationFlow:
         
         for pet in pets[:3]:
             print(f"  - {pet.get('name')}: {pet.get('breed', 'Unknown breed')}")
-
-
-# Cleanup fixture
-@pytest.fixture(scope="class", autouse=True)
-def cleanup_test_data(authenticated_client):
-    """Cleanup TEST_ prefixed data after test class completes"""
-    yield
-    # Cleanup: Remove test favorites
-    try:
-        favorites_response = authenticated_client.get(f"{BASE_URL}/api/favorites/{PET_ID}")
-        if favorites_response.status_code == 200:
-            data = favorites_response.json()
-            for fav in data.get("favorites", []):
-                if fav.get("title", "").startswith("TEST_"):
-                    authenticated_client.post(f"{BASE_URL}/api/favorites/remove", json={
-                        "pet_id": PET_ID,
-                        "item_id": fav.get("item_id")
-                    })
-                    print(f"  Cleaned up test favorite: {fav.get('title')}")
-    except Exception as e:
-        print(f"  Cleanup warning: {e}")
 
 
 if __name__ == "__main__":
