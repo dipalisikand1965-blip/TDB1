@@ -28,6 +28,8 @@
 | **Mira = Soul Mate** | FIXED | Changed Mira's identity from "Pet Concierge®" to "{Pet}'s Soul Mate" |
 | **Error Messages** | FIXED | "High traffic" message now says "Don't worry, the Concierge® is here!" |
 | **Tile Alignment** | FIXED | Pills row now properly scrolls horizontally with consistent layout |
+| **Pick → Chat API** | FIXED | Changed endpoint from /api/service-desk/create (404) to /api/service-requests |
+| **Cross-Pillar Memory** | DONE | Messages now persist across pillars via unified sessionStorage |
 | **Comprehensive Audit** | DONE | Created `/app/memory/AUDIT.md` and `/app/memory/GAPS_AUDIT.md` |
 | **Score Display Bug** | FIXED | Fixed floating point display issue (87.29999... -> 87%) |
 
