@@ -367,12 +367,14 @@ const CuratedConciergeSection = ({
   pillar = 'celebrate',
   token,
   onTicketCreate,
+  onNotificationUpdate, // Callback to update notification badge
   className = '',
 }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [ticketLoading, setTicketLoading] = useState(null); // Card ID being processed
+  const [createdTickets, setCreatedTickets] = useState({}); // Track created tickets by card ID
 
   // Fetch curated set
   const fetchCuratedSet = useCallback(async (forceRefresh = false) => {
