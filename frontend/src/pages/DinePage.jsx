@@ -453,39 +453,39 @@ const DinePage = () => {
         </div>
       </div>
 
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* DINE CATEGORIES - Quick Navigation Cards */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
       <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Fresh Meals Section */}
-        <section id="meals" className="mb-16 scroll-mt-20">
+        <section id="categories" className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Truck className="w-6 h-6 text-orange-500" />
-                Fresh Pet Meals
+                <UtensilsCrossed className="w-6 h-6 text-orange-500" />
+                Explore Dine
               </h2>
-              <p className="text-gray-600">Vet-approved, delivered to your door</p>
+              <p className="text-gray-600">Fresh food, treats, supplements & more</p>
             </div>
-            <Link to="/search?q=fresh">
-              <Button variant="outline" className="gap-2">
-                View All <ChevronRight className="w-4 h-4" />
-              </Button>
-            </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
-            {freshMealsCategories.map((cat) => {
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
+            {dineCategories.map((cat) => {
               const Icon = cat.icon;
               return (
                 <Link key={cat.id} to={cat.path}>
-                  <Card className="p-4 sm:p-6 hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer group">
-                    <div className="flex items-center gap-3 sm:gap-4">
-                      <div className="p-2.5 sm:p-3 bg-orange-100 rounded-xl group-hover:bg-orange-200 transition-colors">
-                        <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" />
+                  <Card className={`relative p-4 hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer group overflow-hidden h-full`}>
+                    <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-5 group-hover:opacity-10 transition-opacity`} />
+                    <div className="relative">
+                      <div className={`p-2.5 bg-gradient-to-br ${cat.gradient} rounded-xl w-fit mb-3`}>
+                        <Icon className="w-5 h-5 text-white" />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 text-sm sm:text-base">{cat.name}</h3>
-                        <p className="text-xs sm:text-sm text-gray-500 truncate">{cat.description}</p>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-gray-400 ml-auto group-hover:text-orange-500 transition-colors flex-shrink-0" />
+                      <h3 className="font-semibold text-gray-900 text-sm mb-1">{cat.name}</h3>
+                      <p className="text-xs text-gray-500 line-clamp-2">{cat.description}</p>
+                      {cat.badge && (
+                        <Badge className={`mt-2 text-xs ${cat.badge === 'Gold Standard' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'}`}>
+                          {cat.badge}
+                        </Badge>
+                      )}
                     </div>
                   </Card>
                 </Link>
