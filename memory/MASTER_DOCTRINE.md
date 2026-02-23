@@ -321,4 +321,4 @@ python3 -c "..." # See memory check script
 
 **REMEMBER: MIRA IS THE BRAIN. EVERYTHING SHE LEARNS MUST BE STORED.**
 
-Preview URL: https://mira-soul.preview.emergentagent.com
+Preview URL: https://mira-os-preview-4.preview.emergentagent.com

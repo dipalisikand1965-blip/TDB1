@@ -16,7 +16,7 @@ import requests
 import time
 
 # Configuration
-API_BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://mira-soul.preview.emergentagent.com")
+API_BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://mira-os-preview-4.preview.emergentagent.com")
 OUTPUT_DIR = "/app/frontend/public/videos/brand_story/audio"
 
 # Voiceover scripts for each clip (matching BRAND_STORY_CLIPS in Home.jsx)

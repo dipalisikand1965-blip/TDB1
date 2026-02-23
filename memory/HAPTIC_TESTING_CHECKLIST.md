@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://mira-soul.preview.emergentagent.com/mira-demo**
+**https://mira-os-preview-4.preview.emergentagent.com/mira-demo**
 
 ---
 
