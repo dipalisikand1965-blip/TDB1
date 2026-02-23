@@ -160,20 +160,16 @@ All 5 reported issues from the user have been resolved and verified by testing a
 
 ## 📝 UPCOMING TASKS (PRIORITY ORDER)
 
-### P0 - Critical
-1. Fix Fresh Pet Meals card links (Fresh Treats → /celebrate/treats, Fresh Meals → /dine/meals)
-2. Fix tab navigation links in PillarPageLayout
-3. Verify new products render on frontend
-
 ### P1 - Important
-1. Make category pills interactive (filter products on click)
+1. Replicate "Gold Standard" pattern to Treats, Chews sub-categories
 2. Add admin CRUD for Dine Essentials
 3. CSV upload capability for products
+4. Proactive birthday reminders on PetHomePage
 
 ### P2 - Enhancement
-1. Replicate Gold Standard to Treats/Chews tabs
-2. Razorpay checkout integration
-3. Birthday reminders on PetHomePage
+1. Razorpay checkout integration
+2. Resend domain verification for email notifications
+3. Gupshup configuration for WhatsApp
 
 ---
 
