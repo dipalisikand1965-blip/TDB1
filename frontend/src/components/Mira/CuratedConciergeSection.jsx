@@ -604,8 +604,21 @@ const CuratedConciergeSection = ({
     );
   }
 
+  // Get location info from meta if available
+  const userLocation = data?.meta?.user_location;
+
   return (
     <div className={className} data-testid="curated-concierge-section">
+      {/* Location Badge - Show where these picks are curated for */}
+      {userLocation?.city && (
+        <div className="flex items-center gap-1.5 mb-3 px-2 py-1 bg-white/5 rounded-lg w-fit">
+          <MapPin className="w-3 h-3 text-emerald-400" />
+          <span className="text-xs text-emerald-400 font-medium">
+            Curated for {userLocation.city}
+          </span>
+        </div>
+      )}
+
       {/* Header with "Handpicked" and "Updated" + sync status */}
       <div className="flex items-center justify-between mb-3">
         <p className="text-sm text-white/80 font-medium">
