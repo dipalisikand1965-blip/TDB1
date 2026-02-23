@@ -24682,7 +24682,8 @@ async def create_ticket_from_concierge_pick(
             "read": False,
             "created_at": now.isoformat()
         }
-        await db.notifications.insert_one(member_notification)
+        # Write to member_notifications (used by Inbox)
+        await db.member_notifications.insert_one(member_notification)
         
         # ─── CREATE ADMIN NOTIFICATION ────────────────────────────────────────
         admin_notification = {
