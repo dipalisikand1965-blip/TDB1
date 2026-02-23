@@ -540,11 +540,12 @@ const MealsPage = () => {
     return CARD_CONFIGS;
   }, [petHasAllergies, planBuilder.allergySafe]);
   
-  // Handle card CTA click
-  const handleCardCTA = (cardId) => {
-    console.log(`[MealsPage] Card CTA clicked: ${cardId}`);
-    sonnerToast.success(`Starting ${cardId.replace('fresh-', '').replace('-', ' ')} flow for ${activePet?.name}!`);
-    // TODO: Open flow modal
+  // Handle card CTA click - Opens FlowModal
+  const handleCardCTA = (cardId, entryPoint = 'card_cta') => {
+    console.log(`[MealsPage] Card CTA clicked: ${cardId}, entry: ${entryPoint}`);
+    setActiveFlowCardId(cardId);
+    setFlowEntryPoint(entryPoint);
+    setFlowModalOpen(true);
   };
   
   // Handle Set Fresh Plan from control center
@@ -552,7 +553,13 @@ const MealsPage = () => {
     const cardId = planBuilder.cadence === 'weekly' ? CANONICAL_CARD_IDS.WEEKLY_PLAN :
                    planBuilder.allergySafe ? CANONICAL_CARD_IDS.ALLERGY_SAFE :
                    CANONICAL_CARD_IDS.TRIAL_PACK;
-    handleCardCTA(cardId);
+    handleCardCTA(cardId, 'top_cta');
+  };
+  
+  // Handle FlowModal close
+  const handleFlowModalClose = () => {
+    setFlowModalOpen(false);
+    setActiveFlowCardId(null);
   };
 
   useEffect(() => {
