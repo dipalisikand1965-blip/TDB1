@@ -410,10 +410,12 @@ const CuratedConciergeSection = ({
     }
   }, [petId, pillar, token]);
 
-  // Initial fetch
+  // Initial fetch and refetch when token becomes available
   useEffect(() => {
-    fetchCuratedSet();
-  }, [fetchCuratedSet]);
+    if (token) {
+      fetchCuratedSet();
+    }
+  }, [fetchCuratedSet, token]);
 
   // Handle ticket creation
   const handleCreateTicket = async (card) => {
