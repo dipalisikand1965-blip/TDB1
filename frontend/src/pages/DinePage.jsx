@@ -495,26 +495,41 @@ const DinePage = () => {
           </div>
         </section>
 
-        {/* Pet Buddy Section - NEW */}
-        <section className="mb-16">
-          <Card className="p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white overflow-hidden relative">
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {/* DINE OUT SECTION - Restaurants, Cafes & Buddy Meetups Combined */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        <section className="mt-8 mb-8">
+          <div className="text-center mb-8">
+            <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-1 mb-4">
+              <Coffee className="w-3 h-3 mr-1 inline" /> Dine Out
+            </Badge>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+              Pet-Friendly Dining & Meetups
+            </h2>
+            <p className="text-gray-600 max-w-xl mx-auto text-sm">
+              Discover restaurants, cafes, and connect with other pet parents
+            </p>
+          </div>
+
+          {/* Pet Buddy Meetups Card */}
+          <Card className="p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white overflow-hidden relative mb-8">
             <div className="absolute right-0 top-0 opacity-20">
               <Users className="w-48 h-48 -mr-12 -mt-12" />
             </div>
             <div className="relative">
               <div className="flex items-center gap-2 mb-2">
                 <Users className="w-6 h-6" />
-                <h2 className="text-2xl font-bold">Pet Buddy Meetups</h2>
+                <h3 className="text-xl font-bold">Buddy Meetups</h3>
                 <Badge className="bg-white/20 text-white ml-2">NEW</Badge>
               </div>
-              <p className="text-white/90 mb-4 max-w-xl">
-                Going to a pet-friendly restaurant? Let other pet parents know! Schedule your visit and connect with fellow pet lovers for playdates and socializing.
+              <p className="text-white/90 mb-4 max-w-xl text-sm">
+                Schedule visits & connect with fellow pet lovers for playdates!
               </p>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 <Button 
+                  size="sm"
                   className="bg-white text-purple-600 hover:bg-gray-100"
                   onClick={() => {
-                    // Scroll to restaurants and show a toast or open first restaurant's buddy modal
                     if (filteredRestaurants.length > 0) {
                       setShowBuddyModal(filteredRestaurants[0]);
                     } else {
@@ -523,13 +538,13 @@ const DinePage = () => {
                   }}
                   data-testid="schedule-visit-btn"
                 >
-                  <Calendar className="w-4 h-4 mr-2" /> Schedule a Visit
+                  <Calendar className="w-4 h-4 mr-2" /> Schedule Visit
                 </Button>
                 <Button 
+                  size="sm"
                   variant="outline" 
                   className="border-white text-white hover:bg-white/20"
                   onClick={() => {
-                    // Show all upcoming meetups across all restaurants
                     if (filteredRestaurants.length > 0) {
                       setShowBuddyModal(filteredRestaurants[0]);
                     } else {
@@ -543,16 +558,15 @@ const DinePage = () => {
               </div>
             </div>
           </Card>
-        </section>
 
         {/* Concierge® Recommended Restaurants Section */}
-        <section id="restaurants" className="scroll-mt-20">
+        <div id="restaurants" className="scroll-mt-20">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <Coffee className="w-6 h-6 text-orange-500" />
-              Concierge® Recommended
-            </h2>
-            <p className="text-gray-600">Dine out with your furry friend</p>
+            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <Star className="w-5 h-5 text-amber-500" />
+              Concierge® Featured Restaurants
+            </h3>
+            <p className="text-gray-600 text-sm">Dine out with your furry friend</p>
           </div>
 
           {/* Filters */}
