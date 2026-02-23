@@ -325,8 +325,8 @@ const DinePage = () => {
   return (
     <PillarPageLayout
       pillar="dine"
-      title="Dine - Fresh Pet Meals & Restaurants | The Doggy Company"
-      description="Discover nutritious fresh meals and pet-friendly restaurants for your furry friend."
+      title={activePet ? `Dine for ${activePet.name}` : "Food & Treats for Your Pet"}
+      description={activePet ? `Chosen around ${activePet.name}'s taste, energy, and needs` : "Discover nutritious fresh meals and pet-friendly restaurants for your furry friend."}
       useTabNavigation={true}
       onSubcategoryChange={handleTabChange}
     >
