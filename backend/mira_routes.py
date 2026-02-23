@@ -22784,10 +22784,59 @@ async def send_vault_to_concierge(request: UnifiedVaultRequest):
             'urgency': 'medium'
         })
         
-        # Build description
-        description = f"Vault Type: {request.vault_type}\n"
-        description += f"Pillar: {request.pillar}\n\n"
-        description += f"Data:\n{json.dumps(data, indent=2, default=str)[:2000]}"
+        # Build description (human-readable format, not raw JSON)
+        def format_picks_description(vault_type, pillar, data, pet_name):
+            """Format picks data into human-readable description"""
+            lines = []
+            
+            if vault_type == "picks":
+                lines.append(f"🎁 {pillar.title()} recommendations for {pet_name}")
+                lines.append("")
+                
+                # Format picked items
+                picked = data.get("picked_items", [])
+                if picked:
+                    lines.append("📌 Selected items:")
+                    for item in picked[:5]:  # Limit to 5
+                        name = item.get("name", "Item")
+                        price = item.get("price")
+                        category = item.get("category", "").replace("-", " ").replace("_", " ").title()
+                        why = item.get("why_for_pet", "")
+                        
+                        if price:
+                            lines.append(f"  • {name} - ₹{price}")
+                        else:
+                            lines.append(f"  • {name}")
+                        if category:
+                            lines.append(f"    Category: {category}")
+                        if why:
+                            lines.append(f"    {why}")
+                    
+                    if len(picked) > 5:
+                        lines.append(f"  ... and {len(picked) - 5} more items")
+                
+                # Format shown items (if different from picked)
+                shown = data.get("shown_items", [])
+                if shown and shown != picked:
+                    lines.append("")
+                    lines.append("👀 Also browsed:")
+                    for item in shown[:3]:
+                        lines.append(f"  • {item.get('name', 'Item')}")
+            else:
+                # Generic vault type - still make it readable
+                lines.append(f"Request type: {vault_type.replace('_', ' ').title()}")
+                lines.append(f"Pillar: {pillar.title() if pillar else 'General'}")
+                lines.append(f"Pet: {pet_name}")
+                
+                # Add any meaningful data fields
+                for key, value in data.items():
+                    if key not in ["picked_items", "shown_items", "session_id"]:
+                        if isinstance(value, str) and value:
+                            lines.append(f"{key.replace('_', ' ').title()}: {value}")
+            
+            return "\n".join(lines)
+        
+        description = format_picks_description(request.vault_type, request.pillar, data, pet_name)
         
         # Create unified signal
         signal_result = await create_signal(
