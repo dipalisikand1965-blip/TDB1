@@ -77,7 +77,14 @@ DINE_CONCIERGE_PRODUCTS = [
         "icon": "refresh-cw",
         "description": "A gentle 7-10 day transition plan with what to watch for, tailored to {pet_name}.",
         "why_concierge": "Switches can trigger tummy/skin reactions; we tailor it safely.",
-        "cta_text": "Start Transition",
+        "cta_text": "Start transition",
+        "why_phrases": {
+            "sensitive_tummy": "Gentle transition for sensitive tummies",
+            "itchy": "Careful switch to avoid skin flare-ups",
+            "picky": "Gradual intro to keep picky eaters comfortable",
+            "anxious": "Slow pace to avoid stress-related tummy issues",
+            "default": "Safe, guided food transition"
+        },
         "default_questions": [
             {
                 "id": "switch_from_to",
