@@ -464,7 +464,7 @@ const FlowModal = ({
     setIsSubmitting(true);
     
     try {
-      // Build uniform ticket payload
+      // Build uniform ticket payload (includes user for customer info)
       const payload = buildTicketPayload({
         schema,
         pet,
@@ -472,7 +472,8 @@ const FlowModal = ({
         flowAnswers: answers,
         draftId,
         entryPoint,
-        constraintsApplied
+        constraintsApplied,
+        user
       });
       
       console.log('[FlowModal] Submitting ticket:', payload);
