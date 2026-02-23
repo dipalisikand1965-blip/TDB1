@@ -504,7 +504,7 @@ async def generate_curated_set(
     }
     
     # 6. Cache the result
-    if db:
+    if db is not None:
         await cache_curated_set(db, cache_key, curated_set, expires_at)
     
     return curated_set
