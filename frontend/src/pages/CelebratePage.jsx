@@ -483,35 +483,64 @@ const CelebratePage = () => {
       <div className="max-w-6xl mx-auto px-4 pt-6">
         <PersonalizedPicks pillar="celebrate" maxProducts={6} />
         
-        {/* Concierge Pick Card - Opens the FAB panel for full experience */}
-        {activePet && (
-          <div className="mt-6">
-            <ConciergePickCard
-              key={`concierge-card-${activePet.id}`}
-              pet={{
-                name: activePet.name,
-                breed: activePet.breed,
-                photo: activePet.photo_url,
-                soulTraits: activePet.personality_traits || [],
-                id: activePet.id
-              }}
-              pillar="celebrate"
-              title={CONCIERGE_PRESETS.celebrate.title}
-              icon={CONCIERGE_PRESETS.celebrate.icon}
-              description={CONCIERGE_PRESETS.celebrate.description}
-              soulReason={getSoulBasedReason(activePet, 'celebrate')}
-              responseTime="2 hours"
-              addToCart={false}
-              onArrange={() => setIsPillarPanelOpen(true)}
-              miniPicks={dynamicPicks.length > 0 ? dynamicPicks : [
-                { icon: '☕', name: 'Photo Mug' },
-                { icon: '🎁', name: 'Photo Coaster' },
-                { icon: '🎀', name: 'Name Bandana' },
-                { icon: '🖼️', name: 'AI Portrait' },
-                { icon: '🏷️', name: 'Collar Tag' },
-                { icon: '🧸', name: 'Lookalike Plush' }
-              ]}
-            />
+        {/* NEW: Curated Concierge Section - Dynamic picks from Intelligence Layer */}
+        {activePet && token && (
+          <div className="mt-8">
+            {/* Section Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-pink-500" />
+                  Mira's Picks for {activePet.name}
+                </h2>
+                <p className="text-sm text-gray-500">
+                  Curated celebrations based on {activePet.name}'s personality
+                </p>
+              </div>
+            </div>
+            
+            {/* Curated Concierge Cards */}
+            <div className="bg-gradient-to-br from-slate-900 via-purple-950/90 to-slate-900 rounded-2xl p-4 sm:p-6">
+              <CuratedConciergeSection
+                petId={activePet.id || activePet._id}
+                petName={activePet.name}
+                pillar="celebrate"
+                token={token}
+                onTicketCreate={async (ticketData) => {
+                  // Create ticket and show in inbox
+                  try {
+                    const response = await fetch(`${API_URL}/api/service-requests`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                      },
+                      body: JSON.stringify({
+                        type: ticketData.card_type,
+                        pillar: 'celebrate',
+                        source: 'curated_picks',
+                        title: ticketData.card_name,
+                        pet_id: ticketData.pet_id,
+                        details: {
+                          card_id: ticketData.card_id,
+                          pet_name: activePet.name,
+                        },
+                        priority: 'normal',
+                      }),
+                    });
+                    
+                    if (response.ok) {
+                      toast.success('Request received! Check your Inbox.');
+                    } else {
+                      throw new Error('Failed to create request');
+                    }
+                  } catch (err) {
+                    toast.error('Could not create request. Please try again.');
+                    throw err;
+                  }
+                }}
+              />
+            </div>
           </div>
         )}
       </div>
