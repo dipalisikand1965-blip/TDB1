@@ -63,7 +63,7 @@ const PILLARS = [
       { name: 'Travel By Concierge®', path: '/travel', highlight: true },
       { name: 'Pet Taxi', path: '/travel?type=taxi' },
       { name: 'Pet Airlines', path: '/travel?type=airline' },
-      { name: 'Travel Planning', path: '/travel' },
+      { name: 'Travel Planning', path: '/travel?type=planning' },
     ]
   },
   {
