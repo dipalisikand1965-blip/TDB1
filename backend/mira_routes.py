@@ -24322,6 +24322,63 @@ def determine_pet_size(pet: dict) -> str:
     return "medium"
 
 
+def determine_age_band(pet: dict) -> str:
+    """
+    Determine pet's age band from DOB or age field.
+    
+    Age bands:
+    - puppy: < 1 year
+    - young: 1-3 years
+    - adult: 3-7 years  
+    - senior: 7+ years (varies by breed, but 7 is a safe default)
+    
+    Note: Senior detection is scoring-based, not rule-based.
+    A "senior" tag boosts comfort cards but doesn't exclude active options
+    if the dog has social/energetic traits.
+    """
+    # Try explicit age field first
+    age = pet.get("age")
+    if age:
+        try:
+            # Handle formats like "4 years", "4", "4.5"
+            age_str = str(age).lower().replace("years", "").replace("year", "").replace("old", "").strip()
+            age_num = float(age_str)
+            
+            if age_num < 1:
+                return "puppy"
+            elif age_num < 3:
+                return "young"
+            elif age_num < 7:
+                return "adult"
+            else:
+                return "senior"
+        except:
+            pass
+    
+    # Try DOB
+    dob = pet.get("dob")
+    if dob:
+        try:
+            if isinstance(dob, str):
+                dob = datetime.fromisoformat(dob.replace("Z", "+00:00"))
+            
+            today = datetime.now(timezone.utc)
+            age_years = (today - dob).days / 365.25
+            
+            if age_years < 1:
+                return "puppy"
+            elif age_years < 3:
+                return "young"
+            elif age_years < 7:
+                return "adult"
+            else:
+                return "senior"
+        except:
+            pass
+    
+    return ""  # Unknown - don't apply age modifiers
+
+
 async def check_upcoming_events(db, pet_id: str) -> Optional[dict]:
     """
     Check if pet has any upcoming events (birthday, gotcha day) within 30 days.
