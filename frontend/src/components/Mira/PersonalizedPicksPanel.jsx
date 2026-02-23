@@ -136,6 +136,7 @@ const ExpandablePickCard = ({
   isSelected, 
   onSelect, 
   onViewDetails, // Open product detail modal for catalogue items
+  onChatClick,   // NEW: Flow this pick to chat conversation
   petName,
   type = 'catalogue' // 'catalogue' or 'concierge'
 }) => {
@@ -150,6 +151,12 @@ const ExpandablePickCard = ({
     e.stopPropagation();
     hapticFeedback.success();
     onSelect(pick);
+  };
+  
+  const handleChatClick = (e) => {
+    e.stopPropagation();
+    hapticFeedback.buttonTap();
+    if (onChatClick) onChatClick(pick);
   };
 
   const isConcierge = type === 'concierge';
