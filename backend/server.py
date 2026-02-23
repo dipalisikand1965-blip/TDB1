@@ -14558,6 +14558,64 @@ async def unarchive_notification(notification_id: str):
     return {"success": result.modified_count > 0, "notification_id": notification_id}
 
 
+# ============================================
+# MEMBER GEOLOCATION AUTO-DETECT
+# ============================================
+# On login, frontend detects user's location and saves to profile
+# This enables location-aware concierge services
+
+class MemberLocationUpdate(BaseModel):
+    latitude: float
+    longitude: float
+    city: Optional[str] = None
+    state: Optional[str] = None
+    country: Optional[str] = None
+    source: str = "auto"  # "auto" = detected, "manual" = user entered
+
+@api_router.post("/member/location")
+async def update_member_location(location: MemberLocationUpdate, authorization: str = Header(None)):
+    """
+    Update member's current location (auto-detected on login).
+    This powers location-aware services like nearby vets, groomers, etc.
+    """
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization required")
+    
+    try:
+        token = authorization.replace("Bearer ", "")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_email = payload.get("sub")
+    except Exception as e:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    # Update user document with location
+    location_data = {
+        "location": {
+            "latitude": location.latitude,
+            "longitude": location.longitude,
+            "city": location.city,
+            "state": location.state,
+            "country": location.country,
+            "source": location.source,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+    }
+    
+    result = await db.users.update_one(
+        {"email": user_email},
+        {"$set": location_data}
+    )
+    
+    if result.modified_count > 0:
+        logger.info(f"[GEO] ✅ Location updated for {user_email}: {location.city}, {location.state}")
+        return {
+            "success": True,
+            "message": f"Location saved: {location.city or 'Unknown'}",
+            "location": location_data["location"]
+        }
+    else:
+        return {"success": False, "message": "User not found or location unchanged"}
+
 
 # ============================================
 # GUARDRAIL: NO NOTIFICATION-ONLY OBJECTS
