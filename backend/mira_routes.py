@@ -24669,9 +24669,22 @@ async def create_ticket_from_concierge_pick(
         member_notification = {
             "id": str(uuid.uuid4()),
             "user_email": user_email,
-            "type": "ticket_created",
+            "type": "picks_request_received",  # Shows in Primary tab
             "title": f"Request Received: {data.card_name}",
             "message": f"Your request for {data.card_name} for {pet_name} has been received. We'll be in touch soon!",
+            "pet_id": data.pet_id,  # Root level for filtering
+            "pet_name": pet_name,
+            "ticket_id": ticket_id,
+            "pillar": data.pillar,
+            "data": {
+                "ticket_id": ticket_id,
+                "pet_id": data.pet_id,
+                "pet_name": pet_name,
+                "card_id": data.card_id,
+                "card_name": data.card_name,
+                "card_type": data.card_type,
+                "pillar": data.pillar
+            },
             "metadata": {
                 "ticket_id": ticket_id,
                 "pet_id": data.pet_id,
