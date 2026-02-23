@@ -276,9 +276,16 @@ const DinePage = () => {
               petName={activePet.name}
               token={token}
               onReserveClick={(place) => {
-                // Open concierge chat with the place pre-filled
-                console.log('[DINE] Reserve clicked for:', place.name);
-                // Could trigger a modal or navigate to /mira-demo with context
+                // Open the same booking modal as Pet-Friendly Hangouts section
+                setSelectedRestaurant({
+                  id: place.id || `nearby-${place.name}`,
+                  name: place.name,
+                  address: place.address || 'Address available on request',
+                  city: place.city || 'Your City',
+                  rating: place.rating,
+                  phone: place.phone
+                });
+                setShowBookingModal(true);
               }}
             />
           </div>
