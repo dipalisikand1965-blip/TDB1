@@ -258,15 +258,12 @@ const DinePage = () => {
       title="Dine - Fresh Pet Meals & Restaurants | The Doggy Company"
       description="Discover nutritious fresh meals and pet-friendly restaurants for your furry friend."
     >
-      {/* Dining Concierge Picker - Rover-style service request widget */}
-      <DiningConciergePicker />
-      
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* DINE CONCIERGE LAYER - Intelligence-driven personalized picks */}
       {/* Order: Concierge Layer → Hangouts → Catalogue */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {activePet && token ? (
-        <div className="max-w-6xl mx-auto px-4 pt-8">
+        <div className="max-w-6xl mx-auto px-4 pt-8 pb-4">
           <div className="text-center mb-6">
             <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 mb-4">
               <Crown className="w-3 h-3 mr-1 inline" /> Mira's Picks for {activePet.name}
@@ -300,9 +297,8 @@ const DinePage = () => {
         </div>
       ) : null}
       
-      {/* Legacy Personalized Picks - can be removed once new system is verified */}
-      <div className="max-w-6xl mx-auto px-4 pt-8">
-        <PersonalizedPicks pillar="dine" maxProducts={6} />
+      {/* Dining Concierge Picker - Rover-style service request widget */}
+      <DiningConciergePicker />
         
         {/* Concierge Pick Card - Personalized dining service */}
         {activePet && (
