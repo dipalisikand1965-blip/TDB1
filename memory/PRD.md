@@ -6,98 +6,65 @@ The user, Dipali, is the founder of a "pet operating system" named Mira, built i
 
 ---
 
-## ✅ SESSION 9 - PILLAR-SPECIFIC PICKS PANEL - February 22, 2026
+## ✅ SESSION 10 - INTELLIGENCE LAYER (Phase 1-4) - February 23, 2026
 
-### FAB MODAL NOW PILLAR-AWARE ✅
+### UI FIXES COMPLETED ✅
 
-**The Problem:**
-When on `/celebrate` page and clicking "Ask Mira" FAB or "Mystique's Picks", the panel showed ALL pillar tabs (Dine, Care, Travel, Stay, Enjoy, etc.) - confusing users who were already in celebrate context.
+**1. Chat Scrolling Under Header** - Fixed CSS with solid background and proper z-index
+**2. Soul Score** - Now showing correctly (87% for Mystique)
+**3. PetHomePage Main Navbar** - Added site navigation for pillar access
+**4. MiraDemoPage Footer** - Added footer component
 
-**The Solution:**
-Modified `PersonalizedPicksPanel.jsx` to accept a `pillar` prop that LOCKS the panel to show only that pillar.
+### INTELLIGENCE LAYER BACKEND COMPLETE ✅
 
-**How It Works:**
-```jsx
-// PersonalizedPicksPanel.jsx
-const PersonalizedPicksPanel = ({ pillar = null, ...props }) => {
-  const isPillarLocked = Boolean(pillar);
-  const displayPillars = isPillarLocked 
-    ? PILLARS.filter(p => p.id === pillar)  // Show only locked pillar
-    : PILLARS;                               // Show all pillars
+Built the full Intelligence Layer for dynamic, personalized picks:
+
+**New Files Created:**
+- `/app/backend/app/intelligence_layer.py` - Core curation engine
+- Updated `/app/backend/app/data/service_cards.py` - Celebrate services library
+
+**API Endpoints Added:**
+- `GET /api/mira/curated-set/{pet_id}/{pillar}` - Main curated picks endpoint
+- `POST /api/mira/curated-set/answer` - Save thin-profile question answers
+- `DELETE /api/mira/curated-set/cache/{pet_id}` - Cache invalidation
+
+**Features Implemented:**
+1. **Safety First - Allergy Filtering**: Products with pet's known allergens are filtered BEFORE any other logic
+2. **Soul-Based Scoring**: Products and services scored by soul trait affinity
+3. **Breed/Size Matching**: Recommendations adjusted for pet characteristics
+4. **Event Proximity**: Birthday/gotcha day detection for timely recommendations
+5. **30-Minute Caching**: Dynamic but synced - same picks across all UI surfaces
+6. **Thin Profile Questions**: Micro-question cards when pet data is sparse
+
+**Example Response for Mystique (Shih Tzu, allergic to chicken):**
+```json
+{
+  "catalogue_picks": [{"name": "Classic Birthday Cake", "why_for_pet": "Curated for Mystique"}],
+  "concierge_picks": [
+    {"name": "Quiet Celebration Plan", "score": 80.5, "_why": "Matched: warms_up_slowly"},
+    {"name": "Playdate Party", "score": 62.5},
+    {"name": "Custom Cake Design", "score": 59.0}
+  ],
+  "question_card": null,
+  "meta": {
+    "personalization_summary": "Personalized by soul traits: Protective, warms_up_slowly, Friendly; breed: Shih Tzu; size: small; allergies filtered: chicken",
+    "cache_expires_at": "30 minutes from generation"
+  }
 }
-```
-
-**Files Modified:**
-- `/app/frontend/src/components/Mira/PersonalizedPicksPanel.jsx` - Added `pillar` prop, `isPillarLocked`, `displayPillars` logic
-- `/app/frontend/src/components/MiraChatWidget.jsx` - Passes `pillar` prop to lock panel
-- `/app/frontend/src/pages/CelebratePage.jsx` - Uses `usePillarContext()` for pet sync
-
-### CONCIERGE PICK CARD WITH FULL PICKS ✅
-
-**What Changed:**
-The Concierge Pick card on `/celebrate` now shows:
-1. Title: "Mira's Picks for {Pet}" (pet-first)
-2. Full pick cards with icon, name, description
-3. "Concierge creates" label
-4. "Create for {Pet}" button
-5. Dynamic picks from API (not hardcoded)
-
-**Files Modified:**
-- `/app/frontend/src/components/ConciergePickCard.jsx`
-
-### PET SWITCHING NOW SYNCED ✅
-
-**The Problem:**
-When switching pets via navbar dropdown, the Concierge card still showed the old pet name.
-
-**The Solution:**
-Changed `CelebratePage.jsx` to use `usePillarContext()` instead of local state:
-```jsx
-const { currentPet } = usePillarContext();
-const activePet = currentPet; // Syncs with global pet selector
 ```
 
 ---
 
-## 🔴 NEXT: THE INTELLIGENCE LAYER
+## 🔴 NEXT: FRONTEND INTEGRATION (Phase 5)
 
-### What's Currently Happening:
-Picks are fetched from `/api/mira/top-picks/{pet}` but the returned picks are still somewhat generic - the same "Custom allergy-safe birthday cake" shows for ALL pets.
+### What Needs to Happen:
+Update `/celebrate` page and components to call the new `/api/mira/curated-set` endpoint:
 
-### What SHOULD Happen:
-Picks must be TRULY personalized based on the pet's unique profile:
+1. **PersonalizedPicksPanel.jsx** - Fetch from new endpoint
+2. **ConciergePickCard.jsx** - Render catalogue_picks and concierge_picks
+3. **Question Card UI** - New component for thin-profile questions
 
-| Data Source | Example for Mystique (Shih Tzu) | Example for Buddy (Golden Retriever) |
-|-------------|--------------------------------|-------------------------------------|
-| **Soul Traits** | "warms up slowly to new people" → Intimate party | "playful, energetic" → Big bash |
-| **Breed** | Small dog → Indoor venues | Large dog → Outdoor/park venues |
-| **Health** | Sensitive stomach → Special diet cake | No restrictions → Any treats |
-| **Conversation** | Asked about grooming → Show grooming picks | Asked about hiking → Show adventure picks |
-
-### Implementation Plan:
-
-**1. Backend Changes (`top_picks_routes.py`):**
-```python
-def get_personalized_picks(pet_id, pillar):
-    pet = get_pet(pet_id)
-    soul = get_soul_data(pet_id)
-    
-    # Score each pick based on pet profile
-    scored_picks = []
-    for pick in CONCIERGE_SUGGESTIONS[pillar]:
-        score = 0
-        
-        # Soul trait matching
-        if 'anxious' in soul.traits and pick.is_calm_option:
-            score += 10
-        if 'energetic' in soul.traits and pick.is_active_option:
-            score += 10
-            
-        # Breed matching
-        if pet.size == 'small' and pick.suitable_for_small:
-            score += 5
-            
-        # Allergy filtering
+---
         if pet.allergies and pick.contains_allergen(pet.allergies):
             score = -100  # Exclude
             
