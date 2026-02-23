@@ -682,21 +682,33 @@ const MealsPage = () => {
             {/* Fresh Meals Hero - Allergy-aware */}
             <FreshMealsHero pet={activePet} />
             
-            {/* Mira's Curated Picks */}
-            {token && (
-              <div className="mb-8">
-                <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-4 md:p-6 shadow-xl">
-                  <CuratedConciergeSection
-                    petId={activePet.id}
-                    petName={activePet.name}
-                    pillar="dine"
-                    subPillar="fresh-meals"
-                    token={token}
-                    userEmail={user?.email}
-                  />
+            {/* Mira's Fresh Meals Placeholder - Until backend creates fresh_meals_concierge_cards.py */}
+            <div className="mb-8">
+              <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-4 md:p-6 shadow-xl">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
+                      <Sparkles className="w-8 h-8 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">
+                        Mira can set a plan for {activePet.name}
+                      </h3>
+                      <p className="text-gray-400 text-sm">
+                        Fresh meals, curated by your Concierge® based on {activePet.name}'s soul profile
+                      </p>
+                    </div>
+                  </div>
+                  <Button 
+                    onClick={handleSetPlan}
+                    className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white whitespace-nowrap"
+                  >
+                    Build Fresh Plan
+                    <ChevronRight className="w-4 h-4 ml-1" />
+                  </Button>
                 </div>
               </div>
-            )}
+            </div>
             
             {/* Plan Builder Row */}
             <PlanBuilderRow 
