@@ -188,20 +188,20 @@ const FreshMealsHero = ({ pet }) => {
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${heroImage})` }}
       />
-      {/* FIXED: Stronger gradient overlay for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-900/40" />
+      {/* FIXED: Much stronger gradient overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-gray-900/85 to-gray-900/60" />
       
       <div className="relative z-10 p-6 md:p-8">
-        <Badge className="bg-orange-500/90 text-white border-orange-400 mb-3">
+        <Badge className="bg-orange-500 text-white border-orange-400 mb-3 shadow-lg">
           <Sparkles className="w-3 h-3 mr-1" />
           Fresh & Personalized
         </Badge>
         
-        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 drop-shadow-lg">
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
           Fresh Meals for {petName}
         </h1>
         
-        <p className="text-white/95 text-sm md:text-base max-w-lg mb-4 drop-shadow-md">
+        <p className="text-white text-sm md:text-base max-w-lg mb-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]">
           Fresh meals, arranged for {petName} — allergy-aware, portioned, and delivered.
         </p>
         
