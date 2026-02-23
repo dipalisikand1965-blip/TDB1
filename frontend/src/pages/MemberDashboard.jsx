@@ -911,12 +911,20 @@ const MemberDashboard = () => {
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight" style={{fontFamily: 'Manrope, sans-serif'}}>
                   {user.name?.split(' ')[0] || 'Pet Parent'}&apos;s Dashboard
                 </h1>
-                {/* Show all pets names */}
+                {/* Show pets info - mobile shows count, desktop shows names */}
                 {pets.length > 0 && (
-                  <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                    <PawPrint className="w-4 h-4 text-pink-400" />
-                    <span className="text-sm md:text-base text-slate-400">
-                      {pets.map(p => p.name).join(' • ')}
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <PawPrint className="w-4 h-4 text-pink-400 flex-shrink-0" />
+                    {/* Mobile: Show count only */}
+                    <span className="text-sm text-slate-400 sm:hidden">
+                      {pets.length} {pets.length === 1 ? 'pet' : 'pets'}
+                    </span>
+                    {/* Desktop: Show first 4 names + count if more */}
+                    <span className="hidden sm:inline text-sm md:text-base text-slate-400">
+                      {pets.length <= 4 
+                        ? pets.map(p => p.name).join(' • ')
+                        : `${pets.slice(0, 4).map(p => p.name).join(' • ')} +${pets.length - 4} more`
+                      }
                     </span>
                   </div>
                 )}
