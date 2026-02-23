@@ -124,7 +124,10 @@ const MyPets = () => {
       
       if (favoritesRes.ok) {
         const favData = await favoritesRes.json();
+        console.log(`[MyPets] Favorites for ${petId}:`, favData.favorites?.length, 'items');
         setPetFavorites(prev => ({ ...prev, [petId]: favData.favorites || [] }));
+      } else {
+        console.log(`[MyPets] Favorites API error for ${petId}:`, favoritesRes.status);
       }
     } catch (error) {
       console.error('Error fetching Mira knowledge:', error);
