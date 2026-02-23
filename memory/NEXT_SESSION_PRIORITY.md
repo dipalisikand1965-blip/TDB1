@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://concierge-flow.preview.emergentagent.com
+**Preview URL:** https://concierge-lab.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

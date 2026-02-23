@@ -151,7 +151,7 @@
 ## 🔧 DEBUG CHECKLIST FOR NEXT AGENT
 
 ### If products not showing:
-1. Check API: `curl https://concierge-flow.preview.emergentagent.com/api/dine/bundles`
+1. Check API: `curl https://concierge-lab.preview.emergentagent.com/api/dine/bundles`
 2. Verify bundles state in DinePage.jsx (line ~80)
 3. Check if bundles.map() is rendering (line ~570)
 

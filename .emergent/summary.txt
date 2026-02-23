@@ -1,183 +1,168 @@
-<analysis>**original_problem_statement**: The user, Dipali, is building a pet operating system called Mira, centered around Soul Intelligence (a pet personality system) and an AI concierge. The application is a highly personal project.
+<analysis>**original_problem_statement**: The user, Dipali, is building a pet operating system called Mira, a highly personal project centered around Soul Intelligence (a pet personality system) and an AI concierge. The goal is to move beyond standard e-commerce and create a high-touch, personalized experience where curated recommendations for products and services are dynamically generated based on a pet's unique soul profile. Every concierge action must create a service desk ticket and trigger real-time notifications, capturing user intent and enabling a premium, consultative service model.
 
-The core goal is to build out the Intelligence Layer for various pillars (e.g., Dine, Celebrate) that dynamically generates curated product and service recommendations (the Concierge Layer) based on a pet's soul profile. This layer must be distinct from a standard e-commerce Catalogue Layer. All concierge actions must create service desk tickets and trigger real-time notifications.
-
-Recent user requests have focused on improving UI/UX, fixing navigation bugs, implementing a real-time WebSocket notification system for a seamless user experience, and ensuring state (like the currently selected pet) is synchronized across all relevant pages.
+The user is very anxious about context loss between agent sessions and has repeatedly requested thorough documentation and a clear single source of truth (SSOT). The vision is summarized as: **Mira is the soul, the Concierge controls the experience, and the System is the capillary enabler.**
 
 **PRODUCT REQUIREMENTS**:
-- **Two-Layer System**: The UI must have two distinct layers:
-    1.  **Concierge Layer (Top)**: Shows dynamic, personalized cards for the active pet. Every CTA in this layer **must** create/attach a Service Desk ticket and trigger notifications.
-    2.  **Catalogue Layer (Bottom)**: Shows standard e-commerce items.
-- **Intelligence Layer Backend**:
-    - An endpoint () generates the Concierge Layer content, personalized using pet traits and cached for performance.
-    - Logic must be varied and card-specific, avoiding repetitive text.
-    - Allergy filtering is a hard requirement.
-- **Frontend Integration**:
-    - Pages must call the curated-set API and render the Concierge Layer.
-    - The UI must provide immediate, optimistic feedback on user actions (e.g., CTA clicks).
-    - A WebSocket connection should provide real-time updates for notifications and state changes.
-    - Pet selection must be synchronized across the entire application.
+- **Pillar-Based OS**: The app is structured around 13 pillars of a pet's life (e.g., Dine, Celebrate, Care, Stay).
+- **Intelligence Layer**: A backend system that generates personalized Concierge Layer content based on a pet's soul data, preferences, and location.
+- **Location-Awareness**: The system must automatically detect the user's geolocation and use it to enhance recommendations (e.g., Google Places API for restaurants).
+- **Unified Service Command**: All user requests must flow through a single pipeline that creates a service desk ticket. This has been implemented.
+- **Pet-First, Soul-Driven Personalization**: All content and recommendations should be explicitly tailored to the active pet (e.g., Dine for Mystique instead of Dine for your pet).
 
 **User's preferred language**: English
 
 **what currently exists?**
-- A backend intelligence layer for the Celebrate and Dine pillars that generates personalized, varied concierge cards.
-- An endpoint () that creates service desk tickets and emits WebSocket events for real-time updates.
-- A  component with improved UI/UX (high-contrast, varied CTAs, personalized why text) integrated into  and .
-- A full-featured WebSocket notification system that provides optimistic UI updates on CTA clicks (button state changes to , a toast notification appears) and updates the notification bell count in real-time.
-- A pet-switcher dropdown in the left-hand  component.
-- The main  now includes the notification bell, and the Oops error when clicking the user profile has been fixed.
-- Pet selection is now synchronized across the , , , and  using a combination of  and a shared .
-- Key UI bugs have been fixed, including the navigation dropdown z-index and an Oops error on restaurant pages caused by missing IDs.
+The application is a full-stack React/FastAPI/MongoDB app. In this session, the agent successfully resolved a 5-point punch list of critical bugs on the  page, including fixing navigation, ensuring new products were visible, and implementing Load More functionality. Following that, the agent performed a significant UI/UX overhaul on the  and  pages, implementing a gold standard design system with iOS-inspired aesthetics (glassmorphism, bento grids, haptic feedback cues). Minor UI tweaks, such as fixing restaurant card alignment and updating CTA button text, were also completed. The agent began personalizing the UI to be pet-first by dynamically inserting the pet's name into page titles.
+
+Most recently, the user reported a **critical bug**: the main user onboarding flow () is broken, preventing new user sign-ups. The agent had just begun investigating this issue when the session ended.
 
 **Last working item**:
-- **Last item agent was working**: The user reported that the pet dashboard header is scrambled and overflowing on mobile devices. The agent was investigating the component  to fix the responsive layout.
-- **Status**: NOT STARTED
+- **Last item agent was working**: Investigating a critical bug in the user onboarding flow located at the  route. The user reported that the multi-step form is skipping questions and eventually fails with an oops message, making it impossible for new users to register. The agent was examining  to diagnose the root cause.
+- **Status**: IN PROGRESS
 - **Agent Testing Done**: N
-- **Which testing method agent to use?**: screenshot tool. The agent needs to take a screenshot of the  page using a mobile viewport to verify the layout of the  is no longer scrambled.
+- **Which testing method agent to use?**: Frontend testing agent. This is a critical, multi-step user flow. The agent must test the entire journey from start to finish, including error states and successful registration, across mobile and desktop views.
 - **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1**: **Fix Scrambled Pet Dashboard Header on Mobile (P0)**
--   **Issue 2**: **Verify End-to-End WebSocket Notification Flow (P1)**
--   **Issue 3**: **Verify Multi-Pet Syncing Across App (P1)**
--   **Issue 4**: **Mobile Page Scroll Bug (P2)**
+-   **Issue 1**: The  user onboarding flow is broken. (P0 - CRITICAL BLOCKER)
+-   **Issue 2**: Restaurant search results are not displayed in the Mira chat widget. (P1)
 
 **Issues Detail**:
--   **Issue 1: Fix Scrambled Pet Dashboard Header on Mobile**
-    -   **Attempted fixes**: None. The agent has only identified the file ().
-    -   **Next debug checklist**: Edit the identified file to apply proper responsive styling (e.g., flex-wrap, grid layout for mobile, or reducing content/font size) to ensure the header elements fit within a mobile screen without overlapping or breaking the layout.
-    -   **Why fix this issue and what will be achieved with the fix?**: The dashboard is unusable on mobile due to this layout issue. Fixing it is critical for mobile usability.
-    -   **Status**: NOT STARTED
+-   **Issue 1: Broken Onboarding Flow (P0)**
+    -   **Attempted fixes**: None. The agent was in the initial investigation phase, viewing .
+    -   **Next debug checklist**:
+        1.  Thoroughly analyze  to understand the state management (), question progression logic, and form submission API calls.
+        2.  Identify why questions are being skipped. This is likely an issue with how the  state is being updated or read.
+        3.  Trace the logic that leads to the oops error message. It's likely an unhandled error from the registration API endpoint or a client-side navigation failure.
+        4.  Reproduce the issue by attempting to sign up as a new user. Use browser dev tools to monitor state changes and network requests.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is the primary user acquisition funnel. A broken onboarding flow means no new users can join the platform, which is a critical business failure.
+    -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Frontend
--   **Issue 2: Verify End-to-End WebSocket Notification Flow**
-    -   **Attempted fixes**: The full flow has been implemented (backend emit, frontend hook, optimistic UI).
-    -   **Next debug checklist**: Perform an end-to-end test: 1. Click a concierge CTA. 2. Verify the button state changes to ✓ Received. 3. Verify the toast appears. 4. Verify the notification bell count increments instantly. 5. Navigate to the inbox and see the new notification. This may require user testing due to the screenshot tool's limitations with authenticated sessions.
-    -   **Why fix this issue and what will be achieved with the fix?**: To confirm the complex real-time feedback loop, a core part of the user experience, is working flawlessly.
-    -   **Status**: USER VERIFICATION PENDING
-    -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Both
--   **Issue 3: Verify Multi-Pet Syncing Across App**
-    -   **Attempted fixes**: The agent refactored  to use  and updated / to read the active pet from .
-    -   **Next debug checklist**: Perform an end-to-end test: 1. Go to the dashboard and switch pets using the  dropdown. 2. Navigate to the Dine page, Celebrate page, and Inbox page. 3. Verify that all pages display content and are filtered for the newly selected pet.
-    -   **Why fix this issue and what will be achieved with the fix?**: Ensures a consistent and non-confusing experience for users with multiple pets.
-    -   **Status**: USER VERIFICATION PENDING
-    -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Frontend
--   **Issue 4: Mobile Page Scroll Bug**
-    -   **Attempted fixes**: A  component and global CSS were added in a previous session.
-    -   **Next debug checklist**: Requires user testing on a mobile device or a dedicated mobile-view test with the testing agent to confirm that navigating to a new page scrolls the user to the top.
-    -   **Why fix this issue and what will be achieved with the fix?**: Fixes a core usability issue where users are disoriented upon navigation.
-    -   **Status**: USER VERIFICATION PENDING
+    -   **Blocked on other issue**: No, this is the main blocker.
+
+-   **Issue 2: Mira Chat Restaurant Search (P1)**
+    -   **Attempted fixes**: The agent correctly identified that the backend sends , but the frontend  was not rendering it. The agent added logic to store  in the message state and added a new rendering block within the component to display place cards.
+    -   **Next debug checklist**:
+        1.  Resume work on .
+        2.  Finalize and test the new rendering component for place cards.
+        3.  Ensure the Reserve with Concierge CTA on each card correctly triggers the  hook to create a service desk ticket.
+        4.  Test the end-to-end flow: ask Mira for restaurants, see the results, and click the CTA to verify a ticket is created.
+    -   **Why fix this issue and what will be achieved with the fix?**: This makes the AI concierge significantly more useful and directly addresses a user request to provide actionable, in-chat results.
+    -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Frontend
 
 **In progress Task List**:
-None.
+-   **Task 1: Complete Comprehensive Feature and API Audit (P2)**
+    -   **Where to resume**: The agent listed all available API endpoints but did not yet synthesize this into the requested audit. The next step is to create a new markdown file () and document all existing features, APIs, and integrations (e.g., Google Places, YouTube).
+    -   **What will be achieved with this?**: This will create a valuable SSOT document that identifies underutilized assets. It will enable the agent to provide concrete, actionable suggestions for enhancing the Dine and Celebrate pages with existing capabilities, fulfilling a direct and important user request for a full deep dive.
+    -   **Status**: IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?**: N/A
+    -   **Blocked on something**: Blocked by the critical onboarding bug (Issue 1).
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
--   Roll out the Intelligence Layer to the remaining 11 pillar pages.
--   Implement proactive, time-sensitive alerts on the .
+- **P1: Replicate Gold Standard Pattern:** Apply the Fresh Meals tab/page structure and  engine to the other Dine sub-categories (, , ).
+- **P2: Proactive Birthday Reminders:** Display alerts on the  for upcoming pet birthdays.
+- **P3: Razorpay Checkout Integration:** Implement full checkout functionality.
+- **P3: Leverage Audited APIs**: Based on the audit, integrate existing APIs (like YouTube) into the Celebrate and Dine pages to provide more dynamic, personalized content (e.g., Celebration training videos for Mystique).
 
 **Future Tasks:**
--   Build the Living Home feature to dynamically refresh the homepage.
--   Refactor  into smaller, more manageable modules.
--   Consolidate fragmented database ticket collections.
--   Integrate Razorpay payment gateway.
+- Unify the three different Mira chat interfaces into a single experience.
+- Gamify the  process.
+- Roll out the location-aware Intelligence Layer to the remaining 11 pillars.
+- Refactor  into smaller, more manageable modules.
 
 **Completed work in this session**
--   **Dine & Celebrate Card Polish**: Implemented varied, personalized  explanations and card-specific  for both pillars, removing repetitive content.
--   **WebSocket Notification Flow**: Implemented a full, end-to-end real-time notification system. On CTA click, the UI provides optimistic feedback (button state changes, toast notification appears) and a WebSocket event instantly updates the notification bell count.
--   **Multi-Pet Syncing**: Refactored  to use a shared  and updated other pages (, ) to read from , ensuring the selected pet is consistent across the app.
--   **GlobalNav Pet Switcher**: Converted the static pet name button in the left-hand navigation into a functional dropdown for switching between pets.
--   **Navbar UI Fixes**: Added the  to the main application header and fixed an Oops error that occurred when clicking the user profile button.
--   **Critical Bug Fixes**:
-    -   Resolved a z-index conflict that caused the main navigation dropdown to render behind page content.
-    -   Fixed an Oops error on restaurant pages by ensuring all restaurant documents in the backend have a unique ID.
-    -   Corrected a bug on  that prevented the optimistic ✓ Received button state from showing.
+- ** Page Bug Fixes**:
+  - Resolved a 5-point punch list: fixed duplicate tabs, ensured new products were visible, implemented Load More logic, and corrected all tab/card navigation throughout the page.
+- **Gold Standard UI/UX Overhaul**:
+  - Created a new shared stylesheet () for premium, iOS-inspired UI.
+  - Refactored  and  to use bento grids, glassmorphism card effects, and improved typography.
+- **UI & Personalization Fixes**:
+  - Corrected alignment on restaurant cards for a cleaner layout.
+  - Changed the View Request CTA to the user-preferred Sent to Concierge® on curated service cards.
+  - Implemented Pet-First titles on Dine and Celebrate pages, showing the active pet's name.
 
 **Earlier issues found/mentioned but not fixed**
-None not already listed in the pending issues.
+-   **Resend Domain Verification**: The  domain must be verified in the user's Resend account to enable email notifications.
+-   **Gupshup Configuration**: The Gupshup app requires proper configuration before WhatsApp notifications can be sent.
 
 **Known issue recurrence from previous fork**
--   **Automated Login Failure**: The screenshot tool consistently fails to maintain a logged-in session, making it difficult to test authenticated frontend states. This forces reliance on user testing or complex scripting for verification.
+-   **Issue recurrence in previous fork**: The Duplicate All Dine tab issue.
+-   **Recurrence count**: 1
+-   **Status**: RESOLVED (The fix in this session was definitive and passed testing).
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Two-Layer Architecture**: Separation between the ticket-based **Concierge Layer** and the e-commerce **Catalogue Layer**.
--   **Persona-Based Scoring**: Backend system that ranks concierge cards based on pet traits.
--   **WebSocket Notifications**: Real-time updates pushed from the backend to the frontend using Socket.IO for a responsive user experience.
--   **Optimistic UI Updates**: Frontend state changes immediately upon user action for perceived speed, later reconciled by server confirmation.
--   **Shared State Management**: Use of React Context () and  to synchronize the active pet across different pages and components.
+- **Concierge-First UI**: Interfaces designed as intent-capture tools for a service team.
+- **Pet-First, Soul-Driven**: A core product principle where all UI and logic is personalized for the active pet.
+- **Bento Grid UI**: A modern, asymmetric grid layout used for service/experience cards.
+- **Glassmorphism**: A UI trend using background blur to create a frosted-glass effect, implemented in the new .
+- **Haptic Feedback Cues**: Using CSS classes to trigger subtle animations on interaction, mimicking physical feedback on mobile.
 
 **key DB schema**
--   ****: Stores generated concierge sets.
--   ****: Source of pet profile data.
--   ****: Stores tickets created from concierge cards.
--   ****: Stores user-facing notifications.
--   ****: Stores admin-facing notifications.
+- No new changes to DB schema in this session.
 
 **All files of reference**
--   : **(NEEDS FIX)** Location of the scrambled mobile header.
--   : Core component for rendering concierge cards; contains WebSocket and optimistic UI logic.
--   : New custom hook for handling member-facing WebSocket connections.
--   : Shared context that manages the active pet state.
--   : Now uses  for pet state.
--   : Contains the  endpoint, now modified to emit WebSocket events.
--   : Modified to handle Socket.IO connections and events for members.
-
-**Areas that need refactoring**:
--    is becoming a monolith and should be broken down into smaller modules (e.g., a dedicated WebSocket module).
-
-**key api endpoints**
--   : Fetches personalized concierge cards.
--   : Creates a service desk ticket and now emits a  WebSocket event.
--   **WebSocket Events**:
-    -   Client emits  with .
-    -   Server emits  to a specific member's room upon ticket creation.
+-   : **(Primary focus)** The file for the broken user registration flow. It needs immediate debugging.
+-   : Modified to handle restaurant results from the Mira API. Work is in progress.
+-   : Heavily refactored for bug fixes and the new Gold Standard UI.
+-   : Heavily refactored for the new Gold Standard UI.
+-   : New file containing shared premium styles for UI components.
+-   : Modified to fix complex tab navigation logic.
+-   : Modified to change the CTA button text.
+-   : Modified to improve alignment and visual consistency.
 
 **Critical Info for New Agent**
--   **Immediate Priority**: Your first task is to fix the scrambled mobile layout in .
--   **Verification Needed**: Several major features (WebSocket flow, multi-pet sync) are fully implemented but await end-to-end verification. Due to tool limitations with authenticated sessions, you may need to ask the user to test these or devise a reliable testing script.
--   **Context is Key**: The application now heavily relies on a shared  and  for pet state. When debugging pet-related issues, always check that the component is correctly using the context or listening for storage events.
+-   **TOP PRIORITY IS ONBOARDING**: The user is extremely concerned about the broken  flow. You must fix this before addressing any other task. Failure to do so blocks all new user acquisition.
+-   **USER VISION: PET-FIRST**: The user reinforced their core vision. Always personalize the experience for the specific pet () wherever possible. Avoid generic language.
+-   **FINISH THE AUDIT**: After fixing the onboarding flow, the next major task is to complete the comprehensive feature/API audit and present the findings and suggestions to the user. This was a direct and important request.
+-   **MAINTAIN THE GOLD STANDARD**: The new UI on the Dine and Celebrate pages sets a new design precedent. Any new components or modifications should adhere to the styles established in .
 
 **documents and test reports created in this job**
--    (updated)
--   
--   
+-   : Test report confirming the Gold Standard UI changes passed.
+-   : Test report confirming the  page bug fixes passed.
+-   : Updated to reflect completed work and new user requests.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Click on Dipali profile button causes an Oops error; notification bell should be in the main header.
-2.  **Agent**: Acknowledged and started investigating.
-3.  **Agent**: Implemented the fix for the Oops error and added the notification bell to .
-4.  **User**: Reports that switching pets works on  but not on  page—the concierge section doesn't update.
-5.  **Agent**: Identified the cause:  was not using the shared  for pet state.
-6.  **Agent**: Refactored  to use , fixing the sync issue.
-7.  **User**: Reports that the pet dashboard header is scrambled on mobile.
-8.  **Agent**: Acknowledged the issue and identified the relevant component file.
-9.  **User**: please prepare full SSOT nd complete detailed handover
-10. **Agent**: Acknowledged and started preparing the handover.
+10. User asks for UI/UX gold standard magic on Celebrate and Dine pages and an exhaustive study of what's missing. (DONE)
+9. Agent proposes a plan to analyze, identify missing features, and implement UI improvements.
+8. User confirms: Yes please.
+7. Agent implements all Gold Standard UI/UX improvements.
+6. Agent runs testing agent, which passes.
+5. Agent prepares to finish.
+4. User reports misaligned restaurant cards and incorrect View Request CTA. (DONE)
+3. Agent fixes restaurant card alignment and changes CTA to Sent to Concierge®.
+2. User provides a detailed request for the Mira chat to show restaurant results from the Google Places API, and asks for a full audit of all features and the ticket creation flow. (IN PROGRESS)
+1. User provides a detailed request for  personalization on the  page. (DONE)
+1. **User reports a critical issue: the  onboarding flow is broken, skipping questions and ending in an error.** (CRITICAL - IN PROGRESS)
+- **Pending User Message**: Pleasae make SSOT and update Memory prd and handover exhausitvley - this is a standing instruction to ensure context is not lost.
 
 **Project Health Check:**
--   **Broken**: The mobile view of  is scrambled and unusable.
--   **Mocked**: Nothing is mocked.
+-   **Broken**: The primary user onboarding flow () is non-functional, which is a critical failure for user acquisition.
+-   **Mocked**: None.
 
 **3rd Party Integrations**
--   Socket.IO (for WebSockets)
+- **Google Places API**: Used by the backend to find nearby restaurants for the Mira chat.
+- **Resend**: For email notifications (requires domain verification).
+- **Gupshup**: For WhatsApp notifications (requires configuration).
 
 **Testing status**
--   **Testing agent used after significant changes**: YES. The testing agent was used to verify UI/UX improvements to the concierge cards and backend personalization logic, with all tests passing.
+-   **Testing agent used after significant changes**: YES. The testing agent was successfully used twice to verify the  page fixes and the Gold Standard UI overhaul.
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None.
--   **Known regressions**: The mobile layout of the pet dashboard header is broken.
+-   **Known regressions**: None. The onboarding bug is a newly discovered critical issue.
 
 **Credentials to test flow:**
 -   **Member Login**:  / 
 -   **Admin Login**:  / 
+-   **New User Signup**: Does not currently work. This is the critical bug to fix.
 
 **What agent forgot to execute**
-The agent was in the process of investigating the scrambled mobile header in  when the user requested a handover. The fix has not yet been implemented.</analysis>
+The agent was on track but was interrupted by the user's report of the critical onboarding bug. As a result, the following tasks were started but not completed:
+-   **Mira Chat Restaurant Results**: The implementation in  is half-finished and needs to be completed and tested.
+-   **Comprehensive Audit**: The agent gathered a list of API endpoints but did not synthesize it into the requested audit document with actionable suggestions.</analysis>

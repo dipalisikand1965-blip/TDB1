@@ -323,7 +323,7 @@ ADMIN_USERNAME=aditya
 ADMIN_PASSWORD=lola4304
 
 # Frontend (.env)
-REACT_APP_BACKEND_URL=https://concierge-flow.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://concierge-lab.preview.emergentagent.com
 ```
 
 ### Test Credentials
@@ -378,7 +378,7 @@ REACT_APP_BACKEND_URL=https://concierge-flow.preview.emergentagent.com
 ## 🚀 DEPLOYMENT
 
 ### Preview Environment
-- URL: https://concierge-flow.preview.emergentagent.com
+- URL: https://concierge-lab.preview.emergentagent.com
 - Database: Local MongoDB
 - Status: All features working
 
