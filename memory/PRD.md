@@ -109,6 +109,11 @@
 | Comprehensive Audit | ✅ DONE |
 | Full Roadmap | ✅ DONE |
 | **Restaurant Search in Chat (P1)** | ✅ FIXED |
+| **Dynamic Picks for All 15 Pillars** | ✅ DONE |
+| **YouTube Videos on Learn Page** | ✅ VERIFIED WORKING |
+| **Save to Favorites Feature** | ✅ BACKEND COMPLETE, UI ADDED |
+| **FavoritesPanel Component** | ✅ CREATED |
+| **Soul Score Display** | ✅ VERIFIED (88% on mira-demo) |
 
 ### Restaurant Search Fix Details (Feb 23, 2026 - Session 2)
 **Problem**: When users asked "find me a pet-friendly restaurant in Mumbai", Mira asked for seating preference instead of showing results directly.
