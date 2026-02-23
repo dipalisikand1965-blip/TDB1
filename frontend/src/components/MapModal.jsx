@@ -6,8 +6,8 @@
  */
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '../ui/dialog';
-import { Button } from '../ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from './ui/dialog';
+import { Button } from './ui/button';
 import { MapPin, Navigation, ExternalLink, X, Phone, Star, Clock, Loader2 } from 'lucide-react';
 
 const MapModal = ({
