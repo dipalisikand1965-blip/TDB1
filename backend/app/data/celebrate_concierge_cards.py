@@ -249,13 +249,20 @@ CELEBRATE_CONCIERGE_SERVICES: List[Dict[str, Any]] = [
     {
         "id": "celebrate_home_setup",
         "type": "concierge_service",
-        "name": "At-Home Setup + Safe Zones + Run-of-Show",
+        "name": "At-Home Setup + Safe Zones",
         "description": "Calm, safe setup with a simple schedule and pet comfort plan.",
         "icon": "🏠",
         "why_concierge": "Pet-safe environment planning",
-        "cta_text": "Request",
+        "cta_text": "Request setup",
         "cta_action": "create_ticket",
         "ticket_category": "celebrate_home_setup",
+        "why_phrases": {
+            "anxious": "Safe zones + calm environment",
+            "senior": "Comfortable setup for senior pets",
+            "calm": "Peaceful celebration at home",
+            "warms_up_slowly": "Gentle intro for cautious pets",
+            "default": "Pet-safe home celebration setup"
+        },
         "ticket_questions": [
             {"id": "space", "question": "Indoor/outdoor + approximate space size?", "type": "text"},
             {"id": "comfort", "question": "Pet comfort: anxious/ok with guests?", "type": "choice", "options": ["Anxious - needs calm setup", "Ok with guests", "Warms up slowly"]},
