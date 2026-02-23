@@ -1127,6 +1127,9 @@ const CelebratePage = () => {
           setIsPillarPanelOpen(false);
         }}
       />
+      
+      {/* Close the theme wrapper */}
+      </div>
     </PillarPageLayout>
   );
 };
