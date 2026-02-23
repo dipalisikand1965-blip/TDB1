@@ -381,6 +381,7 @@ const CuratedConciergeSection = ({
   petName,
   pillar = 'celebrate',
   token,
+  userEmail, // For WebSocket registration
   onTicketCreate,
   onNotificationUpdate, // Callback to update notification badge
   className = '',
@@ -390,6 +391,31 @@ const CuratedConciergeSection = ({
   const [error, setError] = useState(null);
   const [ticketLoading, setTicketLoading] = useState(null); // Card ID being processed
   const [createdTickets, setCreatedTickets] = useState({}); // Track created tickets by card ID
+
+  // WebSocket for real-time feedback
+  const handleWebSocketTicketCreated = useCallback((data) => {
+    if (data.card_id) {
+      setCreatedTickets(prev => ({
+        ...prev,
+        [data.card_id]: data.ticket_id || true
+      }));
+      // Show success toast
+      toast.success('Request confirmed!', { duration: 2000 });
+    }
+  }, []);
+
+  const handleInboxBadgeUpdate = useCallback((unreadCount) => {
+    if (onNotificationUpdate) {
+      onNotificationUpdate(unreadCount);
+    }
+  }, [onNotificationUpdate]);
+
+  const { isConnected, isSyncing } = useMemberSocket({
+    email: userEmail,
+    token,
+    onTicketCreated: handleWebSocketTicketCreated,
+    onInboxBadgeUpdate: handleInboxBadgeUpdate,
+  });
 
   // Fetch curated set
   const fetchCuratedSet = useCallback(async (forceRefresh = false) => {
