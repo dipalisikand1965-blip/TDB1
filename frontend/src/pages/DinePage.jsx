@@ -131,6 +131,7 @@ const DinePage = () => {
   const [restaurantsToShow, setRestaurantsToShow] = useState(6); // Show only 6 initially
   const [productsToShow, setProductsToShow] = useState(15); // 3 rows x 5 columns
   const [heroIndex, setHeroIndex] = useState(0);
+  const [essentialsFilter, setEssentialsFilter] = useState('all'); // Filter for Dine Essentials section
   
   // Scroll to top when page loads
   useEffect(() => {
