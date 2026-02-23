@@ -277,18 +277,6 @@ const QuestionCard = ({ card, petId, petName, onAnswerSaved, token }) => {
 const ConciergeCard = ({ card, petName, onCreateTicket, isLoading }) => {
   const Icon = getCardIcon(card);
   const isProduct = card.type === 'concierge_product';
-  
-  // Gradient colors based on type
-  const gradientClass = isProduct
-    ? 'from-pink-500/10 to-purple-500/10 border-pink-500/20'
-    : 'from-purple-500/10 to-blue-500/10 border-purple-500/20';
-  
-  const iconBgClass = isProduct ? 'bg-pink-500/20' : 'bg-purple-500/20';
-  const iconColorClass = isProduct ? 'text-pink-400' : 'text-purple-400';
-  const labelColorClass = isProduct ? 'text-pink-400' : 'text-purple-400';
-  const buttonClass = isProduct
-    ? 'bg-pink-500/20 hover:bg-pink-500/30 text-pink-300'
-    : 'bg-purple-500/20 hover:bg-purple-500/30 text-purple-300';
 
   const handleClick = () => {
     hapticFeedback.buttonTap();
@@ -299,47 +287,55 @@ const ConciergeCard = ({ card, petName, onCreateTicket, isLoading }) => {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`rounded-2xl bg-gradient-to-br ${gradientClass} border p-4`}
+      className="rounded-xl bg-white/5 border border-white/10 p-3"
+      data-testid={`concierge-card-${card.id}`}
     >
-      {/* Header with icon and label */}
-      <div className="flex items-start gap-3 mb-3">
-        <div className={`w-10 h-10 rounded-xl ${iconBgClass} flex items-center justify-center flex-shrink-0`}>
-          <Icon className={`w-5 h-5 ${iconColorClass}`} />
+      {/* Header with icon and label - Compact */}
+      <div className="flex items-start gap-2.5 mb-2">
+        <div className={`w-9 h-9 rounded-lg ${isProduct ? 'bg-pink-500/15' : 'bg-purple-500/15'} flex items-center justify-center flex-shrink-0`}>
+          <Icon className={`w-4 h-4 ${isProduct ? 'text-pink-400' : 'text-purple-400'}`} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className={`text-xs ${labelColorClass} font-medium mb-0.5`}>
+          {/* High-contrast label */}
+          <p className={`text-[10px] uppercase tracking-wide font-semibold mb-0.5 ${isProduct ? 'text-pink-300' : 'text-purple-300'}`}>
             {isProduct ? 'Concierge® Product' : 'Concierge® Service'}
           </p>
-          <h4 className="text-white font-semibold text-sm leading-tight">
+          {/* High-contrast title - Near white for dark backgrounds */}
+          <h4 className="text-white font-bold text-sm leading-snug">
             {card.name}
           </h4>
         </div>
       </div>
 
-      {/* Description */}
-      <p className="text-gray-400 text-sm mb-2 line-clamp-2">
+      {/* Description - Readable contrast */}
+      <p className="text-gray-300 text-xs mb-2 line-clamp-2 leading-relaxed">
         {card.description}
       </p>
 
-      {/* Why for pet - subtle helper line */}
+      {/* Why for pet - Personalized reason, prominent placement above CTA */}
       {card.why_for_pet && (
-        <p className="text-xs text-gray-500 mb-3 italic">
-          {card.why_for_pet}
+        <p className="text-xs text-amber-300/90 mb-2 font-medium">
+          ✦ {card.why_for_pet}
         </p>
       )}
 
-      {/* CTA Button */}
+      {/* CTA Button - Solid color, no gradient, white text */}
       <button
         onClick={handleClick}
         disabled={isLoading}
-        className={`w-full py-2.5 ${buttonClass} rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2`}
+        data-testid={`concierge-cta-${card.id}`}
+        className={`w-full py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${
+          isProduct 
+            ? 'bg-pink-500 hover:bg-pink-600 text-white' 
+            : 'bg-purple-500 hover:bg-purple-600 text-white'
+        } ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
       >
         {isLoading ? (
           <Loader2 className="w-4 h-4 animate-spin" />
         ) : (
           <>
-            {card.cta_text || (isProduct ? `Create for ${petName}` : 'Request')}
-            <ChevronRight className="w-4 h-4" />
+            {isProduct ? `Create for ${petName}` : 'Request'}
+            <ChevronRight className="w-3.5 h-3.5" />
           </>
         )}
       </button>
