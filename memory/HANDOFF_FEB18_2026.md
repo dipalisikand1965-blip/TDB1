@@ -304,7 +304,7 @@ Test Pets:
 ## Services
 - Backend: Running on port 8001
 - Frontend: Running on port 3000
-- Preview URL: https://pet-intent.preview.emergentagent.com
+- Preview URL: https://concierge-pillars.preview.emergentagent.com
 
 ---
 

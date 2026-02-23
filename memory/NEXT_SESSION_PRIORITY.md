@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://pet-intent.preview.emergentagent.com
+**Preview URL:** https://concierge-pillars.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

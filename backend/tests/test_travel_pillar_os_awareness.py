@@ -25,7 +25,7 @@ def get_base_url():
                     return line.strip().split('=', 1)[1].rstrip('/')
     except Exception:
         pass
-    return "https://pet-intent.preview.emergentagent.com"
+    return "https://concierge-pillars.preview.emergentagent.com"
 
 BASE_URL = get_base_url()
 

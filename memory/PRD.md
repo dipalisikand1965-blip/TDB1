@@ -178,7 +178,7 @@ Page navigates to /inbox ❌ (should stay on page)
 - **Admin Login**: `aditya` / `lola4304`
 
 ### URLs
-- **Frontend**: `https://pet-intent.preview.emergentagent.com`
+- **Frontend**: `https://concierge-pillars.preview.emergentagent.com`
 - **Fresh Meals Page**: `/dine/meals`
 - **Admin Service Desk**: `/admin/service-desk`
 - **API**: `/api/service-requests`
