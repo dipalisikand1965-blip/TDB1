@@ -555,6 +555,19 @@ const CuratedConciergeSection = ({
 
   return (
     <div className={className} data-testid="curated-concierge-section">
+      {/* Header with "Handpicked" and "Updated" */}
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-sm text-white/80 font-medium">
+          ✨ Handpicked for {petName}
+        </p>
+        {getUpdatedText() && (
+          <p className="text-[10px] text-gray-500 flex items-center gap-1">
+            <Clock className="w-2.5 h-2.5" />
+            {getUpdatedText()}
+          </p>
+        )}
+      </div>
+
       {/* Cards in strict order: question → products → services */}
       <div className="space-y-2">
         {/* Question Card (if present) - Always first */}
@@ -576,6 +589,7 @@ const CuratedConciergeSection = ({
             petName={petName}
             onCreateTicket={handleCreateTicket}
             isLoading={ticketLoading === card.id}
+            ticketCreated={!!createdTickets[card.id]}
           />
         ))}
 
@@ -587,24 +601,10 @@ const CuratedConciergeSection = ({
             petName={petName}
             onCreateTicket={handleCreateTicket}
             isLoading={ticketLoading === card.id}
+            ticketCreated={!!createdTickets[card.id]}
           />
         ))}
       </div>
-
-      {/* Footer with updated time - more compact */}
-      {getUpdatedText() && (
-        <p className="text-center text-gray-500 text-[10px] mt-3 flex items-center justify-center gap-1">
-          <Clock className="w-2.5 h-2.5" />
-          {getUpdatedText()}
-        </p>
-      )}
-
-      {/* Personalization summary (subtle) */}
-      {data.meta?.personalization_summary && (
-        <p className="text-center text-gray-600 text-[10px] mt-0.5">
-          {data.meta.personalization_summary}
-        </p>
-      )}
     </div>
   );
 };
