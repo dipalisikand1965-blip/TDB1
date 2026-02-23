@@ -1186,6 +1186,18 @@ const MealsPage = () => {
         position="bottom-right"
         showLabel
       />
+      
+      {/* FlowModal - Unified Flow Engine for Fresh Meals */}
+      <FlowModal
+        isOpen={flowModalOpen}
+        onClose={handleFlowModalClose}
+        cardId={activeFlowCardId}
+        pet={activePet}
+        planBuilder={planBuilder}
+        user={user}
+        token={token}
+        entryPoint={flowEntryPoint}
+      />
     </div>
   );
 };
