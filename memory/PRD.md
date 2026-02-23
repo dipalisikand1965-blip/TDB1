@@ -6,6 +6,45 @@ The user, Dipali, is the founder of a "pet operating system" named Mira, built i
 
 ---
 
+## ✅ SESSION 16 - WEBSOCKET + MULTI-PET SYNC - February 23, 2026
+
+### IMPLEMENTED:
+
+**1. Multi-Pet Sync Across Dashboard/Inbox:**
+- `NotificationsInbox.jsx` now reads from `localStorage.getItem('selectedPetId')` to sync with navbar pet selector
+- `MemberDashboard.jsx` now saves `selectedPetId` to localStorage for global sync
+- Added storage event listeners for cross-tab synchronization
+
+**2. WebSocket Real-Time Notification Flow:**
+- Created `/app/frontend/src/hooks/useMemberSocket.js` - Custom hook for member WebSocket connections
+- Added `register_member` event handler in `realtime_notifications.py`
+- Added `emit_member_notification`, `emit_ticket_created_to_member`, `emit_inbox_badge_update` methods
+- Updated `/api/mira/concierge-pick/ticket` endpoint to emit WebSocket events after ticket creation
+
+**3. CTA Click Feedback Flow:**
+- On CTA click: Button shows "Creating..." state
+- On API success: Optimistic update marks card as ✓ Received
+- Toast: "Request received — updating your Inbox"
+- WebSocket confirms: Updates inbox badge count in real-time
+- Fallback: If no WebSocket in 3-5s, manual badge refresh triggered
+
+**4. Dine Card Icons:**
+- Added lucide icons for all dine pillar cards (Utensils, Shield, MapPin, Users, ChefHat)
+
+**Files Created:**
+- `/app/frontend/src/hooks/useMemberSocket.js`
+
+**Files Modified:**
+- `/app/frontend/src/pages/NotificationsInbox.jsx` - localStorage sync
+- `/app/frontend/src/pages/MemberDashboard.jsx` - localStorage sync
+- `/app/frontend/src/components/Mira/CuratedConciergeSection.jsx` - WebSocket integration
+- `/app/frontend/src/pages/DinePage.jsx` - Pass userEmail prop
+- `/app/frontend/src/pages/CelebratePage.jsx` - Pass userEmail prop
+- `/app/backend/realtime_notifications.py` - Member WebSocket events
+- `/app/backend/mira_routes.py` - Emit WebSocket after ticket creation
+
+---
+
 ## ✅ SESSION 15 - CONCIERGE CARDS UI/UX POLISH + FIXES - February 23, 2026
 
 ### IMPLEMENTED:
