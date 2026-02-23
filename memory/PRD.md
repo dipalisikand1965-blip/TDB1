@@ -6,78 +6,94 @@ The user, Dipali, is the founder of a "pet operating system" named Mira, built i
 
 ---
 
-## ✅ SESSION 10 - INTELLIGENCE LAYER (Phase 1-4) - February 23, 2026
+## ✅ SESSION 10 - INTELLIGENCE LAYER COMPLETE - February 23, 2026
 
 ### UI FIXES COMPLETED ✅
 
-**1. Chat Scrolling Under Header** - Fixed CSS with solid background and proper z-index
-**2. Soul Score** - Now showing correctly (87% for Mystique)
-**3. PetHomePage Main Navbar** - Added site navigation for pillar access
-**4. MiraDemoPage Footer** - Added footer component
+1. **Chat Scrolling Under Header** - Fixed CSS with solid background and proper z-index
+2. **Soul Score** - Now showing correctly (87% for Mystique)
+3. **PetHomePage Main Navbar** - Added site navigation for pillar access
+4. **MiraDemoPage Footer** - Added footer component
 
 ### INTELLIGENCE LAYER BACKEND COMPLETE ✅
 
-Built the full Intelligence Layer for dynamic, personalized picks:
+Built the full 10-card Celebrate Concierge Library with persona-based scoring:
 
-**New Files Created:**
+**Files Created:**
+- `/app/backend/app/data/celebrate_concierge_cards.py` - 10-card library (5 products, 5 services)
 - `/app/backend/app/intelligence_layer.py` - Core curation engine
-- Updated `/app/backend/app/data/service_cards.py` - Celebrate services library
 
-**API Endpoints Added:**
-- `GET /api/mira/curated-set/{pet_id}/{pillar}` - Main curated picks endpoint
+**API Endpoints:**
+- `GET /api/mira/curated-set/{pet_id}/{pillar}` - **Concierge layer ONLY** (no catalogue)
 - `POST /api/mira/curated-set/answer` - Save thin-profile question answers
 - `DELETE /api/mira/curated-set/cache/{pet_id}` - Cache invalidation
 
-**Features Implemented:**
-1. **Safety First - Allergy Filtering**: Products with pet's known allergens are filtered BEFORE any other logic
-2. **Soul-Based Scoring**: Products and services scored by soul trait affinity
-3. **Breed/Size Matching**: Recommendations adjusted for pet characteristics
-4. **Event Proximity**: Birthday/gotcha day detection for timely recommendations
-5. **30-Minute Caching**: Dynamic but synced - same picks across all UI surfaces
-6. **Thin Profile Questions**: Micro-question cards when pet data is sparse
+**The 10-Card Celebrate Library:**
 
-**Example Response for Mystique (Shih Tzu, allergic to chicken):**
+| Concierge Products (Bespoke) | Concierge Services (Arrangements) |
+|------------------------------|-----------------------------------|
+| 1. Custom Celebration Cake Design | 6. Plan Celebration End-to-End |
+| 2. Bespoke Celebration Box | 7. At-Home Setup + Safe Zones |
+| 3. Outdoor Party Pack (for Chaos) | 8. Photographer Booking |
+| 4. Styled Photo Moment Kit | 9. Pet-Friendly Venue Reservation |
+| 5. Keepsake Memory Set | 10. Quiet Celebration Plan |
+
+**Persona-Based Scoring (Tested & Working):**
+| Pet | Type | Top Picks | Why |
+|-----|------|-----------|-----|
+| Mystique (Shih Tzu) | Elegant | Cake Design, At-Home Setup | Warms up slowly, photo-ready |
+| Buddy (Golden Retriever) | Active | Outdoor Pack (99), End-to-End (100) | Playful, energetic, large |
+| Lola (Maltese, thin profile) | Small-elegant | Photo Kit, Cake + **Question Card** | Breed defaults + capture preferences |
+
+**Response Structure:**
 ```json
 {
-  "catalogue_picks": [{"name": "Classic Birthday Cake", "why_for_pet": "Curated for Mystique"}],
-  "concierge_picks": [
-    {"name": "Quiet Celebration Plan", "score": 80.5, "_why": "Matched: warms_up_slowly"},
-    {"name": "Playdate Party", "score": 62.5},
-    {"name": "Custom Cake Design", "score": 59.0}
+  "concierge_products": [  // 2-3 bespoke deliverables → Ticket
+    {"name": "Custom Celebration Cake Design", "cta_action": "create_ticket", "_score": 78}
   ],
-  "question_card": null,
-  "meta": {
-    "personalization_summary": "Personalized by soul traits: Protective, warms_up_slowly, Friendly; breed: Shih Tzu; size: small; allergies filtered: chicken",
-    "cache_expires_at": "30 minutes from generation"
-  }
+  "concierge_services": [  // 1-2 arrangements → Ticket
+    {"name": "At-Home Setup + Safe Zones", "cta_action": "create_ticket", "_score": 84}
+  ],
+  "question_card": {  // 0-1 if profile thin
+    "question": "What style celebration would Lola love?",
+    "options": ["Playful & colorful", "Elegant & minimal", ...]
+  },
+  "meta": {"cache_expires_at": "30 min", "total_cards": 5}
 }
 ```
+
+**Key Design Decisions (LOCKED):**
+- ❌ NO `catalogue_picks` in curated-set - catalogue handled separately
+- ✅ ALL concierge cards create tickets (no add-to-cart)
+- ✅ Persona scoring uses weights, not hard switches
+- ✅ Never returns empty - uses breed/size defaults for thin profiles
+- ✅ Ticket questions hardcoded in card library
 
 ---
 
 ## 🔴 NEXT: FRONTEND INTEGRATION (Phase 5)
 
-### What Needs to Happen:
-Update `/celebrate` page and components to call the new `/api/mira/curated-set` endpoint:
+### What to Build:
 
-1. **PersonalizedPicksPanel.jsx** - Fetch from new endpoint
-2. **ConciergePickCard.jsx** - Render catalogue_picks and concierge_picks
-3. **Question Card UI** - New component for thin-profile questions
+1. **PersonalizedPicksPanel.jsx** 
+   - Call `/api/mira/curated-set/{pet_id}/celebrate`
+   - Render `concierge_products` cards (Create for {Pet})
+   - Render `concierge_services` cards (Request)
+   - Render `question_card` if present
+
+2. **ConciergePickCard.jsx**
+   - All CTAs create/attach tickets
+   - Show instant "Request received" + ticket in Inbox
+
+3. **Micro-question UI**
+   - One-tap choice
+   - Persists preference via `POST /curated-set/answer`
+   - Triggers re-fetch of curated set
+
+4. **Ensure Dynamic + Synced**
+   - Pillar page and FAB "{Pet}'s Picks" show same cards
 
 ---
-        if pet.allergies and pick.contains_allergen(pet.allergies):
-            score = -100  # Exclude
-            
-        scored_picks.append((pick, score))
-    
-    return sorted(scored_picks, key=lambda x: x[1], reverse=True)[:5]
-```
-
-**2. Frontend Changes:**
-- Picks already render dynamically from API response
-- Just need backend to return different picks per pet
-
-**3. Database Schema (existing):**
 - `pets` collection has: breed, size, allergies, health_conditions
 - `pet_soul` collection has: personality_traits, social_preferences
 - `user_learn_intents` collection has: recent conversation topics
