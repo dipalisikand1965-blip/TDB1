@@ -12019,11 +12019,18 @@ async def mira_chat(
                     from services.dynamic_picks_generator import generate_dynamic_picks
                     pet_context = selected_pet or {"name": "your pet"}  # Fallback to generic
                     current_pillar = request.current_pillar or "general"
+                    # user_city might not be defined yet, so use safe access
+                    city_context = None
+                    if 'user_city' in dir():
+                        city_context = user_city
+                    elif hasattr(request, 'location'):
+                        city_context = request.location
+                        
                     dynamic_picks = generate_dynamic_picks(
                         user_message=user_message,
                         pillar=current_pillar,
                         pet_context=pet_context,
-                        location=user_city,
+                        location=city_context,
                         additional_context={"session_id": session_id}
                     )
                     if dynamic_picks:
