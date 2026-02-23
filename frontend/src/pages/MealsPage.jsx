@@ -331,13 +331,6 @@ const PlanBuilderRow = ({ planBuilder, setPlanBuilder, petHasAllergies, petName,
               </button>
             );
           })}
-                  ${planBuilder.protein === protein.id ? 'bg-green-500 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:border-green-300'}`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                {protein.label}
-              </button>
-            );
-          })}
         </div>
       </div>
       
