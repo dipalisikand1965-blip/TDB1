@@ -277,14 +277,20 @@ const QuestionCard = ({ card, petId, petName, onAnswerSaved, token }) => {
 // CONCIERGE CARD (Product or Service)
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const ConciergeCard = ({ card, petName, onCreateTicket, isLoading }) => {
+const ConciergeCard = ({ card, petName, onCreateTicket, isLoading, ticketCreated }) => {
   const Icon = getCardIcon(card);
   const isProduct = card.type === 'concierge_product';
 
   const handleClick = () => {
+    if (ticketCreated) return; // Already created
     hapticFeedback.buttonTap();
     onCreateTicket(card);
   };
+
+  // Get CTA text from card or use default
+  const ctaText = ticketCreated 
+    ? 'View request' 
+    : (card.cta_text || (isProduct ? 'Create' : 'Request'));
 
   return (
     <motion.div
@@ -294,8 +300,8 @@ const ConciergeCard = ({ card, petName, onCreateTicket, isLoading }) => {
       data-testid={`concierge-card-${card.id}`}
     >
       {/* Header with icon and label - Compact */}
-      <div className="flex items-start gap-2.5 mb-2">
-        <div className={`w-9 h-9 rounded-lg ${isProduct ? 'bg-pink-500/15' : 'bg-purple-500/15'} flex items-center justify-center flex-shrink-0`}>
+      <div className="flex items-start gap-2.5 mb-1.5">
+        <div className={`w-8 h-8 rounded-lg ${isProduct ? 'bg-pink-500/15' : 'bg-purple-500/15'} flex items-center justify-center flex-shrink-0`}>
           <Icon className={`w-4 h-4 ${isProduct ? 'text-pink-400' : 'text-purple-400'}`} />
         </div>
         <div className="flex-1 min-w-0">
@@ -310,34 +316,39 @@ const ConciergeCard = ({ card, petName, onCreateTicket, isLoading }) => {
         </div>
       </div>
 
-      {/* Description - Readable contrast */}
-      <p className="text-gray-300 text-xs mb-2 line-clamp-2 leading-relaxed">
-        {card.description}
-      </p>
-
-      {/* Why for pet - Personalized reason, prominent placement above CTA */}
+      {/* Why for pet - Card-specific personalized reason */}
       {card.why_for_pet && (
-        <p className="text-xs text-amber-300/90 mb-2 font-medium">
+        <p className="text-xs text-amber-300/90 mb-1.5 font-medium pl-10">
           ✦ {card.why_for_pet}
         </p>
       )}
 
-      {/* CTA Button - Solid color, no gradient, white text */}
+      {/* CTA Button - Uses card-specific cta_text */}
       <button
         onClick={handleClick}
-        disabled={isLoading}
+        disabled={isLoading || ticketCreated}
         data-testid={`concierge-cta-${card.id}`}
         className={`w-full py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${
-          isProduct 
-            ? 'bg-pink-500 hover:bg-pink-600 text-white' 
-            : 'bg-purple-500 hover:bg-purple-600 text-white'
+          ticketCreated
+            ? 'bg-green-500/20 text-green-300 cursor-default'
+            : isProduct 
+              ? 'bg-pink-500 hover:bg-pink-600 text-white' 
+              : 'bg-purple-500 hover:bg-purple-600 text-white'
         } ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
       >
         {isLoading ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>Creating...</span>
+          </>
+        ) : ticketCreated ? (
+          <>
+            <Check className="w-4 h-4" />
+            <span>{ctaText}</span>
+          </>
         ) : (
           <>
-            {isProduct ? `Create for ${petName}` : 'Request'}
+            <span>{ctaText}</span>
             <ChevronRight className="w-3.5 h-3.5" />
           </>
         )}
