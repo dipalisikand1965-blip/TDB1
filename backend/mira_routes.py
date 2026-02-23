@@ -7809,7 +7809,7 @@ async def load_pet_soul(pet_id: str) -> Dict:
         # ═══════════════════════════════════════════════════════════════════════════
         "favorite_treats": preferences.get("favorite_treats", []) or doggy_soul.get("favorite_treats") or doggy_soul.get("treat_preference"),
         "favorite_flavors": preferences.get("favorite_flavors", []),
-        "dislikes": preferences.get("dislikes", []) or soul_data.get("dislikes", []) or pet.get("soul_enrichments", {}).get("dislikes", []),
+        "dislikes": preferences.get("dislikes", []) or soul_data.get("dislikes", []) or (pet.get("soul_enrichments", {}).get("dislikes", []) if isinstance(pet.get("soul_enrichments"), dict) else []),
         "diet_type": preferences.get("diet_type") or doggy_soul.get("diet_type") or doggy_soul.get("dietary_preference"),
         "activity_level": preferences.get("activity_level") or doggy_soul.get("energy_level"),
         # ═══════════════════════════════════════════════════════════════════════════
