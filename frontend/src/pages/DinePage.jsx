@@ -299,33 +299,6 @@ const DinePage = () => {
       
       {/* Dining Concierge Picker - Rover-style service request widget */}
       <DiningConciergePicker />
-        
-        {/* Concierge Pick Card - Personalized dining service */}
-        {activePet && (
-          <div className="mt-6">
-            <ConciergePickCard
-              pet={{
-                name: activePet.name,
-                breed: activePet.breed,
-                photo: activePet.photo_url,
-                soulTraits: activePet.personality_traits || [],
-                id: activePet.id
-              }}
-              pillar="dine"
-              title={CONCIERGE_PRESETS.dine.title}
-              icon={CONCIERGE_PRESETS.dine.icon}
-              description={CONCIERGE_PRESETS.dine.description}
-              soulReason={getSoulBasedReason(activePet, 'dine')}
-              responseTime="2 hours"
-            />
-          </div>
-        )}
-        
-        {/* Mira's Picks for Pet */}
-        {activePet && (
-          <PillarPicksSection pillar="dine" pet={activePet} />
-        )}
-      </div>
 
       {/* Elevated Concierge® Experiences */}
       <div className="max-w-6xl mx-auto px-4 py-12">
