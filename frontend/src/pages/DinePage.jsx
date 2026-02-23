@@ -283,6 +283,7 @@ const DinePage = () => {
               petName={activePet.name}
               pillar="dine"
               token={token}
+              userEmail={authUser?.email || user?.email}
             />
           </div>
         </div>
