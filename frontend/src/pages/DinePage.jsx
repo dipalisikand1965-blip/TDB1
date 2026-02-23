@@ -527,28 +527,61 @@ const DinePage = () => {
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
                   <Package className="w-7 h-7 text-orange-500" />
-                  Dine Essentials
+                  {activeTab === 'feeding-tools' ? 'Feeding Tools' : 
+                   activeTab === 'supplements' ? 'Supplements' : 'Dine Essentials'}
                 </h2>
-                <p className="text-gray-600 mt-1">Feeding tools, supplements & gift kits</p>
+                <p className="text-gray-600 mt-1">
+                  {activeTab === 'feeding-tools' ? 'Bowls, feeders & accessories for your pet' : 
+                   activeTab === 'supplements' ? 'Vitamins & nutritional support' : 
+                   'Feeding tools, supplements & gift kits'}
+                </p>
               </div>
             </div>
             
-            {/* Category Pills */}
-            <div className="flex flex-wrap gap-2 mb-6">
-              <Badge className="bg-orange-100 text-orange-700 cursor-pointer hover:bg-orange-200 px-3 py-1">All</Badge>
-              <Badge variant="outline" className="cursor-pointer hover:bg-gray-100 px-3 py-1">
-                <Utensils className="w-3 h-3 mr-1" /> Feeding Tools
-              </Badge>
-              <Badge variant="outline" className="cursor-pointer hover:bg-gray-100 px-3 py-1">
-                <Leaf className="w-3 h-3 mr-1" /> Supplements
-              </Badge>
-              <Badge variant="outline" className="cursor-pointer hover:bg-gray-100 px-3 py-1">
-                <Gift className="w-3 h-3 mr-1" /> Gift Kits
-              </Badge>
-            </div>
+            {/* Category Pills - Only show when not on a specific tab */}
+            {!['feeding-tools', 'supplements'].includes(activeTab) && (
+              <div className="flex flex-wrap gap-2 mb-6">
+                <Badge 
+                  className={`cursor-pointer px-3 py-1 ${essentialsFilter === 'all' ? 'bg-orange-100 text-orange-700' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'}`}
+                  onClick={() => setEssentialsFilter('all')}
+                >
+                  All
+                </Badge>
+                <Badge 
+                  className={`cursor-pointer px-3 py-1 ${essentialsFilter === 'feeding_tools' ? 'bg-orange-100 text-orange-700' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'}`}
+                  onClick={() => setEssentialsFilter('feeding_tools')}
+                >
+                  <Utensils className="w-3 h-3 mr-1" /> Feeding Tools
+                </Badge>
+                <Badge 
+                  className={`cursor-pointer px-3 py-1 ${essentialsFilter === 'supplements' ? 'bg-orange-100 text-orange-700' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'}`}
+                  onClick={() => setEssentialsFilter('supplements')}
+                >
+                  <Leaf className="w-3 h-3 mr-1" /> Supplements
+                </Badge>
+                <Badge 
+                  className={`cursor-pointer px-3 py-1 ${essentialsFilter === 'gift' ? 'bg-orange-100 text-orange-700' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'}`}
+                  onClick={() => setEssentialsFilter('gift')}
+                >
+                  <Gift className="w-3 h-3 mr-1" /> Gift Kits
+                </Badge>
+              </div>
+            )}
             
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {bundles.map(bundle => (
+              {bundles
+                .filter(bundle => {
+                  // Filter based on activeTab first (from URL/tab navigation)
+                  if (activeTab === 'feeding-tools') return bundle.category === 'feeding_tools';
+                  if (activeTab === 'supplements') return bundle.category === 'supplements';
+                  // Then filter based on local essentialsFilter
+                  if (essentialsFilter === 'all') return true;
+                  if (essentialsFilter === 'feeding_tools') return bundle.category === 'feeding_tools';
+                  if (essentialsFilter === 'supplements') return bundle.category === 'supplements';
+                  if (essentialsFilter === 'gift') return bundle.category === 'gift_card' || bundle.name?.toLowerCase().includes('gift');
+                  return true;
+                })
+                .map(bundle => (
                 <Card 
                   key={bundle.id} 
                   className="overflow-hidden rounded-2xl hover:shadow-xl transition-all cursor-pointer flex flex-col"
