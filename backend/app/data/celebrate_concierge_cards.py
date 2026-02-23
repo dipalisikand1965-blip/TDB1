@@ -217,9 +217,17 @@ CELEBRATE_CONCIERGE_SERVICES: List[Dict[str, Any]] = [
         "description": "Full plan: theme, cake, moments, schedule, add-ons, all coordination handled.",
         "icon": "🎊",
         "why_concierge": "Complete celebration orchestration",
-        "cta_text": "Request",
+        "cta_text": "Request planning",
         "cta_action": "create_ticket",
         "ticket_category": "celebrate_planning",
+        "why_phrases": {
+            "social": "Full bash for social butterflies",
+            "playful": "Action-packed party planning",
+            "elegant": "Sophisticated celebration design",
+            "anxious": "Calm celebration with safe zones",
+            "pampered": "Luxe party for pampered pets",
+            "default": "End-to-end celebration planning"
+        },
         "ticket_questions": [
             {"id": "style", "question": "Playful party or elegant party?", "type": "choice", "options": ["Playful", "Elegant", "Mix of both"]},
             {"id": "datetime", "question": "Date/time + city/area?", "type": "text"},
