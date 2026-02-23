@@ -1720,16 +1720,24 @@ const PersonalizedPicksPanel = ({
                           </div>
                           <h4 className="text-xs font-medium text-white text-center mb-1">{product.name}</h4>
                           <p className="text-[10px] text-amber-300/80 text-center line-clamp-2">{product.description}</p>
+                          {/* Primary CTA - Flow to Chat */}
                           <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (product.links_to) {
+                                window.location.href = product.links_to;
+                              } else {
+                                hapticFeedback.success();
+                                flowPickToChat(product, 'celebrate');
+                              }
+                            }}
                             className={`w-full mt-2 py-1.5 rounded-lg text-[10px] font-medium transition-all ${
                               product.links_to
                                 ? 'bg-gradient-to-r from-amber-500 to-pink-500 text-white hover:opacity-90'
-                                : isSelected(product)
-                                ? 'bg-amber-500 text-white'
-                                : 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/40'
+                                : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:opacity-90'
                             }`}
                           >
-                            {product.links_to ? (product.cta || 'Design Now') : isSelected(product) ? '✓ Added' : (product.cta || 'Request')}
+                            {product.links_to ? (product.cta || 'Design Now') : (product.cta || 'Request')}
                           </button>
                         </div>
                       ))}
