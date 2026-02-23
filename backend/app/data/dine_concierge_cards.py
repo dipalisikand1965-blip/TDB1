@@ -129,7 +129,14 @@ DINE_CONCIERGE_PRODUCTS = [
         "icon": "shield",
         "description": "A safe shortlist + elimination-style plan to identify what suits {pet_name}.",
         "why_concierge": "Requires careful filtering and a structured plan - not generic advice.",
-        "cta_text": "Create Blueprint",
+        "cta_text": "Create blueprint",
+        "why_phrases": {
+            "sensitive_tummy": "Filters ingredients based on food rules",
+            "itchy": "Eliminates common skin irritants",
+            "allergy_prone": "Safe-food shortlist for allergies",
+            "anxious": "Structured plan to reduce stress",
+            "default": "Elimination-style safe diet plan"
+        },
         "default_questions": [
             {
                 "id": "symptoms",
