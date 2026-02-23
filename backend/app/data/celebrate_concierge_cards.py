@@ -612,18 +612,23 @@ def select_concierge_cards(
     }
     
     Never returns empty - uses breed/size defaults for thin profiles.
+    Now includes location-aware personalization.
     """
     soul_traits = pet_data.get("soul_traits", []) or []
     breed = pet_data.get("breed", "") or ""
     size = pet_data.get("size", "medium") or "medium"
     age_band = pet_data.get("age_band", "") or ""
     pet_name = pet_data.get("name", "your pet")
+    user_location = pet_data.get("user_location")  # 🌍 Location for personalization
     
     # ENHANCED: Derive traits from multiple sources (doggy_soul_answers, temperament, etc.)
     derived_traits = derive_traits_from_profile(pet_data)
     
     # Merge soul_traits with derived traits
     all_traits = list(set(soul_traits + derived_traits))
+    
+    city = user_location.get("city") if user_location else None
+    logger.info(f"[CELEBRATE CURATE] Pet: {pet_name}, City: {city}, Traits: {all_traits}")
     
     # If profile is still thin, add breed-based default traits
     if len(all_traits) < 2:
