@@ -345,28 +345,6 @@ const DinePage = () => {
               userEmail={authUser?.email || user?.email}
             />
           </div>
-          
-          {/* Nearby Pet-Friendly Places Carousel */}
-          <div className="mt-8">
-            <NearbyPlacesCarousel
-              pillar="dine"
-              petId={activePet.id}
-              petName={activePet.name}
-              token={token}
-              onReserveClick={(place) => {
-                // Open the same booking modal as Pet-Friendly Hangouts section
-                setSelectedRestaurant({
-                  id: place.id || `nearby-${place.name}`,
-                  name: place.name,
-                  address: place.address || 'Address available on request',
-                  city: place.city || 'Your City',
-                  rating: place.rating,
-                  phone: place.phone
-                });
-                setShowBookingModal(true);
-              }}
-            />
-          </div>
         </div>
       ) : token && !activePet ? (
         // Loading state while pets are being fetched
