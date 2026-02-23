@@ -2067,6 +2067,10 @@ const PersonalizedPicksPanel = ({
             selectedItems={selectedItems}
             onRemove={toggleSelection}
             onSendToConcierge={() => setShowConfirmation(true)}
+            onAskMira={(item) => {
+              // Flow single item to chat
+              flowPickToChat(item, item.pick_type || 'catalogue');
+            }}
             onClear={() => setSelectedItems([])}
             petName={pet?.name}
           />
