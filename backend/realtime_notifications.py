@@ -224,6 +224,37 @@ async def register_agent(sid, data):
 
 
 @sio.event
+async def register_member(sid, data):
+    """Register member with their email for targeted notifications"""
+    member_email = data.get('email')
+    user_id = data.get('user_id')
+    
+    if member_email:
+        connected_members[sid] = {
+            'member_email': member_email,
+            'user_id': user_id,
+            'connected_at': datetime.now(timezone.utc).isoformat(),
+            'last_heartbeat': datetime.now(timezone.utc).isoformat()
+        }
+        # Join member-specific room for targeted notifications
+        await sio.enter_room(sid, f'member:{member_email}')
+        logger.info(f"✅ Member registered: {member_email} ({sid})")
+        await sio.emit('member:registration_success', {
+            'email': member_email,
+            'status': 'connected'
+        }, room=sid)
+
+
+@sio.event
+async def member_disconnect(sid, data):
+    """Handle member disconnection"""
+    if sid in connected_members:
+        member_info = connected_members.pop(sid)
+        member_email = member_info.get('member_email', 'unknown')
+        logger.info(f"🔌 Member disconnected: {member_email} ({sid})")
+
+
+@sio.event
 async def subscribe_ticket(sid, data):
     """Subscribe agent to a specific ticket's updates"""
     ticket_id = data.get('ticket_id')
