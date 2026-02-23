@@ -6,7 +6,7 @@ The user, Dipali, is the founder of a "pet operating system" named Mira, built i
 
 ---
 
-## ✅ SESSION 10 - INTELLIGENCE LAYER COMPLETE - February 23, 2026
+## ✅ SESSION 11 - CELEBRATE CONCIERGE LIBRARY COMPLETE - February 23, 2026
 
 ### UI FIXES COMPLETED ✅
 
@@ -15,7 +15,7 @@ The user, Dipali, is the founder of a "pet operating system" named Mira, built i
 3. **PetHomePage Main Navbar** - Added site navigation for pillar access
 4. **MiraDemoPage Footer** - Added footer component
 
-### INTELLIGENCE LAYER BACKEND COMPLETE ✅
+### CELEBRATE CONCIERGE LIBRARY COMPLETE ✅
 
 Built the full 10-card Celebrate Concierge Library with persona-based scoring:
 
@@ -44,41 +44,33 @@ Built the full 10-card Celebrate Concierge Library with persona-based scoring:
 | Mystique (Shih Tzu) | Elegant | Cake Design, At-Home Setup | Warms up slowly, photo-ready |
 | Buddy (Golden Retriever) | Active | Outdoor Pack (99), End-to-End (100) | Playful, energetic, large |
 | Lola (Maltese, thin profile) | Small-elegant | Photo Kit, Cake + **Question Card** | Breed defaults + capture preferences |
+| Senior Dogs | Comfort-first | At-Home Setup, Quiet Plan boosted; Outdoor Pack penalized | Age-aware scoring |
 
-**Response Structure:**
-```json
-{
-  "concierge_products": [  // 2-3 bespoke deliverables → Ticket
-    {"name": "Custom Celebration Cake Design", "cta_action": "create_ticket", "_score": 78}
-  ],
-  "concierge_services": [  // 1-2 arrangements → Ticket
-    {"name": "At-Home Setup + Safe Zones", "cta_action": "create_ticket", "_score": 84}
-  ],
-  "question_card": {  // 0-1 if profile thin
-    "question": "What style celebration would Lola love?",
-    "options": ["Playful & colorful", "Elegant & minimal", ...]
-  },
-  "meta": {"cache_expires_at": "30 min", "total_cards": 5}
-}
-```
+### ACCEPTANCE CRITERIA ✅
 
-**Key Design Decisions (LOCKED):**
-- ❌ NO `catalogue_picks` in curated-set - catalogue handled separately
-- ✅ ALL concierge cards create tickets (no add-to-cart)
-- ✅ Persona scoring uses weights, not hard switches
-- ✅ Never returns empty - uses breed/size defaults for thin profiles
-- ✅ Ticket questions hardcoded in card library
+1. **Celebrate curated layer always returns 3-5 cards (never empty)**, even for thin profiles (micro-question fills the gap + breed/size defaults ensure cards)
+2. **All concierge cards create tickets** - no add-to-cart CTAs
+3. **Persona scoring uses weights, not hard switches** - traits boost/penalize but don't exclude
+4. **Senior Comfort modifier** - boosts comfort/quiet/short cards, penalizes high-stimulation cards
+5. **30-minute caching** - same picks across all UI surfaces within window
 
 ---
 
-## 🔴 NEXT: FRONTEND INTEGRATION (Phase 5)
+## 🔴 NEXT: PHASE 5 - FRONTEND INTEGRATION
 
-### What to Build:
+### Outcomes (Explicit):
+
+1. **Pillar page and Mira FAB must render the SAME server-returned curated set** for the active pet + pillar
+2. **No client-side recompute** - frontend is a pure renderer of server response
+3. **All CTAs create/attach tickets** - instant "Request received" feedback
+4. **Micro-question persists answer** and triggers re-fetch of curated set
+
+### Implementation:
 
 1. **PersonalizedPicksPanel.jsx** 
    - Call `/api/mira/curated-set/{pet_id}/celebrate`
-   - Render `concierge_products` cards (Create for {Pet})
-   - Render `concierge_services` cards (Request)
+   - Render `concierge_products` cards ("Create for {Pet}")
+   - Render `concierge_services` cards ("Request")
    - Render `question_card` if present
 
 2. **ConciergePickCard.jsx**
@@ -87,11 +79,13 @@ Built the full 10-card Celebrate Concierge Library with persona-based scoring:
 
 3. **Micro-question UI**
    - One-tap choice
-   - Persists preference via `POST /curated-set/answer`
-   - Triggers re-fetch of curated set
+   - Persists via `POST /curated-set/answer`
+   - Triggers re-fetch
 
-4. **Ensure Dynamic + Synced**
-   - Pillar page and FAB "{Pet}'s Picks" show same cards
+4. **Loading/Empty/Error States**
+   - Loading: Show skeleton cards
+   - Empty: Should NEVER happen (server guarantees 3-5)
+   - Error: Show "Mira is thinking..." with retry
 
 ---
 - `pets` collection has: breed, size, allergies, health_conditions
