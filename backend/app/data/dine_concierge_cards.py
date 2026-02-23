@@ -231,7 +231,14 @@ DINE_CONCIERGE_PRODUCTS = [
         "icon": "briefcase",
         "description": "A tailored kit + checklist so dining out with {pet_name} is calm and easy.",
         "why_concierge": "We match kit choices to size, temperament, and outing style.",
-        "cta_text": "Curate Kit",
+        "cta_text": "Curate kit",
+        "why_phrases": {
+            "anxious": "Calming essentials for nervous outings",
+            "social": "Perfect gear for social butterflies",
+            "playful": "Fun kit for energetic dining companions",
+            "new_pet_parent": "Starter kit for first-time diners",
+            "default": "Everything you need for dining out"
+        },
         "default_questions": [
             {
                 "id": "public_comfort",
