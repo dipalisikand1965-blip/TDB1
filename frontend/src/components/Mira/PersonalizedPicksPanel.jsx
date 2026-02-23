@@ -1988,7 +1988,8 @@ const PersonalizedPicksPanel = ({
                       }`}
                       onClick={() => {
                         hapticFeedback.buttonTap();
-                        toggleSelection({
+                        // Flow directly to chat for fallback picks
+                        flowPickToChat({
                           ...fallbackPick,
                           id: `concierge-fallback-${activePillar}-${index}`,
                           pillar: activePillar,
