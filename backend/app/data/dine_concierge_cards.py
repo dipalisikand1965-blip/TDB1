@@ -895,9 +895,9 @@ def select_concierge_cards(
     selected_products = scored_products[:max(products_count, min_products)]
     selected_services = scored_services[:max(services_count, min_services)]
     
-    # Generate why explanations
+    # Generate why explanations with location awareness
     for card in selected_products + selected_services:
-        card["why_for_pet"] = generate_why_explanation(card, pet_name, soul_traits)
+        card["why_for_pet"] = generate_why_explanation(card, pet_name, soul_traits, user_location)
     
     return {
         "concierge_products": selected_products,
