@@ -288,9 +288,16 @@ CELEBRATE_CONCIERGE_SERVICES: List[Dict[str, Any]] = [
         "description": "Book photographer + plan the session around {pet_name}'s temperament.",
         "icon": "📷",
         "why_concierge": "Pet-aware photography coordination",
-        "cta_text": "Request",
+        "cta_text": "Book photographer",
         "cta_action": "create_ticket",
         "ticket_category": "celebrate_photography",
+        "why_phrases": {
+            "photo_ready": "Pro shoot for camera-ready pets",
+            "elegant": "Glamorous portrait session",
+            "anxious": "Patience-first, low-stress shoot",
+            "playful": "Action shots + candid moments",
+            "default": "Professional pet photography"
+        },
         "ticket_questions": [
             {"id": "location", "question": "Home or outdoor location + city/area?", "type": "text"},
             {"id": "style", "question": "Pet style: action shots vs posed portraits?", "type": "choice", "options": ["Action shots", "Posed portraits", "Mix of both"]},
