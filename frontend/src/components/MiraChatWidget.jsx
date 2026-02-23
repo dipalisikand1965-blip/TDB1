@@ -1326,46 +1326,47 @@ const MiraChatWidget = ({
           
           {/* Quick Actions Strip + Pet Picks Pill (part of Zone A - sticky) */}
           {!isMinimized && (
-            <div className="px-3 py-2 border-b bg-white flex items-center gap-2">
-              {/* Pet Picks Pill - Opens PersonalizedPicksPanel filtered to current pillar */}
-              {selectedPet && (
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setShowPicksPanel(true);
-                  }}
-                  className={`px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap min-h-[44px] touch-manipulation flex items-center gap-1.5 shrink-0 transition-all ${
-                    petRecommendations.length > 0
-                      ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg shadow-pink-500/30 animate-pulse'
-                      : 'bg-purple-100 text-purple-700 border border-purple-200'
-                  }`}
-                  data-testid="pet-picks-pill"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>{selectedPet.name}'s Picks</span>
-                </button>
-              )}
-              
-              {/* Services Pill - Shows pillar-specific concierge services */}
-              {selectedPet && (
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    // Send a message asking about services for this pillar
-                    sendMessage(`What ${pillar} services can you arrange for ${selectedPet.name}?`);
-                  }}
-                  className="px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap min-h-[44px] touch-manipulation flex items-center gap-1.5 shrink-0 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-800 border border-amber-200"
-                  data-testid="services-pill"
-                >
-                  <Package className="w-3.5 h-3.5" />
-                  <span>{selectedPet.name}'s Services</span>
-                </button>
-              )}
-              
-              {/* Quick Actions */}
-              <div className="flex gap-2 overflow-x-auto flex-1">
+            <div className="px-3 py-2 border-b bg-white">
+              {/* Pills row - scrollable horizontally */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                {/* Pet Picks Pill - Opens PersonalizedPicksPanel filtered to current pillar */}
+                {selectedPet && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setShowPicksPanel(true);
+                    }}
+                    className={`px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap min-h-[44px] touch-manipulation flex items-center gap-1.5 shrink-0 transition-all ${
+                      petRecommendations.length > 0
+                        ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg shadow-pink-500/30 animate-pulse'
+                        : 'bg-purple-100 text-purple-700 border border-purple-200'
+                    }`}
+                    data-testid="pet-picks-pill"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>{selectedPet.name}'s Picks</span>
+                  </button>
+                )}
+                
+                {/* Services Pill - Shows pillar-specific concierge services */}
+                {selectedPet && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      // Send a message asking about services for this pillar
+                      sendMessage(`What ${pillar} services can you arrange for ${selectedPet.name}?`);
+                    }}
+                    className="px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap min-h-[44px] touch-manipulation flex items-center gap-1.5 shrink-0 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-800 border border-amber-200"
+                    data-testid="services-pill"
+                  >
+                    <Package className="w-3.5 h-3.5" />
+                    <span>{selectedPet.name}'s Services</span>
+                  </button>
+                )}
+                
+                {/* Quick Actions - remaining space */}
                 {(quickActions || []).slice(0, 3).map((action, idx) => {
                   if (!action || typeof action !== 'string') return null;
                   const isKitAction = action.toLowerCase().includes('build');
@@ -1373,7 +1374,7 @@ const MiraChatWidget = ({
                     <button
                       key={idx}
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); sendMessage(action); }}
-                      className={`px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap min-h-[44px] touch-manipulation ${
+                      className={`px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap min-h-[44px] touch-manipulation shrink-0 ${
                         isKitAction 
                           ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white active:from-purple-700 active:to-pink-700' 
                           : 'bg-gray-100 text-gray-700 active:bg-gray-200'
