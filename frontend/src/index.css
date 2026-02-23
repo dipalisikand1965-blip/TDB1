@@ -10,6 +10,9 @@
 /* Import Mira Premium styles including Learn OS */
 @import './styles/mira-premium.css';
 
+/* Import iOS Gold Standard Premium styles for Celebrate & Dine */
+@import './styles/ios-premium.css';
+
 /* ============================================
    MOBILE PWA STABILITY - CRITICAL FOR SAFARI
    ============================================ */
