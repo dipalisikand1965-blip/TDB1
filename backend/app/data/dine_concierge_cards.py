@@ -436,11 +436,18 @@ DINE_CONCIERGE_SERVICES = [
     {
         "id": "dine_wont_eat_rapid_fix",
         "type": "concierge_service",
-        "name": "My Dog Won't Eat (Rapid Fix Plan)",
+        "name": "My Dog Won't Eat (Rapid Fix)",
         "icon": "alert-circle",
         "description": "Quick triage + a practical plan. If there are red flags, we escalate immediately.",
         "why_concierge": "Needs triage logic and safe escalation pathways.",
-        "cta_text": "Get Help Now",
+        "cta_text": "Get help now",
+        "why_phrases": {
+            "picky": "Solutions for stubborn eaters",
+            "anxious": "Stress-related appetite fix",
+            "senior": "Senior appetite support",
+            "sensitive_tummy": "Tummy-friendly reintroduction plan",
+            "default": "Quick triage + practical plan"
+        },
         "default_questions": [
             {
                 "id": "since_when",
