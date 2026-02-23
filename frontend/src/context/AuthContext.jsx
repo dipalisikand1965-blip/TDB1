@@ -181,6 +181,88 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  // Auto-detect geolocation after login
+  useEffect(() => {
+    const detectLocation = async () => {
+      if (!token || !user) return;
+      
+      // Only detect once per session
+      const hasDetected = sessionStorage.getItem('geo_detected');
+      if (hasDetected) return;
+      
+      sessionStorage.setItem('geo_detected', 'true');
+      console.log('[GEO] 🌍 Auto-detecting location for', user.email);
+      
+      // Check if geolocation is supported
+      if (!navigator.geolocation) {
+        console.log('[GEO] Browser does not support geolocation');
+        return;
+      }
+      
+      try {
+        // Get position from browser
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: false,
+            timeout: 10000,
+            maximumAge: 300000 // Cache for 5 mins
+          });
+        });
+        
+        const { latitude, longitude } = position.coords;
+        console.log(`[GEO] 📍 Got coordinates: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+        
+        // Reverse geocode using our backend (uses Google API)
+        let city = null, state = null, country = null;
+        
+        try {
+          const geoResponse = await fetch(
+            `${API_URL}/api/geo/reverse?lat=${latitude}&lng=${longitude}`
+          );
+          const geoData = await geoResponse.json();
+          
+          if (geoData.success) {
+            city = geoData.city;
+            state = geoData.state;
+            country = geoData.country;
+            console.log(`[GEO] ✅ Location: ${city}, ${state} (via ${geoData.source})`);
+          }
+        } catch (geoError) {
+          console.log('[GEO] Reverse geocode failed');
+        }
+        
+        // Save to user profile
+        await fetch(`${API_URL}/api/member/location`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            latitude,
+            longitude,
+            city,
+            state,
+            country,
+            source: 'auto'
+          })
+        });
+        
+      } catch (error) {
+        // Silent fail - geolocation is optional
+        if (error.code === 1) {
+          console.log('[GEO] User denied location permission');
+        } else {
+          console.log('[GEO] Location detection skipped');
+        }
+      }
+    };
+    
+    // Run with slight delay to not block login UX
+    const timer = setTimeout(detectLocation, 1500);
+    return () => clearTimeout(timer);
+  }, [token, user]);
+
   return (
     <AuthContext.Provider value={{ 
       user, 
