@@ -350,9 +350,17 @@ CELEBRATE_CONCIERGE_SERVICES: List[Dict[str, Any]] = [
         "description": "Low-stimulation plan: calm treats, gentle enrichment, controlled guest flow for {pet_name}.",
         "icon": "🤫",
         "why_concierge": "Anxiety-aware celebration design",
-        "cta_text": "Request",
+        "cta_text": "Request quiet plan",
         "cta_action": "create_ticket",
         "ticket_category": "celebrate_quiet",
+        "why_phrases": {
+            "anxious": "Low-stimulation for nervous pets",
+            "warms_up_slowly": "Controlled guest flow for cautious pets",
+            "noise_sensitive": "Noise-free celebration design",
+            "senior": "Gentle celebration for senior pets",
+            "calm": "Peaceful, relaxed celebration",
+            "default": "Quiet, low-stress celebration"
+        },
         "ticket_questions": [
             {"id": "triggers", "question": "Known triggers (doorbell, strangers, balloons, loud music)?", "type": "text"},
             {"id": "style", "question": "Preferred celebration style: solo moment vs 1-2 guests?", "type": "choice", "options": ["Solo moment", "1-2 close guests", "Small gathering (3-5)"]},
