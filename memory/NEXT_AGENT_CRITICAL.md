@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://concierge-pillars.preview.emergentagent.com
+https://concierge-flow.preview.emergentagent.com
 
 ---
 
