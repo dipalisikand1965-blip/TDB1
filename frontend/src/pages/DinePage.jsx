@@ -763,10 +763,12 @@ const DinePage = () => {
               )}
             </>
           )}
-        </div>
+        </section>
         
-        {/* Nearby Pet Cafes & Dog Parks - Part of Dine Out Section */}
-        <div className="mt-8 bg-gradient-to-b from-orange-50 to-white py-8 px-4 -mx-4 rounded-2xl">
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {/* PET CAFES NEAR ME - With city search */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        <section className="mt-8 bg-gradient-to-b from-orange-50 to-white py-8 px-4 -mx-4 rounded-2xl">
           <div className="max-w-full mx-auto">
             <div className="text-center mb-6">
               <h3 className="text-xl font-bold text-gray-800 flex items-center justify-center gap-2">
