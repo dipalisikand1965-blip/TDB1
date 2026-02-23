@@ -282,6 +282,7 @@ const DinePage = () => {
             petId={activePet.id}
             petName={activePet.name}
             pillar="dine"
+            token={token}
             className="mb-8"
           />
         </div>
