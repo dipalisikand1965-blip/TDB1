@@ -1271,7 +1271,7 @@ const MiraChatWidget = ({
               <div>
                 <p className="font-semibold text-sm sm:text-base">Mira</p>
                 <p className="text-[10px] sm:text-xs opacity-80">
-                  {isListening ? '🎤 Listening...' : isSpeaking ? '🔊 Speaking...' : 'Pet Concierge®'}
+                  {isListening ? '🎤 Listening...' : isSpeaking ? '🔊 Speaking...' : `${selectedPet?.name || 'Pet'}'s Soul Mate`}
                 </p>
               </div>
             </div>
