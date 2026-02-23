@@ -815,8 +815,87 @@ const PersonalizedPicksPanel = ({
   const [isSending, setIsSending] = useState(false); // Prevent double submission
   const [undoToast, setUndoToast] = useState(null); // { item, timeout } for 5-second undo
   const [taskStatuses, setTaskStatuses] = useState({}); // { pickId: 'scheduled' | 'in_progress' | 'requested' }
+  const [favorites, setFavorites] = useState([]); // Pet's saved favorites
+  const [savingFavorite, setSavingFavorite] = useState({}); // Track which item is being saved
   const scrollRef = useRef(null);
   const undoTimeoutRef = useRef(null);
+  
+  // Load pet's favorites on mount
+  useEffect(() => {
+    const loadFavorites = async () => {
+      if (!pet?.id) return;
+      try {
+        const res = await fetch(`${API_URL}/api/favorites/${pet.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setFavorites(data.favorites || []);
+        }
+      } catch (err) {
+        console.log('Could not load favorites:', err);
+      }
+    };
+    loadFavorites();
+  }, [pet?.id]);
+  
+  // Check if a pick is favorited
+  const isFavorited = useCallback((pick) => {
+    const pickId = pick.id || pick.pick_id || pick.product_id;
+    return favorites.some(f => f.item_id === pickId);
+  }, [favorites]);
+  
+  // Save/unsave to favorites
+  const toggleFavorite = useCallback(async (pick) => {
+    if (!pet?.id) return;
+    
+    const pickId = pick.id || pick.pick_id || pick.product_id;
+    setSavingFavorite(prev => ({ ...prev, [pickId]: true }));
+    
+    try {
+      const isCurrentlyFavorited = isFavorited(pick);
+      
+      if (isCurrentlyFavorited) {
+        // Remove from favorites
+        const res = await fetch(`${API_URL}/api/favorites/remove`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pet_id: pet.id, item_id: pickId })
+        });
+        if (res.ok) {
+          setFavorites(prev => prev.filter(f => f.item_id !== pickId));
+          hapticFeedback.success();
+        }
+      } else {
+        // Add to favorites
+        const res = await fetch(`${API_URL}/api/favorites/add`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pet_id: pet.id,
+            item: {
+              id: pickId,
+              title: pick.name || pick.title,
+              type: pick.type || 'product',
+              category: pick.category,
+              service_type: pick.service_type,
+              pillar: activePillar,
+              icon: pick.icon
+            }
+          })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.item_added) {
+            setFavorites(prev => [...prev, data.item_added]);
+          }
+          hapticFeedback.success();
+        }
+      }
+    } catch (err) {
+      console.error('Error toggling favorite:', err);
+    } finally {
+      setSavingFavorite(prev => ({ ...prev, [pickId]: false }));
+    }
+  }, [pet?.id, isFavorited, activePillar]);
   
   // Get pillar info - either locked pillar or all pillars
   const displayPillars = isPillarLocked 
