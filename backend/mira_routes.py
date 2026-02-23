@@ -13955,6 +13955,7 @@ Pick one, and I'll give you a simple starting point! 🐾"""
     # ═══════════════════════════════════════════════════════════════════════════════
     # LOCATION FIX: Never default to Mumbai. If no city, don't search - ask user.
     # ═══════════════════════════════════════════════════════════════════════════════
+    logger.info(f"[PLACES DEBUG] detected_place_type={detected_place_type}, is_location_query={is_location_query}, user_city={user_city}")
     if detected_place_type and (is_location_query or user_city):
         # If no city available, skip Places search entirely
         if not user_city:
