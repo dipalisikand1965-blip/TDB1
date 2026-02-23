@@ -222,6 +222,7 @@
 
 | Task | Description | Already Have |
 |------|-------------|--------------|
+| Complete Favorites UI | Wire frontend "Save" button to API, display in pet profile | API + FavoritesPanel done |
 | Birthday Countdown on Dashboard | Show countdown widget | `birthday_engine.py` ready |
 | Allergy Filter on Dine | Auto-filter by soul allergies | Soul data available |
 | Connect Birthday Engine to UI | Surface existing backend to frontend | API exists |
