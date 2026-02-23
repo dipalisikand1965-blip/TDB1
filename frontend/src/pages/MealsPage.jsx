@@ -502,6 +502,11 @@ const MealsPage = () => {
     budget: null
   });
   
+  // FlowModal state
+  const [flowModalOpen, setFlowModalOpen] = useState(false);
+  const [activeFlowCardId, setActiveFlowCardId] = useState(null);
+  const [flowEntryPoint, setFlowEntryPoint] = useState('card_cta');
+  
   // Check if pet has allergies
   const petHasAllergies = useMemo(() => {
     const allergies = activePet?.allergies || activePet?.soul_data?.allergies || [];
