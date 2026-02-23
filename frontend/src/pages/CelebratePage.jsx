@@ -759,17 +759,17 @@ const CelebratePage = () => {
         </div>
       </div>
 
-      {/* Featured Products - MOBILE: 2 tiles, DESKTOP: 3 tiles */}
-      <div className="max-w-6xl mx-auto px-4 py-10 sm:py-16" id="products-section">
+      {/* Featured Products - Premium Grid */}
+      <div className="max-w-6xl mx-auto px-4 py-10 sm:py-16 section-fade-in stagger-5" id="products-section" data-testid="celebrate-products-section">
         <div className="flex items-center justify-between mb-5 sm:mb-8">
           <div>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
+            <h2 className="ios-title-2 text-gray-900">
               {selectedSubcat 
                 ? CATEGORY_DISPLAY_NAMES[selectedSubcat] || celebrateCategories.find(c => c.id === selectedSubcat)?.name || 'Celebration Items'
                 : 'All Celebration Products'
               }
             </h2>
-            <p className="text-gray-600 text-sm sm:text-base">
+            <p className="ios-subhead text-gray-600">
               {selectedSubcat 
                 ? `Showing ${featuredProducts.length} items`
                 : `${featuredProducts.length} products • Tap a category above to filter`
@@ -780,8 +780,9 @@ const CelebratePage = () => {
             <Button 
               variant="outline" 
               size="sm" 
-              className="gap-1 sm:gap-2 text-xs sm:text-sm"
+              className="gap-1 sm:gap-2 text-xs sm:text-sm haptic-btn rounded-full"
               onClick={() => handleSubcategoryChange(null)}
+              data-testid="show-all-products-btn"
             >
               Show All
             </Button>
@@ -791,23 +792,25 @@ const CelebratePage = () => {
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <Card key={i} className="p-3 sm:p-4 md:p-6 animate-pulse">
-                <div className="aspect-square bg-gray-200 rounded-lg mb-3 sm:mb-4"></div>
-                <div className="h-3 sm:h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-3 sm:h-4 bg-gray-200 rounded w-1/2"></div>
+              <Card key={i} className="glass-card p-3 sm:p-4 md:p-6">
+                <div className="aspect-square skeleton-shimmer rounded-2xl mb-3 sm:mb-4"></div>
+                <div className="h-3 sm:h-4 skeleton-shimmer rounded-full w-3/4 mb-2"></div>
+                <div className="h-3 sm:h-4 skeleton-shimmer rounded-full w-1/2"></div>
               </Card>
             ))}
           </div>
         ) : featuredProducts.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {featuredProducts.map((product) => (
-              <ProductCard key={product._id || product.id} product={product} />
+              <div key={product._id || product.id} className="haptic-card">
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
         ) : (
-          <Card className="p-8 sm:p-12 text-center">
+          <Card className="glass-card p-8 sm:p-12 text-center">
             <Cake className="w-10 h-10 sm:w-12 sm:h-12 text-pink-300 mx-auto mb-3 sm:mb-4" />
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="ios-headline text-gray-900 mb-2">
               {selectedSubcat ? 'No products in this category' : 'Coming Soon!'}
             </h3>
             <p className="text-sm text-gray-600">
