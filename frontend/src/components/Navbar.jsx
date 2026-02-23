@@ -1104,13 +1104,24 @@ const Navbar = () => {
                 {/* Beautiful Dropdown Menu - Dark theme to match nav */}
                 {pillar.dropdown && activeDropdown === pillar.id && (
                   <div 
-                    className={`absolute top-full ${getDropdownPosition(index)} w-52 bg-slate-800 text-white shadow-2xl rounded-lg py-2 z-50 border border-slate-600`}
-                    style={{ minWidth: '200px' }}
+                    className={`absolute top-full ${getDropdownPosition(index)} w-52 shadow-2xl rounded-lg py-2 z-50`}
+                    style={{ 
+                      minWidth: '200px',
+                      backgroundColor: '#1e293b',  // slate-800
+                      border: '1px solid #475569', // slate-600
+                      color: 'white'
+                    }}
                     onMouseEnter={() => handleMouseEnter(pillar.id)}
                     onMouseLeave={handleMouseLeave}
                   >
                     {/* Header */}
-                    <div className="px-4 py-2 border-b border-slate-600 bg-slate-700/50">
+                    <div 
+                      className="px-4 py-2"
+                      style={{ 
+                        borderBottom: '1px solid #475569',
+                        backgroundColor: 'rgba(51, 65, 85, 0.5)' // slate-700/50
+                      }}
+                    >
                       <div className="flex items-center gap-2">
                         <span className="text-lg">{pillar.icon}</span>
                         <span className="font-bold text-white">{pillar.name}</span>
@@ -1122,21 +1133,36 @@ const Navbar = () => {
                         key={item.path}
                         to={item.path}
                         onClick={() => setActiveDropdown(null)}
-                        className={`block px-4 py-2.5 text-sm transition-colors border-l-2 ${
-                          item.highlight 
-                            ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-pink-300 font-semibold border-pink-500 hover:from-purple-500/30 hover:to-pink-500/30' 
-                            : 'hover:bg-slate-700 text-gray-300 hover:text-white border-transparent hover:border-purple-400'
-                        }`}
+                        className="block px-4 py-2.5 text-sm transition-colors"
+                        style={{
+                          color: item.highlight ? '#f9a8d4' : '#d1d5db',
+                          backgroundColor: item.highlight ? 'rgba(147, 51, 234, 0.2)' : 'transparent',
+                          borderLeft: item.highlight ? '2px solid #ec4899' : '2px solid transparent'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = item.highlight ? 'rgba(147, 51, 234, 0.3)' : '#334155';
+                          e.target.style.color = 'white';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = item.highlight ? 'rgba(147, 51, 234, 0.2)' : 'transparent';
+                          e.target.style.color = item.highlight ? '#f9a8d4' : '#d1d5db';
+                        }}
                       >
                         {item.name}
                       </Link>
                     ))}
                     {/* View All Link */}
-                    <div className="px-4 py-2 border-t border-slate-600 mt-1">
+                    <div 
+                      className="px-4 py-2 mt-1"
+                      style={{ borderTop: '1px solid #475569' }}
+                    >
                       <Link
                         to={pillar.path}
                         onClick={() => setActiveDropdown(null)}
-                        className="text-xs font-semibold text-pink-400 hover:text-pink-300 flex items-center gap-1"
+                        className="text-xs font-semibold flex items-center gap-1"
+                        style={{ color: '#f472b6' }}
+                        onMouseEnter={(e) => e.target.style.color = '#fbcfe8'}
+                        onMouseLeave={(e) => e.target.style.color = '#f472b6'}
                       >
                         View All {pillar.name} →
                       </Link>
