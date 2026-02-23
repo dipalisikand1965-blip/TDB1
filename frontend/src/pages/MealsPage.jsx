@@ -727,12 +727,6 @@ const MealsPage = () => {
                 <FreshMealsCuratedPicks 
                   pet={activePet}
                   token={token}
-                  onCardAction={(card) => {
-                    // Open FlowModal for products, or use Universal Service Command for services
-                    if (card.type === 'concierge_product') {
-                      handleCardCTA(CANONICAL_CARD_IDS.TRIAL_PACK, 'curated_pick');
-                    }
-                  }}
                   className="[&_h3]:hidden" // Hide the section header since we have our own
                 />
               </div>
