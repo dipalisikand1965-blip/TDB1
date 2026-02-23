@@ -637,6 +637,185 @@ const DinePage = () => {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {/* PET CAFES - City Worldwide Search */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        <section className="mt-12 bg-gradient-to-b from-orange-50 to-white py-8 px-4 -mx-4 rounded-2xl">
+          <div className="max-w-full mx-auto">
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-bold text-gray-800 flex items-center justify-center gap-2">
+                <Coffee className="w-5 h-5 text-orange-600" />
+                Pet Cafes Worldwide
+              </h3>
+              <p className="text-gray-600 text-sm max-w-xl mx-auto">
+                Search any city worldwide for pet-friendly cafes & parks
+              </p>
+              
+              {/* City Search Input - Worldwide Support */}
+              <div className="flex flex-col items-center gap-4 mt-4">
+                <div className="flex gap-2 max-w-md w-full">
+                  <div className="relative flex-1">
+                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input
+                      type="text"
+                      placeholder="Enter any city (e.g., Paris, Tokyo, New York...)"
+                      value={selectedNearbyCity}
+                      onChange={(e) => setSelectedNearbyCity(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && fetchNearbyPlaces(selectedNearbyCity)}
+                      className="pl-10 h-11"
+                      data-testid="dine-city-search-input"
+                    />
+                  </div>
+                  <Button 
+                    onClick={() => fetchNearbyPlaces(selectedNearbyCity)}
+                    className="bg-orange-600 hover:bg-orange-700 h-11 px-6"
+                    data-testid="dine-city-search-btn"
+                  >
+                    <Search className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                {/* Quick City Picks */}
+                <div className="flex flex-wrap justify-center gap-2">
+                  <span className="text-xs text-gray-500 mr-2">Quick picks:</span>
+                  {['Mumbai', 'Delhi', 'Goa', 'Bangalore', 'Paris', 'London', 'Dubai', 'Singapore'].map((city) => (
+                    <Button
+                      key={city}
+                      variant={selectedNearbyCity.toLowerCase() === city.toLowerCase() ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setSelectedNearbyCity(city); fetchNearbyPlaces(city); }}
+                      className={`text-xs ${selectedNearbyCity.toLowerCase() === city.toLowerCase() ? 'bg-orange-600 hover:bg-orange-700' : ''}`}
+                      data-testid={`dine-quick-city-${city.toLowerCase()}`}
+                    >
+                      {city}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            {nearbyLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-orange-600" />
+                <span className="ml-2 text-gray-600">Finding pet-friendly spots in {selectedNearbyCity}...</span>
+              </div>
+            ) : (
+              <>
+                {/* Pet Cafes Grid */}
+                {nearbyCafes.length > 0 && (
+                  <div className="mb-8">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                      <Coffee className="w-5 h-5 text-orange-600" />
+                      Pet Cafes in {selectedNearbyCity.charAt(0).toUpperCase() + selectedNearbyCity.slice(1)}
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {nearbyCafes.slice(0, 8).map((cafe, idx) => (
+                        <Card key={idx} className="overflow-hidden hover:shadow-lg transition-all duration-300 group" data-testid={`cafe-card-${idx}`}>
+                          <div className="p-4">
+                            <div className="flex items-start gap-3">
+                              <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-xl">
+                                ☕
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-semibold text-gray-800 text-sm line-clamp-1">{cafe.name}</h4>
+                                <p className="text-xs text-gray-500">{cafe.address || cafe.area || selectedNearbyCity}</p>
+                              </div>
+                            </div>
+                            
+                            {cafe.rating && (
+                              <div className="flex items-center gap-1 mt-2">
+                                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                <span className="text-xs font-medium">{cafe.rating}</span>
+                              </div>
+                            )}
+                            
+                            <div className="mt-3 flex flex-wrap gap-1">
+                              <Badge className="bg-orange-100 text-orange-700 text-xs">Pet Friendly</Badge>
+                            </div>
+                            
+                            <div className="mt-3 flex gap-2">
+                              <Button
+                                size="sm"
+                                className="flex-1 bg-orange-600 hover:bg-orange-700 text-xs text-white"
+                                onClick={() => {
+                                  setSelectedRestaurant({
+                                    id: cafe.place_id || `cafe-${idx}`,
+                                    name: cafe.name,
+                                    address: cafe.address || cafe.area || selectedNearbyCity,
+                                    city: cafe.city || selectedNearbyCity,
+                                    rating: cafe.rating,
+                                    category: cafe.category,
+                                    phone: cafe.phone
+                                  });
+                                  setShowBookingModal(true);
+                                }}
+                              >
+                                <Calendar className="w-3 h-3 mr-1" /> Reserve
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-xs"
+                                onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cafe.name + ' ' + (cafe.city || selectedNearbyCity))}`, '_blank')}
+                              >
+                                <MapPin className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Dog Parks Grid */}
+                {nearbyParks.length > 0 && (
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                      <Trees className="w-5 h-5 text-green-600" />
+                      Dog Parks in {selectedNearbyCity.charAt(0).toUpperCase() + selectedNearbyCity.slice(1)}
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {nearbyParks.slice(0, 4).map((park, idx) => (
+                        <Card key={idx} className="overflow-hidden hover:shadow-lg transition-all" data-testid={`park-card-${idx}`}>
+                          <div className="p-4">
+                            <div className="flex items-start gap-3">
+                              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-xl">
+                                🌳
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-semibold text-gray-800 text-sm line-clamp-1">{park.name}</h4>
+                                <p className="text-xs text-gray-500">{park.address || park.area || selectedNearbyCity}</p>
+                              </div>
+                            </div>
+                            <div className="mt-3">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="w-full text-xs"
+                                onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(park.name + ' ' + (park.city || selectedNearbyCity))}`, '_blank')}
+                              >
+                                <MapPin className="w-3 h-3 mr-1" /> View on Map
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {nearbyCafes.length === 0 && nearbyParks.length === 0 && (
+                  <div className="text-center py-8">
+                    <Dog className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                    <p className="text-gray-500">No places found for this city. Try another!</p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
         {/* CONCIERGE FEATURED RESTAURANTS */}
         {/* ═══════════════════════════════════════════════════════════════════════ */}
         <section id="restaurants" className="mt-12 scroll-mt-20">
