@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Menu, X, Search, User, ChevronDown, ChevronUp, ChevronRight, Sparkles, PawPrint, LogOut, Mic, MicOff, Loader2, Package } from 'lucide-react';
+import { ShoppingCart, Menu, X, Search, User, ChevronDown, ChevronUp, ChevronRight, Sparkles, PawPrint, LogOut, Mic, MicOff, Loader2, Package, Bell } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { intelligentSearch } from '../utils/unifiedApi';
 import { API_URL } from '../utils/api';
 import MiraSearchPanel from './MiraSearchPanel';
+import NotificationBell from './Mira/NotificationBell';
 
 /**
  * Clean Navbar with all 14 Pillars
