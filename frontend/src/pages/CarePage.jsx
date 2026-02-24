@@ -27,6 +27,9 @@ import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import TransformationStories from '../components/TransformationStories';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
+// NEW: Grooming Flow Modal
+import GroomingFlowModal from '../components/GroomingFlowModal';
+import GroomingEntryCards from '../components/GroomingEntryCards';
 // NEW: FitPage-style engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
 import ConversationalEntry from '../components/ConversationalEntry';
