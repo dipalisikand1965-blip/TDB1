@@ -6267,9 +6267,11 @@ async def get_public_products(
     availability: Optional[str] = None,  # 'fresh' or 'pan-india'
     search: Optional[str] = None,
     pillar: Optional[str] = None,
-    breed: Optional[str] = None,  # NEW: Filter by breed
-    page: int = 1,  # NEW: Pagination
-    limit: int = 50  # Changed from 100 for faster loading
+    breed: Optional[str] = None,  # Filter by breed
+    shape: Optional[str] = None,  # NEW: Filter by cake shape (paw, bone, heart, etc.)
+    page: int = 1,
+    limit: int = 50,
+    skip: int = 0  # Direct skip parameter for more control
 ):
     """Public endpoint for products - queries both products and unified_products collections"""
     query = {}
