@@ -249,6 +249,28 @@ const PILLAR_CONFIGS = {
   },
 
   // ─────────────────────────────────────────────────────────────────────────────
+  // SERVICES - Service Hub
+  // ─────────────────────────────────────────────────────────────────────────────
+  services: {
+    title: 'Concierge® Services',
+    subtitle: 'Premium curated experiences for your pet',
+    theme: {
+      gradient: 'from-slate-900 via-amber-950/80 to-slate-900',
+      accent: 'amber',
+      buttonGradient: 'from-amber-500 to-orange-500',
+      scrollbarColor: 'rgba(245, 158, 11, 0.5)'
+    },
+    items: [
+      { id: 'spa-day', name: 'Luxury Spa Day', description: 'Full grooming + massage + pawdicure', icon: '💆', category: 'grooming', soulTip: 'The ultimate pampering' },
+      { id: 'photo-session', name: 'Pet Photoshoot', description: 'Professional studio photography', icon: '📸', category: 'photography', soulTip: 'Capture their personality' },
+      { id: 'wellness-check', name: 'Wellness Package', description: 'Complete health checkup + report', icon: '🏥', category: 'health', soulTip: 'Peace of mind' },
+      { id: 'personal-trainer', name: 'Personal Training Session', description: 'One-on-one behavior training', icon: '🎓', category: 'training', soulTip: 'Build good habits' },
+      { id: 'party-planner', name: 'Party Planning Service', description: 'Full event coordination', icon: '🎈', category: 'celebration', soulTip: 'Stress-free celebrations' },
+      { id: 'concierge-shopping', name: 'Personal Shopper', description: 'Let Concierge® pick the perfect items', icon: '🛍️', category: 'shopping', soulTip: 'Curated just for them' }
+    ]
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────────
   // SHOP - General Merchandise
   // ─────────────────────────────────────────────────────────────────────────────
   shop: {
