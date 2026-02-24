@@ -461,10 +461,14 @@ const CelebratePage = () => {
     
     try {
       const skip = (page - 1) * PRODUCTS_PER_PAGE;
-      // Build API URL with category filter and pagination
+      // Build API URL with category filter, pagination, and shape filter
       let url = `${API_URL}/api/products?pillar=celebrate&limit=${PRODUCTS_PER_PAGE}&skip=${skip}`;
       if (category && CATEGORY_API_MAP[category]) {
         url += `&category=${CATEGORY_API_MAP[category]}`;
+      }
+      // Add shape filter to API call (backend handles it now)
+      if (shapeFilter) {
+        url += `&shape=${shapeFilter}`;
       }
       
       const response = await fetch(url);
