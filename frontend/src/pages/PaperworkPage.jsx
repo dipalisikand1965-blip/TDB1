@@ -936,27 +936,6 @@ const PaperworkPage = () => {
         maxServices={8}
       />
       
-      {/* Concierge Pick Card - Document management */}
-      {userPets && userPets[0] && (
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <ConciergePickCard
-            pet={{
-              name: userPets[0].name,
-              breed: userPets[0].breed,
-              photo: userPets[0].photo_url,
-              soulTraits: userPets[0].personality_traits || [],
-                id: userPets[0].id
-            }}
-            pillar="paperwork"
-            title={CONCIERGE_PRESETS.paperwork.title}
-            icon={CONCIERGE_PRESETS.paperwork.icon}
-            description={CONCIERGE_PRESETS.paperwork.description}
-            soulReason={getSoulBasedReason(userPets[0], 'paperwork')}
-            responseTime="24 hours"
-          />
-        </div>
-      )}
-      
       {/* ═══════════════════════════════════════════════════════════════════
           HANDPICKED FOR {PET} - Curated concierge products & services
           Server-driven cards with CONCIERGE® PRODUCT/SERVICE badges
