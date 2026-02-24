@@ -500,29 +500,6 @@ const TravelPage = () => {
         </div>
       </div>
 
-      {/* ==================== PERSONALIZED PICKS ==================== */}
-      <div className="py-10 bg-gradient-to-b from-white to-purple-50/30">
-        <div className="max-w-6xl mx-auto px-4 mb-6">
-          <PersonalizedPicks pillar="travel" />
-        </div>
-        
-        {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
-        <MiraCuratedLayer
-          pillar="travel"
-          activePet={userPets?.[0]}
-          token={token}
-          userEmail={user?.email}
-          isLoading={!userPets && !!token}
-        />
-        
-        {/* Mira's Picks for Pet */}
-        {userPets && userPets[0] && (
-          <div className="max-w-6xl mx-auto px-4 mt-6">
-            <PillarPicksSection pillar="travel" pet={userPets[0]} />
-          </div>
-        )}
-      </div>
-
       {/* ==================== TRANSFORMATION STORIES ==================== */}
       <div className="py-12 bg-white">
         <div className="max-w-6xl mx-auto px-4">
