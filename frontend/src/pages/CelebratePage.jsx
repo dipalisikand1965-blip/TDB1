@@ -528,6 +528,18 @@ const CelebratePage = () => {
               />
             </div>
             
+            {/* ═══════════════════════════════════════════════════════════════════════ */}
+            {/* PERSONALIZED ITEMS - Custom items with pet's name/photo */}
+            {/* Concierge® creates these (mugs, portraits, plush toys, etc.) */}
+            {/* ═══════════════════════════════════════════════════════════════════════ */}
+            <div className="mt-6" data-testid="personalized-items-wrapper">
+              <PersonalizedItemsSection
+                pet={activePet}
+                token={token}
+                userEmail={user?.email}
+              />
+            </div>
+            
             {/* TheDoggyBakery Promotion - Pan India Delivery */}
             <div className="mt-6 bg-gradient-to-r from-amber-50 via-orange-50 to-pink-50 rounded-2xl p-5 sm:p-6 border border-amber-200/50 shadow-sm">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
