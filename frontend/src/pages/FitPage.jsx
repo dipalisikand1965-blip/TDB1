@@ -654,6 +654,7 @@ const FitPage = () => {
       <div className="py-10 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <TransformationStories 
+            pillar="fit"
             onViewProgram={(program) => {
               const exp = FIT_EXPERIENCES.find(e => e.title.includes(program?.split('®')[0]));
               if (exp) {
