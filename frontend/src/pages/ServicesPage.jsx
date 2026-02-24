@@ -28,6 +28,7 @@ import {
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import ServiceQuickViewModal from '../components/Mira/ServiceQuickViewModal';
+import PersonalizedPillarSection from '../components/PersonalizedPillarSection';
 
 // =============================================================================
 // SERVICE CATEGORY ICONS & IMAGES
@@ -1157,6 +1158,22 @@ const ServicesPage = () => {
           )}
         </div>
       </section>
+      
+      {/* ═══════════════════════════════════════════════════════════════════
+          PERSONALIZED FOR {PET} - Custom service items created by Concierge®
+          ═══════════════════════════════════════════════════════════════════ */}
+      {selectedPet && (
+        <section className="bg-white py-8 sm:py-12">
+          <div className="max-w-7xl mx-auto px-4" data-testid="personalized-services-wrapper">
+            <PersonalizedPillarSection
+              pillar="services"
+              pet={selectedPet}
+              token={token}
+              userEmail={user?.email}
+            />
+          </div>
+        </section>
+      )}
       
       {/* Emotional Close */}
       <section className="bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] py-10 sm:py-14">
