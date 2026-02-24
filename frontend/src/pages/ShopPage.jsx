@@ -994,6 +994,24 @@ const ShopPage = () => {
         </div>
       )}
       
+      {/* ═══════════════════════════════════════════════════════════════════
+          HANDPICKED FOR {PET} - Curated concierge products & services
+          Server-driven cards with CONCIERGE® PRODUCT/SERVICE badges
+          ═══════════════════════════════════════════════════════════════════ */}
+      {selectedPet && (
+        <div className="max-w-7xl mx-auto px-4 mt-8">
+          <div className="glass-card-dark rounded-3xl p-4 md:p-6 shadow-xl">
+            <CuratedConciergeSection
+              petId={selectedPet.id || selectedPet._id}
+              petName={selectedPet.name}
+              pillar="shop"
+              token={token}
+              userEmail={user?.email}
+            />
+          </div>
+        </div>
+      )}
+      
       {/* Mira's Picks for Pet */}
       {selectedPet && (
         <div className="max-w-7xl mx-auto px-4">
