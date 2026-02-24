@@ -493,6 +493,33 @@ const StayPage = () => {
       title="Places Your Pet Feels at Home"
       description="Stays where your pet is welcome and comfortable"
     >
+      {/* ==================== MIRA'S CURATED LAYER - Gold Standard - ALWAYS FIRST ==================== */}
+      <section className="py-6 bg-gradient-to-b from-white to-emerald-50/30 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 mb-6">
+          <PersonalizedPicks pillar="stay" maxProducts={6} />
+        </div>
+        
+        {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
+        <MiraCuratedLayer
+          pillar="stay"
+          activePet={userPets?.[0]}
+          token={token}
+          userEmail={user?.email}
+          isLoading={!userPets && !!token}
+        />
+        
+        {/* Mira's Picks for Pet */}
+        {userPets && userPets[0] && (
+          <div className="max-w-6xl mx-auto px-4 mt-6">
+            <PillarPicksSection pillar="stay" pet={userPets[0]} />
+          </div>
+        )}
+        
+        <div className="max-w-7xl mx-auto px-4 mt-6">
+          <PetJourneyRecommendations currentPillar="stay" />
+        </div>
+      </section>
+
       {/* ==================== SOCIAL PROOF BANNER ==================== */}
       <div className="bg-white border-b border-gray-100 py-3">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
