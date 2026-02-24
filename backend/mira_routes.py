@@ -24580,7 +24580,7 @@ async def get_curated_set(
     
     try:
         # Validate pillar
-        valid_pillars = ["celebrate", "dine", "stay", "travel", "care", "enjoy", "fit", "learn", "shop"]
+        valid_pillars = ["celebrate", "dine", "stay", "travel", "care", "enjoy", "fit", "learn", "shop", "paperwork", "advisory", "services"]
         if pillar.lower() not in valid_pillars:
             raise HTTPException(status_code=400, detail=f"Invalid pillar: {pillar}")
         
