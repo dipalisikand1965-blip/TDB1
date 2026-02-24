@@ -407,12 +407,18 @@ function AppRouter() {
 
 // Main layout with navbar, footer, cart, etc.
 function MainLayout() {
+  const location = useLocation();
+  
+  // Hide navbar on auth pages for cleaner login/signup experience
+  const authPages = ['/login', '/register', '/member/forgot-password', '/reset-password', '/admin/forgot-password', '/admin/reset-password'];
+  const hideNavbar = authPages.some(path => location.pathname === path || location.pathname.startsWith(path));
+  
   return (
     <div className="App overflow-x-hidden">
       <ScrollToTop />
       <AppBadgeManager />
-      <Navbar />
-      <MemberMobileNav />
+      {!hideNavbar && <Navbar />}
+      {!hideNavbar && <MemberMobileNav />}
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Home is now outside MainLayout for clean landing experience */}
