@@ -515,6 +515,20 @@ const LearnPage = () => {
         {userPets && userPets[0] && (
           <PillarPicksSection pillar="learn" pet={userPets[0]} />
         )}
+        
+        {/* ═══════════════════════════════════════════════════════════════════
+            PERSONALIZED FOR {PET} - Custom training items created by Concierge®
+            ═══════════════════════════════════════════════════════════════════ */}
+        {userPets && userPets[0] && (
+          <div className="mt-6" data-testid="personalized-learn-wrapper">
+            <PersonalizedPillarSection
+              pillar="learn"
+              pet={userPets[0]}
+              token={token}
+              userEmail={user?.email}
+            />
+          </div>
+        )}
       </div>
 
       {/* === ELEVATED CONCIERGE® LEARN EXPERIENCES === */}
