@@ -105,6 +105,19 @@
 | Personalized accessories (mug, bandana, mat, tag) | ✅ DONE |
 | Universal Service Command integration | ✅ DONE |
 | Ticket creation in inbox | ✅ VERIFIED |
+| **✨ Personalized Items Section** | ✅ COMPLETE |
+| Mobile-friendly horizontal scroll | ✅ DONE |
+| "Swipe for more" hint | ✅ ADDED |
+| Matching mira-demo design | ✅ DONE |
+| **📦 Product Pagination** | ✅ COMPLETE |
+| "24 of 611 products" display | ✅ DONE |
+| "Load More Products" button | ✅ WORKING |
+| Incremental loading (24 at a time) | ✅ DONE |
+| **🎂 Shape Filters for Cakes** | ✅ COMPLETE |
+| 8 shape filter pills (paw, bone, heart, etc.) | ✅ DONE |
+| Backend API `shape` filter parameter | ✅ ADDED |
+| CakeBakeryConfig schema in product_master | ✅ ADDED |
+| "Concierge®" trademark on all buttons | ✅ FIXED |
 
 ### PREVIOUS SESSION (Feb 23, 2026)
 | Task | Status |
