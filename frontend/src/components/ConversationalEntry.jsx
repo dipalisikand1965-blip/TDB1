@@ -30,11 +30,11 @@ const PILLAR_GOALS = {
     title: (petName) => petName ? `Planning a trip with ${petName}?` : "What kind of stay are you looking for?",
     goals: [
       { id: 'vacation', label: 'Vacation getaway', icon: TreePine, gradient: 'from-emerald-400 to-teal-500', bg: 'bg-gradient-to-br from-emerald-50 to-teal-50' },
-      { id: 'boarding', label: 'Pet boarding', icon: Home, gradient: 'from-purple-400 to-violet-500', bg: 'bg-gradient-to-br from-purple-50 to-violet-50' },
+      { id: 'pet_friendly_hotel', label: 'Pet-friendly hotel', icon: Hotel, gradient: 'from-purple-400 to-violet-500', bg: 'bg-gradient-to-br from-purple-50 to-violet-50' },
       { id: 'staycation', label: 'Local staycation', icon: Building, gradient: 'from-blue-400 to-indigo-500', bg: 'bg-gradient-to-br from-blue-50 to-indigo-50' },
-      { id: 'business', label: 'Business trip', icon: Hotel, gradient: 'from-slate-400 to-gray-500', bg: 'bg-gradient-to-br from-slate-50 to-gray-50' },
-      { id: 'weekend', label: 'Weekend escape', icon: MapPin, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
-      { id: 'multi_pet', label: 'Multi-pet trip', icon: Users, gradient: 'from-pink-400 to-rose-500', bg: 'bg-gradient-to-br from-pink-50 to-rose-50' },
+      { id: 'resort', label: 'Pet-friendly resort', icon: Sparkles, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
+      { id: 'weekend', label: 'Weekend escape', icon: MapPin, gradient: 'from-rose-400 to-pink-500', bg: 'bg-gradient-to-br from-rose-50 to-pink-50' },
+      { id: 'travel_accommodation', label: 'Travel accommodation', icon: Home, gradient: 'from-cyan-400 to-blue-500', bg: 'bg-gradient-to-br from-cyan-50 to-blue-50' },
     ]
   },
   travel: {
