@@ -609,6 +609,20 @@ const CarePage = () => {
           {userPets && userPets[0] && (
             <PillarPicksSection pillar="care" pet={userPets[0]} />
           )}
+          
+          {/* ═══════════════════════════════════════════════════════════════════
+              PERSONALIZED FOR {PET} - Custom care items created by Concierge®
+              ═══════════════════════════════════════════════════════════════════ */}
+          {userPets && userPets[0] && (
+            <div className="mt-6" data-testid="personalized-care-wrapper">
+              <PersonalizedPillarSection
+                pillar="care"
+                pet={userPets[0]}
+                token={token}
+                userEmail={user?.email}
+              />
+            </div>
+          )}
         </div>
       </div>
 
