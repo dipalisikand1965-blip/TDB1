@@ -52,11 +52,11 @@ const PILLAR_GOALS = {
     title: (petName) => petName ? `What care does ${petName} need?` : "What care are you looking for?",
     goals: [
       { id: 'grooming', label: 'Grooming', icon: Scissors, gradient: 'from-pink-400 to-rose-500', bg: 'bg-gradient-to-br from-pink-50 to-rose-50' },
-      { id: 'vet_visit', label: 'Vet consultation', icon: Stethoscope, gradient: 'from-red-400 to-rose-500', bg: 'bg-gradient-to-br from-red-50 to-rose-50' },
-      { id: 'training', label: 'Training', icon: Award, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
-      { id: 'walking', label: 'Dog walking', icon: Dog, gradient: 'from-emerald-400 to-teal-500', bg: 'bg-gradient-to-br from-emerald-50 to-teal-50' },
-      { id: 'daycare', label: 'Pet daycare', icon: Home, gradient: 'from-purple-400 to-violet-500', bg: 'bg-gradient-to-br from-purple-50 to-violet-50' },
-      { id: 'anything_else', label: 'Anything else', icon: MessageCircle, gradient: 'from-amber-500 to-orange-600', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
+      { id: 'vet_clinic_booking', label: 'Vet Visits', icon: Stethoscope, gradient: 'from-blue-400 to-indigo-500', bg: 'bg-gradient-to-br from-blue-50 to-indigo-50' },
+      { id: 'boarding_daycare', label: 'Boarding & Daycare', icon: Building, gradient: 'from-emerald-400 to-teal-500', bg: 'bg-gradient-to-br from-emerald-50 to-teal-50' },
+      { id: 'pet_sitting', label: 'Pet Sitting', icon: Home, gradient: 'from-green-400 to-emerald-500', bg: 'bg-gradient-to-br from-green-50 to-emerald-50' },
+      { id: 'behavior_anxiety_support', label: 'Behavior Support', icon: Heart, gradient: 'from-purple-400 to-violet-500', bg: 'bg-gradient-to-br from-purple-50 to-violet-50' },
+      { id: 'senior_special_needs', label: 'Senior & Special Needs', icon: Award, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
     ]
   },
   dine: {
