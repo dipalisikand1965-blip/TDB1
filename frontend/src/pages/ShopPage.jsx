@@ -972,43 +972,25 @@ const ShopPage = () => {
       </section>
       
       {/* ═══════════════════════════════════════════════════════════════════
-          HANDPICKED FOR {PET} - Curated concierge products & services
-          Server-driven cards with CONCIERGE® PRODUCT/SERVICE badges
+          MIRA'S CURATED LAYER - Gold Standard Unified Component
+          Includes: Header + CuratedConciergeSection + PersonalizedPillarSection
           ═══════════════════════════════════════════════════════════════════ */}
-      {selectedPet && (
-        <div className="max-w-7xl mx-auto px-4 mt-8">
-          <div className="glass-card-dark rounded-3xl p-4 md:p-6 shadow-xl">
-            <CuratedConciergeSection
-              petId={selectedPet.id || selectedPet._id}
-              petName={selectedPet.name}
-              pillar="shop"
-              token={token}
-              userEmail={user?.email}
-            />
+      <div className="py-8 bg-gradient-to-b from-white to-fuchsia-50/30">
+        <MiraCuratedLayer
+          pillar="shop"
+          activePet={selectedPet}
+          token={token}
+          userEmail={user?.email}
+          isLoading={!selectedPet && !!token}
+        />
+        
+        {/* Mira's Picks for Pet */}
+        {selectedPet && (
+          <div className="max-w-7xl mx-auto px-4 mt-6">
+            <PillarPicksSection pillar="shop" pet={selectedPet} />
           </div>
-        </div>
-      )}
-      
-      {/* Mira's Picks for Pet */}
-      {selectedPet && (
-        <div className="max-w-7xl mx-auto px-4">
-          <PillarPicksSection pillar="shop" pet={selectedPet} />
-        </div>
-      )}
-      
-      {/* ═══════════════════════════════════════════════════════════════════
-          PERSONALIZED FOR {PET} - Custom shop items created by Concierge®
-          ═══════════════════════════════════════════════════════════════════ */}
-      {selectedPet && (
-        <div className="max-w-7xl mx-auto px-4 mt-6" data-testid="personalized-shop-wrapper">
-          <PersonalizedPillarSection
-            pillar="shop"
-            pet={selectedPet}
-            token={token}
-            userEmail={user?.email}
-          />
-        </div>
-      )}
+        )}
+      </div>
       
       <MiraChatWidget pillar="shop" isOpen={miraChatOpen} onClose={() => setMiraChatOpen(false)} />
       
