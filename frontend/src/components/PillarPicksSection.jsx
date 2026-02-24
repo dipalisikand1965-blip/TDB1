@@ -393,26 +393,36 @@ const PillarPicksSection = ({
   
   // Error state
   if (error) {
-    return (
-      <div className={`py-8 ${className}`}>
-        <div className="flex items-center justify-center gap-3 text-gray-500">
-          <AlertCircle className="w-5 h-5" />
-          <span>{error}</span>
-          <button 
-            onClick={fetchPillarPicks}
-            className="text-purple-600 hover:text-purple-700 underline"
-          >
-            Try again
-          </button>
+    // Use fallback picks on error instead of showing error
+    const fallbackPicks = FALLBACK_PICKS_BY_PILLAR[pillar] || [];
+    if (fallbackPicks.length === 0) {
+      return (
+        <div className={`py-8 ${className}`}>
+          <div className="flex items-center justify-center gap-3 text-gray-500">
+            <AlertCircle className="w-5 h-5" />
+            <span>{error}</span>
+            <button 
+              onClick={fetchPillarPicks}
+              className="text-purple-600 hover:text-purple-700 underline"
+            >
+              Try again
+            </button>
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
+    // Fall through to render with fallback picks
   }
   
-  // No picks available
+  // Get effective picks - use fallback if API returns empty
   const hasPicks = picks.catalogue.length > 0 || picks.concierge.length > 0;
-  if (!hasPicks) {
-    return null; // Don't show empty section
+  const effectivePicks = hasPicks 
+    ? picks 
+    : { catalogue: [], concierge: FALLBACK_PICKS_BY_PILLAR[pillar] || [] };
+  
+  // Still nothing? Don't render
+  if (effectivePicks.catalogue.length === 0 && effectivePicks.concierge.length === 0) {
+    return null;
   }
   
   const soulReason = getSoulBasedReason(pet, pillar);
