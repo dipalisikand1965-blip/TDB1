@@ -10,7 +10,7 @@ import { ChevronLeft, ChevronRight, Quote, Star, ArrowRight, Sparkles } from 'lu
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 
-// Transformation stories with larger high-quality images
+// Transformation stories with ACCURATE BREED-SPECIFIC images from Unsplash
 const SAMPLE_TRANSFORMATIONS = [
   {
     id: 1,
@@ -18,8 +18,9 @@ const SAMPLE_TRANSFORMATIONS = [
     breed: 'Golden Retriever',
     ownerName: 'Priya M.',
     location: 'Mumbai',
-    beforeImage: 'https://images.unsplash.com/photo-1636320004437-1f34a9babea4?w=600&h=600&fit=crop&q=80',
-    afterImage: 'https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=600&h=600&fit=crop&q=80',
+    // Golden Retriever images - before (messy coat) and after (groomed)
+    beforeImage: 'https://images.unsplash.com/photo-1461730117549-4b30953f78a6?w=600&h=600&fit=crop&q=80',
+    afterImage: 'https://images.unsplash.com/photo-1608138498905-05b5cd816a36?w=600&h=600&fit=crop&q=80',
     beforeLabel: 'Before',
     afterLabel: 'After',
     headline: 'From matted to magnificent',
@@ -33,8 +34,9 @@ const SAMPLE_TRANSFORMATIONS = [
     breed: 'Beagle',
     ownerName: 'Rahul S.',
     location: 'Bangalore',
-    beforeImage: 'https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=600&h=600&fit=crop&q=80',
-    afterImage: 'https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=600&h=600&fit=crop&q=80',
+    // Beagle images - before (sick) and after (healthy happy)
+    beforeImage: 'https://images.unsplash.com/photo-1737699430579-3f20b8abc613?w=600&h=600&fit=crop&q=80',
+    afterImage: 'https://images.pexels.com/photos/19490048/pexels-photo-19490048.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop',
     beforeLabel: 'Sick',
     afterLabel: 'Healthy',
     headline: 'Emergency care saved his life',
@@ -48,8 +50,9 @@ const SAMPLE_TRANSFORMATIONS = [
     breed: 'Labrador, 11 years',
     ownerName: 'Anita K.',
     location: 'Delhi',
-    beforeImage: 'https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=600&h=600&fit=crop&q=80',
-    afterImage: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&h=600&fit=crop&q=80',
+    // Senior Labrador images - before (struggling) and after (thriving)
+    beforeImage: 'https://images.unsplash.com/photo-1610661152225-10b323d1b855?w=600&h=600&fit=crop&q=80',
+    afterImage: 'https://images.unsplash.com/photo-1619590694371-7eed5838e880?w=600&h=600&fit=crop&q=80',
     beforeLabel: 'Struggling',
     afterLabel: 'Thriving',
     headline: 'Senior mobility restored',
@@ -63,8 +66,9 @@ const SAMPLE_TRANSFORMATIONS = [
     breed: 'German Shepherd',
     ownerName: 'Vikram P.',
     location: 'Gurgaon',
+    // German Shepherd images - before (anxious) and after (confident)
     beforeImage: 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=600&h=600&fit=crop&q=80',
-    afterImage: 'https://images.unsplash.com/photo-1568572933382-74d440642117?w=600&h=600&fit=crop&q=80',
+    afterImage: 'https://images.unsplash.com/photo-1624736356321-a8f755bac571?w=600&h=600&fit=crop&q=80',
     beforeLabel: 'Anxious',
     afterLabel: 'Confident',
     headline: 'Anxiety to confidence',
