@@ -30,6 +30,7 @@ import { useAuth } from '../context/AuthContext';
 import ServiceQuickViewModal from '../components/Mira/ServiceQuickViewModal';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import PillarPicksSection from '../components/PillarPicksSection';
+import PersonalizedPicks from '../components/PersonalizedPicks';
 
 // =============================================================================
 // SERVICE CATEGORY ICONS & IMAGES
