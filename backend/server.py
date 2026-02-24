@@ -6381,16 +6381,34 @@ async def get_public_products(
     # Add shape filter if specified (for cakes/bakery items)
     if shape:
         shape_lower = shape.lower()
-        shape_query = {
-            "$or": [
-                # Check the new structured field
-                {"pillars_occasions.cake_bakery.shape": shape_lower},
-                # Fallback to searching in name/tags
-                {"name": {"$regex": shape_lower, "$options": "i"}},
-                {"tags": {"$regex": shape_lower, "$options": "i"}},
-                {"shape": shape_lower}  # Legacy flat field
-            ]
-        }
+        
+        # Special handling for "round" - most cakes are round by default
+        if shape_lower == "round":
+            # For round shape, find cakes that DON'T have other specific shapes
+            shape_query = {
+                "$and": [
+                    # Must be a cake/bakery item
+                    {"$or": [
+                        {"category": {"$regex": "cake|bakery", "$options": "i"}},
+                        {"name": {"$regex": "cake|cupcake|pupcake", "$options": "i"}},
+                        {"tags": {"$regex": "cake|bakery", "$options": "i"}}
+                    ]},
+                    # Should NOT have other specific shapes in name
+                    {"name": {"$not": {"$regex": "paw|bone|heart|star|square|number|donut", "$options": "i"}}}
+                ]
+            }
+        else:
+            shape_query = {
+                "$or": [
+                    # Check the new structured field
+                    {"pillars_occasions.cake_bakery.shape": shape_lower},
+                    # Fallback to searching in name/tags
+                    {"name": {"$regex": shape_lower, "$options": "i"}},
+                    {"tags": {"$regex": shape_lower, "$options": "i"}},
+                    {"shape": shape_lower}  # Legacy flat field
+                ]
+            }
+        
         if query:
             query = {"$and": [query, shape_query]}
         else:
