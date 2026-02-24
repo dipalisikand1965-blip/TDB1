@@ -2906,6 +2906,163 @@ const Admin = () => {
           </div>
         )}
 
+        {/* Transformations Tab */}
+        {activeTab === 'transformations' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-900">Before/After Transformation Stories ({transformations.length})</h3>
+              <Button className="bg-teal-600 hover:bg-teal-700" onClick={() => {
+                setEditingTransformation({ 
+                  id: `new-${Date.now()}`, 
+                  pet_name: '', 
+                  breed: '', 
+                  owner_name: '', 
+                  before_image: '', 
+                  after_image: '', 
+                  achievement: '', 
+                  testimonial: '', 
+                  program: '',
+                  pillar: 'care',
+                  rating: 5,
+                  is_active: true 
+                });
+                setShowTransformationModal(true);
+              }}>
+                <Plus className="w-4 h-4 mr-2" />Add Story
+              </Button>
+            </div>
+            
+            <Card className="p-6">
+              <div className="space-y-4">
+                {transformations.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">No transformation stories yet. Add your first one!</p>
+                ) : transformations.map((story) => (
+                  <div key={story.id} className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                    {/* Before/After Images */}
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200">
+                        <img src={story.before_image} alt="Before" className="w-full h-full object-cover grayscale" />
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-gray-400" />
+                      <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200 border-2 border-teal-500">
+                        <img src={story.after_image} alt="After" className="w-full h-full object-cover" />
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h4 className="font-semibold text-gray-900">{story.pet_name}</h4>
+                        <span className="text-sm text-gray-500">• {story.breed}</span>
+                        <Badge variant="outline" className="text-xs">{story.pillar}</Badge>
+                        {story.is_active ? (
+                          <Badge className="bg-green-500 text-xs">Active</Badge>
+                        ) : (
+                          <Badge variant="destructive" className="text-xs">Inactive</Badge>
+                        )}
+                      </div>
+                      <p className="text-teal-600 font-medium text-sm mb-1">{story.achievement}</p>
+                      <p className="text-gray-600 text-sm italic">"{story.testimonial}"</p>
+                      <p className="text-xs text-gray-400 mt-1">— {story.owner_name} | {story.program}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="icon" onClick={() => { setEditingTransformation(story); setShowTransformationModal(true); }}>
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="text-red-500" onClick={() => deleteTransformation(story.id)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+            
+            {/* Transformation Modal */}
+            {showTransformationModal && editingTransformation && (
+              <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                <Card className="w-full max-w-2xl bg-white p-6 max-h-[90vh] overflow-y-auto">
+                  <h3 className="text-lg font-bold mb-4">{editingTransformation.id?.startsWith('new-') ? 'Add' : 'Edit'} Transformation Story</h3>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium">Pet Name *</label>
+                        <Input value={editingTransformation.pet_name} onChange={(e) => setEditingTransformation({...editingTransformation, pet_name: e.target.value})} placeholder="e.g., Bruno" />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Breed *</label>
+                        <Input value={editingTransformation.breed || ''} onChange={(e) => setEditingTransformation({...editingTransformation, breed: e.target.value})} placeholder="e.g., Golden Retriever" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium">Owner Name</label>
+                        <Input value={editingTransformation.owner_name || ''} onChange={(e) => setEditingTransformation({...editingTransformation, owner_name: e.target.value})} placeholder="e.g., Priya M." />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Pillar</label>
+                        <select className="w-full border rounded-md p-2" value={editingTransformation.pillar || 'care'} onChange={(e) => setEditingTransformation({...editingTransformation, pillar: e.target.value})}>
+                          <option value="care">Care</option>
+                          <option value="fit">Fit</option>
+                          <option value="stay">Stay</option>
+                          <option value="learn">Learn</option>
+                          <option value="travel">Travel</option>
+                          <option value="dine">Dine</option>
+                          <option value="celebrate">Celebrate</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium">Before Image URL *</label>
+                        <Input value={editingTransformation.before_image || ''} onChange={(e) => setEditingTransformation({...editingTransformation, before_image: e.target.value})} placeholder="https://..." />
+                        {editingTransformation.before_image && (
+                          <img src={editingTransformation.before_image} alt="Preview" className="w-24 h-24 object-cover rounded mt-2 grayscale" />
+                        )}
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">After Image URL *</label>
+                        <Input value={editingTransformation.after_image || ''} onChange={(e) => setEditingTransformation({...editingTransformation, after_image: e.target.value})} placeholder="https://..." />
+                        {editingTransformation.after_image && (
+                          <img src={editingTransformation.after_image} alt="Preview" className="w-24 h-24 object-cover rounded mt-2 border-2 border-teal-500" />
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Achievement/Headline *</label>
+                      <Input value={editingTransformation.achievement || ''} onChange={(e) => setEditingTransformation({...editingTransformation, achievement: e.target.value})} placeholder="e.g., From matted to magnificent" />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Testimonial Quote *</label>
+                      <textarea className="w-full border rounded-md p-2 h-20" value={editingTransformation.testimonial || ''} onChange={(e) => setEditingTransformation({...editingTransformation, testimonial: e.target.value})} placeholder="The groomer was so gentle..." />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium">Program/Service</label>
+                        <Input value={editingTransformation.program || ''} onChange={(e) => setEditingTransformation({...editingTransformation, program: e.target.value})} placeholder="e.g., Groom & Glam Curator®" />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Rating</label>
+                        <select className="w-full border rounded-md p-2" value={editingTransformation.rating || 5} onChange={(e) => setEditingTransformation({...editingTransformation, rating: parseInt(e.target.value)})}>
+                          {[5,4,3,2,1].map(r => <option key={r} value={r}>{r} Stars</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2">
+                        <input type="checkbox" checked={editingTransformation.is_active !== false} onChange={(e) => setEditingTransformation({...editingTransformation, is_active: e.target.checked})} />
+                        <span className="text-sm">Active</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 mt-6">
+                    <Button variant="outline" onClick={() => { setShowTransformationModal(false); setEditingTransformation(null); }}>Cancel</Button>
+                    <Button className="bg-teal-600" onClick={() => saveTransformation(editingTransformation)} disabled={!editingTransformation.pet_name || !editingTransformation.before_image || !editingTransformation.after_image || !editingTransformation.achievement || !editingTransformation.testimonial}>Save</Button>
+                  </div>
+                </Card>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Insights/Blog Tab */}
         {activeTab === 'insights' && (
           <div className="space-y-6">
