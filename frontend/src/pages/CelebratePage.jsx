@@ -36,6 +36,7 @@ import { useAuth } from '../context/AuthContext';
 import { usePillarContext } from '../context/PillarContext';
 import { toast } from 'sonner';
 import { MiraOSTrigger } from '../components/mira-os';
+import MiraBirthdayBoxCard from '../components/celebrate/MiraBirthdayBoxCard';
 
 // Lazy load Soul Explainer for footer link
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
