@@ -600,27 +600,6 @@ const CarePage = () => {
         </div>
       </div>
 
-      {/* ==================== MIRA'S CURATED LAYER - Gold Standard ==================== */}
-      <div className="py-10 bg-gradient-to-b from-white to-rose-50/30">
-        <PersonalizedPicks pillar="care" />
-        
-        {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
-        <MiraCuratedLayer
-          pillar="care"
-          activePet={userPets?.[0]}
-          token={token}
-          userEmail={user?.email}
-          isLoading={!userPets && !!token}
-        />
-        
-        {/* Mira's Picks for Pet */}
-        {userPets && userPets[0] && (
-          <div className="max-w-6xl mx-auto px-4 mt-6">
-            <PillarPicksSection pillar="care" pet={userPets[0]} />
-          </div>
-        )}
-      </div>
-
       {/* ==================== TRANSFORMATION STORIES - World Class Design ==================== */}
       <TransformationStories className="bg-white" />
 
