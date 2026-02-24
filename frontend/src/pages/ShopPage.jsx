@@ -25,6 +25,7 @@ import PillarNav from '../components/PillarNav';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import PillarPicksSection from '../components/PillarPicksSection';
+import PersonalizedPillarSection from '../components/PersonalizedPillarSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import {
   Search, Heart, ArrowRight, X, Package, Mic,
@@ -996,6 +997,20 @@ const ShopPage = () => {
       {selectedPet && (
         <div className="max-w-7xl mx-auto px-4">
           <PillarPicksSection pillar="shop" pet={selectedPet} />
+        </div>
+      )}
+      
+      {/* ═══════════════════════════════════════════════════════════════════
+          PERSONALIZED FOR {PET} - Custom shop items created by Concierge®
+          ═══════════════════════════════════════════════════════════════════ */}
+      {selectedPet && (
+        <div className="max-w-7xl mx-auto px-4 mt-6" data-testid="personalized-shop-wrapper">
+          <PersonalizedPillarSection
+            pillar="shop"
+            pet={selectedPet}
+            token={token}
+            userEmail={user?.email}
+          />
         </div>
       )}
       
