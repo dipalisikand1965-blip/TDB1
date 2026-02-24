@@ -160,6 +160,176 @@
 
 ---
 
+## 📖 PILLAR PAGE GOLD STANDARD (THE BIBLE)
+
+### Overview
+Every pillar page in Mira follows the same architecture pattern established by Dine and Celebrate pages. This ensures consistent, soul-driven personalization across the entire pet operating system.
+
+### Architecture: 3 Soul-Driven Sections Per Pillar
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  1. HANDPICKED FOR {PET}  (CuratedConciergeSection)             │
+│     ├── Dark glass-card-dark container                          │
+│     ├── "Handpicked for Mystique" header                        │
+│     ├── CONCIERGE® PRODUCT cards (server-driven)                │
+│     ├── CONCIERGE® SERVICE cards (server-driven)                │
+│     └── Backend: /api/mira/curated-set/{petId}/{pillar}         │
+├─────────────────────────────────────────────────────────────────┤
+│  2. MIRA'S PICKS FOR {PET}  (PillarPicksSection)                │
+│     ├── Dynamic picks from API + static fallback                │
+│     ├── "Mira's Picks for Mystique" header                      │
+│     ├── Catalogue products + Concierge services                 │
+│     └── Backend: /api/mira/top-picks/{petId}/pillar/{pillar}    │
+├─────────────────────────────────────────────────────────────────┤
+│  3. PERSONALIZED FOR {PET}  (PersonalizedPillarSection)         │
+│     ├── Static curated items per pillar                         │
+│     ├── "CARE ESSENTIALS FOR MYSTIQUE" header                   │
+│     ├── Horizontal scroll with desktop buttons                  │
+│     └── Config: PILLAR_CONFIGS in PersonalizedPillarSection.jsx │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Frontend Component Files
+
+| Component | File Path | Purpose |
+|-----------|-----------|---------|
+| **CuratedConciergeSection** | `/app/frontend/src/components/Mira/CuratedConciergeSection.jsx` | Server-driven CONCIERGE® cards |
+| **PillarPicksSection** | `/app/frontend/src/components/PillarPicksSection.jsx` | Dynamic picks with fallback |
+| **PersonalizedPillarSection** | `/app/frontend/src/components/PersonalizedPillarSection.jsx` | Static curated items |
+
+### Backend Data Files
+
+| Pillar | Backend Data File |
+|--------|-------------------|
+| **celebrate** | `/app/backend/app/data/celebrate_concierge_cards.py` |
+| **dine** | `/app/backend/app/data/dine_concierge_cards.py` |
+| **fresh_meals** | `/app/backend/app/data/fresh_meals_concierge_cards.py` |
+| **care** | `/app/backend/app/data/care_concierge_cards.py` |
+| **stay, travel, learn, enjoy, fit, paperwork, advisory, services, shop** | `/app/backend/app/data/universal_pillar_cards.py` |
+
+### Backend Intelligence
+
+- **File**: `/app/backend/app/intelligence_layer.py`
+- **Function**: `get_curated_concierge_set(pillar, pet_data, intent_context)`
+- **Returns**: `{ concierge_products: [], concierge_services: [], question_card: null }`
+
+### How to Add a NEW Pillar Page
+
+1. **Frontend - Add imports to the new page:**
+```jsx
+import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
+import PillarPicksSection from '../components/PillarPicksSection';
+import PersonalizedPillarSection from '../components/PersonalizedPillarSection';
+```
+
+2. **Frontend - Add sections in the page (in this order):**
+```jsx
+{/* 1. HANDPICKED FOR {PET} */}
+{userPets && userPets[0] && (
+  <div className="glass-card-dark rounded-3xl p-4 md:p-6 shadow-xl mt-8">
+    <CuratedConciergeSection
+      petId={userPets[0].id || userPets[0]._id}
+      petName={userPets[0].name}
+      pillar="YOUR_PILLAR"
+      token={token}
+      userEmail={user?.email}
+    />
+  </div>
+)}
+
+{/* 2. MIRA'S PICKS FOR {PET} */}
+{userPets && userPets[0] && (
+  <PillarPicksSection pillar="YOUR_PILLAR" pet={userPets[0]} />
+)}
+
+{/* 3. PERSONALIZED FOR {PET} */}
+{userPets && userPets[0] && (
+  <PersonalizedPillarSection
+    pillar="YOUR_PILLAR"
+    pet={userPets[0]}
+    token={token}
+    userEmail={user?.email}
+  />
+)}
+```
+
+3. **Backend - Add pillar cards in `universal_pillar_cards.py`:**
+```python
+YOUR_PILLAR_CARDS = [
+    {
+        "id": "pillar_item_1",
+        "type": "concierge_product",  # or "concierge_service"
+        "name": "Item Name for {pet_name}",
+        "description": "Description with {pet_name}",
+        "icon": "🎯",
+        "cta_text": "Button Text",
+        "default_score": 80,
+    },
+    # ... more cards
+]
+
+# Add to PILLAR_CARDS registry
+PILLAR_CARDS = {
+    ...
+    "your_pillar": YOUR_PILLAR_CARDS,
+}
+```
+
+4. **Backend - Add pillar to `intelligence_layer.py`:**
+```python
+elif pillar in ["stay", "travel", ..., "your_pillar"]:
+    from app.data.universal_pillar_cards import select_pillar_cards
+    result = select_pillar_cards(pillar, pet_data, max_cards=4)
+    # ...
+```
+
+5. **Frontend - Add fallback picks in `PillarPicksSection.jsx`:**
+```javascript
+FALLBACK_PICKS_BY_PILLAR = {
+    ...
+    your_pillar: [
+        { id: 'item-1', name: 'Item Name', description: '...', icon: '🎯', concierge: true },
+        { id: 'item-2', name: 'Item Name', description: '...', icon: '🏆', concierge: true }
+    ]
+}
+```
+
+6. **Frontend - Add pillar config in `PersonalizedPillarSection.jsx`:**
+```javascript
+PILLAR_CONFIGS = {
+    ...
+    your_pillar: {
+        title: 'Pillar Title',
+        subtitle: 'Subtitle for pet',
+        theme: { gradient: '...', accent: 'color', buttonGradient: '...' },
+        items: [
+            { id: 'item-1', name: 'Item', description: '...', icon: '🎯', ... },
+            // ... more items
+        ]
+    }
+}
+```
+
+### What NOT to Do
+
+❌ **Never use old ConciergePickCard** - It shows the purple card with "Let Mira Arrange This" button - this is deprecated
+❌ **Never leave sections empty** - Always have fallback data
+❌ **Never skip the dark container** - CuratedConciergeSection must be wrapped in `glass-card-dark rounded-3xl p-4 md:p-6 shadow-xl`
+❌ **Never hardcode pet names** - Always use `{pet_name}` placeholder in backend, personalize in frontend
+
+### Verification Checklist for New Pillars
+
+- [ ] CuratedConciergeSection shows "Handpicked for {Pet}" with cards
+- [ ] PillarPicksSection shows "Mira's Picks for {Pet}" (with fallback if API empty)
+- [ ] PersonalizedPillarSection shows "{PILLAR} ESSENTIALS FOR {PET}"
+- [ ] All cards have CTA buttons that create service tickets
+- [ ] Dark container styling is consistent
+- [ ] Mobile horizontal scroll works
+- [ ] Desktop scroll buttons visible
+
+---
+
 ### PersonalizedPillarSection Rollout (Feb 24, 2026)
 **Feature**: Universal "Personalized for [Pet Name]" sections added to all 6 pillar pages (Care, Stay, Travel, Learn, Enjoy, Fit).
 
