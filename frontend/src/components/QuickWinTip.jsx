@@ -57,15 +57,17 @@ const TIPS_DATABASE = {
       { tip: 'Avoid feeding 4 hours before flights', action: 'View guide', emoji: '🍽️' },
     ],
   },
-  // Care pillar tips
+  // Care pillar tips - Support, Caregiving, Health, Hygiene
   care: {
     general: [
-      { tip: 'Regular grooming prevents skin issues', action: 'Book grooming', emoji: '✨' },
+      { tip: 'Regular grooming prevents skin issues', action: 'Book grooming', emoji: '✨', actionType: 'navigate', actionUrl: '/care?type=grooming' },
       { tip: 'Dental chews reduce tartar by up to 70%', action: 'Shop dental', emoji: '🦷' },
-      { tip: 'Nail trimming every 3 weeks prevents pain', action: 'Book session', emoji: '✂️' },
-      { tip: 'Brush teeth 3x weekly for optimal health', action: 'Shop brushes', emoji: '🪥' },
-      { tip: 'Check ears weekly for signs of infection', action: 'View guide', emoji: '👂' },
-      { tip: 'Seasonal flea prevention is essential', action: 'Shop meds', emoji: '🐛' },
+      { tip: 'Nail trimming every 3 weeks prevents pain', action: 'Book session', emoji: '✂️', actionType: 'navigate', actionUrl: '/care?type=grooming' },
+      { tip: 'Annual vet checkups catch issues early', action: 'Book checkup', emoji: '🏥', actionType: 'navigate', actionUrl: '/care?type=vet_clinic_booking' },
+      { tip: 'Seasonal flea & tick prevention is essential', action: 'Book consult', emoji: '🐛', actionType: 'navigate', actionUrl: '/care?type=vet_clinic_booking' },
+      { tip: 'Familiar items help pets settle in boarding', action: 'Find boarding', emoji: '🏠', actionType: 'navigate', actionUrl: '/care?type=boarding_daycare' },
+      { tip: 'In-home pet sitters reduce separation anxiety', action: 'Find sitter', emoji: '💜', actionType: 'navigate', actionUrl: '/care?type=pet_sitting' },
+      { tip: 'Senior pets benefit from more frequent checkups', action: 'Book visit', emoji: '🤍', actionType: 'navigate', actionUrl: '/care?type=senior_special_needs_support' },
     ],
   },
   // Dine pillar tips
