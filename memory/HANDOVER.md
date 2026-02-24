@@ -410,7 +410,7 @@ curl -s "$API_URL/api/pets" -H "Authorization: Bearer $TOKEN" | \
 
 | Purpose | URL |
 |---------|-----|
-| Preview | `https://mira-personal-pet.preview.emergentagent.com` |
+| Preview | `https://concierge-pet-magic.preview.emergentagent.com` |
 | Mira Demo Page | `/mira-demo` (NOT `/mira`) |
 | Debug Mode | Add `?debug=1` to URL |
 | Admin Panel | `/admin` |

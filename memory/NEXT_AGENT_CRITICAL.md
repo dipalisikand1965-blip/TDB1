@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://mira-personal-pet.preview.emergentagent.com
+https://concierge-pet-magic.preview.emergentagent.com
 
 ---
 
