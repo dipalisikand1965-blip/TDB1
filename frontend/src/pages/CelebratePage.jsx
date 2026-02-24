@@ -59,6 +59,7 @@ const celebrateCategories = [
 const CelebratePage = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [showBoxBuilder, setShowBoxBuilder] = useState(false);
   const [boxOccasion, setBoxOccasion] = useState('birthday');
   const [showPartyWizard, setShowPartyWizard] = useState(false);
@@ -84,11 +85,43 @@ const CelebratePage = () => {
   const [viewMode, setViewMode] = useState('products'); // 'products' | 'services'
   const [selectedSubcat, setSelectedSubcat] = useState(null);
   
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+  const PRODUCTS_PER_PAGE = 24;
+  
+  // Shape filter state
+  const [selectedShape, setSelectedShape] = useState(null);
+  
   // Pillar Mira Panel state
   const [isPillarPanelOpen, setIsPillarPanelOpen] = useState(false);
   
   // Dynamic picks for the Concierge Card preview
   const [dynamicPicks, setDynamicPicks] = useState([]);
+  
+  // Shape definitions for auto-detection
+  const CAKE_SHAPES = [
+    { id: 'paw', emoji: '🐾', label: 'Paw Shape', keywords: ['paw', 'paw-shaped', 'paw print'] },
+    { id: 'bone', emoji: '🦴', label: 'Bone Shape', keywords: ['bone', 'bone-shaped', 'biscuit bone'] },
+    { id: 'heart', emoji: '💜', label: 'Heart Shape', keywords: ['heart', 'heart-shaped', 'love'] },
+    { id: 'round', emoji: '⭕', label: 'Round/Circle', keywords: ['round', 'circle', 'circular'] },
+    { id: 'square', emoji: '⬜', label: 'Square', keywords: ['square', 'rectangular', 'box'] },
+    { id: 'star', emoji: '⭐', label: 'Star Shape', keywords: ['star', 'star-shaped'] },
+    { id: 'number', emoji: '🔢', label: 'Number Cake', keywords: ['number', 'age', 'digit'] },
+    { id: 'donut', emoji: '🍩', label: 'Donut Shape', keywords: ['donut', 'doughnut', 'ring'] },
+  ];
+  
+  // Auto-detect shape from product name/description
+  const detectProductShape = (product) => {
+    const text = `${product.name || ''} ${product.description || ''} ${(product.tags || []).join(' ')}`.toLowerCase();
+    for (const shape of CAKE_SHAPES) {
+      if (shape.keywords.some(keyword => text.includes(keyword))) {
+        return shape.id;
+      }
+    }
+    return null;
+  };
   
   // Scroll to top when page loads
   useEffect(() => {
