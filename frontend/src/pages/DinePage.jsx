@@ -32,6 +32,7 @@ import NearbyPlacesCarousel from '../components/NearbyPlacesCarousel';
 import { usePillarContext } from '../context/PillarContext';
 import FreshMealsTab from '../components/dine/FreshMealsTab';
 import MapModal from '../components/MapModal';
+import PersonalizedDineSection from '../components/dine/PersonalizedDineSection';
 
 // Get user from AuthContext or localStorage
 const getUser = () => {
