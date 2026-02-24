@@ -445,15 +445,24 @@ const CelebratePage = () => {
     }
   }, [searchParams, setSearchParams]);
 
+  // Reset pagination when filters change
   useEffect(() => {
-    fetchFeaturedProducts(selectedSubcat);
+    setCurrentPage(1);
+    setSelectedShape(null);
+    fetchFeaturedProducts(selectedSubcat, 1, null);
   }, [selectedSubcat]);
 
-  const fetchFeaturedProducts = async (category = null) => {
-    setLoading(true);
+  const fetchFeaturedProducts = async (category = null, page = 1, shapeFilter = null, append = false) => {
+    if (page === 1) {
+      setLoading(true);
+    } else {
+      setLoadingMore(true);
+    }
+    
     try {
-      // Build API URL with category filter - load ALL products for the category
-      let url = `${API_URL}/api/products?pillar=celebrate&limit=100`;
+      const skip = (page - 1) * PRODUCTS_PER_PAGE;
+      // Build API URL with category filter and pagination
+      let url = `${API_URL}/api/products?pillar=celebrate&limit=${PRODUCTS_PER_PAGE}&skip=${skip}`;
       if (category && CATEGORY_API_MAP[category]) {
         url += `&category=${CATEGORY_API_MAP[category]}`;
       }
@@ -462,6 +471,7 @@ const CelebratePage = () => {
       if (response.ok) {
         const data = await response.json();
         let products = data.products || data || [];
+        const total = data.total || products.length;
         
         // Additional client-side filtering for more precision
         if (category && CATEGORY_API_MAP[category]) {
@@ -478,13 +488,47 @@ const CelebratePage = () => {
           });
         }
         
-        setFeaturedProducts(products);
-        console.log(`[CelebratePage] Loaded ${products.length} products${category ? ` for ${category}` : ''}`);
+        // Apply shape filter if selected
+        if (shapeFilter) {
+          products = products.filter(p => detectProductShape(p) === shapeFilter);
+        }
+        
+        if (append && page > 1) {
+          setFeaturedProducts(prev => [...prev, ...products]);
+        } else {
+          setFeaturedProducts(products);
+        }
+        
+        setTotalProducts(total);
+        setHasMore(skip + products.length < total);
+        setCurrentPage(page);
+        
+        console.log(`[CelebratePage] Loaded ${products.length} products (page ${page}, total: ${total})${category ? ` for ${category}` : ''}${shapeFilter ? ` shape: ${shapeFilter}` : ''}`);
       }
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+  
+  // Load more products
+  const loadMoreProducts = () => {
+    if (!loadingMore && hasMore) {
+      fetchFeaturedProducts(selectedSubcat, currentPage + 1, selectedShape, true);
+    }
+  };
+  
+  // Handle shape filter click
+  const handleShapeFilter = (shapeId) => {
+    if (selectedShape === shapeId) {
+      // Toggle off - show all products
+      setSelectedShape(null);
+      fetchFeaturedProducts(selectedSubcat, 1, null);
+    } else {
+      setSelectedShape(shapeId);
+      fetchFeaturedProducts(selectedSubcat, 1, shapeId);
     }
   };
   
