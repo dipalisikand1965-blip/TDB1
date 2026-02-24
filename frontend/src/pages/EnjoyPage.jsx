@@ -461,6 +461,20 @@ const EnjoyPage = () => {
           {userPets && userPets[0] && (
             <PillarPicksSection pillar="enjoy" pet={userPets[0]} />
           )}
+          
+          {/* ═══════════════════════════════════════════════════════════════════
+              PERSONALIZED FOR {PET} - Custom play items created by Concierge®
+              ═══════════════════════════════════════════════════════════════════ */}
+          {userPets && userPets[0] && (
+            <div className="mt-6" data-testid="personalized-enjoy-wrapper">
+              <PersonalizedPillarSection
+                pillar="enjoy"
+                pet={userPets[0]}
+                token={token}
+                userEmail={user?.email}
+              />
+            </div>
+          )}
         </div>
       </div>
 
