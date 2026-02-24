@@ -1162,13 +1162,13 @@ const ServicesPage = () => {
       </section>
       
       {/* ═══════════════════════════════════════════════════════════════════
-          PERSONALIZED FOR {PET} - Custom service items created by Concierge®
-          ═══════════════════════════════════════════════════════════════════ */}
-      {/* ═══════════════════════════════════════════════════════════════════
           MIRA'S CURATED LAYER - Gold Standard Unified Component
           Includes: Header + CuratedConciergeSection + PersonalizedPillarSection
           ═══════════════════════════════════════════════════════════════════ */}
       <div className="py-8 bg-gradient-to-b from-white to-amber-50/30">
+        {/* Personalized Product Picks - Same as Celebrate/Dine gold standard */}
+        <PersonalizedPicks pillar="services" maxProducts={6} />
+        
         <MiraCuratedLayer
           pillar="services"
           activePet={selectedPet}
