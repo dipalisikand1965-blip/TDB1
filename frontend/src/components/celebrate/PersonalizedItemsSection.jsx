@@ -171,18 +171,23 @@ const PersonalizedItemsSection = ({
           </p>
         </div>
 
-        {/* Horizontal Scrollable Cards */}
-        <div 
-          className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide" 
-          style={{ WebkitOverflowScrolling: 'touch' }}
-        >
-          {PERSONALIZED_ITEMS.map((item) => (
-            <div
-              key={item.id}
-              className="flex-shrink-0 w-36 p-3 rounded-xl bg-gradient-to-br from-pink-900/40 to-purple-900/20 border border-pink-500/30 cursor-pointer hover:border-pink-400/50 transition-all active:scale-[0.98]"
-              onClick={() => handleItemClick(item)}
-              data-testid={`personalized-item-${item.id}`}
-            >
+        {/* Horizontal Scrollable Cards - iOS Native Feel */}
+        <div className="relative">
+          <div 
+            className="flex gap-4 overflow-x-auto pb-3 scrollbar-hide snap-x snap-mandatory" 
+            style={{ 
+              WebkitOverflowScrolling: 'touch',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }}
+          >
+            {PERSONALIZED_ITEMS.map((item) => (
+              <div
+                key={item.id}
+                className="flex-shrink-0 w-44 sm:w-48 p-4 rounded-2xl bg-gradient-to-br from-pink-900/50 to-purple-900/30 border border-pink-500/40 cursor-pointer hover:border-pink-400/60 transition-all active:scale-[0.98] snap-start"
+                onClick={() => handleItemClick(item)}
+                data-testid={`personalized-item-${item.id}`}
+              >
               {/* Icon */}
               <div className="flex justify-center mb-2">
                 <span className="text-3xl">{item.icon}</span>
