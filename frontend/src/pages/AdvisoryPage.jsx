@@ -19,6 +19,7 @@ import AdminQuickEdit from '../components/AdminQuickEdit';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import PillarPicksSection from '../components/PillarPicksSection';
+import PersonalizedPillarSection from '../components/PersonalizedPillarSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import {
   Brain, Heart, Apple, Home, Stethoscope, GraduationCap,
@@ -721,6 +722,20 @@ const AdvisoryPage = () => {
       {userPets && userPets[0] && (
         <div className="max-w-6xl mx-auto px-4">
           <PillarPicksSection pillar="advisory" pet={userPets[0]} />
+        </div>
+      )}
+      
+      {/* ═══════════════════════════════════════════════════════════════════
+          PERSONALIZED FOR {PET} - Custom advisory items created by Concierge®
+          ═══════════════════════════════════════════════════════════════════ */}
+      {userPets && userPets[0] && (
+        <div className="max-w-6xl mx-auto px-4 mt-6" data-testid="personalized-advisory-wrapper">
+          <PersonalizedPillarSection
+            pillar="advisory"
+            pet={userPets[0]}
+            token={token}
+            userEmail={user?.email}
+          />
         </div>
       )}
       
