@@ -437,6 +437,21 @@ const DinePage = () => {
               userEmail={authUser?.email || user?.email}
             />
           </div>
+          
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* PERSONALIZED DINE ITEMS - Custom dining gear with pet's name */}
+          {/* Bowls, mats, treat jars - Concierge® creates these */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          <div className="mt-6" data-testid="personalized-dine-wrapper">
+            <PersonalizedDineSection
+              pet={activePet}
+              token={token}
+              userEmail={authUser?.email || user?.email}
+              onSaveToFavorites={(item) => {
+                console.log('[DinePage] Saved to favorites:', item);
+              }}
+            />
+          </div>
         </div>
       ) : token && !activePet ? (
         // Loading state while pets are being fetched
