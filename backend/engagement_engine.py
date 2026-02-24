@@ -708,6 +708,38 @@ async def create_transformation_story(story: TransformationStory):
     await db.transformation_stories.insert_one(story_dict)
     return {"id": story_dict["id"], "message": "Story created"}
 
+@router.put("/transformations/{story_id}")
+async def update_transformation_story(story_id: str, story: TransformationStory):
+    """Admin: Update transformation story"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    story_dict = story.dict()
+    story_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    result = await db.transformation_stories.update_one(
+        {"id": story_id},
+        {"$set": story_dict}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Story not found")
+    
+    return {"message": "Story updated"}
+
+@router.delete("/transformations/{story_id}")
+async def delete_transformation_story(story_id: str):
+    """Admin: Delete transformation story"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    result = await db.transformation_stories.delete_one({"id": story_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Story not found")
+    
+    return {"message": "Story deleted"}
+
 # ==================== QUICK WIN TIPS ====================
 
 class QuickWinTip(BaseModel):
