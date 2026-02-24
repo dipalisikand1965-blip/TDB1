@@ -634,7 +634,7 @@ const CarePage = () => {
       </div>
 
       {/* ==================== TRANSFORMATION STORIES - World Class Design ==================== */}
-      <TransformationStories className="bg-white" />
+      <TransformationStories pillar="care" className="bg-white" />
 
       {/* === CARE TYPES STRIP === */}
       <div className="bg-white border-b shadow-sm sticky top-0 z-40">
