@@ -171,14 +171,39 @@ const PersonalizedItemsSection = ({
           </p>
         </div>
 
-        {/* Horizontal Scrollable Cards - iOS Native Feel */}
-        <div className="relative">
+        {/* Horizontal Scrollable Cards - Works on both mobile & desktop */}
+        <div className="relative group">
+          {/* Left scroll button - Desktop only */}
+          <button
+            onClick={() => {
+              const container = document.querySelector('[data-scroll-container="personalized"]');
+              if (container) container.scrollBy({ left: -200, behavior: 'smooth' });
+            }}
+            className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-black/60 hover:bg-black/80 rounded-full items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity -ml-4"
+            aria-label="Scroll left"
+          >
+            ←
+          </button>
+          
+          {/* Right scroll button - Desktop only */}
+          <button
+            onClick={() => {
+              const container = document.querySelector('[data-scroll-container="personalized"]');
+              if (container) container.scrollBy({ left: 200, behavior: 'smooth' });
+            }}
+            className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-black/60 hover:bg-black/80 rounded-full items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity -mr-4"
+            aria-label="Scroll right"
+          >
+            →
+          </button>
+          
           <div 
-            className="flex gap-4 overflow-x-auto pb-3 scrollbar-hide snap-x snap-mandatory" 
+            data-scroll-container="personalized"
+            className="flex gap-4 overflow-x-auto pb-3 snap-x snap-mandatory scroll-smooth" 
             style={{ 
               WebkitOverflowScrolling: 'touch',
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none'
+              scrollbarWidth: 'thin',
+              scrollbarColor: 'rgba(236, 72, 153, 0.5) transparent'
             }}
           >
             {PERSONALIZED_ITEMS.map((item) => (
