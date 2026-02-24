@@ -172,23 +172,49 @@ const DEFAULT_THEME = {
 };
 
 /**
- * Loading Skeleton Component
+ * Premium Loading Skeleton with Shimmer Effect
+ * Mobile-first design with proper touch-target sizes
  */
-const LoadingSkeleton = () => (
-  <div className="max-w-6xl mx-auto px-4 pt-8">
-    <div className="text-center">
-      <div className="glass-card p-6 rounded-2xl">
-        <div className="h-6 skeleton-shimmer rounded-full w-48 mx-auto mb-4"></div>
-        <div className="h-8 skeleton-shimmer rounded-full w-64 mx-auto mb-2"></div>
-        <div className="h-4 skeleton-shimmer rounded-full w-80 mx-auto mb-6"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-          <div className="h-32 skeleton-shimmer rounded-xl"></div>
-          <div className="h-32 skeleton-shimmer rounded-xl"></div>
+const LoadingSkeleton = ({ pillar }) => {
+  const theme = PILLAR_THEMES[pillar] || DEFAULT_THEME;
+  
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
+      {/* Header Skeleton */}
+      <div className="text-center mb-6 sm:mb-8">
+        <div className="inline-flex items-center px-4 py-2 rounded-full bg-gray-100 animate-pulse mb-4">
+          <div className="w-4 h-4 rounded bg-gray-200 mr-2" />
+          <div className="h-4 w-32 bg-gray-200 rounded" />
+        </div>
+        <div className="h-7 sm:h-8 bg-gray-100 rounded-lg w-64 mx-auto mb-3 animate-pulse" />
+        <div className="h-4 sm:h-5 bg-gray-50 rounded-lg w-80 max-w-full mx-auto animate-pulse" />
+      </div>
+      
+      {/* Cards Container Skeleton */}
+      <div className={`${theme.containerGradient} rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl`}>
+        <div className="space-y-3 sm:space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div 
+              key={i} 
+              className="bg-white/5 rounded-xl p-4 animate-pulse"
+              style={{ animationDelay: `${i * 100}ms` }}
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/10 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="h-3 bg-white/10 rounded w-24 mb-2" />
+                  <div className="h-4 sm:h-5 bg-white/15 rounded w-3/4 mb-1" />
+                  <div className="h-3 bg-white/10 rounded w-full" />
+                </div>
+              </div>
+              <div className="h-10 sm:h-11 bg-white/10 rounded-xl mt-4" />
+            </div>
+          ))}
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 /**
  * MiraCuratedLayer - Universal wrapper for pillar curated sections
