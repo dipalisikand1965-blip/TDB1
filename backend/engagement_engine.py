@@ -688,7 +688,9 @@ async def get_transformation_stories(pillar: str = "fit", active_only: bool = Tr
     if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
-    query = {"pillar": pillar}
+    query = {}
+    if pillar != "all":
+        query["pillar"] = pillar
     if active_only:
         query["is_active"] = True
     
