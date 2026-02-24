@@ -12,27 +12,28 @@ import { API_URL } from '../utils/api';
 
 // Tips database - Now organized by pillar
 const TIPS_DATABASE = {
-  // Fit pillar tips
+  // Fit pillar tips - Activity, Movement, Training, Conditioning
   fit: {
     weight: [
-      { tip: '15-minute morning walks boost metabolism by 20%', action: 'Set reminder', emoji: '🌅' },
+      { tip: '15-minute morning walks boost metabolism by 20%', action: 'Set reminder', emoji: '🌅', actionType: 'navigate', actionUrl: '/fit?goal=weight_loss' },
       { tip: 'Splitting meals into 3 portions aids digestion', action: 'View guide', emoji: '🍽️' },
-      { tip: 'Swimming burns 3x more calories than walking', action: 'Book session', emoji: '🏊' },
+      { tip: 'Swimming burns 3x more calories than walking', action: 'Book session', emoji: '🏊', actionType: 'navigate', actionUrl: '/fit?goal=swimming' },
     ],
     puppy: [
-      { tip: 'Short 5-min training sessions work best', action: 'View tips', emoji: '🎯' },
-      { tip: 'Socialization before 16 weeks shapes behavior', action: 'Find groups', emoji: '🐕' },
+      { tip: 'Short 5-min training sessions work best', action: 'Book training', emoji: '🎯', actionType: 'navigate', actionUrl: '/fit?goal=puppy_activity' },
+      { tip: 'Socialization before 16 weeks shapes behavior', action: 'Find groups', emoji: '🐕', actionType: 'navigate', actionUrl: '/fit?goal=socialization' },
       { tip: 'Mental games tire puppies more than running', action: 'Shop toys', emoji: '🧩' },
     ],
     senior: [
-      { tip: 'Gentle stretching maintains joint flexibility', action: 'View exercises', emoji: '🧘' },
-      { tip: 'Raised bowls reduce neck strain', action: 'Shop bowls', emoji: '🥣' },
-      { tip: 'Shorter, frequent walks are easier on joints', action: 'Adjust plan', emoji: '🚶' },
+      { tip: 'Gentle stretching maintains joint flexibility', action: 'View exercises', emoji: '🧘', actionType: 'navigate', actionUrl: '/fit?goal=senior_mobility' },
+      { tip: 'Low-impact swimming is gentle on senior joints', action: 'Book swim', emoji: '🏊', actionType: 'navigate', actionUrl: '/fit?goal=swimming' },
+      { tip: 'Shorter, frequent walks are easier on joints', action: 'Adjust plan', emoji: '🚶', actionType: 'navigate', actionUrl: '/fit?goal=walk' },
     ],
     general: [
-      { tip: 'Consistent meal times regulate energy levels', action: 'Set schedule', emoji: '⏰' },
+      { tip: 'Daily walks keep your pet mentally stimulated', action: 'Book walk', emoji: '🐕', actionType: 'navigate', actionUrl: '/fit?goal=walk' },
+      { tip: 'Consistent training builds lasting habits', action: 'Book training', emoji: '🎓', actionType: 'navigate', actionUrl: '/fit?goal=training' },
       { tip: 'Interactive play strengthens your bond', action: 'Shop toys', emoji: '💕' },
-      { tip: 'Grooming sessions double as health checks', action: 'Book grooming', emoji: '✨' },
+      { tip: 'Agility training boosts confidence & fitness', action: 'Try agility', emoji: '⚡', actionType: 'navigate', actionUrl: '/fit?goal=agility' },
     ],
   },
   // Stay pillar tips
