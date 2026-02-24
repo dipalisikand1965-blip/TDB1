@@ -70,7 +70,7 @@ xl: 32px - Major divisions
 | **Test User** | dipali@clubconcierge.in | test123 |
 | **Admin** | aditya | lola4304 |
 
-**Preview URL:** https://concierge-pet-magic.preview.emergentagent.com
+**Preview URL:** https://concierge-pillars-1.preview.emergentagent.com
 
 ---
 

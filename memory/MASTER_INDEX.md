@@ -323,7 +323,7 @@ ADMIN_USERNAME=aditya
 ADMIN_PASSWORD=lola4304
 
 # Frontend (.env)
-REACT_APP_BACKEND_URL=https://concierge-pet-magic.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://concierge-pillars-1.preview.emergentagent.com
 ```
 
 ### Test Credentials
@@ -378,7 +378,7 @@ REACT_APP_BACKEND_URL=https://concierge-pet-magic.preview.emergentagent.com
 ## 🚀 DEPLOYMENT
 
 ### Preview Environment
-- URL: https://concierge-pet-magic.preview.emergentagent.com
+- URL: https://concierge-pillars-1.preview.emergentagent.com
 - Database: Local MongoDB
 - Status: All features working
 

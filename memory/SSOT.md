@@ -8,7 +8,7 @@
 
 **Owner:** Dipali Sikand (dipali@clubconcierge.in)
 **Project:** Mira OS - Pet Operating System
-**Preview:** https://concierge-pet-magic.preview.emergentagent.com
+**Preview:** https://concierge-pillars-1.preview.emergentagent.com
 **Status:** PRODUCTION-READY CORE, POLISHING 3 PILLARS
 
 ---
@@ -173,13 +173,13 @@ Admin sees in Service Desk → Replies → Member gets notification
 
 ```bash
 # Weather API
-curl "https://concierge-pet-magic.preview.emergentagent.com/api/test/weather?lat=12.9716&lng=77.5946"
+curl "https://concierge-pillars-1.preview.emergentagent.com/api/test/weather?lat=12.9716&lng=77.5946"
 
 # YouTube API
-curl "https://concierge-pet-magic.preview.emergentagent.com/api/test/youtube?query=dog+grooming"
+curl "https://concierge-pillars-1.preview.emergentagent.com/api/test/youtube?query=dog+grooming"
 
 # Location suggestions for Care
-curl "https://concierge-pet-magic.preview.emergentagent.com/api/mira/location-suggestions/care" \
+curl "https://concierge-pillars-1.preview.emergentagent.com/api/mira/location-suggestions/care" \
   -H "Authorization: Bearer {TOKEN}"
 ```
 
