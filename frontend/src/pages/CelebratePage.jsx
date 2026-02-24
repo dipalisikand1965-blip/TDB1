@@ -969,6 +969,44 @@ const CelebratePage = () => {
             )}
           </Card>
         )}
+        
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {/* LOAD MORE BUTTON */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {hasMore && !loading && featuredProducts.length > 0 && (
+          <div className="flex justify-center mt-8">
+            <Button
+              onClick={loadMoreProducts}
+              disabled={loadingMore}
+              size="lg"
+              className="px-8 py-3 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-semibold shadow-lg"
+              data-testid="load-more-btn"
+            >
+              {loadingMore ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  Loading...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  Load More Products
+                  <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">
+                    {totalProducts - featuredProducts.length} more
+                  </span>
+                </span>
+              )}
+            </Button>
+          </div>
+        )}
+        
+        {/* Total count summary when all loaded */}
+        {!hasMore && featuredProducts.length > 0 && totalProducts > PRODUCTS_PER_PAGE && (
+          <div className="text-center mt-6">
+            <p className="ios-caption text-gray-500">
+              ✓ Showing all {featuredProducts.length} products
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Bottom CTA - Glass Style */}
