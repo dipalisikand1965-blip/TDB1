@@ -600,6 +600,20 @@ const StayPage = () => {
             />
           )}
           
+          {/* ═══════════════════════════════════════════════════════════════════
+              PERSONALIZED FOR {PET} - Custom stay items created by Concierge®
+              ═══════════════════════════════════════════════════════════════════ */}
+          {userPets && userPets[0] && (
+            <div className="mt-6" data-testid="personalized-stay-wrapper">
+              <PersonalizedPillarSection
+                pillar="stay"
+                pet={userPets[0]}
+                token={token}
+                userEmail={user?.email}
+              />
+            </div>
+          )}
+          
           <PetJourneyRecommendations 
             currentPillar="stay"
           />
