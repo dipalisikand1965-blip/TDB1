@@ -473,7 +473,7 @@ const MiraBirthdayBoxCard = ({
                 ) : (
                   <span className="flex items-center gap-2">
                     <Send className="w-5 h-5" />
-                    Send to Mira's Concierge
+                    Send to Concierge®
                   </span>
                 )}
               </Button>
