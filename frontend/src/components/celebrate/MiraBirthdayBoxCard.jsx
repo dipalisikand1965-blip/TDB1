@@ -468,7 +468,7 @@ const MiraBirthdayBoxCard = ({
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Sending to Concierge...
+                    Sending to Concierge®...
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
