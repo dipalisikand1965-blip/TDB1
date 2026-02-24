@@ -25,6 +25,7 @@ import PillarNav from '../components/PillarNav';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
+import PersonalizedPicks from '../components/PersonalizedPicks';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import {
   Search, Heart, ArrowRight, X, Package, Mic,
