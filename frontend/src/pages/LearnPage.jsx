@@ -18,7 +18,6 @@ import AdminQuickEdit from '../components/AdminQuickEdit';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
-import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import PillarPicksSection from '../components/PillarPicksSection';
 import PersonalizedPillarSection from '../components/PersonalizedPillarSection';
 import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
