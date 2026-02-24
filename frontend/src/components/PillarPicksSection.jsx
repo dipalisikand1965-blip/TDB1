@@ -31,6 +31,61 @@ import { toast } from '../hooks/use-toast';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// FALLBACK PICKS - Never leave the section empty
+// These are soul-driven Concierge® curated items per pillar
+// ═══════════════════════════════════════════════════════════════════════════════
+const FALLBACK_PICKS_BY_PILLAR = {
+  celebrate: [
+    { id: 'celebrate-1', name: 'Birthday Cake', description: 'Custom cake made with safe ingredients', why_it_fits: 'Perfect for your special day!', icon: '🎂', concierge: true },
+    { id: 'celebrate-2', name: 'Party Decorations Kit', description: 'Paw-ty themed balloons & banners', why_it_fits: 'Make it Instagram-worthy', icon: '🎈', concierge: true }
+  ],
+  dine: [
+    { id: 'dine-1', name: 'Fresh Meal Plan', description: 'Weekly fresh meals tailored to dietary needs', why_it_fits: 'Nutrition matched to preferences', icon: '🍽️', concierge: true },
+    { id: 'dine-2', name: 'Treat Subscription', description: 'Monthly curated treats box', why_it_fits: 'Allergy-safe treats delivered', icon: '🦴', concierge: true }
+  ],
+  care: [
+    { id: 'care-1', name: 'Grooming Session', description: 'Full spa day with coat-specific care', why_it_fits: 'Coat care matched to breed', icon: '✨', concierge: true },
+    { id: 'care-2', name: 'Wellness Check', description: 'Complete health assessment', why_it_fits: 'Preventive care is love', icon: '🏥', concierge: true }
+  ],
+  stay: [
+    { id: 'stay-1', name: 'Luxury Boarding', description: 'Premium pet hotel with daily updates', why_it_fits: 'Peace of mind when you travel', icon: '🏨', concierge: true },
+    { id: 'stay-2', name: 'In-Home Pet Sitter', description: 'Verified sitter in your home', why_it_fits: 'Comfort of familiar surroundings', icon: '🏠', concierge: true }
+  ],
+  travel: [
+    { id: 'travel-1', name: 'Travel Kit', description: 'Everything needed for safe journeys', why_it_fits: 'Stress-free adventures await', icon: '🧳', concierge: true },
+    { id: 'travel-2', name: 'Pet-Friendly Itinerary', description: 'Curated destinations that welcome pets', why_it_fits: 'Adventures together!', icon: '✈️', concierge: true }
+  ],
+  learn: [
+    { id: 'learn-1', name: 'Training Session', description: 'One-on-one with certified trainer', why_it_fits: 'Build better habits together', icon: '🎓', concierge: true },
+    { id: 'learn-2', name: 'Behavior Consultation', description: 'Expert assessment & personalized plan', why_it_fits: 'Understand their needs', icon: '🧠', concierge: true }
+  ],
+  enjoy: [
+    { id: 'enjoy-1', name: 'Adventure Day Out', description: 'Guided trip to pet-friendly spots', why_it_fits: 'Make memories together', icon: '🌳', concierge: true },
+    { id: 'enjoy-2', name: 'Playdate Arrangement', description: 'Social time with compatible pets', why_it_fits: 'Socialization is important', icon: '🐕', concierge: true }
+  ],
+  fit: [
+    { id: 'fit-1', name: 'Fitness Assessment', description: 'Body condition & exercise plan', why_it_fits: 'Health starts with movement', icon: '🏃', concierge: true },
+    { id: 'fit-2', name: 'Swim Session', description: 'Low-impact exercise in warm pool', why_it_fits: 'Joint-friendly fitness', icon: '🏊', concierge: true }
+  ],
+  paperwork: [
+    { id: 'paperwork-1', name: 'Document Organization', description: 'Digitize and organize all pet documents', why_it_fits: 'Everything in one place', icon: '📋', concierge: true },
+    { id: 'paperwork-2', name: 'Registration Assistance', description: 'Help with licenses & permits', why_it_fits: 'Stay compliant, stress-free', icon: '📜', concierge: true }
+  ],
+  advisory: [
+    { id: 'advisory-1', name: 'Nutrition Consultation', description: 'Expert dietary guidance', why_it_fits: 'Optimal health through diet', icon: '🥗', concierge: true },
+    { id: 'advisory-2', name: 'Wellness Plan', description: 'Comprehensive health roadmap', why_it_fits: 'Preventive care saves lives', icon: '💊', concierge: true }
+  ],
+  services: [
+    { id: 'services-1', name: 'Concierge® Membership', description: 'Premium access to all services', why_it_fits: 'VIP treatment for your pet', icon: '👑', concierge: true },
+    { id: 'services-2', name: 'Priority Support', description: '24/7 emergency assistance', why_it_fits: 'Peace of mind anytime', icon: '🆘', concierge: true }
+  ],
+  shop: [
+    { id: 'shop-1', name: 'Personal Shopper', description: 'Curated product selection', why_it_fits: 'Perfect picks, every time', icon: '🛍️', concierge: true },
+    { id: 'shop-2', name: 'Custom Merchandise', description: 'Personalized with your pet', why_it_fits: 'One-of-a-kind items', icon: '🎁', concierge: true }
+  ]
+};
+
 /**
  * ProductPickCard - For catalogue products (direct purchase)
  */
