@@ -178,6 +178,19 @@ These decisions are **FINAL** and must not be changed without explicit user appr
 ### COMPLETED TODAY (Feb 24, 2026)
 | Task | Status |
 |------|--------|
+| **🔒 CARE vs FIT PILLAR REORGANIZATION** | ✅ COMPLETE |
+| CARE_TYPES updated to 8 categories | ✅ DONE |
+| Walk/Training REMOVED from Care | ✅ DONE |
+| Boarding & Daycare ADDED to Care | ✅ DONE |
+| CARE_EXPERIENCES updated (6 new experiences) | ✅ DONE |
+| Quick Book section limited to 4 cards | ✅ DONE |
+| ConversationalEntry goals updated for Care | ✅ DONE |
+| ConversationalEntry goals updated for Stay (travel-led) | ✅ DONE |
+| QuickWinTip tips updated (care/fit separation) | ✅ DONE |
+| TransformationStories made pillar-aware | ✅ DONE |
+| CARE_STORIES vs FIT_STORIES differentiated | ✅ DONE |
+| CarePage.jsx passes pillar="care" | ✅ DONE |
+| FitPage.jsx passes pillar="fit" | ✅ DONE |
 | **🎨 UI COLOR DIFFERENTIATION** | ✅ COMPLETE |
 | Care pillar: Changed from pink to TEAL color | ✅ DONE |
 | UnifiedHero.jsx: Care gradient updated | ✅ DONE |
