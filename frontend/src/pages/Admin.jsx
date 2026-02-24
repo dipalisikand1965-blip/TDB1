@@ -2398,6 +2398,7 @@ const Admin = () => {
               { id: 'insights', label: 'Blog', icon: FileText },
               { id: 'testimonials', label: 'Testimonials', icon: Star },
               { id: 'faqs', label: 'FAQs', icon: HelpCircle },
+              { id: 'transformations', label: 'Transformations', icon: ArrowRight },
               { id: 'about', label: 'About', icon: Sparkles },
               { id: 'pages', label: 'CMS', icon: FileText },
               { id: 'landing-page', label: 'Landing Page', icon: Image },
