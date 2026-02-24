@@ -40,9 +40,9 @@ const PILLAR_THEMES = {
   celebrate: {
     name: 'Celebrate',
     icon: Sparkles,
-    iconColor: 'text-pink-500',
-    badgeGradient: 'bg-gradient-to-r from-pink-500 to-purple-500',
-    containerGradient: 'bg-gradient-to-br from-slate-900 via-purple-950/90 to-slate-900',
+    iconColor: 'text-fuchsia-500',
+    badgeGradient: 'bg-gradient-to-r from-fuchsia-500 to-pink-500',
+    containerGradient: 'bg-gradient-to-br from-slate-900 via-fuchsia-950/90 to-slate-900',
     title: (petName) => `Celebrations for ${petName}`,
     subtitle: (petName) => `Curated celebrations based on ${petName}'s personality`,
     description: 'Birthday parties, gotcha days, and special moments - all orchestrated by Concierge®'
@@ -61,7 +61,7 @@ const PILLAR_THEMES = {
     name: 'Care',
     icon: Scissors,
     iconColor: 'text-rose-500',
-    badgeGradient: 'bg-gradient-to-r from-rose-500 to-pink-500',
+    badgeGradient: 'bg-gradient-to-r from-rose-500 to-red-400',
     containerGradient: 'bg-gradient-to-br from-slate-900 via-rose-950/80 to-slate-900',
     title: (petName) => `Grooming & Care for ${petName}`,
     subtitle: (petName) => `Premium care services tailored to ${petName}'s needs`,
@@ -80,9 +80,9 @@ const PILLAR_THEMES = {
   travel: {
     name: 'Travel',
     icon: Plane,
-    iconColor: 'text-sky-500',
-    badgeGradient: 'bg-gradient-to-r from-sky-500 to-blue-500',
-    containerGradient: 'bg-gradient-to-br from-slate-900 via-sky-950/80 to-slate-900',
+    iconColor: 'text-cyan-500',
+    badgeGradient: 'bg-gradient-to-r from-cyan-500 to-teal-500',
+    containerGradient: 'bg-gradient-to-br from-slate-900 via-cyan-950/80 to-slate-900',
     title: (petName) => `Travel Planning for ${petName}`,
     subtitle: (petName) => `Adventures and journeys designed for ${petName}`,
     description: 'Pet-friendly destinations, travel kits, and documentation - arranged by Concierge®'
@@ -90,9 +90,9 @@ const PILLAR_THEMES = {
   learn: {
     name: 'Learn',
     icon: GraduationCap,
-    iconColor: 'text-violet-500',
-    badgeGradient: 'bg-gradient-to-r from-violet-500 to-purple-500',
-    containerGradient: 'bg-gradient-to-br from-slate-900 via-violet-950/80 to-slate-900',
+    iconColor: 'text-indigo-500',
+    badgeGradient: 'bg-gradient-to-r from-indigo-500 to-blue-500',
+    containerGradient: 'bg-gradient-to-br from-slate-900 via-indigo-950/80 to-slate-900',
     title: (petName) => `Training & Learning for ${petName}`,
     subtitle: (petName) => `Behavior programs crafted for ${petName}'s personality`,
     description: 'Training sessions, behavior consultations, and skill building - by expert trainers.'
@@ -100,9 +100,9 @@ const PILLAR_THEMES = {
   enjoy: {
     name: 'Enjoy',
     icon: Gamepad2,
-    iconColor: 'text-amber-500',
-    badgeGradient: 'bg-gradient-to-r from-amber-500 to-yellow-500',
-    containerGradient: 'bg-gradient-to-br from-slate-900 via-amber-950/80 to-slate-900',
+    iconColor: 'text-yellow-500',
+    badgeGradient: 'bg-gradient-to-r from-yellow-500 to-amber-500',
+    containerGradient: 'bg-gradient-to-br from-slate-900 via-yellow-950/80 to-slate-900',
     title: (petName) => `Play & Activities for ${petName}`,
     subtitle: (petName) => `Fun experiences matched to ${petName}'s energy`,
     description: 'Playdates, adventures, and enrichment activities - curated for maximum joy.'
