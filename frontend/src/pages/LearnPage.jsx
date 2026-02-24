@@ -488,42 +488,23 @@ const LearnPage = () => {
       {/* Personalized Picks for User's Pet */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <PersonalizedPicks pillar="learn" maxProducts={6} />
-        
-        {/* ═══════════════════════════════════════════════════════════════════
-            HANDPICKED FOR {PET} - Curated concierge products & services
-            Server-driven cards with CONCIERGE® PRODUCT/SERVICE badges
-            ═══════════════════════════════════════════════════════════════════ */}
-        {userPets && userPets[0] && (
-          <div className="glass-card-dark rounded-3xl p-4 md:p-6 shadow-xl mt-8">
-            <CuratedConciergeSection
-              petId={userPets[0].id || userPets[0]._id}
-              petName={userPets[0].name}
-              pillar="learn"
-              token={token}
-              userEmail={user?.email}
-            />
-          </div>
-        )}
-        
-        {/* Mira's Picks for Pet */}
-        {userPets && userPets[0] && (
-          <PillarPicksSection pillar="learn" pet={userPets[0]} />
-        )}
-        
-        {/* ═══════════════════════════════════════════════════════════════════
-            PERSONALIZED FOR {PET} - Custom training items created by Concierge®
-            ═══════════════════════════════════════════════════════════════════ */}
-        {userPets && userPets[0] && (
-          <div className="mt-6" data-testid="personalized-learn-wrapper">
-            <PersonalizedPillarSection
-              pillar="learn"
-              pet={userPets[0]}
-              token={token}
-              userEmail={user?.email}
-            />
-          </div>
-        )}
       </div>
+      
+      {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
+      <MiraCuratedLayer
+        pillar="learn"
+        activePet={userPets?.[0]}
+        token={token}
+        userEmail={user?.email}
+        isLoading={!userPets && !!token}
+      />
+      
+      {/* Mira's Picks for Pet */}
+      {userPets && userPets[0] && (
+        <div className="max-w-6xl mx-auto px-4 mt-6">
+          <PillarPicksSection pillar="learn" pet={userPets[0]} />
+        </div>
+      )}
 
       {/* === ELEVATED CONCIERGE® LEARN EXPERIENCES === */}
       <div className="py-16 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
