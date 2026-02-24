@@ -20,6 +20,7 @@ import AdminQuickEdit from '../components/AdminQuickEdit';
 import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import PillarPicksSection from '../components/PillarPicksSection';
+import PersonalizedPillarSection from '../components/PersonalizedPillarSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import {
   Shield, Heart, Plane, FileText, Sparkles, Scale, Upload, Download,
@@ -959,6 +960,20 @@ const PaperworkPage = () => {
       {userPets && userPets[0] && (
         <div className="max-w-6xl mx-auto px-4">
           <PillarPicksSection pillar="paperwork" pet={userPets[0]} />
+        </div>
+      )}
+      
+      {/* ═══════════════════════════════════════════════════════════════════
+          PERSONALIZED FOR {PET} - Custom paperwork items created by Concierge®
+          ═══════════════════════════════════════════════════════════════════ */}
+      {userPets && userPets[0] && (
+        <div className="max-w-6xl mx-auto px-4 mt-6" data-testid="personalized-paperwork-wrapper">
+          <PersonalizedPillarSection
+            pillar="paperwork"
+            pet={userPets[0]}
+            token={token}
+            userEmail={user?.email}
+          />
         </div>
       )}
       
