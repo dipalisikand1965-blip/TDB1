@@ -511,11 +511,11 @@ const TravelPage = () => {
           {/* ═══════════════════════════════════════════════════════════════════
               PERSONALIZED FOR {PET} - Custom travel items created by Concierge®
               ═══════════════════════════════════════════════════════════════════ */}
-          {selectedPets && selectedPets[0] && (
+          {userPets && userPets[0] && (
             <div className="mt-6" data-testid="personalized-travel-wrapper">
               <PersonalizedPillarSection
                 pillar="travel"
-                pet={selectedPets[0]}
+                pet={userPets[0]}
                 token={token}
                 userEmail={user?.email}
               />
