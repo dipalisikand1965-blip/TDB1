@@ -21,7 +21,7 @@ Your production site will show OLD content because it's calling the WRONG backen
 # 1. Check current URL
 cat /app/frontend/.env | grep REACT_APP_BACKEND_URL
 
-# 2. If it shows preview URL (like https://soul-picks-engine.preview.emergentagent.com), FIX IT:
+# 2. If it shows preview URL (like https://soul-groom.preview.emergentagent.com), FIX IT:
 sed -i 's|REACT_APP_BACKEND_URL=.*|REACT_APP_BACKEND_URL=https://thedoggycompany.in|' /app/frontend/.env
 
 # 3. Restart frontend to pick up changes
@@ -34,7 +34,7 @@ sudo supervisorctl restart frontend
 
 | Environment | REACT_APP_BACKEND_URL |
 |-------------|----------------------|
-| Preview | `https://soul-picks-engine.preview.emergentagent.com` |
+| Preview | `https://soul-groom.preview.emergentagent.com` |
 | **PRODUCTION** | **`https://thedoggycompany.in`** |
 
 ---

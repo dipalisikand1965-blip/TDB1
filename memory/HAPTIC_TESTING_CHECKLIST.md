@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://soul-picks-engine.preview.emergentagent.com/mira-demo**
+**https://soul-groom.preview.emergentagent.com/mira-demo**
 
 ---
 
