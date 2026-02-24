@@ -626,6 +626,20 @@ const FitPage = () => {
         {userPets && userPets[0] && (
           <PillarPicksSection pillar="fit" pet={userPets[0]} />
         )}
+        
+        {/* ═══════════════════════════════════════════════════════════════════
+            PERSONALIZED FOR {PET} - Custom fitness items created by Concierge®
+            ═══════════════════════════════════════════════════════════════════ */}
+        {userPets && userPets[0] && (
+          <div className="mt-6" data-testid="personalized-fit-wrapper">
+            <PersonalizedPillarSection
+              pillar="fit"
+              pet={userPets[0]}
+              token={token}
+              userEmail={user?.email}
+            />
+          </div>
+        )}
       </div>
 
       {/* ==================== CONVERSATIONAL ENTRY + QUICK WIN ==================== */}
