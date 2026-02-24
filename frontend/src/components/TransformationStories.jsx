@@ -1,26 +1,30 @@
 /**
  * TransformationStories.jsx
  * Before & After pet transformation carousel
- * Emotional, persuasive social proof that builds trust
+ * World-class design with large, impactful imagery
  */
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Quote, Star, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Quote, Star, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
+import { Badge } from './ui/badge';
 
-// Sample transformation stories (in production, fetch from API)
+// Transformation stories with larger high-quality images
 const SAMPLE_TRANSFORMATIONS = [
   {
     id: 1,
     petName: 'Bruno',
-    breed: 'Labrador',
+    breed: 'Golden Retriever',
     ownerName: 'Priya M.',
-    beforeImage: 'https://images.unsplash.com/photo-1636320004437-1f34a9babea4?w=200&h=200&fit=crop',
-    afterImage: 'https://images.unsplash.com/photo-1676895211217-a99a64017c82?w=200&h=200&fit=crop',
-    achievement: 'Lost 4kg in 10 weeks',
-    testimonial: 'The trainers understood Bruno perfectly. He actually enjoys his workouts now!',
-    program: 'Weight Journey Partner®',
+    location: 'Mumbai',
+    beforeImage: 'https://images.unsplash.com/photo-1636320004437-1f34a9babea4?w=600&h=600&fit=crop&q=80',
+    afterImage: 'https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=600&h=600&fit=crop&q=80',
+    beforeLabel: 'Before',
+    afterLabel: 'After',
+    headline: 'From matted to magnificent',
+    testimonial: '"The groomer was so gentle with Bruno\'s anxiety. He actually enjoyed it!"',
+    program: 'Groom & Glam Curator®',
     rating: 5
   },
   {
@@ -28,22 +32,28 @@ const SAMPLE_TRANSFORMATIONS = [
     petName: 'Coco',
     breed: 'Beagle',
     ownerName: 'Rahul S.',
-    beforeImage: 'https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=200&h=200&fit=crop',
-    afterImage: 'https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=200&h=200&fit=crop',
-    achievement: 'From couch potato to agility star',
-    testimonial: 'Coco went from sleeping all day to winning her first agility ribbon!',
-    program: 'Active Lifestyle Curator®',
+    location: 'Bangalore',
+    beforeImage: 'https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=600&h=600&fit=crop&q=80',
+    afterImage: 'https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=600&h=600&fit=crop&q=80',
+    beforeLabel: 'Sick',
+    afterLabel: 'Healthy',
+    headline: 'Emergency care saved his life',
+    testimonial: '"They found a 24/7 vet at 2am. Forever grateful for their emergency support."',
+    program: 'Emergency Response Partner®',
     rating: 5
   },
   {
     id: 3,
     petName: 'Max',
-    breed: 'Golden Retriever',
+    breed: 'Labrador, 11 years',
     ownerName: 'Anita K.',
-    beforeImage: 'https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=200&h=200&fit=crop',
-    afterImage: 'https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=200&h=200&fit=crop',
-    achievement: 'Senior mobility restored',
-    testimonial: 'At 11, Max is moving like a puppy again. The hydrotherapy made all the difference.',
+    location: 'Delhi',
+    beforeImage: 'https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=600&h=600&fit=crop&q=80',
+    afterImage: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&h=600&fit=crop&q=80',
+    beforeLabel: 'Struggling',
+    afterLabel: 'Thriving',
+    headline: 'Senior mobility restored',
+    testimonial: '"The physiotherapy sessions gave Max a new lease on life at 11!"',
     program: 'Senior Wellness Companion®',
     rating: 5
   },
@@ -52,11 +62,14 @@ const SAMPLE_TRANSFORMATIONS = [
     petName: 'Luna',
     breed: 'German Shepherd',
     ownerName: 'Vikram P.',
-    beforeImage: 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=200&h=200&fit=crop',
-    afterImage: 'https://images.unsplash.com/photo-1568572933382-74d440642117?w=200&h=200&fit=crop',
-    achievement: 'Anxiety reduced, confidence gained',
-    testimonial: 'Luna was always nervous. The structured training gave her so much confidence.',
-    program: 'Wellness Architect®',
+    location: 'Gurgaon',
+    beforeImage: 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=600&h=600&fit=crop&q=80',
+    afterImage: 'https://images.unsplash.com/photo-1568572933382-74d440642117?w=600&h=600&fit=crop&q=80',
+    beforeLabel: 'Anxious',
+    afterLabel: 'Confident',
+    headline: 'Anxiety to confidence',
+    testimonial: '"The trainer understood Luna\'s fears perfectly. She\'s a different dog now!"',
+    program: 'Behavior Architect®',
     rating: 5
   }
 ];
@@ -80,7 +93,7 @@ const TransformationStories = ({
 
   const scroll = (direction) => {
     if (scrollRef.current) {
-      const scrollAmount = 320;
+      const scrollAmount = 340;
       scrollRef.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth'
@@ -99,104 +112,155 @@ const TransformationStories = ({
   }, []);
 
   return (
-    <div className={`${className}`}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900">Real Transformations</h3>
-          <p className="text-sm text-gray-500">Stories from our pet community</p>
+    <div className={`py-12 sm:py-16 ${className}`}>
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Header */}
+        <div className="text-center mb-8 sm:mb-12">
+          <Badge className="bg-gradient-to-r from-rose-500 to-pink-500 text-white px-4 py-1.5 mb-4">
+            <Sparkles className="w-3.5 h-3.5 mr-1.5 inline" />
+            Success Stories
+          </Badge>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+            Real Transformations
+          </h2>
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+            Stories from our pet care community
+          </p>
         </div>
-        
-        {/* Navigation */}
-        <div className="flex items-center gap-2">
+
+        {/* Navigation buttons - Desktop */}
+        <div className="hidden sm:flex justify-end gap-2 mb-6">
           <button
             onClick={() => scroll('left')}
             disabled={!canScrollLeft}
-            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all
               ${canScrollLeft 
-                ? 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 shadow-sm' 
+                ? 'bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-rose-300 shadow-md' 
                 : 'bg-gray-100 text-gray-300 cursor-not-allowed'}`}
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={() => scroll('right')}
             disabled={!canScrollRight}
-            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all
               ${canScrollRight 
-                ? 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 shadow-sm' 
+                ? 'bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-rose-300 shadow-md' 
                 : 'bg-gray-100 text-gray-300 cursor-not-allowed'}`}
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
-      </div>
 
-      {/* Carousel */}
-      <div 
-        ref={scrollRef}
-        className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 -mx-1 px-1"
-        style={{ scrollSnapType: 'x mandatory' }}
-      >
-        {stories.map((story, idx) => (
-          <TransformationCard 
-            key={story.id || idx} 
-            story={story}
-            onViewProgram={onViewProgram}
-          />
-        ))}
+        {/* Carousel */}
+        <div 
+          ref={scrollRef}
+          className="flex gap-5 sm:gap-6 overflow-x-auto scrollbar-hide pb-4 -mx-4 px-4 sm:mx-0 sm:px-0"
+          style={{ scrollSnapType: 'x mandatory' }}
+        >
+          {stories.map((story, idx) => (
+            <TransformationCard 
+              key={story.id || idx} 
+              story={story}
+              onViewProgram={onViewProgram}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
-// Individual transformation card
+// Individual transformation card - World-class design
 const TransformationCard = ({ story, onViewProgram }) => {
-  const { petName, breed, ownerName, beforeImage, afterImage, achievement, testimonial, program, rating } = story;
+  const { petName, breed, ownerName, location, beforeImage, afterImage, beforeLabel, afterLabel, headline, testimonial, program, rating } = story;
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="flex-shrink-0 w-[300px] bg-white rounded-2xl border border-gray-100 overflow-hidden 
-                 hover:shadow-lg transition-shadow"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.3 }}
+      className="flex-shrink-0 w-[320px] sm:w-[360px] bg-white rounded-3xl border border-gray-100 overflow-hidden 
+                 shadow-lg hover:shadow-2xl transition-all duration-300"
       style={{ scrollSnapAlign: 'start' }}
     >
-      {/* Before/After Images */}
-      <div className="relative h-32 bg-gradient-to-r from-gray-100 to-gray-50">
+      {/* Before/After Images - MUCH LARGER */}
+      <div className="relative h-48 sm:h-56 bg-gradient-to-br from-rose-50 to-pink-50">
         <div className="absolute inset-0 flex">
-          {/* Before */}
-          <div className="w-1/2 relative">
+          {/* Before Image */}
+          <div className="w-1/2 relative overflow-hidden">
             <img 
               src={beforeImage} 
               alt={`${petName} before`}
-              className="w-full h-full object-cover grayscale opacity-80"
+              className="w-full h-full object-cover filter grayscale-[30%] opacity-90 hover:grayscale-0 transition-all duration-500"
             />
-            <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/60 text-white text-[10px] rounded-full">
-              Before
+            <div className="absolute bottom-3 left-3">
+              <span className="px-3 py-1.5 bg-gray-900/70 backdrop-blur-sm text-white text-xs sm:text-sm font-medium rounded-full">
+                {beforeLabel}
+              </span>
             </div>
           </div>
           
-          {/* Arrow */}
+          {/* Divider Arrow */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-            <div className="w-8 h-8 rounded-full bg-white shadow-lg flex items-center justify-center">
-              <ArrowRight className="w-4 h-4 text-teal-600" />
-            </div>
+            <motion.div 
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white shadow-xl flex items-center justify-center border-2 border-rose-200"
+              whileHover={{ scale: 1.1 }}
+            >
+              <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-rose-500" />
+            </motion.div>
           </div>
           
-          {/* After */}
-          <div className="w-1/2 relative">
+          {/* After Image */}
+          <div className="w-1/2 relative overflow-hidden">
             <img 
               src={afterImage} 
               alt={`${petName} after`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
             />
-            <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-teal-600 text-white text-[10px] rounded-full">
-              After
+            <div className="absolute bottom-3 right-3">
+              <span className="px-3 py-1.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-xs sm:text-sm font-medium rounded-full shadow-lg">
+                {afterLabel}
+              </span>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Content */}
+      <div className="p-5 sm:p-6">
+        {/* Pet Info */}
+        <div className="mb-4">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">{petName}</h3>
+          <p className="text-sm text-gray-500">{breed}</p>
+        </div>
+        
+        {/* Achievement Headline */}
+        <div className="mb-4">
+          <p className="text-base sm:text-lg font-semibold text-rose-600">{headline}</p>
+        </div>
+        
+        {/* Testimonial */}
+        <div className="mb-4">
+          <p className="text-sm sm:text-base text-gray-600 italic leading-relaxed">
+            {testimonial}
+          </p>
+        </div>
+        
+        {/* Owner & Location */}
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          <span className="text-sm text-gray-500">— {ownerName}, {location}</span>
+          <div className="flex items-center gap-0.5">
+            {[...Array(rating)].map((_, i) => (
+              <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+            ))}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
       {/* Content */}
       <div className="p-4">
