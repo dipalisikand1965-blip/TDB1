@@ -504,8 +504,8 @@ const TravelPage = () => {
           )}
           
           {/* Mira's Picks for Pet */}
-          {selectedPets && selectedPets[0] && (
-            <PillarPicksSection pillar="travel" pet={selectedPets[0]} />
+          {userPets && userPets[0] && (
+            <PillarPicksSection pillar="travel" pet={userPets[0]} />
           )}
           
           {/* ═══════════════════════════════════════════════════════════════════
