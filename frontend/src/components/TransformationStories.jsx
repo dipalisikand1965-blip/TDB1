@@ -2,6 +2,7 @@
  * TransformationStories.jsx
  * Before & After pet transformation carousel
  * World-class design with large, impactful imagery
+ * NOW PILLAR-AWARE: Different stories for Care vs Fit
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -10,82 +11,183 @@ import { ChevronLeft, ChevronRight, Quote, Star, ArrowRight, Sparkles } from 'lu
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 
-// Transformation stories with ACCURATE BREED-SPECIFIC images from Unsplash
-const SAMPLE_TRANSFORMATIONS = [
+// ═══════════════════════════════════════════════════════════════════════════════
+// CARE STORIES - Grooming, Vet, Boarding, Behavior Support, Senior Care
+// ═══════════════════════════════════════════════════════════════════════════════
+const CARE_STORIES = [
   {
-    id: 1,
+    id: 'care-1',
     petName: 'Bruno',
     breed: 'Golden Retriever',
     ownerName: 'Priya M.',
     location: 'Mumbai',
-    // Golden Retriever images - before (messy coat) and after (groomed)
     beforeImage: 'https://images.unsplash.com/photo-1461730117549-4b30953f78a6?w=600&h=600&fit=crop&q=80',
     afterImage: 'https://images.unsplash.com/photo-1608138498905-05b5cd816a36?w=600&h=600&fit=crop&q=80',
-    beforeLabel: 'Before',
-    afterLabel: 'After',
+    beforeLabel: 'Matted',
+    afterLabel: 'Magnificent',
     headline: 'From matted to magnificent',
     testimonial: '"The groomer was so gentle with Bruno\'s anxiety. He actually enjoyed it!"',
     program: 'Groom & Glam Curator®',
     rating: 5
   },
   {
-    id: 2,
+    id: 'care-2',
     petName: 'Coco',
     breed: 'Beagle',
     ownerName: 'Rahul S.',
     location: 'Bangalore',
-    // Beagle images - before (sick) and after (healthy happy)
-    beforeImage: 'https://images.unsplash.com/photo-1737699430579-3f20b8abc613?w=600&h=600&fit=crop&q=80',
+    beforeImage: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&h=600&fit=crop&q=80',
     afterImage: 'https://images.pexels.com/photos/19490048/pexels-photo-19490048.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop',
     beforeLabel: 'Sick',
     afterLabel: 'Healthy',
     headline: 'Emergency care saved his life',
     testimonial: '"They found a 24/7 vet at 2am. Forever grateful for their emergency support."',
-    program: 'Emergency Response Partner®',
+    program: 'Vet & Clinic Coordinator®',
     rating: 5
   },
   {
-    id: 3,
-    petName: 'Max',
-    breed: 'Labrador, 11 years',
-    ownerName: 'Anita K.',
+    id: 'care-3',
+    petName: 'Bella',
+    breed: 'Shih Tzu',
+    ownerName: 'Meera K.',
     location: 'Delhi',
-    // Senior Labrador images - before (struggling) and after (thriving)
-    beforeImage: 'https://images.unsplash.com/photo-1610661152225-10b323d1b855?w=600&h=600&fit=crop&q=80',
-    afterImage: 'https://images.unsplash.com/photo-1619590694371-7eed5838e880?w=600&h=600&fit=crop&q=80',
-    beforeLabel: 'Struggling',
-    afterLabel: 'Thriving',
-    headline: 'Senior mobility restored',
-    testimonial: '"The physiotherapy sessions gave Max a new lease on life at 11!"',
-    program: 'Senior Wellness Companion®',
+    beforeImage: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=600&h=600&fit=crop&q=80',
+    afterImage: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&h=600&fit=crop&q=80',
+    beforeLabel: 'Anxious',
+    afterLabel: 'Relaxed',
+    headline: 'Boarding anxiety conquered',
+    testimonial: '"First time leaving Bella for a week. Daily updates gave me complete peace of mind."',
+    program: 'Boarding & Daycare Curator®',
     rating: 5
   },
   {
-    id: 4,
+    id: 'care-4',
     petName: 'Luna',
     breed: 'German Shepherd',
     ownerName: 'Vikram P.',
     location: 'Gurgaon',
-    // German Shepherd images - before (anxious) and after (confident)
     beforeImage: 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=600&h=600&fit=crop&q=80',
     afterImage: 'https://images.unsplash.com/photo-1624736356321-a8f755bac571?w=600&h=600&fit=crop&q=80',
-    beforeLabel: 'Anxious',
-    afterLabel: 'Confident',
-    headline: 'Anxiety to confidence',
-    testimonial: '"The trainer understood Luna\'s fears perfectly. She\'s a different dog now!"',
-    program: 'Behavior Architect®',
+    beforeLabel: 'Fearful',
+    afterLabel: 'Calm',
+    headline: 'Grooming anxiety resolved',
+    testimonial: '"Luna used to tremble at grooming. Now she sits calmly through the whole session."',
+    program: 'Behavior & Anxiety Partner®',
+    rating: 5
+  },
+  {
+    id: 'care-5',
+    petName: 'Max',
+    breed: 'Labrador, 11 years',
+    ownerName: 'Anita K.',
+    location: 'Pune',
+    beforeImage: 'https://images.unsplash.com/photo-1610661152225-10b323d1b855?w=600&h=600&fit=crop&q=80',
+    afterImage: 'https://images.unsplash.com/photo-1619590694371-7eed5838e880?w=600&h=600&fit=crop&q=80',
+    beforeLabel: 'Struggling',
+    afterLabel: 'Comfortable',
+    headline: 'Senior comfort restored',
+    testimonial: '"The special needs support for Max\'s arthritis has been life-changing."',
+    program: 'Senior & Special Needs Companion®',
     rating: 5
   }
 ];
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// FIT STORIES - Walk, Training, Weight, Agility, Puppy Programs, Senior Mobility
+// ═══════════════════════════════════════════════════════════════════════════════
+const FIT_STORIES = [
+  {
+    id: 'fit-1',
+    petName: 'Rocky',
+    breed: 'Labrador',
+    ownerName: 'Arun T.',
+    location: 'Mumbai',
+    beforeImage: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&h=600&fit=crop&q=80',
+    afterImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop&q=80',
+    beforeLabel: '32kg',
+    afterLabel: '26kg',
+    headline: 'Lost 6kg in 3 months',
+    testimonial: '"The weight management program was perfect. Rocky is so much more energetic now!"',
+    program: 'Weight Journey Partner®',
+    rating: 5
+  },
+  {
+    id: 'fit-2',
+    petName: 'Coco',
+    breed: 'Beagle Puppy',
+    ownerName: 'Neha S.',
+    location: 'Bangalore',
+    beforeImage: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=600&h=600&fit=crop&q=80',
+    afterImage: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&h=600&fit=crop&q=80',
+    beforeLabel: 'Untrained',
+    afterLabel: 'Well-behaved',
+    headline: 'Puppy to pro in 8 weeks',
+    testimonial: '"The puppy training program transformed Coco. She knows all basic commands now!"',
+    program: 'Training & Skills®',
+    rating: 5
+  },
+  {
+    id: 'fit-3',
+    petName: 'Duke',
+    breed: 'Border Collie',
+    ownerName: 'Sanjay M.',
+    location: 'Delhi',
+    beforeImage: 'https://images.unsplash.com/photo-1503256207526-0d5d80fa2f47?w=600&h=600&fit=crop&q=80',
+    afterImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop&q=80',
+    beforeLabel: 'Restless',
+    afterLabel: 'Champion',
+    headline: 'Agility champion in the making',
+    testimonial: '"Duke\'s energy finally has an outlet. He loves agility training!"',
+    program: 'Agility & Fitness®',
+    rating: 5
+  },
+  {
+    id: 'fit-4',
+    petName: 'Max',
+    breed: 'Labrador, 11 years',
+    ownerName: 'Anita K.',
+    location: 'Pune',
+    beforeImage: 'https://images.unsplash.com/photo-1610661152225-10b323d1b855?w=600&h=600&fit=crop&q=80',
+    afterImage: 'https://images.unsplash.com/photo-1619590694371-7eed5838e880?w=600&h=600&fit=crop&q=80',
+    beforeLabel: 'Stiff',
+    afterLabel: 'Mobile',
+    headline: 'Senior mobility restored',
+    testimonial: '"The gentle fitness program gave Max a new lease on life at 11!"',
+    program: 'Senior Mobility & Gentle Fitness®',
+    rating: 5
+  },
+  {
+    id: 'fit-5',
+    petName: 'Simba',
+    breed: 'Golden Retriever',
+    ownerName: 'Kavita R.',
+    location: 'Hyderabad',
+    beforeImage: 'https://images.unsplash.com/photo-1461730117549-4b30953f78a6?w=600&h=600&fit=crop&q=80',
+    afterImage: 'https://images.unsplash.com/photo-1608138498905-05b5cd816a36?w=600&h=600&fit=crop&q=80',
+    beforeLabel: 'Lazy',
+    afterLabel: 'Active',
+    headline: 'From couch to trail',
+    testimonial: '"Daily walks changed everything. Simba now looks forward to his morning routine!"',
+    program: 'Daily Walk & Activity®',
+    rating: 5
+  }
+];
+
+// Default stories (for backward compatibility)
+const SAMPLE_TRANSFORMATIONS = CARE_STORIES;
+
 const TransformationStories = ({ 
-  stories = SAMPLE_TRANSFORMATIONS,
+  pillar = 'care', // NEW: Accept pillar prop to show relevant stories
+  stories,
   onViewProgram,
   className = '' 
 }) => {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  
+  // Select stories based on pillar
+  const displayStories = stories || (pillar === 'fit' ? FIT_STORIES : CARE_STORIES);
 
   const checkScroll = () => {
     if (scrollRef.current) {
