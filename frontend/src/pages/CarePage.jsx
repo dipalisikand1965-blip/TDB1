@@ -521,6 +521,27 @@ const CarePage = () => {
         .stagger-6 { animation-delay: 0.6s; }
       `}</style>
 
+      {/* ==================== MIRA'S CURATED LAYER - Gold Standard - ALWAYS FIRST ==================== */}
+      <div className="py-10 bg-gradient-to-b from-white to-teal-50/30">
+        <PersonalizedPicks pillar="care" />
+        
+        {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
+        <MiraCuratedLayer
+          pillar="care"
+          activePet={userPets?.[0]}
+          token={token}
+          userEmail={user?.email}
+          isLoading={!userPets && !!token}
+        />
+        
+        {/* Mira's Picks for Pet */}
+        {userPets && userPets[0] && (
+          <div className="max-w-6xl mx-auto px-4 mt-6">
+            <PillarPicksSection pillar="care" pet={userPets[0]} />
+          </div>
+        )}
+      </div>
+
       {/* ==================== SOCIAL PROOF BANNER ==================== */}
       <div className="bg-white border-b border-gray-100 py-3">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
