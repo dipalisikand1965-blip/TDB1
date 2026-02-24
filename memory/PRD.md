@@ -94,6 +94,85 @@
 
 ---
 
+## 🔒 LOCKED ARCHITECTURAL DECISIONS (Feb 24, 2026)
+
+These decisions are **FINAL** and must not be changed without explicit user approval.
+
+### PILLAR DEFINITIONS
+
+| Pillar | One-Liner | User Intent |
+|--------|-----------|-------------|
+| **CARE** | Support and caregiving | "My pet needs care/help" |
+| **FIT** | Activity and improvement | "My pet needs activity/improvement" |
+| **STAY** | Travel accommodation | "Where can my pet stay during travel?" |
+
+### CARE OWNS (8 Top-Level Categories)
+
+| ID | Label | Description |
+|----|-------|-------------|
+| `grooming` | Grooming | Hygiene, coat care, bath, nail trim |
+| `vet_clinic_booking` | Vet Visits & Clinic Booking | Clinic discovery, booking & follow-up coordination |
+| `boarding_daycare` | Boarding & Daycare | Overnight boarding + daytime supervision |
+| `pet_sitting` | Pet Sitting | In-home care, feeding, companionship |
+| `behavior_anxiety_support` | Behavior & Anxiety Support | Fear, stress, grooming/vet anxiety |
+| `senior_special_needs_support` | Senior & Special Needs Support | Comfort, mobility, special handling |
+| `nutrition_consult_booking` | Nutrition Consult Booking | Diet consults, allergy support booking |
+| `emergency_help` | Emergency Help | Urgent care routing & coordination |
+
+**Subtypes under `vet_clinic_booking`:**
+- Clinic Visit Booking
+- Preventive Care Appointment
+- Diagnostics & Test Booking
+- Follow-up Appointment Coordination
+- Recovery Support Coordination
+- Let Mira Recommend a Clinic
+
+### FIT OWNS
+
+| Category | Description |
+|----------|-------------|
+| Walk | Daily walks, energy release |
+| Training & Skills | Obedience, behavior training, habit-building |
+| Fitness & Conditioning | Weight programs, stamina, strength |
+| Weight Activity Plans | Exercise routines for weight management |
+| Play & Enrichment | Mental + physical stimulation |
+| Agility | Performance, coordination training |
+| Puppy Activity & Socialization | Movement, routine, confidence |
+| Senior Mobility & Gentle Fitness | Maintenance movement (routed from Fit) |
+| Swimming / Activity Sessions | Exercise and conditioning |
+
+### STAY OWNS
+
+| Category | Description |
+|----------|-------------|
+| Pet-friendly travel stays | Hotels, resorts with pet access |
+| Vacation stays | Holiday accommodations |
+| Travel accommodation planning | Trip planning assistance |
+
+### WHAT MOVED WHERE
+
+| From | To | Items |
+|------|-----|-------|
+| Care → Fit | Walk, Training |
+| Stay → Care | Boarding, Daycare, Pet Sitting |
+| Care → Separate | Behavior Training (Fit) vs Behavior Support (Care) |
+
+### TransformationStories - Pillar-Aware
+
+- **Care stories**: Grooming recovery, vet support, senior support, boarding reassurance, post-op care, anxiety-sensitive grooming
+- **Fit stories**: Weight progress, training wins, agility confidence, puppy routines, mobility improvement
+
+### Concierge-Safe Language Rules
+
+| ❌ Avoid | ✅ Use Instead |
+|----------|----------------|
+| "Vet & Health" | "Vet Visits & Clinic Booking" |
+| "Nutrition Guidance" | "Nutrition Consult Booking" |
+| "Medical advice" | "Coordination/booking/support" |
+| "Emergency treatment" | "Urgent care routing & coordination" |
+
+---
+
 ## CURRENT SESSION WORK (Feb 24, 2026)
 
 ### COMPLETED TODAY (Feb 24, 2026)
