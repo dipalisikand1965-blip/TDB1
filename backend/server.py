@@ -6367,16 +6367,40 @@ async def get_public_products(
     # Add breed filter if specified
     if breed:
         breed_lower = breed.lower()
-        query["$or"] = query.get("$or", []) + [
-            {"breed_tags": {"$regex": breed_lower, "$options": "i"}},
-            {"tags": {"$regex": breed_lower, "$options": "i"}}
-        ]
+        breed_query = {
+            "$or": [
+                {"breed_tags": {"$regex": breed_lower, "$options": "i"}},
+                {"tags": {"$regex": breed_lower, "$options": "i"}}
+            ]
+        }
+        if query:
+            query = {"$and": [query, breed_query]}
+        else:
+            query = breed_query
+    
+    # Add shape filter if specified (for cakes/bakery items)
+    if shape:
+        shape_lower = shape.lower()
+        shape_query = {
+            "$or": [
+                # Check the new structured field
+                {"pillars_occasions.cake_bakery.shape": shape_lower},
+                # Fallback to searching in name/tags
+                {"name": {"$regex": shape_lower, "$options": "i"}},
+                {"tags": {"$regex": shape_lower, "$options": "i"}},
+                {"shape": shape_lower}  # Legacy flat field
+            ]
+        }
+        if query:
+            query = {"$and": [query, shape_query]}
+        else:
+            query = shape_query
     
     # Get total count first for pagination
     total_count = await db.products_master.count_documents(query if query else {})
     
-    # Calculate skip for pagination
-    skip = (page - 1) * limit
+    # Calculate skip for pagination (use direct skip if provided, otherwise calculate from page)
+    actual_skip = skip if skip > 0 else (page - 1) * limit
     
     # First, query products_master collection with pagination
     old_products = await db.products_master.find(
