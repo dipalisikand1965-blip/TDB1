@@ -194,28 +194,34 @@ const PersonalizedItemsSection = ({
               </div>
               
               {/* Name */}
-              <h4 className="text-xs font-medium text-white text-center mb-1">
+              <h4 className="text-sm font-semibold text-white text-center mb-1">
                 {item.name}
               </h4>
               
               {/* Description */}
-              <p className="text-[10px] text-pink-300/80 text-center line-clamp-2">
+              <p className="text-xs text-pink-300/80 text-center line-clamp-2 min-h-[2.5rem]">
                 {item.description}
               </p>
               
               {/* Price/Source */}
-              <p className="text-[10px] text-gray-500 text-center mt-2 italic">
+              <p className="text-xs text-gray-400 text-center mt-2 italic">
                 Concierge® creates
               </p>
               
               {/* CTA Button */}
               <button
-                className="w-full mt-2 py-1.5 rounded-lg text-[10px] font-medium transition-all bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:opacity-90"
+                className="w-full mt-3 py-2.5 rounded-xl text-sm font-semibold transition-all bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:opacity-90 active:scale-[0.98] shadow-lg"
               >
                 Create for {pet.name}
               </button>
             </div>
           ))}
+          </div>
+          
+          {/* Scroll Indicator - Mobile hint */}
+          <div className="flex justify-center mt-3 sm:hidden">
+            <span className="text-xs text-pink-400/50">← Swipe for more →</span>
+          </div>
         </div>
       </div>
 
