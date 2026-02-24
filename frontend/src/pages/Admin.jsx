@@ -1771,6 +1771,7 @@ const Admin = () => {
       else if (activeTab === 'members') fetchMembers();
       else if (activeTab === 'faqs') fetchFaqs();
       else if (activeTab === 'testimonials') fetchTestimonials();
+      else if (activeTab === 'transformations') fetchTransformations();
       else if (activeTab === 'insights') fetchBlogPosts();
       else if (activeTab === 'pets') fetchPetProfiles();
       else if (activeTab === 'loyalty') fetchLoyaltyStats();
