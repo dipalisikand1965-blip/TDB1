@@ -217,7 +217,35 @@ const LoadingSkeleton = ({ pillar }) => {
 };
 
 /**
- * MiraCuratedLayer - Universal wrapper for pillar curated sections
+ * Animation Variants for Framer Motion
+ */
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15
+    }
+  }
+};
+
+/**
+ * MiraCuratedLayer - GOLD STANDARD Universal wrapper for pillar curated sections
+ * World-class mobile-first design with premium animations
  */
 const MiraCuratedLayer = ({
   pillar,
@@ -234,7 +262,7 @@ const MiraCuratedLayer = ({
   
   // Show loading skeleton when waiting for pet data
   if (isLoading) {
-    return <LoadingSkeleton />;
+    return <LoadingSkeleton pillar={pillar} />;
   }
   
   // Don't render if no pet or token
@@ -246,31 +274,45 @@ const MiraCuratedLayer = ({
   const petId = activePet.id || activePet._id;
   
   return (
-    <div 
-      className={`max-w-6xl mx-auto px-4 pt-8 pb-4 section-fade-in stagger-1 ${className}`}
+    <motion.div 
+      className={`max-w-6xl mx-auto px-4 py-6 sm:py-8 ${className}`}
       data-testid={`${pillar}-curated-layer`}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
     >
       {/* ═══════════════════════════════════════════════════════════════════════
-          SECTION HEADER - Badge + Title + Subtitle (Centered)
+          SECTION HEADER - Premium Badge + Title + Subtitle (Centered)
+          Mobile-first typography with touch-optimized spacing
           ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="text-center mb-6">
-        <Badge className={`${theme.badgeGradient} text-white px-4 py-1.5 mb-4 shadow-lg`}>
-          <IconComponent className="w-3.5 h-3.5 mr-1.5 inline" />
+      <motion.div className="text-center mb-6 sm:mb-8" variants={itemVariants}>
+        <Badge 
+          className={`${theme.badgeGradient} text-white px-4 py-2 mb-4 shadow-lg 
+            text-xs sm:text-sm font-medium tracking-wide
+            transform hover:scale-105 transition-transform duration-200`}
+        >
+          <IconComponent className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 inline" />
           Mira's Picks for {petName}
         </Badge>
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 tracking-tight">
           {theme.title(petName)}
         </h2>
-        <p className="text-sm sm:text-base text-gray-600 max-w-xl mx-auto">
+        <p className="text-sm sm:text-base text-gray-600 max-w-xl mx-auto leading-relaxed px-2">
           {theme.subtitle(petName)}
         </p>
-      </div>
+      </motion.div>
       
       {/* ═══════════════════════════════════════════════════════════════════════
           CURATED CONCIERGE SECTION - Server-driven cards
-          Dark glass container with pillar-specific gradient
+          Premium dark glass container with pillar-specific gradient
+          Backdrop blur for glassmorphism effect
           ═══════════════════════════════════════════════════════════════════════ */}
-      <div className={`${theme.containerGradient} rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xl`}>
+      <motion.div 
+        className={`${theme.containerGradient} rounded-2xl sm:rounded-3xl p-4 sm:p-6 
+          shadow-2xl backdrop-blur-sm border border-white/5
+          transform transition-all duration-300`}
+        variants={itemVariants}
+      >
         <CuratedConciergeSection
           petId={petId}
           petName={petName}
@@ -278,23 +320,28 @@ const MiraCuratedLayer = ({
           token={token}
           userEmail={userEmail}
         />
-      </div>
+      </motion.div>
       
       {/* ═══════════════════════════════════════════════════════════════════════
           PERSONALIZED PILLAR SECTION - Static curated items
           Horizontal scroll with desktop buttons
+          Mobile-optimized touch interactions
           ═══════════════════════════════════════════════════════════════════════ */}
       {showPersonalizedSection && (
-        <div className="mt-6" data-testid={`personalized-${pillar}-wrapper`}>
+        <motion.div 
+          className="mt-6 sm:mt-8" 
+          data-testid={`personalized-${pillar}-wrapper`}
+          variants={itemVariants}
+        >
           <PersonalizedPillarSection
             pillar={pillar}
             pet={activePet}
             token={token}
             userEmail={userEmail}
           />
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
