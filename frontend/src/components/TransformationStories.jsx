@@ -262,48 +262,4 @@ const TransformationCard = ({ story, onViewProgram }) => {
   );
 };
 
-      {/* Content */}
-      <div className="p-4">
-        {/* Pet Info & Achievement */}
-        <div className="flex items-start justify-between mb-2">
-          <div>
-            <h4 className="font-bold text-gray-900">{petName}</h4>
-            <p className="text-xs text-gray-500">{breed}</p>
-          </div>
-          <div className="px-2 py-1 bg-teal-50 text-teal-700 text-xs font-medium rounded-full">
-            {achievement}
-          </div>
-        </div>
-
-        {/* Testimonial */}
-        <div className="relative mb-3">
-          <Quote className="absolute -top-1 -left-1 w-4 h-4 text-gray-200" />
-          <p className="text-sm text-gray-600 italic pl-3 line-clamp-2">
-            {testimonial}
-          </p>
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-          <div className="flex items-center gap-2">
-            <div className="flex">
-              {[...Array(rating)].map((_, i) => (
-                <Star key={i} className="w-3 h-3 text-amber-400 fill-amber-400" />
-              ))}
-            </div>
-            <span className="text-xs text-gray-500">— {ownerName}</span>
-          </div>
-          
-          <button
-            onClick={() => onViewProgram?.(program)}
-            className="text-xs text-teal-600 hover:text-teal-700 font-medium flex items-center gap-1"
-          >
-            {program?.split('®')[0]} <ArrowRight className="w-3 h-3" />
-          </button>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
 export default TransformationStories;
