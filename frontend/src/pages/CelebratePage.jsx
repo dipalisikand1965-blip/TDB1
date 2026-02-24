@@ -492,10 +492,7 @@ const CelebratePage = () => {
           });
         }
         
-        // Apply shape filter if selected
-        if (shapeFilter) {
-          products = products.filter(p => detectProductShape(p) === shapeFilter);
-        }
+        // Shape filtering is now done by the backend API
         
         if (append && page > 1) {
           setFeaturedProducts(prev => [...prev, ...products]);
