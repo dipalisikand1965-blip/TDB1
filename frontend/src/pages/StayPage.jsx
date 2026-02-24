@@ -590,33 +590,6 @@ const StayPage = () => {
         </div>
       </div>
 
-      {/* ==================== MIRA'S CURATED LAYER - Gold Standard ==================== */}
-      <section className="py-6 bg-gradient-to-b from-white to-emerald-50/30 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 mb-6">
-          <PersonalizedPicks pillar="stay" maxProducts={6} />
-        </div>
-        
-        {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
-        <MiraCuratedLayer
-          pillar="stay"
-          activePet={userPets?.[0]}
-          token={token}
-          userEmail={user?.email}
-          isLoading={!userPets && !!token}
-        />
-        
-        {/* Mira's Picks for Pet */}
-        {userPets && userPets[0] && (
-          <div className="max-w-6xl mx-auto px-4 mt-6">
-            <PillarPicksSection pillar="stay" pet={userPets[0]} />
-          </div>
-        )}
-        
-        <div className="max-w-7xl mx-auto px-4 mt-6">
-          <PetJourneyRecommendations currentPillar="stay" />
-        </div>
-      </section>
-
       {/* ==================== SEARCH & FILTERS SECTION ==================== */}
       <div className="py-8 bg-emerald-50/50">
         <div className="max-w-4xl mx-auto px-4">
