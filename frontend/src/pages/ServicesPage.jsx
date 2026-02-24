@@ -29,6 +29,7 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import ServiceQuickViewModal from '../components/Mira/ServiceQuickViewModal';
 import PersonalizedPillarSection from '../components/PersonalizedPillarSection';
+import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
 
 // =============================================================================
 // SERVICE CATEGORY ICONS & IMAGES
