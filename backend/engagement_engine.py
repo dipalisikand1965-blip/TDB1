@@ -673,6 +673,7 @@ class TransformationStory(BaseModel):
     pet_name: str
     breed: str
     owner_name: str
+    location: Optional[str] = None
     before_image: str
     after_image: str
     achievement: str
