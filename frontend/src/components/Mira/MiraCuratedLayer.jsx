@@ -2,13 +2,15 @@
  * MiraCuratedLayer.jsx
  * =====================
  * 
- * Universal wrapper component for the "Mira's Picks" concierge layer.
- * Ensures consistent design across ALL pillar pages matching Dine/Celebrate gold standard.
+ * GOLD STANDARD: Universal wrapper component for the "Mira's Picks" concierge layer.
+ * Ensures consistent, world-class mobile-first design across ALL pillar pages.
  * 
  * Features:
- * - Pillar-specific theming (colors, gradients, icons)
- * - Centered header with Badge + Title + Subtitle
- * - Loading skeleton state
+ * - Premium pillar-specific theming (colors, gradients, icons)
+ * - Mobile-first responsive design with touch-optimized targets
+ * - Glassmorphism effects with backdrop blur
+ * - Smooth entrance animations with staggered loading
+ * - Loading skeleton with shimmer effect
  * - Dark glass container for CuratedConciergeSection
  * - Integrated PersonalizedPillarSection below
  * 
@@ -23,6 +25,7 @@
  */
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Crown, Sparkles, Heart, Plane, GraduationCap, Gamepad2, Dumbbell, FileText, Stethoscope, ShoppingBag, Scissors, Home, PawPrint } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import CuratedConciergeSection from './CuratedConciergeSection';
