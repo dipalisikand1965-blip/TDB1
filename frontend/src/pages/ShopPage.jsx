@@ -26,6 +26,7 @@ import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import PillarPicksSection from '../components/PillarPicksSection';
 import PersonalizedPillarSection from '../components/PersonalizedPillarSection';
+import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import {
   Search, Heart, ArrowRight, X, Package, Mic,

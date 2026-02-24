@@ -20,6 +20,7 @@ import { getPetPhotoUrl } from '../utils/petAvatar';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import PillarPicksSection from '../components/PillarPicksSection';
 import PersonalizedPillarSection from '../components/PersonalizedPillarSection';
+import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import {
   Brain, Heart, Apple, Home, Stethoscope, GraduationCap,
