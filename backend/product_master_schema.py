@@ -268,15 +268,62 @@ class UseCaseConfig(BaseModel):
     tsa_approved: bool = False  # For carriers
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# CAKE/BAKERY SPECIFIC CONFIG
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Shape options for cakes and bakery items
+CAKE_SHAPES = [
+    "paw", "bone", "heart", "round", "square", "star", 
+    "number", "donut", "custom", "silhouette", "breed_specific"
+]
+
+class CakeBakeryConfig(BaseModel):
+    """Cake and bakery-specific attributes"""
+    
+    # Shape
+    shape: Optional[str] = None  # paw, bone, heart, round, square, star, number, donut
+    shape_customizable: bool = False  # Can customer request custom shape?
+    
+    # Size options for cakes
+    cake_size: Optional[str] = None  # mini, small, medium, large, xl
+    serves_count: Optional[int] = None  # Serves how many pets?
+    weight_grams: Optional[int] = None  # Weight in grams
+    
+    # Decoration
+    photo_printable: bool = False  # Can add pet photo?
+    name_printable: bool = True  # Can add pet name?
+    message_printable: bool = False  # Can add custom message?
+    
+    # Flavors
+    flavors_available: List[str] = []  # peanut_butter, carob, chicken, etc.
+    base_flavor: Optional[str] = None  # Default flavor
+    
+    # Dietary
+    is_vegan: bool = False
+    is_grain_free: bool = False
+    is_sugar_free: bool = True  # Most pet cakes should be sugar-free
+    
+    # Freshness
+    shelf_life_days: Optional[int] = None
+    requires_refrigeration: bool = True
+    
+    # Breed cake specific
+    is_breed_cake: bool = False
+    breed_for: Optional[str] = None  # Which breed is this cake shaped like?
+
+
 class PillarsOccasionsInfo(BaseModel):
     """Tab 3: Complete pillars and occasions"""
     
     pillar: PillarConfig = Field(default_factory=PillarConfig)
     occasion: OccasionConfig = Field(default_factory=OccasionConfig)
     use_case: UseCaseConfig = Field(default_factory=UseCaseConfig)
+    cake_bakery: CakeBakeryConfig = Field(default_factory=CakeBakeryConfig)
 
 
 # ==================== TAB 4: COMMERCE & OPS ====================
+
 
 class PricingInfo(BaseModel):
     """Pricing configuration"""
