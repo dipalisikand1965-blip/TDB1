@@ -602,27 +602,6 @@ const FitPage = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <PersonalizedPicks pillar="fit" maxProducts={6} />
         
-        {/* Concierge Pick Card - Personal fitness program */}
-        {userPets && userPets[0] && (
-          <div className="mt-6">
-            <ConciergePickCard
-              pet={{
-                name: userPets[0].name,
-                breed: userPets[0].breed,
-                photo: userPets[0].photo_url,
-                soulTraits: userPets[0].personality_traits || [],
-                id: userPets[0].id
-              }}
-              pillar="fit"
-              title={CONCIERGE_PRESETS.fit.title}
-              icon={CONCIERGE_PRESETS.fit.icon}
-              description={CONCIERGE_PRESETS.fit.description}
-              soulReason={getSoulBasedReason(userPets[0], 'fit')}
-              responseTime="2 hours"
-            />
-          </div>
-        )}
-        
         {/* ═══════════════════════════════════════════════════════════════════
             HANDPICKED FOR {PET} - Curated concierge products & services
             Server-driven cards with CONCIERGE® PRODUCT/SERVICE badges
