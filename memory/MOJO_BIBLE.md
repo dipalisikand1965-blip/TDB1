@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://concierge-pillars-1.preview.emergentagent.com
+https://soul-picks-engine.preview.emergentagent.com
 ```
 
 ---

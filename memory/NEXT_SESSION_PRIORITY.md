@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://concierge-pillars-1.preview.emergentagent.com
+**Preview URL:** https://soul-picks-engine.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

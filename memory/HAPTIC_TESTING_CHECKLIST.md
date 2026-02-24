@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://concierge-pillars-1.preview.emergentagent.com/mira-demo**
+**https://soul-picks-engine.preview.emergentagent.com/mira-demo**
 
 ---
 
