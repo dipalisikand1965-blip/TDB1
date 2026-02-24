@@ -18,8 +18,7 @@ import ProductCard from '../components/ProductCard';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import PillarPicksSection from '../components/PillarPicksSection';
-import PersonalizedPillarSection from '../components/PersonalizedPillarSection';
-import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
+import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import {
   Brain, Heart, Apple, Home, Stethoscope, GraduationCap,

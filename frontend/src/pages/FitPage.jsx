@@ -30,8 +30,7 @@ import PillarServicesGrid from '../components/PillarServicesGrid';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import PillarPicksSection from '../components/PillarPicksSection';
-import PersonalizedPillarSection from '../components/PersonalizedPillarSection';
-import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
+import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 // New engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
