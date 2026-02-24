@@ -101,17 +101,14 @@
 |------|--------|
 | **🌟 PersonalizedPillarSection Rollout (Full)** | ✅ COMPLETE |
 | Universal component built | ✅ DONE |
-| Care page integration | ✅ DONE |
-| Stay page integration | ✅ DONE |
-| Travel page integration | ✅ DONE |
-| Learn page integration | ✅ DONE |
-| Enjoy page integration | ✅ DONE |
-| Fit page integration | ✅ DONE |
-| Paperwork page integration | ✅ DONE |
-| Advisory page integration | ✅ DONE |
-| Services page integration | ✅ DONE |
-| Shop page integration | ✅ DONE |
+| Care, Stay, Travel, Learn, Enjoy, Fit pages | ✅ DONE |
+| Paperwork, Advisory, Services, Shop pages | ✅ DONE |
 | All 10 pillar sections tested | ✅ VERIFIED (iteration_31, iteration_32) |
+| **🔄 PillarPicksSection Fallback System** | ✅ COMPLETE |
+| Added FALLBACK_PICKS_BY_PILLAR for all pillars | ✅ DONE |
+| Section never empty - shows fallback when API empty | ✅ DONE |
+| TravelPage bug fixed (userPets[0] vs selectedPets[0]) | ✅ FIXED |
+| Tested on Care, Stay, Travel | ✅ VERIFIED (iteration_33) |
 | **🎁 Mira's Birthday Box Feature** | ✅ COMPLETE |
 | Soul-driven breed cake suggestions | ✅ DONE |
 | Allergy-aware personalization | ✅ DONE |
