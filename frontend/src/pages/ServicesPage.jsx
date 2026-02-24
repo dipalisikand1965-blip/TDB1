@@ -1162,34 +1162,26 @@ const ServicesPage = () => {
       {/* ═══════════════════════════════════════════════════════════════════
           PERSONALIZED FOR {PET} - Custom service items created by Concierge®
           ═══════════════════════════════════════════════════════════════════ */}
-      {selectedPet && (
-        <section className="bg-white py-8 sm:py-12">
-          {/* ═══════════════════════════════════════════════════════════════════
-              HANDPICKED FOR {PET} - Curated concierge products & services
-              Server-driven cards with CONCIERGE® PRODUCT/SERVICE badges
-              ═══════════════════════════════════════════════════════════════════ */}
-          <div className="max-w-7xl mx-auto px-4 mb-8">
-            <div className="glass-card-dark rounded-3xl p-4 md:p-6 shadow-xl">
-              <CuratedConciergeSection
-                petId={selectedPet.id || selectedPet._id}
-                petName={selectedPet.name}
-                pillar="services"
-                token={token}
-                userEmail={user?.email}
-              />
-            </div>
+      {/* ═══════════════════════════════════════════════════════════════════
+          MIRA'S CURATED LAYER - Gold Standard Unified Component
+          Includes: Header + CuratedConciergeSection + PersonalizedPillarSection
+          ═══════════════════════════════════════════════════════════════════ */}
+      <div className="py-8 bg-gradient-to-b from-white to-amber-50/30">
+        <MiraCuratedLayer
+          pillar="services"
+          activePet={selectedPet}
+          token={token}
+          userEmail={user?.email}
+          isLoading={!selectedPet && !!token}
+        />
+        
+        {/* Mira's Picks for Pet */}
+        {selectedPet && (
+          <div className="max-w-7xl mx-auto px-4 mt-6">
+            <PillarPicksSection pillar="services" pet={selectedPet} />
           </div>
-          
-          <div className="max-w-7xl mx-auto px-4" data-testid="personalized-services-wrapper">
-            <PersonalizedPillarSection
-              pillar="services"
-              pet={selectedPet}
-              token={token}
-              userEmail={user?.email}
-            />
-          </div>
-        </section>
-      )}
+        )}
+      </div>
       
       {/* Emotional Close */}
       <section className="bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] py-10 sm:py-14">
