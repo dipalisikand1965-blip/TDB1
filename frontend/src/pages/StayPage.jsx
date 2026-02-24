@@ -570,27 +570,6 @@ const StayPage = () => {
         <div className="max-w-7xl mx-auto px-4">
           <PersonalizedPicks pillar="stay" maxProducts={6} />
           
-          {/* Concierge Pick Card - Personalized boarding service */}
-          {userPets && userPets[0] && (
-            <div className="mt-6">
-              <ConciergePickCard
-                pet={{
-                  name: userPets[0].name,
-                  breed: userPets[0].breed,
-                  photo: userPets[0].photo_url,
-                  soulTraits: userPets[0].personality_traits || [],
-                id: userPets[0].id
-                }}
-                pillar="stay"
-                title={CONCIERGE_PRESETS.stay.title}
-                icon={CONCIERGE_PRESETS.stay.icon}
-                description={CONCIERGE_PRESETS.stay.description}
-                soulReason={getSoulBasedReason(userPets[0], 'stay')}
-                responseTime="2 hours"
-              />
-            </div>
-          )}
-          
           {/* ═══════════════════════════════════════════════════════════════════
               HANDPICKED FOR {PET} - Curated concierge products & services
               Server-driven cards with CONCIERGE® PRODUCT/SERVICE badges
