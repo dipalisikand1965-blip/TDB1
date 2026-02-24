@@ -115,11 +115,27 @@ const CelebratePage = () => {
   // Auto-detect shape from product name/description
   const detectProductShape = (product) => {
     const text = `${product.name || ''} ${product.description || ''} ${(product.tags || []).join(' ')}`.toLowerCase();
+    const category = (product.category || '').toLowerCase();
+    
+    // Check for explicit shapes first
     for (const shape of CAKE_SHAPES) {
+      if (shape.id === 'round') continue; // Handle round separately
       if (shape.keywords.some(keyword => text.includes(keyword))) {
         return shape.id;
       }
     }
+    
+    // If it's a cake/bakery item and no other shape detected, it's likely round
+    const isCakeItem = category.includes('cake') || 
+                       category.includes('bakery') ||
+                       text.includes('cake') ||
+                       text.includes('pupcake') ||
+                       text.includes('cupcake');
+    
+    if (isCakeItem) {
+      return 'round'; // Default shape for cakes
+    }
+    
     return null;
   };
   
