@@ -60,9 +60,9 @@ const PILLAR_THEMES = {
   care: {
     name: 'Care',
     icon: Scissors,
-    iconColor: 'text-rose-500',
-    badgeGradient: 'bg-gradient-to-r from-rose-500 to-red-400',
-    containerGradient: 'bg-gradient-to-br from-slate-900 via-rose-950/80 to-slate-900',
+    iconColor: 'text-teal-500',
+    badgeGradient: 'bg-gradient-to-r from-teal-500 to-cyan-500',
+    containerGradient: 'bg-gradient-to-br from-slate-900 via-teal-950/80 to-slate-900',
     title: (petName) => `Grooming & Care for ${petName}`,
     subtitle: (petName) => `Premium care services tailored to ${petName}'s needs`,
     description: 'Spa days, grooming sessions, and wellness care - personalized by Concierge®'
