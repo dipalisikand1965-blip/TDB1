@@ -448,7 +448,7 @@ const PillarPicksSection = ({
         </div>
         
         {/* Refresh indicator */}
-        {lastFetch && (
+        {lastFetch && hasPicks && (
           <p className="text-xs text-gray-400 flex items-center gap-1 ml-13">
             <Clock className="w-3 h-3" />
             Updated based on {pet.name}'s profile & your conversations with Mira
@@ -457,14 +457,14 @@ const PillarPicksSection = ({
       </div>
       
       {/* Products Grid */}
-      {picks.catalogue.length > 0 && (
+      {effectivePicks.catalogue.length > 0 && (
         <div className="mb-6">
           <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
             <Package className="w-4 h-4" />
             From Our Catalogue
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {picks.catalogue.slice(0, 5).map((pick, index) => (
+            {effectivePicks.catalogue.slice(0, 5).map((pick, index) => (
               <ProductPickCard
                 key={pick.id || index}
                 pick={pick}
@@ -477,14 +477,14 @@ const PillarPicksSection = ({
       )}
       
       {/* Concierge Services */}
-      {picks.concierge.length > 0 && (
+      {effectivePicks.concierge.length > 0 && (
         <div>
           <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
             <Star className="w-4 h-4 text-purple-500" />
-            Concierge Curated
+            Concierge® Curated
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {picks.concierge.slice(0, 2).map((pick, index) => (
+            {effectivePicks.concierge.slice(0, 2).map((pick, index) => (
               <ConciergePickCard
                 key={pick.id || index}
                 pick={pick}
