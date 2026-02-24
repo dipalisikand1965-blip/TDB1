@@ -6406,7 +6406,7 @@ async def get_public_products(
     old_products = await db.products_master.find(
         query, 
         {"_id": 0}
-    ).skip(skip).limit(limit).to_list(limit)
+    ).skip(actual_skip).limit(limit).to_list(limit)
     for p in old_products:
         pid = p.get("id") or p.get("shopify_id")
         if pid and pid not in seen_ids:
