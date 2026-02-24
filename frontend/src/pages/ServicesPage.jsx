@@ -1165,6 +1165,22 @@ const ServicesPage = () => {
           ═══════════════════════════════════════════════════════════════════ */}
       {selectedPet && (
         <section className="bg-white py-8 sm:py-12">
+          {/* ═══════════════════════════════════════════════════════════════════
+              HANDPICKED FOR {PET} - Curated concierge products & services
+              Server-driven cards with CONCIERGE® PRODUCT/SERVICE badges
+              ═══════════════════════════════════════════════════════════════════ */}
+          <div className="max-w-7xl mx-auto px-4 mb-8">
+            <div className="glass-card-dark rounded-3xl p-4 md:p-6 shadow-xl">
+              <CuratedConciergeSection
+                petId={selectedPet.id || selectedPet._id}
+                petName={selectedPet.name}
+                pillar="services"
+                token={token}
+                userEmail={user?.email}
+              />
+            </div>
+          </div>
+          
           <div className="max-w-7xl mx-auto px-4" data-testid="personalized-services-wrapper">
             <PersonalizedPillarSection
               pillar="services"
