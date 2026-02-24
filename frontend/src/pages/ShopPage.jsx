@@ -977,6 +977,9 @@ const ShopPage = () => {
           Includes: Header + CuratedConciergeSection + PersonalizedPillarSection
           ═══════════════════════════════════════════════════════════════════ */}
       <div className="py-8 bg-gradient-to-b from-white to-fuchsia-50/30">
+        {/* Personalized Product Picks - Same as Celebrate/Dine gold standard */}
+        <PersonalizedPicks pillar="shop" maxProducts={6} />
+        
         <MiraCuratedLayer
           pillar="shop"
           activePet={selectedPet}
