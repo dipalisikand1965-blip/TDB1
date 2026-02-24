@@ -504,6 +504,22 @@ const TravelPage = () => {
             </div>
           )}
           
+          {/* ═══════════════════════════════════════════════════════════════════
+              HANDPICKED FOR {PET} - Curated concierge products & services
+              Server-driven cards with CONCIERGE® PRODUCT/SERVICE badges
+              ═══════════════════════════════════════════════════════════════════ */}
+          {userPets && userPets[0] && (
+            <div className="glass-card-dark rounded-3xl p-4 md:p-6 shadow-xl mt-8">
+              <CuratedConciergeSection
+                petId={userPets[0].id || userPets[0]._id}
+                petName={userPets[0].name}
+                pillar="travel"
+                token={token}
+                userEmail={user?.email}
+              />
+            </div>
+          )}
+          
           {/* Mira's Picks for Pet */}
           {userPets && userPets[0] && (
             <PillarPicksSection pillar="travel" pet={userPets[0]} />
