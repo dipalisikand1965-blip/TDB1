@@ -528,6 +528,11 @@ const Admin = () => {
   const [editingTestimonial, setEditingTestimonial] = useState(null);
   const [showTestimonialModal, setShowTestimonialModal] = useState(false);
   
+  // Transformation Stories
+  const [transformations, setTransformations] = useState([]);
+  const [editingTransformation, setEditingTransformation] = useState(null);
+  const [showTransformationModal, setShowTransformationModal] = useState(false);
+  
   // Blog Posts
   const [blogPosts, setBlogPosts] = useState([]);
   const [blogCategories, setBlogCategories] = useState([]);
