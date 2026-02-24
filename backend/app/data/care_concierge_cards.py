@@ -280,9 +280,7 @@ def select_care_cards(pet_data: Dict, max_cards: int = 4) -> Dict:
     Returns a mix of products and services.
     """
     pet_name = pet_data.get("name", "Your Pet")
-    breed = (pet_data.get("breed") or "").lower()
     age = pet_data.get("age", "")
-    allergies = pet_data.get("allergies") or []
     traits = pet_data.get("personality_traits") or []
     
     # Determine persona hints
