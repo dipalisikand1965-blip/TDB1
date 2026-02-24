@@ -23,8 +23,7 @@ import ServiceBookingModal from '../components/ServiceBookingModal';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import PillarPicksSection from '../components/PillarPicksSection';
-import PersonalizedPillarSection from '../components/PersonalizedPillarSection';
-import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
+import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
 // NEW: FitPage-style engagement components
