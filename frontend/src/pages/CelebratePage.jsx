@@ -876,8 +876,8 @@ const CelebratePage = () => {
             </h2>
             <p className="ios-subhead text-gray-600">
               {selectedSubcat 
-                ? `Showing ${featuredProducts.length} items`
-                : `${featuredProducts.length} products • Tap a category above to filter`
+                ? `Showing ${featuredProducts.length} of ${totalProducts} items`
+                : `${featuredProducts.length} of ${totalProducts} products • Tap a category above to filter`
               }
             </p>
           </div>
@@ -892,6 +892,41 @@ const CelebratePage = () => {
               Show All
             </Button>
           )}
+        </div>
+        
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {/* SHAPE FILTER PILLS - Auto-detected cake shapes */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        <div className="mb-6" data-testid="shape-filters">
+          <p className="ios-caption text-gray-500 mb-2 flex items-center gap-1">
+            <span>🎂</span> Filter by cake shape:
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {CAKE_SHAPES.map((shape) => (
+              <button
+                key={shape.id}
+                onClick={() => handleShapeFilter(shape.id)}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${
+                  selectedShape === shape.id
+                    ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md'
+                    : 'bg-white border border-gray-200 text-gray-700 hover:border-pink-300 hover:bg-pink-50'
+                }`}
+                data-testid={`shape-filter-${shape.id}`}
+              >
+                <span>{shape.emoji}</span>
+                <span>{shape.label}</span>
+              </button>
+            ))}
+            {selectedShape && (
+              <button
+                onClick={() => handleShapeFilter(selectedShape)}
+                className="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center gap-1"
+                data-testid="clear-shape-filter"
+              >
+                ✕ Clear
+              </button>
+            )}
+          </div>
         </div>
 
         {loading ? (
