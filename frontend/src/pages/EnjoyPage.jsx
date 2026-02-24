@@ -437,27 +437,6 @@ const EnjoyPage = () => {
         <div className="max-w-6xl mx-auto px-4">
           <PersonalizedPicks pillar="enjoy" />
           
-          {/* Concierge Pick Card - Custom activity planning */}
-          {userPets && userPets[0] && (
-            <div className="mt-6">
-              <ConciergePickCard
-                pet={{
-                  name: userPets[0].name,
-                  breed: userPets[0].breed,
-                  photo: userPets[0].photo_url,
-                  soulTraits: userPets[0].personality_traits || [],
-                id: userPets[0].id
-                }}
-                pillar="enjoy"
-                title={CONCIERGE_PRESETS.enjoy.title}
-                icon={CONCIERGE_PRESETS.enjoy.icon}
-                description={CONCIERGE_PRESETS.enjoy.description}
-                soulReason={getSoulBasedReason(userPets[0], 'enjoy')}
-                responseTime="2 hours"
-              />
-            </div>
-          )}
-          
           {/* ═══════════════════════════════════════════════════════════════════
               HANDPICKED FOR {PET} - Curated concierge products & services
               Server-driven cards with CONCIERGE® PRODUCT/SERVICE badges
