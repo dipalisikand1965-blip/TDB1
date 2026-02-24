@@ -42,30 +42,15 @@ import {
   Home, Building2, AlertCircle, Trophy, ShoppingCart
 } from 'lucide-react';
 
-// Elevated Concierge® Care Experiences
+// Elevated Concierge® Care Experiences - Aligned with Care = Support & Caregiving
 const CARE_EXPERIENCES = [
-  {
-    title: "Wellness Orchestrator®",
-    description: "From annual checkups to specialist consultations, we coordinate your pet's complete healthcare journey — finding the right vets, managing appointments, and ensuring nothing falls through the cracks.",
-    icon: "🏥",
-    gradient: "from-rose-500 to-pink-600",
-    badge: "Essential",
-    badgeColor: "bg-rose-600",
-    image: "https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=800&q=80",
-    highlights: [
-      "Vet selection & appointment booking",
-      "Medical record management",
-      "Vaccination & deworming schedules",
-      "Specialist referral coordination"
-    ]
-  },
   {
     title: "Groom & Glam Curator®",
     description: "Every coat tells a story. We match your pet with groomers who understand their breed, temperament, and style preferences — because grooming should be a spa day, not a stressful one.",
     icon: "✨",
-    gradient: "from-pink-500 to-purple-600",
+    gradient: "from-pink-500 to-rose-600",
     badge: "Popular",
-    badgeColor: "bg-amber-500",
+    badgeColor: "bg-pink-500",
     image: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800&q=80",
     highlights: [
       "Groomer matching by breed expertise",
@@ -75,112 +60,157 @@ const CARE_EXPERIENCES = [
     ]
   },
   {
-    title: "Daily Companion Finder®",
-    description: "Need a reliable walker, sitter, or overnight carer? We vet, match, and coordinate trusted companions who treat your pet like family — not just another client.",
-    icon: "🐕",
-    gradient: "from-green-500 to-teal-600",
-    image: "https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=800&q=80",
+    title: "Vet & Clinic Coordinator®",
+    description: "From routine checkups to specialist consultations, we handle clinic discovery, appointment booking, and follow-up coordination — so you never miss a beat in your pet's health journey.",
+    icon: "🏥",
+    gradient: "from-blue-500 to-indigo-600",
+    badge: "Essential",
+    badgeColor: "bg-blue-600",
+    image: "https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=800&q=80",
     highlights: [
-      "Background-verified walkers & sitters",
-      "Personality & energy matching",
-      "Regular check-ins & GPS tracking",
+      "Clinic discovery & appointment booking",
+      "Preventive care scheduling",
+      "Diagnostics & test coordination",
+      "Recovery & follow-up support"
+    ]
+  },
+  {
+    title: "Boarding & Daycare Curator®",
+    description: "Need trusted care when you're away? We match your pet with verified boarding facilities and daycare centers that understand their temperament and needs.",
+    icon: "🏠",
+    gradient: "from-emerald-500 to-teal-600",
+    badge: "Trusted",
+    badgeColor: "bg-emerald-600",
+    image: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800&q=80",
+    highlights: [
+      "Verified boarding facilities",
+      "Daycare matching by temperament",
+      "Regular updates & check-ins",
       "Emergency backup arrangements"
     ]
   },
   {
-    title: "Emergency Response Partner®",
-    description: "When emergencies strike, you need more than a phone number. We guide you through crisis moments — locating 24/7 vets, arranging urgent transport, and staying with you until your pet is safe.",
-    icon: "🚨",
-    gradient: "from-red-500 to-orange-600",
-    image: "https://images.unsplash.com/photo-1612531386530-97286d97c2d2?w=800&q=80",
+    title: "Behavior & Anxiety Partner®",
+    description: "For pets who need gentle support with anxiety, fear, or stress. We connect you with specialists who understand sensitive handling and therapeutic approaches.",
+    icon: "💜",
+    gradient: "from-purple-500 to-violet-600",
+    image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80",
     highlights: [
-      "24/7 emergency vet locator",
-      "Urgent transport coordination",
-      "Real-time crisis support",
-      "Post-emergency follow-up care"
+      "Anxiety & fear support specialists",
+      "Grooming & vet stress handling",
+      "Separation anxiety guidance",
+      "Gentle desensitization coordination"
     ]
   },
   {
-    title: "Feed & Nutrition Advisor®",
-    description: "Every pet deserves a diet tailored to their unique needs. Our nutrition experts create personalised meal plans, manage weight goals, and navigate food allergies — so your pet thrives from the inside out.",
-    icon: "🍖",
-    gradient: "from-orange-500 to-amber-600",
-    badge: "New",
-    badgeColor: "bg-orange-500",
-    image: "https://images.unsplash.com/photo-1585846416120-3a7354ed7d39?w=800&q=80",
+    title: "Senior & Special Needs Companion®",
+    description: "Aging pets and those with special needs deserve extra care. We coordinate comfort support, mobility assistance, and specialized handling for your beloved senior.",
+    icon: "🤍",
+    gradient: "from-amber-500 to-orange-600",
+    badge: "Compassionate",
+    badgeColor: "bg-amber-500",
+    image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80",
     highlights: [
-      "Custom diet planning by nutritionists",
-      "Weight management programmes",
-      "Allergy-safe meal solutions",
-      "Puppy & senior nutrition guidance"
+      "Senior comfort & support",
+      "Special needs handling",
+      "Mobility assistance coordination",
+      "Medication schedule support"
+    ]
+  },
+  {
+    title: "Emergency Response Partner®",
+    description: "When emergencies strike, we guide you through crisis moments — locating 24/7 vets, arranging urgent transport, and coordinating care until your pet is safe.",
+    icon: "🚨",
+    gradient: "from-red-500 to-rose-600",
+    image: "https://images.unsplash.com/photo-1612531386530-97286d97c2d2?w=800&q=80",
+    highlights: [
+      "24/7 emergency vet routing",
+      "Urgent transport coordination",
+      "Real-time crisis support",
+      "Post-emergency follow-up"
     ]
   }
 ];
 
-// Care Types Configuration
+// ═══════════════════════════════════════════════════════════════════════════════
+// CARE_TYPES - Single Source of Truth for Sticky Strip + Wizard
+// Care = Support, Caregiving, Health, Hygiene, Supervision
+// (Walk/Training moved to Fit pillar)
+// ═══════════════════════════════════════════════════════════════════════════════
 const CARE_TYPES = {
   grooming: {
     id: 'grooming',
     name: 'Grooming',
     icon: Scissors,
-    description: 'Full groom, bath, nail trim, ear cleaning',
+    description: 'Hygiene, coat care, bath, nail trim',
     color: 'from-pink-500 to-rose-500',
     bgColor: 'bg-pink-50',
     textColor: 'text-pink-600'
   },
-  walks: {
-    id: 'walks',
-    name: 'Walks & Sitting',
-    icon: PawPrint,
-    description: 'Daily walks, pet sitting, overnight care',
+  vet_clinic_booking: {
+    id: 'vet_clinic_booking',
+    name: 'Vet Visits',
+    icon: Stethoscope,
+    description: 'Clinic discovery, booking & follow-up coordination',
+    color: 'from-blue-500 to-indigo-500',
+    bgColor: 'bg-blue-50',
+    textColor: 'text-blue-600',
+    // Subtypes available in wizard step 2
+    subtypes: ['clinic_visit', 'preventive_care', 'diagnostics', 'followup', 'recovery_support']
+  },
+  boarding_daycare: {
+    id: 'boarding_daycare',
+    name: 'Boarding & Daycare',
+    icon: Building2,
+    description: 'Overnight boarding & daytime supervision',
+    color: 'from-emerald-500 to-teal-500',
+    bgColor: 'bg-emerald-50',
+    textColor: 'text-emerald-600'
+  },
+  pet_sitting: {
+    id: 'pet_sitting',
+    name: 'Pet Sitting',
+    icon: Home,
+    description: 'In-home care, feeding & companionship',
     color: 'from-green-500 to-emerald-500',
     bgColor: 'bg-green-50',
     textColor: 'text-green-600'
   },
-  training: {
-    id: 'training',
-    name: 'Training & Behaviour',
-    icon: GraduationCap,
-    description: 'Obedience, anxiety, reactivity, puppy training',
-    color: 'from-blue-500 to-indigo-500',
-    bgColor: 'bg-blue-50',
-    textColor: 'text-blue-600'
-  },
-  vet_coordination: {
-    id: 'vet_coordination',
-    name: 'Vet Coordination',
-    icon: Stethoscope,
-    description: 'Find vets, schedule reminders, health records',
+  behavior_anxiety_support: {
+    id: 'behavior_anxiety_support',
+    name: 'Behavior Support',
+    icon: Heart,
+    description: 'Anxiety, fear & stress support',
     color: 'from-purple-500 to-violet-500',
     bgColor: 'bg-purple-50',
     textColor: 'text-purple-600'
   },
-  emergency: {
-    id: 'emergency',
-    name: 'Emergency Help',
-    icon: AlertTriangle,
-    description: 'Urgent care routing & emergency guidance',
-    color: 'from-red-500 to-orange-500',
-    bgColor: 'bg-red-50',
-    textColor: 'text-red-600'
-  },
-  special_needs: {
-    id: 'special_needs',
-    name: 'Special Needs Care',
-    icon: Heart,
-    description: 'Senior care, disability support, chronic conditions',
-    color: 'from-amber-500 to-yellow-500',
+  senior_special_needs_support: {
+    id: 'senior_special_needs_support',
+    name: 'Senior & Special Needs',
+    icon: Trophy,
+    description: 'Comfort, mobility & special handling',
+    color: 'from-amber-500 to-orange-500',
     bgColor: 'bg-amber-50',
     textColor: 'text-amber-600'
   },
-  feed: {
-    id: 'feed',
-    name: 'Feed & Nutrition',
+  nutrition_consult_booking: {
+    id: 'nutrition_consult_booking',
+    name: 'Nutrition Consults',
     icon: Package,
-    description: 'Diet planning, weight management, allergy diets',
+    description: 'Diet consults & allergy support booking',
     color: 'from-orange-500 to-amber-500',
     bgColor: 'bg-orange-50',
     textColor: 'text-orange-600'
+  },
+  emergency_help: {
+    id: 'emergency_help',
+    name: 'Emergency Help',
+    icon: AlertTriangle,
+    description: 'Urgent care routing & coordination',
+    color: 'from-red-500 to-rose-500',
+    bgColor: 'bg-red-50',
+    textColor: 'text-red-600'
   }
 };
 
