@@ -27,8 +27,8 @@ const PILLAR_GRADIENTS = {
   // DINE - Warm, satisfied belly, the comfort of a good meal. Warm amber to cozy brown
   dine: 'from-[#D97706] via-[#92400E] to-[#451A03]',
   
-  // CARE - Gentle touch, being groomed, feeling loved. Soft rose to nurturing purple
-  care: 'from-[#EC4899] via-[#A855F7] to-[#4A1942]',
+  // CARE - Gentle touch, being groomed, feeling pampered. Fresh teal to soothing aqua
+  care: 'from-[#14B8A6] via-[#0D9488] to-[#134E4A]',
   
   // ENJOY - Playful energy! Chasing balls, pure happiness. Bright blue to energetic cyan
   enjoy: 'from-[#0EA5E9] via-[#6366F1] to-[#1E1B4B]',
