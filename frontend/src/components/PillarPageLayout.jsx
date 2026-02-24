@@ -230,16 +230,16 @@ const PillarPageLayout = ({
   const PILLAR_BG = {
     celebrate: 'from-pink-50',
     dine: 'from-amber-50',
-    care: 'from-purple-50',
+    care: 'from-teal-50',
     enjoy: 'from-blue-50',
-    travel: 'from-sky-50',
+    travel: 'from-cyan-50',
     stay: 'from-green-50',
-    fit: 'from-red-50',
-    learn: 'from-emerald-50',
-    advisory: 'from-indigo-50',
+    fit: 'from-lime-50',
+    learn: 'from-indigo-50',
+    advisory: 'from-violet-50',
     emergency: 'from-rose-50',
     paperwork: 'from-slate-50',
-    farewell: 'from-violet-50',
+    farewell: 'from-purple-50',
     adopt: 'from-orange-50'
   };
   
