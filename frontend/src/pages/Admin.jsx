@@ -1021,6 +1021,55 @@ const Admin = () => {
     }
   };
 
+  // ==================== TRANSFORMATION STORIES ====================
+  const fetchTransformations = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/engagement/transformations?pillar=all&active_only=false`, {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setTransformations(data.stories || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch transformations:', error);
+    }
+  };
+
+  const saveTransformation = async (data) => {
+    try {
+      const isEdit = data.id && !data.id.startsWith('new-');
+      const url = isEdit 
+        ? `${API_URL}/api/engagement/transformations/${data.id}` 
+        : `${API_URL}/api/engagement/transformations`;
+      const response = await fetch(url, {
+        method: isEdit ? 'PUT' : 'POST',
+        headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (response.ok) {
+        fetchTransformations();
+        setShowTransformationModal(false);
+        setEditingTransformation(null);
+      }
+    } catch (error) {
+      console.error('Failed to save transformation:', error);
+    }
+  };
+
+  const deleteTransformation = async (id) => {
+    if (!window.confirm('Delete this transformation story?')) return;
+    try {
+      await fetch(`${API_URL}/api/engagement/transformations/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      fetchTransformations();
+    } catch (error) {
+      console.error('Failed to delete transformation:', error);
+    }
+  };
+
   // Fetch Blog Posts
   const fetchBlogPosts = async () => {
     try {
