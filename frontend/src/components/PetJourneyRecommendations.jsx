@@ -333,39 +333,7 @@ const PetJourneyRecommendations = ({
 
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* ===== PET SELECTOR - Compact, Mobile-First ===== */}
-      {userPets.length > 1 && (
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          <span className="text-xs text-gray-500 flex-shrink-0">For:</span>
-          {userPets.map((pet) => {
-            const isSelected = selectedPet?.id === pet.id || selectedPet?._id === pet._id;
-            return (
-              <motion.button
-                key={pet.id || pet._id}
-                onClick={() => setSelectedPet(pet)}
-                whileTap={{ scale: 0.95 }}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full flex-shrink-0 transition-all ${
-                  isSelected 
-                    ? 'bg-purple-100 border-2 border-purple-500' 
-                    : 'bg-gray-100 border-2 border-transparent hover:bg-gray-200'
-                }`}
-              >
-                <div className="w-6 h-6 rounded-full overflow-hidden bg-purple-200">
-                  <img 
-                    src={getPetPhotoUrl(pet)} 
-                    alt={pet.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <span className={`text-sm font-medium ${isSelected ? 'text-purple-700' : 'text-gray-700'}`}>
-                  {pet.name}
-                </span>
-                {isSelected && <Check className="w-3 h-3 text-purple-600" />}
-              </motion.button>
-            );
-          })}
-        </div>
-      )}
+      {/* Pet selector removed - using universal pet selector from top nav */}
 
       {/* ===== SOUL INCOMPLETE PROMPT ===== */}
       {soulIncomplete && selectedPet && (
