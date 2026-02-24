@@ -629,6 +629,24 @@ async def generate_curated_set(
         concierge_services = [c for c in result["cards"] if c.get("type") == "concierge_service"]
         question_card = None
     
+    elif pillar == "care":
+        # Care pillar cards
+        from app.data.care_concierge_cards import select_care_cards
+        
+        result = select_care_cards(pet_data, max_cards=4)
+        concierge_products = [c for c in result["cards"] if c.get("type") == "concierge_product"]
+        concierge_services = [c for c in result["cards"] if c.get("type") == "concierge_service"]
+        question_card = None
+    
+    elif pillar in ["stay", "travel", "learn", "enjoy", "fit", "paperwork", "advisory", "services", "shop"]:
+        # Universal pillar cards
+        from app.data.universal_pillar_cards import select_pillar_cards
+        
+        result = select_pillar_cards(pillar, pet_data, max_cards=4)
+        concierge_products = [c for c in result["cards"] if c.get("type") == "concierge_product"]
+        concierge_services = [c for c in result["cards"] if c.get("type") == "concierge_service"]
+        question_card = None
+    
     else:
         # For other pillars, use fallback (to be expanded later)
         logger.warning(f"[INTELLIGENCE] Pillar '{pillar}' not yet implemented - returning empty")
