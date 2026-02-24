@@ -578,46 +578,25 @@ const CarePage = () => {
         </div>
       </div>
 
-      {/* ==================== PERSONALIZED PICKS ==================== */}
-      <div className="py-10 bg-gradient-to-b from-white to-pink-50/30">
-        <div className="max-w-6xl mx-auto px-4">
-          <PersonalizedPicks pillar="care" />
-          
-          {/* ═══════════════════════════════════════════════════════════════════
-              HANDPICKED FOR {PET} - Curated concierge products & services
-              Server-driven cards with CONCIERGE® PRODUCT/SERVICE badges
-              ═══════════════════════════════════════════════════════════════════ */}
-          {userPets && userPets[0] && (
-            <div className="glass-card-dark rounded-3xl p-4 md:p-6 shadow-xl mt-8">
-              <CuratedConciergeSection
-                petId={userPets[0].id || userPets[0]._id}
-                petName={userPets[0].name}
-                pillar="care"
-                token={token}
-                userEmail={user?.email}
-              />
-            </div>
-          )}
-          
-          {/* Mira's Picks for Pet */}
-          {userPets && userPets[0] && (
+      {/* ==================== MIRA'S CURATED LAYER - Gold Standard ==================== */}
+      <div className="py-10 bg-gradient-to-b from-white to-rose-50/30">
+        <PersonalizedPicks pillar="care" />
+        
+        {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
+        <MiraCuratedLayer
+          pillar="care"
+          activePet={userPets?.[0]}
+          token={token}
+          userEmail={user?.email}
+          isLoading={!userPets && !!token}
+        />
+        
+        {/* Mira's Picks for Pet */}
+        {userPets && userPets[0] && (
+          <div className="max-w-6xl mx-auto px-4 mt-6">
             <PillarPicksSection pillar="care" pet={userPets[0]} />
-          )}
-          
-          {/* ═══════════════════════════════════════════════════════════════════
-              PERSONALIZED FOR {PET} - Custom care items created by Concierge®
-              ═══════════════════════════════════════════════════════════════════ */}
-          {userPets && userPets[0] && (
-            <div className="mt-6" data-testid="personalized-care-wrapper">
-              <PersonalizedPillarSection
-                pillar="care"
-                pet={userPets[0]}
-                token={token}
-                userEmail={user?.email}
-              />
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* ==================== TRANSFORMATION STORIES ==================== */}
