@@ -22,7 +22,6 @@ import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import ServiceBookingModal from '../components/ServiceBookingModal';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import PersonalizedPicks from '../components/PersonalizedPicks';
-import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import PillarPicksSection from '../components/PillarPicksSection';
 import PersonalizedPillarSection from '../components/PersonalizedPillarSection';
 import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
