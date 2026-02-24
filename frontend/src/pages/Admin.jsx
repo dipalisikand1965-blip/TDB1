@@ -4639,6 +4639,43 @@ const Admin = () => {
                   />
                 </div>
               </div>
+              
+              {/* 🎂 CAKE/BAKERY SHAPE - For filtering on Celebrate page */}
+              <div className="p-3 bg-pink-50 rounded-lg border border-pink-200">
+                <label className="block text-sm font-medium text-pink-700 mb-2">
+                  🎂 Cake Shape (for Celebrate filters)
+                </label>
+                <select
+                  value={editingProduct.shape || editingProduct.pillars_occasions?.cake_bakery?.shape || ''}
+                  onChange={(e) => setEditingProduct({ 
+                    ...editingProduct, 
+                    shape: e.target.value,
+                    pillars_occasions: {
+                      ...(editingProduct.pillars_occasions || {}),
+                      cake_bakery: {
+                        ...(editingProduct.pillars_occasions?.cake_bakery || {}),
+                        shape: e.target.value
+                      }
+                    }
+                  })}
+                  className="w-full border rounded-lg p-2 text-sm"
+                >
+                  <option value="">-- Select Shape --</option>
+                  <option value="paw">🐾 Paw Shape</option>
+                  <option value="bone">🦴 Bone Shape</option>
+                  <option value="heart">💜 Heart Shape</option>
+                  <option value="round">⭕ Round/Circle</option>
+                  <option value="square">⬜ Square</option>
+                  <option value="star">⭐ Star Shape</option>
+                  <option value="number">🔢 Number Cake</option>
+                  <option value="donut">🍩 Donut Shape</option>
+                  <option value="silhouette">🐕 Breed Silhouette</option>
+                  <option value="custom">✨ Custom Shape</option>
+                </select>
+                <p className="text-xs text-pink-500 mt-1">
+                  Used for shape filters on the Celebrate page (paw, bone, heart, etc.)
+                </p>
+              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
