@@ -664,21 +664,21 @@ const CarePage = () => {
         </div>
       </div>
 
-      {/* === QUICK BOOK SERVICES === */}
-      <div className="py-12 bg-gradient-to-b from-slate-50 to-white">
+      {/* === QUICK BOOK SERVICES (4 Cards Max - Concierge-Led) === */}
+      <div className="py-10 sm:py-12 bg-gradient-to-b from-slate-50 to-white">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <Badge className="bg-rose-100 text-rose-700 mb-3">Quick Book</Badge>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Book Care Services Instantly</h2>
-            <p className="text-gray-600 mt-2">Select a service and book in under 2 minutes</p>
+          <div className="text-center mb-6 sm:mb-8">
+            <Badge className="bg-teal-100 text-teal-700 mb-3">Quick Book</Badge>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Book Care Services Instantly</h2>
+            <p className="text-sm sm:text-base text-gray-600 mt-2">Select a service and book in under 2 minutes</p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {/* 4 Cards Only - Mobile Optimized 2x2 Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {[
               { type: 'grooming', icon: Scissors, name: 'Grooming', color: 'from-pink-500 to-rose-600', desc: 'Bath, trim & spa' },
-              { type: 'vet', icon: Stethoscope, name: 'Vet Visit', color: 'from-blue-500 to-indigo-600', desc: 'Checkups & vaccines' },
-              { type: 'training', icon: GraduationCap, name: 'Training', color: 'from-purple-500 to-violet-600', desc: 'Behavior & skills' },
-              { type: 'walking', icon: PawPrint, name: 'Walking', color: 'from-green-500 to-emerald-600', desc: 'Daily walks' }
+              { type: 'vet_clinic_booking', icon: Stethoscope, name: 'Vet Visits', color: 'from-blue-500 to-indigo-600', desc: 'Clinic booking' },
+              { type: 'boarding_daycare', icon: Building2, name: 'Boarding & Daycare', color: 'from-emerald-500 to-teal-600', desc: 'Care when away' }
             ].map((service, idx) => {
               const Icon = service.icon;
               return (
@@ -688,34 +688,34 @@ const CarePage = () => {
                     setBookingServiceType(service.type);
                     setShowBookingModal(true);
                   }}
-                  className={`animate-scale-in stagger-${idx + 1} group p-4 sm:p-6 bg-white rounded-2xl border-2 border-gray-100 hover:border-rose-200 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 text-left`}
+                  className={`animate-scale-in stagger-${idx + 1} group p-4 sm:p-5 bg-white rounded-2xl border-2 border-gray-100 hover:border-teal-200 hover:shadow-xl active:scale-[0.98] transition-all duration-300 text-left`}
                   data-testid={`quick-book-${service.type}`}
                 >
-                  <div className={`w-12 h-12 sm:w-14 sm:h-14 mb-3 sm:mb-4 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                    <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                  <div className={`w-11 h-11 sm:w-12 sm:h-12 mb-3 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-1 text-sm sm:text-base">{service.name}</h3>
-                  <p className="text-xs sm:text-sm text-gray-500">{service.desc}</p>
-                  <div className="mt-2 sm:mt-3 flex items-center text-rose-600 text-xs sm:text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                    Book Now <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
+                  <h3 className="font-bold text-gray-900 mb-1 text-sm sm:text-base leading-tight">{service.name}</h3>
+                  <p className="text-xs text-gray-500">{service.desc}</p>
+                  <div className="mt-2 flex items-center text-teal-600 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                    Book Now <ChevronRight className="w-3 h-3 ml-1" />
                   </div>
                 </button>
               );
             })}
             
-            {/* Anything Else - Ask Concierge */}
+            {/* Let Mira Recommend - Concierge Entry */}
             <button
               onClick={() => setShowAnythingElseModal(true)}
-              className="animate-scale-in stagger-5 group p-4 sm:p-6 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border-2 border-amber-200 hover:border-amber-400 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 text-left"
-              data-testid="quick-book-anything-else"
+              className="animate-scale-in stagger-4 group p-4 sm:p-5 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl border-2 border-purple-200 hover:border-purple-400 hover:shadow-xl active:scale-[0.98] transition-all duration-300 text-left"
+              data-testid="quick-book-mira-recommend"
             >
-              <div className="w-12 h-12 sm:w-14 sm:h-14 mb-3 sm:mb-4 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+              <div className="w-11 h-11 sm:w-12 sm:h-12 mb-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <h3 className="font-bold text-gray-900 mb-1 text-sm sm:text-base">Anything Else</h3>
-              <p className="text-xs sm:text-sm text-gray-500">Custom request</p>
-              <div className="mt-2 sm:mt-3 flex items-center text-amber-600 text-xs sm:text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                Ask Concierge® <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
+              <h3 className="font-bold text-gray-900 mb-1 text-sm sm:text-base leading-tight">Let Mira Recommend</h3>
+              <p className="text-xs text-gray-500">Not sure? We'll help</p>
+              <div className="mt-2 flex items-center text-purple-600 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                Ask Concierge® <ChevronRight className="w-3 h-3 ml-1" />
               </div>
             </button>
           </div>
