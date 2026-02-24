@@ -264,7 +264,7 @@ const TransformationStories = ({
           className="flex gap-5 sm:gap-6 overflow-x-auto scrollbar-hide pb-4 -mx-4 px-4 sm:mx-0 sm:px-0"
           style={{ scrollSnapType: 'x mandatory' }}
         >
-          {stories.map((story, idx) => (
+          {displayStories.map((story, idx) => (
             <TransformationCard 
               key={story.id || idx} 
               story={story}
