@@ -935,43 +935,25 @@ const PaperworkPage = () => {
       />
       
       {/* ═══════════════════════════════════════════════════════════════════
-          HANDPICKED FOR {PET} - Curated concierge products & services
-          Server-driven cards with CONCIERGE® PRODUCT/SERVICE badges
+          MIRA'S CURATED LAYER - Gold Standard Unified Component
+          Includes: Header + CuratedConciergeSection + PersonalizedPillarSection
           ═══════════════════════════════════════════════════════════════════ */}
-      {userPets && userPets[0] && (
-        <div className="max-w-6xl mx-auto px-4 mt-8">
-          <div className="glass-card-dark rounded-3xl p-4 md:p-6 shadow-xl">
-            <CuratedConciergeSection
-              petId={userPets[0].id || userPets[0]._id}
-              petName={userPets[0].name}
-              pillar="paperwork"
-              token={token}
-              userEmail={user?.email}
-            />
+      <div className="py-8 bg-gradient-to-b from-white to-slate-50/30">
+        <MiraCuratedLayer
+          pillar="paperwork"
+          activePet={userPets?.[0]}
+          token={token}
+          userEmail={user?.email}
+          isLoading={!userPets && !!token}
+        />
+        
+        {/* Mira's Picks for Pet */}
+        {userPets && userPets[0] && (
+          <div className="max-w-6xl mx-auto px-4 mt-6">
+            <PillarPicksSection pillar="paperwork" pet={userPets[0]} />
           </div>
-        </div>
-      )}
-      
-      {/* Mira's Picks for Pet */}
-      {userPets && userPets[0] && (
-        <div className="max-w-6xl mx-auto px-4">
-          <PillarPicksSection pillar="paperwork" pet={userPets[0]} />
-        </div>
-      )}
-      
-      {/* ═══════════════════════════════════════════════════════════════════
-          PERSONALIZED FOR {PET} - Custom paperwork items created by Concierge®
-          ═══════════════════════════════════════════════════════════════════ */}
-      {userPets && userPets[0] && (
-        <div className="max-w-6xl mx-auto px-4 mt-6" data-testid="personalized-paperwork-wrapper">
-          <PersonalizedPillarSection
-            pillar="paperwork"
-            pet={userPets[0]}
-            token={token}
-            userEmail={user?.email}
-          />
-        </div>
-      )}
+        )}
+      </div>
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="paperwork" position="bottom-left" />
