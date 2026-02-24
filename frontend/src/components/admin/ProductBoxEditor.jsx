@@ -843,6 +843,86 @@ const ProductBoxEditor = ({
                 </label>
               </div>
             </Card>
+            
+            {/* 🎂 Cake/Bakery Config - Shape for Celebrate filters */}
+            <Card className="p-4 bg-pink-50/50 border-pink-200">
+              <SectionHeader 
+                title="🎂 Cake & Bakery Config" 
+                subtitle="Shape and customization options (used for Celebrate page filters)" 
+              />
+              
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-pink-700 font-medium">Cake Shape</Label>
+                  <select
+                    value={getValue('pillars_occasions.cake_bakery.shape', '') || getValue('shape', '')}
+                    onChange={(e) => {
+                      updateField('pillars_occasions.cake_bakery.shape', e.target.value);
+                      updateField('shape', e.target.value);
+                    }}
+                    className="w-full h-10 px-3 rounded-md border border-pink-200 bg-white"
+                  >
+                    <option value="">-- Select Shape --</option>
+                    <option value="paw">🐾 Paw Shape</option>
+                    <option value="bone">🦴 Bone Shape</option>
+                    <option value="heart">💜 Heart Shape</option>
+                    <option value="round">⭕ Round/Circle</option>
+                    <option value="square">⬜ Square</option>
+                    <option value="star">⭐ Star Shape</option>
+                    <option value="number">🔢 Number Cake</option>
+                    <option value="donut">🍩 Donut Shape</option>
+                    <option value="silhouette">🐕 Breed Silhouette</option>
+                    <option value="custom">✨ Custom Shape</option>
+                  </select>
+                  <p className="text-xs text-pink-500 mt-1">
+                    Used for shape filters on the Celebrate page (paw, bone, heart, etc.)
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <label className="flex items-center gap-2">
+                    <Switch 
+                      checked={getValue('pillars_occasions.cake_bakery.photo_printable', false)}
+                      onCheckedChange={(v) => updateField('pillars_occasions.cake_bakery.photo_printable', v)}
+                    />
+                    <span className="text-sm">📸 Photo Printable</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <Switch 
+                      checked={getValue('pillars_occasions.cake_bakery.name_printable', true)}
+                      onCheckedChange={(v) => updateField('pillars_occasions.cake_bakery.name_printable', v)}
+                    />
+                    <span className="text-sm">✏️ Name Printable</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <Switch 
+                      checked={getValue('pillars_occasions.cake_bakery.is_breed_cake', false)}
+                      onCheckedChange={(v) => updateField('pillars_occasions.cake_bakery.is_breed_cake', v)}
+                    />
+                    <span className="text-sm">🐕 Breed-Specific Cake</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <Switch 
+                      checked={getValue('pillars_occasions.cake_bakery.shape_customizable', false)}
+                      onCheckedChange={(v) => updateField('pillars_occasions.cake_bakery.shape_customizable', v)}
+                    />
+                    <span className="text-sm">✨ Custom Shape Available</span>
+                  </label>
+                </div>
+                
+                {getValue('pillars_occasions.cake_bakery.is_breed_cake', false) && (
+                  <div>
+                    <Label className="text-pink-700">Breed For (if breed cake)</Label>
+                    <Input 
+                      value={getValue('pillars_occasions.cake_bakery.breed_for', '')}
+                      onChange={(e) => updateField('pillars_occasions.cake_bakery.breed_for', e.target.value)}
+                      placeholder="e.g., Shih Tzu, Labrador, Golden Retriever"
+                      className="border-pink-200"
+                    />
+                  </div>
+                )}
+              </div>
+            </Card>
           </TabsContent>
           
           {/* TAB 4: COMMERCE & OPS */}
