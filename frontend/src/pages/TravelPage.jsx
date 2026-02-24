@@ -484,26 +484,6 @@ const TravelPage = () => {
         <div className="max-w-6xl mx-auto px-4">
           <PersonalizedPicks pillar="travel" />
           
-          {/* Concierge Pick Card - Travel coordination */}
-          {selectedPets && selectedPets.length > 0 && (
-            <div className="mt-6">
-              <ConciergePickCard
-                pet={{
-                  name: selectedPets[0]?.name || 'your pet',
-                  breed: selectedPets[0]?.breed,
-                  soulTraits: selectedPets[0]?.personality_traits || [],
-                id: selectedPets[0]?.id
-                }}
-                pillar="travel"
-                title={CONCIERGE_PRESETS.travel.title}
-                icon={CONCIERGE_PRESETS.travel.icon}
-                description={CONCIERGE_PRESETS.travel.description}
-                soulReason={getSoulBasedReason(selectedPets[0], 'travel')}
-                responseTime="2 hours"
-              />
-            </div>
-          )}
-          
           {/* ═══════════════════════════════════════════════════════════════════
               HANDPICKED FOR {PET} - Curated concierge products & services
               Server-driven cards with CONCIERGE® PRODUCT/SERVICE badges
