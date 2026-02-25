@@ -197,6 +197,16 @@
   height: 14px;
   color: rgba(255, 255, 255, 0.5);
   margin-top: -2px;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.soul-dropdown-arrow:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.soul-dropdown-arrow.open {
+  transform: rotate(180deg);
 }
 
 /* ========================================
