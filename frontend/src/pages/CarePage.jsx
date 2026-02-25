@@ -265,9 +265,12 @@ const CarePage = () => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [bookingServiceType, setBookingServiceType] = useState('grooming');
   
-  // NEW: Dedicated Flow Modals for Grooming and Vet Visits
+  // NEW: Dedicated Flow Modals for Care Services
   const [showGroomingFlowModal, setShowGroomingFlowModal] = useState(false);
   const [showVetVisitFlowModal, setShowVetVisitFlowModal] = useState(false);
+  const [showBoardingFlowModal, setShowBoardingFlowModal] = useState(false);
+  const [showPetSittingFlowModal, setShowPetSittingFlowModal] = useState(false);
+  const [showEmergencyFlowModal, setShowEmergencyFlowModal] = useState(false);
   
   // Bundle Detail Modal
   const [selectedBundle, setSelectedBundle] = useState(null);
