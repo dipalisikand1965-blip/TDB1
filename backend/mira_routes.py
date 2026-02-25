@@ -14394,7 +14394,51 @@ If not, tell me what {pet_name} ate and the timing, and I'll guide the next step
                 health_list = health_conditions if isinstance(health_conditions, list) else [health_conditions]
                 health_text = f"And with {pet_name}'s **{', '.join(health_list)}**, "
             
-            food_advisory_response = f"""Great question about celebration food for {pet_name}!
+            # Determine specific advice type
+            is_overeating_question = "overeat" in user_message.lower() or "too much" in user_message.lower() or "stop" in user_message.lower()
+            is_portion_question = "how many" in user_message.lower() or "how much" in user_message.lower()
+            
+            if is_overeating_question:
+                food_advisory_response = f"""Great question about managing {pet_name}'s celebration enjoyment!
+
+{allergy_text}we need to be thoughtful about portions. Here's how to let {pet_name} enjoy without overdoing it:
+
+**Celebration portion tips for {pet_name}:**
+- **Pre-feed a small meal** before the party so she's not ravenous
+- **Use tiny treats** - break celebration treats into small pieces
+- **Set a treat limit** - 10% of daily calories max from party treats
+- **Offer frozen treats** - they last longer and slow down eating
+- **Schedule treat times** - spread them across the event, not all at once
+
+**Signs {pet_name} has had enough:**
+- Slowing down eating pace
+- Looking for water frequently
+- Lying down between treats
+
+**The joy formula:** Small portions + frequent attention = {pet_name} feels celebrated without tummy troubles!
+
+Want me to help plan a treat schedule for the party?
+
+**[Plan treat schedule]** · **[Calculate safe portions]** · **[Shop small treats]**"""
+            elif is_portion_question:
+                food_advisory_response = f"""Let me help with portions for {pet_name}'s celebration!
+
+{allergy_text}we need portions that are safe AND satisfying.
+
+**General party treat guide for {pet_name}:**
+- **Total party treats:** 10-15% of daily calorie allowance
+- **Individual treat size:** Thumbnail-sized for small dogs
+- **Cake slice:** 1-2 tablespoons max
+- **Spread over:** The whole event, not all at once
+
+**{pet_name}-specific notes:**
+{health_text}be extra mindful of rich foods.
+
+Would you like specific portion calculations based on the treats you're planning?
+
+**[Calculate my portions]** · **[Show safe treat sizes]** · **[Plan treat schedule]**"""
+            else:
+                food_advisory_response = f"""Great question about celebration food for {pet_name}!
 
 {allergy_text}we need to be careful about ingredients. {health_text}gentle options are best.
 
