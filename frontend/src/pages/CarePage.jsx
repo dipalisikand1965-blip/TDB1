@@ -31,6 +31,10 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import MiraCarePlan from '../components/MiraCarePlan';
 // NEW: Care Service Flow Modal - Full options for each service
 import CareServiceFlowModal from '../components/CareServiceFlowModal';
+// NEW: Grooming Flow Modal - Detailed 6-step wizard for grooming
+import GroomingFlowModal from '../components/GroomingFlowModal';
+// NEW: Vet Visit Flow Modal - Detailed wizard for vet visits
+import VetVisitFlowModal from '../components/VetVisitFlowModal';
 // NEW: FitPage-style engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
 import {
