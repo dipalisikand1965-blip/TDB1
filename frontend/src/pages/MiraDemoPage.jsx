@@ -140,6 +140,7 @@ import { useToast } from '../hooks/use-toast';
 
 // Import the production-style CSS (matches thedoggycompany.in)
 import '../styles/mira-prod.css';
+import '../styles/mira-unified-header.css';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // NOTE: DEMO_PET and ALL_DEMO_PETS are now imported from '../hooks/mira'
