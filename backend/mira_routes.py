@@ -3215,7 +3215,7 @@ understand what they mean based on the conversation flow. If we were discussing 
             api_key=api_key,
             session_id=f"mira-os-{datetime.now().timestamp()}",
             system_message=MIRA_OS_SYSTEM_PROMPT
-        ).with_model("openai", "gpt-4o")
+        ).with_model("openai", "gpt-5.1")  # Upgraded to GPT-5.1 for better conversation quality
         
         # "Tell me more" handling - user wants options explained
         tell_me_more_context = ""
