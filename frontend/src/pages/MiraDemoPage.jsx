@@ -3727,37 +3727,27 @@ const MiraDemoPage = () => {
   return (
     <div className="mira-prod">
       {/* ═══════════════════════════════════════════════════════════════════
-          STICKY HEADER SECTION - All header elements grouped together
-          Stays fixed at top when used in modal or when scrolling
+          UNIFIED SINGLE TOP BAR HEADER
+          All navigation elements in one clean horizontal row
           ═══════════════════════════════════════════════════════════════════ */}
       <div className="mira-sticky-header" ref={shellRefs.headerRef}>
-        {/* ═══════════════════════════════════════════════════════════════════
-            BACK TO PILLAR - Shows when user came from a pillar page
-            Helps users return to where they were browsing
-            ═══════════════════════════════════════════════════════════════════ */}
+        {/* Back to Pillar - Shows when user came from a pillar page */}
         {(returnUrl || sourcePillar) && (
           <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-b border-purple-200/30">
             <div className="max-w-4xl mx-auto px-4 py-2 flex items-center justify-between">
               <button
                 onClick={() => navigate(returnUrl || `/${sourcePillar}`)}
-                className="flex items-center gap-2 text-sm font-medium text-purple-600 hover:text-purple-800 transition-colors"
+                className="flex items-center gap-2 text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors"
                 data-testid="back-to-pillar-btn"
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span>Back to {PILLAR_NAMES[sourcePillar] || 'browsing'}</span>
               </button>
-              <span className="text-xs text-gray-500">
-                Chat with Mira, then return anytime
-              </span>
             </div>
           </div>
         )}
         
-        {/* ═══════════════════════════════════════════════════════════════════
-            MEMORY WHISPER - Subtle notification when Mira recalls past context
-            Shows as a small chip above the chat, auto-dismisses
-            (Keeping for backward compatibility, but SoulKnowledgeTicker is primary now)
-            ═══════════════════════════════════════════════════════════════════ */}
+        {/* Memory Whisper - Subtle notification when Mira recalls past context */}
         <MemoryWhisper 
           memoryContext={activeMemoryContext}
           petName={pet?.name || 'your pet'}
@@ -3766,105 +3756,23 @@ const MiraDemoPage = () => {
         />
         
         {/* ═══════════════════════════════════════════════════════════════════
-            SOUL KNOWLEDGE TICKER - Dynamic rolling ticker showing everything
-            Mira knows about the pet. Encourages completing soul questions.
-            "Mira knows Mojo 67%" with all the WHY - favorites, allergies, breed traits
+            MIRA UNIFIED HEADER - Single horizontal top bar
+            [Mira Logo] [Pet+Soul Score] [OS Tabs] [Weather] [Profile]
             ═══════════════════════════════════════════════════════════════════ */}
-        {(soulKnowledge.items.length > 0 || tickerItems.length > 0) && (
-          <SoulKnowledgeTicker
-            petId={pet?.id}
-            petName={pet?.name || 'your pet'}
-            petPhoto={pet?.photo}
-            soulScore={pet?.soulScore || soulKnowledge.soulScore || 0}
-            knowledgeItems={soulKnowledge.items.length > 0 ? soulKnowledge.items : tickerItems.map(t => ({
-              icon: t.icon,
-              text: t.text,
-              category: t.type === 'weather' ? 'activity' : t.type === 'place' ? 'activity' : 'soul',
-              priority: 5
-            }))}
-            apiUrl={API_URL}
-            token={token}
-            onSoulBadgeClick={(deepLink) => {
-              // Open MOJO Profile Modal - Pet Identity Layer
-              setMojoDeepLink(deepLink);
-              setShowMojoModal(true);
-            }}
-            onSoulQuestionClick={() => {
-              // Navigate to soul questions page
-              hapticFeedback.buttonTap();
-              navigate(`/pet-soul/${pet.id || ''}`);
-            }}
-            onKnowledgeItemClick={(item) => {
-              // Convert knowledge item click to a query
-              hapticFeedback.buttonTap();
-              if (item.category === 'diet') {
-                handleQuickReply(`Tell me about ${pet.name}'s diet preferences`);
-              } else if (item.category === 'health') {
-                handleQuickReply(`What health information do you have for ${pet.name}?`);
-              } else if (item.category === 'activity') {
-                handleQuickReply(`What activities would ${pet.name} enjoy?`);
-              } else if (item.category === 'breed') {
-                handleQuickReply(`Tell me about ${pet.breed || pet.name}'s breed characteristics`);
-              } else {
-                handleQuickReply(`What do you know about ${pet.name}?`);
-              }
-            }}
-          />
-        )}
-        
-        {/* HEADER */}
-        <header className="mp-header">
-          <div className="mp-header-inner">
-            {/* Left: Mira Logo - Pink circle */}
-            <div className="mp-logo">
-              <div className="mp-logo-icon">
-                <Sparkles />
-              </div>
-              <div className="mp-logo-text">
-                <span className="mp-logo-title">Mira</span>
-                <span className="mp-logo-subtitle">Your Pet Companion</span>
-              </div>
-            </div>
-            
-            {/* Right side: Notification Bell + Pet Selector */}
-            <div className="flex items-center gap-2">
-              {/* Notification Bell */}
-              <NotificationBell userEmail={user?.email} petId={pet?.id} petName={pet?.name} />
-              
-              {/* Pet Selector - Simple dropdown for switching pets */}
-              <PetSelector
-                currentPet={pet}
-                allPets={allPets}
-                isOpen={showPetSelector}
-                onToggle={() => setShowPetSelector(!showPetSelector)}
-                onSelectPet={switchPet}
-              />
-            </div>
-          </div>
-        </header>
-        
-        {/* PET OS NAVIGATION - The 6 Layer OS Navigation Bar */}
-        {/* MOJO = Identity | TODAY = Time | PICKS = Intelligence | SERVICES = Action | LEARN = Knowledge | CONCIERGE = Human */}
-        <PetOSNavigation
+        <MiraUnifiedHeader
           currentPet={pet}
           allPets={allPets}
           soulScore={pet?.soulScore || soulKnowledge.soulScore || 0}
           healthScore={calculateHealthScore(pet)}
           activeTab={activeOSTab}
           onTabChange={(tabId) => {
-            // Use Bible-compliant tab change handler
             handleOSTabChange(tabId);
-            
-            // Mark tab as visited (PULSE → ON)
             markTabVisited(tabId);
-            
-            // Clear "new" flag when picks panel is opened
             if (tabId === 'picks') {
               setMiraPicks(prev => ({ ...prev, hasNew: false }));
             }
           }}
           onPetClick={() => {
-            // Open MOJO Profile Modal when pet avatar is clicked
             handleOSTabChange('mojo');
             setMojoDeepLink(null);
           }}
@@ -3875,7 +3783,7 @@ const MiraDemoPage = () => {
               : (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) > 0 
                 ? (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) 
                 : null,
-            services: null, // TODO: Connect to pending services count
+            services: null,
           }}
           picksHasNew={miraPicks.hasNew}
           iconStates={iconStates}
