@@ -20,7 +20,7 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-soul-1.preview.
 
 # Test credentials
 TEST_USER_EMAIL = "dipali@clubconcierge.in"
-TEST_USER_PASSWORD = "lola4304"
+TEST_USER_PASSWORD = "test123"  # Correct password from review request
 ADMIN_USER = "aditya"
 ADMIN_PASSWORD = "lola4304"
 
