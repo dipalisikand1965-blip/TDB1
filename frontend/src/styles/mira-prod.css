@@ -112,8 +112,9 @@
     var(--mira-bg-violet) 100%
   );
   
-  /* Use measured footer height for bottom padding, with fallback */
-  padding: var(--space-lg) var(--space-xl);
+  /* Padding for content */
+  padding: var(--space-xl) var(--space-xl);
+  padding-top: 24px; /* Space at top of content */
   padding-bottom: calc(
     max(var(--mira-interaction-footer-h), var(--mira-footer-fallback)) 
     + var(--page-bottom-space)
@@ -122,6 +123,11 @@
   /* Smooth scrolling */
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Inner wrapper for messages - ensures proper spacing */
+.mp-messages-inner {
+  padding-top: 8px;
 }
 
 /* ========================================
