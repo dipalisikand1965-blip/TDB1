@@ -299,25 +299,13 @@
 
 /* Mobile: Full width dropdown */
 @media (max-width: 768px) {
-  /* Use smaller header offset on mobile */
-  :root {
-    --mira-header-offset: var(--mira-header-offset-mobile);
-  }
-  
+  /* Mobile layout adjustments */
   .mp-messages {
-    padding-bottom: 180px; /* More space for mobile keyboard + composer */
-    padding-left: var(--space-md);
-    padding-right: var(--space-md);
-  }
-  
-  .mp-composer {
-    padding-bottom: calc(var(--space-2xl) + env(safe-area-inset-bottom, 0px));
-  }
-  
-  .mp-sandbox-footer {
-    bottom: 90px; /* Slightly higher on mobile */
-    font-size: 10px;
-    padding: var(--space-xs) var(--space-md);
+    padding: var(--space-md) var(--space-md);
+    padding-bottom: calc(
+      max(var(--mira-interaction-footer-h), 160px) 
+      + var(--page-bottom-space)
+    );
   }
   
   .mp-pet-dropdown {
