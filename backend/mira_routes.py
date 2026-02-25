@@ -11644,9 +11644,10 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
     # ═══════════════════════════════════════════════════════════════════════════
     elif any(term in response_lower for term in ["budget", "price", "range", "spend", "affordable"]):
         quick_replies = [
-            "Budget friendly",
-            "Mid-range",
-            "Premium quality"
+            build_quick_reply_chip("Budget friendly", "Budget friendly options please.", "refine", domain="shop"),
+            build_quick_reply_chip("Mid-range", "Mid-range options.", "refine", domain="shop"),
+            build_quick_reply_chip("Premium quality", "Premium quality, price not a concern.", "refine", domain="shop"),
+            build_quick_reply_chip("Something else", "Something else.", "continue", domain="shop")
         ]
     
     # ═══════════════════════════════════════════════════════════════════════════
