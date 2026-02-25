@@ -379,6 +379,30 @@ const useChatSubmit = (config) => {
       
       console.log('[MIRA CHAT] Response received:', data.success !== false ? 'success' : 'failed');
       
+      // ═══════════════════════════════════════════════════════════════════════════
+      // FLOW MODAL TRIGGERS - THE MAGIC OF INTELLIGENT ROUTING
+      // When Mira detects booking intent, auto-open the right FlowModal wizard
+      // ═══════════════════════════════════════════════════════════════════════════
+      if (data.flow_modal?.trigger) {
+        console.log('[FLOW MODAL] Triggering:', data.flow_modal.type, 'for pet:', data.flow_modal.pet_name);
+        
+        // Trigger the appropriate FlowModal based on type
+        const modalType = data.flow_modal.type;
+        
+        if (modalType === 'grooming' && typeof setShowGroomingFlowModal === 'function') {
+          setShowGroomingFlowModal(true);
+          console.log('[FLOW MODAL] ✨ Opening GroomingFlowModal');
+        } else if (modalType === 'vet_visit' && typeof setShowVetVisitFlowModal === 'function') {
+          setShowVetVisitFlowModal(true);
+          console.log('[FLOW MODAL] ✨ Opening VetVisitFlowModal');
+        } else if (modalType === 'care_service' && typeof setShowCareServiceFlowModal === 'function') {
+          setShowCareServiceFlowModal(true);
+          console.log('[FLOW MODAL] ✨ Opening CareServiceFlowModal');
+        }
+        
+        // Still show Mira's response, but don't return early
+      }
+      
       // UI ACTION HANDLER (for backwards compatibility)
       if (data.ui_action?.type === 'open_picks_vault') {
         console.log('[UI ACTION] Opening Personalized Picks Panel for:', data.ui_action.pet_name);
