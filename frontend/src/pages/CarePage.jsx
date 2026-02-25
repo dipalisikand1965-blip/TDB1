@@ -376,19 +376,14 @@ const CarePage = () => {
         const data = await response.json();
         const pets = data.pets || [];
         setUserPets(pets);
-        // Set first pet as selected by default
-        if (pets.length > 0 && !selectedPet) {
-          setSelectedPet(pets[0]);
+        // Set first pet in context if not already set
+        if (pets.length > 0 && !currentPet) {
+          setCurrentPet(pets[0]);
         }
       }
     } catch (error) {
       console.error('Error fetching pets:', error);
     }
-  };
-
-  // Handle pet selection change (from MultiPetSelector or elsewhere)
-  const handlePetSelect = (pet) => {
-    setSelectedPet(pet);
   };
 
   const fetchCareProducts = async () => {
