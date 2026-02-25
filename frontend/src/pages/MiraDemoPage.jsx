@@ -497,6 +497,13 @@ const MiraDemoPage = () => {
   const [showDietaryContext, setShowDietaryContext] = useState(false);
   const [dietaryContextExpanded, setDietaryContextExpanded] = useState(false);
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // FLOW MODAL STATES - Intelligent booking wizards triggered by Mira chat
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const [showGroomingFlowModal, setShowGroomingFlowModal] = useState(false);
+  const [showVetVisitFlowModal, setShowVetVisitFlowModal] = useState(false);
+  const [showCareServiceFlowModal, setShowCareServiceFlowModal] = useState(false);
+  
   // Auto-show dietary context chip in food-related conversations
   useEffect(() => {
     const lastMessage = conversationHistory[conversationHistory.length - 1];
