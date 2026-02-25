@@ -279,9 +279,11 @@ const UniversalServiceButton = ({
   };
   
   // Position configs (for floating variant)
+  // Mobile: above the mobile nav bar (bottom-24)
+  // Desktop: positioned above Mira orb (bottom-24)
   const positionConfig = {
-    'bottom-right': 'fixed bottom-24 right-4 z-[9990] sm:bottom-20 sm:right-6',
-    'bottom-left': 'fixed bottom-24 left-4 z-[9990] sm:bottom-20 sm:left-6',
+    'bottom-right': 'fixed bottom-20 right-4 z-[9990] sm:bottom-24 sm:right-6',
+    'bottom-left': 'fixed bottom-20 left-4 z-[9990] sm:bottom-24 sm:left-6',
     'inline': ''
   };
   
