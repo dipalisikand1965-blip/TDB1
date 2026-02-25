@@ -537,7 +537,7 @@ const VetVisitFlowModal = ({
               ) : (
                 <>
                   <Sparkles className="w-4 h-4 mr-2" />
-                  Submit Request
+                  Send to Concierge®
                 </>
               )}
             </Button>
