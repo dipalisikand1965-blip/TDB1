@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell, BellDot, X, MessageCircle, Check, CheckCheck, Calendar, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -7,11 +8,10 @@ import { API_URL } from '../utils/api';
 const API = API_URL;
 
 const MemberNotificationBell = ({ userEmail, onNotificationClick }) => {
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const dropdownRef = useRef(null);
 
   // Fetch notifications
   const fetchNotifications = async () => {
