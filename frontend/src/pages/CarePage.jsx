@@ -576,6 +576,31 @@ const CarePage = () => {
       />
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
+          HANDPICKED FOR [PET] - Curated Concierge Products & Services
+          "Gold Standard" - These are the intelligent picks Mira creates
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <div className="py-10 bg-gradient-to-b from-white to-teal-50/30">
+        {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
+        <MiraCuratedLayer
+          pillar="care"
+          activePet={selectedPet}
+          token={token}
+          userEmail={user?.email}
+          isLoading={!userPets.length && !!token}
+        />
+        
+        {/* Personalized Picks Section */}
+        <PersonalizedPicks pillar="care" />
+        
+        {/* Mira's Pillar Picks for Pet */}
+        {selectedPet && (
+          <div className="max-w-6xl mx-auto px-4 mt-6">
+            <PillarPicksSection pillar="care" pet={selectedPet} />
+          </div>
+        )}
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
           ALL CARE SERVICES - For browsing (secondary to Mira's recommendations)
           ═══════════════════════════════════════════════════════════════════════════════ */}
       <div className="py-10 sm:py-12 bg-white">
