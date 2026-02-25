@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://soul-concierge.preview.emergentagent.com
+https://paw-concierge.preview.emergentagent.com
 ```
 
 ---
