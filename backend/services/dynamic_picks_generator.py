@@ -1205,8 +1205,103 @@ def _generate_services_picks(user_msg: str, pet_name: str, pet_context: Dict) ->
 
 
 def _generate_generic_picks(user_msg: str, pet_name: str, pet_context: Dict) -> List[Dict]:
-    """Generate generic picks when pillar is not specific"""
-    return [{
+    """
+    Generate context-aware Concierge Arranges picks when pillar is not specific.
+    
+    Bible Rule: PICKS is NEVER empty. When no catalogue match, show Concierge Arranges.
+    These are context-specific, not generic placeholders.
+    """
+    picks = []
+    user_msg_lower = user_msg.lower()
+    
+    # Detect intent from message and create context-specific Concierge Arranges cards
+    if any(kw in user_msg_lower for kw in ["walk", "walking", "exercise"]):
+        picks.append({
+            "type": "service",
+            "category": "concierge",
+            "title": f"Concierge Arranges: Dog Walker for {pet_name}",
+            "subtitle": "We'll find and coordinate the perfect walker",
+            "icon": "🐕",
+            "reason": "Matched to energy level and schedule",
+            "cta": "Arrange Walker",
+            "service_type": "concierge_walker",
+            "concierge_always": True
+        })
+    elif any(kw in user_msg_lower for kw in ["groom", "haircut", "bath", "spa"]):
+        picks.append({
+            "type": "service",
+            "category": "concierge",
+            "title": f"Concierge Arranges: Grooming for {pet_name}",
+            "subtitle": "We'll book the perfect salon or home visit",
+            "icon": "✂️",
+            "reason": "Matched to coat type and preferences",
+            "cta": "Arrange Grooming",
+            "service_type": "concierge_grooming",
+            "concierge_always": True
+        })
+    elif any(kw in user_msg_lower for kw in ["vet", "doctor", "health", "sick"]):
+        picks.append({
+            "type": "service",
+            "category": "concierge",
+            "title": f"Concierge Arranges: Vet Visit for {pet_name}",
+            "subtitle": "We'll find the right specialist and book",
+            "icon": "🩺",
+            "reason": "Coordinated care with your pet's history",
+            "cta": "Arrange Vet",
+            "service_type": "concierge_vet",
+            "concierge_always": True
+        })
+    elif any(kw in user_msg_lower for kw in ["train", "training", "behav", "class"]):
+        picks.append({
+            "type": "service",
+            "category": "concierge",
+            "title": f"Concierge Arranges: Training for {pet_name}",
+            "subtitle": "We'll match you with the right trainer",
+            "icon": "🎓",
+            "reason": "Based on specific needs and goals",
+            "cta": "Arrange Training",
+            "service_type": "concierge_training",
+            "concierge_always": True
+        })
+    elif any(kw in user_msg_lower for kw in ["travel", "trip", "vacation", "holiday"]):
+        picks.append({
+            "type": "service",
+            "category": "concierge",
+            "title": f"Concierge Arranges: Pet-Friendly Travel",
+            "subtitle": "Hotels, transport, paperwork - we handle it all",
+            "icon": "✈️",
+            "reason": f"Stress-free travel with {pet_name}",
+            "cta": "Plan Trip",
+            "service_type": "concierge_travel",
+            "concierge_always": True
+        })
+    elif any(kw in user_msg_lower for kw in ["birthday", "party", "celebrate", "cake"]):
+        picks.append({
+            "type": "service",
+            "category": "concierge",
+            "title": f"Concierge Arranges: Celebration for {pet_name}",
+            "subtitle": "Cake, venue, photographer - the whole party",
+            "icon": "🎉",
+            "reason": "Your vision, our coordination",
+            "cta": "Plan Party",
+            "service_type": "concierge_celebrate",
+            "concierge_always": True
+        })
+    elif any(kw in user_msg_lower for kw in ["food", "eat", "diet", "meal", "feed"]):
+        picks.append({
+            "type": "service",
+            "category": "concierge",
+            "title": f"Concierge Arranges: Custom Diet for {pet_name}",
+            "subtitle": "Nutritionist-designed meal plans",
+            "icon": "🍽️",
+            "reason": "Personalized to health needs",
+            "cta": "Get Diet Plan",
+            "service_type": "concierge_nutrition",
+            "concierge_always": True
+        })
+    
+    # Always add a general concierge option as fallback
+    picks.append({
         "type": "service",
         "category": "concierge",
         "title": f"Concierge Help for {pet_name}",
@@ -1214,5 +1309,8 @@ def _generate_generic_picks(user_msg: str, pet_name: str, pet_context: Dict) -> 
         "icon": "✨",
         "reason": "Your personal pet concierge",
         "cta": "Get Help",
-        "service_type": "concierge_general"
-    }]
+        "service_type": "concierge_general",
+        "concierge_always": True
+    })
+    
+    return picks
