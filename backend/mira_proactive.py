@@ -996,9 +996,13 @@ async def check_meta_proactive_alerts(pet_id: str, pet_name: str, db) -> List[Di
                 if o_date:
                     try:
                         if isinstance(o_date, str):
-                            order_dates.append(datetime.fromisoformat(o_date.replace("Z", "+00:00")))
+                            dt = datetime.fromisoformat(o_date.replace("Z", "+00:00"))
                         else:
-                            order_dates.append(o_date)
+                            dt = o_date
+                        # Ensure timezone awareness
+                        if dt.tzinfo is None:
+                            dt = dt.replace(tzinfo=timezone.utc)
+                        order_dates.append(dt)
                     except:
                         pass
             
