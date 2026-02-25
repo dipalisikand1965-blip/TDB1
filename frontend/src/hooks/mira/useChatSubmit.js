@@ -1021,6 +1021,39 @@ const useChatSubmit = (config) => {
         console.log(`[PILLAR] Updated currentPillar to: ${currentPillarForReplies}`);
       }
       
+      // ═══════════════════════════════════════════════════════════════════════════
+      // INTELLIGENT PANEL ROUTING - THE MAGIC STITCHING
+      // Based on detected pillar and content, auto-open the RIGHT panel
+      // This makes Mira feel intelligent - she doesn't just answer, she GUIDES
+      // ═══════════════════════════════════════════════════════════════════════════
+      const shouldAutoOpenPanel = (
+        currentPillarForReplies && 
+        currentPillarForReplies !== 'general' && 
+        currentPillarForReplies !== 'advisory'
+      );
+      
+      if (shouldAutoOpenPanel) {
+        // If we have products/services for a specific pillar, show PICKS panel
+        if (hasProducts || hasServices || (Array.isArray(picksEngineData) && picksEngineData.length > 0)) {
+          console.log(`[INTELLIGENT ROUTING] Opening PICKS panel for pillar: ${currentPillarForReplies}`);
+          setShowTopPicksPanel(true);
+          // Also set the OS tab to PICKS
+          if (typeof setActiveOSTab === 'function') {
+            setActiveOSTab('picks');
+          }
+        }
+        // If it's a service request pillar (care, stay, travel), show SERVICES panel
+        const serviceRequestPillars = ['care', 'stay', 'travel', 'celebrate', 'dine'];
+        if (serviceRequestPillars.includes(currentPillarForReplies) && data.concierge?.cta_prominence === 'primary') {
+          console.log(`[INTELLIGENT ROUTING] Service request detected for: ${currentPillarForReplies}`);
+          // The concierge CTA is primary - user likely wants to book something
+        }
+        // If pillar is LEARN, suggest LEARN panel
+        if (currentPillarForReplies === 'learn' || currentPillarForReplies === 'advisory') {
+          console.log(`[INTELLIGENT ROUTING] Educational content - LEARN panel relevant`);
+        }
+      }
+      
       // MIRA OS CONTEXT
       if (data.os_context) {
         const osContext = data.os_context;
