@@ -285,11 +285,13 @@ const LearnPanel = ({
   onClose, 
   pet,
   token,
+  conversationContext,  // Context from chat (e.g., { topic: "birthday", pillar: "celebrate" })
+  conversationPicks,    // Learn picks from chat response
   onOpenServices,
   onOpenConcierge 
 }) => {
   // State
-  const [view, setView] = useState('home'); // 'home' | 'topic' | 'search' | 'saved' | 'detail'
+  const [view, setView] = useState('home'); // 'home' | 'topic' | 'search' | 'saved' | 'detail' | 'conversation'
   const [topics, setTopics] = useState([]);
   const [activeTopic, setActiveTopic] = useState(null);
   const [homeData, setHomeData] = useState({ start_here: [], for_your_pet: [], from_your_chat: [], topics: [] });
@@ -305,12 +307,20 @@ const LearnPanel = ({
   const petId = pet?.id && pet.id !== 'demo-pet' ? pet.id : null;
   const petName = pet?.name || 'your pet';
   
+  // Check if we have conversation-specific content
+  const hasConversationContent = conversationPicks?.length > 0 || conversationContext?.topic;
+  
   // Fetch home data on mount or when pet changes
   useEffect(() => {
     if (isOpen) {
-      fetchHomeData();
+      // If we have conversation picks, show them first
+      if (hasConversationContent) {
+        setView('conversation');
+      } else {
+        fetchHomeData();
+      }
     }
-  }, [isOpen, petId]);
+  }, [isOpen, petId, hasConversationContent]);
   
   const fetchHomeData = async () => {
     setIsLoading(true);
