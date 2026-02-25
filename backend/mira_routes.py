@@ -3168,15 +3168,43 @@ If a question like "everyday vs special-occasion treats" was already answered, m
     
     # Full conversation history for context understanding
     conversation_context = ""
+    detected_original_topic = None
     if conversation_history and len(conversation_history) > 0:
         conv_lines = []
         for msg in conversation_history[-8:]:  # Last 8 messages
             role = "Parent" if msg.get('role') == 'user' else "Mira"
-            conv_lines.append(f"{role}: {msg.get('content', '')[:500]}")  # Truncate long messages
+            content = msg.get('content', '')[:500]
+            conv_lines.append(f"{role}: {content}")
+            
+            # Detect original topic from conversation
+            content_lower = content.lower()
+            if not detected_original_topic:
+                if any(kw in content_lower for kw in ["dog walker", "walker", "walking service", "need a walk"]):
+                    detected_original_topic = "DOG_WALKER"
+                elif any(kw in content_lower for kw in ["grooming", "groom", "haircut", "bath"]):
+                    detected_original_topic = "GROOMING"
+                elif any(kw in content_lower for kw in ["birthday", "party", "celebrate", "celebration"]):
+                    detected_original_topic = "BIRTHDAY"
+                elif any(kw in content_lower for kw in ["vet", "doctor", "health check", "vaccination"]):
+                    detected_original_topic = "VET"
+                elif any(kw in content_lower for kw in ["travel", "trip", "vacation", "hotel"]):
+                    detected_original_topic = "TRAVEL"
+        
+        # Build a strong topic anchor if we detected the original topic
+        topic_anchor = ""
+        if detected_original_topic == "DOG_WALKER":
+            topic_anchor = """
+⚠️ CRITICAL TOPIC ANCHOR: This conversation is about DOG WALKING SERVICE.
+User asked for a dog walker. Stay on this topic. Do NOT switch to restaurants, cafes, or other services.
+Your ONLY job is to gather: timing, days, duration - then confirm booking through Concierge.
+"""
+        elif detected_original_topic:
+            topic_anchor = f"\n⚠️ TOPIC ANCHOR: This conversation is about {detected_original_topic}. Stay focused on this topic.\n"
+        
         conversation_context = f"""
 RECENT CONVERSATION (for context):
 {chr(10).join(conv_lines)}
-
+{topic_anchor}
 CRITICAL: Use this context to understand the parent's current needs. If they mention "cake" or make typos, 
 understand what they mean based on the conversation flow. If we were discussing birthday planning, 
 "cake" means birthday cake. Stay anchored to the original topic.
