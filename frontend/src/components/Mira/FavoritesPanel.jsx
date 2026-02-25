@@ -125,6 +125,9 @@ const FavoritesPanel = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
+  
+  // UNIFIED SERVICE FLOW: Hook to create service tickets
+  const { submitRequest, isSubmitting } = useUniversalServiceCommand();
 
   // Fetch favorites
   const fetchFavorites = useCallback(async () => {
@@ -157,6 +160,32 @@ const FavoritesPanel = ({
       fetchFavorites();
     }
   }, [isOpen, compact, fetchFavorites]);
+
+  // Handle favorite selection - CREATES SERVICE TICKET
+  const handleFavoriteSelect = async (item) => {
+    // Create a service ticket for this favorite intent
+    try {
+      await submitRequest({
+        type: 'FAVORITE_REQUEST',
+        pillar: item.pillar || 'general',
+        message: `I'd like to proceed with my saved favorite: ${item.title || item.name}`,
+        context: {
+          favorite_id: item.item_id,
+          favorite_title: item.title || item.name,
+          favorite_category: item.category,
+          favorite_pillar: item.pillar
+        },
+        pet: { id: petId, name: petName },
+        entryPoint: 'favorites_panel',
+        navigateToInbox: false // Let the parent handle navigation
+      });
+    } catch (err) {
+      console.error('Error creating ticket from favorite:', err);
+    }
+    
+    // Also call the parent handler if provided
+    onFavoriteSelect?.(item);
+  };
 
   // Remove favorite
   const handleRemove = async (item) => {
