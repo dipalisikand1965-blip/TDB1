@@ -1549,6 +1549,121 @@ async def seed_care_products_v2():
     }
 
 
+# ==================== COMPREHENSIVE CARE SEED (V3) ====================
+
+@router.post("/admin/seed-comprehensive-care")
+async def seed_comprehensive_care_products():
+    """
+    Seed comprehensive care products and bundles with:
+    - Size tags (xs, small, medium, large, xl)
+    - Coat tags (short_coat, long_coat, double_coat, curly_coat)
+    - Life stage tags (puppy, adult, senior)
+    - Temperament tags (calm, anxious, grooming_nervous, vet_nervous)
+    - Intent tags (grooming, vet_clinic_booking, boarding_daycare, etc.)
+    - Mira whispers for personalization
+    """
+    db = get_db()
+    logger = get_logger()
+    
+    from care_products_master import CARE_PRODUCTS, CARE_BUNDLES
+    
+    products_seeded = 0
+    bundles_seeded = 0
+    
+    # Seed products to products_master collection
+    for product in CARE_PRODUCTS:
+        product_doc = {
+            **product,
+            "pillar": "care",
+            "category": "care",
+            "sync_source": "care_master_seed",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.products_master.update_one(
+            {"id": product["id"]},
+            {"$set": product_doc},
+            upsert=True
+        )
+        products_seeded += 1
+    
+    # Seed bundles to product_bundles collection
+    for bundle in CARE_BUNDLES:
+        bundle_doc = {
+            **bundle,
+            "bundle_type": "care",
+            "category": "care",
+            "sync_source": "care_master_seed",
+            "is_recommended": True,
+            "active": True,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.product_bundles.update_one(
+            {"id": bundle["id"]},
+            {"$set": bundle_doc},
+            upsert=True
+        )
+        bundles_seeded += 1
+    
+    logger.info(f"Seeded {products_seeded} comprehensive care products and {bundles_seeded} bundles")
+    
+    return {
+        "success": True,
+        "products_seeded": products_seeded,
+        "bundles_seeded": bundles_seeded,
+        "message": "Comprehensive care products with size/coat/life_stage/temperament tags seeded successfully",
+        "products": [p["name"] for p in CARE_PRODUCTS],
+        "bundles": [b["name"] for b in CARE_BUNDLES]
+    }
+
+
+@router.get("/products-for-pet/{pet_id}")
+async def get_care_products_for_pet(pet_id: str, intent: Optional[str] = None):
+    """
+    Get care products filtered for a specific pet's profile.
+    Uses size, coat type, life stage, and temperament for matching.
+    """
+    db = get_db()
+    
+    # Fetch pet profile
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    from care_products_master import get_products_for_pet, get_bundles_for_pet, get_bundles_for_intent
+    
+    # Build pet data for filtering
+    soul = pet.get("soul", {})
+    pet_data = {
+        "pet_name": pet.get("name", "Your pet"),
+        "size": soul.get("size") or pet.get("size") or "medium",
+        "coat_type": soul.get("coat_type") or "short_coat",
+        "life_stage": soul.get("life_stage") or "adult",
+        "temperament": soul.get("temperament") or "calm"
+    }
+    
+    # Get matching products and bundles
+    matching_products = get_products_for_pet(pet_data)
+    
+    if intent:
+        matching_bundles = get_bundles_for_intent(intent, pet_data)
+    else:
+        matching_bundles = get_bundles_for_pet(pet_data)
+    
+    return {
+        "pet": {
+            "id": pet_id,
+            "name": pet.get("name"),
+            "profile": pet_data
+        },
+        "products": matching_products[:12],  # Top 12 matches
+        "bundles": matching_bundles[:6],  # Top 6 bundles
+        "total_products": len(matching_products),
+        "total_bundles": len(matching_bundles)
+    }
+
+
 # ==================== SETTINGS ====================
 
 @router.get("/admin/settings")
