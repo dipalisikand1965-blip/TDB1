@@ -10327,33 +10327,22 @@ input, select, textarea {
 
 
 /* ========================================
-   FIXED HEADER - Always visible at top
+   HEADER STACK - All header elements are now contained in .mira-sticky-header
+   Individual sticky rules removed - the container handles stickiness
    ======================================== */
 .mira-prod .mp-header,
 .mira-prod .mp-soul-ticker,
 .mira-prod .soul-knowledge-ticker {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 90 !important;
-  background: linear-gradient(180deg, rgba(30, 27, 75, 1) 0%, rgba(30, 27, 75, 0.98) 100%) !important;
+  /* No individual sticky - contained in .mira-sticky-header */
+  flex-shrink: 0;
+  background: var(--mira-bg-dark);
 }
 
-/* Make the entire top section sticky */
-.mira-prod > .mp-soul-ticker,
-.mira-prod > div:first-child {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 90 !important;
-}
-
-/* Navigation tabs should also be sticky */
+/* Navigation tabs are also contained in .mira-sticky-header */
 .mira-prod .mp-nav,
 .mira-prod .mp-tabs {
-  position: sticky !important;
-  top: 60px !important;
-  z-index: 85 !important;
-  background: rgba(30, 27, 75, 0.98) !important;
-  backdrop-filter: blur(10px) !important;
+  flex-shrink: 0;
+  background: var(--mira-bg-dark);
 }
 
 /* Ensure scrollable content doesn't overlap sticky elements */
