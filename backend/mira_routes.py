@@ -14362,6 +14362,55 @@ If not, tell me what {pet_name} ate and the timing, and I'll guide the next step
     # DO NOT immediately create service ticket - ask location/size first
     # ═══════════════════════════════════════════════════════════════════════════
     if pillar == "celebrate":
+        # ═══════════════════════════════════════════════════════════════════════════
+        # HISTORY QUERY DETECTION - If asking about past celebrations, answer from history
+        # ═══════════════════════════════════════════════════════════════════════════
+        history_keywords = ["last time", "last birthday", "last year", "previous", "what did we do", "remember", "before"]
+        is_history_query = any(kw in user_message.lower() for kw in history_keywords)
+        
+        if is_history_query and selected_pet:
+            pillar_histories = selected_pet.get("pillar_histories", {})
+            celebrations = pillar_histories.get("celebrations", [])
+            dog_friends = pillar_histories.get("dog_friends", [])
+            
+            if celebrations:
+                last_celebration = celebrations[0]
+                location_info = last_celebration.get("location", "")
+                guests = last_celebration.get("guests", [])
+                date_info = last_celebration.get("date", "")
+                cel_type = last_celebration.get("type", "celebration")
+                
+                # Build soulful history response
+                friends_mention = f" with {', '.join(guests)}" if guests else ""
+                if dog_friends and not guests:
+                    friends_mention = f" (and I remember {pet_name}'s friends: {', '.join(dog_friends[:3])})"
+                
+                history_response = f"""Oh, I remember {pet_name}'s last {cel_type}! 
+
+Last time ({date_info}), you celebrated **at {location_info}**{friends_mention}.
+
+{f"Since {pet_name}'s friends include {', '.join(dog_friends[:3])}, would you like to invite them again?" if dog_friends else ""}
+
+**Would you like to do something similar this time, or try something different?**"""
+                
+                logger.info(f"[CELEBRATE-HISTORY] Answered from history: {len(celebrations)} past celebrations")
+                
+                return add_picks_to_response({
+                    "success": True,
+                    "response": history_response,
+                    "session_id": session_id,
+                    "ticket_id": ticket_id,
+                    "pillar": pillar,
+                    "ticket_type": "advisory",
+                    "conversation_contract": {
+                        "mode": "clarify",
+                        "quick_replies": [
+                            {"id": "QR-CEL-SAME", "label": "Same as last time", "payload_text": f"Same as last time - {location_info}.", "intent_type": "answer_option"},
+                            {"id": "QR-CEL-NEW", "label": "Something different", "payload_text": "Let's try something different this time.", "intent_type": "answer_option"},
+                        ]
+                    }
+                }, selected_pet)
+        
         # Check if this is initial celebration request or a follow-up
         # FIX: Check ai_context.celebrate_stage instead of pillar field, since we track stage there
         current_celebrate_stage = existing_ticket.get("ai_context", {}).get("celebrate_stage") if existing_ticket else None
