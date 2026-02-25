@@ -16967,6 +16967,8 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 pet_name=selected_pet.get("name") if selected_pet else None,
                 pet_data=selected_pet
             ),
+            "youtube_results": youtube_results,  # LEARN pillar YouTube videos
+            "learn_content": learn_content,  # LEARN pillar content with Mira Frame
             "end_state": "RESPONDED",
             "disclaimer_shown": is_nutrition_query,  # Track if nutrition disclaimer should be shown
             # Picks Vault handoff info for Concierge
