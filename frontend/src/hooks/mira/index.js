@@ -63,3 +63,12 @@ export {
   saveConversationMemory,
   buildMemoryPrefix
 } from './useChat';
+
+// Shell state management
+export { 
+  default as useMiraShell,
+  shouldShowQuickReplies,
+  shouldShowComposer,
+  shouldShowSiteFooter,
+  getFooterModeLabel
+} from './useMiraShell';
