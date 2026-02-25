@@ -3,21 +3,14 @@
  * ======================
  * Single Top Bar Header for Mira OS
  * 
- * Based on user's design reference:
- * [Mira Logo] [Pet Avatar+Soul Score] [TODAY][PICKS][SERVICES][LEARN][CONCIERGE®] [Weather] [Pet Profile]
- * 
- * Features:
- * - Single horizontal row layout
- * - 3D perspective tab design with glass morphism
- * - Pet avatar with golden soul score badge
- * - Weather display on the right
- * - Responsive for mobile/desktop
+ * Layout (from user's reference):
+ * [Mira Logo] [Pet+Soul+Name (→MOJO)] [TODAY][PICKS][SERVICES][LEARN][CONCIERGE®] [Temp] [Pet Switcher (→dropdown)]
  */
 
 import React, { useState, useRef, useEffect, memo } from 'react';
 import { 
   ChevronDown, Heart, Calendar, Sparkles, Briefcase, 
-  GraduationCap, Users, Check, Cloud
+  GraduationCap, Users, Check
 } from 'lucide-react';
 import hapticFeedback from '../../utils/haptic';
 
@@ -31,28 +24,23 @@ const OS_LAYERS = [
 ];
 
 /**
- * Pet Soul Badge - Golden badge showing soul score percentage
- * Clicking opens MOJO modal (pet profile)
+ * LEFT SIDE: Pet Identity Section - Opens MOJO Modal
+ * Shows: Pet avatar with soul ring, soul % badge, pet name, heart icon, notification badge
  */
-const PetSoulBadge = memo(({ pet, soulScore = 0, onClick }) => {
+const PetIdentitySection = memo(({ pet, soulScore = 0, onClick, notificationCount = 0 }) => {
   const petPhoto = pet?.photo || pet?.pet_photo || pet?.photo_url;
   const petName = pet?.name || 'Pet';
   
   return (
-    <div className="mira-pet-soul-section" onClick={onClick} style={{ cursor: 'pointer' }}>
-      {/* Pet Avatar with Soul Ring - Click opens MOJO modal */}
-      <div className="soul-avatar-container">
-        {/* Orange outer glow */}
-        <div className="soul-avatar-glow" />
+    <div className="mira-pet-identity" onClick={onClick} data-testid="pet-identity-section">
+      {/* Pet Avatar with Soul Progress Ring */}
+      <div className="pet-identity-avatar">
+        {/* Orange glow effect */}
+        <div className="pet-avatar-glow" />
         
-        {/* Progress ring showing soul score */}
-        <svg className="soul-progress-ring" viewBox="0 0 100 100">
-          <circle
-            cx="50" cy="50" r="44"
-            fill="none"
-            stroke="rgba(245, 158, 11, 0.2)"
-            strokeWidth="4"
-          />
+        {/* Progress ring */}
+        <svg className="pet-soul-ring" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(245, 158, 11, 0.2)" strokeWidth="4" />
           <circle
             cx="50" cy="50" r="44"
             fill="none"
@@ -65,55 +53,54 @@ const PetSoulBadge = memo(({ pet, soulScore = 0, onClick }) => {
         </svg>
         
         {/* Pet photo */}
-        <div className="soul-avatar-photo">
+        <div className="pet-avatar-photo">
           {petPhoto ? (
-            <img 
-              src={petPhoto} 
-              alt={petName}
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = `https://api.dicebear.com/7.x/lorelei/svg?seed=${petName}&backgroundColor=ffdfbf`;
-              }}
-            />
+            <img src={petPhoto} alt={petName} onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = `https://api.dicebear.com/7.x/lorelei/svg?seed=${petName}&backgroundColor=ffdfbf`;
+            }} />
           ) : (
-            <span className="soul-avatar-emoji">🐕</span>
+            <span>🐕</span>
           )}
         </div>
         
-        {/* Soul Score Badge - Golden */}
-        <div className="soul-score-badge">
-          <span className="soul-score-value">{Math.round(soulScore)}%</span>
-          <span className="soul-score-label">SOUL</span>
+        {/* Heart icon overlay */}
+        <div className="pet-avatar-heart">
+          <Heart className="heart-icon" />
+        </div>
+        
+        {/* Soul Score Badge */}
+        <div className="pet-soul-badge">
+          <span className="soul-percent">{Math.round(soulScore)}%</span>
+          <span className="soul-label">SOUL</span>
         </div>
       </div>
       
-      {/* Pet Name */}
-      <div className="soul-pet-info">
-        <span className="soul-pet-name">{petName}</span>
+      {/* Pet Name + Dropdown Arrow */}
+      <div className="pet-identity-info">
+        <span className="pet-identity-name">{petName}</span>
+        <ChevronDown className="pet-identity-arrow" />
       </div>
+      
+      {/* Notification Badge (orange) */}
+      {notificationCount > 0 && (
+        <div className="pet-notification-badge">{notificationCount}</div>
+      )}
     </div>
   );
 });
 
 /**
- * OS Tab - 3D perspective style tab
+ * OS Tab - Navigation tab with icon and label
  */
-const OSTab = memo(({ 
-  layer, 
-  isActive, 
-  onClick, 
-  badge = null,
-  hasNew = false,
-  iconState = 'OFF',
-  iconCount = 0,
-}) => {
+const OSTab = memo(({ layer, isActive, onClick, badge = null, iconState = 'OFF', iconCount = 0 }) => {
   const Icon = layer.icon;
   const isPulse = iconState === 'PULSE';
-  const isOff = iconState === 'OFF';
+  const showBadge = badge || iconCount > 0;
   
   return (
     <button
-      className={`mira-os-tab ${isActive ? 'active' : ''} ${isPulse ? 'pulse' : ''} ${isOff ? 'off' : ''}`}
+      className={`mira-os-tab ${isActive ? 'active' : ''} ${isPulse ? 'pulse' : ''}`}
       onClick={() => {
         hapticFeedback.buttonTap();
         onClick(layer.id);
@@ -122,9 +109,9 @@ const OSTab = memo(({
     >
       <Icon className="tab-icon" />
       <span className="tab-label">{layer.label}</span>
-      {(badge || iconCount > 0) && (
+      {showBadge && (
         <span className={`tab-badge ${isPulse ? 'badge-pulse' : ''}`}>
-          {iconCount || badge}
+          {iconCount > 0 ? `+${iconCount}` : badge}
         </span>
       )}
     </button>
@@ -132,59 +119,26 @@ const OSTab = memo(({
 });
 
 /**
- * Weather Display - Compact weather info
+ * Temperature Display
  */
-const WeatherDisplay = memo(({ weather, onClick }) => {
+const TemperatureDisplay = memo(({ weather }) => {
   const temp = weather?.current_weather?.temperature || weather?.temperature;
-  const city = weather?.city;
-  
   if (!temp) return null;
   
   return (
-    <button className="mira-weather-display" onClick={onClick} data-testid="weather-display">
-      <Cloud className="weather-icon" />
-      <span className="weather-temp">{Math.round(temp)}°C</span>
-    </button>
+    <div className="mira-temp-display" data-testid="temp-display">
+      <span className="temp-value">{Math.round(temp)}°C</span>
+    </div>
   );
 });
 
 /**
- * Pet Profile Avatar - Right side profile with name (Pet Switcher)
+ * RIGHT SIDE: Pet Switcher - Opens dropdown to switch pets
  */
-const PetProfileAvatar = memo(({ pet, onClick, isOpen }) => {
+const PetSwitcher = memo(({ pet, allPets = [], onSwitchPet, isOpen, onToggle, onClose }) => {
   const petPhoto = pet?.photo || pet?.pet_photo || pet?.photo_url;
   const petName = pet?.name || 'Pet';
-  
-  return (
-    <button 
-      className={`mira-profile-avatar ${isOpen ? 'active' : ''}`} 
-      onClick={onClick} 
-      data-testid="pet-profile-avatar"
-    >
-      <div className="profile-photo">
-        {petPhoto ? (
-          <img 
-            src={petPhoto} 
-            alt={petName}
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = `https://api.dicebear.com/7.x/lorelei/svg?seed=${petName}&backgroundColor=ffdfbf`;
-            }}
-          />
-        ) : (
-          <span>🐕</span>
-        )}
-      </div>
-      <span className="profile-name">{petName}</span>
-      <ChevronDown className={`profile-dropdown-arrow ${isOpen ? 'open' : ''}`} />
-    </button>
-  );
-});
-
-/**
- * Pet Dropdown - Multi-pet switcher
- */
-const PetDropdown = memo(({ pets = [], currentPet, onSelectPet, isOpen, onClose }) => {
+  const petCount = allPets.length;
   const dropdownRef = useRef(null);
   
   useEffect(() => {
@@ -193,52 +147,78 @@ const PetDropdown = memo(({ pets = [], currentPet, onSelectPet, isOpen, onClose 
         onClose();
       }
     };
-    
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+    if (isOpen) document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen, onClose]);
   
-  if (!isOpen) return null;
-  
   return (
-    <div className="mira-pet-dropdown" ref={dropdownRef}>
-      <div className="dropdown-header">Switch Pet</div>
-      <div className="dropdown-list">
-        {pets.map((pet) => {
-          const soulScore = Number(pet.soulScore) || Number(pet.overall_score) || 0;
-          const hasPhoto = pet.photo || pet.image;
-          
-          return (
-            <button
-              key={pet.id}
-              className={`dropdown-item ${pet.id === currentPet?.id ? 'active' : ''}`}
-              onClick={() => {
-                hapticFeedback.buttonTap();
-                onSelectPet(pet);
-                onClose();
-              }}
-            >
-              <div className="dropdown-avatar">
-                {hasPhoto ? (
-                  <img src={hasPhoto} alt={pet.name} />
-                ) : (
-                  <span>🐕</span>
-                )}
-              </div>
-              <div className="dropdown-info">
-                <span className="dropdown-name">{pet.name}</span>
-                <span className="dropdown-breed">{pet.breed}</span>
-              </div>
-              {soulScore > 10 && (
-                <span className="dropdown-score">{Math.round(soulScore)}%</span>
-              )}
-              {pet.id === currentPet?.id && <Check className="dropdown-check" />}
-            </button>
-          );
-        })}
-      </div>
+    <div className="mira-pet-switcher" ref={dropdownRef}>
+      {/* Switcher Button */}
+      <button 
+        className={`pet-switcher-btn ${isOpen ? 'active' : ''}`} 
+        onClick={onToggle}
+        data-testid="pet-switcher-btn"
+      >
+        {/* Pet Count Badge */}
+        {petCount > 1 && <span className="pet-count-badge">{petCount}+</span>}
+        
+        {/* Pet Photo */}
+        <div className="switcher-photo">
+          {petPhoto ? (
+            <img src={petPhoto} alt={petName} onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = `https://api.dicebear.com/7.x/lorelei/svg?seed=${petName}&backgroundColor=ffdfbf`;
+            }} />
+          ) : (
+            <span>🐕</span>
+          )}
+        </div>
+        
+        {/* Pet Name */}
+        <span className="switcher-name">{petName}</span>
+      </button>
+      
+      {/* Dropdown */}
+      {isOpen && (
+        <div className="pet-switcher-dropdown">
+          {allPets.map((p) => {
+            const pPhoto = p.photo || p.pet_photo || p.photo_url || p.image;
+            const pScore = Number(p.soulScore) || Number(p.overall_score) || 0;
+            const isNew = p.isNew || pScore < 20;
+            const isSelected = p.id === pet?.id;
+            
+            return (
+              <button
+                key={p.id}
+                className={`switcher-item ${isSelected ? 'selected' : ''}`}
+                onClick={() => {
+                  hapticFeedback.buttonTap();
+                  onSwitchPet(p);
+                  onClose();
+                }}
+              >
+                <div className="item-avatar">
+                  {pPhoto ? (
+                    <img src={pPhoto} alt={p.name} />
+                  ) : (
+                    <div className="item-avatar-placeholder">🐕</div>
+                  )}
+                </div>
+                <div className="item-info">
+                  <span className="item-name">{p.name}</span>
+                  <span className="item-breed">{p.breed}</span>
+                </div>
+                {isNew ? (
+                  <span className="item-new">+ New</span>
+                ) : pScore > 0 ? (
+                  <span className="item-score">{Math.round(pScore)}%</span>
+                ) : null}
+                {isSelected && <Check className="item-check" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 });
@@ -250,7 +230,6 @@ const MiraUnifiedHeader = ({
   currentPet,
   allPets = [],
   soulScore = 0,
-  healthScore = 0,
   activeTab = 'today',
   onTabChange,
   onPetClick,
@@ -259,26 +238,13 @@ const MiraUnifiedHeader = ({
   picksHasNew = false,
   iconStates = {},
   weather = null,
-  onWeatherClick = null,
+  notificationCount = 0,
 }) => {
-  const [showPetSwitcher, setShowPetSwitcher] = useState(false); // RIGHT side dropdown
-  
-  // LEFT: Pet avatar click opens MOJO modal (pet profile)
-  const handlePetAvatarClick = () => {
-    hapticFeedback.buttonTap();
-    setShowPetSwitcher(false); // Close right dropdown if open
-    onPetClick?.();
-  };
-  
-  // RIGHT: Profile avatar click toggles pet switcher dropdown
-  const handlePetSwitcherToggle = () => {
-    hapticFeedback.buttonTap();
-    setShowPetSwitcher(!showPetSwitcher);
-  };
+  const [showPetSwitcher, setShowPetSwitcher] = useState(false);
   
   return (
     <header className="mira-unified-header">
-      {/* Left: Mira Logo */}
+      {/* LEFT: Mira Logo */}
       <div className="mira-logo-section">
         <div className="mira-logo-icon">
           <Sparkles />
@@ -289,17 +255,20 @@ const MiraUnifiedHeader = ({
         </div>
       </div>
       
-      {/* Center-Left: Pet Avatar with Soul Score - Opens MOJO Modal */}
-      <div className="mira-pet-section-wrapper">
-        <PetSoulBadge
-          pet={currentPet}
-          soulScore={soulScore}
-          onClick={handlePetAvatarClick}
-        />
-      </div>
+      {/* LEFT: Pet Identity (opens MOJO modal) */}
+      <PetIdentitySection
+        pet={currentPet}
+        soulScore={soulScore}
+        onClick={() => {
+          hapticFeedback.buttonTap();
+          setShowPetSwitcher(false);
+          onPetClick?.();
+        }}
+        notificationCount={notificationCount}
+      />
       
-      {/* Center: OS Tabs with 3D perspective */}
-      <nav className="mira-os-tabs-container">
+      {/* CENTER: OS Navigation Tabs */}
+      <nav className="mira-os-tabs">
         {OS_LAYERS.map((layer) => {
           const tabIconState = iconStates[layer.id] || { state: 'OFF', count: 0 };
           return (
@@ -309,7 +278,6 @@ const MiraUnifiedHeader = ({
               isActive={activeTab === layer.id}
               onClick={onTabChange}
               badge={badges[layer.id]}
-              hasNew={layer.id === 'picks' && picksHasNew}
               iconState={tabIconState.state}
               iconCount={tabIconState.count}
             />
@@ -317,24 +285,21 @@ const MiraUnifiedHeader = ({
         })}
       </nav>
       
-      {/* Right: Weather + Pet Switcher */}
-      <div className="mira-right-section">
-        <WeatherDisplay weather={weather} onClick={onWeatherClick} />
-        <div className="mira-pet-switcher-wrapper">
-          <PetProfileAvatar 
-            pet={currentPet} 
-            onClick={handlePetSwitcherToggle}
-            isOpen={showPetSwitcher}
-          />
-          <PetDropdown
-            pets={allPets}
-            currentPet={currentPet}
-            onSelectPet={onSwitchPet}
-            isOpen={showPetSwitcher}
-            onClose={() => setShowPetSwitcher(false)}
-          />
-        </div>
-      </div>
+      {/* CENTER-RIGHT: Temperature */}
+      <TemperatureDisplay weather={weather} />
+      
+      {/* RIGHT: Pet Switcher (opens dropdown) */}
+      <PetSwitcher
+        pet={currentPet}
+        allPets={allPets}
+        onSwitchPet={onSwitchPet}
+        isOpen={showPetSwitcher}
+        onToggle={() => {
+          hapticFeedback.buttonTap();
+          setShowPetSwitcher(!showPetSwitcher);
+        }}
+        onClose={() => setShowPetSwitcher(false)}
+      />
     </header>
   );
 };
