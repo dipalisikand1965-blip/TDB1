@@ -551,183 +551,55 @@ const CarePage = () => {
         .stagger-6 { animation-delay: 0.6s; }
       `}</style>
 
-      {/* ==================== MIRA'S CURATED LAYER - Gold Standard - ALWAYS FIRST ==================== */}
-      <div className="py-10 bg-gradient-to-b from-white to-teal-50/30">
-        <PersonalizedPicks pillar="care" />
-        
-        {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
-        <MiraCuratedLayer
-          pillar="care"
-          activePet={userPets?.[0]}
-          token={token}
-          userEmail={user?.email}
-          isLoading={!userPets && !!token}
-        />
-        
-        {/* Mira's Picks for Pet */}
-        {userPets && userPets[0] && (
-          <div className="max-w-6xl mx-auto px-4 mt-6">
-            <PillarPicksSection pillar="care" pet={userPets[0]} />
-          </div>
-        )}
-      </div>
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          MIRA'S CARE PLAN - THE MAIN SECTION
+          Mira KNOWS what the pet needs. She doesn't ask - she TELLS.
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <MiraCarePlan
+        petId={userPets?.[0]?._id || userPets?.[0]?.id}
+        petName={userPets?.[0]?.name}
+        token={token}
+      />
 
-      {/* ==================== SOCIAL PROOF BANNER ==================== */}
-      <div className="bg-white border-b border-gray-100 py-3">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
-          <FitnessJourneyCounter pillar="care" />
-          <RotatingSocialProof 
-            petName={userPets[0]?.name} 
-            breedName={userPets[0]?.breed} 
-          />
-        </div>
-      </div>
-
-      {/* ==================== CONVERSATIONAL ENTRY + QUICK WIN ==================== */}
-      <div className="py-10 bg-gradient-to-b from-gray-50/50 to-white">
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          ALL CARE SERVICES - For browsing (secondary to Mira's recommendations)
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <div className="py-10 sm:py-12 bg-white">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-6 items-stretch">
-            <ConversationalEntry 
-              pillar="care"
-              petName={userPets[0]?.name}
-              onGoalSelect={(goal, message) => {
-                // Handle "Anything Else" separately - open concierge form
-                if (goal.id === 'anything_else') {
-                  setShowAnythingElseModal(true);
-                  return;
-                }
-                // Map goal to service type and open booking form instead of Mira
-                const goalToServiceMap = {
-                  'grooming': 'grooming',
-                  'vet_visit': 'vet',
-                  'training': 'training',
-                  'walking': 'walking',
-                  'daycare': 'daycare',
-                  'spa': 'grooming' // spa falls under grooming
-                };
-                const serviceType = goalToServiceMap[goal.id] || 'grooming';
-                setBookingServiceType(serviceType);
-                setShowBookingModal(true);
-              }}
-            />
-            <QuickWinTip
-              pillar="care"
-              petName={userPets[0]?.name}
-              petBreed={userPets[0]?.breed}
-              petAge={userPets[0]?.age}
-              onActionClick={(tip) => {
-                if (tip?.actionType === 'navigate' && tip?.actionUrl) {
-                  navigate(tip.actionUrl);
-                } else if (tip?.actionType === 'checklist') {
-                  // Show care checklist
-                  toast({ title: tip.action, description: 'Care checklist coming soon!' });
-                } else {
-                  toast({ title: tip.action, description: 'Coming soon!' });
-                }
-              }}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* ==================== TRANSFORMATION STORIES - World Class Design ==================== */}
-      <TransformationStories pillar="care" className="bg-white" />
-
-      {/* === CARE TYPES STRIP === */}
-      <div className="bg-white border-b shadow-sm sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500 hidden sm:inline flex-shrink-0">Care Services:</span>
-            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-              {Object.values(CARE_TYPES).map((type) => {
-                const Icon = type.icon;
-                return (
-                  <button
-                    key={type.id}
-                    onClick={() => {
-                      setSelectedType(type.id);
-                      handleStartCare();
-                    }}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${type.bgColor} ${type.textColor} hover:scale-105 whitespace-nowrap flex-shrink-0`}
-                    data-testid={`care-type-${type.id}`}
-                  >
-                    <Icon className="w-4 h-4 flex-shrink-0" />
-                    <span className="text-sm font-medium">{type.name}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* === QUICK BOOK SERVICES (4 Cards Max - Concierge-Led) === */}
-      <div className="py-10 sm:py-12 bg-gradient-to-b from-slate-50 to-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-6 sm:mb-8">
-            <Badge className="bg-teal-100 text-teal-700 mb-3">Quick Book</Badge>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Book Care Services Instantly</h2>
-            <p className="text-sm sm:text-base text-gray-600 mt-2">Select a service and book in under 2 minutes</p>
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">All Care Services</h2>
+            <p className="text-gray-600">Browse all services or let Mira guide you above</p>
           </div>
           
-          {/* 4 Cards Only - Mobile Optimized 2x2 Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-            {[
-              { type: 'grooming', icon: Scissors, name: 'Grooming', color: 'from-pink-500 to-rose-600', desc: 'Bath, trim & spa' },
-              { type: 'vet_clinic_booking', icon: Stethoscope, name: 'Vet Visits', color: 'from-blue-500 to-indigo-600', desc: 'Clinic booking' },
-              { type: 'boarding_daycare', icon: Building2, name: 'Boarding & Daycare', color: 'from-emerald-500 to-teal-600', desc: 'Care when away' }
-            ].map((service, idx) => {
-              const Icon = service.icon;
+          {/* Clean 4x2 Grid of Care Services */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+            {Object.values(CARE_TYPES).map((type, idx) => {
+              const Icon = type.icon;
               return (
                 <button
-                  key={service.type}
+                  key={type.id}
                   onClick={() => {
-                    setBookingServiceType(service.type);
+                    setBookingServiceType(type.id);
                     setShowBookingModal(true);
                   }}
-                  className={`animate-scale-in stagger-${idx + 1} group p-4 sm:p-5 bg-white rounded-2xl border-2 border-gray-100 hover:border-teal-200 hover:shadow-xl active:scale-[0.98] transition-all duration-300 text-left`}
-                  data-testid={`quick-book-${service.type}`}
+                  className={`group p-4 sm:p-5 bg-white rounded-2xl border-2 border-gray-100 hover:border-teal-200 hover:shadow-lg active:scale-[0.98] transition-all duration-300 text-left`}
+                  data-testid={`care-service-${type.id}`}
                 >
-                  <div className={`w-11 h-11 sm:w-12 sm:h-12 mb-3 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 mb-3 rounded-xl bg-gradient-to-br ${type.color} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
                     <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-1 text-sm sm:text-base leading-tight">{service.name}</h3>
-                  <p className="text-xs text-gray-500">{service.desc}</p>
-                  <div className="mt-2 flex items-center text-teal-600 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                    Book Now <ChevronRight className="w-3 h-3 ml-1" />
-                  </div>
+                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base leading-tight">{type.name}</h3>
+                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">{type.description}</p>
                 </button>
               );
             })}
-            
-            {/* Let Mira Recommend - Concierge Entry */}
-            <button
-              onClick={() => setShowAnythingElseModal(true)}
-              className="animate-scale-in stagger-4 group p-4 sm:p-5 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl border-2 border-purple-200 hover:border-purple-400 hover:shadow-xl active:scale-[0.98] transition-all duration-300 text-left"
-              data-testid="quick-book-mira-recommend"
-            >
-              <div className="w-11 h-11 sm:w-12 sm:h-12 mb-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-              </div>
-              <h3 className="font-bold text-gray-900 mb-1 text-sm sm:text-base leading-tight">Let Mira Recommend</h3>
-              <p className="text-xs text-gray-500">Not sure? We'll help</p>
-              <div className="mt-2 flex items-center text-purple-600 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                Ask Concierge® <ChevronRight className="w-3 h-3 ml-1" />
-              </div>
-            </button>
           </div>
         </div>
       </div>
 
-      {/* === SERVICE CATALOG WITH DYNAMIC PRICING === */}
-      <ServiceCatalogSection 
-        pillar="care"
-        title="Care, Personalised"
-        subtitle="See your personalized price based on your city, pet size, and requirements"
-        maxServices={12}
-      />
-
-      {/* === HOW IT WORKS === */}
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          HOW IT WORKS - Explains the Mira + Concierge model
+          ═══════════════════════════════════════════════════════════════════════════════ */}
       <div className="py-16 bg-gradient-to-b from-white to-slate-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
