@@ -247,11 +247,37 @@ What Mira Now Remembers:
 - Added detection for "last time", "last birthday", "previous", "what did we do"
 - Returns celebration history from `pillar_histories` instead of starting new flow
 
+**17. ✅ META PROACTIVE ALERTS - "Mira as Pet Historian"**
+
+New proactive alert types based on user's Question Bank document:
+
+| Alert Type | Example |
+|------------|---------|
+| **Service Reminder** | "It's been 30 days since Mystique's last grooming with Pawfect Care - Priya" |
+| **Celebration Anniversary** | "A year ago: Mystique's birthday with Bruno, Cookie, Mojo" |
+| **Social/Playdate Reminder** | "Time for Mystique to see Bruno?" |
+| **Reorder Pattern** | "You usually order every ~30 days. Time to restock?" |
+| **Micro-celebration** | "Small consistent gestures matter more than one big event" |
+
 **Code Changes:**
 - `mira_routes.py`: Added `load_pet_pillar_histories()` async function
 - `mira_routes.py`: Added pillar history injection in `build_mira_system_prompt()`
 - `mira_routes.py`: Added history query detection in celebrate pillar flow
+- `mira_proactive.py`: Added `check_meta_proactive_alerts()` function
 - Fixed Motor database null-check (`if db is None` instead of `if not db`)
+- Fixed timezone-aware datetime handling in all proactive functions
+
+**User Question Bank Tested (from uploaded document):**
+| Question Category | Status | Notes |
+|-------------------|--------|-------|
+| **CELEBRATE - What to do** | ✅ | Soulful, contextual responses |
+| **CELEBRATE - Birthday planning** | ✅ | Uses allergy, health, personality data |
+| **DINE - Food decisions** | ✅ | "Mystique is allergic to chicken..." |
+| **DINE - Treats & portions** | ✅ | Uses weight, health, lymphoma status |
+| **STAY - Alone time** | ✅ | Uses temperament, health context |
+| **TRAVEL - Bring or board** | ✅ | Considers lymphoma treatment |
+| **EMOTIONAL - Grief** | ✅ | "I hear you. You don't have to say anything more." |
+| **EMOTIONAL - Overwhelm** | ✅ | "Let's make this feel lighter for you..." |
 
 ---
 
