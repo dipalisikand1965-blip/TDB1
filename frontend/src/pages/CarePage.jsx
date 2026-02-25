@@ -521,6 +521,8 @@ const CarePage = () => {
       pillar="care"
       title="Care - Pet Grooming & Wellness | The Doggy Company"
       description="From grooming to training, walks to wellness — we understand your pet's unique needs."
+      currentPet={selectedPet}
+      onPetChange={handlePetSelect}
     >
       {/* Staggered Animation Styles */}
       <style>{`
