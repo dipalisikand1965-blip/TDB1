@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://paw-concierge.preview.emergentagent.com
+**Preview URL:** https://mira-soul-os.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
