@@ -239,20 +239,74 @@ export const VET_VISIT_FLOW_SCHEMA = {
 
 /**
  * Build VET_VISIT_REQUEST ticket payload
+ * Matches the TicketCreate Pydantic model expected by /api/tickets
  */
 export const buildVetVisitTicketPayload = (data, pet, user, entryPoint) => {
+  // Build description from collected data
+  const petName = pet?.name || 'Pet';
+  const visitReason = VET_VISIT_OPTIONS.visitReason.find(o => o.id === data.visit_reason)?.label || data.visit_reason;
+  const additionalConcerns = (data.additional_concerns || [])
+    .map(c => VET_VISIT_OPTIONS.additionalConcerns.find(o => o.id === c)?.label)
+    .filter(Boolean)
+    .join(', ');
+  const temperament = (data.temperament_flags || [])
+    .map(t => VET_VISIT_OPTIONS.temperament.find(o => o.id === t)?.label)
+    .filter(Boolean)
+    .join(', ');
+  
+  const description = `
+**Vet Visit Request for ${petName}**
+
+**Primary Reason:** ${visitReason}
+${additionalConcerns ? `**Additional Concerns:** ${additionalConcerns}` : ''}
+${data.other_notes ? `**Notes:** ${data.other_notes}` : ''}
+
+**Timing:**
+- Urgency: ${data.urgency || 'Flexible'}
+- Time window: ${data.time_window || 'Flexible'}
+
+**Handling Preferences:**
+${temperament ? `- Temperament: ${temperament}` : ''}
+${data.special_notes ? `- Special notes: ${data.special_notes}` : ''}
+
+**Location Preferences:**
+- Preferred area: ${data.preferred_area || 'Not specified'}
+- Pickup/drop needed: ${data.pickup_drop || 'Not specified'}
+- Language preference: ${data.language_preference || 'English'}
+${data.home_contact ? `- Contact: ${data.home_contact}` : ''}
+
+**Pet Details:**
+- Name: ${petName}
+- Breed: ${pet?.breed || 'Not specified'}
+
+---
+Entry Point: ${entryPoint}
+This helps Mira coordinate a more gentle experience. We do not provide medical advice.
+`.trim();
+
+  // Return in TicketCreate format
   return {
-    ticket_type: 'VET_VISIT_REQUEST',
-    pillar: 'care',
-    sub_pillar: 'vet_clinic_booking',
-    pet_id: pet?.id || pet?._id,
-    pet_name: pet?.name,
-    entry_point: entryPoint || 'care_vet_visit',
-    context_source: 'care/vet_visit',
+    member: {
+      name: user?.name || user?.email?.split('@')[0] || 'Member',
+      email: user?.email || '',
+      phone: user?.phone || user?.whatsapp || ''
+    },
+    category: 'care',
+    sub_category: 'vet_clinic_booking',
+    urgency: data.urgency === 'asap' || data.urgency === 'today' ? 'high' : 'medium',
+    description: description,
+    source: 'flow_modal',
+    source_reference: entryPoint || 'care_vet_visit',
+    attachments: [],
+    // Extended metadata for Mira OS
     metadata: {
+      ticket_type: 'VET_VISIT_REQUEST',
+      pillar: 'care',
+      sub_pillar: 'vet_clinic_booking',
+      pet_id: pet?.id || pet?._id,
+      pet_name: petName,
       visit_reason: data.visit_reason,
       additional_concerns: data.additional_concerns || [],
-      other_notes: data.other_notes,
       timing: {
         urgency: data.urgency,
         time_window: data.time_window
@@ -267,10 +321,7 @@ export const buildVetVisitTicketPayload = (data, pet, user, entryPoint) => {
         language_preference: data.language_preference,
         home_contact: data.home_contact
       }
-    },
-    user_email: user?.email,
-    status: 'open',
-    priority: data.urgency === 'asap' || data.urgency === 'today' ? 'high' : 'normal'
+    }
   };
 };
 
