@@ -4,9 +4,11 @@
  * Mira's proactive care recommendations for a pet.
  * 
  * Mira KNOWS what the pet needs - she doesn't ask.
- * Each recommendation has a ONE-TAP action that creates a service desk ticket.
+ * Each recommendation opens a FLOW MODAL for detailed intake.
  * 
  * Philosophy: "Mira is the soul, Concierge is the hands, System is the capillary"
+ * 
+ * UPDATED: Now opens FlowModal for grooming and vet visits instead of direct ticket creation
  */
 
 import React, { useState, useEffect } from 'react';
@@ -31,6 +33,8 @@ import { Card } from './ui/card';
 import { toast } from 'sonner';
 import { API_URL } from '../utils/api';
 import useUniversalServiceCommand from '../hooks/useUniversalServiceCommand';
+import GroomingFlowModal from './GroomingFlowModal';
+import VetVisitFlowModal from './VetVisitFlowModal';
 
 // Icon mapping
 const ICON_MAP = {
