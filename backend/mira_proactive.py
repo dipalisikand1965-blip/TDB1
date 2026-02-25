@@ -890,12 +890,18 @@ async def get_proactive_alerts(pet_id: str, user_email: str = None):
     if owner_email:
         reorder_alerts = await check_reorder_suggestions(pet_id, pet_name, owner_email, db)
     
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # META PROACTIVE - "Mira as Pet Historian" (From User's Question Bank)
+    # ═══════════════════════════════════════════════════════════════════════════════
+    meta_alerts = await check_meta_proactive_alerts(pet_id, pet_name, db)
+    
     all_alerts.extend(vaccination_alerts)
     all_alerts.extend(birthday_alerts)
     all_alerts.extend(grooming_alerts)
     all_alerts.extend(health_checkin_alerts)
     all_alerts.extend(seasonal_alerts)
     all_alerts.extend(reorder_alerts)
+    all_alerts.extend(meta_alerts)
     
     # Sort by urgency
     urgency_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
