@@ -466,7 +466,6 @@ async def execute_decision(
     
     # Handle EXECUTE action (create/update ticket)
     if action_enum == Action.EXECUTE and service_type:
-    if action_enum == Action.EXECUTE and service_type:
         ticket_result = await handle_execute_action(
             service_type=service_type,
             request=request,
