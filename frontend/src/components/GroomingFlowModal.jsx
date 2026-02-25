@@ -89,7 +89,7 @@ const MultiSelectField = ({ field, value = [], onChange, petName }) => {
   };
   
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" data-testid={`field-${field.id}`}>
       <label className="text-sm font-medium text-gray-700">
         {(field.label || '').replace('{petName}', petName || 'your pet')}
         {field.required && <span className="text-rose-500 ml-1">*</span>}
@@ -103,6 +103,7 @@ const MultiSelectField = ({ field, value = [], onChange, petName }) => {
               type="button"
               onClick={() => toggleOption(option.id)}
               whileTap={{ scale: 0.95 }}
+              data-testid={`option-${field.id}-${option.id}`}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all
                 ${isSelected 
                   ? 'bg-teal-500 text-white shadow-md' 
