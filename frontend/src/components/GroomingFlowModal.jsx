@@ -178,6 +178,21 @@ const GroomingFlowModal = ({
   const userId = user?.id || user?._id || user?.email;
   const petId = pet?.id || pet?._id;
   
+  // Get user's saved address for auto-prefill (at-home grooming)
+  const userAddress = user?.address || user?.location || user?.area || '';
+  const userArea = user?.area || user?.locality || '';
+  
+  // Auto-prefill address when switching to home mode
+  useEffect(() => {
+    if (formData.service_mode === 'home' && userAddress && !formData.address) {
+      setFormData(prev => ({
+        ...prev,
+        address: userAddress,
+        landmark: userArea
+      }));
+    }
+  }, [formData.service_mode, userAddress, userArea, formData.address]);
+  
   // Initialize with preselected mode
   useEffect(() => {
     if (isOpen && preselectedMode && preselectedMode !== 'mira_recommend') {
