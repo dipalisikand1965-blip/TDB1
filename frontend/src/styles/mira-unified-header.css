@@ -1,0 +1,645 @@
+/**
+ * mira-unified-header.css
+ * ======================
+ * Styles for the single top bar Mira OS header
+ * 
+ * Design: Dark purple/magenta theme with 3D perspective tabs
+ * Based on user's reference image
+ */
+
+/* ========================================
+   UNIFIED HEADER CONTAINER
+   ======================================== */
+.mira-unified-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 20px;
+  background: linear-gradient(180deg, 
+    rgba(15, 7, 32, 0.98) 0%, 
+    rgba(26, 15, 53, 0.95) 100%
+  );
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  min-height: 70px;
+  overflow: visible;
+  position: relative;
+  z-index: 50;
+}
+
+/* ========================================
+   MIRA LOGO SECTION (Left)
+   ======================================== */
+.mira-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.mira-logo-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #ec4899, #d946ef);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 20px rgba(236, 72, 153, 0.4);
+}
+
+.mira-logo-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.mira-logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ec4899;
+  letter-spacing: -0.5px;
+}
+
+.logo-subtitle {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+/* ========================================
+   PET SOUL SECTION (Center-Left)
+   ======================================== */
+.mira-pet-section-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mira-pet-soul-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 6px 12px 6px 6px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  transition: all 0.2s ease;
+}
+
+.mira-pet-soul-section:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(245, 158, 11, 0.5);
+}
+
+/* Soul Avatar with Progress Ring */
+.soul-avatar-container {
+  position: relative;
+  width: 50px;
+  height: 50px;
+}
+
+.soul-avatar-glow {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, transparent 70%);
+  animation: soul-glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes soul-glow-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+.soul-progress-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.soul-avatar-photo {
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #2d1f42, #1a1025);
+  border: 2px solid rgba(245, 158, 11, 0.5);
+}
+
+.soul-avatar-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.soul-avatar-emoji {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+/* Golden Soul Score Badge */
+.soul-score-badge {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3px 10px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border-radius: 12px;
+  border: 2px solid rgba(15, 7, 32, 0.8);
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
+}
+
+.soul-score-value {
+  font-size: 12px;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+}
+
+.soul-score-label {
+  font-size: 7px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.5px;
+}
+
+/* Pet Name Info */
+.soul-pet-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.soul-pet-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.soul-dropdown-arrow {
+  width: 14px;
+  height: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: -2px;
+}
+
+/* ========================================
+   OS TABS (Center) - 3D Perspective Style
+   ======================================== */
+.mira-os-tabs-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+.mira-os-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: linear-gradient(145deg, 
+    rgba(139, 92, 246, 0.15) 0%, 
+    rgba(139, 92, 246, 0.05) 100%
+  );
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  transform: rotateX(5deg);
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.mira-os-tab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.08) 0%, 
+    transparent 50%
+  );
+  pointer-events: none;
+}
+
+.mira-os-tab:hover {
+  background: linear-gradient(145deg, 
+    rgba(139, 92, 246, 0.25) 0%, 
+    rgba(236, 72, 153, 0.1) 100%
+  );
+  border-color: rgba(139, 92, 246, 0.4);
+  color: white;
+  transform: rotateX(0deg) translateY(-2px);
+  box-shadow: 
+    0 8px 25px rgba(139, 92, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.mira-os-tab.active {
+  background: linear-gradient(145deg, 
+    rgba(236, 72, 153, 0.3) 0%, 
+    rgba(139, 92, 246, 0.2) 100%
+  );
+  border-color: rgba(236, 72, 153, 0.5);
+  color: white;
+  transform: rotateX(0deg);
+  box-shadow: 
+    0 6px 20px rgba(236, 72, 153, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.mira-os-tab.off {
+  opacity: 0.5;
+}
+
+.mira-os-tab.pulse {
+  animation: tab-pulse 2s ease-in-out infinite;
+}
+
+@keyframes tab-pulse {
+  0%, 100% { 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+  50% { 
+    box-shadow: 0 4px 25px rgba(236, 72, 153, 0.5);
+  }
+}
+
+.mira-os-tab .tab-icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.85;
+}
+
+.mira-os-tab .tab-label {
+  text-transform: uppercase;
+}
+
+.mira-os-tab .tab-badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ec4899, #d946ef);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mira-os-tab .tab-badge.badge-pulse {
+  animation: badge-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes badge-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(236, 72, 153, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(236, 72, 153, 0.8); }
+}
+
+/* ========================================
+   RIGHT SECTION (Weather + Profile)
+   ======================================== */
+.mira-right-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* Weather Display */
+.mira-weather-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mira-weather-display:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.mira-weather-display .weather-icon {
+  width: 16px;
+  height: 16px;
+  color: #3b82f6;
+}
+
+.mira-weather-display .weather-temp {
+  color: white;
+}
+
+/* Pet Profile Avatar */
+.mira-profile-avatar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 6px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mira-profile-avatar:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+.mira-profile-avatar .profile-photo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #2d1f42, #1a1025);
+  border: 2px solid rgba(139, 92, 246, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mira-profile-avatar .profile-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mira-profile-avatar .profile-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+}
+
+/* ========================================
+   PET DROPDOWN
+   ======================================== */
+.mira-pet-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 280px;
+  background: linear-gradient(145deg, rgba(88, 28, 135, 0.98), rgba(59, 7, 100, 0.98));
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  overflow: hidden;
+  animation: dropdown-slide 0.2s ease-out;
+}
+
+@keyframes dropdown-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mira-pet-dropdown .dropdown-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.mira-pet-dropdown .dropdown-list {
+  padding: 8px;
+}
+
+.mira-pet-dropdown .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 4px;
+}
+
+.mira-pet-dropdown .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mira-pet-dropdown .dropdown-item.active {
+  background: rgba(168, 85, 247, 0.2);
+}
+
+.mira-pet-dropdown .dropdown-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.mira-pet-dropdown .dropdown-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mira-pet-dropdown .dropdown-info {
+  flex: 1;
+  text-align: left;
+}
+
+.mira-pet-dropdown .dropdown-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.mira-pet-dropdown .dropdown-breed {
+  display: block;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.mira-pet-dropdown .dropdown-score {
+  padding: 3px 8px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+}
+
+.mira-pet-dropdown .dropdown-check {
+  width: 18px;
+  height: 18px;
+  color: #a855f7;
+}
+
+/* ========================================
+   MOBILE RESPONSIVE
+   ======================================== */
+@media (max-width: 1024px) {
+  .mira-unified-header {
+    padding: 8px 16px;
+    gap: 12px;
+  }
+  
+  .mira-logo-text {
+    display: none;
+  }
+  
+  .mira-os-tab {
+    padding: 8px 12px;
+  }
+  
+  .mira-os-tab .tab-label {
+    display: none;
+  }
+  
+  .mira-os-tab.active .tab-label {
+    display: inline;
+  }
+}
+
+@media (max-width: 768px) {
+  .mira-unified-header {
+    padding: 8px 12px;
+    gap: 8px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .mira-unified-header::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .mira-logo-section {
+    min-width: auto;
+  }
+  
+  .mira-logo-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .mira-logo-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .soul-avatar-container {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .soul-pet-name {
+    font-size: 12px;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .mira-os-tabs-container {
+    gap: 4px;
+    justify-content: flex-start;
+    flex: none;
+  }
+  
+  .mira-os-tab {
+    padding: 6px 10px;
+    font-size: 11px;
+    transform: none;
+  }
+  
+  .mira-os-tab:hover {
+    transform: none;
+  }
+  
+  .mira-weather-display {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  
+  .mira-profile-avatar {
+    padding: 4px;
+  }
+  
+  .mira-profile-avatar .profile-name {
+    display: none;
+  }
+  
+  .mira-profile-avatar .profile-photo {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mira-unified-header {
+    min-height: 60px;
+  }
+  
+  .soul-pet-info {
+    display: none;
+  }
+  
+  .mira-os-tab {
+    padding: 6px 8px;
+  }
+  
+  .mira-os-tab .tab-icon {
+    width: 14px;
+    height: 14px;
+  }
+}
