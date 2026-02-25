@@ -241,7 +241,7 @@ def generate_vet_recommendation(pet: dict, traits: List[str], care_history: dict
         elif days_since > 300 and is_senior:  # 10+ months for seniors
             urgency = 'recommended'
             title = f"Time to schedule {name}'s checkup"
-            reason = f"Senior pets benefit from more frequent health monitoring."
+            reason = "Senior pets benefit from more frequent health monitoring."
         elif days_since > 330:  # 11 months - upcoming reminder
             urgency = 'upcoming'
             title = f"{name}'s annual checkup is coming up"
@@ -256,7 +256,7 @@ def generate_vet_recommendation(pet: dict, traits: List[str], care_history: dict
     
     is_anxious = any(t in traits for t in ['anxious', 'cautious', 'nervous'])
     if is_anxious:
-        reason += f" I can recommend vets experienced with nervous pets."
+        reason += " I can recommend vets experienced with nervous pets."
     
     return CareRecommendation(
         id='vet_rec',
