@@ -17745,6 +17745,7 @@ set_source_download_admin(verify_admin, {"username": ADMIN_USERNAME, "password":
 app.include_router(concierge_command_router)  # Command Center at /api/concierge/*
 app.include_router(health_vault_router)  # Health Vault at /api/health-vault/*
 set_command_center_db(db)  # Initialize Command Center with database
+set_os_concierge_db(db)  # Initialize OS Concierge (tab in MiraDemoPage) with database
 set_health_vault_db(db)  # Initialize Health Vault with database
 
 # Analytics Dashboard
