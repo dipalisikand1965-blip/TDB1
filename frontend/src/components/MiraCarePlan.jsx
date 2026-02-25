@@ -128,15 +128,35 @@ const MiraCarePlan = ({
     fetchCarePlan();
   }, [petId, token]);
 
-  // Handle booking action
+  // Handle booking action - Opens appropriate FlowModal
   const handleBookService = async (recommendation) => {
     const petName = carePlan?.pet_name || propPetName || 'your pet';
-    const pet = {
+    const pet = propPet || {
       id: petId,
       name: petName,
-      breed: carePlan?.pet_breed
+      breed: carePlan?.pet_breed,
+      photo_url: carePlan?.pet_photo
     };
     
+    setActiveRecommendation(recommendation);
+    
+    // Check recommendation type and open appropriate FlowModal
+    const recType = recommendation.type?.toLowerCase();
+    
+    // GROOMING - Open detailed grooming flow modal
+    if (recType === 'grooming' || recType === 'groom') {
+      setGroomingModalOpen(true);
+      return;
+    }
+    
+    // VET VISIT - Open detailed vet visit flow modal
+    if (recType === 'vet_clinic_booking' || recType === 'vet' || recType === 'vet_visit' || recType === 'wellness_checkup' || recType === 'vaccination') {
+      setVetVisitModalOpen(true);
+      return;
+    }
+    
+    // For other service types, use the existing ticket creation flow
+    // (These will be converted to FlowModals in future iterations)
     setBookingInProgress(recommendation.id);
     
     try {
