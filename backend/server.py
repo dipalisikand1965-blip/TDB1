@@ -1997,37 +1997,46 @@ async def ensure_default_user_exists():
     try:
         # Check if default user exists
         default_email = "dipali@clubconcierge.in"
+        default_password = "test123"  # Your preferred password
         existing = await db.users.find_one({"email": default_email})
         
         if not existing:
             # Create default user with bcrypt password
             import uuid
-            password_hash = pwd_context.hash("lola4304")
+            password_hash = pwd_context.hash(default_password)
             user_doc = {
                 "id": str(uuid.uuid4()),
                 "email": default_email,
                 "password_hash": password_hash,
                 "name": "Dipali",
                 "phone": None,
-                "membership_tier": "free",
+                "role": "admin",
+                "is_admin": True,
+                "membership_tier": "gold",
+                "membership_status": "active",
+                "pet_pass_status": "active",
                 "membership_expires": None,
                 "chat_count_today": 0,
                 "last_chat_date": None,
                 "created_at": get_utc_timestamp()
             }
             await db.users.insert_one(user_doc)
-            logger.info(f"AUTO-CREATED default user: {default_email}")
+            logger.info(f"AUTO-CREATED default user: {default_email} with password: {default_password}")
         else:
-            # Ensure password_hash field exists and is correct
-            if "password_hash" not in existing or not existing.get("password_hash"):
-                password_hash = pwd_context.hash("lola4304")
-                await db.users.update_one(
-                    {"email": default_email},
-                    {"$set": {"password_hash": password_hash}}
-                )
-                logger.info(f"Updated password_hash for: {default_email}")
-            else:
-                logger.info(f"Default user already exists: {default_email}")
+            # ALWAYS update password to ensure test123 works + ensure admin access
+            password_hash = pwd_context.hash(default_password)
+            await db.users.update_one(
+                {"email": default_email},
+                {"$set": {
+                    "password_hash": password_hash,
+                    "role": "admin",
+                    "is_admin": True,
+                    "membership_tier": "gold",
+                    "membership_status": "active",
+                    "pet_pass_status": "active"
+                }}
+            )
+            logger.info(f"Updated user {default_email} - password set to: {default_password}, admin access granted")
     except Exception as e:
         logger.error(f"Error ensuring default user: {e}")
 
