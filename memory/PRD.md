@@ -182,6 +182,20 @@ Tier: gold
     - Defines: User journeys and the "feel" of each tab
     - This is now the SINGLE SOURCE OF TRUTH for Mira's behavior
 
+14. ✅ **MIRA STRUCTURED ENGINE BUILT**
+    - `/app/backend/mira_structured_engine/` - New intelligence core
+    - `schemas.py` - Request/Response contracts
+    - `question_registry.py` - Canonical questions per service type
+    - `memory_assembler.py` - Pet context builder
+    - `ticket_manager.py` - Unified Request Spine
+    - `engine.py` - Main orchestration
+    - Feature flag: `MIRA_STRUCTURED_ENGINE=true`
+    - Full grooming flow TESTED AND WORKING:
+      - "grooming for Max" → Draft ticket created
+      - "at home" → Ticket updated with location_mode
+      - "full grooming" → Ticket updated with service_scope
+      - "this week" → Ticket status: OPEN (ready for concierge)
+
 ### Critical Architecture Insight (Feb 25, 2026)
 **The user clarified the vision:**
 - Mira should understand like Claude understands context
@@ -192,7 +206,7 @@ Tier: gold
 
 ### Vision Score
 - Before: 40%
-- After: 78% (Intelligent routing brings the "magic")
+- After: 85% (Structured engine + Unified Request Spine!)
 - Target: 100%
 
 ---
