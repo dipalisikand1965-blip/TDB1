@@ -321,8 +321,9 @@ const VetVisitFlowModal = ({
     
     try {
       const payload = buildVetVisitTicketPayload(formData, pet, user, entryPoint);
+      console.log('[VetVisitFlowModal] Submitting payload:', JSON.stringify(payload).substring(0, 500));
       
-      const response = await fetch(`${API_URL}/api/tickets`, {
+      const response = await fetch(`${API_URL}/api/tickets/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -331,12 +332,17 @@ const VetVisitFlowModal = ({
         body: JSON.stringify(payload)
       });
       
+      console.log('[VetVisitFlowModal] Response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error('Failed to create ticket');
+        const errorText = await response.text();
+        console.error('[VetVisitFlowModal] Error response:', errorText);
+        throw new Error(`Failed to create ticket: ${response.status}`);
       }
       
       const result = await response.json();
-      setTicketId(result.id || result.ticket_id);
+      console.log('[VetVisitFlowModal] Success:', result);
+      setTicketId(result.ticket?.ticket_id || result.id || result.ticket_id);
       setIsSuccess(true);
       
       // Clear draft
