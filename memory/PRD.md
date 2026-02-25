@@ -140,34 +140,39 @@ The mira-demo page now uses a unified single horizontal top bar design:
 
 ## TICKET CREATION API
 
-### Endpoint
-`POST /api/tickets/`
+### Unified Service Command Endpoint (CANONICAL)
+`POST /api/service-requests`
 
-### Payload Structure
+**All customer-facing modals MUST use this endpoint**, not `/api/tickets/`. The unified service command ensures:
+1. Service Desk Ticket created
+2. Admin notification sent
+3. Member inbox entry created
+4. Proper pillar/source tracking
+
+### Payload Structure (via useUniversalServiceCommand hook)
 ```javascript
 {
-  member: {
+  type: string,        // e.g., 'GROOMING_REQUEST', 'VET_APPOINTMENT'
+  pillar: string,      // e.g., 'care', 'dine', 'celebrate'
+  source: string,      // entry point identifier
+  customer: {
     name: string,
     email: string,
     phone: string
   },
-  category: string, // pillar name
-  sub_category: string, // service name
-  urgency: 'low' | 'medium' | 'high',
-  description: string, // Markdown formatted
-  source: 'flow_modal',
-  source_reference: string, // entry point
-  attachments: [],
-  metadata: {
-    ticket_type: string,
-    pillar: string,
-    sub_pillar: string,
-    pet_id: string,
+  details: {           // Service-specific data
+    service_type: string,
     pet_name: string,
-    // ... service-specific data
-  }
+    pet_breed: string,
+    // ... additional fields
+  },
+  priority: 'low' | 'normal' | 'high',
+  intent: string       // Human-readable intent description
 }
 ```
+
+### Legacy Ticket Endpoint (Admin Use Only)
+`POST /api/tickets/` - Used only by admin components for direct ticket management.
 
 ---
 
