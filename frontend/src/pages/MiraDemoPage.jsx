@@ -933,6 +933,20 @@ const MiraDemoPage = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get('tab');
     const threadParam = urlParams.get('thread');
+    const openConcierge = urlParams.get('openConcierge');
+    const ticketParam = urlParams.get('ticket');
+    
+    // Handle openConcierge=true from FlowModals
+    if (openConcierge === 'true') {
+      setActiveOSTab('concierge');
+      setShowConciergeHome(true);
+      if (ticketParam) {
+        setConciergeThread(prev => ({ ...prev, threadId: ticketParam }));
+      }
+      // Clean URL after handling
+      window.history.replaceState({}, '', window.location.pathname);
+      return;
+    }
     
     if (tabParam) {
       // Map URL param to OS tab IDs
