@@ -485,18 +485,119 @@
 }
 
 /* ========================================
-   OLD COMPOSER STYLES - DEPRECATED
-   Now using InteractionFooter component
+   COMPOSER - Beautiful original design restored
+   Fixed at bottom of chat shell
    ======================================== */
-/* Composer styling is now in InteractionFooter.css */
 .mp-composer {
-  /* Legacy support - will be removed */
-  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-lg) var(--space-md) var(--space-2xl);
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 7, 32, 0.98) 30%);
+  z-index: 50;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-/* Old sandbox footer moved to InteractionFooter */
+.mp-composer-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.mp-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  padding: var(--space-sm) var(--space-md);
+  transition: all 0.2s ease;
+}
+
+.mp-input-wrapper:focus-within {
+  border-color: var(--mira-purple);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+.mp-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  font-family: 'Manrope', sans-serif;
+  padding: var(--space-sm) 0;
+  outline: none;
+}
+
+.mp-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.mp-input-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mp-input-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.mp-input-btn.send {
+  background: linear-gradient(135deg, var(--mira-pink), var(--mira-magenta));
+  color: white;
+}
+
+.mp-input-btn.send:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(233, 30, 154, 0.4);
+}
+
+.mp-input-btn.send:disabled {
+  opacity: 0.5;
+  transform: none;
+  cursor: not-allowed;
+}
+
+.mp-input-btn.listening {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  animation: pulse-mic 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-mic {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+}
+
+/* Sandbox footer - sits above the composer */
 .mp-sandbox-footer {
-  display: none;
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--space-xs) var(--space-lg);
+  text-align: center;
+  font-size: 11px;
+  color: var(--mira-text-muted);
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius-full);
+  z-index: 49;
+  pointer-events: none;
 }
 
 .mp-messages-inner {
