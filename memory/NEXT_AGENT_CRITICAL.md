@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://concierge-core.preview.emergentagent.com
+https://pet-os-flow.preview.emergentagent.com
 
 ---
 
