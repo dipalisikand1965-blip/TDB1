@@ -230,34 +230,42 @@ const CareFlowModal = ({
     }
   };
   
-  // Submit
+  // Submit via Unified Service Command
   const handleSubmit = async () => {
     setIsSubmitting(true);
     
     try {
       const payload = buildPayload(formData, pet, user, entryPoint);
-      console.log(`[CareFlowModal] Submitting ${schema?.ticketType}:`, JSON.stringify(payload).substring(0, 500));
+      console.log(`[CareFlowModal] Submitting ${schema?.ticketType} via unified service flow:`, JSON.stringify(payload).substring(0, 500));
       
-      const response = await fetch(`${API_URL}/api/tickets/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+      const result = await submitRequest({
+        type: (schema?.ticketType || 'CARE_REQUEST').toUpperCase(),
+        pillar: 'care',
+        entryPoint: entryPoint,
+        pet: pet,
+        details: {
+          ...payload,
+          service_type: schema?.ticketType || 'care_service',
+          form_data: formData,
+          pet_breed: pet?.breed,
+          pet_size: pet?.size
         },
-        body: JSON.stringify(payload)
+        intent: `${schema?.title || 'Care'} request for ${petName}`,
+        showToast: false,
+        navigateToInbox: false
       });
       
-      if (!response.ok) {
-        throw new Error(`Failed to create ticket: ${response.status}`);
+      if (result.success) {
+        console.log('[CareFlowModal] Success via unified flow:', result);
+        setTicketId(result.ticketId);
+        setIsSuccess(true);
+        
+        toast.success(`Request sent to Concierge® for ${petName}`, {
+          description: 'Check your inbox for updates.'
+        });
+      } else {
+        throw new Error(result.error || 'Failed to submit request');
       }
-      
-      const result = await response.json();
-      setTicketId(result.ticket?.ticket_id || result.id);
-      setIsSuccess(true);
-      
-      toast.success(`Request sent to Concierge® for ${petName}`, {
-        description: 'Check your inbox for updates.'
-      });
     } catch (error) {
       console.error('Care flow ticket error:', error);
       toast.error('Failed to submit request. Please try again.');
