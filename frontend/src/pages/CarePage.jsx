@@ -1255,15 +1255,14 @@ const CarePage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Service Booking Modal */}
-      <ServiceBookingModal
+      {/* Care Service Flow Modal - Full options for each service */}
+      <CareServiceFlowModal
         isOpen={showBookingModal}
         onClose={() => setShowBookingModal(false)}
         serviceType={bookingServiceType}
-        onBookingComplete={(data) => {
-          console.log('Booking complete:', data);
-          setShowBookingModal(false);
-        }}
+        pet={selectedPet}
+        userPets={userPets}
+        token={token}
       />
       
       {/* === BUNDLE DETAIL MODAL === */}
