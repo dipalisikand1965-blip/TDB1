@@ -6825,8 +6825,8 @@ Details:
         "customer_name": customer_name,
         "customer_email": customer_email,
         "customer_phone": customer_phone,
-        "subject": f"{payload.type.replace('_', ' ').title()} Request",
-        "preview": description[:200] + "..." if len(description) > 200 else description,
+        "subject": f"{service_type} for {pet_name}",
+        "preview": f"Your {service_type.lower()} request has been received. Our team will get back to you shortly.",
         "status": "open",
         "priority": priority,
         "created_at": now,
@@ -6834,9 +6834,9 @@ Details:
         "messages": [
             {
                 "id": f"msg-{uuid.uuid4().hex[:8]}",
-                "from": "customer",
-                "sender_name": customer_name,
-                "content": description,
+                "from": "system",
+                "sender_name": "Mira Concierge",
+                "content": member_friendly_description,
                 "timestamp": now
             }
         ],
@@ -6844,6 +6844,8 @@ Details:
             "source": payload.source,
             "intent": payload.intent,
             "pillar": payload.pillar,
+            "pet_name": pet_name,
+            "services": services_str,
             "details": payload.details
         }
     })
