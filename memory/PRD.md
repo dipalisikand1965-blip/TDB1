@@ -139,6 +139,16 @@ Tier: gold
     - Now displays friendly message: "Hi! Your [Service] request for [Pet] has been received..."
     - Messages include proper formatting with emoji and context
 
+11. ✅ **Birthday Party Context Preservation**
+    - "Birthday party for [pet]" → "home with the crew" now correctly continues as HOME party
+    - No more random restaurant suggestions when user wants home celebration
+    - Session state saved and restored correctly for multi-turn birthday planning
+
+12. ✅ **CONCIERGE Tab Inbox Fixed**
+    - Created `/api/os/concierge/home` endpoint
+    - Returns status, active_requests, recent_threads for the user
+    - CONCIERGE tab now loads correctly with user's service requests
+
 ### Vision Score
 - Before: 40%
 - After: 78% (Intelligent routing brings the "magic")
