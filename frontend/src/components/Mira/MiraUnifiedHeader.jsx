@@ -270,18 +270,19 @@ const MiraUnifiedHeader = ({
   weather = null,
   onWeatherClick = null,
 }) => {
-  const [showPetDropdown, setShowPetDropdown] = useState(false);
+  const [showPetSwitcher, setShowPetSwitcher] = useState(false); // RIGHT side dropdown
   
-  // Pet avatar click ALWAYS opens MOJO modal (pet profile)
+  // LEFT: Pet avatar click opens MOJO modal (pet profile)
   const handlePetAvatarClick = () => {
     hapticFeedback.buttonTap();
+    setShowPetSwitcher(false); // Close right dropdown if open
     onPetClick?.();
   };
   
-  // Dropdown toggle is separate
-  const handleDropdownToggle = () => {
+  // RIGHT: Profile avatar click toggles pet switcher dropdown
+  const handlePetSwitcherToggle = () => {
     hapticFeedback.buttonTap();
-    setShowPetDropdown(!showPetDropdown);
+    setShowPetSwitcher(!showPetSwitcher);
   };
   
   return (
@@ -297,22 +298,12 @@ const MiraUnifiedHeader = ({
         </div>
       </div>
       
-      {/* Center-Left: Pet Avatar with Soul Score */}
+      {/* Center-Left: Pet Avatar with Soul Score - Opens MOJO Modal */}
       <div className="mira-pet-section-wrapper">
         <PetSoulBadge
           pet={currentPet}
           soulScore={soulScore}
           onClick={handlePetAvatarClick}
-          onDropdownToggle={handleDropdownToggle}
-          showDropdown={showPetDropdown}
-          hasMultiplePets={allPets.length > 1}
-        />
-        <PetDropdown
-          pets={allPets}
-          currentPet={currentPet}
-          onSelectPet={onSwitchPet}
-          isOpen={showPetDropdown}
-          onClose={() => setShowPetDropdown(false)}
         />
       </div>
       
