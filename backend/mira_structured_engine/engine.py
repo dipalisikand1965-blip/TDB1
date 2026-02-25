@@ -272,6 +272,57 @@ def _fallback_decision(user_message: str, pet_name: str, existing_ticket: Option
     
     msg_lower = user_message.lower()
     
+    # If there's an existing ticket, this might be an answer to a question
+    if existing_ticket:
+        service_type = existing_ticket.get("service_type")
+        missing_fields = existing_ticket.get("missing_fields", [])
+        
+        if missing_fields:
+            # Try to extract answer for first missing field
+            first_field = missing_fields[0]
+            extracted_value = None
+            
+            # Location mode answers
+            if first_field == "location_mode":
+                if any(word in msg_lower for word in ["home", "at home", "my place"]):
+                    extracted_value = "at_home"
+                elif any(word in msg_lower for word in ["salon", "shop", "store"]):
+                    extracted_value = "salon"
+                elif any(word in msg_lower for word in ["either", "both", "any"]):
+                    extracted_value = "either"
+            
+            # Service scope answers
+            elif first_field == "service_scope":
+                if any(word in msg_lower for word in ["full", "everything", "complete"]):
+                    extracted_value = "full_groom"
+                elif "bath" in msg_lower and "only" in msg_lower:
+                    extracted_value = "bath_only"
+                elif any(word in msg_lower for word in ["hair", "cut", "trim"]):
+                    extracted_value = "haircut_only"
+                elif "nail" in msg_lower:
+                    extracted_value = "nails_only"
+            
+            # Time window answers
+            elif first_field == "time_window":
+                if any(word in msg_lower for word in ["asap", "soon", "urgent", "today", "now"]):
+                    extracted_value = "asap"
+                elif any(word in msg_lower for word in ["this week", "few days"]):
+                    extracted_value = "this_week"
+                elif any(word in msg_lower for word in ["next week", "later"]):
+                    extracted_value = "next_week"
+                elif any(word in msg_lower for word in ["flexible", "whenever", "any"]):
+                    extracted_value = "flexible"
+            
+            if extracted_value:
+                return {
+                    "action": "execute",
+                    "intent": "clarify",
+                    "service_type": service_type,
+                    "pillar": "care",
+                    "response": f"Got it! {first_field.replace('_', ' ').title()}: {extracted_value.replace('_', ' ')}",
+                    "extracted_fields": {first_field: extracted_value},
+                }
+    
     # Simple intent detection as fallback
     if any(word in msg_lower for word in ["groom", "bath", "haircut", "nail"]):
         return {
