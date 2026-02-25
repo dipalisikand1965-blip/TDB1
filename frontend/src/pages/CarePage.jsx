@@ -567,8 +567,9 @@ const CarePage = () => {
           Mira KNOWS what the pet needs. She doesn't ask - she TELLS.
           ═══════════════════════════════════════════════════════════════════════════════ */}
       <MiraCarePlan
-        petId={userPets?.[0]?._id || userPets?.[0]?.id}
-        petName={userPets?.[0]?.name}
+        petId={selectedPet?._id || selectedPet?.id}
+        petName={selectedPet?.name}
+        petBreed={selectedPet?.breed}
         token={token}
       />
 
