@@ -87,18 +87,9 @@ const PetSoulBadge = memo(({ pet, soulScore = 0, onClick }) => {
         </div>
       </div>
       
-      {/* Pet Name with Dropdown Arrow - Click opens dropdown if multiple pets */}
-      <div className="soul-pet-info" onClick={onClick} style={{ cursor: 'pointer' }}>
+      {/* Pet Name */}
+      <div className="soul-pet-info">
         <span className="soul-pet-name">{petName}</span>
-        {hasMultiplePets && (
-          <ChevronDown 
-            className={`soul-dropdown-arrow ${showDropdown ? 'open' : ''}`} 
-            onClick={(e) => {
-              e.stopPropagation();
-              onDropdownToggle?.();
-            }}
-          />
-        )}
       </div>
     </div>
   );
