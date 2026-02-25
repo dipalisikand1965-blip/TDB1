@@ -8022,7 +8022,7 @@ async def load_pet_pillar_histories(db, pet_id: str, pet_name: str = None) -> Di
     - dog_friends: Known dog friends from past events
     - providers: Frequently used service providers
     """
-    if not db or not pet_id:
+    if db is None or not pet_id:
         return {}
     
     histories = {}
