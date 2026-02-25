@@ -1,10 +1,15 @@
 /**
  * GroomingFlowModal.jsx
  * 
- * CONCIERGE-LED GROOMING INTAKE FLOW
+ * CONCIERGE®-LED GROOMING INTAKE FLOW
  * 
  * Reuses the FlowModal engine pattern with grooming-specific schemas.
- * All requests go to Concierge - no direct booking.
+ * All requests go to Concierge® - no direct booking.
+ * 
+ * Features:
+ * - Auto-prefills pet parent address for at-home grooming
+ * - Breed intelligence for personalized recommendations
+ * - Creates ticket AND inbox entry for unified tracking
  * 
  * Entry points:
  * - At-Home Grooming → preselects mode = 'home'
@@ -13,7 +18,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { X, ChevronRight, ChevronLeft, Check, Loader2, Sparkles, Home, Building2, Scissors } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Check, Loader2, Sparkles, Home, Building2, Scissors, Info, Inbox } from 'lucide-react';
 import { Dialog, DialogContent } from './ui/dialog';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -22,6 +27,7 @@ import { Textarea } from './ui/textarea';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_URL } from '../utils/api';
+import { getBreedIntelligence, getBreedGroomingTip } from '../utils/breedIntelligence';
 import {
   GROOMING_FLOW_SCHEMAS,
   GROOMING_OPTIONS,
