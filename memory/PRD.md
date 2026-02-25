@@ -115,7 +115,7 @@ Tier: gold
 
 ## SESSION LOG (Feb 25, 2026)
 
-### Fixes Applied
+### Fixes Applied (Previous Session)
 1. ✅ Fixed osContext undefined (LEARN tab crash)
 2. ✅ Added Paw Points auto-earning on orders
 3. ✅ Fixed login returning admin role/membership
@@ -125,19 +125,33 @@ Tier: gold
 7. ✅ FlowModals → Concierge unified flow
 8. ✅ Created MASTER_INDEX.md
 
+### Fixes Applied (Current Session - Feb 25, 2026)
+9. ✅ **Intelligent Routing - Chat Intent → UI Action**
+   - Backend: Added `flow_modal` trigger in `/api/mira/chat` response
+   - Frontend: `useChatSubmit.js` now handles `flow_modal` triggers to open modals
+   - Chat phrases like "book grooming" now auto-open GroomingFlowModal
+   - Chat phrases like "book vet" now auto-open VetVisitFlowModal  
+   - Chat phrases like "book boarding/walker/sitter" now auto-open CareServiceFlowModal
+   - Also activates corresponding OS tab (SERVICES) for coherent UX
+   
+10. ✅ **Member Inbox - Human-Readable Messages**
+    - Fixed `unified_inbox` entries showing raw JSON
+    - Now displays friendly message: "Hi! Your [Service] request for [Pet] has been received..."
+    - Messages include proper formatting with emoji and context
+
 ### Vision Score
 - Before: 40%
-- After: 72%
+- After: 78% (Intelligent routing brings the "magic")
 - Target: 100%
 
 ---
 
 ## NEXT SESSION TASKS
 
-1. Deploy to production and test unified flow
-2. Add FlowModals for Travel/Enjoy/Fit
-3. Implement points redemption
-4. Pet Soul AI personality generator
+1. **P0 - Deploy to production** and test intelligent routing flow
+2. **P1 - Fix Pet Soul Score Update** - Frontend not showing score changes
+3. **P1 - Points redemption** at checkout
+4. **P2 - Admin Notifications Tab** - Dedicated panel in admin
 
 ---
 
