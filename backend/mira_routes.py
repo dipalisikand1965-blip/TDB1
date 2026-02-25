@@ -3267,6 +3267,26 @@ Stay focused on the trip. Do NOT switch to general pet care topics.
 ORIGINAL INTENT: TREATS/FOOD
 Stay focused on food/treats. Progress through the flow without looping.
 """
+                elif 'CARE' in first_step or 'WALKER' in first_step or 'WALK' in first_step:
+                    intent_anchor = """
+ORIGINAL INTENT: DOG WALKER / PET CARE SERVICE
+You MUST stay focused on arranging a DOG WALKER. Do NOT switch to restaurants, cafes, parks, or other topics.
+The user wants a dog walking service. Ask about:
+- Timing preferences (morning/afternoon/evening)
+- Days needed (once, weekly, specific days)
+- Duration of walks
+Then CONFIRM you will arrange this service through Concierge. Do NOT show restaurant recommendations.
+"""
+                elif 'VET' in first_step or 'HEALTH' in first_step:
+                    intent_anchor = """
+ORIGINAL INTENT: VETERINARY / HEALTH CHECK
+Stay focused on health/vet topics. Do NOT switch to activities or dining.
+"""
+                elif 'BOARDING' in first_step or 'SITTING' in first_step:
+                    intent_anchor = """
+ORIGINAL INTENT: PET BOARDING / PET SITTING
+Stay focused on boarding or sitting arrangements. Gather dates, duration, special needs.
+"""
             
             user_message_text = f"""
 {pet_info}
