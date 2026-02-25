@@ -24,6 +24,11 @@ Build "The Doggy Company" into a "Pet Life Operating System" where the AI assist
 - **2025-02-25:** Fixed AI context switching bug in `mira_routes.py` - AI no longer traps users in celebrate flow when they switch topics (e.g., asking for "dog walker" while in celebration flow)
 - **2025-02-25:** Fixed notification bell to navigate to full Inbox page instead of showing dropdown - `MemberNotificationBell.jsx`
 - **2025-02-25:** Fixed "I'm having a moment" chat error in `useChat.js` - added null-safe defaults and error handling for route_intent and ticket creation APIs
+- **2025-02-25:** MAJOR FIX - AI Intelligence & Context Retention in `mira_routes.py`:
+  - Added intent anchors for CARE/WALKER/VET/BOARDING flows to keep AI focused
+  - Added conversation topic detection from history (dog walker, groomer, vet keywords)
+  - Added Places Guardrail to clear restaurant/cafe data for service bookings
+  - Now when user asks for "dog walker" then says "any day", AI stays on topic instead of showing restaurants
 
 ## In Progress
 - [ ] P1: "Celebrate" flow advisory detection refinement - AI too eager to push booking flow
