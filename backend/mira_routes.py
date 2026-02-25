@@ -7995,7 +7995,178 @@ async def load_pet_soul(pet_id: str) -> Dict:
         "preferences": preferences
     }
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # LOAD PILLAR HISTORIES - Orders, Services, Celebrations, etc.
+    # This is the SOUL of context - Mira remembers EVERYTHING
+    # ═══════════════════════════════════════════════════════════════════════════
+    try:
+        pillar_histories = await load_pet_pillar_histories(db, pet.get("id"), pet.get("name"))
+        if pillar_histories:
+            soul["pillar_histories"] = pillar_histories
+            logger.info(f"[SOUL LOAD] Loaded pillar histories for {pet.get('name')}: {list(pillar_histories.keys())}")
+    except Exception as hist_err:
+        logger.warning(f"[SOUL LOAD] Could not load pillar histories: {hist_err}")
+    
     return {k: v for k, v in soul.items() if v is not None}  # Remove None values but keep 0
+
+
+async def load_pet_pillar_histories(db, pet_id: str, pet_name: str = None) -> Dict:
+    """
+    Load ALL pillar histories for a pet - Orders, Services, Celebrations, etc.
+    This makes Mira truly remember everything about the pet.
+    
+    Returns dict with:
+    - orders: Last 10 orders
+    - services: Last 10 service requests (grooming, vet, boarding, etc.)
+    - celebrations: Past celebrations/parties
+    - dog_friends: Known dog friends from past events
+    - providers: Frequently used service providers
+    """
+    if not db or not pet_id:
+        return {}
+    
+    histories = {}
+    
+    try:
+        # ═══════════════════════════════════════════════════════════════════════════
+        # 1. ORDER HISTORY - What products were purchased for this pet
+        # ═══════════════════════════════════════════════════════════════════════════
+        orders_cursor = db.orders.find(
+            {"$or": [{"pet_id": pet_id}, {"pet_name": pet_name}]},
+            {"_id": 0, "order_id": 1, "items": 1, "total": 1, "created_at": 1, "status": 1}
+        ).sort("created_at", -1).limit(10)
+        orders = await orders_cursor.to_list(10)
+        
+        if orders:
+            histories["orders"] = []
+            for o in orders:
+                items_summary = []
+                for item in (o.get("items") or [])[:3]:  # First 3 items
+                    items_summary.append(item.get("name") or item.get("product_name", "Item"))
+                histories["orders"].append({
+                    "date": str(o.get("created_at", ""))[:10],
+                    "items": items_summary,
+                    "total": o.get("total"),
+                    "status": o.get("status", "completed")
+                })
+            logger.info(f"[HISTORY] Found {len(orders)} orders for {pet_name}")
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # 2. SERVICE HISTORY - Grooming, Vet, Boarding, etc.
+        # ═══════════════════════════════════════════════════════════════════════════
+        services_cursor = db.service_desk_tickets.find(
+            {"$or": [
+                {"pet_id": pet_id}, 
+                {"pet.id": pet_id},
+                {"pet.name": pet_name},
+                {"ai_context.pet_name": pet_name}
+            ]},
+            {"_id": 0, "ticket_id": 1, "pillar": 1, "service_type": 1, "description": 1, 
+             "created_at": 1, "status": 1, "ai_context": 1, "provider": 1}
+        ).sort("created_at", -1).limit(15)
+        services = await services_cursor.to_list(15)
+        
+        if services:
+            histories["services"] = {}
+            providers_count = {}
+            
+            for s in services:
+                pillar = s.get("pillar") or s.get("service_type") or "general"
+                if pillar not in histories["services"]:
+                    histories["services"][pillar] = []
+                
+                service_info = {
+                    "date": str(s.get("created_at", ""))[:10],
+                    "type": s.get("service_type") or pillar,
+                    "description": (s.get("description") or "")[:100],
+                    "status": s.get("status", "completed"),
+                    "provider": s.get("provider") or s.get("ai_context", {}).get("provider")
+                }
+                histories["services"][pillar].append(service_info)
+                
+                # Track providers
+                provider = service_info.get("provider")
+                if provider:
+                    key = f"{pillar}:{provider}"
+                    providers_count[key] = providers_count.get(key, 0) + 1
+            
+            # Store top providers
+            if providers_count:
+                histories["top_providers"] = [
+                    {"pillar": k.split(":")[0], "provider": k.split(":")[1], "count": v}
+                    for k, v in sorted(providers_count.items(), key=lambda x: -x[1])[:5]
+                ]
+            
+            logger.info(f"[HISTORY] Found services: {list(histories['services'].keys())}")
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # 3. CELEBRATION HISTORY - Past birthdays, parties, events
+        # ═══════════════════════════════════════════════════════════════════════════
+        celebrate_cursor = db.service_desk_tickets.find(
+            {"$and": [
+                {"$or": [{"pet_id": pet_id}, {"pet.id": pet_id}, {"pet.name": pet_name}]},
+                {"$or": [{"pillar": "celebrate"}, {"service_type": {"$in": ["birthday", "party", "celebration"]}}]}
+            ]},
+            {"_id": 0, "created_at": 1, "ai_context": 1, "description": 1}
+        ).sort("created_at", -1).limit(5)
+        celebrations = await celebrate_cursor.to_list(5)
+        
+        if celebrations:
+            histories["celebrations"] = []
+            for c in celebrations:
+                ai_ctx = c.get("ai_context") or {}
+                histories["celebrations"].append({
+                    "date": str(c.get("created_at", ""))[:10],
+                    "type": ai_ctx.get("celebrate_type", "celebration"),
+                    "location": ai_ctx.get("celebrate_location", "unknown"),
+                    "size": ai_ctx.get("celebrate_size"),
+                    "guests": ai_ctx.get("guest_list", []),
+                    "notes": (c.get("description") or "")[:100]
+                })
+            logger.info(f"[HISTORY] Found {len(celebrations)} celebrations for {pet_name}")
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # 4. DOG FRIENDS - Extract from celebration guest lists and memories
+        # ═══════════════════════════════════════════════════════════════════════════
+        dog_friends = set()
+        
+        # From celebrations
+        for c in histories.get("celebrations", []):
+            for guest in c.get("guests", []):
+                if guest and isinstance(guest, str):
+                    dog_friends.add(guest)
+        
+        # From mira_memories
+        memories_cursor = db.mira_memories.find(
+            {"$and": [
+                {"pet_id": pet_id},
+                {"$or": [
+                    {"memory_type": {"$in": ["social", "friend", "playdate"]}},
+                    {"content": {"$regex": "friend|play|met|knows", "$options": "i"}}
+                ]}
+            ]},
+            {"_id": 0, "content": 1}
+        ).limit(10)
+        memories = await memories_cursor.to_list(10)
+        
+        # Simple extraction of dog names from memories
+        for m in memories:
+            content = m.get("content", "")
+            # Look for patterns like "played with Bruno" or "friend named Cookie"
+            import re
+            friend_matches = re.findall(r'(?:friend|played with|knows|met)\s+(\w+)', content, re.I)
+            for f in friend_matches:
+                if f.lower() not in ["the", "a", "an", "other", "some", "new"]:
+                    dog_friends.add(f.capitalize())
+        
+        if dog_friends:
+            histories["dog_friends"] = list(dog_friends)
+            logger.info(f"[HISTORY] Found dog friends for {pet_name}: {histories['dog_friends']}")
+        
+    except Exception as e:
+        logger.error(f"[HISTORY] Error loading pillar histories: {e}")
+    
+    return histories
 
 
 def _parse_allergies(allergy_str: str) -> list:
