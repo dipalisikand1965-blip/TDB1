@@ -53,20 +53,42 @@
 }
 
 /* ========================================
-   MAIN CONTAINER
+   MAIN CONTAINER - Full Page Layout
    ======================================== */
 .mira-prod {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   height: 100vh;
-  overflow: hidden; /* Prevent body scroll, let mp-messages handle scrolling */
+  overflow: hidden; /* Prevent body scroll */
   background: linear-gradient(180deg, 
     var(--mira-bg-dark) 0%, 
     var(--mira-bg-purple) 50%,
     var(--mira-bg-violet) 100%
   );
   font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Layout stacking context */
+  position: relative;
+}
+
+/* ========================================
+   CHAT SHELL - Contains messages + composer
+   Fills space between header and footer
+   ======================================== */
+.mira-prod .mp-chat-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0; /* Critical for nested flex scrolling */
+  position: relative;
+  overflow: hidden;
+}
+
+/* Footer must be outside chat shell - hide it in mira-prod context */
+.mira-prod > footer,
+.mira-prod > .footer,
+.mira-prod > [class*="Footer"] {
+  display: none; /* Footer should not appear in the chat OS view */
 }
 
 /* ========================================
