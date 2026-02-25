@@ -952,6 +952,10 @@ async def check_meta_proactive_alerts(pet_id: str, pet_name: str, db) -> List[Di
                     else:
                         cel_dt = cel_date
                     
+                    # Ensure timezone awareness
+                    if cel_dt.tzinfo is None:
+                        cel_dt = cel_dt.replace(tzinfo=timezone.utc)
+                    
                     days_since = (now - cel_dt).days
                     
                     # If it's been about a year (330-400 days), remind about anniversary
