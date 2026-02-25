@@ -1,14 +1,40 @@
 # MIRA PET OS - PRD
 ## The Doggy Company - Pet Life Operating System
-**Version:** 2.0 | **Updated:** February 25, 2026
+**Version:** 3.0 | **Updated:** February 25, 2026
+
+---
+
+## CRITICAL: READ FIRST
+
+**Mira is NOT a chatbot with keyword matching.**
+**Mira IS an AI that knows the pet's soul - like Claude knows your project.**
+
+**The Soul Bible:** `/app/memory/MIRA_SOUL_BIBLE.md` ⭐⭐⭐
 
 ---
 
 ## QUICK LINKS
-- **Master Index:** `/app/memory/MASTER_INDEX.md` ⭐
-- **Start Here:** `/app/memory/AGENT_START_HERE.md`
+- **Soul Bible:** `/app/memory/MIRA_SOUL_BIBLE.md` ⭐ (START HERE)
+- **Master Index:** `/app/memory/MASTER_INDEX.md`
 - **Vision Status:** `/app/VISION_STATUS.md`
-- **Mira Bible:** `/app/memory/MIRA_BIBLE.md`
+
+---
+
+## THE SIMPLE FRAME
+
+```
+PET = WHO (context anchor - like selecting a project)
+TABS = WHAT KIND OF HELP (modes of interaction)
+```
+
+| Tab | Role | Feel |
+|-----|------|------|
+| Pet | Active workspace | "Who am I helping?" |
+| Today | Daily briefing | "What needs attention NOW?" |
+| Picks | Mira suggests | "What's best for THIS pet?" |
+| Services | Catalog browse | "What CAN I book?" |
+| Concierge | Ticket execution | "What is Mira HANDLING?" |
+| Learn | Confidence builder | "Help me understand FIRST" |
 
 ---
 
