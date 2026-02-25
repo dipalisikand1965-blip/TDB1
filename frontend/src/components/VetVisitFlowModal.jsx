@@ -425,10 +425,10 @@ const VetVisitFlowModal = ({
             
             <div className="space-y-3">
               <Button 
-                onClick={() => window.location.href = `/inbox?ticket=${ticketId}`}
+                onClick={() => window.location.href = `/mira-demo?openConcierge=true&ticket=${ticketId}`}
                 className="w-full bg-white text-violet-600 hover:bg-violet-50"
               >
-                Open Request Thread
+                View in Concierge® Inbox
               </Button>
               <Button 
                 variant="ghost" 
