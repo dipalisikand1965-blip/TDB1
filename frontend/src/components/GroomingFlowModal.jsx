@@ -40,7 +40,7 @@ const SingleSelectField = ({ field, value, onChange, petName }) => {
   const options = field.options || [];
   
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" data-testid={`field-${field.id}`}>
       <label className="text-sm font-medium text-gray-700">
         {(field.label || '').replace('{petName}', petName || 'your pet')}
         {field.required && <span className="text-rose-500 ml-1">*</span>}
@@ -54,6 +54,7 @@ const SingleSelectField = ({ field, value, onChange, petName }) => {
               type="button"
               onClick={() => onChange(option.id)}
               whileTap={{ scale: 0.97 }}
+              data-testid={`option-${field.id}-${option.id}`}
               className={`p-3 rounded-xl text-sm font-medium transition-all text-left
                 ${isSelected 
                   ? 'bg-teal-500 text-white shadow-lg ring-2 ring-teal-300' 
