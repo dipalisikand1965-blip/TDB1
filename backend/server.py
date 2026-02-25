@@ -7588,6 +7588,69 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
         ]
     }
     
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # CARE PILLAR: Prioritize comprehensive care products with good_for_tags
+    # These have size/coat/life_stage/temperament/intent tags
+    # ═══════════════════════════════════════════════════════════════════════════════
+    if pillar == "care":
+        # First, get comprehensive care products (with good_for_tags)
+        care_query = {
+            "pillar": "care",
+            "good_for_tags": {"$exists": True, "$ne": []}
+        }
+        comprehensive_products = await db.products_master.find(care_query, {"_id": 0}).limit(20).to_list(20)
+        
+        # Determine pet's size category for matching
+        size_tag = "medium"  # default
+        if weight:
+            try:
+                weight_num = float(weight) if isinstance(weight, str) else weight
+                if weight_num < 10:
+                    size_tag = "small"
+                elif weight_num < 25:
+                    size_tag = "medium"
+                else:
+                    size_tag = "large"
+            except:
+                pass
+        
+        # Score comprehensive products based on pet profile match
+        scored_comprehensive = []
+        for p in comprehensive_products:
+            good_for_tags = p.get("good_for_tags", [])
+            score = 50  # Base score for comprehensive products
+            
+            # Size match
+            if size_tag in good_for_tags or "all" in good_for_tags:
+                score += 25
+            
+            # Age match
+            if age_category in good_for_tags:
+                score += 20
+            
+            # Coat type match (from pet soul data)
+            soul = pet.get("soul", {})
+            coat_type = soul.get("coat_type", "").lower().replace(" ", "_")
+            if coat_type and coat_type in good_for_tags:
+                score += 15
+            
+            # Temperament match
+            temperament = soul.get("temperament", "").lower()
+            if temperament and temperament in good_for_tags:
+                score += 10
+            
+            scored_comprehensive.append({
+                **p,
+                "score": score,
+                "why_it_fits": f"Perfect for {size_tag} {age_category}s" if score > 60 else "Great for everyday care"
+            })
+        
+        # Sort by score
+        scored_comprehensive.sort(key=lambda x: x.get("score", 0), reverse=True)
+        
+        return {"recommendations": scored_comprehensive[:limit]}
+    
+    # For other pillars, continue with original logic
     # Pillar filter - prioritize products from this pillar
     if pillar:
         query["pillar"] = pillar
