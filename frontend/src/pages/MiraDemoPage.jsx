@@ -571,6 +571,54 @@ const MiraDemoPage = () => {
   }, [pet?.id, shellState.activePetId, shellActions]);
 
   // ═══════════════════════════════════════════════════════════════════════════════
+  // SYNC QUICK REPLIES TO SHELL
+  // Bridges legacy quickReplies state to the new shell state model
+  // ═══════════════════════════════════════════════════════════════════════════════
+  useEffect(() => {
+    if (quickReplies && quickReplies.length > 0) {
+      // Convert legacy format to shell format
+      const shellOptions = quickReplies.map((qr, idx) => ({
+        id: qr.id || `qr-${idx}`,
+        label: qr.text || qr.label || '',
+        value: qr.value || qr.text || '',
+        intent: qr.intent_type || null,
+      })).filter(opt => opt.label);
+
+      if (shellOptions.length > 0) {
+        shellActions.setPendingQuestion({
+          ticketId: currentTicket?.id || null,
+          threadId: sessionId,
+          questionId: `chat-${Date.now()}`, // Generate unique question ID
+          questionType: 'quick_reply',
+          options: shellOptions,
+          source: 'backend',
+        });
+      }
+    } else {
+      // Clear quick replies when empty
+      if (shellState.interactionFooter.quickReplies.options?.length > 0) {
+        shellActions.clearQuickReplies();
+      }
+    }
+  }, [quickReplies, currentTicket?.id, sessionId, shellActions, shellState.interactionFooter.quickReplies.options?.length]);
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // SYNC MODAL STATE TO SHELL
+  // When modals open/close, update shell state for footer suppression
+  // ═══════════════════════════════════════════════════════════════════════════════
+  useEffect(() => {
+    const isAnyModalOpen = showHelpModal || showVault || showMojoModal || 
+                           showSoulFormModal || requestBuilderState?.isOpen;
+    
+    if (isAnyModalOpen && !shellState.modal.isOpen) {
+      shellActions.openModal('generic', null);
+    } else if (!isAnyModalOpen && shellState.modal.isOpen) {
+      shellActions.closeModal();
+    }
+  }, [showHelpModal, showVault, showMojoModal, showSoulFormModal, requestBuilderState?.isOpen, 
+      shellState.modal.isOpen, shellActions]);
+
+  // ═══════════════════════════════════════════════════════════════════════════════
   // COMMIT ACTION HANDLER - With toast + chat confirmation (Bible Section 1.5)
   // ═══════════════════════════════════════════════════════════════════════════════
   const handleCommitAction = useCallback(async (action, actionName = 'Action', successMessage = 'Done!') => {
