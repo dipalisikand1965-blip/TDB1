@@ -4171,16 +4171,11 @@ async def get_concierge_home(
         }
     
     try:
-        # Determine if concierge is live (based on current time - 9 AM to 9 PM)
-        from datetime import datetime, timezone
-        now = datetime.now(timezone.utc)
-        hour = now.hour
-        is_live = 3 <= hour <= 15  # 9 AM to 9 PM IST (UTC+5:30)
-        
+        # Concierge® is 24/7 - always available for members
         status = {
-            "is_live": is_live,
-            "status_text": "Live Now" if is_live else "Offline",
-            "message": None if is_live else "We're offline, but your request is queued. We'll respond within 2 hours."
+            "is_live": True,
+            "status_text": "Live Now",
+            "message": "Your Concierge is ready to help 24/7"
         }
         
         # Build query for user's requests
