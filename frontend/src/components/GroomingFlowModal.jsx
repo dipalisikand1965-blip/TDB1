@@ -440,8 +440,8 @@ const GroomingFlowModal = ({
           </AnimatePresence>
         </div>
         
-        {/* Footer */}
-        <div className="px-6 py-4 bg-gray-50 border-t flex items-center justify-between gap-3">
+        {/* Footer - Fixed at bottom */}
+        <div className="px-6 py-4 bg-gray-50 border-t flex items-center justify-between gap-3 flex-shrink-0">
           {currentStep > 0 ? (
             <Button variant="ghost" onClick={goBack} className="text-gray-600">
               <ChevronLeft className="w-4 h-4 mr-1" />
