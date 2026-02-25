@@ -17719,6 +17719,11 @@ from favorites_routes import router as favorites_router
 app.include_router(favorites_router, prefix="/api")  # Favorites at /api/favorites/*
 logger.info("Favorites API routes initialized")
 
+# Mira Care Plan Intelligence
+from mira_care_plan import care_plan_router
+app.include_router(care_plan_router)  # Care Plan at /api/mira/care-plan/*
+logger.info("Mira Care Plan Intelligence initialized")
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
