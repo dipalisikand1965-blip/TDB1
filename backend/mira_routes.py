@@ -9386,12 +9386,51 @@ async def create_service_desk_ticket(
     })
     logger.info(f"[UNIFIED FLOW] Mira → Notification created: {notification_id}")
     
-    # Also add to unified_inbox collection (legacy)
+    # Create member-friendly message for unified_inbox
+    pet_names = ", ".join([p.get("name", "your pet") for p in pets]) if pets else "your pet"
+    action_type_display = action_details.get("action_type", "request").replace("_", " ").title()
+    category_display_msg = action_details.get("category", "general").replace("_", " ").title()
+    
+    member_friendly_message = f"""Hi {user.get('name') if user else 'there'}! 👋
+
+Your **{action_type_display}** request for {pet_names} has been received.
+
+**Category:** {category_display_msg}
+
+Our Concierge® team will review your request and get back to you shortly with personalized options.
+
+Thank you for choosing The Doggy Company! 🐾"""
+    
+    # Also add to unified_inbox collection (legacy) - with MEMBER-FRIENDLY content
     await db.unified_inbox.insert_one({
-        **ticket_doc,
+        "id": inbox_id,
+        "ticket_id": ticket_id,
+        "thread_id": inbox_id,
+        "request_id": ticket_id,
+        "notification_id": notification_id,
+        "pillar": pillar,
+        "type": "service_request",
+        "channel": "mira_ai",
+        "customer_name": user.get("name") if user else "Guest",
+        "customer_email": user.get("email") if user else None,
+        "subject": f"{action_type_display} for {pet_names}",
+        "preview": f"Your {action_type_display.lower()} request has been received. Our team will get back to you shortly.",
+        "status": "open",
+        "priority": action_details.get("priority", "medium"),
+        "created_at": now,
+        "updated_at": now,
         "inbox_type": "service_request",
         "source": "mira_ai",
-        "unread": True
+        "unread": True,
+        "messages": [
+            {
+                "id": f"msg-{uuid.uuid4().hex[:8]}",
+                "from": "system",
+                "sender_name": "Mira Concierge",
+                "content": member_friendly_message,
+                "timestamp": now
+            }
+        ]
     })
     
     # Link to the mira ticket
