@@ -16,8 +16,8 @@ const Login = () => {
   const location = useLocation();
   const { toast } = useToast();
   
-  // Get the return path from location state (set by ProtectedRoute) or default to /pet-home
-  const from = location.state?.from || '/pet-home';
+  // Get the return path from location state (set by ProtectedRoute) or default to Mira OS
+  const from = location.state?.from || '/mira-demo';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,9 +26,9 @@ const Login = () => {
       await login(email, password);
       toast({
         title: "Welcome back!",
-        description: "Successfully logged in.",
+        description: "Taking you to Mira...",
       });
-      // Navigate back to the page user was trying to access, or to Mira OS
+      // Navigate to Mira OS - the heart of the experience
       navigate(from, { replace: true });
     } catch (error) {
       toast({
