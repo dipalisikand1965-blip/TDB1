@@ -134,8 +134,8 @@ export const AuthProvider = ({ children }) => {
    * REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
    */
   const initiateGoogleLogin = () => {
-    // After login, land on Dashboard - the member hub
-    const redirectUrl = `${window.location.origin}/dashboard`;
+    // After login, land on Pet Home - the member hub
+    const redirectUrl = `${window.location.origin}/pet-home`;
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
 
