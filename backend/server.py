@@ -6706,20 +6706,53 @@ async def create_service_request(payload: ServiceRequestPayload):
     customer_email = payload.customer.get("email")
     customer_phone = payload.customer.get("phone")
     
-    # Build description from details
-    details_text = "\n".join([f"- {k.replace('_', ' ').title()}: {v}" for k, v in payload.details.items() if v])
+    # Build HUMAN-FRIENDLY description from details
+    def format_value(v):
+        """Format a value for human reading"""
+        if isinstance(v, dict):
+            return None  # Skip nested dicts
+        if isinstance(v, list):
+            return ", ".join(str(x) for x in v) if v else None
+        if isinstance(v, bool):
+            return "Yes" if v else "No"
+        return str(v) if v else None
     
-    description = f"""Service Request: {payload.type.replace('_', ' ').title()}
+    # Extract key details for member-friendly message
+    pet_name = payload.details.get("pet_name", "your pet")
+    service_type = payload.details.get("service_type", payload.type).replace("_", " ").title()
+    services_requested = payload.details.get("services_requested", [])
+    if isinstance(services_requested, list):
+        services_str = ", ".join(s.replace("_", " ").title() for s in services_requested)
+    else:
+        services_str = str(services_requested).replace("_", " ").title()
+    
+    # Create a friendly description for the member
+    member_friendly_description = f"""Hi {customer_name}! 👋
+
+Your {service_type} request for {pet_name} has been received.
+
+**Services:** {services_str if services_str else service_type}
+
+Our Concierge® team will review your request and get back to you shortly with options tailored for {pet_name}.
+
+Thank you for choosing The Doggy Company! 🐾"""
+
+    # Create detailed description for admin/internal use
+    details_items = []
+    for k, v in payload.details.items():
+        formatted = format_value(v)
+        if formatted and k not in ['metadata', 'comfort_notes', 'behavior_flags', 'logistics']:
+            details_items.append(f"- {k.replace('_', ' ').title()}: {formatted}")
+    details_text = "\n".join(details_items)
+    
+    admin_description = f"""Service Request: {payload.type.replace('_', ' ').title()}
 Pillar: {payload.pillar.title()}
-Source: {payload.source}
-Intent: {payload.intent or 'General inquiry'}
+Pet: {pet_name}
+Services: {services_str}
 
-Customer Details:
-- Name: {customer_name}
-- Phone: {customer_phone or 'Not provided'}
-- Email: {customer_email or 'Not provided'}
+Customer: {customer_name} ({customer_email or 'No email'})
 
-Request Details:
+Details:
 {details_text}
 """
     
