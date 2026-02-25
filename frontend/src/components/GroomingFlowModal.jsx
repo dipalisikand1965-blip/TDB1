@@ -331,7 +331,7 @@ const GroomingFlowModal = ({
     }
   };
   
-  // Success state
+  // Success state - Shows confirmation with Concierge® and inbox notification
   if (isSuccess) {
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -344,17 +344,26 @@ const GroomingFlowModal = ({
             >
               <Check className="w-10 h-10" />
             </motion.div>
-            <h2 className="text-2xl font-bold mb-2">Request Sent!</h2>
-            <p className="text-teal-100 mb-6">
-              Your grooming request for {petName} has been sent to Concierge.
-              We'll get back to you shortly.
+            <h2 className="text-2xl font-bold mb-2">Request Sent to Concierge®</h2>
+            <p className="text-teal-100 mb-2">
+              Your grooming request for {petName} has been received.
             </p>
+            <p className="text-teal-200 text-sm mb-4">
+              Our Concierge® team will review and get back to you shortly with the best options for {petName}.
+            </p>
+            
+            {/* Inbox confirmation badge */}
+            <div className="flex items-center justify-center gap-2 mb-6 px-4 py-2 bg-white/10 rounded-full">
+              <Inbox className="w-4 h-4" />
+              <span className="text-sm">Added to your Inbox</span>
+            </div>
+            
             <div className="space-y-3">
               <Button 
                 onClick={() => window.location.href = `/inbox?ticket=${ticketId}`}
                 className="w-full bg-white text-teal-600 hover:bg-teal-50"
               >
-                Open Request
+                Open Request Thread
               </Button>
               <Button 
                 variant="ghost" 
