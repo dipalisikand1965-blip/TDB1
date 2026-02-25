@@ -12628,7 +12628,17 @@ Is there anything else I can help you with while you wait?"""
             ],
             "products": [],
             "services": []
-        })
+        }
+        
+        # Add flow_modal and active_tab to response if triggered
+        if flow_modal_data:
+            response_obj["flow_modal"] = flow_modal_data
+        if ui_action_data:
+            response_obj["ui_action"] = ui_action_data
+        if active_tab_data:
+            response_obj["active_tab"] = active_tab_data
+        
+        return add_picks_to_response(response_obj)
     
     # ═══════════════════════════════════════════════════════════════════════════
     # MEAL PLAN INTENT DETECTION - Before general flow
