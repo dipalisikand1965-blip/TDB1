@@ -81,8 +81,12 @@
   flex-shrink: 0;
   background: var(--mira-bg-dark); /* Solid background to prevent content bleeding through */
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px); /* Extra protection for any transparency */
+  backdrop-filter: blur(12px); /* Extra protection for any transparency */
+  -webkit-backdrop-filter: blur(12px);
 }
+
+/* When header rows change, update --mira-header-offset in :root */
+/* Current stack: Soul ticker + Header + OS Nav */
 
 /* ========================================
    HEADER - Centered
