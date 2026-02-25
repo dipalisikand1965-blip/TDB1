@@ -232,6 +232,7 @@ async def get_ticket_state(ticket_id: str) -> Optional[Dict[str, Any]]:
             return None
         
         return {
+            "ticket_id": ticket.get("ticket_id"),
             "id": ticket.get("ticket_id"),
             "status": ticket.get("status"),
             "service_type": ticket.get("service_type"),
