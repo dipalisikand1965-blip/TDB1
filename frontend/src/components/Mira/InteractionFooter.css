@@ -1,0 +1,312 @@
+/**
+ * InteractionFooter.css
+ * =====================
+ * Styles for the mode-based interaction footer.
+ * 
+ * Z-index hierarchy:
+ * - Quick replies: z-45
+ * - Composer: z-50
+ * - New messages pill: z-52
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   INTERACTION FOOTER CONTAINER
+   Fixed at bottom, measured by ResizeObserver
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.mira-interaction-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 7, 32, 0.98) 20%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.mira-interaction-footer.hidden {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   QUICK REPLIES RAIL
+   Single row, horizontal scroll
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.mira-quick-replies-rail {
+  padding: 12px 16px 8px;
+  z-index: 45;
+}
+
+.mira-quick-replies-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.mira-quick-replies-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.mira-quick-reply-chip {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 20px;
+  color: #f0f0f5;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Manrope', -apple-system, sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.mira-quick-reply-chip:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.35);
+  border-color: rgba(139, 92, 246, 0.6);
+  transform: translateY(-1px);
+}
+
+.mira-quick-reply-chip:active:not(:disabled) {
+  transform: translateY(0);
+  background: rgba(139, 92, 246, 0.45);
+}
+
+.mira-quick-reply-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mira-quick-reply-chip .chip-icon {
+  font-size: 16px;
+}
+
+.mira-quick-reply-chip .chip-label {
+  line-height: 1.2;
+}
+
+/* Desktop sizing */
+@media (min-width: 769px) {
+  .mira-quick-replies-rail {
+    padding: 16px 24px 12px;
+    max-height: 56px;
+  }
+
+  .mira-quick-reply-chip {
+    padding: 12px 20px;
+    font-size: 14px;
+    height: 40px;
+  }
+}
+
+/* Mobile sizing */
+@media (max-width: 768px) {
+  .mira-quick-replies-rail {
+    padding: 10px 12px 8px;
+    max-height: 48px;
+  }
+
+  .mira-quick-reply-chip {
+    padding: 8px 14px;
+    font-size: 13px;
+    height: 36px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPOSER BAR
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.mira-composer-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  z-index: 50;
+}
+
+.mira-composer-input {
+  flex: 1;
+  height: 48px;
+  padding: 0 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  color: #f0f0f5;
+  font-size: 15px;
+  font-family: 'Manrope', -apple-system, sans-serif;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.mira-composer-input::placeholder {
+  color: rgba(240, 240, 245, 0.5);
+}
+
+.mira-composer-input:focus {
+  border-color: rgba(139, 92, 246, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mira-composer-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: rgba(240, 240, 245, 0.6);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.mira-composer-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  color: #f0f0f5;
+}
+
+.mira-composer-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Send button special state */
+.mira-composer-send.active {
+  background: linear-gradient(135deg, #e91e9a, #d946ef);
+  color: white;
+}
+
+.mira-composer-send.active:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(233, 30, 154, 0.4);
+}
+
+/* Voice button active state */
+.mira-composer-voice.active {
+  background: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  animation: pulse-voice 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-voice {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+}
+
+/* Desktop sizing */
+@media (min-width: 769px) {
+  .mira-composer-bar {
+    padding: 16px 24px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .mira-composer-input {
+    height: 56px;
+    font-size: 15px;
+  }
+}
+
+/* Mobile sizing */
+@media (max-width: 768px) {
+  .mira-composer-bar {
+    padding: 10px 12px;
+    gap: 6px;
+  }
+
+  .mira-composer-input {
+    height: 44px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  .mira-composer-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NEW MESSAGES PILL
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.mira-new-messages-pill {
+  position: absolute;
+  top: -48px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(139, 92, 246, 0.9);
+  border: none;
+  border-radius: 20px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Manrope', -apple-system, sans-serif;
+  cursor: pointer;
+  z-index: 52;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+  transition: all 0.2s ease;
+  animation: bounce-in 0.3s ease;
+}
+
+.mira-new-messages-pill:hover {
+  background: rgba(139, 92, 246, 1);
+  transform: translateX(-50%) translateY(-2px);
+}
+
+@keyframes bounce-in {
+  0% { transform: translateX(-50%) translateY(20px); opacity: 0; }
+  100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SAFE AREA SPACER (Mobile)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.mira-safe-area-spacer {
+  height: env(safe-area-inset-bottom, 0px);
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MODE VARIATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Mode 1: Light prompt - minimal footer */
+.mira-interaction-footer.mode-1 {
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 7, 32, 0.85) 40%);
+}
+
+.mira-interaction-footer.mode-1 .mira-composer-bar {
+  padding-top: 8px;
+}
+
+/* Mode 2: Active guided - slightly more prominent */
+.mira-interaction-footer.mode-2 {
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 7, 32, 0.95) 25%);
+}
+
+/* Mode 3: Full concierge - most prominent */
+.mira-interaction-footer.mode-3 {
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 7, 32, 0.98) 20%);
+  border-top: 1px solid rgba(139, 92, 246, 0.15);
+}
