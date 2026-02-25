@@ -163,6 +163,9 @@ const GroomingFlowModal = ({
   entryPoint = 'care_grooming', // care_grooming_home | care_grooming_salon | care_grooming_mira
   preselectedMode = null // 'home' | 'salon' | 'mira_recommend'
 }) => {
+  // Universal Service Command - unified service flow
+  const { submitRequest } = useUniversalServiceCommand();
+  
   // Determine which schema to use
   const schemaId = preselectedMode === 'mira_recommend' ? 'grooming-mira-recommend' : 'grooming-request';
   const schema = GROOMING_FLOW_SCHEMAS[schemaId];
