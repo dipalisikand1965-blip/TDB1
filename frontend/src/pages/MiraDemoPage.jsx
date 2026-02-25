@@ -783,13 +783,17 @@ const MiraDemoPage = () => {
   // Sync quick replies from legacy state to shell
   useEffect(() => {
     if (quickReplies && quickReplies.length > 0) {
+      console.log('[SHELL DEBUG] Raw quickReplies:', JSON.stringify(quickReplies));
+      
       // Convert legacy format to shell format
       const shellOptions = quickReplies.map((qr, idx) => ({
         id: qr.id || `qr-${idx}`,
-        label: qr.text || qr.label || '',
-        value: qr.value || qr.text || '',
+        label: qr.text || qr.label || qr || '', // Also handle if qr is just a string
+        value: qr.value || qr.text || qr || '',
         intent: qr.intent_type || null,
       })).filter(opt => opt.label);
+
+      console.log('[SHELL DEBUG] Converted shellOptions:', JSON.stringify(shellOptions));
 
       if (shellOptions.length > 0) {
         shellActions.setPendingQuestion({
