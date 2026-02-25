@@ -498,9 +498,9 @@ const VetVisitFlowModal = ({
           </div>
         </div>
         
-        {/* Footer */}
-        <div className="px-6 py-4 bg-gray-50 border-t flex items-center justify-between gap-3">
-          <div className="text-xs text-gray-500">
+        {/* Footer - Fixed at bottom */}
+        <div className="px-6 py-4 bg-gray-50 border-t flex items-center justify-between gap-3 flex-shrink-0">
+          <div className="text-xs text-gray-500 hidden sm:block">
             Mira will recommend trusted vets in this area. We do not provide medical advice.
           </div>
           
