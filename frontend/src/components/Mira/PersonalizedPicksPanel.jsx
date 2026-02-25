@@ -31,6 +31,7 @@ import ConciergeDetailModal from './ConciergeDetailModal';
 import CuratedConciergeSection from './CuratedConciergeSection';
 import { ProductDetailModal } from '../ProductCard';
 import { createPortal } from 'react-dom';
+import useUniversalServiceCommand from '../../hooks/useUniversalServiceCommand';
 
 /**
  * FitBadges - Subtle safety/fit indicators for picks
