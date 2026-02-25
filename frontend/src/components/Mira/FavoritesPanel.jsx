@@ -6,6 +6,9 @@
  * - "What Mira Knows" section on pet home
  * - Dedicated favorites page
  * - As a modal/drawer
+ * 
+ * UNIFIED SERVICE FLOW INTEGRATION:
+ * When user selects a favorite → Creates Service Desk Ticket → Admin + Member Notification
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -16,6 +19,7 @@ import {
   HeartPulse, GraduationCap, Loader2, Gift
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
+import { useUniversalServiceCommand } from '../../hooks/useUniversalServiceCommand';
 
 // Pillar icons and colors
 const PILLAR_CONFIG = {
