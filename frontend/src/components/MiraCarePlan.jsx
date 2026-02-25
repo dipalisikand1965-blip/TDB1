@@ -125,23 +125,23 @@ const MiraCarePlan = ({
     
     try {
       // Create service desk ticket via Universal Service Command
-      const ticketData = {
-        type: recommendation.type.toUpperCase(),
+      const result = await submitRequest({
         pillar: 'care',
-        pet_name: petName,
-        pet_id: petId,
-        service_type: recommendation.type,
+        requestType: recommendation.type.toUpperCase(),
+        petName: petName,
+        petId: petId,
         title: recommendation.title,
         description: `${recommendation.title}\n\nReason: ${recommendation.reason}`,
-        source: 'mira_care_plan',
+        entryPoint: 'mira_care_plan',
         metadata: {
           ...recommendation.metadata,
           urgency: recommendation.urgency,
-          mira_recommended: true
-        }
-      };
-      
-      const result = await createServiceRequest(ticketData);
+          mira_recommended: true,
+          service_type: recommendation.type
+        },
+        showToast: false,
+        navigateToInbox: false
+      });
       
       if (result.success) {
         toast.success(
