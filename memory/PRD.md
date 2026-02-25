@@ -23,6 +23,7 @@ Build "The Doggy Company" into a "Pet Life Operating System" where the AI assist
 - **2025-02-25:** Fixed Concierge 24/7 status in `concierge_routes.py` - was hardcoded to 9AM-9PM, now always shows "Live Now"
 - **2025-02-25:** Fixed AI context switching bug in `mira_routes.py` - AI no longer traps users in celebrate flow when they switch topics (e.g., asking for "dog walker" while in celebration flow)
 - **2025-02-25:** Fixed notification bell to navigate to full Inbox page instead of showing dropdown - `MemberNotificationBell.jsx`
+- **2025-02-25:** Fixed "I'm having a moment" chat error in `useChat.js` - added null-safe defaults and error handling for route_intent and ticket creation APIs
 
 ## In Progress
 - [ ] P1: "Celebrate" flow advisory detection refinement - AI too eager to push booking flow
