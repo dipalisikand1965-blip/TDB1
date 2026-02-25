@@ -748,22 +748,35 @@ async def get_care_stats():
 # ==================== PRODUCTS ENDPOINTS ====================
 
 @router.get("/products")
-async def get_care_products(care_type: Optional[str] = None, limit: int = 50):
-    """Get care-related products"""
+async def get_care_products(care_type: Optional[str] = None, limit: int = 100, comprehensive_only: bool = False):
+    """Get care-related products
+    
+    Set comprehensive_only=true to get only products with good_for_tags (new taxonomy)
+    """
     db = get_db()
     
-    query = {"$or": [
-        {"category": "care"},
-        {"pillar": "care"},
-        {"category": "feed"},  # Feed & Nutrition products
-        {"care_type": {"$exists": True}},
-        {"tags": {"$in": ["care", "grooming", "training", "walking", "wellness", "health", "feed", "nutrition"]}}
-    ]}
+    if comprehensive_only:
+        # Only products with comprehensive tags (size/coat/life_stage/temperament)
+        query = {
+            "pillar": "care",
+            "good_for_tags": {"$exists": True, "$ne": []}
+        }
+    else:
+        query = {"$or": [
+            {"category": "care"},
+            {"pillar": "care"},
+            {"care_type": {"$exists": True}},
+            {"tags": {"$in": ["care", "grooming", "training", "walking", "wellness", "health"]}}
+        ]}
     
     if care_type:
-        query = {"$and": [query, {"$or": [{"care_type": care_type}, {"category": care_type}, {"tags": care_type}]}]}
+        query = {"$and": [query, {"$or": [{"care_type": care_type}, {"category": care_type}, {"tags": care_type}, {"intent_tags": care_type}]}]}
     
-    products = await db.products_master.find(query, {"_id": 0}).limit(limit).to_list(limit)
+    # Sort by priority: comprehensive products first, then by updated_at
+    products = await db.products_master.find(query, {"_id": 0}).sort([
+        ("good_for_tags", -1),  # Products with tags first
+        ("updated_at", -1)
+    ]).limit(limit).to_list(limit)
     
     return {"products": products, "total": len(products)}
 
