@@ -103,10 +103,38 @@ No direct booking. No pricing display. All requests go through Concierge®.
 | File | Purpose |
 |------|---------|
 | `/app/frontend/src/pages/MiraDemoPage.jsx` | Main OS page with chat + 6-layer navigation |
-| `/app/frontend/src/components/Mira/PetOSNavigation.jsx` | OS tab navigation component |
+| `/app/frontend/src/components/Mira/MiraUnifiedHeader.jsx` | **NEW** Single top bar header component |
+| `/app/frontend/src/components/Mira/PetOSNavigation.jsx` | OS tab navigation component (legacy, replaced by unified header) |
 | `/app/frontend/src/hooks/mira/useLayerNavigation.js` | Layer navigation hook |
 | `/app/frontend/src/components/Mira/TodayPanel.jsx` | TODAY layer panel |
 | `/app/frontend/src/components/Mira/ServicesPanel.jsx` | SERVICES layer panel |
+| `/app/frontend/src/styles/mira-unified-header.css` | **NEW** Styles for unified header |
+
+---
+
+## MIRA OS SHELL ARCHITECTURE (Updated Feb 25, 2026)
+
+### Single Top Bar Header Design
+The mira-demo page now uses a unified single horizontal top bar design:
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ [Mira Logo] [Pet+Soul Score] [TODAY][PICKS][SERVICES][LEARN][CONCIERGE®] [Weather][Profile] │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Components (left to right):**
+1. **Mira Logo**: Pink sparkle icon + "Mira" + "Your Pet Companion"
+2. **Pet Soul Badge**: Pet avatar with golden progress ring showing soul score %
+3. **OS Tabs**: 3D perspective glass-morphism tabs (TODAY, PICKS, SERVICES, LEARN, CONCIERGE®)
+4. **Weather**: Temperature display that opens TODAY panel
+5. **Pet Profile**: Avatar with name for quick pet switching
+
+**Key Features:**
+- Single row layout (no multi-row stacking)
+- 3D perspective effect on tabs
+- Responsive design (collapses gracefully on mobile)
+- Pet dropdown for multi-pet switching
 
 ---
 
