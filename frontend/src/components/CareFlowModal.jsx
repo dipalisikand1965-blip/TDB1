@@ -164,6 +164,9 @@ const CareFlowModal = ({
   icon = null,
   iconLabel = 'Care'
 }) => {
+  // Universal Service Command - unified service flow
+  const { submitRequest } = useUniversalServiceCommand();
+  
   // State
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
