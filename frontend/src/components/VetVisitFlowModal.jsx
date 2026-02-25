@@ -392,7 +392,7 @@ const VetVisitFlowModal = ({
     }
   };
   
-  // Success state
+  // Success state - Shows confirmation with Concierge® and inbox notification
   if (isSuccess) {
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -405,19 +405,30 @@ const VetVisitFlowModal = ({
             >
               <Check className="w-10 h-10" />
             </motion.div>
-            <h2 className="text-2xl font-bold mb-2">Request Sent!</h2>
+            <h2 className="text-2xl font-bold mb-2">Request Sent to Concierge®</h2>
             <p className="text-violet-100 mb-2">
-              Mira has created your vet visit request for {petName}.
+              Your vet visit request for {petName} has been received.
             </p>
-            <p className="text-violet-200 text-sm mb-6">
-              Our Concierge team will contact you in your request thread.
+            <p className="text-violet-200 text-sm mb-4">
+              Our Concierge® team will review and coordinate with trusted clinics in your area.
             </p>
+            
+            {/* Inbox confirmation badge */}
+            <div className="flex items-center justify-center gap-2 mb-6 px-4 py-2 bg-white/10 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+              <span className="text-sm">Added to your Inbox</span>
+            </div>
+            
+            <p className="text-violet-300 text-xs mb-6 italic">
+              We do not provide medical advice. Mira coordinates clinic discovery and bookings.
+            </p>
+            
             <div className="space-y-3">
               <Button 
                 onClick={() => window.location.href = `/inbox?ticket=${ticketId}`}
                 className="w-full bg-white text-violet-600 hover:bg-violet-50"
               >
-                Open Request
+                Open Request Thread
               </Button>
               <Button 
                 variant="ghost" 
