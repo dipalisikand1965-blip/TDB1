@@ -224,6 +224,9 @@ const VetVisitFlowModal = ({
   entryPoint = 'care_vet_visit',
   preselectedType = null // 'routine_checkup' | 'vaccination' | etc
 }) => {
+  // Universal Service Command - unified service flow
+  const { submitRequest } = useUniversalServiceCommand();
+  
   const schema = VET_VISIT_FLOW_SCHEMA;
   
   // State
