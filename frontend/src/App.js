@@ -81,8 +81,21 @@ function ConditionalFloatingButton() {
   if (hiddenPaths.some(path => pathname === path || pathname.startsWith(path + '/'))) {
     return null;
   }
-  // REMOVED: FloatingContactButton (the "C" button) - keeping only Mira orb
-  return null;
+  
+  // UNIVERSAL SERVICE COMMAND - Accessible from EVERYWHERE
+  // User Intent → Service Desk Ticket → Admin Notification → Member Notification
+  // Shows on BOTH mobile and desktop
+  return (
+    <UniversalServiceButton 
+      variant="floating"
+      position="bottom-left"
+      label="Need Help?"
+      showLabel={false}
+      pillar="general"
+      requireIntakeModal={true}
+      navigateToInbox={true}
+    />
+  );
 }
 
 // ConditionalMobileNav - Show mobile nav bar only on appropriate pages
