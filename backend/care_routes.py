@@ -1499,6 +1499,56 @@ async def seed_care_products():
     }
 
 
+@router.post("/admin/seed-products-v2")
+async def seed_care_products_v2():
+    """
+    Seed the 10 broad-breed friendly care products.
+    Products mapped by size, coat type, and life stage (not exact breeds).
+    All copy is support/comfort/coordination-led (no medical claims).
+    """
+    db = get_db()
+    logger = get_logger()
+    
+    from care_products_data import CARE_PRODUCTS_V2, CARE_BUNDLES_V2
+    from datetime import datetime, timezone
+    
+    products_seeded = 0
+    bundles_seeded = 0
+    
+    # Seed products
+    for product in CARE_PRODUCTS_V2:
+        product["created_at"] = datetime.now(timezone.utc).isoformat()
+        product["updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.products_master.update_one(
+            {"id": product["id"]},
+            {"$set": product},
+            upsert=True
+        )
+        products_seeded += 1
+    
+    # Seed bundles
+    for bundle in CARE_BUNDLES_V2:
+        bundle["created_at"] = datetime.now(timezone.utc).isoformat()
+        bundle["updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.product_bundles.update_one(
+            {"id": bundle["id"]},
+            {"$set": bundle},
+            upsert=True
+        )
+        bundles_seeded += 1
+    
+    logger.info(f"Seeded {products_seeded} care products v2 and {bundles_seeded} bundles")
+    
+    return {
+        "success": True,
+        "products_seeded": products_seeded,
+        "bundles_seeded": bundles_seeded,
+        "message": "Care products v2 (broad-breed friendly) seeded successfully",
+        "products": [p["name"] for p in CARE_PRODUCTS_V2],
+        "bundles": [b["name"] for b in CARE_BUNDLES_V2]
+    }
+
+
 # ==================== SETTINGS ====================
 
 @router.get("/admin/settings")
