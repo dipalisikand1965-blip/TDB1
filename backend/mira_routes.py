@@ -11628,6 +11628,18 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
         ]
     
     # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 6b: Temperament/Handling Confirmation Questions
+    # For confirming pet behavior during services
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["temperament", "handling", "behavior", "behaviour", "comfortable with", "nervous", "anxious"]) and any(term in response_lower for term in ["confirm", "correct", "right", "notes", "anything else"]):
+        quick_replies = [
+            build_quick_reply_chip("Yes, correct", "Yes, that's correct.", "execute", domain="care"),
+            build_quick_reply_chip("Small update", "I have a small update.", "refine", domain="care"),
+            build_quick_reply_chip("Add notes", "I'd like to add some notes.", "refine", domain="care"),
+            build_quick_reply_chip("Tell concierge directly", "I'll tell the concierge directly.", "handoff", domain="care")
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
     # PATTERN 7: Shopping/Product Questions  
     # ═══════════════════════════════════════════════════════════════════════════
     elif any(term in response_lower for term in ["budget", "price", "range", "spend", "affordable"]):
