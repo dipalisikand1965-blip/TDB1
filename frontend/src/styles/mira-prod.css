@@ -489,34 +489,18 @@
 }
 
 /* ========================================
-   COMPOSER - Fixed at bottom of chat shell
+   OLD COMPOSER STYLES - DEPRECATED
+   Now using InteractionFooter component
    ======================================== */
+/* Composer styling is now in InteractionFooter.css */
 .mp-composer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: var(--space-lg) var(--space-md) var(--space-2xl);
-  background: linear-gradient(180deg, transparent 0%, rgba(15, 7, 32, 0.98) 30%);
-  z-index: 50; /* Above messages, below modals */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  /* Legacy support - will be removed */
+  display: none;
 }
 
-/* Sandbox footer - sits above the composer */
+/* Old sandbox footer moved to InteractionFooter */
 .mp-sandbox-footer {
-  position: fixed;
-  bottom: 80px; /* Above composer */
-  left: 50%;
-  transform: translateX(-50%);
-  padding: var(--space-xs) var(--space-lg);
-  text-align: center;
-  font-size: 11px;
-  color: var(--mira-text-muted);
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: var(--radius-full);
-  z-index: 49;
-  pointer-events: none;
+  display: none;
 }
 
 .mp-messages-inner {
