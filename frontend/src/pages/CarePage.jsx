@@ -367,11 +367,21 @@ const CarePage = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setUserPets(data.pets || []);
+        const pets = data.pets || [];
+        setUserPets(pets);
+        // Set first pet as selected by default
+        if (pets.length > 0 && !selectedPet) {
+          setSelectedPet(pets[0]);
+        }
       }
     } catch (error) {
       console.error('Error fetching pets:', error);
     }
+  };
+
+  // Handle pet selection change (from MultiPetSelector or elsewhere)
+  const handlePetSelect = (pet) => {
+    setSelectedPet(pet);
   };
 
   const fetchCareProducts = async () => {
