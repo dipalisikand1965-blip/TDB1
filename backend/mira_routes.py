@@ -12080,7 +12080,8 @@ async def mira_chat(
                 try:
                     from services.dynamic_picks_generator import generate_dynamic_picks
                     pet_context = selected_pet or {"name": "your pet"}  # Fallback to generic
-                    current_pillar = request.current_pillar or "general"
+                    # USE DETECTED PILLAR, not request.current_pillar
+                    current_pillar = detected_pillar or request.current_pillar or "general"
                     # user_city might not be defined yet, so use safe access
                     city_context = None
                     if 'user_city' in dir():
@@ -12098,7 +12099,7 @@ async def mira_chat(
                     if dynamic_picks:
                         picks_response_data["picks"] = dynamic_picks
                         picks_response_data["pillar"] = current_pillar
-                        logger.info(f"[DYNAMIC PICKS] Generated {len(dynamic_picks)} fallback picks for {current_pillar}")
+                        logger.info(f"[DYNAMIC PICKS] Generated {len(dynamic_picks)} fallback picks for pillar={current_pillar}")
                 except Exception as dyn_err:
                     logger.warning(f"[DYNAMIC PICKS] Fallback failed: {dyn_err}")
                     
