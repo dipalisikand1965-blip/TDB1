@@ -1,0 +1,218 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   WORLD CLASS POLISH — The Doggy Company
+   Global enhancements for premium mobile-first experience
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ─── 1. PRODUCT CARDS — Larger images on mobile ─── */
+@media (max-width: 640px) {
+  /* Shop page product grid */
+  .product-card img,
+  [class*="product"] img[class*="object-cover"],
+  .grid img[alt] {
+    min-height: 180px !important;
+  }
+  
+  /* Product card in 2-column grid — give more vertical space */
+  .grid-cols-2 > div,
+  [class*="grid-cols-2"] > div {
+    min-height: auto;
+  }
+  
+  /* Product name — allow 2 lines */
+  .product-card h3,
+  .product-card [class*="font-medium"],
+  .product-card [class*="font-semibold"] {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.3;
+  }
+}
+
+/* ─── 2. PILLAR HERO SECTIONS — Subtle depth on scroll ─── */
+[class*="gradient-to-r"][class*="from-"] {
+  position: relative;
+}
+
+/* Pillar hero gradient — smoother transition */
+.pillar-hero,
+[class*="bg-gradient"] {
+  transition: opacity 0.3s ease;
+}
+
+/* Hero text entrance animation */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Apply to pillar page titles */
+h1[class*="text-4xl"],
+h1[class*="text-5xl"],
+h1[class*="text-3xl"] {
+  animation: heroFadeUp 0.6s ease-out;
+}
+
+/* Subtitle fade in slightly delayed */
+h1 + p,
+h1 + div > p {
+  animation: heroFadeUp 0.8s ease-out;
+}
+
+/* ─── 3. MIRA DEMO CHAT — Softer message styling ─── */
+
+/* User messages — softer gradient */
+.mp-user-bubble,
+[class*="bg-gradient"][class*="from-pink"] {
+  border-radius: 20px 20px 4px 20px !important;
+  box-shadow: 0 2px 12px rgba(236, 72, 153, 0.15);
+}
+
+/* Mira messages — glass-morphism feel */
+.mp-card,
+.mp-mira-card {
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 20px 20px 20px 4px !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* Chat input area — float above content */
+.chat-input-area,
+[class*="sticky"][class*="bottom"] {
+  backdrop-filter: blur(16px);
+}
+
+/* Smoother message transitions */
+.mp-card,
+.mp-user-bubble {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── 4. NOTIFICATION INBOX — Better read/unread contrast ─── */
+
+/* Unread notifications — stronger visual signal */
+[data-testid*="inbox-row"]:not([class*="opacity"]) {
+  border-left: 3px solid #ec4899;
+}
+
+/* Read notifications — clearly dimmed */
+.notification-read,
+[class*="opacity-70"] {
+  opacity: 0.55;
+}
+
+/* Unread title — bolder */
+.inbox-row-unread h3,
+h3[class*="font-semibold"][class*="text-white"] {
+  letter-spacing: -0.01em;
+}
+
+/* Concierge reply — special highlight */
+[class*="concierge"] {
+  border-left-color: #a855f7 !important;
+}
+
+/* ─── 5. FONT SIZE CONSISTENCY — Mobile-first hierarchy ─── */
+@media (max-width: 640px) {
+  /* Page titles */
+  h1 { font-size: 1.75rem !important; line-height: 1.2; }
+  h2 { font-size: 1.375rem !important; line-height: 1.25; }
+  h3 { font-size: 1.125rem !important; line-height: 1.3; }
+  
+  /* Body text */
+  p, span, div { 
+    font-size: inherit; 
+  }
+  
+  /* Small text — never below 12px */
+  .text-xs { font-size: 0.75rem !important; }
+  .text-\[10px\] { font-size: 0.6875rem !important; }
+  .text-\[11px\] { font-size: 0.6875rem !important; }
+}
+
+/* ─── 6. PAGE TRANSITIONS — Rhythm between pages ─── */
+
+/* Smooth page entrance */
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Apply to main content areas */
+main,
+[class*="min-h-screen"],
+.App > div > div {
+  animation: pageEnter 0.4s ease-out;
+}
+
+/* Cards and sections — staggered entrance */
+@keyframes sectionReveal {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+section,
+[class*="rounded-xl"],
+[class*="rounded-2xl"] {
+  animation: sectionReveal 0.5s ease-out both;
+}
+
+/* Stagger effect for grids */
+.grid > *:nth-child(1) { animation-delay: 0.05s; }
+.grid > *:nth-child(2) { animation-delay: 0.1s; }
+.grid > *:nth-child(3) { animation-delay: 0.15s; }
+.grid > *:nth-child(4) { animation-delay: 0.2s; }
+.grid > *:nth-child(5) { animation-delay: 0.25s; }
+.grid > *:nth-child(6) { animation-delay: 0.3s; }
+
+/* ─── 7. SCROLL SMOOTHNESS ─── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Momentum scrolling on iOS */
+[class*="overflow-auto"],
+[class*="overflow-x-auto"],
+[class*="overflow-y-auto"] {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ─── 8. TOUCH TARGETS — Minimum 44px for accessibility ─── */
+@media (max-width: 640px) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Exception for inline text links */
+  p a, span a, li a {
+    min-height: auto;
+    min-width: auto;
+  }
+}
+
+/* ─── 9. FOCUS STATES — Beautiful, not ugly ─── */
+:focus-visible {
+  outline: 2px solid rgba(139, 92, 246, 0.5);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ─── 10. LOADING STATES — Graceful ─── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.loading-shimmer,
+[class*="animate-pulse"] {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0.03) 25%, 
+    rgba(255,255,255,0.08) 50%, 
+    rgba(255,255,255,0.03) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}

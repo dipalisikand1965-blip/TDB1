@@ -1,0 +1,8 @@
+  const [cartInput, setCartInput] = useState({
+    petName: '',
+    date: null,
+    time: '',
+    age: '',
+    purchaseType: 'onetime',
+    addPartyBox: false
+  });
