@@ -328,6 +328,53 @@ async def create_order(order: dict):
     except Exception as e:
         logger.error(f"Pet Soul auto-learn failed: {e}")
     
+    # Auto-award Paw Points (1 point per ₹10 spent)
+    points_earned = 0
+    try:
+        customer_email = order.get("customer", {}).get("email")
+        order_total = order.get("total", 0)
+        if customer_email and order_total > 0:
+            # Calculate points: 1 point per ₹10 spent
+            points_to_award = int(order_total / 10)
+            if points_to_award > 0:
+                # Check if first order for bonus
+                order_count = await db.orders.count_documents({"customer.email": customer_email})
+                is_first_order = order_count <= 1
+                if is_first_order:
+                    points_to_award += 100  # First order bonus
+                
+                # Update user points
+                user = await db.users.find_one({"email": customer_email})
+                if user:
+                    current_balance = user.get("loyalty_points", 0)
+                    lifetime_earned = user.get("lifetime_points_earned", current_balance)
+                    new_balance = current_balance + points_to_award
+                    new_lifetime = lifetime_earned + points_to_award
+                    
+                    await db.users.update_one(
+                        {"email": customer_email},
+                        {"$set": {
+                            "loyalty_points": new_balance,
+                            "lifetime_points_earned": new_lifetime
+                        }}
+                    )
+                    
+                    # Log transaction
+                    await db.paw_points_ledger.insert_one({
+                        "user_email": customer_email,
+                        "amount": points_to_award,
+                        "balance_after": new_balance,
+                        "reason": f"Order #{order.get('orderId', '')[:8]}" + (" (First Order Bonus!)" if is_first_order else ""),
+                        "source": "order",
+                        "reference_id": order.get("orderId"),
+                        "created_at": datetime.now(timezone.utc)
+                    })
+                    
+                    points_earned = points_to_award
+                    logger.info(f"Awarded {points_to_award} Paw Points to {customer_email} for order {order.get('orderId')}")
+    except Exception as e:
+        logger.error(f"Paw Points auto-award failed: {e}")
+    
     # Auto-create ticket for Command Center
     ticket_id = None
     try:
