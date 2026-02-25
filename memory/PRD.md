@@ -183,9 +183,10 @@ The mira-demo page now uses a unified single horizontal top bar design:
 - [x] Ticket routing verification (member inbox + admin desk)
 - [x] Mira-demo OS Bar structure
 - [x] **Single Top Bar Header** - Unified header design implemented (Feb 25, 2026)
+- [x] **Unified Service Command Fix** - All Care modals (GroomingFlowModal, VetVisitFlowModal, CareFlowModal) now route through `/api/service-requests` instead of direct `/api/tickets/` (Feb 25, 2026)
 
 ### P1 - Immediate
-- [ ] Fix Picks and Learn tabs functionality (not returning correct content)
+- [ ] Fix Learn tab context bug (shows generic content instead of conversation-specific content)
 - [ ] Behavior Support FlowModal schema
 - [ ] Senior & Special Needs FlowModal schema
 - [ ] Nutrition Consults FlowModal schema
