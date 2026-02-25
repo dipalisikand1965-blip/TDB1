@@ -323,7 +323,27 @@ def _fallback_decision(user_message: str, pet_name: str, existing_ticket: Option
                     "extracted_fields": {first_field: extracted_value},
                 }
     
-    # Simple intent detection as fallback
+    # ═══════════════════════════════════════════════════════════════════════════
+    # INTENT DETECTION - recognize what user wants
+    # ═══════════════════════════════════════════════════════════════════════════
+    
+    # Birthday/Celebrate intent
+    if any(word in msg_lower for word in ["birthday", "party", "celebrate", "celebration", "pawty", "gotcha day"]):
+        return {
+            "action": "ask",
+            "intent": "book_service",
+            "service_type": "birthday_party",
+            "pillar": "celebrate",
+            "response": f"A birthday party for {pet_name}! 🎂 This is going to be special.\n\nWould you like to celebrate at home or at a venue?",
+            "quick_replies_override": [
+                {"label": "At home with the crew", "value": "at_home"},
+                {"label": "At a pet-friendly venue", "value": "venue"},
+                {"label": "Help me decide", "value": "help_decide"},
+            ],
+            "extracted_fields": {},
+        }
+    
+    # Grooming intent
     if any(word in msg_lower for word in ["groom", "bath", "haircut", "nail"]):
         return {
             "action": "execute",
@@ -333,7 +353,9 @@ def _fallback_decision(user_message: str, pet_name: str, existing_ticket: Option
             "response": f"I'd love to help arrange grooming for {pet_name}! Let me set that up.",
             "extracted_fields": {},
         }
-    elif any(word in msg_lower for word in ["vet", "doctor", "vaccine", "checkup"]):
+    
+    # Vet intent
+    elif any(word in msg_lower for word in ["vet", "doctor", "vaccine", "checkup", "vaccination"]):
         return {
             "action": "execute",
             "intent": "book_service",
@@ -342,7 +364,9 @@ def _fallback_decision(user_message: str, pet_name: str, existing_ticket: Option
             "response": f"I can help arrange a vet visit for {pet_name}.",
             "extracted_fields": {},
         }
-    elif any(word in msg_lower for word in ["board", "daycare", "stay", "sitting"]):
+    
+    # Boarding/Stay intent
+    elif any(word in msg_lower for word in ["board", "daycare", "stay", "sitting", "sitter"]):
         return {
             "action": "execute",
             "intent": "book_service",
@@ -351,12 +375,35 @@ def _fallback_decision(user_message: str, pet_name: str, existing_ticket: Option
             "response": f"Let me help you find the right stay option for {pet_name}.",
             "extracted_fields": {},
         }
+    
+    # Food/Dine intent
+    elif any(word in msg_lower for word in ["food", "meal", "diet", "feed", "hungry", "eat"]):
+        return {
+            "action": "recommend",
+            "intent": "recommend",
+            "pillar": "dine",
+            "response": f"I can help with {pet_name}'s nutrition! What are you looking for - meal planning, food recommendations, or something specific?",
+            "quick_replies_override": [
+                {"label": "Meal plan", "value": "meal_plan"},
+                {"label": "Food recommendations", "value": "food_recs"},
+                {"label": "Fresh meals", "value": "fresh_meals"},
+            ],
+            "extracted_fields": {},
+        }
+    
+    # Default - but with helpful quick replies
     else:
         return {
             "action": "respond",
             "intent": "general_chat",
             "pillar": "advisory",
-            "response": f"I'm here to help with anything for {pet_name}. What do you need?",
+            "response": f"I'm here to help with {pet_name}! What would you like to do?",
+            "quick_replies_override": [
+                {"label": "Book grooming", "value": "grooming"},
+                {"label": "Schedule vet visit", "value": "vet"},
+                {"label": "Plan something fun", "value": "celebrate"},
+                {"label": "Something else", "value": "other"},
+            ],
         }
 
 
