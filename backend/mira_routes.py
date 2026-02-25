@@ -772,6 +772,42 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
                         "text": memory.get("summary", memory.get("content", "")),
                         "date": memory.get("created_at")
                     }
+                
+                # LEARN PICKS for CELEBRATE pillar (Birthday/Party content)
+                # Shows birthday-relevant learning content in LEARN tab
+                pet_name = pet.get("name", "your pet")
+                learn_picks = [
+                    {
+                        "title": "Dog-Safe Birthday Cake Recipes",
+                        "why": f"Delicious, safe treats for {pet_name}'s special day",
+                        "cta": "View Recipes",
+                        "service_type": "birthday_recipes",
+                        "youtube_query": "dog birthday cake recipe"
+                    },
+                    {
+                        "title": "How to Throw a Dog Birthday Party",
+                        "why": "Step-by-step party planning guide",
+                        "cta": "Watch",
+                        "service_type": "party_guide",
+                        "youtube_query": "how to throw dog birthday party"
+                    },
+                    {
+                        "title": "Pet Photography Tips",
+                        "why": f"Capture {pet_name}'s celebration beautifully",
+                        "cta": "Learn",
+                        "service_type": "photo_tips",
+                        "youtube_query": "pet birthday photography tips"
+                    },
+                    {
+                        "title": "Party Games for Dogs",
+                        "why": "Fun activities for the birthday celebration",
+                        "cta": "Explore",
+                        "service_type": "party_games",
+                        "youtube_query": "dog party games ideas"
+                    }
+                ]
+                os_context["learn_picks"] = learn_picks
+                os_context["learn_context"] = {"topic": "birthday", "pillar": "celebrate"}
             
             # ═══════════════════════════════════════════════════════════════════════════
             # DINE PILLAR OS-AWARENESS (per MIRA BIBLE)
