@@ -12048,6 +12048,11 @@ async def mira_chat(
         "missing_profile_fields": []
     }
     
+    # EARLY PILLAR DETECTION for Picks Engine
+    # Bible Rule: PICKS must know the pillar to generate relevant cards
+    detected_pillar = detect_pillar(user_message, request.current_pillar)
+    logger.info(f"[PICKS] Early pillar detection: {detected_pillar}")
+    
     if PICKS_ENGINE_AVAILABLE:
         try:
             if selected_pet:
