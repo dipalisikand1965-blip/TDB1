@@ -142,24 +142,7 @@
   display: block !important;
 }
 
-/* ========================================
-   STICKY HEADER CONTAINER
-   Groups Soul Ticker, Header, and Navigation
-   Stays fixed at top when scrolling
-   ======================================== */
-.mira-sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  flex-shrink: 0;
-  background: var(--mira-bg-dark); /* Solid background to prevent content bleeding through */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px); /* Extra protection for any transparency */
-  -webkit-backdrop-filter: blur(12px);
-}
-
-/* When header rows change, update --mira-header-offset in :root */
-/* Current stack: Soul ticker + Header + OS Nav */
+/* Header stack is now defined above in the main section */
 
 /* ========================================
    HEADER - Centered
