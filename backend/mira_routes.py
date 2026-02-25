@@ -12543,7 +12543,56 @@ Your concierge has received your request and will get back to you shortly via Wh
 
 Is there anything else I can help you with while you wait?"""
         
-        return add_picks_to_response({
+        # ═══════════════════════════════════════════════════════════════════════════
+        # INTELLIGENT FLOW MODAL TRIGGERS - THE MAGIC OF UNIFIED OS
+        # For booking intents, trigger the appropriate FlowModal wizard
+        # This creates the "stitched up" experience - chat intent → UI action
+        # ═══════════════════════════════════════════════════════════════════════════
+        flow_modal_data = None
+        ui_action_data = None
+        active_tab_data = "services"  # Default to services for all service handoffs
+        
+        if triggered_service['id'] == 'grooming_booking':
+            flow_modal_data = {
+                "type": "grooming",
+                "trigger": True,
+                "pet_id": selected_pet.get("id") if selected_pet else None,
+                "pet_name": pet_name
+            }
+            ui_action_data = {
+                "type": "open_flow_modal",
+                "modal": "grooming",
+                "pet_id": selected_pet.get("id") if selected_pet else None
+            }
+            logger.info(f"[FLOW MODAL] Triggering GroomingFlowModal for {pet_name}")
+        elif triggered_service['id'] == 'vet_booking':
+            flow_modal_data = {
+                "type": "vet_visit",
+                "trigger": True,
+                "pet_id": selected_pet.get("id") if selected_pet else None,
+                "pet_name": pet_name
+            }
+            ui_action_data = {
+                "type": "open_flow_modal",
+                "modal": "vet_visit",
+                "pet_id": selected_pet.get("id") if selected_pet else None
+            }
+            logger.info(f"[FLOW MODAL] Triggering VetVisitFlowModal for {pet_name}")
+        elif triggered_service['id'] == 'boarding_booking':
+            flow_modal_data = {
+                "type": "care_service",
+                "trigger": True,
+                "pet_id": selected_pet.get("id") if selected_pet else None,
+                "pet_name": pet_name
+            }
+            ui_action_data = {
+                "type": "open_flow_modal",
+                "modal": "care_service",
+                "pet_id": selected_pet.get("id") if selected_pet else None
+            }
+            logger.info(f"[FLOW MODAL] Triggering CareServiceFlowModal for {pet_name}")
+        
+        response_obj = {
             "success": True,
             "response": confirmation_response,
             "session_id": session_id,
