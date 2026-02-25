@@ -501,8 +501,8 @@ const FlowModal = ({
       toast.success('Request sent to Concierge®', {
         description: `Ticket #${data.ticket_id || data.id} created`,
         action: {
-          label: 'Open request',
-          onClick: () => navigate(`/inbox?ticket=${data.ticket_id || data.id}`)
+          label: 'View in inbox',
+          onClick: () => navigate(`/mira-demo?openConcierge=true&ticket=${data.ticket_id || data.id}`)
         },
         duration: 8000  // Keep toast visible longer
       });
