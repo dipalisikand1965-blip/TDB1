@@ -423,8 +423,67 @@ def _generate_travel_picks(user_msg: str, pet_name: str, pet_context: Dict, loca
 
 
 def _generate_care_picks(user_msg: str, pet_name: str, pet_context: Dict) -> List[Dict]:
-    """Generate picks for CARE pillar - grooming, vet, health"""
+    """Generate picks for CARE pillar - grooming, vet, health, walking, sitting"""
     picks = []
+    energy_level = pet_context.get("energy_level", "medium")
+    
+    # Walking / Dog Walker
+    if any(kw in user_msg for kw in ["walk", "walking", "walker", "daily walk", "exercise"]):
+        picks.append({
+            "type": "service",
+            "category": "walking",
+            "title": f"Daily Dog Walker for {pet_name}",
+            "subtitle": f"Matched to {energy_level} energy level",
+            "icon": "🐕",
+            "reason": f"Regular walks keep {pet_name} happy & healthy",
+            "cta": "Find Walker",
+            "service_type": "walker_search",
+            "concierge_always": True
+        })
+        picks.append({
+            "type": "service",
+            "category": "walking",
+            "title": "Pack Walk Experience",
+            "subtitle": "Socialized group walks with other dogs",
+            "icon": "🐾",
+            "reason": "Great for socialization and energy burn",
+            "cta": "Book Pack Walk",
+            "service_type": "pack_walk"
+        })
+        picks.append({
+            "type": "service",
+            "category": "training",
+            "title": "Leash Training Session",
+            "subtitle": "Professional heel & recall training",
+            "icon": "🎓",
+            "reason": f"Make walks with {pet_name} enjoyable",
+            "cta": "Book Training",
+            "service_type": "leash_training"
+        })
+    
+    # Pet Sitting
+    if any(kw in user_msg for kw in ["sit", "sitting", "sitter", "pet sitter", "watch", "overnight"]):
+        picks.append({
+            "type": "service",
+            "category": "sitting",
+            "title": f"Pet Sitter for {pet_name}",
+            "subtitle": "Trusted care while you're away",
+            "icon": "🏠",
+            "reason": f"Home visits with detailed updates",
+            "cta": "Find Sitter",
+            "service_type": "sitter_coordination",
+            "concierge_always": True
+        })
+        picks.append({
+            "type": "service",
+            "category": "boarding",
+            "title": "Home Boarding",
+            "subtitle": f"{pet_name} stays at sitter's home",
+            "icon": "🛏️",
+            "reason": "Home environment, not a kennel",
+            "cta": "Find Host",
+            "service_type": "home_boarding"
+        })
     
     # Grooming
     if any(kw in user_msg for kw in ["groom", "haircut", "bath", "nail", "fur", "coat", "trim"]):
