@@ -15,13 +15,14 @@ Build "The Doggy Company" into a "Pet Life Operating System" where the AI assist
 - ✅ Unified Service Flow architecture
 - ✅ Real-time WebSocket notifications
 - ✅ FavoritesPanel with Universal Service Command hook (fixed 2025-02-25)
+- ✅ PersonalizedPicksPanel with Universal Service Command hook (fixed 2025-02-25)
 
 ## Completed Work
 - **2025-02-25:** Fixed compilation error in `FavoritesPanel.jsx` - incorrect import of `useUniversalServiceCommand`
+- **2025-02-25:** Integrated `useUniversalServiceCommand` into `PersonalizedPicksPanel.jsx` - "Create for {Pet}" buttons now trigger full service desk flow with pick details (name, type, description, price)
 
 ## In Progress
-- [ ] P0: User verification of Unified Service Flow in Favorites Panel (code complete)
-- [ ] P1: "Celebrate" flow advisory detection refinement
+- [ ] P1: "Celebrate" flow advisory detection refinement - AI too eager to push booking flow
 
 ## Known Issues
 1. **Pet Soul Score not updating in UI** (P2) - Score should increment after AI interactions
@@ -42,6 +43,7 @@ Build "The Doggy Company" into a "Pet Life Operating System" where the AI assist
 
 ## Key Files
 - `frontend/src/components/Mira/FavoritesPanel.jsx` - Favorites with service flow
+- `frontend/src/components/Mira/PersonalizedPicksPanel.jsx` - Picks with service flow (FIXED)
 - `frontend/src/hooks/useUniversalServiceCommand.js` - Universal service hook
 - `backend/routes/mira_routes.py` - Core AI logic (needs refactoring)
 - `backend/services/mira/mira_memory_assembler.py` - Pet context assembly
@@ -49,8 +51,30 @@ Build "The Doggy Company" into a "Pet Life Operating System" where the AI assist
 ## API Endpoints
 - `POST /api/mira/chat` - AI chat
 - `GET /api/proactive/alerts/{pet_id}` - META proactive alerts
-- `POST /api/service-requests` - Unified Service Flow
+- `POST /api/service-requests` - Unified Service Flow (picks, favorites, etc.)
 
 ## Test Credentials
 - User: `dipali@clubconcierge.in` / `test123`
 - Admin: `aditya` / `lola4304`
+
+## Service Request Data Model
+```json
+{
+  "ticket_id": "TKT-XXXXXXXX",
+  "type": "PICK_REQUEST",
+  "pillar": "celebrate",
+  "source": "picks_panel",
+  "customer": { "name", "email", "phone" },
+  "details": {
+    "pick_id": "...",
+    "pick_name": "Photo Coaster Set",
+    "pick_type": "personalized",
+    "pick_description": "...",
+    "pick_price": "...",
+    "message": "I'd like to proceed with: ...",
+    "pet_name": "Mystique",
+    "entry_point": "picks_panel"
+  },
+  "status": "pending"
+}
+```
