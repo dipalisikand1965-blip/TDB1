@@ -1,0 +1,419 @@
+/**
+ * PillarPageLayout.jsx
+ * 
+ * A reusable layout component for all pillar pages.
+ * Ensures consistent, personalized design across Celebrate, Dine, Care, Enjoy,
+ * Travel, Stay, Fit, Learn, Advisory, Emergency, Paperwork, Farewell, Adopt.
+ * 
+ * Features:
+ * - UnifiedHero with pet photo, soul score arc, Mira's message
+ * - PillarNav with Product/Service toggle
+ * - Pillar-specific theming and messaging
+ * - Mobile-first responsive design
+ */
+
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Package, Wrench, PawPrint } from 'lucide-react';
+import { API_URL } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
+import { usePillarContext } from '../context/PillarContext';
+import UnifiedHero from './UnifiedHero';
+import PillarNav from './PillarNav';
+import SEOHead from './SEOHead';
+import MiraChatWidget from './MiraChatWidget';
+
+// Pillar subcategories configuration - with REAL product images from Shopify
+const PILLAR_SUBCATEGORIES = {
+  celebrate: [
+    { id: 'cakes', name: 'Birthday Cakes', path: '/celebrate/cakes', emoji: '🎂', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/products/WhatsAppImage2022-05-13at3.24.11PM.jpg?v=1655357921' },
+    { id: 'breed-cakes', name: 'Breed Cakes', path: '/celebrate/breed-cakes', emoji: '❤️', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Untitled_design_17.png?v=1723638766' },
+    { id: 'mini-cakes', name: 'Mini Cakes', path: '/celebrate/mini-cakes', emoji: '🧁', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/7_dfd55b51-8b3d-4a5f-b99d-84a6b251e275.png?v=1746685342' },
+    { id: 'pupcakes', name: 'Pupcakes & Dognuts', path: '/celebrate/pupcakes', emoji: '✨', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Designer_5.png?v=1761639445' },
+    { id: 'desi-treats', name: 'Desi Treats', path: '/celebrate/desi-treats', emoji: '🪔', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/UntitledDesign-5-Edited.png?v=1759234529' },
+    { id: 'treats', name: 'Treats & Biscuits', path: '/celebrate/treats', emoji: '🦴', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Untitleddesign-2026-01-17T110113.430.png?v=1768627888' },
+    { id: 'hampers', name: 'Gift Hampers', path: '/celebrate/hampers', emoji: '🎁', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Untitleddesign-2026-01-20T122636.295.png?v=1768892215' },
+    { id: 'accessories', name: 'Party Accessories', path: '/celebrate/accessories', emoji: '🎉', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/products/FC144498-711C-42A4-8867-99638A34FB8C.png?v=1656737324' },
+    { id: 'diy', name: 'DIY Cake Kits', path: '/celebrate/diy', emoji: '🎨', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/IMG_7843.jpg?v=1729504729' },
+    { id: 'custom', name: 'Custom Creations', path: '/celebrate/custom', emoji: '✏️', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/products/treatjar2_1.jpg?v=1599218328', isCustom: true },
+    { id: 'gift-cards', name: 'Gift Cards', path: '/celebrate/gift-cards', emoji: '💳', image: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Watercolour-Background-Night-Sky-Postcard.jpg?v=1706442619' }
+  ],
+  dine: [
+    { id: 'fresh-meals', name: 'Fresh Meals', path: '/dine/meals', emoji: '🥩', image: 'https://static.prod-images.emergentagent.com/jobs/99ab70cf-a57b-46c1-987d-9e895d2af777/images/84cb230bb28acc363cdf69d0a236b1efac3ec8bf0b82c9c8648399580ada71e2.png' },
+    { id: 'treats', name: 'Treats', path: '/celebrate/treats', emoji: '🦴' },
+    { id: 'chews', name: 'Chews', path: '/dine?tab=chews', emoji: '🦷' },
+    { id: 'frozen', name: 'Frozen', path: '/dine?tab=frozen', emoji: '🧊' },
+    { id: 'feeding-tools', name: 'Feeding Tools', path: '/dine?tab=feeding-tools', emoji: '🥣' },
+    { id: 'supplements', name: 'Supplements', path: '/dine?tab=supplements', emoji: '💊' },
+    { id: 'dine-out', name: 'Dine Out', path: '/dine#restaurants', emoji: '🍽️' }
+  ],
+  care: [
+    { id: 'grooming', name: 'Grooming', path: '/care?type=grooming', emoji: '✂️' },
+    { id: 'vet_clinic_booking', name: 'Vet Visits', path: '/care?type=vet_clinic_booking', emoji: '🩺' },
+    { id: 'boarding_daycare', name: 'Boarding & Daycare', path: '/care?type=boarding_daycare', emoji: '🏠' },
+    { id: 'pet_sitting', name: 'Pet Sitting', path: '/care?type=pet_sitting', emoji: '🐕‍🦺' },
+    { id: 'behavior_anxiety_support', name: 'Behavior Support', path: '/care?type=behavior_anxiety_support', emoji: '🧠' },
+    { id: 'senior_special_needs_support', name: 'Senior & Special Needs', path: '/care?type=senior_special_needs_support', emoji: '🤍' },
+    { id: 'nutrition_consult_booking', name: 'Nutrition Consults', path: '/care?type=nutrition_consult_booking', emoji: '🥗' },
+    { id: 'emergency_help', name: 'Emergency Help', path: '/care?type=emergency_help', emoji: '🚨' }
+  ],
+  enjoy: [
+    { id: 'toys', name: 'Toys', path: '/enjoy/toys', emoji: '🎾' },
+    { id: 'chews', name: 'Chews', path: '/enjoy/chews', emoji: '🦴' },
+    { id: 'games', name: 'Games', path: '/enjoy/games', emoji: '🎮' },
+    { id: 'puzzles', name: 'Puzzles', path: '/enjoy/puzzles', emoji: '🧩' }
+  ],
+  travel: [
+    { id: 'carriers', name: 'Carriers', path: '/travel/carriers', emoji: '🎒' },
+    { id: 'car', name: 'Car Accessories', path: '/travel/car', emoji: '🚗' },
+    { id: 'outdoor', name: 'Outdoor Gear', path: '/travel/outdoor', emoji: '⛺' }
+  ],
+  stay: [
+    { id: 'beds', name: 'Beds', path: '/stay/beds', emoji: '🛏️' },
+    { id: 'mats', name: 'Mats', path: '/stay/mats', emoji: '🧺' },
+    { id: 'kennels', name: 'Kennels', path: '/stay/kennels', emoji: '🏠' },
+    { id: 'bowls', name: 'Bowls', path: '/stay/bowls', emoji: '🥣' }
+  ],
+  fit: [
+    { id: 'leashes', name: 'Leashes', path: '/fit/leashes', emoji: '🦮' },
+    { id: 'harnesses', name: 'Harnesses', path: '/fit/harnesses', emoji: '🎽' },
+    { id: 'collars', name: 'Collars', path: '/fit/collars', emoji: '📿' },
+    { id: 'apparel', name: 'Apparel', path: '/fit/apparel', emoji: '👕' }
+  ],
+  learn: [
+    { id: 'training', name: 'Training Aids', path: '/learn/training', emoji: '🎓' },
+    { id: 'puzzles', name: 'Puzzles', path: '/learn/puzzles', emoji: '🧩' },
+    { id: 'books', name: 'Books', path: '/learn/books', emoji: '📚' }
+  ],
+  advisory: [
+    { id: 'nutrition', name: 'Nutrition', path: '/advisory/nutrition', emoji: '🥗' },
+    { id: 'behavior', name: 'Behavior', path: '/advisory/behavior', emoji: '🧠' },
+    { id: 'health', name: 'Health', path: '/advisory/health', emoji: '❤️' }
+  ],
+  emergency: [
+    { id: 'first-aid', name: 'First Aid', path: '/emergency/first-aid', emoji: '🩹' },
+    { id: 'hospitals', name: 'Hospitals', path: '/emergency/hospitals', emoji: '🏥' }
+  ],
+  paperwork: [
+    { id: 'registration', name: 'Registration', path: '/paperwork/registration', emoji: '📋' },
+    { id: 'insurance', name: 'Insurance', path: '/paperwork/insurance', emoji: '🛡️' }
+  ],
+  farewell: [
+    { id: 'memorial', name: 'Memorial', path: '/farewell/memorial', emoji: '🌈' },
+    { id: 'support', name: 'Support', path: '/farewell/support', emoji: '💕' }
+  ],
+  adopt: [
+    { id: 'rescue', name: 'Rescue', path: '/adopt/rescue', emoji: '🏠' },
+    { id: 'shelters', name: 'Shelters', path: '/adopt/shelters', emoji: '🐾' }
+  ]
+};
+
+/**
+ * PillarPageLayout - Wraps pillar-specific content with unified hero and navigation
+ * 
+ * @param {string} pillar - The pillar identifier (celebrate, dine, care, etc.)
+ * @param {string} title - SEO title for the page
+ * @param {string} description - SEO description
+ * @param {React.ReactNode} children - The pillar-specific content (can be a render prop)
+ * @param {string} defaultViewMode - 'products' or 'services' (default: 'products')
+ * @param {boolean} showSubcategories - Whether to show subcategory pills (default: true)
+ * @param {boolean} useTabNavigation - If true, tabs update state instead of navigating (default: false)
+ * @param {function} onSubcategoryChange - Callback when subcategory changes (for tab mode)
+ * @param {boolean} hideMiraWidget - Hide the MiraChatWidget (use when page has MiraOSTrigger)
+ */
+const PillarPageLayout = ({
+  pillar,
+  title,
+  description,
+  children,
+  defaultViewMode = 'products',
+  showSubcategories = true,
+  useTabNavigation = false,
+  onSubcategoryChange,
+  hideMiraWidget = false
+}) => {
+  const { user, token } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
+  // Use global pet from PillarContext - ensures consistency when pet is switched elsewhere
+  const { currentPet, setCurrentPet, pets: contextPets, soulData: contextSoulData } = usePillarContext();
+  
+  // Pet state - fallback to local fetch if context not available
+  const [localPets, setLocalPets] = useState([]);
+  const [localSoulData, setLocalSoulData] = useState(null);
+  
+  // Use context values if available, otherwise use local
+  const userPets = contextPets?.length > 0 ? contextPets : localPets;
+  const activePet = currentPet || (userPets.length > 0 ? userPets[0] : null);
+  const petSoulData = contextSoulData || localSoulData;
+  
+  // Navigation state
+  const [viewMode, setViewMode] = useState(defaultViewMode);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  
+  // Read category from URL params on mount (for tab highlighting after redirects)
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category');
+    if (categoryFromUrl) {
+      setSelectedSubcategory(categoryFromUrl);
+    }
+  }, [searchParams]);
+  
+  // Fetch user's pets (fallback if context doesn't have them)
+  useEffect(() => {
+    const fetchPets = async () => {
+      if (!token || contextPets?.length > 0) return;
+      try {
+        const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const pets = data.pets || [];
+          setLocalPets(pets);
+          // Set global currentPet if not already set
+          if (pets.length > 0 && !currentPet) {
+            setCurrentPet(pets[0]);
+          }
+        }
+      } catch (err) {
+        console.debug('Failed to fetch pets:', err);
+      }
+    };
+    fetchPets();
+  }, [token, contextPets, currentPet, setCurrentPet]);
+  
+  // Fetch soul data when pet changes (only if context doesn't have it)
+  useEffect(() => {
+    const fetchSoulData = async () => {
+      if (!activePet?.id || !token || contextSoulData) return;
+      try {
+        const response = await fetch(`${API_URL}/api/soul-drip/completeness/${activePet.id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setLocalSoulData(data);
+        }
+      } catch (err) {
+        console.debug('Failed to fetch soul data:', err);
+      }
+    };
+    fetchSoulData();
+  }, [activePet?.id, token, contextSoulData]);
+  
+  // Handle search submit - navigate to search results
+  const handleSearchSubmit = (query) => {
+    if (query.trim()) {
+      navigate(`/search?q=${encodeURIComponent(query.trim())}&pillar=${pillar}`);
+    }
+  };
+  
+  // Handle view mode change
+  const handleViewModeChange = (mode) => {
+    setViewMode(mode);
+    // Navigate to appropriate page
+    if (mode === 'products') {
+      navigate('/shop');
+    } else {
+      navigate('/services');
+    }
+  };
+  
+  // Handle search change
+  const handleSearchChange = (query) => {
+    setSearchQuery(query);
+  };
+  
+  // Get subcategories for current pillar
+  const subcategories = PILLAR_SUBCATEGORIES[pillar] || [];
+  
+  // Get pillar-specific gradient for bottom section
+  const PILLAR_BG = {
+    celebrate: 'from-pink-50',
+    dine: 'from-amber-50',
+    care: 'from-teal-50',
+    enjoy: 'from-blue-50',
+    travel: 'from-cyan-50',
+    stay: 'from-green-50',
+    fit: 'from-lime-50',
+    learn: 'from-indigo-50',
+    advisory: 'from-violet-50',
+    emergency: 'from-rose-50',
+    paperwork: 'from-slate-50',
+    farewell: 'from-purple-50',
+    adopt: 'from-orange-50'
+  };
+  
+  const bgGradient = PILLAR_BG[pillar] || 'from-gray-50';
+  
+  return (
+    <div className={`min-h-screen bg-gradient-to-b ${bgGradient} to-white pb-20 md:pb-0 overflow-x-hidden w-full max-w-full`} data-testid={`${pillar}-page`}>
+      {/* SEO */}
+      <SEOHead 
+        title={title}
+        description={description}
+        path={`/${pillar}`}
+      />
+      
+      {/* Unified Hero - Pet is the HERO! */}
+      {/* MIRA OS DOCTRINE: hideSearchBar=true because Mira already knows what pet needs */}
+      <UnifiedHero
+        pet={activePet}
+        soulData={petSoulData}
+        pillar={pillar}
+        viewMode={viewMode}
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+        onSearchSubmit={handleSearchSubmit}
+        hideSearchBar={true}
+      />
+      
+      {/* Navigation Bar - Subcategories Only (Removed clinical Products/Services toggle) */}
+      <div className="bg-white border-b border-gray-100 sticky top-0 z-40 overflow-hidden">
+        <div className="max-w-6xl mx-auto overflow-hidden">
+          {/* Subcategories Row - Now the primary navigation */}
+          {showSubcategories && subcategories.length > 0 && (
+            <div className="flex items-center justify-between px-4 py-3">
+              {/* Subcategory Pills - Scrollable on mobile */}
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide flex-1 pr-4">
+                <button
+                  onClick={() => {
+                    setSelectedSubcategory(null);
+                    onSubcategoryChange?.(null);
+                  }}
+                  className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-2xl font-medium text-xs sm:text-sm transition-all min-w-[80px] ${
+                    !selectedSubcategory
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                      : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-purple-300'
+                  }`}
+                  data-testid="all-subcategories"
+                >
+                  <span className="text-xl">✨</span>
+                  <span className="whitespace-nowrap text-center leading-tight">All {pillar.charAt(0).toUpperCase() + pillar.slice(1)}</span>
+                </button>
+                {subcategories.map((subcat) => (
+                  subcat.isCustom ? (
+                    // Custom creations flow to Mira concierge
+                    <Link
+                      key={subcat.id}
+                      to="/mira-demo?custom=true"
+                      className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-2xl font-medium text-xs sm:text-sm transition-all min-w-[80px] bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-300 text-purple-700 hover:from-purple-200 hover:to-pink-200`}
+                      data-testid={`subcat-${subcat.id}`}
+                    >
+                      {subcat.image ? (
+                        <div className="w-12 h-12 rounded-lg overflow-hidden mb-1 ring-2 ring-purple-400">
+                          <img src={subcat.image} alt={subcat.name} className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <span className="text-lg">{subcat.emoji}</span>
+                      )}
+                      <span className="whitespace-nowrap text-center leading-tight">{subcat.name}</span>
+                    </Link>
+                  ) : useTabNavigation ? (
+                    // Check if path is for internal tab switching or external navigation
+                    subcat.path.includes('?tab=') || subcat.path.includes('#') ? (
+                      <button
+                        key={subcat.id}
+                        onClick={() => {
+                          setSelectedSubcategory(subcat.id);
+                          onSubcategoryChange?.(subcat.id);
+                          // Handle hash navigation for anchors
+                          if (subcat.path.includes('#')) {
+                            const hash = subcat.path.split('#')[1];
+                            const element = document.getElementById(hash);
+                            if (element) {
+                              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                          }
+                        }}
+                        className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-2xl font-medium text-xs sm:text-sm transition-all min-w-[80px] ${
+                          selectedSubcategory === subcat.id
+                            ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                            : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-purple-300'
+                        }`}
+                        data-testid={`subcat-${subcat.id}`}
+                      >
+                        {subcat.image ? (
+                          <div className="w-12 h-12 rounded-lg overflow-hidden mb-1">
+                            <img src={subcat.image} alt={subcat.name} className="w-full h-full object-cover" />
+                          </div>
+                        ) : (
+                          <span className="text-lg">{subcat.emoji}</span>
+                        )}
+                        <span className="whitespace-nowrap text-center leading-tight">{subcat.name}</span>
+                      </button>
+                    ) : (
+                      // External navigation - use Link
+                      <Link
+                        key={subcat.id}
+                        to={subcat.path}
+                        className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-2xl font-medium text-xs sm:text-sm transition-all min-w-[80px] bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-purple-300`}
+                        data-testid={`subcat-${subcat.id}`}
+                      >
+                        {subcat.image ? (
+                          <div className="w-12 h-12 rounded-lg overflow-hidden mb-1">
+                            <img src={subcat.image} alt={subcat.name} className="w-full h-full object-cover" />
+                          </div>
+                        ) : (
+                          <span className="text-lg">{subcat.emoji}</span>
+                        )}
+                        <span className="whitespace-nowrap text-center leading-tight">{subcat.name}</span>
+                      </Link>
+                    )
+                  ) : (
+                    <Link
+                      key={subcat.id}
+                      to={subcat.path}
+                      onClick={() => setSelectedSubcategory(subcat.id)}
+                      className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-2xl font-medium text-xs sm:text-sm transition-all min-w-[80px] ${
+                        selectedSubcategory === subcat.id
+                          ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                          : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-purple-300'
+                      }`}
+                      data-testid={`subcat-${subcat.id}`}
+                    >
+                      {subcat.image ? (
+                        <div className="w-12 h-12 rounded-lg overflow-hidden mb-1">
+                          <img src={subcat.image} alt={subcat.name} className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <span className="text-lg">{subcat.emoji}</span>
+                      )}
+                      <span className="whitespace-nowrap text-center leading-tight">{subcat.name}</span>
+                    </Link>
+                  )
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Pillar-specific content */}
+      <main>
+        {/* Pass context to children via render prop or clone */}
+        {typeof children === 'function'
+          ? children({
+              activePet,
+              userPets,
+              petSoulData,
+              viewMode,
+              searchQuery,
+              selectedSubcategory,
+              subcategories,
+              setActivePet: setCurrentPet,
+              setSelectedSubcategory
+            })
+          : children}
+      </main>
+      
+      {/* Mira Chat Widget - hidden when page uses MiraOSTrigger */}
+      {!hideMiraWidget && <MiraChatWidget pillar={pillar} />}
+    </div>
+  );
+};
+
+export default PillarPageLayout;

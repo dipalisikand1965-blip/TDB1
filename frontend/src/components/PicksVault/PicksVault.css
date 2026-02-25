@@ -1,0 +1,657 @@
+/**
+ * PICKS VAULT - Luxury Haptic Styles
+ * ====================================
+ * Dark theme, glass morphism, premium feel
+ * Mobile-first with iOS-optimized interactions
+ */
+
+.pv-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16162a 100%);
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+}
+
+/* Header */
+.pv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pv-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pv-pet-photo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #a855f7;
+  object-fit: cover;
+}
+
+.pv-header-text h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.pv-header-text p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pv-heart {
+  color: #ec4899;
+  fill: #ec4899;
+}
+
+.pv-close-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pv-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.pv-close-btn:active {
+  transform: scale(0.95);
+}
+
+/* Picks List */
+.pv-picks-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pv-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.5px;
+}
+
+.pv-section-icon {
+  font-size: 14px;
+}
+
+/* Pick Item */
+.pv-pick-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.pv-pick-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.pv-pick-item.pv-pick-selected {
+  background: rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+/* Pick Image */
+.pv-pick-image {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.pv-pick-image:active {
+  transform: scale(0.95);
+}
+
+.pv-pick-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pv-pick-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #3b3b5c 0%, #2d2d4a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.pv-pick-selected-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 24px;
+  height: 24px;
+  background: #22c55e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+}
+
+.pv-pick-info-hint {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.pv-pick-image:hover .pv-pick-info-hint {
+  opacity: 1;
+}
+
+/* Pick Info */
+.pv-pick-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pv-pick-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pv-pick-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ec4899;
+}
+
+.pv-pick-why {
+  font-size: 12px;
+  color: rgba(168, 85, 247, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Select Button */
+.pv-select-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  border: none;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.pv-select-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
+}
+
+.pv-select-btn:active {
+  transform: scale(0.95);
+}
+
+.pv-select-btn-active {
+  background: #22c55e;
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4);
+}
+
+.pv-select-plus {
+  font-size: 24px;
+  font-weight: 300;
+}
+
+/* Refresh Button */
+.pv-refresh-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pv-refresh-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+.pv-refresh-btn:active {
+  transform: scale(0.98);
+}
+
+.pv-refresh-count {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Footer */
+.pv-footer {
+  padding: 16px 20px 24px;
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pv-footer-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pv-concierge-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.pv-footer-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pv-footer-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.pv-footer-subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.4;
+}
+
+/* Send Button */
+.pv-send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border: none;
+  border-radius: 28px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+}
+
+.pv-send-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 30px rgba(34, 197, 94, 0.4);
+}
+
+.pv-send-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.pv-send-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.pv-send-icon {
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pv-send-count {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Confirmation */
+.pv-confirmation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+  height: 100%;
+}
+
+.pv-confirmation-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  margin-bottom: 24px;
+  animation: pv-pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes pv-pop-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.pv-confirmation h2 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.pv-confirmation p {
+  margin: 0 0 24px;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.pv-confirmation-summary {
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 32px;
+}
+
+.pv-confirmation-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.pv-btn {
+  padding: 14px 28px;
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pv-btn-primary {
+  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  border: none;
+  color: #ffffff;
+}
+
+.pv-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
+}
+
+/* Mobile Optimizations */
+@media (max-width: 480px) {
+  .pv-header {
+    padding: 16px;
+  }
+
+  .pv-pet-photo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .pv-header-text h2 {
+    font-size: 16px;
+  }
+
+  .pv-picks-list {
+    padding: 12px;
+  }
+
+  .pv-pick-item {
+    padding: 10px;
+  }
+
+  .pv-pick-image {
+    width: 64px;
+    height: 64px;
+  }
+
+  .pv-pick-name {
+    font-size: 14px;
+  }
+
+  .pv-select-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .pv-footer {
+    padding: 12px 16px 20px;
+  }
+
+  .pv-send-btn {
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+}
+
+/* Safe area for iOS */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pv-footer {
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .pv-confirmation-icon {
+    animation: none;
+  }
+  
+  .pv-pick-item,
+  .pv-select-btn,
+  .pv-send-btn {
+    transition: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SENT TO CONCIERGE STYLES
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Pick item actions container */
+.pv-pick-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Send individual item to Concierge button */
+.pv-send-item-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.3));
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pv-send-item-btn:hover {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.5), rgba(236, 72, 153, 0.5));
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+}
+
+.pv-send-item-btn:active {
+  transform: scale(0.95);
+}
+
+.pv-concierge-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #c4b5fd;
+}
+
+/* Sent overlay on item */
+.pv-sent-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(34, 197, 94, 0.95);
+  backdrop-filter: blur(4px);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  z-index: 10;
+  animation: sentAppear 0.3s ease-out;
+}
+
+@keyframes sentAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.pv-sent-overlay .pv-sent-icon {
+  color: white;
+}
+
+.pv-sent-overlay span {
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Sent badge in actions area */
+.pv-sent-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 20px;
+  color: #22c55e;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Pick item with sent state */
+.pv-pick-item.pv-pick-sent {
+  position: relative;
+  opacity: 0.9;
+}
+
+/* Refresh button loading state */
+.pv-refresh-btn.pv-refreshing {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.pv-refresh-btn .pv-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+

@@ -1,0 +1,660 @@
+id,name,base_price,pillar,category,type,description
+svc-fit-15e96e63,Fitness Assessment & Programme Design,2499,fit,assessment,service,"Comprehensive fitness evaluation including body condition scoring, mobility assessment, and personalised exercise programme design."
+svc-fit-85322381,Personal Training Programme - 8 Weeks,7999,fit,training,service,One-on-one training sessions with a certified canine fitness trainer. Includes home exercises and weekly progress reviews.
+svc-fit-6772e766,Weight Management Programme,5999,fit,weight,service,"Structured weight loss or gain programme with nutrition planning, exercise routines, and regular weigh-ins."
+svc-fit-a6d208d2,Hydrotherapy Sessions,1499,fit,therapy,service,"Water-based therapy sessions for rehabilitation, fitness, or senior mobility. Supervised by trained hydrotherapists."
+svc-fit-314163ce,Senior Mobility Programme,4999,fit,senior,service,"Gentle exercise programme designed for senior dogs. Focus on maintaining mobility, joint health, and quality of life."
+svc-fit-2b0721c5,Puppy Development Programme,3999,fit,puppy,service,Age-appropriate fitness activities for puppies. Build healthy exercise habits and proper physical development.
+svc-fit-c4ff6597,Agility Foundation Course,4499,fit,agility,service,"Introduction to agility training. Learn basic obstacles, commands, and course navigation in a fun environment."
+svc-fit-b3b39dbe,Canine Yoga (Doga) Session,799,fit,wellness,service,"Relaxing yoga session with your dog. Great for bonding, flexibility, and stress relief for both pet and parent."
+svc-celebrate-party,Birthday Party Planning,,celebrate,party,,Complete party coordination
+svc-celebrate-gotcha,Gotcha Day Celebration,,celebrate,gotcha,,Celebrate your pet's adoption anniversary with a special gotcha day package.
+svc-celebrate-surprise,Surprise Delivery Service,1499,celebrate,surprise,,Send surprise treats and gifts to any pet parent! We deliver joy anywhere.
+svc-stay-concierge,Stay Concierge,,stay,,,Find perfect pet-friendly accommodation
+svc-stay-premium,Premium Boarding Setup,,stay,,,Custom boarding arrangement
+svc-travel-planning,Travel Planning,,travel,,,Complete travel coordination
+svc-travel-relocation,Relocation Concierge,,travel,,,Full relocation support
+svc-feed-nutrition,Nutrition Consultation,,feed,,,Expert diet planning
+svc-feed-meal-plan,Custom Meal Planning,,feed,,,Personalized meal plans
+svc-care-emergency,Emergency Care Coordination,,care,,,24/7 emergency support
+svc-fit-assessment,Fitness Assessment,,fit,assessment,,Complete fitness evaluation
+svc-fit-program,Personal Training Program,,fit,,,8-week fitness journey
+svc-learn-behavior,Behavior Consultation,,learn,,,Address specific issues
+svc-enjoy-adventure,Adventure Day Planning,,enjoy,,,Custom adventure experience
+svc-enjoy-playdate,Playdate Coordination,,enjoy,,,Group play sessions
+svc-groom-mobile,Mobile Grooming,,groom,,,Grooming at your doorstep
+svc-adopt-match,Pet Matching Service,,adopt,,,Find your perfect pet
+svc-adopt-support,New Pet Support,,adopt,,,30-day transition support
+svc-farewell-memorial,Memorial Planning,,farewell,,,Dignified farewell service
+svc-farewell-grief,Grief Support,,farewell,,,Counseling and support
+svc-dine-reservation,VIP Restaurant Reservations,,dine,,,Priority booking at pet-friendly restaurants
+svc-dine-picnic,Gourmet Picnic Setup,,dine,,,Complete pet-friendly picnic arrangement
+svc-insure-consult,Insurance Consultation,,insure,,,Find the right coverage
+svc-insure-claims,Claims Assistance,,insure,,,Help with insurance claims
+svc-shop-styling,Pet Styling Consultation,,shop,,,Product recommendations
+svc-dine-chefs-table,Chef's Table Experience,,dine,,,Private chef dining at pet-friendly restaurants
+svc-dine-private-home,Private Home Dining,,dine,,,Chef comes to your home with pet-safe menu
+svc-dine-catering,Pet Party Catering,,dine,,,Catering for pet birthdays & events
+svc-dine-subscription,Fresh Meal Subscription,,dine,,,Weekly fresh pet meals delivered
+svc-dine-group-event,Group Dining Events,,dine,,,Organize pet parent meetups
+svc-care-grooming,Premium Grooming Session,,care,grooming,,"Full grooming service including bath, haircut, nail trim, and ear cleaning."
+svc-care-vet,Vet Consultation at Home,,care,vet,,Licensed veterinarian visits your home for check-ups and consultations.
+svc-care-sitting,Pet Sitting (Daily),,care,sitting,,Professional pet sitter cares for your pet at your home.
+svc-celebrate-venue,Pet-Friendly Venue Booking,,celebrate,venue,,We find and book the perfect pet-friendly venue for your celebration.
+svc-learn_prod_clicker,Professional Training Clicker,299,care,care,,High-quality clicker for positive reinforcement training.
+svc-dine-f9364aff,Pet Caf Visit,499,enjoy,experiences,,Pet-friendly café experience with treats
+svc-dine-f4bebcb6,Doggy Brunch Reservation,799,enjoy,experiences,,Weekend brunch at pet-friendly restaurant
+svc-dine-1dd03b79,Home Chef Pet Meal,399,dine,meals,,Fresh home-cooked meal for your pet
+svc-dine-149222dc,Gourmet Pet Platter,649,dine,meals,,Premium selection of pet-safe treats
+svc-stay-eb1b89c2,Pet Hotel Standard Room,1499,stay,boarding,,Comfortable overnight stay for your pet
+svc-stay-9aeb0242,Luxury Pet Suite,2999,stay,boarding,,Premium suite with extra amenities
+svc-stay-dc128835,Doggy Daycare Pass,599,care,daycare,,Full day supervised play and care
+svc-travel-14fe2322,Pet Passport Service,1999,shop,services,,Complete documentation for international travel
+svc-travel-bf4970ea,Pet Transport Service,3999,travel,services,,Door-to-door pet transportation
+svc-enjoy-efd5110c,Dog Park Meetup Pass,299,enjoy,events,,Access to exclusive dog park events
+svc-enjoy-1d90a879,Pet Photography Session,1999,enjoy,experiences,,Professional pet photoshoot
+svc-enjoy-2307e263,Doggy Swimming Session,799,enjoy,activities,,Supervised pool time for dogs
+svc-fit-9a00b7ab,Dog Running Session,499,fit,fitness,,Professional dog running service
+svc-fit-0d19a648,Canine Yoga Class,799,learn,classes,,Yoga session with your dog
+svc-fit-e07de578,Weight Management Program,2999,shop,weight,,3-month fitness & diet program
+svc-fit-5a3d45ff,Agility Training Session,999,learn,training,,Obstacle course training
+svc-advisory-4816ac9b,Behaviour Assessment,1499,shop,consultations,,Professional behaviour evaluation
+svc-advisory-347e8209,Pet Life Planning,2499,shop,planning,,Comprehensive pet care roadmap
+svc-advisory-4c13f2cb,Senior Pet Care Plan,1999,care,planning,,Specialized care for aging pets
+svc-paperwork-9dc28c77,Pet Insurance Assistance,499,shop,services,,Help with insurance paperwork
+svc-paperwork-f7b2af2c,Registration Service,299,shop,services,,Pet registration and licensing
+svc-paperwork-18b00074,Health Certificate,799,care,certificates,,Official health documentation
+svc-paperwork-de483ae1,Microchip Registration,599,shop,documentation,,Microchip and database registration
+svc-paperwork-48c6de72,Pet Will & Trust Setup,4999,shop,legal,,Legal pet care documentation
+svc-emergency-27c8523d,Emergency Transport Service,2999,emergency,emergency,,Priority pet ambulance service
+svc-emergency-5aa61513,Lost Pet Recovery Plan,1999,shop,services,,GPS tracking and recovery service
+svc-emergency-b0e9efe5,Emergency Fund Setup,499,emergency,financial,,Pet emergency savings plan setup
+svc-adopt-5b8366a7,Adoption Counselling,799,adopt,services,,Expert guidance for pet adoption
+svc-adopt-6878a0e9,Home Assessment Service,999,shop,services,,Pet-proofing home consultation
+svc-dine-d6cfc31d,Puppy Picnic Set,899,enjoy,experiences,,Complete picnic setup for you and your pet
+svc-dine-5e2c2519,Pet Food Tasting Session,599,enjoy,experiences,,Sample premium pet foods
+svc-dine-d71fa051,Pet Chef Consultation,999,shop,consultations,,One-on-one with pet nutrition chef
+svc-dine-c0c2215d,Doggy Ice Cream Party,1499,enjoy,events,,Ice cream party for pets
+svc-dine-394247c0,Pet Bakery Tour,799,enjoy,experiences,,Behind the scenes at pet bakery
+svc-dine-58949d34,Weekly Meal Prep Service,1999,shop,services,,Fresh meals prepared weekly
+svc-dine-fddb1596,Pet Wine & Dine Night,2499,enjoy,experiences,,Luxury dining experience
+svc-dine-5d0174ec,Pet Nutrition Workshop,1299,learn,classes,,Learn about pet nutrition
+svc-stay-5cf25fe8,Cat Condo Rental,999,stay,boarding,,Private cat accommodation
+svc-stay-d0c8ba69,VIP Pet Penthouse,4999,stay,boarding,,Top-floor luxury suite
+svc-stay-d393d42c,Home Pet Sitting,1299,shop,services,,In-home pet care service
+svc-stay-c57c999b,Overnight Pet Nanny,1999,shop,services,,24-hour in-home care
+svc-stay-8d906e2b,Pet Vacation Resort,6999,stay,boarding,,Resort-style boarding
+svc-stay-65422098,Senior Pet Care Room,1799,stay,boarding,,Specialized senior pet boarding
+svc-stay-cfb19d45,Puppy Kindergarten Stay,1299,stay,boarding,,Socialization-focused boarding
+svc-stay-66f12a22,Pet Hotel Pool Access,499,stay,amenities,,Swimming pool day pass
+svc-stay-96af6b89,Extended Stay Discount,24999,stay,packages,,30-day boarding package
+svc-stay-bee84036,Special Needs Boarding,2499,stay,boarding,,Medical care included
+svc-stay-6e89377d,Holiday Pet Hotel,1999,stay,boarding,,Festive themed stays
+svc-stay-b08656a8,Pet Playgroup Session,399,enjoy,activities,,Supervised group play
+svc-travel-96ad5c22,Pet Travel Insurance,2999,travel,insurance,,Comprehensive coverage
+svc-travel-128855a2,Airline Pet Booking,4999,shop,services,,Flight booking assistance
+svc-travel-718ace51,Pet Hotel Finder,499,stay,services,,Find pet-friendly stays
+svc-travel-da888f2b,International Vet Check,1999,shop,services,,Travel health certificate
+svc-travel-c36b8834,Pet Relocation Service,14999,shop,relocation,,Complete moving service
+svc-enjoy-f676cf07,Doggy Birthday Party,2999,enjoy,events,,Full birthday celebration
+svc-enjoy-bd8e74a7,Pet Spa Day,1499,enjoy,experiences,,Relaxation and pampering
+svc-enjoy-eabfa586,Dog Beach Day,599,enjoy,activities,,Beach outing package
+svc-enjoy-f662a5ef,Pet Movie Night,799,enjoy,events,,Outdoor cinema for pets
+svc-enjoy-c2ccdd9c,Hiking Trail Pass,399,enjoy,activities,,Access to pet trails
+svc-enjoy-5a8978d2,Pet Art Class,999,learn,classes,,Create art with your pet
+svc-enjoy-c4374ad1,Doggy Yoga Session,699,learn,classes,,Doga class for you both
+svc-enjoy-edad76f0,Sunrise Dog Walk,499,enjoy,activities,,Group morning walks
+svc-enjoy-dbe300ab,Pet Costume Party,799,enjoy,events,,Themed costume event
+svc-enjoy-8cb5de63,Doggy Dance Class,899,learn,classes,,Learn tricks together
+svc-enjoy-9ed5a32d,Pet Camping Trip,3999,enjoy,experiences,,Overnight camping adventure
+svc-enjoy-1ffae7ad,Bubble Play Session,299,enjoy,activities,,Pet-safe bubble fun
+svc-enjoy-aeb3d517,Pet Photobooth Access,399,enjoy,experiences,,Fun photo opportunities
+svc-fit-da240769,Hydrotherapy Session,1299,shop,therapy,,Water-based exercise
+svc-fit-89526281,Personal Dog Trainer,1999,learn,training,,One-on-one training
+svc-fit-773d1514,Treadmill Training,799,fit,fitness,,Indoor running session
+svc-fit-0abbc0b8,Canine CrossFit,899,fit,fitness,,High-intensity workout
+svc-fit-cb1e54ed,Swimming Lessons,1499,learn,classes,,Learn to swim safely
+svc-fit-bdfea102,Obstacle Course Pass,699,enjoy,activities,,Access to agility course
+svc-fit-ca1d02b3,Canine Massage Session,999,care,wellness,,Post-workout recovery
+svc-fit-196b6fe2,Monthly Fitness Plan,4999,fit,programs,,Customized workout plan
+svc-fit-e863d305,Balance Ball Training,699,learn,classes,,Core strengthening
+svc-fit-de7330a4,Sprint Training Session,599,fit,fitness,,Speed and agility
+svc-learn-76313bd3,Basic Obedience Course,2999,learn,training,,Foundation training
+svc-learn-1feabe4b,Puppy Socialization Class,1499,learn,classes,,Early social skills
+svc-learn-f285fc00,Advanced Commands Training,3999,learn,courses,,Complex commands
+svc-learn-ad2ada40,Trick Training Workshop,999,learn,workshops,,Fun tricks to learn
+svc-learn-bdff5948,Behaviour Modification,4999,shop,programs,,Address problem behaviours
+svc-learn-332dfec9,Service Dog Training,9999,learn,specialized,,Professional service training
+svc-learn-a6904223,Therapy Dog Certification,5999,shop,certification,,Become a therapy team
+svc-learn-4781e95d,Recall Training Intensive,2499,learn,courses,,Perfect recall every time
+svc-learn-2e9e8ba7,House Training Program,1999,learn,programs,,Potty training success
+svc-learn-cb9efa29,Separation Anxiety Course,3499,learn,courses,,Build independence
+svc-learn-a10dd645,Canine Good Citizen Prep,2999,shop,certifications,,CGC certification prep
+svc-learn-d28a0927,Online Training Course,1499,learn,training,,Learn at your pace
+svc-learn-f44696cb,Group Training Classes,999,learn,classes,,Social learning
+svc-learn-f64be77d,Private Training Session,1999,learn,training,,One-on-one instruction
+svc-learn-403fe5c2,Reactive Dog Workshop,2999,shop,workshops,,Help reactive dogs
+svc-learn-a3b0b70a,Nose Work Introduction,1299,learn,classes,,Scent detection basics
+svc-care-9e3e93a4,Annual Wellness Checkup,1999,care,checkups,,Comprehensive health exam
+svc-care-d91b0143,Dental Cleaning,3999,shop,dental,,Professional dental care
+svc-care-1377d639,Flea & Tick Prevention,999,shop,preventive,,Monthly protection
+svc-care-ab29b4f4,Microchipping Service,999,shop,services,,Permanent ID implant
+svc-care-c4f7e586,Allergy Testing,2999,shop,diagnostics,,Identify allergies
+svc-care-6cc875d7,Blood Panel Test,1999,shop,diagnostics,,Complete blood work
+svc-care-4c49bf18,Heartworm Prevention,1499,shop,preventive,,Monthly heartworm protection
+svc-care-48c44b71,Anxiety Relief Drops,799,care,wellness,,Natural calming aid
+svc-care-72f32b25,Pain Management Plan,2999,shop,treatments,,Chronic pain care
+svc-care-9edbbfba,Wellness Blood Test,1499,care,diagnostics,,Preventive screening
+svc-advisory-893ea747,New Pet Parent Consult,799,shop,consultations,,First-time owner guidance
+svc-advisory-a40e35c5,Multi-Pet Household Plan,1499,shop,planning,,Managing multiple pets
+svc-advisory-9869b0bb,Pet Insurance Review,499,shop,financial,,Insurance comparison
+svc-advisory-868116bf,Vet Selection Assistance,599,shop,guidance,,Find the right vet
+svc-advisory-ec3071d6,Pet Budget Planning,699,shop,financial,,Financial pet planning
+svc-advisory-f318ce10,Exercise Plan Consult,899,fit,consultations,,Custom fitness plan
+svc-advisory-15cac1ec,Diet Transition Plan,799,shop,planning,,Safe food switching
+svc-advisory-4dff9608,Pet Safety Audit,999,shop,assessments,,Home safety check
+svc-advisory-4bcf8a7b,Training Method Consult,699,learn,consultations,,Find right training style
+svc-advisory-4dcadc67,End-of-Life Planning,999,shop,planning,,Compassionate guidance
+svc-advisory-cd79487b,Rehoming Consultation,599,shop,consultations,,Responsible rehoming help
+svc-fit-20c869ef,Personal Fitness Assessment,1499,fit,fitness_assessment,,"Comprehensive fitness evaluation for your pet including body condition score, mobility check, and personalised exercise plan"
+svc-fit-cd0415bd,Agility Training Sessions (4 Pack),2499,fit,exercise_plan,,"Fun agility training sessions to improve coordination, confidence and fitness"
+svc-fit-0706f65f,Swimming Therapy Session,1299,fit,exercise_plan,,Low-impact aquatic exercise perfect for senior pets or those recovering from injury
+svc-learn-c970f784,Puppy Foundation Course,4999,learn,puppy_training,,"Essential training for puppies 8-16 weeks covering socialisation, basic commands, and house training"
+svc-learn-59efacc8,Basic Obedience Training (8 Sessions),6999,learn,basic_obedience,,"Master sit, stay, come, heel, and leash walking with certified trainers"
+svc-learn-86a761b7,Behaviour Modification Programme,8999,learn,behavior_modification,,"Address specific behavioural issues like aggression, anxiety, or excessive barking"
+svc-learn-1c73605c,Advanced Tricks & Commands,5499,learn,advanced_training,,"Fun advanced training including tricks, off-leash reliability, and complex commands"
+svc-learn-9f57f471,Private In-Home Training Session,2499,learn,basic_obedience,,One-on-one training session at your home for personalised attention
+svc-groom-f1f657ff,Spa Bath & Pamper Session,2499,shop,spa_bath,,"Luxury spa experience with aromatherapy bath, massage, and premium conditioning"
+svc-groom-34eaf366,Nail Trim & Paw Care,499,care,nail_care,,Professional nail trimming with paw pad moisturising treatment
+svc-groom-fed640c9,Breed-Specific Styling,2999,shop,styling,,Expert breed-standard styling by certified groomers familiar with your breed
+svc-advisory-94989eb8,Behaviour Consultation,2999,advisory,behaviour,,60-minute consultation with certified animal behaviourist to address concerns
+svc-advisory-4dd08198,Nutrition Planning Session,1999,advisory,nutrition,,Personalised nutrition plan developed by veterinary nutritionist
+svc-advisory-bad10d2a,Senior Pet Care Consultation,1499,advisory,consultation,,Comprehensive guidance for caring for your ageing pet with comfort and dignity
+svc-advisory-f696c03b,New Pet Parent Coaching,2499,advisory,coaching,,One-on-one coaching for new pet parents covering everything from feeding to training
+svc-advisory-9cfa5cb2,Breed Selection Guidance,999,advisory,breed_selection,,Expert advice to help you choose the perfect breed for your lifestyle
+svc-paperwork-9c3cb546,Pet Passport Application Service,3999,paperwork,travel,,Complete assistance with pet passport application including documentation and vet coordination
+svc-paperwork-5f32695e,KCI Registration Assistance,2499,paperwork,documentation,,Help with Kennel Club of India registration including pedigree verification
+svc-paperwork-5e994d0f,Medical Records Digitisation,999,paperwork,medical,,Convert all physical medical records to secure digital format with cloud backup
+svc-paperwork-e96964aa,Import/Export Documentation,7999,paperwork,documentation,,Complete documentation assistance for international pet relocation
+svc-emergency-8d11080b,24/7 Emergency Helpline Subscription,2999,emergency,helpline,,Annual subscription to 24/7 veterinary emergency helpline with instant advice
+svc-emergency-afc24ad7,Lost Pet Alert Service,999,emergency,lost_pet,,"Instant alert broadcast to local community, shelters, and veterinary clinics"
+svc-emergency-84b8d7ec,First Aid Training Course,3499,emergency,training,,Learn essential pet first aid skills from certified professionals
+svc-adopt-899ac12c,Adoption Application Processing,499,adopt,adoption_process,,Complete adoption application processing with background checks and home visit
+svc-adopt-8baf7a60,Adoption Counselling Session,999,adopt,consultation,,Expert guidance to help you find the perfect pet match for your family
+svc-adopt-bc5b1cf3,Shelter Support Donation,500,adopt,donation,,Direct donation to partner shelters to support rescued animals
+svc-farewell-0b79f1d7,Private Cremation Service,4999,farewell,cremation,,Dignified private cremation with ashes returned in an elegant urn
+svc-farewell-caa3632b,Rainbow Bridge Ceremony,2499,farewell,ceremony,,Touching farewell ceremony with readings and memorial moment
+svc-farewell-2b3012b4,Grief Support Counselling,1499,farewell,grief_support,,Professional pet loss counselling to help you through this difficult time
+svc-farewell-6374faf4,Paw Print Memorial,999,farewell,memorial,,Professional clay paw print impression as a lasting tribute
+svc-insure-4c7b4100,Basic Health Coverage,2999,insure,insurance,,Essential health insurance covering accidents and basic illnesses
+svc-insure-d823ef58,Comprehensive Pet Insurance,5999,insure,comprehensive,,"Full coverage including accidents, illness, surgeries, and preventive care"
+svc-insure-45d2f162,Senior Pet Insurance,4499,insure,senior_coverage,,Specialised coverage for pets over 7 years with pre-existing condition options
+svc-insure-3e2d91fd,Wellness Add-On,1499,insure,wellness,,Add preventive care coverage including vaccinations and annual check-ups
+svc-insure-9212f433,Travel Insurance for Pets,999,insure,travel_insurance,,Coverage for pets during domestic and international travel
+svc-community-6898a12a,Dog Park Meetup Pass (Monthly),999,community,meetups,,Monthly pass for organised dog park meetups with socialisation activities
+svc-community-6771dc01,Pet Parent Social Club Membership,2499,community,membership,,Annual membership to exclusive pet parent community with events and networking
+svc-community-81fae822,Breed-Specific Playdate,499,community,playdates,,Organised playdate with dogs of the same breed for specialised socialisation
+svc-community-96d0306f,Pet-Friendly Event Ticket,799,community,events,,Entry to premium pet-friendly events including festivals and exhibitions
+svc-community-7258b354,Pet Photography Meetup,1499,community,photo_meetup,,Join other pet parents for a fun photo session with professional photographer
+svc-bundle-fit-transformation,Complete Fitness Transformation,8999,fit,fitness_bundle,,"12-week programme combining assessment, weight management, and exercise sessions"
+svc-bundle-learn-puppy-starter,Puppy Learning Journey,9999,learn,training_bundle,,Complete puppy training from foundation through basic obedience
+svc-bundle-groom-pamper-day,Ultimate Pamper Day,4499,care,grooming_bundle,,"Full day of pampering including spa bath, full grooming, and de-shedding"
+svc-bundle-advisory-new-parent,New Pet Parent Essentials,4999,advisory,advisory_bundle,,"Everything new pet parents need including coaching, nutrition, and behaviour guidance"
+svc-bundle-insure-complete-protection,Complete Protection Plan,7499,insure,insurance_bundle,,Full insurance coverage with wellness add-on and travel protection
+svc-PROD-F1680CB37170,IATA Approved Travel Crate - Small,0,travel,travel,,
+svc-PROD-AF47C448D1C4,IATA Approved Travel Crate - Medium,0,travel,travel,,
+svc-PROD-B6630E1C959D,IATA Approved Travel Crate - Large,0,travel,travel,,
+svc-PROD-F8008846F354,Portable Pet Water Bottle,0,travel,travel,,
+svc-PROD-66EA6B650090,GPS Smart ID Tag,0,travel,travel,,
+svc-PROD-4897907A5EBE,Premium Deshedding Brush,0,care,care,,
+svc-PROD-BF7EBA0D2EC2,Safety Nail Clipper Set,0,care,care,,
+svc-PROD-CD37054E7D05,Gentle Oatmeal Shampoo,0,care,care,,
+svc-PROD-CC3AD8944742,Ear Cleaning Solution,0,care,care,,
+svc-PROD-7FBD4D907103,Biodegradable Poop Bags (120 Count),0,care,care,,
+svc-PROD-8C4134CAF38F,Calming Pheromone Spray,0,care,care,,
+svc-PROD-C1600C3F930F,Pet Dining Placemat,0,dine,dine,,
+svc-PROD-62236491D609,Dine-Time Calming Spray,0,dine,dine,,
+svc-PROD-3E55A7BAFAC4,Caf Ready Bandana,0,dine,dine,,
+svc-PROD-639D63468799,Reusable Pup Cup,0,dine,dine,,
+svc-PROD-53AC5CACA0BB,Outdoor Dining Mat,0,dine,dine,,
+svc-PROD-FBB90DF3D120,Caf Cooling Vest,0,dine,dine,,
+svc-PROD-CDADEE5AF32A,Fresh Breath Dental Chews,0,dine,dine,,
+svc-fit-prod-915b63cd,Dog Yoga Mat,1299,fit,fit,,Non-slip yoga mat designed for pet stretching and relaxation exercises. Perfect for doga sessions with your furry friend.
+svc-fit-prod-cc80aef8,Interactive Fetch Launcher,2499,fit,fit,,Automatic ball launcher with adjustable distance settings. Great for high-energy dogs who love fetch.
+svc-fit-prod-ec10e862,Swimming Vest (All Sizes),1799,fit,fit,,High-visibility flotation vest for water-loving dogs. Adjustable straps and handle for easy lifting.
+svc-fit-prod-358bfdea,Treadmill for Dogs,15999,fit,fit,,Indoor exercise solution for dogs. Variable speed settings and safety rails. Perfect for rainy days or apartment living.
+svc-seed-stay-40a736ce,Standard Boarding - 1 Night,999,stay,boarding,,Comfortable overnight stay with meals
+svc-seed-stay-25beac5b,Premium Suite - 1 Night,1499,stay,boarding,,Luxury suite with AC and webcam access
+svc-seed-stay-b4d82068,Daycare Pass - Single Day,599,stay,daycare,,Full day of play and supervision
+svc-seed-stay-e053f179,Daycare Pack - 10 Days,4999,stay,daycare,,10-day daycare pass with 2 bonus days
+svc-seed-stay-b06d0e4e,Home Boarding Service,1299,stay,boarding,,Stay with a certified pet host
+svc-seed-stay-35e67a6c,Puppy Daycare (under 1 Year),699,stay,daycare,,Specialized care for young puppies
+svc-seed-stay-f621ab50,Senior Dog Stay,1199,stay,boarding,,Gentle care for senior pets
+svc-seed-stay-5cc83de6,Medical Boarding,1799,stay,boarding,,Boarding with medication administration
+svc-seed-stay-96811e4b,Holiday Pet Sitting,1599,stay,boarding,,In-home pet sitting during holidays
+svc-seed-stay-c60487d8,Airport Pickup & Drop,799,stay,services,,Pet transport to/from airport
+svc-seed-travel-c9c0c605,International Flight Assistance,9999,shop,services,,End-to-end international travel support
+svc-seed-travel-48f44771,Pet-Friendly Hotel Booking,499,shop,services,,We find the perfect pet-friendly stay
+svc-seed-care-c87e3042,Full Grooming Session,999,care,grooming,,"Bath, haircut, nail trim, ear cleaning"
+svc-seed-care-ee82dfd6,Puppy First Groom,699,care,grooming,,Gentle introduction to grooming
+svc-seed-care-3e3213a3,Flea & Tick Prevention Pack,799,care,health,,3-month protection pack
+svc-seed-care-c9ee4699,Joint Support Supplements,899,care,health,,Glucosamine & chondroitin formula
+svc-seed-care-acd7d9dc,Skin & Coat Supplements,699,care,health,,Omega-rich formula for shiny coat
+svc-seed-care-3421b3a8,Vet Video Consultation,499,care,health,,Online vet consultation
+svc-seed-enjoy-d9d90d45,Dog Park Playdate Booking,399,enjoy,services,,Organized playdate at local park
+svc-seed-enjoy-dd8937e5,Swimming Pool Session,799,enjoy,services,,Supervised pool time for dogs
+svc-seed-enjoy-53d38976,Agility Course Access,599,enjoy,services,,Access to agility training course
+svc-seed-fit-9fbbea2b,Personal Training Session,999,fit,training,,One-on-one fitness training
+svc-seed-fit-6e3038cf,Weight Loss Program (4 Weeks),3999,fit,programs,,Structured weight management program
+svc-seed-fit-ce084921,Puppy Fitness Starter,2499,fit,programs,,Age-appropriate exercise program
+svc-seed-fit-cee46735,Senior Mobility Program,2999,fit,programs,,Gentle exercises for older dogs
+svc-seed-fit-bfc542fb,Canine Treadmill Session,599,fit,training,,Supervised treadmill workout
+svc-seed-fit-92c2a48f,Swimming Fitness Class,799,fit,training,,Low-impact aqua fitness
+svc-seed-fit-0f7980a3,Agility Training Course,4999,fit,programs,,8-week agility training program
+svc-seed-fit-dc3c3a43,Monthly Fitness Subscription,2999,fit,programs,,Unlimited fitness sessions
+svc-seed-fit-a62e3b62,Dog Yoga (Doga) Session,599,fit,training,,Relaxing yoga with your dog
+svc-seed-learn-bb2c3631,Puppy Kindergarten (8 Weeks),5999,learn,training,,Foundation training for puppies
+svc-seed-learn-02b0a368,Advanced Training Program,7999,learn,training,,Complex commands & tricks
+svc-seed-learn-63540423,Behavior Modification,6999,learn,training,,Address specific behavior issues
+svc-seed-learn-3e36e599,Socialization Classes,2499,learn,training,,Safe exposure to new experiences
+svc-seed-learn-4b9c4d98,Trick Training Course,3499,learn,training,,Fun tricks to impress everyone
+svc-seed-paperwork-34b4f03d,Pet Registration Service,999,paperwork,documentation,,Complete municipal registration
+svc-seed-paperwork-4a148e22,Pet Insurance Consultation,499,paperwork,consultation,,Find the right pet insurance
+svc-seed-paperwork-6b8dd44e,Vaccination Record Book,299,paperwork,documentation,,Official vaccination record
+svc-seed-paperwork-c3fef725,Pet Will & Trust Service,4999,paperwork,legal,,Legal protection for your pet's future
+svc-seed-paperwork-f835e76f,Breeding License Assistance,3999,paperwork,documentation,,Help with breeding permits
+svc-seed-advisory-2a9fd38d,Pre-Adoption Counseling,799,advisory,consultation,,Choose the right pet for your family
+svc-seed-advisory-c58433b2,New Pet Parent Guidance,999,advisory,consultation,,Everything you need to know
+svc-seed-advisory-1089da9f,Multi-Pet Household Advisory,1499,advisory,consultation,,Introducing new pets safely
+svc-seed-advisory-b4e6501b,Breed Selection Service,1999,shop,consultation,,Find your perfect breed match
+svc-seed-advisory-08449aa0,Pet-Proofing Home Audit,1499,advisory,services,,Make your home pet-safe
+svc-seed-emergency-ff35f1cb,24/7 Emergency Vet Hotline,299,emergency,emergency,,Round-the-clock vet access
+svc-seed-emergency-0fba5b04,First Aid Training Workshop,1999,travel,training,,Learn pet first aid
+svc-seed-emergency-c46d5e62,Poison Control Consultation,499,emergency,emergency,,Immediate toxicity guidance
+svc-seed-emergency-8fa7b9f2,Lost Pet Search Service,1999,emergency,services,,Professional pet search team
+svc-seed-farewell-d7cdaca0,Cremation Service - Standard,3999,shop,cremation,,Dignified cremation service
+svc-seed-farewell-a55e74fd,Cremation Service - Premium,6999,shop,cremation,,Private cremation with ceremony
+svc-seed-farewell-479e1cf7,Paw Print Keepsake,999,farewell,memorial,,Clay paw print impression
+svc-seed-farewell-6629655d,Photo Memorial Frame,1499,farewell,memorial,,Custom photo memorial
+svc-seed-farewell-94125864,Memorial Garden Stone,2499,farewell,memorial,,Engraved garden memorial
+svc-seed-farewell-15584e8a,Pet Loss Counseling Session,999,farewell,services,,Grief support counseling
+svc-seed-adopt-45858257,Adoption Counseling,0,adopt,services,,Free adoption guidance
+svc-seed-adopt-54adefbc,Rescue Dog Rehabilitation,4999,adopt,services,,Behavior support for rescues
+svc-seed-adopt-71274095,Foster-to-Adopt Program,0,adopt,programs,,Try before you commit
+svc-seed-adopt-ffcdaa55,Senior Pet Adoption Support,999,adopt,services,,Support for adopting older pets
+svc-seed-adopt-13400197,Second Chance Sponsorship,500,adopt,donation,,Sponsor a shelter pet
+svc-seed-shop-e1b40287,Grooming Brush Set,799,shop,grooming,,Complete brush collection
+svc-svc-celebrate-7f5048e6,Birthday Pawty Planning - Home,4999,celebrate,party-planning,,"Complete birthday celebration planning at your home. Includes décor, cake coordination, photography, and party games for your furry friend and their pals."
+svc-svc-celebrate-1d7dabb1,Birthday Pawty Planning - Caf/Venue,7999,celebrate,party-planning,,"Premium birthday celebration at a pet-friendly café or venue. Full Concierge® service with venue booking, décor, catering, and entertainment."
+svc-svc-celebrate-7a925790,Birthday Pawty Planning - Resort Experience,14999,celebrate,party-planning,,"Luxury resort birthday experience. Exclusive venue, gourmet menu, spa treatments, and overnight stay option for the birthday pup."
+svc-svc-celebrate-096f3547,Milestone Celebration - Puppy to Adult,2999,celebrate,milestone,,Mark your puppy's transition to adulthood with a special ceremony. Includes growth photo compilation and celebration.
+svc-svc-celebrate-7f1565c4,Milestone Celebration - Senior Honours,3499,celebrate,milestone,,Honour your pet's golden years with a dignified senior celebration. Gentle activities suited to their pace.
+svc-svc-celebrate-b5b832db,Surprise Delivery & Moment,1999,celebrate,surprise,,"Surprise your pet parent with an unexpected celebration delivery. Perfect for birthdays, anniversaries, or just because."
+svc-svc-celebrate-26caef13,Party Coordination Service,2499,celebrate,coordination,,"Full party coordination without venue booking. We handle décor, cake, invites, and guest management."
+svc-svc-celebrate-68e6d5f5,Breed Day Celebration,2499,celebrate,breed-day,,Celebrate your pet's breed heritage on their official Breed Day. Connect with other breed enthusiasts and honour their lineage.
+svc-svc-celebrate-da88476b,Adoption Anniversary Ritual,1999,celebrate,anniversary,,Annual ritual to celebrate the bond between you and your adopted pet. Includes donation to rescue organisations.
+svc-svc-dine-2f4ace47,Nutrition Assessment & Meal Plan,1999,dine,consultation,,"Comprehensive nutrition assessment by a certified pet nutritionist. Personalised meal plan based on breed, age, and health conditions."
+svc-svc-dine-44e36ece,Diet Transition Support,1499,dine,support,,Guided transition to new food with monitoring and adjustments. Ideal for switching to fresh food or managing sensitivities.
+svc-svc-dine-ec77bdf1,Allergy Testing & Diet Planning,3999,dine,health,,Comprehensive food allergy testing with elimination diet planning. Identify triggers and create a safe meal plan.
+svc-svc-dine-d5633fd0,Home Cooking Workshop,2499,dine,workshop,,Learn to prepare nutritious homemade meals for your pet. Hands-on workshop with recipes and tips.
+svc-svc-dine-0d03dd02,Meal Prep Service - Weekly,1999,dine,meal-prep,,Weekly meal preparation and portioning service. Fresh meals prepared and delivered to your doorstep.
+svc-svc-stay-6268afff,Boarding Concierge - Standard,1499,stay,boarding,,Full-service boarding coordination with our Concierge® team. We find the perfect stay based on your pet's personality.
+svc-svc-stay-9a248569,Boarding Concierge - Premium,2499,stay,boarding,,"Premium boarding with luxury amenities. Private suite, spa treatment, and personalised attention."
+svc-svc-stay-11abdb7a,Daycare Planning & Coordination,799,stay,daycare,,"Regular daycare scheduling and coordination. We manage bookings, transportation, and daily reports."
+svc-svc-stay-0c95a0ef,Home Pet Sitter Matching,999,shop,pet-sitting,,"We match you with a vetted, compatible home pet sitter. Your pet stays in a loving home environment."
+svc-svc-stay-10f6ffd7,Trial Stay Experience,499,stay,trial,,Short trial stay to help your pet adjust to boarding. Perfect for anxious pets or first-timers.
+svc-svc-travel-d9c2f29d,Pet Travel Planning - Domestic,2999,travel,planning,,"Complete domestic travel planning for you and your pet. Flight/train bookings, pet-friendly stays, and itinerary."
+svc-svc-travel-fbdc8657,Pet Travel Planning - International,9999,travel,planning,,"Comprehensive international travel planning including documentation, quarantine requirements, and airline coordination."
+svc-svc-travel-12312229,Pet Relocation Service - Domestic,14999,shop,relocation,,End-to-end pet relocation within India. Door-to-door service with climate-controlled transport.
+svc-svc-travel-3d30fbb1,Pet Relocation Service - International,49999,shop,relocation,,"Complete international pet relocation with all documentation, customs clearance, and destination delivery."
+svc-svc-travel-fe9aae55,Travel Documentation Service,3999,travel,documentation,,"We handle all pet travel documentation - health certificates, import permits, and airline forms."
+svc-svc-travel-7f7b4df1,Airport Assistance Service,1999,shop,assistance,,"Personal assistance at the airport for pet check-in, security, and boarding. Reduces travel stress."
+svc-svc-travel-9fa70123,Pet-Friendly Destination Research,999,shop,research,,"Detailed research on pet-friendly destinations, activities, and accommodations for your trip."
+svc-svc-care-391f33bc,Grooming Concierge - Full Service,1499,care,grooming,,"Premium grooming with Concierge® coordination. We book, transport, and ensure your pet's comfort throughout."
+svc-svc-care-4b3a0f05,Home Grooming Service,1999,care,grooming,,Professional grooming in the comfort of your home. Less stress for anxious pets.
+svc-svc-care-ab1ef415,Vet Appointment Coordination,499,care,health,,"We schedule and coordinate all vet appointments. Reminders, transport, and report collection included."
+svc-svc-care-dc450729,Wellness Programme - Annual,9999,care,wellness,,"Comprehensive annual wellness programme with scheduled check-ups, vaccinations, and preventive care."
+svc-svc-care-350a66bc,Senior Pet Care Programme,12999,care,senior-care,,"Specialised care programme for senior pets. Enhanced monitoring, mobility support, and comfort care."
+svc-svc-care-0d344ead,Post-Surgery Care Coordination,2999,care,recovery,,"Complete post-surgery care coordination including medication management, wound care, and recovery monitoring."
+svc-svc-enjoy-57ba0150,Playdate Coordination Service,799,shop,social,,We find compatible playmates and coordinate regular playdates for your social pup.
+svc-svc-enjoy-a8ba8999,Social Calendar Management,1999,enjoy,social,,"Monthly social calendar with curated events, meetups, and activities for your pet."
+svc-svc-enjoy-a2f999b2,Adventure Day Out,2999,enjoy,experience,,"Curated adventure day with hiking, beach visit, or nature exploration. Supervised fun for active dogs."
+svc-svc-enjoy-aabd3519,Swimming Session - Pool,999,enjoy,activity,,"Supervised swimming session at a pet pool. Great exercise and fun, especially in summer."
+svc-svc-enjoy-87f1504a,Pet Caf Experience,1499,enjoy,experience,,"Special outing to a pet café with treats, playtime, and socialisation. Perfect for a pawrent-pet date."
+svc-svc-learn-83554778,Behaviour Assessment & Plan,2499,learn,assessment,,In-depth behaviour assessment with customised modification plan for specific issues.
+svc-svc-learn-dd8da108,Private Training - Home Visit,1999,learn,training,,One-on-one training session at your home. Address specific behaviours in familiar environment.
+svc-svc-learn-d6d763c9,Puppy Socialisation Programme,4999,learn,socialisation,,Structured socialisation programme for puppies during critical development period.
+svc-svc-learn-185e5ed3,Reactivity Rehabilitation,8999,learn,behaviour,,Intensive programme for reactive dogs. Build confidence and change responses to triggers.
+svc-svc-learn-041b71ca,Separation Anxiety Programme,5999,learn,behaviour,,Structured programme to address separation anxiety with gradual desensitisation.
+svc-svc-learn-ea112dba,Canine Good Citizen Preparation,6999,learn,certification,,Preparation course for Canine Good Citizen certification. Build skills for public access.
+svc-svc-paperwork-e0b6d991,Breed Registration - KCI,4999,paperwork,breed-registry,,Complete Kennel Club of India registration with pedigree documentation.
+svc-svc-paperwork-28f1caa3,Pet Insurance Advisory,999,paperwork,insurance,,"Compare and select the best pet insurance based on your pet's breed, age, and health history."
+svc-svc-paperwork-58af97fc,Document Organisation Service,1499,shop,organisation,,"We organise and digitise all your pet's documents in a secure, accessible format."
+svc-svc-paperwork-2eeb4d14,Import/Export Permit Service,7999,paperwork,permits,,Handle all permits and documentation for international pet movement.
+svc-svc-advisory-313f87f4,New Pet Parent Consultation,1499,advisory,consultation,,Comprehensive consultation for new pet parents. Everything you need to know about caring for your new family member.
+svc-svc-advisory-e266850f,Breed Selection Advisory,1999,advisory,advisory,,"Expert guidance to choose the perfect breed based on your lifestyle, home, and preferences."
+svc-svc-advisory-48c9949f,Second Opinion Service,999,advisory,health,,Connect with specialist vets for second opinions on diagnoses or treatment plans.
+svc-svc-advisory-bf6e8f0a,End-of-Life Consultation,1499,advisory,consultation,,Compassionate guidance during your pet's final chapter. Quality of life assessment and care planning.
+svc-svc-emergency-442c9ca6,Lost Pet Search & Recovery,4999,emergency,search,,"Professional search team activated within hours. Flyers, social media, and ground search."
+svc-svc-emergency-7f7d140a,Pet First Aid Training,2499,travel,training,,Learn essential pet first aid skills. Certification included.
+svc-svc-farewell-eb4da3dc,Rainbow Bridge Ceremony - Complete,9999,shop,ceremony,,"Dignified farewell ceremony with cremation, memorial service, and keepsakes."
+svc-svc-farewell-6c595c14,At-Home Euthanasia Coordination,4999,farewell,end-of-life,,Arrange peaceful at-home euthanasia with a compassionate vet. Dignified goodbye in familiar surroundings.
+svc-svc-farewell-072144bb,Memorial Planning Service,2999,farewell,memorial,,"Complete memorial planning including keepsakes, tribute video, and remembrance options."
+svc-svc-farewell-81704345,Grief Support Sessions,1499,farewell,support,,Professional grief counselling for pet loss. Individual or family sessions available.
+svc-svc-adopt-1d41ca6f,Foster-to-Adopt Programme,999,adopt,programme,,Trial foster period before committing to adoption. Support throughout the transition.
+svc-PROD-B04D6E0B0E54,Agility Training Set,0,learn,training-equipment,,
+svc-PROD-62FC20BB6710,Interactive Puzzle Feeder,0,fit,mental-fitness,,
+svc-PROD-A942D09526CB,Balance Board for Dogs,0,learn,core-training,,
+svc-PROD-7C422F22E055,Tug Rope - Heavy Duty,0,shop,strength,,
+svc-PROD-5C48703D7A1C,Cooling Vest,0,shop,weather-gear,,
+svc-PROD-6F6D84BDC0E9,Portable Water Bottle,0,shop,hydration,,
+svc-PROD-A0564BEEC5EC,Pet Health Monitor,0,advisory,advisory,,
+svc-PROD-A1863A58DC1B,Pheromone Calming Diffuser,0,advisory,advisory,,
+svc-PROD-79B99C9EAE9F,Pet Weight Management Scale,0,advisory,advisory,,
+svc-PROD-2DDF6CE64594,Senior Pet Mobility Ramp,0,advisory,advisory,,
+svc-PROD-F9A3CC092F39,GPS Pet Tracker - Real Time,0,emergency,emergency,,
+svc-PROD-A965615904A2,GPS Pet Tracker - Mini (Cats & Small Dogs),0,emergency,emergency,,
+svc-PROD-043BC49784BC,Smart QR ID Tag - Emergency,0,emergency,emergency,,
+svc-PROD-152B28DF6024,High-Visibility Reflective Vest,0,emergency,emergency,,
+svc-PROD-71B4BBAC613C,Soft Emergency Muzzle Set (3 Sizes),0,emergency,emergency,,
+svc-PROD-47DBD1D3E4B5,Emergency Calming Spray,0,emergency,emergency,,
+svc-PROD-3E1D5C1620CF,Smart QR ID Tag,0,paperwork,paperwork,,
+svc-PROD-D8983D38FF03,Digital Pet ID Card,0,paperwork,paperwork,,
+svc-PROD-5B40E90BEC36,Digital Health Record Wallet,0,paperwork,paperwork,,
+svc-PROD-D107BDD9357E,TDC Health File Folder,0,paperwork,paperwork,,
+svc-PROD-9C95D4BDF688,Vaccination Booklet Holder,0,paperwork,paperwork,,
+svc-PROD-AC067D096252,Waterproof Document Sleeve,0,paperwork,paperwork,,
+svc-PROD-72C0658B94A3,Travel Document Pouch,0,paperwork,paperwork,,
+svc-PROD-B2C5887FA570,Emergency Document Wallet,0,paperwork,paperwork,,
+svc-PROD-6228C21DF7F2,Emergency Contact Cards (Pack of 5),0,paperwork,paperwork,,
+svc-PROD-DD9E2442FCB4,Pet Insurance Document Organizer,0,paperwork,paperwork,,
+svc-PROD-482BF9EC24AE,Annual Compliance Checklist,0,paperwork,paperwork,,
+svc-PROD-1B2DC302D424,Smart Activity Tracker,0,fit,fit,,
+svc-PROD-A938A011CBB1,Pet Weight Scale,0,fit,fit,,
+svc-PROD-550F0F7BAFC7,Automatic Ball Launcher,0,fit,fit,,
+svc-PROD-F74AADD1F080,Pet Treadmill,0,fit,fit,,
+svc-PROD-8A93C77102D9,Swimming Safety Vest,0,fit,fit,,
+svc-PROD-1ADD9E952CB3,Joint Support Supplement,0,fit,fit,,
+svc-PROD-D47FAB5ABD8B,Cooling Exercise Vest,0,fit,fit,,
+svc-PROD-BB71B4AAA52A,Canine Balance Board,0,fit,fit,,
+svc-PROD-F19DE643DFD0,Social Butterfly Bandana,0,enjoy,enjoy,,
+svc-PROD-3ED36187B10C,Cooling Vest for Outdoor Fun,0,enjoy,enjoy,,
+svc-PROD-A1F794467B3C,Safety Swim Vest,0,enjoy,enjoy,,
+svc-PROD-CAECA555999E,Event Day Backpack,0,enjoy,enjoy,,
+svc-PROD-B3CCF01E24A5,Portable Outdoor Bed,0,enjoy,enjoy,,
+svc-PROD-1E8FFC699847,Social Profile Tag,0,enjoy,enjoy,,
+svc-stay-696d061f899ee8015c535faa,The Leela Goa,12000,stay,stay,,Luxury beachfront resort set amidst 75 acres of lush gardens. One of India's most pet-welcoming luxury properties with dedicated pet amenities.
+svc-stay-696d061f899ee8015c535fab,W Goa,12000,stay,stay,,Trendy beachside escape with vibrant design and pet-friendly policies. Perfect for young pet parents seeking style and comfort.
+svc-stay-696d061f899ee8015c535fac,Ahilya By the Sea,5000,shop,stay,,Intimate heritage property with just 8 rooms. Dogs are treated as family here with personalized care.
+svc-stay-696d061f899ee8015c535fad,SUJN Jawai,12000,stay,stay,,Luxury tented camp in leopard country. One of India's most exclusive pet-friendly wilderness experiences.
+svc-stay-696d061f899ee8015c535fae,Taj Lake Palace,25000,stay,stay,,Iconic floating palace on Lake Pichola. Pets are welcomed as royal guests with special arrangements.
+svc-stay-696d061f899ee8015c535faf,The Oberoi Rajvilas,12000,stay,stay,,32-acre luxury resort with Rajasthani architecture. Pets are pampered with dedicated walking areas.
+svc-stay-696d061f899ee8015c535fb0,CGH Earth - Coconut Lagoon,12000,stay,stay,,Eco-friendly backwater resort accessible only by boat. Pets enjoy the natural surroundings.
+svc-stay-696d061f899ee8015c535fb1,Marari Beach Resort,12000,stay,stay,,Beachside eco-resort with traditional Kerala cottages. Perfect for beach-loving dogs.
+svc-stay-696d061f899ee8015c535fb2,The Oberoi Cecil,5000,stay,stay,,Colonial heritage hotel with stunning mountain views. Pets enjoy the crisp mountain air.
+svc-stay-696d061f899ee8015c535fb3,Wildflower Hall,12000,stay,stay,,"Former residence of Lord Kitchener at 8,250 ft. Surrounded by cedar forests perfect for pet walks."
+svc-stay-696d061f899ee8015c535fb6,Della Resorts,12000,stay,stay,,Adventure resort with India's largest collection of adventure activities. Pet-friendly rooms available.
+svc-stay-696d061f899ee8015c535fb7,Radisson Blu Resort & Spa Alibaug,12000,stay,stay,,Beachside resort perfect for weekend getaways from Mumbai. Pet-friendly rooms with garden access.
+svc-stay-696d061f899ee8015c535fb8,Evolve Back Coorg,12000,stay,stay,,Luxury plantation resort in coffee country. Expansive grounds perfect for pets to explore.
+svc-stay-696d061f899ee8015c535fb9,The Serai Kabini,12000,stay,stay,,Wildlife resort on the banks of Kabini River. Perfect for nature-loving pet families.
+svc-stay-696d061f899ee8015c535fba,The Tamara Kodai,12000,stay,stay,,Boutique resort in the Palani Hills. Misty mountains and forest walks for pets.
+svc-stay-696d061f899ee8015c535fbb,Taj Fisherman's Cove,12000,stay,stay,,Beachfront resort near Chennai. Pet-friendly cottages with direct beach access.
+svc-stay-696d061f899ee8015c535fbc,"The Oberoi, Gurugram",5000,shop,stay,,Urban luxury hotel with pet-friendly rooms. Ideal for business travelers with pets.
+svc-stay-696d061f899ee8015c535fbd,ITC Grand Bharat,12000,stay,stay,,All-suite resort spread across 100 acres. Pets enjoy the expansive grounds and golf course.
+svc-stay-696d061f899ee8015c535fbe,Taj Exotica Resort & Spa,12000,stay,stay,,Island paradise with pet-friendly villas. Near Asia's best beach.
+svc-stay-696d061f899ee8015c535fbf,Palais De Mahe,5000,stay,stay,,Boutique heritage hotel in French Quarter. Pet-friendly rooms with courtyard access.
+svc-stay-696d061f899ee8015c535fc0,Treehouse Jaipur,5000,stay,stay,,Unique treehouse-style property with pet-friendly rooms. Great city views.
+svc-stay-696d061f899ee8015c535fc1,SaffronStays Casa Del Sol,5000,stay,stay,,Private villa perfect for pet families. Fully fenced garden and pool.
+svc-stay-696d061f899ee8015c535fc2,Atmantan Wellness Centre,12000,stay,stay,,Luxury wellness resort with pet-friendly options. Holistic retreat for you and your pet.
+svc-stay-696d061f899ee8015c535fc3,Himalaica,5000,stay,stay,,Cozy mountain homestay with incredible views. Dogs love the apple orchards.
+svc-stay-696d061f899ee8015c535fc4,Camp Wildex,12000,stay,stay,,Adventure camp by the Ganges. Perfect for active pet families.
+svc-stay-696d061f899ee8015c535fc5,The Windflower Prakruthi,12000,stay,stay,,Nature resort near Bangalore airport. Great for pet staycations.
+svc-stay-696d061f899ee8015c535fc6,Mahua Kothi,12000,stay,stay,,Luxury jungle lodge near tiger reserve. Pet-friendly with precautions.
+svc-stay-696d061f899ee8015c535fc7,Vivanta Dal View,5000,stay,stay,,Lakeside luxury with Dal Lake views. Pet-friendly rooms with garden access.
+svc-stay-696d061f899ee8015c535fc8,The Machan,12000,stay,stay,,Treehouse eco-resort in the forest. Unique experience for nature-loving pets.
+svc-stay-696d061f899ee8015c535fc9,Aahana Resort,12000,stay,stay,,Nature resort at the foothills of the Himalayas. Pet-friendly with large grounds.
+svc-boarding-69787d6a3fbee8a72eb13f67,Pawsome Pet Resort,1500,stay,boarding,,Luxury pet resort with spacious rooms and 24/7 vet access
+svc-boarding-69787d6a3fbee8a72eb13f68,Happy Tails Boarding,800,stay,boarding,,Cozy home environment with personal attention
+svc-boarding-69787d6a3fbee8a72eb13f69,Pet Paradise Delhi,1200,stay,boarding,,Luxury pet boarding with individual suites and personalized care
+svc-PROD-0FFA097BFEAE,Pet-Friendly Hotel Stay,0,stay,hotel,,
+svc-PROD-C856199055D2,Resort Getaway with Pets,0,shop,resort,,
+svc-PROD-EDA35289A625,Private Villa Rental,0,shop,villa,,
+svc-PROD-FA4435430533,Countryside Farmstay,0,stay,farmstay,,
+svc-PROD-2D04300F4A79,Premium Pet Boarding,0,stay,boarding,,
+svc-PROD-EA4C3657AEE4,Standard Pet Boarding,0,stay,boarding,,
+svc-PROD-86D3B6F5F70D,Home-style Pet Boarding,0,stay,homestay,,
+svc-PROD-D93F6220C860,Pet Daycare - Full Day,0,care,daycare,,
+svc-PROD-557FA7031AB5,Pet-Friendly Cab Service,0,travel,cab,,
+svc-PROD-B6C7791C00B8,Train Travel Assistance,0,travel,train,,
+svc-PROD-C39634C3CEDD,Domestic Flight Coordination,0,shop,flight,,
+svc-PROD-AA7BD1002E51,Pet Taxi - City Rides,0,shop,taxi,,
+svc-PROD-E2B791EAA694,Bath & Brush,0,care,grooming,,
+svc-PROD-2054D6966F5F,Daily Dog Walking,0,shop,walking,,
+svc-PROD-03407A0BBFD4,Pet Sitting (8 Hours),0,shop,sitting,,
+svc-PROD-8C21C8B5AB85,Basic Obedience Training,0,learn,training,,
+svc-PROD-9ED37697CC22,Vet Consultation Booking,0,shop,vet,,
+svc-PROD-1B4B9807E262,Agility Training Class,0,fit,agility,,
+svc-PROD-B19A48A8F5F8,Dog Park Day Pass,0,shop,park,,
+svc-PROD-DDB61969ADCC,Pet Cafe Voucher,0,shop,cafe,,
+svc-PROD-750BE03D6799,Beach Day Experience,0,shop,beach,,
+svc-PROD-6C40202B715E,Puppy Training Course,0,learn,puppy,,
+svc-PROD-FB8A502EBBD3,Fun Tricks Workshop,0,shop,tricks,,
+svc-69763578bf962b2a4806bb6c,Biodegradable Poop Bags (120 count),0,care,care,,Eco-friendly waste bags. Extra thick and leak-proof.
+svc-6977d50cf1ba3c3bd6e57597,Puppy Daycare (under 1 year),0,care,daycare,,Specialized care for young puppies
+svc-6977d50cf1ba3c3bd6e575bb,Weight Loss Program (4 weeks),0,shop,programs,,Structured weight management program
+svc-6977d50cf1ba3c3bd6e575c5,Puppy Kindergarten (8 weeks),0,learn,training,,Foundation training for puppies
+svc-697838c4fdefa8a5b3756286,Soft Emergency Muzzle Set (3 sizes),0,emergency,emergency,,Breathable mesh muzzle set for safe handling during injuries. Non-intimidating design.
+svc-69787d6ab1ffb9d0ef5fe0ee,Ahilya by the Sea,0,stay,stay,,Intimate heritage property with just 8 rooms. Dogs are treated as family here with personalized care.
+svc-69787d6ab1ffb9d0ef5fe127,Palais de Mahe,0,stay,stay,,Boutique heritage hotel in French Quarter. Pet-friendly rooms with courtyard access.
+svc-697888da1b42203bef3270d5,Pet Resort Getaway,0,shop,resort,,Luxury resort for pets
+svc-697888da1b42203bef3270f3,Pet Sitting (8 hours),0,shop,sitting,,In-home pet sitting
+svc-6978936e1b42203bef327c71,Pet Adventure Day,0,shop,adventure,,Guided outdoor adventure
+svc-6978936e1b42203bef327c75,Basic Grooming,0,care,basic,,Bath and brush
+svc-6978936e1b42203bef327c77,Nail Trim & Filing,0,shop,nail,,Professional nail care
+svc-6978936e1b42203bef327c79,Adoption Consultation,0,adopt,consultation,,Find your perfect match
+svc-6978936e1b42203bef327c7d,Post-Adoption Support,0,adopt,support,,30-day support package
+svc-6978936e1b42203bef327c7f,Memorial Service,0,shop,memorial,,Dignified memorial ceremony
+svc-6978936e1b42203bef327c81,Private Cremation,0,shop,cremation,,Private cremation service
+svc-6978936e1b42203bef327c87,Premium Reservation Service,0,shop,service,,Guaranteed pet-friendly seating
+svc-6978936e1b42203bef327c8d,Premium Coverage Plan,0,shop,insurance,,Comprehensive insurance
+svc-6978936e1b42203bef327c8f,Accident Only Plan,0,shop,insurance,,Accident coverage
+svc-PROD-BFE3F2280142,TEST_Product_20260127163538,0,shop,,,
+svc-PROD-9D6CD1ACECAA,Woof Woof Inn,0,stay,boarding,,
+svc-PROD-7748FF2AE515,Pet Paradise,0,stay,boarding,,
+svc-PROD-F93923E1924D,Furry Friends Haven,0,stay,boarding,,
+svc-PROD-B05597A41C87,K9 Comfort Zone,0,stay,boarding,,
+svc-PROD-80831CD98BC1,Doggy Daycare & Stay,0,stay,boarding,,
+svc-PROD-99933649AFC7,Paws & Relax,0,stay,boarding,,
+svc-PROD-731F55854916,The Barking Lot,0,stay,boarding,,
+svc-PROD-77E11E436578,Snout House,0,stay,boarding,,
+svc-PROD-20F63A029858,Tail Waggers Resort,0,stay,boarding,,
+svc-PROD-B32A4EDECAE1,Cuddles Pet Care,0,stay,boarding,,
+svc-PROD-755FEDC753C9,Canine Castle Mumbai,0,stay,boarding,,
+svc-PROD-6662F741F7C7,Paws & Play Delhi,0,stay,boarding,,
+svc-PROD-BA6C178F255B,The Dog Lodge Gurgaon,0,stay,boarding,,
+svc-PROD-FE005F55E37A,Furry Friends Pune,0,stay,boarding,,
+svc-PROD-8AAD5AB36F94,Wagging Tails Hyderabad,0,stay,boarding,,
+svc-PROD-57AA27BE46AC,Pet Paradise Chennai,0,stay,boarding,,
+svc-697c3ed8d9fc024950dca197,Allergy-Safe Diet Planning,0,shop,feed,,Specialized diet planning for pets with food allergies
+svc-697c3ed8d9fc024950dca199,Puppy Nutrition Programme,0,shop,feed,,Age-appropriate nutrition guidance for growing puppies
+svc-697c3ed8d9fc024950dca19b,Senior Pet Nutrition,0,shop,feed,,Specialized nutrition support for aging pets
+svc-697c3ed8d9fc024950dca19d,Prescription Diet Coordination,0,shop,feed,,Help sourcing and managing prescription diets
+svc-697c3ed8d9fc024950dca1a9,Free Insurance Quote Comparison,0,insure,insure,,Get quotes from multiple pet insurance providers - completely free
+svc-697c3ed8d9fc024950dca1ab,Policy Review & Optimization,0,insure,insure,,Expert review of your current pet insurance policy
+svc-697c3ed8d9fc024950dca1ad,Claim Filing Assistance,0,insure,insure,,Professional help filing and tracking insurance claims
+svc-697c3ed8d9fc024950dca1af,Renewal Management Service,0,insure,insure,,Never miss a renewal with automated reminders
+svc-697dbae5572fc2185da93e75,Comfort Crate for New Pets,0,adopt,adopt,,Cozy crate to help adopted pets feel safe
+svc-697dbae5572fc2185da93e77,Rescue Calming Supplement,0,adopt,adopt,,Natural calming aid for anxious rescue pets
+svc-697dbae5572fc2185da93e79,Orthopedic Comfort Bed,0,adopt,adopt,,Memory foam bed for senior rescues
+svc-697dbae5572fc2185da93e7d,Shelter Donation Gift Card,0,adopt,adopt,,Support local shelters with a donation
+svc-697dbae5572fc2185da93e7f,Dog Treadmill (Small),0,fit,fit,,Indoor exercise treadmill for small dogs
+svc-697dbae5572fc2185da93e81,Weighted Vest for Dogs,0,fit,fit,,Adjustable weight vest for strength training
+svc-697dbae5572fc2185da93e87,Exercise Ball Launcher,0,fit,fit,,Automatic ball launcher for fetch exercises
+svc-697dbaeb572fc2185da93e9b,Squeaky Ball Set (3 pack),0,enjoy,enjoy,,Durable tennis balls with squeaker
+svc-697dbaeb572fc2185da93ea1,Portable Dog Pool,0,enjoy,enjoy,,Foldable splash pool for summer fun
+svc-697dbaeb572fc2185da93ea3,Party Bandana Set,0,enjoy,enjoy,,Stylish bandanas for meetups & events
+svc-tdc-4e286279e18a,Professional Deshedding Brush,849.0,care,grooming,,"Stainless steel deshedding tool reduces shedding by up to 90%. Ergonomic handle, gentle on skin. For medium to large coats."
+svc-tdc-f30a7b52c8c4,Gentle Oatmeal Shampoo - 500ml,549.0,care,grooming,,"Soothing oatmeal formula for sensitive skin. pH balanced, paraben-free. Leaves coat soft, shiny, and fresh-smelling."
+svc-tdc-5463661d58e0,Nail Clipper & File Set,449.0,care,grooming,,"Professional-grade nail clipper with safety guard. Includes nail file and quick guide. Stainless steel, non-slip grip."
+svc-tdc-e72bcd5a54e8,Paw Balm & Nose Butter Duo,699.0,care,grooming,,"Organic balm set for cracked paws and dry noses. Made with shea butter, coconut oil, and vitamin E. Safe if licked."
+svc-tdc-f49554dcf585,Ear Cleaning Solution - 120ml,399.0,care,grooming,,"Gentle ear cleaner removes wax and debris. Prevents infections, reduces odor. Vet-recommended formula."
+svc-travel-171532b1a134,Wahl Cargo Seat Cover for Pets,1898.0,travel,car-accessories,,"Premium cargo area seat cover to protect your car from pet hair, dirt, and scratches. Waterproof backing, machine washable. Universal fit for most SUVs and hatchbacks. Dimensions: 59x55 inches."
+svc-travel-c9a35347e75a,Pet Passport & Document Holder,549.0,travel,travel-accessories,,"Organized document holder for all pet travel paperwork. Holds vaccination records, health certificates, insurance, and ID. Water-resistant material. Perfect for international travel."
+svc-travel-07dae68ed728,Car Window Mesh Barrier,799.0,travel,car-accessories,,Breathable mesh barrier for car windows. Allows fresh air while preventing pets from jumping out. Easy magnetic installation. Set of 2 for front or rear windows.
+svc-dine-item-f9230be5,TDC Freeze-dried Liver,349,dine,general,,Individual item from Gourmet Treats Box. Premium quality dining essential from The Doggy Company.
+svc-dine-item-0229ab12,TDC Dental Chews,249,dine,general,,Individual item from Gourmet Treats Box. Premium quality dining essential from The Doggy Company.
+svc-dine-item-475cda5d,TDC Photo Frame,999,dine,photo_services,,Individual item from Adoption Anniversary Special. Premium quality dining essential from The Doggy Company.
+svc-dine-item-b75c8ac7,TDC Gourmet Meal,399,dine,meals,,Individual item from Puppy Date Night. Premium quality dining essential from The Doggy Company.
+svc-dine-item-6910756b,TDC Dine-fresh-chicken,399,dine,general,,Individual item from Weekly Fresh Meal Plan. Premium quality dining essential from The Doggy Company.
+svc-dine-item-58a0bc3e,TDC Dine-lamb-rice,399,dine,general,,Individual item from Weekly Fresh Meal Plan. Premium quality dining essential from The Doggy Company.
+svc-dine-item-587ac910,TDC Dine-fish-omega,399,dine,general,,Individual item from Weekly Fresh Meal Plan. Premium quality dining essential from The Doggy Company.
+svc-enjoy-prod-ball,Squeaky Ball Set (3 Pack),299,enjoy,enjoy,,Durable tennis balls with squeaker
+svc-travel-prod-a9ec81b2,Pet Passport Holder,399,travel,travel,,"Waterproof holder for vaccination records, health certificates, and ID tags."
+svc-travel-prod-555f5c1e,Motion Sickness Relief Drops,349,travel,travel,,Natural remedy for car sickness. Give 30 mins before travel.
+svc-adopt-prod-anxiety-wrap,ThunderShirt Anxiety Wrap,1899,adopt,adopt-calming,,"Pressure wrap that applies gentle, constant pressure to reduce anxiety"
+svc-adopt-prod-crate-soft,Soft-Sided Comfort Crate,2499,adopt,adopt-comfort,,Cozy collapsible crate with plush lining - perfect safe space for new pets
+svc-adopt-prod-hideaway,Covered Pet Hideaway Bed,1799,adopt,adopt-comfort,,Cave-style bed providing security for nervous rescues
+svc-adopt-prod-orthopedic-bed,Orthopedic Memory Foam Bed,2999,adopt,adopt-comfort,,Premium memory foam bed for senior or injured rescue pets
+svc-adopt-prod-snuffle-mat,Snuffle Mat for Slow Feeding,799,adopt,adopt-enrichment,,Interactive feeding mat that encourages natural foraging behavior
+svc-adopt-prod-probiotic,Digestive Health Probiotic,999,adopt,adopt-health,,Probiotic supplement to help rescued pets adjust to new diet
+svc-adopt-prod-immune-boost,Immune Support Supplement,1199,adopt,adopt-health,,Boost immunity during the transition period with vitamins & antioxidants
+svc-adopt-prod-gentle-shampoo,Gentle Rescue Pet Shampoo,499,adopt,adopt-grooming,,"Hypoallergenic, tear-free shampoo for sensitive rescue pets"
+svc-adopt-prod-guide-book,Adoption Success Handbook,449,adopt,adopt-guide,,Complete guide to helping your rescue pet adjust and thrive
+svc-adopt-prod-behavior-guide,Understanding Rescue Behavior,549,adopt,adopt-guide,,Expert guide on common rescue pet behaviors and how to help
+svc-adopt-prod-donation-500,Shelter Support - 500,500,adopt,adopt-donation,,Donate to local shelters and support rescue operations
+svc-adopt-prod-donation-1000,Shelter Support - 1000,1000,adopt,adopt-donation,,Generous donation to help rescue more animals in need
+svc-stay-prod-travel-food-container,Airtight Travel Food Container,899,stay,travel-feeding,,"3-compartment container for food, treats, and supplements - leak-proof design."
+svc-stay-prod-bed-portable,Portable Memory Foam Travel Bed,1799,stay,travel-comfort,,"Lightweight, foldable bed with removable, washable cover - rolls up for easy packing."
+svc-stay-prod-cooling-mat,Pressure-Activated Cooling Mat,1299,stay,travel-comfort,,Self-cooling gel mat for hot weather travel - no refrigeration needed.
+svc-stay-prod-car-seat,Elevated Pet Car Seat,2299,stay,travel-safety,,Booster seat with safety tether - lets small pets see out the window safely.
+svc-stay-prod-calming-treats,Travel Calming Chews,799,stay,travel-calming,,"Soft chews with chamomile, valerian & L-theanine - 30 count."
+svc-stay-prod-motion-sickness,Motion Sickness Relief Tablets,599,stay,travel-health,,Natural anti-nausea tablets for car and air travel - 30 tablets.
+svc-stay-prod-pet-passport,Pet Travel Document Organizer,699,stay,travel-docs,,"Waterproof organizer for vaccination records, health certificates, and ID."
+svc-stay-prod-id-tags,Engraved Travel ID Tag Set,399,stay,travel-docs,,"Set of 2 durable metal tags with name, phone & destination info."
+svc-fit-product-45c35fa8,Agility Training Hurdle Set,1299,fit,fit,,Adjustable hurdles for backyard agility training
+svc-fit-product-c9bbcf1b,Dog Treadmill - Compact,8999,fit,fit,,Indoor exercise treadmill for dogs up to 25kg
+svc-fit-product-ac023770,Swimming Vest for Dogs,999,fit,fit,,Buoyancy vest for safe water exercise and swimming
+svc-fit-product-f67ff376,Snuffle Mat - Large,699,fit,fit,,Enrichment mat for mental stimulation during feeding
+svc-fit-product-122b5f91,Weighted Exercise Vest,1799,fit,fit,,Adjustable weighted vest for strength training walks
+svc-travel-b1f06bf6,Premium Car Seat for Dogs,3499,travel,travel-safety,,"Elevated car seat with safety harness attachment. Plush memory foam, waterproof base. Perfect for road trips."
+svc-travel-c9e34699,Pet Travel Bag Organizer,1499,travel,travel-accessories,,"Multi-pocket bag for all pet essentials. Fits food, treats, bowls, toys, documents. Waterproof base, shoulder strap."
+svc-travel-d3a5a022,Portable Travel Bed,1999,travel,travel-comfort,,Foldable memory foam bed with waterproof cover. Sets up in seconds. Provides familiar comfort away from home.
+svc-travel-1f08385f,Calming Travel Spray,699,travel,travel-health,,"Pheromone-based spray for carriers, cars, hotel rooms. Reduces travel anxiety naturally. Vet recommended."
+svc-travel-3c00808d,Pet Passport Holder & Document Organizer,899,travel,travel-docs,,"Premium holder for vaccination records, health certificates, ID tags. RFID-protected pocket for microchip info."
+SVC-GROOM-FULL,Full Spa Grooming,1500,care,grooming,,"Complete spa experience with massage, premium products"
+SVC-VET-CONSULT,Vet Consultation,600,care,vet,,General health checkup and consultation
+SVC-CELEB-BDAY-HOME,Birthday Party - Home,5000,celebrate,,,Complete birthday planning and execution at your home
+SVC-CELEB-BDAY-VENUE,Birthday Party - Venue,8000,celebrate,,,Birthday celebration at a pet-friendly venue
+SVC-CELEB-MILESTONE,Milestone Celebration,,celebrate,,,"First travel, senior years, recovery milestones"
+SVC-CELEB-FESTIVE,Festive Celebration Planning,4000,celebrate,,,"Diwali, Christmas, Holi celebrations with your pet"
+SVC-CELEB-SURPRISE,Surprise Coordination,,celebrate,,,Surprise party or gift coordination for pet parents
+SVC-CELEB-REMINDERS,Life Moment Tracking,0,celebrate,,,"Automated reminders for birthdays, gotcha days, milestones"
+SVC-DINE-DISCOVER,Pet-Friendly Restaurant Discovery,0,dine,,,Find the perfect restaurant that welcomes your pet
+SVC-DINE-RESERVE,Reservation Assistance,200,dine,,,We confirm pet acceptance and make the reservation
+SVC-DINE-ETIQUETTE,Dining Etiquette Guidance,500,dine,,,Tips and training for dining out with your pet
+SVC-DINE-ADVISORY,Venue Suitability Advisory,0,dine,,,Breed and size suitability check for venues
+SVC-DINE-BACKUP,Backup Dining Alternatives,,dine,,,Alternative options if plans change last minute
+SVC-STAY-DISCOVER,Pet-Friendly Hotel Discovery,0,stay,,,Find hotels and resorts that welcome your pet
+SVC-STAY-VERIFY,Property Rule Verification,300,stay,,,"Verify breed, size, and number restrictions"
+SVC-STAY-ADVISORY,Room Suitability Advisory,0,stay,,,Recommend the right room type for your pet
+SVC-STAY-LONGTERM,Long-Stay Assistance,,stay,,,Serviced apartments and extended stay planning
+SVC-STAY-BOARDING,Boarding Alternatives,800,stay,,,"When hotel stays aren't possible, we find boarding"
+SVC-TRAVEL-AIRLINE,Airline Policy Interpretation,500,travel,,,Route-specific pet policy guidance
+SVC-TRAVEL-CABIN-CARGO,Cabin vs Cargo Advisory,300,travel,,,Feasibility check based on pet size and route
+SVC-TRAVEL-ROAD-RAIL,Train & Road Travel Planning,800,travel,,,Complete road trip or train journey planning
+SVC-TRAVEL-DESTINATION,Destination Pet Rules,400,travel,,,Pet rules and requirements at your destination
+SVC-TRAVEL-RELOCATE-DOM,Domestic Relocation Planning,5000,travel,,,Complete domestic move with your pet
+SVC-TRAVEL-RELOCATE-INTL,International Relocation,15000,travel,,,International move with quarantine and documentation
+SVC-TRAVEL-TRANSIT,Transit & Handling Guidance,1000,travel,,,Airport handling and transit coordination
+SVC-CARE-VET-GENERAL,Vet Consultation - General,600,care,,,General health checkup and consultation
+SVC-CARE-VET-SPECIALTY,Vet Consultation - Specialty,1500,care,,,"Specialist consultation (dermatology, cardiology, etc.)"
+SVC-CARE-VET-HOME,Vet Visit - Home,1200,care,,,Vet comes to your home
+SVC-CARE-GROOM-HOME,Home Grooming,1200,care,,,Groomer comes to your home
+SVC-CARE-PREVENT,Preventive Care Reminders,0,care,,,"Vaccination, deworming, health check reminders"
+SVC-CARE-NUTRITION,Nutrition Guidance,800,care,,,Non-medical diet and nutrition planning
+SVC-CARE-RECOVERY,Recovery Care Coordination,,care,,,Post-surgery or treatment care coordination
+SVC-CARE-SENIOR,Senior Pet Care Planning,1500,care,,,Comprehensive care plan for senior pets
+SVC-ENJOY-PARKS,Pet Parks Discovery,0,enjoy,,,Find dog parks and open spaces near you
+SVC-ENJOY-EVENTS,Pet Events & Experiences,500,enjoy,,,"Pet-friendly events, meetups, experiences"
+SVC-ENJOY-SOCIAL,Socialisation Planning,800,enjoy,,,Structured socialisation for puppies and shy dogs
+SVC-ENJOY-WEEKEND,Weekend Outing Planning,400,enjoy,,,Complete weekend activity plan with your pet
+SVC-FIT-WALK-DAILY,Dog Walking - Daily,300,fit,,,Daily dog walking service
+SVC-FIT-ACTIVITY,Breed-Appropriate Activity Plan,1000,fit,,,Customized exercise routine for your breed
+SVC-FIT-INDOOR,Indoor Exercise Routines,800,fit,,,Exercise plans for apartment living
+SVC-FIT-OUTDOOR,Outdoor Exercise Sessions,500,fit,,,Guided outdoor exercise and play
+SVC-FIT-SENIOR,Senior Mobility Planning,1200,fit,,,Gentle exercise for senior dogs
+SVC-FIT-SWIM,Swimming Sessions,1000,fit,,,Hydrotherapy and recreational swimming
+SVC-LEARN-NEWPARENT,New Pet Parent Onboarding,1500,learn,,,Everything you need to know as a first-time pet parent
+SVC-LEARN-BREED,Breed Education Session,800,learn,,,Understand your breed's needs and temperament
+SVC-LEARN-PUPPY,Puppy Transition Guidance,2000,learn,,,First 30 days with your new puppy
+SVC-LEARN-SENIOR,Senior Pet Care Education,1000,learn,,,Understanding and caring for aging pets
+SVC-LEARN-BEHAVIOR,Behavior Understanding,1200,learn,,,Learn to read and understand your pet's behavior
+SVC-LEARN-TRAINING-ADV,Advanced Training,5000,learn,,,Advanced commands and tricks
+SVC-PAPER-REGISTER,Pet Registration Guidance,500,paperwork,,,Help with local pet registration
+SVC-PAPER-MICROCHIP,Microchipping Assistance,300,paperwork,,,Microchip registration and documentation
+SVC-PAPER-LICENSE,Licensing & Compliance,400,paperwork,,,Local compliance and licensing guidance
+SVC-PAPER-TRAVEL,Travel Documentation,1500,paperwork,,,"Pet passport, health certificates, NOCs"
+SVC-PAPER-INSURANCE,Insurance Paperwork Advisory,300,paperwork,,,Help with pet insurance documentation
+SVC-PAPER-ADOPTION,Adoption Documentation,500,paperwork,,,Adoption papers and transfer documentation
+SVC-ADVISE-HOUSING,Housing & Society Advisory,500,advisory,,,Navigate pet rules in housing societies
+SVC-ADVISE-MULTI,Multi-Pet Household Planning,1000,advisory,,,Adding another pet to your family
+SVC-ADVISE-BEHAVIOR,Behavior Escalation Pathways,,advisory,,,Non-clinical behavior concern guidance
+SVC-ADVISE-EOL,End-of-Life Preparation,,advisory,,,Planning for your pet's final chapter
+SVC-EMERG-VET,Emergency Vet Discovery,0,emergency,,,Find nearest emergency vet immediately
+SVC-EMERG-AFTER,After-Hours Care Guidance,0,emergency,,,Guidance when regular vets are closed
+SVC-EMERG-RESPONSE,Accident & Poisoning Response,0,emergency,,,Immediate guidance for emergencies
+SVC-EMERG-LOST,Lost Pet Response,,emergency,,,Coordination for lost pet recovery
+SVC-EMERG-TRANSPORT,Emergency Transport,1500,emergency,,,Emergency pet ambulance coordination
+SVC-FARE-EUTHANASIA,Euthanasia Coordination,,farewell,,,Vet-guided peaceful passing
+SVC-FARE-CREMATION,Cremation & Burial,3000,farewell,,,Dignified final arrangements
+SVC-FARE-MEMORIAL,Memorial & Remembrance,2000,farewell,,,Memorial planning and keepsakes
+SVC-FARE-GRIEF,Grief Support Resources,0,farewell,,,Support during difficult times
+SVC-ADOPT-DISCOVER,Ethical Adoption Discovery,0,adopt,,,Find verified shelters and rescues
+SVC-ADOPT-SUITABILITY,Breed Suitability Advisory,500,adopt,,,Find the right breed for your lifestyle
+SVC-ADOPT-READINESS,Adoption Readiness Planning,300,adopt,,,Are you ready for a pet?
+SVC-ADOPT-HOME,Home Preparation Guidance,500,adopt,,,Prepare your home for a new pet
+SVC-ADOPT-TRANSITION,First 30 Days Support,2000,adopt,,,Transition support for new adoptions
+SVC-SHOP-PERSONAL,Personal Shopping Assistance,0,shop,,,Help finding the right products
+SVC-SHOP-EMERGENCY,Emergency Sourcing,,shop,,,Urgent product sourcing
+SVC-SHOP-VET-REC,Vet-Recommended Sourcing,200,shop,,,Find specific vet-recommended products
+SVC-SHOP-RELOCATE,Travel & Relocation Sourcing,500,shop,,,All products needed for travel/move
+SVC-CARE-TEST-CUSTOM-SERVICE,Test Custom Service UPDATED,1299.0,care,,,Updated description
+TEST-SVC-5D8A3471,Updated Test Grooming Service,600.0,care,,,Updated description for testing
+abee0bac-9551-42d4-99be-f69e91bd267e,Long Coat  Full Grooming  Complete Spa Day,1500,,grooming,,
+2dd76537-4583-4912-80cc-7a0715430abf,Short Coat  Express Grooming  Quick Refresh,800,,grooming,,
+8b890e95-3ea6-469d-8b48-854a504f6b8f,Curly Coat  Poodle Mix Grooming  Doodle Specialist,1800,,grooming,,
+1024f74b-5c74-480e-bbed-9731acb0e0d9,Small Breed  Puppy's First Groom  Gentle Introduction,600,,grooming,,
+de9405c2-449b-4ac3-9fc5-c0b6113521e7,Large Breed  Big Dog Bath  Home Service,1200,,grooming,,
+ac74cb79-b36a-402c-a195-1f4423998da5,High Energy  Obedience Training  Focus Building,8000,,training,,
+6aeae591-3da4-4973-a6c8-2b6755c1f2f7,Indie Dog  Street Dog Rehab  Urban Adjustment,10000,,training,,
+121ac3cd-02d2-41e8-9b7c-a2fbbad6b97f,Small Breed  Puppy Socialization  Early Learning,4000,,training,,
+64e5baf2-66a3-461d-b5b5-15191c7ca940,Anxious Dog  Behavior Modification  Calm Building,15000,,training,,
+83efaae5-32ed-4d97-b7f1-340b2bb18bc6,Scent Dog  Nose Work Training  Mental Exercise,5000,,training,,
+67efce7d-5801-41fd-961e-c82679989ea5,High Energy  Power Walk  Energy Drain,400,,walking_sitting,,
+16485ae2-e7d9-441c-b2a3-62b1a4b46d41,Small Breed  Gentle Walk  Leisurely Pace,300,,walking_sitting,,
+073943d0-cf28-40aa-8e26-efbed6c9f6b5,Large Breed  Adventure Walk  Trail Exploration,800,,walking_sitting,,
+737ec42d-639c-4ef8-b839-a1374f08299e,All Breeds  Pet Sitting  Home Care,800,,walking_sitting,,
+14b6c5b1-38bc-41b6-ac1b-363af4c60cfc,Small Breed  Lap Dog Sitter  Companion Care,1000,,walking_sitting,,
+e1cd76b4-3819-4db0-aa3d-fc355eef919b,Large Breed  Flight Crate Training  Travel Prep,5000,,travel_handling,,
+1dd18410-3731-497d-9102-4ed5551b7e94,Small Breed  Cabin Travel Prep  Fly With Me,3000,,travel_handling,,
+d22634c2-3ca2-49ae-9e95-8a506ad30a43,All Breeds  Road Trip Setup  Car Travel Ready,2000,,travel_handling,,
+a231db07-6203-48f1-916f-39dc170da2f6,Anxious Traveler  Travel Anxiety Support  Calm Journey,4000,,travel_handling,,
+f8aa5da4-0d44-47ec-b90d-a4e894b38ed9,All Breeds  Birthday Party Setup  Complete Celebration,5000,,celebration_support,,
+d6e9c387-3cf0-4f28-b16b-3c6d49bffaa6,All Breeds  Gotcha Day Surprise  Adoption Anniversary,2000,,celebration_support,,
+57d74757-d22f-4e70-ab8c-cd59ffa239a8,All Breeds  Photoshoot Coordination  Memory Capture,3000,,celebration_support,,
+5e23ba03-49ab-4cfe-a5be-2ef4f24241e4,Large Breed  Party Venue Booking  Space For Play,,,celebration_support,,
+1a7670a5-57fb-4f0f-a2b7-5807326b382a,All Breeds  Nutrition Consultation  Diet Planning,1500,,care_support,,
+d4484726-9605-48d4-908b-44a3238bf2e3,Senior Dog  Geriatric Care Plan  Golden Years,2500,,care_support,,
+c41b7b10-8d31-42c1-bc86-6aa3af73b69a,Large Breed  Joint Health Support  Mobility Care,3000,,care_support,,
+fa71748c-c72a-4b89-9099-9c3e44b0cd7f,Sensitive Skin  Allergy Management  Comfort Plan,4000,,care_support,,
+92bec617-1ab1-43d3-8415-dfcbe900296b,Post-Surgery  Recovery Support  Healing Help,,,care_support,,
+care-svc-8ad65147,Puppy Training Programme,,,training,,Foundation training for puppies aged 8 weeks to 6 months.
+care-svc-6db53eb2,Anxiety & Behaviour Therapy,,,training,,"Specialized programme for anxiety, reactivity, and behavioural issues."
+care-svc-1541bac1,Pet Sitting (Day),,,walking,,Daytime pet sitting at your home or sitter's home.
+care-svc-85955aa3,Overnight Pet Sitting,,,walking,,Overnight care at your home with bedtime routine and morning walks.
+care-svc-f7f6d143,Vet Visit Coordination,,,health,,"We find the right vet, book the appointment, and manage your records."
+care-svc-9986120f,Emergency Support Line,,,health,,24/7 emergency support with vet locator and transport coordination.
+care-svc-920db090,Senior Pet Wellness Check,,,health,,Comprehensive wellness assessment for senior pets (7+ years).
+care-vet-002,Home Vet Visit,,care,vet,,Veterinarian visits your home for check-up and basic treatments.
+care-wellness-001,Wellness Check-up,,care,wellness,,Complete health screening with blood work and physical examination.
+groom-dc4393fd,Spa Day Experience,,,premium,,Luxury spa treatment with aromatherapy and massage

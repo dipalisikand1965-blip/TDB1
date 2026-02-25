@@ -1,0 +1,77 @@
+import React from 'react';
+
+/**
+ * Logo component for The Doggy Company
+ * 
+ * Features a teal serving cloche (concierge bell) with colorful paw print on top
+ * Brand Colors: Teal (#14B8A6), Purple (#9333EA), Pink (#EC4899), Orange (#F97316)
+ */
+const Logo = ({ 
+  size = 'md', 
+  showText = true, 
+  variant = 'default',
+  className = '' 
+}) => {
+  // Size configurations
+  const sizeConfig = {
+    xs: { logo: 'h-6 w-6', text: 'text-sm', tagline: 'text-[10px]' },
+    sm: { logo: 'h-8 w-8', text: 'text-base', tagline: 'text-xs' },
+    md: { logo: 'h-12 w-12', text: 'text-xl', tagline: 'text-xs' },
+    lg: { logo: 'h-16 w-16', text: 'text-2xl', tagline: 'text-sm' },
+    xl: { logo: 'h-20 w-20', text: 'text-3xl', tagline: 'text-sm' }
+  };
+  
+  const config = sizeConfig[size] || sizeConfig.md;
+
+  return (
+    <div className={`flex items-center gap-2.5 ${className}`}>
+      {/* Logo Icon - Teal cloche with colorful paw */}
+      <img 
+        src="/logo-new.png" 
+        alt="The Doggy Company" 
+        className={`${config.logo} object-contain`}
+      />
+      
+      {/* Company Name - Clean, professional typography */}
+      {showText && (
+        <div className="flex flex-col">
+          <div className={`font-bold ${config.text} leading-tight tracking-tight`}>
+            {variant === 'light' ? (
+              <span className="text-white">thedoggycompany</span>
+            ) : (
+              <span className="text-gray-900">
+                <span className="text-teal-600">the</span>
+                <span className="text-purple-600">doggy</span>
+                <span className="text-pink-600">company</span>
+              </span>
+            )}
+          </div>
+          <span className={`${config.tagline} font-medium tracking-wider uppercase ${variant === 'light' ? 'text-white/70 hover:text-white' : 'text-teal-600 hover:text-teal-700'} transition-colors`}>
+            Pet Concierge®
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Compact logo - just the icon, no text
+export const LogoCompact = ({ size = 'md', className = '' }) => {
+  const sizeConfig = {
+    xs: 'h-6 w-6',
+    sm: 'h-8 w-8',
+    md: 'h-10 w-10',
+    lg: 'h-12 w-12',
+    xl: 'h-16 w-16'
+  };
+  
+  return (
+    <img 
+      src="/logo-new.png" 
+      alt="The Doggy Company" 
+      className={`${sizeConfig[size] || sizeConfig.md} object-contain ${className}`}
+    />
+  );
+};
+
+export default Logo;

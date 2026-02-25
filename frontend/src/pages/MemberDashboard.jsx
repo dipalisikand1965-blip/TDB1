@@ -1,0 +1,1558 @@
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { 
+  ShoppingBag, PawPrint, Star, User, LogOut, Package, 
+  MapPin, Settings, Lock, Bell, Shield, Phone, Mail, MessageCircle,
+  RefreshCw, Calendar, Pause, Play, X, MessageSquare, Edit2, Trash2, Loader2,
+  UtensilsCrossed, Users, Clock, Stethoscope, Sparkles, Home, Plane, Cake, Gift, Crown, Heart,
+  ChevronRight, Trophy, Zap, Target, Flame, Award, Medal, CheckCircle2, ArrowRight, TrendingUp, Wallet,
+  BellRing, Smartphone, HelpCircle, Plus, Minus, History, FileText, Brain
+} from 'lucide-react';
+import axios from 'axios';
+import { toast } from '../hooks/use-toast';
+import { API_URL } from '../utils/api';
+import PetAvatar from '../components/PetAvatar';
+import SoulScoreArc from '../components/SoulScoreArc';
+import LivingSoulOrb from '../components/LivingSoulOrb';
+import MemberNotificationBell from '../components/MemberNotificationBell';
+import GlobalNav from '../components/Mira/GlobalNav';
+
+// Lazy load heavy components to improve initial render
+const PawPointsRewards = lazy(() => import('../components/PawPointsRewards'));
+const MiraConversationHistory = lazy(() => import('../components/MiraConversationHistory'));
+const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo').then(m => ({ default: m.default })));
+
+// Push notifications hook
+import usePushNotifications from '../hooks/usePushNotifications';
+
+// Extracted dashboard components
+import { 
+  QuickScoreBoost, 
+  GamificationBanner, 
+  ACHIEVEMENTS, 
+  TIER_COLORS, 
+  triggerCelebration 
+} from '../components/dashboard';
+
+// First Visit Tour
+import { useTour } from '../components/FirstVisitTour';
+
+// Push Notification Banner - lazy loaded
+const PushNotificationBanner = lazy(() => import('../components/PushNotificationBanner'));
+
+// Loading fallback for lazy components
+const TabLoader = () => (
+  <div className="flex items-center justify-center py-12">
+    <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+  </div>
+);
+
+import PullToRefreshIndicator from '../components/PullToRefreshIndicator';
+import usePullToRefresh from '../hooks/usePullToRefresh';
+
+// Voice Quick Actions
+import VoiceQuickActions from '../components/VoiceQuickActions';
+
+// ============================================
+// LAZY-LOADED TAB COMPONENTS
+// These are now in separate files for better performance
+// ============================================
+const OverviewTab = lazy(() => import('../components/dashboard/tabs/OverviewTab'));
+const ServicesTab = lazy(() => import('../components/dashboard/tabs/ServicesTab'));
+const OrdersTab = lazy(() => import('../components/dashboard/tabs/OrdersTab'));
+const PetsTab = lazy(() => import('../components/dashboard/tabs/PetsTab'));
+const RequestsTab = lazy(() => import('../components/dashboard/tabs/RequestsTab'));
+const SettingsTab = lazy(() => import('../components/dashboard/tabs/SettingsTab'));
+const DiningTab = lazy(() => import('../components/dashboard/tabs/DiningTab'));
+const CelebrationsTab = lazy(() => import('../components/dashboard/tabs/CelebrationsTab'));
+const StayTab = lazy(() => import('../components/dashboard/tabs/StayTab'));
+const TravelTab = lazy(() => import('../components/dashboard/tabs/TravelTab'));
+const AutoshipTab = lazy(() => import('../components/dashboard/tabs/AutoshipTab'));
+const ReviewsTab = lazy(() => import('../components/dashboard/tabs/ReviewsTab'));
+const AddressesTab = lazy(() => import('../components/dashboard/tabs/AddressesTab'));
+const RewardsTab = lazy(() => import('../components/dashboard/tabs/RewardsTab'));
+const MiraTab = lazy(() => import('../components/dashboard/tabs/MiraTab'));
+const DocumentsTab = lazy(() => import('../components/dashboard/tabs/DocumentsTab'));
+const QuotesTab = lazy(() => import('../components/dashboard/tabs/QuotesTab'));
+const MembershipTab = lazy(() => import('../components/dashboard/tabs/MembershipTab'));
+const PicksHistoryTab = lazy(() => import('../components/dashboard/tabs/PicksHistoryTab'));
+
+// ============================================
+// 🏛️ PILLAR POPUP COMPONENT
+// Shows usage history and stats for each pillar
+// ============================================
+const PillarPopup = ({ pillar, onClose, onExplore, data }) => {
+  if (!pillar) return null;
+  
+  const getPillarStats = () => {
+    switch (pillar.id) {
+      case 'celebrate':
+        return {
+          items: data.celebrationOrders || [],
+          stats: [
+            { label: 'Total Orders', value: data.celebrationOrders?.length || 0 },
+            { label: 'Cakes Ordered', value: data.celebrationOrders?.filter(o => o.items?.some(i => i.name?.toLowerCase().includes('cake'))).length || 0 }
+          ],
+          emptyText: 'No celebration orders yet. Make your pet\'s special day unforgettable!'
+        };
+      case 'dine':
+        return {
+          items: [...(data.diningHistory?.reservations?.items || []), ...(data.diningHistory?.visits?.items || [])],
+          stats: [
+            { label: 'Reservations', value: data.diningHistory?.reservations?.items?.length || 0 },
+            { label: 'Visits', value: data.diningHistory?.visits?.items?.length || 0 },
+            { label: 'Meetups', value: data.diningHistory?.meetups?.items?.length || 0 }
+          ],
+          emptyText: 'No dining history yet. Discover pet-friendly restaurants!'
+        };
+      case 'stay':
+        return {
+          items: data.stayHistory?.bookings || [],
+          stats: [
+            { label: 'Total Stays', value: data.stayHistory?.bookings?.length || 0 },
+            { label: 'Upcoming', value: data.stayHistory?.upcoming?.length || 0 },
+            { label: 'Past Stays', value: data.stayHistory?.past?.length || 0 }
+          ],
+          emptyText: 'No stays booked yet. Find the perfect boarding for your pet!'
+        };
+      case 'travel':
+        return {
+          items: data.travelHistory?.requests || [],
+          stats: [
+            { label: 'Total Trips', value: data.travelHistory?.requests?.length || 0 },
+            { label: 'Upcoming', value: data.travelHistory?.upcoming?.length || 0 },
+            { label: 'Completed', value: data.travelHistory?.past?.length || 0 }
+          ],
+          emptyText: 'No travel requests yet. Plan your next pet-friendly adventure!'
+        };
+      default:
+        return {
+          items: [],
+          stats: [
+            { label: 'Activities', value: 0 },
+            { label: 'This Month', value: 0 }
+          ],
+          emptyText: `Start exploring ${pillar.name} services for your pet!`
+        };
+    }
+  };
+  
+  const pillarData = getPillarStats();
+  
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <Card className="w-full max-w-md bg-slate-900/90 backdrop-blur-xl shadow-2xl rounded-2xl overflow-hidden border border-white/10" onClick={(e) => e.stopPropagation()}>
+        <div className={`p-6 bg-gradient-to-br ${pillar.color} text-white`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center text-3xl backdrop-blur-sm">
+                {pillar.icon}
+              </div>
+              <div>
+                <h2 className="text-xl font-bold">{pillar.name}</h2>
+                <p className="text-white/80 text-sm">Your activity & history</p>
+              </div>
+            </div>
+            <button 
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-3 gap-px bg-gray-100 border-b">
+          {pillarData.stats.map((stat, idx) => (
+            <div key={idx} className="bg-white p-4 text-center">
+              <p className="text-2xl font-bold text-white">{stat.value}</p>
+              <p className="text-xs text-slate-400">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+        
+        <div className="p-4 max-h-60 overflow-y-auto">
+          <h3 className="text-sm font-semibold text-slate-400 mb-3">Recent Activity</h3>
+          {pillarData.items.length > 0 ? (
+            <div className="space-y-2">
+              {pillarData.items.slice(0, 5).map((item, idx) => (
+                <div key={idx} className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg border border-white/5">
+                  <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${pillar.color} flex items-center justify-center text-white text-lg`}>
+                    {pillar.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-white truncate">
+                      {item.items?.[0]?.name || item.restaurant_name || item.property_name || item.destination || 'Activity'}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {item.created_at ? new Date(item.created_at).toLocaleDateString() : 
+                       item.date || item.check_in || 'Recent'}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 mx-auto bg-slate-800/50 rounded-full flex items-center justify-center text-3xl mb-3 border border-white/5">
+                {pillar.icon}
+              </div>
+              <p className="text-sm text-slate-500">{pillarData.emptyText}</p>
+            </div>
+          )}
+        </div>
+        
+        <div className="p-4 border-t border-white/10 bg-slate-900/50 flex gap-3">
+          <Button variant="outline" className="flex-1 border-white/10 text-slate-300 hover:bg-white/5 hover:text-white" onClick={onClose}>
+            Close
+          </Button>
+          <Button 
+            className={`flex-1 bg-gradient-to-r ${pillar.color} text-white border-0`}
+            onClick={() => {
+              onClose();
+              onExplore(pillar.path);
+            }}
+          >
+            Explore {pillar.name}
+            <ChevronRight className="w-4 h-4 ml-1" />
+          </Button>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+// ============================================
+// 📊 PAW POINTS BREAKDOWN MODAL
+// ============================================
+const PawPointsBreakdownModal = ({ open, onClose, history, loading, totalPoints }) => {
+  if (!open) return null;
+  
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col bg-slate-900/95 backdrop-blur-xl border border-white/10">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-white">
+            <Gift className="w-5 h-5 text-purple-400" />
+            Paw Points History
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="p-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-white mb-4">
+          <p className="text-sm opacity-90">Current Balance</p>
+          <p className="text-3xl font-bold">{totalPoints?.toLocaleString() || 0} points</p>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto space-y-2">
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-purple-400" />
+            </div>
+          ) : history.length > 0 ? (
+            history.map((tx, idx) => (
+              <div key={idx} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-white/5">
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    tx.type === 'earn' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                  }`}>
+                    {tx.type === 'earn' ? <Plus className="w-4 h-4" /> : <Minus className="w-4 h-4" />}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">{tx.description}</p>
+                    <p className="text-xs text-slate-500">{new Date(tx.created_at).toLocaleDateString()}</p>
+                  </div>
+                </div>
+                <span className={`font-semibold ${tx.type === 'earn' ? 'text-green-400' : 'text-red-400'}`}>
+                  {tx.type === 'earn' ? '+' : '-'}{tx.points}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-8">
+              <History className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+              <p className="text-slate-500">No transactions yet</p>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// ============================================
+// 🎯 MAIN DASHBOARD COMPONENT
+// ============================================
+const MemberDashboard = () => {
+  const { user, logout, token, loading: authLoading, refreshUser } = useAuth();
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
+  
+  // Core State
+  const [orders, setOrders] = useState([]);
+  const [pets, setPets] = useState([]);
+  const [autoships, setAutoships] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [reviewableProducts, setReviewableProducts] = useState([]);
+  const [diningHistory, setDiningHistory] = useState({ reservations: { items: [] }, visits: { items: [] }, meetups: { items: [] } });
+  const [stayHistory, setStayHistory] = useState({ bookings: [], upcoming: [], past: [] });
+  const [travelHistory, setTravelHistory] = useState({ requests: [], upcoming: [], past: [] });
+  const [celebrationOrders, setCelebrationOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showSoulExplainer, setShowSoulExplainer] = useState(false);
+  
+  // Tab and Pet Selection State
+  const [activeTab, setActiveTab] = useState('overview');
+  const [selectedPetId, setSelectedPetId] = useState(() => {
+    // Initialize from localStorage for global sync
+    return localStorage.getItem('selectedPetId') || null;
+  });
+  
+  // Sync selectedPetId with localStorage
+  useEffect(() => {
+    if (selectedPetId) {
+      localStorage.setItem('selectedPetId', selectedPetId);
+    }
+  }, [selectedPetId]);
+  
+  // Listen for storage events to sync pet selection across tabs/components
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'selectedPetId' && e.newValue) {
+        setSelectedPetId(e.newValue);
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+  
+  // Push Notifications Hook
+  const { 
+    isPushSupported, 
+    permission: pushPermission, 
+    isSubscribed: isPushSubscribed,
+    loading: pushLoading,
+    subscribe: subscribeToPush,
+    unsubscribe: unsubscribeFromPush,
+    sendTestNotification
+  } = usePushNotifications(user?.id);
+  
+  // Settings State
+  const [settings, setSettings] = useState({
+    email: true,
+    whatsapp: false,
+    sms: false,
+    push_notifications: false,
+    order_updates: true,
+    promotional: true,
+    celebration_reminders: true,
+    health_reminders: true,
+    community_updates: false,
+    soul_whisper: true,
+    soul_whisper_frequency: 'daily',
+    soul_whisper_time: '10:00',
+    shareData: false
+  });
+  const [settingsLoading, setSettingsLoading] = useState(false);
+  const [settingsSaved, setSettingsSaved] = useState(false);
+  
+  // Pillar Popup State
+  const [pillarPopup, setPillarPopup] = useState({ open: false, pillar: null });
+  
+  // My Requests (Mira Tickets) State
+  const [myRequests, setMyRequests] = useState([]);
+  const [requestsLoading, setRequestsLoading] = useState(false);
+  
+  // Paw Points State
+  const [showPawPointsBreakdown, setShowPawPointsBreakdown] = useState(false);
+  const [pawPointsHistory, setPawPointsHistory] = useState([]);
+  const [pawPointsLoading, setPawPointsLoading] = useState(false);
+  
+  // Voice Quick Actions
+  const [showVoiceActions, setShowVoiceActions] = useState(false);
+  
+  // Tour
+  const { showTour, startTour, endTour } = useTour();
+  
+  // Achievements for rewards tab
+  const [achievements, setAchievements] = useState([]);
+
+  // Pull-to-Refresh Handler
+  const handlePullToRefresh = useCallback(async () => {
+    if (!token || !user?.id) return;
+    
+    try {
+      const response = await axios.get(`${API_URL}/api/engagement/sync/${user.id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (response.data) {
+        if (response.data.pets) setPets(response.data.pets);
+        if (response.data.recent_orders) setOrders(response.data.recent_orders);
+        
+        try {
+          await axios.post(`${API_URL}/api/engagement/streak/${user.id}/action?action_type=pet_update`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+        } catch (e) {
+          // Silent fail for streak tracking
+        }
+      }
+      
+      toast({ title: 'Refreshed! ✨', description: 'Your data is up to date' });
+    } catch (error) {
+      console.error('Refresh failed:', error);
+    }
+  }, [token, user?.id]);
+
+  // Pull-to-Refresh Hook
+  const { isPulling, pullProgress, isRefreshing } = usePullToRefresh(handlePullToRefresh, {
+    enabled: typeof window !== 'undefined' && window.innerWidth < 768
+  });
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login');
+    }
+  }, [authLoading, user, navigate]);
+  
+  // Listen for openSoulExplainer event
+  useEffect(() => {
+    const handleOpenExplainer = () => setShowSoulExplainer(true);
+    window.addEventListener('openSoulExplainer', handleOpenExplainer);
+    return () => window.removeEventListener('openSoulExplainer', handleOpenExplainer);
+  }, []);
+
+  // Main data fetching effect
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!token || !user) {
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        
+        const [ordersRes, petsRes, autoshipRes, reviewsRes] = await Promise.all([
+          axios.get(`${API_URL}/api/orders/my-orders`, config).catch(() => ({ data: { orders: [] } })),
+          axios.get(`${API_URL}/api/pets/my-pets`, config).catch(() => ({ data: { pets: [] } })),
+          axios.get(`${API_URL}/api/autoship/my-subscriptions`, config).catch(() => ({ data: { subscriptions: [] } })),
+          axios.get(`${API_URL}/api/reviews/my-reviews`, config).catch(() => ({ data: { reviews: [] } }))
+        ]);
+        
+        // Fetch dining history
+        try {
+          const diningRes = await axios.get(`${API_URL}/api/dine/my-dining-history?user_id=${user.id || ''}&email=${user.email || ''}`);
+          setDiningHistory(diningRes.data || { reservations: { items: [] }, visits: { items: [] }, meetups: { items: [] } });
+        } catch (e) {
+          console.error('Failed to fetch dining history:', e);
+        }
+        
+        // Fetch stay history
+        try {
+          const stayRes = await axios.get(`${API_URL}/api/stay/my-bookings?email=${user.email || ''}`, config);
+          setStayHistory(stayRes.data || { bookings: [], upcoming: [], past: [] });
+        } catch (e) {
+          console.error('Failed to fetch stay history:', e);
+        }
+        
+        // Fetch travel history
+        try {
+          const travelRes = await axios.get(`${API_URL}/api/travel/my-requests?user_email=${user.email || ''}`, config);
+          const requests = travelRes.data.requests || [];
+          const now = new Date();
+          const upcoming = requests.filter(r => new Date(r.journey?.travel_date) >= now && r.status !== 'cancelled');
+          const past = requests.filter(r => new Date(r.journey?.travel_date) < now || r.status === 'cancelled' || r.status === 'completed');
+          setTravelHistory({ requests, upcoming, past });
+        } catch (e) {
+          console.error('Failed to fetch travel history:', e);
+        }
+
+        const userOrders = ordersRes.data.orders || [];
+        setOrders(userOrders);
+        
+        // Filter celebration orders
+        const celebrations = userOrders.filter(o => 
+          o.items?.some(i => 
+            i.category?.toLowerCase().includes('cake') || 
+            i.category?.toLowerCase().includes('treat') ||
+            i.category?.toLowerCase().includes('celebrate')
+          )
+        );
+        setCelebrationOrders(celebrations);
+        
+        setPets(petsRes.data.pets || []);
+        setAutoships(autoshipRes.data.subscriptions || []);
+        setReviews(reviewsRes.data.reviews || []);
+        
+        // Check for achievement unlocks
+        const loadedPets = petsRes.data.pets || [];
+        if (loadedPets.length > 0) {
+          const primaryPet = loadedPets[0];
+          const score = Math.min(100, primaryPet.overall_score || 0);
+          
+          const celebratedKey = `celebrated_milestones_${primaryPet.id}`;
+          const celebrated = JSON.parse(localStorage.getItem(celebratedKey) || '[]');
+          
+          const milestones = [
+            { threshold: 25, name: 'Soul Seeker', icon: '🔍' },
+            { threshold: 50, name: 'Soul Explorer', icon: '🧭' },
+            { threshold: 75, name: 'Soul Guardian', icon: '🛡️' },
+            { threshold: 100, name: 'Soul Master', icon: '👑' }
+          ];
+          
+          const newMilestones = milestones.filter(m => 
+            score >= m.threshold && !celebrated.includes(m.threshold)
+          );
+          
+          if (newMilestones.length > 0) {
+            const highest = newMilestones[newMilestones.length - 1];
+            setTimeout(() => {
+              triggerCelebration(highest.threshold === 100 ? 'heavy' : 'medium');
+              toast({
+                title: `🎉 Achievement Unlocked!`,
+                description: `${highest.icon} ${highest.name} - ${primaryPet.name} has reached ${highest.threshold}% Soul completion!`,
+                duration: 6000
+              });
+            }, 1000);
+            
+            localStorage.setItem(celebratedKey, JSON.stringify([
+              ...celebrated,
+              ...newMilestones.map(m => m.threshold)
+            ]));
+          }
+          
+          // Set achievements for rewards tab
+          setAchievements(milestones.map(m => ({
+            ...m,
+            id: m.name.toLowerCase().replace(' ', '_'),
+            name: m.name,
+            description: `Reach ${m.threshold}% Pet Soul completion`,
+            unlocked_at: score >= m.threshold ? new Date().toISOString() : null
+          })));
+        }
+        
+        // Sync achievement points
+        try {
+          const syncRes = await fetch(`${API_URL}/api/paw-points/sync-achievements`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (syncRes.ok) {
+            const syncData = await syncRes.json();
+            if (syncData.points_earned > 0) {
+              toast({
+                title: `🎉 ${syncData.points_earned} Paw Points Earned!`,
+                description: syncData.message,
+                duration: 5000
+              });
+              triggerCelebration('light');
+              await refreshUser();
+            }
+          }
+        } catch (err) {
+          console.error('Failed to sync achievements:', err);
+        }
+        
+        // Extract reviewable products
+        const productIds = new Set((reviewsRes.data.reviews || []).map(r => r.product_id));
+        const reviewableProds = [];
+        for (const order of userOrders) {
+          for (const item of (order.items || [])) {
+            if (!productIds.has(item.id) && !reviewableProds.find(p => p.id === item.id)) {
+              reviewableProds.push({
+                id: item.id,
+                name: item.name,
+                image: item.image,
+                orderId: order.id
+              });
+            }
+          }
+        }
+        setReviewableProducts(reviewableProds);
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+        toast({ title: 'Error', description: 'Failed to load dashboard data', variant: 'destructive' });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchData();
+    }
+  }, [token, user, refreshUser]);
+
+  // Fetch My Requests
+  useEffect(() => {
+    const fetchMyRequests = async () => {
+      if (!token || !user) return;
+      
+      setRequestsLoading(true);
+      try {
+        const [requestsRes, bookingsRes] = await Promise.all([
+          axios.get(`${API_URL}/api/mira/my-requests`, {
+            headers: { Authorization: `Bearer ${token}` }
+          }).catch(() => ({ data: { requests: [] } })),
+          axios.get(`${API_URL}/api/user/bookings?email=${encodeURIComponent(user.email)}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          }).catch(() => ({ data: { bookings: [] } }))
+        ]);
+        
+        const requests = requestsRes.data.requests || [];
+        const bookings = (bookingsRes.data.bookings || []).map(b => ({
+          id: b.ticket_id || b.id,
+          ticket_id: b.ticket_id,
+          service_name: b.service_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Service',
+          description: `${b.service_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Service'} booking${b.date ? ` for ${b.date}` : ''}${b.time ? ` at ${b.time}` : ''}`,
+          status: b.status,
+          status_display: {
+            label: b.status === 'pending' ? 'Pending Confirmation' : 
+                   b.status === 'confirmed' ? 'Confirmed' :
+                   b.status === 'completed' ? 'Completed' : 
+                   b.status === 'cancelled' ? 'Cancelled' : b.status,
+            color: b.status === 'pending' ? 'yellow' : 
+                   b.status === 'confirmed' ? 'green' : 
+                   b.status === 'completed' ? 'blue' : 
+                   b.status === 'cancelled' ? 'red' : 'gray',
+            icon: b.status === 'pending' ? '⏳' : 
+                  b.status === 'confirmed' ? '✅' : 
+                  b.status === 'completed' ? '🎉' : 
+                  b.status === 'cancelled' ? '❌' : '📋'
+          },
+          pet_name: b.pet_name,
+          pillar: 'Booking',
+          created_at: b.created_at,
+          type: 'booking'
+        }));
+        
+        const allRequests = [...requests, ...bookings]
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        setMyRequests(allRequests);
+      } catch (error) {
+        console.error('Failed to fetch requests:', error);
+      } finally {
+        setRequestsLoading(false);
+      }
+    };
+    
+    fetchMyRequests();
+  }, [token, user]);
+
+  // Paw Points History
+  const fetchPawPointsHistory = async () => {
+    if (!token || !user) return;
+    
+    setPawPointsLoading(true);
+    try {
+      const response = await axios.get(`${API_URL}/api/paw-points/history?limit=100`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPawPointsHistory(response.data.transactions || []);
+    } catch (error) {
+      console.error('Failed to fetch paw points history:', error);
+    } finally {
+      setPawPointsLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    if (showPawPointsBreakdown) {
+      fetchPawPointsHistory();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showPawPointsBreakdown]);
+
+  // Handle setting change
+  const handleSettingChange = useCallback(async (key, value) => {
+    setSettings(prev => ({ ...prev, [key]: value !== undefined ? value : !prev[key] }));
+    setSettingsLoading(true);
+    setSettingsSaved(false);
+    
+    try {
+      await axios.put(`${API_URL}/api/user/settings`, {
+        [key]: value !== undefined ? value : !settings[key]
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSettingsSaved(true);
+      setTimeout(() => setSettingsSaved(false), 2000);
+    } catch (error) {
+      console.error('Failed to save setting:', error);
+    } finally {
+      setSettingsLoading(false);
+    }
+  }, [token, settings]);
+
+  // Refresh requests handler
+  const refreshRequests = useCallback(async () => {
+    if (!token || !user) return;
+    
+    setRequestsLoading(true);
+    try {
+      const [requestsRes, bookingsRes] = await Promise.all([
+        axios.get(`${API_URL}/api/mira/my-requests`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }).catch(() => ({ data: { requests: [] } })),
+        axios.get(`${API_URL}/api/user/bookings?email=${encodeURIComponent(user.email)}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }).catch(() => ({ data: { bookings: [] } }))
+      ]);
+      
+      const requests = requestsRes.data.requests || [];
+      const bookings = (bookingsRes.data.bookings || []).map(b => ({
+        id: b.ticket_id || b.id,
+        description: `${b.service_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Service'} booking${b.date ? ` for ${b.date}` : ''}${b.time ? ` at ${b.time}` : ''}`,
+        status: b.status,
+        status_display: {
+          label: b.status === 'pending' ? 'Pending Confirmation' : 
+                 b.status === 'confirmed' ? 'Confirmed' :
+                 b.status === 'completed' ? 'Completed' : 
+                 b.status === 'cancelled' ? 'Cancelled' : b.status,
+          color: b.status === 'pending' ? 'yellow' : 
+                 b.status === 'confirmed' ? 'green' : 
+                 b.status === 'completed' ? 'blue' : 
+                 b.status === 'cancelled' ? 'red' : 'gray',
+          icon: b.status === 'pending' ? '⏳' : 
+                b.status === 'confirmed' ? '✅' : 
+                b.status === 'completed' ? '🎉' : 
+                b.status === 'cancelled' ? '❌' : '📋'
+        },
+        pet_name: b.pet_name,
+        pillar: 'Booking',
+        created_at: b.created_at,
+        type: 'booking'
+      }));
+      
+      setMyRequests([...requests, ...bookings].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+    } finally {
+      setRequestsLoading(false);
+    }
+  }, [token, user]);
+
+  // Refresh reviews handler
+  const refreshReviews = useCallback(async () => {
+    if (!token) return;
+    try {
+      const reviewsRes = await axios.get(`${API_URL}/api/reviews/my-reviews`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setReviews(reviewsRes.data.reviews || []);
+    } catch (error) {
+      console.error('Failed to refresh reviews:', error);
+    }
+  }, [token]);
+
+  // Loading state - Premium Skeleton Loader
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-[#FAFAF9]">
+        {/* Skeleton Header */}
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-6 animate-pulse">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-white/20"></div>
+              <div className="space-y-2">
+                <div className="h-6 w-32 bg-white/20 rounded"></div>
+                <div className="h-4 w-48 bg-white/20 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Skeleton Content */}
+        <div className="max-w-6xl mx-auto p-4 space-y-4">
+          {/* Soul Score Grid Skeleton */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="bg-white rounded-2xl p-4 animate-pulse">
+                <div className="w-20 h-20 mx-auto rounded-full bg-gray-200 mb-3"></div>
+                <div className="h-4 w-16 mx-auto bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Cards Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[1, 2].map(i => (
+              <div key={i} className="bg-white rounded-2xl p-6 animate-pulse">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-gray-200 rounded-xl"></div>
+                  <div className="h-5 w-32 bg-gray-200 rounded"></div>
+                </div>
+                <div className="space-y-3">
+                  <div className="h-4 w-full bg-gray-100 rounded"></div>
+                  <div className="h-4 w-3/4 bg-gray-100 rounded"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Text Loading */}
+          <div className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto mb-3" />
+              <p className="text-gray-500 text-sm">Loading your dashboard...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) return null;
+
+  // Get primary pet (fallback) and current selected pet
+  const primaryPet = pets[0];
+  const currentPet = pets.find(p => p.id === selectedPetId) || primaryPet;
+  
+  // Get saved addresses from orders
+  const savedAddresses = orders
+    .filter(o => o.delivery?.address)
+    .map(o => ({
+      address: o.delivery.address,
+      city: o.delivery.city,
+      pincode: o.delivery.pincode
+    }))
+    .filter((addr, idx, self) => 
+      idx === self.findIndex(a => a.address === addr.address && a.city === addr.city)
+    );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-purple-950/30 text-slate-100">
+      {/* Global Navigation: Dashboard | Inbox + Pet Switcher */}
+      <GlobalNav 
+        activePetName={currentPet?.name} 
+        activePetId={currentPet?.id}
+        pets={pets}
+        onPetSelect={(pet) => {
+          setSelectedPetId(pet.id);
+        }}
+        onPetClick={() => navigate('/my-pets')} 
+      />
+      
+      {/* Warm Soul Orb Background Effects */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-gradient-to-tr from-purple-400/30 to-pink-500/30 rounded-full blur-[150px]" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gradient-to-tr from-pink-400/20 to-amber-500/20 rounded-full blur-[120px]" />
+        <div className="absolute top-1/2 right-0 w-64 h-64 bg-gradient-to-tr from-amber-400/10 to-rose-400/10 rounded-full blur-[100px]" />
+      </div>
+      
+      {/* Pull to Refresh Indicator */}
+      <PullToRefreshIndicator isPulling={isPulling} pullProgress={pullProgress} isRefreshing={isRefreshing} />
+      
+      {/* Push Notification Banner */}
+      <Suspense fallback={null}>
+        <PushNotificationBanner />
+      </Suspense>
+      
+      {/* Soul Explainer Video Dialog */}
+      <Suspense fallback={null}>
+        {showSoulExplainer && (
+          <SoulExplainerVideo 
+            open={showSoulExplainer} 
+            onClose={() => setShowSoulExplainer(false)} 
+            petName={currentPet?.name}
+          />
+        )}
+      </Suspense>
+      
+      {/* Voice Quick Actions */}
+      {showVoiceActions && (
+        <VoiceQuickActions 
+          open={showVoiceActions}
+          onClose={() => setShowVoiceActions(false)}
+          pets={pets}
+        />
+      )}
+      
+      {/* Pillar Popup */}
+      {pillarPopup.open && (
+        <PillarPopup 
+          pillar={pillarPopup.pillar}
+          onClose={() => setPillarPopup({ open: false, pillar: null })}
+          onExplore={(path) => navigate(path)}
+          data={{
+            celebrationOrders,
+            diningHistory,
+            stayHistory,
+            travelHistory
+          }}
+        />
+      )}
+      
+      {/* Paw Points Breakdown Modal */}
+      <PawPointsBreakdownModal
+        open={showPawPointsBreakdown}
+        onClose={() => setShowPawPointsBreakdown(false)}
+        history={pawPointsHistory}
+        loading={pawPointsLoading}
+        totalPoints={user?.loyalty_points}
+      />
+      
+      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pb-28 md:pb-8 pt-4 md:pt-8 relative z-10">
+          {/* 1️⃣ HEADER - Pet Parent Name + All Pets Listed */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl md:rounded-3xl flex items-center justify-center shadow-lg shadow-purple-500/30 transition-transform hover:scale-105">
+                <User className="w-8 h-8 md:w-10 md:h-10 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight" style={{fontFamily: 'Manrope, sans-serif'}}>
+                  {user.name?.split(' ')[0] || 'Pet Parent'}&apos;s Dashboard
+                </h1>
+                {/* Show pets info - mobile shows count, desktop shows names */}
+                {pets.length > 0 && (
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <PawPrint className="w-4 h-4 text-pink-400 flex-shrink-0" />
+                    {/* Mobile: Show count only */}
+                    <span className="text-sm text-slate-400 sm:hidden">
+                      {pets.length} {pets.length === 1 ? 'pet' : 'pets'}
+                    </span>
+                    {/* Desktop: Show first 4 names + count if more */}
+                    <span className="hidden sm:inline text-sm md:text-base text-slate-400">
+                      {pets.length <= 4 
+                        ? pets.map(p => p.name).join(' • ')
+                        : `${pets.slice(0, 4).map(p => p.name).join(' • ')} +${pets.length - 4} more`
+                      }
+                    </span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2 mt-2">
+                  <Badge className="bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs md:text-sm font-medium px-3 py-1 rounded-full">Pet Pass Active</Badge>
+                  {user.loyalty_points > 0 && (
+                    <Badge 
+                      variant="outline" 
+                      className="text-xs md:text-sm cursor-pointer bg-slate-800/50 border-white/10 text-slate-300 hover:bg-purple-500/20 hover:border-purple-500/30 transition-colors px-3 py-1 rounded-full"
+                      onClick={() => setShowPawPointsBreakdown(true)}
+                      data-testid="paw-points-badge"
+                    >
+                      <Gift className="w-3.5 h-3.5 mr-1.5" />
+                      {user.loyalty_points} Paw Points
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Header Actions: Notification Bell + Sign Out */}
+            <div className="flex items-center gap-2 self-start sm:self-center relative z-[1000]">
+              {/* Member Notification Bell */}
+              <MemberNotificationBell 
+                userEmail={user?.email}
+                onNotificationClick={(notification) => {
+                  // Navigate to requests tab when clicking notification
+                  if (notification.ticket_id) {
+                    setActiveTab('requests');
+                  }
+                }}
+              />
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={(e) => { 
+                  e.preventDefault();
+                  e.stopPropagation();
+                  logout(); 
+                  navigate('/'); 
+                }}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                }}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  logout();
+                  navigate('/');
+                }}
+                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 border-red-500/30 rounded-xl transition-all hover:scale-105 relative z-[1001]"
+                data-testid="signout-btn"
+                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', pointerEvents: 'auto', isolation: 'isolate' }}
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
+          </div>
+
+        {/* Main Tabs - Wraps everything */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          
+          {/* 📌 NAVIGATION TABS - Top Right after header */}
+          <div className="mb-6">
+            {/* Desktop Tab Navigation */}
+            <div className="hidden lg:flex justify-end">
+              <TabsList className="backdrop-blur-xl bg-slate-900/80 border border-white/10 shadow-xl p-1.5 rounded-xl !inline-flex !h-auto flex-wrap justify-end gap-1">
+                <TabsTrigger value="overview" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Home className="w-3.5 h-3.5 mr-1 inline" /> Home
+                </TabsTrigger>
+                <TabsTrigger value="services" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Crown className="w-3.5 h-3.5 mr-1 inline" /> Services
+                </TabsTrigger>
+                <TabsTrigger value="rewards" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Gift className="w-3.5 h-3.5 mr-1 inline" /> Paw Points
+                </TabsTrigger>
+                <TabsTrigger value="mira" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Sparkles className="w-3.5 h-3.5 mr-1 inline" /> Mira AI
+                </TabsTrigger>
+                <TabsTrigger value="picks" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Gift className="w-3.5 h-3.5 mr-1 inline" /> Picks
+                </TabsTrigger>
+                <TabsTrigger value="requests" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Calendar className="w-3.5 h-3.5 mr-1 inline" /> Bookings
+                  {myRequests.length > 0 && <Badge variant="secondary" className="ml-1 h-4 px-1 text-[10px] bg-purple-500/30 text-purple-200">{myRequests.length}</Badge>}
+                </TabsTrigger>
+                <TabsTrigger value="orders" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Package className="w-3.5 h-3.5 mr-1 inline" /> Orders
+                </TabsTrigger>
+                <TabsTrigger value="quotes" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <FileText className="w-3.5 h-3.5 mr-1 inline" /> Quotes
+                </TabsTrigger>
+                <TabsTrigger value="documents" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Shield className="w-3.5 h-3.5 mr-1 inline" /> Documents
+                </TabsTrigger>
+                <TabsTrigger value="autoship" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <RefreshCw className="w-3.5 h-3.5 mr-1 inline" /> Autoship
+                </TabsTrigger>
+                <TabsTrigger value="reviews" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <MessageSquare className="w-3.5 h-3.5 mr-1 inline" /> Reviews
+                </TabsTrigger>
+                <TabsTrigger value="pets" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <PawPrint className="w-3.5 h-3.5 mr-1 inline" /> Pets
+                </TabsTrigger>
+                <TabsTrigger value="addresses" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <MapPin className="w-3.5 h-3.5 mr-1 inline" /> Addresses
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Settings className="w-3.5 h-3.5 mr-1 inline" /> Settings
+                </TabsTrigger>
+                <TabsTrigger value="membership" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Crown className="w-3.5 h-3.5 mr-1 inline" /> Plan
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            
+            {/* Tablet/Mobile Tab Navigation - Scrollable */}
+            <div className="lg:hidden relative">
+              <TabsList className="backdrop-blur-xl bg-slate-900/80 border border-white/10 shadow-xl p-1.5 rounded-xl flex overflow-x-auto gap-1 scrollbar-hide touch-pan-x">
+                <TabsTrigger value="overview" data-testid="mobile-tab-overview" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
+                  <Home className="w-3.5 h-3.5" /> Home
+                </TabsTrigger>
+                <TabsTrigger value="services" data-testid="mobile-tab-services" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
+                  <Crown className="w-3.5 h-3.5" /> Services
+                </TabsTrigger>
+                <TabsTrigger value="rewards" data-testid="mobile-tab-rewards" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
+                  <Gift className="w-3.5 h-3.5" /> Paw Points
+                </TabsTrigger>
+                <TabsTrigger value="mira" data-testid="mobile-tab-mira" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
+                  <Sparkles className="w-3.5 h-3.5" /> Mira AI
+                </TabsTrigger>
+                <TabsTrigger value="requests" data-testid="mobile-tab-requests" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
+                  <Calendar className="w-3.5 h-3.5" /> Bookings
+                  {myRequests.length > 0 && <Badge variant="secondary" className="ml-1 h-4 px-1 text-[10px] bg-purple-500/30 text-purple-200">{myRequests.length}</Badge>}
+                </TabsTrigger>
+                <TabsTrigger value="orders" data-testid="mobile-tab-orders" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
+                  <Package className="w-3.5 h-3.5" /> Orders
+                </TabsTrigger>
+                <TabsTrigger value="pets" data-testid="mobile-tab-pets" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
+                  <PawPrint className="w-3.5 h-3.5" /> Pets
+                </TabsTrigger>
+                <TabsTrigger value="settings" data-testid="mobile-tab-settings" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
+                  <Settings className="w-3.5 h-3.5" /> Settings
+                </TabsTrigger>
+              </TabsList>
+              {/* Scroll indicator - fade hint that more tabs exist */}
+              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#0d0d1a] to-transparent pointer-events-none rounded-r-xl" />
+            </div>
+          </div>
+
+          {/* 🐾 PET SELECTOR - Below nav tabs */}
+          {pets.length > 1 && (
+            <div className="mb-6 p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xl rounded-xl border border-white/10">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                <p className="text-xs text-purple-400 font-medium tracking-wider">VIEWING DASHBOARD FOR</p>
+                {currentPet && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => navigate(`/pet/${currentPet.id}`)}
+                    className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 text-xs h-7 self-start sm:self-auto"
+                    data-testid="header-go-to-pet-soul-btn"
+                  >
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    <span className="hidden sm:inline">Go to {currentPet.name}&apos;s Soul Journey →</span>
+                    <span className="sm:hidden">View Soul →</span>
+                  </Button>
+                )}
+              </div>
+              {/* Pet selector row - Mobile responsive with visible names */}
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-purple-500/50 -mx-1 px-1">
+                {pets.map((pet) => (
+                  <button
+                    key={pet.id}
+                    onClick={() => setSelectedPetId(pet.id)}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-full whitespace-nowrap transition-all shrink-0 text-sm ${
+                      selectedPetId === pet.id || (!selectedPetId && pet.id === pets[0]?.id)
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30' 
+                        : 'bg-slate-800/50 border border-white/10 text-slate-300 hover:border-purple-500/50'
+                    }`}
+                    data-testid={`header-pet-selector-${pet.name?.toLowerCase()}`}
+                  >
+                    <span className="text-base">{pet.species === 'cat' ? '🐱' : '🐕'}</span>
+                    <span className="font-medium truncate max-w-[80px]">{pet.name}</span>
+                    {pet.overall_score >= 80 && <span className="text-xs">⭐</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 2️⃣ ALL PETS SOUL SCORE GRID - Select a pet to see details */}
+          {pets.length > 0 && (
+            <Card className="mb-8 overflow-hidden bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 text-white border-none shadow-2xl shadow-purple-500/30 rounded-2xl md:rounded-3xl">
+              <div className="p-4 md:p-6 lg:p-8">
+                {/* Section Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mb-6">
+                  <div className="flex items-center gap-2">
+                    <Brain className="w-6 h-6 md:w-7 md:h-7 text-yellow-300" />
+                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight" style={{fontFamily: 'Manrope, sans-serif'}}>Your Pets&apos; Soul Journey</h2>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-white/70 text-sm md:text-base hidden sm:inline">The more we know, the better Mira serves you!</span>
+                    <button
+                      onClick={() => setShowSoulExplainer(true)}
+                      className="flex items-center gap-1.5 bg-black/20 hover:bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium transition-all hover:scale-105 active:scale-95 border border-white/10"
+                      data-testid="what-is-pet-soul-btn"
+                    >
+                      <HelpCircle className="w-4 h-4" />
+                      What is Pet Soul?
+                    </button>
+                  </div>
+                </div>
+                
+                {/* All Pets Grid - Responsive for all devices - Fixed mobile spacing */}
+                <div className={`grid ${
+                  pets.length === 1 
+                    ? 'grid-cols-1 max-w-[200px] mx-auto' 
+                    : pets.length === 2 
+                      ? 'grid-cols-2 max-w-sm mx-auto gap-3 md:gap-4' 
+                      : pets.length <= 3 
+                        ? 'grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4' 
+                        : pets.length <= 4 
+                          ? 'grid-cols-2 md:grid-cols-4 gap-2.5 md:gap-3' 
+                          : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 md:gap-3'
+                }`}>
+                {pets.map((pet) => {
+                  const score = Math.round(pet.overall_score || 0);
+                  const questionsAnswered = Object.keys(pet.doggy_soul_answers || {}).length;
+                  const needsAttention = score < 50;
+                  const isSelected = selectedPetId === pet.id || (!selectedPetId && pet.id === pets[0]?.id);
+                  
+                  return (
+                    <div 
+                      key={pet.id}
+                      className={`relative bg-black/20 backdrop-blur-md rounded-xl p-2.5 md:p-4 text-center cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border touch-manipulation ${
+                        isSelected 
+                          ? 'border-white/30 bg-black/40 shadow-lg shadow-white/10' 
+                          : needsAttention 
+                            ? 'border-yellow-400/50 hover:border-yellow-400/70 hover:bg-black/30' 
+                            : 'border-white/10 hover:border-white/20 hover:bg-black/30'
+                      }`}
+                      style={{ minWidth: 0 }} /* Prevent grid blowout */
+                      onClick={() => navigate(`/pet/${pet.id}`)}
+                      data-testid={`pet-card-${pet.name?.toLowerCase()}`}
+                    >
+                      {/* Selected indicator */}
+                      {isSelected && (
+                        <div className="absolute -top-1.5 -right-1.5 w-6 h-6 md:w-7 md:h-7 bg-white rounded-full flex items-center justify-center shadow-lg z-10">
+                          <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-purple-600" />
+                        </div>
+                      )}
+                      
+                      {/* Pet Soul Score Arc - Responsive size */}
+                      <div className="flex justify-center">
+                        <SoulScoreArc 
+                          score={score}
+                          petId={pet.id}
+                          petName={pet.name}
+                          size={pets.length > 4 ? "sm" : "md"}
+                          showLabel={false}
+                          showCTA={false}
+                          animated={true}
+                        />
+                      </div>
+                      
+                      {/* Pet Name */}
+                      <p className={`font-bold mt-2 text-sm md:text-base ${isSelected ? 'text-yellow-300' : 'text-white'}`}>{pet.name}</p>
+                      <p className="text-[10px] md:text-xs text-white/60 truncate">{pet.breed || 'Pet'}</p>
+                      
+                      {/* Questions Count */}
+                      <p className="text-[10px] md:text-xs text-white/70 mt-1">
+                        {questionsAnswered} questions
+                      </p>
+                      
+                      {/* Status indicator */}
+                      <div className="mt-1.5 md:mt-2">
+                        {score >= 80 ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] md:text-xs text-emerald-300 font-medium">
+                            🏆 Soul Master!
+                          </span>
+                        ) : score >= 50 ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] md:text-xs text-yellow-300 font-medium">
+                            ⭐ Growing
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-xs text-pink-300 font-medium">
+                            🌱 New
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+                
+                {/* Add Pet Button */}
+                <div 
+                  className="relative bg-black/10 backdrop-blur-md rounded-xl p-2.5 md:p-4 text-center cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border border-dashed border-white/30 hover:border-pink-400/70 hover:bg-black/20 touch-manipulation flex flex-col items-center justify-center min-h-[140px]"
+                  onClick={() => navigate('/join')}
+                  data-testid="add-pet-btn"
+                >
+                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center mb-2">
+                    <Plus className="w-6 h-6 md:w-7 md:h-7 text-white" />
+                  </div>
+                  <p className="font-bold text-sm md:text-base text-white">Add Pet</p>
+                  <p className="text-[10px] md:text-xs text-white/60">Introduce another fur baby</p>
+                </div>
+              </div>
+              
+              {/* Overall Stats - Responsive */}
+              <div className="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-white/20 grid grid-cols-3 gap-4 md:gap-8 max-w-xl mx-auto">
+                <div className="text-center">
+                  <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-yellow-300">
+                    {Math.round(pets.reduce((sum, p) => sum + (p.overall_score || 0), 0) / pets.length)}%
+                  </p>
+                  <p className="text-[10px] md:text-xs text-white/70 mt-1">Avg Soul Score</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-emerald-300">
+                    {pets.reduce((sum, p) => sum + Object.keys(p.doggy_soul_answers || {}).length, 0)}
+                  </p>
+                  <p className="text-[10px] md:text-xs text-white/70 mt-1">Total Questions</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-pink-300">
+                    {pets.filter(p => (p.overall_score || 0) >= 80).length}/{pets.length}
+                  </p>
+                  <p className="text-[10px] md:text-xs text-white/70 mt-1">Soul Masters</p>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* 🌟 SELECTED PET'S LIVING SOUL ORB - Hero Display */}
+        {currentPet && (
+          <Card className="mb-8 overflow-hidden bg-gradient-to-br from-slate-950 via-purple-950/50 to-slate-950 border border-white/10 shadow-2xl rounded-2xl md:rounded-3xl">
+            <div className="relative p-6 md:p-8 lg:p-10">
+              {/* Background ambient glow */}
+              <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+              <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl" />
+              
+              <div className="relative flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+                {/* Living Soul Orb */}
+                <div className="flex-shrink-0">
+                  <LivingSoulOrb
+                    score={Math.round(currentPet.overall_score || 0)}
+                    petName={currentPet.name}
+                    petId={currentPet.id}
+                    size="lg"
+                    showDetails={true}
+                    showCelebration={true}
+                    isFirstReveal={Object.keys(currentPet.doggy_soul_answers || {}).length <= 3}
+                  />
+                </div>
+                
+                {/* Soul Details & Actions */}
+                <div className="flex-1 text-center lg:text-left">
+                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                    {currentPet.name}&apos;s Soul Journey
+                  </h3>
+                  <p className="text-white/60 text-sm md:text-base mb-6 max-w-md">
+                    {currentPet.overall_score >= 80 
+                      ? `You truly understand ${currentPet.name}. This bond is special.`
+                      : currentPet.overall_score >= 50
+                        ? `${currentPet.name}'s soul is growing! Keep answering questions to deepen your connection.`
+                        : `Begin your journey to understand ${currentPet.name}'s unique soul.`
+                    }
+                  </p>
+                  
+                  {/* Quick Stats */}
+                  <div className="flex justify-center lg:justify-start gap-6 mb-6">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-purple-400">{Object.keys(currentPet.doggy_soul_answers || {}).length}</p>
+                      <p className="text-xs text-white/50">Questions</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-pink-400">{Math.round(currentPet.overall_score || 0)}%</p>
+                      <p className="text-xs text-white/50">Complete</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-emerald-400">
+                        {currentPet.overall_score >= 80 ? '👑' : currentPet.overall_score >= 50 ? '🧭' : '🌱'}
+                      </p>
+                      <p className="text-xs text-white/50">Rank</p>
+                    </div>
+                  </div>
+                  
+                  {/* CTA Button */}
+                  {currentPet.overall_score < 100 && (
+                    <Button
+                      onClick={() => navigate(`/soul-builder?pet=${currentPet.id}&continue=true`)}
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-6 py-3 rounded-full font-semibold shadow-lg shadow-purple-500/30"
+                      data-testid="grow-soul-btn"
+                    >
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Grow {currentPet.name}&apos;s Soul
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* 3️⃣ SELECTED PET'S GAMIFICATION BANNER */}
+        <div className="mb-8">
+          <GamificationBanner 
+            pets={pets}
+            orders={orders}
+            user={user}
+            selectedPetId={selectedPetId}
+            onNavigateToPet={(petId) => navigate(`/soul-builder?pet=${petId}&continue=true`)}
+            onOpenExplainer={() => {}}
+          />
+        </div>
+        
+        {/* ⚡ QUICK SCORE BOOST - Show when selected pet's score is low */}
+        {currentPet && currentPet.overall_score < 75 && (
+          <div className="mb-8">
+            <QuickScoreBoost 
+              pet={currentPet} 
+              onAnswerQuestion={() => {
+                window.location.reload();
+              }}
+            />
+          </div>
+        )}
+
+          {/* Tab Contents - All Lazy Loaded */}
+          
+          {/* Back to Home Button - Shows when on any tab except overview */}
+          {activeTab !== 'overview' && (
+            <div className="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-xl border-b border-white/10 p-3 mb-4 -mx-4 px-4 md:hidden flex items-center justify-between">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className="flex items-center gap-2 text-sm text-purple-400 hover:text-purple-300 transition-colors"
+              >
+                <ArrowRight className="w-4 h-4 rotate-180" />
+                Back to Home
+              </button>
+              <button
+                onClick={() => setActiveTab('overview')}
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                aria-label="Close tab"
+              >
+                <X className="w-5 h-5 text-slate-400" />
+              </button>
+            </div>
+          )}
+          
+          <TabsContent value="overview">
+            <Suspense fallback={<TabLoader />}>
+              <OverviewTab 
+                user={user}
+                pets={pets}
+                orders={orders}
+                myRequests={myRequests}
+                primaryPet={primaryPet}
+                setShowSoulExplainer={setShowSoulExplainer}
+                setShowPawPointsBreakdown={setShowPawPointsBreakdown}
+                addToCart={addToCart}
+                onTabChange={setActiveTab}
+                selectedPetId={selectedPetId}
+                onPetChange={setSelectedPetId}
+              />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="services">
+            <Suspense fallback={<TabLoader />}>
+              <ServicesTab />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="rewards">
+            <Suspense fallback={<TabLoader />}>
+              <RewardsTab 
+                user={user}
+                pets={pets}
+                orders={orders}
+                achievements={achievements}
+                setShowPawPointsBreakdown={setShowPawPointsBreakdown}
+              />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="mira">
+            <Suspense fallback={<TabLoader />}>
+              <MiraTab user={user} pets={pets} />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="picks">
+            <Suspense fallback={<TabLoader />}>
+              <PicksHistoryTab pet={pets?.[0]} user={user} />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="requests">
+            <Suspense fallback={<TabLoader />}>
+              <RequestsTab 
+                myRequests={myRequests}
+                requestsLoading={requestsLoading}
+                onRefresh={refreshRequests}
+                userEmail={user?.email}
+              />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="orders">
+            <Suspense fallback={<TabLoader />}>
+              <OrdersTab orders={orders} />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="quotes">
+            <Suspense fallback={<TabLoader />}>
+              <QuotesTab user={user} token={token} />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="documents">
+            <Suspense fallback={<TabLoader />}>
+              <DocumentsTab 
+                pets={pets}
+                token={token}
+                API_URL={API_URL}
+              />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="dining">
+            <Suspense fallback={<TabLoader />}>
+              <DiningTab diningHistory={diningHistory} />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="celebrations">
+            <Suspense fallback={<TabLoader />}>
+              <CelebrationsTab 
+                pets={pets}
+                celebrationOrders={celebrationOrders}
+                user={user}
+              />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="stay">
+            <Suspense fallback={<TabLoader />}>
+              <StayTab stayHistory={stayHistory} />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="travel">
+            <Suspense fallback={<TabLoader />}>
+              <TravelTab travelHistory={travelHistory} />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="autoship">
+            <Suspense fallback={<TabLoader />}>
+              <AutoshipTab autoships={autoships} />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="reviews">
+            <Suspense fallback={<TabLoader />}>
+              <ReviewsTab 
+                reviews={reviews}
+                reviewableProducts={reviewableProducts}
+                user={user}
+                token={token}
+                API_URL={API_URL}
+                onReviewsUpdate={refreshReviews}
+              />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="pets">
+            <Suspense fallback={<TabLoader />}>
+              <PetsTab pets={pets} />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="addresses">
+            <Suspense fallback={<TabLoader />}>
+              <AddressesTab savedAddresses={savedAddresses} />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <Suspense fallback={<TabLoader />}>
+              <SettingsTab 
+                user={user}
+                pets={pets}
+                settings={settings}
+                settingsLoading={settingsLoading}
+                settingsSaved={settingsSaved}
+                isPushSupported={isPushSupported}
+                pushPermission={pushPermission}
+                isPushSubscribed={isPushSubscribed}
+                pushLoading={pushLoading}
+                handleSettingChange={handleSettingChange}
+                subscribeToPush={subscribeToPush}
+                unsubscribeFromPush={unsubscribeFromPush}
+                sendTestNotification={sendTestNotification}
+                setSettings={setSettings}
+                setShowVoiceActions={setShowVoiceActions}
+                toast={toast}
+              />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="membership">
+            <Suspense fallback={<TabLoader />}>
+              <MembershipTab 
+                user={user}
+              />
+            </Suspense>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
+
+export default MemberDashboard;

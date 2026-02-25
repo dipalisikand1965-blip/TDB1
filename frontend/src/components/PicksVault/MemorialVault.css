@@ -1,0 +1,154 @@
+/**
+ * MEMORIAL VAULT STYLES - Gentle & Sensitive
+ */
+
+.mv-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16162a 100%);
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.mv-container.mv-gentle {
+  background: linear-gradient(180deg, #1a1d2e 0%, #151823 100%);
+}
+
+.mv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mv-header-left { display: flex; align-items: center; gap: 12px; }
+
+.mv-icon-badge {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+
+.mv-header-text h2 { margin: 0; font-size: 18px; font-weight: 500; }
+.mv-header-text p { margin: 4px 0 0; font-size: 13px; color: rgba(255, 255, 255, 0.5); }
+
+.mv-close-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: none; color: rgba(255, 255, 255, 0.5); cursor: pointer;
+}
+
+.mv-content { flex: 1; overflow-y: auto; padding: 20px; }
+
+.mv-intro {
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 24px;
+}
+
+.mv-services { margin-bottom: 24px; }
+.mv-services label { display: block; font-size: 14px; color: rgba(255, 255, 255, 0.6); margin-bottom: 12px; }
+
+.mv-service-item {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+}
+
+.mv-service-item:hover { background: rgba(255, 255, 255, 0.05); }
+
+.mv-service-item.mv-selected {
+  background: rgba(167, 139, 250, 0.1);
+  border-color: rgba(167, 139, 250, 0.3);
+}
+
+.mv-checkbox {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.mv-checkbox.mv-checked { background: #a78bfa; border-color: #a78bfa; }
+
+.mv-field { margin-bottom: 20px; }
+.mv-field label { display: block; font-size: 14px; color: rgba(255, 255, 255, 0.6); margin-bottom: 8px; }
+
+.mv-field textarea {
+  width: 100%; padding: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  color: #ffffff; font-size: 15px; font-family: inherit;
+  min-height: 120px; resize: vertical;
+}
+
+.mv-field textarea::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+.mv-footer {
+  padding: 16px 20px 24px;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mv-footer-message { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+.mv-concierge-icon {
+  width: 36px; height: 36px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 600;
+}
+.mv-footer-text { display: flex; flex-direction: column; gap: 4px; }
+.mv-footer-title { font-size: 14px; font-weight: 500; }
+.mv-footer-subtitle { font-size: 13px; color: rgba(255, 255, 255, 0.4); }
+
+.mv-send-btn {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+  border: none; border-radius: 28px;
+  color: #ffffff; font-size: 16px; font-weight: 500; cursor: pointer;
+}
+
+.mv-confirmation {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 48px 24px; height: 100%;
+}
+
+.mv-confirmation-icon {
+  width: 80px; height: 80px;
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #ffffff; margin-bottom: 24px;
+}
+
+.mv-confirmation h2 { margin: 0 0 8px; font-size: 22px; font-weight: 500; }
+.mv-confirmation p { margin: 0 0 16px; font-size: 15px; color: rgba(255, 255, 255, 0.6); }
+
+.mv-rainbow { font-size: 48px; margin-bottom: 16px; }
+
+.mv-poem {
+  font-style: italic;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 24px;
+}
+
+.mv-btn { padding: 14px 28px; border-radius: 24px; font-size: 15px; font-weight: 500; cursor: pointer; }
+.mv-btn-primary { background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%); border: none; color: #ffffff; }
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mv-footer { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+}

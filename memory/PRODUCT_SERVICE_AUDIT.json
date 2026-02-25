@@ -1,0 +1,551 @@
+{
+  "audit_date": "2026-02-09T05:35:38.817518",
+  "products": {
+    "total_count": 2151,
+    "field_completeness": {
+      "name": {
+        "count": 2151,
+        "pct": 100.0
+      },
+      "pillar": {
+        "count": 2151,
+        "pct": 100.0
+      },
+      "category": {
+        "count": 2150,
+        "pct": 100.0
+      },
+      "price": {
+        "count": 2142,
+        "pct": 99.6
+      },
+      "description": {
+        "count": 2148,
+        "pct": 99.9
+      },
+      "image": {
+        "count": 1278,
+        "pct": 59.4
+      },
+      "tags": {
+        "count": 2086,
+        "pct": 97.0
+      },
+      "semantic_intents": {
+        "count": 2027,
+        "pct": 94.2
+      },
+      "semantic_tags": {
+        "count": 2027,
+        "pct": 94.2
+      },
+      "mira_hint": {
+        "count": 1818,
+        "pct": 84.5
+      },
+      "base_tags": {
+        "count": 0,
+        "pct": 0.0
+      },
+      "applicable_breeds": {
+        "count": 2151,
+        "pct": 100.0
+      },
+      "breed_tags": {
+        "count": 2151,
+        "pct": 100.0
+      },
+      "is_all_breeds": {
+        "count": 1370,
+        "pct": 63.7
+      },
+      "size_tags": {
+        "count": 2151,
+        "pct": 100.0
+      }
+    },
+    "pillar_distribution": {
+      "dine": 126,
+      "celebrate": 420,
+      "shop": 824,
+      "travel": 102,
+      "care": 147,
+      "stay": 115,
+      "enjoy": 60,
+      "fit": 126,
+      "learn": 60,
+      "paperwork": 32,
+      "advisory": 29,
+      "emergency": 26,
+      "farewell": 20,
+      "adopt": 47,
+      "insure": 11,
+      "community": 6
+    },
+    "category_distribution": {
+      "treats": 39,
+      "other": 41,
+      "dognuts": 25,
+      "accessories": 454,
+      "hampers": 20,
+      "desi-treats": 15,
+      "cakes": 110,
+      "mini-cakes": 8,
+      "fresh-meals": 28,
+      "frozen-treats": 23,
+      "breed-cakes": 43,
+      "gift-cards": 1,
+      "nut-butters": 6,
+      "cat-treats": 9,
+      "merchandise": 7,
+      "travel": 21,
+      "travel-accessories": 5,
+      "care": 49,
+      "dine": 12,
+      "boarding": 41,
+      "daycare": 6,
+      "services": 29,
+      "travel-gear": 16,
+      "grooming": 58,
+      "health": 10,
+      "toys": 65,
+      "training": 61,
+      "programs": 9,
+      "workshops": 3,
+      "certification": 3,
+      "documentation": 10,
+      "consultation": 17,
+      "legal": 2,
+      "emergency": 17,
+      "supplies": 1,
+      "cremation": 4,
+      "memorial": 10,
+      "ceremony": 3,
+      "kits": 9,
+      "donation": 2,
+      "beds": 80,
+      "clothing": 2,
+      "party-planning": 3,
+      "celebration": 106,
+      "milestone": 3,
+      "surprise": 2,
+      "coordination": 1,
+      "photography": 2,
+      "keepsakes": 3,
+      "subscription": 2,
+      "breed-day": 1,
+      "anniversary": 1,
+      "support": 3,
+      "experience": 3,
+      "workshop": 1,
+      "meal-prep": 1,
+      "pet-sitting": 1,
+      "trial": 1,
+      "planning": 7,
+      "relocation": 4,
+      "assistance": 1,
+      "research": 1,
+      "wellness": 6,
+      "senior-care": 1,
+      "recovery": 1,
+      "social": 2,
+      "activity": 1,
+      "enrichment": 1,
+      "assessment": 6,
+      "weight": 6,
+      "therapy": 5,
+      "senior": 3,
+      "puppy": 4,
+      "socialisation": 1,
+      "behaviour": 3,
+      "registration": 1,
+      "breed-registry": 1,
+      "insurance": 6,
+      "organisation": 1,
+      "permits": 1,
+      "advisory": 14,
+      "search": 1,
+      "end-of-life": 1,
+      "keepsake": 2,
+      "programme": 1,
+      "training-equipment": 1,
+      "mental-fitness": 1,
+      "active-gear": 1,
+      "water-sports": 1,
+      "core-training": 1,
+      "strength": 1,
+      "tracking": 1,
+      "weather-gear": 1,
+      "supplements": 5,
+      "hydration": 1,
+      "paperwork": 14,
+      "fit": 36,
+      "enjoy": 20,
+      "stay": 32,
+      "hotel": 1,
+      "resort": 1,
+      "villa": 1,
+      "farmstay": 1,
+      "homestay": 1,
+      "cab": 1,
+      "train": 1,
+      "flight": 1,
+      "taxi": 1,
+      "walks": 1,
+      "sitting": 2,
+      "vet": 2,
+      "agility": 2,
+      "park": 1,
+      "cafe": 1,
+      "beach": 1,
+      "behavior": 1,
+      "tricks": 1,
+      "service": 33,
+      "essentials": 1,
+      "walking": 1,
+      "adventure": 1,
+      "spa": 1,
+      "basic": 1,
+      "nail": 1,
+      "kit": 3,
+      "voucher": 1,
+      "concierge": 8,
+      "feed": 6,
+      "insure": 4,
+      "comfort": 3,
+      "travel-health": 5,
+      "travel-feeding": 3,
+      "adopt": 6,
+      "mat": 1,
+      "wipes": 1,
+      "leash": 1,
+      "towel": 1,
+      "adopt-kit": 4,
+      "adopt-calming": 3,
+      "adopt-comfort": 3,
+      "adopt-training": 1,
+      "adopt-enrichment": 2,
+      "adopt-health": 2,
+      "adopt-grooming": 2,
+      "adopt-guide": 2,
+      "adopt-donation": 2,
+      "travel-carrier": 3,
+      "travel-comfort": 4,
+      "travel-safety": 5,
+      "travel-tech": 1,
+      "travel-calming": 3,
+      "travel-docs": 3,
+      "meal-toppers": 2,
+      "travel-carriers": 1,
+      "leashes": 2,
+      "carriers": 8,
+      "bedding": 1,
+      "bowls": 6,
+      "crates": 2,
+      "car-accessories": 2,
+      "mats": 1,
+      "harnesses": 1,
+      "playpens": 1,
+      "party_accessories": 6,
+      "party_decorations": 4,
+      "party_tableware": 2,
+      "cake_decorations": 2,
+      "party_supplies": 2,
+      "party_kits": 4,
+      "party_toys": 2,
+      "gourmet_treats": 4,
+      "party_hats": 1,
+      "tableware": 1,
+      "bandanas": 7,
+      "feeding": 2,
+      "hygiene": 1,
+      "biscuits": 1,
+      "general": 5,
+      "photo_services": 1,
+      "meals": 3,
+      "plush": 1,
+      "urns": 2,
+      "bundles": 6,
+      "experiences": 10,
+      "packages": 6,
+      "gear": 8,
+      "events": 6,
+      "activities": 8,
+      "fitness": 4,
+      "classes": 10,
+      "consultations": 6,
+      "guides": 6,
+      "certificates": 1,
+      "subscriptions": 6,
+      "financial": 3,
+      "products": 7,
+      "amenities": 1,
+      "add-ons": 2,
+      "safety": 1,
+      "courses": 4,
+      "specialized": 1,
+      "certifications": 1,
+      "checkups": 1,
+      "vaccines": 1,
+      "dental": 1,
+      "preventive": 2,
+      "diagnostics": 3,
+      "treatments": 3,
+      "guidance": 1,
+      "assessments": 1,
+      "fitness_assessment": 1,
+      "exercise_plan": 3,
+      "puppy_training": 1,
+      "basic_obedience": 2,
+      "behavior_modification": 1,
+      "advanced_training": 1,
+      "spa_bath": 1,
+      "nail_care": 1,
+      "styling": 1,
+      "nutrition": 1,
+      "coaching": 1,
+      "breed_selection": 1,
+      "medical": 1,
+      "identity": 1,
+      "first_aid": 1,
+      "helpline": 1,
+      "transport": 1,
+      "lost_pet": 1,
+      "adoption_process": 1,
+      "foster": 1,
+      "adoption_package": 1,
+      "grief_support": 1,
+      "comprehensive": 1,
+      "senior_coverage": 1,
+      "travel_insurance": 1,
+      "meetups": 1,
+      "membership": 1,
+      "playdates": 1,
+      "photo_meetup": 1,
+      "fitness_bundle": 1,
+      "training_bundle": 1,
+      "grooming_bundle": 1,
+      "advisory_bundle": 1,
+      "paperwork_bundle": 1,
+      "emergency_bundle": 1,
+      "adoption_bundle": 1,
+      "farewell_bundle": 1,
+      "insurance_bundle": 1,
+      "community_bundle": 1,
+      "party": 1,
+      "premium": 2,
+      "gotcha": 1,
+      "venue": 1,
+      "clothes": 4,
+      "celebration_addons": 6,
+      "cups_merch": 4,
+      "cross_pillar": 5,
+      "learn": 6,
+      "apparel": 41,
+      "null": 1
+    },
+    "semantic_intents": {
+      "training_behavior": 654,
+      "birthday_celebration": 845,
+      "play_enrichment": 317,
+      "everyday_treats": 473,
+      "fresh_food": 424,
+      "memorial_farewell": 56,
+      "weight_fitness": 237,
+      "home_decor": 792,
+      "fashion_wearables": 601,
+      "senior_care": 208,
+      "dental_oral": 117,
+      "swimming_spa": 223,
+      "digestion_gut": 60,
+      "skin_coat": 313,
+      "puppy_essentials": 209,
+      "travel_adventure": 535,
+      "dining_cafe": 309,
+      "joint_mobility": 180,
+      "boarding_stay": 116,
+      "calm_anxiety": 39,
+      "emergency_care": 84,
+      "documentation_legal": 18,
+      "consultation_advice": 17,
+      "safety_id": 6
+    }
+  },
+  "services": {
+    "services": {
+      "total_count": 2406,
+      "fields": {
+        "name": {
+          "count": 2406,
+          "pct": 100.0
+        },
+        "pillar": {
+          "count": 2406,
+          "pct": 100.0
+        },
+        "category": {
+          "count": 2374,
+          "pct": 98.7
+        },
+        "price": {
+          "count": 1393,
+          "pct": 57.9
+        },
+        "description": {
+          "count": 2261,
+          "pct": 94.0
+        },
+        "semantic_intents": {
+          "count": 2323,
+          "pct": 96.6
+        },
+        "semantic_tags": {
+          "count": 2323,
+          "pct": 96.6
+        }
+      }
+    },
+    "services_master": {
+      "total_count": 695,
+      "fields": {
+        "name": {
+          "count": 695,
+          "pct": 100.0
+        },
+        "pillar": {
+          "count": 695,
+          "pct": 100.0
+        },
+        "category": {
+          "count": 555,
+          "pct": 79.9
+        },
+        "price": {
+          "count": 413,
+          "pct": 59.4
+        },
+        "description": {
+          "count": 568,
+          "pct": 81.7
+        }
+      }
+    },
+    "service_catalog": {
+      "total_count": 89,
+      "fields": {
+        "name": {
+          "count": 89,
+          "pct": 100.0
+        },
+        "pillar": {
+          "count": 89,
+          "pct": 100.0
+        },
+        "category": {
+          "count": 3,
+          "pct": 3.4
+        },
+        "description": {
+          "count": 89,
+          "pct": 100.0
+        }
+      }
+    },
+    "breed_services": {
+      "total_count": 29,
+      "fields": {
+        "name": {
+          "count": 29,
+          "pct": 100.0
+        },
+        "category": {
+          "count": 29,
+          "pct": 100.0
+        }
+      }
+    },
+    "care_services": {
+      "total_count": 20,
+      "fields": {
+        "name": {
+          "count": 20,
+          "pct": 100.0
+        },
+        "pillar": {
+          "count": 8,
+          "pct": 40.0
+        },
+        "category": {
+          "count": 20,
+          "pct": 100.0
+        },
+        "price": {
+          "count": 20,
+          "pct": 100.0
+        },
+        "description": {
+          "count": 20,
+          "pct": 100.0
+        }
+      }
+    }
+  },
+  "gaps": [
+    {
+      "type": "missing_semantic_intents",
+      "collection": "products_master",
+      "count": 124,
+      "samples": [
+        "Orthopedic Dog Bed - Medium",
+        "Cooling Mat - Large",
+        "Poop Bag Dispenser + Bags",
+        "Social Calendar Management",
+        "Behaviour Assessment & Plan",
+        "Reactivity Rehabilitation",
+        "Canine Good Citizen Preparation",
+        "Cooling Vest",
+        "Cooling Exercise Vest",
+        "Pet Photoshoot Package"
+      ]
+    },
+    {
+      "type": "missing_semantic_intents",
+      "collection": "services_master",
+      "count": 695,
+      "severity": "HIGH"
+    },
+    {
+      "type": "missing_semantic_intents",
+      "collection": "service_catalog",
+      "count": 89,
+      "severity": "HIGH"
+    },
+    {
+      "type": "missing_semantic_intents",
+      "collection": "breed_services",
+      "count": 29,
+      "severity": "HIGH"
+    },
+    {
+      "type": "missing_semantic_intents",
+      "collection": "care_services",
+      "count": 20,
+      "severity": "HIGH"
+    },
+    {
+      "type": "missing_tags",
+      "collection": "products_master",
+      "count": 65
+    },
+    {
+      "type": "missing_mira_hint",
+      "collection": "products_master",
+      "count": 333
+    }
+  ],
+  "recommendations": [
+    "Run semantic tagging on 124 products missing semantic_intents",
+    "Run semantic tagging on 695 services in services_master",
+    "Generate mira_hint for 333 products"
+  ]
+}

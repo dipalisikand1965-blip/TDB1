@@ -1704,11 +1704,23 @@ const babelMetadataPlugin = ({ types: t }) => {
     return result;
   }
 
+  // Files too large/complex for the metadata plugin - skip to prevent crashes
+  const EXCLUDED_FILES = [
+    'MiraOSModal.jsx', 'MiraDemoPage.jsx', 'MiraDemoOriginalPage.jsx',
+    'MiraDemoBackupPage.jsx', 'MiraOSPage.jsx', 'server.py',
+    'Admin.jsx', 'MemberDashboard.jsx', 'CelebratePage.jsx',
+    'ShopPage.jsx', 'StayPage.jsx', 'TravelPage.jsx'
+  ];
+
   return {
     name: "element-metadata-plugin",
     visitor: {
       // Add metadata attributes to React components (capitalized JSX)
       JSXElement(jsxPath, state) {
+        // Skip large/complex files to prevent babel crashes
+        const currentFile = state.filename || '';
+        if (EXCLUDED_FILES.some(f => currentFile.endsWith(f))) return;
+
         const openingElement = jsxPath.node.openingElement;
         if (!openingElement?.name) return;
         const elementName = getName(openingElement);

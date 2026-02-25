@@ -1,0 +1,60 @@
+{
+  "name": "The Doggy Company - Pet Concierge",
+  "short_name": "Doggy Co",
+  "description": "Your Pet's Life, Thoughtfully Orchestrated. AI-powered Pet Concierge with soul intelligence.",
+  "start_url": "/mira-demo",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f0a19",
+  "theme_color": "#8B5CF6",
+  "categories": ["lifestyle", "shopping", "health"],
+  "lang": "en-IN",
+  "dir": "ltr",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "doggy-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "doggy-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ask Mira",
+      "short_name": "Mira",
+      "description": "Talk to your pet's AI concierge",
+      "url": "/mira-demo",
+      "icons": [{ "src": "doggy-logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Pets",
+      "short_name": "Pets",
+      "description": "View your pet family",
+      "url": "/my-pets",
+      "icons": [{ "src": "doggy-logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Shop",
+      "short_name": "Shop",
+      "description": "Browse products for your pet",
+      "url": "/shop",
+      "icons": [{ "src": "doggy-logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Emergency",
+      "short_name": "SOS",
+      "description": "24/7 pet emergency support",
+      "url": "/emergency",
+      "icons": [{ "src": "doggy-logo.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
