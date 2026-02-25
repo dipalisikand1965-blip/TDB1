@@ -48,7 +48,6 @@ const PILLAR_SUBCATEGORIES = {
     { id: 'dine-out', name: 'Dine Out', path: '/dine#restaurants', emoji: '🍽️' }
   ],
   care: [
-    { id: 'all', name: 'All Care', path: '/care', emoji: '✨', isDefault: true },
     { id: 'grooming', name: 'Grooming', path: '/care?type=grooming', emoji: '✂️' },
     { id: 'vet_clinic_booking', name: 'Vet Visits', path: '/care?type=vet_clinic_booking', emoji: '🩺' },
     { id: 'boarding_daycare', name: 'Boarding & Daycare', path: '/care?type=boarding_daycare', emoji: '🏠' },
