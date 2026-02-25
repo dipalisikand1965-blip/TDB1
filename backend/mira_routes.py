@@ -4911,9 +4911,14 @@ async def mira_os_understand_with_products(
         # Detect DOING modes - require clarify-first
         is_plan_mode = any(phrase in user_input_lower for phrase in [
             "plan", "planning", "want to plan", "help me plan",
-            "birthday party", "road trip", "meal routine", "schedule for",
+            "help me organize", "organize a", "road trip", "meal routine", "schedule for",
             "how should i", "what should i plan"
-        ]) and not is_groom_booking
+        ]) and not is_groom_booking and not any(kw in user_input_lower for kw in ["show", "find", "get", "buy", "order", "cake"])
+        
+        # "birthday party" ALONE triggers plan, but "birthday cake" is a product search
+        is_birthday_party_planning = "birthday party" in user_input_lower and not any(kw in user_input_lower for kw in ["cake", "treat", "hamper", "gift", "buy"])
+        if is_birthday_party_planning:
+            is_plan_mode = True
         
         # BOOK mode includes ALL logistics/money requests: travel, hotels, grooming, boarding, etc.
         is_hotel_stay_request = any(phrase in user_input_lower for phrase in [
