@@ -389,13 +389,16 @@
 
 /* ========================================
    CHAT MESSAGES AREA
+   Main scrollable content container
    ======================================== */
 .mp-messages {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: var(--space-lg) var(--space-xl);
-  padding-bottom: 120px; /* Space for fixed composer */
-  min-height: 0; /* Important for flex scrolling */
+  padding-bottom: 140px; /* Space for fixed composer */
+  padding-top: var(--space-lg); /* Content starts after sticky header (flexbox handles positioning) */
+  min-height: 0; /* Critical for flex scrolling */
   position: relative;
   z-index: 1; /* Below sticky header (z-index: 100) */
   background: linear-gradient(180deg, 
@@ -403,6 +406,9 @@
     var(--mira-bg-purple) 50%,
     var(--mira-bg-violet) 100%
   );
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 .mp-messages-inner {
