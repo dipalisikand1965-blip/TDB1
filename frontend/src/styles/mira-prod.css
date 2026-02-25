@@ -271,7 +271,19 @@
   }
   
   .mp-messages {
-    padding-bottom: 160px; /* More space for mobile keyboard + composer */
+    padding-bottom: 180px; /* More space for mobile keyboard + composer */
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+  
+  .mp-composer {
+    padding-bottom: calc(var(--space-2xl) + env(safe-area-inset-bottom, 0px));
+  }
+  
+  .mp-sandbox-footer {
+    bottom: 90px; /* Slightly higher on mobile */
+    font-size: 10px;
+    padding: var(--space-xs) var(--space-md);
   }
   
   .mp-pet-dropdown {
