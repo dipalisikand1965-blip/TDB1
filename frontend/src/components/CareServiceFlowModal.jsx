@@ -285,10 +285,17 @@ const CareServiceFlowModal = ({
       });
       
       if (result.success) {
-        toast.success('Request submitted!', {
-          description: `Your concierge will reach out about ${selectedPet?.name}'s ${serviceConfig.title.toLowerCase()}.`
+        toast.success('Request sent to Concierge®', {
+          description: `Opening your inbox to track ${selectedPet?.name}'s ${serviceConfig.title.toLowerCase()} request...`,
+          duration: 3000
         });
         onClose();
+        
+        // Navigate to Mira OS with Concierge panel open and ticket focused
+        // Using state to tell MiraDemoPage to open Concierge with this ticket
+        setTimeout(() => {
+          window.location.href = `/mira-demo?openConcierge=true&ticket=${result.ticketId}`;
+        }, 500);
       } else {
         throw new Error(result.error);
       }
