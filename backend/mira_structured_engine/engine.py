@@ -425,6 +425,7 @@ async def execute_decision(
     service_type = decision.get("service_type")
     response_text = decision.get("response", "")
     extracted_fields = decision.get("extracted_fields", {})
+    quick_replies_override = decision.get("quick_replies_override", [])
     
     # Map to enums
     try:
@@ -452,7 +453,19 @@ async def execute_decision(
         action=action_enum,
     )
     
+    # If decision includes quick_replies_override, use those
+    if quick_replies_override:
+        response.quick_replies = [
+            QuickReply(
+                label=qr.get("label", qr.get("value", "")),
+                value=qr.get("value", ""),
+                action="send_message"
+            )
+            for qr in quick_replies_override
+        ]
+    
     # Handle EXECUTE action (create/update ticket)
+    if action_enum == Action.EXECUTE and service_type:
     if action_enum == Action.EXECUTE and service_type:
         ticket_result = await handle_execute_action(
             service_type=service_type,
