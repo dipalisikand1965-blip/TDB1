@@ -5038,9 +5038,39 @@ const MiraDemoPage = () => {
       />
       
       {/* ═══════════════════════════════════════════════════════════════════════════
-          FOOTER - Site Footer with navigation and links
+          INTERACTION FOOTER - Mode-based footer owned by shell
+          Renders: Quick replies + Composer + New messages pill
+          Modes: 0=hidden, 1=light, 2=active guided, 3=full concierge, 4=modal
           ═══════════════════════════════════════════════════════════════════════════ */}
-      <Footer />
+      <InteractionFooter
+        ref={shellRefs.footerRef}
+        mode={shellState.interactionFooter.mode}
+        showQuickReplies={shellSelectors.showQuickReplies}
+        quickReplies={shellState.interactionFooter.quickReplies}
+        onQuickReplySelect={(optionId, value) => {
+          shellActions.selectQuickReply(optionId, value);
+          // Also trigger the message send
+          handleQuickReply(value);
+        }}
+        showComposer={shellSelectors.showComposer}
+        composerValue={query}
+        composerPlaceholder={shellState.interactionFooter.composer.placeholder}
+        onComposerChange={setQuery}
+        onComposerSend={() => handleSubmit(null)}
+        onComposerAttach={() => {/* TODO: Handle attachment */}}
+        onComposerVoice={toggleListening}
+        isSending={isLoading}
+        voiceActive={isListening}
+        newMessagesCount={shellState.interactionFooter.newMessages.count}
+        onNewMessagesClick={() => {
+          shellActions.setNewMessages(0);
+          scrollToBottom();
+        }}
+        isSuppressed={shellState.interactionFooter.isSuppressedByModal}
+      />
+      
+      {/* Site Footer - Hidden in mira-prod context via CSS */}
+      {shellSelectors.showSiteFooter && <Footer />}
     </div>
   );
 };
