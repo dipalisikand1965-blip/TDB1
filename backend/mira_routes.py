@@ -5008,9 +5008,13 @@ async def mira_os_understand_with_products(
             mira_mode = "GENERAL"
         
         # DOING modes require clarify-first on first turn
+        # BUT FIND/EXPLORE modes should ALWAYS show products immediately - that's the magic!
         is_doing_mode = mira_mode in ["PLAN", "BOOK", "EXECUTE"]
+        is_finding_mode = mira_mode in ["FIND", "EXPLORE"]
         is_first_turn = len(request.conversation_history or []) < 2
-        clarify_only = is_doing_mode and is_first_turn
+        
+        # Only clarify on first turn for DOING modes, NEVER for FIND/EXPLORE
+        clarify_only = is_doing_mode and is_first_turn and not is_finding_mode
         
         # EMOTIONAL modes never show products
         no_products_ever = mira_mode in ["COMFORT", "EMERGENCY"]
