@@ -1026,15 +1026,85 @@ const useChatSubmit = (config) => {
         const osContext = data.os_context;
         console.log('[MIRA OS] Context received:', osContext);
         
-        // 1. Auto-refresh Picks
-        if (osContext.picks_update?.should_refresh && osContext.picks_update?.pillar) {
-          console.log(`[MIRA OS] Silently refreshing Picks for pillar: ${osContext.picks_update.pillar}`);
+        // 1. Auto-refresh Picks AND merge pillar-specific picks from os_context
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CRITICAL FIX: Backend generates picks in os_context.{pillar}_picks
+        // We MUST merge these into miraPicks state, not just set needsRefresh
+        // Bible Rule: PICKS is NEVER empty - use Concierge Arranges as fallback
+        // ═══════════════════════════════════════════════════════════════════════════
+        const pillarPicksMap = {
+          care: osContext.care_picks,
+          celebrate: osContext.celebrate_picks,
+          dine: osContext.dine_picks,
+          stay: osContext.stay_picks,
+          travel: osContext.travel_picks,
+          enjoy: osContext.enjoy_picks
+        };
+        
+        const activePillar = osContext.picks_update?.pillar || 'general';
+        const pillarPicks = pillarPicksMap[activePillar] || [];
+        
+        if (pillarPicks.length > 0) {
+          console.log(`[MIRA OS] Found ${pillarPicks.length} picks for pillar: ${activePillar}`);
+          
+          // Transform pillar picks into service cards
+          const pillarServices = pillarPicks.map((pick, idx) => ({
+            id: `${activePillar}-pick-${idx}-${Date.now()}`,
+            type: 'service',
+            category: pick.service_type || activePillar,
+            title: pick.title,
+            subtitle: pick.why || pick.subtitle,
+            reason: pick.why,
+            cta: pick.cta || 'Get Started',
+            service_type: pick.service_type,
+            concierge_always: pick.concierge_always || false,
+            profile_used: pick.profile_used || [],
+            pillar: activePillar,
+            source: 'os_context',
+            is_personalized: true,
+            pet_name: pet?.name || 'your pet'
+          }));
+          
           if (setMiraPicks) {
             setMiraPicks(prev => ({
               ...prev,
-              activePillar: osContext.picks_update.pillar,
-              needsRefresh: true,
-              refreshContext: osContext.picks_update.context || 'general'
+              services: [...pillarServices, ...(prev.services || []).filter(s => s.source !== 'os_context')],
+              activePillar: activePillar,
+              hasNew: true,
+              lastUpdated: new Date().toISOString(),
+              refreshContext: osContext.picks_update?.context || activePillar
+            }));
+          }
+        } else if (osContext.picks_update?.should_refresh && osContext.picks_update?.pillar) {
+          // No pillar picks but refresh requested - ensure Concierge Arranges fallback
+          console.log(`[MIRA OS] No pillar picks for ${activePillar}, using Concierge Arranges fallback`);
+          
+          // Bible Rule: PICKS is NEVER empty
+          const conciergeFallback = {
+            id: `concierge-arranges-${activePillar}-${Date.now()}`,
+            type: 'service',
+            category: 'concierge',
+            title: `Concierge Arranges: ${activePillar.charAt(0).toUpperCase() + activePillar.slice(1)} Request`,
+            subtitle: `Tell Mira what you need for ${pet?.name || 'your pet'}`,
+            reason: 'Your personal pet concierge will coordinate this',
+            cta: 'Get Help',
+            service_type: `concierge_${activePillar}`,
+            concierge_always: true,
+            pillar: activePillar,
+            source: 'concierge_fallback',
+            is_personalized: true,
+            pet_name: pet?.name || 'your pet'
+          };
+          
+          if (setMiraPicks) {
+            setMiraPicks(prev => ({
+              ...prev,
+              services: [conciergeFallback, ...(prev.services || []).filter(s => s.source !== 'concierge_fallback')],
+              activePillar: activePillar,
+              conciergeFallback: true,
+              conciergeFallbackReason: `No catalogue matches for ${activePillar}`,
+              needsRefresh: false,
+              refreshContext: osContext.picks_update?.context || 'general'
             }));
           }
         }
