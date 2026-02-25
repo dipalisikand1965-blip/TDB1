@@ -17718,6 +17718,15 @@ app.include_router(top_picks_router)  # Top Picks at /api/mira/top-picks/*
 set_top_picks_db(db)  # Initialize Top Picks with database
 set_mira_db(db)  # Initialize Mira with database
 set_intelligence_db(db)  # Initialize Intelligence with database
+
+# Initialize Mira Structured Engine (feature-flagged)
+try:
+    from mira_structured_engine import set_engine_db
+    set_engine_db(db)
+    logger.info("[STRUCTURED ENGINE] Database initialized")
+except ImportError as e:
+    logger.warning(f"[STRUCTURED ENGINE] Not available: {e}")
+
 set_memory_routes_db(db)  # Initialize Memory with database
 set_session_db(db)  # Initialize Session Persistence with database
 set_mira_service_desk_db(db)  # Initialize Mira Service Desk with database
