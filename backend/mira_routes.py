@@ -11980,6 +11980,80 @@ async def mira_chat(
     """
     db = get_db()
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # FEATURE FLAG: USE STRUCTURED ENGINE
+    # When enabled, routes to new tab-aware intelligence engine
+    # ═══════════════════════════════════════════════════════════════════════════
+    USE_STRUCTURED_ENGINE = os.environ.get("MIRA_STRUCTURED_ENGINE", "false").lower() == "true"
+    
+    if USE_STRUCTURED_ENGINE:
+        try:
+            from mira_structured_engine import run_mira_turn, MiraTurnRequest, PetContext, UIContext, ActiveTab
+            
+            # Build structured request
+            pet_ctx = request.pet_context or {}
+            structured_request = MiraTurnRequest(
+                message=request.message.strip(),
+                session_id=request.session_id or str(uuid.uuid4()),
+                pet_context=PetContext(
+                    id=pet_ctx.get("id", "unknown"),
+                    name=pet_ctx.get("name", "Pet"),
+                    breed=pet_ctx.get("breed"),
+                    species=pet_ctx.get("species", "dog"),
+                    weight_kg=pet_ctx.get("weight_kg") or pet_ctx.get("weight"),
+                    allergies=pet_ctx.get("allergies", []),
+                    temperament=pet_ctx.get("temperament"),
+                    grooming_preference=pet_ctx.get("grooming_preference"),
+                    soul=pet_ctx.get("soul", {}),
+                ),
+                ui_context=UIContext(
+                    active_tab=ActiveTab(request.ui_context.get("active_tab", "chat")) if request.ui_context else ActiveTab.CHAT,
+                    active_pillar=request.ui_context.get("active_pillar") if request.ui_context else None,
+                    surface=request.ui_context.get("surface", "chat_overlay") if request.ui_context else "chat_overlay",
+                    draft_ticket_id=request.ui_context.get("draft_ticket_id") if request.ui_context else None,
+                ),
+                user_id=request.user_id,
+                conversation_history=request.conversation_history or [],
+                source=request.source or "mira_demo",
+            )
+            
+            # Run structured engine
+            result = await run_mira_turn(structured_request)
+            
+            # Convert to legacy response format for backward compatibility
+            legacy_response = {
+                "success": result.success,
+                "response": result.response,
+                "session_id": result.session_id,
+                "pillar": result.pillar.value if result.pillar else "advisory",
+                "intent": result.intent.value if result.intent else "general_chat",
+                "action": result.action.value if result.action else "respond",
+                "quick_replies": [{"label": qr.label, "action": "send_message", "payload_text": qr.value} for qr in result.quick_replies],
+                "ticket": {
+                    "id": result.ticket.id,
+                    "status": result.ticket.status.value if result.ticket.status else "none",
+                    "service_type": result.ticket.service_type,
+                    "filled_fields": result.ticket.filled_fields,
+                    "missing_fields": result.ticket.missing_fields,
+                } if result.ticket.id else None,
+                "clarifying_question": {
+                    "question_id": result.clarifying_question.question_id,
+                    "question_text": result.clarifying_question.question_text,
+                    "field_name": result.clarifying_question.field_name,
+                } if result.clarifying_question else None,
+                "conversation_contract": {
+                    "mode": "clarify" if result.action.value == "ask" else "answer",
+                    "quick_replies": [{"label": qr.label, "action": "send_message", "payload_text": qr.value} for qr in result.quick_replies],
+                },
+            }
+            
+            logger.info(f"[STRUCTURED ENGINE] Processed: action={result.action.value}, intent={result.intent.value}")
+            return legacy_response
+            
+        except Exception as structured_err:
+            logger.error(f"[STRUCTURED ENGINE] Error, falling back to legacy: {structured_err}", exc_info=True)
+            # Fall through to legacy engine
+    
     session_id = request.session_id or str(uuid.uuid4())
     user_message = request.message.strip()
     
