@@ -343,6 +343,45 @@ const MiraCarePlan = ({
           Mira updates this plan as she learns more about {petName}
         </motion.p>
       </div>
+      
+      {/* FLOW MODALS - Detailed intake wizards */}
+      
+      {/* Grooming Flow Modal */}
+      <GroomingFlowModal
+        isOpen={groomingModalOpen}
+        onClose={() => {
+          setGroomingModalOpen(false);
+          setActiveRecommendation(null);
+        }}
+        pet={propPet || {
+          id: petId,
+          name: carePlan?.pet_name || propPetName,
+          breed: carePlan?.pet_breed,
+          photo_url: carePlan?.pet_photo
+        }}
+        user={user}
+        token={token}
+        entryPoint="mira_care_plan"
+      />
+      
+      {/* Vet Visit Flow Modal */}
+      <VetVisitFlowModal
+        isOpen={vetVisitModalOpen}
+        onClose={() => {
+          setVetVisitModalOpen(false);
+          setActiveRecommendation(null);
+        }}
+        pet={propPet || {
+          id: petId,
+          name: carePlan?.pet_name || propPetName,
+          breed: carePlan?.pet_breed,
+          photo_url: carePlan?.pet_photo
+        }}
+        user={user}
+        token={token}
+        entryPoint="mira_care_plan"
+        preselectedType={activeRecommendation?.metadata?.visit_type}
+      />
     </div>
   );
 };
