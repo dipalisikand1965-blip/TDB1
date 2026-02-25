@@ -642,13 +642,31 @@ const CarePage = () => {
             <Button 
               onClick={handleStartCare}
               size="lg"
-              className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 rounded-full px-8 hover:scale-105 transition-transform"
+              className="bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 rounded-full px-8 hover:scale-105 transition-transform"
               data-testid="start-care-btn"
             >
               Start Care Request
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          TRANSFORMATION STORIES - Trust proof
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <TransformationStories pillar="care" className="bg-white" />
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          SOCIAL PROOF BANNER
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <div className="bg-gradient-to-r from-teal-50 to-emerald-50 border-y border-teal-100 py-4">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
+          <FitnessJourneyCounter pillar="care" />
+          <RotatingSocialProof 
+            petName={userPets[0]?.name} 
+            breedName={userPets[0]?.breed} 
+          />
         </div>
       </div>
 
