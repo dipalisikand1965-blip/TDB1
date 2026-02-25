@@ -7112,6 +7112,9 @@ PILLARS = {
             "event", "meetup", "meet up", "playdate", "play date", "dog park",
             "trail", "hike", "hiking", "experience", "activity", "fun", "play",
             "park", "beach", "outdoor", "outing", "weekend plan",
+            # Pet Cafes and Venues
+            "pet cafe", "dog cafe", "cat cafe", "cafe with dog", "cafe with pet",
+            "hangout", "fun place", "take my dog", "take my pet",
             # Social
             "socialize", "socializing", "other dogs", "dog friends", "playgroup",
             # Entertainment
