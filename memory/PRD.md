@@ -279,6 +279,23 @@ New proactive alert types based on user's Question Bank document:
 | **EMOTIONAL - Grief** | ✅ | "I hear you. You don't have to say anything more." |
 | **EMOTIONAL - Overwhelm** | ✅ | "Let's make this feel lighter for you..." |
 
+### 🔧 CELEBRATE FLOW IMPROVEMENTS
+
+**18. ✅ Fixed "Absolutely" Banned Word**
+- Removed "absolutely" from celebrate initial response
+- Changed to "I can already picture the joy"
+
+**19. ✅ Food/Cake Advisory Detection**
+- Questions about cake safety, overeating, portions now get advisory responses
+- No longer trigger booking flow incorrectly
+- Responses are context-aware (overeating vs portions vs safety)
+
+**20. ✅ Question Bank Tester Created**
+- `/app/backend/tests/question_bank_tester.py`
+- 80+ questions across 8 pillars
+- Automated soulfulness evaluation
+- Reports pass/fail with detailed analysis
+
 ---
 
 ## NEXT SESSION TASKS
