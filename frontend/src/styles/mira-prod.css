@@ -76,29 +76,70 @@
     var(--mira-bg-violet) 100%
   );
   font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
-  /* Layout stacking context */
   position: relative;
 }
 
 /* ========================================
-   CHAT SHELL - Contains messages + composer
-   Fills space between header and footer
+   STICKY HEADER STACK
+   Measured by ResizeObserver, height written to --mira-header-h
    ======================================== */
-.mira-prod .mp-chat-shell {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0; /* Critical for nested flex scrolling */
-  position: relative;
-  overflow: hidden;
+.mira-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  flex-shrink: 0;
+  background: var(--mira-bg-dark);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-/* Footer must be outside chat shell - hide it in mira-prod context */
+/* ========================================
+   CONTENT CANVAS
+   Uses measured header/footer heights for padding
+   This is the ONLY scrollable area
+   ======================================== */
+.mp-messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0; /* Critical for flex scrolling */
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(180deg, 
+    var(--mira-bg-dark) 0%, 
+    var(--mira-bg-purple) 50%,
+    var(--mira-bg-violet) 100%
+  );
+  
+  /* Use measured footer height for bottom padding, with fallback */
+  padding: var(--space-lg) var(--space-xl);
+  padding-bottom: calc(
+    max(var(--mira-interaction-footer-h), var(--mira-footer-fallback)) 
+    + var(--page-bottom-space)
+  );
+  
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ========================================
+   SITE FOOTER VISIBILITY
+   Hidden in active chat mode, visible in content flow
+   ======================================== */
+.mira-prod .site-footer,
 .mira-prod > footer,
 .mira-prod > .footer,
 .mira-prod > [class*="Footer"],
 .mira-prod > .bg-gray-900 {
-  display: none !important; /* Footer should not appear in the chat OS view */
+  display: none !important;
+}
+
+/* Show site footer only when explicitly allowed via data attribute */
+.mira-prod[data-show-site-footer="true"] .site-footer,
+.mira-prod[data-show-site-footer="true"] > footer {
+  display: block !important;
 }
 
 /* ========================================
