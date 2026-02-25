@@ -592,7 +592,55 @@ def _generate_celebrate_picks(user_msg: str, pet_name: str, pet_context: Dict, a
     additional_context = additional_context or {}
     location = additional_context.get("celebrate_location", "")
     
-    # Cake
+    # BIRTHDAY - comprehensive package for birthday queries
+    is_birthday = any(kw in user_msg for kw in ["birthday", "bday", "b'day", "birthdate", "turning"])
+    
+    if is_birthday:
+        # Birthday always gets full package
+        picks.append({
+            "type": "product",
+            "category": "cake",
+            "title": f"Custom Birthday Cake for {pet_name}",
+            "subtitle": "Dog-safe, beautifully decorated",
+            "icon": "🎂",
+            "reason": f"The perfect centerpiece for {pet_name}'s celebration",
+            "cta": "Design Cake",
+            "service_type": "birthday_cake"
+        })
+        picks.append({
+            "type": "service",
+            "category": "venue",
+            "title": f"Pet-Friendly Party Venues",
+            "subtitle": "Curated celebration spots in your area",
+            "icon": "📍",
+            "reason": "Perfect locations for the celebration",
+            "cta": "Find Venues",
+            "service_type": "party_venue"
+        })
+        picks.append({
+            "type": "service",
+            "category": "photography",
+            "title": f"Pet Photography Session",
+            "subtitle": f"Capture {pet_name}'s special day",
+            "icon": "📸",
+            "reason": f"Beautiful memories of the celebration",
+            "cta": "Book Session",
+            "service_type": "pet_photography"
+        })
+        picks.append({
+            "type": "service",
+            "category": "coordination",
+            "title": "Full Party Coordination",
+            "subtitle": "Let our Concierge® handle all the details",
+            "icon": "✨",
+            "reason": "Stress-free celebration planning",
+            "cta": "Get Help",
+            "service_type": "party_coordination",
+            "concierge_always": True
+        })
+        return picks  # Return birthday package without checking other keywords
+    
+    # Cake (non-birthday)
     if any(kw in user_msg for kw in ["cake", "pupcake", "dognut", "birthday cake"]):
         picks.append({
             "type": "product",
