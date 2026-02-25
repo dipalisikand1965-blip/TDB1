@@ -778,6 +778,53 @@ const MiraDemoPage = () => {
   const [isPageReady, setIsPageReady] = useState(false);
 
   // ═══════════════════════════════════════════════════════════════════════════════
+  // SHELL STATE SYNC - Bridges legacy state to new shell state model
+  // Must be placed AFTER all useState declarations but BEFORE useEffects that use them
+  // ═══════════════════════════════════════════════════════════════════════════════
+  
+  // Sync quick replies from legacy state to shell
+  useEffect(() => {
+    if (quickReplies && quickReplies.length > 0) {
+      // Convert legacy format to shell format
+      const shellOptions = quickReplies.map((qr, idx) => ({
+        id: qr.id || `qr-${idx}`,
+        label: qr.text || qr.label || '',
+        value: qr.value || qr.text || '',
+        intent: qr.intent_type || null,
+      })).filter(opt => opt.label);
+
+      if (shellOptions.length > 0) {
+        shellActions.setPendingQuestion({
+          ticketId: currentTicket?.id || null,
+          threadId: sessionId,
+          questionId: `chat-${Date.now()}`,
+          questionType: 'quick_reply',
+          options: shellOptions,
+          source: 'backend',
+        });
+      }
+    } else {
+      // Clear quick replies when empty
+      if (shellState.interactionFooter.quickReplies.options?.length > 0) {
+        shellActions.clearQuickReplies();
+      }
+    }
+  }, [quickReplies, currentTicket?.id, sessionId, shellActions, shellState.interactionFooter.quickReplies.options?.length]);
+
+  // Sync modal state to shell for footer suppression
+  useEffect(() => {
+    const isAnyModalOpen = showHelpModal || showVault || showMojoModal || 
+                           showSoulFormModal || requestBuilderState?.isOpen;
+    
+    if (isAnyModalOpen && !shellState.modal.isOpen) {
+      shellActions.openModal('generic', null);
+    } else if (!isAnyModalOpen && shellState.modal.isOpen) {
+      shellActions.closeModal();
+    }
+  }, [showHelpModal, showVault, showMojoModal, showSoulFormModal, requestBuilderState?.isOpen, 
+      shellState.modal.isOpen, shellActions]);
+
+  // ═══════════════════════════════════════════════════════════════════════════════
   // ICON STATE API - Real data from unified Service Desk ticket spine
   // Single endpoint: /api/os/icon-state - enforces uniform service flow
   // ═══════════════════════════════════════════════════════════════════════════════
