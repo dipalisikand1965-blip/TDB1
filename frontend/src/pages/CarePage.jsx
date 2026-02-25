@@ -389,19 +389,20 @@ const CarePage = () => {
   const fetchCareProducts = async () => {
     try {
       const [productsRes, bundlesRes] = await Promise.all([
-        // Use new pillar resolver API for rule-based product filtering
-        fetch(`${API_URL}/api/products?pillar=care&limit=50`),
-        fetch(`${API_URL}/api/care/bundles`)
+        // Use comprehensive care products API with proper taxonomy (good_for_tags)
+        fetch(`${API_URL}/api/care/products?comprehensive_only=true&limit=50`),
+        fetch(`${API_URL}/api/care/bundles?comprehensive_only=true`)
       ]);
       
       if (productsRes.ok) {
         const data = await productsRes.json();
         setCareProducts(data.products || []);
-        console.log(`[CarePage] Loaded ${data.count} products via pillar resolver`);
+        console.log(`[CarePage] Loaded ${data.total} comprehensive care products`);
       }
       if (bundlesRes.ok) {
         const data = await bundlesRes.json();
         setCareBundles(data.bundles || []);
+        console.log(`[CarePage] Loaded ${data.total} comprehensive care bundles`);
       }
     } catch (error) {
       console.error('Error fetching care products:', error);
