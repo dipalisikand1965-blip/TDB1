@@ -707,10 +707,26 @@ const CarePage = () => {
           
           <div className="mt-6 sm:mt-10 text-center">
             <p className="text-xs sm:text-sm text-gray-500">
-              💬 Need guidance? <button onClick={handleStartCare} className="text-rose-600 hover:underline font-medium">Start a conversation</button>
+              💬 Need guidance? <button onClick={handleStartCare} className="text-teal-600 hover:underline font-medium">Start a conversation</button>
             </p>
           </div>
         </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          PRODUCT SECTIONS (Secondary - E-commerce)
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      
+      {/* Mira's Curated Picks for Pet */}
+      <div className="py-10 bg-gradient-to-b from-white to-gray-50">
+        <PersonalizedPicks pillar="care" />
+        
+        {/* Mira's Picks Section */}
+        {userPets && userPets[0] && (
+          <div className="max-w-6xl mx-auto px-4 mt-6">
+            <PillarPicksSection pillar="care" pet={userPets[0]} />
+          </div>
+        )}
       </div>
 
       {/* === CARE BUNDLES === */}
