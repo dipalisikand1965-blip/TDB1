@@ -62,6 +62,7 @@ import SoulKnowledgeTicker from '../components/Mira/SoulKnowledgeTicker';
 import { FormattedText, TypedText } from '../components/Mira/TextComponents';
 import { triggerCelebrationConfetti } from '../utils/confetti';
 import PetOSNavigation from '../components/Mira/PetOSNavigation';
+import MiraUnifiedHeader from '../components/Mira/MiraUnifiedHeader';
 import WeatherCard from '../components/Mira/WeatherCard';
 import WhyForPetBadge from '../components/Mira/WhyForPetBadge';
 import ServicesPanel from '../components/Mira/ServicesPanel';
