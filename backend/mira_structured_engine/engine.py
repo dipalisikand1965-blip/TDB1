@@ -415,7 +415,7 @@ async def execute_decision(
         )
         
         response.ticket = TicketState(
-            id=ticket_result.get("ticket_id"),
+            id=ticket_result.get("ticket_id") or ticket_result.get("id"),
             status=TicketStatus(ticket_result.get("status", "draft")),
             service_type=service_type,
             filled_fields=ticket_result.get("filled_fields", {}),
