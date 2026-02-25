@@ -19,7 +19,7 @@ import {
   HeartPulse, GraduationCap, Loader2, Gift
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
-import { useUniversalServiceCommand } from '../../hooks/useUniversalServiceCommand';
+import useUniversalServiceCommand from '../../hooks/useUniversalServiceCommand';
 
 // Pillar icons and colors
 const PILLAR_CONFIG = {
