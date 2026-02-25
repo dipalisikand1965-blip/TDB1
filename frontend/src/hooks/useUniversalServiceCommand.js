@@ -214,17 +214,17 @@ const useUniversalServiceCommand = () => {
         toast.success('Request sent to Concierge®', {
           description: `Your ${pillar} request has been received`,
           action: {
-            label: 'Open request',
-            onClick: () => navigate(`/inbox?ticket=${data.ticket_id}`)
+            label: 'View in inbox',
+            onClick: () => navigate(`/mira-demo?openConcierge=true&ticket=${data.ticket_id}`)
           },
           duration: 5000
         });
       }
       
-      // Navigate to inbox
+      // Navigate to Mira OS Concierge (unified inbox)
       if (navigateToInbox) {
         setTimeout(() => {
-          navigate(`/inbox?ticket=${data.ticket_id}`);
+          navigate(`/mira-demo?openConcierge=true&ticket=${data.ticket_id}`);
         }, 1500);
       }
       
