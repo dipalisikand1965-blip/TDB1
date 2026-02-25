@@ -1549,23 +1549,114 @@ async def get_pillar_picks(
         life_stage = "adult"
     
     picks = []
+    products = []
     
-    # Query products for this pillar
-    # Priority: exact pillar match > primary_pillar > pillars array
-    # Note: in_stock may be None for some products, so we check for != False
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # CARE PILLAR: Prioritize comprehensive care products from products_master
+    # These have size/coat/life_stage/temperament/intent tags
+    # ═══════════════════════════════════════════════════════════════════════════════
+    if pillar == "care":
+        # Query comprehensive care products (with good_for_tags)
+        care_query = {
+            "pillar": "care",
+            "good_for_tags": {"$exists": True, "$ne": []},
+            "status": {"$in": ["active", None]}
+        }
+        
+        # Get all comprehensive care products first
+        care_products = await db.products_master.find(care_query, {"_id": 0}).limit(30).to_list(30)
+        
+        # Score and filter by pet profile
+        for product in care_products:
+            good_for_tags = product.get("good_for_tags", [])
+            intent_tags = product.get("intent_tags", [])
+            
+            # Calculate match score
+            score = 50  # Base score
+            
+            # Size match
+            if size_cat in good_for_tags or "all" in good_for_tags:
+                score += 25
+            
+            # Life stage match
+            if life_stage in good_for_tags:
+                score += 20
+            
+            # Check soul data for temperament match
+            soul = pet.get("soul", {})
+            temperament = soul.get("temperament", "").lower()
+            if temperament:
+                if temperament in good_for_tags:
+                    score += 15
+                if "anxious" in good_for_tags and temperament in ["anxious", "nervous", "shy"]:
+                    score += 10
+            
+            # Coat type match
+            coat_type = soul.get("coat_type", "").lower().replace(" ", "_")
+            if coat_type and coat_type in good_for_tags:
+                score += 15
+            
+            # Skip if no matches at all
+            if score == 50:
+                continue
+                
+            # Build why reason
+            why_parts = []
+            if size_cat in good_for_tags:
+                why_parts.append(f"perfect for {size_cat} breeds")
+            if life_stage in good_for_tags:
+                why_parts.append(f"great for {life_stage}s")
+            if coat_type and coat_type in good_for_tags:
+                why_parts.append(f"ideal for {coat_type.replace('_', ' ')}")
+            why_reason = " • ".join(why_parts) if why_parts else product.get("concierge_note", "")
+            
+            picks.append({
+                "id": product.get("id"),
+                "name": product.get("name"),
+                "price": product.get("price"),
+                "image": product.get("image"),
+                "type": "product",
+                "pick_type": "catalogue",
+                "why_reason": why_reason,
+                "score": score,
+                "category": product.get("subcategory", "care"),
+                "badges": [],
+                "good_for_tags": good_for_tags,
+                "intent_tags": intent_tags,
+            })
+        
+        # Sort by score and take top items
+        picks.sort(key=lambda x: x.get("score", 0), reverse=True)
+        
+        # If we have enough comprehensive products, return them
+        if len(picks) >= 5:
+            catalogue_picks = picks[:5]
+        else:
+            # Fall through to also query unified_products if needed
+            catalogue_picks = picks
+    else:
+        catalogue_picks = []
     
-    # First, get products with exact pillar match (highest priority)
-    # IMPORTANT: Exclude cat products - we are THE DOGGY COMPANY!
-    exact_query = {
-        "pillar": pillar,
-        "in_stock": {"$ne": False},
-        "visibility.status": {"$in": ["active", None]},
-        # Filter out cat products
-        "name": {"$not": {"$regex": "cat|kitten|feline|meow|purr|kitty", "$options": "i"}},
-        "pet_type": {"$nin": ["cat", "cats", "feline"]},
-    }
-    cursor = db.unified_products.find(exact_query, {"_id": 0}).limit(20)
-    products = await cursor.to_list(length=20)
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # For non-care pillars or if we need more products, query unified_products
+    # ═══════════════════════════════════════════════════════════════════════════════
+    if pillar != "care" or len(catalogue_picks) < 5:
+        # Query products for this pillar
+        # Priority: exact pillar match > primary_pillar > pillars array
+        # Note: in_stock may be None for some products, so we check for != False
+        
+        # First, get products with exact pillar match (highest priority)
+        # IMPORTANT: Exclude cat products - we are THE DOGGY COMPANY!
+        exact_query = {
+            "pillar": pillar,
+            "in_stock": {"$ne": False},
+            "visibility.status": {"$in": ["active", None]},
+            # Filter out cat products
+            "name": {"$not": {"$regex": "cat|kitten|feline|meow|purr|kitty", "$options": "i"}},
+            "pet_type": {"$nin": ["cat", "cats", "feline"]},
+        }
+        cursor = db.unified_products.find(exact_query, {"_id": 0}).limit(20)
+        products = await cursor.to_list(length=20)
     
     # If not enough, add products with primary_pillar match
     if len(products) < 15:
