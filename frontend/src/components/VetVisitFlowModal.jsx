@@ -427,7 +427,7 @@ const VetVisitFlowModal = ({
   
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-2xl p-0 overflow-hidden max-h-[90vh]">
+      <DialogContent className="sm:max-w-2xl p-0 overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="bg-gradient-to-r from-violet-500 to-purple-500 px-6 py-4 text-white">
           <div className="flex items-center justify-between mb-3">
