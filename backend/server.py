@@ -17629,6 +17629,7 @@ app.include_router(status_router)
 app.include_router(feedback_router)
 app.include_router(birthday_router)
 app.include_router(concierge_router)
+app.include_router(os_concierge_router)  # OS Concierge tab in MiraDemoPage
 app.include_router(reports_email_router)
 app.include_router(auth_router)
 app.include_router(product_router)
