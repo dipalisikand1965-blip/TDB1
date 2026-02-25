@@ -12736,7 +12736,7 @@ Which of these would you like me to arrange first?"""
                 "original_intent": "birthday_party",
                 "awaiting_response": "party_location",
                 "pending_action": "plan_birthday_party",
-                "context_data": {"pet_name": pet_name, "pillar": "celebrate", "known_allergies": known_allergies}
+                "context_data": {"pet_name": pet_name, "pillar": "celebrate"}
             })
         except Exception as e:
             logger.warning(f"[CONV STATE] Could not save birthday state: {e}")
