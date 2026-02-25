@@ -490,15 +490,15 @@ async def get_care_plan_for_user(user_id: str):
     
     from bson import ObjectId
     try:
-        user = db.users.find_one({"_id": ObjectId(user_id)})
+        user = await db.users.find_one({"_id": ObjectId(user_id)})
     except Exception:
-        user = db.users.find_one({"id": user_id})
+        user = await db.users.find_one({"id": user_id})
     
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
     # Get user's first pet
-    pet = db.pets.find_one({"parent_email": user.get('email')})
+    pet = await db.pets.find_one({"parent_email": user.get('email')})
     if not pet:
         raise HTTPException(status_code=404, detail="No pets found for user")
     
