@@ -35,6 +35,13 @@ import conversationIntelligence from '../utils/conversationIntelligence';
 import notificationSounds from '../utils/notificationSounds';
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// MIRA SHELL - Single source of truth for layout state
+// ═══════════════════════════════════════════════════════════════════════════════
+import { useMiraShell, shouldShowQuickReplies } from '../hooks/mira/useMiraShell';
+import InteractionFooter from '../components/Mira/InteractionFooter';
+import '../components/Mira/InteractionFooter.css';
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // VAULT SYSTEM - "Mira is the Brain, Concierge® is the Hands"
 // ═══════════════════════════════════════════════════════════════════════════════
 import { VaultManager, UnifiedPicksVault } from '../components/PicksVault';
