@@ -260,8 +260,11 @@ const CareManager = ({ getAuthHeader }) => {
   const resetProductForm = () => {
     setProductForm({
       name: '', description: '', price: '', compare_price: '', image: '',
-      care_type: 'grooming', subcategory: '', tags: '', pet_sizes: '',
-      in_stock: true, paw_reward_points: 0, is_birthday_perk: false, birthday_discount_percent: ''
+      subcategory: 'grooming_essentials', product_type: 'individual',
+      good_for_tags: '', intent_tags: '', concierge_note: '', cta_label: 'Ask Mira to Include',
+      care_type: 'grooming', tags: '', pet_sizes: '', status: 'active',
+      in_stock: true, paw_reward_points: 0, is_birthday_perk: false, birthday_discount_percent: '',
+      partner_vendor: '', availability_cities: ''
     });
   };
 
@@ -274,7 +277,10 @@ const CareManager = ({ getAuthHeader }) => {
         paw_reward_points: parseInt(productForm.paw_reward_points) || 0,
         birthday_discount_percent: productForm.birthday_discount_percent ? parseInt(productForm.birthday_discount_percent) : null,
         tags: productForm.tags.split(',').map(t => t.trim()).filter(Boolean),
-        pet_sizes: productForm.pet_sizes.split(',').map(s => s.trim()).filter(Boolean)
+        pet_sizes: productForm.pet_sizes.split(',').map(s => s.trim()).filter(Boolean),
+        good_for_tags: productForm.good_for_tags.split(',').map(t => t.trim()).filter(Boolean),
+        intent_tags: productForm.intent_tags.split(',').map(t => t.trim()).filter(Boolean),
+        availability_cities: productForm.availability_cities.split(',').map(c => c.trim()).filter(Boolean)
       };
 
       if (editingProduct) {
@@ -305,8 +311,11 @@ const CareManager = ({ getAuthHeader }) => {
   // Bundle CRUD
   const resetBundleForm = () => {
     setBundleForm({
-      name: '', description: '', price: '', original_price: '', image: '',
-      care_type: 'grooming', items: '', is_recommended: true, paw_reward_points: 0
+      name: '', description: '', what_it_helps_with: '', price: '', original_price: '', image: '',
+      bundle_type: 'routine_care', included_items: '', optional_addons: '',
+      good_for_tags: '', intent_tags: '', concierge_flow_mapping: '',
+      care_type: 'grooming', items: '', status: 'active', display_priority: 99,
+      is_recommended: true, paw_reward_points: 0, guardrail_note: ''
     });
   };
 
@@ -317,7 +326,12 @@ const CareManager = ({ getAuthHeader }) => {
         price: parseFloat(bundleForm.price) || 0,
         original_price: bundleForm.original_price ? parseFloat(bundleForm.original_price) : null,
         paw_reward_points: parseInt(bundleForm.paw_reward_points) || 0,
-        items: bundleForm.items.split(',').map(i => i.trim()).filter(Boolean)
+        display_priority: parseInt(bundleForm.display_priority) || 99,
+        items: bundleForm.items.split(',').map(i => i.trim()).filter(Boolean),
+        included_items: bundleForm.included_items.split(',').map(i => i.trim()).filter(Boolean),
+        optional_addons: bundleForm.optional_addons.split(',').map(i => i.trim()).filter(Boolean),
+        good_for_tags: bundleForm.good_for_tags.split(',').map(t => t.trim()).filter(Boolean),
+        intent_tags: bundleForm.intent_tags.split(',').map(t => t.trim()).filter(Boolean)
       };
 
       if (editingBundle) {
