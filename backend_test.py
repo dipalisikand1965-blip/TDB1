@@ -18,9 +18,9 @@ class DoggyCompanyAPITester:
         self.tests_passed = 0
         self.test_results = []
         
-        # Test credentials from review request
+        # Test credentials from review request  
         self.test_email = "dipali@clubconcierge.in"
-        self.test_password = "test123"
+        self.test_password = "lola4304"  # Correct password from backend/.env
 
     def log_test(self, name: str, success: bool, response_data: Dict = None, error: str = None):
         """Log a test result"""
