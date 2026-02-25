@@ -752,22 +752,6 @@ const CarePage = () => {
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════════════════
-          PRODUCT SECTIONS (Secondary - E-commerce)
-          ═══════════════════════════════════════════════════════════════════════════════ */}
-      
-      {/* Mira's Curated Picks for Pet */}
-      <div className="py-10 bg-gradient-to-b from-white to-gray-50">
-        <PersonalizedPicks pillar="care" />
-        
-        {/* Mira's Picks Section */}
-        {selectedPet && (
-          <div className="max-w-6xl mx-auto px-4 mt-6">
-            <PillarPicksSection pillar="care" pet={selectedPet} />
-          </div>
-        )}
-      </div>
-
       {/* === CARE BUNDLES === */}
       <div id="care-kits" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
