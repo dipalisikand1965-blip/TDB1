@@ -391,9 +391,9 @@ const GroomingFlowModal = ({
           </p>
         </div>
         
-        {/* Pet context strip */}
+        {/* Pet context strip - Fixed */}
         {pet && (
-          <div className="px-6 py-3 bg-teal-50 border-b border-teal-100 flex items-center gap-3">
+          <div className="px-6 py-3 bg-teal-50 border-b border-teal-100 flex items-center gap-3 flex-shrink-0">
             <div className="w-10 h-10 rounded-full bg-teal-200 overflow-hidden">
               {pet.photo_url ? (
                 <img src={pet.photo_url} alt={petName} className="w-full h-full object-cover" />
@@ -412,8 +412,8 @@ const GroomingFlowModal = ({
           </div>
         )}
         
-        {/* Step content */}
-        <div className="px-6 py-5 overflow-y-auto max-h-[50vh]">
+        {/* Step content - Scrollable, takes remaining space */}
+        <div className="px-6 py-5 overflow-y-auto flex-1 min-h-0">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
