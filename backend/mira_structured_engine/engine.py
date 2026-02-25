@@ -515,7 +515,18 @@ async def handle_execute_action(
     }
     pillar = pillar_map.get(service_type, "care")
     
-    # Get or create ticket
+    # If there's an existing ticket AND we have extracted fields, UPDATE the ticket
+    if existing_ticket and existing_ticket.get("id") and extracted_fields:
+        ticket_id = existing_ticket.get("id")
+        
+        # Update each extracted field
+        for field_name, field_value in extracted_fields.items():
+            result = await update_ticket_field(ticket_id, field_name, field_value)
+        
+        # Return the updated ticket state
+        return await get_ticket_state(ticket_id) or {"error": "Ticket not found"}
+    
+    # Otherwise, get or create ticket
     ticket_result = await get_or_create_ticket_for_intent(
         service_type=service_type,
         pet_id=request.pet_context.id,
