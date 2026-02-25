@@ -255,9 +255,13 @@ const CarePage = () => {
     window.scrollTo(0, 0);
   }, []);
   
-  // Service Booking Modal
+  // Service Booking Modal (legacy - for services without dedicated FlowModal)
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [bookingServiceType, setBookingServiceType] = useState('grooming');
+  
+  // NEW: Dedicated Flow Modals for Grooming and Vet Visits
+  const [showGroomingFlowModal, setShowGroomingFlowModal] = useState(false);
+  const [showVetVisitFlowModal, setShowVetVisitFlowModal] = useState(false);
   
   // Bundle Detail Modal
   const [selectedBundle, setSelectedBundle] = useState(null);
