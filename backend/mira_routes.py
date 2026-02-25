@@ -14238,14 +14238,42 @@ Would you like me to show you safe treats in one of those flavors?"""
     # 3.5 CHECK FOR ACTIVE CONVERSATION FLOWS (before pillar re-routing)
     # If we're in an active multi-step flow (celebrate, travel, etc.), 
     # stay in that flow instead of re-routing based on message content
+    # UNLESS the user's message clearly indicates a NEW/DIFFERENT request
     # ═══════════════════════════════════════════════════════════════════════════
     if existing_ticket:
         active_celebrate_stage = existing_ticket.get("ai_context", {}).get("celebrate_stage")
         
         if active_celebrate_stage and active_celebrate_stage in ["location", "size"]:
-            # Force pillar back to celebrate to continue the flow
-            logger.info(f"[CELEBRATE-FLOW] Continuing celebrate flow, stage={active_celebrate_stage}")
-            pillar = "celebrate"
+            # Check if user is asking for something DIFFERENT from celebrate flow
+            # Keywords that indicate they want to switch contexts
+            switch_intent_keywords = [
+                # CARE pillar requests
+                "dog walker", "walker", "walking", "pet sitter", "sitting", "vet", "grooming",
+                "vaccination", "medication", "health check", "doctor",
+                # DINE pillar requests
+                "food", "diet", "nutrition", "feeding", "hungry", "meal",
+                # ENJOY pillar requests  
+                "park", "playdate", "cafe", "hike", "activity", "fun",
+                # TRAVEL pillar requests
+                "travel", "trip", "vacation", "flight", "hotel",
+                # General new topic indicators
+                "actually", "instead", "change", "different", "new request", "something else"
+            ]
+            
+            user_msg_lower = user_message.lower()
+            is_switching_context = any(kw in user_msg_lower for kw in switch_intent_keywords)
+            
+            if is_switching_context:
+                # User wants something different - exit celebrate flow
+                logger.info(f"[CELEBRATE-FLOW] User switching context from celebrate flow. Message: {user_message[:50]}...")
+                # Clear the celebrate stage so we don't get stuck
+                await update_mira_ticket(session_id, {
+                    "ai_context.celebrate_stage": None
+                })
+            else:
+                # Force pillar back to celebrate to continue the flow
+                logger.info(f"[CELEBRATE-FLOW] Continuing celebrate flow, stage={active_celebrate_stage}")
+                pillar = "celebrate"
     
     # 4. Handle FAREWELL/GRIEF with COMFORT mode - before emergency check
     if pillar == "farewell":
