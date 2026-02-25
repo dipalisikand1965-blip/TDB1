@@ -3015,6 +3015,9 @@ const MiraDemoPage = () => {
     setShowTopPicksPanel,
     setShowInsightsPanel,
     
+    // OS Tab State (for intelligent routing)
+    setActiveOSTab,
+    
     // Context Tracking
     lastShownProducts,
     setLastShownProducts,
