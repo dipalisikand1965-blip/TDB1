@@ -227,11 +227,16 @@ const CarePage = () => {
   const navigate = useNavigate();
   const formRef = useRef(null);
   
+  // Use PillarContext for pet selection (synced across all pillar components)
+  const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
+  
+  // Selected pet from context (or first pet as fallback)
+  const selectedPet = currentPet;
+  
   // State
   const [showWizard, setShowWizard] = useState(false);
   const [wizardStep, setWizardStep] = useState(1);
   const [userPets, setUserPets] = useState([]);
-  const [selectedPet, setSelectedPet] = useState(null); // Currently selected pet
   const [selectedPets, setSelectedPets] = useState([]); // Multi-pet support for bookings
   const [selectedType, setSelectedType] = useState(null);
   const [loading, setLoading] = useState(false);
