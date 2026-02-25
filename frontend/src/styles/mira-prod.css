@@ -44,6 +44,12 @@
   --radius-lg: 16px;
   --radius-xl: 20px;
   --radius-full: 9999px;
+  
+  /* Sticky Header Offset - Total height of sticky header stack
+     Soul ticker (~44px) + Header (~80px) + OS Nav (~56px) = ~180px
+     Add buffer for safety */
+  --mira-header-offset: 180px;
+  --mira-header-offset-mobile: 160px;
 }
 
 /* ========================================
