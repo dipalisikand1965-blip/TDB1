@@ -1281,7 +1281,7 @@ const CarePage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Care Service Flow Modal - Full options for each service */}
+      {/* Care Service Flow Modal - Full options for each service (legacy) */}
       <CareServiceFlowModal
         isOpen={showBookingModal}
         onClose={() => setShowBookingModal(false)}
@@ -1289,6 +1289,26 @@ const CarePage = () => {
         pet={selectedPet}
         userPets={userPets}
         token={token}
+      />
+      
+      {/* NEW: Grooming Flow Modal - Detailed 6-step wizard */}
+      <GroomingFlowModal
+        isOpen={showGroomingFlowModal}
+        onClose={() => setShowGroomingFlowModal(false)}
+        pet={selectedPet}
+        user={user}
+        token={token}
+        entryPoint="care_page_grid"
+      />
+      
+      {/* NEW: Vet Visit Flow Modal - Detailed wizard */}
+      <VetVisitFlowModal
+        isOpen={showVetVisitFlowModal}
+        onClose={() => setShowVetVisitFlowModal(false)}
+        pet={selectedPet}
+        user={user}
+        token={token}
+        entryPoint="care_page_grid"
       />
       
       {/* === BUNDLE DETAIL MODAL === */}
