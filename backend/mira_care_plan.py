@@ -67,7 +67,7 @@ def calculate_days_since(date_str: Optional[str]) -> Optional[int]:
         else:
             date = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
         return (datetime.now() - date.replace(tzinfo=None)).days
-    except:
+    except Exception:
         return None
 
 
@@ -229,7 +229,7 @@ def generate_vet_recommendation(pet: dict, traits: List[str], care_history: dict
         try:
             age_num = int(''.join(filter(str.isdigit, str(age))))
             is_senior = age_num >= 7
-        except:
+        except Exception:
             pass
     
     # Calculate recommendation
@@ -362,7 +362,7 @@ def generate_senior_recommendation(pet: dict, traits: List[str], care_history: d
         try:
             age_num = int(''.join(filter(str.isdigit, str(age))))
             is_senior = age_num >= 7
-        except:
+        except Exception:
             pass
     
     if not is_senior:
@@ -405,7 +405,7 @@ async def get_mira_care_plan(pet_id: str):
     from bson import ObjectId
     try:
         pet = db.pets.find_one({"_id": ObjectId(pet_id)})
-    except:
+    except Exception:
         pet = db.pets.find_one({"id": pet_id})
     
     if not pet:
@@ -491,7 +491,7 @@ async def get_care_plan_for_user(user_id: str):
     from bson import ObjectId
     try:
         user = db.users.find_one({"_id": ObjectId(user_id)})
-    except:
+    except Exception:
         user = db.users.find_one({"id": user_id})
     
     if not user:
