@@ -5036,6 +5036,35 @@ const MiraDemoPage = () => {
       
       {/* Quick replies now handled by the original system in ChatMessage/QuickReplies components */}
       
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          FLOW MODALS - Intelligent booking wizards triggered by Mira chat
+          When user says "Book grooming for Mystique", Mira opens the right wizard
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <Suspense fallback={<LazyFallback />}>
+        <GroomingFlowModal 
+          isOpen={showGroomingFlowModal}
+          onClose={() => setShowGroomingFlowModal(false)}
+          pet={pet}
+        />
+      </Suspense>
+      
+      <Suspense fallback={<LazyFallback />}>
+        <VetVisitFlowModal 
+          isOpen={showVetVisitFlowModal}
+          onClose={() => setShowVetVisitFlowModal(false)}
+          pet={pet}
+        />
+      </Suspense>
+      
+      <Suspense fallback={<LazyFallback />}>
+        <CareServiceFlowModal 
+          isOpen={showCareServiceFlowModal}
+          onClose={() => setShowCareServiceFlowModal(false)}
+          pet={pet}
+          serviceType="general"
+        />
+      </Suspense>
+      
       {/* Site Footer - Hidden in mira-prod context via CSS */}
       {shellSelectors.showSiteFooter && <Footer />}
     </div>
