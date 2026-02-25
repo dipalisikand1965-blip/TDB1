@@ -11554,30 +11554,60 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
         ]
     
     # ═══════════════════════════════════════════════════════════════════════════
-    # PATTERN 5: Location/Service Questions
+    # PATTERN 5: GROOMING LOCATION - Home vs Salon (MUST be checked BEFORE generic indoor/outdoor)
+    # This pattern specifically handles "home or salon" / "at-home or groomer" questions
     # ═══════════════════════════════════════════════════════════════════════════
-    elif any(term in response_lower for term in ["indoor", "outdoor", "seating", "location", "area", "which area"]):
+    elif (
+        any(term in response_lower for term in ["home or salon", "at home or", "at-home or", "groomer or at home", "salon or at home", "prefer.*home.*salon", "prefer.*salon.*home"]) or
+        (any(term in response_lower for term in ["grooming", "groom", "bath"]) and any(term in response_lower for term in ["home", "salon", "centre", "center", "groomer"]) and "?" in response_text)
+    ):
         quick_replies = [
-            "Indoor preferred",
-            "Outdoor preferred",
-            "Either works"
+            build_quick_reply_chip("At-home grooming", f"I prefer at-home grooming for {pet_ref}.", "refine", domain="care"),
+            build_quick_reply_chip("Salon / at-centre", f"I'd like to take {pet_ref} to a salon.", "refine", domain="care"),
+            build_quick_reply_chip("Either works", "Either works, you can recommend.", "refine", domain="care"),
+            build_quick_reply_chip("Need Mira to recommend", "What do you recommend based on my pet?", "continue", domain="care")
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 5b: GROOMING SERVICE TYPE - What kind of grooming
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["grooming", "groom", "trim", "bath", "haircut"]) and any(term in response_lower for term in ["what kind", "type of", "full session", "quick trim", "bath only", "what would you like"]):
+        quick_replies = [
+            build_quick_reply_chip("Full grooming session", f"Full grooming for {pet_ref}.", "refine", domain="care"),
+            build_quick_reply_chip("Just a bath", "Just a bath please.", "refine", domain="care"),
+            build_quick_reply_chip("Quick trim only", "Quick trim only.", "refine", domain="care"),
+            build_quick_reply_chip("Something else", "Something else.", "continue", domain="care")
+        ]
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # PATTERN 5c: Dining/Restaurant Location Questions (Indoor/Outdoor)
+    # Only match when NOT in grooming context
+    # ═══════════════════════════════════════════════════════════════════════════
+    elif any(term in response_lower for term in ["indoor", "outdoor", "seating", "patio"]) and not any(term in response_lower for term in ["grooming", "groom", "bath", "salon"]):
+        quick_replies = [
+            build_quick_reply_chip("Indoor preferred", "Indoor seating preferred.", "refine", domain="dine"),
+            build_quick_reply_chip("Outdoor preferred", "Outdoor seating preferred.", "refine", domain="dine"),
+            build_quick_reply_chip("Either works", "Either works.", "refine", domain="dine"),
+            build_quick_reply_chip("Something else", "Something else.", "continue", domain="dine")
         ]
     
     elif any(term in response_lower for term in ["book", "schedule", "appointment", "when", "date", "time"]):
         quick_replies = [
-            "As soon as possible",
-            "This week",
-            "Flexible timing"
+            build_quick_reply_chip("As soon as possible", "As soon as possible.", "refine", domain="care"),
+            build_quick_reply_chip("This week", "Sometime this week.", "refine", domain="care"),
+            build_quick_reply_chip("Flexible timing", "I'm flexible on timing.", "refine", domain="care"),
+            build_quick_reply_chip("Something else", "Something else.", "continue", domain="care")
         ]
     
     # ═══════════════════════════════════════════════════════════════════════════
-    # PATTERN 6: Grooming/Care Questions
+    # PATTERN 6: Grooming/Care Questions (fallback - only if no specific pattern matched)
     # ═══════════════════════════════════════════════════════════════════════════
     elif any(term in response_lower for term in ["grooming", "groom", "trim", "bath", "haircut"]):
         quick_replies = [
-            "Full grooming session",
-            "Just a bath",
-            "Quick trim only"
+            build_quick_reply_chip("Full grooming session", f"Full grooming for {pet_ref}.", "refine", domain="care"),
+            build_quick_reply_chip("Just a bath", "Just a bath.", "refine", domain="care"),
+            build_quick_reply_chip("Quick trim only", "Quick trim only.", "refine", domain="care"),
+            build_quick_reply_chip("Something else", "Something else.", "continue", domain="care")
         ]
     
     elif any(term in response_lower for term in ["vet", "veterinary", "checkup", "vaccination"]):
