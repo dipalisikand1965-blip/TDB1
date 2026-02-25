@@ -1,0 +1,122 @@
+{
+  "identity": "E1: The Anti-AI Designer - Mobile Gold Standard Edition",
+  "mission": "Transform the Mira Pet OS 'Celebrate' and 'Dine' pages into a haptic, emotional, and native-feeling mobile experience. Kill the 'bootstrap grid' look. Embrace fluid, touch-first design.",
+  "target_audience": "Affluent pet parents who want their pets to live better than humans. Mobile-first (90% traffic).",
+  "typography": {
+    "primary_font": "SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif",
+    "secondary_font": "SF Pro Text, -apple-system, BlinkMacSystemFont, sans-serif",
+    "rules": [
+      "Use 'tracking-tight' (-0.02em) for all headings > 24px.",
+      "Use 'tracking-normal' for body text < 16px.",
+      "Font weights: 600 (SemiBold) for headers, 400 (Regular) for body. Avoid 700+ unless it's a huge number.",
+      "Hierarchy: Large Title (34px) > Title 1 (28px) > Title 2 (22px) > Title 3 (20px) > Headline (17px) > Body (17px) > Callout (16px) > Subhead (15px) > Footnote (13px) > Caption (12px)."
+    ]
+  },
+  "color_palette": {
+    "celebrate": {
+      "theme_name": "Confetti & Cream",
+      "primary": "#FF2D55",
+      "secondary": "#AF52DE",
+      "background": "#FFF0F5",
+      "surface": "rgba(255, 255, 255, 0.8)",
+      "accent": "#FFD700",
+      "gradient": "linear-gradient(135deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%)",
+      "glass_border": "rgba(255, 255, 255, 0.5)"
+    },
+    "dine": {
+      "theme_name": "Harvest & Hearth",
+      "primary": "#FF9500",
+      "secondary": "#FF3B30",
+      "background": "#FFF8F0",
+      "surface": "rgba(255, 255, 255, 0.9)",
+      "accent": "#34C759",
+      "gradient": "linear-gradient(120deg, #f6d365 0%, #fda085 100%)",
+      "glass_border": "rgba(255, 255, 255, 0.6)"
+    },
+    "neutral": {
+      "text_primary": "#1C1C1E",
+      "text_secondary": "#3A3A3C",
+      "text_tertiary": "#8E8E93",
+      "divider": "#C6C6C8"
+    }
+  },
+  "layout_strategy": {
+    "mobile_first": true,
+    "grid_system": "Bento Grid (Asymmetric)",
+    "container_padding": "p-4 sm:p-6",
+    "card_radius": "rounded-[24px]",
+    "button_radius": "rounded-full",
+    "spacing_scale": "Multiply standard tailwind spacing by 1.5x for 'luxury' feel.",
+    "safe_areas": "Respect top (44px) and bottom (34px) safe areas for iOS."
+  },
+  "component_upgrades": [
+    {
+      "component": "UnifiedHero",
+      "instruction": "Transform into an 'Immersive Story' header. Use a 105% width video/image that bleeds off-screen. Overlay text with a heavy blur backdrop (glassmorphism).",
+      "animation": "Parallax on scroll (slow movement of bg image).",
+      "height": "70vh (Mobile), 60vh (Desktop)"
+    },
+    {
+      "component": "ConciergeExperienceCard",
+      "instruction": "Convert to 'Squircle Glass Cards'. Remove solid white backgrounds. Use 'bg-white/80' with 'backdrop-blur-xl'. Add a 1px solid border with 'border-white/40'.",
+      "interaction": "Scale down to 0.98 on tap (active state).",
+      "shadow": "shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
+    },
+    {
+      "component": "SmartFilters",
+      "instruction": "Create a 'Floating Pill Dock'. Horizontal scroll container with NO scrollbar. Pills should have a 'snap' effect.",
+      "style": "Pills: bg-white shadow-sm border border-gray-100. Active: bg-black text-white."
+    },
+    {
+      "component": "ProductCard",
+      "instruction": "Minimalist. Image takes 70% of height. Text is minimal. 'Add' button is a circular icon button at bottom right of image, not a full width bar.",
+      "aspect_ratio": "aspect-[3/4]"
+    }
+  ],
+  "motion_guidelines": {
+    "library": "framer-motion",
+    "spring_config": {
+      "type": "spring",
+      "stiffness": 400,
+      "damping": 30
+    },
+    "page_transition": {
+      "initial": { "opacity": 0, "y": 20 },
+      "animate": { "opacity": 1, "y": 0 },
+      "exit": { "opacity": 0, "y": -20 },
+      "transition": { "duration": 0.4, "ease": "easeInOut" }
+    },
+    "haptic_visuals": "Add a 'scale(0.95)' transform on 'active' state for ALL clickable elements to simulate button press."
+  },
+  "image_urls": {
+    "celebrate_hero": [
+      "https://images.unsplash.com/photo-1701722579310-e033b550d55e?q=85",
+      "https://images.unsplash.com/flagged/photo-1583958211970-af3e1596ef32?q=85",
+      "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=1200&q=80"
+    ],
+    "dine_hero": [
+      "https://images.unsplash.com/photo-1672323471046-21e40fab1ccd?q=85",
+      "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80",
+      "https://images.unsplash.com/photo-1749280447562-d7e04018c42a?q=85"
+    ]
+  },
+  "instructions_to_main_agent": [
+    "1. REFACATOR 'CelebratePage.jsx' and 'DinePage.jsx' to use the new 'ios-premium.css' classes. DO NOT just import the css, apply the classes.",
+    "2. APPLY 'font-family: SF Pro Display' to all headings via Tailwind 'font-sans' override or specific class.",
+    "3. IMPLEMENT 'Bento Grid' for the 'Elevated Concierge Experiences' section. Instead of a simple 2-col grid, make the first item 'col-span-2' (full width) to break monotony.",
+    "4. REPLACE standard 'Button' components in the Hero CTA with 'Glass Buttons' (bg-white/20 backdrop-blur-md border border-white/50).",
+    "5. ENSURE all scroll containers (filters, cards) have 'scrollbar-hide' class and 'snap-x' for smooth snapping.",
+    "6. ADD 'data-testid' to every interactive element (buttons, inputs, cards) for testing.",
+    "7. USE the provided image URLs for the Hero rotations.",
+    "8. CRITICAL: On Mobile, the 'Bottom Navigation' exists. Ensure the page has 'pb-24' (padding-bottom: 6rem) so content isn't hidden behind the nav bar.",
+    "9. COLOR RULES: For 'Celebrate', use the 'Confetti & Cream' palette. For 'Dine', use 'Harvest & Hearth'. Do not mix them.",
+    "10. MOTION: Wrap main sections in <motion.div> with the specified spring config."
+  ],
+  "universal_guidelines": [
+    "Don't make generic centered layouts.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "NEVER use generic 'transition: all'. Animate specific properties.",
+    "Use 2-3x more spacing than feels comfortable."
+  ]
+}

@@ -1,15 +1,1016 @@
+/* ============================================
+   GLOBAL FONT CONSISTENCY - WORLD CLASS UI
+   Consistent typography across all pages
+   ============================================ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Import Mira Premium styles including Learn OS */
+@import './styles/mira-premium.css';
+
+/* Import iOS Gold Standard Premium styles for Celebrate & Dine */
+@import './styles/ios-premium.css';
+
+/* ============================================
+   MOBILE PWA STABILITY - CRITICAL FOR SAFARI
+   ============================================ */
+
+/* Use dvh/svh for proper mobile viewport */
+:root {
+  --app-height: 100dvh;
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+}
+
+/* Fallback for older browsers */
+@supports not (height: 100dvh) {
+  :root {
+    --app-height: 100svh;
+  }
+}
+
+@supports not (height: 100svh) {
+  :root {
+    --app-height: 100vh;
+  }
+}
+
+/* Prevent ALL horizontal scrolling and wobble */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: auto; /* Prevent smooth scroll on navigation */
+}
+
 body {
-    margin: 0;
-    font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-        sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+  margin: 0;
+  padding: 0;
+  touch-action: pan-y;
+  /* Better mobile font scaling */
+  font-size: 16px;
+}
+
+/* Mobile font scaling - ensure readability on small screens */
+@media (max-width: 640px) {
+  body {
+    font-size: 15px;
+  }
+  
+  /* Slightly larger touch targets for buttons */
+  button, a {
+    min-height: 44px;
+  }
+  
+  /* Ensure headings are readable */
+  h1, .text-3xl, .text-4xl {
+    font-size: clamp(1.5rem, 5vw, 2.25rem) !important;
+  }
+  
+  h2, .text-2xl {
+    font-size: clamp(1.25rem, 4vw, 1.75rem) !important;
+  }
+  
+  h3, .text-xl {
+    font-size: clamp(1.1rem, 3.5vw, 1.5rem) !important;
+  }
+  
+  /* Ensure body text is readable */
+  p, span, div {
+    font-size: max(0.875rem, 14px);
+  }
+  
+  /* Prevent text from being too small */
+  .text-xs {
+    font-size: 0.75rem !important;
+    min-font-size: 12px;
+  }
+  
+  .text-sm {
+    font-size: 0.875rem !important;
+  }
+}
+
+/* Root container for proper PWA layout */
+#root {
+  height: 100%;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
+}
+
+/* ============================================
+   iOS SAFARI INPUT FIX - PREVENTS ZOOM
+   ============================================ */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0;
+  font-size: 16px !important; /* Prevents iOS zoom on focus */
+  touch-action: manipulation;
+}
+
+/* Ensure inputs get proper styling back */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  background-clip: padding-box;
+}
+
+/* ============================================
+   TOUCH TARGET SIZES - iOS 44px, Android 48px
+   ============================================ */
+button,
+[role="button"],
+a.btn,
+.touchable {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+
+/* iOS click delay fix - must be on clickable elements */
+@supports (-webkit-touch-callout: none) {
+  button,
+  [role="button"],
+  a {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+}
+
+/* Make all form elements tappable */
+@media (max-width: 768px) {
+  input, button, select, textarea, a {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Minimum touch targets */
+  button:not(.compact),
+  [role="button"]:not(.compact) {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Hamburger menu should be easily tappable */
+  [data-testid="navbar-mobile-menu-btn"] {
+    min-height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* ============================================
+   SAFE AREA UTILITIES
+   ============================================ */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+.safe-area-inset {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* ============================================
+   SCROLLBAR UTILITIES
+   ============================================ */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth scrolling for chat */
+.scroll-smooth-touch {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+}
+
+/* ============================================
+   PREVENT PAGE BOUNCE ON IOS
+   ============================================ */
+.no-bounce {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
+}
+
+/* Google Fonts for Pet Life OS */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ============================================
+   PET LIFE OS - DESIGN SYSTEM
+   World's First Pet Operating System
+   Mobile-First Masterpiece
+   ============================================ */
+
+:root {
+  /* Primary Colors - Deep Teal (Trust, Health) */
+  --color-primary: #0F766E;
+  --color-primary-light: #14B8A6;
+  --color-primary-dark: #0D5C56;
+  
+  /* Mira Accent - Purple (Intelligence, AI) */
+  --color-mira: #9333EA;
+  --color-mira-light: #A855F7;
+  --color-mira-dark: #7C3AED;
+  
+  /* Secondary Colors - Warm Amber (Energy, Play) */
+  --color-secondary: #D97706;
+  --color-secondary-light: #F59E0B;
+  --color-secondary-dark: #B45309;
+  
+  /* Accent Colors - Deep Pink (Love, Heart) */
+  --color-accent: #BE185D;
+  --color-accent-light: #EC4899;
+  
+  /* Background - Warm Stone (Organic, Natural) */
+  --bg-primary: #FAFAF9;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #FFFFFF;
+  
+  /* Text Colors */
+  --text-primary: #1C1917;
+  --text-secondary: #57534E;
+  --text-muted: #A8A29E;
+  
+  /* Spacing - Premium 2-3x standard */
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1.25rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  
+  /* Typography */
+  --font-display: 'Manrope', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-special: 'Syne', sans-serif;
+  
+  /* Shadows - Soft & Premium */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --shadow-glow: 0 0 40px rgba(15, 118, 110, 0.15);
+  
+  /* Radius - Organic feel */
+  --radius-sm: 1rem;
+  --radius-md: 1.5rem;
+  --radius-lg: 2rem;
+  --radius-full: 9999px;
+}
+
+/* Base Styles */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile Touch Optimization - Fix for "banging" keys issue */
+button, 
+a, 
+input, 
+textarea, 
+select,
+[role="button"] {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+}
+
+/* Remove 300ms click delay on mobile */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="search"],
+textarea {
+  touch-action: manipulation;
+  font-size: 16px !important; /* Prevent iOS zoom on focus */
+}
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  background: var(--bg-primary);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  line-height: 1.6;
+  background: var(--bg-primary);
+}
+
+/* ============================================
+   MOBILE-FIRST UTILITY CLASSES
+   ============================================ */
+
+/* Font Families */
+.font-display { font-family: var(--font-display); }
+.font-body { font-family: var(--font-body); }
+.font-special { font-family: var(--font-special); }
+
+/* Premium Spacing */
+.space-premium { padding: var(--space-lg); }
+.gap-premium { gap: var(--space-lg); }
+
+/* Organic Radius */
+.radius-organic { border-radius: var(--radius-lg); }
+.radius-pill { border-radius: var(--radius-full); }
+
+/* Premium Shadows */
+.shadow-soft { box-shadow: var(--shadow-md); }
+.shadow-glow { box-shadow: var(--shadow-glow); }
+
+/* ============================================
+   MOBILE BOTTOM NAVIGATION
+   The heart of Pet Life OS
+   ============================================ */
+
+/* Mobile Nav Container - Fixed bottom navigation bar */
+.mobile-nav-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9995;
+  padding: 0.5rem 1rem;
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.mobile-nav-bar {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius-full);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.2);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 1rem;
+  transition: background 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.mobile-nav-item:active {
+  transform: scale(0.95);
+}
+
+.mobile-nav-item.active {
+  background: rgba(147, 51, 234, 0.1);
+}
+
+.mobile-nav-item.active .nav-icon {
+  color: var(--color-mira);
+}
+
+.mobile-nav-item.active .nav-label {
+  color: var(--color-mira);
+  font-weight: 600;
+}
+
+.nav-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.nav-label {
+  font-size: 0.625rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Pulse FAB - Center button (DEPRECATED - replaced by Mira) */
+.pulse-fab {
+  position: absolute;
+  top: -1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4rem;
+  height: 4rem;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border-radius: 50%;
+  box-shadow: 0 8px 24px rgba(15, 118, 110, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid var(--bg-primary);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Mira FAB - Center button (New AI assistant) */
+.mira-fab {
+  position: absolute;
+  top: -1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3.5rem;
+  height: 3.5rem;
+  background: linear-gradient(135deg, #9333EA 0%, #EC4899 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid white;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: mira-pulse 2s ease-in-out infinite;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  z-index: 10;
+}
+
+@keyframes mira-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(147, 51, 234, 0.5); }
+  50% { box-shadow: 0 0 30px rgba(236, 72, 153, 0.6); }
+}
+
+/* ============================================
+   MOBILE TOUCH FIX - Global styles for iOS
+   ============================================ */
+.mira-fab:hover {
+  transform: translateX(-50%) scale(1.1);
+  box-shadow: 0 0 35px rgba(147, 51, 234, 0.7);
+}
+
+.mira-fab:active {
+  transform: translateX(-50%) scale(0.95);
+}
+
+.pulse-fab:hover {
+  transform: translateX(-50%) scale(1.05);
+  box-shadow: 0 12px 32px rgba(15, 118, 110, 0.5);
+}
+
+.pulse-fab:active {
+  transform: translateX(-50%) scale(0.95);
+}
+
+.pulse-fab svg {
+  width: 1.75rem;
+  height: 1.75rem;
+  color: white;
+}
+
+/* ============================================
+   BENTO GRID LAYOUT
+   Premium dashboard cards
+   ============================================ */
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .bento-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    padding: 2rem;
+  }
+}
+
+.bento-hero {
+  grid-column: span 2;
+  grid-row: span 2;
+  aspect-ratio: 1;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+}
+
+.bento-card {
+  aspect-ratio: 1;
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(168, 162, 158, 0.1);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bento-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.bento-tall {
+  grid-row: span 2;
+}
+
+/* ============================================
+   PREMIUM CARDS
+   Glass morphism & depth
+   ============================================ */
+
+.card-premium {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(168, 162, 158, 0.08);
+  overflow: hidden;
+}
+
+.card-glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-gradient-soul {
+  background: linear-gradient(135deg, #FDE68A 0%, #FDBA74 50%, #FDA4AF 100%);
+}
+
+/* ============================================
+   PREMIUM BUTTONS
+   Pill-shaped with micro-animations
+   ============================================ */
+
+.btn-premium {
+  font-family: var(--font-display);
+  font-weight: 700;
+  padding: 1rem 2rem;
+  border-radius: var(--radius-full);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-premium:hover {
+  transform: scale(1.02);
+}
+
+.btn-premium:active {
+  transform: scale(0.98);
+}
+
+.btn-primary-premium {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: 0 8px 24px rgba(15, 118, 110, 0.25);
+}
+
+.btn-primary-premium:hover {
+  box-shadow: 0 12px 32px rgba(15, 118, 110, 0.35);
+}
+
+.btn-secondary-premium {
+  background: rgba(28, 25, 23, 0.05);
+  color: var(--text-primary);
+}
+
+.btn-secondary-premium:hover {
+  background: rgba(28, 25, 23, 0.08);
+}
+
+/* ============================================
+   SOUL JOURNEY STYLES
+   Mystical & ethereal
+   ============================================ */
+
+.soul-title {
+  font-family: var(--font-special);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.soul-gradient {
+  background: linear-gradient(135deg, #FDE68A 0%, #FDBA74 30%, #FDA4AF 60%, #DDD6FE 100%);
+}
+
+.soul-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+/* ============================================
+   ANIMATIONS
+   Micro-interactions that delight
+   ============================================ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(15, 118, 110, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(15, 118, 110, 0.5);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shrink-width {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+.animate-shrink-width {
+  animation: shrink-width 8s linear forwards;
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.hover-lift {
+  transition: transform 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+/* Staggered animations */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+
+/* ============================================
+   SCROLLBAR STYLING
+   Premium & minimal
+   ============================================ */
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(168, 162, 158, 0.3) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(168, 162, 158, 0.3);
+  border-radius: 3px;
+}
+
+/* ============================================
+   MOBILE-SPECIFIC OVERRIDES
+   ============================================ */
+
+@media (max-width: 768px) {
+  /* Extra bottom padding for mobile nav */
+  .mobile-safe-bottom {
+    padding-bottom: 6rem;
+  }
+  
+  /* Larger touch targets */
+  button, a, [role="button"] {
+    min-height: 44px;
+  }
+  
+  /* Disable hover effects on mobile */
+  .hover-lift:hover {
+    transform: none;
+  }
+  
+  /* Active state instead */
+  .hover-lift:active {
+    transform: scale(0.98);
+  }
+  
+  /* ============================================
+     MOBILE TYPOGRAPHY ENHANCEMENTS
+     Ensure readability on small screens
+     ============================================ */
+  
+  /* Base text size increase for mobile readability */
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  /* Card content should be readable */
+  .card-premium p,
+  .card-clean p,
+  .bento-card p {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  /* Form inputs should be readable */
+  input, select, textarea {
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+  }
+  
+  /* Modal content readability */
+  [role="dialog"] p,
+  [role="dialog"] label {
+    font-size: 0.9375rem;
+  }
+  
+  /* Badge text minimum */
+  .badge, [class*="Badge"] {
+    font-size: 0.75rem;
+    min-height: 1.5rem;
+  }
+  
+  /* Button text minimum */
+  button {
+    font-size: 0.875rem;
+  }
+}
+
+/* ============================================
+   LEGACY COMPATIBILITY
+   (Keeping existing styles that work)
+   ============================================ */
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  50% { transform: rotate(10deg); }
+  75% { transform: rotate(-5deg); }
+}
+
+.animate-wiggle {
+  animation: wiggle 0.5s ease-in-out infinite;
+}
+
+/* Legacy button classes */
+@layer components {
+  .btn-primary {
+    @apply bg-teal-600 hover:bg-teal-700 text-white font-medium px-6 py-2.5 rounded-lg;
+  }
+  
+  .btn-secondary {
+    @apply bg-white border border-gray-300 hover:border-gray-400 text-gray-700 font-medium px-6 py-2.5 rounded-lg;
+  }
+  
+  .btn-accent {
+    @apply bg-purple-600 hover:bg-purple-700 text-white font-medium px-6 py-2.5 rounded-lg transition-all duration-200;
+  }
+
+  /* Cards - Clean, minimal shadows */
+  .card-clean {
+    @apply bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+  
+  .card-hover {
+    @apply bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-teal-200 transition-all duration-200;
+  }
+
+  /* Product Card */
+  .product-card {
+    @apply bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-200;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .product-card img {
+    @apply w-full aspect-square object-cover bg-gray-50;
+  }
+
+  /* Section Headers - Consistent typography */
+  .section-title {
+    @apply text-2xl md:text-3xl font-bold text-gray-900 tracking-tight;
+  }
+  
+  .section-subtitle {
+    @apply text-base md:text-lg text-gray-600 max-w-2xl;
+  }
+
+  /* Price styling */
+  .price-tag {
+    @apply text-lg font-bold text-gray-900;
+  }
+  
+  .price-original {
+    @apply text-sm text-gray-400 line-through;
+  }
+  
+  .price-discount {
+    @apply text-sm font-medium text-green-600;
+  }
+
+  /* Badge styles */
+  .badge-sale {
+    @apply inline-block px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded;
+  }
+  
+  .badge-new {
+    @apply inline-block px-2 py-0.5 bg-teal-500 text-white text-xs font-bold rounded;
+  }
+  
+  .badge-featured {
+    @apply inline-block px-2 py-0.5 bg-purple-500 text-white text-xs font-bold rounded;
+  }
+
+  /* Input fields */
+  .input-clean {
+    @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all duration-200;
+  }
+
+  /* Links */
+  .link-teal {
+    @apply text-teal-600 hover:text-teal-700 font-medium transition-colors duration-200;
+  }
+}
+
+/* ============================================
+   ANIMATIONS - Subtle, professional
+   ============================================ */
+
+/* Fade in on scroll */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+/* Staggered children animation */
+.stagger-children > * {
+  opacity: 0;
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.35s; }
+
+/* Hover lift effect */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Smooth image zoom on hover */
+.img-zoom {
+  overflow: hidden;
+}
+
+.img-zoom img {
+  transition: transform 0.3s ease;
+}
+
+.img-zoom:hover img {
+  transform: scale(1.05);
 }
 
 code {
@@ -87,6 +1088,56 @@ code {
         display: contents !important;
     }
 
+
+
+/* ==================== SLIDE-OUT DRAWER ANIMATIONS ==================== */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out-right {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0.8;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out forwards;
+}
+
+.animate-slide-out-right {
+  animation: slide-out-right 0.3s ease-in forwards;
+}
+
+/* Drawer scrollbar styling */
+.drawer-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.drawer-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.drawer-content::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.drawer-content::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
     [data-debug-wrapper="true"] > * {
         margin-left: inherit;
         margin-right: inherit;
@@ -113,3 +1164,62 @@ code {
         border-bottom-color: inherit;
     }
 }
+
+/* Hide Emergent badge */
+#emergent-badge,
+[id="emergent-badge"],
+a[href*="emergent"][class*="badge"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+}
+
+/* Pet Soul Score Animations */
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes ping-slow {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  75%, 100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+.animate-ping-slow {
+  animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 1.5s ease-in-out infinite;
+}
+
+/* Build refresh: 1770976638 */
+
+/* World-class UI polish */
+@import './styles/world-class-polish.css';
