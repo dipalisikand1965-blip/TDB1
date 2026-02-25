@@ -2747,16 +2747,7 @@
   }
 }
 
-/* ========================================
-   SANDBOX FOOTER
-   ======================================== */
-.mp-sandbox-footer {
-  padding: var(--space-sm) var(--space-lg);
-  text-align: center;
-  font-size: 11px;
-  color: var(--mira-text-muted);
-  background: rgba(0, 0, 0, 0.3);
-}
+/* Old sandbox footer styles moved to fixed positioning above */
 
 /* ========================================
    GLOBAL FIX: Force White Text on Welcome Chips
