@@ -14492,12 +14492,12 @@ Use this weather information to advise the user on pet activities. Be specific a
                 
                 if videos:
                     youtube_results = [{
-                        "video_id": v.get("video_id"),
+                        "video_id": v.get("id"),
                         "title": v.get("title"),
-                        "thumbnail": v.get("thumbnail_url"),
-                        "channel": v.get("channel_title"),
+                        "thumbnail": v.get("thumbnail"),
+                        "channel": v.get("channel"),
                         "duration": v.get("duration"),
-                        "url": f"https://www.youtube.com/watch?v={v.get('video_id')}"
+                        "url": v.get("url") or f"https://www.youtube.com/watch?v={v.get('id')}"
                     } for v in videos]
                     
                     # Build Mira Frame for the learn content (Bible Rule)
