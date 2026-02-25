@@ -109,6 +109,11 @@ const useChatSubmit = (config) => {
     // OS Tab State (for intelligent routing)
     setActiveOSTab,
     
+    // FlowModal Triggers (for intelligent booking)
+    setShowGroomingFlowModal,
+    setShowVetVisitFlowModal,
+    setShowCareServiceFlowModal,
+    
     // Context Tracking
     lastShownProducts,
     setLastShownProducts,
