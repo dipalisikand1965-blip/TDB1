@@ -1333,6 +1333,51 @@ const CarePage = () => {
         entryPoint="care_page_grid"
       />
       
+      {/* NEW: Boarding & Daycare Flow Modal */}
+      <CareFlowModal
+        isOpen={showBoardingFlowModal}
+        onClose={() => setShowBoardingFlowModal(false)}
+        pet={selectedPet}
+        user={user}
+        token={token}
+        schema={BOARDING_DAYCARE_FLOW_SCHEMA}
+        buildPayload={buildBoardingTicketPayload}
+        entryPoint="care_page_grid"
+        accentColor="blue"
+        headerGradient="from-blue-500 to-indigo-500"
+        iconLabel="Boarding"
+      />
+      
+      {/* NEW: Pet Sitting Flow Modal */}
+      <CareFlowModal
+        isOpen={showPetSittingFlowModal}
+        onClose={() => setShowPetSittingFlowModal(false)}
+        pet={selectedPet}
+        user={user}
+        token={token}
+        schema={PET_SITTING_FLOW_SCHEMA}
+        buildPayload={buildPetSittingTicketPayload}
+        entryPoint="care_page_grid"
+        accentColor="green"
+        headerGradient="from-green-500 to-emerald-500"
+        iconLabel="Pet Sitting"
+      />
+      
+      {/* NEW: Emergency Help Flow Modal */}
+      <CareFlowModal
+        isOpen={showEmergencyFlowModal}
+        onClose={() => setShowEmergencyFlowModal(false)}
+        pet={selectedPet}
+        user={user}
+        token={token}
+        schema={EMERGENCY_HELP_FLOW_SCHEMA}
+        buildPayload={buildEmergencyTicketPayload}
+        entryPoint="care_page_grid"
+        accentColor="red"
+        headerGradient="from-red-500 to-rose-500"
+        iconLabel="Emergency"
+      />
+      
       {/* === BUNDLE DETAIL MODAL === */}
       <Dialog open={showBundleModal} onOpenChange={setShowBundleModal}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
