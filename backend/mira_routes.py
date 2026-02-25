@@ -14409,7 +14409,7 @@ Last time ({date_info}), you celebrated **at {location_info}**{friends_mention}.
                             {"id": "QR-CEL-NEW", "label": "Something different", "payload_text": "Let's try something different this time.", "intent_type": "answer_option"},
                         ]
                     }
-                }, selected_pet)
+                })
         
         # Check if this is initial celebration request or a follow-up
         # FIX: Check ai_context.celebrate_stage instead of pillar field, since we track stage there
