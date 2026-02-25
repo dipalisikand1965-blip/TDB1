@@ -267,12 +267,16 @@ const MiraUnifiedHeader = ({
 }) => {
   const [showPetDropdown, setShowPetDropdown] = useState(false);
   
-  const handlePetSectionClick = () => {
-    if (allPets.length > 1) {
-      setShowPetDropdown(!showPetDropdown);
-    } else {
-      onPetClick?.();
-    }
+  // Pet avatar click ALWAYS opens MOJO modal (pet profile)
+  const handlePetAvatarClick = () => {
+    hapticFeedback.buttonTap();
+    onPetClick?.();
+  };
+  
+  // Dropdown toggle is separate
+  const handleDropdownToggle = () => {
+    hapticFeedback.buttonTap();
+    setShowPetDropdown(!showPetDropdown);
   };
   
   return (
@@ -293,7 +297,10 @@ const MiraUnifiedHeader = ({
         <PetSoulBadge
           pet={currentPet}
           soulScore={soulScore}
-          onClick={handlePetSectionClick}
+          onClick={handlePetAvatarClick}
+          onDropdownToggle={handleDropdownToggle}
+          showDropdown={showPetDropdown}
+          hasMultiplePets={allPets.length > 1}
         />
         <PetDropdown
           pets={allPets}
