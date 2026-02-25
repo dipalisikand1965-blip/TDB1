@@ -857,6 +857,279 @@ async def check_seasonal_tips(pet_id: str, pet_name: str, db) -> List[Dict]:
     
     return alerts
 
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# META PROACTIVE - "Mira as Pet Historian"
+# From User's Question Bank: "Can you keep track... and bring it back next year?"
+# ═══════════════════════════════════════════════════════════════════════════════
+
+async def check_meta_proactive_alerts(pet_id: str, pet_name: str, db) -> List[Dict]:
+    """
+    META PROACTIVE ALERTS - Makes Mira feel like a living historian.
+    
+    Features from user's question bank:
+    1. "Remind me a week before any important date"
+    2. "Can you show me what we've actually done, so I feel less guilty?"
+    3. "When I'm not in a good place, suggest no-pressure ways"
+    4. "Store ideas I like for future - so they don't vanish"
+    5. "Keep track of what worked and what we decided not to repeat"
+    6. "Act as a quiet historian - remembering patterns"
+    7. "If I do nothing elaborate, help me design one tiny ritual"
+    """
+    alerts = []
+    now = datetime.now(timezone.utc)
+    
+    try:
+        # ═══════════════════════════════════════════════════════════════════════════
+        # 1. SERVICE PROVIDER DUE - "It's been X days since last grooming with Priya"
+        # ═══════════════════════════════════════════════════════════════════════════
+        last_grooming = await db.service_desk_tickets.find_one(
+            {"$or": [
+                {"pet_id": pet_id},
+                {"pet.id": pet_id},
+                {"ai_context.pet_name": pet_name}
+            ], "pillar": "care", "service_type": {"$regex": "groom", "$options": "i"}},
+            sort=[("created_at", -1)]
+        )
+        
+        if last_grooming:
+            last_date = last_grooming.get("created_at")
+            provider = last_grooming.get("provider") or last_grooming.get("ai_context", {}).get("provider")
+            if last_date and provider:
+                try:
+                    if isinstance(last_date, str):
+                        last_dt = datetime.fromisoformat(last_date.replace("Z", "+00:00"))
+                    else:
+                        last_dt = last_date
+                    
+                    days_since = (now - last_dt).days
+                    
+                    if days_since >= 30 and days_since < 45:
+                        alerts.append({
+                            "id": f"meta-grooming-due-{pet_id}",
+                            "type": "service_reminder",
+                            "pillar": "care",
+                            "title": f"✂️ It's been {days_since} days since {pet_name}'s last grooming",
+                            "message": f"{pet_name} was last groomed with {provider} on {last_dt.strftime('%B %d')}. Shall I book the same groomer again?",
+                            "pet_id": pet_id,
+                            "pet_name": pet_name,
+                            "urgency": "medium",
+                            "days_since": days_since,
+                            "provider": provider,
+                            "cta": f"Book {provider} Again",
+                            "cta_action": "rebook_grooming",
+                            "created_at": now.isoformat()
+                        })
+                except Exception as e:
+                    logger.warning(f"[META] Error parsing grooming date: {e}")
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # 2. CELEBRATION HISTORY REMINDER - "Remember last year's party?"
+        # ═══════════════════════════════════════════════════════════════════════════
+        last_celebration = await db.service_desk_tickets.find_one(
+            {"$and": [
+                {"$or": [{"pet_id": pet_id}, {"pet.id": pet_id}]},
+                {"$or": [{"pillar": "celebrate"}, {"service_type": {"$in": ["birthday", "party"]}}]}
+            ]},
+            sort=[("created_at", -1)]
+        )
+        
+        if last_celebration:
+            cel_date = last_celebration.get("created_at")
+            ai_ctx = last_celebration.get("ai_context", {})
+            cel_type = ai_ctx.get("celebrate_type", "celebration")
+            guests = ai_ctx.get("guest_list", [])
+            
+            if cel_date:
+                try:
+                    if isinstance(cel_date, str):
+                        cel_dt = datetime.fromisoformat(cel_date.replace("Z", "+00:00"))
+                    else:
+                        cel_dt = cel_date
+                    
+                    days_since = (now - cel_dt).days
+                    
+                    # If it's been about a year (330-400 days), remind about anniversary
+                    if 330 <= days_since <= 400:
+                        guests_text = f" with {', '.join(guests[:3])}" if guests else ""
+                        alerts.append({
+                            "id": f"meta-celebration-anniversary-{pet_id}",
+                            "type": "celebration_reminder",
+                            "pillar": "celebrate",
+                            "title": f"🎉 A year ago: {pet_name}'s {cel_type}",
+                            "message": f"Remember last year's {cel_type}{guests_text}? Want to plan something similar this year?",
+                            "pet_id": pet_id,
+                            "pet_name": pet_name,
+                            "urgency": "low",
+                            "days_since": days_since,
+                            "last_event": cel_type,
+                            "past_guests": guests,
+                            "cta": "Plan This Year's Celebration",
+                            "cta_action": "plan_celebration",
+                            "created_at": now.isoformat()
+                        })
+                except Exception as e:
+                    logger.warning(f"[META] Error parsing celebration date: {e}")
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # 3. ORDER RESTOCK INTELLIGENCE - "You usually order every X weeks"
+        # ═══════════════════════════════════════════════════════════════════════════
+        recent_orders = await db.orders.find(
+            {"$or": [{"pet_id": pet_id}, {"pet_name": pet_name}]},
+            {"_id": 0, "created_at": 1, "items": 1}
+        ).sort("created_at", -1).limit(5).to_list(5)
+        
+        if len(recent_orders) >= 2:
+            # Calculate average order frequency
+            order_dates = []
+            for o in recent_orders:
+                o_date = o.get("created_at")
+                if o_date:
+                    try:
+                        if isinstance(o_date, str):
+                            order_dates.append(datetime.fromisoformat(o_date.replace("Z", "+00:00")))
+                        else:
+                            order_dates.append(o_date)
+                    except:
+                        pass
+            
+            if len(order_dates) >= 2:
+                # Calculate average interval
+                intervals = []
+                for i in range(len(order_dates) - 1):
+                    interval = (order_dates[i] - order_dates[i+1]).days
+                    if interval > 0:
+                        intervals.append(interval)
+                
+                if intervals:
+                    avg_interval = sum(intervals) // len(intervals)
+                    days_since_last = (now - order_dates[0]).days
+                    
+                    # If we're past the average interval
+                    if days_since_last >= avg_interval and days_since_last < avg_interval + 14:
+                        last_items = []
+                        for item in (recent_orders[0].get("items") or [])[:3]:
+                            last_items.append(item.get("name") or item.get("product_name", "Item"))
+                        
+                        alerts.append({
+                            "id": f"meta-reorder-pattern-{pet_id}",
+                            "type": "reorder_pattern",
+                            "pillar": "shop",
+                            "title": f"🛒 Time to restock for {pet_name}?",
+                            "message": f"You usually order every ~{avg_interval} days. Last order was {days_since_last} days ago: {', '.join(last_items)}. Need to restock?",
+                            "pet_id": pet_id,
+                            "pet_name": pet_name,
+                            "urgency": "low",
+                            "avg_interval": avg_interval,
+                            "days_since_last": days_since_last,
+                            "last_items": last_items,
+                            "cta": "Reorder Same Items",
+                            "cta_action": "quick_reorder",
+                            "created_at": now.isoformat()
+                        })
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # 4. DOG FRIENDS ALERT - "Haven't had a playdate with Bruno in a while"
+        # ═══════════════════════════════════════════════════════════════════════════
+        dog_friends_memory = await db.mira_memories.find_one(
+            {"pet_id": pet_id, "memory_type": "social"},
+            {"_id": 0, "content": 1, "created_at": 1}
+        )
+        
+        if dog_friends_memory:
+            import re
+            content = dog_friends_memory.get("content", "")
+            friend_matches = re.findall(r'(?:friend|played with|knows)\s+(\w+)', content, re.I)
+            friends = [f.capitalize() for f in friend_matches if f.lower() not in ["the", "a", "an", "other"]]
+            
+            if friends:
+                # Check last playdate/celebration with these friends
+                recent_social = await db.service_desk_tickets.find_one(
+                    {"$and": [
+                        {"$or": [{"pet_id": pet_id}, {"pet.id": pet_id}]},
+                        {"ai_context.guest_list": {"$in": friends}}
+                    ]},
+                    sort=[("created_at", -1)]
+                )
+                
+                last_social_days = 999
+                if recent_social:
+                    social_date = recent_social.get("created_at")
+                    if social_date:
+                        try:
+                            if isinstance(social_date, str):
+                                social_dt = datetime.fromisoformat(social_date.replace("Z", "+00:00"))
+                            else:
+                                social_dt = social_date
+                            last_social_days = (now - social_dt).days
+                        except:
+                            pass
+                
+                # If it's been a while since seeing friends
+                if last_social_days >= 60:
+                    friend_mention = friends[0] if friends else "friends"
+                    alerts.append({
+                        "id": f"meta-playdate-reminder-{pet_id}",
+                        "type": "social_reminder",
+                        "pillar": "celebrate",
+                        "title": f"🐕 Time for {pet_name} to see {friend_mention}?",
+                        "message": f"{pet_name}'s friend list: {', '.join(friends[:3])}. It's been a while since their last playdate. Maybe plan something fun?",
+                        "pet_id": pet_id,
+                        "pet_name": pet_name,
+                        "urgency": "low",
+                        "friends": friends[:5],
+                        "days_since_playdate": last_social_days if last_social_days < 999 else None,
+                        "cta": "Plan Playdate",
+                        "cta_action": "plan_playdate",
+                        "created_at": now.isoformat()
+                    })
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # 5. MICRO-CELEBRATION SUGGESTION - "Small daily rituals that say you matter"
+        # ═══════════════════════════════════════════════════════════════════════════
+        # Show this occasionally (every 14 days roughly)
+        day_of_year = now.timetuple().tm_yday
+        if day_of_year % 14 == 0:
+            micro_celebrations = [
+                {
+                    "title": f"💜 Micro-celebration idea for {pet_name}",
+                    "message": "A 5-minute 'love ritual' can be as simple as a slow brush, quiet cuddles, or their favorite game. No prep needed, just presence.",
+                    "cta": "Show Me Ideas"
+                },
+                {
+                    "title": f"✨ Small gesture, big impact for {pet_name}",
+                    "message": "Today's idea: Tell them how good they are while doing something mundane (like filling their water bowl). They notice your tone.",
+                    "cta": "More Ideas"
+                },
+                {
+                    "title": f"🌟 Celebrating {pet_name} daily",
+                    "message": "Small consistent gestures over time matter more than one big event. What's one tiny thing you can do today?",
+                    "cta": "Inspire Me"
+                }
+            ]
+            
+            selected = micro_celebrations[day_of_year % len(micro_celebrations)]
+            alerts.append({
+                "id": f"meta-micro-celebration-{pet_id}-{day_of_year}",
+                "type": "micro_celebration",
+                "pillar": "celebrate",
+                "title": selected["title"],
+                "message": selected["message"],
+                "pet_id": pet_id,
+                "pet_name": pet_name,
+                "urgency": "low",
+                "cta": selected["cta"],
+                "cta_action": "show_micro_celebrations",
+                "created_at": now.isoformat()
+            })
+        
+    except Exception as e:
+        logger.error(f"[META PROACTIVE] Error generating alerts: {e}")
+    
+    return alerts
+
+
 @router.get("/alerts/{pet_id}")
 async def get_proactive_alerts(pet_id: str, user_email: str = None):
     """
