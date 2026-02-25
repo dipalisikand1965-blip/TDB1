@@ -87,8 +87,9 @@
 /* Footer must be outside chat shell - hide it in mira-prod context */
 .mira-prod > footer,
 .mira-prod > .footer,
-.mira-prod > [class*="Footer"] {
-  display: none; /* Footer should not appear in the chat OS view */
+.mira-prod > [class*="Footer"],
+.mira-prod > .bg-gray-900 {
+  display: none !important; /* Footer should not appear in the chat OS view */
 }
 
 /* ========================================
