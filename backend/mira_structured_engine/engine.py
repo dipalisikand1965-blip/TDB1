@@ -530,9 +530,9 @@ def reorder_options_for_pet(
     # Simple reordering rules
     if question_id == "grooming.location_mode":
         # If pet is noise-sensitive or anxious, put "At home" first
-        loud_sounds = pet_context.get("loud_sounds_reaction", "").lower()
-        anxiety = pet_context.get("separation_anxiety", "").lower()
-        grooming_pref = pet_context.get("grooming_preference", "").lower()
+        loud_sounds = (pet_context.get("loud_sounds_reaction") or "").lower()
+        anxiety = (pet_context.get("separation_anxiety") or "").lower()
+        grooming_pref = (pet_context.get("grooming_preference") or "").lower()
         
         if any(word in loud_sounds for word in ["scared", "anxious", "nervous"]):
             # Move "at_home" to front
