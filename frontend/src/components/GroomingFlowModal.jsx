@@ -358,9 +358,9 @@ const GroomingFlowModal = ({
   
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[90vh]">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-4 text-white">
+      <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[90vh] flex flex-col">
+        {/* Header - Fixed */}
+        <div className="bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-4 text-white flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
             <Badge className="bg-white/20 text-white">
               <Scissors className="w-3 h-3 mr-1" />
