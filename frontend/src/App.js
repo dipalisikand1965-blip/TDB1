@@ -12,6 +12,7 @@ import FloatingContactButton from "./components/FloatingContactButton";
 import MiraFloatingButton from "./components/MiraFloatingButton";
 import MobileNavBar from "./components/MobileNavBar";
 import MemberMobileNav from "./components/MemberMobileNav";
+import UniversalServiceButton from "./components/UniversalServiceButton";
 import { useAppBadge } from "./hooks/useAppBadge";
 import { API_URL } from "./utils/api";
 
