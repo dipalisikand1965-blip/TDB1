@@ -1281,123 +1281,281 @@ const CareManager = ({ getAuthHeader }) => {
         </TabsContent>
       </Tabs>
 
-      {/* Product Modal */}
+      {/* Product Modal - Comprehensive v3 */}
       <Dialog open={showProductModal} onOpenChange={setShowProductModal}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingProduct ? 'Edit Product' : 'Add Product'}</DialogTitle>
+            <DialogTitle>{editingProduct ? 'Edit Care Product' : 'Add Care Product'}</DialogTitle>
+            <p className="text-sm text-gray-500">Products are building blocks - individual items only</p>
           </DialogHeader>
           <div className="space-y-4">
-            <div>
-              <Label>Product Name</Label>
-              <Input value={productForm.name} onChange={(e) => setProductForm({...productForm, name: e.target.value})} />
-            </div>
-            <div>
-              <Label>Description</Label>
-              <Textarea value={productForm.description} onChange={(e) => setProductForm({...productForm, description: e.target.value})} />
-            </div>
+            {/* Basic Info */}
             <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <Label>Product Name *</Label>
+                <Input value={productForm.name} onChange={(e) => setProductForm({...productForm, name: e.target.value})} placeholder="Gentle Grooming Brush Kit" />
+              </div>
+              <div className="col-span-2">
+                <Label>Description</Label>
+                <Textarea value={productForm.description} onChange={(e) => setProductForm({...productForm, description: e.target.value})} placeholder="Soft bristle brush set for sensitive coats..." rows={2} />
+              </div>
+            </div>
+
+            {/* Pricing */}
+            <div className="grid grid-cols-3 gap-4">
               <div>
-                <Label>Price (₹)</Label>
+                <Label>Price (₹) *</Label>
                 <Input type="number" value={productForm.price} onChange={(e) => setProductForm({...productForm, price: e.target.value})} />
               </div>
               <div>
                 <Label>Compare Price (₹)</Label>
                 <Input type="number" value={productForm.compare_price} onChange={(e) => setProductForm({...productForm, compare_price: e.target.value})} />
               </div>
-            </div>
-            <div>
-              <Label>Image URL</Label>
-              <Input value={productForm.image} onChange={(e) => setProductForm({...productForm, image: e.target.value})} />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Care Type</Label>
-                <Select value={productForm.care_type} onValueChange={(val) => setProductForm({...productForm, care_type: val})}>
+                <Label>Status</Label>
+                <Select value={productForm.status} onValueChange={(val) => setProductForm({...productForm, status: val})}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="grooming">Grooming</SelectItem>
-                    <SelectItem value="walks">Walks & Sitting</SelectItem>
-                    <SelectItem value="training">Training</SelectItem>
-                    <SelectItem value="wellness">Wellness</SelectItem>
-                    <SelectItem value="general">General</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="seasonal">Seasonal</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Category */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Subcategory *</Label>
+                <Select value={productForm.subcategory} onValueChange={(val) => setProductForm({...productForm, subcategory: val})}>
+                  <SelectTrigger><SelectValue placeholder="Select subcategory" /></SelectTrigger>
+                  <SelectContent>
+                    {SUBCATEGORY_OPTIONS.map(opt => (
+                      <SelectItem key={opt} value={opt}>{opt.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label>Subcategory</Label>
-                <Input value={productForm.subcategory} onChange={(e) => setProductForm({...productForm, subcategory: e.target.value})} />
+                <Label>Image URL</Label>
+                <Input value={productForm.image} onChange={(e) => setProductForm({...productForm, image: e.target.value})} placeholder="https://..." />
               </div>
             </div>
-            <div>
-              <Label>Tags (comma-separated)</Label>
-              <Input value={productForm.tags} onChange={(e) => setProductForm({...productForm, tags: e.target.value})} placeholder="grooming, brush, coat care" />
+
+            {/* GOOD FOR TAGS - Primary filtering */}
+            <div className="p-3 bg-purple-50 rounded-lg space-y-3">
+              <Label className="text-purple-700 font-semibold">Good For Tags (Pet Matching)</Label>
+              <p className="text-xs text-purple-600">Comma-separated: size, coat, life stage, temperament</p>
+              <Input 
+                value={productForm.good_for_tags} 
+                onChange={(e) => setProductForm({...productForm, good_for_tags: e.target.value})} 
+                placeholder="small, medium, long_coat, anxious, grooming_nervous"
+              />
+              <div className="flex flex-wrap gap-1 text-xs">
+                <span className="text-purple-500">Size:</span>
+                {SIZE_TAG_OPTIONS.map(t => <Badge key={t} variant="outline" className="cursor-pointer text-xs" onClick={() => setProductForm({...productForm, good_for_tags: productForm.good_for_tags ? `${productForm.good_for_tags}, ${t}` : t})}>{t}</Badge>)}
+                <span className="text-purple-500 ml-2">Coat:</span>
+                {COAT_TAG_OPTIONS.slice(0,4).map(t => <Badge key={t} variant="outline" className="cursor-pointer text-xs" onClick={() => setProductForm({...productForm, good_for_tags: productForm.good_for_tags ? `${productForm.good_for_tags}, ${t}` : t})}>{t}</Badge>)}
+              </div>
+              <div className="flex flex-wrap gap-1 text-xs">
+                <span className="text-purple-500">Life:</span>
+                {LIFE_STAGE_TAG_OPTIONS.map(t => <Badge key={t} variant="outline" className="cursor-pointer text-xs" onClick={() => setProductForm({...productForm, good_for_tags: productForm.good_for_tags ? `${productForm.good_for_tags}, ${t}` : t})}>{t}</Badge>)}
+                <span className="text-purple-500 ml-2">Temp:</span>
+                {TEMPERAMENT_TAG_OPTIONS.slice(0,4).map(t => <Badge key={t} variant="outline" className="cursor-pointer text-xs" onClick={() => setProductForm({...productForm, good_for_tags: productForm.good_for_tags ? `${productForm.good_for_tags}, ${t}` : t})}>{t}</Badge>)}
+              </div>
             </div>
-            <div>
-              <Label>Pet Sizes (comma-separated)</Label>
-              <Input value={productForm.pet_sizes} onChange={(e) => setProductForm({...productForm, pet_sizes: e.target.value})} placeholder="small, medium, large" />
+
+            {/* INTENT TAGS - Use case mapping */}
+            <div className="p-3 bg-teal-50 rounded-lg space-y-3">
+              <Label className="text-teal-700 font-semibold">Intent Tags (Use Case)</Label>
+              <p className="text-xs text-teal-600">What care intents this product supports</p>
+              <Input 
+                value={productForm.intent_tags} 
+                onChange={(e) => setProductForm({...productForm, intent_tags: e.target.value})} 
+                placeholder="grooming, pet_sitting, behavior_anxiety_support"
+              />
+              <div className="flex flex-wrap gap-1">
+                {INTENT_TAG_OPTIONS.map(t => <Badge key={t} variant="outline" className="cursor-pointer text-xs" onClick={() => setProductForm({...productForm, intent_tags: productForm.intent_tags ? `${productForm.intent_tags}, ${t}` : t})}>{t.replace(/_/g, ' ')}</Badge>)}
+              </div>
             </div>
+
+            {/* Concierge */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Paw Reward Points</Label>
+                <Label>Concierge Note</Label>
+                <Input value={productForm.concierge_note} onChange={(e) => setProductForm({...productForm, concierge_note: e.target.value})} placeholder="Supports comfortable grooming prep" />
+              </div>
+              <div>
+                <Label>CTA Label</Label>
+                <Input value={productForm.cta_label} onChange={(e) => setProductForm({...productForm, cta_label: e.target.value})} placeholder="Ask Mira to Include" />
+              </div>
+            </div>
+
+            {/* Rewards */}
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label>Paw Points</Label>
                 <Input type="number" value={productForm.paw_reward_points} onChange={(e) => setProductForm({...productForm, paw_reward_points: parseInt(e.target.value) || 0})} />
               </div>
               <div>
                 <Label>Birthday Discount %</Label>
                 <Input type="number" value={productForm.birthday_discount_percent} onChange={(e) => setProductForm({...productForm, birthday_discount_percent: e.target.value})} />
               </div>
+              <div>
+                <Label>Partner/Vendor</Label>
+                <Input value={productForm.partner_vendor} onChange={(e) => setProductForm({...productForm, partner_vendor: e.target.value})} />
+              </div>
             </div>
-            <div className="flex items-center gap-6">
+
+            {/* Toggles */}
+            <div className="flex items-center gap-6 flex-wrap">
               <label className="flex items-center gap-2">
                 <Switch checked={productForm.in_stock} onCheckedChange={(val) => setProductForm({...productForm, in_stock: val})} />
-                <span>In Stock</span>
+                <span className="text-sm">In Stock</span>
               </label>
               <label className="flex items-center gap-2">
                 <Switch checked={productForm.is_birthday_perk} onCheckedChange={(val) => setProductForm({...productForm, is_birthday_perk: val})} />
-                <span>Birthday Perk</span>
+                <span className="text-sm">Birthday Perk</span>
               </label>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowProductModal(false)}>Cancel</Button>
-            <Button onClick={saveProduct}>Save Product</Button>
+            <Button onClick={saveProduct} className="bg-gradient-to-r from-purple-600 to-pink-600">Save Product</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Bundle Modal */}
+      {/* Bundle Modal - Comprehensive v3 */}
       <Dialog open={showBundleModal} onOpenChange={setShowBundleModal}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingBundle ? 'Edit Bundle' : 'Add Bundle'}</DialogTitle>
+            <DialogTitle>{editingBundle ? 'Edit Care Bundle' : 'Add Care Bundle'}</DialogTitle>
+            <p className="text-sm text-gray-500">Bundles are curated outcomes - use-case solutions</p>
           </DialogHeader>
           <div className="space-y-4">
+            {/* Basic Info */}
             <div>
-              <Label>Bundle Name</Label>
-              <Input value={bundleForm.name} onChange={(e) => setBundleForm({...bundleForm, name: e.target.value})} />
+              <Label>Bundle Name *</Label>
+              <Input value={bundleForm.name} onChange={(e) => setBundleForm({...bundleForm, name: e.target.value})} placeholder="Small Breed Grooming Comfort Bundle" />
             </div>
             <div>
               <Label>Description</Label>
-              <Textarea value={bundleForm.description} onChange={(e) => setBundleForm({...bundleForm, description: e.target.value})} />
+              <Textarea value={bundleForm.description} onChange={(e) => setBundleForm({...bundleForm, description: e.target.value})} rows={2} />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>What it helps with (1-line outcome)</Label>
+              <Input value={bundleForm.what_it_helps_with} onChange={(e) => setBundleForm({...bundleForm, what_it_helps_with: e.target.value})} placeholder="Regular grooming prep for small breeds, salon prep, at-home maintenance" />
+            </div>
+
+            {/* Pricing & Type */}
+            <div className="grid grid-cols-3 gap-4">
               <div>
-                <Label>Price (₹)</Label>
+                <Label>Price (₹) *</Label>
                 <Input type="number" value={bundleForm.price} onChange={(e) => setBundleForm({...bundleForm, price: e.target.value})} />
               </div>
               <div>
                 <Label>Original Price (₹)</Label>
                 <Input type="number" value={bundleForm.original_price} onChange={(e) => setBundleForm({...bundleForm, original_price: e.target.value})} />
               </div>
+              <div>
+                <Label>Bundle Type *</Label>
+                <Select value={bundleForm.bundle_type} onValueChange={(val) => setBundleForm({...bundleForm, bundle_type: val})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {BUNDLE_TYPE_OPTIONS.map(opt => (
+                      <SelectItem key={opt} value={opt}>{opt.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div>
-              <Label>Image URL</Label>
-              <Input value={bundleForm.image} onChange={(e) => setBundleForm({...bundleForm, image: e.target.value})} />
+
+            {/* Linked Products */}
+            <div className="p-3 bg-blue-50 rounded-lg space-y-3">
+              <Label className="text-blue-700 font-semibold">Included Items (Product IDs)</Label>
+              <Input 
+                value={bundleForm.included_items} 
+                onChange={(e) => setBundleForm({...bundleForm, included_items: e.target.value})} 
+                placeholder="gentle-grooming-brush-kit, ear-face-cleaning-kit, paw-care-protection-kit"
+              />
+              <Label className="text-blue-700 font-semibold">Optional Add-ons (Product IDs)</Label>
+              <Input 
+                value={bundleForm.optional_addons} 
+                onChange={(e) => setBundleForm({...bundleForm, optional_addons: e.target.value})} 
+                placeholder="calming-wrap-set, clinic-visit-calm-kit"
+              />
             </div>
+
+            {/* GOOD FOR TAGS */}
+            <div className="p-3 bg-purple-50 rounded-lg space-y-3">
+              <Label className="text-purple-700 font-semibold">Good For Tags (Pet Matching)</Label>
+              <Input 
+                value={bundleForm.good_for_tags} 
+                onChange={(e) => setBundleForm({...bundleForm, good_for_tags: e.target.value})} 
+                placeholder="small, xs, long_coat, grooming_nervous, anxious"
+              />
+              <div className="flex flex-wrap gap-1 text-xs">
+                {SIZE_TAG_OPTIONS.map(t => <Badge key={t} variant="outline" className="cursor-pointer text-xs" onClick={() => setBundleForm({...bundleForm, good_for_tags: bundleForm.good_for_tags ? `${bundleForm.good_for_tags}, ${t}` : t})}>{t}</Badge>)}
+                {TEMPERAMENT_TAG_OPTIONS.slice(0,3).map(t => <Badge key={t} variant="outline" className="cursor-pointer text-xs" onClick={() => setBundleForm({...bundleForm, good_for_tags: bundleForm.good_for_tags ? `${bundleForm.good_for_tags}, ${t}` : t})}>{t}</Badge>)}
+              </div>
+            </div>
+
+            {/* INTENT TAGS */}
+            <div className="p-3 bg-teal-50 rounded-lg space-y-3">
+              <Label className="text-teal-700 font-semibold">Intent Tags</Label>
+              <Input 
+                value={bundleForm.intent_tags} 
+                onChange={(e) => setBundleForm({...bundleForm, intent_tags: e.target.value})} 
+                placeholder="grooming, behavior_anxiety_support, pet_sitting"
+              />
+              <div className="flex flex-wrap gap-1">
+                {INTENT_TAG_OPTIONS.slice(0,5).map(t => <Badge key={t} variant="outline" className="cursor-pointer text-xs" onClick={() => setBundleForm({...bundleForm, intent_tags: bundleForm.intent_tags ? `${bundleForm.intent_tags}, ${t}` : t})}>{t.replace(/_/g, ' ')}</Badge>)}
+              </div>
+            </div>
+
+            {/* Concierge Flow */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Concierge Flow Mapping</Label>
+                <Input value={bundleForm.concierge_flow_mapping} onChange={(e) => setBundleForm({...bundleForm, concierge_flow_mapping: e.target.value})} placeholder="grooming_request" />
+              </div>
+              <div>
+                <Label>Display Priority (lower = higher)</Label>
+                <Input type="number" value={bundleForm.display_priority} onChange={(e) => setBundleForm({...bundleForm, display_priority: parseInt(e.target.value) || 99})} />
+              </div>
+            </div>
+
+            {/* Image & Rewards */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Image URL</Label>
+                <Input value={bundleForm.image} onChange={(e) => setBundleForm({...bundleForm, image: e.target.value})} />
+              </div>
+              <div>
+                <Label>Paw Points</Label>
+                <Input type="number" value={bundleForm.paw_reward_points} onChange={(e) => setBundleForm({...bundleForm, paw_reward_points: parseInt(e.target.value) || 0})} />
+              </div>
+            </div>
+
+            {/* Guardrail */}
             <div>
-              <Label>Care Type</Label>
-              <Select value={bundleForm.care_type} onValueChange={(val) => setBundleForm({...bundleForm, care_type: val})}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Label>Guardrail Note (optional)</Label>
+              <Input value={bundleForm.guardrail_note} onChange={(e) => setBundleForm({...bundleForm, guardrail_note: e.target.value})} placeholder="Supports comfort only. Clinical guidance remains with vet." />
+            </div>
+
+            <label className="flex items-center gap-2">
+              <Switch checked={bundleForm.is_recommended} onCheckedChange={(val) => setBundleForm({...bundleForm, is_recommended: val})} />
+              <span className="text-sm">Recommended</span>
+            </label>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBundleModal(false)}>Cancel</Button>
+            <Button onClick={saveBundle} className="bg-gradient-to-r from-purple-600 to-pink-600">Save Bundle</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
                 <SelectContent>
                   <SelectItem value="grooming">Grooming</SelectItem>
                   <SelectItem value="walks">Walks & Sitting</SelectItem>
