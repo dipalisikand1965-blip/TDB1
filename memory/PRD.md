@@ -1,5 +1,5 @@
 # Mira Pet OS - Product Requirements Document (SSOT)
-## Single Source of Truth - Last Updated: February 24, 2026
+## Single Source of Truth - Last Updated: February 25, 2026
 
 ---
 
@@ -12,6 +12,36 @@
 **Key Principle**: Every concierge action must create a service desk ticket and trigger real-time notifications, capturing user intent and enabling a premium, consultative service model.
 
 **Voice Configuration**: ElevenLabs Eloise (British English) with OpenAI TTS backup
+
+---
+
+## ✅ COMPREHENSIVE CARE TAXONOMY (Feb 25, 2026)
+
+### Care Products Taxonomy
+| Dimension | Tags |
+|-----------|------|
+| **Size** | xs, small, medium, large, xl |
+| **Coat** | short_coat, long_coat, double_coat, curly_coat, low_shed, high_shed |
+| **Life Stage** | puppy, adult, senior |
+| **Temperament** | calm, anxious, reactive, grooming_nervous, vet_nervous, first_time_boarding |
+| **Intent** | grooming, vet_clinic_booking, boarding_daycare, pet_sitting, behavior_anxiety_support, senior_special_needs_support, nutrition_consult_booking, emergency_help, recovery_support_coordination |
+
+### Product Subcategories
+- grooming_essentials, hygiene_cleaning, paw_coat_care, dental_care, preventive_support, recovery_support, senior_comfort, clinic_visit_prep, calm_handling_support
+
+### Bundle Types
+- starter_setup, routine_care, visit_prep, recovery_setup, senior_support, anxiety_support, seasonal_care
+
+### Seeded Data
+- **18 Comprehensive Care Products** (with good_for_tags)
+- **12 Comprehensive Care Bundles** (with included_items, optional_addons)
+
+### API Endpoints Updated
+- `GET /api/care/products?comprehensive_only=true` - Returns products with taxonomy tags
+- `GET /api/care/bundles?comprehensive_only=true` - Returns bundles with taxonomy tags  
+- `POST /api/care/admin/seed-comprehensive-care` - Seeds comprehensive products/bundles
+- `GET /api/care/products-for-pet/{pet_id}` - Pet-profile matched products
+- `GET /api/mira/top-picks/{pet_id}/pillar/care` - Prioritizes comprehensive products
 
 ---
 
