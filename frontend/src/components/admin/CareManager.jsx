@@ -94,16 +94,22 @@ const CareManager = ({ getAuthHeader }) => {
   const [editingTip, setEditingTip] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
   
-  // Form states
+  // Form states - COMPREHENSIVE CARE V3
   const [productForm, setProductForm] = useState({
     name: '', description: '', price: '', compare_price: '', image: '',
-    care_type: 'grooming', subcategory: '', tags: '', pet_sizes: '',
-    in_stock: true, paw_reward_points: 0, is_birthday_perk: false, birthday_discount_percent: ''
+    subcategory: 'grooming_essentials', product_type: 'individual',
+    good_for_tags: '', intent_tags: '', concierge_note: '', cta_label: 'Ask Mira to Include',
+    care_type: 'grooming', tags: '', pet_sizes: '', status: 'active',
+    in_stock: true, paw_reward_points: 0, is_birthday_perk: false, birthday_discount_percent: '',
+    partner_vendor: '', availability_cities: ''
   });
   
   const [bundleForm, setBundleForm] = useState({
-    name: '', description: '', price: '', original_price: '', image: '',
-    care_type: 'grooming', items: '', is_recommended: true, paw_reward_points: 0
+    name: '', description: '', what_it_helps_with: '', price: '', original_price: '', image: '',
+    bundle_type: 'routine_care', included_items: '', optional_addons: '',
+    good_for_tags: '', intent_tags: '', concierge_flow_mapping: '',
+    care_type: 'grooming', items: '', status: 'active', display_priority: 99,
+    is_recommended: true, paw_reward_points: 0, guardrail_note: ''
   });
   
   const [partnerForm, setPartnerForm] = useState({
@@ -120,6 +126,15 @@ const CareManager = ({ getAuthHeader }) => {
   });
   
   const fileInputRef = useRef(null);
+  
+  // Tag options for dropdowns
+  const SIZE_TAG_OPTIONS = ['xs', 'small', 'medium', 'large', 'xl'];
+  const COAT_TAG_OPTIONS = ['short_coat', 'long_coat', 'double_coat', 'curly_coat', 'low_shed', 'high_shed'];
+  const LIFE_STAGE_TAG_OPTIONS = ['puppy', 'adult', 'senior'];
+  const TEMPERAMENT_TAG_OPTIONS = ['calm', 'anxious', 'reactive', 'grooming_nervous', 'vet_nervous', 'first_time_boarding'];
+  const INTENT_TAG_OPTIONS = ['grooming', 'vet_clinic_booking', 'boarding_daycare', 'pet_sitting', 'behavior_anxiety_support', 'senior_special_needs_support', 'nutrition_consult_booking', 'emergency_help', 'recovery_support_coordination'];
+  const SUBCATEGORY_OPTIONS = ['grooming_essentials', 'hygiene_cleaning', 'paw_coat_care', 'dental_care', 'preventive_support', 'recovery_support', 'senior_comfort', 'clinic_visit_prep', 'calm_handling_support'];
+  const BUNDLE_TYPE_OPTIONS = ['starter_setup', 'routine_care', 'visit_prep', 'recovery_setup', 'senior_support', 'anxiety_support', 'seasonal_care'];
   
   // Reset tip form
   const resetTipForm = () => {
