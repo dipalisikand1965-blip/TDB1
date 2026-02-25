@@ -243,6 +243,15 @@
 
 /* Mobile: Full width dropdown */
 @media (max-width: 768px) {
+  /* Use smaller header offset on mobile */
+  :root {
+    --mira-header-offset: var(--mira-header-offset-mobile);
+  }
+  
+  .mp-messages {
+    padding-bottom: 160px; /* More space for mobile keyboard + composer */
+  }
+  
   .mp-pet-dropdown {
     position: fixed;
     top: auto;
