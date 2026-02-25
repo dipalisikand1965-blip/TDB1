@@ -11612,9 +11612,10 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
     
     elif any(term in response_lower for term in ["vet", "veterinary", "checkup", "vaccination"]):
         quick_replies = [
-            "Regular checkup",
-            "Specific health concern",
-            "Vaccination due"
+            build_quick_reply_chip("Regular checkup", f"Regular checkup for {pet_ref}.", "refine", domain="care"),
+            build_quick_reply_chip("Specific health concern", "I have a specific health concern.", "refine", domain="care"),
+            build_quick_reply_chip("Vaccination due", "Vaccination is due.", "refine", domain="care"),
+            build_quick_reply_chip("Something else", "Something else.", "continue", domain="care")
         ]
     
     # ═══════════════════════════════════════════════════════════════════════════
