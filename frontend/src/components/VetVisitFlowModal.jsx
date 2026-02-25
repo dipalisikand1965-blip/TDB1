@@ -350,7 +350,9 @@ const VetVisitFlowModal = ({
         clearVetVisitDraft(userId, petId);
       }
       
-      toast.success('Request sent to Concierge!');
+      toast.success(`Request sent to Concierge® for ${petName}`, {
+        description: 'Check your inbox for updates.'
+      });
     } catch (error) {
       console.error('Vet visit ticket error:', error);
       toast.error('Failed to submit request. Please try again.');
