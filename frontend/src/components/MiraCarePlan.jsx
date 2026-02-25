@@ -81,7 +81,7 @@ const MiraCarePlan = ({
   const [error, setError] = useState(null);
   const [bookingInProgress, setBookingInProgress] = useState(null);
   
-  const { createServiceRequest } = useUniversalServiceCommand();
+  const { submitRequest, isSubmitting } = useUniversalServiceCommand();
 
   // Fetch care plan
   useEffect(() => {
