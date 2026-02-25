@@ -352,8 +352,11 @@ async def login_user(user: UserLogin):
     # Get membership access info
     access = await check_mira_access(user.email)
     
-    # Create JWT
-    access_token = create_access_token(data={"sub": user.email, "role": "user"})
+    # Get user's actual role (default to "user" if not set)
+    user_role = db_user.get("role", "user")
+    
+    # Create JWT with actual user role
+    access_token = create_access_token(data={"sub": user.email, "role": user_role})
     
     return {
         "message": "Login successful",
@@ -364,7 +367,11 @@ async def login_user(user: UserLogin):
             "email": db_user["email"],
             "name": db_user.get("name") or db_user.get("full_name") or db_user["email"].split('@')[0],
             "phone": db_user.get("phone") or db_user.get("mobile"),
+            "role": user_role,
+            "is_admin": db_user.get("is_admin", False),
             "membership_tier": db_user.get("membership_tier", "free"),
+            "membership_status": db_user.get("membership_status"),
+            "pet_pass_status": db_user.get("pet_pass_status"),
             "membership_expires": db_user.get("membership_expires"),
             "loyalty_points": db_user.get("loyalty_points", 0)
         },
