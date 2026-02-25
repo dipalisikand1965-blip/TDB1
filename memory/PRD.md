@@ -175,6 +175,21 @@ Tier: gold
     - Returns status, active_requests, recent_threads for the user
     - CONCIERGE tab now loads correctly with user's service requests
 
+13. ✅ **MIRA SOUL BIBLE Created**
+    - `/app/memory/MIRA_SOUL_BIBLE.md` - Complete architecture documentation
+    - Defines: Mira = Claude with pet memory (NOT keyword matching)
+    - Defines: OS tabs and their distinct purposes
+    - Defines: User journeys and the "feel" of each tab
+    - This is now the SINGLE SOURCE OF TRUTH for Mira's behavior
+
+### Critical Architecture Insight (Feb 25, 2026)
+**The user clarified the vision:**
+- Mira should understand like Claude understands context
+- NO keyword matching → pure LLM intelligence with memory
+- Only guardrails: medical/legal advice
+- Each tab must FEEL different (not all same chat blocks)
+- Pet = context anchor, Tabs = modes of interaction
+
 ### Vision Score
 - Before: 40%
 - After: 78% (Intelligent routing brings the "magic")
