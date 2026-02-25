@@ -229,7 +229,7 @@ useSession: sessionId, setSessionId, sessionRecovered, setSessionRecovered
 
 - **Email**: `dipali@clubconcierge.in`
 - **Password**: `lola4304`
-- **Preview URL**: `https://pet-memory-hub.preview.emergentagent.com`
+- **Preview URL**: `https://mira-soul-1.preview.emergentagent.com`
 
 ---
 
