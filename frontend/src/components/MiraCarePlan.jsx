@@ -30,7 +30,7 @@ import { Badge } from './ui/badge';
 import { Card } from './ui/card';
 import { toast } from 'sonner';
 import { API_URL } from '../utils/api';
-import { useUniversalServiceCommand } from '../hooks/useUniversalServiceCommand';
+import useUniversalServiceCommand from '../hooks/useUniversalServiceCommand';
 
 // Icon mapping
 const ICON_MAP = {
