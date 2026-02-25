@@ -1076,13 +1076,13 @@ const PersonalizedPicksPanel = ({
       await submitRequest({
         type: 'PICK_REQUEST',
         pillar: activePillar || 'general',
-        message: `I'd like to proceed with: ${pick.name || pick.title}`,
-        context: {
+        details: {
           pick_id: pick.id || pick.pick_id,
           pick_name: pick.name || pick.title,
           pick_type: pickType,
           pick_description: pick.description,
-          pick_price: pick.price || pick.price_display
+          pick_price: pick.price || pick.price_display,
+          message: `I'd like to proceed with: ${pick.name || pick.title}`
         },
         pet: { id: pet?.id, name: pet?.name },
         entryPoint: 'picks_panel',
