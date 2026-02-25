@@ -414,24 +414,42 @@ const GroomingFlowModal = ({
           </p>
         </div>
         
-        {/* Pet context strip - Fixed */}
+        {/* Pet context strip with breed intelligence - Fixed */}
         {pet && (
-          <div className="px-6 py-3 bg-teal-50 border-b border-teal-100 flex items-center gap-3 flex-shrink-0">
-            <div className="w-10 h-10 rounded-full bg-teal-200 overflow-hidden">
-              {pet.photo_url ? (
-                <img src={pet.photo_url} alt={petName} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-teal-600 font-bold">
-                  {petName.charAt(0)}
-                </div>
-              )}
+          <div className="px-6 py-3 bg-teal-50 border-b border-teal-100 flex-shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-teal-200 overflow-hidden flex-shrink-0">
+                {pet.photo_url ? (
+                  <img src={pet.photo_url} alt={petName} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-teal-600 font-bold">
+                    {petName.charAt(0)}
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-gray-900">For {petName}</p>
+                <p className="text-xs text-gray-500">
+                  {pet.breed} {pet.size && `• ${pet.size}`}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="font-medium text-gray-900">For {petName}</p>
-              <p className="text-xs text-gray-500">
-                {pet.breed} {pet.size && `• ${pet.size}`}
-              </p>
-            </div>
+            
+            {/* Breed intelligence tip */}
+            {pet.breed && (() => {
+              const breedTip = getBreedGroomingTip(pet.breed);
+              if (breedTip) {
+                return (
+                  <div className="mt-2 p-2 bg-teal-100 rounded-lg">
+                    <div className="flex items-start gap-2 text-xs text-teal-800">
+                      <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                      <span><strong>Mira knows:</strong> {breedTip}</span>
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            })()}
           </div>
         )}
         
@@ -442,7 +460,7 @@ const GroomingFlowModal = ({
               key={currentStep}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
+              exit={{ opacity: 0, x: -20 }}}
               transition={{ duration: 0.2 }}
             >
               {currentStepData && (
