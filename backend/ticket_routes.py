@@ -3231,7 +3231,7 @@ Reply (message body only, no subject line):"""
             api_key=api_key,
             session_id=f"reply-draft-{request.ticket_id}",
             system_message=system_prompt
-        ).with_model("openai", "gpt-4o")
+        ).with_model("openai", "gpt-5.1")
         
         user_message = UserMessage(text="Generate the reply now.")
         response = await chat.send_message(user_message)
@@ -3283,7 +3283,7 @@ async def ai_summarize_ticket(ticket_id: str):
             api_key=api_key,
             session_id=f"summarize-{ticket_id}",
             system_message="You are a helpful assistant that summarizes customer service tickets. Be concise and highlight key points, issues, and actions taken."
-        ).with_model("openai", "gpt-4o")
+        ).with_model("openai", "gpt-5.1")
         
         prompt = f"""Summarize this ticket in 2-3 bullet points:
 
@@ -3328,7 +3328,7 @@ async def ai_suggest_actions(ticket_id: str):
             api_key=api_key,
             session_id=f"actions-{ticket_id}",
             system_message="You are a customer service expert. Suggest 3-5 specific next actions for handling this ticket effectively. Be actionable and specific."
-        ).with_model("openai", "gpt-4o")
+        ).with_model("openai", "gpt-5.1")
         
         prompt = f"""Based on this ticket, suggest the next best actions:
 
