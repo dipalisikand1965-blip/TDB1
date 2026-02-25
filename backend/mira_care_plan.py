@@ -404,9 +404,9 @@ async def get_mira_care_plan(pet_id: str):
     # Get pet data
     from bson import ObjectId
     try:
-        pet = db.pets.find_one({"_id": ObjectId(pet_id)})
+        pet = await db.pets.find_one({"_id": ObjectId(pet_id)})
     except Exception:
-        pet = db.pets.find_one({"id": pet_id})
+        pet = await db.pets.find_one({"id": pet_id})
     
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
@@ -423,7 +423,7 @@ async def get_mira_care_plan(pet_id: str):
     pet_name = pet.get('name', '')
     if pet_name:
         # Check recent grooming tickets
-        recent_grooming = db.service_desk_tickets.find_one(
+        recent_grooming = await db.service_desk_tickets.find_one(
             {"pet_name": pet_name, "service_type": {"$in": ["grooming", "GROOMING"]}},
             sort=[("created_at", -1)]
         )
@@ -431,7 +431,7 @@ async def get_mira_care_plan(pet_id: str):
             care_history['last_grooming'] = recent_grooming.get('created_at')
         
         # Check recent vet tickets
-        recent_vet = db.service_desk_tickets.find_one(
+        recent_vet = await db.service_desk_tickets.find_one(
             {"pet_name": pet_name, "service_type": {"$in": ["vet", "vet_clinic_booking", "VET"]}},
             sort=[("created_at", -1)]
         )
