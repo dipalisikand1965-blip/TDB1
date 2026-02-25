@@ -318,44 +318,58 @@ const VetVisitFlowModal = ({
     }
   };
   
-  // Submit to Concierge
+  // Submit to Concierge via Unified Service Command
   const handleSubmit = async () => {
     setIsSubmitting(true);
     
     try {
       const payload = buildVetVisitTicketPayload(formData, pet, user, entryPoint);
-      console.log('[VetVisitFlowModal] Submitting payload:', JSON.stringify(payload).substring(0, 500));
+      console.log('[VetVisitFlowModal] Submitting via unified service flow:', JSON.stringify(payload).substring(0, 500));
       
-      const response = await fetch(`${API_URL}/api/tickets/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+      // Get visit reason label for display
+      const visitReasonLabel = VET_VISIT_OPTIONS.visit_reasons?.find(r => r.id === formData.visit_reason)?.label 
+        || formData.visit_reason 
+        || 'Vet Visit';
+      
+      const result = await submitRequest({
+        type: 'VET_APPOINTMENT',
+        pillar: 'care',
+        entryPoint: entryPoint,
+        pet: pet,
+        details: {
+          ...payload,
+          service_type: 'vet_visit',
+          visit_reason: formData.visit_reason,
+          visit_reason_label: visitReasonLabel,
+          urgency: formData.urgency,
+          concerns: formData.concerns,
+          preferred_timing: formData.preferred_timing,
+          location_preference: formData.location_preference,
+          special_notes: formData.special_notes,
+          pet_breed: pet?.breed,
+          pet_age: pet?.age
         },
-        body: JSON.stringify(payload)
+        intent: `Vet visit request for ${petName}: ${visitReasonLabel}`,
+        showToast: false,
+        navigateToInbox: false
       });
       
-      console.log('[VetVisitFlowModal] Response status:', response.status);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('[VetVisitFlowModal] Error response:', errorText);
-        throw new Error(`Failed to create ticket: ${response.status}`);
+      if (result.success) {
+        console.log('[VetVisitFlowModal] Success via unified flow:', result);
+        setTicketId(result.ticketId);
+        setIsSuccess(true);
+        
+        // Clear draft
+        if (userId && petId) {
+          clearVetVisitDraft(userId, petId);
+        }
+        
+        toast.success(`Request sent to Concierge® for ${petName}`, {
+          description: 'Check your inbox for updates.'
+        });
+      } else {
+        throw new Error(result.error || 'Failed to submit request');
       }
-      
-      const result = await response.json();
-      console.log('[VetVisitFlowModal] Success:', result);
-      setTicketId(result.ticket?.ticket_id || result.id || result.ticket_id);
-      setIsSuccess(true);
-      
-      // Clear draft
-      if (userId && petId) {
-        clearVetVisitDraft(userId, petId);
-      }
-      
-      toast.success(`Request sent to Concierge® for ${petName}`, {
-        description: 'Check your inbox for updates.'
-      });
     } catch (error) {
       console.error('Vet visit ticket error:', error);
       toast.error('Failed to submit request. Please try again.');
