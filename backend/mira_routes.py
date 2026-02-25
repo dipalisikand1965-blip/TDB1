@@ -14368,6 +14368,71 @@ If not, tell me what {pet_name} ate and the timing, and I'll guide the next step
         history_keywords = ["last time", "last birthday", "last year", "previous", "what did we do", "remember", "before"]
         is_history_query = any(kw in user_message.lower() for kw in history_keywords)
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # FOOD/CAKE ADVISORY DETECTION - Route to advisory response, not booking flow
+        # Questions like "What cake is safe for allergies?" should get dietary advice
+        # ═══════════════════════════════════════════════════════════════════════════
+        food_cake_keywords = ["cake", "food", "treat", "safe to eat", "allergies", "what can", "menu", "catering"]
+        advisory_keywords = ["safe", "should", "healthy", "best", "recommend", "suggest", "how many", "too much"]
+        is_food_advisory_question = (
+            any(kw in user_message.lower() for kw in food_cake_keywords) and
+            any(kw in user_message.lower() for kw in advisory_keywords)
+        )
+        
+        if is_food_advisory_question and selected_pet and not is_history_query:
+            # This is an advisory question about celebration food - answer with pet context
+            allergies = selected_pet.get("allergies", []) or []
+            health_conditions = selected_pet.get("health_conditions", []) or []
+            
+            allergy_text = ""
+            if allergies:
+                allergy_list = allergies if isinstance(allergies, list) else [allergies]
+                allergy_text = f"Since {pet_name} is **allergic to {', '.join(allergy_list)}**, "
+            
+            health_text = ""
+            if health_conditions:
+                health_list = health_conditions if isinstance(health_conditions, list) else [health_conditions]
+                health_text = f"And with {pet_name}'s **{', '.join(health_list)}**, "
+            
+            food_advisory_response = f"""Great question about celebration food for {pet_name}!
+
+{allergy_text}we need to be careful about ingredients. {health_text}gentle options are best.
+
+**Safe cake options for {pet_name}:**
+- **Fish or lamb-based** dog cakes (no chicken)
+- **Wheat-free** if any grain sensitivity
+- **Low-sugar** pupcakes with peanut butter (no xylitol!)
+- **Frozen yogurt** dog treats as a cool alternative
+
+**What to avoid:**
+- Any chicken-based ingredients
+- Chocolate (toxic)
+- Xylitol sweetener
+- Too much fat if digestion is sensitive
+
+Would you like me to help you find specific products, or shall I pass this to Concierge to source a custom cake?
+
+**[Shop safe cakes]** · **[Ask Concierge to source]** · **[DIY recipe ideas]**"""
+            
+            logger.info(f"[CELEBRATE-FOOD-ADVISORY] Answered food/cake advisory question")
+            
+            return add_picks_to_response({
+                "success": True,
+                "response": food_advisory_response,
+                "session_id": session_id,
+                "ticket_id": ticket_id,
+                "pillar": pillar,
+                "ticket_type": "advisory",
+                "conversation_contract": {
+                    "mode": "clarify",
+                    "quick_replies": [
+                        {"id": "QR-SHOP-CAKE", "label": "Shop safe cakes", "payload_text": "Show me safe cakes for " + pet_name, "intent_type": "action"},
+                        {"id": "QR-CONCIERGE-CAKE", "label": "Ask Concierge", "payload_text": "Help me source a custom safe cake", "intent_type": "action"},
+                        {"id": "QR-DIY-RECIPE", "label": "DIY recipes", "payload_text": "Give me DIY cake recipe ideas", "intent_type": "action"},
+                    ]
+                }
+            })
+        
         if is_history_query and selected_pet:
             pillar_histories = selected_pet.get("pillar_histories", {})
             celebrations = pillar_histories.get("celebrations", [])
