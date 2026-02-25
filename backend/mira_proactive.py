@@ -1074,6 +1074,9 @@ async def check_meta_proactive_alerts(pet_id: str, pet_name: str, db) -> List[Di
                                 social_dt = datetime.fromisoformat(social_date.replace("Z", "+00:00"))
                             else:
                                 social_dt = social_date
+                            # Ensure timezone awareness
+                            if social_dt.tzinfo is None:
+                                social_dt = social_dt.replace(tzinfo=timezone.utc)
                             last_social_days = (now - social_dt).days
                         except:
                             pass
