@@ -14423,7 +14423,7 @@ Last time ({date_info}), you celebrated **at {location_info}**{friends_mention}.
             # Initial request - ask about location (Stage 1)
             celebrate_stage = "location"
             logger.info(f"[CELEBRATE-DEBUG] Entering Stage 1 (location)")
-            celebrate_response = f"""Oh, a celebration for {pet_name}! They're going to absolutely love this.
+            celebrate_response = f"""Oh, a celebration for {pet_name}! I can already picture the joy.
 
 I can already picture {pet_name}'s excitement. Let me help make this perfect.
 
