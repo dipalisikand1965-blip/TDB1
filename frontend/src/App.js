@@ -288,15 +288,17 @@ function App() {
     <ErrorBoundary>
       <HelmetProvider>
         <AuthProvider>
-          <CartProvider>
-            <PillarProvider>
-              <LayerProvider>
-                <BrowserRouter>
-                  <AppRouter />
-                </BrowserRouter>
-              </LayerProvider>
-            </PillarProvider>
-          </CartProvider>
+          <GlobalNotificationProvider>
+            <CartProvider>
+              <PillarProvider>
+                <LayerProvider>
+                  <BrowserRouter>
+                    <AppRouter />
+                  </BrowserRouter>
+                </LayerProvider>
+              </PillarProvider>
+            </CartProvider>
+          </GlobalNotificationProvider>
         </AuthProvider>
       </HelmetProvider>
     </ErrorBoundary>
