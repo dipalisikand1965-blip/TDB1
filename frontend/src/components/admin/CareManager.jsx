@@ -1556,34 +1556,6 @@ const CareManager = ({ getAuthHeader }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-                <SelectContent>
-                  <SelectItem value="grooming">Grooming</SelectItem>
-                  <SelectItem value="walks">Walks & Sitting</SelectItem>
-                  <SelectItem value="training">Training</SelectItem>
-                  <SelectItem value="wellness">Wellness</SelectItem>
-                  <SelectItem value="general">General</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Product IDs (comma-separated)</Label>
-              <Input value={bundleForm.items} onChange={(e) => setBundleForm({...bundleForm, items: e.target.value})} placeholder="care-product-1, care-product-2" />
-            </div>
-            <div>
-              <Label>Paw Reward Points</Label>
-              <Input type="number" value={bundleForm.paw_reward_points} onChange={(e) => setBundleForm({...bundleForm, paw_reward_points: parseInt(e.target.value) || 0})} />
-            </div>
-            <label className="flex items-center gap-2">
-              <Switch checked={bundleForm.is_recommended} onCheckedChange={(val) => setBundleForm({...bundleForm, is_recommended: val})} />
-              <span>Recommended</span>
-            </label>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowBundleModal(false)}>Cancel</Button>
-            <Button onClick={saveBundle}>Save Bundle</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Partner Modal */}
       <Dialog open={showPartnerModal} onOpenChange={setShowPartnerModal}>
