@@ -428,8 +428,8 @@ const VetVisitFlowModal = ({
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-2xl p-0 overflow-hidden max-h-[90vh] flex flex-col">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-violet-500 to-purple-500 px-6 py-4 text-white">
+        {/* Header - Fixed */}
+        <div className="bg-gradient-to-r from-violet-500 to-purple-500 px-6 py-4 text-white flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <button onClick={goBack} disabled={currentStep === 0} className={`text-white/80 hover:text-white ${currentStep === 0 ? 'invisible' : ''}`}>
@@ -456,10 +456,10 @@ const VetVisitFlowModal = ({
           </p>
         </div>
         
-        {/* Main content area - Two column layout on desktop */}
-        <div className="flex flex-col md:flex-row">
+        {/* Main content area - Two column layout on desktop - Scrollable */}
+        <div className="flex flex-col md:flex-row flex-1 min-h-0 overflow-hidden">
           {/* Left column - Form */}
-          <div className="flex-1 px-6 py-5 overflow-y-auto max-h-[50vh] md:max-h-[60vh]">
+          <div className="flex-1 px-6 py-5 overflow-y-auto">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStep}
@@ -493,7 +493,7 @@ const VetVisitFlowModal = ({
           </div>
           
           {/* Right column - Pet context sidebar (desktop only) */}
-          <div className="hidden md:block w-64 p-4 bg-gray-50 border-l">
+          <div className="hidden md:block w-64 p-4 bg-gray-50 border-l flex-shrink-0">
             <PetContextSidebar pet={pet} formData={formData} />
           </div>
         </div>
