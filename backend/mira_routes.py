@@ -10010,6 +10010,56 @@ If Soul data is sparse, ASK targeted questions. Do NOT assume from breed.
             if breed_tips:
                 pet_context += f"\n  📋 BREED-SPECIFIC CARE TIPS FOR {pet_name} ({breed}):\n"
                 pet_context += breed_tips
+            
+            # ═══════════════════════════════════════════════════════════════════
+            # PILLAR HISTORIES - Orders, Services, Celebrations, Dog Friends
+            # This is what makes Mira truly remember EVERYTHING
+            # ═══════════════════════════════════════════════════════════════════
+            pillar_histories = pet.get('pillar_histories', {})
+            if pillar_histories:
+                pet_context += f"\n\n📚 {pet_name.upper()}'S HISTORY (YOU REMEMBER THIS):\n"
+                
+                # Order history
+                orders = pillar_histories.get('orders', [])
+                if orders:
+                    pet_context += f"\n  🛒 PAST ORDERS:\n"
+                    for o in orders[:5]:
+                        items = ', '.join(o.get('items', [])[:3])
+                        pet_context += f"    - {o.get('date')}: {items}\n"
+                
+                # Service history by pillar
+                services = pillar_histories.get('services', {})
+                if services:
+                    pet_context += f"\n  🔧 PAST SERVICES:\n"
+                    for pillar_name, svc_list in services.items():
+                        if svc_list:
+                            latest = svc_list[0]
+                            provider_info = f" with {latest.get('provider')}" if latest.get('provider') else ""
+                            pet_context += f"    - {pillar_name.title()}: Last on {latest.get('date')}{provider_info}\n"
+                
+                # Top providers
+                top_providers = pillar_histories.get('top_providers', [])
+                if top_providers:
+                    pet_context += f"\n  ⭐ PREFERRED PROVIDERS:\n"
+                    for p in top_providers[:3]:
+                        pet_context += f"    - {p.get('pillar').title()}: {p.get('provider')} (used {p.get('count')}x)\n"
+                
+                # Celebration history
+                celebrations = pillar_histories.get('celebrations', [])
+                if celebrations:
+                    pet_context += f"\n  🎉 PAST CELEBRATIONS:\n"
+                    for c in celebrations[:3]:
+                        location_info = f" at {c.get('location')}" if c.get('location') and c.get('location') != 'unknown' else ""
+                        guests_info = f" with {', '.join(c.get('guests', [])[:3])}" if c.get('guests') else ""
+                        pet_context += f"    - {c.get('date')}: {c.get('type', 'celebration').title()}{location_info}{guests_info}\n"
+                
+                # Dog friends
+                dog_friends = pillar_histories.get('dog_friends', [])
+                if dog_friends:
+                    pet_context += f"\n  🐕 DOG FRIENDS: {', '.join(dog_friends)}\n"
+                    pet_context += f"    (Invite them to parties, mention in playdates!)\n"
+                
+                logger.info(f"[PET CONTEXT] Added pillar histories for {pet_name}")
     
     # Log the pet context for debugging
     if pet_context:
