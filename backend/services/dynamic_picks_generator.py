@@ -736,8 +736,41 @@ def _generate_celebrate_picks(user_msg: str, pet_name: str, pet_context: Dict, a
 
 
 def _generate_enjoy_picks(user_msg: str, pet_name: str, pet_context: Dict) -> List[Dict]:
-    """Generate picks for ENJOY pillar - play, enrichment, activities"""
+    """Generate picks for ENJOY pillar - play, enrichment, activities, outings"""
     picks = []
+    
+    # Pet Cafe / Outing
+    if any(kw in user_msg for kw in ["cafe", "pet cafe", "dog cafe", "cat cafe", "outing", "take out", "fun place", "hangout"]):
+        picks.append({
+            "type": "service",
+            "category": "pet_cafe",
+            "title": f"Pet-Friendly Cafes for {pet_name}",
+            "subtitle": "Curated spots where pets are welcome",
+            "icon": "☕",
+            "reason": f"Enjoy quality time with {pet_name}",
+            "cta": "Find Cafes",
+            "service_type": "pet_cafe_search"
+        })
+        picks.append({
+            "type": "service",
+            "category": "outdoor",
+            "title": f"Pet-Friendly Outings",
+            "subtitle": "Parks, beaches, trails & more",
+            "icon": "🌳",
+            "reason": f"Adventures await with {pet_name}",
+            "cta": "Explore Places",
+            "service_type": "outdoor_activities"
+        })
+        picks.append({
+            "type": "service",
+            "category": "social",
+            "title": f"Dog Meet-ups & Playdates",
+            "subtitle": "Organized social events nearby",
+            "icon": "🐕",
+            "reason": f"Let {pet_name} make new friends",
+            "cta": "Find Events",
+            "service_type": "dog_meetups"
+        })
     
     # Toys
     if any(kw in user_msg for kw in ["toy", "play", "ball", "frisbee", "tug"]):
