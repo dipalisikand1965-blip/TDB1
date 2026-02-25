@@ -16,8 +16,8 @@ const Login = () => {
   const location = useLocation();
   const { toast } = useToast();
   
-  // Get the return path from location state (set by ProtectedRoute) or default to Mira OS
-  const from = location.state?.from || '/mira-demo';
+  // Get the return path from location state (set by ProtectedRoute) or default to Pet Home
+  const from = location.state?.from || '/pet-home';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,9 +26,9 @@ const Login = () => {
       await login(email, password);
       toast({
         title: "Welcome back!",
-        description: "Taking you to Mira...",
+        description: "Taking you to your pets...",
       });
-      // Navigate to Mira OS - the heart of the experience
+      // Navigate to Pet Home - the landing page for all pets
       navigate(from, { replace: true });
     } catch (error) {
       toast({
