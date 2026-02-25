@@ -923,9 +923,21 @@ async def import_care_products(products: List[Dict[str, Any]]):
 # ==================== BUNDLES ENDPOINTS ====================
 
 @router.get("/bundles")
-async def get_care_bundles(care_type: Optional[str] = None, category: Optional[str] = None):
-    """Get care bundles including Feed/Nutrition bundles"""
+async def get_care_bundles(care_type: Optional[str] = None, category: Optional[str] = None, comprehensive_only: bool = False):
+    """Get care bundles including Feed/Nutrition bundles
+    
+    Set comprehensive_only=true to get only bundles with good_for_tags (new taxonomy)
+    """
     db = get_db()
+    
+    if comprehensive_only:
+        # Only bundles with comprehensive tags
+        query = {
+            "bundle_type": "care",
+            "good_for_tags": {"$exists": True, "$ne": []}
+        }
+        bundles = await db.product_bundles.find(query, {"_id": 0}).sort("display_priority", 1).to_list(50)
+        return {"bundles": bundles, "total": len(bundles)}
     
     # Check both collections for care bundles
     query = {"$or": [{"bundle_type": "care"}, {"pillar": "care"}, {"active": True}]}
@@ -934,8 +946,12 @@ async def get_care_bundles(care_type: Optional[str] = None, category: Optional[s
     if category:
         query = {"$and": [query, {"category": category}]}
     
-    # Fetch from both collections
-    bundles_legacy = await db.product_bundles.find(query, {"_id": 0}).to_list(50)
+    # Fetch from both collections - sort comprehensive bundles first
+    bundles_legacy = await db.product_bundles.find(query, {"_id": 0}).sort([
+        ("good_for_tags", -1),  # Bundles with tags first
+        ("display_priority", 1),
+        ("updated_at", -1)
+    ]).to_list(50)
     bundles_new = await db.care_bundles.find({"$or": [{"active": True}, {"is_active": True}]}, {"_id": 0}).to_list(50)
     
     # Filter new bundles by category if specified
