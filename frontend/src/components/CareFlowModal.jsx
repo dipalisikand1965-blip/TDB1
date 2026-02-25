@@ -455,7 +455,7 @@ const CareFlowModal = ({
               ) : (
                 <>
                   <Sparkles className="w-4 h-4 mr-2" />
-                  Send to Concierge
+                  Send to Concierge®
                 </>
               )}
             </Button>
