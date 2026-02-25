@@ -274,44 +274,56 @@ const GroomingFlowModal = ({
     }
   };
   
-  // Submit to Concierge
+  // Submit to Concierge via Unified Service Command
   const handleSubmit = async () => {
     setIsSubmitting(true);
     
     try {
       const payload = buildGroomingTicketPayload(formData, pet, user, entryPoint);
-      console.log('[GroomingFlowModal] Submitting payload:', JSON.stringify(payload).substring(0, 500));
+      console.log('[GroomingFlowModal] Submitting via unified service flow:', JSON.stringify(payload).substring(0, 500));
       
-      const response = await fetch(`${API_URL}/api/tickets/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+      // Build selected services list for display
+      const selectedServices = formData.services 
+        ? formData.services.map(svcId => GROOMING_OPTIONS.services?.find(s => s.id === svcId)?.label || svcId).join(', ')
+        : 'Grooming Request';
+      
+      const result = await submitRequest({
+        type: 'GROOMING_REQUEST',
+        pillar: 'care',
+        entryPoint: entryPoint,
+        pet: pet,
+        details: {
+          ...payload,
+          service_type: 'grooming',
+          service_mode: formData.service_mode || 'salon',
+          services_requested: selectedServices,
+          urgency: formData.urgency,
+          address: formData.address,
+          special_notes: formData.special_notes,
+          pet_breed: pet?.breed,
+          pet_size: pet?.size
         },
-        body: JSON.stringify(payload)
+        intent: `Grooming request for ${petName}: ${selectedServices}`,
+        showToast: false,
+        navigateToInbox: false
       });
       
-      console.log('[GroomingFlowModal] Response status:', response.status);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('[GroomingFlowModal] Error response:', errorText);
-        throw new Error(`Failed to create ticket: ${response.status}`);
+      if (result.success) {
+        console.log('[GroomingFlowModal] Success via unified flow:', result);
+        setTicketId(result.ticketId);
+        setIsSuccess(true);
+        
+        // Clear draft
+        if (userId && petId) {
+          clearGroomingDraft(userId, petId);
+        }
+        
+        toast.success(`Request sent to Concierge® for ${petName}`, {
+          description: 'Check your inbox for updates.'
+        });
+      } else {
+        throw new Error(result.error || 'Failed to submit request');
       }
-      
-      const result = await response.json();
-      console.log('[GroomingFlowModal] Success:', result);
-      setTicketId(result.ticket?.ticket_id || result.id || result.ticket_id);
-      setIsSuccess(true);
-      
-      // Clear draft
-      if (userId && petId) {
-        clearGroomingDraft(userId, petId);
-      }
-      
-      toast.success(`Request sent to Concierge® for ${petName}`, {
-        description: 'Check your inbox for updates.'
-      });
     } catch (error) {
       console.error('Grooming ticket error:', error);
       toast.error('Failed to submit request. Please try again.');
