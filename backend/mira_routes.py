@@ -14372,8 +14372,8 @@ If not, tell me what {pet_name} ate and the timing, and I'll guide the next step
         # FOOD/CAKE ADVISORY DETECTION - Route to advisory response, not booking flow
         # Questions like "What cake is safe for allergies?" should get dietary advice
         # ═══════════════════════════════════════════════════════════════════════════
-        food_cake_keywords = ["cake", "food", "treat", "safe to eat", "allergies", "what can", "menu", "catering"]
-        advisory_keywords = ["safe", "should", "healthy", "best", "recommend", "suggest", "how many", "too much"]
+        food_cake_keywords = ["cake", "food", "treat", "safe to eat", "allergies", "what can", "menu", "catering", "overeat", "eating"]
+        advisory_keywords = ["safe", "should", "healthy", "best", "recommend", "suggest", "how many", "too much", "stop", "prevent", "avoid"]
         is_food_advisory_question = (
             any(kw in user_message.lower() for kw in food_cake_keywords) and
             any(kw in user_message.lower() for kw in advisory_keywords)
