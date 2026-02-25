@@ -1219,13 +1219,25 @@ async def lifespan(app: FastAPI):
     logger.info("Checking products...")
     await seed_initial_products()
     
-    # Run Product Intelligence Engine to ensure all tags are set
-    logger.info("Running Product Intelligence Engine for tag enhancement...")
-    await auto_enhance_product_tags()
+    # Run heavy tasks in background to speed up deployment
+    async def background_startup_tasks():
+        """Run non-critical heavy tasks after server is ready"""
+        try:
+            # Run Product Intelligence Engine to ensure all tags are set
+            logger.info("[BACKGROUND] Running Product Intelligence Engine for tag enhancement...")
+            await auto_enhance_product_tags()
+            
+            # Run AI Semantic Tagging on startup (powers E032 Semantic Search)
+            logger.info("[BACKGROUND] Running AI Semantic Tagging for Mira intelligence...")
+            await run_ai_semantic_tagging_on_startup()
+            
+            logger.info("[BACKGROUND] All startup background tasks completed")
+        except Exception as e:
+            logger.warning(f"[BACKGROUND] Startup tasks failed (non-blocking): {e}")
     
-    # Run AI Semantic Tagging on startup (powers E032 Semantic Search)
-    logger.info("Running AI Semantic Tagging for Mira intelligence...")
-    await run_ai_semantic_tagging_on_startup()
+    # Start background tasks without blocking
+    asyncio.create_task(background_startup_tasks())
+    logger.info("Background startup tasks scheduled (non-blocking)")
     
     # Initialize role database connection
     set_role_db(db)
