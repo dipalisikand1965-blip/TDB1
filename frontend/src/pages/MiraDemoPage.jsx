@@ -5087,36 +5087,62 @@ const MiraDemoPage = () => {
       />
       
       {/* ═══════════════════════════════════════════════════════════════════════════
-          INTERACTION FOOTER - Mode-based footer owned by shell
-          Renders: Quick replies + Composer + New messages pill
-          Modes: 0=hidden, 1=light, 2=active guided, 3=full concierge, 4=modal
+          QUICK REPLIES - Shown above composer when there's a pending question
+          Uses shell state to determine visibility
           ═══════════════════════════════════════════════════════════════════════════ */}
-      <InteractionFooter
-        ref={shellRefs.footerRef}
-        mode={shellState.interactionFooter.mode}
-        showQuickReplies={shellSelectors.showQuickReplies}
-        quickReplies={shellState.interactionFooter.quickReplies}
-        onQuickReplySelect={(optionId, value) => {
-          shellActions.selectQuickReply(optionId, value);
-          // Also trigger the message send
-          handleQuickReply(value);
-        }}
-        showComposer={shellSelectors.showComposer}
-        composerValue={query}
-        composerPlaceholder={shellState.interactionFooter.composer.placeholder}
-        onComposerChange={setQuery}
-        onComposerSend={() => handleSubmit(null)}
-        onComposerAttach={() => {/* TODO: Handle attachment */}}
-        onComposerVoice={toggleListening}
-        isSending={isProcessing}
-        voiceActive={isListening}
-        newMessagesCount={shellState.interactionFooter.newMessages.count}
-        onNewMessagesClick={() => {
-          shellActions.setNewMessages(0);
-          scrollToBottom();
-        }}
-        isSuppressed={shellState.interactionFooter.isSuppressedByModal}
-      />
+      {shellSelectors.showQuickReplies && shellState.interactionFooter.quickReplies.options?.length > 0 && (
+        <div className="mp-quick-replies-container" style={{
+          position: 'fixed',
+          bottom: '120px',
+          left: 0,
+          right: 0,
+          zIndex: 48,
+          padding: '12px 16px',
+          display: 'flex',
+          justifyContent: 'center',
+        }}>
+          <div style={{
+            display: 'flex',
+            gap: '8px',
+            overflowX: 'auto',
+            maxWidth: '100%',
+            padding: '4px',
+          }}>
+            {shellState.interactionFooter.quickReplies.options.map((option, idx) => (
+              <button
+                key={option.id || idx}
+                onClick={() => {
+                  shellActions.selectQuickReply(option.id, option.value);
+                  handleQuickReply(option.value);
+                }}
+                style={{
+                  flexShrink: 0,
+                  padding: '10px 16px',
+                  background: 'rgba(139, 92, 246, 0.2)',
+                  border: '1px solid rgba(139, 92, 246, 0.4)',
+                  borderRadius: '20px',
+                  color: '#f0f0f5',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.15s ease',
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = 'rgba(139, 92, 246, 0.35)';
+                  e.target.style.transform = 'translateY(-1px)';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'rgba(139, 92, 246, 0.2)';
+                  e.target.style.transform = 'translateY(0)';
+                }}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       
       {/* Site Footer - Hidden in mira-prod context via CSS */}
       {shellSelectors.showSiteFooter && <Footer />}
