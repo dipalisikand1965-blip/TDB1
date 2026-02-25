@@ -903,6 +903,10 @@ async def check_meta_proactive_alerts(pet_id: str, pet_name: str, db) -> List[Di
                     else:
                         last_dt = last_date
                     
+                    # Ensure timezone awareness
+                    if last_dt.tzinfo is None:
+                        last_dt = last_dt.replace(tzinfo=timezone.utc)
+                    
                     days_since = (now - last_dt).days
                     
                     if days_since >= 30 and days_since < 45:
