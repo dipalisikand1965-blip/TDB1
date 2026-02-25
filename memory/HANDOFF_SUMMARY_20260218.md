@@ -15,7 +15,7 @@
 - **User:** `dipali@clubconcierge.in` / `test123`
 - **Admin:** `aditya` / `lola4304`
 - **Test URL:** `/mira-demo?debug=1`
-- **API URL:** `https://soul-groom.preview.emergentagent.com`
+- **API URL:** `https://mira-preview.preview.emergentagent.com`
 
 ---
 

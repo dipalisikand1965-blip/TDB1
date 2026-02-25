@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://soul-groom.preview.emergentagent.com
+https://mira-preview.preview.emergentagent.com
 ```
 
 ---
