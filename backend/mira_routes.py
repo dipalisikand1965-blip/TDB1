@@ -14466,6 +14466,66 @@ Use this weather information to advise the user on pet activities. Be specific a
         except Exception as e:
             logger.warning(f"[WEATHER] Error fetching weather: {e}")
     
+    # 4.8 FETCH YOUTUBE VIDEOS for LEARN pillar
+    # Bible Rule: LEARN shows curated YouTube videos with Mira Frame wrapping
+    youtube_results = []
+    learn_content = None
+    
+    if pillar == "learn" or any(kw in user_message.lower() for kw in ["how to", "teach", "train", "tips", "tutorial", "guide", "learn about"]):
+        try:
+            from services.youtube_service import search_youtube_videos
+            from conversation_contract import detect_learn_intent
+            
+            learn_intent = detect_learn_intent(user_message)
+            if learn_intent.get("has_intent") and learn_intent.get("confidence", 0) >= 0.5:
+                youtube_topic = learn_intent.get("topic", user_message)
+                pet_name = selected_pet.get("name", "dog") if selected_pet else "dog"
+                
+                # Build pet-specific search query
+                search_query = f"{youtube_topic} for {pet_name} {selected_pet.get('breed', 'dog') if selected_pet else 'dog'}"
+                
+                videos = await search_youtube_videos(
+                    query=search_query,
+                    max_results=3,
+                    order="relevance"
+                )
+                
+                if videos:
+                    youtube_results = [{
+                        "video_id": v.get("video_id"),
+                        "title": v.get("title"),
+                        "thumbnail": v.get("thumbnail_url"),
+                        "channel": v.get("channel_title"),
+                        "duration": v.get("duration"),
+                        "url": f"https://www.youtube.com/watch?v={v.get('video_id')}"
+                    } for v in videos]
+                    
+                    # Build Mira Frame for the learn content (Bible Rule)
+                    learn_content = {
+                        "topic": youtube_topic,
+                        "videos": youtube_results,
+                        "mira_frame": {
+                            "before_bullets": [
+                                f"What you'll learn about {youtube_topic}",
+                                f"Tips specific to {pet_name}'s needs",
+                                "Practical steps you can try today"
+                            ],
+                            "after_checklist": [
+                                f"Try this with {pet_name} today",
+                                "Let Mira know how it goes",
+                                "Book a trainer if you need help"
+                            ],
+                            "action_bar": [
+                                {"label": "Let Mira do it", "action": "concierge_arrange", "type": "primary"},
+                                {"label": "Ask Mira", "action": "ask_followup", "type": "secondary"},
+                                {"label": "Save", "action": "save_to_vault", "type": "secondary"}
+                            ]
+                        }
+                    }
+                    logger.info(f"[LEARN] Found {len(youtube_results)} YouTube videos for: {youtube_topic}")
+        except Exception as e:
+            logger.warning(f"[LEARN] Error fetching YouTube videos: {e}")
+    
     # 5. Check if this needs RESEARCH MODE
     research_context = None
     if needs_research(user_message):
