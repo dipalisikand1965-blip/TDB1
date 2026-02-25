@@ -6924,8 +6924,8 @@ Details:
         "customer_name": customer_name,
         "customer_email": customer_email,
         "customer_phone": customer_phone,
-        "preview": f"{payload.type.replace('_', ' ').title()} - {customer_name}",
-        "message": description[:500] if len(description) > 500 else description,
+        "preview": f"{service_type} - {pet_name}",
+        "message": admin_description[:500] if len(admin_description) > 500 else admin_description,
         "created_at": now,
         "updated_at": now
     })
