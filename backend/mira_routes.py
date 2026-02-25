@@ -9449,17 +9449,20 @@ If Soul data is sparse, ASK targeted questions. Do NOT assume from breed.
 
 """
         for pet in pets_to_process:
-            identity = pet.get('identity') or {}
-            soul = pet.get('soul') or {}
-            preferences = pet.get('preferences') or {}
-            health = pet.get('health') or {}
+            identity = pet.get('identity') or {} if pet else {}
+            soul = pet.get('soul') or {} if pet else {}
+            preferences = pet.get('preferences') or {} if pet else {}
+            health = pet.get('health') or {} if pet else {}
             
+            if not pet:
+                continue
+                
             pet_name = pet.get('name', 'Pet')
             pet_names_for_greeting.append(pet_name)
             breed = identity.get('breed') or pet.get('breed', 'Unknown breed')
             
             # Get doggy soul answers for additional profile data
-            doggy_soul = pet.get('doggy_soul_answers', {})
+            doggy_soul = pet.get('doggy_soul_answers') or {}
             
             # ═══════════════════════════════════════════════════════════════════════════
             # SEALED FACTS BLOCK - DO NOT ALTER (Breed Guardrail)
