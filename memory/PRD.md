@@ -30,7 +30,9 @@ Building "Mira," a "pet operating system" centered on "Soul Intelligence." The g
    - Services selection (conditional)
    - Comfort & behavior questions
    - Logistics (address/area, timing)
-   - Review & submit to Concierge
+   - Review & submit to Concierge®
+   - **NEW: Breed intelligence** - Shows breed-specific tips (e.g., "Mira knows: Regular brushing to prevent matting" for Shih Tzu)
+   - **NEW: Auto-prefill address** from user profile for at-home grooming
 
 2. **Vet Visit FlowModal** - 5-step wizard
    - 10 visit reason options
@@ -38,6 +40,7 @@ Building "Mira," a "pet operating system" centered on "Soul Intelligence." The g
    - Timing & urgency
    - Handling preferences
    - Location preferences
+   - Medical disclaimer: "We do not provide medical advice"
 
 3. **Boarding & Daycare FlowModal** - 5-step wizard
    - Service type (Daycare / Overnight / Extended / Mira Recommend)
@@ -57,18 +60,28 @@ Building "Mira," a "pet operating system" centered on "Soul Intelligence." The g
    - Emergency type (Vet Emergency / Lost Pet / Transport / After Hours)
    - Pet state (for vet emergencies)
    - Help needed & contact
+   - Warning: "For life-threatening emergencies, please also call your nearest emergency vet"
 
 6. **8 Care Subcategory Tabs** - All aligned with locked CARE categories
    - Grooming, Vet Visits, Boarding & Daycare, Pet Sitting
    - Behavior Support, Senior & Special Needs, Nutrition Consults, Emergency Help
+
+**✅ UX Improvements (Latest):**
+- **Concierge®** branding with registered trademark throughout
+- **Success confirmation** shows "Request Sent to Concierge®" with personalized message
+- **Inbox notification badge** confirms "Added to your Inbox"
+- **Breed intelligence** displays breed-specific grooming tips in pet context sidebar
+- **Auto-prefill address** for at-home services from user profile
+- **Toast notifications** with Concierge® branding
 
 **✅ Technical Implementation:**
 - All FlowModals create tickets via POST `/api/tickets/`
 - Flexbox layout ensures footer navigation always visible
 - data-testid attributes for automated testing
 - Draft saving to localStorage
-- Pet context sidebar with real-time summary
+- Pet context sidebar with real-time summary + breed tips
 - Progress bar and step navigation
+- Breed intelligence utility: `/app/frontend/src/utils/breedIntelligence.js`
 
 ### Earlier Implementations
 - Care product taxonomy (18 products, 12 bundles)
