@@ -77,6 +77,8 @@ const URGENCY_STYLES = {
 const MiraCarePlan = ({ 
   petId, 
   petName: propPetName,
+  pet: propPet, // Full pet object for FlowModals
+  user,
   token,
   className = '' 
 }) => {
@@ -84,6 +86,11 @@ const MiraCarePlan = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [bookingInProgress, setBookingInProgress] = useState(null);
+  
+  // Flow Modal states - Open detailed wizard instead of simple ticket
+  const [groomingModalOpen, setGroomingModalOpen] = useState(false);
+  const [vetVisitModalOpen, setVetVisitModalOpen] = useState(false);
+  const [activeRecommendation, setActiveRecommendation] = useState(null);
   
   const { submitRequest, isSubmitting } = useUniversalServiceCommand();
 
