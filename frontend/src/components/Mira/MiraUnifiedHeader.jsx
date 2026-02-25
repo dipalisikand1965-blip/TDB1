@@ -158,14 +158,18 @@ const WeatherDisplay = memo(({ weather, onClick }) => {
 });
 
 /**
- * Pet Profile Avatar - Right side profile with name
+ * Pet Profile Avatar - Right side profile with name (Pet Switcher)
  */
-const PetProfileAvatar = memo(({ pet, onClick }) => {
+const PetProfileAvatar = memo(({ pet, onClick, isOpen }) => {
   const petPhoto = pet?.photo || pet?.pet_photo || pet?.photo_url;
   const petName = pet?.name || 'Pet';
   
   return (
-    <button className="mira-profile-avatar" onClick={onClick} data-testid="pet-profile-avatar">
+    <button 
+      className={`mira-profile-avatar ${isOpen ? 'active' : ''}`} 
+      onClick={onClick} 
+      data-testid="pet-profile-avatar"
+    >
       <div className="profile-photo">
         {petPhoto ? (
           <img 
@@ -181,6 +185,7 @@ const PetProfileAvatar = memo(({ pet, onClick }) => {
         )}
       </div>
       <span className="profile-name">{petName}</span>
+      <ChevronDown className={`profile-dropdown-arrow ${isOpen ? 'open' : ''}`} />
     </button>
   );
 });
