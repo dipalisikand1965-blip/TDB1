@@ -168,38 +168,71 @@ class CareRequestUpdate(BaseModel):
     completion_notes: Optional[str] = None
 
 
-# Care Product Models
+# Care Product Models (v3 - Comprehensive with size/coat/life_stage/temperament/intent)
 class CareProductCreate(BaseModel):
     name: str
     description: Optional[str] = None
     price: float
     compare_price: Optional[float] = None
     image: Optional[str] = None
-    care_type: str  # grooming, walks, training, etc.
-    subcategory: Optional[str] = None
+    pillar: str = "care"
+    subcategory: Optional[str] = None  # grooming_essentials, hygiene_cleaning, etc.
+    product_type: str = "individual"  # individual | bundle
+    # Comprehensive filtering tags
+    good_for_tags: List[str] = []  # Size: small, medium, large | Coat: short_coat, long_coat, double_coat | Life: puppy, adult, senior | Temperament: anxious, calm
+    intent_tags: List[str] = []  # grooming, vet_clinic_booking, boarding_daycare, pet_sitting, behavior_anxiety_support, etc.
+    # Legacy compatibility
+    care_type: Optional[str] = "grooming"
     tags: List[str] = []
     pet_sizes: List[str] = []
+    # Concierge fields
+    concierge_note: Optional[str] = None  # Support/comfort only note
+    cta_label: str = "Ask Mira to Include"
+    # Commerce
     in_stock: bool = True
     stock_quantity: Optional[int] = None
     sku: Optional[str] = None
+    status: str = "active"  # active | draft | seasonal
+    # Rewards
     paw_reward_points: int = 0
     is_birthday_perk: bool = False
     birthday_discount_percent: Optional[int] = None
     is_member_exclusive: bool = False
+    # Partner/Vendor
+    partner_vendor: Optional[str] = None
+    availability_cities: List[str] = []
 
 
 class CareBundleCreate(BaseModel):
     name: str
     description: Optional[str] = None
+    what_it_helps_with: Optional[str] = None  # 1-line outcome description
     price: float
     original_price: Optional[float] = None
     image: Optional[str] = None
-    care_type: str
+    pillar: str = "care"
+    bundle_type: str = "routine_care"  # starter_setup, routine_care, visit_prep, recovery_setup, senior_support, anxiety_support, seasonal_care
+    # Linked products
+    included_items: List[str] = []  # Product IDs
+    optional_addons: List[str] = []  # Optional add-on product IDs
+    # Comprehensive filtering tags
+    good_for_tags: List[str] = []  # Same as products
+    intent_tags: List[str] = []  # Same as products
+    # Concierge flow mapping
+    concierge_flow_mapping: Optional[str] = None  # grooming_request, vet_clinic_booking_request, etc.
+    # Legacy compatibility
+    care_type: Optional[str] = "grooming"
     items: List[str] = []
+    # Status and display
+    status: str = "active"
+    display_priority: int = 99  # Lower = higher priority for Mira picks
     is_recommended: bool = True
+    # Rewards
     paw_reward_points: int = 0
     is_birthday_perk: bool = False
     birthday_discount_percent: Optional[int] = None
+    # Guardrail
+    guardrail_note: Optional[str] = None  # e.g., "Supports comfort only. Clinical guidance remains with vet."
 
 
 class CarePartnerCreate(BaseModel):
