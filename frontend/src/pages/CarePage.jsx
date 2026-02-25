@@ -736,9 +736,9 @@ const CarePage = () => {
         <PersonalizedPicks pillar="care" />
         
         {/* Mira's Picks Section */}
-        {userPets && userPets[0] && (
+        {selectedPet && (
           <div className="max-w-6xl mx-auto px-4 mt-6">
-            <PillarPicksSection pillar="care" pet={userPets[0]} />
+            <PillarPicksSection pillar="care" pet={selectedPet} />
           </div>
         )}
       </div>
