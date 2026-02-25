@@ -503,19 +503,76 @@ export const GROOMING_FLOW_SCHEMAS = {
 
 /**
  * Build GROOMING_REQUEST ticket payload
+ * Matches the TicketCreate Pydantic model expected by /api/tickets
  */
 export const buildGroomingTicketPayload = (data, pet, user, entryPoint) => {
+  // Build description from the collected data
+  const petName = pet?.name || 'Pet';
+  const mode = data.service_mode === 'home' ? 'at-home' : data.service_mode === 'salon' ? 'salon' : 'Mira recommendation';
+  const format = data.service_format || 'not specified';
+  const services = (data.services_requested || []).join(', ') || 'to be determined';
+  
+  const description = `
+**Grooming Request for ${petName}**
+
+**Mode:** ${mode}
+**Format:** ${format}
+**Services:** ${services}
+
+**Comfort Notes:**
+- Comfortable with strangers: ${data.stranger_comfort || 'Not specified'}
+- Nervous during grooming: ${data.nervous_grooming || 'Not specified'}
+- Comfortable with dryer/noise: ${data.dryer_comfort || 'Not specified'}
+- Biting/snap history: ${data.biting_history || 'No'}
+- Can stand for full session: ${data.can_stand || 'Not specified'}
+${data.special_notes ? `- Special notes: ${data.special_notes}` : ''}
+
+**Location/Timing:**
+${data.service_mode === 'home' ? `
+- Address: ${data.address || 'To be provided'}
+- Area: ${data.landmark || 'Not specified'}
+- Water access: ${data.water_access || 'Not specified'}
+- Grooming space: ${data.grooming_space || 'Not specified'}
+` : `
+- Preferred area: ${data.preferred_area || 'Not specified'}
+- Distance preference: ${data.distance_preference || 'Flexible'}
+- Pickup/drop: ${data.pickup_drop || 'Not specified'}
+- Salon type: ${data.salon_type || 'Any'}
+`}
+- Preferred days: ${(data.preferred_days || []).join(', ') || 'Flexible'}
+- Preferred time: ${data.preferred_time || 'Flexible'}
+
+**Pet Details:**
+- Name: ${petName}
+- Breed: ${pet?.breed || 'Not specified'}
+
+---
+Entry Point: ${entryPoint}
+`.trim();
+
+  // Return in TicketCreate format
   return {
-    ticket_type: 'GROOMING_REQUEST',
-    pillar: 'care',
-    sub_pillar: 'grooming',
-    pet_id: pet?.id || pet?._id,
-    pet_name: pet?.name,
-    entry_point: entryPoint || 'care_grooming',
-    context_source: 'care/grooming',
+    member: {
+      name: user?.name || user?.email?.split('@')[0] || 'Member',
+      email: user?.email || '',
+      phone: user?.phone || user?.whatsapp || ''
+    },
+    category: 'care',
+    sub_category: 'grooming',
+    urgency: data.urgency === 'asap' ? 'high' : 'medium',
+    description: description,
+    source: 'flow_modal',
+    source_reference: entryPoint || 'care_grooming',
+    attachments: [],
+    // Extended metadata for Mira OS
     metadata: {
-      service_mode: data.service_mode || 'mira_recommend',
-      service_format: data.service_format || null,
+      ticket_type: 'GROOMING_REQUEST',
+      pillar: 'care',
+      sub_pillar: 'grooming',
+      pet_id: pet?.id || pet?._id,
+      pet_name: petName,
+      service_mode: data.service_mode,
+      service_format: data.service_format,
       services_requested: data.services_requested || [],
       comfort_notes: {
         stranger_comfort: data.stranger_comfort,
@@ -529,43 +586,17 @@ export const buildGroomingTicketPayload = (data, pet, user, entryPoint) => {
         nervous: data.nervous_grooming === 'yes',
         biting_risk: data.biting_history === 'yes' || data.biting_history === 'occasionally'
       },
-      logistics: data.service_mode === 'home' ? {
-        type: 'home',
+      logistics: {
+        type: data.service_mode,
         address: data.address,
-        landmark: data.landmark,
-        water_access: data.water_access,
-        grooming_space: data.grooming_space,
-        lift_available: data.lift_available,
-        other_pets: data.other_pets
-      } : {
-        type: 'salon',
         preferred_area: data.preferred_area,
-        distance_preference: data.distance_preference,
-        pickup_drop: data.pickup_drop,
-        salon_type: data.salon_type,
-        wait_preference: data.wait_preference
+        distance_preference: data.distance_preference
       },
       timing: {
         preferred_days: data.preferred_days || [],
         preferred_time: data.preferred_time
-      },
-      plan_preferences: (data.service_format === 'bundle' || data.service_format === 'maintenance') ? {
-        goal: data.plan_goal,
-        frequency: data.frequency,
-        plan_length: data.plan_length,
-        start_timeline: data.start_timeline
-      } : null,
-      // For Mira recommend flow
-      quick_intake: data.last_groomed || data.main_concern ? {
-        last_groomed: data.last_groomed,
-        main_concern: data.main_concern,
-        mode_preference: data.mode_preference,
-        urgency: data.urgency
-      } : null
-    },
-    user_email: user?.email,
-    status: 'open',
-    priority: data.urgency === 'asap' ? 'high' : 'normal'
+      }
+    }
   };
 };
 
