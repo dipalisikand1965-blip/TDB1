@@ -14566,6 +14566,56 @@ Use this weather information to advise the user on pet activities. Be specific a
         except Exception as e:
             logger.warning(f"[LEARN] Error fetching YouTube videos: {e}")
     
+    # CELEBRATE PILLAR - Fetch birthday/party YouTube videos
+    elif pillar == "celebrate" or any(kw in user_message.lower() for kw in ["birthday", "party", "celebration"]):
+        try:
+            from services.youtube_service import search_youtube_videos
+            pet_name = selected_pet.get("name", "dog") if selected_pet else "dog"
+            
+            # Search for birthday/party content
+            search_query = f"dog birthday party ideas for {pet_name}"
+            
+            videos = await search_youtube_videos(
+                query=search_query,
+                max_results=3,
+                order="relevance"
+            )
+            
+            if videos:
+                youtube_results = [{
+                    "video_id": v.get("id"),
+                    "title": v.get("title"),
+                    "thumbnail": v.get("thumbnail"),
+                    "channel": v.get("channel"),
+                    "duration": v.get("duration"),
+                    "url": v.get("url") or f"https://www.youtube.com/watch?v={v.get('id')}"
+                } for v in videos]
+                
+                learn_content = {
+                    "topic": "birthday celebration",
+                    "videos": youtube_results,
+                    "mira_frame": {
+                        "before_bullets": [
+                            f"How to plan {pet_name}'s perfect birthday",
+                            "Dog-safe cake and treat ideas",
+                            "Fun party activities"
+                        ],
+                        "after_checklist": [
+                            "Book a venue or plan at home",
+                            "Order a custom cake",
+                            "Invite furry friends"
+                        ],
+                        "action_bar": [
+                            {"label": "Let Mira plan it", "action": "concierge_arrange", "type": "primary"},
+                            {"label": "Order Cake", "action": "order_cake", "type": "secondary"},
+                            {"label": "Save Ideas", "action": "save_to_vault", "type": "secondary"}
+                        ]
+                    }
+                }
+                logger.info(f"[LEARN-CELEBRATE] Found {len(youtube_results)} birthday videos")
+        except Exception as e:
+            logger.warning(f"[LEARN-CELEBRATE] Error fetching birthday videos: {e}")
+    
     # 5. Check if this needs RESEARCH MODE
     research_context = None
     if needs_research(user_message):
