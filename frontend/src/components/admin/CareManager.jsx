@@ -256,6 +256,20 @@ const CareManager = ({ getAuthHeader }) => {
     }
   };
 
+  // Seed comprehensive care products (v3 - with size/coat/life_stage/temperament/intent tags)
+  const seedComprehensiveCare = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/api/care/admin/seed-comprehensive-care`, {}, getAuthHeader());
+      toast({ 
+        title: '✅ Comprehensive Care Seeded', 
+        description: `Seeded ${response.data.products_seeded} products and ${response.data.bundles_seeded} bundles with full taxonomy` 
+      });
+      fetchAllData();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to seed comprehensive care', variant: 'destructive' });
+    }
+  };
+
   // Product CRUD
   const resetProductForm = () => {
     setProductForm({
