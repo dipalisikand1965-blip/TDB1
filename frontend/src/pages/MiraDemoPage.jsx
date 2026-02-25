@@ -5108,7 +5108,7 @@ const MiraDemoPage = () => {
         onComposerSend={() => handleSubmit(null)}
         onComposerAttach={() => {/* TODO: Handle attachment */}}
         onComposerVoice={toggleListening}
-        isSending={isLoading}
+        isSending={isProcessing}
         voiceActive={isListening}
         newMessagesCount={shellState.interactionFooter.newMessages.count}
         onNewMessagesClick={() => {
