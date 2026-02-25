@@ -678,8 +678,8 @@ const CarePage = () => {
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
           <FitnessJourneyCounter pillar="care" />
           <RotatingSocialProof 
-            petName={userPets[0]?.name} 
-            breedName={userPets[0]?.breed} 
+            petName={selectedPet?.name} 
+            breedName={selectedPet?.breed} 
           />
         </div>
       </div>
