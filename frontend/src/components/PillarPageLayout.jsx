@@ -48,10 +48,15 @@ const PILLAR_SUBCATEGORIES = {
     { id: 'dine-out', name: 'Dine Out', path: '/dine#restaurants', emoji: '🍽️' }
   ],
   care: [
-    { id: 'grooming', name: 'Grooming', path: '/care/grooming', emoji: '✨' },
-    { id: 'health', name: 'Health', path: '/care/health', emoji: '❤️' },
-    { id: 'supplements', name: 'Supplements', path: '/care/supplements', emoji: '💊' },
-    { id: 'spa', name: 'Spa', path: '/care/spa', emoji: '🛁' }
+    { id: 'all', name: 'All Care', path: '/care', emoji: '✨', isDefault: true },
+    { id: 'grooming', name: 'Grooming', path: '/care?type=grooming', emoji: '✂️' },
+    { id: 'vet_clinic_booking', name: 'Vet Visits', path: '/care?type=vet_clinic_booking', emoji: '🩺' },
+    { id: 'boarding_daycare', name: 'Boarding & Daycare', path: '/care?type=boarding_daycare', emoji: '🏠' },
+    { id: 'pet_sitting', name: 'Pet Sitting', path: '/care?type=pet_sitting', emoji: '🐕‍🦺' },
+    { id: 'behavior_anxiety_support', name: 'Behavior Support', path: '/care?type=behavior_anxiety_support', emoji: '🧠' },
+    { id: 'senior_special_needs_support', name: 'Senior & Special Needs', path: '/care?type=senior_special_needs_support', emoji: '🤍' },
+    { id: 'nutrition_consult_booking', name: 'Nutrition Consults', path: '/care?type=nutrition_consult_booking', emoji: '🥗' },
+    { id: 'emergency_help', name: 'Emergency Help', path: '/care?type=emergency_help', emoji: '🚨' }
   ],
   enjoy: [
     { id: 'toys', name: 'Toys', path: '/enjoy/toys', emoji: '🎾' },
