@@ -7084,8 +7084,9 @@ PILLARS = {
             "ear infection", "ear issue", "eye issue", "dental", "teeth", "breath", "bad breath",
             "limping", "lameness", "stiff", "mobility", "joint pain",
             "seems off", "not himself", "not herself", "something wrong",
-            # Daily care
+            # Daily care & Walking (CARE service - dog walker)
             "sitting", "pet sitting", "walker", "walking", "daily walk", "dog walker",
+            "walk", "for a walk", "take for walk", "need walker",
             "routine care", "daily routine", "care routine",
             # Medication
             "medication", "medicine", "supplements", "vitamins", "prescription",
