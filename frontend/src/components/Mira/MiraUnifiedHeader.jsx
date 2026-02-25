@@ -326,10 +326,23 @@ const MiraUnifiedHeader = ({
         })}
       </nav>
       
-      {/* Right: Weather + Pet Profile */}
+      {/* Right: Weather + Pet Switcher */}
       <div className="mira-right-section">
         <WeatherDisplay weather={weather} onClick={onWeatherClick} />
-        <PetProfileAvatar pet={currentPet} onClick={onPetClick} />
+        <div className="mira-pet-switcher-wrapper">
+          <PetProfileAvatar 
+            pet={currentPet} 
+            onClick={handlePetSwitcherToggle}
+            isOpen={showPetSwitcher}
+          />
+          <PetDropdown
+            pets={allPets}
+            currentPet={currentPet}
+            onSelectPet={onSwitchPet}
+            isOpen={showPetSwitcher}
+            onClose={() => setShowPetSwitcher(false)}
+          />
+        </div>
       </div>
     </header>
   );
