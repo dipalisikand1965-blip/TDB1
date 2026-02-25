@@ -174,7 +174,7 @@ CURRENT CONTEXT:
         api_key=api_key,
         session_id=f"mira-understand-{datetime.now().timestamp()}",
         system_message=MIRA_SYSTEM_PROMPT
-    ).with_model("openai", "gpt-4o")
+    ).with_model("openai", "gpt-5.1")
     
     # Build user message
     user_message_text = f"""
