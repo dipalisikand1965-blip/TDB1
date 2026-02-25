@@ -19,7 +19,8 @@ Build "The Doggy Company" into a "Pet Life Operating System" where the AI assist
 
 ## Completed Work
 - **2025-02-25:** Fixed compilation error in `FavoritesPanel.jsx` - incorrect import of `useUniversalServiceCommand`
-- **2025-02-25:** Integrated `useUniversalServiceCommand` into `PersonalizedPicksPanel.jsx` - "Create for {Pet}" buttons now trigger full service desk flow with pick details (name, type, description, price)
+- **2025-02-25:** Integrated `useUniversalServiceCommand` into `PersonalizedPicksPanel.jsx` - "Create for {Pet}" buttons now trigger full service desk flow with pick details
+- **2025-02-25:** Fixed Concierge 24/7 status in `concierge_routes.py` - was hardcoded to 9AM-9PM, now always shows "Live Now"
 
 ## In Progress
 - [ ] P1: "Celebrate" flow advisory detection refinement - AI too eager to push booking flow
