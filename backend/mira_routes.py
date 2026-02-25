@@ -11591,6 +11591,15 @@ def generate_intelligent_quick_replies(response_text: str, pet_name: str = None,
             build_quick_reply_chip("Something else", "Something else.", "continue", domain="dine")
         ]
     
+    elif any(term in response_lower for term in ["book", "schedule", "appointment", "when", "date", "time"]) and any(term in response_lower for term in ["when would", "what time", "which day", "preferred time", "preferred day"]):
+        quick_replies = [
+            build_quick_reply_chip("Today", "Today if possible.", "refine", domain="care"),
+            build_quick_reply_chip("Tomorrow", "Tomorrow.", "refine", domain="care"),
+            build_quick_reply_chip("This week", "Sometime this week.", "refine", domain="care"),
+            build_quick_reply_chip("Weekend", "On the weekend.", "refine", domain="care"),
+            build_quick_reply_chip("Flexible", "I'm flexible on timing.", "refine", domain="care")
+        ]
+    
     elif any(term in response_lower for term in ["book", "schedule", "appointment", "when", "date", "time"]):
         quick_replies = [
             build_quick_reply_chip("As soon as possible", "As soon as possible.", "refine", domain="care"),
