@@ -427,11 +427,11 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding: var(--space-lg) var(--space-xl);
-  padding-bottom: 140px; /* Space for fixed composer */
-  padding-top: var(--space-lg); /* Content starts after sticky header (flexbox handles positioning) */
+  padding-bottom: 160px; /* Space for fixed composer + quick replies */
+  padding-top: var(--space-lg);
   min-height: 0; /* Critical for flex scrolling */
   position: relative;
-  z-index: 1; /* Below sticky header (z-index: 100) */
+  z-index: 1;
   background: linear-gradient(180deg, 
     var(--mira-bg-dark) 0%, 
     var(--mira-bg-purple) 50%,
@@ -440,6 +440,37 @@
   /* Smooth scrolling */
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+}
+
+/* ========================================
+   COMPOSER - Fixed at bottom of chat shell
+   ======================================== */
+.mp-composer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-lg) var(--space-md) var(--space-2xl);
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 7, 32, 0.98) 30%);
+  z-index: 50; /* Above messages, below modals */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Sandbox footer - sits above the composer */
+.mp-sandbox-footer {
+  position: fixed;
+  bottom: 80px; /* Above composer */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--space-xs) var(--space-lg);
+  text-align: center;
+  font-size: 11px;
+  color: var(--mira-text-muted);
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius-full);
+  z-index: 49;
+  pointer-events: none;
 }
 
 .mp-messages-inner {
