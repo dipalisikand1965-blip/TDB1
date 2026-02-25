@@ -1940,7 +1940,7 @@ from mira_upload import router as mira_upload_router
 from mira_concierge_handoff import router as mira_concierge_handoff_router
 
 # Import Concierge Command Center routes
-from concierge_routes import router as concierge_command_router, set_concierge_db as set_command_center_db
+from concierge_routes import router as concierge_command_router, set_concierge_db as set_command_center_db, os_router as os_concierge_router, set_os_concierge_db
 
 # Import Analytics routes
 from analytics_routes import router as analytics_router, set_database as set_analytics_db
