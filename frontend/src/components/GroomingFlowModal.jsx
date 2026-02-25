@@ -256,8 +256,9 @@ const GroomingFlowModal = ({
     
     try {
       const payload = buildGroomingTicketPayload(formData, pet, user, entryPoint);
+      console.log('[GroomingFlowModal] Submitting payload:', JSON.stringify(payload).substring(0, 500));
       
-      const response = await fetch(`${API_URL}/api/tickets`, {
+      const response = await fetch(`${API_URL}/api/tickets/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -266,12 +267,17 @@ const GroomingFlowModal = ({
         body: JSON.stringify(payload)
       });
       
+      console.log('[GroomingFlowModal] Response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error('Failed to create ticket');
+        const errorText = await response.text();
+        console.error('[GroomingFlowModal] Error response:', errorText);
+        throw new Error(`Failed to create ticket: ${response.status}`);
       }
       
       const result = await response.json();
-      setTicketId(result.id || result.ticket_id);
+      console.log('[GroomingFlowModal] Success:', result);
+      setTicketId(result.ticket?.ticket_id || result.id || result.ticket_id);
       setIsSuccess(true);
       
       // Clear draft
