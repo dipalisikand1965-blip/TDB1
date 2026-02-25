@@ -29,6 +29,8 @@ import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
 // NEW: Mira Care Plan - Proactive soul-driven recommendations
 import MiraCarePlan from '../components/MiraCarePlan';
+// NEW: Care Service Flow Modal - Full options for each service
+import CareServiceFlowModal from '../components/CareServiceFlowModal';
 // NEW: FitPage-style engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
 import {
