@@ -6981,9 +6981,9 @@ PILLARS = {
             # Allergies and sensitivities (food context)
             "allergy", "allergies", "allergic", "sensitive stomach", "food allergy",
             "intolerance", "ingredient", "ingredients",
-            # Dining Out (secondary)
-            "restaurant", "dining out", "cafe", "brunch", "lunch", "dinner", "reservation",
-            "pet-friendly restaurant", "dine out", "pet cafe", "dog cafe", "cat cafe",
+            # Dining Out - Restaurant only (pet cafe is in ENJOY)
+            "restaurant", "dining out", "brunch", "lunch", "dinner", "reservation",
+            "pet-friendly restaurant", "dine out",
             # Shopping for food (routes to DINE per architecture - not SHOP)
             "buy food", "order food", "get food", "food delivery"
         ],
