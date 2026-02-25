@@ -252,7 +252,9 @@ const CareFlowModal = ({
       setTicketId(result.ticket?.ticket_id || result.id);
       setIsSuccess(true);
       
-      toast.success('Request sent to Concierge!');
+      toast.success(`Request sent to Concierge® for ${petName}`, {
+        description: 'Check your inbox for updates.'
+      });
     } catch (error) {
       console.error('Care flow ticket error:', error);
       toast.error('Failed to submit request. Please try again.');
@@ -286,7 +288,7 @@ const CareFlowModal = ({
     }
   };
   
-  // Success state
+  // Success state - Shows confirmation with Concierge® and inbox notification
   if (isSuccess) {
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -299,13 +301,20 @@ const CareFlowModal = ({
             >
               <Check className="w-10 h-10" />
             </motion.div>
-            <h2 className="text-2xl font-bold mb-2">Request Sent!</h2>
+            <h2 className="text-2xl font-bold mb-2">Request Sent to Concierge®</h2>
             <p className="text-white/90 mb-2">
-              Your request for {petName} has been sent to Concierge.
+              Your request for {petName} has been received.
             </p>
-            <p className="text-white/70 text-sm mb-6">
-              We'll get back to you shortly.
+            <p className="text-white/70 text-sm mb-4">
+              Our Concierge® team will review and get back to you shortly with the best options.
             </p>
+            
+            {/* Inbox confirmation badge */}
+            <div className="flex items-center justify-center gap-2 mb-6 px-4 py-2 bg-white/10 rounded-full">
+              <Inbox className="w-4 h-4" />
+              <span className="text-sm">Added to your Inbox</span>
+            </div>
+            
             <div className="space-y-3">
               <Button 
                 onClick={() => window.location.href = `/inbox?ticket=${ticketId}`}
