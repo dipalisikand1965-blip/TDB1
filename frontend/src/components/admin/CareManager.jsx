@@ -845,7 +845,7 @@ const CareManager = ({ getAuthHeader }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {products.map((product) => (
-              <Card key={product.id} className="p-4">
+              <Card key={product.id} className={`p-4 ${product.good_for_tags?.length > 0 ? 'border-purple-200 bg-purple-50/30' : ''}`}>
                 <div className="flex items-start gap-3">
                   {product.image ? (
                     <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-lg bg-gray-100" />
@@ -856,22 +856,45 @@ const CareManager = ({ getAuthHeader }) => {
                   )}
                   <div className="flex-1">
                     <h4 className="font-semibold text-gray-900">{product.name}</h4>
-                    <p className="text-sm text-gray-500 capitalize">{product.care_type}</p>
+                    <p className="text-xs text-gray-500 capitalize">{product.subcategory?.replace(/_/g, ' ') || product.care_type}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="font-bold text-green-600">₹{product.price}</span>
                       {product.compare_price && (
-                        <span className="text-sm text-gray-400 line-through">₹{product.compare_price}</span>
+                        <span className="text-xs text-gray-400 line-through">₹{product.compare_price}</span>
                       )}
                     </div>
+                    {/* Good For Tags */}
+                    {product.good_for_tags?.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {product.good_for_tags.slice(0, 4).map(tag => (
+                          <Badge key={tag} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">{tag}</Badge>
+                        ))}
+                        {product.good_for_tags.length > 4 && (
+                          <Badge variant="outline" className="text-xs">+{product.good_for_tags.length - 4}</Badge>
+                        )}
+                      </div>
+                    )}
+                    {/* Intent Tags */}
+                    {product.intent_tags?.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {product.intent_tags.slice(0, 2).map(tag => (
+                          <Badge key={tag} variant="outline" className="text-xs bg-teal-50 text-teal-700 border-teal-200">{tag.replace(/_/g, ' ')}</Badge>
+                        ))}
+                      </div>
+                    )}
+                    {/* Status Badges */}
                     <div className="flex flex-wrap gap-1 mt-2">
                       {product.paw_reward_points > 0 && (
                         <Badge variant="outline" className="text-xs">🐾 {product.paw_reward_points} pts</Badge>
                       )}
                       {product.is_birthday_perk && (
-                        <Badge variant="outline" className="text-xs text-pink-600">🎂 Birthday Perk</Badge>
+                        <Badge variant="outline" className="text-xs text-pink-600">🎂 Birthday</Badge>
                       )}
                       {!product.in_stock && (
                         <Badge className="bg-red-100 text-red-600 text-xs">Out of Stock</Badge>
+                      )}
+                      {product.status === 'draft' && (
+                        <Badge className="bg-gray-100 text-gray-600 text-xs">Draft</Badge>
                       )}
                     </div>
                   </div>
@@ -888,14 +911,22 @@ const CareManager = ({ getAuthHeader }) => {
                         price: product.price?.toString() || '',
                         compare_price: product.compare_price?.toString() || '',
                         image: product.image || '',
+                        subcategory: product.subcategory || 'grooming_essentials',
+                        product_type: product.product_type || 'individual',
+                        good_for_tags: Array.isArray(product.good_for_tags) ? product.good_for_tags.join(', ') : '',
+                        intent_tags: Array.isArray(product.intent_tags) ? product.intent_tags.join(', ') : '',
+                        concierge_note: product.concierge_note || '',
+                        cta_label: product.cta_label || 'Ask Mira to Include',
                         care_type: product.care_type || 'grooming',
-                        subcategory: product.subcategory || '',
                         tags: Array.isArray(product.tags) ? product.tags.join(', ') : '',
                         pet_sizes: Array.isArray(product.pet_sizes) ? product.pet_sizes.join(', ') : '',
+                        status: product.status || 'active',
                         in_stock: product.in_stock !== false,
                         paw_reward_points: product.paw_reward_points || 0,
                         is_birthday_perk: product.is_birthday_perk || false,
-                        birthday_discount_percent: product.birthday_discount_percent?.toString() || ''
+                        birthday_discount_percent: product.birthday_discount_percent?.toString() || '',
+                        partner_vendor: product.partner_vendor || '',
+                        availability_cities: Array.isArray(product.availability_cities) ? product.availability_cities.join(', ') : ''
                       });
                       setShowProductModal(true);
                     }}
