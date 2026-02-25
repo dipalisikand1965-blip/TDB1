@@ -391,24 +391,10 @@ const MiraMessageHeader = ({
       <div className="mp-mira-avatar"><Sparkles /></div>
       <span className="mp-mira-name">Mira</span>
       
-      {/* Quick Reply Tiles */}
-      {msg.quickReplies && msg.quickReplies.length > 0 && (
-        <div className="mp-header-tiles">
-          {msg.quickReplies.map((chip, cIdx) => (
-            <button 
-              key={cIdx} 
-              onClick={() => { 
-                hapticFeedback?.chipTap?.(); 
-                onQuickReply(chip.value); 
-              }} 
-              className="mp-header-tile"
-              data-testid={`header-tile-${cIdx}`}
-            >
-              {chip.text}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Quick Reply Tiles - REMOVED: Now rendered in InteractionFooter only
+          Quick replies must be in ONE place (the interaction footer zone)
+          to prevent duplication and ensure proper state binding
+      */}
       
       {/* ═══════════════════════════════════════════════════════════════════════
           C° CONCIERGE INDICATOR - Status indicator per Bible Section 2
