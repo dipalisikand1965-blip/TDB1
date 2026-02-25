@@ -32,15 +32,16 @@ const OS_LAYERS = [
 
 /**
  * Pet Soul Badge - Golden badge showing soul score percentage
+ * Clicking opens MOJO modal (pet profile)
  */
-const PetSoulBadge = memo(({ pet, soulScore = 0, onClick }) => {
+const PetSoulBadge = memo(({ pet, soulScore = 0, onClick, onDropdownToggle, showDropdown, hasMultiplePets }) => {
   const petPhoto = pet?.photo || pet?.pet_photo || pet?.photo_url;
   const petName = pet?.name || 'Pet';
   
   return (
-    <div className="mira-pet-soul-section" onClick={onClick}>
-      {/* Pet Avatar with Soul Ring */}
-      <div className="soul-avatar-container">
+    <div className="mira-pet-soul-section">
+      {/* Pet Avatar with Soul Ring - Click opens MOJO modal */}
+      <div className="soul-avatar-container" onClick={onClick} style={{ cursor: 'pointer' }}>
         {/* Orange outer glow */}
         <div className="soul-avatar-glow" />
         
