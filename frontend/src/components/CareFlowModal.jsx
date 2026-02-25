@@ -1,15 +1,19 @@
 /**
  * CareFlowModal.jsx
  * 
- * GENERIC CARE FLOW MODAL
+ * GENERIC CARE FLOW MODAL for Concierge®
  * Renders any Care service flow based on provided schema.
  * Used for: Boarding & Daycare, Pet Sitting, Emergency Help, etc.
  * 
- * Follows the same pattern as GroomingFlowModal but is schema-driven.
+ * Features:
+ * - Auto-prefills address from user profile
+ * - Breed intelligence support
+ * - Creates ticket AND inbox entry for unified tracking
+ * - Concierge® branding throughout
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { X, ChevronRight, ChevronLeft, Check, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Check, Loader2, Sparkles, AlertCircle, Info, Inbox } from 'lucide-react';
 import { Dialog, DialogContent } from './ui/dialog';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -18,6 +22,7 @@ import { Textarea } from './ui/textarea';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_URL } from '../utils/api';
+import { getBreedIntelligence, getBreedGroomingTip } from '../utils/breedIntelligence';
 
 // Field Types constant
 const FIELD_TYPES = {
@@ -27,6 +32,7 @@ const FIELD_TYPES = {
   DATE: 'date',
   NUMBER: 'number'
 };
+
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // FIELD RENDERERS
