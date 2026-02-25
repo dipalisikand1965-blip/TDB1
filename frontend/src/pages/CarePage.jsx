@@ -229,7 +229,8 @@ const CarePage = () => {
   const [showWizard, setShowWizard] = useState(false);
   const [wizardStep, setWizardStep] = useState(1);
   const [userPets, setUserPets] = useState([]);
-  const [selectedPets, setSelectedPets] = useState([]); // Multi-pet support
+  const [selectedPet, setSelectedPet] = useState(null); // Currently selected pet
+  const [selectedPets, setSelectedPets] = useState([]); // Multi-pet support for bookings
   const [selectedType, setSelectedType] = useState(null);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
