@@ -180,6 +180,7 @@ The mira-demo page now uses a unified single horizontal top bar design:
 - [x] **Single Top Bar Header** - Unified header design implemented (Feb 25, 2026)
 
 ### P1 - Immediate
+- [ ] Fix Picks and Learn tabs functionality (not returning correct content)
 - [ ] Behavior Support FlowModal schema
 - [ ] Senior & Special Needs FlowModal schema
 - [ ] Nutrition Consults FlowModal schema
