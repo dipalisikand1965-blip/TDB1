@@ -6690,6 +6690,64 @@ Would you like me to find vets or pet pharmacies near you, or shall I have your 
             except Exception as soul_err:
                 logger.warning(f"[SOUL-FIRST] Error in soul extraction/write: {soul_err}")
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # INTELLIGENT FLOW MODAL TRIGGERS
+        # When user expresses booking intent, trigger the appropriate FlowModal
+        # This creates the "magic" - Mira understands and opens the right wizard
+        # ═══════════════════════════════════════════════════════════════════════════
+        user_input_lower = request.input.lower() if request.input else ""
+        
+        # Grooming booking intent → GroomingFlowModal
+        grooming_booking_phrases = ["book grooming", "book groomer", "schedule grooming", "need grooming", 
+                                   "grooming for", "groom my", "grooming appointment"]
+        if any(phrase in user_input_lower for phrase in grooming_booking_phrases):
+            response_data["flow_modal"] = {
+                "type": "grooming",
+                "trigger": True,
+                "pet_id": enriched_pet_context.get("id") if enriched_pet_context else None,
+                "pet_name": enriched_pet_context.get("name") if enriched_pet_context else None
+            }
+            response_data["ui_action"] = {
+                "type": "open_flow_modal",
+                "modal": "grooming",
+                "pet_id": enriched_pet_context.get("id") if enriched_pet_context else None
+            }
+            logger.info(f"[FLOW MODAL] Triggering GroomingFlowModal for booking intent")
+        
+        # Vet visit intent → VetVisitFlowModal
+        vet_booking_phrases = ["book vet", "vet appointment", "need vet", "vet checkup", "vet visit",
+                              "see a vet", "take to vet", "schedule vet"]
+        if any(phrase in user_input_lower for phrase in vet_booking_phrases):
+            response_data["flow_modal"] = {
+                "type": "vet_visit",
+                "trigger": True,
+                "pet_id": enriched_pet_context.get("id") if enriched_pet_context else None,
+                "pet_name": enriched_pet_context.get("name") if enriched_pet_context else None
+            }
+            response_data["ui_action"] = {
+                "type": "open_flow_modal",
+                "modal": "vet_visit",
+                "pet_id": enriched_pet_context.get("id") if enriched_pet_context else None
+            }
+            logger.info(f"[FLOW MODAL] Triggering VetVisitFlowModal for booking intent")
+        
+        # Care service intent → CareServiceFlowModal
+        care_booking_phrases = ["book care", "care service", "need care", "health checkup", 
+                               "vaccination", "dental", "wellness check"]
+        if any(phrase in user_input_lower for phrase in care_booking_phrases):
+            response_data["flow_modal"] = {
+                "type": "care_service",
+                "trigger": True,
+                "pet_id": enriched_pet_context.get("id") if enriched_pet_context else None,
+                "pet_name": enriched_pet_context.get("name") if enriched_pet_context else None
+            }
+            response_data["ui_action"] = {
+                "type": "open_flow_modal",
+                "modal": "care_service",
+                "pet_id": enriched_pet_context.get("id") if enriched_pet_context else None
+            }
+            logger.info(f"[FLOW MODAL] Triggering CareServiceFlowModal for booking intent")
+        
         return response_data
     except Exception as e:
         logger.error(f"Mira OS understand-with-products error: {e}")
