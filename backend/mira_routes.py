@@ -7766,6 +7766,11 @@ class MiraChatRequest(BaseModel):
     start_new_conversation: bool = False  # Flag to start fresh conversation
     previous_pillar: Optional[str] = None  # For cross-pillar context
     debug: bool = False  # Enable Picks Engine debug output (matched_synonyms, tags, scores)
+    
+    # NEW: Structured engine fields
+    ui_context: Optional[Dict[str, Any]] = None  # {active_tab, active_pillar, surface, draft_ticket_id}
+    conversation_history: Optional[List[Dict[str, str]]] = None  # [{role, content}]
+    user_id: Optional[str] = None
 
 class MiraPetContext(BaseModel):
     pet_id: str
