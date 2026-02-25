@@ -26,8 +26,8 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
-import { API_URL } from '../utils/api';
 import { getBreedIntelligence, getBreedGroomingTip } from '../utils/breedIntelligence';
+import useUniversalServiceCommand from '../hooks/useUniversalServiceCommand';
 import {
   GROOMING_FLOW_SCHEMAS,
   GROOMING_OPTIONS,

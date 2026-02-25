@@ -10,7 +10,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { X, ChevronRight, ChevronLeft, Check, Loader2, Sparkles, Stethoscope } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Check, Loader2, Sparkles, Stethoscope, Inbox } from 'lucide-react';
 import { Dialog, DialogContent } from './ui/dialog';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -18,7 +18,7 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
-import { API_URL } from '../utils/api';
+import useUniversalServiceCommand from '../hooks/useUniversalServiceCommand';
 import {
   VET_VISIT_FLOW_SCHEMA,
   VET_VISIT_OPTIONS,

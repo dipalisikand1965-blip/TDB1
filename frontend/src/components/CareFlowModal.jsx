@@ -21,7 +21,7 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
-import { API_URL } from '../utils/api';
+import useUniversalServiceCommand from '../hooks/useUniversalServiceCommand';
 import { getBreedIntelligence, getBreedGroomingTip } from '../utils/breedIntelligence';
 
 // Field Types constant
