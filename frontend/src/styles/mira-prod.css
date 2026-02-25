@@ -45,11 +45,20 @@
   --radius-xl: 20px;
   --radius-full: 9999px;
   
-  /* Sticky Header Offset - Total height of sticky header stack
-     Soul ticker (~44px) + Header (~80px) + OS Nav (~56px) = ~180px
-     Add buffer for safety */
-  --mira-header-offset: 180px;
-  --mira-header-offset-mobile: 160px;
+  /* ═══════════════════════════════════════════════════════════════════════════
+     MEASURED LAYOUT VARIABLES
+     These are updated by ResizeObserver in useMiraShell.js
+     DO NOT hardcode - let JavaScript measure and set these
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --mira-header-h: 0px;
+  --mira-interaction-footer-h: 0px;
+  
+  /* Fallback heights (used before measurement) */
+  --mira-header-fallback: 180px;
+  --mira-footer-fallback: 140px;
+  
+  /* Page spacing */
+  --page-bottom-space: 32px;
 }
 
 /* ========================================
