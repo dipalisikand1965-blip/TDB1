@@ -93,6 +93,11 @@ const TestScenariosPanel = lazy(() => import('../components/Mira/TestScenariosPa
 const HandoffSummary = lazy(() => import('../components/Mira/HandoffSummary'));
 const SoulFormModal = lazy(() => import('../components/Mira/SoulFormModal'));
 const MojoProfileModal = lazy(() => import('../components/Mira/MojoProfileModal'));
+
+// FlowModals - Intelligent booking wizards triggered by chat
+const GroomingFlowModal = lazy(() => import('../components/GroomingFlowModal'));
+const VetVisitFlowModal = lazy(() => import('../components/VetVisitFlowModal'));
+const CareServiceFlowModal = lazy(() => import('../components/CareServiceFlowModal'));
 const TodayPanel = lazy(() => import('../components/Mira/TodayPanel'));
 
 // Simple loading fallback for lazy components
