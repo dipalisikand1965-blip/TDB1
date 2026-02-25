@@ -120,25 +120,30 @@ const MiraCarePlan = ({
   // Handle booking action
   const handleBookService = async (recommendation) => {
     const petName = carePlan?.pet_name || propPetName || 'your pet';
+    const pet = {
+      id: petId,
+      name: petName,
+      breed: carePlan?.pet_breed
+    };
     
     setBookingInProgress(recommendation.id);
     
     try {
       // Create service desk ticket via Universal Service Command
       const result = await submitRequest({
+        type: recommendation.type.toUpperCase(),
         pillar: 'care',
-        requestType: recommendation.type.toUpperCase(),
-        petName: petName,
-        petId: petId,
-        title: recommendation.title,
-        description: `${recommendation.title}\n\nReason: ${recommendation.reason}`,
         entryPoint: 'mira_care_plan',
-        metadata: {
-          ...recommendation.metadata,
+        pet: pet,
+        details: {
+          service_type: recommendation.type,
+          recommendation_title: recommendation.title,
+          recommendation_reason: recommendation.reason,
           urgency: recommendation.urgency,
           mira_recommended: true,
-          service_type: recommendation.type
+          ...recommendation.metadata
         },
+        intent: `${recommendation.title} - Mira recommended`,
         showToast: false,
         navigateToInbox: false
       });
