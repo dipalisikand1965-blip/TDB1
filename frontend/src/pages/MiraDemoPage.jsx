@@ -546,6 +546,31 @@ const MiraDemoPage = () => {
   });
 
   // ═══════════════════════════════════════════════════════════════════════════════
+  // MIRA SHELL - Single source of truth for layout/footer state
+  // Implements the MiraAppShell state model from spec
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const {
+    state: shellState,
+    actions: shellActions,
+    selectors: shellSelectors,
+    refs: shellRefs,
+  } = useMiraShell(layerActiveTab);
+
+  // Sync tab changes to shell state
+  useEffect(() => {
+    if (layerActiveTab !== shellState.activeTab) {
+      shellActions.setTab(layerActiveTab);
+    }
+  }, [layerActiveTab, shellState.activeTab, shellActions]);
+
+  // Sync pet ID to shell
+  useEffect(() => {
+    if (pet?.id && pet.id !== shellState.activePetId) {
+      shellActions.setActivePet(pet.id);
+    }
+  }, [pet?.id, shellState.activePetId, shellActions]);
+
+  // ═══════════════════════════════════════════════════════════════════════════════
   // COMMIT ACTION HANDLER - With toast + chat confirmation (Bible Section 1.5)
   // ═══════════════════════════════════════════════════════════════════════════════
   const handleCommitAction = useCallback(async (action, actionName = 'Action', successMessage = 'Done!') => {
