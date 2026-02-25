@@ -265,20 +265,20 @@ const CareServiceFlowModal = ({
         .filter(Boolean);
       
       const result = await submitRequest({
+        type: serviceType.toUpperCase(),
         pillar: 'care',
-        requestType: serviceType.toUpperCase(),
-        petName: selectedPet?.name,
-        petId: selectedPet?._id || selectedPet?.id,
-        title: `${serviceConfig.title} for ${selectedPet?.name}`,
-        description: `Services requested: ${selectedOptionNames.join(', ')}${selectedLocation ? `\nLocation: ${selectedLocation}` : ''}${additionalNotes ? `\nNotes: ${additionalNotes}` : ''}`,
         entryPoint: 'care_service_flow_modal',
-        metadata: {
+        pet: selectedPet,
+        details: {
           service_type: serviceType,
+          services_requested: selectedOptionNames.join(', '),
           selected_options: selectedOptions,
           selected_location: selectedLocation,
+          additional_notes: additionalNotes,
           pet_breed: selectedPet?.breed,
           mira_recommended: miraRecommendation?.option
         },
+        intent: `${serviceConfig.title} request for ${selectedPet?.name}`,
         showToast: false,
         navigateToInbox: false
       });
