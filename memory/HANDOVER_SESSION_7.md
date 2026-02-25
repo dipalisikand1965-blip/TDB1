@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://soul-concierge.preview.emergentagent.com
+https://mira-soul-ai.preview.emergentagent.com
 
 ---
 

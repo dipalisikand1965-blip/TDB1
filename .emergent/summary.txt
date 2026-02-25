@@ -13,62 +13,58 @@ The user's most recent focus has been on perfecting the  page's layout and funct
 -   **Bible-Driven Development**: Adhere to principles in .
 -   **Mira OS Shell Architecture**: Implement a robust, measured, and state-driven layout for the  page to prevent UI bugs like content/footer overlap. The page should feature a single, clean top bar for navigation.
 -   **Contextual Quick Replies**: Quick reply chips must always match the specific question Mira is asking in the conversation.
--   **Picks & Learn Functionality**: The Picks and Learn tabs must provide correct, context-aware content (e.g., YouTube videos for a dog walk query).
+-   **Picks & Learn Functionality**: The Picks and Learn tabs must provide correct, context-aware content.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack React/FastAPI/MongoDB app. The last session involved an extensive and difficult refactor of the  page to fix severe layout issues (content overlapping the header, footer overlapping the chat composer). A new Mira OS Shell architecture was introduced, using a  to dynamically measure header/footer height and apply it as padding to the content area via CSS variables. While this fixed the core overlap bugs, the user was dissatisfied with the resulting multi-row header design. Quick reply logic was also addressed, with a final successful test showing contextually correct chips. The user's final request was to consolidate the complex multi-row header into a single, clean top bar and update project documentation.
+The agent has completed a massive overhaul of the  page. This included multiple header redesigns to achieve a user-approved single top bar, with distinct click actions for the pet modal (left) and pet switcher (right).
+
+More significantly, the agent conducted a deep Bible-driven refactor of the **Picks** and **Learn** functionalities. The **Picks** engine is now highly context-aware, correctly identifying conversational pillars (e.g., 'birthday' -> 'celebrate'), generating relevant suggestions, and adhering to the never empty rule by providing Concierge Arranges fallbacks. The **Learn** tab now correctly fetches and displays YouTube videos for educational queries.
+
+However, a bug was found where the **Learn** tab shows generic content instead of context-specific content (e.g., showing training videos for a birthday query). The agent identified the root cause and was in the middle of a frontend refactor to fix it when the user requested this summary.
 
 **Last working item**:
--   **Last item agent was working**: The user requested a major redesign of the  header to be a single, clean top bar for both mobile and desktop views. This involves refactoring the existing multi-row header stack (Soul Chips, Brand/Pet ID, OS Tabs) into one cohesive component.
--   **Status**: NOT STARTED
+-   **Last item agent was working**: Fixing a contextual bug in the  tab. The  component was showing generic training courses instead of content relevant to the current conversation (e.g., birthday). The agent identified that the panel fetches its own static data and was in the process of modifying  and  to pass the conversation-specific  from the chat response down as props.
+-   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: screenshot tool. The agent needs to capture both desktop and mobile views to verify the new single-bar header layout is responsive and visually correct.
+-   **Which testing method agent to use?**: screenshot tool. After completing the frontend refactor, the agent should test by sending a birthday query, navigating to the Learn tab, and capturing a screenshot to verify that birthday-related content is displayed.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Brittle UI Layout on  (P0 - Recurring)**
-    -   **Description**: The  page has suffered from recurring and severe layout bugs, including content rendering under the header and the footer overlapping the chat composer. While the agent implemented a robust Shell architecture to fix this, the user has been repeatedly unhappy with the visual result, indicating the implementation is not yet stable or aesthetically pleasing. The latest request for a single-bar header is another attempt to solve this.
-    -   **Attempted fixes**: Introduced a  hook with  to create a measured layout. Refactored CSS multiple times to fix stacking and  conflicts.
-    -   **Next debug checklist**: Implement the user's new single top bar design, ensuring it's fully responsive and leverages the measured shell architecture to prevent any content overlap. This will involve modifying , , and the header components (, , ).
-    -   **Why fix this issue and what will be achieved with the fix?**: To create a stable, visually appealing, and user-approved layout for the core operating system page of the application.
+-   **Issue 1: Learn Tab is Not Context-Aware (P0)**
+    -   **Description**: The user reported that when they ask about birthday, the  tab shows generic training content, not birthday-related videos or articles. The agent confirmed this is because the  component fetches static data from  and does not use the contextual  provided in the chat response's .
+    -   **Attempted fixes**: The agent started passing the contextual  from  as a prop to  and began modifying  to consume this prop.
+    -   **Next debug checklist**:
+        1.  Resume work in .
+        2.  Finish modifying the component to prioritize rendering the  prop when it's available.
+        3.  If  is empty or null, it should fall back to the existing behavior of fetching from .
+        4.  Test with a birthday query to confirm the fix.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is critical to fulfilling the Bible doctrine of a fully context-aware OS. The  tab must reflect the ongoing conversation.
     -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: Y
+    -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: frontend
     -   **Blocked on other issue**: None
 
--   **Issue 2:  and  Tabs are Not Functional (P1)**
-    -   **Description**: The user reported: the picks are not coming correct the learn is not coming with youtue when i asked for dog walk. This indicates the backend logic or frontend rendering for these core OS tabs is either broken or not implemented.
-    -   **Attempted fixes**: None in this session.
-    -   **Next debug checklist**:
-        1.  Investigate the API endpoints that power the  and  tabs.
-        2.  Trace the frontend code in  and its child components to see how data for these tabs is fetched and rendered.
-        3.  Test the dog walk scenario to reproduce the failure to show YouTube videos in the Learn tab.
-    -   **Why fix this issue and what will be achieved with the fix?**: These tabs are core features of the Mira OS experience. Fixing them is critical to fulfilling the product vision.
-    -   **Status**: NOT STARTED
-    -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: both
-    -   **Blocked on other issue**: None
-
--   **Issue 3: Production Deployment Failure (P2)**
-    -   **Description**: From the initial handoff, the production deployment was failing with an Nginx error.
+-   **Issue 2: Production Deployment Failure (P2)**
+    -   **Description**: From the initial handoff, the production deployment was failing with an Nginx error. No new information on this.
     -   **Status**: BLOCKED (on user/platform support confirmation).
     -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Blocked on other issue**: None.
 
 **In progress Task List**:
--   **Task 1: Implement Single Top Bar Header (P0)**
-    -   **Where to resume**: Refactor the JSX in  and the CSS in . Consolidate the , , and  components into a single visual row, following the user's image reference. Ensure it is responsive for desktop and mobile.
-    -   **What will be achieved with this?**: A clean, user-approved header layout that simplifies the UI.
-    -   **Status**: NOT STARTED
+-   **Task 1: Complete the Learn Tab Context Fix (P0)**
+    -   **Where to resume**: . The agent needs to complete the logic to render the  prop.
+    -   **What will be achieved with this?**: The  tab will display content that is directly relevant to the user's current conversation, fulfilling a core product requirement.
+    -   **Status**: IN PROGRESS
     -   **Should Test frontend/backend/both after fix?**: frontend
     -   **Blocked on something**: None.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
-*   **P1: Complete the Mira OS Shell Refactor**: The full state machine ( hook) proposed by the user spec needs to be completed. This includes implementing footer mode-switching per tab and ensuring quick replies are fully state-bound to . This will stabilize the UI and prevent future regressions.
-*   **P2: Update SSOT/PRD Document**: The user explicitly requested to update memorty for net agent too (). This needs to reflect the new Shell Architecture and other major changes.
+*   **P1: Update SSOT/PRD Document**: The user has requested a summary and SSOT update. After fixing the  bug, the agent must update  to reflect the massive changes to the Header, Picks, and Learn systems.
+*   **P2: Complete the Mira OS Shell Refactor**: The full state machine ( hook) proposed by the user spec needs to be completed to stabilize the UI and prevent future layout regressions.
 
 **Future Tasks:**
 *   Connect the  component to the backend.
@@ -79,16 +75,15 @@ The application is a full-stack React/FastAPI/MongoDB app. The last session invo
 *   Enable voice commands (ElevenLabs/OpenAI).
 
 **Completed work in this session**
-- **Verified Ticket Routing**: Confirmed that service tickets created from the Care pillar's FlowModals correctly appear in both the member's inbox and the admin service desk.
-- **Fixed  Layout Issues**:
-    - Implemented a Mira OS Shell architecture with a  hook and  to fix critical content and footer overlap bugs.
-    - Fixed an issue where individual header elements were stacking incorrectly by consolidating them into a single sticky container.
-- **Fixed Quick Reply Logic & UI**:
-    - Corrected backend pattern matching in  to generate contextually relevant quick reply options.
-    - Resolved a bug where quick replies were displayed in two places simultaneously (in the message card and the footer).
-    - Fixed a bug where quick reply chips were rendering as empty boxes.
-    - Successfully restored the user's preferred beautiful composer UI design.
-- **Verified Correct Quick Reply Behavior**: The final test confirmed that when Mira asks a question (e.g., at home or at a salon?), the correct, matching quick reply chips are displayed in the interaction footer.
+-   **Header Redesign & Refactor**: Implemented a new, unified single-top-bar header in  page, matching the user's visual spec. This involved multiple iterations to correctly handle click events for the MOJO Pet Modal (left side) and the Pet Switcher dropdown (right side).
+-   **Bible-Driven Picks Overhaul**:
+    -   **Fixed Pillar Detection**: Corrected logic in  to ensure user queries are mapped to the correct pillar (e.g., pet cafe now correctly maps to enjoy instead of dine).
+    -   **Implemented Never Empty Rule**: Fixed the picks engine in  to return context-aware Concierge Arranges cards when no direct catalog matches are found.
+    -   **Enhanced Pick Relevance**: Greatly improved the variety and relevance of picks for multiple scenarios, including birthday, grooming, pet cafes, and anxiety, by enhancing the respective pick generators.
+    -   **Fixed Frontend State Bug**: Corrected a major bug in  where the frontend was ignoring the contextual picks sent from the backend. The frontend now correctly merges these picks into its state.
+-   **Learn Tab YouTube Integration**:
+    -   Successfully integrated YouTube API calls into the main chat flow in .
+    -   The  tab now correctly fetches and displays YouTube videos for relevant queries (e.g., how to train my dog).
 
 **Earlier issues found/mentioned but not fixed**
 -   **Resend Domain Verification**:  needs verification in the user's Resend account.
@@ -96,54 +91,57 @@ The application is a full-stack React/FastAPI/MongoDB app. The last session invo
 -   **Auto-Prefill Address**: The code to pre-fill the user's address in the FlowModals has not been tested.
 
 **Known issue recurrence from previous fork**
--   **UI Layout Instability on **: This issue became a major recurring theme throughout this session. The agent and user went through numerous cycles of fixing and re-breaking the header and footer layout.
+-   **UI Layout Instability on **: This was a major recurring theme in the previous session. While the new header seems stable, the underlying Shell architecture is not fully complete, so the risk of layout regressions remains.
 -   **Recurrence count**: 5+
--   **Status**: IN PROGRESS (The core Shell fix is in place, but the visual implementation is still being iterated on).
+-   **Status**: IN PROGRESS (The core issue is being addressed by the Mira OS Shell task, which is pending).
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Mira OS Shell Architecture**: A new, critical pattern for the  page. It uses a React hook () and a  to dynamically measure the height of the sticky header and interaction footer. These heights are written to CSS variables (, ), which are then used to apply  and  to the main scrollable content canvas. This prevents the classic overlap issues with sticky/fixed elements.
--   **State Machine for UI**: The spec provided by the user outlines a comprehensive state machine for managing the  UI, including a  (hidden, prompt, active chat) and a  that is strictly bound to the active conversation question (). The implementation of this is in progress.
+-   **Bible-Driven Development**: The agent's work was dictated by a set of doctrine files (, etc.), requiring adherence to a complex product philosophy for all features, especially  and .
+-   **Context-Aware Pick Generation**: A core system where user intent is mapped to a pillar (e.g., Care, Celebrate). This pillar then drives a dynamic pick generator () to create relevant product/service suggestions.
+-   **Picks Fallback Logic**: To fulfill the Picks can never be empty rule, a Concierge Arranges fallback mechanism was implemented to generate service-ticket-based suggestions when no catalog items match a query.
+-   **Frontend/Backend State Synchronization**: A critical bug was fixed where the backend was correctly generating contextual data (), but the frontend was not consuming it. The fix involved modifying the  hook to merge this data into the frontend's state upon receiving a chat response.
 
 **key DB schema**
--   No changes made to the database schema in this session.
+-   No changes were made to the database schema in this session.
 
 **All files of reference**
--   : The main file for the Mira OS, heavily modified during the session.
--   : The primary CSS file for the mira-demo page, extensively changed to support the new shell architecture.
--   : Contains the new core logic for the measured layout.
--   : The project's source of truth, which the user has requested be updated.
+-   : The main entry point for chat, pillar detection, and response orchestration.
+-   : Contains the logic for generating all contextual Picks.
+-   : The main page for the Mira OS experience.
+-   : The component for the  tab, currently being fixed.
+-   : Handles chat submission and processes the backend response.
+-    and related doctrine files: The source of truth for all feature logic.
 
 **Critical Info for New Agent**
--   **Your immediate task is a UI refactor**: The user wants the multi-row header on the  page consolidated into a single, clean top bar, as per their image reference. This is the highest priority.
--   **The Mira OS Shell is the correct path forward**: The layout has been very fragile. The shell architecture (using  to measure and apply padding via CSS variables) is the technically correct solution that was being implemented. You must continue building on this foundation, not discard it. The user's request is a change *to the appearance* of the header, but it must still work *within the shell system*.
--   **The user is highly sensitive to UI/UX**: Phrases like awful, beautiful before, and fed up were used. Pay close attention to visual details and test thoroughly with screenshots.
--   **Quick replies are complex**: The logic is split between the backend () and frontend ( state). The final state of the last session had them working correctly, but the underlying state machine is incomplete. Be careful not to regress this functionality.
+-   **Your immediate task is to fix the  tab**. The user found a bug where it shows generic content. You need to complete the frontend refactor started by the previous agent in  to make it consume conversation-specific data passed down from .
+-   **Adhere to the Bible**: The user is highly focused on ensuring the app's behavior aligns with the doctrine documents. Any changes to , , or  must be cross-referenced with these documents.
+-   **Update Documentation**: The user has requested a summary and SSOT () update. Once the  bug is fixed, updating  is the next highest priority.
+-   **Picks are now robust**: The agent spent a significant amount of time fixing the  engine based on user feedback and testing. This system is now much more reliable and context-aware. Be careful not to regress it.
 
 **documents and test reports created in this job**
 -   None.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Complained the layout was awful with quick replies showing twice and the pet avatar being in the wrong place. Status: Addressed by agent.
-2.  **User**: Reported being fed up. Status: Acknowledged by agent.
-3.  **User**: Confirmed the agent should proceed with the full shell refactor. Status: Agent started implementation.
-4.  **User**: Pointed out content was still going under the header. Status: Addressed by agent.
-5.  **User**: Shared a screenshot showing the header was stuck and split into two pieces. Status: Addressed by agent.
-6.  **User**: Asked the agent to test and i will see what is happening. Status: Agent performed a test flow.
-7.  **User**: Said i dont know am i attempting to much as it isnt working for me. Status: Agent tried to clarify the issue.
-8.  **User**: Clarified the issues: the composer bar is too small (bar is small) and not the original beautiful design, and the  and  tabs are not working correctly. Status: Agent restored the composer design.
-9.  **User**: Shared a screenshot showing quick reply chips were empty purple boxes. Status: Addressed by agent.
-10. **User**: **Final Request**: Shared an image and asked the agent to create a clean, single top bar for the header and then update the SSOT/PRD memory. Status: **This is the current P0 task.**
+1.  **User**: Tested pet cafe query and noted issues. Status: Addressed by agent.
+2.  **User**: Tested birthday and noted only 1 pick. Status: Addressed by agent.
+3.  **User**: Tested anxiety and noted only 1 pick. Status: Addressed by agent.
+4.  **User**: Confirmed all PICKS tests were passing. Status: Acknowledged by agent.
+5.  **User**: Tested the  tab for a birthday query and sent a screenshot showing it displayed incorrect, generic training content. Status: This is the current P0 issue.
+6.  **User**: Confirmed the agent's analysis of the  bug was correct.
+7.  **User**: Acknowledged the agent's plan to fix the  bug.
+8.  **User**: Interrupted the agent's fix implementation to ask for a summary and SSOT update. Status: **This handover is fulfilling that request.**
+9.  **User**: Asked agent to do atleast 4-5 cases of birthday, grooming, pet cafe & edge cases from question bank. Status: Acknowledged by agent.
+10. **User**: Asked agent to check if picks read can ever be empty. Status: Acknowledged by agent.
 
 **Project Health Check:**
 -   **Broken**:
-    -   The  UI layout is in a fragile, half-refactored state and does not meet user expectations.
-    -   The  and  tabs are reportedly not functional.
-    -   Production deployment is likely still broken.
+    -   The  tab displays non-contextual content, which is a high-priority bug.
+    -   Production deployment is likely still broken (carry-over issue).
 -   **Mocked**:
-    -   The full Mira OS Shell state machine (footer modes, full quick reply context) is only partially implemented.
+    -   The full Mira OS Shell state machine (including footer modes) is only partially implemented.
 
 **3rd Party Integrations**
 -   Google Places API
@@ -156,11 +154,12 @@ The application is a full-stack React/FastAPI/MongoDB app. The last session invo
 -   **Testing agent used after significant changes**: NO
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None.
--   **Known regressions**: The  layout has regressed multiple times during the session's refactor attempts.
+-   **Known regressions**: None in this session, but the  layout remains a sensitive area prone to regressions.
 
 **Credentials to test flow:**
 -   **Member Login**:  / 
 -   **Admin Login**:  / 
 
 **What agent forgot to execute**
--   The agent did not complete the full implementation of the Mira OS Shell state model (Phases 2-4) as defined by the user's detailed specification, which includes mode-based footers and robust state-binding for quick replies. The focus shifted to iterative visual fixes requested by the user.</analysis>
+-   The agent was repeatedly interrupted before they could update the  file. This documentation is now significantly out of date and needs to be updated to reflect the new header architecture and the complete overhaul of the Picks/Learn systems.
+-   The full implementation of the  state model as defined in the original user spec (including footer mode-switching) remains pending.</analysis>
