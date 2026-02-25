@@ -989,8 +989,42 @@ def _generate_paperwork_picks(user_msg: str, pet_name: str, pet_context: Dict) -
 
 
 def _generate_advisory_picks(user_msg: str, pet_name: str, pet_context: Dict) -> List[Dict]:
-    """Generate picks for ADVISORY pillar - expert consultation, nutrition, behavior"""
+    """Generate picks for ADVISORY pillar - expert consultation, nutrition, behavior, anxiety"""
     picks = []
+    
+    # ANXIETY / Fear - specific handling
+    if any(kw in user_msg for kw in ["anxiety", "anxious", "scared", "fear", "thunder", "firework", "loud noise", "storm", "nervous", "stress", "worried"]):
+        picks.append({
+            "type": "service",
+            "category": "behavior_specialist",
+            "title": f"Anxiety Specialist for {pet_name}",
+            "subtitle": "Certified animal behaviorist consultation",
+            "icon": "🧠",
+            "reason": "Professional help for anxiety management",
+            "cta": "Book Session",
+            "service_type": "anxiety_consultation"
+        })
+        picks.append({
+            "type": "product",
+            "category": "calming",
+            "title": f"Calming Products for {pet_name}",
+            "subtitle": "Thunder shirts, calming treats, diffusers",
+            "icon": "🌿",
+            "reason": "Proven anxiety relief solutions",
+            "cta": "View Options",
+            "service_type": "calming_products"
+        })
+        picks.append({
+            "type": "service",
+            "category": "training",
+            "title": f"Desensitization Training",
+            "subtitle": "Gradual exposure therapy program",
+            "icon": "🎓",
+            "reason": f"Help {pet_name} overcome fears",
+            "cta": "Start Program",
+            "service_type": "desensitization_training"
+        })
+        return picks  # Return anxiety-specific picks
     
     # Nutrition advice
     if any(kw in user_msg for kw in ["nutrition", "diet", "food advice", "what to feed", "eating"]):
