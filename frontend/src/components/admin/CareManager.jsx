@@ -514,7 +514,7 @@ const CareManager = ({ getAuthHeader }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Heart className="w-7 h-7 text-pink-600" />
@@ -522,12 +522,12 @@ const CareManager = ({ getAuthHeader }) => {
           </h2>
           <p className="text-gray-500">Manage care requests, partners, products & bundles</p>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={fetchAllData} variant="outline">
+        <div className="flex gap-2 flex-wrap">
+          <Button onClick={fetchAllData} variant="outline" size="sm">
             <RefreshCw className="w-4 h-4 mr-2" /> Refresh
           </Button>
-          <Button onClick={seedProducts} variant="outline">
-            <Download className="w-4 h-4 mr-2" /> Seed Data
+          <Button onClick={seedComprehensiveCare} className="bg-gradient-to-r from-purple-600 to-pink-600 text-white" size="sm">
+            <Sparkles className="w-4 h-4 mr-2" /> Seed Care Products
           </Button>
         </div>
       </div>
