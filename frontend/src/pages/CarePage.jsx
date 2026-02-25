@@ -29,12 +29,18 @@ import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
 // NEW: Mira Care Plan - Proactive soul-driven recommendations
 import MiraCarePlan from '../components/MiraCarePlan';
-// NEW: Care Service Flow Modal - Full options for each service
+// NEW: Care Service Flow Modal - Full options for each service (legacy)
 import CareServiceFlowModal from '../components/CareServiceFlowModal';
 // NEW: Grooming Flow Modal - Detailed 6-step wizard for grooming
 import GroomingFlowModal from '../components/GroomingFlowModal';
 // NEW: Vet Visit Flow Modal - Detailed wizard for vet visits
 import VetVisitFlowModal from '../components/VetVisitFlowModal';
+// NEW: Generic Care Flow Modal - For Boarding, Pet Sitting, Emergency
+import CareFlowModal from '../components/CareFlowModal';
+// NEW: Flow schemas for Care services
+import BOARDING_DAYCARE_FLOW_SCHEMA, { buildBoardingTicketPayload } from '../schemas/boardingDaycareFlows';
+import PET_SITTING_FLOW_SCHEMA, { buildPetSittingTicketPayload } from '../schemas/petSittingFlows';
+import EMERGENCY_HELP_FLOW_SCHEMA, { buildEmergencyTicketPayload } from '../schemas/emergencyHelpFlows';
 // NEW: FitPage-style engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
 import {
