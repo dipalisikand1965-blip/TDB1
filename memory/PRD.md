@@ -93,6 +93,8 @@ No direct booking. No pricing display. All requests go through Concierge®.
 | `/app/frontend/src/components/GroomingFlowModal.jsx` | Custom 6-step grooming wizard with breed intelligence |
 | `/app/frontend/src/components/VetVisitFlowModal.jsx` | Custom 5-step vet visit wizard |
 | `/app/frontend/src/components/CareFlowModal.jsx` | Generic flow modal for any schema |
+| `/app/frontend/src/components/CareServiceFlowModal.jsx` | Service selection modal (uses unified service command) |
+| `/app/frontend/src/hooks/useUniversalServiceCommand.js` | **CRITICAL** Unified service command hook - all modals must use this |
 | `/app/frontend/src/schemas/groomingFlows.js` | Grooming schema + options + payload builder |
 | `/app/frontend/src/schemas/vetVisitFlows.js` | Vet visit schema |
 | `/app/frontend/src/schemas/boardingDaycareFlows.js` | Boarding schema |
