@@ -1764,7 +1764,9 @@ async def get_pillar_picks(
     # This shows the breadth of what Concierge® can do for users
     # ═══════════════════════════════════════════════════════════════════════════════
     
-    catalogue_picks = picks[:5]  # Top 5 catalogue items
+    # For Care pillar, catalogue_picks is already set from comprehensive products
+    if pillar != "care" or not catalogue_picks:
+        catalogue_picks = picks[:5]  # Top 5 catalogue items
     
     # Generate Concierge picks from our detailed suggestions
     concierge_picks = []
