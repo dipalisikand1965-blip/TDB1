@@ -3677,7 +3677,7 @@ const MiraDemoPage = () => {
           STICKY HEADER SECTION - All header elements grouped together
           Stays fixed at top when used in modal or when scrolling
           ═══════════════════════════════════════════════════════════════════ */}
-      <div className="mira-sticky-header">
+      <div className="mira-sticky-header" ref={shellRefs.headerRef}>
         {/* ═══════════════════════════════════════════════════════════════════
             BACK TO PILLAR - Shows when user came from a pillar page
             Helps users return to where they were browsing
