@@ -520,29 +520,54 @@ export const fetchMoodContext = async (message, petName) => {
  * @returns {Promise<object>} - Intent data
  */
 export const routeIntent = async ({ userId, petId, query, pet, token, userCity }) => {
-  const response = await fetch(`${API_URL}/api/mira/route_intent`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` })
-    },
-    body: JSON.stringify({
-      parent_id: userId || 'DEMO-PARENT',
-      pet_id: petId,
-      utterance: query,
-      source_event: 'search',
-      device: 'web',
-      pet_context: {
-        name: pet.name,
-        breed: pet.breed,
-        age_years: parseInt(pet.age) || 3,
-        allergies: Array.isArray(pet.sensitivities) ? pet.sensitivities : (pet.sensitivities ? [pet.sensitivities] : []),
-        notes: Array.isArray(pet.traits) ? pet.traits : (pet.traits ? [pet.traits] : []),
-        city: pet?.city || pet?.location?.city || userCity || 'Mumbai'
-      }
-    })
-  });
-  return response.json();
+  try {
+    const response = await fetch(`${API_URL}/api/mira/route_intent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` })
+      },
+      body: JSON.stringify({
+        parent_id: userId || 'DEMO-PARENT',
+        pet_id: petId || 'DEMO-PET',
+        utterance: query || '',
+        source_event: 'search',
+        device: 'web',
+        pet_context: {
+          name: pet?.name || 'Pet',
+          breed: pet?.breed || 'Mixed',
+          age_years: parseInt(pet?.age) || 3,
+          allergies: Array.isArray(pet?.sensitivities) ? pet.sensitivities : (pet?.sensitivities ? [pet.sensitivities] : []),
+          notes: Array.isArray(pet?.traits) ? pet.traits : (pet?.traits ? [pet.traits] : []),
+          city: pet?.city || pet?.location?.city || userCity || 'Mumbai'
+        }
+      })
+    });
+    
+    if (!response.ok) {
+      console.error('[ROUTE INTENT] Server error:', response.status);
+      // Return a default intent classification on error
+      return {
+        pillar: 'General',
+        intent_primary: 'GENERAL_QUERY',
+        intent_secondary: [],
+        life_state: 'EXPLORE',
+        channel: 'Mira_OS'
+      };
+    }
+    
+    return response.json();
+  } catch (error) {
+    console.error('[ROUTE INTENT] Error:', error);
+    // Return default on network error
+    return {
+      pillar: 'General',
+      intent_primary: 'GENERAL_QUERY',
+      intent_secondary: [],
+      life_state: 'EXPLORE',
+      channel: 'Mira_OS'
+    };
+  }
 };
 
 /**
