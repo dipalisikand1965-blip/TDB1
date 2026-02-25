@@ -4163,7 +4163,7 @@ async def get_concierge_home(
     - recent_threads: Recent conversation threads
     """
     db = _db
-    if not db:
+    if db is None:
         return {
             "status": {"is_live": False, "status_text": "Connecting...", "message": "Database not connected"},
             "active_requests": [],
