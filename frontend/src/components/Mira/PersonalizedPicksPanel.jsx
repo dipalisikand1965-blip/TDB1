@@ -1055,12 +1055,9 @@ const PersonalizedPicksPanel = ({
   };
   
   // Flow single pick to chat - creates ticket and adds message to chat
+  // UNIFIED SERVICE FLOW: Always creates a service ticket for concierge
   const flowPickToChat = async (pick, pickType = 'catalogue') => {
     console.log('[PersonalizedPicksPanel] flowPickToChat called:', { pick, pickType, hasOnPickClick: !!onPickClick });
-    if (!onPickClick) {
-      console.warn('[PersonalizedPicksPanel] onPickClick callback not provided!');
-      return;
-    }
     
     hapticFeedback.success();
     
@@ -1074,10 +1071,34 @@ const PersonalizedPicksPanel = ({
       timestamp: new Date().toISOString()
     };
     
-    console.log('[PersonalizedPicksPanel] Calling onPickClick with:', pickData);
+    // UNIFIED SERVICE FLOW: Create a service ticket for this pick
+    try {
+      await submitRequest({
+        type: 'PICK_REQUEST',
+        pillar: activePillar || 'general',
+        message: `I'd like to proceed with: ${pick.name || pick.title}`,
+        context: {
+          pick_id: pick.id || pick.pick_id,
+          pick_name: pick.name || pick.title,
+          pick_type: pickType,
+          pick_description: pick.description,
+          pick_price: pick.price || pick.price_display
+        },
+        pet: { id: pet?.id, name: pet?.name },
+        entryPoint: 'picks_panel',
+        navigateToInbox: true,
+        showToast: true
+      });
+      console.log('[PersonalizedPicksPanel] Service ticket created for pick:', pick.name);
+    } catch (err) {
+      console.error('[PersonalizedPicksPanel] Error creating service ticket:', err);
+    }
     
-    // Call the callback to flow pick into chat
-    onPickClick(pickData);
+    // Also call the legacy callback if provided (for backwards compatibility)
+    if (onPickClick) {
+      console.log('[PersonalizedPicksPanel] Calling onPickClick with:', pickData);
+      onPickClick(pickData);
+    }
     
     // Close the panel
     onClose();
