@@ -1193,7 +1193,8 @@ async def get_proactive_alerts(pet_id: str, user_email: str = None):
             "grooming": len(grooming_alerts),
             "health_checkin": len(health_checkin_alerts),
             "seasonal": len(seasonal_alerts),
-            "reorder": len(reorder_alerts)
+            "reorder": len(reorder_alerts),
+            "meta_proactive": len(meta_alerts)
         },
         "generated_at": datetime.now(timezone.utc).isoformat()
     }
