@@ -580,7 +580,8 @@ const CarePage = () => {
       <MiraCarePlan
         petId={selectedPet?._id || selectedPet?.id}
         petName={selectedPet?.name}
-        petBreed={selectedPet?.breed}
+        pet={selectedPet}
+        user={user}
         token={token}
       />
 
