@@ -12641,6 +12641,107 @@ Is there anything else I can help you with while you wait?"""
         return add_picks_to_response(response_obj)
     
     # ═══════════════════════════════════════════════════════════════════════════
+    # BIRTHDAY/CELEBRATE CONTEXT PRESERVATION
+    # When user says "birthday party for [pet]" then follows up with location
+    # preference like "home" or "at a venue", we MUST preserve the celebrate context
+    # ═══════════════════════════════════════════════════════════════════════════
+    is_birthday_party_request = any(kw in user_msg_lower for kw in [
+        "birthday party", "birthday for", "plan a birthday", "celebrate birthday",
+        "birthday celebration", "party for", "pawty for", "pawty party"
+    ])
+    
+    # Check if this is a CONTINUATION of a birthday context
+    is_home_party_context = any(kw in user_msg_lower for kw in [
+        "home", "at home", "home with", "at my place", "our place", "home party",
+        "crew", "gang", "family", "the gang", "the crew"
+    ])
+    
+    # Check if previous context was celebrate/birthday
+    was_celebrate_context = (
+        original_intent == "birthday_party" or 
+        (context_data and context_data.get("pillar") == "celebrate") or
+        (awaiting and "birthday" in str(awaiting).lower())
+    )
+    
+    # If user said "home with the crew" or similar AFTER a birthday request, 
+    # this is a HOME BIRTHDAY PARTY, not a restaurant search!
+    if is_home_party_context and was_celebrate_context:
+        logger.info(f"[BIRTHDAY CONTEXT] Home party continuation for {pet_name}")
+        
+        # Generate home birthday party response
+        home_party_response = f"""Perfect! A birthday party at home for **{pet_name}** — that's going to be special. 🎂
+
+Here's what I can help arrange:
+
+**🏠 Home Party Essentials**
+• Dog-safe birthday cake (matching {pet_name}'s dietary needs)
+• Party snacks for {pet_name} + any furry guests
+• Birthday bandana or outfit
+• Decorations (pet-safe, no small parts)
+
+**📸 Capture the Moment**
+• Pet photographer (home visit)
+• Party games & activities
+
+**🐾 Pre-Party Prep**
+• Grooming session before the big day
+• Safety check of party space
+
+Which of these would you like me to arrange first?"""
+        
+        return add_picks_to_response({
+            "success": True,
+            "response": home_party_response,
+            "session_id": session_id,
+            "pillar": "celebrate",
+            "intent": "home_birthday_party",
+            "awaiting": "party_element_selection",
+            "conversation_contract": {
+                "mode": "clarify",
+                "quick_replies": [
+                    {"label": "Arrange the cake", "action": "send_message", "payload_text": "Arrange a birthday cake"},
+                    {"label": "Book photographer", "action": "send_message", "payload_text": "Book a pet photographer"},
+                    {"label": "Pre-party grooming", "action": "send_message", "payload_text": "Book grooming before the party"},
+                    {"label": "Handle everything", "action": "send_message", "payload_text": "Handle all the party planning"}
+                ]
+            },
+            "products": [],
+            "picks": {
+                "type": "celebrate_home_party",
+                "title": f"Birthday Party Picks for {pet_name}",
+                "items": [
+                    {"name": "Dog-safe birthday cake", "category": "food", "service_type": "birthday_cake"},
+                    {"name": "Party snack platter", "category": "food", "service_type": "party_snacks"},
+                    {"name": "Birthday outfit/bandana", "category": "accessories", "service_type": "birthday_accessories"},
+                    {"name": "Pet photographer", "category": "services", "service_type": "pet_photography"},
+                    {"name": "Pre-party grooming", "category": "services", "service_type": "grooming_celebration"}
+                ]
+            },
+            "services": [
+                {"id": "arrange_cake", "name": "Arrange Birthday Cake", "type": "concierge"},
+                {"id": "book_photographer", "name": "Book Pet Photographer", "type": "concierge"},
+                {"id": "party_setup", "name": "Party Setup Coordination", "type": "concierge"},
+                {"id": "handle_all", "name": "Handle Everything", "type": "concierge"}
+            ]
+        })
+    
+    # If this is a NEW birthday party request, save context for continuation
+    if is_birthday_party_request and not awaiting:
+        logger.info(f"[BIRTHDAY PARTY] New request for {pet_name}")
+        
+        # Save conversation state for birthday context
+        try:
+            from mira_session_persistence import update_conversation_state
+            await update_conversation_state(session_id, {
+                "original_intent": "birthday_party",
+                "awaiting_response": "party_location",
+                "pending_action": "plan_birthday_party",
+                "context_data": {"pet_name": pet_name, "pillar": "celebrate", "known_allergies": known_allergies}
+            })
+        except Exception as e:
+            logger.warning(f"[CONV STATE] Could not save birthday state: {e}")
+    
+    # ═══════════════════════════════════════════════════════════════════════════
     # MEAL PLAN INTENT DETECTION - Before general flow
     # Lead with diet type + weight, NOT allergies
     # ═══════════════════════════════════════════════════════════════════════════
