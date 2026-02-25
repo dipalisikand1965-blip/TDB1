@@ -27,13 +27,10 @@ import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import TransformationStories from '../components/TransformationStories';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
-// NEW: Grooming Flow Modal
-import GroomingFlowModal from '../components/GroomingFlowModal';
-import GroomingEntryCards from '../components/GroomingEntryCards';
+// NEW: Mira Care Plan - Proactive soul-driven recommendations
+import MiraCarePlan from '../components/MiraCarePlan';
 // NEW: FitPage-style engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
-import ConversationalEntry from '../components/ConversationalEntry';
-import QuickWinTip from '../components/QuickWinTip';
 import {
   Scissors, PawPrint, GraduationCap, Stethoscope, AlertTriangle, Heart,
   ClipboardList, MapPin, Calendar, Clock, CheckCircle, MessageCircle,
