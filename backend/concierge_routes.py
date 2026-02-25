@@ -4135,3 +4135,128 @@ async def get_member_health_vault(email: str):
     
     return {"health_vault": health_data}
 
+
+
+# ═══════════════════════════════════════════════════════════════════════════════════
+# OS CONCIERGE HOME ENDPOINT
+# This powers the CONCIERGE tab in the MiraDemoPage OS UI
+# Returns status, active requests, and recent threads for the user
+# ═══════════════════════════════════════════════════════════════════════════════════
+
+os_router = APIRouter(prefix="/api/os/concierge", tags=["OS Concierge"])
+
+def set_os_concierge_db(db):
+    """Set the database reference for OS Concierge endpoints"""
+    global _db
+    _db = db
+
+@os_router.get("/home")
+async def get_concierge_home(
+    user_id: str = Query(..., description="User ID or email"),
+    pet_id: str = Query("all", description="Pet ID or 'all' for all pets")
+):
+    """
+    Get Concierge home screen data for the OS tab.
+    Returns:
+    - status: Live/offline status of concierge
+    - active_requests: User's active service requests
+    - recent_threads: Recent conversation threads
+    """
+    db = _db
+    if not db:
+        return {
+            "status": {"is_live": False, "status_text": "Connecting...", "message": "Database not connected"},
+            "active_requests": [],
+            "recent_threads": []
+        }
+    
+    try:
+        # Determine if concierge is live (based on current time - 9 AM to 9 PM)
+        from datetime import datetime, timezone
+        now = datetime.now(timezone.utc)
+        hour = now.hour
+        is_live = 3 <= hour <= 15  # 9 AM to 9 PM IST (UTC+5:30)
+        
+        status = {
+            "is_live": is_live,
+            "status_text": "Live Now" if is_live else "Offline",
+            "message": None if is_live else "We're offline, but your request is queued. We'll respond within 2 hours."
+        }
+        
+        # Build query for user's requests
+        user_query = {"$or": [
+            {"user_id": user_id},
+            {"customer_email": user_id},
+            {"created_by": user_id}
+        ]}
+        
+        # Add pet filter if specific pet
+        if pet_id and pet_id != "all":
+            user_query["pet_id"] = pet_id
+        
+        # Fetch active requests from service_desk_tickets
+        active_requests_cursor = db.service_desk_tickets.find(
+            {**user_query, "status": {"$in": ["pending", "open", "in_progress", "awaiting_response"]}},
+            {"_id": 0}
+        ).sort("created_at", -1).limit(10)
+        active_tickets = await active_requests_cursor.to_list(10)
+        
+        # Format active requests for UI
+        active_requests = []
+        for ticket in active_tickets:
+            # Map status to display colors
+            status_map = {
+                "pending": {"text": "Awaiting Review", "color": "amber"},
+                "open": {"text": "In Queue", "color": "blue"},
+                "in_progress": {"text": "Working on it", "color": "purple"},
+                "awaiting_response": {"text": "Options Ready!", "color": "green"}
+            }
+            status_info = status_map.get(ticket.get("status", "pending"), {"text": "Pending", "color": "gray"})
+            
+            active_requests.append({
+                "id": ticket.get("ticket_id") or ticket.get("id"),
+                "title": ticket.get("subject") or ticket.get("service_type", "Request").replace("_", " ").title(),
+                "pet_name": ticket.get("pet_name"),
+                "pet_id": ticket.get("pet_id"),
+                "timestamp": ticket.get("created_at"),
+                "status_display": status_info,
+                "pillar": ticket.get("pillar") or ticket.get("category"),
+                "icon": ticket.get("icon") or "message-circle"
+            })
+        
+        # Fetch recent threads from unified_inbox
+        recent_threads_cursor = db.unified_inbox.find(
+            user_query,
+            {"_id": 0}
+        ).sort("updated_at", -1).limit(5)
+        recent_inbox = await recent_threads_cursor.to_list(5)
+        
+        # Format threads for UI
+        recent_threads = []
+        for thread in recent_inbox:
+            recent_threads.append({
+                "id": thread.get("thread_id") or thread.get("id"),
+                "title": thread.get("subject") or thread.get("preview", "Conversation")[:50],
+                "preview": thread.get("preview") or thread.get("messages", [{}])[-1].get("content", "")[:100] if thread.get("messages") else "",
+                "timestamp": thread.get("updated_at") or thread.get("created_at"),
+                "unread": thread.get("unread", False),
+                "pet_name": thread.get("pet_name"),
+                "pet_id": thread.get("pet_id")
+            })
+        
+        logger.info(f"[OS CONCIERGE HOME] user_id={user_id}, pet_id={pet_id}, active={len(active_requests)}, threads={len(recent_threads)}")
+        
+        return {
+            "status": status,
+            "active_requests": active_requests,
+            "recent_threads": recent_threads
+        }
+        
+    except Exception as e:
+        logger.error(f"[OS CONCIERGE HOME] Error: {e}")
+        return {
+            "status": {"is_live": False, "status_text": "Error", "message": str(e)},
+            "active_requests": [],
+            "recent_threads": []
+        }
+
