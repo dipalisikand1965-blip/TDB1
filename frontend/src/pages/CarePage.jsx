@@ -637,15 +637,27 @@ const CarePage = () => {
                 <button
                   key={type.id}
                   onClick={() => {
-                    // Open dedicated FlowModal for grooming and vet visits
-                    if (type.id === 'grooming') {
-                      setShowGroomingFlowModal(true);
-                    } else if (type.id === 'vet_clinic_booking') {
-                      setShowVetVisitFlowModal(true);
-                    } else {
-                      // Use legacy CareServiceFlowModal for other services
-                      setBookingServiceType(type.id);
-                      setShowBookingModal(true);
+                    // Open dedicated FlowModal for each Care service
+                    switch(type.id) {
+                      case 'grooming':
+                        setShowGroomingFlowModal(true);
+                        break;
+                      case 'vet_clinic_booking':
+                        setShowVetVisitFlowModal(true);
+                        break;
+                      case 'boarding_daycare':
+                        setShowBoardingFlowModal(true);
+                        break;
+                      case 'pet_sitting':
+                        setShowPetSittingFlowModal(true);
+                        break;
+                      case 'emergency_help':
+                        setShowEmergencyFlowModal(true);
+                        break;
+                      default:
+                        // Use legacy CareServiceFlowModal for other services
+                        setBookingServiceType(type.id);
+                        setShowBookingModal(true);
                     }
                   }}
                   className={`group p-4 sm:p-5 bg-white rounded-2xl border-2 border-gray-100 hover:border-teal-200 hover:shadow-lg active:scale-[0.98] transition-all duration-300 text-left`}
