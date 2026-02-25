@@ -387,6 +387,7 @@ const useChatSubmit = (config) => {
       // ═══════════════════════════════════════════════════════════════════════════
       // FLOW MODAL TRIGGERS - THE MAGIC OF INTELLIGENT ROUTING
       // When Mira detects booking intent, auto-open the right FlowModal wizard
+      // This creates the unified OS experience - chat intent → UI action
       // ═══════════════════════════════════════════════════════════════════════════
       if (data.flow_modal?.trigger) {
         console.log('[FLOW MODAL] Triggering:', data.flow_modal.type, 'for pet:', data.flow_modal.pet_name);
@@ -403,6 +404,12 @@ const useChatSubmit = (config) => {
         } else if (modalType === 'care_service' && typeof setShowCareServiceFlowModal === 'function') {
           setShowCareServiceFlowModal(true);
           console.log('[FLOW MODAL] ✨ Opening CareServiceFlowModal');
+        }
+        
+        // Activate the corresponding OS tab for coherent experience
+        if (data.active_tab && typeof setActiveOSTab === 'function') {
+          setActiveOSTab(data.active_tab);
+          console.log('[OS TAB] ✨ Activating tab:', data.active_tab);
         }
         
         // Still show Mira's response, but don't return early
