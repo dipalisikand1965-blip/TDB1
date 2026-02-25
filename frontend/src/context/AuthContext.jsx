@@ -135,7 +135,7 @@ export const AuthProvider = ({ children }) => {
    */
   const initiateGoogleLogin = () => {
     // After login, land on Dashboard - the member hub
-    const redirectUrl = window.location.origin + '/dashboard';
+    const redirectUrl = `${window.location.origin}/dashboard`;
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
 
