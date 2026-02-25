@@ -17816,6 +17816,25 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                     # Filter to only educational/informational products
                     products = [p for p in products if p.get("is_guide") or p.get("is_educational")]
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # CONTEXT GUARDRAIL: Clear nearby_places for service booking conversations
+        # Dog walker, groomer, vet appointments don't need restaurant/cafe suggestions
+        # ═══════════════════════════════════════════════════════════════════════════
+        service_booking_keywords = ["walker", "walking", "groomer", "grooming", "vet", "vaccination", "sitter", "boarding"]
+        is_service_booking = any(kw in user_message.lower() for kw in service_booking_keywords)
+        
+        # Also check conversation history for service booking context
+        if request.conversation_history:
+            for msg in request.conversation_history[-5:]:
+                if any(kw in str(msg.get("content", "")).lower() for kw in service_booking_keywords):
+                    is_service_booking = True
+                    break
+        
+        if is_service_booking:
+            # Don't show restaurants/cafes when user is booking a service
+            nearby_places_data = None
+            logger.info(f"[PLACES GUARDRAIL] Cleared nearby_places for service booking context")
+        
         response_data = {
             "response": response,
             "session_id": session_id,
