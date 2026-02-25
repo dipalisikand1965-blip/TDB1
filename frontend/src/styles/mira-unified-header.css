@@ -337,13 +337,18 @@
 }
 
 /* ========================================
-   RIGHT SECTION (Weather + Profile)
+   RIGHT SECTION (Weather + Pet Switcher)
    ======================================== */
 .mira-right-section {
   display: flex;
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+}
+
+/* Pet Switcher Wrapper */
+.mira-pet-switcher-wrapper {
+  position: relative;
 }
 
 /* Weather Display */
