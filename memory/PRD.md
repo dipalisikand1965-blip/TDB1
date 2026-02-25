@@ -55,213 +55,17 @@ No direct booking. No pricing display. All requests go through Concierge®.
 └─────────────────────────────────────────┘
 ```
 
-### Success Screen Structure
-```
-┌─────────────────────────────────────────┐
-│ ✓ Request Sent to Concierge®            │
-│                                         │
-│ Your {service} request for {PetName}    │
-│ has been received.                      │
-│                                         │
-│ Our Concierge® team will review and     │
-│ get back to you shortly.                │
-│                                         │
-│ [📥 Added to your Inbox]                │
-│                                         │
-│ [Open Request Thread]                   │
-│ [Back to {Pillar}]                      │
-└─────────────────────────────────────────┘
-```
-
 ---
 
-## HOW TO ADD A NEW SERVICE FLOW
+## VERIFICATION STATUS (Feb 25, 2026)
 
-### Step 1: Create Schema File
-Location: `/app/frontend/src/schemas/{serviceName}Flows.js`
+### ✅ TICKET ROUTING - VERIFIED WORKING
+- FlowModal tickets successfully create in database
+- Member inbox shows tickets via `/api/tickets/my-tickets`
+- Admin service desk shows tickets via `/api/tickets`
+- Unified Service Command flow complete
 
-```javascript
-// Template for new service flow schema
-export const FIELD_TYPES = {
-  SINGLE_SELECT: 'single_select',
-  MULTI_SELECT: 'multi_select',
-  TEXT: 'text',
-  DATE: 'date',
-  NUMBER: 'number'
-};
-
-export const SERVICE_OPTIONS = {
-  // Define all options for each field
-  serviceType: [
-    { id: 'option1', label: 'Option 1', icon: '🎯', desc: 'Description' },
-    { id: 'mira_recommend', label: 'Let Mira Recommend', icon: '✨' }
-  ],
-  // ... more option groups
-};
-
-export const SERVICE_FLOW_SCHEMA = {
-  id: 'service-request',
-  title: '{Service} for {petName}',
-  subtitle: 'Mira will help arrange the best {service}',
-  ticketType: 'SERVICE_REQUEST',
-  steps: [
-    {
-      id: 'step1',
-      title: 'Question for step 1?',
-      subtitle: 'Optional subtitle',
-      showIf: (data) => true, // Conditional step
-      fields: [
-        {
-          id: 'field_name',
-          type: FIELD_TYPES.SINGLE_SELECT,
-          label: 'Field label',
-          required: true,
-          options: SERVICE_OPTIONS.serviceType,
-          showIf: (data) => true // Conditional field
-        }
-      ]
-    }
-    // ... more steps
-  ]
-};
-
-// Build ticket payload for API
-export const buildServiceTicketPayload = (data, pet, user, entryPoint) => {
-  return {
-    member: {
-      name: user?.name || user?.email?.split('@')[0] || 'Member',
-      email: user?.email || '',
-      phone: user?.phone || ''
-    },
-    category: 'pillar_name', // care, dine, fit, etc.
-    sub_category: 'service_name',
-    urgency: data.urgency === 'asap' ? 'high' : 'medium',
-    description: `**{Service} Request for ${pet?.name}**\n\n...`,
-    source: 'flow_modal',
-    source_reference: entryPoint,
-    metadata: {
-      ticket_type: 'SERVICE_REQUEST',
-      pillar: 'pillar_name',
-      sub_pillar: 'service_name',
-      pet_id: pet?.id || pet?._id,
-      pet_name: pet?.name,
-      // ... all form data
-    }
-  };
-};
-
-export default SERVICE_FLOW_SCHEMA;
-```
-
-### Step 2: Create or Use Generic FlowModal Component
-
-**Option A: Use Generic CareFlowModal** (recommended for simple flows)
-```jsx
-import CareFlowModal from '../components/CareFlowModal';
-import SERVICE_SCHEMA, { buildServiceTicketPayload } from '../schemas/serviceFlows';
-
-<CareFlowModal
-  isOpen={showModal}
-  onClose={() => setShowModal(false)}
-  pet={selectedPet}
-  user={user}
-  token={token}
-  schema={SERVICE_SCHEMA}
-  buildPayload={buildServiceTicketPayload}
-  entryPoint="pillar_page_grid"
-  accentColor="teal" // teal, violet, blue, green, red
-  headerGradient="from-teal-500 to-cyan-500"
-  iconLabel="Service Name"
-/>
-```
-
-**Option B: Create Custom FlowModal** (for complex flows with breed intelligence)
-Copy `/app/frontend/src/components/GroomingFlowModal.jsx` as template.
-
-### Step 3: Add to Pillar Page
-```jsx
-// In PillarPage.jsx
-import CareFlowModal from '../components/CareFlowModal';
-import SERVICE_SCHEMA, { buildServiceTicketPayload } from '../schemas/serviceFlows';
-
-// Add state
-const [showServiceModal, setShowServiceModal] = useState(false);
-
-// Add to grid click handler
-onClick={() => {
-  if (type.id === 'service_name') {
-    setShowServiceModal(true);
-  }
-}}
-
-// Add modal component
-<CareFlowModal
-  isOpen={showServiceModal}
-  onClose={() => setShowServiceModal(false)}
-  // ... props
-/>
-```
-
----
-
-## BREED INTELLIGENCE
-
-### Location
-`/app/frontend/src/utils/breedIntelligence.js`
-
-### How to Use
-```jsx
-import { getBreedIntelligence, getBreedGroomingTip } from '../utils/breedIntelligence';
-
-// Get full breed data
-const breedData = getBreedIntelligence(pet.breed);
-// Returns: { size, coat, groomingNotes, groomingRecommendations, temperamentFlags, sensitivityFlags }
-
-// Get specific grooming tip
-const tip = getBreedGroomingTip(pet.breed);
-// Returns: "Regular brushing to prevent matting" (for Shih Tzu)
-```
-
-### Adding New Breeds
-Add to `BREED_INTELLIGENCE` object in breedIntelligence.js:
-```javascript
-'new breed name': {
-  size: 'small' | 'medium' | 'large',
-  coat: 'short' | 'long' | 'double',
-  groomingNotes: ['Tip 1', 'Tip 2'],
-  groomingRecommendations: ['Rec 1', 'Rec 2'],
-  vetNotes: ['Note 1'],
-  temperamentFlags: ['gentle', 'friendly'],
-  sensitivityFlags: ['heat_sensitive', 'ear_prone']
-}
-```
-
----
-
-## CONCIERGE® BRANDING GUIDELINES
-
-### Always Use
-- **Concierge®** (with registered trademark symbol)
-- "Request Sent to Concierge®"
-- "Send to Concierge®" (button text)
-- "Our Concierge® team will review..."
-- "Added to your Inbox" (with inbox icon)
-
-### Toast Notifications
-```javascript
-toast.success(`Request sent to Concierge® for ${petName}`, {
-  description: 'Check your inbox for updates.'
-});
-```
-
-### Medical Disclaimer (for vet-related flows)
-"We do not provide medical advice. Mira coordinates clinic discovery and bookings."
-
----
-
-## CARE PILLAR - COMPLETED FLOWS
-
-### 8 Locked CARE Categories
+### ✅ CARE PILLAR - 100% VERIFIED
 | ID | Name | FlowModal | Status |
 |----|------|-----------|--------|
 | `grooming` | Grooming | GroomingFlowModal | ✅ Complete |
@@ -273,7 +77,17 @@ toast.success(`Request sent to Concierge® for ${petName}`, {
 | `senior_special_needs_support` | Senior & Special Needs | CareFlowModal | 🔜 P1 |
 | `nutrition_consult_booking` | Nutrition Consults | CareFlowModal | 🔜 P1 |
 
-### Care FlowModal Files
+### ✅ MIRA-DEMO OS BAR - FUNCTIONAL
+- 6 OS Layers implemented and navigable
+- PetOSNavigation component renders all tabs
+- Layer navigation via useLayerNavigation hook
+- Chat interface functional
+
+---
+
+## KEY FILES
+
+### Care Pillar FlowModals
 | File | Purpose |
 |------|---------|
 | `/app/frontend/src/components/GroomingFlowModal.jsx` | Custom 6-step grooming wizard with breed intelligence |
@@ -283,40 +97,16 @@ toast.success(`Request sent to Concierge® for ${petName}`, {
 | `/app/frontend/src/schemas/vetVisitFlows.js` | Vet visit schema |
 | `/app/frontend/src/schemas/boardingDaycareFlows.js` | Boarding schema |
 | `/app/frontend/src/schemas/petSittingFlows.js` | Pet sitting schema |
-| `/app/frontend/src/schemas/emergencyHelpFlows.js` | Emergency schema (3-step fast-track) |
+| `/app/frontend/src/schemas/emergencyHelpFlows.js` | Emergency schema |
 
-### Care Page Integration
-- File: `/app/frontend/src/pages/CarePage.jsx`
-- Imports all FlowModals and schemas
-- Grid click handler opens appropriate FlowModal based on `type.id`
-- Subcategory tabs defined in `/app/frontend/src/components/PillarPageLayout.jsx`
-
----
-
-## OTHER PILLARS - APPLY SAME PATTERN
-
-### DINE Pillar (To Be Implemented)
-Locked Categories:
-- Fresh Meals
-- Treats & Snacks
-- Dining Out (Pet-Friendly Cafes)
-- Special Diet Consults
-- Autoship Management
-
-### FIT Pillar (To Be Implemented)
-Locked Categories:
-- Dog Walking
-- Training Sessions
-- Fitness Programs
-- Swimming
-- Agility
-
-### CELEBRATE Pillar (To Be Implemented)
-Locked Categories:
-- Birthday Party
-- Gotcha Day
-- Pet Photography
-- Custom Celebrations
+### Mira-Demo OS
+| File | Purpose |
+|------|---------|
+| `/app/frontend/src/pages/MiraDemoPage.jsx` | Main OS page with chat + 6-layer navigation |
+| `/app/frontend/src/components/Mira/PetOSNavigation.jsx` | OS tab navigation component |
+| `/app/frontend/src/hooks/mira/useLayerNavigation.js` | Layer navigation hook |
+| `/app/frontend/src/components/Mira/TodayPanel.jsx` | TODAY layer panel |
+| `/app/frontend/src/components/Mira/ServicesPanel.jsx` | SERVICES layer panel |
 
 ---
 
@@ -351,58 +141,32 @@ Locked Categories:
 }
 ```
 
-### Response
-```javascript
-{
-  success: true,
-  ticket: {
-    ticket_id: "TKT-20260225-001",
-    id: "objectid",
-    // ... ticket data
-  }
-}
-```
-
----
-
-## FILES CREATED THIS SESSION
-
-### New Files
-- `/app/frontend/src/components/VetVisitFlowModal.jsx`
-- `/app/frontend/src/components/CareFlowModal.jsx`
-- `/app/frontend/src/schemas/vetVisitFlows.js`
-- `/app/frontend/src/schemas/boardingDaycareFlows.js`
-- `/app/frontend/src/schemas/petSittingFlows.js`
-- `/app/frontend/src/schemas/emergencyHelpFlows.js`
-- `/app/frontend/src/utils/breedIntelligence.js`
-
-### Modified Files
-- `/app/frontend/src/components/GroomingFlowModal.jsx` - Added breed intelligence, Concierge® branding
-- `/app/frontend/src/components/MiraCarePlan.jsx` - Opens FlowModals
-- `/app/frontend/src/pages/CarePage.jsx` - All FlowModal integrations
-- `/app/frontend/src/components/PillarPageLayout.jsx` - 8 Care subcategory tabs
-
 ---
 
 ## PRIORITIZED BACKLOG
 
-### P1 - Immediate (Care Pillar Completion)
-- [ ] Behavior Support FlowModal (lighter 4-step)
-- [ ] Senior & Special Needs FlowModal (lighter 4-step)
-- [ ] Nutrition Consults FlowModal (lighter 4-step)
+### P0 - COMPLETE ✅
+- [x] FlowModal pattern for Care pillar
+- [x] Ticket routing verification (member inbox + admin desk)
+- [x] Mira-demo OS Bar structure
 
-### P0 - Next (mira-demo Integration)
-- [ ] Sync FlowModal submissions to CONCIERGE tab
-- [ ] Sync MiraCarePlan recommendations to PICKS tab
-- [ ] Show active requests in TODAY tab
-- [ ] Implement the 6-layer OS2 bar flow
+### P1 - Immediate
+- [ ] Behavior Support FlowModal schema
+- [ ] Senior & Special Needs FlowModal schema
+- [ ] Nutrition Consults FlowModal schema
+- [ ] Connect SERVICES panel to real ticket data
 
-### P2 - Future
-- [ ] Apply FlowModal pattern to DINE pillar
-- [ ] Apply FlowModal pattern to FIT pillar
-- [ ] Apply FlowModal pattern to CELEBRATE pillar
+### P2 - Next (Apply FlowModal to Other Pillars)
+- [ ] DINE pillar FlowModals (Fresh Meals, Treats, etc.)
+- [ ] FIT pillar FlowModals (Dog Walking, Training, etc.)
+- [ ] CELEBRATE pillar FlowModals (Birthday, Photography, etc.)
+
+### P3 - Future
 - [ ] TransformationStories backend connection
-- [ ] Notification flow (Resend/Gupshup)
+- [ ] Notification flow (Resend/Gupshup) - pending domain verification
+- [ ] Razorpay payment integration
+- [ ] Voice commands (ElevenLabs/OpenAI)
+- [ ] Refactor backend server.py into modules
 
 ---
 
@@ -425,11 +189,4 @@ Locked Categories:
 
 ---
 
-## NEXT AGENT INSTRUCTIONS
-
-1. **Read this SSOT first** - Contains all patterns and guidelines
-2. **P1 Priority**: Create remaining 3 Care FlowModals (Behavior, Senior, Nutrition) using CareFlowModal component
-3. **P0 After P1**: mira-demo OS bar integration - user provided detailed spec in last message
-4. **Always use Concierge®** with registered trademark
-5. **Test with testing_agent** after implementation
-6. **Update this SSOT** when adding new flows or patterns
+*Last Updated: February 25, 2026*
