@@ -636,9 +636,21 @@ async def get_8_pillars_summary(pet_id: str):
 @pet_soul_router.post("/profile/{pet_id}/answer")
 async def save_answer(pet_id: str, answer: DoggyAnswer):
     """Save a single answer and update scores"""
+    from bson import ObjectId
+    
+    # Try to find pet by id field first, then by _id
     pet = await db.pets.find_one({"id": pet_id})
     if not pet:
+        try:
+            pet = await db.pets.find_one({"_id": ObjectId(pet_id)})
+        except:
+            pass
+    
+    if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
+    
+    # Use the pet's actual _id for updates
+    pet_filter = {"_id": pet["_id"]} if "_id" in pet else {"id": pet_id}
     
     # Update the answer
     update_data = {
@@ -646,17 +658,17 @@ async def save_answer(pet_id: str, answer: DoggyAnswer):
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.pets.update_one({"id": pet_id}, {"$set": update_data})
+    await db.pets.update_one(pet_filter, {"$set": update_data})
     
     # Recalculate scores and insights
-    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    pet = await db.pets.find_one(pet_filter, {"_id": 0})
     answers = pet.get("doggy_soul_answers", {})
     folder_scores = {fk: calculate_folder_score(answers, fk) for fk in FOLDER_KEYS}
     overall_score = calculate_overall_score(answers)
     insights = generate_insights(pet)
     
     # Update scores and insights
-    await db.pets.update_one({"id": pet_id}, {"$set": {
+    await db.pets.update_one(pet_filter, {"$set": {
         "overall_score": overall_score,
         "folder_scores": folder_scores,
         "insights": insights
