@@ -98,6 +98,13 @@ The legacy `/api/mira/chat` endpoint (26,000+ lines in `mira_routes.py`) was enh
 ## Known Issues
 1. **Pet Soul Score not updating in UI** (P2) - Score should increment after AI interactions
 2. **Password visibility toggle broken** (P3) - Non-functional on login page
+3. **Maximum update depth exceeded** (P2) - React re-render warning exists but doesn't block functionality
+
+## Recently Completed (2026-02-26)
+- [x] P0: **SERVICES tab pulse/glow** - Tab glows pink for 5 seconds when AI creates service ticket
+- [x] P0: **Quick Actions in SERVICES modal** - Clicking launchers (Grooming, Vet, etc.) opens ServiceRequestBuilder  
+- [x] P1: **Auto-switch PICKS pillar** - Grooming/vet conversations automatically set pillar to 'care'
+- [x] Fixed state propagation issue using ref + forceUpdate pattern to avoid re-render cascades
 
 ## Upcoming Tasks
 - [ ] P0: Fine-tune soulful prompt based on more bible documents
