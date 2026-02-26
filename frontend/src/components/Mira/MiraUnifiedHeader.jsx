@@ -299,6 +299,10 @@ const MiraUnifiedHeader = ({
       <nav className="mira-os-tabs">
         {OS_LAYERS.map((layer) => {
           const tabIconState = iconStates[layer.id] || { state: 'OFF', count: 0 };
+          // Override services tab state when servicesPulse is active
+          const effectiveIconState = (layer.id === 'services' && servicesPulse) 
+            ? 'PULSE' 
+            : tabIconState.state;
           return (
             <OSTab
               key={layer.id}
@@ -306,7 +310,7 @@ const MiraUnifiedHeader = ({
               isActive={activeTab === layer.id}
               onClick={onTabChange}
               badge={badges[layer.id]}
-              iconState={tabIconState.state}
+              iconState={effectiveIconState}
               iconCount={tabIconState.count}
             />
           );
