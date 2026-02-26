@@ -332,7 +332,7 @@ const MiraUnifiedHeader = ({
       </nav>
       
       {/* CENTER-RIGHT: Temperature */}
-      <TemperatureDisplay weather={weather} />
+      <TemperatureDisplay weather={weather} onLocationClick={onLocationClick} />
       
       {/* RIGHT: Notification Bell - Opens Inbox */}
       <NotificationBellInHeader count={notificationCount} />
