@@ -883,18 +883,63 @@ async def get_soulful_response(
         
         # Detect pillar context from conversation
         lower_msg = message.lower()
+        detected_topic = None  # For intent saving
+        
         if any(kw in lower_msg for kw in ["groom", "bath", "haircut", "spa", "nail", "walker", "walk", "vet", "health", "sitting", "sitter"]):
             suggested_pillar = "care"
+            if any(kw in lower_msg for kw in ["groom", "bath", "haircut", "spa", "nail"]):
+                detected_topic = "grooming"
+            elif any(kw in lower_msg for kw in ["vet", "health", "checkup", "vaccination"]):
+                detected_topic = "health"
+            elif any(kw in lower_msg for kw in ["walker", "walk"]):
+                detected_topic = "walks"
         elif any(kw in lower_msg for kw in ["birthday", "party", "celebrate", "gift", "photo"]):
             suggested_pillar = "celebrate"
+            detected_topic = "celebration"
         elif any(kw in lower_msg for kw in ["food", "treat", "diet", "nutrition", "meal"]):
             suggested_pillar = "dine"
+            detected_topic = "nutrition"
         elif any(kw in lower_msg for kw in ["travel", "trip", "hotel", "vacation", "flight"]):
             suggested_pillar = "travel"
+            detected_topic = "travel"
         elif any(kw in lower_msg for kw in ["boarding", "kennel", "daycare"]):
             suggested_pillar = "stay"
+            detected_topic = "boarding"
         elif any(kw in lower_msg for kw in ["train", "behavior", "obedience"]):
             suggested_pillar = "learn"
+            detected_topic = "training"
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # SAVE INTENT FOR SOUL INTEGRATION
+        # This powers the "MOJO MIGHT NEED THIS" shelf in Services panel
+        # ═══════════════════════════════════════════════════════════════════════════
+        if detected_topic and db is not None:
+            try:
+                from datetime import datetime, timezone
+                import uuid as uuid_module
+                
+                # Get user_id from user_email
+                user_id = user_email
+                if "@" in user_email:
+                    user_doc = await db.users.find_one({"email": user_email}, {"id": 1})
+                    if user_doc and user_doc.get("id"):
+                        user_id = user_doc["id"]
+                
+                intent_doc = {
+                    "id": f"intent-{uuid_module.uuid4().hex[:8]}",
+                    "user_id": user_id,
+                    "pet_id": pet_id,
+                    "topic": detected_topic,
+                    "message": message[:200],
+                    "pillar": suggested_pillar,
+                    "confidence": 0.85,
+                    "source": "soulful_brain",
+                    "created_at": datetime.now(timezone.utc)
+                }
+                await db.user_learn_intents.insert_one(intent_doc)
+                logger.info(f"[SOULFUL] Saved intent '{detected_topic}' for {pet_name}")
+            except Exception as intent_err:
+                logger.warning(f"[SOULFUL] Failed to save intent: {intent_err}")
         
         # ═══════════════════════════════════════════════════════════════════════════
         # EXTRACT SUGGESTIONS FROM RESPONSE → POPULATE PICKS
