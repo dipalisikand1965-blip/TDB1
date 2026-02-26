@@ -196,6 +196,41 @@ async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
         return {"name": pet_name or "your pet", "context": "", "soul_data": {}}
 
 
+@router.get("/pets")
+async def get_pets_for_mira(email: str = None):
+    """Get pets for Mira Pure OS - simplified public endpoint."""
+    if db is None:
+        return {"pets": [], "error": "Database not connected"}
+    
+    try:
+        query = {}
+        if email:
+            query["owner_email"] = email
+        
+        pets_cursor = db.pets.find(query)
+        pets = []
+        async for pet in pets_cursor:
+            pet_data = {
+                "_id": str(pet.get("_id", "")),
+                "id": str(pet.get("_id", "")),
+                "name": pet.get("name"),
+                "breed": pet.get("breed"),
+                "species": pet.get("species"),
+                "age": pet.get("age"),
+                "birthday": pet.get("birthday"),
+                "city": pet.get("city"),
+                "soul_data": pet.get("soul_data", {}),
+                "health_data": pet.get("health_data", {}),
+            }
+            pets.append(pet_data)
+        
+        return {"pets": pets, "count": len(pets)}
+        
+    except Exception as e:
+        logger.error(f"[MIRA PURE] Error fetching pets: {e}")
+        return {"pets": [], "error": str(e)}
+
+
 @router.post("/chat", response_model=PureChatResponse)
 async def pure_chat(request: PureChatRequest):
     """
