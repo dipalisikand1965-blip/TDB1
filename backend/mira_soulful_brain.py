@@ -647,23 +647,122 @@ async def get_soulful_response(
         context_parts.append(f"Breed: {pet_context['breed']}")
     if pet_context.get("age"):
         context_parts.append(f"Age: {pet_context['age']}")
+    if pet_context.get("weight"):
+        context_parts.append(f"Weight: {pet_context['weight']}")
+    if pet_context.get("gender"):
+        context_parts.append(f"Gender: {pet_context['gender']}")
     
-    # Personality (crucial for soulful responses)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # FULL DOGGY SOUL ANSWERS - The heart of pet memory
+    # This is what makes Mira truly know the pet
+    # ═══════════════════════════════════════════════════════════════════════════
+    doggy_soul = pet_context.get("doggy_soul_answers") or {}
+    
+    # Personality & Behavior
+    temperament = doggy_soul.get("temperament") or pet_context.get("temperament")
+    if temperament:
+        context_parts.append(f"Temperament: {temperament}")
+    
+    energy_level = doggy_soul.get("energy_level") or pet_context.get("activity_level")
+    if energy_level:
+        context_parts.append(f"Energy level: {energy_level}")
+    
+    # Social behavior
+    behavior_with_dogs = doggy_soul.get("behavior_with_dogs")
+    if behavior_with_dogs:
+        context_parts.append(f"With other dogs: {behavior_with_dogs}")
+    
+    behavior_with_people = doggy_soul.get("social_with_people")
+    if behavior_with_people:
+        context_parts.append(f"With people: {behavior_with_people}")
+    
+    stranger_reaction = doggy_soul.get("stranger_reaction")
+    if stranger_reaction:
+        context_parts.append(f"With strangers: {stranger_reaction}")
+    
+    # Handling & Grooming
+    handling_comfort = doggy_soul.get("handling_comfort")
+    if handling_comfort:
+        context_parts.append(f"Handling comfort: {handling_comfort} - IMPORTANT for grooming/vet visits")
+    
+    coat_type = doggy_soul.get("coat_type") or pet_context.get("coat_type")
+    if coat_type:
+        context_parts.append(f"Coat type: {coat_type}")
+    
+    # Anxiety & Triggers
+    anxiety_triggers = doggy_soul.get("anxiety_triggers") or pet_context.get("anxiety_triggers")
+    if anxiety_triggers:
+        if isinstance(anxiety_triggers, list):
+            context_parts.append(f"Anxiety triggers: {', '.join(anxiety_triggers)} - BE CAREFUL with these")
+        else:
+            context_parts.append(f"Anxiety triggers: {anxiety_triggers} - BE CAREFUL with these")
+    
+    loud_sounds = doggy_soul.get("loud_sounds")
+    if loud_sounds:
+        context_parts.append(f"Reaction to loud sounds: {loud_sounds}")
+    
+    separation_anxiety = doggy_soul.get("separation_anxiety")
+    if separation_anxiety:
+        context_parts.append(f"Separation anxiety: {separation_anxiety}")
+    
+    # Food & Motivation
+    food_motivation = doggy_soul.get("food_motivation")
+    if food_motivation:
+        context_parts.append(f"Food motivation: {food_motivation}")
+    
+    favorite_treats = doggy_soul.get("favorite_treats") or pet_context.get("favorite_treats")
+    if favorite_treats:
+        if isinstance(favorite_treats, list):
+            context_parts.append(f"Favorite treats: {', '.join(favorite_treats)}")
+        else:
+            context_parts.append(f"Favorite treats: {favorite_treats}")
+    
+    # Health
+    health_conditions = doggy_soul.get("health_conditions") or pet_context.get("medical_conditions")
+    if health_conditions:
+        if isinstance(health_conditions, list):
+            context_parts.append(f"Health conditions: {', '.join(health_conditions)} - Consider in recommendations")
+        else:
+            context_parts.append(f"Health conditions: {health_conditions} - Consider in recommendations")
+    
+    life_stage = doggy_soul.get("life_stage")
+    if life_stage:
+        context_parts.append(f"Life stage: {life_stage}")
+    
+    # Training & Behavior concerns
+    training_level = doggy_soul.get("training_level")
+    if training_level:
+        context_parts.append(f"Training level: {training_level}")
+    
+    behavior_concerns = doggy_soul.get("behavior_concerns")
+    if behavior_concerns:
+        if isinstance(behavior_concerns, list):
+            context_parts.append(f"Behavior concerns: {', '.join(behavior_concerns)}")
+        else:
+            context_parts.append(f"Behavior concerns: {behavior_concerns}")
+    
+    # Personality (also check legacy fields)
     personality = pet_context.get("personality") or pet_context.get("soul_data", {}).get("personality", [])
     if personality:
         if isinstance(personality, list):
-            context_parts.append(f"Personality: {', '.join(personality)}")
+            context_parts.append(f"Personality traits: {', '.join(personality)}")
         else:
-            context_parts.append(f"Personality: {personality}")
+            context_parts.append(f"Personality traits: {personality}")
     
-    # Health data
+    # Health data - Allergies (CRITICAL)
     allergies = pet_context.get("allergies") or pet_context.get("health_data", {}).get("allergies", [])
+    food_allergies = doggy_soul.get("food_allergies") or pet_context.get("dietary_restrictions")
+    all_allergies = []
     if allergies:
-        context_parts.append(f"Allergies: {', '.join(allergies)} - IMPORTANT: avoid these in recommendations")
+        all_allergies.extend(allergies if isinstance(allergies, list) else [allergies])
+    if food_allergies:
+        all_allergies.extend(food_allergies if isinstance(food_allergies, list) else [food_allergies])
+    if all_allergies:
+        context_parts.append(f"⚠️ ALLERGIES: {', '.join(all_allergies)} - NEVER recommend these")
     
     chronic = pet_context.get("chronic_conditions") or pet_context.get("health_data", {}).get("chronic_conditions")
     if chronic:
-        context_parts.append(f"Health note: {chronic} - be gentle and considerate")
+        context_parts.append(f"Chronic condition: {chronic} - be gentle and considerate")
     
     # Preferences
     preferences = pet_context.get("preferences") or pet_context.get("soul_data", {}).get("preferences", {})
