@@ -194,44 +194,6 @@ async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
     except Exception as e:
         logger.error(f"[MIRA PURE] Error getting pet context: {e}")
         return {"name": pet_name or "your pet", "context": "", "soul_data": {}}
-        
-        # Build a concise context summary
-        context_parts = []
-        
-        if pet.get("breed"):
-            context_parts.append(f"Breed: {pet.get('breed')}")
-        if pet.get("age"):
-            context_parts.append(f"Age: {pet.get('age')}")
-        if pet.get("birthday"):
-            context_parts.append(f"Birthday: {pet.get('birthday')}")
-        
-        # Soul data
-        soul = pet.get("soul_data", {})
-        if soul.get("personality"):
-            context_parts.append(f"Personality: {soul.get('personality')}")
-        if soul.get("favorite_activities"):
-            context_parts.append(f"Loves: {', '.join(soul.get('favorite_activities', []))}")
-        if soul.get("dietary_preferences"):
-            context_parts.append(f"Food preferences: {', '.join(soul.get('dietary_preferences', []))}")
-        
-        # Allergies/sensitivities
-        allergies = pet.get("allergies", []) or pet.get("sensitivities", [])
-        if allergies:
-            context_parts.append(f"Allergies/Avoid: {', '.join(allergies)}")
-        
-        # Health notes (brief)
-        health = pet.get("health_notes") or pet.get("medical_history")
-        if health and isinstance(health, str):
-            context_parts.append(f"Health: {health[:100]}")
-        
-        return {
-            "name": pet.get("name", pet_name or "your pet"),
-            "context": "\n".join(context_parts) if context_parts else "A beloved pet."
-        }
-        
-    except Exception as e:
-        logger.error(f"[MIRA PURE] Error getting pet context: {e}")
-        return {"name": pet_name or "your pet", "context": ""}
 
 
 @router.post("/chat", response_model=PureChatResponse)
