@@ -2661,6 +2661,11 @@ const Admin = () => {
           />
         )}
 
+        {/* Live Conversation Threads Tab */}
+        {activeTab === 'live-threads' && (
+          <LiveConversationThreads getAuthHeaders={getAuthHeaders} />
+        )}
+
         {/* Products Tab - Using ProductManager Component */}
         {activeTab === 'products' && (
           <CelebrateManager getAuthHeader={getAuthHeaders} />
