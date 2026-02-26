@@ -1004,6 +1004,81 @@ const MiraDemoPage = () => {
     }
   }, []); // Run once on mount
   
+  // Check if we should show location prompt on first visit
+  useEffect(() => {
+    if (!isPageReady || !token) return;
+    
+    // Check if user has already set location (localStorage or profile)
+    const hasSetLocation = localStorage.getItem('mira_location_set') === 'true';
+    const hasProfileLocation = user?.location?.city;
+    
+    if (!hasSetLocation && !hasProfileLocation) {
+      // Show location prompt after a short delay (let user see the page first)
+      const timer = setTimeout(() => {
+        setLocationModalMode('prompt');
+        setShowLocationModal(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isPageReady, token, user?.location?.city]);
+  
+  // Handle location set from modal
+  const handleLocationSet = useCallback(async (city, coords) => {
+    setUserCity(city);
+    if (coords) {
+      setUserGeoLocation(coords);
+    }
+    
+    // Mark as set in localStorage
+    localStorage.setItem('mira_location_set', 'true');
+    localStorage.setItem('mira_user_city', city);
+    
+    // Save to user profile
+    if (token) {
+      try {
+        await fetch(`${API_URL}/api/member/location`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            latitude: coords?.latitude,
+            longitude: coords?.longitude,
+            city: city,
+            source: 'mira_demo_modal'
+          })
+        });
+        console.log('[LOCATION] ✅ Saved user location:', city);
+      } catch (e) {
+        console.log('[LOCATION] Could not save to profile:', e);
+      }
+    }
+    
+    // Refresh weather with new city
+    fetchWeatherForCity(city);
+  }, [token, API_URL]);
+  
+  // Fetch weather for a specific city
+  const fetchWeatherForCity = useCallback(async (city) => {
+    try {
+      const response = await fetch(`${API_URL}/api/mira/weather/pet-activity?city=${encodeURIComponent(city)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentWeather(data);
+        console.log('[WEATHER] Refreshed for:', city);
+      }
+    } catch (e) {
+      console.log('[WEATHER] Could not fetch:', e);
+    }
+  }, [API_URL]);
+  
+  // Handle click on weather/location widget
+  const handleLocationClick = useCallback(() => {
+    setLocationModalMode('change');
+    setShowLocationModal(true);
+  }, []);
+  
   // Fetch user's geolocation AFTER page is ready (deferred for performance)
   useEffect(() => {
     if (!isPageReady) return;
