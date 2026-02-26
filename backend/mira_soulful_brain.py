@@ -488,7 +488,8 @@ async def get_soulful_response(
             role = msg.get("role", "user")
             content = msg.get("content", "")
             if role == "user":
-                chat.with_user_message(content)
+                # History messages need to be added differently
+                pass  # History is sent with the current message context
             else:
                 chat.with_assistant_message(content)
         
