@@ -228,6 +228,37 @@ Every Message (user + Mira) Flows Into Thread → Concierge Can Jump In
 
 ---
 
+## FIXES APPLIED (2026-02-26)
+
+### P0: PICKS Panel Dynamic Suggestions Fix ✅
+**What:** The PICKS panel was not showing Mira's dynamic suggestions from chat conversations. Instead of showing "Mira's Suggestions from Our Chat" section with birthday party ideas, it showed static picks.
+
+**Root Cause:** In `/app/frontend/src/hooks/mira/useChatSubmit.js`, line 888 was setting `conciergeArranges: []` in CATALOGUE MODE, which cleared any dynamic suggestions from the backend response.
+
+**Fix Applied:**
+- Changed `conciergeArranges: []` to `conciergeArranges: conciergeCards` in multiple places
+- Lines 771, 798, 824, 892, 952 in useChatSubmit.js
+- Backend correctly returns `concierge_arranges` array with suggestion cards
+- Frontend now preserves these in `miraPicks.conciergeArranges`
+- PersonalizedPicksPanel renders them in "Mira's Suggestions" section
+
+**Key Files:**
+- `/app/frontend/src/hooks/mira/useChatSubmit.js` - Lines 879-905 (CATALOGUE MODE preserves conciergeCards)
+- `/app/frontend/src/components/Mira/PersonalizedPicksPanel.jsx` - Lines 1925-1973 (renders conversationSuggestions)
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - Line 5059 (passes miraPicks.conciergeArranges)
+
+### P1: Soul Score Update Fix ✅
+**What:** Soul Score was stuck at 0% because the backend was using wrong query pattern.
+
+**Root Cause:** Backend pet_soul_routes.py was querying for `{"id": pet_id}` but some pets only have `_id` field (MongoDB ObjectId).
+
+**Fix Applied:**
+- `/app/backend/pet_soul_routes.py` - Updated `save_answer` and `save_bulk_answers` endpoints
+- Now tries `{"id": pet_id}` first, then falls back to `{"_id": ObjectId(pet_id)}`
+- Uses `pet["_id"]` for update queries to ensure correct matching
+
+---
+
 ## REMAINING TASKS
 
 ### P2: Real-time SERVICES Badge via WebSockets
