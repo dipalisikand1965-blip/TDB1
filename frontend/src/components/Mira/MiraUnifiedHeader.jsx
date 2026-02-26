@@ -303,6 +303,12 @@ const MiraUnifiedHeader = ({
           const effectiveIconState = (layer.id === 'services' && servicesPulse) 
             ? 'PULSE' 
             : tabIconState.state;
+          
+          // Debug log for services tab pulse
+          if (layer.id === 'services') {
+            console.log('[HEADER] Services tab - servicesPulse:', servicesPulse, 'effectiveState:', effectiveIconState);
+          }
+          
           return (
             <OSTab
               key={layer.id}
