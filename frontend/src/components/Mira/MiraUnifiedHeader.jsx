@@ -279,6 +279,7 @@ const MiraUnifiedHeader = ({
   weather = null,
   notificationCount = 0,
   servicesPulse = false, // Glowing effect when AI creates a service ticket
+  onLocationClick = null, // Callback to change location
 }) => {
   const [showPetSwitcher, setShowPetSwitcher] = useState(false);
   
