@@ -105,6 +105,13 @@ The legacy `/api/mira/chat` endpoint (26,000+ lines in `mira_routes.py`) was enh
 - [x] P0: **Quick Actions in SERVICES modal** - Clicking launchers (Grooming, Vet, etc.) opens ServiceRequestBuilder  
 - [x] P1: **Auto-switch PICKS pillar** - Grooming/vet conversations automatically set pillar to 'care'
 - [x] Fixed state propagation issue using ref + forceUpdate pattern to avoid re-render cascades
+- [x] **Location Flow Implemented:**
+  - Weather widget shows city next to temperature (e.g., "25°C • Mumbai")
+  - Click on weather widget opens Location Change modal
+  - Popular Indian cities quick select (Mumbai, Delhi, Bangalore, etc.)
+  - Auto-detect location via browser/IP fallback
+  - Mira confirms location before giving location-based suggestions ("You're in Mumbai, right?")
+  - Location saved to localStorage and user profile
 
 ## Upcoming Tasks
 - [ ] P0: Fine-tune soulful prompt based on more bible documents
