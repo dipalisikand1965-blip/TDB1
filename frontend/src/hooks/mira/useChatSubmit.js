@@ -763,12 +763,13 @@ const useChatSubmit = (config) => {
       } else if (fallbackMode === 'clarify' && clarifyingQuestions.length > 0) {
         // ═══════════════════════════════════════════════════════════════════════════
         // CLARIFY MODE: Ask clarifying questions before showing picks
+        // Preserve any concierge suggestions from backend
         // ═══════════════════════════════════════════════════════════════════════════
-        console.log(`[CLARIFY MODE] Showing ${clarifyingQuestions.length} clarifying questions`);
+        console.log(`[CLARIFY MODE] Showing ${clarifyingQuestions.length} clarifying questions, conciergeCards: ${conciergeCards.length}`);
         setMiraPicks({
           products: [],
           services: [],
-          conciergeArranges: [],
+          conciergeArranges: conciergeCards, // Preserve dynamic suggestions
           clarifyingQuestions: clarifyingQuestions,
           picksContract: picksContract,
           conversationContract: conversationContract,
@@ -795,7 +796,7 @@ const useChatSubmit = (config) => {
           services: [],
           places: contractPlacesResults,
           placesType: 'places',
-          conciergeArranges: [],
+          conciergeArranges: conciergeCards, // Preserve dynamic suggestions
           picksContract: picksContract,
           conversationContract: conversationContract,
           contractMode: contractMode,
@@ -821,7 +822,7 @@ const useChatSubmit = (config) => {
           services: [],
           places: [],
           youtubeVideos: contractYoutubeResults,
-          conciergeArranges: [],
+          conciergeArranges: conciergeCards, // Preserve dynamic suggestions
           picksContract: picksContract,
           conversationContract: conversationContract,
           contractMode: contractMode,
