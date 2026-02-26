@@ -1,0 +1,50 @@
+{
+  "summary": "Verified PICKS panel dynamic suggestions fix - backend returns concierge_arranges correctly, frontend code preserves them in useChatSubmit.js and passes to PersonalizedPicksPanel. All 7 backend tests passed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_picks_dynamic_suggestions.py",
+    "/app/test_reports/pytest/picks_suggestions_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Code fix verified at useChatSubmit.js line 892: conciergeArranges now preserves conciergeCards instead of clearing",
+    "Code fix verified at useChatSubmit.js line 952: CLARIFY MODE preserves existing conciergeArranges",
+    "Code fix verified at MiraDemoPage.jsx line 5059: passes miraPicks.conciergeArranges to PersonalizedPicksPanel as conversationSuggestions"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_picks_dynamic_suggestions.py"
+  ],
+  "success_rate": {
+    "backend": "100% (7/7 tests passed)",
+    "frontend": "Code review passed - UI testing had session issues"
+  },
+  "test_credentials": "dipali@clubconcierge.in / test123",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend API /api/mira/chat correctly returns concierge_arranges and picks_contract when user asks about birthday party. Frontend fix in useChatSubmit.js preserves these values in miraPicks state. PersonalizedPicksPanel renders them in the 'Mira's Suggestions from Our Chat' section. UI testing had browser session persistence issues - main agent can manually verify by: 1) Login 2) Go to /mira-demo 3) Send birthday party message 4) Click PICKS tab 5) Look for 'Mira's Suggestions' section",
+  "features_verified": {
+    "backend_returns_concierge_arranges": "PASS - API returns concierge_arranges array with suggestion cards for birthday party queries",
+    "backend_returns_picks_contract": "PASS - API returns picks_contract with fallback_mode='concierge' and concierge_cards",
+    "frontend_preserves_conciergeArranges": "CODE REVIEW PASS - useChatSubmit.js line 892 now preserves conciergeCards",
+    "frontend_passes_to_panel": "CODE REVIEW PASS - MiraDemoPage.jsx line 5059 passes miraPicks.conciergeArranges as conversationSuggestions",
+    "panel_renders_suggestions": "CODE REVIEW PASS - PersonalizedPicksPanel.jsx line 1925-1935 renders conversationSuggestions section"
+  },
+  "rca_of_the_issue": {
+    "root_cause": "In useChatSubmit.js, the miraPicks state was being set with 'conciergeArranges: []' in multiple places (CATALOGUE MODE, CLARIFY MODE), which cleared any dynamic suggestions from the backend response",
+    "fix_applied": "Changed 'conciergeArranges: []' to 'conciergeArranges: conciergeCards' to preserve backend suggestions",
+    "affected_files": [
+      "frontend/src/hooks/mira/useChatSubmit.js (Lines 879-905)",
+      "frontend/src/components/Mira/PersonalizedPicksPanel.jsx (Lines 1925-1973)",
+      "frontend/src/pages/MiraDemoPage.jsx (Line 5059)"
+    ]
+  }
+}
