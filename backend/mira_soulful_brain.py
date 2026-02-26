@@ -433,44 +433,42 @@ async def get_soulful_response(
         # The response is now a string directly
         response_text = response if isinstance(response, str) else str(response)
         
-        # For now, we detect actions from the response text
-        # In production, we'd use function calling but let's keep it simple
+        # Detect if we should trigger actions based on conversation context
         actions = []
+        lower_msg = message.lower()
         
-        if hasattr(response, "tool_calls") and response.tool_calls:
-            for tool_call in response.tool_calls:
-                func_name = tool_call.function.name
-                func_args = json.loads(tool_call.function.arguments)
-                
-                logger.info(f"[SOULFUL] Function call: {func_name} with args: {func_args}")
-                
-                if func_name == "create_service_ticket":
-                    result = await execute_create_service_ticket(func_args, pet_id, pet_name, user_email)
-                    actions.append({"type": "service_created", "data": result})
-                    
-                elif func_name == "get_picks":
-                    result = await execute_get_picks(func_args, pet_name, allergies)
-                    actions.append({"type": "picks", "data": result})
-                    
-                elif func_name == "get_today_items":
-                    result = await execute_get_today_items(pet_id, pet_name)
-                    actions.append({"type": "today", "data": result})
-                    
-                elif func_name == "get_learn_content":
-                    result = await execute_get_learn_content(func_args, pet_name)
-                    actions.append({"type": "learn", "data": result})
+        # Auto-create service ticket for booking requests
+        booking_keywords = ["book", "schedule", "arrange", "set up", "need a", "want to book", "get me"]
+        service_keywords = ["grooming", "groom", "walker", "walking", "vet", "boarding", "sitting", "training", "birthday", "party"]
+        
+        has_booking_intent = any(kw in lower_msg for kw in booking_keywords)
+        detected_service = None
+        for svc in service_keywords:
+            if svc in lower_msg:
+                detected_service = svc
+                break
+        
+        if has_booking_intent and detected_service:
+            # Auto-create a service ticket
+            service_type_map = {
+                "grooming": "grooming", "groom": "grooming",
+                "walker": "dog_walker", "walking": "dog_walker", "walk": "dog_walker",
+                "vet": "vet_visit",
+                "boarding": "boarding",
+                "sitting": "pet_sitting", "sitter": "pet_sitting",
+                "training": "training",
+                "birthday": "birthday_party", "party": "birthday_party"
+            }
+            svc_type = service_type_map.get(detected_service, "other")
             
-            # Get follow-up response after function execution
-            # Add function results to context
-            for action in actions:
-                result_summary = action["data"].get("message", "Done")
-                chat.with_assistant_message(f"[Action completed: {result_summary}]")
+            result = await execute_create_service_ticket(
+                {"service_type": svc_type, "description": message},
+                pet_id, pet_name, user_email
+            )
+            actions.append({"type": "service_created", "data": result})
             
-            # Get final response incorporating the actions
-            follow_up = await chat.chat()
-            response_text = follow_up.content if hasattr(follow_up, "content") else str(follow_up)
-        else:
-            response_text = response.content if hasattr(response, "content") else str(response)
+            # Append ticket info to response
+            response_text = f"{response_text}\n\nI've created a service request ({result['ticket_id']}) for this. Our concierge team will confirm details with you shortly."
         
         # Generate quick replies based on context
         quick_replies = generate_quick_replies(message, response_text, active_pillar, pet_name)
