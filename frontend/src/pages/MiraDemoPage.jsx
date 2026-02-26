@@ -4083,6 +4083,15 @@ const MiraDemoPage = () => {
         hasAwaitingTicket={apiCounts?.awaitingYouCount > 0}
       />
       
+      {/* LOCATION PROMPT MODAL */}
+      <LocationPromptModal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onLocationSet={handleLocationSet}
+        currentCity={userCity}
+        mode={locationModalMode}
+      />
+      
       {/* HANDOFF SUMMARY - Lazy loaded */}
       {(handoffSummary?.isOpen) && (
         <Suspense fallback={<LazyFallback />}>
