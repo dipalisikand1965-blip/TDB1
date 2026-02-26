@@ -2380,6 +2380,7 @@ const Admin = () => {
             <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-violet-100 rounded">🤖 Mira & AI</span>
             {[
               { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
+              { id: 'live-threads', label: 'Live Threads', icon: Headphones },
               { id: 'mira-memory', label: 'Memory', icon: Brain },
               { id: 'kit-assembly', label: 'Kit Assembly', icon: Package },
               { id: 'communications', label: 'Communications', icon: Mail },
