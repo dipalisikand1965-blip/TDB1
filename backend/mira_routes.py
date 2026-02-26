@@ -12365,6 +12365,33 @@ async def mira_chat(
             if active_pillar and active_pillar.startswith("mira-"):
                 active_pillar = None  # Not a real pillar
             
+            # ═══════════════════════════════════════════════════════════════════
+            # LIVE CONVERSATION THREAD - Create/append silently in background
+            # This enables the Service Desk to see ALL conversations in real-time
+            # Flow: User Intent → Service Desk Thread → Admin Notification
+            # ═══════════════════════════════════════════════════════════════════
+            live_thread_id = None
+            try:
+                from live_conversation_routes import get_or_create_thread_for_session, append_to_thread
+                
+                # Get or create thread for this session
+                live_thread_id = await get_or_create_thread_for_session(
+                    session_id=request.session_id or str(uuid.uuid4()),
+                    user_id=pet_ctx.get("user_id"),
+                    user_email=user_email,
+                    user_name=pet_ctx.get("user_name"),
+                    pet_id=pet_id,
+                    pet_name=pet_name,
+                    pet_breed=pet_ctx.get("breed"),
+                    initial_message=request.message.strip(),
+                    source=request.source or "mira_demo",
+                    pillar=active_pillar or "general",
+                    user_city=request.user_city if hasattr(request, 'user_city') else None
+                )
+                logger.info(f"[LIVE_THREAD] Thread {live_thread_id} for session {request.session_id}")
+            except Exception as thread_err:
+                logger.warning(f"[LIVE_THREAD] Could not create thread: {thread_err}")
+            
             # Get soulful response
             soulful_result = await get_soulful_response(
                 message=request.message.strip(),
@@ -12376,6 +12403,25 @@ async def mira_chat(
                 active_pillar=active_pillar,
                 user_city=request.user_city if hasattr(request, 'user_city') else None
             )
+            
+            # ═══════════════════════════════════════════════════════════════════
+            # LIVE THREAD - Append Mira's response to the thread
+            # ═══════════════════════════════════════════════════════════════════
+            if live_thread_id:
+                try:
+                    mira_response_text = soulful_result.get("response", "")
+                    await append_to_thread(
+                        thread_id=live_thread_id,
+                        sender="mira",
+                        content=mira_response_text,
+                        metadata={
+                            "actions": soulful_result.get("actions", []),
+                            "suggested_pillar": soulful_result.get("suggested_pillar"),
+                            "quick_replies": soulful_result.get("quick_replies", [])
+                        }
+                    )
+                except Exception as append_err:
+                    logger.warning(f"[LIVE_THREAD] Could not append Mira response: {append_err}")
             
             # Build response maintaining legacy structure for UI compatibility
             soulful_response = {
