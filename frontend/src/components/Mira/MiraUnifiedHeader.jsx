@@ -271,11 +271,6 @@ const MiraUnifiedHeader = ({
 }) => {
   const [showPetSwitcher, setShowPetSwitcher] = useState(false);
   
-  // Debug: Log when servicesPulse changes
-  if (servicesPulse) {
-    console.log('[MiraUnifiedHeader] servicesPulse is TRUE - SERVICES tab should pulse');
-  }
-  
   return (
     <header className="mira-unified-header">
       {/* LEFT: Mira Logo */}
