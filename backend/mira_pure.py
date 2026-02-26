@@ -94,6 +94,7 @@ class PureChatResponse(BaseModel):
     response: str
     pet_name: Optional[str] = None
     session_id: Optional[str] = None
+    actions: Optional[List[Dict[str, Any]]] = []
 
 
 async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
