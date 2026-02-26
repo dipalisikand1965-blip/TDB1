@@ -382,6 +382,9 @@ function AppRouter() {
         {/* MIRA PURE - Clean soulful AI test page (no hardcoded logic) */}
         <Route path="/mira-pure" element={<MiraPurePage />} />
         
+        {/* MIRA PURE OS - Full OS with tabs, pet selector (no hardcoded logic) */}
+        <Route path="/mira-pure-os" element={<MiraPureOSPage />} />
+        
         {/* MIRA OS - New Header Shell Navigation Page */}
         <Route path="/mira-os" element={<ProtectedRoute requireMembership={true}><MiraOSPage /></ProtectedRoute>} />
         
