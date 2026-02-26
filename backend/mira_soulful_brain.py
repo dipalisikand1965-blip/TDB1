@@ -505,37 +505,52 @@ async def get_soulful_response(
         actions = []
         lower_msg = message.lower()
         
-        # Auto-create service ticket for booking requests
-        booking_keywords = ["book", "schedule", "arrange", "set up", "need a", "want to book", "get me"]
-        service_keywords = ["grooming", "groom", "walker", "walking", "vet", "boarding", "sitting", "training", "birthday", "party"]
+        # Auto-create service ticket for booking/arrangement requests
+        # These are the "Concierge Handoff" trigger words from MIRA_DOCTRINE.md
+        booking_keywords = ["book", "schedule", "arrange", "set up", "need a", "want to book", 
+                           "get me", "plan", "organise", "organize", "help me find", "can you find"]
+        
+        # Service types that trigger ticket creation
+        service_keywords = {
+            # Care pillar
+            "grooming": "grooming", "groom": "grooming", "spa": "grooming",
+            "walker": "dog_walker", "walking": "dog_walker", "walk": "dog_walker",
+            "vet": "vet_visit", "veterinarian": "vet_visit", "checkup": "vet_visit",
+            "boarding": "boarding", "kennel": "boarding",
+            "sitting": "pet_sitting", "sitter": "pet_sitting", "pet sit": "pet_sitting",
+            "daycare": "daycare",
+            # Training
+            "training": "training", "trainer": "training",
+            # Celebrate
+            "birthday": "birthday_party", "party": "birthday_party", "celebration": "birthday_party",
+            "photo": "photo_session", "photoshoot": "photo_session",
+            # Travel
+            "hotel": "travel_planning", "hotels": "travel_planning", "stay": "travel_planning",
+            "trip": "travel_planning", "travel": "travel_planning", "vacation": "travel_planning",
+            "accommodation": "travel_planning", "resort": "travel_planning",
+            # Other
+            "taxi": "pet_taxi", "transport": "pet_taxi",
+        }
         
         has_booking_intent = any(kw in lower_msg for kw in booking_keywords)
         detected_service = None
-        for svc in service_keywords:
-            if svc in lower_msg:
-                detected_service = svc
+        detected_service_type = None
+        
+        for keyword, svc_type in service_keywords.items():
+            if keyword in lower_msg:
+                detected_service = keyword
+                detected_service_type = svc_type
                 break
         
         if has_booking_intent and detected_service:
-            # Auto-create a service ticket
-            service_type_map = {
-                "grooming": "grooming", "groom": "grooming",
-                "walker": "dog_walker", "walking": "dog_walker", "walk": "dog_walker",
-                "vet": "vet_visit",
-                "boarding": "boarding",
-                "sitting": "pet_sitting", "sitter": "pet_sitting",
-                "training": "training",
-                "birthday": "birthday_party", "party": "birthday_party"
-            }
-            svc_type = service_type_map.get(detected_service, "other")
-            
+            # Auto-create a service ticket per UNIFIED_SERVICE_FLOW.md
             result = await execute_create_service_ticket(
-                {"service_type": svc_type, "description": message},
+                {"service_type": detected_service_type, "description": message},
                 pet_id, pet_name, user_email
             )
             actions.append({"type": "service_created", "data": result})
             
-            # Append ticket info to response
+            # Append ticket info to response (continuation, not escalation)
             response_text = f"{response_text}\n\nI've created a service request ({result['ticket_id']}) for this. Our concierge team will confirm details with you shortly."
         
         # Generate quick replies based on context
