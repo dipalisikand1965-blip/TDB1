@@ -332,8 +332,9 @@ class TestMiraResponseEmojis:
         )
         
         if pets_response.status_code == 200:
-            pets = pets_response.json()
-            self.pet = pets[0] if pets else None
+            pets_data = pets_response.json()
+            pets = pets_data.get("pets", []) if isinstance(pets_data, dict) else pets_data
+            self.pet = next((p for p in pets if p.get("name") == "Mystique"), pets[0] if pets else None)
         else:
             self.pet = None
             
