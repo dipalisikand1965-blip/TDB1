@@ -12668,12 +12668,8 @@ async def mira_chat(
                     pet_context = selected_pet or {"name": "your pet"}  # Fallback to generic
                     # USE DETECTED PILLAR, not request.current_pillar
                     current_pillar = detected_pillar or request.current_pillar or "general"
-                    # user_city might not be defined yet, so use safe access
-                    city_context = None
-                    if 'user_city' in dir():
-                        city_context = user_city
-                    elif hasattr(request, 'location'):
-                        city_context = request.location
+                    # Get user's city from request
+                    city_context = getattr(request, 'user_city', None) or (request.pet_context or {}).get('city')
                         
                     dynamic_picks = generate_dynamic_picks(
                         user_message=user_message,
