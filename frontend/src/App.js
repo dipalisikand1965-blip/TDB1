@@ -271,6 +271,8 @@ const MiraDemoPage = lazy(() => import("./pages/MiraDemoPage"));
 const MiraDemoOriginalPage = lazy(() => import("./pages/MiraDemoOriginalPage"));
 // MiraDemoBackupPage - UNTOUCHED BACKUP for comparison during refactoring
 const MiraDemoBackupPage = lazy(() => import("./pages/MiraDemoBackupPage"));
+// MiraPurePage - Clean soulful AI without hardcoded logic
+const MiraPurePage = lazy(() => import("./pages/MiraPurePage"));
 // MiraOSPage - New Header Shell navigation page
 const MiraOSPage = lazy(() => import("./pages/MiraOSPage"));
 // MiraPillarSandbox - Test page for unified Mira on pillar pages
