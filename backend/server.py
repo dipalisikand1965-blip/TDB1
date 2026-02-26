@@ -1901,6 +1901,9 @@ from smart_routes import router as smart_router
 # Import Mira AI Concierge System
 from mira_routes import router as mira_router, set_mira_db
 
+# Import Mira Pure - Clean soulful AI without hardcoded logic
+from mira_pure import router as mira_pure_router, set_db as set_mira_pure_db
+
 # Import Mira Streaming Service (Response Streaming via SSE)
 from mira_streaming import router as mira_streaming_router
 
