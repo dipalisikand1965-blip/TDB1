@@ -94,9 +94,9 @@ class PureChatResponse(BaseModel):
 
 
 async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
-    """Get pet's soul context - what Mira knows about them."""
+    """Get pet's full soul context - what Mira knows about them."""
     if db is None:
-        return {"name": pet_name or "your pet", "context": ""}
+        return {"name": pet_name or "your pet", "context": "", "soul_data": {}}
     
     try:
         # Try to find pet by ID or name
@@ -112,7 +112,88 @@ async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
             pet = await db.pets.find_one({"name": {"$regex": f"^{pet_name}$", "$options": "i"}})
         
         if not pet:
-            return {"name": pet_name or "your pet", "context": "No specific details available."}
+            return {"name": pet_name or "your pet", "context": "No specific details available.", "soul_data": {}}
+        
+        # Build comprehensive context from soul data
+        soul = pet.get("soul_data", {})
+        health = pet.get("health_data", {})
+        
+        context_parts = []
+        
+        # Basic info
+        context_parts.append(f"Name: {pet.get('name')}")
+        if pet.get("breed"):
+            context_parts.append(f"Breed: {pet.get('breed')}")
+        if pet.get("age"):
+            context_parts.append(f"Age: {pet.get('age')}")
+        if pet.get("birthday"):
+            context_parts.append(f"Birthday: {pet.get('birthday')}")
+        
+        # Personality (THE SOUL)
+        personality = soul.get("personality", [])
+        if personality:
+            if isinstance(personality, list):
+                context_parts.append(f"Personality: {', '.join(personality)}")
+            else:
+                context_parts.append(f"Personality: {personality}")
+        
+        if soul.get("temperament"):
+            context_parts.append(f"Temperament: {soul.get('temperament')}")
+        
+        if soul.get("energy_level"):
+            context_parts.append(f"Energy level: {soul.get('energy_level')}/10")
+        
+        # Preferences
+        prefs = soul.get("preferences", {})
+        if prefs.get("favorite_activities"):
+            context_parts.append(f"Loves: {', '.join(prefs.get('favorite_activities', [])[:5])}")
+        if prefs.get("favorite_foods"):
+            context_parts.append(f"Favorite foods: {', '.join(prefs.get('favorite_foods', [])[:3])}")
+        if prefs.get("favorite_toys"):
+            context_parts.append(f"Favorite toys: {', '.join(prefs.get('favorite_toys', [])[:3])}")
+        
+        # Dislikes
+        dislikes = soul.get("dislikes", [])
+        if dislikes:
+            context_parts.append(f"Dislikes: {', '.join(dislikes[:4])}")
+        
+        # Health - CRITICAL for safety
+        allergies = health.get("allergies", []) or pet.get("allergies", [])
+        if allergies:
+            context_parts.append(f"⚠️ ALLERGIES: {', '.join(allergies)}")
+        
+        conditions = health.get("chronic_conditions")
+        if conditions:
+            context_parts.append(f"⚠️ Health: {conditions}")
+        
+        sensitivities = health.get("sensitivities", [])
+        if sensitivities:
+            context_parts.append(f"Sensitivities: {', '.join(sensitivities)}")
+        
+        # Love language & quirks
+        if soul.get("love_language"):
+            context_parts.append(f"Love language: {soul.get('love_language')}")
+        
+        quirks = soul.get("quirks", [])
+        if quirks:
+            context_parts.append(f"Quirks: {', '.join(quirks[:3])}")
+        
+        # Relationships
+        relationships = pet.get("relationships", {})
+        if relationships.get("dog_friends"):
+            context_parts.append(f"Dog friends: {', '.join(relationships.get('dog_friends', []))}")
+        
+        return {
+            "name": pet.get("name", pet_name or "your pet"),
+            "context": "\n".join(context_parts) if context_parts else "A beloved pet.",
+            "soul_data": soul,
+            "health_data": health,
+            "full_pet": pet
+        }
+        
+    except Exception as e:
+        logger.error(f"[MIRA PURE] Error getting pet context: {e}")
+        return {"name": pet_name or "your pet", "context": "", "soul_data": {}}
         
         # Build a concise context summary
         context_parts = []
