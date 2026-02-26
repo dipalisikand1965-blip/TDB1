@@ -306,7 +306,7 @@ const MiraUnifiedHeader = ({
           
           return (
             <OSTab
-              key={layer.id}
+              key={`${layer.id}-${layer.id === 'services' ? servicesPulse : 'static'}`}
               layer={layer}
               isActive={activeTab === layer.id}
               onClick={onTabChange}
