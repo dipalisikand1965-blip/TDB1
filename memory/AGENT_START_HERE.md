@@ -70,7 +70,7 @@ xl: 32px - Major divisions
 | **Test User** | dipali@clubconcierge.in | test123 |
 | **Admin** | aditya | lola4304 |
 
-**Preview URL:** https://mira-soul-1.preview.emergentagent.com
+**Preview URL:** https://soul-os-preview.preview.emergentagent.com
 
 ---
 
