@@ -4501,6 +4501,65 @@ async def search_services_from_db(
         logger.error(traceback.format_exc())
         return []
 
+# ═══════════════════════════════════════════════════════════════════════════
+# HARDCODED SERVICES FALLBACK
+# When DB has no services, return these defaults
+# ═══════════════════════════════════════════════════════════════════════════
+HARDCODED_SERVICES = {
+    "grooming": [
+        {"id": "svc-groom-basic", "name": "Basic Grooming", "description": "Bath, brush, nail trim, ear cleaning", "price": 1499, "icon": "✂️", "color": "#EC4899", "pillar": "care", "category": "grooming"},
+        {"id": "svc-groom-full", "name": "Full Grooming Session", "description": "Complete spa - bath, haircut, nails, ears, teeth", "price": 2499, "icon": "✂️", "color": "#EC4899", "pillar": "care", "category": "grooming"},
+        {"id": "svc-groom-spa", "name": "Deluxe Spa Treatment", "description": "Premium grooming with massage, conditioning, aromatherapy", "price": 3999, "icon": "💆", "color": "#EC4899", "pillar": "care", "category": "grooming"},
+    ],
+    "vet": [
+        {"id": "svc-vet-checkup", "name": "Health Check-up", "description": "Comprehensive health examination", "price": 999, "icon": "🏥", "color": "#8B5CF6", "pillar": "care", "category": "vet"},
+        {"id": "svc-vet-vaccine", "name": "Vaccination Package", "description": "Core vaccines and health certificate", "price": 1999, "icon": "💉", "color": "#8B5CF6", "pillar": "care", "category": "vet"},
+    ],
+    "boarding": [
+        {"id": "svc-board-day", "name": "Daycare", "description": "Full day care with play, meals, and rest", "price": 799, "icon": "🏠", "color": "#F59E0B", "pillar": "stay", "category": "boarding"},
+        {"id": "svc-board-overnight", "name": "Overnight Boarding", "description": "Overnight stay with care and comfort", "price": 1299, "icon": "🏠", "color": "#F59E0B", "pillar": "stay", "category": "boarding"},
+    ],
+    "training": [
+        {"id": "svc-train-basic", "name": "Basic Obedience Training", "description": "Sit, stay, come, leash walking", "price": 3999, "icon": "🎓", "color": "#6366F1", "pillar": "fit", "category": "training"},
+        {"id": "svc-train-behavior", "name": "Behavior Modification", "description": "Address specific behavior issues", "price": 5999, "icon": "🎓", "color": "#6366F1", "pillar": "fit", "category": "training"},
+    ],
+    "walks": [
+        {"id": "svc-walk-single", "name": "Single Walk", "description": "30-minute solo walk in your area", "price": 299, "icon": "🐕", "color": "#10B981", "pillar": "fit", "category": "walks"},
+        {"id": "svc-walk-monthly", "name": "Monthly Walk Package", "description": "20 walks per month with reports", "price": 4999, "icon": "🐕", "color": "#10B981", "pillar": "fit", "category": "walks"},
+    ],
+    "party": [
+        {"id": "svc-party-basic", "name": "Birthday Party Package", "description": "Cake, decorations, photo session", "price": 4999, "icon": "🎉", "color": "#F97316", "pillar": "celebrate", "category": "party"},
+        {"id": "svc-party-premium", "name": "Premium Pawty Package", "description": "Full celebration with venue, catering, photography", "price": 9999, "icon": "🎉", "color": "#F97316", "pillar": "celebrate", "category": "party"},
+    ],
+    "celebrate": [
+        {"id": "svc-cake", "name": "Custom Pet Cake", "description": "Dog-safe cake made with love", "price": 1499, "icon": "🎂", "color": "#EC4899", "pillar": "celebrate", "category": "celebrate"},
+        {"id": "svc-photo", "name": "Pet Photography Session", "description": "Professional photoshoot with edited photos", "price": 2999, "icon": "📸", "color": "#EC4899", "pillar": "celebrate", "category": "celebrate"},
+    ]
+}
+
+def get_hardcoded_services_for_category(category: str, pet_context: Dict = None, limit: int = 4) -> List[Dict]:
+    """Return hardcoded services when DB is empty"""
+    pet_name = pet_context.get("name", "your pet") if pet_context else "your pet"
+    services = []
+    
+    hardcoded = HARDCODED_SERVICES.get(category, [])
+    for svc in hardcoded[:limit]:
+        services.append({
+            "id": svc["id"],
+            "name": svc["name"],
+            "description": svc["description"],
+            "price": svc["price"],
+            "display_price": f"₹{svc['price']:,}",
+            "icon": svc["icon"],
+            "color": svc["color"],
+            "pillar": svc.get("pillar", "care"),
+            "category": svc.get("category", category),
+            "why_for_pet": f"Perfect for {pet_name}",
+            "isConcierge": True
+        })
+    
+    return services
+
 
 # ═══════════════════════════════════════════════════════════════════════════
 # E013: REMEMBERED SERVICE PROVIDERS
