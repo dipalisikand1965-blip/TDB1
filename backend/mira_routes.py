@@ -12345,7 +12345,7 @@ async def mira_chat(
             
             # Get pet context
             pet_ctx = request.pet_context or {}
-            pet_name = pet_ctx.get("name") or request.pet_name or "your pet"
+            pet_name = pet_ctx.get("name") or "your pet"
             pet_id = pet_ctx.get("id") or request.selected_pet_id
             
             # Extract user email from authorization token
