@@ -790,6 +790,8 @@ const PersonalizedPicksPanel = ({
   conciergeDecision = null, // Concierge prominence decision
   safetyOverride = null,   // Emergency/caution state
   lastUpdated = null,      // For "Updated just now"
+  // NEW: Mira's conversation suggestions (🎂, 🎈, etc.)
+  conversationSuggestions = [], // Dynamic suggestions from chat
   // NEW: Conversation context for context-aware picks
   conversationContext = null, // { topic: "goa trip", destination: "Goa" }
   // NEW: Single pillar mode - when on a pillar page, show ONLY that pillar (no tabs for others)
