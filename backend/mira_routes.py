@@ -12348,6 +12348,18 @@ async def mira_chat(
             pet_name = pet_ctx.get("name") or request.pet_name or "your pet"
             pet_id = pet_ctx.get("id") or request.selected_pet_id
             
+            # Extract user email from authorization token
+            user_email = None
+            if authorization and authorization.startswith("Bearer "):
+                try:
+                    import jwt
+                    token = authorization.replace("Bearer ", "")
+                    # Decode without verification to get claims (verification already done by middleware)
+                    payload = jwt.decode(token, options={"verify_signature": False})
+                    user_email = payload.get("email") or payload.get("sub") or payload.get("user_id")
+                except Exception as token_err:
+                    logger.warning(f"[SOULFUL] Could not decode token for user_email: {token_err}")
+            
             # Determine active pillar from request
             active_pillar = request.current_pillar
             if active_pillar and active_pillar.startswith("mira-"):
@@ -12359,7 +12371,7 @@ async def mira_chat(
                 pet_id=pet_id,
                 pet_name=pet_name,
                 pet_context=pet_ctx,
-                user_email=request.user_email if hasattr(request, 'user_email') else None,
+                user_email=user_email,
                 conversation_history=request.conversation_history or [],
                 active_pillar=active_pillar,
                 user_city=request.user_city if hasattr(request, 'user_city') else None
