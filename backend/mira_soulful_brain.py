@@ -268,6 +268,41 @@ MIRA_FUNCTIONS = [
         }
     },
     {
+        "name": "suggest_picks_for_request",
+        "description": "Generate 3-4 curated suggestions/ideas for a service request (birthday party, grooming, etc.) that will appear in PICKS panel. Use this AFTER understanding the core request (2-3 clarifying questions) to give the user concrete options before handing off to Concierge.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "request_type": {
+                    "type": "string",
+                    "enum": ["birthday_party", "grooming", "travel", "boarding", "vet_visit", "training", "photo_session", "celebration", "other"],
+                    "description": "Type of service request"
+                },
+                "suggestions": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "title": {"type": "string", "description": "Short title (e.g., 'Dog-safe Peanut Butter Cake')"},
+                            "description": {"type": "string", "description": "Brief description of the suggestion"},
+                            "emoji": {"type": "string", "description": "Relevant emoji (🎂, 🎈, etc.)"},
+                            "price_range": {"type": "string", "description": "Optional price range (e.g., '₹500-800')"}
+                        },
+                        "required": ["title", "description"]
+                    },
+                    "minItems": 3,
+                    "maxItems": 4,
+                    "description": "3-4 concrete suggestions/ideas"
+                },
+                "summary": {
+                    "type": "string",
+                    "description": "Brief summary of what user wants (e.g., 'At-home family birthday for Mystique')"
+                }
+            },
+            "required": ["request_type", "suggestions", "summary"]
+        }
+    },
+    {
         "name": "get_today_items",
         "description": "Get what's happening today for the pet - reminders, due items, alerts.",
         "parameters": {
