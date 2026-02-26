@@ -12,7 +12,7 @@ English
 - **Admin:** `aditya` / `lola4304`
 
 ## Preview URL
-https://mira-soul-os-1.preview.emergentagent.com/mira-demo
+https://concierge-unified.preview.emergentagent.com/mira-demo
 
 ---
 
