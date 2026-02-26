@@ -4434,6 +4434,16 @@ async def search_services_from_db(
         
         logger.info(f"[SERVICE SEARCH] Found {len(raw_services)} services from DB")
         
+        # ═══════════════════════════════════════════════════════════════════════
+        # FALLBACK: Use hardcoded services if DB is empty
+        # ═══════════════════════════════════════════════════════════════════════
+        if not raw_services:
+            logger.info(f"[SERVICE SEARCH] DB empty, using hardcoded services for: {matched_categories}")
+            all_hardcoded = []
+            for cat in matched_categories:
+                all_hardcoded.extend(get_hardcoded_services_for_category(cat, pet_context, limit))
+            return all_hardcoded[:limit]
+        
         # Category icons mapping
         CATEGORY_ICONS = {
             "grooming": "✂️",
