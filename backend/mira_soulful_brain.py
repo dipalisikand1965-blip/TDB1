@@ -494,8 +494,9 @@ async def get_soulful_response(
             if history_summary:
                 context_intro = f"[Recent conversation context:\n{chr(10).join(history_summary)}\n]\n\nParent's latest message: "
         
-        # Get response using send_message
-        response = await chat.send_message(UserMessage(text=message))
+        # Get response using send_message with context
+        full_message = f"{context_intro}{message}"
+        response = await chat.send_message(UserMessage(text=full_message))
         
         # The response is now a string directly
         response_text = response if isinstance(response, str) else str(response)
