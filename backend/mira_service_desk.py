@@ -849,6 +849,7 @@ async def handoff_to_concierge(request: HandoffToConciergeRequest):
             "link": f"/admin?tab=servicedesk&ticket={request.ticket_id}",
             "priority": "high" if request.concierge_queue == "EMERGENCY" else "normal",
             "created_at": now.isoformat(),
+            "read": False,  # Required for admin notifications query
             "read_at": None,
             "status": "unread"
         }
