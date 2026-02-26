@@ -8,10 +8,19 @@ Build "The Doggy Company" into a "Pet Life Operating System" where the AI assist
 ### What Was Done
 The legacy `/api/mira/chat` endpoint (26,000+ lines in `mira_routes.py`) was enhanced with a **Soulful Brain** module that:
 - Provides warm, focused, bible-following conversations
-- Uses GPT-5.1 with a carefully crafted soul prompt
-- References pet personality, allergies, relationships naturally
+- Uses GPT-5.1 with a comprehensive soul prompt based on ALL major bibles:
+  - MIRA_DOCTRINE.md - Core principles
+  - MIRA_CONVERSATION_RULES.md - Chat rules
+  - MIRA_VOICE_RULES.md - Voice/response rules
+  - MIRA_SOUL_BIBLE.md - Soul principles
+- References pet personality, allergies, relationships, health conditions naturally
 - Auto-creates service tickets when booking intent is detected
-- Stays focused on what the user is actually asking
+- Follows the Four Governing Principles:
+  1. Presence Before Performance
+  2. Remember → Confirm → Act
+  3. One Question at a Time
+  4. Never a Dead End
+- Respects the Pet Description Rule (don't repeat traits on follow-ups)
 
 ### How It Works
 ```
