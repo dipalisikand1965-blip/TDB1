@@ -134,7 +134,7 @@ soulReason={getSoulBasedReason(activePet, 'celebrate')}  // or 'stay', 'dine', e
 ---
 
 ## PREVIEW URL
-https://mira-soul-1.preview.emergentagent.com
+https://soul-os-preview.preview.emergentagent.com
 
 ---
 

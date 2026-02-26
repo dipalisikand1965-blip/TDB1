@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://mira-soul-1.preview.emergentagent.com
+https://soul-os-preview.preview.emergentagent.com
 
 ---
 
