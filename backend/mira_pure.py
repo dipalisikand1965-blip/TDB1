@@ -32,6 +32,9 @@ db = None
 def set_db(database):
     global db
     db = database
+    # Also set db for functions
+    from mira_pure_functions import set_db as set_functions_db
+    set_functions_db(database)
 
 # ═══════════════════════════════════════════════════════════════════════════
 # THE SOUL PROMPT - This is ALL the instruction Mira needs
