@@ -10549,3 +10549,124 @@ input, select, textarea {
     padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* ========================================
+   DESKTOP FULL-WIDTH OPTIMIZATION
+   Make content flow better on larger screens
+   ======================================== */
+
+/* Desktop: Expand content width */
+@media (min-width: 1024px) {
+  .mp-messages-inner {
+    max-width: 1200px !important;
+    width: 100%;
+  }
+  
+  .mp-composer-inner {
+    max-width: 1000px !important;
+    width: 100%;
+  }
+  
+  /* Quick actions / chips - spread more */
+  .mp-quick-actions,
+  .mira-quick-actions {
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  
+  /* Hero welcome section - wider */
+  .hero-layout,
+  .mira-hero {
+    max-width: 1100px !important;
+  }
+  
+  /* Messages bubble - can be wider */
+  .mp-bubble-user {
+    max-width: 60%;
+  }
+  
+  .mp-card {
+    max-width: 85%;
+  }
+}
+
+/* Extra large screens (1440px+) */
+@media (min-width: 1440px) {
+  .mp-messages-inner {
+    max-width: 1400px !important;
+  }
+  
+  .mp-composer-inner {
+    max-width: 1200px !important;
+  }
+  
+  .mp-quick-actions,
+  .mira-quick-actions {
+    max-width: 1300px;
+  }
+}
+
+/* Ultra-wide screens (1920px+) */
+@media (min-width: 1920px) {
+  .mp-messages-inner {
+    max-width: 1600px !important;
+    padding: 0 var(--space-xl);
+  }
+  
+  .mp-composer-inner {
+    max-width: 1400px !important;
+  }
+}
+
+/* ========================================
+   MOBILE RESPONSIVENESS IMPROVEMENTS
+   Ensure content is accessible on small screens
+   ======================================== */
+
+@media (max-width: 640px) {
+  /* Reduce padding on very small screens */
+  .mp-messages {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+  
+  /* Full-width messages on mobile */
+  .mp-bubble-user {
+    max-width: 85%;
+  }
+  
+  .mp-card {
+    max-width: 100%;
+  }
+  
+  /* Quick actions - stack vertically if needed */
+  .mp-quick-actions {
+    gap: var(--space-sm);
+  }
+  
+  /* Composer - full width on mobile */
+  .mp-composer-inner {
+    max-width: 100%;
+    padding: 0 var(--space-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .mp-messages {
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
+  }
+  
+  .mp-composer {
+    padding: var(--space-sm);
+  }
+  
+  .mp-input-wrapper {
+    padding: var(--space-xs) var(--space-sm);
+  }
+  
+  .mp-input {
+    font-size: 14px;
+  }
+}
