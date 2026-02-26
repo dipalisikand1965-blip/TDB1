@@ -10671,3 +10671,55 @@ input, select, textarea {
     font-size: 14px;
   }
 }
+
+/* ========================================
+   DESKTOP: Hero Welcome Section Expansion
+   ======================================== */
+@media (min-width: 1024px) {
+  .mira-hero-welcome {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .hero-layout {
+    max-width: 1100px !important;
+  }
+  
+  .mira-feature-showcase {
+    max-width: 900px;
+    width: 100%;
+    margin: 24px auto 0;
+  }
+  
+  .feature-grid {
+    grid-template-columns: repeat(4, 1fr); /* 4 columns on desktop */
+    gap: 14px;
+  }
+  
+  .quick-chips {
+    max-width: 1000px;
+    margin: 32px auto 0;
+  }
+  
+  .try-examples {
+    max-width: 1000px;
+    margin: 24px auto 0;
+  }
+}
+
+@media (min-width: 1440px) {
+  .mira-hero-welcome {
+    max-width: 1400px;
+  }
+  
+  .mira-feature-showcase {
+    max-width: 1100px;
+  }
+  
+  .feature-grid {
+    grid-template-columns: repeat(5, 1fr); /* 5 columns on ultrawide */
+    gap: 16px;
+  }
+}
+
