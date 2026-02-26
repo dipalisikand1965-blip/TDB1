@@ -412,12 +412,15 @@ async def get_pet_services(pet_id: str = None, pet_name: str = None, email: str 
         if email:
             query["user_email"] = email
         
-        services_cursor = db.service_desk_tickets.find(query).sort("created_at", -1).limit(limit)
+        # Check both collections (service_requests from mira_pure, service_desk_tickets from legacy)
         services = []
+        
+        # Get from service_requests (new Mira Pure system)
+        services_cursor = db.service_requests.find(query).sort("created_at", -1).limit(limit)
         async for svc in services_cursor:
             services.append({
                 "ticket_id": svc.get("ticket_id"),
-                "service_type": svc.get("service_type"),
+                "service_type": svc.get("type") or svc.get("service_type"),
                 "description": svc.get("description"),
                 "status": svc.get("status", "pending"),
                 "created_at": str(svc.get("created_at", ""))[:10],
