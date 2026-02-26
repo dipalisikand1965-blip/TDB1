@@ -12360,7 +12360,8 @@ async def mira_chat(
                 pet_context=pet_ctx,
                 user_email=request.user_email if hasattr(request, 'user_email') else None,
                 conversation_history=request.conversation_history or [],
-                active_pillar=active_pillar
+                active_pillar=active_pillar,
+                user_city=request.user_city if hasattr(request, 'user_city') else None
             )
             
             # Build response maintaining legacy structure for UI compatibility
