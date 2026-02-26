@@ -87,6 +87,31 @@ https://concierge-unified.preview.emergentagent.com/mira-demo
 - `/app/frontend/src/hooks/mira/useChatSubmit.js` - Lines 446-449 (setPillar from suggested_pillar)
 - `/app/backend/mira_soulful_brain.py` - Returns `suggested_pillar` in response
 
+### 6. Unified Service Flow - Admin Notification Fix (P0) ✅
+**What:** Service desk tickets now correctly send notifications to admin when:
+1. User explicitly requests a service (booking, grooming, vet, etc.)
+2. Conversation auto-completes after max clarifying questions
+
+**Problem Fixed:**
+- Admin notifications were created with `read_at: None` but missing `read: False` field
+- The admin API queries for `read: False`, so notifications weren't appearing in unread count
+- Conversation auto-completion (max clarifying questions) wasn't triggering handoff/notification
+
+**How it works:**
+- **Frontend (useChatSubmit.js):** When conversation auto-completes (max 4 clarifying questions), calls `/api/service_desk/handoff_to_concierge` API
+- **Backend (mira_service_desk.py):** `handoff_to_concierge` creates admin notification with `read: False`
+- **Backend (mira_soulful_brain.py):** Direct service creation also includes `read: False`
+
+**Key Files:**
+- `/app/frontend/src/hooks/mira/useChatSubmit.js` - Lines 1402-1451 (auto-handoff on conversation complete)
+- `/app/backend/mira_service_desk.py` - Line 851 (added `read: False` to admin notification)
+- `/app/backend/mira_soulful_brain.py` - Line 349 (already had `read: False`)
+
+**Service Flow:**
+```
+User Intent → Service Desk Ticket → Admin Notification → Member Notification → Pillar Request → Tickets → Channel Intakes
+```
+
 ---
 
 ## IN-PROGRESS TASK: Breed-Specific LEARN Content Filtering (P1)
