@@ -338,12 +338,26 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s ease;
+}
+
+.mira-temp-display:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .mira-temp-display .temp-value {
   font-size: 14px;
   font-weight: 600;
   color: white;
+}
+
+.mira-temp-display .temp-city {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* ========================================
