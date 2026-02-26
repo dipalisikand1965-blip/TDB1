@@ -3828,6 +3828,7 @@ const MiraDemoPage = () => {
           iconStates={iconStates}
           weather={currentWeather}
           onWeatherClick={() => handleOSTabChange('today')}
+          servicesPulse={servicesPulse}
         />
       </div>
       
