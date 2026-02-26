@@ -423,6 +423,25 @@ const useChatSubmit = (config) => {
         return;
       }
       
+      // ═══════════════════════════════════════════════════════════════════════════
+      // SOULFUL BRAIN HINTS - Tab highlighting and pillar context
+      // When the soulful brain detects service/topic context, it provides hints
+      // ═══════════════════════════════════════════════════════════════════════════
+      
+      // Highlight the relevant OS tab (e.g., SERVICES glows after ticket created)
+      if (data.highlight_tab && typeof setHighlightedTab === 'function') {
+        setHighlightedTab(data.highlight_tab);
+        console.log('[SOULFUL] Highlighting tab:', data.highlight_tab);
+        // Auto-clear highlight after 5 seconds
+        setTimeout(() => setHighlightedTab(null), 5000);
+      }
+      
+      // Set suggested pillar for PICKS context (e.g., grooming → care pillar)
+      if (data.suggested_pillar && typeof setSuggestedPillar === 'function') {
+        setSuggestedPillar(data.suggested_pillar);
+        console.log('[SOULFUL] Suggesting pillar:', data.suggested_pillar);
+      }
+      
       // REAL-TIME SOUL SCORE UPDATE
       if (data.pet_soul_score !== undefined && data.pet_soul_score !== null) {
         const newScore = Math.round(data.pet_soul_score);
