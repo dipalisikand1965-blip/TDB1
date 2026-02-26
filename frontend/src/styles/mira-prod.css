@@ -2931,8 +2931,9 @@ button.mp-welcome-chip,
   display: flex;
   align-items: flex-start;
   gap: var(--space-2xl);
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto var(--space-2xl);
+  width: 100%;
 }
 
 /* Pet Avatar with Animated Rings */
