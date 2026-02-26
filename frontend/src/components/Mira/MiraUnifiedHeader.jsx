@@ -292,7 +292,6 @@ const MiraUnifiedHeader = ({
           setShowPetSwitcher(false);
           onPetClick?.();
         }}
-        notificationCount={notificationCount}
       />
       
       {/* CENTER: OS Navigation Tabs */}
@@ -315,6 +314,9 @@ const MiraUnifiedHeader = ({
       
       {/* CENTER-RIGHT: Temperature */}
       <TemperatureDisplay weather={weather} />
+      
+      {/* RIGHT: Notification Bell - Opens Inbox */}
+      <NotificationBellInHeader count={notificationCount} />
       
       {/* RIGHT: Pet Switcher (opens dropdown) */}
       <PetSwitcher
