@@ -377,6 +377,9 @@ function AppRouter() {
         {/* MIRA OS BACKUP - UNTOUCHED version for comparison during refactoring */}
         <Route path="/mira-demobackup" element={<ProtectedRoute requireMembership={true}><MiraDemoBackupPage /></ProtectedRoute>} />
         
+        {/* MIRA PURE - Clean soulful AI test page (no hardcoded logic) */}
+        <Route path="/mira-pure" element={<MiraPurePage />} />
+        
         {/* MIRA OS - New Header Shell Navigation Page */}
         <Route path="/mira-os" element={<ProtectedRoute requireMembership={true}><MiraOSPage /></ProtectedRoute>} />
         
