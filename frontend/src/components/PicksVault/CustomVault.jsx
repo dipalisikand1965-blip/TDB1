@@ -132,27 +132,76 @@ const CustomVault = ({
 
       {/* Content */}
       <div className="cv-content">
-        <div className="cv-field">
-          <label>What are you looking for?</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe what you want in detail..."
-            rows={4}
-            data-testid="custom-description"
-          />
-        </div>
+        {/* MIRA'S SUGGESTIONS - When present, show as selectable cards */}
+        {miraSuggestions.length > 0 && (
+          <div className="cv-mira-suggestions" data-testid="mira-suggestions-section">
+            <div className="cv-section-header">
+              <Sparkles size={18} className="text-pink-500" />
+              <span>Mira's Picks for {pet?.name || 'Your Pet'}</span>
+            </div>
+            <p className="cv-section-desc">Tap to select what you want included</p>
+            
+            <div className="cv-suggestions-grid">
+              {miraSuggestions.map((suggestion) => (
+                <div 
+                  key={suggestion.id}
+                  className={`cv-suggestion-card ${selectedSuggestions.has(suggestion.id) ? 'selected' : ''}`}
+                  onClick={() => toggleSuggestion(suggestion.id)}
+                  data-testid={`suggestion-${suggestion.id}`}
+                >
+                  <div className="cv-suggestion-icon">
+                    {selectedSuggestions.has(suggestion.id) ? (
+                      <Check size={20} className="text-green-500" />
+                    ) : (
+                      <span className="cv-emoji">{suggestion.title?.match(/^[\p{Emoji}]/u)?.[0] || '✨'}</span>
+                    )}
+                  </div>
+                  <div className="cv-suggestion-content">
+                    <h4>{suggestion.title?.replace(/^[\p{Emoji}]\s*/u, '') || 'Suggestion'}</h4>
+                    {suggestion.subtitle && suggestion.subtitle !== 'Price on request' && (
+                      <span className="cv-suggestion-price">{suggestion.subtitle}</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="cv-selection-summary">
+              {selectedSuggestions.size > 0 ? (
+                <span>{selectedSuggestions.size} item{selectedSuggestions.size > 1 ? 's' : ''} selected</span>
+              ) : (
+                <span className="cv-hint">Select items or send all to Concierge</span>
+              )}
+            </div>
+          </div>
+        )}
 
-        <div className="cv-field">
-          <label>Specific Requirements</label>
-          <textarea
-            value={requirements}
-            onChange={(e) => setRequirements(e.target.value)}
-            placeholder="Size, color, material, ingredients to avoid..."
-            rows={3}
-            data-testid="custom-requirements"
-          />
-        </div>
+        {/* Only show manual form fields if NO Mira suggestions */}
+        {miraSuggestions.length === 0 && (
+          <>
+            <div className="cv-field">
+              <label>What are you looking for?</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe what you want in detail..."
+                rows={4}
+                data-testid="custom-description"
+              />
+            </div>
+
+            <div className="cv-field">
+              <label>Specific Requirements</label>
+              <textarea
+                value={requirements}
+                onChange={(e) => setRequirements(e.target.value)}
+                placeholder="Size, color, material, ingredients to avoid..."
+                rows={3}
+                data-testid="custom-requirements"
+              />
+            </div>
+          </>
+        )}
 
         <div className="cv-field-row">
           <div className="cv-field">
