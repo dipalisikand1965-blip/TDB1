@@ -787,6 +787,91 @@ async def get_soulful_response(
         elif any(kw in lower_msg for kw in ["train", "behavior", "obedience"]):
             suggested_pillar = "learn"
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # EXTRACT SUGGESTIONS FROM RESPONSE → POPULATE PICKS
+        # When Mira gives concrete suggestions (cake, decorations, etc.), convert to PICKS
+        # ═══════════════════════════════════════════════════════════════════════════
+        concierge_cards = []
+        picks_contract = None
+        
+        # Detect if response contains bullet-point suggestions (🎂, 🎈, •, -, etc.)
+        suggestion_patterns = ["🎂", "🎈", "📸", "🦴", "🎉", "🍰", "🎁", "✨"]
+        has_suggestions = any(emoji in response_text for emoji in suggestion_patterns)
+        
+        # Also detect bullet points with content
+        import re
+        bullet_pattern = r'[•\-]\s*\*?\*?([^•\-\n]+)'
+        bullets = re.findall(bullet_pattern, response_text)
+        
+        # If there are suggestions (3+ items), extract them for PICKS
+        if has_suggestions or len(bullets) >= 3:
+            # Try to extract suggestion items
+            suggestion_items = []
+            
+            # Method 1: Emoji-based extraction
+            for emoji in suggestion_patterns:
+                if emoji in response_text:
+                    # Find text after emoji until newline
+                    pattern = rf'{emoji}\s*([^\n]+)'
+                    matches = re.findall(pattern, response_text)
+                    for match in matches:
+                        suggestion_items.append({"emoji": emoji, "text": match.strip()})
+            
+            # Method 2: Bullet-based extraction (if not enough emoji items)
+            if len(suggestion_items) < 3 and len(bullets) >= 3:
+                for bullet in bullets[:4]:
+                    clean_text = bullet.strip().rstrip('.')
+                    if len(clean_text) > 10:  # Meaningful content
+                        suggestion_items.append({"emoji": "✨", "text": clean_text})
+            
+            # Convert to concierge_cards (max 4)
+            import uuid as uuid_module
+            for i, item in enumerate(suggestion_items[:4]):
+                # Parse the suggestion text
+                text = item.get("text", "")
+                emoji = item.get("emoji", "✨")
+                
+                # Try to extract price if present (₹XXX or ₹XXX-XXX)
+                price_match = re.search(r'[₹$][\d,]+(?:\s*[-–]\s*[₹$]?[\d,]+)?', text)
+                price = price_match.group(0) if price_match else None
+                
+                # Clean title (remove price from it)
+                title = re.sub(r'\s*\([₹$][\d,\-–\s]+\)', '', text)
+                title = re.sub(r'\s*[₹$][\d,\-–\s]+', '', title)
+                title = title.strip()
+                
+                if len(title) > 5:  # Valid suggestion
+                    card = {
+                        "id": f"mira-suggestion-{uuid_module.uuid4().hex[:8]}",
+                        "type": "mira_suggestion",
+                        "label": "Mira's Pick",
+                        "title": f"{emoji} {title[:60]}",
+                        "subtitle": price if price else "Price on request",
+                        "description": f"Suggested for {pet_name}",
+                        "spec_chip": f"For {pet_name}",
+                        "no_price": not bool(price),
+                        "action": "add_to_request",
+                        "pillar": suggested_pillar or "celebrate",
+                        "category": "mira_suggestions",
+                        "intent": title,
+                        "original_request": message[:200],
+                        "pet_id": pet_id,
+                        "pet_name": pet_name,
+                        "why_it_fits": f"Suggested by Mira for {pet_name}"
+                    }
+                    concierge_cards.append(card)
+            
+            # If we generated suggestions, create picks_contract
+            if concierge_cards:
+                picks_contract = {
+                    "fallback_mode": "concierge",
+                    "fallback_reason": "mira_suggestions",
+                    "match_count": len(concierge_cards),
+                    "concierge_cards": concierge_cards,
+                    "blocked_by_safety": False
+                }
+                logger.info(f"[SOULFUL] Generated {len(concierge_cards)} suggestion cards for PICKS")
+        
         return {
             "response": response_text,
             "actions": actions,
@@ -794,6 +879,10 @@ async def get_soulful_response(
             "pet_name": pet_name,
             "highlight_tab": highlight_tab,  # Which OS tab should glow
             "suggested_pillar": suggested_pillar,  # Which PICKS pillar is relevant
+            "concierge_arranges": concierge_cards,  # Suggestions for PICKS panel
+            "picks_contract": picks_contract,  # Contract for PICKS processing
+            "concierge_fallback": len(concierge_cards) > 0,
+            "concierge_fallback_reason": "mira_suggestions" if concierge_cards else None
         }
         
     except Exception as e:
