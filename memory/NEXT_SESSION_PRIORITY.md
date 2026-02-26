@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://soul-os-preview.preview.emergentagent.com
+**Preview URL:** https://mira-soul-os-1.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
