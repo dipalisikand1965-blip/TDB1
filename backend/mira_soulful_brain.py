@@ -426,6 +426,56 @@ async def execute_create_service_ticket(args: dict, pet_id: str, pet_name: str, 
     }
 
 
+async def execute_suggest_picks_for_request(args: dict, pet_id: str, pet_name: str, user_email: str) -> dict:
+    """
+    Generate concierge pick cards from Mira's suggestions.
+    These will appear in the PICKS panel with 'Send to Concierge' option.
+    """
+    import uuid
+    
+    request_type = args.get("request_type", "other")
+    suggestions = args.get("suggestions", [])
+    summary = args.get("summary", "Custom request")
+    
+    # Map request type to pillar
+    pillar = map_service_to_pillar(request_type)
+    
+    # Generate concierge cards from suggestions
+    concierge_cards = []
+    for i, suggestion in enumerate(suggestions[:4]):  # Max 4 suggestions
+        card = {
+            "id": f"suggestion-{uuid.uuid4().hex[:8]}",
+            "type": "concierge_suggestion",
+            "label": "Mira's Suggestion",
+            "title": f"{suggestion.get('emoji', '✨')} {suggestion.get('title', 'Custom option')}",
+            "subtitle": suggestion.get("price_range", "Price on request"),
+            "description": suggestion.get("description", ""),
+            "spec_chip": f"For {pet_name}",
+            "no_price": not bool(suggestion.get("price_range")),
+            "action": "create_ticket",
+            "pillar": pillar,
+            "category": "mira_suggestions",
+            "intent": summary,
+            "original_request": summary,
+            "pet_id": pet_id,
+            "pet_name": pet_name,
+            "request_type": request_type,
+            "why_it_fits": f"Suggested for {pet_name}'s {request_type.replace('_', ' ')}"
+        }
+        concierge_cards.append(card)
+    
+    logger.info(f"[SOULFUL] Generated {len(concierge_cards)} suggestion cards for {pet_name}")
+    
+    return {
+        "success": True,
+        "suggestions_generated": len(concierge_cards),
+        "concierge_cards": concierge_cards,
+        "summary": summary,
+        "pillar": pillar,
+        "message": f"Here are {len(concierge_cards)} ideas for {pet_name}. Tap any to add to your request!"
+    }
+
+
 def map_service_to_pillar(service_type: str) -> str:
     """Map service type to pillar for the unified flow."""
     pillar_map = {
