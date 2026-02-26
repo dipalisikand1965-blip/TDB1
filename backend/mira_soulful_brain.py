@@ -464,8 +464,9 @@ async def get_soulful_response(
     
     context_string = "\n".join(context_parts) if context_parts else "No specific details available yet."
     
-    # Build system prompt
-    system_prompt = build_soul_prompt(pet_name, context_string, active_pillar)
+    # Build system prompt with conversation length for pet description rule
+    conversation_length = len(conversation_history) if conversation_history else 0
+    system_prompt = build_soul_prompt(pet_name, context_string, active_pillar, conversation_length)
     
     try:
         # Initialize chat with proper initialization
