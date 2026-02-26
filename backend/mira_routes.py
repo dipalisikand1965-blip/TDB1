@@ -12503,7 +12503,8 @@ async def mira_chat(
             
             # Detect service intent and fetch from catalogue
             service_keywords = ["grooming", "groom", "haircut", "bath", "nail", "vet", "vaccine", 
-                              "boarding", "board", "daycare", "walking", "walker", "training", "trainer"]
+                              "boarding", "board", "daycare", "walking", "walker", "training", "trainer",
+                              "party", "birthday", "celebrate", "celebration", "pawty", "gotcha", "cake", "photography", "photo"]
             product_keywords = ["food", "treat", "toy", "bed", "leash", "collar", "bowl", "shampoo"]
             
             if any(kw in user_lower for kw in service_keywords):
