@@ -368,6 +368,7 @@ const useChatSubmit = (config) => {
           },
           pet_name: pet.name,
           pet_breed: pet.breed || pet.identity?.breed,
+          user_city: userCity || pet?.city || 'Mumbai',  // For location-based recommendations
           // Additional context for enhanced responses
           ticket_id: ticketId,
           conversation_history: conversationHistory.slice(-10).map(m => ({
