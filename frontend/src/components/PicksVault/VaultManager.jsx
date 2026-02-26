@@ -76,11 +76,6 @@ function detectVaultTypeFromResponse(miraResponse, userMessage, pillar) {
     return VAULT_TYPES.PICKS;
   }
   
-  // MIRA SUGGESTIONS detection - concierge_arranges from Mira's curated picks
-  if (miraResponse?.concierge_arranges?.length > 0) {
-    return VAULT_TYPES.CUSTOM;  // Show in Custom vault (concierge flow)
-  }
-  
   // Booking detection
   const bookingKeywords = ['book', 'appointment', 'schedule', 'reserve', 'vet visit', 'training session'];
   if (bookingKeywords.some(kw => lowerMessage.includes(kw))) {
