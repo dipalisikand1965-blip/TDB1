@@ -17726,6 +17726,8 @@ app.include_router(mira_upload_router)  # Mira File Upload at /api/mira/upload/*
 app.include_router(mira_concierge_handoff_router)  # Mira Concierge Handoff at /api/mira/concierge/*
 app.include_router(mira_service_desk_router)  # Mira Service Desk at /api/mira/route_intent
 app.include_router(service_desk_router)  # Service Desk at /api/service_desk/*
+app.include_router(live_threads_router)  # Live Conversation Threads at /api/live_threads/*
+set_live_threads_db(db)  # Initialize Live Threads with database
 app.include_router(tts_router, prefix="/api")  # TTS at /api/tts/*
 app.include_router(top_picks_router)  # Top Picks at /api/mira/top-picks/*
 set_top_picks_db(db)  # Initialize Top Picks with database
