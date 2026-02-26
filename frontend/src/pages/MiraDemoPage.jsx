@@ -742,6 +742,8 @@ const MiraDemoPage = () => {
   const [showTodayPanel, setShowTodayPanel] = useState(false);
   // SERVICES PANEL: Execution Layer - Active requests and service launchers
   const [showServicesPanel, setShowServicesPanel] = useState(false);
+  // SERVICES TAB PULSE: Visual feedback when AI creates a ticket
+  const [servicesPulse, setServicesPulse] = useState(false);
   // LEARN PANEL: Knowledge Layer - Curated guides and videos
   const [showLearnPanel, setShowLearnPanel] = useState(false);
   // SERVICE REQUEST BUILDER: New request builder modal state
