@@ -12,7 +12,7 @@ English
 - **Admin:** `aditya` / `lola4304`
 
 ## Preview URL
-https://pet-life-ai.preview.emergentagent.com/mira-demo
+https://mira-soul-fix.preview.emergentagent.com/mira-demo
 
 ---
 
