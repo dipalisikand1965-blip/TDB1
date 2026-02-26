@@ -12420,11 +12420,12 @@ async def mira_chat(
             
             # Extract user email from authorization token
             user_email = None
-            logger.info(f"[SOULFUL] Authorization value: {authorization[:50] if authorization else 'None'}...")
-            if authorization and authorization.startswith("Bearer "):
+            logger.info(f"[SOULFUL] Authorization value: '{authorization[:60] if authorization else 'None'}'")
+            logger.info(f"[SOULFUL] Starts with 'Bearer ': {authorization.startswith('Bearer ') if authorization else False}")
+            if authorization and "Bearer " in authorization:
                 try:
                     import jwt
-                    token = authorization.replace("Bearer ", "")
+                    token = authorization.replace("Bearer ", "").strip()
                     # Decode without verification to get claims (verification already done by middleware)
                     payload = jwt.decode(token, options={"verify_signature": False})
                     user_email = payload.get("email") or payload.get("sub") or payload.get("user_id")
