@@ -3916,6 +3916,7 @@ const MiraDemoPage = () => {
           weather={currentWeather}
           onWeatherClick={() => handleOSTabChange('today')}
           servicesPulse={servicesPulse}
+          onLocationClick={handleLocationClick}
         />
       </div>
       
