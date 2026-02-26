@@ -32,7 +32,7 @@ import os
 import json
 import logging
 from typing import List, Dict, Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Emergent LLM integration
 from emergentintegrations.llm.chat import LlmChat, UserMessage
