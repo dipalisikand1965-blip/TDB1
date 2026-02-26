@@ -4196,9 +4196,33 @@ async def get_concierge_home(
         ).sort("created_at", -1).limit(10)
         active_tickets = await active_requests_cursor.to_list(10)
         
+        # ALSO fetch from mira_tickets (for Mira-created tickets - Unified Service Flow)
+        mira_user_query = {"$or": [
+            {"user_id": user_id},
+            {"user_email": user_id}
+        ]}
+        if pet_id and pet_id != "all":
+            mira_user_query["pet_id"] = pet_id
+        
+        mira_tickets_cursor = db.mira_tickets.find(
+            {**mira_user_query, "status": {"$in": ["placed", "pending", "in_progress", "scheduled", "working"]}},
+            {"_id": 0}
+        ).sort("created_at", -1).limit(10)
+        mira_tickets = await mira_tickets_cursor.to_list(10)
+        
+        # Combine and dedupe by ticket_id
+        all_tickets = active_tickets + mira_tickets
+        seen_ids = set()
+        unique_tickets = []
+        for t in all_tickets:
+            tid = t.get("ticket_id") or t.get("id")
+            if tid and tid not in seen_ids:
+                seen_ids.add(tid)
+                unique_tickets.append(t)
+        
         # Format active requests for UI
         active_requests = []
-        for ticket in active_tickets:
+        for ticket in unique_tickets[:10]:  # Limit to 10 total
             # Map status to display colors
             status_map = {
                 "pending": {"text": "Awaiting Review", "color": "amber"},
