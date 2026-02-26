@@ -800,76 +800,105 @@ async def get_soulful_response(
         # ═══════════════════════════════════════════════════════════════════════════
         # EXTRACT SUGGESTIONS FROM RESPONSE → POPULATE PICKS
         # When Mira gives concrete suggestions (cake, decorations, etc.), convert to PICKS
+        # Mira's response format: numbered lists like "1. **Title**" or "- Item"
         # ═══════════════════════════════════════════════════════════════════════════
         concierge_cards = []
         picks_contract = None
         
-        # Detect if response contains bullet-point suggestions (🎂, 🎈, •, -, etc.)
-        suggestion_patterns = ["🎂", "🎈", "📸", "🦴", "🎉", "🍰", "🎁", "✨"]
-        has_suggestions = any(emoji in response_text for emoji in suggestion_patterns)
-        
-        # Also detect bullet points with content
         import re
-        bullet_pattern = r'[•\-]\s*\*?\*?([^•\-\n]+)'
-        bullets = re.findall(bullet_pattern, response_text)
+        import uuid as uuid_module
         
-        # If there are suggestions (3+ items), extract them for PICKS
-        if has_suggestions or len(bullets) >= 3:
-            # Try to extract suggestion items
-            suggestion_items = []
+        suggestion_items = []
+        
+        # Method 1: Extract numbered bold headers like "1. **Paw-ty at Home**" or "2. **Activity Fun**"
+        # These are Mira's main suggestion categories
+        numbered_pattern = r'^\s*(\d+)\.\s*\*?\*?([^*\n]+)\*?\*?'
+        for line in response_text.split('\n'):
+            match = re.match(numbered_pattern, line.strip())
+            if match:
+                num = match.group(1)
+                title = match.group(2).strip().strip('*').strip()
+                # Filter out questions and too-short titles
+                if len(title) > 10 and not title.endswith('?') and not title.startswith('To narrow'):
+                    suggestion_items.append({
+                        "emoji": "🎉" if "party" in title.lower() or "paw" in title.lower() else "✨",
+                        "text": title,
+                        "number": num
+                    })
+        
+        # Method 2: If no numbered items, try bullet points with bold "**Title**" or emoji starters
+        if len(suggestion_items) < 2:
+            # Look for lines starting with - or • followed by bold text or emoji
+            bullet_pattern = r'^\s*[-•]\s*\*?\*?([🎂🎈📸🦴🎉🍰🎁✨]?\s*[^*\n:]+)'
+            for line in response_text.split('\n'):
+                match = re.match(bullet_pattern, line.strip())
+                if match:
+                    text = match.group(1).strip().strip('*').strip(':').strip()
+                    # Must be substantial (not just "Dog-safe cake" sub-bullets)
+                    if len(text) > 15 and not text.endswith('?'):
+                        # Extract emoji if present at start
+                        emoji_match = re.match(r'^([🎂🎈📸🦴🎉🍰🎁✨])\s*(.+)', text)
+                        if emoji_match:
+                            suggestion_items.append({"emoji": emoji_match.group(1), "text": emoji_match.group(2)})
+                        else:
+                            suggestion_items.append({"emoji": "✨", "text": text})
+        
+        # Method 3: Last resort - emoji at START of line (not middle of text)
+        if len(suggestion_items) < 2:
+            emoji_patterns = ["🎂", "🎈", "📸", "🦴", "🎉", "🍰", "🎁"]
+            for emoji in emoji_patterns:
+                # Only match emoji at start of line
+                pattern = rf'^{emoji}\s+(.+?)(?:\n|$)'
+                matches = re.findall(pattern, response_text, re.MULTILINE)
+                for match in matches:
+                    clean = match.strip()
+                    if len(clean) > 10 and not clean.endswith('?'):
+                        suggestion_items.append({"emoji": emoji, "text": clean[:100]})
+        
+        # Convert to concierge_cards (max 4, deduplicated)
+        seen_titles = set()
+        for item in suggestion_items[:6]:  # Check more, keep 4
+            text = item.get("text", "")
+            emoji = item.get("emoji", "✨")
             
-            # Method 1: Emoji-based extraction
-            for emoji in suggestion_patterns:
-                if emoji in response_text:
-                    # Find text after emoji until newline
-                    pattern = rf'{emoji}\s*([^\n]+)'
-                    matches = re.findall(pattern, response_text)
-                    for match in matches:
-                        suggestion_items.append({"emoji": emoji, "text": match.strip()})
+            # Clean and validate title
+            title = text.strip()
+            title = re.sub(r'\s*\([₹$][\d,\-–\s]+\)', '', title)  # Remove prices in parens
+            title = re.sub(r'\s*[₹$][\d,]+.*$', '', title)  # Remove trailing prices
+            title = title.strip()
             
-            # Method 2: Bullet-based extraction (if not enough emoji items)
-            if len(suggestion_items) < 3 and len(bullets) >= 3:
-                for bullet in bullets[:4]:
-                    clean_text = bullet.strip().rstrip('.')
-                    if len(clean_text) > 10:  # Meaningful content
-                        suggestion_items.append({"emoji": "✨", "text": clean_text})
+            # Skip duplicates and invalid entries
+            title_lower = title.lower()
+            if title_lower in seen_titles or len(title) < 8:
+                continue
+            seen_titles.add(title_lower)
             
-            # Convert to concierge_cards (max 4)
-            import uuid as uuid_module
-            for i, item in enumerate(suggestion_items[:4]):
-                # Parse the suggestion text
-                text = item.get("text", "")
-                emoji = item.get("emoji", "✨")
-                
-                # Try to extract price if present (₹XXX or ₹XXX-XXX)
-                price_match = re.search(r'[₹$][\d,]+(?:\s*[-–]\s*[₹$]?[\d,]+)?', text)
-                price = price_match.group(0) if price_match else None
-                
-                # Clean title (remove price from it)
-                title = re.sub(r'\s*\([₹$][\d,\-–\s]+\)', '', text)
-                title = re.sub(r'\s*[₹$][\d,\-–\s]+', '', title)
-                title = title.strip()
-                
-                if len(title) > 5:  # Valid suggestion
-                    card = {
-                        "id": f"mira-suggestion-{uuid_module.uuid4().hex[:8]}",
-                        "type": "mira_suggestion",
-                        "label": "Mira's Pick",
-                        "title": f"{emoji} {title[:60]}",
-                        "subtitle": price if price else "Price on request",
-                        "description": f"Suggested for {pet_name}",
-                        "spec_chip": f"For {pet_name}",
-                        "no_price": not bool(price),
-                        "action": "add_to_request",
-                        "pillar": suggested_pillar or "celebrate",
-                        "category": "mira_suggestions",
-                        "intent": title,
-                        "original_request": message[:200],
-                        "pet_id": pet_id,
-                        "pet_name": pet_name,
-                        "why_it_fits": f"Suggested by Mira for {pet_name}"
-                    }
-                    concierge_cards.append(card)
+            # Try to extract price if present
+            price_match = re.search(r'[₹$][\d,]+(?:\s*[-–]\s*[₹$]?[\d,]+)?', text)
+            price = price_match.group(0) if price_match else None
+            
+            card = {
+                "id": f"mira-suggestion-{uuid_module.uuid4().hex[:8]}",
+                "type": "mira_suggestion",
+                "label": "Mira's Pick",
+                "title": f"{emoji} {title[:60]}",
+                "subtitle": price if price else "Tap to request",
+                "description": f"Suggested for {pet_name}",
+                "spec_chip": f"For {pet_name}",
+                "no_price": not bool(price),
+                "action": "add_to_request",
+                "pillar": suggested_pillar or "celebrate",
+                "category": "mira_suggestions",
+                "intent": title,
+                "original_request": message[:200],
+                "pet_id": pet_id,
+                "pet_name": pet_name,
+                "why_it_fits": f"Suggested by Mira for {pet_name}"
+            }
+            concierge_cards.append(card)
+            
+            if len(concierge_cards) >= 4:
+                break
             
             # If we generated suggestions, create picks_contract
             if concierge_cards:
