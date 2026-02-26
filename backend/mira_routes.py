@@ -12423,7 +12423,6 @@ async def mira_chat(
             logger.info(f"[SOULFUL] Authorization value: {authorization[:50] if authorization else 'None'}...")
             if authorization and authorization.startswith("Bearer "):
                 try:
-                try:
                     import jwt
                     token = authorization.replace("Bearer ", "")
                     # Decode without verification to get claims (verification already done by middleware)
