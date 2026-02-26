@@ -238,7 +238,12 @@ async def pure_chat(request: PureChatRequest):
     
     This endpoint lets GPT-5.1 handle the conversation naturally,
     with only personality guidance and pet context.
+    Now includes function calling for actions (picks, services, etc.)
     """
+    from mira_pure_functions import (
+        get_picks_for_pet, create_service_request, 
+        get_today_actions, get_learn_content, MIRA_FUNCTIONS
+    )
     
     # Get API key
     api_key = os.environ.get("EMERGENT_LLM_KEY") or os.environ.get("EMERGENT_API_KEY") or os.environ.get("LLM_API_KEY")
@@ -250,11 +255,25 @@ async def pure_chat(request: PureChatRequest):
     pet_name = pet_info["name"]
     pet_context = pet_info["context"]
     
-    # Build the soul prompt with pet info
+    # Build the soul prompt with pet info and function awareness
     system_prompt = MIRA_SOUL_PROMPT.format(
         pet_name=pet_name,
         pet_context=pet_context if pet_context else "A beloved pet (no specific details yet)."
     )
+    
+    # Add function awareness to the prompt
+    system_prompt += """
+
+ACTIONS YOU CAN TAKE:
+When the conversation naturally leads to an action, you can:
+- Show PICKS: When they want recommendations (treats, services, products)
+- Create SERVICE REQUEST: When they want to book something (walker, grooming, vet, party)
+- Show TODAY: When they ask about today's tasks, reminders, or what's happening
+- Show LEARN: When they want to learn something or need tips/guides
+
+After taking an action, briefly confirm what you did. Example:
+"I've set up a dog walker request for next week. Our team will confirm the details shortly."
+"""
     
     # Build conversation for the LLM
     conversation_text = ""
@@ -263,12 +282,91 @@ async def pure_chat(request: PureChatRequest):
             role = "Parent" if msg.get("role") == "user" else "Mira"
             conversation_text += f"{role}: {msg.get('content', '')}\n"
     
+    # Detect intent for actions
+    user_lower = request.message.lower()
+    actions_taken = []
+    action_data = None
+    
+    # Check for action triggers
+    if any(kw in user_lower for kw in ["show me", "recommend", "picks", "suggestions", "options", "treats", "products"]):
+        # Get picks
+        pillar = "all"
+        if "treat" in user_lower or "food" in user_lower:
+            pillar = "dine"
+        elif "groom" in user_lower or "spa" in user_lower:
+            pillar = "care"
+        elif "travel" in user_lower or "trip" in user_lower:
+            pillar = "travel"
+        elif "birthday" in user_lower or "party" in user_lower or "celebrate" in user_lower:
+            pillar = "celebrate"
+        
+        action_data = await get_picks_for_pet(request.pet_id, pet_name, pillar)
+        actions_taken.append({"type": "picks", "data": action_data})
+    
+    elif any(kw in user_lower for kw in ["book", "schedule", "arrange", "set up", "i need a", "want to book"]):
+        # Create service request
+        service_type = "other"
+        if "walker" in user_lower or "walk" in user_lower:
+            service_type = "dog_walker"
+        elif "groom" in user_lower or "spa" in user_lower or "bath" in user_lower:
+            service_type = "grooming"
+        elif "vet" in user_lower or "doctor" in user_lower or "checkup" in user_lower:
+            service_type = "vet_visit"
+        elif "birthday" in user_lower or "party" in user_lower:
+            service_type = "birthday_party"
+        elif "travel" in user_lower or "trip" in user_lower or "hotel" in user_lower:
+            service_type = "travel"
+        elif "sit" in user_lower or "board" in user_lower:
+            service_type = "boarding"
+        
+        action_data = await create_service_request(
+            pet_id=request.pet_id,
+            pet_name=pet_name,
+            user_email=request.user_email or "user@example.com",
+            service_type=service_type,
+            description=request.message
+        )
+        actions_taken.append({"type": "service_created", "data": action_data})
+    
+    elif any(kw in user_lower for kw in ["today", "reminder", "what's happening", "any alerts", "to do"]):
+        # Get today's actions
+        action_data = await get_today_actions(request.pet_id, pet_name, request.user_email or "")
+        actions_taken.append({"type": "today", "data": action_data})
+    
+    elif any(kw in user_lower for kw in ["learn", "guide", "tips", "how to", "teach me", "information about"]):
+        # Get learn content
+        action_data = await get_learn_content(request.pet_id, pet_name)
+        actions_taken.append({"type": "learn", "data": action_data})
+    
+    # Build context for LLM including action results
+    action_context = ""
+    if actions_taken:
+        action_context = "\n\n[ACTION TAKEN]\n"
+        for action in actions_taken:
+            if action["type"] == "picks":
+                picks = action["data"].get("picks", [])
+                action_context += f"Fetched {len(picks)} picks for {pet_name}:\n"
+                for p in picks[:3]:
+                    action_context += f"- {p['name']}: {p['description']} ({p['price']})\n"
+            elif action["type"] == "service_created":
+                action_context += f"Created service request: {action['data'].get('ticket_id', 'N/A')} - {action['data'].get('message', '')}\n"
+            elif action["type"] == "today":
+                actions_list = action["data"].get("actions", [])
+                action_context += f"Today's actions for {pet_name} ({len(actions_list)} items):\n"
+                for a in actions_list:
+                    action_context += f"- {a['icon']} {a['title']}: {a['description']}\n"
+            elif action["type"] == "learn":
+                content = action["data"].get("content", [])
+                action_context += f"Learning content ({len(content)} items):\n"
+                for c in content[:3]:
+                    action_context += f"- {c['title']}: {c['description']}\n"
+    
     # Current message
     user_input = f"""
 {conversation_text}
 Parent: {request.message}
-
-Respond as Mira. Be warm, focused, and brief. Stay on topic."""
+{action_context}
+Respond as Mira. Be warm, focused, and brief. If an action was taken, acknowledge it naturally. Stay on topic."""
 
     try:
         # Create chat with GPT-5.1
@@ -283,11 +381,12 @@ Respond as Mira. Be warm, focused, and brief. Stay on topic."""
         
         logger.info(f"[MIRA PURE] Response for '{request.message[:50]}...': {response[:100]}...")
         
-        return PureChatResponse(
-            response=response,
-            pet_name=pet_name,
-            session_id=request.session_id
-        )
+        return {
+            "response": response,
+            "pet_name": pet_name,
+            "session_id": request.session_id,
+            "actions": actions_taken
+        }
         
     except Exception as e:
         logger.error(f"[MIRA PURE] Error: {e}")
