@@ -434,20 +434,11 @@ const useChatSubmit = (config) => {
       // Highlight the relevant OS tab (e.g., SERVICES glows after ticket created)
       if (data.highlight_tab) {
         console.log('[SOULFUL] Highlighting tab:', data.highlight_tab);
-        console.log('[SOULFUL] setServicesPulse function exists:', typeof setServicesPulse);
         // Specifically handle services tab pulse
-        if (data.highlight_tab === 'services') {
-          if (typeof setServicesPulse === 'function') {
-            console.log('[SOULFUL] Calling setServicesPulse(true)');
-            setServicesPulse(true);
-            // Auto-clear highlight after 5 seconds
-            setTimeout(() => {
-              console.log('[SOULFUL] Calling setServicesPulse(false) after timeout');
-              setServicesPulse(false);
-            }, 5000);
-          } else {
-            console.warn('[SOULFUL] setServicesPulse is not a function!', setServicesPulse);
-          }
+        if (data.highlight_tab === 'services' && typeof setServicesPulse === 'function') {
+          setServicesPulse(true);
+          // Auto-clear highlight after 5 seconds
+          setTimeout(() => setServicesPulse(false), 5000);
         }
       }
       
