@@ -12426,8 +12426,11 @@ async def mira_chat(
                     # Decode without verification to get claims (verification already done by middleware)
                     payload = jwt.decode(token, options={"verify_signature": False})
                     user_email = payload.get("email") or payload.get("sub") or payload.get("user_id")
+                    logger.info(f"[SOULFUL] Extracted user_email from token: {user_email}")
                 except Exception as token_err:
                     logger.warning(f"[SOULFUL] Could not decode token for user_email: {token_err}")
+            else:
+                logger.warning(f"[SOULFUL] No authorization header, user_email will be None")
             
             # Determine active pillar from request
             active_pillar = request.current_pillar
