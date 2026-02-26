@@ -12423,6 +12423,38 @@ async def mira_chat(
                 except Exception as append_err:
                     logger.warning(f"[LIVE_THREAD] Could not append Mira response: {append_err}")
             
+            # ═══════════════════════════════════════════════════════════════════
+            # RESTORE LEGACY PRODUCT/SERVICE MATCHING
+            # The soulful brain handles conversation, but we still need to fetch
+            # products/services from the catalogue based on intent
+            # ═══════════════════════════════════════════════════════════════════
+            fetched_services = []
+            fetched_products = []
+            user_lower = request.message.lower()
+            
+            # Detect service intent and fetch from catalogue
+            service_keywords = ["grooming", "groom", "haircut", "bath", "nail", "vet", "vaccine", 
+                              "boarding", "board", "daycare", "walking", "walker", "training", "trainer"]
+            product_keywords = ["food", "treat", "toy", "bed", "leash", "collar", "bowl", "shampoo"]
+            
+            if any(kw in user_lower for kw in service_keywords):
+                try:
+                    fetched_services = await search_services_from_db(request.message, pet_ctx, limit=4)
+                    logger.info(f"[SOULFUL+LEGACY] Fetched {len(fetched_services)} services for: {request.message[:50]}")
+                except Exception as svc_err:
+                    logger.warning(f"[SOULFUL+LEGACY] Service fetch failed: {svc_err}")
+            
+            if any(kw in user_lower for kw in product_keywords):
+                try:
+                    fetched_products = await search_real_products(
+                        query=request.message,
+                        pet_context=pet_ctx,
+                        limit=4
+                    )
+                    logger.info(f"[SOULFUL+LEGACY] Fetched {len(fetched_products)} products for: {request.message[:50]}")
+                except Exception as prod_err:
+                    logger.warning(f"[SOULFUL+LEGACY] Product fetch failed: {prod_err}")
+            
             # Build response maintaining legacy structure for UI compatibility
             soulful_response = {
                 "success": True,
@@ -12433,9 +12465,9 @@ async def mira_chat(
                 "actions": soulful_result.get("actions", []),
                 # Quick replies for UI
                 "quick_replies": soulful_result.get("quick_replies", []),
-                # Map actions to legacy structures for UI compatibility
-                "products": [],
-                "services": [],
+                # RESTORED: Products and services from catalogue
+                "products": fetched_products,
+                "services": fetched_services,
                 # Mira's suggestions → PICKS panel (concierge_arranges)
                 "concierge_arranges": soulful_result.get("concierge_arranges", []),
                 # picks_contract for PICKS processing
