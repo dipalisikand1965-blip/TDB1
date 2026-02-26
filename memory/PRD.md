@@ -112,6 +112,49 @@ https://pet-life-ai.preview.emergentagent.com/mira-demo
 User Intent → Service Desk Ticket → Admin Notification → Member Notification → Pillar Request → Tickets → Channel Intakes
 ```
 
+### 7. Live Conversation Threads - Real-time Service Desk (P0) ✅
+**What:** Every conversation with Mira is captured as a "Live Thread" that the Service Desk can monitor in real-time. Concierge can see all active conversations and "jump in" to respond as human.
+
+**Flow:**
+```
+User Opens Conversation → Service Desk Thread Created (silently) → Admin Notification → 
+Every Message (user + Mira) Flows Into Thread → Concierge Can Jump In
+```
+
+**How it works:**
+- When user sends first message via `/api/mira/chat`, a live thread is auto-created
+- Both user messages AND Mira responses are appended to the thread in real-time
+- Admin Service Desk sees "Live Threads" tab with all active conversations
+- Admin can click thread to see full conversation history
+- Admin can type reply to "jump in" as Concierge
+- User receives notification when Concierge responds
+
+**Backend Endpoints:**
+- `POST /api/live_threads/start` - Start new thread
+- `POST /api/live_threads/append` - Append message to thread
+- `GET /api/live_threads/active` - Get all active threads (admin auth)
+- `GET /api/live_threads/{thread_id}` - Get thread details with messages
+- `POST /api/live_threads/{thread_id}/reply` - Concierge reply
+- `POST /api/live_threads/{thread_id}/close` - Close thread
+- `GET /api/live_threads/stats/overview` - Stats overview
+
+**Key Files:**
+- `/app/backend/live_conversation_routes.py` - NEW file - All live thread endpoints
+- `/app/backend/mira_routes.py` - Lines 12368-12420 (auto-creates thread on chat)
+- `/app/frontend/src/components/admin/LiveConversationThreads.jsx` - NEW file - Admin dashboard component
+- `/app/frontend/src/pages/Admin.jsx` - Added "Live Threads" tab under MIRA & AI
+
+**Database Collection:**
+- `live_conversation_threads` - Stores all threads with messages array
+
+**Admin Dashboard Features:**
+- Stats cards: Active Now, Need Attention, Today New, Closed Today
+- Thread list with user/pet info, message preview, timestamp
+- Click thread to open detail modal
+- Full conversation view (user messages in purple, Mira in white, Concierge in green)
+- Reply input for Concierge to respond
+- Close thread button
+
 ---
 
 ## IN-PROGRESS TASK: Breed-Specific LEARN Content Filtering (P1)
