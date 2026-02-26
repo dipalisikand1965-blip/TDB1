@@ -72,6 +72,7 @@ import OnboardingTooltip from '../components/Mira/OnboardingTooltip';
 import ConciergeReplyBanner from '../components/Mira/ConciergeReplyBanner';
 import NewChatConfirmDialog from '../components/Mira/NewChatConfirmDialog';
 import StarterChips from '../components/Mira/StarterChips';
+import LocationPromptModal from '../components/Mira/LocationPromptModal';
 import Footer from '../components/Footer';
 
 // ═══════════════════════════════════════════════════════════════════════════════
