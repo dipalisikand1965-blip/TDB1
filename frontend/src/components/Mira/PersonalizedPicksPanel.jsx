@@ -1919,6 +1919,60 @@ const PersonalizedPicksPanel = ({
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* ═══════════════════════════════════════════════════ */}
+                {/* CONVERSATION SUGGESTIONS - Dynamic picks from Mira's chat */}
+                {/* These are the 🎂🎈📸🦴 suggestions from the conversation */}
+                {/* ═══════════════════════════════════════════════════ */}
+                {conversationSuggestions.length > 0 && (
+                  <div className="md:col-span-2 mb-6">
+                    <div className="mb-3">
+                      <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-pink-400 animate-pulse" />
+                        Mira's Suggestions from Our Chat
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-1">Tap to select what you want for {pet?.name}</p>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {conversationSuggestions.map((suggestion, index) => (
+                        <div 
+                          key={suggestion.id || index}
+                          className={`p-4 rounded-xl bg-gradient-to-r from-pink-900/30 to-purple-900/30 border border-pink-500/30 cursor-pointer hover:border-pink-500/60 transition-all active:scale-[0.98] ${
+                            isSelected(suggestion) ? 'ring-2 ring-pink-500' : ''
+                          }`}
+                          onClick={() => {
+                            hapticFeedback.buttonTap();
+                            toggleSelection(suggestion, 'suggestion');
+                          }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-full bg-pink-500/20 flex items-center justify-center flex-shrink-0">
+                              <span className="text-2xl">{suggestion.title?.match(/^[\p{Emoji}]/u)?.[0] || '✨'}</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-medium text-white text-sm">{suggestion.title?.replace(/^[\p{Emoji}]\s*/u, '') || 'Suggestion'}</h4>
+                              {suggestion.subtitle && suggestion.subtitle !== 'Price on request' && (
+                                <span className="text-xs text-green-400">{suggestion.subtitle}</span>
+                              )}
+                              {suggestion.description && (
+                                <p className="text-xs text-gray-400 mt-1 truncate">{suggestion.description}</p>
+                              )}
+                            </div>
+                            <div
+                              className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                                isSelected(suggestion) 
+                                  ? 'bg-pink-500 text-white' 
+                                  : 'bg-gray-700 text-gray-400'
+                              }`}
+                            >
+                              {isSelected(suggestion) ? <Check className="w-4 h-4" /> : <span className="text-lg">+</span>}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* ═══════════════════════════════════════════════════ */}
                 {/* LEFT: MIRA'S PICKS - Handpicked products for this pet */}
                 {/* ═══════════════════════════════════════════════════ */}
                 <div>
