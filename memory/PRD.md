@@ -247,6 +247,38 @@ Every Message (user + Mira) Flows Into Thread → Concierge Can Jump In
 - `/app/frontend/src/components/Mira/PersonalizedPicksPanel.jsx` - Lines 1925-1973 (renders conversationSuggestions)
 - `/app/frontend/src/pages/MiraDemoPage.jsx` - Line 5059 (passes miraPicks.conciergeArranges)
 
+### P0: Services Not Showing in PICKS Panel ✅
+**What:** When user asked for grooming/party/vet services, the PICKS panel showed 0 services. The soulful brain was bypassing legacy product/service fetching.
+
+**Root Cause:** 
+1. The soulful brain response was returning `products: []` and `services: []` without querying the database
+2. The services collection in DB was empty (services were hardcoded but never inserted)
+
+**Fix Applied:**
+1. Added service/product fetching back into the soulful response path (`mira_routes.py` lines 12494-12525)
+2. Added hardcoded services fallback when DB is empty (`mira_routes.py` lines 4505-4570)
+3. Added party/celebrate keywords to service detection
+
+**Key Files:**
+- `/app/backend/mira_routes.py` - Lines 12494-12525 (restore legacy service fetching)
+- `/app/backend/mira_routes.py` - Lines 4505-4570 (HARDCODED_SERVICES fallback)
+
+### P0: Full Pet Memory Not Used by Mira ✅
+**What:** Mira was only using basic pet info (name, breed, age) and ignoring critical soul data like handling_comfort, anxiety_triggers, temperament, energy_level, etc.
+
+**Root Cause:** The `get_soulful_response()` function in `mira_soulful_brain.py` only extracted a few fields from `pet_context`, not the full `doggy_soul_answers`.
+
+**Fix Applied:**
+- Expanded context building in `mira_soulful_brain.py` (lines 637-750) to include ALL doggy_soul_answers fields:
+  - temperament, energy_level, handling_comfort, coat_type
+  - behavior_with_dogs, social_with_people, stranger_reaction
+  - anxiety_triggers, loud_sounds, separation_anxiety
+  - food_motivation, favorite_treats, health_conditions, life_stage
+  - training_level, behavior_concerns, allergies
+
+**Key Files:**
+- `/app/backend/mira_soulful_brain.py` - Lines 637-750 (full doggy_soul_answers extraction)
+
 ### P1: Soul Score Update Fix ✅
 **What:** Soul Score was stuck at 0% because the backend was using wrong query pattern.
 
