@@ -913,31 +913,32 @@ async def get_soulful_response(
         # SAVE INTENT FOR SOUL INTEGRATION
         # This powers the "MOJO MIGHT NEED THIS" shelf in Services panel
         # ═══════════════════════════════════════════════════════════════════════════
-        if detected_topic and db is not None:
+        if detected_topic and db is not None and user_email:
             try:
                 from datetime import datetime, timezone
                 import uuid as uuid_module
                 
                 # Get user_id from user_email
                 user_id = user_email
-                if "@" in user_email:
+                if user_email and "@" in user_email:
                     user_doc = await db.users.find_one({"email": user_email}, {"id": 1})
                     if user_doc and user_doc.get("id"):
                         user_id = user_doc["id"]
                 
-                intent_doc = {
-                    "id": f"intent-{uuid_module.uuid4().hex[:8]}",
-                    "user_id": user_id,
-                    "pet_id": pet_id,
-                    "topic": detected_topic,
-                    "message": message[:200],
-                    "pillar": suggested_pillar,
-                    "confidence": 0.85,
-                    "source": "soulful_brain",
-                    "created_at": datetime.now(timezone.utc)
-                }
-                await db.user_learn_intents.insert_one(intent_doc)
-                logger.info(f"[SOULFUL] Saved intent '{detected_topic}' for {pet_name}")
+                if user_id:
+                    intent_doc = {
+                        "id": f"intent-{uuid_module.uuid4().hex[:8]}",
+                        "user_id": user_id,
+                        "pet_id": pet_id,
+                        "topic": detected_topic,
+                        "message": message[:200],
+                        "pillar": suggested_pillar,
+                        "confidence": 0.85,
+                        "source": "soulful_brain",
+                        "created_at": datetime.now(timezone.utc)
+                    }
+                    await db.user_learn_intents.insert_one(intent_doc)
+                    logger.info(f"[SOULFUL] Saved intent '{detected_topic}' for {pet_name}")
             except Exception as intent_err:
                 logger.warning(f"[SOULFUL] Failed to save intent: {intent_err}")
         
