@@ -386,16 +386,82 @@ const MiraPureOSPage = () => {
                   )}
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                   
-                  {/* Action buttons if present */}
+                  {/* Action results */}
                   {msg.actions && msg.actions.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-2">
+                    <div className="mt-4 space-y-3">
                       {msg.actions.map((action, aIdx) => (
-                        <button
-                          key={aIdx}
-                          className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded-lg text-xs transition-colors"
-                        >
-                          {action.label}
-                        </button>
+                        <div key={aIdx}>
+                          {/* Picks display */}
+                          {action.type === 'picks' && action.data?.picks && (
+                            <div className="bg-slate-900/50 rounded-xl p-3 border border-purple-500/20">
+                              <p className="text-xs text-purple-400 font-medium mb-2">
+                                📦 Picks for {action.data.pet_name}
+                              </p>
+                              <div className="space-y-2">
+                                {action.data.picks.slice(0, 3).map((pick, pIdx) => (
+                                  <div key={pIdx} className="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg">
+                                    <div>
+                                      <p className="text-sm text-white">{pick.name}</p>
+                                      <p className="text-xs text-slate-400">{pick.description}</p>
+                                    </div>
+                                    <span className="text-xs text-emerald-400 whitespace-nowrap ml-2">{pick.price}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Service created display */}
+                          {action.type === 'service_created' && action.data?.success && (
+                            <div className="bg-emerald-500/10 rounded-xl p-3 border border-emerald-500/20">
+                              <p className="text-xs text-emerald-400 font-medium mb-1">
+                                ✓ Service Request Created
+                              </p>
+                              <p className="text-sm text-white">Ticket: {action.data.ticket_id}</p>
+                              <p className="text-xs text-slate-400 mt-1">{action.data.message}</p>
+                            </div>
+                          )}
+                          
+                          {/* Today actions display */}
+                          {action.type === 'today' && action.data?.actions && (
+                            <div className="bg-amber-500/10 rounded-xl p-3 border border-amber-500/20">
+                              <p className="text-xs text-amber-400 font-medium mb-2">
+                                📅 Today for {action.data.pet_name}
+                              </p>
+                              <div className="space-y-2">
+                                {action.data.actions.map((item, tIdx) => (
+                                  <div key={tIdx} className="flex items-start gap-2 p-2 bg-slate-800/50 rounded-lg">
+                                    <span className="text-lg">{item.icon}</span>
+                                    <div>
+                                      <p className="text-sm text-white">{item.title}</p>
+                                      <p className="text-xs text-slate-400">{item.description}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Learn content display */}
+                          {action.type === 'learn' && action.data?.content && (
+                            <div className="bg-green-500/10 rounded-xl p-3 border border-green-500/20">
+                              <p className="text-xs text-green-400 font-medium mb-2">
+                                📚 Learning Resources
+                              </p>
+                              <div className="space-y-2">
+                                {action.data.content.slice(0, 3).map((item, lIdx) => (
+                                  <div key={lIdx} className="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg">
+                                    <div>
+                                      <p className="text-sm text-white">{item.title}</p>
+                                      <p className="text-xs text-slate-400">{item.description}</p>
+                                    </div>
+                                    <span className="text-xs text-slate-500 whitespace-nowrap ml-2">{item.read_time}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       ))}
                     </div>
                   )}
