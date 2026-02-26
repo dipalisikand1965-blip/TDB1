@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://concierge-unified.preview.emergentagent.com/mira-demo**
+**https://pet-life-ai.preview.emergentagent.com/mira-demo**
 
 ---
 

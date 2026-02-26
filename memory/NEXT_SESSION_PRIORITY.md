@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://concierge-unified.preview.emergentagent.com
+**Preview URL:** https://pet-life-ai.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
