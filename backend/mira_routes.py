@@ -7819,6 +7819,7 @@ class MiraChatRequest(BaseModel):
     ui_context: Optional[Dict[str, Any]] = None  # {active_tab, active_pillar, surface, draft_ticket_id}
     conversation_history: Optional[List[Dict[str, str]]] = None  # [{role, content}]
     user_id: Optional[str] = None
+    user_city: Optional[str] = None  # User's city for location-based recommendations
 
 class MiraPetContext(BaseModel):
     pet_id: str
