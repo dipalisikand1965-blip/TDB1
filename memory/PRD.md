@@ -157,22 +157,49 @@ Every Message (user + Mira) Flows Into Thread → Concierge Can Jump In
 
 ---
 
-## IN-PROGRESS TASK: Breed-Specific LEARN Content Filtering (P1)
+### 8. Breed-Specific LEARN Content Filtering (P1) ✅
+**What:** LEARN tab content is personalized based on the selected pet's breed. A Shih Tzu owner sees content relevant to brachycephalic breeds, long coats, and toy breeds.
 
-### Current State
-The LEARN tab already has sophisticated personalization:
-- Pet tags (puppy, adult, senior, anxious, food_sensitive)
-- Breed tags (brachy, double_coat, floppy_ears, toy, etc.)
-- Content scoring based on tag matches
-- "For your pet" shelf shows personalized content
+**How it works:**
+- `BREED_TAG_MAP` maps breeds to characteristic tags (e.g., "shih tzu" → `["brachy", "long_coat", "toy"]`)
+- `derive_pet_tags_from_profile()` extracts both pet tags (life stage, behavior) and breed tags
+- `calculate_relevance_score()` scores content based on tag matches
+- "For your pet" shelf shows personalized content with "For {pet_name}" badges
 
-### What's Already Implemented
-The `/app/backend/learn_os_routes.py` file (1639 lines) ALREADY has:
-1. `BREED_TAG_MAP` (lines 76-162) - Maps breeds to tags (e.g., "shih tzu" → ["brachy", "long_coat", "toy"])
-2. `derive_pet_tags_from_profile()` (lines 165-286) - Extracts pet_tags and breed_tags from pet profile
-3. `calculate_relevance_score()` (lines 296-352) - Scores content based on tag matches
-4. `fetch_pet_profile()` (lines 382-397) - Fetches pet from DB by pet_id
-5. Both `/home` and `/topic/{topic}` endpoints already accept `pet_id` query param
+**Key Files:**
+- `/app/backend/learn_os_routes.py` - Lines 76-286 (BREED_TAG_MAP, derive_pet_tags_from_profile)
+- `/app/frontend/src/components/Mira/LearnPanel.jsx` - Lines 325-340 (passes pet_id to API)
+
+**Test Results:**
+- Shih Tzu "Mojo" gets tags: `[brachy, long_coat, toy]`
+- "For your pet" shelf: 7 personalized items, 2 with "For Mojo" badge
+- Grooming topic correctly applies breed_tags for personalization
+
+### 9. Auto-switch PICKS Pillar (P1) ✅
+**What:** PICKS pillar automatically switches based on conversation context. Grooming conversations auto-switch to "care" pillar.
+
+**How it works:**
+- Backend returns `suggested_pillar` in chat response based on detected intent
+- Frontend `useChatSubmit.js` calls `setPillar(data.suggested_pillar)` to update state
+- Also returns `highlight_tab` to highlight relevant OS tabs
+
+**Pillar Mappings:**
+| Intent | Pillar | Highlight Tab |
+|--------|--------|---------------|
+| grooming | care | services |
+| vet visit | care | services |
+| food/meal | dine | - |
+| birthday | celebrate | - |
+| travel | travel | - |
+| boarding | stay | - |
+
+**Key Files:**
+- `/app/backend/mira_soulful_brain.py` - Returns suggested_pillar based on conversation
+- `/app/frontend/src/hooks/mira/useChatSubmit.js` - Lines 447-449 (setPillar from suggested_pillar)
+
+---
+
+## REMAINING TASKS
 
 ### What Needs Verification/Enhancement
 1. **Verify pet_id is passed correctly from frontend** - Check `LearnPanel.jsx` or equivalent
