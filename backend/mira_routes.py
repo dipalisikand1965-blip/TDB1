@@ -12322,6 +12322,7 @@ async def mira_chat(
     Main Mira chat endpoint.
     Every interaction creates or updates a ticket.
     """
+    logger.info(f"[MIRA CHAT] Received request, authorization present: {authorization is not None}")
     db = get_db()
     
     # ═══════════════════════════════════════════════════════════════════════════
