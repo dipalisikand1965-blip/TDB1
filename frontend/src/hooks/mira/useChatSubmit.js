@@ -978,6 +978,18 @@ const useChatSubmit = (config) => {
       if (data.concierge_confirmation?.show_banner) {
         setConciergeConfirmation(data.concierge_confirmation);
         console.log('[CONCIERGE CONFIRM] Service request banner shown:', data.concierge_confirmation.ticket_id);
+        
+        // Trigger SERVICES tab pulse for 5 seconds to draw attention
+        if (typeof setServicesPulse === 'function') {
+          setServicesPulse(true);
+          setTimeout(() => setServicesPulse(false), 5000);
+        }
+      }
+      
+      // Auto-set pillar based on conversation context (from soulful brain)
+      if (data.suggested_pillar && typeof setPillar === 'function') {
+        console.log('[SOULFUL] Auto-setting pillar from conversation:', data.suggested_pillar);
+        setPillar(data.suggested_pillar);
       }
       
       // ═══════════════════════════════════════════════════════════════════════════
