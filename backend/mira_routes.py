@@ -12328,6 +12328,94 @@ async def mira_chat(
             logger.error(f"[STRUCTURED ENGINE] Error, falling back to legacy: {structured_err}", exc_info=True)
             # Fall through to legacy engine
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # FEATURE FLAG: USE SOULFUL BRAIN
+    # When enabled, uses the new soulful conversation engine that follows the bibles
+    # This gives warm, focused responses while keeping all existing data flows
+    # ═══════════════════════════════════════════════════════════════════════════
+    USE_SOULFUL_BRAIN = os.environ.get("MIRA_SOULFUL_BRAIN", "true").lower() == "true"
+    
+    if USE_SOULFUL_BRAIN:
+        try:
+            from mira_soulful_brain import get_soulful_response, set_db as set_soulful_db
+            
+            # Ensure soulful brain has DB access
+            set_soulful_db(db)
+            
+            # Get pet context
+            pet_ctx = request.pet_context or {}
+            pet_name = pet_ctx.get("name") or request.pet_name or "your pet"
+            pet_id = pet_ctx.get("id") or request.selected_pet_id
+            
+            # Determine active pillar from request
+            active_pillar = request.current_pillar
+            if active_pillar and active_pillar.startswith("mira-"):
+                active_pillar = None  # Not a real pillar
+            
+            # Get soulful response
+            soulful_result = await get_soulful_response(
+                message=request.message.strip(),
+                pet_id=pet_id,
+                pet_name=pet_name,
+                pet_context=pet_ctx,
+                user_email=request.user_email if hasattr(request, 'user_email') else None,
+                conversation_history=request.conversation_history or [],
+                active_pillar=active_pillar
+            )
+            
+            # Build response maintaining legacy structure for UI compatibility
+            soulful_response = {
+                "success": True,
+                "response": soulful_result.get("response", "I'm here to help!"),
+                "session_id": request.session_id or str(uuid.uuid4()),
+                "pet_name": pet_name,
+                # Include actions from function calling
+                "actions": soulful_result.get("actions", []),
+                # Quick replies for UI
+                "quick_replies": soulful_result.get("quick_replies", []),
+                # Map actions to legacy structures for UI compatibility
+                "products": [],
+                "services": [],
+                "concierge_arranges": [],
+            }
+            
+            # Process actions and map to legacy structures
+            for action in soulful_result.get("actions", []):
+                if action["type"] == "service_created":
+                    # Service was created - add concierge confirmation
+                    ticket_data = action["data"]
+                    soulful_response["concierge_confirmation"] = {
+                        "show_banner": True,
+                        "ticket_id": ticket_data.get("ticket_id"),
+                        "service_type": ticket_data.get("service_type"),
+                        "message": ticket_data.get("message")
+                    }
+                elif action["type"] == "picks":
+                    # Got picks - map to products/services
+                    picks_data = action["data"]
+                    for pick in picks_data.get("picks", []):
+                        if pick.get("type") == "product":
+                            soulful_response["products"].append({
+                                "name": pick.get("name"),
+                                "price": pick.get("price"),
+                                "description": pick.get("description"),
+                                "id": pick.get("name", "").lower().replace(" ", "_")
+                            })
+                        else:
+                            soulful_response["services"].append({
+                                "name": pick.get("name"),
+                                "price": pick.get("price"),
+                                "description": pick.get("description"),
+                                "id": pick.get("name", "").lower().replace(" ", "_")
+                            })
+            
+            logger.info(f"[SOULFUL BRAIN] Processed message for {pet_name}, actions: {len(soulful_result.get('actions', []))}")
+            return soulful_response
+            
+        except Exception as soulful_err:
+            logger.error(f"[SOULFUL BRAIN] Error, falling back to legacy: {soulful_err}", exc_info=True)
+            # Fall through to legacy engine
+    
     session_id = request.session_id or str(uuid.uuid4())
     user_message = request.message.strip()
     
