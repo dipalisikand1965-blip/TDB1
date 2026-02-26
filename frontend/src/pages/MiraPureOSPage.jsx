@@ -1,13 +1,29 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, Dog, Calendar, Scissors, Heart, MapPin, Utensils, Plane, 
-         ShoppingBag, GraduationCap, Bell, ChevronDown, Sun, Cloud,
-         Clock, Star, MessageCircle, Package, Stethoscope, Home, Dumbbell,
-         Hotel, Briefcase, HelpCircle, Camera, Gift, Coffee } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { 
+  Send, Sparkles, Dog, Calendar, Scissors, Heart, MapPin, Utensils, Plane, 
+  ShoppingBag, GraduationCap, Bell, ChevronDown, ChevronRight, Sun, Cloud,
+  Clock, Star, MessageCircle, Package, Stethoscope, Home, Dumbbell, Hotel, 
+  Briefcase, HelpCircle, Camera, Gift, Coffee, X, ArrowLeft, User, Check,
+  Phone, Mail, AlertCircle, Play, BookOpen, RefreshCw, ChevronUp
+} from 'lucide-react';
 import { API_URL } from '../utils/api';
 
 const API = API_URL;
 
-// All 10 Pillars with their icons and colors
+// ═══════════════════════════════════════════════════════════════════════════════
+// OS TABS - The 7 Layers of Mira OS (from Bible)
+// ═══════════════════════════════════════════════════════════════════════════════
+const OS_TABS = [
+  { id: 'today', label: 'Today', icon: Sun, color: 'from-amber-500 to-orange-500' },
+  { id: 'picks', label: 'Picks', icon: Sparkles, color: 'from-pink-500 to-rose-500' },
+  { id: 'services', label: 'Services', icon: Briefcase, color: 'from-blue-500 to-cyan-500' },
+  { id: 'learn', label: 'Learn', icon: GraduationCap, color: 'from-indigo-500 to-purple-500' },
+  { id: 'concierge', label: 'Concierge', icon: MessageCircle, color: 'from-emerald-500 to-teal-500' },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PILLARS - The 10+ pillars of pet life
+// ═══════════════════════════════════════════════════════════════════════════════
 const PILLARS = [
   { id: 'celebrate', label: 'Celebrate', icon: Gift, color: 'from-pink-500 to-rose-500', emoji: '🎂' },
   { id: 'dine', label: 'Dine', icon: Utensils, color: 'from-orange-500 to-amber-500', emoji: '🍖' },
@@ -21,9 +37,30 @@ const PILLARS = [
   { id: 'services', label: 'Services', icon: Briefcase, color: 'from-slate-500 to-gray-500', emoji: '🔧' },
 ];
 
-// Quick replies based on pillar and conversation
-const getQuickReplies = (activePillar, petName, lastResponse) => {
+// ═══════════════════════════════════════════════════════════════════════════════
+// QUICK REPLIES - Context-aware suggestions based on conversation
+// ═══════════════════════════════════════════════════════════════════════════════
+const getQuickReplies = (activePillar, petName, lastResponse, actions) => {
   const lower = lastResponse?.toLowerCase() || '';
+  
+  // Action-based quick replies (after service/picks actions)
+  if (actions?.length > 0) {
+    const lastAction = actions[actions.length - 1];
+    if (lastAction.type === 'service_created') {
+      return [
+        { text: 'View in Services', icon: Briefcase, action: 'open_services' },
+        { text: 'Add more details', icon: MessageCircle },
+        { text: 'Start something new', icon: RefreshCw },
+      ];
+    }
+    if (lastAction.type === 'picks') {
+      return [
+        { text: 'Show more options', icon: Sparkles },
+        { text: 'Create one for me', icon: Gift },
+        { text: 'Talk to Concierge', icon: MessageCircle },
+      ];
+    }
+  }
   
   // Context-aware from conversation
   if (lower.includes('birthday') || lower.includes('party')) {
@@ -47,8 +84,15 @@ const getQuickReplies = (activePillar, petName, lastResponse) => {
       { text: 'Light trim', icon: Scissors },
     ];
   }
+  if (lower.includes('vet') || lower.includes('checkup') || lower.includes('health')) {
+    return [
+      { text: 'Book vet visit', icon: Stethoscope },
+      { text: 'Show me clinics nearby', icon: MapPin },
+      { text: 'Regular checkup', icon: Calendar },
+    ];
+  }
   
-  // Pillar-specific
+  // Pillar-specific defaults
   switch (activePillar) {
     case 'celebrate':
       return [
@@ -107,81 +151,515 @@ const getQuickReplies = (activePillar, petName, lastResponse) => {
   }
 };
 
-// Picks data based on pillar (would come from backend in production)
+// ═══════════════════════════════════════════════════════════════════════════════
+// PICKS DATA - Returns picks based on pillar
+// ═══════════════════════════════════════════════════════════════════════════════
 const getPillarPicks = (pillar, petName, allergies = []) => {
-  const isChickenFree = allergies.includes('chicken');
+  const isChickenFree = allergies.some(a => a?.toLowerCase()?.includes('chicken'));
   
   const allPicks = {
     celebrate: [
-      { id: 'c1', name: 'Custom Photo Mug', desc: 'Start your day with your best friend\'s face', price: 'Concierge creates', icon: '☕' },
-      { id: 'c2', name: 'Photo Coaster Set', desc: 'Protect surfaces with pet love', price: 'Concierge creates', icon: '🥤' },
-      { id: 'c3', name: 'Custom Name Bandana', desc: 'Stylish bandana with embroidered name', price: 'Concierge creates', icon: '🎀' },
-      { id: 'c4', name: 'AI Pet Portrait', desc: 'Artistic portrait generated from photos', price: 'Concierge creates', icon: '🖼️' },
-      { id: 'c5', name: 'Custom Collar Tag', desc: 'Engraved with name and phone', price: 'Concierge creates', icon: '🏷️' },
-      { id: 'c6', name: 'Custom Lookalike Plush', desc: 'A plush toy that looks like your pet', price: 'Concierge creates', icon: '🧸' },
+      { id: 'c1', name: 'Custom Photo Mug', desc: 'Start your day with your best friend\'s face', price: 'Concierge creates', icon: '☕', type: 'concierge' },
+      { id: 'c2', name: 'Photo Coaster Set', desc: 'Protect surfaces with pet love', price: 'Concierge creates', icon: '🥤', type: 'concierge' },
+      { id: 'c3', name: 'Custom Name Bandana', desc: 'Stylish bandana with embroidered name', price: 'Concierge creates', icon: '🎀', type: 'concierge' },
+      { id: 'c4', name: 'AI Pet Portrait', desc: 'Artistic portrait generated from photos', price: 'Concierge creates', icon: '🖼️', type: 'concierge' },
+      { id: 'c5', name: 'Birthday Party Setup', desc: 'Complete pawty package with decorations', price: 'From ₹2,500', icon: '🎉', type: 'service' },
+      { id: 'c6', name: 'Custom Lookalike Plush', desc: 'A plush toy that looks like your pet', price: 'Concierge creates', icon: '🧸', type: 'concierge' },
     ],
     dine: [
-      { id: 'd1', name: 'Premium Wet Food', desc: isChickenFree ? 'Chicken-free recipe' : 'High protein formula', price: '₹450/pack', icon: '🥫' },
-      { id: 'd2', name: 'Birthday Cake', desc: isChickenFree ? 'Chicken-free, dog-safe' : 'Dog-safe celebration cake', price: '₹650', icon: '🎂' },
-      { id: 'd3', name: 'Dental Treats', desc: 'Keeps teeth clean naturally', price: '₹320/pack', icon: '🦷' },
-      { id: 'd4', name: 'Freeze-dried Treats', desc: 'Single ingredient, healthy', price: '₹480', icon: '🍖' },
+      { id: 'd1', name: 'Premium Wet Food', desc: isChickenFree ? 'Chicken-free recipe' : 'High protein formula', price: '₹450/pack', icon: '🥫', type: 'product' },
+      { id: 'd2', name: 'Birthday Cake', desc: isChickenFree ? 'Chicken-free, dog-safe' : 'Dog-safe celebration cake', price: '₹650', icon: '🎂', type: 'product' },
+      { id: 'd3', name: 'Dental Treats', desc: 'Keeps teeth clean naturally', price: '₹320/pack', icon: '🦷', type: 'product' },
+      { id: 'd4', name: 'Freeze-dried Treats', desc: 'Single ingredient, healthy', price: '₹480', icon: '🍖', type: 'product' },
+      { id: 'd5', name: 'Fresh Meal Plan', desc: 'Customized fresh meals delivered', price: 'From ₹200/meal', icon: '🥗', type: 'service' },
     ],
     care: [
-      { id: 'care1', name: 'Dog Walking', desc: 'Professional walker for daily walks', price: '₹300/walk', icon: '🚶' },
-      { id: 'care2', name: 'Grooming & Spa', desc: 'Full grooming session', price: 'From ₹800', icon: '✂️' },
-      { id: 'care3', name: 'Vet Home Visit', desc: 'Veterinarian comes to you', price: '₹1,500', icon: '🏥' },
-      { id: 'care4', name: 'Pet Sitting', desc: 'In-home pet care', price: '₹500/day', icon: '🏠' },
+      { id: 'care1', name: 'Dog Walking', desc: 'Professional walker for daily walks', price: '₹300/walk', icon: '🚶', type: 'service' },
+      { id: 'care2', name: 'Grooming & Spa', desc: 'Full grooming session', price: 'From ₹800', icon: '✂️', type: 'service' },
+      { id: 'care3', name: 'Vet Home Visit', desc: 'Veterinarian comes to you', price: '₹1,500', icon: '🏥', type: 'service' },
+      { id: 'care4', name: 'Pet Sitting', desc: 'In-home pet care', price: '₹500/day', icon: '🏠', type: 'service' },
+      { id: 'care5', name: 'Vaccination', desc: 'Keep vaccinations up to date', price: 'Varies', icon: '💉', type: 'service' },
     ],
     travel: [
-      { id: 't1', name: 'Pet-Friendly Hotels', desc: 'Curated accommodations', price: 'Varies', icon: '🏨' },
-      { id: 't2', name: 'Travel Kit', desc: 'Everything for the journey', price: '₹2,200', icon: '🧳' },
-      { id: 't3', name: 'Pet Taxi', desc: 'Safe pet transport', price: 'From ₹500', icon: '🚗' },
+      { id: 't1', name: 'Pet-Friendly Hotels', desc: 'Curated accommodations', price: 'Varies', icon: '🏨', type: 'service' },
+      { id: 't2', name: 'Travel Kit', desc: 'Everything for the journey', price: '₹2,200', icon: '🧳', type: 'product' },
+      { id: 't3', name: 'Pet Taxi', desc: 'Safe pet transport', price: 'From ₹500', icon: '🚗', type: 'service' },
+      { id: 't4', name: 'Travel Documents', desc: 'Health certificates & more', price: 'Concierge handles', icon: '📄', type: 'concierge' },
     ],
     stay: [
-      { id: 's1', name: 'Premium Boarding', desc: 'Luxury pet hotel stay', price: '₹1,200/night', icon: '🏨' },
-      { id: 's2', name: 'Home Pet Sitter', desc: 'Sitter stays at your home', price: '₹800/day', icon: '🏠' },
-      { id: 's3', name: 'Daycare', desc: 'Supervised play all day', price: '₹600/day', icon: '☀️' },
+      { id: 's1', name: 'Premium Boarding', desc: 'Luxury pet hotel stay', price: '₹1,200/night', icon: '🏨', type: 'service' },
+      { id: 's2', name: 'Home Pet Sitter', desc: 'Sitter stays at your home', price: '₹800/day', icon: '🏠', type: 'service' },
+      { id: 's3', name: 'Daycare', desc: 'Supervised play all day', price: '₹600/day', icon: '☀️', type: 'service' },
     ],
     enjoy: [
-      { id: 'e1', name: 'Dog Park Visit', desc: 'Find the best parks nearby', price: 'Free', icon: '🌳' },
-      { id: 'e2', name: 'Pet Cafe Booking', desc: 'Reserve at pet-friendly spots', price: 'Varies', icon: '☕' },
-      { id: 'e3', name: 'Playdate Matching', desc: 'Find friends for your pet', price: 'Free', icon: '🐕' },
+      { id: 'e1', name: 'Dog Park Visit', desc: 'Find the best parks nearby', price: 'Free', icon: '🌳', type: 'info' },
+      { id: 'e2', name: 'Pet Cafe Booking', desc: 'Reserve at pet-friendly spots', price: 'Varies', icon: '☕', type: 'service' },
+      { id: 'e3', name: 'Playdate Matching', desc: 'Find friends for your pet', price: 'Free', icon: '🐕', type: 'service' },
     ],
     fit: [
-      { id: 'f1', name: 'Fitness Assessment', desc: 'Check your pet\'s fitness level', price: '₹500', icon: '💪' },
-      { id: 'f2', name: 'Exercise Plan', desc: 'Custom workout routine', price: 'Concierge creates', icon: '📋' },
-      { id: 'f3', name: 'Swimming Session', desc: 'Low-impact exercise', price: '₹800', icon: '🏊' },
+      { id: 'f1', name: 'Fitness Assessment', desc: 'Check your pet\'s fitness level', price: '₹500', icon: '💪', type: 'service' },
+      { id: 'f2', name: 'Exercise Plan', desc: 'Custom workout routine', price: 'Concierge creates', icon: '📋', type: 'concierge' },
+      { id: 'f3', name: 'Swimming Session', desc: 'Low-impact exercise', price: '₹800', icon: '🏊', type: 'service' },
     ],
     learn: [
-      { id: 'l1', name: 'Basic Training', desc: 'Obedience fundamentals', price: '₹2,000/session', icon: '📚' },
-      { id: 'l2', name: 'Behavior Consultation', desc: 'Address specific issues', price: '₹1,500', icon: '🧠' },
-      { id: 'l3', name: 'Puppy School', desc: 'Socialization & basics', price: '₹5,000/course', icon: '🎓' },
+      { id: 'l1', name: 'Basic Training', desc: 'Obedience fundamentals', price: '₹2,000/session', icon: '📚', type: 'service' },
+      { id: 'l2', name: 'Behavior Consultation', desc: 'Address specific issues', price: '₹1,500', icon: '🧠', type: 'service' },
+      { id: 'l3', name: 'Puppy School', desc: 'Socialization & basics', price: '₹5,000/course', icon: '🎓', type: 'service' },
     ],
     advisory: [
-      { id: 'a1', name: 'Nutrition Advice', desc: 'Diet planning help', price: 'Free', icon: '🥗' },
-      { id: 'a2', name: 'Health Questions', desc: 'General wellness guidance', price: 'Free', icon: '❤️' },
-      { id: 'a3', name: 'Breed Guide', desc: 'Breed-specific info', price: 'Free', icon: '📖' },
+      { id: 'a1', name: 'Nutrition Advice', desc: 'Diet planning help', price: 'Free', icon: '🥗', type: 'info' },
+      { id: 'a2', name: 'Health Questions', desc: 'General wellness guidance', price: 'Free', icon: '❤️', type: 'info' },
+      { id: 'a3', name: 'Breed Guide', desc: 'Breed-specific info', price: 'Free', icon: '📖', type: 'info' },
     ],
     services: [
-      { id: 'sv1', name: 'All Services', desc: 'Browse all available services', price: 'Varies', icon: '🔧' },
-      { id: 'sv2', name: 'My Requests', desc: 'Track your service requests', price: '-', icon: '📋' },
-      { id: 'sv3', name: 'Concierge Chat', desc: 'Talk to our team', price: 'Free', icon: '💬' },
+      { id: 'sv1', name: 'All Services', desc: 'Browse all available services', price: 'Varies', icon: '🔧', type: 'service' },
+      { id: 'sv2', name: 'My Requests', desc: 'Track your service requests', price: '-', icon: '📋', type: 'info' },
+      { id: 'sv3', name: 'Concierge Chat', desc: 'Talk to our team', price: 'Free', icon: '💬', type: 'service' },
     ],
   };
   
   return allPicks[pillar] || allPicks.celebrate;
 };
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// MOJO PROFILE MODAL COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+const MojoProfileModal = ({ pet, isOpen, onClose }) => {
+  if (!isOpen || !pet) return null;
+  
+  const soulData = pet.soul_data || {};
+  const healthData = pet.health_data || {};
+  const allergies = healthData.allergies || pet.allergies || [];
+  const personality = soulData.personality || [];
+  const preferences = soulData.preferences || {};
+  
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center" data-testid="mojo-modal">
+      <div className="bg-slate-900 w-full md:max-w-lg md:rounded-2xl rounded-t-3xl max-h-[85vh] overflow-hidden">
+        {/* Header */}
+        <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/10 px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-lg">
+              {pet.name?.[0]}
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-white">{pet.name}</h2>
+              <p className="text-xs text-slate-400">{pet.breed} • {pet.age || 'Age unknown'}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-full" data-testid="mojo-close-btn">
+            <X className="w-5 h-5 text-slate-400" />
+          </button>
+        </div>
+        
+        {/* Content */}
+        <div className="p-4 space-y-6 overflow-y-auto max-h-[calc(85vh-80px)]">
+          {/* Soul Score */}
+          <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl p-4 border border-purple-500/30">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-purple-300">Soul Score</span>
+              <span className="text-2xl font-bold text-white">{soulData.soul_completeness || 0}%</span>
+            </div>
+            <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all"
+                style={{ width: `${soulData.soul_completeness || 0}%` }}
+              />
+            </div>
+            <p className="text-xs text-slate-400 mt-2">The more Mira knows, the better she can help</p>
+          </div>
+          
+          {/* Personality */}
+          {personality.length > 0 && (
+            <div>
+              <h3 className="text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                <Heart className="w-4 h-4 text-pink-400" />
+                Personality
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {personality.map((trait, i) => (
+                  <span key={i} className="px-3 py-1 bg-pink-500/20 text-pink-300 rounded-full text-xs">
+                    {trait}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Allergies */}
+          {allergies.length > 0 && (
+            <div>
+              <h3 className="text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-amber-400" />
+                Allergies
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {allergies.map((allergy, i) => (
+                  <span key={i} className="px-3 py-1 bg-red-500/20 text-red-300 rounded-full text-xs border border-red-500/30">
+                    {allergy}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Favorites */}
+          {preferences.favorite_activities?.length > 0 && (
+            <div>
+              <h3 className="text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                <Star className="w-4 h-4 text-yellow-400" />
+                Loves
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {preferences.favorite_activities.map((activity, i) => (
+                  <span key={i} className="px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full text-xs">
+                    {activity}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Basic Info */}
+          <div className="grid grid-cols-2 gap-3">
+            {pet.birthday && (
+              <div className="bg-slate-800/50 rounded-lg p-3">
+                <p className="text-xs text-slate-500">Birthday</p>
+                <p className="text-sm text-white">{pet.birthday}</p>
+              </div>
+            )}
+            {pet.city && (
+              <div className="bg-slate-800/50 rounded-lg p-3">
+                <p className="text-xs text-slate-500">City</p>
+                <p className="text-sm text-white">{pet.city}</p>
+              </div>
+            )}
+            {soulData.energy_level && (
+              <div className="bg-slate-800/50 rounded-lg p-3">
+                <p className="text-xs text-slate-500">Energy Level</p>
+                <p className="text-sm text-white">{soulData.energy_level}/10</p>
+              </div>
+            )}
+            {soulData.temperament && (
+              <div className="bg-slate-800/50 rounded-lg p-3">
+                <p className="text-xs text-slate-500">Temperament</p>
+                <p className="text-sm text-white">{soulData.temperament}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PICKS MODAL COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+const PicksModal = ({ pet, pillar, picks, isOpen, onClose, onPickClick }) => {
+  if (!isOpen) return null;
+  
+  const currentPillar = PILLARS.find(p => p.id === pillar);
+  
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center" data-testid="picks-modal">
+      <div className="bg-slate-900 w-full md:max-w-2xl md:rounded-2xl rounded-t-3xl max-h-[85vh] overflow-hidden">
+        {/* Header */}
+        <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/10 px-4 py-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-pink-400" />
+              <h2 className="text-lg font-semibold text-white">Picks for {pet?.name}</h2>
+            </div>
+            <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-full" data-testid="picks-close-btn">
+              <X className="w-5 h-5 text-slate-400" />
+            </button>
+          </div>
+          <p className="text-xs text-pink-400/80">
+            {currentPillar?.emoji} {currentPillar?.label} • Personalized because Mira knows {pet?.name}
+          </p>
+        </div>
+        
+        {/* Picks Grid */}
+        <div className="p-4 overflow-y-auto max-h-[calc(85vh-100px)]">
+          <div className="grid grid-cols-2 gap-3">
+            {picks.map((pick) => (
+              <div
+                key={pick.id}
+                className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-xl p-4 border border-purple-500/20 hover:border-purple-500/50 transition-all group"
+              >
+                <div className="text-3xl mb-3">{pick.icon}</div>
+                <h3 className="text-sm font-semibold text-white mb-1">{pick.name}</h3>
+                <p className="text-xs text-slate-400 mb-3 line-clamp-2">{pick.desc}</p>
+                <p className="text-xs text-pink-400 mb-3">{pick.price}</p>
+                <button
+                  onClick={() => onPickClick(pick)}
+                  className="w-full py-2 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-xs font-medium rounded-lg transition-all"
+                  data-testid={`pick-${pick.id}-btn`}
+                >
+                  {pick.type === 'concierge' ? 'Have Concierge create' : `Get for ${pet?.name}`}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SERVICES MODAL COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+const ServicesModal = ({ pet, services, isOpen, onClose }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center" data-testid="services-modal">
+      <div className="bg-slate-900 w-full md:max-w-lg md:rounded-2xl rounded-t-3xl max-h-[85vh] overflow-hidden">
+        {/* Header */}
+        <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/10 px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Briefcase className="w-5 h-5 text-blue-400" />
+            <h2 className="text-lg font-semibold text-white">Services for {pet?.name}</h2>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-full" data-testid="services-close-btn">
+            <X className="w-5 h-5 text-slate-400" />
+          </button>
+        </div>
+        
+        {/* Services List */}
+        <div className="p-4 overflow-y-auto max-h-[calc(85vh-80px)]">
+          {services.length === 0 ? (
+            <div className="text-center py-12">
+              <Briefcase className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+              <p className="text-slate-400 text-sm">No active service requests</p>
+              <p className="text-slate-500 text-xs mt-1">Ask Mira to book something for {pet?.name}</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {services.map((service, idx) => (
+                <div key={idx} className="bg-slate-800/50 rounded-xl p-4 border border-white/10">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <p className="text-sm font-medium text-white">{service.ticket_id}</p>
+                      <p className="text-xs text-slate-400">{service.service_type?.replace(/_/g, ' ')}</p>
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      service.status === 'pending' ? 'bg-amber-500/20 text-amber-300' :
+                      service.status === 'confirmed' ? 'bg-emerald-500/20 text-emerald-300' :
+                      'bg-slate-500/20 text-slate-300'
+                    }`}>
+                      {service.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 line-clamp-2">{service.description}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TODAY MODAL COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+const TodayModal = ({ pet, actions, isOpen, onClose }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center" data-testid="today-modal">
+      <div className="bg-slate-900 w-full md:max-w-lg md:rounded-2xl rounded-t-3xl max-h-[85vh] overflow-hidden">
+        {/* Header */}
+        <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/10 px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sun className="w-5 h-5 text-amber-400" />
+            <h2 className="text-lg font-semibold text-white">Today for {pet?.name}</h2>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-full" data-testid="today-close-btn">
+            <X className="w-5 h-5 text-slate-400" />
+          </button>
+        </div>
+        
+        {/* Actions List */}
+        <div className="p-4 overflow-y-auto max-h-[calc(85vh-80px)]">
+          {actions.length === 0 ? (
+            <div className="text-center py-12">
+              <Sun className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+              <p className="text-slate-400 text-sm">Nothing urgent today!</p>
+              <p className="text-slate-500 text-xs mt-1">{pet?.name} is all caught up</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {actions.map((action, idx) => (
+                <div key={idx} className={`rounded-xl p-4 border ${
+                  action.priority === 'high' ? 'bg-red-500/10 border-red-500/30' :
+                  action.priority === 'medium' ? 'bg-amber-500/10 border-amber-500/30' :
+                  'bg-slate-800/50 border-white/10'
+                }`}>
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">{action.icon}</span>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-white">{action.title}</p>
+                      <p className="text-xs text-slate-400 mt-1">{action.description}</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-500" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LEARN MODAL COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+const LearnModal = ({ pet, content, isOpen, onClose }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center" data-testid="learn-modal">
+      <div className="bg-slate-900 w-full md:max-w-lg md:rounded-2xl rounded-t-3xl max-h-[85vh] overflow-hidden">
+        {/* Header */}
+        <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/10 px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <GraduationCap className="w-5 h-5 text-indigo-400" />
+            <h2 className="text-lg font-semibold text-white">Learn about {pet?.name}</h2>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-full" data-testid="learn-close-btn">
+            <X className="w-5 h-5 text-slate-400" />
+          </button>
+        </div>
+        
+        {/* Content List */}
+        <div className="p-4 overflow-y-auto max-h-[calc(85vh-80px)]">
+          {content.length === 0 ? (
+            <div className="text-center py-12">
+              <BookOpen className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+              <p className="text-slate-400 text-sm">Loading learning content...</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {content.map((item, idx) => (
+                <div key={idx} className="bg-slate-800/50 rounded-xl p-4 border border-white/10 hover:border-indigo-500/30 transition-all cursor-pointer">
+                  <div className="flex items-start gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      item.type === 'video' ? 'bg-red-500/20' :
+                      item.type === 'guide' ? 'bg-indigo-500/20' :
+                      'bg-emerald-500/20'
+                    }`}>
+                      {item.type === 'video' ? <Play className="w-5 h-5 text-red-400" /> :
+                       item.type === 'guide' ? <BookOpen className="w-5 h-5 text-indigo-400" /> :
+                       <Star className="w-5 h-5 text-emerald-400" />}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-white">{item.title}</p>
+                      <p className="text-xs text-slate-400 mt-1">{item.description}</p>
+                      <p className="text-xs text-slate-500 mt-2">{item.read_time}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONCIERGE MODAL COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+const ConciergeModal = ({ pet, isOpen, onClose, onStartChat }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center" data-testid="concierge-modal">
+      <div className="bg-slate-900 w-full md:max-w-lg md:rounded-2xl rounded-t-3xl max-h-[85vh] overflow-hidden">
+        {/* Header */}
+        <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/10 px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <MessageCircle className="w-5 h-5 text-emerald-400" />
+            <h2 className="text-lg font-semibold text-white">Concierge</h2>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-full" data-testid="concierge-close-btn">
+            <X className="w-5 h-5 text-slate-400" />
+          </button>
+        </div>
+        
+        {/* Content */}
+        <div className="p-4">
+          <div className="text-center py-8">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mx-auto mb-4">
+              <MessageCircle className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-lg font-semibold text-white mb-2">Human Concierge</h3>
+            <p className="text-sm text-slate-400 mb-6">
+              Our team is here to help with anything Mira can't handle automatically.
+              We'll arrange, source, and coordinate for {pet?.name}.
+            </p>
+            
+            <div className="space-y-3">
+              <button 
+                onClick={() => onStartChat('I need help with something for ' + pet?.name)}
+                className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium rounded-xl"
+              >
+                Start Concierge Chat
+              </button>
+              <div className="flex gap-3">
+                <button className="flex-1 py-3 bg-slate-800 text-slate-300 rounded-xl text-sm flex items-center justify-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  Call
+                </button>
+                <button className="flex-1 py-3 bg-slate-800 text-slate-300 rounded-xl text-sm flex items-center justify-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  Email
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
 const MiraPureOSPage = () => {
+  // State
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [pets, setPets] = useState([]);
   const [activePet, setActivePet] = useState(null);
   const [activePillar, setActivePillar] = useState('celebrate');
+  const [activeTab, setActiveTab] = useState(null);
   const [showPetSelector, setShowPetSelector] = useState(false);
   const [sessionId] = useState(`pure-os-${Date.now()}`);
-  const [showPicksPanel, setShowPicksPanel] = useState(true);
+  
+  // Modal states
+  const [showMojoModal, setShowMojoModal] = useState(false);
+  const [showPicksModal, setShowPicksModal] = useState(false);
+  const [showServicesModal, setShowServicesModal] = useState(false);
+  const [showTodayModal, setShowTodayModal] = useState(false);
+  const [showLearnModal, setShowLearnModal] = useState(false);
+  const [showConciergeModal, setShowConciergeModal] = useState(false);
+  
+  // Data states
+  const [services, setServices] = useState([]);
+  const [todayActions, setTodayActions] = useState([]);
+  const [learnContent, setLearnContent] = useState([]);
+  
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -212,10 +690,13 @@ const MiraPureOSPage = () => {
     scrollToBottom();
   }, [messages]);
 
-  const lastMiraMessage = messages.filter(m => m.role === 'assistant').pop()?.content || '';
-  const quickReplies = getQuickReplies(activePillar, activePet?.name || 'your pet', lastMiraMessage);
+  // Get current state
+  const lastMiraMessage = messages.filter(m => m.role === 'assistant').pop();
+  const lastActions = lastMiraMessage?.actions || [];
+  const quickReplies = getQuickReplies(activePillar, activePet?.name || 'your pet', lastMiraMessage?.content || '', lastActions);
   const pillarPicks = getPillarPicks(activePillar, activePet?.name, activePet?.health_data?.allergies || []);
 
+  // Send message to backend
   const sendMessage = async (text) => {
     if (!text.trim() || isLoading) return;
 
@@ -223,12 +704,11 @@ const MiraPureOSPage = () => {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
-    setShowPicksPanel(false); // Hide picks when chatting
 
     try {
       const response = await fetch(`${API}/api/mira-pure/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': application/json' },
         body: JSON.stringify({
           message: text,
           pet_id: activePet?._id || activePet?.id,
@@ -246,17 +726,42 @@ const MiraPureOSPage = () => {
       const data = await response.json();
       
       if (data.response) {
-        setMessages(prev => [...prev, { 
+        const assistantMessage = { 
           role: 'assistant', 
           content: data.response,
-          actions: data.actions
-        }]);
+          actions: data.actions || []
+        };
+        setMessages(prev => [...prev, assistantMessage]);
+        
+        // Update services list if a service was created
+        if (data.actions?.some(a => a.type === 'service_created')) {
+          const newService = data.actions.find(a => a.type === 'service_created')?.data;
+          if (newService?.ticket_id) {
+            setServices(prev => [newService, ...prev]);
+          }
+        }
+        
+        // Update today actions if fetched
+        if (data.actions?.some(a => a.type === 'today')) {
+          const todayData = data.actions.find(a => a.type === 'today')?.data;
+          if (todayData?.actions) {
+            setTodayActions(todayData.actions);
+          }
+        }
+        
+        // Update learn content if fetched
+        if (data.actions?.some(a => a.type === 'learn')) {
+          const learnData = data.actions.find(a => a.type === 'learn')?.data;
+          if (learnData?.content) {
+            setLearnContent(learnData.content);
+          }
+        }
       }
     } catch (error) {
       console.error('Chat error:', error);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: "Let me try that again..." 
+        content: "I'm having trouble connecting. Let me try again..." 
       }]);
     } finally {
       setIsLoading(false);
@@ -270,34 +775,67 @@ const MiraPureOSPage = () => {
   };
 
   const handlePickClick = async (pick) => {
-    // Send message to create service request
-    const msg = `I'd like to get ${pick.name} for ${activePet?.name}`;
+    setShowPicksModal(false);
+    const msg = pick.type === 'concierge' 
+      ? `I'd like Concierge to create ${pick.name} for ${activePet?.name}`
+      : `I'd like to get ${pick.name} for ${activePet?.name}`;
     sendMessage(msg);
   };
 
   const handlePillarChange = (pillarId) => {
     setActivePillar(pillarId);
-    setShowPicksPanel(true);
-    // Clear messages when switching pillars for fresh context
-    setMessages([]);
   };
 
-  const allergies = activePet?.health_data?.allergies || [];
+  const handleTabClick = (tabId) => {
+    setActiveTab(tabId === activeTab ? null : tabId);
+    
+    switch (tabId) {
+      case 'today':
+        setShowTodayModal(true);
+        // Fetch today actions
+        sendMessage(`What's happening today for ${activePet?.name}?`);
+        break;
+      case 'picks':
+        setShowPicksModal(true);
+        break;
+      case 'services':
+        setShowServicesModal(true);
+        break;
+      case 'learn':
+        setShowLearnModal(true);
+        // Fetch learn content
+        sendMessage(`Show me learning content for ${activePet?.name}`);
+        break;
+      case 'concierge':
+        setShowConciergeModal(true);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleQuickReplyClick = (reply) => {
+    if (reply.action === 'open_services') {
+      setShowServicesModal(true);
+    } else {
+      sendMessage(reply.text);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col" data-testid="mira-pure-os">
       {/* Header */}
       <header className="sticky top-0 z-20 bg-slate-900/90 backdrop-blur-xl border-b border-white/10">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            {/* Logo */}
+            {/* Logo & Pet */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-semibold text-white">Mira Pure</h1>
-                <p className="text-xs text-pink-400">♡ Mira knows {activePet?.name || 'your pet'}</p>
+                <h1 className="text-lg font-semibold text-white">Mira Pure OS</h1>
+                <p className="text-xs text-pink-400">Mira knows {activePet?.name || 'your pet'}</p>
               </div>
             </div>
             
@@ -306,12 +844,17 @@ const MiraPureOSPage = () => {
               <button
                 onClick={() => setShowPetSelector(!showPetSelector)}
                 className="flex items-center gap-2 px-3 py-2 bg-slate-800/80 hover:bg-slate-700/80 rounded-xl border border-white/10"
+                data-testid="pet-selector-btn"
               >
                 {activePet && (
                   <>
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-sm">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setShowMojoModal(true); }}
+                      className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-sm ring-2 ring-purple-500/50"
+                      data-testid="mojo-btn"
+                    >
                       {activePet.name?.[0]}
-                    </div>
+                    </button>
                     <div className="text-left">
                       <p className="text-sm font-medium text-white">{activePet.name}</p>
                       <p className="text-xs text-purple-400">{activePet.soul_data?.soul_completeness || 0}% Soul</p>
@@ -322,7 +865,7 @@ const MiraPureOSPage = () => {
               </button>
               
               {showPetSelector && pets.length > 0 && (
-                <div className="absolute right-0 top-full mt-2 w-64 bg-slate-800/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden z-30">
+                <div className="absolute right-0 top-full mt-2 w-64 bg-slate-800/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden z-30" data-testid="pet-dropdown">
                   {pets.map((pet) => (
                     <button
                       key={pet._id || pet.id}
@@ -334,6 +877,7 @@ const MiraPureOSPage = () => {
                       className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-700/50 ${
                         activePet?.name === pet.name ? 'bg-purple-500/20' : ''
                       }`}
+                      data-testid={`pet-option-${pet.name}`}
                     >
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold">
                         {pet.name?.[0]}
@@ -351,21 +895,46 @@ const MiraPureOSPage = () => {
           </div>
         </div>
         
+        {/* OS Tabs */}
+        <div className="max-w-6xl mx-auto px-4 pb-2">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+            {OS_TABS.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTabClick(tab.id)}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-all whitespace-nowrap ${
+                    isActive
+                      ? `bg-gradient-to-r ${tab.color} text-white shadow-lg`
+                      : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                  data-testid={`tab-${tab.id}`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        
         {/* Pillar Tabs */}
         <div className="max-w-6xl mx-auto px-4 pb-3">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
             {PILLARS.map((pillar) => {
-              const Icon = pillar.icon;
               const isActive = activePillar === pillar.id;
               return (
                 <button
                   key={pillar.id}
                   onClick={() => handlePillarChange(pillar.id)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap ${
                     isActive
                       ? `bg-gradient-to-r ${pillar.color} text-white shadow-lg`
-                      : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700/50'
+                      : 'bg-slate-800/30 text-slate-500 hover:text-white hover:bg-slate-700/30'
                   }`}
+                  data-testid={`pillar-${pillar.id}`}
                 >
                   <span>{pillar.emoji}</span>
                   {pillar.label}
@@ -377,23 +946,26 @@ const MiraPureOSPage = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-4 pb-40">
-        {/* Picks Panel - Shows when no conversation */}
-        {showPicksPanel && messages.length === 0 && (
-          <div className="mb-6">
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-4 pb-44">
+        {/* Welcome / Picks Panel - Shows when no conversation */}
+        {messages.length === 0 && (
+          <div className="mb-6" data-testid="welcome-panel">
             {/* Section Title */}
             <div className="flex items-center gap-2 mb-3">
               <Sparkles className="w-4 h-4 text-pink-400" />
               <h2 className="text-sm font-semibold text-white">PERSONALIZED FOR {activePet?.name?.toUpperCase()}</h2>
             </div>
-            <p className="text-xs text-pink-400/80 mb-4">Unique items featuring your pet - Concierge creates these</p>
+            <p className="text-xs text-pink-400/80 mb-4">
+              {PILLARS.find(p => p.id === activePillar)?.emoji} {PILLARS.find(p => p.id === activePillar)?.label} • Items curated because Mira knows {activePet?.name}
+            </p>
             
             {/* Picks Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              {pillarPicks.map((pick) => (
+              {pillarPicks.slice(0, 6).map((pick) => (
                 <div
                   key={pick.id}
                   className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-xl p-4 border border-purple-500/20 hover:border-purple-500/50 transition-all group"
+                  data-testid={`pick-card-${pick.id}`}
                 >
                   <div className="text-3xl mb-3">{pick.icon}</div>
                   <h3 className="text-sm font-semibold text-white mb-1">{pick.name}</h3>
@@ -403,29 +975,40 @@ const MiraPureOSPage = () => {
                     onClick={() => handlePickClick(pick)}
                     className="w-full py-2 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-xs font-medium rounded-lg transition-all"
                   >
-                    Create for {activePet?.name}
+                    {pick.type === 'concierge' ? 'Have Concierge create' : `Get for ${activePet?.name}`}
                   </button>
                 </div>
               ))}
             </div>
             
+            {/* View All Picks */}
+            <button 
+              onClick={() => setShowPicksModal(true)}
+              className="w-full mt-4 py-3 bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 rounded-xl text-sm flex items-center justify-center gap-2"
+              data-testid="view-all-picks-btn"
+            >
+              View all picks
+              <ChevronRight className="w-4 h-4" />
+            </button>
+            
             {/* Concierge Section */}
             <div className="mt-8">
               <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-4 h-4 text-pink-400" />
-                <h2 className="text-sm font-semibold text-white">CONCIERGE® ARRANGES FOR {activePet?.name?.toUpperCase()}</h2>
+                <MessageCircle className="w-4 h-4 text-emerald-400" />
+                <h2 className="text-sm font-semibold text-white">CONCIERGE ARRANGES FOR {activePet?.name?.toUpperCase()}</h2>
               </div>
               <p className="text-xs text-slate-400 mb-4">We'll source and arrange everything</p>
               
-              {/* Chat prompt */}
+              {/* Chat prompt with quick replies */}
               <div className="bg-slate-800/50 rounded-xl p-4 border border-white/10">
                 <p className="text-sm text-slate-300 mb-3">Ask for anything. If it needs action, we'll open a request and handle it in Services.</p>
                 <div className="flex flex-wrap gap-2">
                   {quickReplies.map((reply, idx) => (
                     <button
                       key={idx}
-                      onClick={() => sendMessage(reply.text)}
+                      onClick={() => handleQuickReplyClick(reply)}
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white rounded-full text-xs transition-all"
+                      data-testid={`quick-reply-${idx}`}
                     >
                       <reply.icon className="w-3 h-3" />
                       {reply.text}
@@ -439,7 +1022,7 @@ const MiraPureOSPage = () => {
         
         {/* Chat Messages */}
         {messages.length > 0 && (
-          <div className="space-y-4">
+          <div className="space-y-4" data-testid="chat-messages">
             {messages.map((msg, idx) => (
               <div
                 key={idx}
@@ -451,6 +1034,7 @@ const MiraPureOSPage = () => {
                       ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-br-md'
                       : 'bg-slate-800 text-slate-100 rounded-bl-md'
                   }`}
+                  data-testid={`message-${idx}`}
                 >
                   {msg.role === 'assistant' && (
                     <div className="flex items-center gap-2 mb-2">
@@ -467,17 +1051,23 @@ const MiraPureOSPage = () => {
                         <div key={aIdx}>
                           {/* Service Created */}
                           {action.type === 'service_created' && action.data?.success && (
-                            <div className="bg-emerald-500/10 rounded-xl p-3 border border-emerald-500/20">
-                              <p className="text-xs text-emerald-400 font-medium mb-1">✓ Service Request Created</p>
+                            <div className="bg-emerald-500/10 rounded-xl p-3 border border-emerald-500/20" data-testid="service-created-card">
+                              <p className="text-xs text-emerald-400 font-medium mb-1">Service Request Created</p>
                               <p className="text-sm text-white">Ticket: {action.data.ticket_id}</p>
                               <p className="text-xs text-slate-400 mt-1">{action.data.message}</p>
+                              <button 
+                                onClick={() => setShowServicesModal(true)}
+                                className="mt-2 text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1"
+                              >
+                                View in Services <ChevronRight className="w-3 h-3" />
+                              </button>
                             </div>
                           )}
                           
                           {/* Picks */}
                           {action.type === 'picks' && action.data?.picks && (
-                            <div className="bg-purple-500/10 rounded-xl p-3 border border-purple-500/20">
-                              <p className="text-xs text-purple-400 font-medium mb-2">📦 Recommendations</p>
+                            <div className="bg-purple-500/10 rounded-xl p-3 border border-purple-500/20" data-testid="picks-card">
+                              <p className="text-xs text-purple-400 font-medium mb-2">Recommendations</p>
                               <div className="space-y-2">
                                 {action.data.picks.slice(0, 3).map((pick, pIdx) => (
                                   <div key={pIdx} className="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg">
@@ -489,17 +1079,41 @@ const MiraPureOSPage = () => {
                                   </div>
                                 ))}
                               </div>
+                              <button 
+                                onClick={() => setShowPicksModal(true)}
+                                className="mt-2 text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1"
+                              >
+                                View all picks <ChevronRight className="w-3 h-3" />
+                              </button>
                             </div>
                           )}
                           
                           {/* Today */}
                           {action.type === 'today' && action.data?.actions && (
-                            <div className="bg-amber-500/10 rounded-xl p-3 border border-amber-500/20">
-                              <p className="text-xs text-amber-400 font-medium mb-2">📅 Today</p>
+                            <div className="bg-amber-500/10 rounded-xl p-3 border border-amber-500/20" data-testid="today-card">
+                              <p className="text-xs text-amber-400 font-medium mb-2">Today</p>
                               <div className="space-y-2">
                                 {action.data.actions.map((item, tIdx) => (
                                   <div key={tIdx} className="flex items-start gap-2 p-2 bg-slate-800/50 rounded-lg">
                                     <span>{item.icon}</span>
+                                    <div>
+                                      <p className="text-sm text-white">{item.title}</p>
+                                      <p className="text-xs text-slate-400">{item.description}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Learn */}
+                          {action.type === 'learn' && action.data?.content && (
+                            <div className="bg-indigo-500/10 rounded-xl p-3 border border-indigo-500/20" data-testid="learn-card">
+                              <p className="text-xs text-indigo-400 font-medium mb-2">Learning Content</p>
+                              <div className="space-y-2">
+                                {action.data.content.slice(0, 3).map((item, lIdx) => (
+                                  <div key={lIdx} className="flex items-start gap-2 p-2 bg-slate-800/50 rounded-lg">
+                                    <BookOpen className="w-4 h-4 text-indigo-400 mt-0.5" />
                                     <div>
                                       <p className="text-sm text-white">{item.title}</p>
                                       <p className="text-xs text-slate-400">{item.description}</p>
@@ -533,15 +1147,15 @@ const MiraPureOSPage = () => {
         )}
       </main>
 
-      {/* Quick Replies */}
+      {/* Quick Replies - Above input when in conversation */}
       {messages.length > 0 && !isLoading && (
-        <div className="fixed bottom-24 left-0 right-0 z-10">
+        <div className="fixed bottom-24 left-0 right-0 z-10" data-testid="quick-replies-bar">
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex flex-wrap gap-2 justify-center">
               {quickReplies.map((reply, idx) => (
                 <button
                   key={idx}
-                  onClick={() => sendMessage(reply.text)}
+                  onClick={() => handleQuickReplyClick(reply)}
                   className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white rounded-full border border-white/10 text-xs backdrop-blur-xl"
                 >
                   <reply.icon className="w-3 h-3" />
@@ -549,10 +1163,11 @@ const MiraPureOSPage = () => {
                 </button>
               ))}
               <button
-                onClick={() => { setMessages([]); setShowPicksPanel(true); }}
+                onClick={() => { setMessages([]); }}
                 className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded-full text-xs"
+                data-testid="new-chat-btn"
               >
-                ← Back to Picks
+                New conversation
               </button>
             </div>
           </div>
@@ -560,7 +1175,7 @@ const MiraPureOSPage = () => {
       )}
 
       {/* Input */}
-      <div className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-white/10">
+      <div className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-white/10" data-testid="chat-input-bar">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <form onSubmit={handleSubmit} className="flex items-center gap-3">
             <input
@@ -571,20 +1186,64 @@ const MiraPureOSPage = () => {
               placeholder={`Ask anything about ${activePet?.name || 'your pet'}...`}
               className="flex-1 bg-slate-800 text-white px-4 py-3 rounded-xl border border-white/10 focus:border-pink-500 focus:outline-none text-sm"
               disabled={isLoading || !activePet}
+              data-testid="chat-input"
             />
             <button
               type="submit"
               disabled={!input.trim() || isLoading || !activePet}
               className="p-3 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 disabled:from-slate-700 disabled:to-slate-700 text-white rounded-xl transition-all"
+              data-testid="chat-send-btn"
             >
               <Send className="w-5 h-5" />
             </button>
           </form>
           <p className="text-center text-xs text-slate-500 mt-2">
-            Mira Pure • Soulful AI • No hardcoded logic
+            Mira Pure OS • Soulful AI • Function Calling
           </p>
         </div>
       </div>
+
+      {/* Modals */}
+      <MojoProfileModal 
+        pet={activePet} 
+        isOpen={showMojoModal} 
+        onClose={() => setShowMojoModal(false)} 
+      />
+      <PicksModal 
+        pet={activePet} 
+        pillar={activePillar}
+        picks={pillarPicks} 
+        isOpen={showPicksModal} 
+        onClose={() => setShowPicksModal(false)}
+        onPickClick={handlePickClick}
+      />
+      <ServicesModal 
+        pet={activePet} 
+        services={services} 
+        isOpen={showServicesModal} 
+        onClose={() => setShowServicesModal(false)} 
+      />
+      <TodayModal 
+        pet={activePet} 
+        actions={todayActions} 
+        isOpen={showTodayModal} 
+        onClose={() => setShowTodayModal(false)} 
+      />
+      <LearnModal 
+        pet={activePet} 
+        content={learnContent} 
+        isOpen={showLearnModal} 
+        onClose={() => setShowLearnModal(false)} 
+      />
+      <ConciergeModal 
+        pet={activePet} 
+        isOpen={showConciergeModal} 
+        onClose={() => setShowConciergeModal(false)}
+        onStartChat={(msg) => {
+          setShowConciergeModal(false);
+          sendMessage(msg);
+        }}
+      />
     </div>
   );
 };
