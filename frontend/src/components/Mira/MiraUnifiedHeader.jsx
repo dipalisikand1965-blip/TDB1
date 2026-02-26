@@ -306,13 +306,14 @@ const MiraUnifiedHeader = ({
           
           return (
             <OSTab
-              key={`${layer.id}-${layer.id === 'services' ? servicesPulse : 'static'}`}
+              key={layer.id}
               layer={layer}
               isActive={activeTab === layer.id}
               onClick={onTabChange}
               badge={badges[layer.id]}
               iconState={effectiveIconState}
               iconCount={tabIconState.count}
+              forceRender={layer.id === 'services' ? servicesPulse : undefined}
             />
           );
         })}
