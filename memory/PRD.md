@@ -197,6 +197,35 @@ Every Message (user + Mira) Flows Into Thread → Concierge Can Jump In
 - `/app/backend/mira_soulful_brain.py` - Returns suggested_pillar based on conversation
 - `/app/frontend/src/hooks/mira/useChatSubmit.js` - Lines 447-449 (setPillar from suggested_pillar)
 
+### 10. Mira Suggestions → PICKS Panel (P1) ✅
+**What:** When Mira gives concrete suggestions (cake, decorations, etc.), they appear as selectable cards in the PICKS panel with "Send to Concierge" option.
+
+**How it works:**
+1. User asks for party/service planning
+2. Mira asks 2-3 clarifying questions
+3. Mira gives 3-4 suggestions formatted with emojis (🎂, 🎈, 📸, 🦴)
+4. Backend extracts suggestions and creates `concierge_arranges` cards
+5. Frontend PICKS panel displays "CONCIERGE® ARRANGES" section
+6. User can tap any card to add to their request
+7. "Send to Concierge" submits selected suggestions
+
+**Backend Response Structure:**
+```json
+{
+  "response": "Here are ideas for Mystique's party...",
+  "concierge_arranges": [
+    {"id": "...", "type": "mira_suggestion", "title": "🎂 Dog-friendly cake", ...}
+  ],
+  "picks_contract": {"fallback_mode": "concierge", "concierge_cards": [...]}
+}
+```
+
+**Key Files:**
+- `/app/backend/mira_soulful_brain.py` - Lines 175-205 (suggestion format prompt)
+- `/app/backend/mira_soulful_brain.py` - Lines 830-920 (suggestion extraction)
+- `/app/frontend/src/hooks/mira/useChatSubmit.js` - Lines 840-870 (CONCIERGE FALLBACK)
+- `/app/frontend/src/components/Mira/PersonalizedPicksPanel.jsx` - Renders concierge cards
+
 ---
 
 ## REMAINING TASKS
