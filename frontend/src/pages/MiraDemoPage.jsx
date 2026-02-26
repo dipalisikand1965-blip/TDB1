@@ -3067,6 +3067,9 @@ const MiraDemoPage = () => {
     // Pillar
     setPillar,
     
+    // Services tab pulse (for highlighting after ticket creation)
+    setServicesPulse,
+    
     // Voice
     voiceEnabled,
     voiceTimeoutRef,
