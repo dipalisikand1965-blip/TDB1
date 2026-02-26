@@ -48,13 +48,9 @@ const CustomVault = ({
     
     try {
       if (onSendToConcierge) {
-        // Get selected suggestions
-        const selectedItems = miraSuggestions.filter(s => selectedSuggestions.has(s.id));
-        
         await onSendToConcierge({
-          vault_type: miraSuggestions.length > 0 ? 'mira_suggestions' : 'custom',
-          description: context || description,
-          selected_suggestions: selectedItems.length > 0 ? selectedItems : miraSuggestions,
+          vault_type: 'custom',
+          description,
           requirements,
           budget,
           timeline,
@@ -69,7 +65,7 @@ const CustomVault = ({
     } finally {
       setIsSending(false);
     }
-  }, [description, context, requirements, budget, timeline, referenceImage, pet, pillar, onSendToConcierge, miraSuggestions, selectedSuggestions]);
+  }, [description, requirements, budget, timeline, referenceImage, pet, pillar, onSendToConcierge]);
 
   const handleClose = useCallback(() => {
     haptic.light();
