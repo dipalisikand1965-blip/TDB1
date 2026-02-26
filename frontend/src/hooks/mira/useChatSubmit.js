@@ -881,11 +881,14 @@ const useChatSubmit = (config) => {
         // ═══════════════════════════════════════════════════════════════════════════
         // CATALOGUE MODE: Normal product rendering
         // fallback_mode === "catalogue" - render products/services normally
+        // CRITICAL FIX: Preserve conciergeArranges from backend even in catalogue mode
+        // These are Mira's dynamic suggestions that should appear in PICKS panel
         // ═══════════════════════════════════════════════════════════════════════════
+        console.log(`[CATALOGUE MODE] conciergeCards from backend: ${conciergeCards.length}`);
         setMiraPicks({
           products: clarifyOnly ? [] : newProducts,
           services: clarifyOnly ? [] : [...newServices, ...newExperiences],
-          conciergeArranges: [],
+          conciergeArranges: conciergeCards, // FIXED: Preserve dynamic suggestions
           picksContract: picksContract,  // Include contract for consistency
           conversationContract: conversationContract,
           contractMode: contractMode,
@@ -897,7 +900,7 @@ const useChatSubmit = (config) => {
           mode: miraMode,
           clarifyOnly: clarifyOnly,
           showConcierge: shouldShowConcierge,
-          hasNew: !clarifyOnly && (newProducts.length > 0 || newServices.length > 0)
+          hasNew: !clarifyOnly && (newProducts.length > 0 || newServices.length > 0 || conciergeCards.length > 0)
         });
         
         // PICKS NOTIFICATION
