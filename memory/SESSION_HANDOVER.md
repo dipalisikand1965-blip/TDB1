@@ -152,7 +152,7 @@ tip_card = {
 # 🔑 CREDENTIALS
 
 - **Emergent LLM Key**: `sk-emergent-cEb0eF956Fa6741A31`
-- **Preview URL**: `https://soul-os-preview.preview.emergentagent.com`
+- **Preview URL**: `https://mira-soul-os-1.preview.emergentagent.com`
 
 ---
 
