@@ -1408,6 +1408,45 @@ const useChatSubmit = (config) => {
           } else {
             setShowConversationEndBanner(true);
             setConversationComplete(true);
+            
+            // ═══════════════════════════════════════════════════════════════════
+            // UNIFORM SERVICE FLOW: Trigger handoff to Concierge® when conversation
+            // auto-completes (max clarifying questions reached)
+            // This ensures admin notification is sent per UNIFIED_SERVICE_FLOW.md
+            // ═══════════════════════════════════════════════════════════════════
+            if (ticketId || currentTicket?.id) {
+              const handoffTicketId = ticketId || currentTicket.id;
+              console.log('[HANDOFF] Auto-triggering handoff for ticket:', handoffTicketId);
+              
+              // Build conversation summary from history
+              const recentMessages = conversationHistory.slice(-6);
+              const conversationSummary = recentMessages
+                .map(m => `${m.type === 'user' ? 'Parent' : 'Mira'}: ${m.content?.slice(0, 100)}`)
+                .join('\n');
+              
+              // Trigger handoff to Concierge® - This creates admin notification
+              fetch(`${API_URL}/api/service_desk/handoff_to_concierge`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...(token && { Authorization: `Bearer ${token}` })
+                },
+                body: JSON.stringify({
+                  ticket_id: handoffTicketId,
+                  concierge_queue: (pillar || currentTicket?.pillar || 'GENERAL').toUpperCase(),
+                  latest_mira_summary: conversationSummary || 'Conversation auto-completed after clarifying questions.',
+                  pillar: pillar || currentTicket?.pillar
+                })
+              }).then(res => {
+                if (res.ok) {
+                  console.log('[HANDOFF] ✅ Ticket handed to Concierge:', handoffTicketId);
+                  // Trigger services tab pulse to notify user
+                  if (setServicesPulse) setServicesPulse(true);
+                }
+              }).catch(err => {
+                console.error('[HANDOFF] Failed to handoff:', err);
+              });
+            }
           }
           setClarifyingQuestionCount(0);
         }
