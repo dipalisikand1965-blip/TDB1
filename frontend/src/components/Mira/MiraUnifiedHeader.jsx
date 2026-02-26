@@ -149,13 +149,24 @@ const OSTab = memo(({ layer, isActive, onClick, badge = null, iconState = 'OFF',
 /**
  * Temperature Display
  */
-const TemperatureDisplay = memo(({ weather }) => {
+/**
+ * Temperature Display with City
+ */
+const TemperatureDisplay = memo(({ weather, onLocationClick }) => {
   const temp = weather?.current_weather?.temperature || weather?.temperature;
+  const city = weather?.city;
   if (!temp) return null;
   
   return (
-    <div className="mira-temp-display" data-testid="temp-display">
+    <div 
+      className="mira-temp-display" 
+      data-testid="temp-display"
+      onClick={onLocationClick}
+      style={{ cursor: onLocationClick ? 'pointer' : 'default' }}
+      title={onLocationClick ? 'Click to change location' : undefined}
+    >
       <span className="temp-value">{Math.round(temp)}°C</span>
+      {city && <span className="temp-city">• {city}</span>}
     </div>
   );
 });
