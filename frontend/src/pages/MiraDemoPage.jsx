@@ -797,6 +797,8 @@ const MiraDemoPage = () => {
   // GEOLOCATION - Get user's actual location for weather/nearby
   const [userGeoLocation, setUserGeoLocation] = useState(null);
   const [userCity, setUserCity] = useState('Mumbai'); // Fallback
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [locationModalMode, setLocationModalMode] = useState('prompt'); // 'prompt' or 'change'
   
   // Track if page is fully loaded (for deferring non-critical operations)
   const [isPageReady, setIsPageReady] = useState(false);
