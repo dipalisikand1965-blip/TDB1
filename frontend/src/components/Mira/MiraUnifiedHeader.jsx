@@ -121,7 +121,7 @@ const NotificationBellInHeader = memo(({ count = 0 }) => {
 /**
  * OS Tab - Navigation tab with icon and label
  */
-const OSTab = memo(({ layer, isActive, onClick, badge = null, iconState = 'OFF', iconCount = 0 }) => {
+const OSTab = memo(({ layer, isActive, onClick, badge = null, iconState = 'OFF', iconCount = 0, forceRender }) => {
   const Icon = layer.icon;
   const isPulse = iconState === 'PULSE';
   const showBadge = badge || iconCount > 0;
