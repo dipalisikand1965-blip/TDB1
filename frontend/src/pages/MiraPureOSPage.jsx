@@ -815,6 +815,7 @@ const MiraPureOSPage = () => {
         setShowPicksModal(true);
         break;
       case 'services':
+        fetchServices();  // Fetch latest services from DB
         setShowServicesModal(true);
         break;
       case 'learn':
@@ -832,6 +833,7 @@ const MiraPureOSPage = () => {
 
   const handleQuickReplyClick = (reply) => {
     if (reply.action === 'open_services') {
+      fetchServices();  // Fetch latest services from DB
       setShowServicesModal(true);
     } else {
       sendMessage(reply.text);
