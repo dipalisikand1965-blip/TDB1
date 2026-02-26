@@ -840,7 +840,21 @@ const MiraPureOSPage = () => {
             </div>
             
             {/* Pet Selector */}
-            <div className="relative">
+            <div className="relative flex items-center gap-2">
+              {/* Pet Avatar - Opens profile modal */}
+              {activePet && (
+                <div 
+                  onClick={() => setShowMojoModal(true)}
+                  className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-sm ring-2 ring-purple-500/50 cursor-pointer hover:ring-purple-400"
+                  data-testid="mojo-btn"
+                  role="button"
+                  tabIndex={0}
+                >
+                  {activePet.name?.[0]}
+                </div>
+              )}
+              
+              {/* Pet Selector Dropdown */}
               <button
                 onClick={() => setShowPetSelector(!showPetSelector)}
                 className="flex items-center gap-2 px-3 py-2 bg-slate-800/80 hover:bg-slate-700/80 rounded-xl border border-white/10"
@@ -848,13 +862,6 @@ const MiraPureOSPage = () => {
               >
                 {activePet && (
                   <>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); setShowMojoModal(true); }}
-                      className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-sm ring-2 ring-purple-500/50"
-                      data-testid="mojo-btn"
-                    >
-                      {activePet.name?.[0]}
-                    </button>
                     <div className="text-left">
                       <p className="text-sm font-medium text-white">{activePet.name}</p>
                       <p className="text-xs text-purple-400">{activePet.soul_data?.soul_completeness || 0}% Soul</p>
