@@ -20,16 +20,33 @@ const CustomVault = ({
   pet = {},
   pillar = 'general',
   initialRequest = '',
+  context = '',
+  miraSuggestions = [],
   onSendToConcierge,
   onClose
 }) => {
-  const [description, setDescription] = useState(initialRequest);
+  const [description, setDescription] = useState(initialRequest || context);
   const [requirements, setRequirements] = useState('');
   const [budget, setBudget] = useState('');
   const [timeline, setTimeline] = useState('');
   const [referenceImage, setReferenceImage] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [selectedSuggestions, setSelectedSuggestions] = useState(new Set());
+
+  // Toggle suggestion selection
+  const toggleSuggestion = useCallback((suggestionId) => {
+    haptic.light();
+    setSelectedSuggestions(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(suggestionId)) {
+        newSet.delete(suggestionId);
+      } else {
+        newSet.add(suggestionId);
+      }
+      return newSet;
+    });
+  }, []);
 
   const handleImageUpload = useCallback((e) => {
     const file = e.target.files[0];
