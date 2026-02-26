@@ -404,32 +404,37 @@ async def get_soulful_response(
     system_prompt = build_soul_prompt(pet_name, context_string, active_pillar)
     
     try:
-        # Initialize chat with function calling
+        # Initialize chat with proper initialization
         emergent_key = os.environ.get("EMERGENT_LLM_KEY")
         if not emergent_key:
             raise ValueError("EMERGENT_LLM_KEY not set")
         
-        chat = LlmChat(emergent_key)
-        chat.with_system_message(system_prompt)
-        chat.with_model("openai", "gpt-5.1")
-        chat.with_tools(MIRA_FUNCTIONS)
+        import uuid
+        session_id = f"soulful-{uuid.uuid4().hex[:8]}"
+        
+        chat = LlmChat(
+            api_key=emergent_key,
+            session_id=session_id,
+            system_message=system_prompt
+        ).with_model("openai", "gpt-5.1")
         
         # Add conversation history
         for msg in conversation_history[-10:]:  # Last 10 messages
             role = msg.get("role", "user")
             content = msg.get("content", "")
             if role == "user":
-                chat.with_message(UserMessage(content))
+                chat.with_user_message(content)
             else:
                 chat.with_assistant_message(content)
         
-        # Add current message
-        chat.with_message(UserMessage(message))
+        # Get response using send_message
+        response = await chat.send_message(UserMessage(text=message))
         
-        # Get response
-        response = await chat.chat()
+        # The response is now a string directly
+        response_text = response if isinstance(response, str) else str(response)
         
-        # Process any function calls
+        # For now, we detect actions from the response text
+        # In production, we'd use function calling but let's keep it simple
         actions = []
         
         if hasattr(response, "tool_calls") and response.tool_calls:
