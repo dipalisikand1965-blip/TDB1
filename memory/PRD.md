@@ -201,30 +201,6 @@ Every Message (user + Mira) Flows Into Thread → Concierge Can Jump In
 
 ## REMAINING TASKS
 
-### What Needs Verification/Enhancement
-1. **Verify pet_id is passed correctly from frontend** - Check `LearnPanel.jsx` or equivalent
-2. **Verify breed is extracted from pet profile** - Check if `pet.breed` is populated
-3. **Test with Mojo (Shih Tzu)** - Should show brachy, long_coat, toy content boosted
-4. **Add `relevant_breeds` array to content** - Currently uses `breed_tags`, may need explicit breed names
-5. **UI indicator** - Show "For Shih Tzus" badge on breed-relevant content
-
-### Key Files to Check
-- `/app/frontend/src/components/Mira/LearnPanel.jsx` - How pet_id is passed to API
-- `/app/backend/learn_os_routes.py` - Already has the logic, verify it's working
-- `/app/backend/learn_content_seeder.py` - Content has `breed_tags` field
-- Database: `pets` collection - Check if `breed` field is populated
-
-### Testing Steps
-1. Login as dipali@clubconcierge.in
-2. Open LEARN tab
-3. Check if "For your pet" shelf shows Shih Tzu relevant content
-4. API test: `GET /api/os/learn/home?pet_id={mojo_pet_id}`
-5. Check response has `personalization.breed_tags` populated
-
----
-
-## REMAINING TASKS
-
 ### P2: Real-time SERVICES Badge via WebSockets
 - **Status:** NOT STARTED
 - **Description:** Update SERVICES tab badge in real-time when ticket status changes
