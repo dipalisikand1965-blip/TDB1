@@ -12436,7 +12436,13 @@ async def mira_chat(
                 # Map actions to legacy structures for UI compatibility
                 "products": [],
                 "services": [],
-                "concierge_arranges": [],
+                # Mira's suggestions → PICKS panel (concierge_arranges)
+                "concierge_arranges": soulful_result.get("concierge_arranges", []),
+                # picks_contract for PICKS processing
+                "picks_contract": soulful_result.get("picks_contract"),
+                # Concierge fallback flags
+                "concierge_fallback": soulful_result.get("concierge_fallback", False),
+                "concierge_fallback_reason": soulful_result.get("concierge_fallback_reason"),
                 # NEW: Tab highlighting and pillar context
                 "highlight_tab": soulful_result.get("highlight_tab"),  # services/picks/learn/concierge
                 "suggested_pillar": soulful_result.get("suggested_pillar"),  # care/celebrate/dine/travel/stay/learn
