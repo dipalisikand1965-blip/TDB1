@@ -95,7 +95,7 @@ class PureChatResponse(BaseModel):
 
 async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
     """Get pet's soul context - what Mira knows about them."""
-    if not db:
+    if db is None:
         return {"name": pet_name or "your pet", "context": ""}
     
     try:
