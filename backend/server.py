@@ -1919,6 +1919,14 @@ from mira_service_desk import (
     service_desk_router,
     set_db as set_mira_service_desk_db
 )
+
+# Import Live Conversation Threads (Real-time Service Desk)
+from live_conversation_routes import (
+    live_threads_router,
+    set_live_threads_db,
+    get_or_create_thread_for_session,
+    append_to_thread
+)
 from mira_intelligence import router as mira_intelligence_router, set_intelligence_db
 
 # Import Mira Relationship Memory System
