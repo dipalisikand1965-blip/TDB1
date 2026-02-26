@@ -12377,6 +12377,9 @@ async def mira_chat(
                 "products": [],
                 "services": [],
                 "concierge_arranges": [],
+                # NEW: Tab highlighting and pillar context
+                "highlight_tab": soulful_result.get("highlight_tab"),  # services/picks/learn/concierge
+                "suggested_pillar": soulful_result.get("suggested_pillar"),  # care/celebrate/dine/travel/stay/learn
             }
             
             # Process actions and map to legacy structures
