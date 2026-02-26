@@ -163,7 +163,7 @@ async def pure_chat(request: PureChatRequest):
     """
     
     # Get API key
-    api_key = os.environ.get("EMERGENT_API_KEY") or os.environ.get("LLM_API_KEY")
+    api_key = os.environ.get("EMERGENT_LLM_KEY") or os.environ.get("EMERGENT_API_KEY") or os.environ.get("LLM_API_KEY")
     if not api_key:
         raise HTTPException(status_code=500, detail="LLM API key not configured")
     
