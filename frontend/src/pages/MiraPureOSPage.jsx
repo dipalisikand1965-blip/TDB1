@@ -101,7 +101,7 @@ const MiraPureOSPage = () => {
   useEffect(() => {
     const fetchPets = async () => {
       try {
-        const response = await fetch(`${API}/api/pets?email=dipali@clubconcierge.in`);
+        const response = await fetch(`${API}/api/mira-pure/pets?email=dipali@clubconcierge.in`);
         if (response.ok) {
           const data = await response.json();
           if (data.pets && data.pets.length > 0) {
