@@ -556,11 +556,36 @@ async def get_soulful_response(
         # Generate quick replies based on context
         quick_replies = generate_quick_replies(message, response_text, active_pillar, pet_name)
         
+        # Determine which tab should glow/activate based on conversation
+        highlight_tab = None
+        suggested_pillar = None
+        
+        # If service was created, highlight SERVICES tab
+        if any(a["type"] == "service_created" for a in actions):
+            highlight_tab = "services"
+        
+        # Detect pillar context from conversation
+        lower_msg = message.lower()
+        if any(kw in lower_msg for kw in ["groom", "bath", "haircut", "spa", "nail", "walker", "walk", "vet", "health", "sitting", "sitter"]):
+            suggested_pillar = "care"
+        elif any(kw in lower_msg for kw in ["birthday", "party", "celebrate", "gift", "photo"]):
+            suggested_pillar = "celebrate"
+        elif any(kw in lower_msg for kw in ["food", "treat", "diet", "nutrition", "meal"]):
+            suggested_pillar = "dine"
+        elif any(kw in lower_msg for kw in ["travel", "trip", "hotel", "vacation", "flight"]):
+            suggested_pillar = "travel"
+        elif any(kw in lower_msg for kw in ["boarding", "kennel", "daycare"]):
+            suggested_pillar = "stay"
+        elif any(kw in lower_msg for kw in ["train", "behavior", "obedience"]):
+            suggested_pillar = "learn"
+        
         return {
             "response": response_text,
             "actions": actions,
             "quick_replies": quick_replies,
-            "pet_name": pet_name
+            "pet_name": pet_name,
+            "highlight_tab": highlight_tab,  # Which OS tab should glow
+            "suggested_pillar": suggested_pillar,  # Which PICKS pillar is relevant
         }
         
     except Exception as e:
