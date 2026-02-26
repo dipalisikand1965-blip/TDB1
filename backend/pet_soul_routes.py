@@ -725,7 +725,9 @@ async def save_bulk_answers(pet_id: str, answers: Dict[str, Any]):
     pet["doggy_soul_answers"] = existing_answers
     insights = generate_insights(pet)
     
-    await db.pets.update_one({"id": pet_id}, {"$set": {
+    # Use the pet's actual _id for update (works regardless of how pet was found)
+    pet_filter = {"_id": pet["_id"]} if "_id" in pet else {"id": pet_id}
+    await db.pets.update_one(pet_filter, {"$set": {
         "doggy_soul_answers": existing_answers,
         "doggy_soul_meta": existing_meta,
         "overall_score": overall_score,
