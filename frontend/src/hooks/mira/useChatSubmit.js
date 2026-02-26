@@ -871,10 +871,11 @@ const useChatSubmit = (config) => {
         setVaultUserMessage(inputQuery);
         notificationSounds.picks();
         
-        // Show vault for Mira's suggestions
-        if (conciergeCards.length > 0) {
-          setShowVault(true);
-        }
+        // NOTE: Don't auto-show vault - let user click PICKS tab instead
+        // The +badge notification will guide them
+        // if (conciergeCards.length > 0) {
+        //   setShowVault(true);
+        // }
       } else if ((shouldShowProductsFromBackend && (newProducts.length > 0 || newServices.length > 0 || newExperiences.length > 0)) || 
           (!clarifyOnly && ['party_planning', 'cake_shopping', 'celebration'].includes(celebrationSubIntent))) {
         // ═══════════════════════════════════════════════════════════════════════════
