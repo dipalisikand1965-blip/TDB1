@@ -942,16 +942,18 @@ const useChatSubmit = (config) => {
           setTimeout(() => setShowInsightsPanel(true), 500);
         }
       } else if (clarifyOnly) {
+        // CLARIFY MODE: Clear products but preserve any existing suggestions
         setMiraPicks(prev => ({
           ...prev,
           products: [],
           services: [],
-          conciergeArranges: [],
+          // Preserve existing conciergeArranges OR use new ones from backend
+          conciergeArranges: conciergeCards.length > 0 ? conciergeCards : prev.conciergeArranges || [],
           conciergeFallback: false,
           mode: miraMode,
           clarifyOnly: true,
           showConcierge: false,
-          hasNew: false
+          hasNew: conciergeCards.length > 0
         }));
       }
       
