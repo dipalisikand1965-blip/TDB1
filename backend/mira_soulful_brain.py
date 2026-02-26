@@ -296,9 +296,10 @@ async def execute_create_service_ticket(args: dict, pet_id: str, pet_name: str, 
     
     if db is not None:
         try:
+            logger.info(f"[SOULFUL] DB is set, attempting inserts for ticket {ticket_id}")
             # 1. Write to service_requests (original collection - backward compat)
-            await db.service_requests.insert_one(ticket)
-            logger.info(f"[SOULFUL] Created ticket in service_requests: {ticket_id} for {pet_name}")
+            result1 = await db.service_requests.insert_one(ticket)
+            logger.info(f"[SOULFUL] Created ticket in service_requests: {ticket_id} for {pet_name}, insert_id: {result1.inserted_id}")
             
             # 2. ALSO write to mira_tickets for CONCIERGE integration (Unified Service Flow)
             # This ensures tickets appear in the CONCIERGE panel
@@ -330,8 +331,8 @@ async def execute_create_service_ticket(args: dict, pet_id: str, pet_name: str, 
                     }
                 ]
             }
-            await db.mira_tickets.insert_one(unified_ticket)
-            logger.info(f"[SOULFUL] Created unified ticket in mira_tickets: {ticket_id}")
+            result2 = await db.mira_tickets.insert_one(unified_ticket)
+            logger.info(f"[SOULFUL] Created unified ticket in mira_tickets: {ticket_id}, insert_id: {result2.inserted_id}")
             
             # 3. Create admin notification for Service Desk
             admin_notification = {
@@ -347,11 +348,13 @@ async def execute_create_service_ticket(args: dict, pet_id: str, pet_name: str, 
                 "created_at": now.isoformat(),
                 "read": False
             }
-            await db.admin_notifications.insert_one(admin_notification)
-            logger.info(f"[SOULFUL] Created admin notification for: {ticket_id}")
+            result3 = await db.admin_notifications.insert_one(admin_notification)
+            logger.info(f"[SOULFUL] Created admin notification for: {ticket_id}, insert_id: {result3.inserted_id}")
             
         except Exception as e:
-            logger.error(f"[SOULFUL] Failed to create ticket: {e}")
+            logger.error(f"[SOULFUL] Failed to create ticket: {e}", exc_info=True)
+    else:
+        logger.warning(f"[SOULFUL] DB is None! Cannot create ticket {ticket_id}")
     
     return {
         "success": True,
