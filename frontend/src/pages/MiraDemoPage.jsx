@@ -5055,6 +5055,8 @@ const MiraDemoPage = () => {
             conciergeDecision={miraPicks.concierge}
             safetyOverride={miraPicks.safetyOverride}
             lastUpdated={miraPicks.lastUpdated}
+            // NEW: Mira's conversation suggestions (🎂, 🎈, etc.)
+            conversationSuggestions={miraPicks.conciergeArranges || []}
             // NEW: Conversation context for context-aware picks
             conversationContext={miraPicks.conversationContext}
             onSendSuccess={(data) => {
