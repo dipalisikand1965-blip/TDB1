@@ -656,18 +656,22 @@ async def get_concierge_home(
         # Get concierge status
         status = await get_concierge_status()
         
-        # Build query filters
-        user_filter = {"user_id": user_id}
+        # Build query filters - support both user_id formats
+        # user_id can be email (dipali@...) or MongoDB ObjectId string
+        user_filter = {"$or": [{"user_id": user_id}, {"user_email": user_id}]}
         if pet_id and pet_id != "all":
             user_filter["pet_id"] = pet_id
         
-        # Get active requests (tickets awaiting user action)
-        awaiting_statuses = ["clarification_needed", "options_ready", "approval_pending", "payment_pending"]
+        # Get active requests (tickets in any non-completed status)
+        # Include: placed, pending, clarification_needed, options_ready, approval_pending, payment_pending, in_progress, scheduled
+        active_statuses = ["placed", "pending", "clarification_needed", "options_ready", "approval_pending", "payment_pending", "in_progress", "scheduled", "working"]
         active_requests = []
         
         tickets_cursor = db.mira_tickets.find({
-            **user_filter,
-            "status": {"$in": awaiting_statuses}
+            "$and": [
+                user_filter,
+                {"status": {"$in": active_statuses}}
+            ]
         }).sort("updated_at", -1).limit(10)
         
         async for ticket in tickets_cursor:
