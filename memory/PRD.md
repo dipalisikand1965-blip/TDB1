@@ -9,29 +9,49 @@ Build "The Doggy Company" into a "Pet Life Operating System" where the AI assist
 - **Database:** MongoDB Atlas
 - **AI:** LLM-based conversational AI with deep context injection (Emergent LLM Key)
 
+## NEW: Mira Pure Architecture (2026-02-26)
+The legacy `mira_routes.py` (26,000+ lines) has been replaced by a new "Mira Pure" architecture:
+- **Backend:** `backend/mira_pure.py` (~450 lines) - Clean GPT-5.1 function calling
+- **Functions:** `backend/mira_pure_functions.py` (~500 lines) - Actions (picks, services, today, learn)
+- **Frontend:** `frontend/src/pages/MiraPureOSPage.jsx` - Complete OS UI with modals
+
+### Key Features of Mira Pure
+- **Soulful AI**: Warm, human-like responses that reference pet's personality, allergies, chronic conditions
+- **Function Calling**: AI can create service tickets, fetch picks, show today's actions, provide learning content
+- **Full OS UI**: Header, Pet Selector, OS Tabs (Today, Picks, Services, Learn, Concierge), Pillar Tabs (10 pillars)
+- **Context-Aware Quick Replies**: Change based on conversation and last action
+- **Modals**: Pet Profile (Mojo), Picks, Services, Today, Learn, Concierge
+
 ## Key Features Implemented
 - ✅ Soulful AI (Mira) with full pet context injection
 - ✅ META Proactive OS System for contextual alerts
 - ✅ Unified Service Flow architecture
 - ✅ Real-time WebSocket notifications
-- ✅ FavoritesPanel with Universal Service Command hook (fixed 2025-02-25)
-- ✅ PersonalizedPicksPanel with Universal Service Command hook (fixed 2025-02-25)
+- ✅ **NEW** Mira Pure OS Page (`/mira-pure-os`) with complete UI (2026-02-26)
+- ✅ **NEW** OS Tabs: Today, Picks, Services, Learn, Concierge (2026-02-26)
+- ✅ **NEW** Pillar Tabs: Celebrate, Dine, Care, Travel, Stay, Enjoy, Fit, Learn, Advisory, Services (2026-02-26)
+- ✅ **NEW** Service creation via AI function calling (2026-02-26)
+- ✅ **NEW** Services modal with real-time fetch from database (2026-02-26)
+- ✅ **NEW** Pet profile modal showing soul score, personality, allergies, preferences (2026-02-26)
+- ✅ **NEW** Picks modal with pillar-specific items (2026-02-26)
+- ✅ **NEW** Context-aware quick replies (2026-02-26)
 
 ## Completed Work
-- **2025-02-25:** Fixed compilation error in `FavoritesPanel.jsx` - incorrect import of `useUniversalServiceCommand`
-- **2025-02-25:** Integrated `useUniversalServiceCommand` into `PersonalizedPicksPanel.jsx` - "Create for {Pet}" buttons now trigger full service desk flow with pick details
-- **2025-02-25:** Fixed Concierge 24/7 status in `concierge_routes.py` - was hardcoded to 9AM-9PM, now always shows "Live Now"
-- **2025-02-25:** Fixed AI context switching bug in `mira_routes.py` - AI no longer traps users in celebrate flow when they switch topics (e.g., asking for "dog walker" while in celebration flow)
-- **2025-02-25:** Fixed notification bell to navigate to full Inbox page instead of showing dropdown - `MemberNotificationBell.jsx`
-- **2025-02-25:** Fixed "I'm having a moment" chat error in `useChat.js` - added null-safe defaults and error handling for route_intent and ticket creation APIs
-- **2025-02-25:** MAJOR FIX - AI Intelligence & Context Retention in `mira_routes.py`:
-  - Added intent anchors for CARE/WALKER/VET/BOARDING flows to keep AI focused
-  - Added conversation topic detection from history (dog walker, groomer, vet keywords)
-  - Added Places Guardrail to clear restaurant/cafe data for service bookings
-  - Now when user asks for "dog walker" then says "any day", AI stays on topic instead of showing restaurants
+- **2026-02-26:** Built complete Mira Pure OS page with:
+  - Header with pet selector and soul score
+  - OS Tabs (Today, Picks, Services, Learn, Concierge) with working modals
+  - 10 Pillar tabs that change the picks grid content
+  - Pet Profile (Mojo) modal showing personality, allergies, favorites
+  - Services modal that fetches tickets from database
+  - Picks modal with "Get for Mojo" and "Have Concierge create" buttons
+  - Chat with soulful AI that creates service tickets via function calling
+  - Quick replies that adapt to conversation context
+  - Fixed services endpoint to fetch from correct collection
+  - Fixed response model to include actions array
+- **2025-02-25:** Fixed multiple legacy system bugs (context switching, concierge status, chat errors, etc.)
 
 ## In Progress
-- [ ] P1: "Celebrate" flow advisory detection refinement - AI too eager to push booking flow
+- [ ] P0: Complete remaining OS tab logic (Today, Learn content from backend)
 
 ## Known Issues
 1. **Pet Soul Score not updating in UI** (P2) - Score should increment after AI interactions
@@ -39,51 +59,80 @@ Build "The Doggy Company" into a "Pet Life Operating System" where the AI assist
 3. **Admin vs Member inbox confusion** (P4) - UX clarity needed
 
 ## Upcoming Tasks
+- Implement Soul Score growth logic within Mira Pure flow
+- Add real learning content from bible documents to Learn modal
+- Add real today actions based on calendar/reminders to Today modal
 - Build "Paw Points" redemption flow at checkout
-- Build distinct UIs for OS tabs (Picks, Services, Concierge)
-- Add "Admin Notifications" tab in `/admin`
 
 ## Backlog
+- Migrate from old `/mira-demo` to new `/mira-pure-os`
+- Delete legacy `mira_routes.py` after migration
 - WhatsApp Business integration
 - Build 'Fit' and 'Work' pillars
 - Premium "Club" membership features
-- Refactor `mira_routes.py` (14,000+ lines)
-- Decompose `MiraDemoPage.jsx`
 
 ## Key Files
-- `frontend/src/components/Mira/FavoritesPanel.jsx` - Favorites with service flow
-- `frontend/src/components/Mira/PersonalizedPicksPanel.jsx` - Picks with service flow (FIXED)
-- `frontend/src/hooks/useUniversalServiceCommand.js` - Universal service hook
-- `backend/routes/mira_routes.py` - Core AI logic (needs refactoring)
-- `backend/services/mira/mira_memory_assembler.py` - Pet context assembly
+### NEW Mira Pure System
+- `frontend/src/pages/MiraPureOSPage.jsx` - Complete OS UI page
+- `backend/mira_pure.py` - Chat endpoint with GPT-5.1 function calling
+- `backend/mira_pure_functions.py` - Actions (picks, services, today, learn)
+
+### Legacy System (to be deprecated)
+- `frontend/src/pages/MiraDemoPage.jsx` - Old UI
+- `backend/routes/mira_routes.py` - Old AI logic (26k+ lines)
 
 ## API Endpoints
-- `POST /api/mira/chat` - AI chat
+### NEW Mira Pure Endpoints
+- `POST /api/mira-pure/chat` - Soulful AI chat with function calling
+- `GET /api/mira-pure/pets` - Get pets for Pure OS
+- `GET /api/mira-pure/services` - Get service tickets
+- `GET /api/mira-pure/health` - Health check
+
+### Legacy Endpoints
+- `POST /api/mira/chat` - Old AI chat
 - `GET /api/proactive/alerts/{pet_id}` - META proactive alerts
-- `POST /api/service-requests` - Unified Service Flow (picks, favorites, etc.)
 
 ## Test Credentials
 - User: `dipali@clubconcierge.in` / `test123`
 - Admin: `aditya` / `lola4304`
 
-## Service Request Data Model
+## Service Request Data Model (Mira Pure)
 ```json
 {
   "ticket_id": "TKT-XXXXXXXX",
-  "type": "PICK_REQUEST",
-  "pillar": "celebrate",
-  "source": "picks_panel",
-  "customer": { "name", "email", "phone" },
-  "details": {
-    "pick_id": "...",
-    "pick_name": "Photo Coaster Set",
-    "pick_type": "personalized",
-    "pick_description": "...",
-    "pick_price": "...",
-    "message": "I'd like to proceed with: ...",
-    "pet_name": "Mystique",
-    "entry_point": "picks_panel"
+  "type": "grooming|dog_walker|vet_visit|birthday_party|travel|boarding|other",
+  "status": "pending|in_progress|completed",
+  "priority": "normal|high|urgent",
+  "pet_id": "...",
+  "pet_name": "Mojo",
+  "user_email": "dipali@clubconcierge.in",
+  "description": "User's request message",
+  "created_at": "2026-02-26T...",
+  "source": "mira_pure"
+}
+```
+
+## Pet Soul Data Model
+```json
+{
+  "soul_data": {
+    "personality": ["calm", "drama-queen", "motherly", "food-motivated"],
+    "temperament": "gentle and observant",
+    "energy_level": 4,
+    "love_language": "quality time",
+    "preferences": {
+      "favorite_activities": ["walks", "napping", "being pampered"],
+      "favorite_foods": ["chicken-free treats"],
+      "favorite_toys": ["plush toys"]
+    },
+    "dislikes": ["loud noises", "being alone"],
+    "quirks": ["always wants to be held"],
+    "soul_completeness": 87
   },
-  "status": "pending"
+  "health_data": {
+    "allergies": ["chicken"],
+    "chronic_conditions": "lymphoma",
+    "sensitivities": []
+  }
 }
 ```
