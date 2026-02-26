@@ -678,7 +678,16 @@ async def get_quick_questions(pet_id: str, limit: int = 5):
     Get a list of quick, high-impact questions to boost the score.
     Perfect for inline question widgets.
     """
+    from bson import ObjectId
+    
+    # Try id field first, then _id
     pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "doggy_soul_answers": 1})
+    if not pet:
+        try:
+            pet = await db.pets.find_one({"_id": ObjectId(pet_id)}, {"_id": 0, "doggy_soul_answers": 1})
+        except:
+            pass
+    
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     
