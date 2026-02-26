@@ -461,25 +461,6 @@ const VaultManager = ({
       );
 
     default:
-      // MIRA SUGGESTIONS: Display Mira's curated picks (concierge_arranges)
-      if (miraResponse?.concierge_arranges?.length > 0) {
-        return (
-          <CustomVault
-            pet={pet}
-            pillar={pillar}
-            context={userMessage}
-            miraSuggestions={miraResponse.concierge_arranges}
-            onSendToConcierge={(data) => sendToConcierge({
-              selected_suggestions: data.selected_suggestions || miraResponse.concierge_arranges,
-              user_request: userMessage,
-              pet_name: pet?.name,
-              pillar: pillar
-            })}
-            onClose={onClose}
-          />
-        );
-      }
-      
       // Fallback: If we have products, show picks vault
       if (miraResponse?.products?.length > 0) {
         return (
