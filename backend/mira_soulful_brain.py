@@ -410,7 +410,8 @@ async def get_soulful_response(
     pet_context: dict = None,
     user_email: str = None,
     conversation_history: List[Dict[str, str]] = None,
-    active_pillar: str = None
+    active_pillar: str = None,
+    user_city: str = None
 ) -> dict:
     """
     Get a soulful response from Mira.
@@ -431,6 +432,10 @@ async def get_soulful_response(
     
     # Build pet context string from the dict
     context_parts = []
+    
+    # Add user's city if available
+    if user_city:
+        context_parts.append(f"User's Location: {user_city}")
     
     if pet_context.get("name"):
         context_parts.append(f"Name: {pet_context['name']}")
