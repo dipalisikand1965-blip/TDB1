@@ -4213,7 +4213,10 @@ const MiraDemoPage = () => {
         <Suspense fallback={<LazyFallback />}>
           <TestScenariosPanel
             isOpen={showTestScenarios}
-            onClose={() => setShowTestScenarios(false)}
+            onClose={() => {
+              setShowTestScenarios(false);
+              localStorage.setItem('mira_test_scenarios_dismissed', 'true');
+            }}
             activeScenario={activeScenario}
             petName={pet?.name || 'your pet'}
             onScenarioClick={(id, query) => {
