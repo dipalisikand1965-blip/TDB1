@@ -690,6 +690,22 @@ const MiraPureOSPage = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Fetch services from backend
+  const fetchServices = async () => {
+    if (!activePet) return;
+    try {
+      const response = await fetch(`${API}/api/mira-pure/services?pet_name=${activePet.name}&email=dipali@clubconcierge.in`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.services) {
+          setServices(data.services);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching services:', error);
+    }
+  };
+
   // Get current state
   const lastMiraMessage = messages.filter(m => m.role === 'assistant').pop();
   const lastActions = lastMiraMessage?.actions || [];
