@@ -272,11 +272,13 @@ MIRA_FUNCTIONS = [
 # ═══════════════════════════════════════════════════════════════════════════
 
 async def execute_create_service_ticket(args: dict, pet_id: str, pet_name: str, user_email: str) -> dict:
-    """Create a service ticket in the database."""
+    """Create a service ticket in the database using the Unified Service Flow."""
     import uuid
     
     ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
+    now = datetime.now(timezone.utc)
     
+    # Basic ticket data for service_requests (backward compatibility)
     ticket = {
         "ticket_id": ticket_id,
         "type": args.get("service_type", "other"),
@@ -288,14 +290,66 @@ async def execute_create_service_ticket(args: dict, pet_id: str, pet_name: str, 
         "pet_name": pet_name,
         "user_email": user_email,
         "status": "pending",
-        "created_at": datetime.utcnow(),
+        "created_at": now,
         "source": "mira_soulful"
     }
     
     if db is not None:
         try:
+            # 1. Write to service_requests (original collection - backward compat)
             await db.service_requests.insert_one(ticket)
-            logger.info(f"[SOULFUL] Created ticket: {ticket_id} for {pet_name}")
+            logger.info(f"[SOULFUL] Created ticket in service_requests: {ticket_id} for {pet_name}")
+            
+            # 2. ALSO write to mira_tickets for CONCIERGE integration (Unified Service Flow)
+            # This ensures tickets appear in the CONCIERGE panel
+            unified_ticket = {
+                "id": ticket_id,
+                "ticket_id": ticket_id,
+                "user_id": user_email,
+                "pet_id": pet_id,
+                "pet_name": pet_name,
+                "title": f"{args.get('service_type', 'Service').replace('_', ' ').title()} for {pet_name}",
+                "service_type": args.get("service_type", "other"),
+                "pillar": map_service_to_pillar(args.get("service_type", "other")),
+                "description": args.get("description", ""),
+                "status": "placed",  # Standard unified flow status
+                "priority": args.get("urgency", "normal"),
+                "source": "mira_soulful_chat",
+                "source_context": {
+                    "created_via": "mira_chat",
+                    "preferred_time": args.get("preferred_time")
+                },
+                "created_at": now.isoformat(),
+                "updated_at": now.isoformat(),
+                "timeline": [
+                    {
+                        "timestamp": now.isoformat(),
+                        "action": "Ticket created",
+                        "status": "placed",
+                        "note": f"Created via Mira chat for {pet_name}"
+                    }
+                ]
+            }
+            await db.mira_tickets.insert_one(unified_ticket)
+            logger.info(f"[SOULFUL] Created unified ticket in mira_tickets: {ticket_id}")
+            
+            # 3. Create admin notification for Service Desk
+            admin_notification = {
+                "id": str(uuid.uuid4()),
+                "type": "new_service_request",
+                "ticket_id": ticket_id,
+                "user_id": user_email,
+                "pet_id": pet_id,
+                "pet_name": pet_name,
+                "title": f"New Request: {args.get('service_type', 'Service').replace('_', ' ').title()}",
+                "content": args.get("description", "")[:200],
+                "priority": args.get("urgency", "normal"),
+                "created_at": now.isoformat(),
+                "read": False
+            }
+            await db.admin_notifications.insert_one(admin_notification)
+            logger.info(f"[SOULFUL] Created admin notification for: {ticket_id}")
+            
         except Exception as e:
             logger.error(f"[SOULFUL] Failed to create ticket: {e}")
     
@@ -306,6 +360,32 @@ async def execute_create_service_ticket(args: dict, pet_id: str, pet_name: str, 
         "message": f"Request created. Ticket: {ticket_id}. Concierge will confirm details shortly.",
         "status": "pending"
     }
+
+
+def map_service_to_pillar(service_type: str) -> str:
+    """Map service type to pillar for the unified flow."""
+    pillar_map = {
+        "grooming": "care",
+        "grooming_appointment": "care",
+        "vet_visit": "care",
+        "vet_appointment": "care",
+        "vaccination": "care",
+        "health_checkup": "care",
+        "boarding": "stay",
+        "pet_sitting": "stay",
+        "travel": "travel",
+        "pet_travel": "travel",
+        "training": "learn",
+        "walking": "care",
+        "dog_walking": "care",
+        "party": "celebrate",
+        "birthday_party": "celebrate",
+        "photography": "celebrate",
+        "adoption": "adopt",
+        "food": "dine",
+        "meal_plan": "dine",
+    }
+    return pillar_map.get(service_type.lower() if service_type else "", "care")
 
 
 async def execute_get_picks(args: dict, pet_name: str, allergies: list = None) -> dict:
