@@ -676,7 +676,17 @@ async def save_answer(pet_id: str, answer: DoggyAnswer):
 @pet_soul_router.post("/profile/{pet_id}/answers/bulk")
 async def save_bulk_answers(pet_id: str, answers: Dict[str, Any]):
     """Save multiple answers at once with optional source tracking"""
+    from bson import ObjectId
+    
+    # Try to find pet by id field first, then by _id
     pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        # Try ObjectId lookup
+        try:
+            pet = await db.pets.find_one({"_id": ObjectId(pet_id)})
+        except:
+            pass
+    
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     
