@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://soul-os-preview.preview.emergentagent.com
+https://mira-soul-os-1.preview.emergentagent.com
 ```
 
 ---
