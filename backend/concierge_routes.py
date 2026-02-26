@@ -4197,10 +4197,21 @@ async def get_concierge_home(
         active_tickets = await active_requests_cursor.to_list(10)
         
         # ALSO fetch from mira_tickets (for Mira-created tickets - Unified Service Flow)
+        # Support both user_id formats: email and UUID
         mira_user_query = {"$or": [
             {"user_id": user_id},
             {"user_email": user_id}
         ]}
+        
+        # If user_id looks like a UUID, also try to find by email from users collection
+        if '-' in user_id and len(user_id) > 30:  # Likely a UUID
+            user_doc = await db.users.find_one({"id": user_id})
+            if user_doc and user_doc.get("email"):
+                mira_user_query["$or"].extend([
+                    {"user_id": user_doc["email"]},
+                    {"user_email": user_doc["email"]}
+                ])
+        
         if pet_id and pet_id != "all":
             mira_user_query["pet_id"] = pet_id
         
