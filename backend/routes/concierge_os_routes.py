@@ -674,7 +674,10 @@ async def get_concierge_home(
             ]
         }).sort("updated_at", -1).limit(10)
         
+        logger.info(f"[CONCIERGE] Query for user_id={user_id}: user_filter={user_filter}, statuses={active_statuses}")
+        
         async for ticket in tickets_cursor:
+            logger.info(f"[CONCIERGE] Found ticket: {ticket.get('ticket_id', ticket.get('id'))} - status={ticket.get('status')}")
             # Get pet name
             pet_name = "Your pet"
             if ticket.get("pet_id"):
