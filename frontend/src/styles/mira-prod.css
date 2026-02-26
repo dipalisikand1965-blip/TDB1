@@ -3666,16 +3666,24 @@ button.mp-welcome-chip,
   50% { transform: scale(1.2) rotate(10deg); opacity: 0.8; }
 }
 
-/* Quick Chips - CENTERED */
+/* Quick Chips - HORIZONTAL SCROLL */
 .quick-chips {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
   align-items: center;
   gap: 12px;
   margin-top: 32px;
   width: 100%;
-  padding: 0 16px;
+  padding: 0 16px 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.quick-chips::-webkit-scrollbar {
+  display: none;
 }
 
 .quick-chip {
