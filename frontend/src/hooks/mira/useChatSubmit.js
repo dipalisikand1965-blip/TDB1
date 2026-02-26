@@ -432,17 +432,20 @@ const useChatSubmit = (config) => {
       // ═══════════════════════════════════════════════════════════════════════════
       
       // Highlight the relevant OS tab (e.g., SERVICES glows after ticket created)
-      if (data.highlight_tab && typeof setHighlightedTab === 'function') {
-        setHighlightedTab(data.highlight_tab);
+      if (data.highlight_tab) {
         console.log('[SOULFUL] Highlighting tab:', data.highlight_tab);
-        // Auto-clear highlight after 5 seconds
-        setTimeout(() => setHighlightedTab(null), 5000);
+        // Specifically handle services tab pulse
+        if (data.highlight_tab === 'services' && typeof setServicesPulse === 'function') {
+          setServicesPulse(true);
+          // Auto-clear highlight after 5 seconds
+          setTimeout(() => setServicesPulse(false), 5000);
+        }
       }
       
       // Set suggested pillar for PICKS context (e.g., grooming → care pillar)
-      if (data.suggested_pillar && typeof setSuggestedPillar === 'function') {
-        setSuggestedPillar(data.suggested_pillar);
-        console.log('[SOULFUL] Suggesting pillar:', data.suggested_pillar);
+      if (data.suggested_pillar && typeof setPillar === 'function') {
+        console.log('[SOULFUL] Auto-setting pillar from conversation:', data.suggested_pillar);
+        setPillar(data.suggested_pillar);
       }
       
       // REAL-TIME SOUL SCORE UPDATE
