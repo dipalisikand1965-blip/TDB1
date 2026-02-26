@@ -12420,7 +12420,9 @@ async def mira_chat(
             
             # Extract user email from authorization token
             user_email = None
+            logger.info(f"[SOULFUL] Authorization value: {authorization[:50] if authorization else 'None'}...")
             if authorization and authorization.startswith("Bearer "):
+                try:
                 try:
                     import jwt
                     token = authorization.replace("Bearer ", "")
