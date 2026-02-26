@@ -396,6 +396,40 @@ Respond as Mira. Be warm, focused, and brief. If an action was taken, acknowledg
         raise HTTPException(status_code=500, detail=f"Chat error: {str(e)}")
 
 
+@router.get("/services")
+async def get_pet_services(pet_id: str = None, pet_name: str = None, email: str = None, limit: int = 10):
+    """Get services/tickets for a pet."""
+    if db is None:
+        return {"services": [], "error": "Database not connected"}
+    
+    try:
+        query = {}
+        if pet_id:
+            query["pet_id"] = pet_id
+        if pet_name:
+            query["pet_name"] = {"$regex": f"^{pet_name}$", "$options": "i"}
+        if email:
+            query["user_email"] = email
+        
+        services_cursor = db.service_desk_tickets.find(query).sort("created_at", -1).limit(limit)
+        services = []
+        async for svc in services_cursor:
+            services.append({
+                "ticket_id": svc.get("ticket_id"),
+                "service_type": svc.get("service_type"),
+                "description": svc.get("description"),
+                "status": svc.get("status", "pending"),
+                "created_at": str(svc.get("created_at", ""))[:10],
+                "pet_name": svc.get("pet_name"),
+            })
+        
+        return {"services": services, "count": len(services)}
+        
+    except Exception as e:
+        logger.error(f"[MIRA PURE] Error fetching services: {e}")
+        return {"services": [], "error": str(e)}
+
+
 @router.get("/health")
 async def health_check():
     """Health check for the pure Mira endpoint."""
