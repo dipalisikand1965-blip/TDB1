@@ -483,15 +483,16 @@ async def get_soulful_response(
             system_message=system_prompt
         ).with_model("openai", "gpt-5.1")
         
-        # Add conversation history
-        for msg in conversation_history[-10:]:  # Last 10 messages
-            role = msg.get("role", "user")
-            content = msg.get("content", "")
-            if role == "user":
-                # History messages need to be added differently
-                pass  # History is sent with the current message context
-            else:
-                chat.with_assistant_message(content)
+        # Build conversation context into the message
+        context_intro = ""
+        if conversation_history and len(conversation_history) > 0:
+            # Include recent history in context
+            history_summary = []
+            for msg in conversation_history[-4:]:  # Last 4 messages for context
+                role = "Parent" if msg.get("role") == "user" else "Mira"
+                history_summary.append(f"{role}: {msg.get('content', '')[:100]}")
+            if history_summary:
+                context_intro = f"[Recent conversation context:\n{chr(10).join(history_summary)}\n]\n\nParent's latest message: "
         
         # Get response using send_message
         response = await chat.send_message(UserMessage(text=message))
