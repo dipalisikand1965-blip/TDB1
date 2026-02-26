@@ -708,7 +708,7 @@ const MiraPureOSPage = () => {
     try {
       const response = await fetch(`${API}/api/mira-pure/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: text,
           pet_id: activePet?._id || activePet?.id,
