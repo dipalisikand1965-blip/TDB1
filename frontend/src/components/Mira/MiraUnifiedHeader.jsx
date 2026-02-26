@@ -4,14 +4,15 @@
  * Single Top Bar Header for Mira OS
  * 
  * Layout (from user's reference):
- * [Mira Logo] [Pet+Soul+Name (→MOJO)] [TODAY][PICKS][SERVICES][LEARN][CONCIERGE®] [Temp] [Pet Switcher (→dropdown)]
+ * [Mira Logo] [Pet+Soul+Name (→MOJO)] [TODAY][PICKS][SERVICES][LEARN][CONCIERGE®] [Temp] [Bell] [Pet Switcher (→dropdown)]
  */
 
 import React, { useState, useRef, useEffect, memo } from 'react';
 import { 
   ChevronDown, Heart, Calendar, Sparkles, Briefcase, 
-  GraduationCap, Users, Check
+  GraduationCap, Users, Check, Bell
 } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import hapticFeedback from '../../utils/haptic';
 
 // OS Layer configuration
@@ -25,9 +26,10 @@ const OS_LAYERS = [
 
 /**
  * LEFT SIDE: Pet Identity Section - Opens MOJO Modal
- * Shows: Pet avatar with soul ring, soul % badge, pet name, heart icon, notification badge
+ * Shows: Pet avatar with soul ring, soul % badge, pet name, heart icon
+ * NOTE: Notification badge moved to separate bell icon
  */
-const PetIdentitySection = memo(({ pet, soulScore = 0, onClick, notificationCount = 0 }) => {
+const PetIdentitySection = memo(({ pet, soulScore = 0, onClick }) => {
   const petPhoto = pet?.photo || pet?.pet_photo || pet?.photo_url;
   const petName = pet?.name || 'Pet';
   
@@ -81,12 +83,38 @@ const PetIdentitySection = memo(({ pet, soulScore = 0, onClick, notificationCoun
         <span className="pet-identity-name">{petName}</span>
         <ChevronDown className="pet-identity-arrow" />
       </div>
-      
-      {/* Notification Badge (orange) */}
-      {notificationCount > 0 && (
-        <div className="pet-notification-badge">{notificationCount}</div>
-      )}
     </div>
+  );
+});
+
+/**
+ * Notification Bell - Opens Inbox
+ */
+const NotificationBellInHeader = memo(({ count = 0 }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  const handleClick = (e) => {
+    e.stopPropagation();
+    hapticFeedback.buttonTap();
+    const returnTo = encodeURIComponent(location.pathname);
+    navigate(`/notifications?returnTo=${returnTo}`);
+  };
+  
+  return (
+    <button
+      className="mira-notification-bell"
+      onClick={handleClick}
+      data-testid="notification-bell"
+      aria-label={`Notifications${count > 0 ? ` (${count} unread)` : ''}`}
+    >
+      <Bell className="bell-icon" />
+      {count > 0 && (
+        <span className="bell-badge" data-testid="notification-badge">
+          {count > 9 ? '9+' : count}
+        </span>
+      )}
+    </button>
   );
 });
 
