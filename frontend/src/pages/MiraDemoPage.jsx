@@ -5089,7 +5089,7 @@ const MiraDemoPage = () => {
           VAULT SYSTEM - Full-screen overlay for picks, bookings, places, etc.
           "Mira is the Brain, Concierge® is the Hands"
           ═══════════════════════════════════════════════════════════════════════════ */}
-      {showVault && (miraPicks.products?.length > 0 || miraPicks.services?.length > 0 || miraPicks.places?.length > 0 || miraPicks.conciergeArranges?.length > 0 || miraPicks.tipCard || activeVaultData) && (
+      {showVault && (miraPicks.products?.length > 0 || miraPicks.services?.length > 0 || miraPicks.places?.length > 0 || miraPicks.tipCard || activeVaultData?.products?.length > 0) && (
         <div className="vault-overlay" data-testid="vault-overlay">
           <VaultManager
             isOpen={showVault}
