@@ -5089,7 +5089,7 @@ const MiraDemoPage = () => {
           VAULT SYSTEM - Full-screen overlay for picks, bookings, places, etc.
           "Mira is the Brain, Concierge® is the Hands"
           ═══════════════════════════════════════════════════════════════════════════ */}
-      {showVault && (miraPicks.products?.length > 0 || miraPicks.services?.length > 0 || miraPicks.places?.length > 0 || miraPicks.tipCard || activeVaultData) && (
+      {showVault && (miraPicks.products?.length > 0 || miraPicks.services?.length > 0 || miraPicks.places?.length > 0 || miraPicks.conciergeArranges?.length > 0 || miraPicks.tipCard || activeVaultData) && (
         <div className="vault-overlay" data-testid="vault-overlay">
           <VaultManager
             isOpen={showVault}
@@ -5102,6 +5102,7 @@ const MiraDemoPage = () => {
               products: miraPicks.products,
               services: miraPicks.services,
               places: miraPicks.places,
+              concierge_arranges: miraPicks.conciergeArranges,  // Mira's suggestions
               nearby_places: miraPicks.places ? { places: miraPicks.places, type: miraPicks.placesType } : null,
               tip_card: miraPicks.tipCard,
               response: activeVaultData,
