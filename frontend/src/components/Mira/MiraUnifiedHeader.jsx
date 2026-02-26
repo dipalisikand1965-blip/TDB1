@@ -267,6 +267,7 @@ const MiraUnifiedHeader = ({
   iconStates = {},
   weather = null,
   notificationCount = 0,
+  servicesPulse = false, // Glowing effect when AI creates a service ticket
 }) => {
   const [showPetSwitcher, setShowPetSwitcher] = useState(false);
   
