@@ -449,6 +449,14 @@ const useChatSubmit = (config) => {
         setPillar(data.suggested_pillar);
       }
       
+      // Highlight the relevant service launcher in SERVICES panel
+      if (data.highlight_service && typeof setHighlightedService === 'function') {
+        console.log('[SOULFUL] Highlighting service launcher:', data.highlight_service);
+        setHighlightedService(data.highlight_service);
+        // Auto-clear after 8 seconds
+        setTimeout(() => setHighlightedService(null), 8000);
+      }
+      
       // REAL-TIME SOUL SCORE UPDATE
       if (data.pet_soul_score !== undefined && data.pet_soul_score !== null) {
         const newScore = Math.round(data.pet_soul_score);
