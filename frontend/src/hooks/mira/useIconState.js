@@ -32,6 +32,7 @@ export const ICON_STATE = {
   OFF: 'OFF',
   ON: 'ON',
   PULSE: 'PULSE',
+  GLOW: 'GLOW', // NEW: Golden glow for actionable Mira suggestions (CTA state)
 };
 
 export const TAB_IDS = {
