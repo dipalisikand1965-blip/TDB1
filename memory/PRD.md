@@ -436,33 +436,71 @@ curl -s "$API_URL/api/os/learn/home?pet_id=XXX" -H "Authorization: Bearer $TOKEN
 
 ## BIBLE DOCUMENTS LOCATION
 All product vision documents are in `/app/memory/`:
+- `SSOT.md` - **SINGLE SOURCE OF TRUTH** (READ THIS FIRST!)
 - `CONCIERGE_BIBLE.md` - CONCIERGE panel behavior
 - `LEARN_BIBLE.md` - LEARN tab behavior
+- `MOJO_BIBLE.md` - Pet identity system
+- `TODAY_SPEC.md` - TODAY panel requirements
+- `UNIFIED_SERVICE_FLOW.md` - Service request flow
 - `PICKS_BIBLE.md` - PICKS recommendations
 - `SERVICES_BIBLE.md` - Services flow
 - And 200+ more defining Mira's personality and behavior
 
 ---
 
-## NEXT AGENT INSTRUCTIONS
+## SESSION LOG: 2026-02-27
 
-### Immediate Task: Verify Breed-Specific LEARN Filtering
-1. **Check if pet_id is passed to LEARN API** - Look at frontend component
-2. **Test API directly:**
-   ```bash
-   # Get pet_id for Mojo first
-   # Then: GET /api/os/learn/home?pet_id={mojo_id}
-   # Check response.personalization.breed_tags
-   ```
-3. **If breed_tags empty:** Check if `pets.breed` is populated in DB
-4. **If working but not visible:** Check frontend renders "For your pet" shelf
+### COMPLETED THIS SESSION:
 
-### If LEARN Already Works
-Move to:
-1. P2: Real-time SERVICES badge (WebSockets)
-2. P2: Fix React "Maximum update depth exceeded" warning
-3. Future: WhatsApp Business integration
+1. **Service Request Modal Cut-off (FIXED)**
+   - Increased z-index to 9999 in ServiceRequestBuilder.jsx
+   - Adjusted maxHeight to 90vh
+   - Submit button now fully visible on mobile
+
+2. **"What Mira Learned" Feature (NEW)**
+   - Added learning extraction to `mira_soulful_brain.py`
+   - Extracts: allergies, preferences, behaviors, health info
+   - Saves to `learned_facts` array in pet document
+   - Also saves to `conversation_memories` collection
+
+3. **Pet Switch Module (FIXED)**
+   - Added Pet Selector Modal to MiraDemoPage.jsx
+   - Shows all pets with soul scores
+   - Checkmark on currently selected pet
+
+4. **Pet Data Synced from Production**
+   - Created `/app/backend/scripts/sync_prod_pets.py`
+   - Synced 8 pets with proper `id` fields
+   - Soul scores now showing correctly
+
+5. **Mobile UI/UX (VERIFIED)**
+   - Tested iPhone SE, iPhone 14 Pro, iPhone 14 Pro Max
+   - Tested Pixel 5, Galaxy S8
+   - All panels rendering correctly
 
 ---
 
-*Last Updated: 2026-02-26 06:10 UTC*
+## NEXT AGENT INSTRUCTIONS
+
+### CRITICAL: Read SSOT First!
+**ALWAYS start by reading `/app/memory/SSOT.md`** - it contains:
+- Complete feature status (all panels 100% complete)
+- Technical details and gotchas
+- Rules for future agents
+- Quick reference commands
+
+### Current Backlog:
+1. **P1:** WhatsApp Business integration
+2. **P1:** Production data sync automation
+3. **P2:** Build 'Fit' pillar
+4. **P2:** Build 'Work' pillar
+5. **Tech Debt:** Fix services database seeding
+
+### Known Issues:
+- Services data is hardcoded (fallback list in mira_routes.py)
+- Must pass `pet_id` in chat requests for learning to work
+- Query pets by `id` field, not `_id`
+
+---
+
+*Last Updated: 2026-02-27 16:00 UTC*
