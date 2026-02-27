@@ -3161,6 +3161,9 @@ const MiraDemoPage = () => {
     // Services tab pulse (for highlighting after ticket creation)
     setServicesPulse,
     
+    // Service launcher highlighting (e.g., "grooming" → Grooming button glows)
+    setHighlightedService,
+    
     // Voice
     voiceEnabled,
     voiceTimeoutRef,
