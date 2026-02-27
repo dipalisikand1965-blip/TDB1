@@ -1,7 +1,51 @@
 # SINGLE SOURCE OF TRUTH (SSOT)
 ## Pet Life Operating System - Mira AI
-**Last Updated:** 2026-02-27
+**Last Updated:** 2026-02-27 16:45 UTC
 **Status:** PRODUCTION READY
+**Document Version:** 3.0
+
+---
+
+## 🔴 CRITICAL FIX LOG - SESSION 2026-02-27
+
+### 🚨 CRITICAL BUG FIXED: Mira Not Knowing Pet Soul
+
+**Symptom:** Mira was saying "I don't know anything about your dog" despite `pet_id` being passed
+
+**Root Cause Analysis:**
+```
+Location: /app/backend/mira_routes.py (line 12418)
+Problem: pet_ctx = request.pet_context or {}
+         ↳ Frontend sends pet_id but NOT full pet_context
+         ↳ Code never fetched pet data from DB
+         ↳ Mira had empty {} for pet knowledge
+```
+
+**Fix Applied (Lines 12417-12441):**
+```python
+# CRITICAL: If pet_context is empty but we have pet_id, fetch from DB
+if pet_id and (not pet_ctx or not pet_ctx.get("doggy_soul_answers")):
+    try:
+        pet_doc = await db.pets.find_one(
+            {"$or": [{"id": pet_id}, {"_id": pet_id}]},
+            {"_id": 0}
+        )
+        if pet_doc:
+            pet_ctx = pet_doc
+            pet_name = pet_ctx.get("name") or "your pet"
+            logger.info(f"[SOULFUL] Loaded pet context from DB...")
+    except Exception as pet_fetch_err:
+        logger.warning(f"[SOULFUL] Could not fetch pet context: {pet_fetch_err}")
+```
+
+**Verification Test Results:**
+| Test | Before Fix | After Fix |
+|------|------------|-----------|
+| "Tell me about my dog" | "I don't know your dog" | Lists all 8 pets with soul data ✅ |
+| "Can I give Mojo chicken treats?" | Generic response | **REFUSES** - knows chicken allergy ✅ |
+| "What's Mojo's personality?" | Unknown | "Friendly, playful, high energy" ✅ |
+
+**Test Report:** `/app/test_reports/iteration_52.json` - 9/9 backend tests PASSED
 
 ---
 
