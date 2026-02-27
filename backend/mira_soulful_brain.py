@@ -945,6 +945,146 @@ async def get_soulful_response(
                 logger.warning(f"[SOULFUL] Failed to save intent: {intent_err}")
         
         # ═══════════════════════════════════════════════════════════════════════════
+        # MIRA LEARNS - Extract facts from user messages and save to pet profile
+        # This powers the "What Mira Learned" section in MOJO profile
+        # Pattern: Look for allergies, preferences, traits mentioned in conversation
+        # ═══════════════════════════════════════════════════════════════════════════
+        if db is not None and pet_id:
+            try:
+                learned_facts = []
+                now = datetime.now(timezone.utc)
+                
+                # Pattern matching for learnable information
+                lower_msg = message.lower()
+                
+                # Allergies (CRITICAL)
+                allergy_patterns = [
+                    (r'allergic to (\w+(?:\s+\w+)?)', 'allergy'),
+                    (r'can\'t eat (\w+)', 'allergy'),
+                    (r'sensitive to (\w+)', 'sensitivity'),
+                    (r'reacts badly to (\w+)', 'allergy'),
+                ]
+                for pattern, fact_type in allergy_patterns:
+                    matches = re.findall(pattern, lower_msg)
+                    for match in matches:
+                        learned_facts.append({
+                            "type": fact_type,
+                            "content": f"{fact_type.title()}: {match}",
+                            "value": match,
+                            "category": "health",
+                            "source": "conversation",
+                            "timestamp": now.isoformat()
+                        })
+                
+                # Preferences (loves, hates, prefers)
+                pref_patterns = [
+                    (r'loves? (\w+(?:\s+\w+)?(?:\s+treats?)?)', 'loves'),
+                    (r'hates? (\w+)', 'dislikes'),
+                    (r'prefers? (\w+(?:\s+\w+)?)', 'prefers'),
+                    (r'favorite (?:treat|food|toy|activity) (?:is |are )?(\w+(?:\s+\w+)?)', 'favorite'),
+                    (r'doesn\'t like (\w+)', 'dislikes'),
+                ]
+                for pattern, fact_type in pref_patterns:
+                    matches = re.findall(pattern, lower_msg)
+                    for match in matches:
+                        # Filter out non-nouns and common words
+                        if match not in ['to', 'the', 'it', 'a', 'an', 'is', 'are', 'was', 'be']:
+                            learned_facts.append({
+                                "type": fact_type,
+                                "content": f"{fact_type.title()}: {match}",
+                                "value": match,
+                                "category": "preferences",
+                                "source": "conversation",
+                                "timestamp": now.isoformat()
+                            })
+                
+                # Behavioral traits
+                behavior_patterns = [
+                    (r'(?:is |gets )?nervous (?:around|about|when) (\w+(?:\s+\w+)?)', 'nervousness_trigger'),
+                    (r'afraid of (\w+)', 'fear'),
+                    (r'anxious (?:around|about|when) (\w+)', 'anxiety_trigger'),
+                    (r'calm (?:around|with) (\w+)', 'comfort'),
+                ]
+                for pattern, fact_type in behavior_patterns:
+                    matches = re.findall(pattern, lower_msg)
+                    for match in matches:
+                        learned_facts.append({
+                            "type": fact_type,
+                            "content": f"Behavior: {fact_type.replace('_', ' ')} - {match}",
+                            "value": match,
+                            "category": "behavior",
+                            "source": "conversation",
+                            "timestamp": now.isoformat()
+                        })
+                
+                # Health information
+                health_patterns = [
+                    (r'has (\w+ skin)', 'condition'),
+                    (r'needs (\w+ grooming)', 'grooming_need'),
+                    (r'on medication for (\w+)', 'medication'),
+                ]
+                for pattern, fact_type in health_patterns:
+                    matches = re.findall(pattern, lower_msg)
+                    for match in matches:
+                        learned_facts.append({
+                            "type": fact_type,
+                            "content": f"Health: {match}",
+                            "value": match,
+                            "category": "health",
+                            "source": "conversation",
+                            "timestamp": now.isoformat()
+                        })
+                
+                # Save learned facts to pet profile if any were found
+                if learned_facts:
+                    # Add to pet's learned_facts array
+                    update_result = await db.pets.update_one(
+                        {"id": pet_id},
+                        {
+                            "$push": {
+                                "learned_facts": {"$each": learned_facts}
+                            },
+                            "$set": {
+                                "last_learned_at": now
+                            }
+                        }
+                    )
+                    
+                    if update_result.modified_count > 0:
+                        logger.info(f"[MIRA LEARNS] ✅ Saved {len(learned_facts)} facts for {pet_name}: {[f['content'] for f in learned_facts]}")
+                    else:
+                        # Try updating by name if id doesn't match
+                        update_by_name = await db.pets.update_one(
+                            {"name": pet_name, "owner_email": user_email},
+                            {
+                                "$push": {
+                                    "learned_facts": {"$each": learned_facts}
+                                },
+                                "$set": {
+                                    "last_learned_at": now
+                                }
+                            }
+                        )
+                        if update_by_name.modified_count > 0:
+                            logger.info(f"[MIRA LEARNS] ✅ Saved {len(learned_facts)} facts for {pet_name} (by name)")
+                        else:
+                            logger.warning(f"[MIRA LEARNS] Could not update pet profile for {pet_name}")
+                    
+                    # Also save to conversation_memories for context
+                    memory_doc = {
+                        "pet_id": pet_id,
+                        "pet_name": pet_name,
+                        "user_email": user_email,
+                        "message": message[:500],
+                        "facts_learned": learned_facts,
+                        "timestamp": now
+                    }
+                    await db.conversation_memories.insert_one(memory_doc)
+                    
+            except Exception as learn_err:
+                logger.warning(f"[MIRA LEARNS] Error extracting facts: {learn_err}")
+        
+        # ═══════════════════════════════════════════════════════════════════════════
         # EXTRACT SUGGESTIONS FROM RESPONSE → POPULATE PICKS
         # When Mira gives concrete suggestions (cake, decorations, etc.), convert to PICKS
         # Mira's response format: numbered lists like "1. **Title**" or "- Item"
