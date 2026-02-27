@@ -941,6 +941,21 @@ const useChatSubmit = (config) => {
           notificationSounds.picks();
         }
         
+        // ═══════════════════════════════════════════════════════════════════
+        // QUICK SEND TO CONCIERGE: Trigger C° GLOW state in catalogue mode
+        // When Mira has actionable suggestions alongside products, light up C°
+        // ═══════════════════════════════════════════════════════════════════
+        if (setActionableSuggestion && conciergeCards.length > 0) {
+          setActionableSuggestion({
+            type: 'catalogue_with_suggestion',
+            summary: conciergeCards[0]?.title || conciergeCards[0]?.name || 'Mira\'s recommendation',
+            message: data.response?.text || inputQuery,
+            originalMessage: inputQuery,
+            pillar: picksContract.pillar || 'advisory',
+            items: conciergeCards.slice(0, 5)
+          });
+        }
+        
         // Check for places
         if (data.nearby_places?.places?.length > 0) {
           setMiraPicks(prev => ({
