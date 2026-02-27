@@ -494,13 +494,50 @@ All product vision documents are in `/app/memory/`:
 2. **P1:** Production data sync automation
 3. **P2:** Build 'Fit' pillar
 4. **P2:** Build 'Work' pillar
-5. **Tech Debt:** Fix services database seeding
+5. **P2:** Saved Learn feature (bookmark/favorite articles)
+6. **Tech Debt:** Remove hardcoded services fallback from mira_routes.py
 
 ### Known Issues:
-- Services data is hardcoded (fallback list in mira_routes.py)
 - Must pass `pet_id` in chat requests for learning to work
 - Query pets by `id` field, not `_id`
 
 ---
 
-*Last Updated: 2026-02-27 16:00 UTC*
+## SESSION LOG: 2026-02-27 (Session 2)
+
+### COMPLETED THIS SESSION:
+
+1. **Password Toggle Verification (CONFIRMED WORKING)**
+   - Verified password toggle on login page is fully functional
+   - Type toggles between 'password' and 'text' correctly
+   - Eye/EyeOff icon toggles appropriately
+   - Location: `/app/frontend/src/pages/Login.jsx` lines 200-209
+
+2. **Document Upload in Concierge (NEW FEATURE)**
+   - Added document upload functionality to ConciergeHomePanel
+   - Users can now upload pet documents (vaccination records, prescriptions, etc.)
+   - Features:
+     - "Upload Docs" chip in suggestion area
+     - Drag-and-drop upload zone
+     - Multi-file upload support
+     - Progress indicator during upload
+     - Success/failure status for each file
+   - Accepts: Images (jpg, png, gif, webp), Documents (pdf, doc, docx)
+   - Max file size: 10MB
+   - Files stored in MongoDB `mira_uploads` collection
+
+**Key Files Modified:**
+- `/app/frontend/src/components/Mira/ConciergeHomePanel.jsx` - Added DocumentUploadSection component
+- `/app/backend/mira_upload.py` - Fixed database truth value bug (line 103)
+
+**API Endpoint:**
+- `POST /api/mira/upload/file` - Multipart form with file, pet_id, context
+
+### TESTING RESULTS:
+- Backend: 100% (4/4 upload API tests passed)
+- Frontend: 100% (Password toggle and document upload both working)
+- Test report: `/app/test_reports/iteration_51.json`
+
+---
+
+*Last Updated: 2026-02-27 16:25 UTC*
