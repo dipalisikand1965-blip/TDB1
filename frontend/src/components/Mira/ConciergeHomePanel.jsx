@@ -199,6 +199,179 @@ const PetSelector = ({ pets, selectedPetId, onSelect, isOpen, onToggle }) => {
 };
 
 /**
+ * Document Upload Component
+ */
+const DocumentUploadSection = ({ petId, userId, onUploadComplete }) => {
+  const fileInputRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFiles(e.dataTransfer.files);
+    }
+  };
+
+  const handleFiles = async (files) => {
+    if (!petId) {
+      alert('Please select a pet first');
+      return;
+    }
+
+    setUploading(true);
+    const newUploads = [];
+
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('pet_id', petId);
+      formData.append('context', 'concierge_upload');
+
+      try {
+        const response = await fetch(`${API_URL}/api/mira/upload/file`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          newUploads.push({
+            ...data,
+            originalName: file.name,
+            success: true
+          });
+        } else {
+          newUploads.push({
+            originalName: file.name,
+            success: false,
+            error: 'Upload failed'
+          });
+        }
+      } catch (err) {
+        newUploads.push({
+          originalName: file.name,
+          success: false,
+          error: err.message
+        });
+      }
+    }
+
+    setUploadedFiles(prev => [...prev, ...newUploads]);
+    setUploading(false);
+    
+    if (onUploadComplete) {
+      onUploadComplete(newUploads);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    if (e.target.files) {
+      handleFiles(e.target.files);
+    }
+  };
+
+  const getFileIcon = (file) => {
+    if (file.file_type === 'image') return <Image size={16} className="text-purple-400" />;
+    return <FileText size={16} className="text-blue-400" />;
+  };
+
+  return (
+    <div className="mb-6" data-testid="document-upload-section">
+      <h3 className="text-sm font-medium text-white/70 mb-3 flex items-center gap-2">
+        <Paperclip size={14} className="text-purple-400" />
+        Upload Documents
+      </h3>
+      <p className="text-xs text-white/40 mb-3">
+        Share vaccination records, prescriptions, or any pet documents
+      </p>
+      
+      {/* Upload Zone */}
+      <div
+        className={`relative border-2 border-dashed rounded-xl p-4 text-center transition-all cursor-pointer ${
+          dragActive 
+            ? 'border-purple-500 bg-purple-500/10' 
+            : 'border-white/10 hover:border-white/30 hover:bg-white/5'
+        }`}
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
+        onClick={() => fileInputRef.current?.click()}
+        data-testid="upload-dropzone"
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept="image/*,.pdf,.doc,.docx"
+          onChange={handleInputChange}
+          className="hidden"
+          data-testid="file-input"
+        />
+        
+        {uploading ? (
+          <div className="flex flex-col items-center py-2">
+            <Loader2 size={24} className="text-purple-400 animate-spin mb-2" />
+            <span className="text-sm text-white/60">Uploading...</span>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center py-2">
+            <Upload size={24} className="text-white/40 mb-2" />
+            <span className="text-sm text-white/60">
+              Drop files here or <span className="text-purple-400">browse</span>
+            </span>
+            <span className="text-xs text-white/30 mt-1">
+              Images, PDFs, Documents (max 10MB)
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Uploaded Files List */}
+      {uploadedFiles.length > 0 && (
+        <div className="mt-3 space-y-2">
+          {uploadedFiles.map((file, idx) => (
+            <div 
+              key={idx}
+              className={`flex items-center gap-2 p-2 rounded-lg text-sm ${
+                file.success 
+                  ? 'bg-green-500/10 border border-green-500/20' 
+                  : 'bg-red-500/10 border border-red-500/20'
+              }`}
+              data-testid={`uploaded-file-${idx}`}
+            >
+              {file.success ? getFileIcon(file) : <X size={16} className="text-red-400" />}
+              <span className={`flex-1 truncate ${file.success ? 'text-white/80' : 'text-red-400'}`}>
+                {file.originalName}
+              </span>
+              {file.success ? (
+                <Check size={16} className="text-green-400" />
+              ) : (
+                <span className="text-xs text-red-400">{file.error}</span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/**
  * ConciergeHomePanel Main Component
  */
 const ConciergeHomePanel = ({ 
@@ -218,6 +391,7 @@ const ConciergeHomePanel = ({
   const [petSelectorOpen, setPetSelectorOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showUploadSection, setShowUploadSection] = useState(false);
   
   // Fetch home data
   const fetchHomeData = useCallback(async () => {
