@@ -1966,8 +1966,9 @@ const PersonalizedPicksPanel = ({
                           key={suggestion.id || index}
                           className={`p-4 rounded-xl bg-gradient-to-r from-pink-900/30 to-purple-900/30 border border-pink-500/30 cursor-pointer hover:border-pink-500/60 transition-all active:scale-[0.98] ${
                             isSelected(suggestion) ? 'ring-2 ring-pink-500' : ''
-                          }`}
+                          } ${isSentToConcierge(suggestion) ? 'opacity-60' : ''}`}
                           onClick={() => {
+                            if (isSentToConcierge(suggestion)) return; // Already sent
                             hapticFeedback.buttonTap();
                             toggleSelection(suggestion, 'suggestion');
                           }}
@@ -1978,8 +1979,19 @@ const PersonalizedPicksPanel = ({
                             </div>
                             <div className="flex-1 min-w-0">
                               <h4 className="font-medium text-white text-sm">{suggestion.title?.replace(/^[\p{Emoji}]\s*/u, '') || 'Suggestion'}</h4>
-                              {suggestion.subtitle && suggestion.subtitle !== 'Price on request' && (
-                                <span className="text-xs text-green-400">{suggestion.subtitle}</span>
+                              {isSentToConcierge(suggestion) ? (
+                                <span className="text-xs text-green-400 flex items-center gap-1">
+                                  <CheckCircle className="w-3 h-3" /> Sent to Concierge
+                                </span>
+                              ) : (
+                                <>
+                                  {suggestion.subtitle && suggestion.subtitle !== 'Price on request' && suggestion.subtitle !== 'Tap to request' && (
+                                    <span className="text-xs text-green-400">{suggestion.subtitle}</span>
+                                  )}
+                                  {(!suggestion.subtitle || suggestion.subtitle === 'Tap to request') && (
+                                    <span className="text-xs text-green-400">Tap to request</span>
+                                  )}
+                                </>
                               )}
                               {suggestion.description && (
                                 <p className="text-xs text-gray-400 mt-1 truncate">{suggestion.description}</p>
@@ -1987,12 +1999,20 @@ const PersonalizedPicksPanel = ({
                             </div>
                             <div
                               className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
-                                isSelected(suggestion) 
-                                  ? 'bg-pink-500 text-white' 
-                                  : 'bg-gray-700 text-gray-400'
+                                isSentToConcierge(suggestion)
+                                  ? 'bg-green-500 text-white'
+                                  : isSelected(suggestion) 
+                                    ? 'bg-pink-500 text-white' 
+                                    : 'bg-gray-700 text-gray-400'
                               }`}
                             >
-                              {isSelected(suggestion) ? <Check className="w-4 h-4" /> : <span className="text-lg">+</span>}
+                              {isSentToConcierge(suggestion) ? (
+                                <CheckCircle className="w-4 h-4" />
+                              ) : isSelected(suggestion) ? (
+                                <Check className="w-4 h-4" />
+                              ) : (
+                                <span className="text-lg">+</span>
+                              )}
                             </div>
                           </div>
                         </div>
