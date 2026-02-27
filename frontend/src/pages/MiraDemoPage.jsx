@@ -4436,7 +4436,7 @@ const MiraDemoPage = () => {
                     picksState={picksState}
                     conciergeState={conciergeState}
                     hapticFeedback={hapticFeedback}
-                    onShowConcierge={() => handleOSTabChange('concierge')}
+                    onShowConcierge={handleConciergeClick}
                     onShowInsights={() => setShowInsightsPanel(true)}
                     onShowPicks={() => handleOSTabChange('picks')}
                     onQuickReply={handleQuickReply}
