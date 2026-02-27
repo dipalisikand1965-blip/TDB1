@@ -962,11 +962,35 @@ async def create_picks_request(payload: PicksRequestPayload):
             user_email = payload.user_email.lower() if payload.user_email else None
             
             if user_email:
+                # Build detailed items list for the notification
+                items_detail_list = []
+                for idx, item in enumerate(payload.selected_items[:5], 1):  # Max 5 items in preview
+                    item_name = item.get("name") or item.get("title", "Unknown item")
+                    item_price = item.get("price") or item.get("display_price", "")
+                    item_type = item.get("pick_type") or item.get("type", "item")
+                    
+                    # Clean up the item name (remove emoji prefixes if present)
+                    if item_name and len(item_name) > 2 and item_name[0] in "🎂🎈📸🦴🎉🍰🎁✨":
+                        item_name = item_name[2:].strip()
+                    
+                    items_detail_list.append({
+                        "name": item_name,
+                        "price": str(item_price) if item_price else None,
+                        "type": item_type
+                    })
+                
+                # Build readable message with item names
+                items_names_list = [i.get("name") for i in items_detail_list]
+                if len(payload.selected_items) > 5:
+                    items_text = ", ".join(items_names_list) + f" (+{len(payload.selected_items) - 5} more)"
+                else:
+                    items_text = ", ".join(items_names_list)
+                
                 member_notification = {
                     "id": member_notification_id,
                     "type": "picks_request_received",
                     "title": f"Request Received: {payload.pet_name}",
-                    "message": f"Your {len(payload.selected_items)} picks for {payload.pet_name} have been sent to Concierge®. We'll get back to you soon!",
+                    "message": f"Your picks for {payload.pet_name} have been sent to Concierge®:\n{items_text}\n\nWe'll get back to you soon!",
                     "pet_name": payload.pet_name,
                     "pet_id": payload.pet_id,
                     "user_email": user_email,
@@ -978,11 +1002,13 @@ async def create_picks_request(payload: PicksRequestPayload):
                     "data": {
                         "thread_id": signal_result.get("thread_id"),
                         "thread_url": f"/mira-demo?tab=services&thread={ticket_id}",
-                        "items_count": len(payload.selected_items)
+                        "items_count": len(payload.selected_items),
+                        "items": items_detail_list,  # Full item details
+                        "additional_notes": payload.additional_notes
                     }
                 }
                 await db.member_notifications.insert_one(member_notification)
-                logger.info(f"[PICKS REQUEST] Created member notification: {member_notification_id} for {payload.pet_name}")
+                logger.info(f"[PICKS REQUEST] Created member notification: {member_notification_id} for {payload.pet_name} with {len(items_detail_list)} items")
             else:
                 logger.warning(f"[PICKS REQUEST] No user_email provided, skipping member notification")
         except Exception as notif_error:
