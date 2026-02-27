@@ -4212,6 +4212,11 @@ button.mp-welcome-chip,
     max-height: 85vh;
   }
   
+  .mp-modal-body {
+    padding: 16px;
+    padding-bottom: 24px;
+  }
+  
   .mp-form-row {
     grid-template-columns: 1fr;
   }
@@ -4219,6 +4224,11 @@ button.mp-welcome-chip,
   .mp-modal-overlay {
     align-items: flex-end;
     padding: 0;
+  }
+  
+  .mp-modal-footer {
+    padding: 16px;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
   }
 }
 
