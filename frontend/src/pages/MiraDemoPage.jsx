@@ -3167,6 +3167,9 @@ const MiraDemoPage = () => {
     setConciergeConfirmation,
     setShowConciergePanel,
     
+    // Quick Send to Concierge (C° GLOW state)
+    setActionableSuggestion,
+    
     // Training Videos
     setHasNewVideos,
     setNewVideosCount,
