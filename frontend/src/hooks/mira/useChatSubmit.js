@@ -147,6 +147,9 @@ const useChatSubmit = (config) => {
     // Services tab pulse (for highlighting after ticket creation)
     setServicesPulse,
     
+    // Service launcher highlighting (for highlighting specific service like "Grooming")
+    setHighlightedService,
+    
     // Voice
     voiceEnabled,
     voiceTimeoutRef,
