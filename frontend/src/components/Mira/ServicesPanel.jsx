@@ -88,24 +88,35 @@ const STATUS_COLORS = {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 // Service Launcher Card (small, clean)
-const LauncherCard = memo(({ service, onClick }) => {
+const LauncherCard = memo(({ service, onClick, isHighlighted = false }) => {
   const IconComponent = getIcon(service.icon);
   
   return (
     <button
       onClick={() => onClick(service)}
-      className="group flex flex-col items-center p-3 bg-slate-800/40 hover:bg-slate-700/50 
-                 rounded-xl border border-white/5 hover:border-purple-500/30 transition-all
-                 min-w-[80px] min-h-[80px] touch-manipulation"
+      className={`group flex flex-col items-center p-3 bg-slate-800/40 hover:bg-slate-700/50 
+                 rounded-xl border transition-all
+                 min-w-[80px] min-h-[80px] touch-manipulation
+                 ${isHighlighted 
+                   ? 'border-purple-500 ring-2 ring-purple-500/50 bg-purple-500/20 animate-pulse' 
+                   : 'border-white/5 hover:border-purple-500/30'}`}
       data-testid={`launcher-${service.id}`}
     >
-      <div className="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center
-                      group-hover:bg-purple-500/20 transition-colors mb-2">
-        <IconComponent className="w-5 h-5 text-slate-300 group-hover:text-purple-400 transition-colors" />
+      <div className={`w-10 h-10 rounded-lg flex items-center justify-center
+                      transition-colors mb-2
+                      ${isHighlighted 
+                        ? 'bg-purple-500/30' 
+                        : 'bg-slate-700/50 group-hover:bg-purple-500/20'}`}>
+        <IconComponent className={`w-5 h-5 transition-colors 
+          ${isHighlighted ? 'text-purple-400' : 'text-slate-300 group-hover:text-purple-400'}`} />
       </div>
-      <span className="text-xs text-slate-300 font-medium text-center leading-tight">
+      <span className={`text-xs font-medium text-center leading-tight
+        ${isHighlighted ? 'text-purple-300' : 'text-slate-300'}`}>
         {service.name}
       </span>
+      {isHighlighted && (
+        <span className="text-[10px] text-purple-400 mt-1">From chat</span>
+      )}
     </button>
   );
 });
