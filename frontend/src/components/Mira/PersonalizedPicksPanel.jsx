@@ -1138,6 +1138,25 @@ const PersonalizedPicksPanel = ({
       hapticFeedback.picksConfirm();
       setShowConfirmation(false);
       
+      // Show success toast with concierge icon
+      toast.success(
+        <div className="flex items-center gap-2">
+          <CheckCircle className="w-5 h-5 text-green-400" />
+          <div>
+            <div className="font-semibold">Sent to your Concierge®</div>
+            <div className="text-xs text-gray-400">{selectedItems.length} pick{selectedItems.length > 1 ? 's' : ''} for {pet?.name}</div>
+          </div>
+        </div>,
+        {
+          duration: 4000,
+          style: {
+            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+            border: '1px solid rgba(147, 51, 234, 0.3)',
+            color: '#fff'
+          }
+        }
+      );
+      
       // Call success callback with selected items count and pet name (called once)
       onSendSuccess?.({
         count: selectedItems.length,
