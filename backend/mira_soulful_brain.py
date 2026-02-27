@@ -950,6 +950,7 @@ async def get_soulful_response(
         # This powers the "What Mira Learned" section in MOJO profile
         # Pattern: Look for allergies, preferences, traits mentioned in conversation
         # ═══════════════════════════════════════════════════════════════════════════
+        logger.info(f"[MIRA LEARNS] Starting extraction: db={db is not None}, pet_id={pet_id}")
         if db is not None and pet_id:
             try:
                 learned_facts = []
@@ -957,6 +958,7 @@ async def get_soulful_response(
                 
                 # Pattern matching for learnable information
                 lower_msg = message.lower()
+                logger.info(f"[MIRA LEARNS] Checking message: {lower_msg[:100]}...")
                 
                 # Allergies (CRITICAL)
                 allergy_patterns = [
