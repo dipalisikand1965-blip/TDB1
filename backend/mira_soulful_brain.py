@@ -1093,7 +1093,6 @@ async def get_soulful_response(
         concierge_cards = []
         picks_contract = None
         
-        import re
         import uuid as uuid_module
         
         suggestion_items = []
