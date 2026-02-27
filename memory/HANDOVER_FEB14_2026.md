@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://pet-ai-brain.preview.emergentagent.com` |
+| **Preview** | `https://mira-learn-fix.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |
