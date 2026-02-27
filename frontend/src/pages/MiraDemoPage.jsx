@@ -101,6 +101,9 @@ const VetVisitFlowModal = lazy(() => import('../components/VetVisitFlowModal'));
 const CareServiceFlowModal = lazy(() => import('../components/CareServiceFlowModal'));
 const TodayPanel = lazy(() => import('../components/Mira/TodayPanel'));
 
+// Quick Concierge Modal - "Send to Concierge" CTA for Mira suggestions
+const QuickConciergeModal = lazy(() => import('../components/Mira/QuickConciergeModal'));
+
 // Simple loading fallback for lazy components
 const LazyFallback = () => <div className="p-4 text-center text-gray-400">Loading...</div>;
 
