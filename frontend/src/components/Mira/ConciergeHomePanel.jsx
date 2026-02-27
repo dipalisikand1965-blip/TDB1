@@ -617,6 +617,19 @@ const ConciergeHomePanel = ({
                       isUrgent={chip.priority === 'urgent'}
                     />
                   ))}
+                  {/* Upload Document Chip */}
+                  <button
+                    onClick={() => setShowUploadSection(!showUploadSection)}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all ${
+                      showUploadSection
+                        ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50'
+                        : 'bg-white/5 text-white/80 border border-white/10 hover:bg-white/10 hover:border-white/20'
+                    }`}
+                    data-testid="upload-document-chip"
+                  >
+                    <Paperclip size={16} />
+                    Upload Docs
+                  </button>
                 </div>
               </div>
               
