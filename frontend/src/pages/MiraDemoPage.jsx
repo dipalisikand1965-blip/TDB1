@@ -505,6 +505,15 @@ const MiraDemoPage = () => {
   const [showVetVisitFlowModal, setShowVetVisitFlowModal] = useState(false);
   const [showCareServiceFlowModal, setShowCareServiceFlowModal] = useState(false);
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // QUICK CONCIERGE MODAL - "Send to Concierge" CTA for Mira suggestions
+  // When Mira suggests actionable items, C° button glows golden
+  // User clicks → Quick confirmation modal → UNIFIED SERVICE FLOW
+  // SSOT Reference: /app/memory/SSOT.md - "Quick Send to Concierge" feature
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const [showQuickConciergeModal, setShowQuickConciergeModal] = useState(false);
+  const [actionableSuggestion, setActionableSuggestion] = useState(null);
+  
   // Auto-show dietary context chip in food-related conversations
   useEffect(() => {
     const lastMessage = conversationHistory[conversationHistory.length - 1];
