@@ -23,6 +23,7 @@ import {
   Hotel, HeartPulse, Star, AlertCircle, MessageSquare, Shield, Thermometer,
   Leaf, Zap, Clock, CheckCircle
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { API_URL } from '../../utils/api';
 import hapticFeedback from '../../utils/haptic';
 import { onPickSelect } from '../../utils/picksDelights';
