@@ -294,20 +294,23 @@ db.pets.update_one({"_id": _id}, {"$set": {"id": new_id}})
 
 ## 🎯 WHAT'S NEXT (BACKLOG)
 
+### P0 - Critical - COMPLETED ✅
+- [x] Services DB seeding (114 services across 14 pillars)
+
 ### P1 - Important
 - [ ] WhatsApp Business integration
 - [ ] Production data sync automation
 - [ ] More learning patterns (exercise, social behaviors)
-
-### P2 - Enhancement
-- [ ] Build 'Fit' pillar
-- [ ] Build 'Work' pillar
-- [ ] Saved Learn feature
+- [ ] Saved Learn feature (bookmarking)
 - [ ] Document upload in Concierge
 
+### P2 - Enhancement
+- [ ] Build 'Fit' pillar features (activity tracking)
+- [ ] Build 'Work' pillar features (document management)
+
 ### Technical Debt
-- [ ] Fix services database seeding
-- [ ] Remove hardcoded services fallback
+- [x] ~~Fix services database seeding~~ DONE
+- [ ] Remove hardcoded services fallback from mira_routes.py
 - [ ] Migrate off /mira-demo to main route
 
 ---
