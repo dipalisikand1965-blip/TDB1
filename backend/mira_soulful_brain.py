@@ -1049,7 +1049,7 @@ async def get_soulful_response(
                                 "learned_facts": {"$each": learned_facts}
                             },
                             "$set": {
-                                "last_learned_at": now
+                                "last_learned_at": now.isoformat()
                             }
                         }
                     )
