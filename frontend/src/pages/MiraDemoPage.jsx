@@ -4952,8 +4952,10 @@ const MiraDemoPage = () => {
             onClose={() => setShowLearnPanel(false)}
             pet={pet}
             token={token}
-            conversationContext={null}
-            conversationPicks={null}
+            conversationContext={conversationContext}
+            conversationPicks={miraPicks.products || miraPicks.services ? 
+              [...(miraPicks.products || []), ...(miraPicks.services || [])] : null
+            }
             onOpenServices={(serviceData) => {
               // "Let Mira do it" - opens ServiceRequestBuilder with prefill from LEARN
               // Per LEARN Bible: One tap → ServiceRequestBuilder prefilled
