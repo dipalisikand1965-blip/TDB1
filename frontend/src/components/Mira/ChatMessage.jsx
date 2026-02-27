@@ -384,7 +384,16 @@ const MiraMessageHeader = ({
   const isPulsingPicks = picksState?.state === 'PULSE';
   const isOnPicks = picksState?.state === 'ON' || isPulsingPicks;
   const isPulsingConcierge = conciergeState?.state === 'PULSE';
-  const isOnConcierge = conciergeState?.state === 'ON' || isPulsingConcierge;
+  const isGlowingConcierge = conciergeState?.state === 'GLOW'; // NEW: Golden glow for Mira suggestions
+  const isOnConcierge = conciergeState?.state === 'ON' || isPulsingConcierge || isGlowingConcierge;
+  
+  // Determine CSS class for concierge icon state
+  const getConciergeStateClass = () => {
+    if (isGlowingConcierge) return 'state-glow';
+    if (isPulsingConcierge) return 'state-pulse';
+    if (isOnConcierge) return 'state-on';
+    return 'state-off';
+  };
   
   return (
     <div className="mp-card-header">
