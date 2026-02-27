@@ -12511,7 +12511,10 @@ async def mira_chat(
             service_keywords = ["grooming", "groom", "haircut", "bath", "nail", "vet", "vaccine", 
                               "boarding", "board", "daycare", "walking", "walker", "training", "trainer",
                               "party", "birthday", "celebrate", "celebration", "pawty", "gotcha", "cake", "photography", "photo"]
-            product_keywords = ["food", "treat", "toy", "bed", "leash", "collar", "bowl", "shampoo"]
+            product_keywords = ["food", "treat", "toy", "toys", "bed", "blanket", "leash", "collar", "bowl", "shampoo", 
+                              "harness", "crate", "carrier", "chew", "puzzle", "ball", "plush", "squeaky"]
+            
+            logger.info(f"[SOULFUL+LEGACY] Checking keywords for: '{user_lower}'")
             
             if any(kw in user_lower for kw in service_keywords):
                 try:
@@ -12520,12 +12523,14 @@ async def mira_chat(
                 except Exception as svc_err:
                     logger.warning(f"[SOULFUL+LEGACY] Service fetch failed: {svc_err}")
             
-            if any(kw in user_lower for kw in product_keywords):
+            matched_product_keywords = [kw for kw in product_keywords if kw in user_lower]
+            if matched_product_keywords:
+                logger.info(f"[SOULFUL+LEGACY] Matched product keywords: {matched_product_keywords}")
                 try:
                     fetched_products = await search_real_products(
                         query=request.message,
                         pet_context=pet_ctx,
-                        limit=4
+                        limit=6
                     )
                     logger.info(f"[SOULFUL+LEGACY] Fetched {len(fetched_products)} products for: {request.message[:50]}")
                 except Exception as prod_err:
