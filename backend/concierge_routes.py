@@ -918,14 +918,41 @@ async def create_picks_request(payload: PicksRequestPayload):
     # Determine pillar from first item or default to 'picks'
     primary_pillar = payload.selected_items[0].get("pillar", "picks") if payload.selected_items else "picks"
     
-    # Build description
+    # Build detailed description with all items
+    description_lines = [f"**Picks Request for {payload.pet_name}**", ""]
+    description_lines.append("**Selected Items:**")
+    
+    for idx, item in enumerate(payload.selected_items, 1):
+        item_name = item.get("name") or item.get("title", "Unknown item")
+        item_price = item.get("price") or item.get("display_price", "")
+        item_type = item.get("pick_type") or item.get("type", "item")
+        item_pillar = item.get("pillar", "")
+        
+        # Build item line
+        item_line = f"{idx}. **{item_name}**"
+        if item_price:
+            item_line += f" - {item_price}"
+        if item_type:
+            item_line += f" ({item_type})"
+        description_lines.append(item_line)
+        
+        # Add category/pillar if available
+        if item.get("category"):
+            description_lines.append(f"   Category: {item.get('category')}")
+    
+    description_lines.append("")
+    
+    if payload.additional_notes:
+        description_lines.append(f"**Additional Notes:**")
+        description_lines.append(payload.additional_notes)
+    
+    description = "\n".join(description_lines)
+    
+    # Also create a short summary for title
+    item_names = [item.get("name") or item.get("title", "Item") for item in payload.selected_items]
     items_summary = ", ".join(item_names[:3])
     if len(item_names) > 3:
         items_summary += f" (+{len(item_names) - 3} more)"
-    
-    description = f"Picks request for {payload.pet_name}: {items_summary}"
-    if payload.additional_notes:
-        description += f"\n\nNotes: {payload.additional_notes}"
     
     try:
         signal_result = await create_signal(
