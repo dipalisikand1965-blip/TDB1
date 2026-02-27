@@ -137,6 +137,9 @@ const useChatSubmit = (config) => {
     setConciergeConfirmation,
     setShowConciergePanel,
     
+    // Quick Send to Concierge (GLOW state trigger)
+    setActionableSuggestion,
+    
     // Training Videos
     setHasNewVideos,
     setNewVideosCount,
