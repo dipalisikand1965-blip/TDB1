@@ -3998,6 +3998,8 @@ button.mp-welcome-chip,
   max-height: 90vh;
   overflow: hidden;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
 }
 
 .mp-modal-header {
@@ -4058,6 +4060,9 @@ button.mp-welcome-chip,
 
 .mp-modal-body {
   padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .mp-modal-desc {
@@ -4126,6 +4131,8 @@ button.mp-welcome-chip,
   gap: 12px;
   padding: 16px 24px 24px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #2d1f47 0%, #1a1225 100%);
 }
 
 .mp-btn-secondary,
