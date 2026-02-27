@@ -423,14 +423,15 @@ const MiraMessageHeader = ({
           C° CONCIERGE INDICATOR - Status indicator per Bible Section 2
           - OFF: Dim/muted (no activity)
           - ON: Lit (threads exist)
-          - PULSE: Animated glow (unread replies - Mira chose something!)
-          - Click: Navigate to CONCIERGE tab (NO dropdown modal)
+          - PULSE: Animated green glow (unread replies - Concierge responded!)
+          - GLOW: Animated golden glow (Mira has actionable suggestion - CTA!)
+          - Click: Navigate to CONCIERGE tab or open Quick Send modal if glowing
       ═══════════════════════════════════════════════════════════════════════ */}
       <button 
-        className={`mp-header-concierge-icon ${isPulsingConcierge ? 'state-pulse' : ''} ${isOnConcierge ? 'state-on' : 'state-off'}`}
+        className={`mp-header-concierge-icon ${getConciergeStateClass()}`}
         onClick={() => {
           hapticFeedback?.buttonTap?.();
-          onShowConcierge?.();
+          onShowConcierge?.(isGlowingConcierge ? conciergeState?.suggestionContext : null);
         }}
         title={conciergeState?.tooltip || 'Concierge®'}
         data-testid="header-concierge-btn"
