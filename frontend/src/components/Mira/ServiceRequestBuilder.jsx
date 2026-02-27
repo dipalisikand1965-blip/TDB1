@@ -449,12 +449,12 @@ const ServiceRequestBuilder = ({
       <div className="relative w-full sm:max-w-lg bg-slate-900 rounded-t-2xl sm:rounded-2xl
                       border border-white/10 flex flex-col overflow-hidden animate-in slide-in-from-bottom duration-300"
            style={{ 
-             maxHeight: 'min(90vh, 90dvh)',
-             paddingBottom: 'env(safe-area-inset-bottom, 0px)'
+             maxHeight: 'min(85vh, 85dvh)',
+             marginBottom: 'env(safe-area-inset-bottom, 0px)'
            }}>
         
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-white/5">
+        {/* Header - fixed at top */}
+        <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-white/5">
           <div>
             <h2 className="text-lg font-semibold text-white">{config.title}</h2>
             <p className="text-xs text-slate-400">{config.subtitle}</p>
@@ -468,8 +468,8 @@ const ServiceRequestBuilder = ({
           </button>
         </div>
         
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 space-y-5">
+        {/* Form - scrollable middle section */}
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 space-y-5 min-h-0">
           
           {/* LEARN Context Banner - Shows when coming from "Let Mira do it" */}
           {hasLearnContext && learnContext?.source_item && (
