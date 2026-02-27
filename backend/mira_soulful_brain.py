@@ -953,8 +953,9 @@ async def get_soulful_response(
         logger.info(f"[MIRA LEARNS] Starting extraction: db={db is not None}, pet_id={pet_id}")
         if db is not None and pet_id:
             try:
+                from datetime import datetime as dt_class, timezone as tz
                 learned_facts = []
-                now = datetime.now(timezone.utc)
+                now = dt_class.now(tz.utc)
                 
                 # Pattern matching for learnable information
                 lower_msg = message.lower()
