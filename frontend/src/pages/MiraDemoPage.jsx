@@ -670,6 +670,19 @@ const MiraDemoPage = () => {
   }, [layerHandleTabChange]);
 
   // ═══════════════════════════════════════════════════════════════════════════════
+  // QUICK CONCIERGE HANDLER - Show modal when C° is clicked in GLOW state
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const handleConciergeClick = useCallback((suggestionContext) => {
+    if (suggestionContext) {
+      // C° was clicked while in GLOW state - show quick modal
+      setShowQuickConciergeModal(true);
+    } else {
+      // Normal click - go to concierge tab
+      handleOSTabChange('concierge');
+    }
+  }, [handleOSTabChange]);
+
+  // ═══════════════════════════════════════════════════════════════════════════════
   // CHAT CONTINUITY - Scroll position preservation (Bible Section 3.1)
   // Note: messagesContainerRef is defined later in the file at Refs section
   // We'll wire this up after the ref is created using useEffect
