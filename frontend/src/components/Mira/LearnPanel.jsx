@@ -303,8 +303,8 @@ const LearnPanel = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   
-  // Get pet ID for personalization
-  const petId = pet?.id && pet.id !== 'demo-pet' ? pet.id : null;
+  // Get pet ID for personalization - handle both `id` and `_id` formats
+  const petId = (pet?.id && pet.id !== 'demo-pet') ? pet.id : (pet?._id || null);
   const petName = pet?.name || 'your pet';
   
   // Check if we have conversation-specific content
