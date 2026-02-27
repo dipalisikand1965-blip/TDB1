@@ -907,6 +907,9 @@ const MiraDemoPage = () => {
     // hasNew flag means Mira just recommended something
     const hasLocalNewPicks = miraPicks?.hasNew === true && localPicksCount > 0;
     
+    // Check if there's an actionable suggestion for Concierge GLOW state
+    const hasActionableSuggestion = actionableSuggestion !== null;
+    
     console.log('[ICON STATE DEBUG] miraPicks:', JSON.stringify({
       hasNew: miraPicks?.hasNew,
       products: productsCount,
@@ -914,7 +917,8 @@ const MiraDemoPage = () => {
       places: placesCount,
       conciergeArranges: conciergeArrangesCount,
       total: localPicksCount,
-      willPulse: hasLocalNewPicks
+      willPulse: hasLocalNewPicks,
+      hasActionableSuggestion
     }));
     
     return {
@@ -922,8 +926,11 @@ const MiraDemoPage = () => {
       // Override picks counts with local state if Mira just added picks
       picksCount: Math.max(apiCounts?.picksCount || 0, localPicksCount),
       newPicksSinceLastView: hasLocalNewPicks ? localPicksCount : (apiCounts?.newPicksSinceLastView || 0),
+      // CONCIERGE GLOW: Pass actionable suggestion state
+      hasActionableSuggestion,
+      suggestionContext: actionableSuggestion,
     };
-  }, [apiCounts, miraPicks]);
+  }, [apiCounts, miraPicks, actionableSuggestion]);
   
   const {
     iconStates,
