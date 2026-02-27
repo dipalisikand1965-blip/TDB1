@@ -811,6 +811,7 @@ const PersonalizedPicksPanel = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [sentItems, setSentItems] = useState([]); // Track items sent to concierge
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showAllCatalogue, setShowAllCatalogue] = useState(false);
   const [showAllConcierge, setShowAllConcierge] = useState(false);
@@ -826,6 +827,11 @@ const PersonalizedPicksPanel = ({
   const [savingFavorite, setSavingFavorite] = useState({}); // Track which item is being saved
   const scrollRef = useRef(null);
   const undoTimeoutRef = useRef(null);
+  
+  // Check if an item was sent to concierge
+  const isSentToConcierge = (item) => {
+    return sentItems.some(i => i.id === item.id || i.name === item.name);
+  };
   
   // Load pet's favorites on mount
   useEffect(() => {
