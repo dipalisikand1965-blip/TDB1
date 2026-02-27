@@ -1,205 +1,192 @@
-<analysis>**original_problem_statement:** The user's primary goal is to build a Pet Life Operating System where the AI, Mira, possesses a soul and human-like contextual understanding. This initiative was driven by significant user frustration with the existing rigid, keyword-based logic, which produced nonsensical associations. The user provided over 200 bible documents defining this vision. The initial plan to build a new, separate Mira Pure OS page was revised; the user now wants to keep their preferred existing production UI () and replace only its brain with the new, soulful AI conversation engine powered by GPT-5.1.
+<analysis>**original_problem_statement:** The user's primary goal is to build a Pet Life Operating System where an AI, Mira, possesses a soul. This involves enhancing the existing  UI with a Live Conversation Thread System, dynamic , and functional  and  panels. The user has been extremely frustrated due to critical regressions introduced by previous agents, such as the  panel breaking, and a general lack of understanding of the existing codebase, leading to wasted time and money.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack application where the legacy AI brain has been successfully swapped with a new soulful brain. The existing, polished UI at  now uses the new, context-aware AI for conversations. The integration was done by modifying the legacy backend route  to call the new AI logic.
-
-Key features are functional:
--   **Soulful AI:** The AI follows principles from the user's bibles, providing context-aware, personalized, and empathetic responses.
--   **Service Creation:** The AI can create service tickets (e.g., for grooming, travel) via function calling, which are saved to the  collection.
--   **Functional UI:** All modals and tabs (Picks, Services, Learn, Today, Concierge) from the original  page are working.
--   **LEARN Tab:** The LEARN tab is populated with curated guides and YouTube videos, seeded from a script ().
--   **Bug Fixes:** A critical notification bell bug and a mobile CSS issue in the LEARN tab have been resolved.
+A full-stack React/FastAPI/MongoDB application. The agent has successfully resolved a cascade of critical bugs and regressions that were causing major user frustration. The application's core AI, the soulful brain, now correctly integrates with legacy product/service search functionality, provides contextually relevant suggestions, and uses the pet's full memory profile. The , , and  panels are now functional. However, the user has just reported new issues with a service debug button and the  panel.
 
 **Last working item**:
--   **Last item agent was working:** The agent was implementing the UI feedback mechanism requested by the user, specifically making the 'SERVICES' tab glow or pulse after a service ticket is created via chat. This was intended to provide a clear visual cue to the user. The agent had started to add the necessary logic to the backend to return a  hint and was investigating how to connect this to the frontend state management in  and the  hook.
+-   **Last item agent was working:** The agent was investigating two new issues reported by the user via a screenshot:
+    1.  A service debug button is not working.
+    2.  The  panel is not behaving as expected, and the user wants its functionality reviewed against the original requirements (the Today bible).
 -   **Status:** IN PROGRESS
 -   **Agent Testing Done:** N
--   **Which testing method agent to use?** Frontend testing agent to verify the UI change (tab glowing) after the fix is implemented.
+-   **Which testing method agent to use?** Frontend testing agent and manual testing with .
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Implement 'glowing tab' for SERVICES (P0)
--   Issue 2: Link Mira-created service tickets to CONCIERGE® conversations (P1)
--   Issue 3: Auto-switch PICKS pillar based on conversation context (P1)
--   Issue 4: Implement breed-specific content filtering in LEARN tab (P1)
--   Issue 5: Real-time SERVICES badge update via WebSockets (P2)
--   Issue 6: Quick Actions in SERVICES modal are not opening specific booking modals (P0)
+-   Issue 1: (P0, HIGHEST) service debug button is not working.
+-   Issue 2: (P0) The  panel functionality needs to be implemented/verified as per its original requirements.
+-   Issue 3: (P1) The form in the Book Grooming service modal gets cut off on mobile, hiding the Send to Concierge button.
+-   Issue 4: (P1) Soul Score is stuck at 0% and does not update.
+-   Issue 5: (P1) Pet switching functionality needs manual verification.
+-   Issue 6: (Low Priority) Non-functional password toggle on the login page.
 
 **Issues Detail:**
--   **Issue 1: Implement 'glowing tab' for SERVICES (P0)**
-    -   **Attempted fixes:** The agent started adding  to the backend response and was investigating how to create and pass a  state function from  into the  hook. The work was interrupted.
+-   **Issue 1: service debug button is not working.**
+    -   **Attempted fixes:** None. Investigation just began.
     -   **Next debug checklist:**
-        1.  In , create a state for the glowing effect, e.g., .
-        2.  Pass  as a prop to the  hook.
-        3.  In , check for the  hint in the AI's response and call .
-        4.  In , pass the  state to the  component.
-        5.  In , use the existing  state for the SERVICES  when the prop is true.
-    -   **Why fix this issue and what will be achieved with the fix?** To provide immediate visual feedback to the user that their request resulted in an action in the SERVICES tab, improving UX.
-    -   **Status:** IN PROGRESS
+        1.  Locate the service debug button in the frontend codebase.
+        2.  Identify its  handler and intended functionality.
+        3.  Use browser developer tools to check for console errors or failed network requests upon clicking.
+    -   **Why fix this issue and what will be achieved with the fix?** To address the user's latest reported bug.
+    -   **Status:** NOT STARTED
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Frontend
 
--   **Issue 2: Link Mira-created service tickets to CONCIERGE® conversations (P1)**
+-   **Issue 2: The  panel functionality needs to be implemented/verified.**
     -   **Attempted fixes:** None.
     -   **Next debug checklist:**
-        1.  Investigate how the CONCIERGE modal fetches its conversation list ( is a likely endpoint).
-        2.  When the soulful AI creates a ticket in the  collection, also create a corresponding entry in the collection that the CONCIERGE modal reads from.
-        3.  The goal is for a ticket created by Mira to appear as a new conversation in the CONCIERGE view.
-    -   **Why fix this issue and what will be achieved with the fix?** To create a unified experience where all service requests, whether initiated via chat or directly, are visible in the CONCIERGE panel.
+        1.  Search the codebase for any documentation, comments, or components related to the TODAY panel's requirements.
+        2.  Analyze the primary component (likely  or similar) to understand its current data sources and rendering logic.
+        3.  Determine what the panel is supposed to display (e.g., daily summary, upcoming appointments, pet's mood) and fix or implement it.
+    -   **Why fix this issue and what will be achieved with the fix?** To address a user-reported functional gap.
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Both
 
--   **Issue 3: Auto-switch PICKS pillar based on conversation context (P1)**
-    -   **Attempted fixes:** The agent added a  field to the backend AI response but did not complete the frontend integration.
+-   **Issue 3: The form in the Book Grooming modal is cut off.**
+    -   **Attempted fixes:** The agent added CSS (, ) to the modal's footer. This needs to be verified.
     -   **Next debug checklist:**
-        1.  In , handle the  field from the API response.
-        2.  Call the  state function (which already exists in ) with the new pillar value from the AI.
-    -   **Why fix this issue and what will be achieved with the fix?** Makes the AI feel smarter and more helpful by proactively showing relevant products/services without requiring the user to manually switch pillars.
-    -   **Status:** IN PROGRESS
+        1.  Use the screenshot tool with a mobile viewport (e.g., 390x844).
+        2.  Open the Book Grooming service form.
+        3.  Verify that the entire form is scrollable and the Send to Concierge button is always visible and accessible at the bottom.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a UI bug that blocks a core user flow on mobile.
+    -   **Status:** TESTING PENDING
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Frontend
 
--   **Issue 4: Implement breed-specific content filtering in LEARN tab (P1)**
-    -   **Attempted fixes:** None. The current API fetches content by topic (e.g., grooming) but does not filter by breed.
-    -   **Next debug checklist:**
-        1.  Modify the Learn content data model in  to include a  array (e.g., ) or a tag system.
-        2.  Update the  endpoint in  to accept a .
-        3.  Use the  to fetch the pet's breed and filter the LEARN content to show general content plus content matching the specific breed.
-    -   **Why fix this issue and what will be achieved with the fix?** Fulfills a key user requirement for pet-centric personalization in the LEARN tab.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Both
-
--   **Issue 5: Real-time SERVICES badge update via WebSockets (P2)**
-    -   **Attempted fixes:** None.
-    -   **Next debug checklist:** Investigate the existing  dependency and explore adding a WebSocket event emitter on the backend when a ticket is created. The frontend would listen for this event and update the notification count.
-    -   **Why fix this issue and what will be achieved with the fix?** Provides a modern, real-time UX, ensuring UI badges are always in sync with the backend state.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Both
-
--   **Issue 6: Quick Actions in SERVICES modal are not opening specific booking modals (P0)**
-    -   **Attempted fixes:** The agent investigated and confirmed the  modal exists and is triggered by .
-    -   **Next debug checklist:**
-        1.  Clicking a Quick Action (e.g., Grooming) should open a pre-filled booking modal for that service. The agent verified the modal *can* open, but the user says it's not working.
-        2.  Verify the  prop is correctly wired in  to the .
-        3.  Trace the  in  to ensure it's correctly calling the function to open the modal.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a critical UI regression. Fixing it restores the primary way users can book services directly without using the chat.
-    -   **Status:** IN PROGRESS
+-   **Issue 4: Soul Score is stuck at 0% and does not update.**
+    -   **Attempted fixes:** The backend API in  was fixed to correctly handle MongoDB's  field instead of a non-existent uid=0(root) gid=0(root) groups=0(root) field during database queries and updates.
+    -   **Next debug checklist:** This requires end-to-end verification.
+        1.  Log in and navigate to the pet profile.
+        2.  Answer a Quick Question for a pet.
+        3.  Confirm the Soul Score percentage updates on the UI.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a core feature of the user's Pet Life OS vision.
+    -   **Status:** TESTING PENDING
     -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Both
+
+-   **Issue 5: Pet switching functionality needs manual verification.**
+    -   **Attempted fixes:** The uid=0(root) gid=0(root) groups=0(root) vs  fixes applied elsewhere may have resolved this. The testing agent gave a PARTIAL pass, confirming the UI elements exist but could not verify the state change.
+    -   **Next debug checklist:**
+        1.  Log in with a user who has multiple pets ().
+        2.  Click the pet's avatar to open the switching modal.
+        3.  Select a different pet and confirm the UI (pet name, avatar, soul score) updates accordingly.
+    -   **Why fix this issue and what will be achieved with the fix?** Essential functionality for users with multiple pets.
+    -   **Status:** USER VERIFICATION PENDING
+    -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Frontend
 
 **In progress Task List**:
--   **Task 1: Resolve all P0 issues.**
-    -   **Where to resume:** Start with Issue 1 (glowing tab), then address Issue 6 (Services Quick Action modals).
-    -   **What will be achieved with this?** This will fix the most critical UI/UX issues and complete the core feedback loops for the user.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Both
-    -   **Blocked on something:** Nothing.
+-   None. All current work is categorized as bug fixes.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   (P1) Fix the CONCIERGE integration to show Mira-created tickets.
-    -   (P1) Implement automatic pillar switching in PICKS based on conversation context.
-    -   (P1) Implement breed-specific filtering in the LEARN tab.
-    -   (P2) Implement real-time badge updates on the SERVICES tab.
-    -   Ensure 100% mobile UI/UX responsiveness on all pages.
+    -   (P1) Ensure 100% mobile UI/UX responsiveness across all pages.
 -   **Future Tasks:**
-    -   Migrate completely away from the old  page to a cleaner structure.
-    -   Refactor/delete all remaining legacy AI logic from .
-    -   Delete unused files: , .
-    -   Implement a script to sync production data to the preview environment.
-    -   Integrate WhatsApp Business for notifications.
-    -   Build out the 'Fit' and 'Work' pillars.
+    -   (P2) Migrate away from the legacy  page.
+    -   (P2) Refactor/delete old AI logic from .
+    -   (P2) Delete unused files (, ).
+    -   (P2) Implement a production data sync script.
+    -   (P2) Integrate WhatsApp Business for notifications.
+    -   (P2) Build out the 'Fit' and 'Work' pillars.
 
 **Completed work in this session**
--   **Brain Transplant on Production UI:** Successfully integrated the new soulful brain into the legacy  endpoint, making the preferred  UI powered by the superior AI.
--   **Enhanced AI with Bibles:** The AI's system prompt was heavily upgraded with rules from the user's 200+ bible documents, drastically improving its personality, context awareness, and adherence to the user's vision.
--   **Fixed Universal Service Command:** Enhanced backend keyword detection to ensure user intent (e.g., arrange travel) correctly triggers the service ticket creation flow.
--   **Populated LEARN Tab:** Created and ran a database seeder () to populate the LEARN tab with curated guides and YouTube videos, fixing the previously empty state.
--   **Resolved Critical UI Bugs:**
-    -   **Notification Bell:** Fixed a header bug where the notification badge was on the pet avatar. A separate, functional bell icon that opens the inbox was implemented.
-    -   **Mobile CSS:** Fixed a visual bug in the LEARN tab's filter pills on mobile devices.
+-   ** Panel Regression (FIXED):** Corrected  to stop clearing dynamic suggestions received from the backend.
+-   **Backend Suggestion Extraction (FIXED):** Rewrote the parsing logic in  to correctly extract structured suggestions from the AI's conversational response.
+-   **Missing Product/Service Fetching (FIXED):** Restored legacy product/service search by adding calls to  and  within the main soulful chat route, effectively merging the old and new AI paths.
+-   **Full Pet Memory Context (FIXED):** The AI context now includes the complete  object, allowing for deeply personalized responses that reference the pet's specific traits (e.g., nervous nature, long Shih Tzu coat).
+-   **Incorrect Pillar Highlighting (FIXED):** Adjusted keyword detection logic in  to correctly prioritize and highlight the right pillar (e.g.,  for health meal plan instead of ).
+-   ** Request Notification Details (FIXED):** Updated  to include the full list of selected items, with details and prices, in both the service desk ticket and the member-facing notification.
+-   **Broken  Panel (FIXED):** Resolved a state management bug in  that prevented the component from fetching and rendering any content, leaving it blank.
+-   **Missing  (FIXED):** Implemented intent saving in the soulful brain, which now populates the MOJO MIGHT NEED THIS shelf with context-aware learning content.
+-   ** Send to Concierge Flow (ENHANCED):** Added a  toast notification for success confirmation and a Sent ✓ badge on item cards after they are sent to the concierge.
+-   **Missing Service Highlighting in  Panel (FIXED):** Implemented a new feature to dynamically highlight the relevant service quick action (e.g., Grooming) based on the current chat conversation.
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Non-functional password toggle on the login page.** (Low priority)
--   **Issue 2: User confusion between the admin notification system and the member inbox.** (Low priority, partially mitigated by the notification bell fix).
+-   **Issue 1:** Non-functional password toggle on the login page.
 
 **Known issue recurrence from previous fork**
--   None.
+-   None in this session, but the uid=0(root) gid=0(root) groups=0(root) vs  bug class continues to be a recurring problem.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Hybrid Architecture (Brain Transplant):** The core strategy is to keep the feature-rich legacy UI and data-fetching logic () while replacing only the core LLM call with a new, superior soulful brain module.
--   **Bible-Driven Development:** Using a large corpus of markdown files in  as the single source of truth for the AI's behavior, personality, and logic.
--   **Database Seeding:** A Python script () is used to populate the MongoDB database with initial content for the LEARN feature.
--   **UI State-Driven Feedback:** The current effort involves using frontend state (e.g., ) to create visual cues (glowing tabs) based on backend responses from the AI.
+-   **Hybrid AI Engine:** The architecture now follows a hybrid model. The  endpoint first calls the new  for conversational responses and suggestions, and *then* calls the legacy product/service search functions, merging the results. This preserves existing functionality while enhancing the AI.
+-   **Intent-Driven UI:** The system now saves  from conversations. These intents are used to dynamically populate UI elements like the Mojo might need this shelf in the  panel with relevant content.
+-   **Data Flow for Highlighting:** The backend detects the conversation topic (e.g., grooming) and returns a  key. The frontend uses a React context/callback () to pass this state down to the , which then applies a visual style to the corresponding button.
+-   **MongoDB uid=0(root) gid=0(root) groups=0(root) vs :** A persistent bug class where parts of the application query for a string uid=0(root) gid=0(root) groups=0(root) field, but MongoDB documents only have a BSON . Multiple files were patched to handle this.
 
 **key DB schema**
--   **learn_guides:** { title, content, topic, is_active, relevant_breeds }
--   **learn_videos:** { title, url, topic, is_active, relevant_breeds }
--   **service_requests:** Used by the new soulful brain to create tickets.
--   **pets:** Stores pet profile, , .
+-   :  - Now being populated correctly.
+-   : The  and  fields now contain a full, formatted list of items from a user's picks request.
+-   : The  field is now a detailed list of items sent to the concierge.
+-    / : These collections are **not** being used. Services are currently provided by a hardcoded fallback in  due to a broken seeding process.
 
 **All files of reference**
--   : The main integration point for the new AI brain.
--   : The single source of truth for the UI.
--   : The hook that needs modification to handle new AI hints (, ).
--   : Defines the  function.
--   : Script used to populate the LEARN tab content.
--   : Component for the main services modal.
--   : The modal for booking a specific service from the quick actions grid.
+-   : The central hub for chat logic, modified to integrate the soulful brain with legacy systems.
+-   : The core AI logic file. Modified for suggestion parsing, pillar detection, and intent saving.
+-   : Handles sending selected picks to the concierge and creating notifications.
+-   : Manages the frontend chat state and was the source of the critical  regression.
+-   : The UI for the LEARN tab, which was fixed to render content.
+-   : The UI for the PICKS tab.
+
+**Areas that need refactoring**:
+-   **Service Data Seeding:** The current implementation uses a hardcoded list of services as a fallback because the database seeding process is broken. A proper startup script should be created to populate the  collection from , and the hardcoded fallback should be removed.
 
 **key api endpoints**
--   : The primary chat endpoint, now powered by the new soulful brain.
--   : Fetches curated content for the LEARN tab.
--   : Endpoint used by the new AI brain to create service tickets.
+-   : The main chat endpoint. It now returns a rich object including conversational text, dynamic suggestions (), matched products/services, and UI hints (, ).
+-   : Creates service desk tickets and member notifications, now with full details of the selected items.
+-   : Provides all data for the LEARN panel, including topics, YouTube videos, and personalized guides.
+-   : Returns the list of available topic categories.
 
 **Critical Info for New Agent**
--   **Focus Exclusively on :** The user has explicitly rejected the  page. All development must happen within the existing  page and its corresponding backend (). Do not create new pages or routes.
--   **The Goal is Full Integration:** The brain transplant was successful, but the nervous system is not fully connected. Your main task is to connect the AI's actions and suggestions to the UI (glowing tabs, switching pillars, updating concierge) and fix data flow discrepancies.
--   **UI/UX is Paramount:** The user is very particular about the UI/UX matching the polished  page, including all its modals and mobile responsiveness. All changes must be tested for visual and functional correctness.
--   **Bibles are the Source of Truth:** Refer to the documents in  for any questions about how a feature should behave.
+-   The user is highly alert to regressions and appreciates direct, honest communication. Acknowledge the history of frustration and focus on delivering stable, verified fixes.
+-   The application logic is a **hybrid** of a new soulful brain and a legacy search engine. Changes to the chat flow must account for both systems, which are now chained together in .
+-   The uid=0(root) gid=0(root) groups=0(root) vs  bug is a recurring nightmare. When working with pet data or any other database documents, always assume you need to query by  (ObjectId) and not uid=0(root) gid=0(root) groups=0(root) (string).
+-   **Services are hardcoded.** The database collections for services are empty. Do not try to fix service-related issues by querying the database; the logic currently relies on a fallback list in .
 
 **documents and test reports created in this job**
--    (A temporary script to run the seeder)
+-   
+-   
+-    (Updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User requested a full travel plan conversation test**, asking if PICKS match and when the CONCIERGE/Universal Service Command kicks in. (Status: Addressed, led to service keyword fix)
-2.  **User reported the notification button was stuck on the pet avatar.** (Status: COMPLETE, fixed)
-3.  **User requested a comprehensive grooming flow test**, checking bible compliance, tab lighting up, PICKS relevance, and LEARN content. (Status: Addressed, led to LEARN content seeding)
-4.  **User confirmed LEARN should curate content based on pet and use a YouTube API.** (Status: Addressed, content was seeded)
-5.  **User reported a mobile CSS bug with un-wrapped words in LEARN.** (Status: COMPLETE, fixed)
-6.  **User listed P0/P1 priorities:** Link CONCIERGE tickets, add breed-specific LEARN filtering, and create real-time SERVICES badge updates. (Status: PENDING)
-7.  **User emphasized the need for 100% mobile UI/UX on iOS and Android.** (Status: ONGOING)
-8.  **User reported the specific service booking modals (e.g., for Grooming) were missing.** (Status: IN-PROGRESS, agent was investigating)
-9.  **User clarified that a grooming conversation should make the SERVICES tab glow and PICKS show Care products.** (Status: IN-PROGRESS)
-10. **User expressed frustration with context loss and demanded a hard handover.** (Status: You are here)
+10. **User:** Asks if the  should be filled with toy and blanket cards after the conversation. (Status: **RESOLVED**, agent fixed product keyword matching).
+9.  **User:** Reports that after selecting a pick, it just shows a checkmark and asks how it gets sent to the concierge and if there should be a visual indicator. (Status: **RESOLVED**, agent added a toast notification and Sent ✓ badge).
+8.  **User:** Reports that asking for a health meal plan correctly puts suggestions in the  section, but the  pillar lights up instead of . (Status: **RESOLVED**, agent fixed pillar detection logic).
+7.  **User:** Asks if the Grooming service button in the  panel should light up when they ask for grooming. (Status: **RESOLVED**, agent implemented this feature).
+6.  **User:** Reports that when a picks request is sent, the service desk ticket and member inbox only get a generic message, not the details of the items selected. (Status: **RESOLVED**, agent fixed the notification/ticket creation to include all item details).
+5.  **User:** Reports that the Book Grooming service form is getting cut off by the footer, making the submit button inaccessible. (Status: **IN PROGRESS**, agent attempted a fix that needs verification).
+4.  **User:** Asks if YouTube is enabled in the  panel and reports that the panel is empty and not conversation-led. (Status: **RESOLVED**, agent fixed the  panel data fetching and rendering).
+3.  **User:** Posts a screenshot showing the  panel is completely empty. (Status: **RESOLVED**).
+2.  **User:** Posts a screenshot and reports that the service debug button is not working. (Status: **PENDING**, current P0 issue).
+1.  **User:** Follows up on the  panel, asking the agent to check its bible to see what should be there. (Status: **PENDING**, current P0 issue).
 
 **Project Health Check:**
--   **Broken:** The data flow between AI-created service tickets ( collection) and the CONCIERGE modal's display is broken. The Quick Actions grid in the SERVICES modal is not opening the specific booking modals as expected by the user.
--   **Mocked:** No new mocked components. The app uses rich test data.
+-   **Broken:**
+    -   The service debug button functionality.
+    -   The  panel's implementation is incomplete or incorrect.
+-   **Mocked:**
+    -   All service data is currently a hardcoded list in the backend due to a broken database seeding process. This is a significant piece of technical debt.
 
 **3rd Party Integrations**
--   **OpenAI GPT-5.1:** Used for the core soulful brain via the Emergent LLM Key.
--   **MongoDB Atlas:** The primary database for the application.
--   **YouTube:** Used for embedding videos in the LEARN tab. No live API calls are made; links are stored in the DB.
+-   OpenAI GPT-5.1 — uses Emergent LLM Key
+-   MongoDB Atlas
+-   YouTube
 
 **Testing status**
--   **Testing agent used after significant changes:** NO (Not since the focus shifted to the  page).
+-   **Testing agent used after significant changes:** YES. The testing agent successfully verified the New Chat button, PICKS panel functionality, and mobile quick chip scrolling. It gave a partial pass on pet switching.
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** None
--   **Known regressions:** The Quick Actions grid in the SERVICES modal is reported as non-functional by the user, which is a major regression.
+-   **Known regressions:** None in this session; the agent successfully fixed several major regressions from the previous session.
 
 **Credentials to test flow:**
--   **User:** 
--   **Password:** 
+-   **User:**  / 
+-   **Admin:**  / 
 
 **What agent forgot to execute**
--   The agent did not complete the implementation of the glowing tab feature before the session ended.
--   The agent did not fully connect the  backend hint to the frontend state to automatically switch the PICKS pillar.</analysis>
+-   The agent pragmatically chose to use a hardcoded fallback for services to fix the user-facing issue quickly, but did not fix the underlying broken database seeding mechanism. This remains as technical debt.
+-   The agent implemented a CSS fix for the overflowing service booking modal but did not take a final screenshot to verify if the fix worked as intended.</analysis>
