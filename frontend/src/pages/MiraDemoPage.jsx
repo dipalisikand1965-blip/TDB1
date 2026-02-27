@@ -5273,6 +5273,25 @@ const MiraDemoPage = () => {
         />
       </Suspense>
       
+      {/* Quick Concierge Modal - "Send to Concierge" CTA for Mira suggestions */}
+      <Suspense fallback={<LazyFallback />}>
+        <QuickConciergeModal
+          isOpen={showQuickConciergeModal}
+          onClose={() => {
+            setShowQuickConciergeModal(false);
+            setActionableSuggestion(null); // Clear glow state
+          }}
+          suggestionContext={actionableSuggestion}
+          petId={pet?.id}
+          petName={pet?.name}
+          userId={user?.id}
+          onSuccess={(data) => {
+            console.log('[QUICK CONCIERGE] Sent to Concierge:', data);
+            setActionableSuggestion(null); // Clear glow state on success
+          }}
+        />
+      </Suspense>
+      
       {/* Site Footer - Hidden in mira-prod context via CSS */}
       {shellSelectors.showSiteFooter && <Footer />}
     </div>
