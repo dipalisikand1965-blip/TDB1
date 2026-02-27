@@ -754,6 +754,10 @@ const MiraDemoPage = () => {
   }, []);
   
   const servicesPulse = servicesPulseRef.current;
+  
+  // HIGHLIGHTED SERVICE: Which service launcher to highlight (e.g., "grooming")
+  const [highlightedService, setHighlightedService] = useState(null);
+  
   // LEARN PANEL: Knowledge Layer - Curated guides and videos
   const [showLearnPanel, setShowLearnPanel] = useState(false);
   // SERVICE REQUEST BUILDER: New request builder modal state
