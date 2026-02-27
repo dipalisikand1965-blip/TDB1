@@ -12,10 +12,11 @@
  * Based on CONCIERGE Bible v1.0
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   X, Send, ChevronDown, Bell, Scissors, Home, Plane, AlertTriangle,
-  Clock, CheckCircle, MessageCircle, ChevronRight, User, PawPrint
+  Clock, CheckCircle, MessageCircle, ChevronRight, User, PawPrint,
+  Upload, FileText, Image, Paperclip, Check, Loader2
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 
