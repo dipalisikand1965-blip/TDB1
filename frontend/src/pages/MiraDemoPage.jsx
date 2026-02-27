@@ -5099,6 +5099,73 @@ const MiraDemoPage = () => {
       )}
       
       {/* ═══════════════════════════════════════════════════════════════════════════
+          PET SELECTOR MODAL - Switch between pets
+          Opens from MOJO profile "Switch Pet" button or header pet badge
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      {showPetSelector && allPets.length > 0 && (
+        <div 
+          className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowPetSelector(false);
+          }}
+        >
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+          <div className="relative w-full max-w-md mx-4 mb-4 sm:mb-0 bg-slate-900 rounded-2xl border border-white/10 shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300">
+            <div className="p-4 border-b border-white/10 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-white">Switch Pet</h3>
+              <button 
+                onClick={() => setShowPetSelector(false)}
+                className="p-2 rounded-full hover:bg-white/10 transition-colors"
+              >
+                <X className="w-5 h-5 text-white/60" />
+              </button>
+            </div>
+            <div className="p-4 max-h-[60vh] overflow-y-auto space-y-2">
+              {allPets.map((p) => {
+                const isSelected = p.id === pet?.id || p.name === pet?.name;
+                const soulScore = Number(p.overall_score || p.soulScore) || 0;
+                return (
+                  <button
+                    key={p.id || p.name}
+                    onClick={() => {
+                      switchPet(p);
+                      setShowPetSelector(false);
+                    }}
+                    className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${
+                      isSelected 
+                        ? 'bg-violet-500/20 border border-violet-500/50' 
+                        : 'bg-white/5 hover:bg-white/10 border border-transparent'
+                    }`}
+                    data-testid={`pet-switch-option-${p.name}`}
+                  >
+                    <div className="w-12 h-12 rounded-full bg-violet-500/20 overflow-hidden flex items-center justify-center">
+                      {p.photo || p.image ? (
+                        <img src={p.photo || p.image} alt={p.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-xl">🐕</span>
+                      )}
+                    </div>
+                    <div className="flex-1 text-left">
+                      <div className="font-medium text-white">{p.name}</div>
+                      <div className="text-sm text-white/50">{p.breed}</div>
+                    </div>
+                    {soulScore > 0 && (
+                      <span className="px-2 py-1 text-xs font-bold rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-white">
+                        {Math.round(soulScore)}%
+                      </span>
+                    )}
+                    {isSelected && (
+                      <Check className="w-5 h-5 text-violet-400" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
           VAULT SYSTEM - Full-screen overlay for picks, bookings, places, etc.
           "Mira is the Brain, Concierge® is the Hands"
           ═══════════════════════════════════════════════════════════════════════════ */}
