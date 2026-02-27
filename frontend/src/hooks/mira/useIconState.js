@@ -235,13 +235,24 @@ export const getIconState = (tabId, data = {}, activeTab = null) => {
     
     // ─────────────────────────────────────────────────────────────────────
     // CONCIERGE®
-    // PULSE: unreadRepliesCount > 0
+    // GLOW: hasActionableSuggestion > 0 (Mira suggested something - CTA)
+    // PULSE: unreadRepliesCount > 0 (Concierge replied - notification)
     // ON: openThreadsCount > 0 (but no unread)
     // OFF: None
     // Badge: unread count (cap 9+)
     // ─────────────────────────────────────────────────────────────────────
     case TAB_IDS.CONCIERGE: {
-      const { unreadRepliesCount = 0, openThreadsCount = 0 } = data;
+      const { unreadRepliesCount = 0, openThreadsCount = 0, hasActionableSuggestion = false, suggestionContext = null } = data;
+      
+      // GLOW takes priority - Mira has an actionable suggestion (CTA)
+      if (hasActionableSuggestion && !isActive) {
+        return {
+          state: ICON_STATE.GLOW,
+          badge: '!',
+          tooltip: 'Send to Concierge?',
+          suggestionContext, // Pass through for the quick modal
+        };
+      }
       
       if (unreadRepliesCount > 0) {
         return {
