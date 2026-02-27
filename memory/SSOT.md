@@ -220,10 +220,12 @@ GET  /api/admin/notifications  - Admin notifications
 **Problem:** MongoDB uses `_id` (ObjectId), but app expects `id` (string)
 **Solution:** Always ensure pets have both fields, query by `id`
 
-### 2. Services Data is Hardcoded
-**Problem:** Services collection is empty, uses hardcoded fallback
-**Location:** `mira_routes.py` line ~hardcoded_services
-**Fix Needed:** Create proper seeding script
+### 2. Services Data - NOW SEEDED ✅
+**Status:** FIXED (2026-02-27)
+**Collections:**
+- `service_catalog`: 84 services (source)
+- `services_master`: 114 services (used by admin Service Box)
+**Admin Access:** `aditya / lola4304` → Service Box
 
 ### 3. datetime Import Scoping
 **Problem:** `from datetime import datetime` conflicts with local vars
