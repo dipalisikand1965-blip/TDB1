@@ -1065,7 +1065,7 @@ async def get_soulful_response(
                                     "learned_facts": {"$each": learned_facts}
                                 },
                                 "$set": {
-                                    "last_learned_at": now
+                                    "last_learned_at": now.isoformat()
                                 }
                             }
                         )
@@ -1081,7 +1081,7 @@ async def get_soulful_response(
                         "user_email": user_email,
                         "message": message[:500],
                         "facts_learned": learned_facts,
-                        "timestamp": now
+                        "timestamp": now.isoformat()
                     }
                     await db.conversation_memories.insert_one(memory_doc)
                     
