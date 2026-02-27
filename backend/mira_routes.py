@@ -12414,10 +12414,30 @@ async def mira_chat(
             # Ensure soulful brain has DB access
             set_soulful_db(db)
             
-            # Get pet context
+            # Get pet context - First try from request, then fetch from DB if we have pet_id
             pet_ctx = request.pet_context or {}
-            pet_name = pet_ctx.get("name") or "your pet"
             pet_id = pet_ctx.get("id") or request.selected_pet_id or request.pet_id
+            pet_name = pet_ctx.get("name") or "your pet"
+            
+            # ═══════════════════════════════════════════════════════════════════
+            # CRITICAL: If pet_context is empty but we have pet_id, fetch from DB
+            # This ensures Mira ALWAYS knows the pet's soul
+            # ═══════════════════════════════════════════════════════════════════
+            if pet_id and (not pet_ctx or not pet_ctx.get("doggy_soul_answers")):
+                try:
+                    # Try to fetch full pet context from database
+                    pet_doc = await db.pets.find_one(
+                        {"$or": [{"id": pet_id}, {"_id": pet_id}]},
+                        {"_id": 0}
+                    )
+                    if pet_doc:
+                        pet_ctx = pet_doc
+                        pet_name = pet_ctx.get("name") or "your pet"
+                        logger.info(f"[SOULFUL] Loaded pet context from DB for {pet_name}: soul_score={pet_ctx.get('soul_score')}, learned_facts={len(pet_ctx.get('learned_facts', []))}")
+                    else:
+                        logger.warning(f"[SOULFUL] Pet not found in DB for id={pet_id}")
+                except Exception as pet_fetch_err:
+                    logger.warning(f"[SOULFUL] Could not fetch pet context: {pet_fetch_err}")
             
             # Extract user email from authorization token
             user_email = None
