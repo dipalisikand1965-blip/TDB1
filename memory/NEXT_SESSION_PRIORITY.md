@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://pet-ai-brain.preview.emergentagent.com
+**Preview URL:** https://mira-learn-fix.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
