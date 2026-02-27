@@ -1058,6 +1058,21 @@ async def get_soulful_response(
                 }
                 logger.info(f"[SOULFUL] Generated {len(concierge_cards)} suggestion cards for PICKS")
         
+        # Map detected topic to service launcher ID
+        highlight_service = None
+        if detected_topic:
+            service_topic_map = {
+                "grooming": "grooming",
+                "health": "vet_visit",
+                "walks": "walking",
+                "celebration": "party_setup",
+                "nutrition": "nutrition",  # May not exist as launcher
+                "travel": "travel",
+                "boarding": "boarding",
+                "training": "training"
+            }
+            highlight_service = service_topic_map.get(detected_topic)
+        
         return {
             "response": response_text,
             "actions": actions,
@@ -1065,6 +1080,8 @@ async def get_soulful_response(
             "pet_name": pet_name,
             "highlight_tab": highlight_tab,  # Which OS tab should glow
             "suggested_pillar": suggested_pillar,  # Which PICKS pillar is relevant
+            "highlight_service": highlight_service,  # Which service launcher to highlight
+            "detected_topic": detected_topic,  # Raw detected topic
             "concierge_arranges": concierge_cards,  # Suggestions for PICKS panel
             "picks_contract": picks_contract,  # Contract for PICKS processing
             "concierge_fallback": len(concierge_cards) > 0,
