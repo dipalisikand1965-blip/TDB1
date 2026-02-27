@@ -505,15 +505,53 @@ All product vision documents are in `/app/memory/`:
 
 ## SESSION LOG: 2026-02-27 (Session 2)
 
+### 🔴 CRITICAL FIX: Mira Pet Context Loading
+
+**Issue:** Mira was saying "I don't know anything about your dog" despite having pet data in DB
+
+**Root Cause:**
+```
+File: /app/backend/mira_routes.py (line 12418)
+Code: pet_ctx = request.pet_context or {}
+Problem: Frontend sends pet_id but not full pet_context → Mira had empty {}
+```
+
+**Fix Applied (Lines 12417-12441):**
+```python
+# CRITICAL: If pet_context is empty but we have pet_id, fetch from DB
+if pet_id and (not pet_ctx or not pet_ctx.get("doggy_soul_answers")):
+    pet_doc = await db.pets.find_one(
+        {"$or": [{"id": pet_id}, {"_id": pet_id}]},
+        {"_id": 0}
+    )
+    if pet_doc:
+        pet_ctx = pet_doc
+```
+
+**Verification Results:**
+| Test | Before | After |
+|------|--------|-------|
+| "Tell me about my dog" | "I don't know" | Lists 8 pets with soul data ✅ |
+| "Chicken treats for Mojo?" | Generic | **REFUSES** - chicken allergy ✅ |
+| "Mojo's personality?" | Unknown | "Friendly, playful, high energy" ✅ |
+
+---
+
 ### COMPLETED THIS SESSION:
 
-1. **Password Toggle Verification (CONFIRMED WORKING)**
+1. **🔴 CRITICAL: Pet Context DB Fetch (FIX)**
+   - File: `/app/backend/mira_routes.py`
+   - Lines: 12417-12441
+   - Impact: Mira now ALWAYS knows pet's soul
+   - Test: `/app/test_reports/iteration_52.json` - 9/9 PASSED
+
+2. **Password Toggle Verification (CONFIRMED WORKING)**
    - Verified password toggle on login page is fully functional
    - Type toggles between 'password' and 'text' correctly
    - Eye/EyeOff icon toggles appropriately
    - Location: `/app/frontend/src/pages/Login.jsx` lines 200-209
 
-2. **Document Upload in Concierge (NEW FEATURE)**
+3. **Document Upload in Concierge (NEW FEATURE)**
    - Added document upload functionality to ConciergeHomePanel
    - Users can now upload pet documents (vaccination records, prescriptions, etc.)
    - Features:
@@ -526,18 +564,32 @@ All product vision documents are in `/app/memory/`:
    - Max file size: 10MB
    - Files stored in MongoDB `mira_uploads` collection
 
-**Key Files Modified:**
-- `/app/frontend/src/components/Mira/ConciergeHomePanel.jsx` - Added DocumentUploadSection component
-- `/app/backend/mira_upload.py` - Fixed database truth value bug (line 103)
+4. **Mobile Compatibility Verified**
+   - iOS (390x844): No overflow ✅
+   - Android (360x800): No overflow ✅
+   - Minor: Multiple onboarding modals for first-time users
 
-**API Endpoint:**
-- `POST /api/mira/upload/file` - Multipart form with file, pet_id, context
+5. **PICKS API Verified Working**
+   - Endpoint: `GET /api/mira/top-picks/{pet_id}`
+   - Returns: timely_picks, celebrate, pillars, personalized
+
+**Key Files Modified:**
+- `/app/backend/mira_routes.py` - Lines 12417-12441 (pet context fetch)
+- `/app/frontend/src/components/Mira/ConciergeHomePanel.jsx` - DocumentUploadSection
+- `/app/backend/mira_upload.py` - Fixed `if db:` → `if db is not None:` (line 103)
+
+**API Endpoints Tested:**
+- `POST /api/mira/chat` - With pet_id, now loads full soul context ✅
+- `POST /api/mira/upload/file` - Document upload ✅
+- `GET /api/mira/top-picks/{pet_id}` - Personalized picks ✅
 
 ### TESTING RESULTS:
-- Backend: 100% (4/4 upload API tests passed)
-- Frontend: 100% (Password toggle and document upload both working)
-- Test report: `/app/test_reports/iteration_51.json`
+- Backend: 100% (9/9 soul memory tests + 4/4 upload tests)
+- Frontend: 95% (Mobile UI works, minor onboarding UX note)
+- Test reports: 
+  - `/app/test_reports/iteration_51.json` (Document Upload)
+  - `/app/test_reports/iteration_52.json` (Soul Memory + Mobile)
 
 ---
 
-*Last Updated: 2026-02-27 16:25 UTC*
+*Last Updated: 2026-02-27 16:50 UTC*
