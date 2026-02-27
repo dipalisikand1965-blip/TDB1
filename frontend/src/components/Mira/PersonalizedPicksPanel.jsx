@@ -1163,6 +1163,9 @@ const PersonalizedPicksPanel = ({
         }
       );
       
+      // Mark items as sent (for visual indicator)
+      setSentItems(prev => [...prev, ...selectedItems]);
+      
       // Call success callback with selected items count and pet name (called once)
       onSendSuccess?.({
         count: selectedItems.length,
