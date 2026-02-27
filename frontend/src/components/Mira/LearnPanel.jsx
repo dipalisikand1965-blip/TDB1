@@ -313,14 +313,21 @@ const LearnPanel = ({
   // Fetch home data on mount or when pet changes
   useEffect(() => {
     if (isOpen) {
-      // If we have conversation picks, show them first
-      if (hasConversationContent) {
-        setView('conversation');
-      } else {
-        fetchHomeData();
+      // Always fetch home data first
+      fetchHomeData();
+      
+      // If we have conversation context, highlight relevant topic but don't switch view
+      if (conversationContext?.topic && topics.length > 0) {
+        const relevantTopic = topics.find(t => 
+          t.id === conversationContext.topic || 
+          t.label?.toLowerCase() === conversationContext.topic?.toLowerCase()
+        );
+        if (relevantTopic) {
+          console.log('[LEARN] Conversation context topic:', relevantTopic.label);
+        }
       }
     }
-  }, [isOpen, petId, hasConversationContent]);
+  }, [isOpen, petId]);
   
   const fetchHomeData = async () => {
     setIsLoading(true);
