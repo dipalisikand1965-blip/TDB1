@@ -152,6 +152,7 @@ if pet_id and (not pet_ctx or not pet_ctx.get("doggy_soul_answers")):
 | Escalate Request | ✅ Working | ConciergePanel.jsx |
 | Thread View | ✅ Working | ConciergeThreadPanel.jsx |
 | **Document Upload** | ✅ NEW | ConciergeHomePanel.jsx |
+| **Quick Send to Concierge (C° GLOW)** | ✅ NEW | QuickConciergeModal.jsx |
 
 **Document Upload Details (Added 2026-02-27):**
 - Location: ConciergeHomePanel → "Upload Docs" chip
@@ -159,6 +160,90 @@ if pet_id and (not pet_ctx or not pet_ctx.get("doggy_soul_answers")):
 - Max size: 10MB per file
 - API: `POST /api/mira/upload/file`
 - Storage: MongoDB `mira_uploads` collection
+
+---
+
+### 6B. QUICK SEND TO CONCIERGE (C° GLOW Feature) - NEW
+
+**Purpose:** When Mira suggests actionable items (recipes, services, products), the C° button glows golden to prompt users: "Want Concierge to make this happen?"
+
+**Flow:**
+```
+Mira suggests something actionable
+        ↓
+C° button glows GOLDEN (state-glow class)
+        ↓
+User clicks C°
+        ↓
+QuickConciergeModal opens with suggestion context
+        ↓
+User clicks "Send to Concierge"
+        ↓
+UNIFIED SERVICE FLOW triggered
+        ↓
+Real Concierge sees ticket in Service Desk
+```
+
+**Icon States (C° Button):**
+| State | Visual | Trigger |
+|-------|--------|---------|
+| `OFF` | Dim/muted | No activity |
+| `ON` | Lit (green) | Open threads exist |
+| `PULSE` | Green glow animation | Concierge replied (unread) |
+| `GLOW` | **Golden glow animation** | Mira has actionable suggestion |
+
+**Files Modified:**
+| File | Changes |
+|------|---------|
+| `/app/frontend/src/hooks/mira/useIconState.js` | Added `GLOW` state, updated CONCIERGE logic (lines 31-35, 243-280) |
+| `/app/frontend/src/components/Mira/QuickConciergeModal.jsx` | NEW - Quick confirmation modal |
+| `/app/frontend/src/components/Mira/ChatMessage.jsx` | Updated C° button to handle GLOW state |
+| `/app/frontend/src/styles/mira-prod.css` | Added `.state-glow` CSS with golden animation |
+| `/app/frontend/src/hooks/mira/useChatSubmit.js` | Triggers `setActionableSuggestion` when conciergeCards exist |
+| `/app/frontend/src/pages/MiraDemoPage.jsx` | Added state, handler, and modal rendering |
+
+**CSS Class:**
+```css
+.mp-header-concierge-icon.state-glow {
+  background: rgba(245, 158, 11, 0.35);
+  border-color: #f59e0b;
+  animation: concierge-glow 1.5s ease-in-out infinite;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.6);
+}
+```
+
+**State Management:**
+```javascript
+// MiraDemoPage.jsx
+const [showQuickConciergeModal, setShowQuickConciergeModal] = useState(false);
+const [actionableSuggestion, setActionableSuggestion] = useState(null);
+
+// Passed to useIconState via mergedCounts:
+hasActionableSuggestion: actionableSuggestion !== null,
+suggestionContext: actionableSuggestion,
+```
+
+**API Call (on "Send to Concierge"):**
+```javascript
+POST /api/service-requests
+{
+  type: 'mira_suggestion',
+  pillar: suggestionContext.pillar,
+  pet_id: petId,
+  source: 'mira_quick_send',
+  details: {
+    mira_suggestion: suggestionContext.summary,
+    original_message: suggestionContext.originalMessage,
+    suggested_items: suggestionContext.items
+  }
+}
+```
+
+**⚠️ DO NOT MODIFY without understanding the full flow. This feature connects:**
+1. Chat response processing (useChatSubmit.js)
+2. Icon state system (useIconState.js)
+3. UI rendering (ChatMessage.jsx, MiraDemoPage.jsx)
+4. UNIFIED SERVICE FLOW (service-requests API)
 
 ---
 
