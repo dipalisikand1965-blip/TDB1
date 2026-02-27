@@ -633,6 +633,18 @@ const ConciergeHomePanel = ({
                 </div>
               </div>
               
+              {/* Document Upload Section - Conditionally shown */}
+              {showUploadSection && (
+                <DocumentUploadSection
+                  petId={selectedPetId || homeData?.pets?.[0]?.id}
+                  userId={userId}
+                  onUploadComplete={(files) => {
+                    console.log('Documents uploaded:', files);
+                    // Could trigger a notification or update UI
+                  }}
+                />
+              )}
+              
               {/* Active Requests Section */}
               {homeData?.active_requests?.length > 0 && (
                 <div className="mb-6">
