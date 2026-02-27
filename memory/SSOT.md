@@ -409,6 +409,120 @@ db.pets.find_one({"id": "pet-mojo-7327ad56"})["learned_facts"]
 
 ---
 
-**Document Version:** 2.0
+**Document Version:** 3.0
 **Created By:** E1 Agent
 **Date:** 2026-02-27
+
+---
+
+## 📝 SESSION CHANGELOG
+
+### Session 2026-02-27 (Current)
+
+#### 🔴 CRITICAL FIX: Pet Context Not Loading from DB
+- **File:** `/app/backend/mira_routes.py`
+- **Lines Modified:** 12417-12441
+- **Issue:** `pet_ctx = request.pet_context or {}` was empty when frontend only sent `pet_id`
+- **Fix:** Added DB fetch when `pet_context` is empty but `pet_id` exists
+- **Impact:** Mira now ALWAYS knows the pet's soul (allergies, temperament, learned_facts)
+
+#### ✅ Document Upload in Concierge (NEW FEATURE)
+- **File:** `/app/frontend/src/components/Mira/ConciergeHomePanel.jsx`
+- **Lines Added:** 200-380 (DocumentUploadSection component)
+- **Features:**
+  - "Upload Docs" chip in suggestion area
+  - Drag-and-drop upload zone
+  - Multi-file upload support
+  - Progress indicator
+  - Success/failure status per file
+- **Backend API:** `POST /api/mira/upload/file`
+- **Storage:** MongoDB `mira_uploads` collection
+- **File:** `/app/backend/mira_upload.py` - Fixed `if db:` → `if db is not None:` (line 103)
+
+#### ✅ Password Toggle Verified Working
+- **File:** `/app/frontend/src/pages/Login.jsx`
+- **Lines:** 200-209
+- **Status:** Was reported as bug but testing confirmed WORKING
+- **Test:** Type toggles between 'password' and 'text' correctly
+
+#### ✅ Comprehensive Mobile Testing
+- **iOS (390x844):** No overflow, UI accessible ✅
+- **Android (360x800):** No overflow, UI accessible ✅
+- **Minor Note:** Multiple onboarding modals for first-time users (can be streamlined)
+
+#### ✅ PICKS API Verified
+- **Endpoint:** `GET /api/mira/top-picks/{pet_id}`
+- **Returns:** timely_picks, celebrate, pillars, personalized suggestions
+- **Status:** Working correctly with pet context
+
+---
+
+### Session 2026-02-27 (Previous Agent)
+
+#### Production Data Seeding
+- Script: `/app/backend/scripts/sync_prod_pets.py`
+- 8 pets synced with soul data
+- Fixed `id` field issue (added string `id` from ObjectId)
+
+#### AI Learning Implementation
+- File: `/app/backend/mira_soulful_brain.py`
+- "What Mira Learned" now auto-populates from conversations
+- Patterns: allergies, preferences, behaviors, health info
+
+#### Pet Switching Modal
+- File: `/app/frontend/src/pages/MiraDemoPage.jsx`
+- Users can switch between their pets
+
+#### Services Database Seeded
+- `service_catalog`: 84 services
+- `services_master`: 114 services
+
+---
+
+## 🔍 QUICK DIAGNOSTIC COMMANDS
+
+### Check if Mira knows the pet:
+```bash
+API_URL=$(grep REACT_APP_BACKEND_URL /app/frontend/.env | cut -d '=' -f2)
+TOKEN=$(curl -s -X POST "$API_URL/api/auth/login" -H "Content-Type: application/json" -d '{"email":"dipali@clubconcierge.in","password":"test123"}' | python3 -c "import sys,json;print(json.load(sys.stdin)['access_token'])")
+
+curl -s -X POST "$API_URL/api/mira/chat" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What do you know about my dog?", "pet_id": "pet-mojo-7327ad56"}'
+```
+
+### Check pet data in DB:
+```python
+import asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
+
+async def check():
+    client = AsyncIOMotorClient("mongodb://localhost:27017")
+    db = client["pet-os-live-test_database"]
+    pet = await db.pets.find_one({"id": "pet-mojo-7327ad56"})
+    print(f"Name: {pet['name']}")
+    print(f"Soul Score: {pet.get('soul_score')}")
+    print(f"Learned Facts: {len(pet.get('learned_facts', []))}")
+    print(f"Doggy Soul Answers: {bool(pet.get('doggy_soul_answers'))}")
+
+asyncio.run(check())
+```
+
+### Test allergy awareness:
+```bash
+curl -s -X POST "$API_URL/api/mira/chat" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Can I give Mojo chicken treats?", "pet_id": "pet-mojo-7327ad56"}'
+# Expected: Mira should REFUSE and mention chicken allergy
+```
+
+---
+
+## 📊 TEST REPORTS
+
+| Report | Date | Status |
+|--------|------|--------|
+| `/app/test_reports/iteration_51.json` | 2026-02-27 | Document Upload + Password Toggle ✅ |
+| `/app/test_reports/iteration_52.json` | 2026-02-27 | Soul Memory + Mobile UI ✅ |
