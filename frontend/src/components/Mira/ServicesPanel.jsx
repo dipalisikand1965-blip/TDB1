@@ -567,6 +567,11 @@ const ServicesPanel = ({
                   key={service.id} 
                   service={service} 
                   onClick={handleLauncherClick}
+                  isHighlighted={highlightedService && (
+                    service.id === highlightedService || 
+                    service.id?.toLowerCase().includes(highlightedService?.toLowerCase()) ||
+                    service.display_name?.toLowerCase().includes(highlightedService?.toLowerCase())
+                  )}
                 />
               ))}
             </div>
