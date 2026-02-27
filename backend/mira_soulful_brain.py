@@ -885,7 +885,15 @@ async def get_soulful_response(
         lower_msg = message.lower()
         detected_topic = None  # For intent saving
         
-        if any(kw in lower_msg for kw in ["groom", "bath", "haircut", "spa", "nail", "walker", "walk", "vet", "health", "sitting", "sitter"]):
+        # Order matters! Check more specific food/meal keywords FIRST
+        # "health meal plan" should match DINE, not CARE
+        if any(kw in lower_msg for kw in ["food", "treat", "diet", "nutrition", "meal", "feeding", "recipe", "kibble"]):
+            suggested_pillar = "dine"
+            detected_topic = "nutrition"
+        elif any(kw in lower_msg for kw in ["birthday", "party", "celebrate", "gift", "photo", "anniversary", "gotcha"]):
+            suggested_pillar = "celebrate"
+            detected_topic = "celebration"
+        elif any(kw in lower_msg for kw in ["groom", "bath", "haircut", "spa", "nail", "walker", "walk", "vet", "health", "sitting", "sitter"]):
             suggested_pillar = "care"
             if any(kw in lower_msg for kw in ["groom", "bath", "haircut", "spa", "nail"]):
                 detected_topic = "grooming"
@@ -893,12 +901,6 @@ async def get_soulful_response(
                 detected_topic = "health"
             elif any(kw in lower_msg for kw in ["walker", "walk"]):
                 detected_topic = "walks"
-        elif any(kw in lower_msg for kw in ["birthday", "party", "celebrate", "gift", "photo"]):
-            suggested_pillar = "celebrate"
-            detected_topic = "celebration"
-        elif any(kw in lower_msg for kw in ["food", "treat", "diet", "nutrition", "meal"]):
-            suggested_pillar = "dine"
-            detected_topic = "nutrition"
         elif any(kw in lower_msg for kw in ["travel", "trip", "hotel", "vacation", "flight"]):
             suggested_pillar = "travel"
             detected_topic = "travel"
