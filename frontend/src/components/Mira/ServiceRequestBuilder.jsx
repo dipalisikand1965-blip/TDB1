@@ -676,8 +676,9 @@ const ServiceRequestBuilder = ({
           )}
         </form>
         
-        {/* Footer */}
-        <div className="p-4 border-t border-white/5 bg-slate-900/80 backdrop-blur-sm">
+        {/* Footer - fixed at bottom, always visible */}
+        <div className="flex-shrink-0 p-4 border-t border-white/5 bg-slate-900/95 backdrop-blur-sm"
+             style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 0px))' }}>
           <button
             type="submit"
             onClick={handleSubmit}
