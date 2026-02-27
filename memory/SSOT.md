@@ -310,7 +310,7 @@ db.pets.update_one({"_id": _id}, {"$set": {"id": new_id}})
 - [ ] Production data sync automation
 - [ ] More learning patterns (exercise, social behaviors)
 - [ ] Saved Learn feature (bookmarking)
-- [ ] Document upload in Concierge
+- [x] ~~Document upload in Concierge~~ ✅ DONE (2026-02-27)
 
 ### P2 - Enhancement
 - [ ] Build 'Fit' pillar features (activity tracking)
