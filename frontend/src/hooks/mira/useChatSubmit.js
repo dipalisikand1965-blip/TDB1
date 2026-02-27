@@ -886,6 +886,21 @@ const useChatSubmit = (config) => {
         setVaultUserMessage(inputQuery);
         notificationSounds.picks();
         
+        // ═══════════════════════════════════════════════════════════════════
+        // QUICK SEND TO CONCIERGE: Trigger C° GLOW state
+        // When Mira has actionable suggestions, light up the C° button
+        // ═══════════════════════════════════════════════════════════════════
+        if (setActionableSuggestion && conciergeCards.length > 0) {
+          setActionableSuggestion({
+            type: 'concierge_suggestion',
+            summary: conciergeCards[0]?.title || conciergeCards[0]?.name || 'Mira\'s suggestion',
+            message: data.response?.text || inputQuery,
+            originalMessage: inputQuery,
+            pillar: picksContract.pillar || 'advisory',
+            items: conciergeCards.slice(0, 5)
+          });
+        }
+        
         // NOTE: Don't auto-show vault - let user click PICKS tab instead
         // The +badge notification will guide them
         // if (conciergeCards.length > 0) {
