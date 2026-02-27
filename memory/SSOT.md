@@ -107,6 +107,14 @@
 | WhatsApp Integration | ✅ Working | ConciergePanel.jsx |
 | Escalate Request | ✅ Working | ConciergePanel.jsx |
 | Thread View | ✅ Working | ConciergeThreadPanel.jsx |
+| **Document Upload** | ✅ NEW | ConciergeHomePanel.jsx |
+
+**Document Upload Details (Added 2026-02-27):**
+- Location: ConciergeHomePanel → "Upload Docs" chip
+- Supports: Images (jpg, png, gif, webp), Documents (pdf, doc, docx)
+- Max size: 10MB per file
+- API: `POST /api/mira/upload/file`
+- Storage: MongoDB `mira_uploads` collection
 
 ---
 
