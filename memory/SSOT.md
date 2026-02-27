@@ -435,11 +435,12 @@ db.pets.update_one({"_id": _id}, {"$set": {"id": new_id}})
 - [x] Services DB seeding (114 services across 14 pillars)
 
 ### P1 - Important
-- [ ] WhatsApp Business integration
+- [ ] WhatsApp Business integration (Gupshup plumbed, waiting for Meta approval)
 - [ ] Production data sync automation
 - [ ] More learning patterns (exercise, social behaviors)
 - [ ] Saved Learn feature (bookmarking)
 - [x] ~~Document upload in Concierge~~ ✅ DONE (2026-02-27)
+- [x] ~~Quick Send to Concierge (C° GLOW)~~ ✅ DONE (2026-02-27)
 
 ### P2 - Enhancement
 - [ ] Build 'Fit' pillar features (activity tracking)
