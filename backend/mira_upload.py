@@ -100,7 +100,7 @@ async def upload_file(
             "content_b64": base64.b64encode(content).decode('utf-8') if len(content) < 5 * 1024 * 1024 else None
         }
         
-        if db:
+        if db is not None:
             await db.mira_uploads.insert_one(upload_doc)
         
         logger.info(f"[UPLOAD] File uploaded: {file.filename} ({len(content)} bytes) for pet {pet_id}")
