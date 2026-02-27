@@ -12559,6 +12559,9 @@ async def mira_chat(
                 # NEW: Tab highlighting and pillar context
                 "highlight_tab": soulful_result.get("highlight_tab"),  # services/picks/learn/concierge
                 "suggested_pillar": soulful_result.get("suggested_pillar"),  # care/celebrate/dine/travel/stay/learn
+                # NEW: Service launcher highlighting
+                "highlight_service": soulful_result.get("highlight_service"),  # grooming/training/boarding/etc
+                "detected_topic": soulful_result.get("detected_topic"),  # Raw detected topic
             }
             
             # Process actions and map to legacy structures
