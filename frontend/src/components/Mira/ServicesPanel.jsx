@@ -319,6 +319,7 @@ const ServicesPanel = ({
   selectedPet = null,
   allPets = [],
   token = null,
+  highlightedService = null, // Which service launcher to highlight (e.g., "grooming")
   onClose = null,
   onTicketSelect = null,
   onOpenRequestBuilder = null,
