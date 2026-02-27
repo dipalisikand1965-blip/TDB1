@@ -4913,6 +4913,7 @@ const MiraDemoPage = () => {
               selectedPet={pet}
               allPets={allPets}
               token={token}
+              highlightedService={highlightedService}
               onClose={() => setShowServicesPanel(false)}
               onTicketSelect={(ticket) => {
                 console.log('[SERVICES] Ticket selected:', ticket);
