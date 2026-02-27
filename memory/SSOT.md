@@ -541,6 +541,23 @@ db.pets.find_one({"id": "pet-mojo-7327ad56"})["learned_facts"]
 - **Returns:** timely_picks, celebrate, pillars, personalized suggestions
 - **Status:** Working correctly with pet context
 
+#### 3. Quick Send to Concierge (C° GLOW Feature) - NEW
+- **File:** `/app/frontend/src/components/Mira/QuickConciergeModal.jsx` (NEW)
+- **Purpose:** When Mira suggests actionable items, C° button glows golden
+- **Flow:**
+  1. Mira returns `concierge_arranges` in chat response
+  2. `setActionableSuggestion()` is called with context
+  3. C° button state changes to `GLOW` (golden animation)
+  4. User clicks → QuickConciergeModal opens
+  5. User confirms → UNIFIED SERVICE FLOW creates ticket
+  6. Real Concierge sees it in Service Desk
+- **Files Modified:**
+  - `useIconState.js` - Added GLOW state
+  - `useChatSubmit.js` - Triggers setActionableSuggestion
+  - `ChatMessage.jsx` - Handles GLOW state for C° button
+  - `MiraDemoPage.jsx` - State + modal rendering
+  - `mira-prod.css` - Golden glow animation CSS
+
 ---
 
 ### Session 2026-02-27 (Previous Agent)
