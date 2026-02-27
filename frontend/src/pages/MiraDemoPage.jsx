@@ -4825,7 +4825,8 @@ const MiraDemoPage = () => {
             onSwitchPet={() => {
               // Open pet selector dropdown
               setShowMojoModal(false);
-              // Could trigger pet selector here if needed
+              // Trigger pet selector
+              setShowPetSelector(true);
             }}
             onEditSection={(sectionId) => {
               if (sectionId === 'soul' || sectionId === 'details') {
