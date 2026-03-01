@@ -102,101 +102,54 @@ const getPillarFromPath = (path) => {
 /**
  * ProtectedRoute - Guards routes behind authentication and optional membership
  * @param {boolean} requireMembership - If true, also requires active membership/pet pass
+ * 
+ * SIMPLIFIED LOGIC (v2 - Fixed redirect loop):
+ * 1. If loading → show spinner
+ * 2. If user exists → show children (or check membership)
+ * 3. If no user but has token → show spinner (wait for auth context)
+ * 4. If no user and no token → redirect to login
  */
 const ProtectedRoute = ({ children, requireMembership = false }) => {
   const { user, loading } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
-  const [authChecked, setAuthChecked] = useState(false);
-  const isRedirecting = useRef(false);
   
-  // Store pathname in ref to avoid re-renders from location changes
-  const pathnameRef = useRef(location.pathname);
-  pathnameRef.current = location.pathname;
+  // Read localStorage synchronously (safe in browser)
+  const hasToken = typeof window !== 'undefined' ? localStorage.getItem('tdb_auth_token') : null;
+  const storedUser = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
 
-  useEffect(() => {
-    // Prevent multiple simultaneous redirects
-    if (isRedirecting.current) return;
-    
-    // Check localStorage once
-    const hasToken = localStorage.getItem('tdb_auth_token');
-    const storedUserStr = localStorage.getItem('user');
-    
-    // Wait for auth context to finish loading
-    if (loading) return;
-    
-    // Case 1: User is authenticated (from context)
-    if (user) {
-      setAuthChecked(true);
-      return;
-    }
-    
-    // Case 2: Have token but user not in state yet - try stored user
-    if (hasToken && storedUserStr) {
-      // Auth context should pick this up, just wait
-      setAuthChecked(true);
-      return;
-    }
-    
-    // Case 3: Have token but no stored user - wait a bit for API
-    if (hasToken && !storedUserStr) {
-      const timer = setTimeout(() => {
-        const currentToken = localStorage.getItem('tdb_auth_token');
-        if (currentToken) {
-          // Still have token, assume valid
-          setAuthChecked(true);
-        } else {
-          // Token was cleared (likely 401) - redirect to login
-          if (!isRedirecting.current) {
-            isRedirecting.current = true;
-            navigate('/login', { 
-              state: { from: pathnameRef.current },
-              replace: true 
-            });
-          }
-        }
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-    
-    // Case 4: No token at all - redirect to login
-    if (!hasToken) {
-      if (!isRedirecting.current) {
-        isRedirecting.current = true;
-        navigate('/login', { 
-          state: { from: pathnameRef.current },
-          replace: true 
-        });
+  // LOADING STATE: Auth context is still initializing
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-950">
+        <div className="text-center">
+          <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-white/70">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // AUTHENTICATED: User is in context - proceed
+  if (user) {
+    // Check membership if required
+    if (requireMembership) {
+      const isAdmin = user?.role === 'admin' || user?.role === 'super_admin' || user?.is_admin === true;
+      const hasActiveMembership = user?.pet_pass_status === 'active' || 
+                                  user?.membership_status === 'active' ||
+                                  user?.has_paid === true ||
+                                  user?.membership_tier ||
+                                  user?.active_pet_pass;
+      
+      if (!isAdmin && !hasActiveMembership) {
+        return <Navigate to="/membership" state={{ from: location.pathname }} replace />;
       }
     }
-  }, [user, loading, navigate]); // REMOVED location from deps - critical fix!
+    return children;
+  }
 
-  // Separate effect for membership check
-  useEffect(() => {
-    if (!authChecked || !user || !requireMembership) return;
-    if (isRedirecting.current) return;
-    
-    const isAdmin = user?.role === 'admin' || user?.role === 'super_admin' || user?.is_admin === true;
-    const hasActiveMembership = user?.pet_pass_status === 'active' || 
-                                user?.membership_status === 'active' ||
-                                user?.has_paid === true ||
-                                user?.membership_tier ||
-                                user?.active_pet_pass;
-    
-    if (!isAdmin && !hasActiveMembership) {
-      isRedirecting.current = true;
-      navigate('/membership', { 
-        state: { from: pathnameRef.current },
-        replace: true 
-      });
-    }
-  }, [authChecked, user, requireMembership, navigate]); // REMOVED location from deps
-
-  // Check token for render logic
-  const currentToken = typeof window !== 'undefined' ? localStorage.getItem('tdb_auth_token') : null;
-
-  // Show loading while auth context is checking OR if we have a token but no user yet
-  if (loading || (currentToken && !user && !authChecked)) {
+  // PENDING: Have token but user not loaded yet - show loading
+  // This prevents redirect loop when auth context is still fetching user
+  if (hasToken || storedUser) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-950">
         <div className="text-center">
@@ -207,16 +160,9 @@ const ProtectedRoute = ({ children, requireMembership = false }) => {
     );
   }
 
-  // No token and auth finished loading - will redirect via useEffect
-  if (!currentToken && !loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-center text-white">
-          <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p>Redirecting to login...</p>
-        </div>
-      </div>
-    );
+  // NOT AUTHENTICATED: No user, no token - redirect to login
+  return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+};
   }
 
   // Check membership for protected routes
