@@ -108,71 +108,89 @@ const ProtectedRoute = ({ children, requireMembership = false }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [authChecked, setAuthChecked] = useState(false);
+  const isRedirecting = useRef(false);
   
-  // Check localStorage immediately on mount (before any async operations)
-  const hasToken = typeof window !== 'undefined' ? localStorage.getItem('tdb_auth_token') : null;
-  const storedUserStr = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+  // Store pathname in ref to avoid re-renders from location changes
+  const pathnameRef = useRef(location.pathname);
+  pathnameRef.current = location.pathname;
 
   useEffect(() => {
-    // CRITICAL: Never redirect if we have a token - wait for auth context to validate it
-    if (hasToken) {
-      // We have a token, so user might be logged in
-      // Wait for AuthContext to either validate or invalidate it
-      if (!loading) {
-        if (user) {
-          // Token validated, user is set - we're good
+    // Prevent multiple simultaneous redirects
+    if (isRedirecting.current) return;
+    
+    // Check localStorage once
+    const hasToken = localStorage.getItem('tdb_auth_token');
+    const storedUserStr = localStorage.getItem('user');
+    
+    // Wait for auth context to finish loading
+    if (loading) return;
+    
+    // Case 1: User is authenticated (from context)
+    if (user) {
+      setAuthChecked(true);
+      return;
+    }
+    
+    // Case 2: Have token but user not in state yet - try stored user
+    if (hasToken && storedUserStr) {
+      // Auth context should pick this up, just wait
+      setAuthChecked(true);
+      return;
+    }
+    
+    // Case 3: Have token but no stored user - wait a bit for API
+    if (hasToken && !storedUserStr) {
+      const timer = setTimeout(() => {
+        const currentToken = localStorage.getItem('tdb_auth_token');
+        if (currentToken) {
+          // Still have token, assume valid
           setAuthChecked(true);
-        } else if (!user && !storedUserStr) {
-          // No user in state AND no stored user - token might be invalid
-          // But still don't redirect yet - give it more time
-          const timer = setTimeout(() => {
-            // Final check after delay
-            const currentToken = localStorage.getItem('tdb_auth_token');
-            if (!currentToken) {
-              navigate('/login', { 
-                state: { from: location.pathname, message: 'Please login to continue' },
-                replace: true 
-              });
-            } else {
-              // Still have token, keep waiting
-              setAuthChecked(true);
-            }
-          }, 500);
-          return () => clearTimeout(timer);
         } else {
-          // Have stored user, waiting for state to catch up
-          setAuthChecked(true);
+          // Token was cleared (likely 401) - redirect to login
+          if (!isRedirecting.current) {
+            isRedirecting.current = true;
+            navigate('/login', { 
+              state: { from: pathnameRef.current },
+              replace: true 
+            });
+          }
         }
-      }
-    } else {
-      // No token at all - definitely not logged in
-      if (!loading) {
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+    
+    // Case 4: No token at all - redirect to login
+    if (!hasToken) {
+      if (!isRedirecting.current) {
+        isRedirecting.current = true;
         navigate('/login', { 
-          state: { from: location.pathname, message: 'Please login to continue' },
+          state: { from: pathnameRef.current },
           replace: true 
         });
       }
     }
-  }, [user, loading, hasToken, storedUserStr, navigate, location]);
+  }, [user, loading, navigate]); // REMOVED location from deps - critical fix!
 
-  // Separate effect for membership check (only after auth is confirmed)
+  // Separate effect for membership check
   useEffect(() => {
-    if (authChecked && user && requireMembership) {
-      const isAdmin = user?.role === 'admin' || user?.role === 'super_admin' || user?.is_admin === true;
-      const hasActiveMembership = user?.pet_pass_status === 'active' || 
-                                  user?.membership_status === 'active' ||
-                                  user?.has_paid === true ||
-                                  user?.membership_tier ||
-                                  user?.active_pet_pass;
-      
-      if (!isAdmin && !hasActiveMembership) {
-        navigate('/membership', { 
-          state: { from: location.pathname, message: 'Join Pet Pass to access Mira OS' },
-          replace: true 
-        });
-      }
+    if (!authChecked || !user || !requireMembership) return;
+    if (isRedirecting.current) return;
+    
+    const isAdmin = user?.role === 'admin' || user?.role === 'super_admin' || user?.is_admin === true;
+    const hasActiveMembership = user?.pet_pass_status === 'active' || 
+                                user?.membership_status === 'active' ||
+                                user?.has_paid === true ||
+                                user?.membership_tier ||
+                                user?.active_pet_pass;
+    
+    if (!isAdmin && !hasActiveMembership) {
+      isRedirecting.current = true;
+      navigate('/membership', { 
+        state: { from: pathnameRef.current },
+        replace: true 
+      });
     }
-  }, [authChecked, user, requireMembership, navigate, location]);
+  }, [authChecked, user, requireMembership, navigate]); // REMOVED location from deps
 
   // Show loading while auth context is checking OR if we have a token but no user yet
   if (loading || (hasToken && !user && !authChecked)) {
