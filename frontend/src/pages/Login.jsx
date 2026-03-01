@@ -23,11 +23,14 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(email, password);
+      const userData = await login(email, password);
       toast({
         title: "Welcome back!",
         description: "Taking you to your pets...",
       });
+      // Small delay to ensure state propagation before navigation
+      // This prevents race condition where ProtectedRoute sees user as null
+      await new Promise(resolve => setTimeout(resolve, 100));
       // Navigate to Pet Home - the landing page for all pets
       navigate(from, { replace: true });
     } catch (error) {
