@@ -107,36 +107,58 @@ const ProtectedRoute = ({ children, requireMembership = false }) => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    if (!loading) {
-      // Check if user is logged in
-      if (!user) {
-        navigate('/login', { 
-          state: { from: location.pathname, message: 'Please login to continue' },
-          replace: true 
-        });
-        return;
-      }
+    // Small delay to allow state to propagate after login
+    const checkAuth = async () => {
+      // Wait a tick for React state to settle
+      await new Promise(resolve => setTimeout(resolve, 50));
       
-      // Check membership if required
-      if (requireMembership) {
-        // STRICT ADMIN CHECK - Only explicit admin role
-        const isAdmin = user?.role === 'admin' || user?.role === 'super_admin' || user?.is_admin === true;
-        const hasActiveMembership = user?.pet_pass_status === 'active' || 
-                                    user?.membership_status === 'active' ||
-                                    user?.has_paid === true ||
-                                    user?.membership_tier ||  // Has any membership tier
-                                    user?.active_pet_pass;    // Has active pet pass
+      if (!loading) {
+        // Also check localStorage as a fallback (for race conditions after login)
+        const hasToken = localStorage.getItem('tdb_auth_token');
+        const hasStoredUser = localStorage.getItem('user');
         
-        if (!isAdmin && !hasActiveMembership) {
-          navigate('/membership', { 
-            state: { from: location.pathname, message: 'Join Pet Pass to access Mira OS' },
+        // Check if user is logged in
+        if (!user && !hasToken) {
+          navigate('/login', { 
+            state: { from: location.pathname, message: 'Please login to continue' },
             replace: true 
           });
+          return;
         }
+        
+        // If we have token but no user in state, wait for auth context to catch up
+        if (!user && hasToken && hasStoredUser) {
+          // User just logged in, give React a moment to update state
+          setIsChecking(true);
+          return;
+        }
+        
+        // Check membership if required
+        if (requireMembership && user) {
+          // STRICT ADMIN CHECK - Only explicit admin role
+          const isAdmin = user?.role === 'admin' || user?.role === 'super_admin' || user?.is_admin === true;
+          const hasActiveMembership = user?.pet_pass_status === 'active' || 
+                                      user?.membership_status === 'active' ||
+                                      user?.has_paid === true ||
+                                      user?.membership_tier ||  // Has any membership tier
+                                      user?.active_pet_pass;    // Has active pet pass
+          
+          if (!isAdmin && !hasActiveMembership) {
+            navigate('/membership', { 
+              state: { from: location.pathname, message: 'Join Pet Pass to access Mira OS' },
+              replace: true 
+            });
+          }
+        }
+        
+        setIsChecking(false);
       }
-    }
+    };
+    
+    checkAuth();
   }, [user, loading, requireMembership, navigate, location]);
 
   // Show loading while checking auth
