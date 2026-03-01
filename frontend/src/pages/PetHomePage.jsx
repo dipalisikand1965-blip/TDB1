@@ -319,13 +319,11 @@ const PetHomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Small delay to ensure localStorage is fully written after login redirect
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
         const token = localStorage.getItem('tdb_auth_token');
         if (!token) {
-          console.log('[PetHome] No token found, redirecting to login');
-          navigate('/login');
+          // Don't redirect here - ProtectedRoute handles this
+          // Just return and let the parent component deal with it
+          console.log('[PetHome] No token, waiting for auth...');
           return;
         }
         
@@ -339,12 +337,9 @@ const PetHomePage = () => {
         });
         
         if (!userRes.ok) {
-          console.log('[PetHome] /api/auth/me failed:', userRes.status);
-          // Don't immediately redirect - might be a temporary issue
-          if (userRes.status === 401) {
-            localStorage.removeItem('tdb_auth_token');
-            navigate('/login');
-          }
+          // Don't redirect to login - just log the error
+          // Token might still be valid, could be a network issue
+          console.log('[PetHome] /api/auth/me returned:', userRes.status);
           return;
         }
         
