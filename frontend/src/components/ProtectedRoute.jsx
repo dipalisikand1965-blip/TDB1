@@ -96,7 +96,8 @@ const getPillarFromPath = (path) => {
  * ProtectedRoute - Guards routes behind authentication and optional membership
  * @param {boolean} requireMembership - If true, also requires active membership/pet pass
  * 
- * SIMPLIFIED LOGIC (v4 - NEVER redirect if token exists):
+ * VERSION: v5_production_debug_20250610
+ * SIMPLIFIED LOGIC (v5 - NEVER redirect if token exists):
  * 1. If has token → trust it, show content (use stored user for membership check)
  * 2. If no token → redirect to login
  */
@@ -104,27 +105,38 @@ const ProtectedRoute = ({ children, requireMembership = false }) => {
   const { user } = useAuth();
   const location = useLocation();
   
+  // === PRODUCTION DEBUG LOGGING ===
+  const VERSION = 'v5_production_debug_20250610';
+  console.log(`[ProtectedRoute ${VERSION}] Checking auth for path:`, location.pathname);
+  
   // Read localStorage synchronously
   const hasToken = typeof window !== 'undefined' ? localStorage.getItem('tdb_auth_token') : null;
   const storedUserStr = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+  
+  console.log(`[ProtectedRoute ${VERSION}] hasToken:`, !!hasToken, 'length:', hasToken?.length || 0);
+  console.log(`[ProtectedRoute ${VERSION}] user from context:`, !!user);
+  console.log(`[ProtectedRoute ${VERSION}] storedUserStr exists:`, !!storedUserStr);
   
   // Parse stored user
   let storedUser = null;
   if (storedUserStr) {
     try {
       storedUser = JSON.parse(storedUserStr);
+      console.log(`[ProtectedRoute ${VERSION}] Parsed storedUser email:`, storedUser?.email);
     } catch (e) {
-      console.error('Failed to parse stored user');
+      console.error(`[ProtectedRoute ${VERSION}] Failed to parse stored user:`, e);
     }
   }
 
   // NO TOKEN = NOT LOGGED IN - redirect immediately
   if (!hasToken) {
+    console.log(`[ProtectedRoute ${VERSION}] NO TOKEN - Redirecting to /login`);
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
   // HAS TOKEN = TRUST IT - use stored user or context user for membership check
   const effectiveUser = user || storedUser;
+  console.log(`[ProtectedRoute ${VERSION}] HAS TOKEN - Showing content. effectiveUser:`, effectiveUser?.email || 'none');
 
   // Check membership if required
   if (requireMembership && effectiveUser) {
@@ -135,14 +147,18 @@ const ProtectedRoute = ({ children, requireMembership = false }) => {
                                 effectiveUser?.membership_tier ||
                                 effectiveUser?.active_pet_pass;
     
+    console.log(`[ProtectedRoute ${VERSION}] Membership check - isAdmin:`, isAdmin, 'hasActiveMembership:', hasActiveMembership);
+    
     if (!isAdmin && !hasActiveMembership) {
+      console.log(`[ProtectedRoute ${VERSION}] NO MEMBERSHIP - Redirecting to /membership`);
       return <Navigate to="/membership" state={{ from: location.pathname }} replace />;
     }
   }
 
   // HAS TOKEN - show content (even if user data is still loading)
+  console.log(`[ProtectedRoute ${VERSION}] ALLOWING ACCESS to:`, location.pathname);
   return children;
 };
 
 export default ProtectedRoute;
-// BUILD VERSION: 1772346845
+// VERSION_MARKER: v5_production_debug_20250610
