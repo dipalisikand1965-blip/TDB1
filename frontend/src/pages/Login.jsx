@@ -28,11 +28,25 @@ const Login = () => {
         title: "Welcome back!",
         description: "Taking you to your pets...",
       });
-      // Small delay to ensure state propagation before navigation
-      // This prevents race condition where ProtectedRoute sees user as null
-      await new Promise(resolve => setTimeout(resolve, 100));
-      // Navigate to Pet Home - the landing page for all pets
-      navigate(from, { replace: true });
+      
+      // Wait for auth state to propagate
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Try React Router navigation first
+      try {
+        navigate(from, { replace: true });
+      } catch (navError) {
+        console.error('Navigate failed, using fallback:', navError);
+      }
+      
+      // Fallback: If still on login page after 500ms, force redirect
+      setTimeout(() => {
+        if (window.location.pathname === '/login' || window.location.pathname.includes('login')) {
+          console.log('Fallback redirect to:', from);
+          window.location.href = from;
+        }
+      }, 500);
+      
     } catch (error) {
       toast({
         variant: "destructive",
