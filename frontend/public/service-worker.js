@@ -1,7 +1,8 @@
-// Service Worker for The Doggy Company PWA - v7 with Push Notifications
+// Service Worker for The Doggy Company PWA - v8 with Push Notifications
 // Feature 11: Push notifications even when browser is closed
+// v8: Fixed auth redirect loop - force cache clear
 
-const CACHE_NAME = 'tdc-pwa-v7';
+const CACHE_NAME = 'tdc-pwa-v8';
 
 self.addEventListener('install', (event) => {
   console.log('[SW] PWA v7: Installing');
