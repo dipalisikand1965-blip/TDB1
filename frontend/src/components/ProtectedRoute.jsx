@@ -96,18 +96,15 @@ const getPillarFromPath = (path) => {
  * ProtectedRoute - Guards routes behind authentication and optional membership
  * @param {boolean} requireMembership - If true, also requires active membership/pet pass
  * 
- * SIMPLIFIED LOGIC (v3 - Fixed infinite loading):
- * 1. If loading → show spinner (max 5 seconds)
- * 2. If user exists → show children (or check membership)
- * 3. If no user but has token → show spinner briefly, then try to use stored user
- * 4. If no user and no token → redirect to login
+ * SIMPLIFIED LOGIC (v4 - NEVER redirect if token exists):
+ * 1. If has token → trust it, show content (use stored user for membership check)
+ * 2. If no token → redirect to login
  */
 const ProtectedRoute = ({ children, requireMembership = false }) => {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
-  const [waitingForAuth, setWaitingForAuth] = useState(true);
   
-  // Read localStorage synchronously (safe in browser)
+  // Read localStorage synchronously
   const hasToken = typeof window !== 'undefined' ? localStorage.getItem('tdb_auth_token') : null;
   const storedUserStr = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
   
@@ -121,69 +118,30 @@ const ProtectedRoute = ({ children, requireMembership = false }) => {
     }
   }
 
-  // Timeout for auth loading - don't wait forever
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setWaitingForAuth(false);
-    }, 3000); // Max 3 seconds wait
-    
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Also stop waiting if we get a user or loading finishes
-  useEffect(() => {
-    if (user || !loading) {
-      setWaitingForAuth(false);
-    }
-  }, [user, loading]);
-
-  // LOADING STATE: Auth context is still initializing (with timeout)
-  if (loading && waitingForAuth) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-950">
-        <div className="text-center">
-          <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-white/70">Loading...</p>
-        </div>
-      </div>
-    );
+  // NO TOKEN = NOT LOGGED IN - redirect immediately
+  if (!hasToken) {
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
-  // Determine the effective user (from context OR localStorage)
+  // HAS TOKEN = TRUST IT - use stored user or context user for membership check
   const effectiveUser = user || storedUser;
 
-  // AUTHENTICATED: User exists (from context or storage) - proceed
-  if (effectiveUser) {
-    // Check membership if required
-    if (requireMembership) {
-      const isAdmin = effectiveUser?.role === 'admin' || effectiveUser?.role === 'super_admin' || effectiveUser?.is_admin === true;
-      const hasActiveMembership = effectiveUser?.pet_pass_status === 'active' || 
-                                  effectiveUser?.membership_status === 'active' ||
-                                  effectiveUser?.has_paid === true ||
-                                  effectiveUser?.membership_tier ||
-                                  effectiveUser?.active_pet_pass;
-      
-      if (!isAdmin && !hasActiveMembership) {
-        return <Navigate to="/membership" state={{ from: location.pathname }} replace />;
-      }
+  // Check membership if required
+  if (requireMembership && effectiveUser) {
+    const isAdmin = effectiveUser?.role === 'admin' || effectiveUser?.role === 'super_admin' || effectiveUser?.is_admin === true;
+    const hasActiveMembership = effectiveUser?.pet_pass_status === 'active' || 
+                                effectiveUser?.membership_status === 'active' ||
+                                effectiveUser?.has_paid === true ||
+                                effectiveUser?.membership_tier ||
+                                effectiveUser?.active_pet_pass;
+    
+    if (!isAdmin && !hasActiveMembership) {
+      return <Navigate to="/membership" state={{ from: location.pathname }} replace />;
     }
-    return children;
   }
 
-  // PENDING: Have token but no user yet - show brief loading
-  if (hasToken && waitingForAuth) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-950">
-        <div className="text-center">
-          <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-white/70">Loading your pets...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // NOT AUTHENTICATED: No user, no token (or timeout exceeded) - redirect to login
-  return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  // HAS TOKEN - show content (even if user data is still loading)
+  return children;
 };
 
 export default ProtectedRoute;
