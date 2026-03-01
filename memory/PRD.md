@@ -12,7 +12,7 @@ English
 - **Admin:** `aditya` / `lola4304`
 
 ## Preview URL
-https://mira-learn-fix.preview.emergentagent.com/mira-demo
+https://pet-os-auth-fix.preview.emergentagent.com/mira-demo
 
 ---
 
