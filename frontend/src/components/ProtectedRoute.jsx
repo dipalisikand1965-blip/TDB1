@@ -107,59 +107,72 @@ const ProtectedRoute = ({ children, requireMembership = false }) => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isChecking, setIsChecking] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
+  
+  // Check localStorage immediately on mount (before any async operations)
+  const hasToken = typeof window !== 'undefined' ? localStorage.getItem('tdb_auth_token') : null;
+  const storedUserStr = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
 
   useEffect(() => {
-    // Small delay to allow state to propagate after login
-    const checkAuth = async () => {
-      // Wait a tick for React state to settle
-      await new Promise(resolve => setTimeout(resolve, 50));
-      
+    // CRITICAL: Never redirect if we have a token - wait for auth context to validate it
+    if (hasToken) {
+      // We have a token, so user might be logged in
+      // Wait for AuthContext to either validate or invalidate it
       if (!loading) {
-        // Also check localStorage as a fallback (for race conditions after login)
-        const hasToken = localStorage.getItem('tdb_auth_token');
-        const hasStoredUser = localStorage.getItem('user');
-        
-        // Check if user is logged in
-        if (!user && !hasToken) {
-          navigate('/login', { 
-            state: { from: location.pathname, message: 'Please login to continue' },
-            replace: true 
-          });
-          return;
+        if (user) {
+          // Token validated, user is set - we're good
+          setAuthChecked(true);
+        } else if (!user && !storedUserStr) {
+          // No user in state AND no stored user - token might be invalid
+          // But still don't redirect yet - give it more time
+          const timer = setTimeout(() => {
+            // Final check after delay
+            const currentToken = localStorage.getItem('tdb_auth_token');
+            if (!currentToken) {
+              navigate('/login', { 
+                state: { from: location.pathname, message: 'Please login to continue' },
+                replace: true 
+              });
+            } else {
+              // Still have token, keep waiting
+              setAuthChecked(true);
+            }
+          }, 500);
+          return () => clearTimeout(timer);
+        } else {
+          // Have stored user, waiting for state to catch up
+          setAuthChecked(true);
         }
-        
-        // If we have token but no user in state, wait for auth context to catch up
-        if (!user && hasToken && hasStoredUser) {
-          // User just logged in, give React a moment to update state
-          setIsChecking(true);
-          return;
-        }
-        
-        // Check membership if required
-        if (requireMembership && user) {
-          // STRICT ADMIN CHECK - Only explicit admin role
-          const isAdmin = user?.role === 'admin' || user?.role === 'super_admin' || user?.is_admin === true;
-          const hasActiveMembership = user?.pet_pass_status === 'active' || 
-                                      user?.membership_status === 'active' ||
-                                      user?.has_paid === true ||
-                                      user?.membership_tier ||  // Has any membership tier
-                                      user?.active_pet_pass;    // Has active pet pass
-          
-          if (!isAdmin && !hasActiveMembership) {
-            navigate('/membership', { 
-              state: { from: location.pathname, message: 'Join Pet Pass to access Mira OS' },
-              replace: true 
-            });
-          }
-        }
-        
-        setIsChecking(false);
       }
-    };
-    
-    checkAuth();
-  }, [user, loading, requireMembership, navigate, location]);
+    } else {
+      // No token at all - definitely not logged in
+      if (!loading) {
+        navigate('/login', { 
+          state: { from: location.pathname, message: 'Please login to continue' },
+          replace: true 
+        });
+      }
+    }
+  }, [user, loading, hasToken, storedUserStr, navigate, location]);
+
+  // Separate effect for membership check (only after auth is confirmed)
+  useEffect(() => {
+    if (authChecked && user && requireMembership) {
+      const isAdmin = user?.role === 'admin' || user?.role === 'super_admin' || user?.is_admin === true;
+      const hasActiveMembership = user?.pet_pass_status === 'active' || 
+                                  user?.membership_status === 'active' ||
+                                  user?.has_paid === true ||
+                                  user?.membership_tier ||
+                                  user?.active_pet_pass;
+      
+      if (!isAdmin && !hasActiveMembership) {
+        navigate('/membership', { 
+          state: { from: location.pathname, message: 'Join Pet Pass to access Mira OS' },
+          replace: true 
+        });
+      }
+    }
+  }, [authChecked, user, requireMembership, navigate, location]);
 
   // Show loading while checking auth or during initial check
   if (loading || isChecking) {
