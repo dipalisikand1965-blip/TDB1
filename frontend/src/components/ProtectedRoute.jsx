@@ -1,13 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Navigate, useLocation, useNavigate, Link } from 'react-router-dom';
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Card } from './ui/card';
-import { Button } from './ui/button';
-import { 
-  Crown, Sparkles, PawPrint, Gift, Percent, Clock, Shield, 
-  Heart, Utensils, Plane, Building, Stethoscope, Dumbbell,
-  FileText, AlertCircle, ShoppingBag, ChevronRight, Star
-} from 'lucide-react';
 
 // Pillar benefits mapping
 const PILLAR_BENEFITS = {
