@@ -163,31 +163,5 @@ const ProtectedRoute = ({ children, requireMembership = false }) => {
   // NOT AUTHENTICATED: No user, no token - redirect to login
   return <Navigate to="/login" state={{ from: location.pathname }} replace />;
 };
-  }
-
-  // Check membership for protected routes
-  if (requireMembership) {
-    // STRICT ADMIN CHECK - Only explicit admin role
-    const isAdmin = user?.role === 'admin' || user?.role === 'super_admin' || user?.is_admin === true;
-    const hasActiveMembership = user?.pet_pass_status === 'active' || 
-                                user?.membership_status === 'active' ||
-                                user?.has_paid === true ||
-                                user?.membership_tier ||  // Has any membership tier
-                                user?.active_pet_pass;    // Has active pet pass
-    
-    if (!isAdmin && !hasActiveMembership) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900">
-          <div className="text-center text-white">
-            <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <p>Redirecting to membership...</p>
-          </div>
-        </div>
-      );
-    }
-  }
-
-  return children;
-};
 
 export default ProtectedRoute;
