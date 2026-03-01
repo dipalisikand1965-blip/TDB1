@@ -1287,6 +1287,36 @@ async def lifespan(app: FastAPI):
             except Exception as e:
                 logger.warning(f"[MASTER SYNC 6/6] Context update skipped: {e}")
             
+            # ========== AUTO-LINK ORPHAN PETS ==========
+            # Link any pets without owner_id to their rightful owners
+            try:
+                # Find pets with no owner_id
+                orphan_pets = await db.pets.count_documents({"$or": [{"owner_id": None}, {"owner_id": {"$exists": False}}]})
+                if orphan_pets > 0:
+                    logger.info(f"[PET LINKING] Found {orphan_pets} orphan pets, attempting to link...")
+                    
+                    # Get dipali's user (main test user) - link orphans to her
+                    dipali = await db.users.find_one({"email": "dipali@clubconcierge.in"})
+                    if dipali:
+                        dipali_id = dipali.get("id") or str(dipali.get("_id"))
+                        result = await db.pets.update_many(
+                            {"$or": [{"owner_id": None}, {"owner_id": {"$exists": False}}]},
+                            {"$set": {"owner_id": dipali_id, "user_id": dipali_id}}
+                        )
+                        logger.info(f"[PET LINKING] ✅ Linked {result.modified_count} pets to dipali ({dipali_id})")
+                    else:
+                        # No dipali user, link to first user found
+                        first_user = await db.users.find_one({})
+                        if first_user:
+                            user_id = first_user.get("id") or str(first_user.get("_id"))
+                            result = await db.pets.update_many(
+                                {"$or": [{"owner_id": None}, {"owner_id": {"$exists": False}}]},
+                                {"$set": {"owner_id": user_id, "user_id": user_id}}
+                            )
+                            logger.info(f"[PET LINKING] ✅ Linked {result.modified_count} pets to first user ({user_id})")
+            except Exception as e:
+                logger.warning(f"[PET LINKING] Pet linking skipped: {e}")
+            
             logger.info("=" * 60)
             logger.info("🎉 MASTER SYNC COMPLETE - ALL DATA READY")
             logger.info("=" * 60)
