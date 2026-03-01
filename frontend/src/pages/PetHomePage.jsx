@@ -319,8 +319,12 @@ const PetHomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Small delay to ensure localStorage is fully written after login redirect
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         const token = localStorage.getItem('tdb_auth_token');
         if (!token) {
+          console.log('[PetHome] No token found, redirecting to login');
           navigate('/login');
           return;
         }
@@ -335,8 +339,12 @@ const PetHomePage = () => {
         });
         
         if (!userRes.ok) {
-          localStorage.removeItem('tdb_auth_token');
-          navigate('/login');
+          console.log('[PetHome] /api/auth/me failed:', userRes.status);
+          // Don't immediately redirect - might be a temporary issue
+          if (userRes.status === 401) {
+            localStorage.removeItem('tdb_auth_token');
+            navigate('/login');
+          }
           return;
         }
         
