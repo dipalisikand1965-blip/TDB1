@@ -174,28 +174,25 @@ const ProtectedRoute = ({ children, requireMembership = false }) => {
     }
   }, [authChecked, user, requireMembership, navigate, location]);
 
-  // Show loading while checking auth or during initial check
-  if (loading || isChecking) {
-    // Check if we have a token - if so, show a nicer loading state
-    const hasToken = typeof window !== 'undefined' && localStorage.getItem('tdb_auth_token');
-    
+  // Show loading while auth context is checking OR if we have a token but no user yet
+  if (loading || (hasToken && !user && !authChecked)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-950">
         <div className="text-center">
           <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-gray-600">{hasToken ? 'Loading your pets...' : 'Loading...'}</p>
+          <p className="text-white/70">Loading your pets...</p>
         </div>
       </div>
     );
   }
 
-  // Show loading while redirecting (no user and no token)
-  if (!user && !localStorage.getItem('tdb_auth_token')) {
+  // No token and auth finished loading - will redirect via useEffect
+  if (!hasToken && !loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <div className="text-center text-white">
           <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p>Checking access...</p>
+          <p>Redirecting to login...</p>
         </div>
       </div>
     );
