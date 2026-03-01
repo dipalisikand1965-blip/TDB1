@@ -23,29 +23,14 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const userData = await login(email, password);
+      await login(email, password);
       toast({
         title: "Welcome back!",
         description: "Taking you to your pets...",
       });
       
-      // Wait for auth state to propagate
-      await new Promise(resolve => setTimeout(resolve, 200));
-      
-      // Try React Router navigation first
-      try {
-        navigate(from, { replace: true });
-      } catch (navError) {
-        console.error('Navigate failed, using fallback:', navError);
-      }
-      
-      // Fallback: If still on login page after 500ms, force redirect
-      setTimeout(() => {
-        if (window.location.pathname === '/login' || window.location.pathname.includes('login')) {
-          console.log('Fallback redirect to:', from);
-          window.location.href = from;
-        }
-      }, 500);
+      // Direct redirect - most reliable method
+      window.location.href = from;
       
     } catch (error) {
       toast({
@@ -53,7 +38,6 @@ const Login = () => {
         title: "Login Failed",
         description: error.response?.data?.detail || "Invalid email or password",
       });
-    } finally {
       setLoading(false);
     }
   };
