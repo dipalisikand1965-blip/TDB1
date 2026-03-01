@@ -68,6 +68,18 @@ export const AuthProvider = ({ children }) => {
     mountedRef.current = true;
     
     if (token) {
+      // Immediately set user from localStorage while we validate with API
+      // This prevents flash of login page
+      const storedUser = localStorage.getItem('user');
+      if (storedUser && !user) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+        } catch (e) {
+          console.error('Failed to parse stored user:', e);
+        }
+      }
+      // Then validate with API
       fetchUser(token);
     } else {
       setLoading(false);
