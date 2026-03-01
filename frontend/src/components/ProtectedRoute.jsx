@@ -192,8 +192,11 @@ const ProtectedRoute = ({ children, requireMembership = false }) => {
     }
   }, [authChecked, user, requireMembership, navigate]); // REMOVED location from deps
 
+  // Check token for render logic
+  const currentToken = typeof window !== 'undefined' ? localStorage.getItem('tdb_auth_token') : null;
+
   // Show loading while auth context is checking OR if we have a token but no user yet
-  if (loading || (hasToken && !user && !authChecked)) {
+  if (loading || (currentToken && !user && !authChecked)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-950">
         <div className="text-center">
@@ -205,7 +208,7 @@ const ProtectedRoute = ({ children, requireMembership = false }) => {
   }
 
   // No token and auth finished loading - will redirect via useEffect
-  if (!hasToken && !loading) {
+  if (!currentToken && !loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <div className="text-center text-white">
