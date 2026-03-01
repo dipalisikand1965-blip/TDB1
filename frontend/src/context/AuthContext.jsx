@@ -112,12 +112,25 @@ export const AuthProvider = ({ children }) => {
   }, [token, fetchUser]);
 
   const login = async (email, password) => {
+    console.log('[AuthContext v5] login() called for:', email);
     const response = await axios.post(`${API_URL}/api/auth/login`, { email, password });
     const { access_token, user: userData } = response.data;
+    
+    console.log('[AuthContext v5] Login successful, storing token...');
+    console.log('[AuthContext v5] Token length:', access_token?.length);
+    console.log('[AuthContext v5] User email:', userData?.email);
+    
     localStorage.setItem(TOKEN_KEY, access_token);
     localStorage.setItem('user', JSON.stringify(userData));
+    
+    // Verify storage worked
+    const storedToken = localStorage.getItem(TOKEN_KEY);
+    const storedUser = localStorage.getItem('user');
+    console.log('[AuthContext v5] Verification - Token stored:', !!storedToken, 'User stored:', !!storedUser);
+    
     setToken(access_token);
     setUser(userData);
+    console.log('[AuthContext v5] State updated, returning userData');
     return userData;
   };
 
