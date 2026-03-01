@@ -16,8 +16,8 @@ const Login = () => {
   const location = useLocation();
   const { toast } = useToast();
   
-  // Get the return path from location state (set by ProtectedRoute) or default to Mira Demo
-  const from = location.state?.from || '/mira-demo';
+  // Get the return path from location state (set by ProtectedRoute) or default to Pet Home
+  const from = location.state?.from || '/pet-home';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
