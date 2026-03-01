@@ -22,17 +22,31 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    console.log('[Login v5] handleSubmit called');
+    console.log('[Login v5] Redirect destination (from):', from);
+    
     try {
       await login(email, password);
+      console.log('[Login v5] login() completed successfully');
+      
+      // Double check token was stored before redirect
+      const tokenCheck = localStorage.getItem('tdb_auth_token');
+      console.log('[Login v5] Pre-redirect token check:', !!tokenCheck, 'length:', tokenCheck?.length);
+      
       toast({
         title: "Welcome back!",
         description: "Taking you to your pets...",
       });
       
-      // Direct redirect - most reliable method
-      window.location.href = from;
+      // Small delay to ensure storage is complete
+      console.log('[Login v5] Starting redirect to:', from);
+      setTimeout(() => {
+        console.log('[Login v5] Executing redirect NOW');
+        window.location.href = from;
+      }, 100);
       
     } catch (error) {
+      console.error('[Login v5] Login error:', error);
       toast({
         variant: "destructive",
         title: "Login Failed",
