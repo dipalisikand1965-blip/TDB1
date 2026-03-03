@@ -104,7 +104,7 @@
    MEMORIAL EDITION: Perfect scroll for Mystique
    - Content never goes behind the input bar
    - Generous bottom padding for comfortable reading
-   - Smooth scrolling with momentum
+   - NO spring-back elastic scrolling
    ======================================== */
 .mp-messages {
   flex: 1;
@@ -121,25 +121,25 @@
   
   /* Padding for content */
   padding: var(--space-xl) var(--space-xl);
-  padding-top: 24px; /* Space at top of content */
-  /* CRITICAL: Extra bottom padding to ensure content scrolls above fixed composer */
-  /* Desktop needs MORE padding since the composer is larger */
-  padding-bottom: 200px; /* Fixed value that works across all devices */
+  padding-top: 24px;
+  /* CRITICAL: Generous bottom padding for input bar clearance */
+  padding-bottom: 240px;
   
-  /* Smooth scrolling */
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
+  /* Disable elastic/spring-back scrolling */
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: auto; /* Disable momentum scroll to fix spring-back */
   
-  /* Hide scrollbar on modern browsers for cleaner look */
+  /* Custom scrollbar */
   scrollbar-width: thin;
   scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
 }
 
-/* Mobile needs slightly more bottom padding for browser chrome */
+/* Mobile: Even more bottom padding */
 @media (max-width: 768px) {
   .mp-messages {
     padding: var(--space-md) var(--space-md);
-    padding-bottom: 220px; /* Extra space for mobile browser UI */
+    padding-bottom: 280px; /* Extra space for mobile */
   }
 }
 
@@ -414,39 +414,11 @@
 }
 
 /* ========================================
-   TEST SCENARIOS PANEL - Positioned at Bottom
-   Below the Ask Mira bar for easy access
+   TEST SCENARIOS PANEL - HIDDEN by default
+   Can be toggled by user when needed
    ======================================== */
 .mp-test-panel {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(180deg, rgba(15, 7, 32, 0.98) 0%, rgba(30, 10, 60, 0.99) 100%);
-  border: none;
-  border-top: 1px solid rgba(168, 85, 247, 0.4);
-  border-radius: 0;
-  padding: var(--space-sm) var(--space-lg);
-  padding-bottom: calc(var(--space-md) + 24px); /* Extra space for OS taskbars */
-  max-width: 100%;
-  z-index: 45; /* BELOW composer (50) so input bar is always accessible */
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
-  animation: test-panel-slide-up 0.3s ease-out;
-}
-
-@keyframes test-panel-slide-up {
-  from { opacity: 0; transform: translateY(100%); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Mobile: Compact with safe area */
-@media (max-width: 768px) {
-  .mp-test-panel {
-    padding: var(--space-xs) var(--space-md);
-    padding-bottom: calc(var(--space-sm) + 20px);
-  }
+  display: none; /* Hidden by default - cleaner production UI */
 }
 
 .mp-test-header {
@@ -665,29 +637,9 @@
   50% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
 }
 
-/* Sandbox footer - BELOW the composer, not above */
+/* Sandbox footer - HIDDEN for cleaner UI */
 .mp-sandbox-footer {
-  position: fixed;
-  /* Position it at very bottom, below the composer */
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: var(--space-xs) var(--space-lg);
-  text-align: center;
-  font-size: 10px;
-  color: var(--mira-text-muted);
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: var(--radius-full);
-  z-index: 45; /* Below composer (z-index 50) */
-  pointer-events: none;
-  opacity: 0.7;
-}
-
-/* Hide sandbox footer on mobile - not needed */
-@media (max-width: 768px) {
-  .mp-sandbox-footer {
-    display: none;
-  }
+  display: none; /* Hide completely - not needed in production */
 }
 
 .mp-messages-inner {
@@ -3254,7 +3206,7 @@ button.mp-welcome-chip,
   50% { transform: scale(1.2) rotate(15deg); opacity: 0.8; }
 }
 
-/* Quick Chips - Centered */
+/* Quick Chips - Horizontal scroll, no wrapping */
 .mp-quick-chips {
   display: flex;
   justify-content: flex-start;
@@ -3264,12 +3216,13 @@ button.mp-welcome-chip,
   overflow-x: auto;
   overflow-y: hidden;
   padding-bottom: 8px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* Firefox */
+  padding-right: 20px; /* Space for last chip */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .mp-quick-chips::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  display: none;
 }
 
 .mp-quick-chip {
@@ -3285,6 +3238,8 @@ button.mp-welcome-chip,
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap; /* CRITICAL: Prevent text wrapping */
+  flex-shrink: 0; /* CRITICAL: Prevent chip shrinking */
 }
 
 .mp-quick-chip:hover {
@@ -10212,10 +10167,17 @@ input, select, textarea {
    ═══════════════════════════════════════════════════════════════════ */
 .quick-replies {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* Horizontal scroll instead of wrap */
   gap: 8px;
   margin-top: 12px;
-  padding-left: 48px; /* Align with message content */
+  padding-left: 48px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.quick-replies::-webkit-scrollbar {
+  display: none;
 }
 
 .quick-reply-btn {
@@ -10231,6 +10193,7 @@ input, select, textarea {
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 .quick-reply-btn:hover {
