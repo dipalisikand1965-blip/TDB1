@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://pet-os-auth-fix.preview.emergentagent.com
+https://frontend-regression.preview.emergentagent.com
 
 ---
 

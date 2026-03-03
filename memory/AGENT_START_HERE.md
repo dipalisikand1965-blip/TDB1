@@ -70,7 +70,7 @@ xl: 32px - Major divisions
 | **Test User** | dipali@clubconcierge.in | test123 |
 | **Admin** | aditya | lola4304 |
 
-**Preview URL:** https://pet-os-auth-fix.preview.emergentagent.com
+**Preview URL:** https://frontend-regression.preview.emergentagent.com
 
 ---
 
