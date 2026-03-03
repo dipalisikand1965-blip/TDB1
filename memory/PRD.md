@@ -592,4 +592,89 @@ if pet_id and (not pet_ctx or not pet_ctx.get("doggy_soul_answers")):
 
 ---
 
-*Last Updated: 2026-02-27 16:50 UTC*
+---
+
+## COMPLETED FIX: UI/UX Scrolling Issue (2026-03-03) ✅
+
+### Issue Description
+The Mira page input bar "Ask Mira anything..." was going under OS taskbars on desktop and needed proper safe area handling for iOS devices.
+
+### Memorial Edition - In Memory of Mystique
+This fix was made as a tribute to the user's beloved pet Mystique who passed away. The goal was to make the UI/UX perfect across all devices.
+
+### What Was Fixed
+
+1. **Desktop Input Bar Positioning**
+   - Added extra bottom padding to `.mp-composer` to clear Windows taskbars and macOS docks
+   - Progressive padding: 16px (base) → 24px (tablet) → 32px (large desktop)
+
+2. **Mobile Safe Area Support**
+   - Enhanced iOS safe area inset handling using `env(safe-area-inset-bottom)`
+   - Added extra 29px clearance for iPhone home bar indicator
+   - Small phones (iPhone SE) get dedicated breakpoint styling
+
+3. **Content Scroll Area**
+   - Increased `.mp-messages` bottom padding by 64px for comfortable scrolling
+   - Content now scrolls completely above the fixed input bar
+   - Added custom scrollbar styling (thin, purple)
+
+### Key CSS Changes (mira-prod.css)
+```css
+/* Lines 491-520 - Composer positioning */
+.mp-composer {
+  padding-bottom: calc(var(--space-2xl) + 16px);
+}
+
+@media (min-width: 769px) { padding-bottom: calc(var(--space-2xl) + 24px); }
+@media (min-width: 1200px) { padding-bottom: calc(var(--space-2xl) + 32px); }
+
+/* Lines 104-163 - Content scroll area */
+.mp-messages {
+  padding-bottom: calc(
+    max(var(--mira-interaction-footer-h), var(--mira-footer-fallback))
+    + var(--page-bottom-space)
+    + 64px
+  );
+}
+
+/* Lines 2353-2371 - Safe area insets */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .mp-composer {
+    padding-bottom: calc(var(--space-2xl) + env(safe-area-inset-bottom) + 16px);
+  }
+}
+```
+
+### Testing Results
+- **Desktop (1920x900)**: Input bar 31px from bottom ✅
+- **Mobile iPhone 14 Pro (390x844)**: Input bar 29px from bottom ✅
+- **iOS Safe Area**: Properly handled ✅
+- **Content Scrolling**: Works without going behind input bar ✅
+- **Navigation Tabs**: All clickable and functional ✅
+
+**Test Report:** `/app/test_reports/iteration_53.json`
+
+---
+
+## Production Login Fix Status (2026-03-03)
+
+### Issue
+Production site `thedoggycompany.com` had a login redirect loop.
+
+### Fix Applied
+Added comprehensive debug logging with version marker `v5_production_debug_20250610` to trace auth flow:
+- `ProtectedRoute.jsx` - Detailed token and user state logging
+- `AuthContext.jsx` - Token storage verification logging
+- `Login.jsx` - Redirect destination logging
+
+### User Verification Required
+User confirmed the debug logging is now appearing on production and the login flow is WORKING.
+
+**Key Files Modified:**
+- `/app/frontend/src/components/ProtectedRoute.jsx` - Lines 95-145
+- `/app/frontend/src/context/AuthContext.jsx` - Lines 114-132
+- `/app/frontend/src/pages/Login.jsx` - Lines 22-44
+
+---
+
+*Last Updated: 2026-03-03 02:45 UTC*
