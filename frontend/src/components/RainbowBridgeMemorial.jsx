@@ -316,8 +316,8 @@ const RainbowBridgeMemorial = () => {
 
       {/* Mark as Memorial Modal */}
       <Dialog open={showMarkMemorialModal} onOpenChange={setShowMarkMemorialModal}>
-        <DialogContent className="bg-slate-900 border-purple-500/30 max-w-lg">
-          <DialogHeader>
+        <DialogContent className="bg-slate-900 border-purple-500/30 max-w-lg max-h-[90vh] flex flex-col">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle className="text-white flex items-center gap-2">
               <Rainbow className="w-5 h-5 text-purple-400" />
               Create Rainbow Bridge Memorial
@@ -327,16 +327,16 @@ const RainbowBridgeMemorial = () => {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 pt-4">
+          <div className="space-y-4 pt-4 overflow-y-auto flex-1 pr-2">
             {/* Pet Selection */}
             <div>
               <label className="text-white/70 text-sm mb-2 block">Select Pet</label>
-              <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
+              <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
                 {pets.map(pet => (
                   <button
                     key={pet.id}
                     onClick={() => setSelectedPet(pet)}
-                    className={`p-3 rounded-lg border text-left transition-all ${
+                    className={`p-2 rounded-lg border text-left transition-all ${
                       selectedPet?.id === pet.id
                         ? 'bg-purple-500/20 border-purple-400/50'
                         : 'bg-slate-800 border-slate-700 hover:border-slate-600'
@@ -346,11 +346,11 @@ const RainbowBridgeMemorial = () => {
                       <img 
                         src={pet.photo || pet.photo_url || `https://api.dicebear.com/7.x/thumbs/svg?seed=${pet.name}`}
                         alt={pet.name}
-                        className="w-10 h-10 rounded-full object-cover"
+                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                       />
-                      <div>
-                        <p className="text-white font-medium text-sm">{pet.name}</p>
-                        <p className="text-slate-400 text-xs">{pet.breed || 'Companion'}</p>
+                      <div className="min-w-0">
+                        <p className="text-white font-medium text-sm truncate">{pet.name}</p>
+                        <p className="text-slate-400 text-xs truncate">{pet.breed || 'Companion'}</p>
                       </div>
                     </div>
                   </button>
@@ -360,7 +360,7 @@ const RainbowBridgeMemorial = () => {
             
             {/* Crossing Date */}
             <div>
-              <label className="text-white/70 text-sm mb-2 block">Date of Crossing</label>
+              <label className="text-white/70 text-sm mb-1 block">Date of Crossing</label>
               <Input
                 type="date"
                 value={memorialData.crossing_date}
@@ -372,31 +372,31 @@ const RainbowBridgeMemorial = () => {
             
             {/* Tribute Message */}
             <div>
-              <label className="text-white/70 text-sm mb-2 block">Tribute Message</label>
+              <label className="text-white/70 text-sm mb-1 block">Tribute Message</label>
               <Textarea
                 placeholder="A few words to remember them by..."
                 value={memorialData.tribute_message}
                 onChange={(e) => setMemorialData(prev => ({ ...prev, tribute_message: e.target.value }))}
-                className="bg-slate-800 border-slate-700 text-white min-h-[80px]"
+                className="bg-slate-800 border-slate-700 text-white min-h-[60px] resize-none"
                 data-testid="tribute-message-input"
               />
             </div>
             
             {/* Favorite Memory */}
             <div>
-              <label className="text-white/70 text-sm mb-2 block">Favorite Memory</label>
+              <label className="text-white/70 text-sm mb-1 block">Favorite Memory</label>
               <Textarea
                 placeholder="Share a cherished memory..."
                 value={memorialData.favorite_memory}
                 onChange={(e) => setMemorialData(prev => ({ ...prev, favorite_memory: e.target.value }))}
-                className="bg-slate-800 border-slate-700 text-white min-h-[60px]"
+                className="bg-slate-800 border-slate-700 text-white min-h-[50px] resize-none"
                 data-testid="favorite-memory-input"
               />
             </div>
             
             {/* Legacy Quote */}
             <div>
-              <label className="text-white/70 text-sm mb-2 block">Legacy Quote (Optional)</label>
+              <label className="text-white/70 text-sm mb-1 block">Legacy Quote (Optional)</label>
               <Input
                 placeholder="A quote that reminds you of them..."
                 value={memorialData.legacy_quote}
@@ -404,25 +404,26 @@ const RainbowBridgeMemorial = () => {
                 className="bg-slate-800 border-slate-700 text-white"
               />
             </div>
-            
-            <div className="flex gap-3 pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setShowMarkMemorialModal(false)}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={markAsMemorial}
-                disabled={!selectedPet}
-                className="flex-1 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600"
-                data-testid="confirm-memorial-btn"
-              >
-                <Rainbow className="w-4 h-4 mr-2" />
-                Create Memorial
-              </Button>
-            </div>
+          </div>
+          
+          {/* Fixed Footer Buttons */}
+          <div className="flex gap-3 pt-4 flex-shrink-0 border-t border-slate-700 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowMarkMemorialModal(false)}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={markAsMemorial}
+              disabled={!selectedPet}
+              className="flex-1 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600"
+              data-testid="confirm-memorial-btn"
+            >
+              <Rainbow className="w-4 h-4 mr-2" />
+              Create Memorial
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
