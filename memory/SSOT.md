@@ -1,8 +1,42 @@
 # SINGLE SOURCE OF TRUTH (SSOT)
 ## Pet Life Operating System - Mira AI
-**Last Updated:** 2026-02-27 16:45 UTC
+**Last Updated:** 2026-03-03 07:00 UTC
 **Status:** PRODUCTION READY
-**Document Version:** 3.0
+**Document Version:** 3.1
+
+---
+
+## 🚨🚨🚨 DEPLOYMENT CRITICAL - READ FIRST 🚨🚨🚨
+
+### ⛔ NEVER DEPLOY WITH WRONG REACT_APP_BACKEND_URL
+
+**Incident Date:** 2026-03-03
+
+**What Happened:**
+Production site `thedoggycompany.com` showed "No pets found" for ALL users despite backend working perfectly.
+
+**Root Cause:**
+The frontend was deployed with `REACT_APP_BACKEND_URL` pointing to a **dead preview URL**:
+```
+❌ WRONG: REACT_APP_BACKEND_URL=https://mira-soul-os.preview.emergentagent.com  (DEAD!)
+✅ CORRECT: REACT_APP_BACKEND_URL=https://thedoggycompany.com
+```
+
+**Why This Breaks Everything:**
+- React bakes `REACT_APP_*` variables into the JavaScript bundle at BUILD time
+- If the URL points to a non-existent server, ALL API calls return 404
+- Users see broken app even though backend is 100% healthy
+
+**Prevention Checklist - BEFORE EVERY DEPLOYMENT:**
+1. ✅ Verify `frontend/.env` has `REACT_APP_BACKEND_URL=https://thedoggycompany.com`
+2. ✅ NEVER use preview URLs (*.preview.emergentagent.com) for production
+3. ✅ After deployment, test login flow on production immediately
+4. ✅ Check browser console for 404 errors on API calls
+
+**How to Debug This Issue:**
+1. Open browser DevTools → Console
+2. Look for `[PetHome]` logs showing which URL is being called
+3. If you see `preview.emergentagent.com` in production → WRONG ENV VAR
 
 ---
 
