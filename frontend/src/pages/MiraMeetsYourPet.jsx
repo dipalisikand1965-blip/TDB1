@@ -53,18 +53,52 @@ import {
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
-// Dog breed avatars for users without photos
+// Dog breed avatars - Popular breeds in India + International favorites
 const DOG_AVATARS = [
-  { id: 'indie', name: 'Indie / Mix', emoji: '🐕', color: 'from-amber-500 to-orange-600' },
+  // Indian Breeds & Mixes
+  { id: 'indie', name: 'Indie / Desi', emoji: '🐕', color: 'from-amber-500 to-orange-600' },
+  { id: 'rajapalayam', name: 'Rajapalayam', emoji: '🦮', color: 'from-slate-100 to-slate-300' },
+  { id: 'mudhol', name: 'Mudhol Hound', emoji: '🐕', color: 'from-amber-600 to-yellow-700' },
+  { id: 'chippiparai', name: 'Chippiparai', emoji: '🐕', color: 'from-amber-400 to-orange-500' },
+  
+  // Popular International Breeds in India
   { id: 'labrador', name: 'Labrador', emoji: '🦮', color: 'from-yellow-500 to-amber-600' },
   { id: 'golden', name: 'Golden Retriever', emoji: '🐕', color: 'from-yellow-400 to-amber-500' },
   { id: 'german_shepherd', name: 'German Shepherd', emoji: '🐕‍🦺', color: 'from-stone-500 to-stone-700' },
-  { id: 'poodle', name: 'Poodle', emoji: '🐩', color: 'from-pink-400 to-rose-500' },
-  { id: 'beagle', name: 'Beagle', emoji: '🐕', color: 'from-orange-400 to-amber-500' },
+  { id: 'rottweiler', name: 'Rottweiler', emoji: '🐕', color: 'from-stone-700 to-stone-900' },
+  { id: 'doberman', name: 'Doberman', emoji: '🐕', color: 'from-stone-800 to-black' },
+  { id: 'boxer', name: 'Boxer', emoji: '🐕', color: 'from-amber-600 to-amber-800' },
+  { id: 'great_dane', name: 'Great Dane', emoji: '🐕', color: 'from-slate-500 to-slate-700' },
+  { id: 'dalmatian', name: 'Dalmatian', emoji: '🐕', color: 'from-white to-slate-200' },
+  
+  // Small & Medium Breeds (Very Popular)
+  { id: 'pomeranian', name: 'Pomeranian', emoji: '🐕', color: 'from-orange-400 to-amber-500' },
   { id: 'shihtzu', name: 'Shih Tzu', emoji: '🐶', color: 'from-slate-400 to-slate-600' },
+  { id: 'lhasa', name: 'Lhasa Apso', emoji: '🐶', color: 'from-amber-300 to-amber-500' },
   { id: 'pug', name: 'Pug', emoji: '🐶', color: 'from-amber-400 to-yellow-500' },
+  { id: 'beagle', name: 'Beagle', emoji: '🐕', color: 'from-orange-400 to-amber-500' },
+  { id: 'cocker', name: 'Cocker Spaniel', emoji: '🐕', color: 'from-amber-500 to-amber-700' },
+  { id: 'dachshund', name: 'Dachshund', emoji: '🐕', color: 'from-amber-600 to-amber-800' },
+  { id: 'poodle', name: 'Poodle', emoji: '🐩', color: 'from-pink-400 to-rose-500' },
+  
+  // Trendy & Companion Breeds
+  { id: 'french_bulldog', name: 'French Bulldog', emoji: '🐶', color: 'from-slate-500 to-slate-700' },
+  { id: 'english_bulldog', name: 'English Bulldog', emoji: '🐶', color: 'from-amber-300 to-amber-500' },
+  { id: 'chihuahua', name: 'Chihuahua', emoji: '🐶', color: 'from-amber-400 to-orange-500' },
+  { id: 'maltese', name: 'Maltese', emoji: '🐶', color: 'from-white to-slate-100' },
+  { id: 'yorkie', name: 'Yorkshire Terrier', emoji: '🐶', color: 'from-amber-500 to-slate-500' },
+  { id: 'shibainu', name: 'Shiba Inu', emoji: '🐕', color: 'from-orange-500 to-amber-600' },
+  
+  // Active & Working Breeds
   { id: 'husky', name: 'Husky', emoji: '🐺', color: 'from-slate-400 to-blue-500' },
-  { id: 'other', name: 'Other Breed', emoji: '🐾', color: 'from-purple-500 to-pink-500' },
+  { id: 'border_collie', name: 'Border Collie', emoji: '🐕', color: 'from-slate-800 to-white' },
+  { id: 'pitbull', name: 'Pitbull / Bully', emoji: '🐕', color: 'from-slate-600 to-slate-800' },
+  { id: 'jack_russell', name: 'Jack Russell', emoji: '🐕', color: 'from-white to-amber-400' },
+  { id: 'saint_bernard', name: 'Saint Bernard', emoji: '🐕', color: 'from-amber-600 to-white' },
+  
+  // Catch-all
+  { id: 'mixed', name: 'Mixed Breed', emoji: '🐾', color: 'from-purple-500 to-pink-500' },
+  { id: 'other', name: 'Other Breed', emoji: '🐾', color: 'from-slate-500 to-slate-700' },
 ];
 
 // Check if user is already logged in
@@ -927,32 +961,39 @@ const MiraMeetsYourPet = () => {
           />
           
           {/* Divider */}
-          <div className="flex items-center gap-4 mb-6 w-full max-w-xs">
+          <div className="flex items-center gap-4 mb-4 w-full max-w-md">
             <div className="flex-1 h-px bg-slate-700"></div>
-            <span className="text-slate-500 text-sm">or choose an avatar</span>
+            <span className="text-slate-500 text-sm">or choose a breed avatar</span>
             <div className="flex-1 h-px bg-slate-700"></div>
           </div>
           
-          {/* Avatar Grid */}
-          <div className="grid grid-cols-5 gap-3 mb-6 max-w-sm">
-            {DOG_AVATARS.map((avatar) => (
-              <button
-                key={avatar.id}
-                onClick={() => {
-                  setSelectedAvatar(avatar);
-                  setBreedDetected(avatar.name);
-                  setBreedConfirmed(true);
-                  setScreen('gender');
-                }}
-                className="flex flex-col items-center p-2 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all hover:scale-105"
-              >
-                <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${avatar.color} flex items-center justify-center text-2xl mb-1`}>
-                  {avatar.emoji}
-                </div>
-                <span className="text-[10px] text-slate-400 text-center leading-tight">{avatar.name.split(' ')[0]}</span>
-              </button>
-            ))}
+          {/* Avatar Grid - Scrollable */}
+          <div className="w-full max-w-lg max-h-64 overflow-y-auto rounded-xl bg-slate-800/50 p-3 mb-4">
+            <div className="grid grid-cols-5 sm:grid-cols-6 gap-2">
+              {DOG_AVATARS.map((avatar) => (
+                <button
+                  key={avatar.id}
+                  onClick={() => {
+                    setSelectedAvatar(avatar);
+                    setBreedDetected(avatar.name);
+                    setBreedConfirmed(true);
+                    setScreen('gender');
+                  }}
+                  className="flex flex-col items-center p-2 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all hover:scale-105 active:scale-95"
+                  title={avatar.name}
+                >
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br ${avatar.color} flex items-center justify-center text-xl sm:text-2xl mb-1 shadow-lg`}>
+                    {avatar.emoji}
+                  </div>
+                  <span className="text-[9px] sm:text-[10px] text-slate-400 text-center leading-tight truncate w-full">{avatar.name.split('/')[0].trim()}</span>
+                </button>
+              ))}
+            </div>
           </div>
+          
+          <p className="text-slate-500 text-xs mb-4">
+            {DOG_AVATARS.length} breeds available • Scroll to see more
+          </p>
         </>
       ) : selectedAvatar ? (
         <>
