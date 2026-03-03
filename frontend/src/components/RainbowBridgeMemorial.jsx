@@ -316,7 +316,7 @@ const RainbowBridgeMemorial = () => {
 
       {/* Mark as Memorial Modal */}
       <Dialog open={showMarkMemorialModal} onOpenChange={setShowMarkMemorialModal}>
-        <DialogContent className="bg-slate-900 border-purple-500/30 max-w-lg max-h-[90vh] flex flex-col">
+        <DialogContent className="bg-slate-900 border-purple-500/30 max-w-lg max-h-[85vh] flex flex-col overflow-hidden sm:max-h-[90vh]">
           <DialogHeader className="flex-shrink-0">
             <DialogTitle className="text-white flex items-center gap-2">
               <Rainbow className="w-5 h-5 text-purple-400" />
@@ -327,19 +327,29 @@ const RainbowBridgeMemorial = () => {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 pt-4 overflow-y-auto flex-1 pr-2">
+          <div className="space-y-4 pt-4 overflow-y-auto flex-1 pr-2 -mr-2 touch-pan-y">
             {/* Pet Selection */}
             <div>
               <label className="text-white/70 text-sm mb-2 block">Select Pet</label>
-              <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+              <div className="grid grid-cols-2 gap-3 max-h-40 overflow-y-auto touch-pan-y p-1">
                 {pets.map(pet => (
                   <button
                     key={pet.id}
-                    onClick={() => setSelectedPet(pet)}
-                    className={`p-2 rounded-lg border text-left transition-all ${
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setSelectedPet(pet);
+                    }}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      setSelectedPet(pet);
+                    }}
+                    data-testid={`select-pet-${pet.id}`}
+                    className={`p-3 rounded-lg border text-left transition-all active:scale-95 ${
                       selectedPet?.id === pet.id
-                        ? 'bg-purple-500/20 border-purple-400/50'
-                        : 'bg-slate-800 border-slate-700 hover:border-slate-600'
+                        ? 'bg-purple-500/30 border-purple-400 ring-2 ring-purple-400/50'
+                        : 'bg-slate-800 border-slate-700 hover:border-slate-600 active:bg-slate-700'
                     }`}
                   >
                     <div className="flex items-center gap-2">
