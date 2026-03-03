@@ -30,6 +30,7 @@ import {
   Clock, ChevronRight, ChevronLeft, Sparkles, Home, CheckCircle, Users,
   MessageCircle, ArrowRight, Book, Camera, Music, Loader2, X, ShoppingCart
 } from 'lucide-react';
+import RainbowBridgeMemorial from '../components/RainbowBridgeMemorial';
 
 // Service Categories
 const SERVICE_CATEGORIES = {
@@ -355,6 +356,13 @@ const FarewellPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Rainbow Bridge Memorial Section - For Mystique 💜 */}
+      <section className="py-12 px-4 bg-gradient-to-b from-slate-900 to-purple-950/50">
+        <div className="max-w-6xl mx-auto">
+          <RainbowBridgeMemorial />
+        </div>
+      </section>
 
       {/* Service Categories - 2x2 on mobile, 4 cols on desktop */}
       <section className="py-12 px-4 relative z-10">

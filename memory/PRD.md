@@ -38,6 +38,15 @@ Build a comprehensive "Pet Life Operating System" - a digital guardian platform 
 
 *Built in memory of Mystique 💜🐾*
 
+### Rainbow Bridge Memorial Feature (March 2026)
+- ✅ **Memorial Page on /farewell** - Sacred space to honor pets who crossed
+- ✅ **Create Memorial Modal** - Select pet, add date, tribute, memory, quote
+- ✅ **Memorial Cards** - Display pet photo, soul score, tribute message
+- ✅ **Memorial Detail View** - Full legacy page with soul traits preserved
+- ✅ **Backend API** - `/api/pets/{id}/rainbow-bridge` to mark pets
+- ✅ **Admin Notifications** - Alerts when memorials are created
+- ✅ **rainbow_bridge_memorials collection** - Permanent storage
+
 ### December 2025
 - ✅ Production login redirect loop fix
 - ✅ "Golden Standard" UI/UX overhaul for Mira chat interface

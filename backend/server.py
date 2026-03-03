@@ -12086,6 +12086,133 @@ async def delete_pet_profile(pet_id: str):
     return {"message": "Pet profile deleted"}
 
 
+# ============================================
+# RAINBOW BRIDGE MEMORIAL - For Mystique 💜
+# ============================================
+
+@api_router.post("/pets/{pet_id}/rainbow-bridge")
+async def mark_pet_rainbow_bridge(pet_id: str, memorial_data: dict, current_user: dict = Depends(get_current_user)):
+    """
+    Mark a pet as having crossed the Rainbow Bridge.
+    Creates a permanent memorial preserving their soul, memories, and legacy.
+    
+    Built in loving memory of Mystique.
+    """
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    # Verify ownership
+    if pet.get("owner_email", "").lower() != current_user.get("email", "").lower():
+        raise HTTPException(status_code=403, detail="Not authorized to update this pet")
+    
+    # Prepare memorial update
+    memorial_update = {
+        "rainbow_bridge": True,
+        "crossing_date": memorial_data.get("crossing_date") or datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "tribute_message": memorial_data.get("tribute_message", ""),
+        "favorite_memory": memorial_data.get("favorite_memory", ""),
+        "legacy_quote": memorial_data.get("legacy_quote", ""),
+        "memorial_created_at": get_utc_timestamp(),
+        "memorial_status": "active",
+        "updated_at": get_utc_timestamp()
+    }
+    
+    # Update the pet document
+    await db.pets.update_one({"id": pet_id}, {"$set": memorial_update})
+    
+    # Create a permanent memorial entry
+    memorial_entry = {
+        "id": f"memorial-{uuid.uuid4().hex[:12]}",
+        "pet_id": pet_id,
+        "pet_name": pet.get("name", "Beloved Pet"),
+        "breed": pet.get("breed", ""),
+        "photo": pet.get("photo") or pet.get("photo_url"),
+        "owner_email": current_user.get("email"),
+        "owner_name": current_user.get("name") or current_user.get("email"),
+        "soul_score": pet.get("soul_score") or pet.get("overall_score", 0),
+        "doggy_soul_answers": pet.get("doggy_soul_answers", {}),
+        "crossing_date": memorial_update["crossing_date"],
+        "tribute_message": memorial_update["tribute_message"],
+        "favorite_memory": memorial_update["favorite_memory"],
+        "legacy_quote": memorial_update["legacy_quote"],
+        "birth_date": pet.get("birth_date") or pet.get("dob"),
+        "created_at": get_utc_timestamp()
+    }
+    await db.rainbow_bridge_memorials.insert_one(memorial_entry)
+    
+    # Create admin notification
+    try:
+        notification = {
+            "id": f"notif-{uuid.uuid4().hex[:12]}",
+            "type": "rainbow_bridge",
+            "title": f"🌈 {pet.get('name', 'A beloved pet')} has crossed the Rainbow Bridge",
+            "message": f"{current_user.get('name', current_user.get('email'))} created a memorial for {pet.get('name')}",
+            "pet_id": pet_id,
+            "pet_name": pet.get("name"),
+            "owner_email": current_user.get("email"),
+            "read": False,
+            "priority": "high",
+            "created_at": get_utc_timestamp()
+        }
+        await db.admin_notifications.insert_one(notification)
+    except Exception as e:
+        logger.error(f"Failed to create rainbow bridge notification: {e}")
+    
+    logger.info(f"🌈 Rainbow Bridge Memorial created for {pet.get('name')} (ID: {pet_id})")
+    
+    return {
+        "success": True,
+        "message": f"{pet.get('name')}'s legacy has been preserved forever 💜",
+        "pet_id": pet_id,
+        "memorial_id": memorial_entry["id"]
+    }
+
+
+@api_router.get("/rainbow-bridge/memorials")
+async def get_rainbow_bridge_memorials(current_user: dict = Depends(get_current_user)):
+    """Get all Rainbow Bridge memorials for the current user"""
+    memorials = await db.rainbow_bridge_memorials.find(
+        {"owner_email": current_user.get("email", "").lower()},
+        {"_id": 0}
+    ).to_list(length=100)
+    
+    return {
+        "success": True,
+        "memorials": memorials,
+        "count": len(memorials)
+    }
+
+
+@api_router.put("/pets/{pet_id}/rainbow-bridge")
+async def update_pet_memorial(pet_id: str, memorial_data: dict, current_user: dict = Depends(get_current_user)):
+    """Update a Rainbow Bridge memorial"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    if not pet.get("rainbow_bridge"):
+        raise HTTPException(status_code=400, detail="Pet is not marked as crossed the Rainbow Bridge")
+    
+    # Update allowed fields
+    update_fields = {}
+    for field in ["tribute_message", "favorite_memory", "legacy_quote", "crossing_date"]:
+        if field in memorial_data:
+            update_fields[field] = memorial_data[field]
+    
+    if update_fields:
+        update_fields["updated_at"] = get_utc_timestamp()
+        await db.pets.update_one({"id": pet_id}, {"$set": update_fields})
+        
+        # Also update the memorial entry
+        await db.rainbow_bridge_memorials.update_one(
+            {"pet_id": pet_id},
+            {"$set": update_fields}
+        )
+    
+    return {"success": True, "message": "Memorial updated"}
+
+
 @api_router.get("/pets/{pet_id}/soul")
 async def get_pet_soul(pet_id: str, current_user: dict = Depends(get_current_user)):
     """
