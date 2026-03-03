@@ -123,11 +123,8 @@
   padding: var(--space-xl) var(--space-xl);
   padding-top: 24px; /* Space at top of content */
   /* CRITICAL: Extra bottom padding to ensure content scrolls above fixed composer */
-  padding-bottom: calc(
-    max(var(--mira-interaction-footer-h), var(--mira-footer-fallback)) 
-    + var(--page-bottom-space)
-    + 64px /* Extra clearance for the composer and comfortable scrolling */
-  );
+  /* Desktop needs MORE padding since the composer is larger */
+  padding-bottom: 200px; /* Fixed value that works across all devices */
   
   /* Smooth scrolling */
   scroll-behavior: smooth;
@@ -136,6 +133,14 @@
   /* Hide scrollbar on modern browsers for cleaner look */
   scrollbar-width: thin;
   scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
+}
+
+/* Mobile needs slightly more bottom padding for browser chrome */
+@media (max-width: 768px) {
+  .mp-messages {
+    padding: var(--space-md) var(--space-md);
+    padding-bottom: 220px; /* Extra space for mobile browser UI */
+  }
 }
 
 /* Custom scrollbar styling for webkit browsers */
@@ -337,15 +342,7 @@
 /* Mobile: Full width dropdown */
 @media (max-width: 768px) {
   /* Mobile layout adjustments - Perfect for iOS & Android */
-  .mp-messages {
-    padding: var(--space-md) var(--space-md);
-    /* CRITICAL: Generous bottom padding on mobile for thumb reachability */
-    padding-bottom: calc(
-      max(var(--mira-interaction-footer-h), 180px) 
-      + var(--page-bottom-space)
-      + 48px /* Extra space for mobile browsers' bottom UI */
-    );
-  }
+  /* NOTE: .mp-messages padding defined earlier with mobile override */
   
   /* Composer adjustments for mobile */
   .mp-composer {
@@ -367,11 +364,6 @@
 
 /* Small phones (iPhone SE, older Androids) */
 @media (max-width: 375px) {
-  .mp-messages {
-    padding: var(--space-sm) var(--space-sm);
-    padding-bottom: calc(200px + var(--page-bottom-space));
-  }
-  
   .mp-composer {
     padding: var(--space-sm) var(--space-xs) calc(var(--space-lg) + 24px);
   }
@@ -422,79 +414,112 @@
 }
 
 /* ========================================
-   TEST SCENARIOS PANEL - Dark Card
+   TEST SCENARIOS PANEL - Positioned at Bottom
+   Below the Ask Mira bar for easy access
    ======================================== */
 .mp-test-panel {
-  margin: var(--space-lg) auto;
-  background: var(--mira-card-bg);
-  border: 1px solid var(--mira-card-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  max-width: 900px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, rgba(15, 7, 32, 0.98) 0%, rgba(30, 10, 60, 0.99) 100%);
+  border: none;
+  border-top: 1px solid rgba(168, 85, 247, 0.4);
+  border-radius: 0;
+  padding: var(--space-sm) var(--space-lg);
+  padding-bottom: calc(var(--space-md) + 24px); /* Extra space for OS taskbars */
+  max-width: 100%;
+  z-index: 45; /* BELOW composer (50) so input bar is always accessible */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+  animation: test-panel-slide-up 0.3s ease-out;
+}
+
+@keyframes test-panel-slide-up {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile: Compact with safe area */
+@media (max-width: 768px) {
+  .mp-test-panel {
+    padding: var(--space-xs) var(--space-md);
+    padding-bottom: calc(var(--space-sm) + 20px);
+  }
 }
 
 .mp-test-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-sm);
 }
 
 .mp-test-title {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: white;
 }
 
 .mp-test-title svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   color: #fbbf24;
 }
 
 .mp-test-close {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: var(--radius-sm);
   border: none;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.1);
   color: var(--mira-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.15s ease;
 }
 
 .mp-test-close:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.2);
   color: white;
+}
+
+.mp-test-close svg {
+  width: 14px;
+  height: 14px;
 }
 
 .mp-test-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-sm);
-  justify-content: center;
+  gap: 8px;
+  justify-content: flex-start;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .mp-test-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: var(--space-sm) var(--space-md);
+  gap: 4px;
+  padding: 8px 14px;
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 20px;
   color: var(--mira-text-secondary);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  min-height: 40px;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .mp-test-chip:hover {
@@ -511,26 +536,10 @@
 /* ========================================
    CHAT MESSAGES AREA
    Main scrollable content container
+   NOTE: Primary definition is earlier in the file
+   This section provides additional overrides
    ======================================== */
-.mp-messages {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: var(--space-lg) var(--space-xl);
-  padding-bottom: 160px; /* Space for fixed composer + quick replies */
-  padding-top: var(--space-lg);
-  min-height: 0; /* Critical for flex scrolling */
-  position: relative;
-  z-index: 1;
-  background: linear-gradient(180deg, 
-    var(--mira-bg-dark) 0%, 
-    var(--mira-bg-purple) 50%,
-    var(--mira-bg-violet) 100%
-  );
-  /* Smooth scrolling */
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-}
+/* .mp-messages defined above with proper padding-bottom calculation */
 
 /* ========================================
    COMPOSER - Beautiful original design restored
@@ -656,20 +665,29 @@
   50% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
 }
 
-/* Sandbox footer - sits above the composer */
+/* Sandbox footer - BELOW the composer, not above */
 .mp-sandbox-footer {
   position: fixed;
-  bottom: 100px;
+  /* Position it at very bottom, below the composer */
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
   padding: var(--space-xs) var(--space-lg);
   text-align: center;
-  font-size: 11px;
+  font-size: 10px;
   color: var(--mira-text-muted);
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   border-radius: var(--radius-full);
-  z-index: 49;
+  z-index: 45; /* Below composer (z-index 50) */
   pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Hide sandbox footer on mobile - not needed */
+@media (max-width: 768px) {
+  .mp-sandbox-footer {
+    display: none;
+  }
 }
 
 .mp-messages-inner {
