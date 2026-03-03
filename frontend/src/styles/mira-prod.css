@@ -3765,8 +3765,10 @@ button.mp-welcome-chip,
   padding: 0 16px 8px;
   overflow-x: auto;
   overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* iOS Safari scroll fix */
+  -webkit-overflow-scrolling: auto;
 }
 
 .quick-chips::-webkit-scrollbar {
@@ -3788,7 +3790,9 @@ button.mp-welcome-chip,
   cursor: pointer;
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
-  white-space: nowrap;
+  white-space: nowrap !important; /* iOS needs !important */
+  flex-shrink: 0 !important; /* CRITICAL: Prevent shrinking on iOS */
+  min-width: max-content; /* Ensure chip expands to fit content */
   min-height: 44px; /* iOS touch target */
 }
 
