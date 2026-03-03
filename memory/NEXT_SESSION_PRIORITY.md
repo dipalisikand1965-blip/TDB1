@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://pet-os-auth-fix.preview.emergentagent.com
+**Preview URL:** https://frontend-regression.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

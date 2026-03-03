@@ -229,7 +229,7 @@ useSession: sessionId, setSessionId, sessionRecovered, setSessionRecovered
 
 - **Email**: `dipali@clubconcierge.in`
 - **Password**: `lola4304`
-- **Preview URL**: `https://pet-os-auth-fix.preview.emergentagent.com`
+- **Preview URL**: `https://frontend-regression.preview.emergentagent.com`
 
 ---
 
