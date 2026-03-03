@@ -395,8 +395,8 @@ const WelcomeHero = ({
         </div>
       </div>
       
-      {/* Quick Suggestion Chips */}
-      <div className="quick-chips">
+      {/* Quick Suggestion Chips - iOS Safari optimized */}
+      <div className="quick-chips" style={{ display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', gap: '12px' }}>
         {[
           { text: `Birthday party for ${pet.name}`, icon: '🎂' },
           { text: 'Health checkup reminder', icon: '💉' },
@@ -406,6 +406,7 @@ const WelcomeHero = ({
             key={i} 
             onClick={() => handleQuickReply(s.text)} 
             className="quick-chip"
+            style={{ whiteSpace: 'nowrap', flexShrink: 0, minWidth: 'max-content' }}
             data-testid={`quick-chip-${i}`}
           >
             <span className="chip-icon">{s.icon}</span>
