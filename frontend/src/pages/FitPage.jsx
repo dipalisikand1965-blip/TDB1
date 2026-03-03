@@ -20,8 +20,7 @@ import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
-import AdminQuickEdit from '../components/AdminQuickEdit';
-import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
+import { ConciergeButton } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
 import MultiPetSelector from '../components/MultiPetSelector';
 import { getPetPhotoUrl } from '../utils/petAvatar';
@@ -1093,13 +1092,7 @@ const FitPage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Admin Quick Edit */}
-      <AdminQuickEdit pillar="fit" position="bottom-left" />
-      
-      {/* Mira OS Trigger */}
-      <MiraOSTrigger pillar="fit" position="bottom-left" />
-      
-      {/* Concierge® Button */}
+      {/* Concierge® Button - Blue C® for Service Desk chat */}
       <ConciergeButton 
         pillar="fit" 
         position="bottom-right"

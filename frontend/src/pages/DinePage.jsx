@@ -17,7 +17,6 @@ import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
-import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import DiningConciergePicker from '../components/DiningConciergePicker';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
@@ -26,7 +25,7 @@ import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePic
 import PillarPicksSection from '../components/PillarPicksSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
-import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
+import { ConciergeButton } from '../components/mira-os';
 import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
 import NearbyPlacesCarousel from '../components/NearbyPlacesCarousel';
 import { usePillarContext } from '../context/PillarContext';
@@ -2787,10 +2786,7 @@ const RestaurantBookingModal = ({ restaurant, onClose, user, activePet }) => {
           </p>
         </form>
       </Card>
-      {/* Mira OS Trigger */}
-      <MiraOSTrigger pillar="dine" position="bottom-left" />
-      
-      {/* Concierge® Button */}
+      {/* Concierge® Button - Blue C® for Service Desk chat */}
       <ConciergeButton 
         pillar="dine" 
         position="bottom-right"

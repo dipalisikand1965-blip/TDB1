@@ -15,8 +15,7 @@ import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import ProductCard from '../components/ProductCard';
-import AdminQuickEdit from '../components/AdminQuickEdit';
-import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
+import { ConciergeButton } from '../components/mira-os';
 import MultiPetSelector from '../components/MultiPetSelector';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
@@ -906,13 +905,7 @@ const EnjoyPage = () => {
         </div>
       </div>
       
-      {/* Admin Quick Edit */}
-      <AdminQuickEdit pillar="enjoy" position="bottom-left" />
-      
-      {/* Mira OS Trigger */}
-      <MiraOSTrigger pillar="enjoy" position="bottom-left" />
-      
-      {/* Concierge® Button */}
+      {/* Concierge® Button - Blue C® for Service Desk chat */}
       <ConciergeButton 
         pillar="enjoy" 
         position="bottom-right"

@@ -291,7 +291,7 @@ const ConciergeButton = ({
         <button
           onClick={handleOpen}
           disabled={loading}
-          className={`${config.button} rounded-full bg-gradient-to-br from-purple-600 to-pink-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center justify-center relative group ${className}`}
+          className={`${config.button} rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center justify-center relative group ${className}`}
           data-testid="concierge-button"
           title="Chat with Concierge®"
         >
@@ -304,7 +304,7 @@ const ConciergeButton = ({
               
               {/* Pulse animation for new messages */}
               {hasNewMessage && (
-                <span className="absolute inset-0 rounded-full bg-purple-400 animate-ping opacity-30" />
+                <span className="absolute inset-0 rounded-full bg-blue-400 animate-ping opacity-30" />
               )}
             </>
           )}
