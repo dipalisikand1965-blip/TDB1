@@ -3046,6 +3046,35 @@ async def understand_with_llm(
         breed_name = pet_context.get('breed', '')
         pet_name = pet_context.get('name', 'Your pet')
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # RAINBOW BRIDGE CHECK - Handle with utmost compassion
+        # ═══════════════════════════════════════════════════════════════════════════
+        is_rainbow_bridge = pet_context.get('rainbow_bridge', False)
+        if is_rainbow_bridge:
+            crossing_date = pet_context.get('crossing_date', '')
+            tribute_message = pet_context.get('tribute_message', '')
+            pet_info = f"""
+## 🌈 IN LOVING MEMORY: {pet_name}
+
+**{pet_name} has crossed the Rainbow Bridge.** This is a memorial profile.
+
+- Crossing Date: {crossing_date or 'Not recorded'}
+- Breed: {breed_name or 'Beloved companion'}
+- Tribute: "{tribute_message or 'Forever in our hearts'}"
+
+**MIRA BEHAVIOR FOR MEMORIAL PETS:**
+1. Speak of {pet_name} with reverence and love - use past tense
+2. Honor their memory - "I remember {pet_name}..." or "{pet_name} was..."
+3. Never suggest services, appointments, or products for {pet_name}
+4. If the parent wants to talk about {pet_name}, listen with compassion
+5. You may share that their soul profile is preserved forever
+6. You may reference happy memories if the parent wishes
+7. Be supportive if they're grieving - "I'm here", "Take your time"
+
+{pet_name}'s soul lives on in this system. Their personality, preferences, and memories are preserved forever. 💜
+"""
+            return (pet_info, breed_context)
+        
         # Get breed-specific knowledge (but use it SECONDARY, not primary)
         if breed_name:
             breed_context = format_breed_context_for_llm(breed_name)

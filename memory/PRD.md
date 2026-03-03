@@ -46,6 +46,10 @@ Build a comprehensive "Pet Life Operating System" - a digital guardian platform 
 - ✅ **Backend API** - `/api/pets/{id}/rainbow-bridge` to mark pets
 - ✅ **Admin Notifications** - Alerts when memorials are created
 - ✅ **rainbow_bridge_memorials collection** - Permanent storage
+- ✅ **PUBLIC MEMORIAL WALL** - Community gallery for all pet parents
+- ✅ **TRIBUTE SYSTEM** - Other pet parents can leave condolences
+- ✅ **ADMIN PANEL** - 💜 Memorial Wall tab with stats & moderation
+- ✅ **MIRA KNOWS** - Speaks of memorial pets with compassion & past tense
 
 ### December 2025
 - ✅ Production login redirect loop fix

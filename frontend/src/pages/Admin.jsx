@@ -58,6 +58,7 @@ import ServiceBox from '../components/admin/ServiceBox';
 import ConciergeExperiencesAdmin from '../components/admin/ConciergeExperiencesAdmin';
 import PillarQueues from '../components/admin/PillarQueues';
 import AdminGuideDashboard from '../components/admin/AdminGuideDashboard';
+import AdminRainbowBridge from '../components/admin/AdminRainbowBridge';
 import { testimonials as mockTestimonials, faqs as mockFaqs } from '../mockData';
 import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
@@ -2358,6 +2359,7 @@ const Admin = () => {
               { id: 'advisory', emoji: '📋', label: 'Advisory' },
               { id: 'emergency', emoji: '🚨', label: 'Emergency' },
               { id: 'farewell', emoji: '🌈', label: 'Farewell' },
+              { id: 'rainbow-bridge', emoji: '💜', label: 'Memorial Wall' },
               { id: 'adopt', emoji: '🐾', label: 'Adopt' },
               { id: 'shop', emoji: '🛒', label: 'Shop' },
             ].map((tab) => (
@@ -3470,6 +3472,11 @@ const Admin = () => {
         {/* Farewell Tab */}
         {activeTab === 'farewell' && (
           <FarewellManager getAuthHeader={getAuthHeaders} />
+        )}
+
+        {/* Rainbow Bridge Memorial Admin */}
+        {activeTab === 'rainbow-bridge' && (
+          <AdminRainbowBridge />
         )}
 
         {/* Adopt Tab */}
