@@ -562,6 +562,8 @@ const MiraMeetsYourPet = () => {
     birthday_type: birthdayType,
     species: 'dog',
     photo: petPhotoPreview,
+    weight: answers.weight || null,
+    weight_unit: answers.weight_unit || 'kg',
     is_neutered: answers.is_neutered === 'yes' ? true : answers.is_neutered === 'no' ? false : null,
     doggy_soul_answers: {
       temperament: answers.temperament,
@@ -575,7 +577,9 @@ const MiraMeetsYourPet = () => {
       lives_with: answers.lives_with,
       other_pets: answers.other_pets,
       life_stage: answers.life_stage,
-      main_goal: answers.main_goal
+      main_goal: answers.main_goal,
+      weight: answers.weight || null,
+      weight_unit: answers.weight_unit || 'kg'
     }
   });
   
