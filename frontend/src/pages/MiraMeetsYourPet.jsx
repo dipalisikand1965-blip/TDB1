@@ -759,23 +759,36 @@ const MiraMeetsYourPet = () => {
                 🚗 How do they feel about car rides?
               </label>
               <div className="flex gap-2">
-                {[
-                  { value: 'anxious', label: '😰 Anxious', color: 'red' },
-                  { value: 'okay', label: '😐 Okay', color: 'amber' },
-                  { value: 'loves', label: '🥰 Loves it!', color: 'green' }
-                ].map(opt => (
-                  <button
-                    key={opt.value}
-                    onClick={() => updatePet(index, 'carRides', opt.value)}
-                    className={`flex-1 py-2 rounded-lg text-sm transition-all ${
-                      pet.carRides === opt.value
-                        ? `bg-${opt.color}-500/20 text-${opt.color}-400 border border-${opt.color}-500`
-                        : 'bg-slate-900 text-slate-400 border border-slate-700'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
+                <button
+                  onClick={() => updatePet(index, 'carRides', 'anxious')}
+                  className={`flex-1 py-2 rounded-lg text-sm transition-all ${
+                    pet.carRides === 'anxious'
+                      ? 'bg-red-500/20 text-red-400 border border-red-500'
+                      : 'bg-slate-900 text-slate-400 border border-slate-700'
+                  }`}
+                >
+                  😰 Anxious
+                </button>
+                <button
+                  onClick={() => updatePet(index, 'carRides', 'okay')}
+                  className={`flex-1 py-2 rounded-lg text-sm transition-all ${
+                    pet.carRides === 'okay'
+                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500'
+                      : 'bg-slate-900 text-slate-400 border border-slate-700'
+                  }`}
+                >
+                  😐 Okay
+                </button>
+                <button
+                  onClick={() => updatePet(index, 'carRides', 'loves')}
+                  className={`flex-1 py-2 rounded-lg text-sm transition-all ${
+                    pet.carRides === 'loves'
+                      ? 'bg-green-500/20 text-green-400 border border-green-500'
+                      : 'bg-slate-900 text-slate-400 border border-slate-700'
+                  }`}
+                >
+                  🥰 Loves it!
+                </button>
               </div>
             </div>
             
