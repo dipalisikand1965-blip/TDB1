@@ -804,34 +804,54 @@ const MiraMeetsYourPet = () => {
         We'll get to know each one personally
       </p>
       
-      {/* Pet count buttons */}
-      <div className="grid grid-cols-5 gap-3 mb-8">
-        {[1, 2, 3, 4, 5].map((num) => (
+      {/* Pet count - Quick buttons */}
+      <div className="flex flex-wrap justify-center gap-3 mb-4 max-w-md">
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
           <button
             key={num}
-            onClick={() => {
-              setTotalPetCount(num);
-              setScreen('photo');
-            }}
-            className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold transition-all
+            onClick={() => setTotalPetCount(num)}
+            className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold transition-all
               ${totalPetCount === num 
                 ? 'bg-gradient-to-br from-pink-500 to-purple-600 text-white scale-110' 
                 : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
               }`}
           >
-            {num}{num === 5 ? '+' : ''}
+            {num}
           </button>
         ))}
       </div>
       
-      {/* Pet emoji preview */}
-      <div className="flex gap-2 mb-8">
-        {Array.from({ length: totalPetCount }, (_, i) => (
-          <span key={i} className="text-4xl animate-bounce" style={{ animationDelay: `${i * 0.1}s` }}>
+      {/* Custom number input for larger families */}
+      <div className="flex items-center gap-3 mb-6">
+        <span className="text-slate-400 text-sm">or enter:</span>
+        <input
+          type="number"
+          min="1"
+          max="50"
+          value={totalPetCount}
+          onChange={(e) => setTotalPetCount(Math.max(1, Math.min(50, parseInt(e.target.value) || 1)))}
+          className="w-20 px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-center text-lg font-bold focus:border-pink-500 focus:outline-none"
+        />
+        <span className="text-slate-400 text-sm">pets</span>
+      </div>
+      
+      {/* Pet emoji preview - show up to 12, then +N */}
+      <div className="flex flex-wrap justify-center gap-1 mb-8 max-w-xs">
+        {Array.from({ length: Math.min(totalPetCount, 12) }, (_, i) => (
+          <span key={i} className="text-3xl animate-bounce" style={{ animationDelay: `${i * 0.05}s` }}>
             🐕
           </span>
         ))}
+        {totalPetCount > 12 && (
+          <span className="text-xl text-pink-400 font-bold self-center ml-1">+{totalPetCount - 12}</span>
+        )}
       </div>
+      
+      {totalPetCount >= 5 && (
+        <p className="text-pink-400 text-sm mb-4 text-center">
+          Wow! {totalPetCount} pets! You're a true pet parent! 🏆
+        </p>
+      )}
       
       <button
         onClick={() => setScreen('photo')}
