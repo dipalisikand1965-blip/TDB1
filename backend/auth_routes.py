@@ -801,7 +801,7 @@ class ParentOnboard(BaseModel):
     whatsapp: Optional[str] = None
     address: Optional[str] = None
     city: str
-    pincode: str
+    pincode: Optional[str] = None
     password: str
 
 class MembershipOnboardRequest(BaseModel):
