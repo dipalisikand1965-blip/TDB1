@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://pillar-consistency.preview.emergentagent.com
+**Preview URL:** https://pet-parent-signup.preview.emergentagent.com
 
 ---
 
