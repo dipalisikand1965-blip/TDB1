@@ -110,7 +110,7 @@ Step 4: Welcome!
 ---
 
 ## PREVIEW URL
-`https://pillar-consistency.preview.emergentagent.com`
+`https://pet-parent-signup.preview.emergentagent.com`
 
 ## SERVICES
 - Frontend: Running on port 3000 (hot reload)

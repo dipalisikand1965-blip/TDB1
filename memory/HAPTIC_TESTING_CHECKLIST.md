@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://pillar-consistency.preview.emergentagent.com/mira-demo**
+**https://pet-parent-signup.preview.emergentagent.com/mira-demo**
 
 ---
 

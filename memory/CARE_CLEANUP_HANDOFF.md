@@ -264,7 +264,7 @@ When user does action on `/care` page:
 | Admin | aditya | lola4304 |
 
 ## URLs
-- Preview: https://pillar-consistency.preview.emergentagent.com
+- Preview: https://pet-parent-signup.preview.emergentagent.com
 - Production: https://thedoggycompany.com (currently down - Nginx issue)
 
 ---

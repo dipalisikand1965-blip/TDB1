@@ -580,8 +580,10 @@ const MiraMeetsYourPet = () => {
       name: petName,
       nickname: petNickname,
       breed: breedDetected,
-      birthday: petBirthday,
-      birthType: birthType,
+      birthdayType: birthdayType,
+      birthdayDate: birthdayDate,
+      gotchaDate: gotchaDate,
+      approximateAge: approximateAge,
       answers: { ...answers }
     };
     
@@ -598,8 +600,10 @@ const MiraMeetsYourPet = () => {
       setPetNickname('');
       setBreedDetected('');
       setBreedConfirmed(false);
-      setPetBirthday('');
-      setBirthType('birthday');
+      setBirthdayType('');
+      setBirthdayDate('');
+      setGotchaDate('');
+      setApproximateAge('');
       setAnswers({});
       setCurrentQuestion(0);
       
@@ -1174,12 +1178,33 @@ const MiraMeetsYourPet = () => {
         <ChevronLeft className="w-5 h-5 text-white" />
       </button>
       
-      {/* Pet photo */}
-      <img
-        src={petPhotoPreview}
-        alt="Pet"
-        className="w-32 h-32 rounded-full object-cover border-4 border-pink-500/30 mb-6"
-      />
+      {/* Show which pet we're on for multi-pet onboarding */}
+      {totalPetCount > 1 && (
+        <div className="mb-4 flex items-center gap-2">
+          <span className="text-slate-400 text-sm">Pet {currentPetIndex + 1} of {totalPetCount}</span>
+          <div className="flex gap-1">
+            {Array.from({ length: totalPetCount }, (_, i) => (
+              <div 
+                key={i} 
+                className={`w-2 h-2 rounded-full ${i <= currentPetIndex ? 'bg-pink-500' : 'bg-slate-700'}`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* Pet photo OR avatar */}
+      {petPhotoPreview ? (
+        <img
+          src={petPhotoPreview}
+          alt="Pet"
+          className="w-32 h-32 rounded-full object-cover border-4 border-pink-500/30 mb-6"
+        />
+      ) : selectedAvatar ? (
+        <div className={`w-32 h-32 rounded-full bg-gradient-to-br ${selectedAvatar.color} flex items-center justify-center text-6xl border-4 border-pink-500/30 mb-6`}>
+          {selectedAvatar.emoji}
+        </div>
+      ) : null}
       
       <h2 className="text-2xl font-bold text-white mb-2 text-center">
         Is this a boy or girl?
@@ -1242,12 +1267,33 @@ const MiraMeetsYourPet = () => {
           <ChevronLeft className="w-5 h-5 text-white" />
         </button>
         
-        {/* Pet photo */}
-        <img
-          src={petPhotoPreview}
-          alt="Pet"
-          className="w-24 h-24 rounded-full object-cover border-4 border-pink-500/30 mb-6"
-        />
+        {/* Show which pet we're on for multi-pet onboarding */}
+        {totalPetCount > 1 && (
+          <div className="mb-4 flex items-center gap-2">
+            <span className="text-slate-400 text-sm">Pet {currentPetIndex + 1} of {totalPetCount}</span>
+            <div className="flex gap-1">
+              {Array.from({ length: totalPetCount }, (_, i) => (
+                <div 
+                  key={i} 
+                  className={`w-2 h-2 rounded-full ${i <= currentPetIndex ? 'bg-pink-500' : 'bg-slate-700'}`}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Pet photo OR avatar */}
+        {petPhotoPreview ? (
+          <img
+            src={petPhotoPreview}
+            alt="Pet"
+            className="w-24 h-24 rounded-full object-cover border-4 border-pink-500/30 mb-6"
+          />
+        ) : selectedAvatar ? (
+          <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${selectedAvatar.color} flex items-center justify-center text-5xl border-4 border-pink-500/30 mb-6`}>
+            {selectedAvatar.emoji}
+          </div>
+        ) : null}
         
         <h2 className="text-2xl font-bold text-white mb-2 text-center">
           What's {pronoun.possessive} name?
@@ -1314,13 +1360,34 @@ const MiraMeetsYourPet = () => {
           <ChevronLeft className="w-5 h-5 text-white" />
         </button>
         
-        {/* Pet photo & name */}
+        {/* Show which pet we're on for multi-pet onboarding */}
+        {totalPetCount > 1 && (
+          <div className="mb-4 flex items-center gap-2">
+            <span className="text-slate-400 text-sm">Pet {currentPetIndex + 1} of {totalPetCount}</span>
+            <div className="flex gap-1">
+              {Array.from({ length: totalPetCount }, (_, i) => (
+                <div 
+                  key={i} 
+                  className={`w-2 h-2 rounded-full ${i <= currentPetIndex ? 'bg-pink-500' : 'bg-slate-700'}`}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Pet photo OR avatar & name */}
         <div className="flex items-center gap-3 mb-6">
-          <img
-            src={petPhotoPreview}
-            alt={petName}
-            className="w-16 h-16 rounded-full object-cover border-2 border-pink-500/30"
-          />
+          {petPhotoPreview ? (
+            <img
+              src={petPhotoPreview}
+              alt={petName}
+              className="w-16 h-16 rounded-full object-cover border-2 border-pink-500/30"
+            />
+          ) : selectedAvatar ? (
+            <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${selectedAvatar.color} flex items-center justify-center text-3xl border-2 border-pink-500/30`}>
+              {selectedAvatar.emoji}
+            </div>
+          ) : null}
           <div>
             <p className="text-white font-medium">{petName}</p>
             <p className="text-slate-400 text-sm">{breedDetected}</p>
@@ -1490,7 +1557,13 @@ const MiraMeetsYourPet = () => {
           <ChevronLeft className="w-5 h-5 text-white" />
         </button>
         <div className="flex items-center gap-2">
-          <img src={petPhotoPreview} alt={petName} className="w-8 h-8 rounded-full object-cover" />
+          {petPhotoPreview ? (
+            <img src={petPhotoPreview} alt={petName} className="w-8 h-8 rounded-full object-cover" />
+          ) : selectedAvatar ? (
+            <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${selectedAvatar.color} flex items-center justify-center text-lg`}>
+              {selectedAvatar.emoji}
+            </div>
+          ) : null}
           <span className="text-white font-medium">{petName}</span>
         </div>
         <div className="w-9" />
@@ -1701,12 +1774,18 @@ const MiraMeetsYourPet = () => {
         
         {/* Question */}
         <div className="flex-1 flex flex-col items-center justify-center p-6">
-          {/* Pet photo */}
-          <img
-            src={petPhotoPreview}
-            alt={petName}
-            className="w-24 h-24 rounded-full object-cover border-4 border-pink-500/30 mb-6"
-          />
+          {/* Pet photo OR avatar */}
+          {petPhotoPreview ? (
+            <img
+              src={petPhotoPreview}
+              alt={petName}
+              className="w-24 h-24 rounded-full object-cover border-4 border-pink-500/30 mb-6"
+            />
+          ) : selectedAvatar ? (
+            <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${selectedAvatar.color} flex items-center justify-center text-5xl border-4 border-pink-500/30 mb-6`}>
+              {selectedAvatar.emoji}
+            </div>
+          ) : null}
           
           {/* Question */}
           <div className="flex items-center gap-2 mb-2">
@@ -1821,12 +1900,18 @@ const MiraMeetsYourPet = () => {
           </div>
         </motion.div>
         
-        {/* Pet photo & name */}
-        <img
-          src={petPhotoPreview}
-          alt={petName}
-          className="w-20 h-20 rounded-full object-cover border-4 border-white/20 -mt-4 mb-4"
-        />
+        {/* Pet photo OR avatar & name */}
+        {petPhotoPreview ? (
+          <img
+            src={petPhotoPreview}
+            alt={petName}
+            className="w-20 h-20 rounded-full object-cover border-4 border-white/20 -mt-4 mb-4"
+          />
+        ) : selectedAvatar ? (
+          <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${selectedAvatar.color} flex items-center justify-center text-4xl border-4 border-white/20 -mt-4 mb-4`}>
+            {selectedAvatar.emoji}
+          </div>
+        ) : null}
         
         <h2 className="text-2xl font-bold text-white mb-2">
           {petName}'s Soul Started!
