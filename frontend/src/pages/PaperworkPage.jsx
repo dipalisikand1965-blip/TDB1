@@ -16,8 +16,7 @@ import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import ProductCard from '../components/ProductCard';
-import AdminQuickEdit from '../components/AdminQuickEdit';
-import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
+import { ConciergeButton } from '../components/mira-os';
 import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import PersonalizedPicks from '../components/PersonalizedPicks';
@@ -959,13 +958,7 @@ const PaperworkPage = () => {
         )}
       </div>
       
-      {/* Admin Quick Edit */}
-      <AdminQuickEdit pillar="paperwork" position="bottom-left" />
-      
-      {/* Mira OS Trigger */}
-      <MiraOSTrigger pillar="paperwork" position="bottom-left" />
-      
-      {/* Concierge® Button */}
+      {/* Concierge® Button - Blue C® for Service Desk chat */}
       <ConciergeButton 
         pillar="paperwork" 
         position="bottom-right"

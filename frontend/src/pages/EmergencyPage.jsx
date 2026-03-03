@@ -13,8 +13,7 @@ import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
-import AdminQuickEdit from '../components/AdminQuickEdit';
-import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
+import { ConciergeButton } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
@@ -759,13 +758,7 @@ const EmergencyPage = () => {
         </div>
       )}
       
-      {/* Admin Quick Edit */}
-      <AdminQuickEdit pillar="emergency" position="bottom-left" />
-      
-      {/* Mira OS Trigger */}
-      <MiraOSTrigger pillar="emergency" position="bottom-left" />
-      
-      {/* Concierge® Button */}
+      {/* Concierge® Button - Blue C® for Service Desk chat */}
       <ConciergeButton 
         pillar="emergency" 
         position="bottom-right"

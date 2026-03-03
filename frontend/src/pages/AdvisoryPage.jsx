@@ -13,9 +13,8 @@ import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
-import { MiraOSTrigger } from '../components/mira-os';
+import { ConciergeButton } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
-import AdminQuickEdit from '../components/AdminQuickEdit';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
@@ -721,9 +720,12 @@ const AdvisoryPage = () => {
         )}
       </div>
       
-      {/* Admin Quick Edit */}
-      <AdminQuickEdit pillar="advisory" position="bottom-left" />
-      <MiraOSTrigger pillar="advisory" position="bottom-left" />
+      {/* Concierge® Button - Blue C® for Service Desk chat */}
+      <ConciergeButton 
+        pillar="advisory" 
+        position="bottom-right"
+        showLabel
+      />
     </PillarPageLayout>
   );
 };

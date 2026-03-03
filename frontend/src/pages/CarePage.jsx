@@ -14,8 +14,7 @@ import { useAuth } from '../context/AuthContext';
 import { usePillarContext } from '../context/PillarContext';
 import { toast } from '../hooks/use-toast';
 import ProductCard from '../components/ProductCard';
-import AdminQuickEdit from '../components/AdminQuickEdit';
-import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
+import { ConciergeButton } from '../components/mira-os';
 import MultiPetSelector from '../components/MultiPetSelector';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import BreedAutocomplete from '../components/BreedAutocomplete';
@@ -1588,13 +1587,7 @@ const CarePage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Admin Quick Edit */}
-      <AdminQuickEdit pillar="care" position="bottom-left" />
-      
-      {/* Mira OS Trigger */}
-      <MiraOSTrigger pillar="care" position="bottom-left" />
-      
-      {/* Concierge® Button */}
+      {/* Concierge® Button - Blue C® for Service Desk chat */}
       <ConciergeButton 
         pillar="care" 
         position="bottom-right"

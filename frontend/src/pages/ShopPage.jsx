@@ -22,7 +22,7 @@ import SoulScoreArc from '../components/SoulScoreArc';
 import MiraLoveNote from '../components/MiraLoveNote';
 import UnifiedHero from '../components/UnifiedHero';
 import PillarNav from '../components/PillarNav';
-import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
+import { ConciergeButton } from '../components/mira-os';
 import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import PersonalizedPicks from '../components/PersonalizedPicks';
@@ -998,10 +998,7 @@ const ShopPage = () => {
       
       <MiraChatWidget pillar="shop" isOpen={miraChatOpen} onClose={() => setMiraChatOpen(false)} />
       
-      {/* Mira OS Trigger */}
-      <MiraOSTrigger pillar="shop" position="bottom-left" />
-      
-      {/* Concierge® Button */}
+      {/* Concierge® Button - Blue C® for Service Desk chat */}
       <ConciergeButton 
         pillar="shop" 
         position="bottom-right"
