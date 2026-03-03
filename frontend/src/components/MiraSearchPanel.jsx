@@ -54,6 +54,7 @@ const MiraSearchPanel = ({
   
   // State
   const [query, setQuery] = useState('');
+  const [replyQuery, setReplyQuery] = useState(''); // Separate state for reply input
   const [isProcessing, setIsProcessing] = useState(false);
   const [miraResponse, setMiraResponse] = useState(null);
   const [showResults, setShowResults] = useState(false);
@@ -385,20 +386,27 @@ const MiraSearchPanel = ({
             <form 
               onSubmit={(e) => {
                 e.preventDefault();
-                handleMiraSearch();
+                if (replyQuery.trim()) {
+                  // Move reply to main query and search
+                  setQuery(replyQuery);
+                  handleMiraSearch(replyQuery);
+                  setReplyQuery('');
+                }
               }}
               className="flex items-center gap-2"
             >
               <input
                 type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                value={replyQuery}
+                onChange={(e) => setReplyQuery(e.target.value)}
                 placeholder="Reply to Mira..."
                 className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                data-testid="mira-reply-input"
+                autoComplete="off"
               />
               <button
                 type="submit"
-                disabled={!query.trim() || isProcessing}
+                disabled={!replyQuery.trim() || isProcessing}
                 className="p-2 bg-purple-500 text-white rounded-full hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
