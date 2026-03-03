@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://frontend-regression.preview.emergentagent.com
+https://pillar-consistency.preview.emergentagent.com
 
 ---
 

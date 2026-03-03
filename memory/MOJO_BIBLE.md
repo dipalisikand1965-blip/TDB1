@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://frontend-regression.preview.emergentagent.com
+https://pillar-consistency.preview.emergentagent.com
 ```
 
 ---
