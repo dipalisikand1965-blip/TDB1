@@ -507,6 +507,28 @@
   animation: dropdown-slide 0.2s ease-out;
 }
 
+/* Mobile pet dropdown - slides up from bottom */
+@media (max-width: 768px) {
+  .pet-switcher-dropdown {
+    position: fixed;
+    top: initial !important; /* Reset to initial value (auto) */
+    inset: auto 0 0 0; /* Shorthand: top auto, right 0, bottom 0, left 0 */
+    min-width: 100%;
+    width: 100%;
+    max-height: 70vh;
+    border-radius: 20px 20px 0 0;
+    z-index: 9999;
+    padding: 16px;
+    padding-bottom: 40px;
+    animation: dropdown-slide-up 0.3s ease-out;
+  }
+}
+
+@keyframes dropdown-slide-up {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes dropdown-slide {
   from { opacity: 0; transform: translateY(-8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -694,6 +716,33 @@
     width: 36px;
     height: 36px;
   }
+  
+  /* Mobile pet switcher dropdown - Full modal style for 768px and below */
+  .mira-pet-switcher {
+    position: static !important;
+  }
+  
+  .pet-switcher-dropdown {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: auto !important; /* Reset height calculation */
+    max-height: 70vh !important;
+    min-width: 100% !important;
+    width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+    z-index: 9999 !important;
+    padding: 16px !important;
+    padding-bottom: 40px !important;
+    transform: none !important;
+  }
+  
+  @keyframes dropdown-slide-up {
+    from { opacity: 0; transform: translateY(100%); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 }
 
 @media (max-width: 480px) {
@@ -712,5 +761,21 @@
   .mira-os-tab .tab-icon {
     width: 14px;
     height: 14px;
+  }
+  
+  /* Mobile pet switcher dropdown - Full screen modal style */
+  .pet-switcher-dropdown {
+    position: fixed !important;
+    top: unset !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    max-height: 70vh;
+    min-width: 100% !important;
+    width: 100% !important;
+    border-radius: 20px 20px 0 0;
+    z-index: 9999 !important;
+    padding: 16px;
+    padding-bottom: 40px;
   }
 }
