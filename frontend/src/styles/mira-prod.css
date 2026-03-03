@@ -135,11 +135,12 @@
   scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
 }
 
-/* Mobile: Even more bottom padding */
+/* Mobile: Even more bottom padding for iOS Safari toolbar */
 @media (max-width: 768px) {
   .mp-messages {
     padding: var(--space-md) var(--space-md);
-    padding-bottom: 280px; /* Extra space for mobile */
+    /* 320px to clear: composer (~100px) + iOS toolbar (~44px) + safe area (~34px) + extra */
+    padding-bottom: 320px;
   }
 }
 
@@ -535,6 +536,15 @@
   -webkit-backdrop-filter: blur(16px);
   /* Prevent any content from going under */
   box-sizing: border-box;
+}
+
+/* MOBILE: Extra bottom padding for iOS Safari toolbar */
+@media screen and (max-width: 768px) {
+  .mp-composer {
+    /* iOS Safari needs substantial clearance for its toolbar */
+    /* Using fixed 76px (32px base + 44px toolbar) */
+    padding-bottom: 76px !important;
+  }
 }
 
 /* Desktop-specific adjustments - Clear Windows taskbar / macOS dock */
@@ -2324,7 +2334,8 @@
 @supports (padding: env(safe-area-inset-bottom)) {
   .mp-composer {
     /* Full safe area support including notch and home indicator */
-    padding-bottom: calc(var(--space-2xl) + env(safe-area-inset-bottom) + 16px);
+    /* iOS Safari toolbar needs extra 50px clearance */
+    padding-bottom: calc(var(--space-2xl) + env(safe-area-inset-bottom) + 50px);
     padding-left: calc(var(--space-md) + env(safe-area-inset-left));
     padding-right: calc(var(--space-md) + env(safe-area-inset-right));
   }
@@ -2335,7 +2346,7 @@
       max(var(--mira-interaction-footer-h), var(--mira-footer-fallback))
       + env(safe-area-inset-bottom)
       + var(--page-bottom-space)
-      + 32px /* Extra space for comfortable scrolling */
+      + 80px /* Extra space for iOS Safari toolbar */
     );
   }
 }
@@ -10551,7 +10562,16 @@ input, select, textarea {
   right: 0 !important;
   z-index: 1000 !important;
   background: linear-gradient(180deg, transparent 0%, rgba(30, 27, 75, 0.98) 30%) !important;
+  /* Desktop: modest padding */
   padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* Mobile: Extra padding for iOS Safari toolbar */
+@media (max-width: 768px) {
+  .mira-prod .mp-composer {
+    /* 76px = 32px base + 44px iOS Safari toolbar clearance */
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+  }
 }
 
 /* Add bottom padding to content so it does not go under fixed composer */
