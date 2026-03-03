@@ -678,3 +678,116 @@ User confirmed the debug logging is now appearing on production and the login fl
 ---
 
 *Last Updated: 2026-03-03 02:45 UTC*
+
+---
+
+## COMPLETED UI/UX FIXES (2026-03-03) - Memorial Edition for Mystique 💜
+
+### 1. iOS Safari Input Bar Fix ✅
+**Issue:** Input bar was cut off by iOS Safari's bottom toolbar
+**Fix:** Added 76px bottom padding for mobile devices
+```css
+@media (max-width: 768px) {
+  .mira-prod .mp-composer {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+```
+**File:** `/app/frontend/src/styles/mira-prod.css` (line ~10565-10575)
+
+### 2. Quick Chips Overlapping Fix ✅
+**Issue:** "Birthday party", "Health checkup", "Custom meal plan" chips were mashed together on iOS
+**Fix:** Added inline styles + CSS for iOS Safari compatibility
+```jsx
+style={{ whiteSpace: 'nowrap', flexShrink: 0, minWidth: 'max-content' }}
+```
+**Files:** 
+- `/app/frontend/src/components/Mira/WelcomeHero.jsx`
+- `/app/frontend/src/styles/mira-prod.css` (line ~3775)
+
+### 3. Scroll Spring-Back Fix ✅
+**Issue:** Content had elastic bounce preventing proper scroll
+**Fix:** Disabled momentum scrolling
+```css
+.mp-messages {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
+}
+```
+**File:** `/app/frontend/src/styles/mira-prod.css` (line ~120)
+
+### 4. Mobile Pet Switcher Fix ✅
+**Issue:** Dropdown invisible on mobile due to `overflow: hidden` on parent
+**Fix:** Used React Portal to render dropdown outside container
+```jsx
+createPortal(<div className="pet-switcher-dropdown">{...}</div>, document.body)
+```
+**File:** `/app/frontend/src/components/Mira/MiraUnifiedHeader.jsx` (line ~222)
+
+### 5. Test Panel & Sandbox Footer Hidden ✅
+**Issue:** Overlapping with input bar
+**Fix:** Set `display: none` and default state to false
+**Files:**
+- `/app/frontend/src/styles/mira-prod.css`
+- `/app/frontend/src/pages/MiraDemoPage.jsx`
+
+---
+
+## MIRA SOUL BIBLE AUDIT (2026-03-03) ✅
+
+**Result: 11/11 Tests PASSED**
+
+| Feature | Status |
+|---------|--------|
+| Memory (Allergies) | ✅ Mira refuses chicken for Mojo |
+| Personality | ✅ Uses pet names, personal traits |
+| Voice Rules | ✅ No banned openers |
+| Quick Convergence | ✅ Creates tickets in 2-3 exchanges |
+| PICKS Integration | ✅ Suggestions appear in panel |
+| Learning System | ✅ Saves new facts |
+| Pet Switching | ✅ Context changes correctly |
+| Quick Replies | ✅ Shows 3-6 contextual buttons |
+| TODAY Panel | ✅ Personalized reminders |
+| Concierge Handoff | ✅ Trigger words create tickets |
+
+**Test Report:** `/app/test_reports/iteration_55.json`
+
+---
+
+## DOCUMENTATION CREATED (2026-03-03)
+
+1. **`/app/SSOT.md`** - Single Source of Truth for all critical fixes
+2. **`/app/GAP_ANALYSIS_ROADMAP.md`** - Full page-by-page gap analysis
+3. **`/app/CRITICAL_DO_NOT_TOUCH.md`** - Developer instructions to prevent breaking production
+
+---
+
+## NEXT PRIORITIES
+
+### P1 - Immediate
+- [ ] Saved Learn feature (bookmark articles)
+- [ ] Verify Emergency pillar works
+- [ ] Test checkout flow end-to-end
+
+### P2 - Short Term
+- [ ] WhatsApp Business integration (pending Meta)
+- [ ] Fit pillar development
+- [ ] Work pillar development
+
+### P3 - Medium Term
+- [ ] Refactor large files (MiraDemoPage.jsx, mira_routes.py)
+- [ ] Performance optimization
+- [ ] Full admin panel verification
+
+---
+
+## FOR MYSTIQUE 💜
+
+This entire session was dedicated to perfecting the Pet OS in memory of Mystique.
+- Every CSS pixel was adjusted with care
+- Every scroll behavior was smoothed with love
+- Every test was run to honor her memory
+
+**Mystique's soul score: 87%** - A beautiful, fully-discovered soul.
+
+*Last Updated: 2026-03-03 05:50 UTC*
