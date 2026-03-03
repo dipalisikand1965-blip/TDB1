@@ -1,7 +1,9 @@
 # Pet Life Operating System - PRD
 
 ## Original Problem Statement
-Build a comprehensive "Pet Life Operating System" - a digital guardian platform for pet owners featuring AI-powered assistance (Mira), pet profiles with soul scores, health tracking, and concierge services across 9 life pillars (Celebrate, Care, Dine, Stay, Travel, Enjoy, Fit, Learn, Shop).
+Build a comprehensive "Pet Life Operating System" - a digital guardian platform for pet owners featuring AI-powered assistance (Mira), pet profiles with soul scores, health tracking, and concierge services across 14 life pillars.
+
+*Built in Memory of Mystique 💜🐾*
 
 ## Core Architecture
 - **Frontend:** React + Tailwind CSS + Framer Motion
@@ -11,72 +13,79 @@ Build a comprehensive "Pet Life Operating System" - a digital guardian platform 
 
 ## What's Been Implemented
 
-### March 2026 (Latest)
+### March 3, 2026 (Latest Session)
 - **MULTI-PET ONBOARDING FLOW COMPLETE:**
-  - Pet count screen (1-8 quick buttons + custom number 1-50)
-  - 33+ breed avatar selection as alternative to photo upload
-  - Avatar displays correctly on all screens (Gender, Name, Birthday, Soul Questions, Payoff)
-  - Multi-pet loop: Complete Pet 1 → Reset → Start Pet 2 → ... → Parent Info
-  - All bugs fixed: handlePetComplete(), undefined state variables, broken img tags
+  - Pet count screen (1-8 quick buttons + custom 1-50)
+  - 33+ breed avatar selection as photo alternative
+  - Avatar displays correctly on all screens
+  - Multi-pet loop: Complete Pet 1 → Reset → Pet 2 → Parent Info
+  - All bugs fixed and tested (10/10 tests passed)
 
-- **UI Consistency Achieved:**
-  - Standardized floating action buttons across all 14 pillar pages
-  - Blue "Concierge" button + Pink "Ask Mira" orb consistently present
-
-- **Universal Search Bar Fixed:**
-  - Visible on all pillar pages
-  - Markdown rendering for AI responses
-  - "Continue in Chat" button for deeper conversations
-
-- **Critical Bug Fixes:**
-  - Fixed new user account hijacking (removed dangerous startup script)
-  - Fixed page crashes on /dine and /stay
-  - Fixed Rainbow Bridge modal shaking on mobile
+- **SERVICE DESK & NOTIFICATION SYSTEM:**
+  - Investigated full Concierge flow end-to-end
+  - Added `has_unread_concierge_reply` flag when concierge replies
+  - Added `has_unread_reply` to pet parent's active requests API
+  - Updated frontend ActiveRequestCard with pink highlight + "NEW" badge
+  - Added mark-as-read endpoint: `POST /api/os/concierge/ticket/{id}/mark-read`
+  - Fixed collection query to include main `tickets` collection
 
 ### Previous Implementations
-- Production login redirect loop fix
-- "Golden Standard" UI/UX for Mira chat interface
-- iOS Safari CSS fixes
+- UI consistency across 14 pillar pages
+- Universal search bar on all pages
+- Critical bug fixes (account hijacking, page crashes, mobile modal)
 - Rainbow Bridge Memorial feature
-- Admin Guide Dashboard with database backup
-- Weight field in onboarding
-- Mira Memory System verified
+- Admin Guide Dashboard
+
+## Service Desk Flow
+
+### How It Works:
+1. **Pet Parent Asks** (Search bar, Mira chat, Services Quick Actions)
+2. **Ticket Created** → Goes to Service Desk
+3. **Concierge Sees** in Service Desk dashboard
+4. **Concierge Replies** → `has_unread_concierge_reply: True`
+5. **Pet Parent Sees** reply in Services panel with "NEW" badge
+
+### Key Endpoints:
+- `POST /api/mira/os/understand-with-products` - Pet parent asks Mira
+- `GET /api/os/concierge/home` - Pet parent's active requests
+- `POST /api/tickets/{id}/reply` - Concierge replies
+- `POST /api/os/concierge/ticket/{id}/mark-read` - Clear unread flag
 
 ## Known Issues
 
-### P0 (Critical)
-- ✅ RESOLVED: Multi-pet onboarding with avatar selection
-
-### P1 (Pending)
-- Concierge WebSocket connection failure (may be infrastructure limitation)
+### P1 (Infrastructure)
+- WebSocket "Reconnecting..." - Known preview environment limitation
+- Real-time updates work via polling (page refresh)
 
 ## Prioritized Backlog
 
-### P1 (High Priority)
-- Enhance 'Fit' Pillar with activity tracking dashboard
-- Enhance 'Paperwork' Pillar with document upload functionality
+### P0 (Launch Critical)
+- ✅ Multi-pet onboarding - DONE
+- ✅ Service desk flow verification - DONE
+- Razorpay integration (API keys needed)
+- Email notifications (Resend API key needed)
+
+### P1 (High Priority)  
+- WhatsApp Business API integration
+- Cart checkout flow testing
+- Enhance 'Fit' Pillar - activity tracking
+- Enhance 'Paperwork' Pillar - document upload
 
 ### P2 (Medium Priority)
-- Build WhatsApp Business API integration
-- Refactor MiraMeetsYourPet.jsx into smaller components
+- Refactor MiraMeetsYourPet.jsx into components
+- Refactor MiraDemoPage.jsx (5,300 lines)
+- Code cleanup and optimization
 
-### P3 (Low Priority)
-- Refactor MiraDemoPage.jsx
-- Refactor Admin.jsx  
-- Clean up Mira.css (11,000+ lines)
+### P3 (Future)
+- Progressive Soul Building
+- Full WhatsApp integration
 
 ## Key Files
-- `/app/frontend/src/pages/MiraMeetsYourPet.jsx` - Multi-pet onboarding flow
-- `/app/frontend/src/components/MiraSearchPanel.jsx` - Universal search bar
-- `/app/frontend/src/components/ui/dialog.jsx` - Fixed mobile modal
-- `/app/frontend/src/pages/PetHomePage.jsx` - Pet home with debug logs
-- `/app/frontend/src/pages/MiraDemoPage.jsx` - Mira AI chat interface
-- `/app/backend/routes/mira_routes.py` - Mira AI backend
-
-## API Endpoints
-- `/api/onboarding/membership` - Create user + multiple pets
-- `/api/mira/os/understand-with-products` - Universal search
-- `/api/admin/products/import-csv` - Bulk product upload
+- `/app/frontend/src/pages/MiraMeetsYourPet.jsx` - Onboarding
+- `/app/frontend/src/components/Mira/ConciergeHomePanel.jsx` - Services UI
+- `/app/backend/concierge_routes.py` - Main concierge API (4,300+ lines)
+- `/app/backend/ticket_routes.py` - Ticket management (4,900+ lines)
+- `/app/backend/routes/concierge_os_routes.py` - OS concierge routes
 
 ## Credentials
 - User: `dipali@clubconcierge.in` / `test123`
@@ -85,5 +94,5 @@ Build a comprehensive "Pet Life Operating System" - a digital guardian platform 
 ## 3rd Party Integrations
 - OpenAI GPT (Emergent LLM Key)
 - MongoDB Atlas
-- YouTube (LEARN panel content)
+- YouTube (LEARN panel)
 - Shopify (product sync)

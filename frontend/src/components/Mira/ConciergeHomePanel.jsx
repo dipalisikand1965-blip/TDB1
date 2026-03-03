@@ -83,24 +83,40 @@ const ActiveRequestCard = ({ request, onClick }) => {
   return (
     <button
       onClick={() => onClick(request)}
-      className="w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-left"
+      className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
+        request.has_unread_reply 
+          ? 'bg-pink-500/10 border-pink-500/30 hover:bg-pink-500/20' 
+          : 'bg-white/5 border-white/10 hover:bg-white/10'
+      }`}
       data-testid={`active-request-${request.ticket_id}`}
     >
-      <div className="flex-shrink-0">
+      <div className="flex-shrink-0 relative">
         <PawPrint size={20} className="text-purple-400" />
+        {request.has_unread_reply && (
+          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-pink-500 rounded-full animate-pulse" />
+        )}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-white truncate">{request.title}</span>
           <span className="text-xs text-white/50">for {request.pet_name}</span>
+          {request.has_unread_reply && (
+            <span className="px-1.5 py-0.5 rounded-full bg-pink-500 text-white text-xs font-bold">
+              NEW
+            </span>
+          )}
         </div>
         <div className={`inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-xs ${colorClass}`}>
           {request.status_display?.text}
         </div>
       </div>
       <div className="flex-shrink-0">
-        <span className="px-3 py-1.5 rounded-full bg-purple-500/20 text-purple-400 text-xs font-medium">
-          {request.action_required}
+        <span className={`px-3 py-1.5 rounded-full text-xs font-medium ${
+          request.has_unread_reply 
+            ? 'bg-pink-500/30 text-pink-300' 
+            : 'bg-purple-500/20 text-purple-400'
+        }`}>
+          {request.has_unread_reply ? 'View Reply' : request.action_required}
         </span>
       </div>
     </button>
@@ -480,11 +496,29 @@ const ConciergeHomePanel = ({
   }, [inputValue, submitting, selectedPetId, userId, homeData, initialContext, onOpenThread]);
   
   // Handle active request click
-  const handleRequestClick = useCallback((request) => {
+  const handleRequestClick = useCallback(async (request) => {
+    // Mark as read if there's an unread reply
+    if (request.has_unread_reply && userId) {
+      try {
+        await fetch(`${API_URL}/api/os/concierge/ticket/${request.ticket_id}/mark-read?user_id=${userId}`, {
+          method: 'POST'
+        });
+        // Update local state to remove the badge immediately
+        setHomeData(prev => ({
+          ...prev,
+          active_requests: prev.active_requests?.map(r => 
+            r.ticket_id === request.ticket_id ? { ...r, has_unread_reply: false } : r
+          )
+        }));
+      } catch (err) {
+        console.error('Error marking ticket as read:', err);
+      }
+    }
+    
     if (onOpenTicket) {
       onOpenTicket(request.ticket_id);
     }
-  }, [onOpenTicket]);
+  }, [onOpenTicket, userId]);
   
   // Handle thread click
   const handleThreadClick = useCallback((thread) => {

@@ -4274,8 +4274,22 @@ async def get_concierge_home(
         ).sort("created_at", -1).limit(10)
         mira_tickets = await mira_tickets_cursor.to_list(10)
         
+        # ALSO fetch from tickets collection (main ticket store)
+        main_tickets_query = {"$or": [
+            {"member.id": user_id},
+            {"member.email": user_id}
+        ]}
+        if pet_id and pet_id != "all":
+            main_tickets_query["pet.id"] = pet_id
+        
+        main_tickets_cursor = db.tickets.find(
+            {**main_tickets_query, "status": {"$in": ["placed", "pending", "in_progress", "scheduled", "working", "acknowledged", "exploring"]}},
+            {"_id": 0}
+        ).sort("updated_at", -1).limit(10)
+        main_tickets = await main_tickets_cursor.to_list(10)
+        
         # Combine and dedupe by ticket_id
-        all_tickets = active_tickets + mira_tickets
+        all_tickets = active_tickets + mira_tickets + main_tickets
         seen_ids = set()
         unique_tickets = []
         for t in all_tickets:
@@ -4298,13 +4312,15 @@ async def get_concierge_home(
             
             active_requests.append({
                 "id": ticket.get("ticket_id") or ticket.get("id"),
+                "ticket_id": ticket.get("ticket_id") or ticket.get("id"),
                 "title": ticket.get("subject") or ticket.get("service_type", "Request").replace("_", " ").title(),
-                "pet_name": ticket.get("pet_name"),
+                "pet_name": ticket.get("pet_name") or "your furry friend",
                 "pet_id": ticket.get("pet_id"),
                 "timestamp": ticket.get("created_at"),
                 "status_display": status_info,
                 "pillar": ticket.get("pillar") or ticket.get("category"),
-                "icon": ticket.get("icon") or "message-circle"
+                "icon": ticket.get("icon") or "message-circle",
+                "has_unread_reply": ticket.get("has_unread_concierge_reply", False)
             })
         
         # Fetch recent threads from unified_inbox

@@ -657,24 +657,38 @@ async def get_concierge_home(
         status = await get_concierge_status()
         
         # Build query filters - support both user_id formats
-        # user_id can be email (dipali@...) or MongoDB ObjectId string
-        user_filter = {"$or": [{"user_id": user_id}, {"user_email": user_id}]}
+        # user_id can be email (dipali@...) or UUID string
+        # tickets collection uses member.id and member.email
+        user_filter = {"$or": [
+            {"user_id": user_id}, 
+            {"user_email": user_id},
+            {"member.id": user_id},
+            {"member.email": user_id}
+        ]}
+        
+        ticket_filter = {"$or": [
+            {"member.id": user_id},
+            {"member.email": user_id}
+        ]}
+        
         if pet_id and pet_id != "all":
             user_filter["pet_id"] = pet_id
+            ticket_filter["pet.id"] = pet_id
         
         # Get active requests (tickets in any non-completed status)
         # Include: placed, pending, clarification_needed, options_ready, approval_pending, payment_pending, in_progress, scheduled
-        active_statuses = ["placed", "pending", "clarification_needed", "options_ready", "approval_pending", "payment_pending", "in_progress", "scheduled", "working"]
+        active_statuses = ["placed", "pending", "clarification_needed", "options_ready", "approval_pending", "payment_pending", "in_progress", "scheduled", "working", "acknowledged", "exploring"]
         active_requests = []
         
-        tickets_cursor = db.mira_tickets.find({
+        # Query the tickets collection (where tickets are actually stored)
+        tickets_cursor = db.tickets.find({
             "$and": [
-                user_filter,
+                ticket_filter,
                 {"status": {"$in": active_statuses}}
             ]
         }).sort("updated_at", -1).limit(10)
         
-        logger.info(f"[CONCIERGE] Query for user_id={user_id}: user_filter={user_filter}, statuses={active_statuses}")
+        logger.info(f"[CONCIERGE] Query for user_id={user_id}: ticket_filter={ticket_filter}, statuses={active_statuses}")
         
         async for ticket in tickets_cursor:
             logger.info(f"[CONCIERGE] Found ticket: {ticket.get('ticket_id', ticket.get('id'))} - status={ticket.get('status')}")
@@ -687,14 +701,15 @@ async def get_concierge_home(
             
             active_requests.append({
                 "id": str(ticket.get("_id", ticket.get("id", ""))),
-                "ticket_id": ticket.get("id", ""),
+                "ticket_id": ticket.get("ticket_id", ticket.get("id", "")),
                 "pet_id": ticket.get("pet_id"),
                 "pet_name": pet_name,
                 "title": ticket.get("title", ticket.get("service_type", "Request")),
                 "status": ticket.get("status"),
                 "status_display": get_status_display(ticket.get("status")),
                 "action_required": get_action_text(ticket.get("status")),
-                "updated_at": ticket.get("updated_at", ticket.get("created_at", ""))
+                "updated_at": ticket.get("updated_at", ticket.get("created_at", "")),
+                "has_unread_reply": ticket.get("has_unread_concierge_reply", False)
             })
         
         # Get recent threads
@@ -1093,6 +1108,45 @@ async def get_thread(
         raise
     except Exception as e:
         logger.error(f"Error getting thread: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/ticket/{ticket_id}/mark-read")
+async def mark_ticket_read(
+    ticket_id: str,
+    user_id: str = Query(..., description="User ID for authorization")
+):
+    """
+    Mark a ticket's concierge reply as read by the pet parent.
+    Called when pet parent views the ticket detail.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        # Find ticket and verify ownership
+        ticket = await db.mira_tickets.find_one({
+            "$and": [
+                {"$or": [{"id": ticket_id}, {"ticket_id": ticket_id}]},
+                {"$or": [{"user_id": user_id}, {"parent_id": user_id}]}
+            ]
+        })
+        
+        if not ticket:
+            raise HTTPException(status_code=404, detail="Ticket not found")
+        
+        # Clear the unread flag
+        await db.mira_tickets.update_one(
+            {"_id": ticket["_id"]},
+            {"$set": {"has_unread_concierge_reply": False}}
+        )
+        
+        return {"success": True, "message": "Marked as read"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error marking ticket as read: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
