@@ -8499,6 +8499,8 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
             "breed": pet_data.get("breed") or data.get("breed", "") or (existing_pet.get("breed") if existing_pet else ""),
             "gender": pet_data.get("gender", "") or (existing_pet.get("gender") if existing_pet else ""),
             "birth_date": pet_data.get("birth_date", "") or (existing_pet.get("birth_date") if existing_pet else ""),
+            "weight": pet_data.get("weight") or (existing_pet.get("weight") if existing_pet else None),
+            "weight_unit": pet_data.get("weight_unit", "kg") or (existing_pet.get("weight_unit") if existing_pet else "kg"),
             "updated_at": datetime.now(timezone.utc).isoformat(),
             # Track which questions have been answered (for deduplication)
             "answered_question_ids": list(set(

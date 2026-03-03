@@ -286,7 +286,9 @@ const SoulBuilder = () => {
     birth_date: '',
     gotcha_date: '',
     is_neutered: null,
-    approximate_age: ''
+    approximate_age: '',
+    weight: '',
+    weight_unit: 'kg'
   });
   
   const [currentChapter, setCurrentChapter] = useState(0);
@@ -1584,6 +1586,60 @@ const SoulBuilder = () => {
                     }`}
                   >
                     {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Weight - Important for Fit pillar recommendations */}
+            <div>
+              <label className="text-white/70 text-sm mb-2 block">Weight <span className="text-white/40">(helps with fitness & portion tips)</span></label>
+              <div className="flex gap-2">
+                <div className="flex-1 relative">
+                  <input
+                    type="number"
+                    placeholder="Enter weight"
+                    value={petData.weight}
+                    onChange={(e) => setPetData(prev => ({ ...prev, weight: e.target.value }))}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-purple-400/50"
+                    data-testid="weight-input"
+                  />
+                </div>
+                <div className="flex gap-1">
+                  {['kg', 'lbs'].map(unit => (
+                    <button
+                      key={unit}
+                      onClick={() => setPetData(prev => ({ ...prev, weight_unit: unit }))}
+                      className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                        petData.weight_unit === unit
+                          ? 'bg-purple-500/20 border border-purple-400/50 text-purple-300'
+                          : 'bg-white/5 border border-white/10 text-white/60 hover:border-white/20'
+                      }`}
+                      data-testid={`weight-unit-${unit}`}
+                    >
+                      {unit}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {/* Quick weight presets based on common dog sizes */}
+              <div className="flex gap-2 mt-2 flex-wrap">
+                {[
+                  { label: 'Small', range: '2-10', emoji: '🐕' },
+                  { label: 'Medium', range: '10-25', emoji: '🦮' },
+                  { label: 'Large', range: '25-45', emoji: '🐕‍🦺' },
+                  { label: 'Giant', range: '45+', emoji: '🐾' }
+                ].map(size => (
+                  <button
+                    key={size.label}
+                    onClick={() => {
+                      const midWeight = size.label === 'Small' ? '6' : size.label === 'Medium' ? '18' : size.label === 'Large' ? '35' : '50';
+                      setPetData(prev => ({ ...prev, weight: midWeight, weight_unit: 'kg' }));
+                    }}
+                    className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-white/50 text-xs hover:border-white/20 hover:text-white/70 transition-all"
+                    data-testid={`weight-preset-${size.label.toLowerCase()}`}
+                  >
+                    {size.emoji} {size.label} ({size.range}kg)
                   </button>
                 ))}
               </div>
