@@ -1219,9 +1219,6 @@ const DinePage = () => {
         }}
         place={selectedPlace}
       />
-      
-      {/* Admin Quick Edit */}
-      <AdminQuickEdit pillar="dine" position="bottom-left" />
       </>
       )}
       
