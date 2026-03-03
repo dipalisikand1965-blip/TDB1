@@ -319,10 +319,15 @@ const PetHomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log('[PetHome] === FETCH DATA STARTED ===');
+        console.log('[PetHome] API_URL:', API_URL);
+        
         // Small delay to ensure localStorage is fully available after page load
         await new Promise(resolve => setTimeout(resolve, 200));
         
         const token = localStorage.getItem('tdb_auth_token');
+        console.log('[PetHome] Token exists:', !!token, token ? `(${token.substring(0, 20)}...)` : '');
+        
         if (!token) {
           console.log('[PetHome] No token found, retrying in 500ms...');
           // Retry once after delay
@@ -343,28 +348,41 @@ const PetHomePage = () => {
         const activePetId = urlParams.get('active_pet');
         
         // Fetch user data
+        console.log('[PetHome] Fetching /api/auth/me...');
         const userRes = await fetch(`${API_URL}/api/auth/me`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         
+        console.log('[PetHome] /api/auth/me status:', userRes.status);
         if (!userRes.ok) {
-          console.log('[PetHome] /api/auth/me returned:', userRes.status);
+          console.log('[PetHome] /api/auth/me FAILED with status:', userRes.status);
           return;
         }
         
         const userData = await userRes.json();
+        console.log('[PetHome] User data received:', userData?.email);
         setUser(userData);
         
         // Fetch pets
+        console.log('[PetHome] Fetching /api/pets/my-pets...');
         const petsRes = await fetch(`${API_URL}/api/pets/my-pets`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         
+        console.log('[PetHome] /api/pets/my-pets status:', petsRes.status);
+        
         if (petsRes.ok) {
           const petsResponse = await petsRes.json();
+          console.log('[PetHome] Raw petsResponse type:', typeof petsResponse);
+          console.log('[PetHome] Raw petsResponse:', JSON.stringify(petsResponse).substring(0, 500));
+          
           // API returns {pets: [...]} so extract the array
           const petsData = Array.isArray(petsResponse) ? petsResponse : (petsResponse.pets || []);
+          console.log('[PetHome] Extracted petsData length:', petsData.length);
+          console.log('[PetHome] Pet names:', petsData.map(p => p.name).join(', '));
+          
           setPets(petsData);
+          console.log('[PetHome] setPets called with', petsData.length, 'pets');
           
           if (petsData.length > 0) {
             // If active_pet ID provided in URL, select that pet
@@ -376,9 +394,16 @@ const PetHomePage = () => {
                 console.log('[PetHome] Selected pet from URL param:', primaryPet.name);
               }
             }
+            console.log('[PetHome] Setting selectedPet to:', primaryPet.name);
             setSelectedPet(primaryPet);
             updatePetContext(primaryPet);
+          } else {
+            console.log('[PetHome] WARNING: petsData is empty after extraction!');
           }
+        } else {
+          console.log('[PetHome] /api/pets/my-pets FAILED with status:', petsRes.status);
+          const errorText = await petsRes.text();
+          console.log('[PetHome] Error response:', errorText);
         }
         
         // Fetch open tickets/requests (gracefully handle if endpoint doesn't exist)
@@ -426,7 +451,11 @@ const PetHomePage = () => {
     );
   }
   
+  // Debug render state
+  console.log('[PetHome] RENDER STATE - loading:', loading, '| pets.length:', pets.length, '| selectedPet:', selectedPet?.name || 'null');
+  
   if (!selectedPet && pets.length === 0) {
+    console.log('[PetHome] SHOWING "No pets found" - this should NOT happen if API returned pets!');
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-purple-950 flex items-center justify-center p-6">
         <div className="text-center max-w-md">

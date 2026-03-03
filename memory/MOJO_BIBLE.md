@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://pet-os-auth-fix.preview.emergentagent.com
+https://frontend-regression.preview.emergentagent.com
 ```
 
 ---
