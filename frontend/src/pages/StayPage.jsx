@@ -11,8 +11,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
-import AdminQuickEdit from '../components/AdminQuickEdit';
-import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
+import { ConciergeButton } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
@@ -3102,13 +3101,7 @@ const SocialDetailsModal = ({ social, onClose }) => {
         </DialogContent>
       </Dialog>
       
-      {/* Admin Quick Edit */}
-      <AdminQuickEdit pillar="stay" position="bottom-left" />
-      
-      {/* Mira OS Trigger */}
-      <MiraOSTrigger pillar="stay" position="bottom-left" />
-      
-      {/* Concierge® Button */}
+      {/* Concierge® Button - Blue C® for Service Desk chat */}
       <ConciergeButton 
         pillar="stay" 
         position="bottom-right"

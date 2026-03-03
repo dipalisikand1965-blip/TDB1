@@ -12,8 +12,7 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
-import AdminQuickEdit from '../components/AdminQuickEdit';
-import { MiraOSTrigger, ConciergeButton } from '../components/mira-os';
+import { ConciergeButton } from '../components/mira-os';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import PillarPicksSection from '../components/PillarPicksSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
@@ -879,13 +878,7 @@ const AdoptPage = () => {
         />
       </div>
       
-      {/* Admin Quick Edit */}
-      <AdminQuickEdit pillar="adopt" position="bottom-left" />
-      
-      {/* Mira OS Trigger */}
-      <MiraOSTrigger pillar="adopt" position="bottom-left" />
-      
-      {/* Concierge® Button */}
+      {/* Concierge® Button - Blue C® for Service Desk chat */}
       <ConciergeButton 
         pillar="adopt" 
         position="bottom-right"

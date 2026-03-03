@@ -35,7 +35,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { usePillarContext } from '../context/PillarContext';
 import { toast } from 'sonner';
-import { MiraOSTrigger } from '../components/mira-os';
+import { ConciergeButton } from '../components/mira-os';
 import MiraBirthdayBoxCard from '../components/celebrate/MiraBirthdayBoxCard';
 import PersonalizedItemsSection from '../components/celebrate/PersonalizedItemsSection';
 
@@ -1322,6 +1322,13 @@ const CelebratePage = () => {
           console.log('[CelebratePage] Picks sent:', data);
           setIsPillarPanelOpen(false);
         }}
+      />
+      
+      {/* Concierge® Button - Blue C® for Service Desk chat */}
+      <ConciergeButton 
+        pillar="celebrate" 
+        position="bottom-right"
+        showLabel
       />
       
       {/* Close the theme wrapper */}
