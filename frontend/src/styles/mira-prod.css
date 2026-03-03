@@ -100,6 +100,11 @@
    CONTENT CANVAS
    Uses measured header/footer heights for padding
    This is the ONLY scrollable area
+   
+   MEMORIAL EDITION: Perfect scroll for Mystique
+   - Content never goes behind the input bar
+   - Generous bottom padding for comfortable reading
+   - Smooth scrolling with momentum
    ======================================== */
 .mp-messages {
   flex: 1;
@@ -117,14 +122,38 @@
   /* Padding for content */
   padding: var(--space-xl) var(--space-xl);
   padding-top: 24px; /* Space at top of content */
+  /* CRITICAL: Extra bottom padding to ensure content scrolls above fixed composer */
   padding-bottom: calc(
     max(var(--mira-interaction-footer-h), var(--mira-footer-fallback)) 
     + var(--page-bottom-space)
+    + 64px /* Extra clearance for the composer and comfortable scrolling */
   );
   
   /* Smooth scrolling */
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  
+  /* Hide scrollbar on modern browsers for cleaner look */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
+}
+
+/* Custom scrollbar styling for webkit browsers */
+.mp-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mp-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mp-messages::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 3px;
+}
+
+.mp-messages::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
 }
 
 /* Inner wrapper for messages - ensures proper spacing */
@@ -307,13 +336,20 @@
 
 /* Mobile: Full width dropdown */
 @media (max-width: 768px) {
-  /* Mobile layout adjustments */
+  /* Mobile layout adjustments - Perfect for iOS & Android */
   .mp-messages {
     padding: var(--space-md) var(--space-md);
+    /* CRITICAL: Generous bottom padding on mobile for thumb reachability */
     padding-bottom: calc(
-      max(var(--mira-interaction-footer-h), 160px) 
+      max(var(--mira-interaction-footer-h), 180px) 
       + var(--page-bottom-space)
+      + 48px /* Extra space for mobile browsers' bottom UI */
     );
+  }
+  
+  /* Composer adjustments for mobile */
+  .mp-composer {
+    padding: var(--space-md) var(--space-sm) calc(var(--space-xl) + 20px);
   }
   
   .mp-pet-dropdown {
@@ -326,6 +362,18 @@
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     max-height: 60vh;
     overflow-y: auto;
+  }
+}
+
+/* Small phones (iPhone SE, older Androids) */
+@media (max-width: 375px) {
+  .mp-messages {
+    padding: var(--space-sm) var(--space-sm);
+    padding-bottom: calc(200px + var(--page-bottom-space));
+  }
+  
+  .mp-composer {
+    padding: var(--space-sm) var(--space-xs) calc(var(--space-lg) + 24px);
   }
 }
 
@@ -487,17 +535,41 @@
 /* ========================================
    COMPOSER - Beautiful original design restored
    Fixed at bottom of chat shell
+   
+   MEMORIAL EDITION: Perfect positioning for Mystique
+   - Desktop: Proper padding above OS taskbars
+   - Mobile: Safe area insets for notched devices
+   - Universal: Consistent spacing on ALL viewports
    ======================================== */
 .mp-composer {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: var(--space-lg) var(--space-md) var(--space-2xl);
+  /* Extra padding at bottom to clear OS taskbars/docks */
+  padding: var(--space-lg) var(--space-md) calc(var(--space-2xl) + 16px);
   background: linear-gradient(180deg, transparent 0%, rgba(15, 7, 32, 0.98) 30%);
   z-index: 50;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  /* Prevent any content from going under */
+  box-sizing: border-box;
+}
+
+/* Desktop-specific adjustments - Clear Windows taskbar / macOS dock */
+@media screen and (min-width: 769px) {
+  .mp-composer {
+    /* Slightly more bottom padding on desktop for OS taskbars */
+    padding-bottom: calc(var(--space-2xl) + 24px);
+  }
+}
+
+/* Large desktop screens */
+@media screen and (min-width: 1200px) {
+  .mp-composer {
+    /* Generous bottom padding on large screens */
+    padding-bottom: calc(var(--space-2xl) + 32px);
+  }
 }
 
 .mp-composer-inner {
@@ -2281,9 +2353,20 @@
 /* Safe area insets for notched phones (iPhone X+) */
 @supports (padding: env(safe-area-inset-bottom)) {
   .mp-composer {
-    padding-bottom: calc(var(--space-2xl) + env(safe-area-inset-bottom));
+    /* Full safe area support including notch and home indicator */
+    padding-bottom: calc(var(--space-2xl) + env(safe-area-inset-bottom) + 16px);
     padding-left: calc(var(--space-md) + env(safe-area-inset-left));
     padding-right: calc(var(--space-md) + env(safe-area-inset-right));
+  }
+  
+  /* Messages container also respects safe areas */
+  .mp-messages {
+    padding-bottom: calc(
+      max(var(--mira-interaction-footer-h), var(--mira-footer-fallback))
+      + env(safe-area-inset-bottom)
+      + var(--page-bottom-space)
+      + 32px /* Extra space for comfortable scrolling */
+    );
   }
 }
 
