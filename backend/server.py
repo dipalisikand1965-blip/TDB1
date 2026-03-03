@@ -1288,63 +1288,23 @@ async def lifespan(app: FastAPI):
                 logger.warning(f"[MASTER SYNC 6/6] Context update skipped: {e}")
             
             # ========== AUTO-LINK ORPHAN PETS ==========
-            # Link any pets without owner_id to their rightful owners
+            # DISABLED: This code was reassigning new users' pets to dipali on server restart
+            # Pets should ONLY belong to the user who created them during onboarding
+            # The onboarding flow properly sets owner_id and owner_email
             try:
-                # Find pets with no owner_id
+                # Just log orphan pets for monitoring, don't auto-assign them
                 orphan_pets = await db.pets.count_documents({"$or": [{"owner_id": None}, {"owner_id": {"$exists": False}}]})
                 if orphan_pets > 0:
-                    logger.info(f"[PET LINKING] Found {orphan_pets} orphan pets, attempting to link...")
-                    
-                    # Get dipali's user (main test user) - link orphans to her
-                    dipali = await db.users.find_one({"email": "dipali@clubconcierge.in"})
-                    if dipali:
-                        dipali_id = dipali.get("id") or str(dipali.get("_id"))
-                        dipali_email = dipali.get("email", "dipali@clubconcierge.in")
-                        result = await db.pets.update_many(
-                            {"$or": [{"owner_id": None}, {"owner_id": {"$exists": False}}]},
-                            {"$set": {
-                                "owner_id": dipali_id, 
-                                "user_id": dipali_id,
-                                "owner_email": dipali_email,
-                                "parent_email": dipali_email,
-                                "member_email": dipali_email
-                            }}
-                        )
-                        logger.info(f"[PET LINKING] ✅ Linked {result.modified_count} pets to dipali ({dipali_email})")
-                    else:
-                        # No dipali user, link to first user found
-                        first_user = await db.users.find_one({})
-                        if first_user:
-                            user_id = first_user.get("id") or str(first_user.get("_id"))
-                            user_email = first_user.get("email", "")
-                            result = await db.pets.update_many(
-                                {"$or": [{"owner_id": None}, {"owner_id": {"$exists": False}}]},
-                                {"$set": {
-                                    "owner_id": user_id, 
-                                    "user_id": user_id,
-                                    "owner_email": user_email,
-                                    "parent_email": user_email
-                                }}
-                            )
-                            logger.info(f"[PET LINKING] ✅ Linked {result.modified_count} pets to first user ({user_email})")
+                    logger.warning(f"[PET LINKING] Found {orphan_pets} orphan pets without owner_id - NOT auto-assigning (by design)")
                 
-                # Also ensure ALL pets have owner_email set for my-pets query
                 pets_without_email = await db.pets.count_documents({
                     "$or": [{"owner_email": None}, {"owner_email": {"$exists": False}}, {"owner_email": ""}]
                 })
                 if pets_without_email > 0:
-                    logger.info(f"[PET LINKING] Found {pets_without_email} pets without owner_email, fixing...")
-                    dipali = await db.users.find_one({"email": "dipali@clubconcierge.in"})
-                    if dipali:
-                        dipali_email = dipali.get("email", "dipali@clubconcierge.in")
-                        result = await db.pets.update_many(
-                            {"$or": [{"owner_email": None}, {"owner_email": {"$exists": False}}, {"owner_email": ""}]},
-                            {"$set": {"owner_email": dipali_email, "parent_email": dipali_email}}
-                        )
-                        logger.info(f"[PET LINKING] ✅ Fixed owner_email for {result.modified_count} pets")
+                    logger.warning(f"[PET LINKING] Found {pets_without_email} pets without owner_email - NOT auto-assigning (by design)")
                         
             except Exception as e:
-                logger.warning(f"[PET LINKING] Pet linking skipped: {e}")
+                logger.warning(f"[PET LINKING] Pet check skipped: {e}")
             
             logger.info("=" * 60)
             logger.info("🎉 MASTER SYNC COMPLETE - ALL DATA READY")
