@@ -21,9 +21,9 @@ Build a comprehensive "Pet Life Operating System" - a digital guardian platform 
 - ✅ Debug logging added to PetHomePage.jsx for production debugging
 
 ### Known Issues
-- 🔴 **P0:** Production `/pet-home` shows "No pets found" despite working API
-  - Root cause: Production has old code deployed
-  - Fix: Deploy current preview code with debug logs
+- ✅ **RESOLVED:** Production `/pet-home` was showing "No pets found"
+  - Root cause: `REACT_APP_BACKEND_URL` was set to dead preview URL (`mira-soul-os.preview.emergentagent.com`)
+  - Fix: User redeployed with correct URL (`thedoggycompany.com`) - ALL 8 PETS NOW SHOWING
 
 ## Prioritized Backlog
 
