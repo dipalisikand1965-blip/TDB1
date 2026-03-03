@@ -12213,7 +12213,102 @@ async def update_pet_memorial(pet_id: str, memorial_data: dict, current_user: di
     return {"success": True, "message": "Memorial updated"}
 
 
-@api_router.get("/pets/{pet_id}/soul")
+# Public Memorial Wall - For all to see and pay tribute
+@api_router.get("/rainbow-bridge/wall")
+async def get_rainbow_bridge_wall():
+    """
+    Get all public memorials for the Rainbow Bridge Wall.
+    Anyone can view - no auth required.
+    """
+    # Get all memorials that are marked as public (or all for now)
+    memorials = await db.rainbow_bridge_memorials.find(
+        {"memorial_status": "active"},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(length=100)
+    
+    # Enrich with tribute counts
+    for memorial in memorials:
+        tribute_count = await db.rainbow_bridge_tributes.count_documents(
+            {"pet_id": memorial.get("pet_id")}
+        )
+        memorial["tribute_count"] = tribute_count
+        
+        # Get recent tributes
+        tributes = await db.rainbow_bridge_tributes.find(
+            {"pet_id": memorial.get("pet_id")},
+            {"_id": 0}
+        ).sort("created_at", -1).to_list(length=5)
+        memorial["tributes"] = tributes
+    
+    return {
+        "success": True,
+        "memorials": memorials,
+        "count": len(memorials)
+    }
+
+
+@api_router.post("/rainbow-bridge/{pet_id}/tribute")
+async def add_memorial_tribute(pet_id: str, tribute_data: dict):
+    """
+    Add a tribute/condolence to a memorial.
+    Public endpoint - anyone can pay tribute.
+    """
+    # Verify the pet has a memorial
+    memorial = await db.rainbow_bridge_memorials.find_one({"pet_id": pet_id})
+    if not memorial:
+        raise HTTPException(status_code=404, detail="Memorial not found")
+    
+    tribute = {
+        "id": f"tribute-{uuid.uuid4().hex[:12]}",
+        "pet_id": pet_id,
+        "pet_name": memorial.get("pet_name"),
+        "message": tribute_data.get("message", ""),
+        "from_name": tribute_data.get("from_name", "Anonymous"),
+        "from_email": tribute_data.get("from_email", ""),
+        "created_at": get_utc_timestamp()
+    }
+    
+    await db.rainbow_bridge_tributes.insert_one(tribute)
+    
+    # Notify the pet parent
+    try:
+        notification = {
+            "id": f"notif-{uuid.uuid4().hex[:12]}",
+            "type": "tribute_received",
+            "title": f"💜 New tribute for {memorial.get('pet_name')}",
+            "message": f"{tribute['from_name']} left a tribute: \"{tribute['message'][:50]}...\"",
+            "pet_id": pet_id,
+            "owner_email": memorial.get("owner_email"),
+            "read": False,
+            "created_at": get_utc_timestamp()
+        }
+        await db.admin_notifications.insert_one(notification)
+    except Exception as e:
+        logger.error(f"Failed to create tribute notification: {e}")
+    
+    return {
+        "success": True,
+        "message": f"Your tribute for {memorial.get('pet_name')} has been shared 💜",
+        "tribute_id": tribute["id"]
+    }
+
+
+@api_router.get("/rainbow-bridge/{pet_id}/tributes")
+async def get_memorial_tributes(pet_id: str):
+    """Get all tributes for a specific memorial"""
+    tributes = await db.rainbow_bridge_tributes.find(
+        {"pet_id": pet_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(length=100)
+    
+    return {
+        "success": True,
+        "tributes": tributes,
+        "count": len(tributes)
+    }
+
+
+
 async def get_pet_soul(pet_id: str, current_user: dict = Depends(get_current_user)):
     """
     Get Pet Soul data - answers, score, tier, and journey progress.
