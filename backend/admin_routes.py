@@ -1233,3 +1233,67 @@ async def get_financial_report(
         "cancelled_orders": cancelled,
         "discount_impact_percent": round((totals.get("total_discounts", 0) / totals.get("total_revenue", 1)) * 100, 2) if totals.get("total_revenue", 0) > 0 else 0
     }
+
+
+
+# ============================================
+# DATABASE EXPORT / BACKUP ENDPOINT
+# ============================================
+
+@fulfilment_router.get("/export-database")
+async def export_database(request: Request):
+    """
+    Export all database collections as JSON for backup purposes.
+    This is a safety feature for disaster recovery.
+    """
+    global db
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    try:
+        export_data = {
+            "exported_at": datetime.now(timezone.utc).isoformat(),
+            "database_name": db.name,
+            "collections": {}
+        }
+        
+        # List of collections to export
+        collections_to_export = [
+            "users", "pets", "tickets", "orders", "products_master", 
+            "services_master", "mira_sessions", "mira_memories", 
+            "conversation_memories", "learn_videos", "learn_guides",
+            "unified_inbox", "admin_notifications", "paw_points_ledger", 
+            "faqs", "admin_config", "unified_products", "service_catalog",
+            "ticket_counters", "user_streaks", "dismissed_alerts"
+        ]
+        
+        for collection_name in collections_to_export:
+            try:
+                collection = db[collection_name]
+                # Fetch all documents, exclude MongoDB's _id for cleaner export
+                docs = await collection.find({}, {"_id": 0}).to_list(length=10000)
+                export_data["collections"][collection_name] = {
+                    "count": len(docs),
+                    "documents": docs
+                }
+                logger.info(f"[DB Export] Exported {len(docs)} docs from {collection_name}")
+            except Exception as coll_err:
+                logger.warning(f"[DB Export] Skipped {collection_name}: {coll_err}")
+                export_data["collections"][collection_name] = {
+                    "count": 0,
+                    "documents": [],
+                    "error": str(coll_err)
+                }
+        
+        export_data["total_collections"] = len(export_data["collections"])
+        export_data["total_documents"] = sum(
+            c["count"] for c in export_data["collections"].values()
+        )
+        
+        logger.info(f"[DB Export] Complete: {export_data['total_collections']} collections, {export_data['total_documents']} documents")
+        
+        return export_data
+        
+    except Exception as e:
+        logger.error(f"[DB Export] Failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Export failed: {str(e)}")

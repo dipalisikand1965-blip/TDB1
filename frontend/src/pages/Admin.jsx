@@ -57,6 +57,7 @@ import UnifiedProductBox from '../components/admin/UnifiedProductBox';
 import ServiceBox from '../components/admin/ServiceBox';
 import ConciergeExperiencesAdmin from '../components/admin/ConciergeExperiencesAdmin';
 import PillarQueues from '../components/admin/PillarQueues';
+import AdminGuideDashboard from '../components/admin/AdminGuideDashboard';
 import { testimonials as mockTestimonials, faqs as mockFaqs } from '../mockData';
 import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
@@ -2478,6 +2479,7 @@ const Admin = () => {
           <div className="flex gap-2 flex-wrap items-center mb-4 pt-2 border-t">
             <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-slate-200 rounded">⚙️ Config</span>
             {[
+              { id: 'admin-guide', label: '📚 Guide & Backup', icon: BookOpen },
               { id: 'agents', label: 'Agents', icon: Users },
               { id: 'members', label: 'Customers', icon: Users },
               { id: 'concierge-experiences', label: 'Concierge XP', icon: Sparkles },
@@ -2575,6 +2577,11 @@ const Admin = () => {
         {/* Breed Tags Manager */}
         {activeTab === 'breed-tags' && (
           <BreedTagsManager />
+        )}
+
+        {/* Admin Guide Dashboard - Help & Database Backup */}
+        {activeTab === 'admin-guide' && (
+          <AdminGuideDashboard />
         )}
 
         {/* Agent Management */}
