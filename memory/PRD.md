@@ -11,6 +11,16 @@ Build a comprehensive "Pet Life Operating System" - a digital guardian platform 
 
 ## What's Been Implemented
 
+### March 2026
+- ✅ **RESOLVED:** Production "No pets found" bug - Root cause was wrong `REACT_APP_BACKEND_URL`
+- ✅ **SSOT & Deployment Bible Updated** - Added critical deployment warning to prevent recurrence
+- ✅ **Admin Guide Dashboard** - New tab in Admin panel with:
+  - Complete guide explaining every admin section and how to use it
+  - Database backup/download functionality (exports all 21 collections)
+  - Critical deployment warning displayed prominently
+  - Quick reference cards for all 50+ admin features
+  - Collapsible sections: Command Center, Members & Pets, Commerce, 14 Pillars, Mira & AI, Analytics, Config
+
 ### December 2025
 - ✅ Production login redirect loop fix
 - ✅ "Golden Standard" UI/UX overhaul for Mira chat interface
