@@ -68,13 +68,21 @@ const MiraSearchPanel = ({
   // Main Mira search function - defined before useEffect that uses it
   const handleMiraSearch = useCallback(async (searchQuery = null) => {
     const inputQuery = searchQuery || query;
-    if (!inputQuery.trim()) return;
+    console.log('[MiraSearchPanel] handleMiraSearch called with:', inputQuery);
+    if (!inputQuery.trim()) {
+      console.log('[MiraSearchPanel] Empty query, returning');
+      return;
+    }
     
     setIsProcessing(true);
     setShowResults(true);
     setMiraResponse(null);
+    console.log('[MiraSearchPanel] Starting API call...');
+    console.log('[MiraSearchPanel] API_URL:', API_URL);
+    console.log('[MiraSearchPanel] Token exists:', !!token);
     
     try {
+      const startTime = Date.now();
       const response = await fetch(`${API_URL}/api/mira/os/understand-with-products`, {
         method: 'POST',
         headers: {
@@ -90,10 +98,12 @@ const MiraSearchPanel = ({
       });
       
       const data = await response.json();
+      console.log('[MiraSearchPanel] API response received in', Date.now() - startTime, 'ms');
+      console.log('[MiraSearchPanel] Response success:', data.success, 'products:', data.response?.products?.length);
       setMiraResponse(data);
       
     } catch (error) {
-      console.error('Mira search error:', error);
+      console.error('[MiraSearchPanel] Mira search error:', error);
       setMiraResponse({
         success: false,
         error: true,
@@ -167,6 +177,7 @@ const MiraSearchPanel = ({
   // Handle form submit
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log('[MiraSearchPanel] Form submitted, query:', query);
     handleMiraSearch();
   };
   
