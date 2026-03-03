@@ -453,17 +453,17 @@ const MiraMeetsYourPet = () => {
                 className="hidden"
               />
               
-              {/* Avatar grid */}
+              {/* Avatar grid - larger on mobile for touch */}
               <div className="text-xs text-slate-500 mb-2">or choose a breed avatar:</div>
-              <div className="grid grid-cols-6 md:grid-cols-8 gap-2 max-h-40 overflow-y-auto p-1">
+              <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2 sm:gap-2 max-h-48 overflow-y-auto p-1 -mx-1">
                 {BREED_AVATARS.map((avatar, avatarIndex) => (
                   <button
                     key={avatarIndex}
                     onClick={() => handleAvatarSelect(index, avatar)}
-                    className={`w-10 h-10 rounded-full bg-gradient-to-br ${avatar.color} flex items-center justify-center text-xl transition-all ${
+                    className={`w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br ${avatar.color} flex items-center justify-center text-xl sm:text-lg transition-all ${
                       pet.avatar?.breed === avatar.breed
                         ? 'ring-2 ring-pink-500 ring-offset-2 ring-offset-slate-800 scale-110'
-                        : 'hover:scale-105'
+                        : 'hover:scale-105 active:scale-95'
                     }`}
                     title={avatar.breed}
                   >
@@ -566,7 +566,7 @@ const MiraMeetsYourPet = () => {
       </div>
       
       {/* Fixed bottom button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-900 via-slate-900 to-transparent">
+      <div className="fixed bottom-0 left-0 right-0 p-4 safe-area-bottom bg-gradient-to-t from-slate-900 via-slate-900 to-transparent">
         <div className="max-w-2xl mx-auto">
           {error && (
             <div className="mb-3 p-3 bg-red-500/20 border border-red-500/50 rounded-xl text-red-400 text-sm text-center">
@@ -822,7 +822,7 @@ const MiraMeetsYourPet = () => {
       </div>
       
       {/* Fixed bottom button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-900 via-slate-900 to-transparent">
+      <div className="fixed bottom-0 left-0 right-0 p-4 safe-area-bottom bg-gradient-to-t from-slate-900 via-slate-900 to-transparent">
         <div className="max-w-2xl mx-auto">
           {error && (
             <div className="mb-3 p-3 bg-red-500/20 border border-red-500/50 rounded-xl text-red-400 text-sm text-center">
@@ -984,7 +984,7 @@ const MiraMeetsYourPet = () => {
       </div>
       
       {/* Fixed bottom button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-900 via-slate-900 to-transparent">
+      <div className="fixed bottom-0 left-0 right-0 p-4 safe-area-bottom bg-gradient-to-t from-slate-900 via-slate-900 to-transparent">
         <div className="max-w-md mx-auto">
           {error && (
             <div className="mb-3 p-3 bg-red-500/20 border border-red-500/50 rounded-xl text-red-400 text-sm text-center">
@@ -1174,7 +1174,7 @@ const MiraMeetsYourPet = () => {
   // ============================================================
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-purple-900/20 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-purple-900/20 to-slate-900 safe-area-inset">
       <AnimatePresence mode="wait">
         {currentScreen === 'petCount' && renderPetCountScreen()}
         {currentScreen === 'basicInfo' && renderBasicInfoScreen()}
