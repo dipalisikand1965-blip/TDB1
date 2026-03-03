@@ -4,14 +4,16 @@
  * World-class onboarding experience for The Doggy Company
  * 
  * Flow:
- * 1. Photo Hook - Upload photo, AI breed detection
- * 2. Gender (BEFORE name - so we can use his/her)
- * 3. Name + Nickname
- * 4. Birthday/Gotcha Day with date picker
- * 5. Parent Info - One clean screen with essentials
+ * 1. Pet Count - "How many pets do you have?" (NEW)
+ * 2. Photo Hook - Upload photo OR choose avatar icon
+ * 3. Gender (BEFORE name - so we can use his/her)
+ * 4. Name + Nickname
+ * 5. Birthday/Gotcha Day with date picker
  * 6. Soul Game - 13 tap questions, one per screen (NO SKIP)
- * 7. Payoff Reveal - Show what Mira learned
- * 8. Pet Home - Default landing
+ * 7. [LOOP back to step 2 for additional pets]
+ * 8. Parent Info - One clean screen with essentials
+ * 9. Payoff Reveal - Show what Mira learned
+ * 10. Pet Home - Default landing
  * 
  * Key Principles:
  * - One question per screen (tap game, not questionnaire)
@@ -19,6 +21,8 @@
  * - Soul ring grows in real-time
  * - ALL questions compulsory (no skip)
  * - Supports adding pets to existing accounts (skip parent info if logged in)
+ * - Photo optional - can choose breed avatar instead
+ * - Multiple pets supported in one onboarding session
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
@@ -48,6 +52,20 @@ import {
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+// Dog breed avatars for users without photos
+const DOG_AVATARS = [
+  { id: 'indie', name: 'Indie / Mix', emoji: '🐕', color: 'from-amber-500 to-orange-600' },
+  { id: 'labrador', name: 'Labrador', emoji: '🦮', color: 'from-yellow-500 to-amber-600' },
+  { id: 'golden', name: 'Golden Retriever', emoji: '🐕', color: 'from-yellow-400 to-amber-500' },
+  { id: 'german_shepherd', name: 'German Shepherd', emoji: '🐕‍🦺', color: 'from-stone-500 to-stone-700' },
+  { id: 'poodle', name: 'Poodle', emoji: '🐩', color: 'from-pink-400 to-rose-500' },
+  { id: 'beagle', name: 'Beagle', emoji: '🐕', color: 'from-orange-400 to-amber-500' },
+  { id: 'shihtzu', name: 'Shih Tzu', emoji: '🐶', color: 'from-slate-400 to-slate-600' },
+  { id: 'pug', name: 'Pug', emoji: '🐶', color: 'from-amber-400 to-yellow-500' },
+  { id: 'husky', name: 'Husky', emoji: '🐺', color: 'from-slate-400 to-blue-500' },
+  { id: 'other', name: 'Other Breed', emoji: '🐾', color: 'from-purple-500 to-pink-500' },
+];
 
 // Check if user is already logged in
 const getExistingAuth = () => {
@@ -322,8 +340,13 @@ const MiraMeetsYourPet = () => {
   const existingAuth = getExistingAuth();
   const isAddingPet = !!existingAuth;
   
-  // Screen state - ORDER: photo -> gender -> name -> birthday -> parent (skip if logged in) -> soul -> payoff
-  const [screen, setScreen] = useState('photo');
+  // Multi-pet state - NEW
+  const [totalPetCount, setTotalPetCount] = useState(1); // How many pets to onboard
+  const [currentPetIndex, setCurrentPetIndex] = useState(0); // Which pet we're on (0-indexed)
+  const [allPetsData, setAllPetsData] = useState([]); // Store completed pets data
+  
+  // Screen state - ORDER: petcount -> photo -> gender -> name -> birthday -> soul -> [loop] -> parent -> payoff
+  const [screen, setScreen] = useState(isAddingPet ? 'photo' : 'petcount'); // Start with pet count for new users
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [detectingBreed, setDetectingBreed] = useState(false);
@@ -331,6 +354,7 @@ const MiraMeetsYourPet = () => {
   // Photo & Pet Info
   const [petPhoto, setPetPhoto] = useState(null);
   const [petPhotoPreview, setPetPhotoPreview] = useState(null);
+  const [selectedAvatar, setSelectedAvatar] = useState(null); // NEW - avatar option instead of photo
   const [petGender, setPetGender] = useState(''); // boy or girl
   const [petName, setPetName] = useState('');
   const [petNickname, setPetNickname] = useState('');
@@ -493,7 +517,8 @@ const MiraMeetsYourPet = () => {
         if (currentQuestion < SOUL_QUESTIONS.length - 1) {
           setCurrentQuestion(prev => prev + 1);
         } else {
-          setScreen('payoff');
+          // Check if there are more pets to add
+          handlePetComplete();
         }
       }, 1500);
     }
@@ -505,7 +530,55 @@ const MiraMeetsYourPet = () => {
     if (currentQuestion < SOUL_QUESTIONS.length - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else {
-      setScreen('payoff');
+      // Check if there are more pets to add
+      handlePetComplete();
+    }
+  };
+  
+  // NEW: Save current pet data and move to next pet (or parent screen)
+  const handlePetComplete = () => {
+    // Save current pet's data
+    const currentPetData = {
+      photo: petPhoto,
+      photoPreview: petPhotoPreview,
+      avatar: selectedAvatar,
+      gender: petGender,
+      name: petName,
+      nickname: petNickname,
+      breed: breedDetected,
+      birthday: petBirthday,
+      birthType: birthType,
+      answers: { ...answers }
+    };
+    
+    setAllPetsData(prev => [...prev, currentPetData]);
+    
+    // Check if more pets to add
+    if (currentPetIndex < totalPetCount - 1) {
+      // Reset pet-specific state for next pet
+      setPetPhoto(null);
+      setPetPhotoPreview(null);
+      setSelectedAvatar(null);
+      setPetGender('');
+      setPetName('');
+      setPetNickname('');
+      setBreedDetected('');
+      setBreedConfirmed(false);
+      setPetBirthday('');
+      setBirthType('birthday');
+      setAnswers({});
+      setCurrentQuestion(0);
+      
+      // Move to next pet
+      setCurrentPetIndex(prev => prev + 1);
+      setScreen('photo');
+    } else {
+      // All pets done - go to parent info (or payoff if already logged in)
+      if (isAddingPet) {
+        setScreen('payoff');
+      } else {
+        setScreen('parent');
+      }
     }
   };
   
@@ -708,6 +781,68 @@ const MiraMeetsYourPet = () => {
   );
   
   // Render Photo Screen
+  // ===== PET COUNT SCREEN (NEW) =====
+  const renderPetCountScreen = () => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="flex flex-col items-center justify-center min-h-screen p-6"
+    >
+      {/* Logo */}
+      <div className="mb-8 flex items-center gap-2">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+          <Sparkles className="w-6 h-6 text-white" />
+        </div>
+        <span className="text-2xl font-bold text-white">Mira</span>
+      </div>
+      
+      <h1 className="text-3xl font-bold text-white mb-2 text-center">
+        How many furry friends do you have?
+      </h1>
+      <p className="text-slate-400 mb-8 text-center">
+        We'll get to know each one personally
+      </p>
+      
+      {/* Pet count buttons */}
+      <div className="grid grid-cols-5 gap-3 mb-8">
+        {[1, 2, 3, 4, 5].map((num) => (
+          <button
+            key={num}
+            onClick={() => {
+              setTotalPetCount(num);
+              setScreen('photo');
+            }}
+            className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold transition-all
+              ${totalPetCount === num 
+                ? 'bg-gradient-to-br from-pink-500 to-purple-600 text-white scale-110' 
+                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+              }`}
+          >
+            {num}{num === 5 ? '+' : ''}
+          </button>
+        ))}
+      </div>
+      
+      {/* Pet emoji preview */}
+      <div className="flex gap-2 mb-8">
+        {Array.from({ length: totalPetCount }, (_, i) => (
+          <span key={i} className="text-4xl animate-bounce" style={{ animationDelay: `${i * 0.1}s` }}>
+            🐕
+          </span>
+        ))}
+      </div>
+      
+      <button
+        onClick={() => setScreen('photo')}
+        className="px-8 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-full font-bold text-lg"
+      >
+        Let's Go! <ChevronRight className="w-5 h-5 inline ml-1" />
+      </button>
+    </motion.div>
+  );
+  
+  // ===== PHOTO SCREEN =====
   const renderPhotoScreen = () => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -730,23 +865,37 @@ const MiraMeetsYourPet = () => {
         </div>
       )}
       
-      {!petPhotoPreview ? (
+      {/* Show which pet we're on for multi-pet onboarding */}
+      {totalPetCount > 1 && (
+        <div className="mb-4 flex items-center gap-2">
+          <span className="text-slate-400 text-sm">Pet {currentPetIndex + 1} of {totalPetCount}</span>
+          <div className="flex gap-1">
+            {Array.from({ length: totalPetCount }, (_, i) => (
+              <div 
+                key={i} 
+                className={`w-2 h-2 rounded-full ${i <= currentPetIndex ? 'bg-pink-500' : 'bg-slate-700'}`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {!petPhotoPreview && !selectedAvatar ? (
         <>
           <h1 className="text-3xl font-bold text-white mb-2 text-center">
-            {isAddingPet ? 'Add another pet!' : 'Let Mira meet your pet'}
+            {isAddingPet ? 'Add another pet!' : totalPetCount > 1 && currentPetIndex > 0 ? `Now let's meet pet #${currentPetIndex + 1}!` : 'Let Mira meet your pet'}
           </h1>
           <p className="text-slate-400 mb-8 text-center">
-            Upload a photo and watch the magic happen
+            Upload a photo or choose an avatar
           </p>
           
           {/* Upload Area */}
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="w-64 h-64 rounded-full border-2 border-dashed border-pink-500/50 flex flex-col items-center justify-center cursor-pointer hover:border-pink-500 hover:bg-pink-500/5 transition-all"
+            className="w-48 h-48 rounded-full border-2 border-dashed border-pink-500/50 flex flex-col items-center justify-center cursor-pointer hover:border-pink-500 hover:bg-pink-500/5 transition-all mb-6"
           >
-            <Camera className="w-16 h-16 text-pink-500 mb-4" />
-            <span className="text-pink-500 font-medium">Upload Photo</span>
-            <span className="text-slate-500 text-sm mt-1">or tap to take one</span>
+            <Camera className="w-12 h-12 text-pink-500 mb-2" />
+            <span className="text-pink-500 font-medium text-sm">Upload Photo</span>
           </div>
           
           <input
@@ -756,6 +905,63 @@ const MiraMeetsYourPet = () => {
             onChange={handlePhotoUpload}
             className="hidden"
           />
+          
+          {/* Divider */}
+          <div className="flex items-center gap-4 mb-6 w-full max-w-xs">
+            <div className="flex-1 h-px bg-slate-700"></div>
+            <span className="text-slate-500 text-sm">or choose an avatar</span>
+            <div className="flex-1 h-px bg-slate-700"></div>
+          </div>
+          
+          {/* Avatar Grid */}
+          <div className="grid grid-cols-5 gap-3 mb-6 max-w-sm">
+            {DOG_AVATARS.map((avatar) => (
+              <button
+                key={avatar.id}
+                onClick={() => {
+                  setSelectedAvatar(avatar);
+                  setBreedDetected(avatar.name);
+                  setBreedConfirmed(true);
+                  setScreen('gender');
+                }}
+                className="flex flex-col items-center p-2 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all hover:scale-105"
+              >
+                <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${avatar.color} flex items-center justify-center text-2xl mb-1`}>
+                  {avatar.emoji}
+                </div>
+                <span className="text-[10px] text-slate-400 text-center leading-tight">{avatar.name.split(' ')[0]}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      ) : selectedAvatar ? (
+        <>
+          {/* Avatar selected - show confirmation */}
+          <div className="relative mb-6">
+            <div className={`w-48 h-48 rounded-full bg-gradient-to-br ${selectedAvatar.color} flex items-center justify-center text-8xl border-4 border-pink-500`}>
+              {selectedAvatar.emoji}
+            </div>
+            <button
+              onClick={() => {
+                setSelectedAvatar(null);
+                setBreedDetected('');
+                setBreedConfirmed(false);
+              }}
+              className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center"
+            >
+              <X className="w-4 h-4 text-slate-400" />
+            </button>
+          </div>
+          
+          <p className="text-white text-xl font-bold mb-2">{selectedAvatar.name}</p>
+          <p className="text-slate-400 mb-6">You can add a real photo later!</p>
+          
+          <button
+            onClick={() => setScreen('gender')}
+            className="px-8 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-full font-bold"
+          >
+            Continue <ChevronRight className="w-5 h-5 inline ml-1" />
+          </button>
         </>
       ) : (
         <>
@@ -1743,6 +1949,7 @@ const MiraMeetsYourPet = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-purple-950">
       <AnimatePresence mode="wait">
+        {screen === 'petcount' && renderPetCountScreen()}
         {screen === 'photo' && renderPhotoScreen()}
         {screen === 'gender' && renderGenderScreen()}
         {screen === 'name' && renderNameScreen()}
