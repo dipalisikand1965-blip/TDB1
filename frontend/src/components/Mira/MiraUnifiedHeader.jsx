@@ -8,6 +8,7 @@
  */
 
 import React, { useState, useRef, useEffect, memo } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   ChevronDown, Heart, Calendar, Sparkles, Briefcase, 
   GraduationCap, Users, Check, Bell
@@ -217,46 +218,110 @@ const PetSwitcher = memo(({ pet, allPets = [], onSwitchPet, isOpen, onToggle, on
         <span className="switcher-name">{petName}</span>
       </button>
       
-      {/* Dropdown */}
+      {/* Dropdown - Use Portal on mobile for proper fixed positioning */}
       {isOpen && (
-        <div className="pet-switcher-dropdown">
-          {allPets.map((p) => {
-            const pPhoto = p.photo || p.pet_photo || p.photo_url || p.image;
-            const pScore = Number(p.soulScore) || Number(p.overall_score) || 0;
-            const isNew = p.isNew || pScore < 20;
-            const isSelected = p.id === pet?.id;
-            
-            return (
-              <button
-                key={p.id}
-                className={`switcher-item ${isSelected ? 'selected' : ''}`}
-                onClick={() => {
-                  hapticFeedback.buttonTap();
-                  onSwitchPet(p);
-                  onClose();
-                }}
-              >
-                <div className="item-avatar">
-                  {pPhoto ? (
-                    <img src={pPhoto} alt={p.name} />
-                  ) : (
-                    <div className="item-avatar-placeholder">🐕</div>
-                  )}
-                </div>
-                <div className="item-info">
-                  <span className="item-name">{p.name}</span>
-                  <span className="item-breed">{p.breed}</span>
-                </div>
-                {isNew ? (
-                  <span className="item-new">+ New</span>
-                ) : pScore > 0 ? (
-                  <span className="item-score">{Math.round(pScore)}%</span>
-                ) : null}
-                {isSelected && <Check className="item-check" />}
-              </button>
-            );
-          })}
-        </div>
+        typeof window !== 'undefined' && window.innerWidth <= 768 ? (
+          createPortal(
+            <div 
+              className="pet-switcher-dropdown"
+              ref={dropdownRef}
+              style={{
+                position: 'fixed',
+                top: 'auto',
+                bottom: '0px',
+                left: '0px',
+                right: '0px',
+                width: '100%',
+                maxHeight: '70vh',
+                borderRadius: '20px 20px 0 0',
+                zIndex: 9999,
+                padding: '16px',
+                paddingBottom: '40px',
+                background: 'linear-gradient(145deg, rgba(88, 28, 135, 0.98), rgba(59, 7, 100, 0.98))',
+                border: '1px solid rgba(168, 85, 247, 0.3)',
+                boxShadow: '0 -12px 40px rgba(0, 0, 0, 0.5)',
+                overflowY: 'auto'
+              }}
+            >
+              {allPets.map((p) => {
+                const pPhoto = p.photo || p.pet_photo || p.photo_url || p.image;
+                const pScore = Number(p.soulScore) || Number(p.overall_score) || 0;
+                const isNew = p.isNew || pScore < 20;
+                const isSelected = p.id === pet?.id;
+                
+                return (
+                  <button
+                    key={p.id}
+                    className={`switcher-item ${isSelected ? 'selected' : ''}`}
+                    onClick={() => {
+                      hapticFeedback.buttonTap();
+                      onSwitchPet(p);
+                      onClose();
+                    }}
+                  >
+                    <div className="item-avatar">
+                      {pPhoto ? (
+                        <img src={pPhoto} alt={p.name} />
+                      ) : (
+                        <div className="item-avatar-placeholder">🐕</div>
+                      )}
+                    </div>
+                    <div className="item-info">
+                      <span className="item-name">{p.name}</span>
+                      <span className="item-breed">{p.breed}</span>
+                    </div>
+                    {isNew ? (
+                      <span className="item-new">+ New</span>
+                    ) : pScore > 0 ? (
+                      <span className="item-score">{Math.round(pScore)}%</span>
+                    ) : null}
+                    {isSelected && <Check className="item-check" />}
+                  </button>
+                );
+              })}
+            </div>,
+            document.body
+          )
+        ) : (
+          <div className="pet-switcher-dropdown">
+            {allPets.map((p) => {
+              const pPhoto = p.photo || p.pet_photo || p.photo_url || p.image;
+              const pScore = Number(p.soulScore) || Number(p.overall_score) || 0;
+              const isNew = p.isNew || pScore < 20;
+              const isSelected = p.id === pet?.id;
+              
+              return (
+                <button
+                  key={p.id}
+                  className={`switcher-item ${isSelected ? 'selected' : ''}`}
+                  onClick={() => {
+                    hapticFeedback.buttonTap();
+                    onSwitchPet(p);
+                    onClose();
+                  }}
+                >
+                  <div className="item-avatar">
+                    {pPhoto ? (
+                      <img src={pPhoto} alt={p.name} />
+                    ) : (
+                      <div className="item-avatar-placeholder">🐕</div>
+                    )}
+                  </div>
+                  <div className="item-info">
+                    <span className="item-name">{p.name}</span>
+                    <span className="item-breed">{p.breed}</span>
+                  </div>
+                  {isNew ? (
+                    <span className="item-new">+ New</span>
+                  ) : pScore > 0 ? (
+                    <span className="item-score">{Math.round(pScore)}%</span>
+                  ) : null}
+                  {isSelected && <Check className="item-check" />}
+                </button>
+              );
+            })}
+          </div>
+        )
       )}
     </div>
   );
