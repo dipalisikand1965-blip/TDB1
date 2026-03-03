@@ -1024,6 +1024,16 @@ const MiraMeetsYourPet = () => {
   // SCREEN 5: WELCOME
   // ============================================================
   
+  const [selectedPetForSoul, setSelectedPetForSoul] = useState(null);
+  
+  // Calculate soul profile completion
+  const getSoulCompletion = (pet) => {
+    // 5 quick questions = 30% base
+    // Full soul = 13 more questions = 70% more
+    // Currently they have 5/18 questions done = ~28%
+    return 30; // They've done the 5 pillar questions
+  };
+  
   const renderWelcomeScreen = () => (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -1035,51 +1045,126 @@ const MiraMeetsYourPet = () => {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', delay: 0.2 }}
-        className="w-24 h-24 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center mb-6"
+        className="w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center mb-4"
       >
-        <Check className="w-12 h-12 text-white" />
+        <Check className="w-10 h-10 text-white" />
       </motion.div>
       
-      <h1 className="text-3xl md:text-4xl font-bold text-white text-center mb-3">
+      <h1 className="text-2xl md:text-3xl font-bold text-white text-center mb-2">
         🎉 Welcome to the family!
       </h1>
       
-      {/* Pet avatars */}
-      <div className="flex flex-wrap justify-center gap-3 mb-6">
+      <p className="text-slate-400 text-center mb-6">
+        You're in! Here's how well I know your babies:
+      </p>
+      
+      {/* Pet cards with soul completion */}
+      <div className="w-full max-w-md space-y-3 mb-6">
         {pets.map((pet, index) => (
           <motion.div
             key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 + index * 0.1 }}
-            className="flex flex-col items-center"
+            className="bg-slate-800/50 rounded-xl p-4 border border-slate-700"
           >
-            {pet.photoPreview ? (
-              <img src={pet.photoPreview} alt={pet.name} className="w-16 h-16 rounded-full object-cover border-2 border-white/20" />
-            ) : pet.avatar ? (
-              <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${pet.avatar.color} flex items-center justify-center text-3xl border-2 border-white/20`}>
-                {pet.avatar.emoji}
+            <div className="flex items-center gap-3">
+              {pet.photoPreview ? (
+                <img src={pet.photoPreview} alt={pet.name} className="w-12 h-12 rounded-full object-cover border-2 border-pink-500/30" />
+              ) : pet.avatar ? (
+                <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${pet.avatar.color} flex items-center justify-center text-2xl border-2 border-pink-500/30`}>
+                  {pet.avatar.emoji}
+                </div>
+              ) : null}
+              
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-white font-medium">{pet.name}</span>
+                  <span className="text-pink-400 text-sm font-medium">{getSoulCompletion(pet)}% Soul</span>
+                </div>
+                
+                {/* Progress bar */}
+                <div className="mt-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${getSoulCompletion(pet)}%` }}
+                    transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
+                    className="h-full bg-gradient-to-r from-pink-500 to-purple-500 rounded-full"
+                  />
+                </div>
+                
+                <p className="text-xs text-slate-500 mt-1">
+                  +70% more with full soul profile
+                </p>
               </div>
-            ) : null}
-            <span className="text-white text-sm mt-1">{pet.name}</span>
+            </div>
           </motion.div>
         ))}
       </div>
       
-      <p className="text-slate-400 text-center max-w-md mb-8">
-        I know enough about {pets.map(p => p.name).join(', ')} to help you right away! 
-        You can always tell me more to unlock deeper personalization.
-      </p>
+      {/* Call to action - Complete Soul Profile */}
+      <div className="w-full max-w-md bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/30 rounded-xl p-4 mb-6">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center flex-shrink-0">
+            <Heart className="w-5 h-5 text-pink-400" />
+          </div>
+          <div>
+            <h3 className="text-white font-medium mb-1">
+              Want me to really know {pets.length === 1 ? pets[0].name : 'them'}?
+            </h3>
+            <p className="text-slate-400 text-sm mb-3">
+              Complete the full Soul Profile and I'll give you personalized recommendations for food, health, travel, celebrations & more!
+            </p>
+            
+            {/* Pet selection for soul completion */}
+            <div className="flex flex-wrap gap-2 mb-3">
+              {pets.map((pet, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedPetForSoul(index)}
+                  className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
+                    selectedPetForSoul === index
+                      ? 'bg-pink-500 text-white'
+                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                  }`}
+                >
+                  {pet.avatar?.emoji || '🐕'} {pet.name}
+                </button>
+              ))}
+            </div>
+            
+            <button
+              onClick={() => {
+                // TODO: Navigate to full soul questions for selected pet
+                // For now, go to dashboard where they can do it
+                navigate('/mira-demo');
+              }}
+              disabled={selectedPetForSoul === null}
+              className={`w-full py-2.5 rounded-lg font-medium text-sm transition-all ${
+                selectedPetForSoul !== null
+                  ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/20'
+                  : 'bg-slate-700 text-slate-400 cursor-not-allowed'
+              }`}
+            >
+              {selectedPetForSoul !== null 
+                ? `Complete ${pets[selectedPetForSoul].name}'s Soul Profile →`
+                : 'Select a pet above to continue'
+              }
+            </button>
+          </div>
+        </div>
+      </div>
       
+      {/* Or skip for now */}
       <button
         onClick={() => navigate('/mira-demo')}
-        className="px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-pink-500/30 hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
+        className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-medium transition-all flex items-center gap-2"
       >
-        Go to Dashboard <ChevronRight className="w-5 h-5" />
+        Skip for now → Go to Dashboard
       </button>
       
-      <p className="text-slate-500 text-sm mt-6 text-center">
-        💡 Tip: Complete full Soul Profiles from each pet's profile to unlock premium personalized picks!
+      <p className="text-slate-500 text-xs mt-4 text-center max-w-sm">
+        Don't worry, I'll remind you! You can complete Soul Profiles anytime from the pet's profile page.
       </p>
     </motion.div>
   );
