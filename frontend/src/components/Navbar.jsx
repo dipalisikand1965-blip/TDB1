@@ -607,21 +607,10 @@ const Navbar = () => {
   };
 
   // ============================================
-  // MIRA OS DOCTRINE: ONE of Everything
-  // Hide Navbar search on pages that have their own UnifiedHero search
+  // UPDATED: Search bar now visible on ALL pages including pillar pages
+  // User requested unified search experience across the platform
   // ============================================
-  const PAGES_WITH_HERO_SEARCH = [
-    // All 14 Pillars
-    '/celebrate', '/celebrate-new', '/dine', '/care', '/enjoy', 
-    '/travel', '/stay', '/fit', '/learn', '/advisory', 
-    '/emergency', '/paperwork', '/farewell', '/adopt',
-    // Shop and Services also have hero search
-    '/shop', '/services'
-  ];
-  
-  const isPillarPage = PAGES_WITH_HERO_SEARCH.some(path => 
-    location.pathname === path || location.pathname.startsWith(path + '/')
-  );
+  const isPillarPage = false; // Always show search bar
 
   // Get dropdown position class
   const getDropdownPosition = (index) => {
