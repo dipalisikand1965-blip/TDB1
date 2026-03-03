@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://frontend-regression.preview.emergentagent.com
+https://pillar-consistency.preview.emergentagent.com
 ```
 
 ---

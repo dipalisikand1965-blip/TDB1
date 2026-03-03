@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://frontend-regression.preview.emergentagent.com/mira-demo**
+**https://pillar-consistency.preview.emergentagent.com/mira-demo**
 
 ---
 
