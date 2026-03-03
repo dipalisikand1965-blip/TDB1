@@ -2110,7 +2110,8 @@ async def add_reply(ticket_id: str, reply: TicketReply):
     
     update_doc = {
         "updated_at": now,
-        "has_new_member_message": False  # Clear flag when concierge replies
+        "has_new_member_message": False,  # Clear flag when concierge replies
+        "has_unread_concierge_reply": not reply.is_internal  # Set TRUE so pet parent sees notification
     }
     
     if not ticket.get("first_response_at") and not reply.is_internal:
