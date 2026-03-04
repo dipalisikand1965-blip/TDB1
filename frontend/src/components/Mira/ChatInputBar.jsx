@@ -167,7 +167,7 @@ const ChatInputBar = ({
       )}
       
       <div className="mp-composer-inner">
-        {/* New Chat Button - shown when there's an active conversation */}
+        {/* New Chat Button - smaller, subtle - only shows when there's a conversation */}
         {hasConversation && onNewChat && (
           <button
             type="button"
@@ -179,19 +179,19 @@ const ChatInputBar = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              background: 'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)',
-              border: 'none',
-              borderRadius: '12px',
-              color: 'white',
+              width: '28px',
+              height: '28px',
+              background: 'rgba(139, 92, 246, 0.3)',
+              border: '1px solid rgba(139, 92, 246, 0.4)',
+              borderRadius: '8px',
+              color: 'rgba(255, 255, 255, 0.7)',
               cursor: 'pointer',
-              marginRight: '8px',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              boxShadow: '0 2px 8px rgba(139, 92, 246, 0.3)'
+              marginRight: '6px',
+              transition: 'all 0.2s',
+              flexShrink: 0
             }}
           >
-            <MessageSquarePlus size={18} />
+            <MessageSquarePlus size={14} />
           </button>
         )}
         

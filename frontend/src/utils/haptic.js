@@ -277,6 +277,7 @@ export const hapticFeedback = {
   },
   
   // ========== BASIC TAPS ==========
+  lightTap: (event) => haptic('light', event),
   buttonTap: (event) => haptic('light', event),
   heavyTap: (event) => haptic('strong', event),
   
