@@ -220,7 +220,7 @@ const Home = () => {
               >
                 {/* Outer soul glow - breathing animation */}
                 <motion.div 
-                  className="absolute -inset-4 bg-gradient-to-r from-purple-500 via-pink-400 to-indigo-500 rounded-full blur-2xl opacity-50"
+                  className="absolute -inset-4 bg-gradient-to-r from-purple-500 via-pink-400 to-indigo-500 rounded-[50%] blur-2xl opacity-50"
                   animate={{ 
                     scale: [1, 1.05, 1],
                     opacity: [0.4, 0.6, 0.4]
@@ -230,7 +230,7 @@ const Home = () => {
                 
                 {/* Inner soul glow - counter animation */}
                 <motion.div 
-                  className="absolute -inset-2 bg-gradient-to-r from-pink-400 via-purple-500 to-pink-400 rounded-full blur-xl opacity-60"
+                  className="absolute -inset-2 bg-gradient-to-r from-pink-400 via-purple-500 to-pink-400 rounded-[50%] blur-xl opacity-60"
                   animate={{ 
                     scale: [1.05, 1, 1.05],
                     opacity: [0.5, 0.7, 0.5]
@@ -271,15 +271,15 @@ const Home = () => {
                   ✨
                 </motion.div>
                 
-                {/* Dog image - circular with soul border */}
-                <div className="relative w-72 h-72 mx-auto rounded-full overflow-hidden shadow-2xl">
+                {/* Dog image - oval with soul border (taller to fit portrait pet photos) */}
+                <div className="relative w-64 h-80 mx-auto rounded-[50%] overflow-hidden shadow-2xl">
                   {/* Animated gradient border */}
-                  <div className="absolute inset-0 rounded-full p-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500">
-                    <div className="w-full h-full rounded-full overflow-hidden bg-[#0f0720]">
+                  <div className="absolute inset-0 rounded-[50%] p-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500">
+                    <div className="w-full h-full rounded-[50%] overflow-hidden bg-[#0f0720] flex items-center justify-center">
                       <img 
                         src={heroImage} 
                         alt={heroPetName} 
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-center"
                       />
                       {/* Subtle soul overlay on the image */}
                       <div className="absolute inset-0 bg-gradient-to-t from-purple-900/40 via-transparent to-pink-500/10" />
