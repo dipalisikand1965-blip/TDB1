@@ -402,6 +402,9 @@ const useRealtimeConcierge = ({
     // Manual reconnect
     reconnect: connect,
     
+    // Reconnect attempts (for graceful degradation)
+    reconnectAttempts: reconnectAttempts.current,
+    
     // Notification sound
     playNotificationSound
   };
