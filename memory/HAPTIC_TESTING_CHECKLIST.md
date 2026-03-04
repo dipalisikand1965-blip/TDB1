@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://concierge-pet-os.preview.emergentagent.com/mira-demo**
+**https://mystique-memorial.preview.emergentagent.com/mira-demo**
 
 ---
 

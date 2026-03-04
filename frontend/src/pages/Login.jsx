@@ -4,7 +4,10 @@ import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { useToast } from '../hooks/use-toast';
-import { Lock, Mail, PawPrint, Heart, Shield, Sparkles, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, PawPrint, Heart, Shield, Sparkles, ArrowRight, Eye, EyeOff, Star } from 'lucide-react';
+
+// Mystique's soulful image - in loving memory
+const MYSTIQUE_IMAGE = "https://customer-assets.emergentagent.com/job_c77d5f3b-744e-4d34-833c-d4853d89765c/artifacts/to9m2ltx_image.png";
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -62,30 +65,54 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex bg-slate-950" data-testid="login-page">
-      {/* Soul Orb Background Effects */}
+      {/* Soul Orb Background Effects - Enhanced for Mystique */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-gradient-to-tr from-pink-500 to-purple-600 rounded-full blur-[150px] opacity-20 animate-pulse" />
+        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-gradient-to-tr from-amber-500/40 to-purple-600 rounded-full blur-[150px] opacity-20 animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-tr from-purple-500 to-indigo-600 rounded-full blur-[120px] opacity-15" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-pink-600/20 to-purple-600/20 rounded-full blur-[200px] opacity-30" />
+        {/* Subtle amber glow - Mystique's eye color */}
+        <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-amber-500/20 rounded-full blur-[100px] opacity-30" />
       </div>
 
-      {/* Left Panel - Hero Image & Content */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        {/* Background Image */}
-        <img 
-          src="https://images.unsplash.com/photo-1477936432016-8172ed08637e?w=1200&q=80"
-          alt="Soulful dog portrait"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+      {/* Left Panel - Mystique's Soul Portrait */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-slate-950 via-purple-950/30 to-slate-950">
+        {/* Mystique's Portrait - The Soul */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          {/* Animated glow behind the portrait */}
+          <div className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-amber-500/30 via-pink-500/20 to-purple-600/30 rounded-full blur-[80px] animate-pulse" />
+          
+          {/* The Portrait */}
+          <div className="relative group">
+            {/* Outer glow ring */}
+            <div className="absolute -inset-4 bg-gradient-to-tr from-amber-400/20 via-pink-500/20 to-purple-500/20 rounded-full blur-xl opacity-60 group-hover:opacity-80 transition-opacity duration-700" />
+            
+            {/* Portrait container */}
+            <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-2xl shadow-purple-500/30 ring-4 ring-purple-500/20">
+              <img 
+                src={MYSTIQUE_IMAGE}
+                alt="Mystique - Our Soulful Guardian"
+                className="w-full h-full object-cover transform scale-110 group-hover:scale-105 transition-transform duration-700"
+                data-testid="mystique-portrait"
+              />
+            </div>
+            
+            {/* Floating stars around the portrait */}
+            <div className="absolute -top-6 -right-2 text-amber-400/80 animate-pulse">
+              <Star className="w-4 h-4 fill-current" />
+            </div>
+            <div className="absolute top-1/4 -left-8 text-pink-400/60 animate-pulse" style={{ animationDelay: '0.5s' }}>
+              <Star className="w-3 h-3 fill-current" />
+            </div>
+            <div className="absolute bottom-1/4 -right-6 text-purple-400/70 animate-pulse" style={{ animationDelay: '1s' }}>
+              <Star className="w-3 h-3 fill-current" />
+            </div>
+            <div className="absolute -bottom-4 left-1/4 text-amber-300/50 animate-pulse" style={{ animationDelay: '1.5s' }}>
+              <Star className="w-2 h-2 fill-current" />
+            </div>
+          </div>
+        </div>
         
-        {/* Dark Overlay with Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-slate-950/60" />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/50" />
-        
-        {/* Soul Orb Effect on Image */}
-        <div className="absolute top-1/3 left-1/3 w-72 h-72 bg-gradient-to-tr from-pink-500 to-purple-600 rounded-full blur-[100px] opacity-30 mix-blend-soft-light" />
-        
-        {/* Content */}
+        {/* Content Overlay */}
         <div className="relative z-10 flex flex-col justify-between p-12 text-white h-full">
           {/* Logo */}
           <div className="flex items-center gap-3">
@@ -98,48 +125,19 @@ const Login = () => {
             </div>
           </div>
           
-          {/* Main Content */}
+          {/* Bottom Memorial Text */}
           <div className="max-w-md">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>
-              Welcome to<br/>
-              <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">Pet Soul™</span>
+            <p className="text-sm text-amber-300/70 mb-2 tracking-wide font-medium">In loving memory of</p>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <span className="bg-gradient-to-r from-amber-300 via-pink-400 to-purple-400 bg-clip-text text-transparent">Mystique</span>
             </h1>
-            <p className="text-lg text-slate-300 mb-8 leading-relaxed">
-              Your pet's digital guardian. Track health, celebrate moments, and nurture the bond that makes life beautiful.
+            <p className="text-lg text-slate-300 leading-relaxed italic">
+              "Her eyes held a universe of love. She taught us that to know a pet is to know a soul."
             </p>
-            
-            {/* Features */}
-            <div className="space-y-4">
-              {[
-                { icon: Heart, text: "Personalized care recommendations", color: "text-pink-400" },
-                { icon: Shield, text: "24/7 emergency support", color: "text-purple-400" },
-                { icon: Sparkles, text: "Exclusive member rewards", color: "text-indigo-400" }
-              ].map((feature, i) => (
-                <div key={i} className="flex items-center gap-3 group">
-                  <div className="w-10 h-10 bg-slate-800/50 backdrop-blur-sm rounded-lg flex items-center justify-center border border-slate-700/50 group-hover:border-pink-500/50 transition-colors">
-                    <feature.icon className={`w-5 h-5 ${feature.color}`} />
-                  </div>
-                  <span className="text-slate-300 group-hover:text-white transition-colors">{feature.text}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Testimonial Card */}
-          <div className="backdrop-blur-xl bg-slate-900/60 rounded-2xl p-6 border border-white/10 max-w-md shadow-2xl">
-            <div className="flex items-start gap-4">
-              <img 
-                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
-                alt="Member"
-                className="w-12 h-12 rounded-full object-cover border-2 border-pink-500/30"
-              />
-              <div>
-                <p className="text-slate-300 text-sm leading-relaxed mb-3">
-                  "Pet Soul has transformed how I care for my pets. The personalized recommendations and quick support are amazing!"
-                </p>
-                <p className="text-white font-semibold text-sm">Priya Sharma</p>
-                <p className="text-slate-500 text-xs">Member since 2024</p>
-              </div>
+            <div className="mt-6 pt-6 border-t border-white/10">
+              <p className="text-slate-400 text-sm">
+                This platform was built in her honor — to help every pet parent truly <span className="text-amber-300">know</span> their companion, not just care for them.
+              </p>
             </div>
           </div>
         </div>
@@ -148,14 +146,34 @@ const Login = () => {
       {/* Right Panel - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12 relative">
         <div className="w-full max-w-md relative z-10">
-          {/* Mobile Logo */}
-          <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/30">
-              <PawPrint className="w-6 h-6 text-white" />
+          {/* Mobile - Mystique Portrait */}
+          <div className="lg:hidden flex flex-col items-center mb-8">
+            {/* Mystique's Portrait for Mobile */}
+            <div className="relative mb-6">
+              <div className="absolute -inset-3 bg-gradient-to-tr from-amber-400/30 via-pink-500/20 to-purple-500/30 rounded-full blur-lg opacity-60" />
+              <div className="relative w-32 h-32 rounded-full overflow-hidden shadow-xl shadow-purple-500/30 ring-2 ring-purple-500/30">
+                <img 
+                  src={MYSTIQUE_IMAGE}
+                  alt="Mystique"
+                  className="w-full h-full object-cover transform scale-110"
+                  data-testid="mystique-portrait-mobile"
+                />
+              </div>
+              {/* Floating star */}
+              <div className="absolute -top-2 -right-1 text-amber-400/80 animate-pulse">
+                <Star className="w-3 h-3 fill-current" />
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>thedoggycompany</h2>
-              <p className="text-xs text-pink-300/70 tracking-wider">PET CONCIERGE®</p>
+            
+            {/* Logo */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/30">
+                <PawPrint className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>thedoggycompany</h2>
+                <p className="text-xs text-pink-300/70 tracking-wider">PET CONCIERGE®</p>
+              </div>
             </div>
           </div>
 
