@@ -1702,6 +1702,184 @@ ${stayRequestForm.special_requests || 'None'}
         subtitle="See your personalized price based on your city, pet size, and requirements"
         maxServices={8}
       />
+      
+      {/* ==================== STAY REQUEST FORM DIALOG ==================== */}
+      <Dialog open={showChecklistPopup} onOpenChange={setShowChecklistPopup}>
+        <DialogContent className="max-w-lg w-[95vw] max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 rounded-2xl">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-4 text-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">Request Pet-Friendly Stay</h3>
+                  <p className="text-white/80 text-sm">We'll verify & book for {userPets[0]?.name || 'your pet'}</p>
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setShowChecklistPopup(false)}
+                className="text-white hover:bg-white/20 rounded-full"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+          
+          {/* Scrollable Form Content */}
+          <div className="flex-1 overflow-y-auto p-5 space-y-4">
+            {/* Resort/Hotel Name */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Resort / Hotel Name *</label>
+              <Input
+                placeholder="e.g., Taj Mahal Palace, The Leela..."
+                value={stayRequestForm.resort_name}
+                onChange={(e) => setStayRequestForm(prev => ({ ...prev, resort_name: e.target.value }))}
+                className="w-full"
+                data-testid="stay-resort-input"
+              />
+            </div>
+
+            {/* Location */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Location / City *</label>
+              <Input
+                placeholder="e.g., Mumbai, Goa, Udaipur..."
+                value={stayRequestForm.location}
+                onChange={(e) => setStayRequestForm(prev => ({ ...prev, location: e.target.value }))}
+                className="w-full"
+                data-testid="stay-location-input"
+              />
+            </div>
+
+            {/* Date Range */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">Check-in Date</label>
+                <Input
+                  type="date"
+                  value={stayRequestForm.check_in_date}
+                  onChange={(e) => setStayRequestForm(prev => ({ ...prev, check_in_date: e.target.value }))}
+                  className="w-full"
+                  data-testid="stay-checkin-input"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">Check-out Date</label>
+                <Input
+                  type="date"
+                  value={stayRequestForm.check_out_date}
+                  onChange={(e) => setStayRequestForm(prev => ({ ...prev, check_out_date: e.target.value }))}
+                  className="w-full"
+                  data-testid="stay-checkout-input"
+                />
+              </div>
+            </div>
+
+            {/* Number of Pets */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Number of Pets Traveling</label>
+              <select
+                value={stayRequestForm.num_pets}
+                onChange={(e) => setStayRequestForm(prev => ({ ...prev, num_pets: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                data-testid="stay-pets-select"
+              >
+                <option value="1">1 Pet</option>
+                <option value="2">2 Pets</option>
+                <option value="3">3 Pets</option>
+                <option value="4+">4+ Pets</option>
+              </select>
+            </div>
+
+            {/* Contact Preference */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">How should we contact you?</label>
+              <div className="flex gap-2">
+                {[
+                  { value: 'whatsapp', label: 'WhatsApp', icon: '💬' },
+                  { value: 'call', label: 'Call', icon: '📞' },
+                  { value: 'email', label: 'Email', icon: '📧' }
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setStayRequestForm(prev => ({ ...prev, contact_preference: opt.value }))}
+                    className={`flex-1 py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                      stayRequestForm.contact_preference === opt.value
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                        : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                    }`}
+                  >
+                    {opt.icon} {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Special Requests */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Special Requests (Optional)</label>
+              <textarea
+                placeholder="Ground floor preferred, need pet bed, dietary requirements..."
+                value={stayRequestForm.special_requests}
+                onChange={(e) => setStayRequestForm(prev => ({ ...prev, special_requests: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 min-h-[80px] resize-none"
+                data-testid="stay-requests-input"
+              />
+            </div>
+
+            {/* Checklist Preview */}
+            <div className="bg-emerald-50 rounded-xl p-4 space-y-2">
+              <h4 className="text-sm font-semibold text-emerald-800 flex items-center gap-2">
+                <CheckCircle className="w-4 h-4" /> What we'll do for you:
+              </h4>
+              <ul className="text-sm text-emerald-700 space-y-1">
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500">✓</span> Verify the property's pet policy
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500">✓</span> Confirm pet-friendly room availability
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500">✓</span> Arrange in-room pet amenities if available
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500">✓</span> Share nearby vet & pet services info
+                </li>
+              </ul>
+            </div>
+            
+            {/* Submit Button */}
+            <div className="pt-2">
+              <Button 
+                onClick={submitStayRequest}
+                disabled={stayRequestLoading || !stayRequestForm.resort_name || !stayRequestForm.location}
+                className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 py-5"
+                data-testid="stay-submit-btn"
+              >
+                {stayRequestLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Submit to Concierge
+                  </>
+                )}
+              </Button>
+              <p className="text-xs text-gray-500 text-center mt-2">
+                Our team typically responds within 2-4 hours
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </PillarPageLayout>
   );
 };
@@ -3057,185 +3235,6 @@ const SocialDetailsModal = ({ social, onClose }) => {
           </div>
         </div>
       </Card>
-      
-      {/* ==================== CHECKLIST POPUP - Beautiful & Mobile-First ==================== */}
-      {/* ==================== STAY REQUEST FORM (Replaces Dead-End Checklist) ==================== */}
-      <Dialog open={showChecklistPopup} onOpenChange={setShowChecklistPopup}>
-        <DialogContent className="max-w-lg w-[95vw] max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 rounded-2xl">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-4 text-white">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                  <Building2 className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">Request Pet-Friendly Stay</h3>
-                  <p className="text-white/80 text-sm">We'll verify & book for {userPets[0]?.name || 'your pet'}</p>
-                </div>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => setShowChecklistPopup(false)}
-                className="text-white hover:bg-white/20 rounded-full"
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
-          
-          {/* Scrollable Form Content */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-4">
-            {/* Resort/Hotel Name */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">Resort / Hotel Name *</label>
-              <Input
-                placeholder="e.g., Taj Mahal Palace, The Leela..."
-                value={stayRequestForm.resort_name}
-                onChange={(e) => setStayRequestForm(prev => ({ ...prev, resort_name: e.target.value }))}
-                className="w-full"
-                data-testid="stay-resort-input"
-              />
-            </div>
-
-            {/* Location */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">Location / City *</label>
-              <Input
-                placeholder="e.g., Mumbai, Goa, Udaipur..."
-                value={stayRequestForm.location}
-                onChange={(e) => setStayRequestForm(prev => ({ ...prev, location: e.target.value }))}
-                className="w-full"
-                data-testid="stay-location-input"
-              />
-            </div>
-
-            {/* Date Range */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">Check-in Date</label>
-                <Input
-                  type="date"
-                  value={stayRequestForm.check_in_date}
-                  onChange={(e) => setStayRequestForm(prev => ({ ...prev, check_in_date: e.target.value }))}
-                  className="w-full"
-                  data-testid="stay-checkin-input"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">Check-out Date</label>
-                <Input
-                  type="date"
-                  value={stayRequestForm.check_out_date}
-                  onChange={(e) => setStayRequestForm(prev => ({ ...prev, check_out_date: e.target.value }))}
-                  className="w-full"
-                  data-testid="stay-checkout-input"
-                />
-              </div>
-            </div>
-
-            {/* Number of Pets */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">Number of Pets Traveling</label>
-              <select
-                value={stayRequestForm.num_pets}
-                onChange={(e) => setStayRequestForm(prev => ({ ...prev, num_pets: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                data-testid="stay-pets-select"
-              >
-                <option value="1">1 Pet</option>
-                <option value="2">2 Pets</option>
-                <option value="3">3 Pets</option>
-                <option value="4+">4+ Pets</option>
-              </select>
-            </div>
-
-            {/* Contact Preference */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">How should we contact you?</label>
-              <div className="flex gap-2">
-                {[
-                  { value: 'whatsapp', label: 'WhatsApp', icon: '💬' },
-                  { value: 'call', label: 'Call', icon: '📞' },
-                  { value: 'email', label: 'Email', icon: '📧' }
-                ].map(opt => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => setStayRequestForm(prev => ({ ...prev, contact_preference: opt.value }))}
-                    className={`flex-1 py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all ${
-                      stayRequestForm.contact_preference === opt.value
-                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                        : 'border-gray-200 hover:border-gray-300 text-gray-600'
-                    }`}
-                  >
-                    {opt.icon} {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Special Requests */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">Special Requests (Optional)</label>
-              <textarea
-                placeholder="Ground floor preferred, need pet bed, dietary requirements..."
-                value={stayRequestForm.special_requests}
-                onChange={(e) => setStayRequestForm(prev => ({ ...prev, special_requests: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 min-h-[80px] resize-none"
-                data-testid="stay-requests-input"
-              />
-            </div>
-
-            {/* Checklist Preview */}
-            <div className="bg-emerald-50 rounded-xl p-4 space-y-2">
-              <h4 className="text-sm font-semibold text-emerald-800 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4" /> What we'll do for you:
-              </h4>
-              <ul className="text-sm text-emerald-700 space-y-1">
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-500">✓</span> Verify the property's pet policy
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-500">✓</span> Confirm pet-friendly room availability
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-500">✓</span> Arrange in-room pet amenities if available
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-500">✓</span> Share nearby vet & pet services info
-                </li>
-              </ul>
-            </div>
-            
-            {/* Submit Button */}
-            <div className="pt-2">
-              <Button 
-                onClick={submitStayRequest}
-                disabled={stayRequestLoading || !stayRequestForm.resort_name || !stayRequestForm.location}
-                className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 py-5"
-                data-testid="stay-submit-btn"
-              >
-                {stayRequestLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Submitting...
-                  </>
-                ) : (
-                  <>
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Submit to Concierge
-                  </>
-                )}
-              </Button>
-              <p className="text-xs text-gray-500 text-center mt-2">
-                Our team typically responds within 2-4 hours
-              </p>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
       
       {/* Concierge® Button - Blue C® for Service Desk chat */}
       <ConciergeButton 
