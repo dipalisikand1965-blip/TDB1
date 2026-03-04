@@ -1,12 +1,15 @@
 /**
  * MiraMeetsYourPet.jsx - Streamlined Multi-Pet Onboarding
  * 
- * Flow: 5 screens total
+ * Flow: 5 screens total (+ optional 6th)
  * 1. Pet Count - How many pets?
  * 2. Meet Your Pack - All pets basic info on ONE screen
  * 3. Soul Snapshot - 5 key pillar questions for ALL pets
  * 4. Parent Info - Account details
- * 5. Welcome - Success & go to dashboard
+ * 5. Welcome - Success & invite to complete full Soul Profile
+ * 6. (Optional) Full Soul Questions - Deep questions for selected pet
+ * 
+ * Philosophy: /app/memory/SOUL_PHILOSOPHY_SSOT.md
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -20,6 +23,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../utils/api';
+import SoulQuestions from '../components/SoulQuestions';
 
 // ============================================================
 // CONSTANTS
