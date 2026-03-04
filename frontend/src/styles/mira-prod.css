@@ -345,9 +345,9 @@
   /* Mobile layout adjustments - Perfect for iOS & Android */
   /* NOTE: .mp-messages padding defined earlier with mobile override */
   
-  /* Composer adjustments for mobile */
+  /* Composer adjustments for mobile - minimal top padding for more chat space */
   .mp-composer {
-    padding: var(--space-md) var(--space-sm) calc(var(--space-xl) + 20px);
+    padding: var(--space-xs) var(--space-sm) calc(var(--space-xl) + 20px);
   }
   
   .mp-pet-dropdown {
@@ -366,7 +366,7 @@
 /* Small phones (iPhone SE, older Androids) */
 @media (max-width: 375px) {
   .mp-composer {
-    padding: var(--space-sm) var(--space-xs) calc(var(--space-lg) + 24px);
+    padding: 4px var(--space-xs) calc(var(--space-lg) + 24px);
   }
 }
 
@@ -528,8 +528,8 @@
   bottom: 0;
   left: 0;
   right: 0;
-  /* Extra padding at bottom to clear OS taskbars/docks */
-  padding: var(--space-lg) var(--space-md) calc(var(--space-2xl) + 16px);
+  /* Minimal top padding, generous bottom for OS taskbars/docks */
+  padding: var(--space-sm) var(--space-md) calc(var(--space-2xl) + 16px);
   background: linear-gradient(180deg, transparent 0%, rgba(15, 7, 32, 0.98) 30%);
   z-index: 50;
   backdrop-filter: blur(16px);
