@@ -122,8 +122,8 @@
   /* Padding for content */
   padding: var(--space-xl) var(--space-xl);
   padding-top: 24px;
-  /* CRITICAL: Generous bottom padding for input bar clearance */
-  padding-bottom: 240px;
+  /* Reduced bottom padding - input bar is minimal now */
+  padding-bottom: 120px;
   
   /* Disable elastic/spring-back scrolling */
   overscroll-behavior: none;
@@ -139,8 +139,8 @@
 @media (max-width: 768px) {
   .mp-messages {
     padding: var(--space-md) var(--space-md);
-    /* 320px to clear: composer (~100px) + iOS toolbar (~44px) + safe area (~34px) + extra */
-    padding-bottom: 320px;
+    /* Reduced padding - just enough for input bar (~70px) + safe area (~20px) */
+    padding-bottom: 100px;
   }
 }
 
@@ -572,11 +572,11 @@
 .mp-input-wrapper {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 28px;
-  padding: var(--space-sm) var(--space-md);
+  border-radius: 24px;
+  padding: 4px var(--space-sm);
   transition: all 0.2s ease;
 }
 
@@ -591,9 +591,9 @@
   background: transparent;
   border: none;
   color: white;
-  font-size: 16px;
+  font-size: 15px;
   font-family: 'Manrope', sans-serif;
-  padding: var(--space-sm) 0;
+  padding: 6px 0;
   outline: none;
 }
 
@@ -605,8 +605,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: none;
   background: transparent;
