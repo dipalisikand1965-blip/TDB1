@@ -345,9 +345,9 @@
   /* Mobile layout adjustments - Perfect for iOS & Android */
   /* NOTE: .mp-messages padding defined earlier with mobile override */
   
-  /* Composer adjustments for mobile - minimal top padding for more chat space */
+  /* Composer adjustments for mobile - minimal padding for maximum chat space */
   .mp-composer {
-    padding: var(--space-xs) var(--space-sm) calc(var(--space-xl) + 20px);
+    padding: 4px var(--space-sm) calc(var(--space-md) + 8px);
   }
   
   .mp-pet-dropdown {
