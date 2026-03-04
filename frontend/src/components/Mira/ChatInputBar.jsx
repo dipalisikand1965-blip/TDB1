@@ -288,16 +288,16 @@ const ChatInputBar = ({
         </form>
       </div>
       
-      {/* Helper text - Mental model clarifier - Below input bar for better mobile visibility */}
+      {/* Helper text - Mental model clarifier - Compact for more chat space */}
       <div className="mp-helper-text" style={{
-        padding: '4px 16px 2px',
+        padding: '2px 12px 0',
         textAlign: 'center',
-        fontSize: '10px',
-        color: 'rgba(255, 255, 255, 0.4)',
+        fontSize: '9px',
+        color: 'rgba(255, 255, 255, 0.35)',
         fontStyle: 'italic',
-        lineHeight: '1.2'
+        lineHeight: '1.1'
       }}>
-        Ask for anything. If it needs action, we'll open a request and handle it in Services.
+        Ask for anything. If it needs action, we'll handle it in Services.
       </div>
     </div>
   );
