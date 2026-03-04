@@ -783,6 +783,14 @@ async def get_user_pets(credentials: HTTPAuthorizationCredentials = Depends(secu
 
 # ============ MEMBERSHIP ONBOARDING ============
 
+class SoulSnapshot(BaseModel):
+    """Soul Snapshot data from quick onboarding"""
+    allergies: Optional[list] = []
+    health_conditions: Optional[list] = []
+    food_preference: Optional[dict] = None
+    car_rides: Optional[str] = None
+    activity_level: Optional[str] = None
+
 class PetOnboard(BaseModel):
     name: str
     breed: str
@@ -793,6 +801,11 @@ class PetOnboard(BaseModel):
     weight_unit: Optional[str] = "kg"
     is_neutered: Optional[bool] = None
     species: str = "dog"
+    photo: Optional[str] = None  # Base64 photo from onboarding
+    avatar: Optional[dict] = None  # Avatar selection from onboarding
+    birthday_type: Optional[str] = None  # 'exact', 'gotcha', or 'approximate'
+    approximate_age: Optional[str] = None  # e.g., '~3 years'
+    soul_snapshot: Optional[SoulSnapshot] = None  # NEW: Quick soul answers from onboarding
 
 class ParentOnboard(BaseModel):
     name: str
@@ -851,6 +864,52 @@ async def membership_onboard(data: MembershipOnboardRequest):
             if pet_data.is_neutered is not None:
                 initial_soul_answers["spayed_neutered"] = "Yes" if pet_data.is_neutered else "No"
             
+            # NEW: Map soul_snapshot from streamlined onboarding to doggy_soul_answers
+            # These 5 quick questions contribute to the base Soul Score (~30%)
+            if pet_data.soul_snapshot:
+                snapshot = pet_data.soul_snapshot
+                
+                # Allergies (weight: 10 points in pet_score_logic.py)
+                if snapshot.allergies:
+                    initial_soul_answers["food_allergies"] = snapshot.allergies if snapshot.allergies else ["None known"]
+                else:
+                    initial_soul_answers["food_allergies"] = ["None known"]
+                
+                # Health conditions (weight: 8 points)
+                if snapshot.health_conditions:
+                    initial_soul_answers["health_conditions"] = snapshot.health_conditions if snapshot.health_conditions else ["None known"]
+                else:
+                    initial_soul_answers["health_conditions"] = ["None known"]
+                
+                # Food preference (contributes to personality understanding)
+                if snapshot.food_preference:
+                    if snapshot.food_preference.get("protein"):
+                        initial_soul_answers["favorite_protein"] = snapshot.food_preference["protein"]
+                    if snapshot.food_preference.get("eating_style"):
+                        initial_soul_answers["eating_style"] = snapshot.food_preference["eating_style"]
+                
+                # Car rides (weight: travel preferences)
+                if snapshot.car_rides:
+                    car_ride_map = {
+                        "anxious": "Anxious - needs extra comfort",
+                        "okay": "Tolerates car rides", 
+                        "loves": "Loves car rides!"
+                    }
+                    initial_soul_answers["car_comfort"] = car_ride_map.get(snapshot.car_rides, snapshot.car_rides)
+                
+                # Activity level (weight: 5 points for lifestyle)
+                if snapshot.activity_level:
+                    activity_map = {
+                        "low": "Calm and relaxed",
+                        "moderate": "Moderate energy",
+                        "high": "High energy"
+                    }
+                    initial_soul_answers["energy_level"] = activity_map.get(snapshot.activity_level, snapshot.activity_level)
+            
+            # Handle approximate age from new onboarding
+            if pet_data.approximate_age:
+                initial_soul_answers["approximate_age"] = pet_data.approximate_age
+            
             pet_doc = {
                 "id": pet_id,
                 "pet_pass_number": pet_pass_number,  # Pet's membership number
@@ -869,6 +928,10 @@ async def membership_onboard(data: MembershipOnboardRequest):
                 "owner_id": user_id,
                 "city": data.parent.city,  # Pet inherits owner's city
                 "pincode": data.parent.pincode,  # Pet inherits owner's pincode
+                "photo": pet_data.photo,  # Base64 photo from onboarding
+                "avatar": pet_data.avatar,  # Avatar selection {breed, emoji, color}
+                "birthday_type": pet_data.birthday_type,  # exact/gotcha/approximate
+                "approximate_age": pet_data.approximate_age,
                 "identity": {
                     "name": pet_data.name,
                     "breed": pet_data.breed,
