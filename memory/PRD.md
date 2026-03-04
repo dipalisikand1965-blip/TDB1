@@ -45,6 +45,20 @@ Build a comprehensive "Pet Life Operating System" - a digital guardian platform 
 - New users start with ~31% Soul Score from onboarding (matching philosophy target of ~30%)
 - Pet avatar and photo properly saved from onboarding
 
+#### ✅ STAY PILLAR AUDIT & FIXES - COMPLETE
+1. **Products Tagged for Stay**: 115 products now show on Stay page
+   - Keywords: bed, mat, kennel, bowl, crate, blanket, cushion, carrier
+   - Products show in "Cozy stays for Mojo!" section
+   
+2. **Stay Request Form**: New form replaces dead-end checklist
+   - Fields: Resort Name, Location, Check-in/out Dates, Num Pets, Contact Preference, Special Requests
+   - Submits to Concierge Service Desk (creates ticket)
+   - Shows "What we'll do for you" checklist preview
+   
+3. **Backend API Updated**: `/api/products?pillar=stay` now checks both `pillar` and `pillars` fields
+
+4. **Concierge WebSocket**: Graceful degradation added - shows "Connecting..." then falls back to hours status
+
 ### March 3, 2026 (Previous Session)
 
 #### ✅ NEW STREAMLINED ONBOARDING FLOW - COMPLETE
