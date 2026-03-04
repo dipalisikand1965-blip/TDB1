@@ -305,7 +305,7 @@ From `/app/memory/CONCIERGE_DNA_DOCTRINE.md`:
 
 ## PREVIEW vs PRODUCTION
 
-- **Preview:** https://pet-parent-signup.preview.emergentagent.com
+- **Preview:** https://concierge-pet-os.preview.emergentagent.com
 - **Production:** https://thedoggycompany.com
 
 Changes are made to preview first, then deployed to production.
