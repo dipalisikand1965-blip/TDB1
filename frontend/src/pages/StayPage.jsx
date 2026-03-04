@@ -151,10 +151,20 @@ const StayPage = () => {
   });
   const [tripOptions, setTripOptions] = useState({ cities: [], trip_types: [] });
 
-  // Checklist Popup state
+  // Checklist Popup state - Now a Stay Request Form
   const [showChecklistPopup, setShowChecklistPopup] = useState(false);
   const [checklistData, setChecklistData] = useState(null);
   const [checklistProducts, setChecklistProducts] = useState([]);
+  const [stayRequestForm, setStayRequestForm] = useState({
+    resort_name: '',
+    location: '',
+    check_in_date: '',
+    check_out_date: '',
+    num_pets: '1',
+    special_requests: '',
+    contact_preference: 'whatsapp'
+  });
+  const [stayRequestLoading, setStayRequestLoading] = useState(false);
   
   // Nearby Hotels & Attractions state (Amadeus + Viator)
   const [nearbyHotels, setNearbyHotels] = useState([]);
@@ -181,34 +191,106 @@ const StayPage = () => {
     action_text: 'Shop Travel Accessories'
   };
 
-  // Handle checklist popup
+  // Handle checklist popup - Now opens Stay Request Form
   const handleChecklistAction = async (tip) => {
     if (tip?.type === 'checklist') {
       setChecklistData(STAY_CHECKLIST);
-      
-      // Fetch travel accessories products
-      try {
-        const response = await fetch(`${API_URL}/api/products?pillar=travel&limit=4`);
-        if (response.ok) {
-          const data = await response.json();
-          setChecklistProducts(data.products || []);
-        } else {
-          // Fallback to stay products
-          const fallbackResponse = await fetch(`${API_URL}/api/products?pillar=stay&limit=4`);
-          if (fallbackResponse.ok) {
-            const fallbackData = await fallbackResponse.json();
-            setChecklistProducts(fallbackData.products || []);
-          }
-        }
-      } catch (error) {
-        console.debug('Failed to fetch checklist products:', error);
-        setChecklistProducts([]);
-      }
-      
       setShowChecklistPopup(true);
     } else {
       // Default action
       toast({ title: tip.action, description: 'Coming soon!' });
+    }
+  };
+
+  // Submit Stay Request to Concierge
+  const submitStayRequest = async () => {
+    if (!stayRequestForm.resort_name || !stayRequestForm.location) {
+      toast({ 
+        title: 'Missing Information', 
+        description: 'Please enter the resort/hotel name and location',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setStayRequestLoading(true);
+    try {
+      const petName = userPets[0]?.name || 'your pet';
+      const requestDescription = `
+**Stay Request for ${petName}**
+
+🏨 **Property:** ${stayRequestForm.resort_name}
+📍 **Location:** ${stayRequestForm.location}
+📅 **Check-in:** ${stayRequestForm.check_in_date || 'Not specified'}
+📅 **Check-out:** ${stayRequestForm.check_out_date || 'Not specified'}
+🐾 **Number of Pets:** ${stayRequestForm.num_pets}
+💬 **Contact Preference:** ${stayRequestForm.contact_preference === 'whatsapp' ? 'WhatsApp' : stayRequestForm.contact_preference === 'call' ? 'Phone Call' : 'Email'}
+
+**Special Requests:**
+${stayRequestForm.special_requests || 'None'}
+
+---
+*Please verify pet policy, arrange pet-friendly room, and confirm amenities.*
+      `.trim();
+
+      // Get user info from auth context
+      const userInfo = user || {};
+      
+      // Create ticket in Service Desk using the proper model structure
+      const response = await fetch(`${API_URL}/api/tickets`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          member: {
+            id: userInfo.id || userInfo.user_id,
+            name: userInfo.name || userInfo.full_name || 'Member',
+            email: userInfo.email,
+            phone: userInfo.phone || userInfo.whatsapp,
+            whatsapp: userInfo.whatsapp || userInfo.phone,
+            city: userInfo.city,
+            membership_type: userInfo.membership_type || 'standard'
+          },
+          category: 'stay',
+          sub_category: 'pawcation_curator',
+          urgency: 'medium',
+          description: requestDescription,
+          source: 'web_stay_page'
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast({ 
+          title: '✅ Stay Request Submitted!', 
+          description: 'Our Concierge team will contact you shortly to assist with your booking.'
+        });
+        setShowChecklistPopup(false);
+        // Reset form
+        setStayRequestForm({
+          resort_name: '',
+          location: '',
+          check_in_date: '',
+          check_out_date: '',
+          num_pets: '1',
+          special_requests: '',
+          contact_preference: 'whatsapp'
+        });
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Failed to submit request');
+      }
+    } catch (error) {
+      console.error('Error submitting stay request:', error);
+      toast({ 
+        title: 'Error', 
+        description: error.message || 'Could not submit your request. Please try again.',
+        variant: 'destructive'
+      });
+    } finally {
+      setStayRequestLoading(false);
     }
   };
 
@@ -2977,6 +3059,7 @@ const SocialDetailsModal = ({ social, onClose }) => {
       </Card>
       
       {/* ==================== CHECKLIST POPUP - Beautiful & Mobile-First ==================== */}
+      {/* ==================== STAY REQUEST FORM (Replaces Dead-End Checklist) ==================== */}
       <Dialog open={showChecklistPopup} onOpenChange={setShowChecklistPopup}>
         <DialogContent className="max-w-lg w-[95vw] max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 rounded-2xl">
           {/* Header */}
@@ -2984,11 +3067,11 @@ const SocialDetailsModal = ({ social, onClose }) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                  <List className="w-5 h-5 text-white" />
+                  <Building2 className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg">{checklistData?.title || 'Your Checklist'}</h3>
-                  <p className="text-white/80 text-sm">{checklistData?.subtitle || 'Personalized for your pet'}</p>
+                  <h3 className="font-bold text-lg">Request Pet-Friendly Stay</h3>
+                  <p className="text-white/80 text-sm">We'll verify & book for {userPets[0]?.name || 'your pet'}</p>
                 </div>
               </div>
               <Button 
@@ -3002,97 +3085,153 @@ const SocialDetailsModal = ({ social, onClose }) => {
             </div>
           </div>
           
-          {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-5">
-            {/* Checklist Items */}
-            {checklistData?.items && (
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Checklist</h4>
-                {checklistData.items.map((item, idx) => (
-                  <div 
-                    key={idx}
-                    className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl hover:bg-emerald-50 transition-colors"
+          {/* Scrollable Form Content */}
+          <div className="flex-1 overflow-y-auto p-5 space-y-4">
+            {/* Resort/Hotel Name */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Resort / Hotel Name *</label>
+              <Input
+                placeholder="e.g., Taj Mahal Palace, The Leela..."
+                value={stayRequestForm.resort_name}
+                onChange={(e) => setStayRequestForm(prev => ({ ...prev, resort_name: e.target.value }))}
+                className="w-full"
+                data-testid="stay-resort-input"
+              />
+            </div>
+
+            {/* Location */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Location / City *</label>
+              <Input
+                placeholder="e.g., Mumbai, Goa, Udaipur..."
+                value={stayRequestForm.location}
+                onChange={(e) => setStayRequestForm(prev => ({ ...prev, location: e.target.value }))}
+                className="w-full"
+                data-testid="stay-location-input"
+              />
+            </div>
+
+            {/* Date Range */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">Check-in Date</label>
+                <Input
+                  type="date"
+                  value={stayRequestForm.check_in_date}
+                  onChange={(e) => setStayRequestForm(prev => ({ ...prev, check_in_date: e.target.value }))}
+                  className="w-full"
+                  data-testid="stay-checkin-input"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">Check-out Date</label>
+                <Input
+                  type="date"
+                  value={stayRequestForm.check_out_date}
+                  onChange={(e) => setStayRequestForm(prev => ({ ...prev, check_out_date: e.target.value }))}
+                  className="w-full"
+                  data-testid="stay-checkout-input"
+                />
+              </div>
+            </div>
+
+            {/* Number of Pets */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Number of Pets Traveling</label>
+              <select
+                value={stayRequestForm.num_pets}
+                onChange={(e) => setStayRequestForm(prev => ({ ...prev, num_pets: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                data-testid="stay-pets-select"
+              >
+                <option value="1">1 Pet</option>
+                <option value="2">2 Pets</option>
+                <option value="3">3 Pets</option>
+                <option value="4+">4+ Pets</option>
+              </select>
+            </div>
+
+            {/* Contact Preference */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">How should we contact you?</label>
+              <div className="flex gap-2">
+                {[
+                  { value: 'whatsapp', label: 'WhatsApp', icon: '💬' },
+                  { value: 'call', label: 'Call', icon: '📞' },
+                  { value: 'email', label: 'Email', icon: '📧' }
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setStayRequestForm(prev => ({ ...prev, contact_preference: opt.value }))}
+                    className={`flex-1 py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                      stayRequestForm.contact_preference === opt.value
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                        : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                    }`}
                   >
-                    <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle className="w-4 h-4 text-emerald-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">{item.text || item}</p>
-                      {item.tip && (
-                        <p className="text-xs text-gray-500 mt-1">{item.tip}</p>
-                      )}
-                    </div>
-                  </div>
+                    {opt.icon} {opt.label}
+                  </button>
                 ))}
               </div>
-            )}
+            </div>
+
+            {/* Special Requests */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Special Requests (Optional)</label>
+              <textarea
+                placeholder="Ground floor preferred, need pet bed, dietary requirements..."
+                value={stayRequestForm.special_requests}
+                onChange={(e) => setStayRequestForm(prev => ({ ...prev, special_requests: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 min-h-[80px] resize-none"
+                data-testid="stay-requests-input"
+              />
+            </div>
+
+            {/* Checklist Preview */}
+            <div className="bg-emerald-50 rounded-xl p-4 space-y-2">
+              <h4 className="text-sm font-semibold text-emerald-800 flex items-center gap-2">
+                <CheckCircle className="w-4 h-4" /> What we'll do for you:
+              </h4>
+              <ul className="text-sm text-emerald-700 space-y-1">
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500">✓</span> Verify the property's pet policy
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500">✓</span> Confirm pet-friendly room availability
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500">✓</span> Arrange in-room pet amenities if available
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500">✓</span> Share nearby vet & pet services info
+                </li>
+              </ul>
+            </div>
             
-            {/* Related Products - Travel Accessories */}
-            {checklistProducts.length > 0 && (
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-                  Travel Accessories
-                </h4>
-                <div className="grid grid-cols-2 gap-3">
-                  {checklistProducts.map((product, idx) => (
-                    <div 
-                      key={idx}
-                      className="bg-white border border-gray-100 rounded-xl p-3 hover:shadow-md transition-all cursor-pointer"
-                      onClick={() => {
-                        addToCart({
-                          id: product.id,
-                          name: product.name || product.title,
-                          price: product.price,
-                          image: product.image,
-                          pillar: 'stay'
-                        });
-                        toast({ title: '🛒 Added!', description: `${product.name || product.title} added to cart` });
-                      }}
-                    >
-                      <div className="aspect-square rounded-lg bg-gray-100 mb-2 overflow-hidden">
-                        {product.image ? (
-                          <img 
-                            src={product.image} 
-                            alt={product.name || product.title}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <ShoppingCart className="w-8 h-8 text-gray-300" />
-                          </div>
-                        )}
-                      </div>
-                      <p className="text-xs font-medium text-gray-900 line-clamp-2">{product.name || product.title}</p>
-                      {product.price && (
-                        <p className="text-sm font-bold text-emerald-600 mt-1">₹{product.price}</p>
-                      )}
-                      <Button 
-                        size="sm" 
-                        className="w-full mt-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 text-xs"
-                      >
-                        <ShoppingCart className="w-3 h-3 mr-1" />
-                        Add to Cart
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Action Button */}
-            <div className="pt-3">
+            {/* Submit Button */}
+            <div className="pt-2">
               <Button 
-                onClick={() => {
-                  setShowChecklistPopup(false);
-                  if (checklistData?.action_url) {
-                    navigate(checklistData.action_url);
-                  }
-                }}
+                onClick={submitStayRequest}
+                disabled={stayRequestLoading || !stayRequestForm.resort_name || !stayRequestForm.location}
                 className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 py-5"
+                data-testid="stay-submit-btn"
               >
-                <ShoppingBag className="w-4 h-4 mr-2" />
-                {checklistData?.action_text || 'Shop Travel Accessories'}
+                {stayRequestLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Submit to Concierge
+                  </>
+                )}
               </Button>
+              <p className="text-xs text-gray-500 text-center mt-2">
+                Our team typically responds within 2-4 hours
+              </p>
             </div>
           </div>
         </DialogContent>

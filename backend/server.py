@@ -6392,8 +6392,12 @@ async def get_public_products(
         query["parent_category"] = parent_category
     
     # Handle pillar-based filtering (for unified_products)
+    # Now checks both 'pillar' field and 'pillars' array for multi-pillar products
     if pillar:
-        query["pillar"] = pillar
+        query["$or"] = [
+            {"pillar": pillar},
+            {"pillars": pillar}
+        ]
     
     # Handle category filtering (subcategory level)
     if category and category not in ["all", "pan-india"]:
