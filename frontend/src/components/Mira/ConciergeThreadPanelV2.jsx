@@ -66,16 +66,18 @@ const MessageStatusIndicator = ({ status, timestamp }) => {
 /**
  * Connection Status Indicator
  * Uses Concierge Hours API status (is_live) instead of WebSocket adminOnline
+ * Gracefully degrades when real-time WebSocket isn't available
  */
-const ConnectionIndicator = ({ status, isLive, statusText }) => {
+const ConnectionIndicator = ({ status, isLive, statusText, reconnectAttempts = 0 }) => {
   const getStatusConfig = () => {
-    if (status === ConnectionStatus.RECONNECTING) {
-      return { color: 'bg-amber-400', pulse: true, text: 'Reconnecting...' };
+    // After 3 failed reconnect attempts, stop showing "Reconnecting" and just show hours status
+    // This provides better UX when WebSocket infrastructure doesn't support upgrades
+    if (status === ConnectionStatus.RECONNECTING && reconnectAttempts < 3) {
+      return { color: 'bg-amber-400', pulse: true, text: 'Connecting...' };
     }
-    if (status !== ConnectionStatus.CONNECTED) {
-      return { color: 'bg-red-400', pulse: false, text: 'Disconnected' };
-    }
-    // Use Concierge Hours API status
+    
+    // For disconnected or after max reconnect attempts, show based on Concierge hours
+    // The polling fallback still works, so we show the service status instead
     if (isLive) {
       return { color: 'bg-green-400', pulse: true, text: statusText || 'Live now' };
     }
@@ -405,7 +407,8 @@ const ConciergeThreadPanelV2 = ({
     sendTyping,
     isTyping,
     markAsRead,
-    offlineQueueLength
+    offlineQueueLength,
+    reconnectAttempts
   } = useRealtimeConcierge({
     userId,
     enabled: isOpen && !!threadId,
@@ -689,7 +692,8 @@ const ConciergeThreadPanelV2 = ({
           <ConnectionIndicator 
             status={connectionStatus} 
             isLive={conciergeStatus.is_live} 
-            statusText={conciergeStatus.status_text} 
+            statusText={conciergeStatus.status_text}
+            reconnectAttempts={reconnectAttempts}
           />
           
           <button
