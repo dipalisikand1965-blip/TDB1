@@ -216,31 +216,11 @@ const Home = () => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1 }}
-                className="relative w-full max-w-sm mx-auto mb-6"
+                className="relative w-72 h-72 mx-auto mb-10"
               >
-                {/* Outer soul glow - breathing animation */}
-                <motion.div 
-                  className="absolute -inset-4 bg-gradient-to-r from-purple-500 via-pink-400 to-indigo-500 rounded-[50%] blur-2xl opacity-50"
-                  animate={{ 
-                    scale: [1, 1.05, 1],
-                    opacity: [0.4, 0.6, 0.4]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                />
-                
-                {/* Inner soul glow - counter animation */}
-                <motion.div 
-                  className="absolute -inset-2 bg-gradient-to-r from-pink-400 via-purple-500 to-pink-400 rounded-[50%] blur-xl opacity-60"
-                  animate={{ 
-                    scale: [1.05, 1, 1.05],
-                    opacity: [0.5, 0.7, 0.5]
-                  }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                />
-                
                 {/* Sparkle particles floating around */}
                 <motion.div
-                  className="absolute -top-2 -right-2 text-2xl"
+                  className="absolute -top-4 right-0 text-2xl z-20"
                   animate={{ 
                     y: [0, -8, 0],
                     opacity: [0.5, 1, 0.5],
@@ -251,7 +231,7 @@ const Home = () => {
                   ✨
                 </motion.div>
                 <motion.div
-                  className="absolute top-1/4 -left-4 text-xl"
+                  className="absolute top-1/4 -left-6 text-xl z-20"
                   animate={{ 
                     y: [0, 6, 0],
                     opacity: [0.3, 0.8, 0.3]
@@ -261,7 +241,7 @@ const Home = () => {
                   ✨
                 </motion.div>
                 <motion.div
-                  className="absolute bottom-1/4 -right-4 text-lg"
+                  className="absolute bottom-1/4 -right-6 text-lg z-20"
                   animate={{ 
                     y: [0, -6, 0],
                     opacity: [0.4, 0.9, 0.4]
@@ -271,28 +251,37 @@ const Home = () => {
                   ✨
                 </motion.div>
                 
-                {/* Dog image - oval with soul border (taller to fit portrait pet photos) */}
-                <div className="relative w-64 h-80 mx-auto rounded-[50%] overflow-hidden shadow-2xl">
-                  {/* Animated gradient border */}
-                  <div className="absolute inset-0 rounded-[50%] p-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500">
-                    <div className="w-full h-full rounded-[50%] overflow-hidden bg-[#0f0720] flex items-center justify-center">
-                      <img 
-                        src={heroImage} 
-                        alt={heroPetName} 
-                        className="w-full h-full object-cover object-center"
-                      />
-                      {/* Subtle soul overlay on the image */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-purple-900/40 via-transparent to-pink-500/10" />
-                    </div>
+                {/* Outer glow ring - FULL CIRCLE */}
+                <motion.div 
+                  className="absolute -inset-3 rounded-full"
+                  style={{ 
+                    background: 'linear-gradient(135deg, #a855f7, #ec4899, #6366f1)',
+                    filter: 'blur(20px)',
+                  }}
+                  animate={{ 
+                    opacity: [0.5, 0.8, 0.5],
+                    scale: [1, 1.02, 1]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                />
+                
+                {/* Main circle container with gradient border */}
+                <div className="relative w-full h-full rounded-full p-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 shadow-2xl shadow-purple-500/50">
+                  <div className="w-full h-full rounded-full overflow-hidden bg-[#0f0720]">
+                    <img 
+                      src={heroImage} 
+                      alt={heroPetName} 
+                      className="w-full h-full object-cover object-center"
+                    />
                   </div>
                 </div>
                 
-                {/* Badge - YOUR PET with soul sparkle */}
+                {/* Badge at BOTTOM */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
-                  className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 px-6 py-2.5 rounded-full shadow-lg shadow-purple-500/30"
+                  className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 px-6 py-2.5 rounded-full shadow-lg shadow-purple-500/30 z-30 whitespace-nowrap"
                 >
                   <span className="text-white font-bold text-sm flex items-center gap-1">
                     ✨ {primaryPet ? heroPetName : 'This is YOUR pet'} ❤️
