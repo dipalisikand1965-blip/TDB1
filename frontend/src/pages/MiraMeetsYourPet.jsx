@@ -23,7 +23,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../utils/api';
-import SoulQuestions from '../components/SoulQuestions';
 
 // ============================================================
 // CONSTANTS
@@ -1139,11 +1138,11 @@ const MiraMeetsYourPet = () => {
             
             <button
               onClick={() => {
-                // TODO: Navigate to full soul questions for selected pet
-                // For now, go to dashboard where they can do it
-                navigate('/mira-demo');
+                // Navigate to Soul Builder for the selected pet
+                navigate('/soul-builder');
               }}
               disabled={selectedPetForSoul === null}
+              data-testid="complete-soul-profile-btn"
               className={`w-full py-2.5 rounded-lg font-medium text-sm transition-all ${
                 selectedPetForSoul !== null
                   ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/20'
@@ -1161,10 +1160,11 @@ const MiraMeetsYourPet = () => {
       
       {/* Or skip for now */}
       <button
-        onClick={() => navigate('/mira-demo')}
+        onClick={() => navigate('/pet-home')}
+        data-testid="skip-to-dashboard-btn"
         className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-medium transition-all flex items-center gap-2"
       >
-        Skip for now → Go to Dashboard
+        Skip for now → Go to Pet Home
       </button>
       
       <p className="text-slate-500 text-xs mt-4 text-center max-w-sm">
