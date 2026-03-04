@@ -1,5 +1,15 @@
 # ONBOARDING REDESIGN - Single Source of Truth (SSOT)
 
+## THE FOUNDING PHILOSOPHY
+
+**Read /app/memory/SOUL_PHILOSOPHY_SSOT.md first.**
+
+This onboarding is not a funnel. It is the first moment a pet parent is asked to truly see their dog.
+
+> "Dogs are not pets first. They are beings first."
+
+---
+
 ## Overview
 Redesign the `/join` onboarding flow to support multiple pets efficiently without user fatigue.
 
