@@ -345,10 +345,19 @@
   /* Mobile layout adjustments - Perfect for iOS & Android */
   /* NOTE: .mp-messages padding defined earlier with mobile override */
   
-  /* Composer - flush to bottom, only safe-area for notched phones */
+  /* Composer - sits right above browser toolbar on iOS/Android */
   .mp-composer {
     padding: 6px 8px;
-    padding-bottom: max(6px, env(safe-area-inset-bottom, 6px));
+    /* iOS Safari bottom toolbar is ~44px, plus safe-area for home indicator (~34px) */
+    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+  }
+  
+  /* iOS Safari specific - browser toolbar at bottom */
+  @supports (-webkit-touch-callout: none) {
+    .mp-composer {
+      /* Extra padding for iOS Safari's bottom address bar */
+      padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    }
   }
   
   .mp-pet-dropdown {
@@ -368,7 +377,7 @@
 @media (max-width: 375px) {
   .mp-composer {
     padding: 4px 6px;
-    padding-bottom: max(4px, env(safe-area-inset-bottom, 4px));
+    padding-bottom: calc(4px + env(safe-area-inset-bottom, 0px));
   }
 }
 
@@ -530,9 +539,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  /* Minimal padding - flush to bottom like standard chat apps */
+  /* Minimal padding - sits right above browser toolbar */
   padding: 8px 12px;
-  padding-bottom: max(8px, env(safe-area-inset-bottom, 8px));
+  /* Use safe-area for iOS Safari bottom toolbar */
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
   background: rgba(15, 7, 32, 0.98);
   z-index: 50;
   backdrop-filter: blur(16px);
@@ -540,28 +550,27 @@
   box-sizing: border-box;
 }
 
-/* MOBILE: Extra bottom padding for iOS Safari toolbar */
+/* MOBILE: iOS Safari toolbar clearance */
 @media screen and (max-width: 768px) {
   .mp-composer {
-    /* iOS Safari needs substantial clearance for its toolbar */
-    /* Using fixed 76px (32px base + 44px toolbar) */
-    padding-bottom: 76px !important;
+    /* Minimal clearance - just safe-area for home indicator */
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
   }
 }
 
-/* Desktop-specific adjustments - Clear Windows taskbar / macOS dock */
+/* Desktop-specific adjustments */
 @media screen and (min-width: 769px) {
   .mp-composer {
-    /* Slightly more bottom padding on desktop for OS taskbars */
-    padding-bottom: calc(var(--space-2xl) + 24px);
+    /* Minimal padding on desktop */
+    padding-bottom: 12px;
   }
 }
 
 /* Large desktop screens */
 @media screen and (min-width: 1200px) {
   .mp-composer {
-    /* Generous bottom padding on large screens */
-    padding-bottom: calc(var(--space-2xl) + 32px);
+    /* Slightly more on large screens */
+    padding-bottom: 16px;
   }
 }
 
@@ -10563,23 +10572,24 @@ input, select, textarea {
   left: 0 !important;
   right: 0 !important;
   z-index: 1000 !important;
-  background: linear-gradient(180deg, transparent 0%, rgba(30, 27, 75, 0.98) 30%) !important;
-  /* Desktop: modest padding */
-  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+  background: rgba(15, 7, 32, 0.98) !important;
+  /* Minimal padding - flush to bottom */
+  padding: 8px 12px !important;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
 }
 
-/* Mobile: Extra padding for iOS Safari toolbar */
+/* Mobile: Just safe-area for notched phones, no extra padding */
 @media (max-width: 768px) {
   .mira-prod .mp-composer {
-    /* 76px = 32px base + 44px iOS Safari toolbar clearance */
-    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 6px 8px !important;
+    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px)) !important;
   }
 }
 
 /* Add bottom padding to content so it does not go under fixed composer */
 .mira-prod .mp-content,
 .mira-prod .mp-conversation {
-  padding-bottom: 120px !important;
+  padding-bottom: 70px !important;
 }
 
 
