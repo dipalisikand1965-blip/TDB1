@@ -122,8 +122,8 @@
   /* Padding for content */
   padding: var(--space-xl) var(--space-xl);
   padding-top: 24px;
-  /* Reduced bottom padding - input bar is minimal now */
-  padding-bottom: 120px;
+  /* Just enough for compact input bar (~60px) */
+  padding-bottom: 70px;
   
   /* Disable elastic/spring-back scrolling */
   overscroll-behavior: none;
@@ -139,8 +139,8 @@
 @media (max-width: 768px) {
   .mp-messages {
     padding: var(--space-md) var(--space-md);
-    /* Reduced padding - just enough for input bar (~70px) + safe area (~20px) */
-    padding-bottom: 100px;
+    /* Just enough to clear compact input bar */
+    padding-bottom: 65px;
   }
 }
 
@@ -345,9 +345,10 @@
   /* Mobile layout adjustments - Perfect for iOS & Android */
   /* NOTE: .mp-messages padding defined earlier with mobile override */
   
-  /* Composer adjustments for mobile - minimal padding for maximum chat space */
+  /* Composer - flush to bottom, only safe-area for notched phones */
   .mp-composer {
-    padding: 4px var(--space-sm) calc(var(--space-md) + 8px);
+    padding: 6px 8px;
+    padding-bottom: max(6px, env(safe-area-inset-bottom, 6px));
   }
   
   .mp-pet-dropdown {
@@ -366,7 +367,8 @@
 /* Small phones (iPhone SE, older Androids) */
 @media (max-width: 375px) {
   .mp-composer {
-    padding: 4px var(--space-xs) calc(var(--space-lg) + 24px);
+    padding: 4px 6px;
+    padding-bottom: max(4px, env(safe-area-inset-bottom, 4px));
   }
 }
 
@@ -528,13 +530,13 @@
   bottom: 0;
   left: 0;
   right: 0;
-  /* Minimal top padding, generous bottom for OS taskbars/docks */
-  padding: var(--space-sm) var(--space-md) calc(var(--space-2xl) + 16px);
-  background: linear-gradient(180deg, transparent 0%, rgba(15, 7, 32, 0.98) 30%);
+  /* Minimal padding - flush to bottom like standard chat apps */
+  padding: 8px 12px;
+  padding-bottom: max(8px, env(safe-area-inset-bottom, 8px));
+  background: rgba(15, 7, 32, 0.98);
   z-index: 50;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  /* Prevent any content from going under */
   box-sizing: border-box;
 }
 
