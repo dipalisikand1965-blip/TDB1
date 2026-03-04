@@ -34,6 +34,17 @@ Build a comprehensive "Pet Life Operating System" - a digital guardian platform 
 - **PetHomePage "Teach Mira more" button** → `/soul-builder` 
 - All navigation flows tested and working (100% pass rate)
 
+#### ✅ SOUL SCORE CALIBRATION - COMPLETE
+- Backend now accepts `soul_snapshot` from onboarding
+- 5 quick questions properly map to Soul Score fields:
+  - `food_allergies` (10 pts) ← allergies
+  - `health_conditions` (8 pts) ← health_conditions  
+  - `energy_level` (6 pts) ← activity_level
+  - `car_comfort` (4 pts) ← car_rides
+  - `favorite_protein` + `eating_style` (3 pts) ← food_preference
+- New users start with ~31% Soul Score from onboarding (matching philosophy target of ~30%)
+- Pet avatar and photo properly saved from onboarding
+
 ### March 3, 2026 (Previous Session)
 
 #### ✅ NEW STREAMLINED ONBOARDING FLOW - COMPLETE
