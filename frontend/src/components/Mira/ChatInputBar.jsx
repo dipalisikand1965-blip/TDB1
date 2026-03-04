@@ -290,11 +290,12 @@ const ChatInputBar = ({
       
       {/* Helper text - Mental model clarifier - Below input bar for better mobile visibility */}
       <div className="mp-helper-text" style={{
-        padding: '8px 16px 4px',
+        padding: '4px 16px 2px',
         textAlign: 'center',
-        fontSize: '11px',
-        color: 'rgba(255, 255, 255, 0.5)',
-        fontStyle: 'italic'
+        fontSize: '10px',
+        color: 'rgba(255, 255, 255, 0.4)',
+        fontStyle: 'italic',
+        lineHeight: '1.2'
       }}>
         Ask for anything. If it needs action, we'll open a request and handle it in Services.
       </div>

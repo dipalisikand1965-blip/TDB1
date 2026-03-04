@@ -17,6 +17,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronRight, ChevronLeft, Bug, RefreshCw, Check, X, AlertTriangle } from 'lucide-react';
 import { ICON_STATE, TAB_IDS, getIconState } from '../../../hooks/mira/useIconState';
 
@@ -172,7 +173,8 @@ const IconStateDebugDrawer = ({
     },
   ];
 
-  return (
+  // Use portal to render outside overflow-hidden containers
+  const portalContent = (
     <>
       {/* Toggle button */}
       <button
@@ -380,6 +382,9 @@ const IconStateDebugDrawer = ({
       </div>
     </>
   );
+
+  // Render via portal to escape overflow-hidden containers
+  return createPortal(portalContent, document.body);
 };
 
 export default IconStateDebugDrawer;
