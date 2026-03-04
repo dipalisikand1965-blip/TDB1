@@ -1,5 +1,18 @@
 # Pet Life Operating System - PRD
 
+## THE FOUNDING PHILOSOPHY
+
+**Essential Reading: /app/memory/SOUL_PHILOSOPHY_SSOT.md**
+
+> "Dogs are not pets first. They are beings first."
+> 
+> This company exists to help people love better. Not just dogs. The human heart itself.
+> Dogs civilize us, if we let them.
+
+*Built in Memory of Mystique 💜🐾*
+
+---
+
 ## Original Problem Statement
 Build a comprehensive "Pet Life Operating System" - a digital guardian platform for pet owners featuring AI-powered assistance (Mira), pet profiles with soul scores, health tracking, and concierge services across 14 life pillars.
 
