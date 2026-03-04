@@ -6,8 +6,8 @@ import { Input } from '../components/ui/input';
 import { useToast } from '../hooks/use-toast';
 import { Lock, Mail, PawPrint, Heart, Shield, Sparkles, ArrowRight, Eye, EyeOff, Star } from 'lucide-react';
 
-// Mystique's soulful image - in loving memory
-const MYSTIQUE_IMAGE = "https://customer-assets.emergentagent.com/job_c77d5f3b-744e-4d34-833c-d4853d89765c/artifacts/to9m2ltx_image.png";
+// Mystique's soulful image - in loving memory 👑
+const MYSTIQUE_IMAGE = "https://customer-assets.emergentagent.com/job_cd02345e-97d9-4ea2-a1d7-1a248ceced0d/artifacts/t980z9hw_image.png";
 
 const Login = () => {
   const [email, setEmail] = useState('');
