@@ -821,12 +821,9 @@ ${stayRequestForm.special_requests || 'None'}
                   onClick={() => setPropertiesToShow(prev => prev + 8)}
                   className="px-8 py-3 rounded-full border-2 border-emerald-300 text-emerald-600 hover:bg-emerald-50"
                 >
-                  Load More Properties
+                  Load More
                   <ChevronDown className="w-4 h-4 ml-2" />
                 </Button>
-                <p className="text-xs text-gray-500 mt-2">
-                  Showing {Math.min(propertiesToShow, properties.length)} of {properties.length}
-                </p>
               </div>
             )}
           </>

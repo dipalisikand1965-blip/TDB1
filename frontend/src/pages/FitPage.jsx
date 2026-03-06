@@ -884,12 +884,9 @@ const FitPage = () => {
                     onClick={() => setProductsToShow(prev => prev + 10)}
                     className="px-8 py-3 rounded-full border-2 border-teal-300 text-teal-600 hover:bg-teal-50"
                   >
-                    Load More Products
+                    Load More
                     <ChevronDown className="w-4 h-4 ml-2" />
                   </Button>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Showing {Math.min(productsToShow, products.length)} of {products.length}
-                  </p>
                 </div>
               )}
             </>

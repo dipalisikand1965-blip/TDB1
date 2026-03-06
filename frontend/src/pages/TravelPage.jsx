@@ -856,12 +856,9 @@ const TravelPage = () => {
                     onClick={() => setProductsToShow(prev => prev + 10)}
                     className="px-8 py-3 rounded-full border-2 border-violet-300 text-violet-600 hover:bg-violet-50"
                   >
-                    Load More Products
+                    Load More
                     <ChevronDown className="w-4 h-4 ml-2" />
                   </Button>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Showing {Math.min(productsToShow, travelProducts.length)} of {travelProducts.length}
-                  </p>
                 </div>
               )}
             </>

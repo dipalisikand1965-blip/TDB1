@@ -616,12 +616,9 @@ const DinePage = () => {
                   onClick={() => setProductsToShow(prev => prev + 15)}
                   className="px-8 py-3 rounded-full border-2 border-orange-300 text-orange-600 hover:bg-orange-50"
                 >
-                  Load More Products
+                  Load More
                   <ChevronDown className="w-4 h-4 ml-2" />
                 </Button>
-                <p className="text-xs text-gray-500 mt-2">
-                  Showing {Math.min(productsToShow, products.length)} of {products.length}
-                </p>
               </div>
             )}
           </section>
@@ -865,12 +862,9 @@ const DinePage = () => {
                     onClick={() => setRestaurantsToShow(prev => prev + 8)}
                     className="px-8 py-3 rounded-full border-2 border-orange-300 text-orange-600 hover:bg-orange-50"
                   >
-                    Load More Restaurants
+                    Load More
                     <ChevronDown className="w-4 h-4 ml-2" />
                   </Button>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Showing {Math.min(restaurantsToShow, filteredRestaurants.filter(r => !r.featured).length)} of {filteredRestaurants.filter(r => !r.featured).length}
-                  </p>
                 </div>
               )}
 
