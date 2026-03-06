@@ -8,7 +8,7 @@ import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { 
-  ArrowRight, Sparkles, Trophy, CheckCircle2, Users, TrendingUp 
+  ArrowRight, Sparkles, Trophy, CheckCircle2, Users, TrendingUp, Heart 
 } from 'lucide-react';
 import { getPetPhotoUrl } from '../../utils/petAvatar';
 import { ACHIEVEMENTS, TIER_COLORS, RARITY_COLORS } from './AchievementSystem';
@@ -314,9 +314,9 @@ const GamificationBanner = ({ pets, orders, user, onNavigateToPet, onOpenExplain
       {/* Social Proof Footer */}
       <div className="bg-purple-900 text-white/80 px-4 py-2 text-center text-xs">
         <span className="inline-flex items-center gap-1">
-          <Users className="w-3 h-3" />
-          <strong className="text-white">2,847</strong> pet parents completed their Soul Journey this month
-          <TrendingUp className="w-3 h-3 text-green-400 ml-1" />
+          <Heart className="w-3 h-3 text-pink-400" />
+          <span className="text-white">Build your pet's Soul Journey — know them better, love them deeper</span>
+          <Sparkles className="w-3 h-3 text-amber-400 ml-1" />
         </span>
       </div>
     </Card>
