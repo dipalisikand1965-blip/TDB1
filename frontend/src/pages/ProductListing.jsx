@@ -1775,11 +1775,6 @@ const ProductListing = ({ category = 'all' }) => {
                 </Button>
               </div>
             )}
-            
-            {/* Showing count */}
-            <p className="text-center text-gray-500 text-sm mt-4">
-              Showing {Math.min(visibleCount, filteredProducts.length)} of {filteredProducts.length} products
-            </p>
           </>
         )}
       </div>
