@@ -1,5 +1,19 @@
 # Pet Life Operating System - PRD
 
+## 🚨 CRITICAL: PREVIEW SETUP REQUIRED
+**Before starting ANY work, read and follow: `/app/memory/PREVIEW_SETUP.md`**
+
+The preview environment uses LOCAL MongoDB that starts EMPTY. You MUST:
+1. Login to Admin (`/admin`) with `aditya / lola4304`
+2. Enable **Master Sync** for Products & Services
+3. **Seed each pillar page** (Celebrate, Dine, Stay, Travel, etc.)
+4. **Seed Service Box**
+5. **Seed Concierge Experiences**
+
+Without this, the admin panels will be empty and features won't work!
+
+---
+
 ## THE FOUNDING PHILOSOPHY
 
 **Essential Reading: /app/memory/SOUL_PHILOSOPHY_SSOT.md**
@@ -36,6 +50,36 @@ Build a comprehensive "Pet Life Operating System" - a digital guardian platform 
 - **Mission statement:** Platform built in her honor to help pet parents truly *know* their companions
 - **Tested:** Desktop & mobile responsive, login functionality verified working
 - **Key file:** `/app/frontend/src/pages/Login.jsx`
+
+#### ✅ KOUROS ON LANDING PAGE - COMPLETE
+- Kouros (user's first pet, black dog) on landing page with circular frame
+- Full purple glow around the circle (not just bottom)
+- Badge positioned at bottom
+- Responsive on mobile and desktop
+
+#### ✅ ADMIN SECURITY - COMPLETE
+- `/admin` routes now protected by `AdminProtectedRoute`
+- Requires separate admin login (`aditya / lola4304`)
+- 8-hour session expiry
+- All admin routes protected: `/admin`, `/admin/docs`, `/admin/service-desk`, `/admin/services`, `/admin/concierge`, `/agent`, etc.
+- **Key file:** `/app/frontend/src/components/AdminProtectedRoute.jsx`
+
+#### ✅ ADMIN PRODUCT/SERVICE EDITING - FIXED
+- **Duplicate modal bug fixed** - Removed 1525 lines of old inline editor code
+- **Image URL saving** - Added `image`, `media` to allowedFields
+- **Price saving** - Added `price`, `base_price`, `originalPrice` to allowedFields
+- **Shopify sync protection** - Products marked `locally_edited: True` won't be overwritten by sync
+- **Key files:** 
+  - `/app/frontend/src/components/admin/UnifiedProductBox.jsx`
+  - `/app/backend/unified_product_box.py`
+  - `/app/backend/shopify_sync_routes.py`
+
+#### ✅ JOIN FLOW BUG FIX - COMPLETE
+- Fixed "body stream already read" error on account creation
+- Switched from `fetch` to `XMLHttpRequest` to bypass Emergent monitoring script interference
+- Added `loginWithToken()` method to AuthContext for direct token login after signup
+- Fixed wrong API endpoint (`/api/onboarding/membership` → `/api/auth/membership/onboard`)
+- Backend now returns `access_token` and `user` object for immediate login
 
 #### ✅ SOUL PROFILE INTEGRATION - COMPLETE
 - **Welcome screen "Complete Soul Profile" button** → `/soul-builder`
