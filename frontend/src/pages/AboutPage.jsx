@@ -233,6 +233,63 @@ const AboutPage = () => {
           </div>
         </section>
 
+        {/* THE PHILOSOPHY - The Heart of Everything */}
+        <section className="py-20 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0612] via-purple-950/20 to-[#0a0612]" />
+          
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center"
+            >
+              <span className="inline-block px-4 py-1 bg-amber-500/10 border border-amber-500/30 rounded-full text-amber-300 text-sm mb-6">
+                Our Philosophy
+              </span>
+              
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8">
+                A dog is not in your life.<br />
+                <span className="bg-gradient-to-r from-amber-300 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                  You are in theirs.
+                </span>
+              </h2>
+              
+              <div className="space-y-6 text-white/70 leading-relaxed text-left">
+                <p className="text-lg">
+                  They don't experience ownership. They experience <em className="text-white">relationship</em>. 
+                  They experience being known — or not known. Being seen — or not seen. 
+                  Being loved with accuracy — or loved carelessly.
+                </p>
+                
+                <p>
+                  Every other pet company is built around the human's convenience. 
+                  What <em>you</em> want to buy. When <em>you</em> want to book. How <em>you</em> want to be served.
+                </p>
+                
+                <p className="text-white font-medium">
+                  We built something different. Something built around your dog's inner life. 
+                  What they prefer. What lights them up. What they have forgiven. 
+                  Who they <em>are</em> — not what breed they are.
+                </p>
+                
+                <div className="py-6 border-l-2 border-purple-500/50 pl-6 my-8 bg-white/5 rounded-r-lg">
+                  <p className="text-white/80 italic">
+                    "A dog cannot speak, but they can be known. Love without attention is just affection. 
+                    And they don't live long enough — so know them better, while you have them."
+                  </p>
+                </div>
+                
+                <p className="text-center text-lg text-white">
+                  They can't tell you what they need.<br />
+                  <span className="text-purple-300">So we built something that remembers everything,</span><br />
+                  <span className="text-pink-300">so you can love them the way they deserve.</span>
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
         {/* Timeline */}
         <section className="py-20 relative">
           <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-pink-900/20" />
