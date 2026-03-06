@@ -390,16 +390,16 @@ const EnjoyPage = () => {
       <div className="bg-white border-b border-gray-100 py-3">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-8">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-lg text-red-600">500+</span>
-            <span className="text-gray-600 text-sm">events hosted</span>
+            <Heart className="w-5 h-5 text-red-500" />
+            <span className="text-gray-600 text-sm">Curated experiences for your pet</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-lg text-rose-600">2,000+</span>
-            <span className="text-gray-600 text-sm">happy pet parents</span>
+            <Sparkles className="w-5 h-5 text-rose-500" />
+            <span className="text-gray-600 text-sm">Tail-wagging moments guaranteed</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-lg text-pink-600">50+</span>
-            <span className="text-gray-600 text-sm">cities covered</span>
+            <MapPin className="w-5 h-5 text-pink-500" />
+            <span className="text-gray-600 text-sm">Across India</span>
           </div>
         </div>
       </div>
