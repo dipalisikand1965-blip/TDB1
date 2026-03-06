@@ -893,8 +893,8 @@ const CelebratePage = () => {
             </h2>
             <p className="ios-subhead text-gray-600">
               {selectedSubcat 
-                ? `Showing ${featuredProducts.length} of ${totalProducts} items`
-                : `${featuredProducts.length} of ${totalProducts} products • Tap a category above to filter`
+                ? 'Filtered results'
+                : 'Browse our collection • Tap a category above to filter'
               }
             </p>
           </div>
