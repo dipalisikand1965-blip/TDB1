@@ -30,21 +30,19 @@ const useAnimatedCounter = (target, duration = 2000) => {
   return count;
 };
 
-// Main Stats Banner - Context-aware counter
+// Main Stats Banner - Context-aware messaging (no fake numbers)
 export const FitnessJourneyCounter = ({ className = '', pillar = '' }) => {
-  const journeyCount = useAnimatedCounter(847);
-  
-  // Pillar-specific messaging instead of always "fitness journeys"
-  const pillarLabels = {
-    fit: 'fitness journeys started',
-    care: 'pets cared for',
-    stay: 'pawcations booked',
-    enjoy: 'happy playdates',
-    celebrate: 'celebrations planned',
-    dine: 'meals enjoyed',
-    travel: 'trips completed',
+  // Pillar-specific authentic messaging instead of fake numbers
+  const pillarMessages = {
+    fit: 'Personalized wellness journeys',
+    care: 'Trusted by pet parents',
+    stay: 'Pet-friendly stays curated',
+    enjoy: 'Tail-wagging experiences',
+    celebrate: 'Moments made special',
+    dine: 'Nutrition crafted with love',
+    travel: 'Safe journeys planned',
   };
-  const label = pillarLabels[pillar] || 'pet families served';
+  const message = pillarMessages[pillar] || 'Loved by pet families';
   
   return (
     <motion.div 
@@ -60,14 +58,14 @@ export const FitnessJourneyCounter = ({ className = '', pillar = '' }) => {
           </div>
         ))}
       </div>
-      <span className="text-sm text-teal-700">
-        <span className="font-bold">{journeyCount.toLocaleString()}</span> {label}
+      <span className="text-sm text-teal-700 font-medium">
+        {message}
       </span>
       <motion.div
         animate={{ scale: [1, 1.2, 1] }}
         transition={{ repeat: Infinity, duration: 2 }}
       >
-        <TrendingUp className="w-4 h-4 text-teal-500" />
+        <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
       </motion.div>
     </motion.div>
   );
@@ -123,10 +121,10 @@ export const RotatingSocialProof = ({ petName, breedName, className = '' }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   
   const messages = [
-    { icon: Users, text: '12 pet parents booked this week', color: 'text-teal-600 bg-teal-50' },
-    { icon: Heart, text: breedName ? `${breedName}s love this program` : 'Popular with all breeds', color: 'text-purple-600 bg-purple-50' },
-    { icon: CheckCircle, text: '98% satisfaction rate', color: 'text-green-600 bg-green-50' },
-    { icon: TrendingUp, text: 'Trending in your area', color: 'text-amber-600 bg-amber-50' },
+    { icon: Heart, text: 'Made with love for your pet', color: 'text-pink-600 bg-pink-50' },
+    { icon: Heart, text: breedName ? `Perfect for ${breedName}s` : 'Great for all breeds', color: 'text-purple-600 bg-purple-50' },
+    { icon: CheckCircle, text: 'Concierge-managed quality', color: 'text-green-600 bg-green-50' },
+    { icon: Sparkles, text: 'Curated just for you', color: 'text-amber-600 bg-amber-50' },
   ];
 
   useEffect(() => {
