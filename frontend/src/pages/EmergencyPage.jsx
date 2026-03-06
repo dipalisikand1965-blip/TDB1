@@ -82,7 +82,12 @@ const EmergencyPage = () => {
     last_seen_location: '',
     last_seen_time: '',
     distinctive_features: '',
-    notes: ''
+    notes: '',
+    // Guest fields (for non-logged-in users)
+    guest_name: '',
+    guest_phone: '',
+    guest_email: '',
+    pet_description: ''
   });
 
   useEffect(() => {
@@ -148,10 +153,7 @@ const EmergencyPage = () => {
   };
 
   const handleEmergencyRequest = (type = null) => {
-    if (!user) {
-      window.location.href = '/login?redirect=/emergency';
-      return;
-    }
+    // For emergencies, allow guests to report - show guest form if not logged in
     if (type) {
       setRequestForm(prev => ({ ...prev, emergency_type: type }));
     }
@@ -160,7 +162,17 @@ const EmergencyPage = () => {
   };
 
   const submitRequest = async () => {
-    if (!selectedPet && requestForm.emergency_type !== 'found_pet') {
+    // For guests, require contact info
+    if (!user && (!requestForm.guest_phone || !requestForm.guest_name)) {
+      toast({
+        title: "Contact Details Required",
+        description: "Please provide your name and phone number so we can reach you",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (!selectedPet && requestForm.emergency_type !== 'found_pet' && user) {
       toast({
         title: "Select a Pet",
         description: "Please select which pet needs help",
@@ -184,7 +196,7 @@ const EmergencyPage = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          ...(token && { 'Authorization': `Bearer ${token}` })
         },
         body: JSON.stringify({
           ...requestForm,
@@ -194,9 +206,10 @@ const EmergencyPage = () => {
           pet_age: selectedPet?.age,
           pet_species: selectedPet?.species || 'dog',
           user_id: user?.id,
-          user_name: user?.name,
-          user_email: user?.email,
-          user_phone: user?.phone
+          user_name: user?.name || requestForm.guest_name,
+          user_email: user?.email || requestForm.guest_email,
+          user_phone: user?.phone || requestForm.guest_phone,
+          is_guest: !user
         })
       });
 
@@ -576,8 +589,56 @@ const EmergencyPage = () => {
               </Select>
             </div>
 
-            {/* Pet Selection - Not for Found Pet */}
-            {requestForm.emergency_type !== 'found_pet' && (
+            {/* Guest Contact Info - Show when not logged in */}
+            {!user && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-3">
+                <p className="text-sm font-medium text-amber-800 flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  Your Contact Details (so we can reach you)
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-amber-700">Your Name *</Label>
+                    <Input
+                      value={requestForm.guest_name}
+                      onChange={(e) => setRequestForm({...requestForm, guest_name: e.target.value})}
+                      placeholder="Your name"
+                      className="border-amber-300"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-amber-700">Phone Number *</Label>
+                    <Input
+                      value={requestForm.guest_phone}
+                      onChange={(e) => setRequestForm({...requestForm, guest_phone: e.target.value})}
+                      placeholder="+91 98765 43210"
+                      className="border-amber-300"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-amber-700">Email (optional)</Label>
+                  <Input
+                    value={requestForm.guest_email}
+                    onChange={(e) => setRequestForm({...requestForm, guest_email: e.target.value})}
+                    placeholder="your@email.com"
+                    className="border-amber-300"
+                  />
+                </div>
+                <div>
+                  <Label className="text-amber-700">Describe your pet</Label>
+                  <Input
+                    value={requestForm.pet_description}
+                    onChange={(e) => setRequestForm({...requestForm, pet_description: e.target.value})}
+                    placeholder="e.g., Brown Labrador, 3 years old, named Max"
+                    className="border-amber-300"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Pet Selection - Only for logged-in users, Not for Found Pet */}
+            {user && requestForm.emergency_type !== 'found_pet' && (
               <div>
                 <Label className="mb-2 block">Select Your Pet *</Label>
                 {userPets.length === 0 ? (
