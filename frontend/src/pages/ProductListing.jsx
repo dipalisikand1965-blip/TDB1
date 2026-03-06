@@ -1286,7 +1286,7 @@ const ProductListing = ({ category = 'all' }) => {
               </div>
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
                 <Heart className="w-5 h-5 text-red-300" />
-                <span className="text-sm">Loved by 45,000+ Pets</span>
+                <span className="text-sm">Made with Love</span>
               </div>
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
                 <Star className="w-5 h-5 text-yellow-300" />

@@ -9,7 +9,7 @@ const benefits = [
   {
     icon: Store,
     title: 'Established Brand',
-    description: 'Partner with a trusted brand backed by 1M+ customers globally and 45,000+ pets fed.'
+    description: 'Partner with a trusted brand built on decades of pet-loving heritage.'
   },
   {
     icon: TrendingUp,
@@ -128,7 +128,7 @@ const Franchise = () => {
               <p className="text-purple-200">Cities & Growing</p>
             </div>
             <div>
-              <p className="text-4xl font-black">500+</p>
+              <p className="text-4xl font-black">2000+</p>
               <p className="text-purple-200">Products</p>
             </div>
             <div>
