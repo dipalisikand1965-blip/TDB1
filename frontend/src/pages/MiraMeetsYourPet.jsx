@@ -272,7 +272,10 @@ const MiraMeetsYourPet = () => {
         body: JSON.stringify(payload)
       });
       
-      const data = await response.json();
+      // Clone response before reading to avoid "body stream already read" error
+      // (Emergent monitoring script may read the body for error logging)
+      const responseClone = response.clone();
+      const data = await responseClone.json();
       
       if (!response.ok) {
         throw new Error(data.detail || 'Failed to create account');
