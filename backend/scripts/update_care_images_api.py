@@ -4,7 +4,7 @@ Update Care products with generated images via API
 """
 import requests
 
-API_URL = "https://authenticity-check-35.preview.emergentagent.com"
+API_URL = "https://pet-os-v1.preview.emergentagent.com"
 AUTH = ("aditya", "lola4304")
 
 # Generated Care images

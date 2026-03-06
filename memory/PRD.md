@@ -1,8 +1,8 @@
 # Pet Life Operating System - The Doggy Company
 ## Product Requirements Document
 
-**Last Updated:** March 6, 2026
-**Version:** 2.5.0
+**Last Updated:** December 6, 2025
+**Version:** 2.6.0
 **Status:** Production Ready for Investor Demo
 
 ---
@@ -16,7 +16,7 @@ The Doggy Company is a "Pet Life Operating System" - a comprehensive platform th
 > "To be known. To be seen. To be loved. With accuracy."
 
 **Live Production:** https://thedoggycompany.com
-**Preview Environment:** https://authenticity-check-35.preview.emergentagent.com
+**Preview Environment:** https://pet-os-v1.preview.emergentagent.com
 
 ---
 
@@ -43,88 +43,66 @@ The Doggy Company is a "Pet Life Operating System" - a comprehensive platform th
 
 | Pillar | Purpose | Status |
 |--------|---------|--------|
-| **Celebrate** | Birthdays, parties, cakes | ✅ Shopify synced |
-| **Dine** | Fresh meals, restaurants | ✅ 100% images |
-| **Stay** | Hotels, boarding, daycare | ✅ 100% images |
-| **Travel** | Trips, carriers, planning | ✅ 100% images |
-| **Care** | Grooming, vet, wellness | ✅ 94% images |
-| **Enjoy** | Experiences, outings | ✅ 100% images |
-| **Play** | Toys, games, activities | ✅ 100% images |
-| **Fit** | Exercise, fitness, agility | ✅ 93% images |
-| **Learn** | Training, education | ✅ 100% images |
-| **Paperwork** | Insurance, documents | 🟡 70% images |
-| **Advisory** | Consultations, planning | ✅ 100% images |
-| **Emergency** | 24/7 urgent care | ✅ 100% images |
-| **Farewell** | Memorial services | ✅ 100% images |
-| **Adopt** | Rescue, adoption | ✅ 100% images |
+| **Celebrate** | Birthdays, parties, cakes | Shopify synced |
+| **Dine** | Fresh meals, restaurants | 100% images |
+| **Stay** | Hotels, boarding, daycare | 100% images |
+| **Travel** | Trips, carriers, planning | 100% images |
+| **Care** | Grooming, vet, wellness | 94% images |
+| **Enjoy** | Experiences, outings | 100% images |
+| **Play** | Toys, games, activities | 100% images |
+| **Fit** | Exercise, fitness, agility | 93% images |
+| **Learn** | Training, education | 100% images |
+| **Paperwork** | Insurance, documents | 70% images |
+| **Advisory** | Consultations, planning | 100% images |
+| **Emergency** | 24/7 urgent care | 100% images |
+| **Farewell** | Memorial services | 100% images |
+| **Adopt** | Rescue, adoption | 100% images |
 
 ---
 
-## 4. COMPLETED WORK (March 6, 2026)
+## 4. COMPLETED WORK
 
-### Session 1: Audit & Critical Fixes
-- ✅ **Landing Page Scroll Bug** - Fixed CSS (`height: 100%` → `min-height: 100%`)
-- ✅ **Mobile Login Memorial** - Added Mystique memorial text
-- ✅ **Fake Stats Removed** - Replaced with authentic messaging
-- ✅ **Philosophy Section** - Added to About page
-- ✅ **Kouros Image Fixed** - Correct black dog now on About page
-- ✅ **Breed Selection Overhaul** - 64 breeds + custom input
-- ✅ **Pillar Colors** - Each pillar has unique gradient
+### Session - December 6, 2025: UI Polish & Handover
+- Fixed **Bottom Nav Active State** - Enhanced with stronger gradient, shadow, scale, and glow effects
+- Fixed **Price Display Consistency** - Products with ₹0 now show "Price on request" 
+- Fixed **Mobile Product Detail Scroll** - Added `overflow-y-auto` and `pb-24` for proper scrolling
+- Updated PRD.md with comprehensive documentation
 
-### Session 2: Product Images (MAJOR)
-- ✅ **Generated AI images** for ALL 14 pillars
-- ✅ **~2000+ products** now have beautiful images
-- ✅ **~1100+ services** have images
-- ✅ **Master Sync Step 7** - Auto-applies images on deployment
-
-### Session 3: Polish & Verification
-- ✅ **Soul Score Board** - Verified working (74%, 83%, etc.)
-- ✅ **Allergy Filtering** - Products filter based on pet allergies
-- ✅ **Mobile Bottom Nav** - Enhanced active state styling
-- ✅ **Emergency Guest Flow** - Guests can report without login
-
-### Image Types Generated
-- Fresh meal bowls (chicken, veggie, fish)
-- Pet travel carriers & accessories
-- Grooming tools & spa products
-- Training kits & agility equipment
-- Hotel rooms & cottages
-- Vet wellness & first aid
-- Memorial & farewell scenes
-- Adoption & rescue imagery
+### Previous Sessions: Major Features
+- **AI Image Generation** for ALL 14 pillars (~2000+ products, ~1100+ services)
+- **Master Sync Step 7** - Auto-applies images on deployment
+- **Soul Score Board** - Verified working (74%, 83%, etc.)
+- **Allergy Filtering** - Products filter based on pet allergies
+- **Emergency Guest Flow** - Guests can report without login
+- **Kouros Image Fix** - Correct black dog on About page
+- **Breed Selection** - 64 breeds + custom input
+- **Pillar Colors** - Each pillar has unique gradient
 
 ---
 
-## 5. PENDING TASKS (For Next Agent)
+## 5. PENDING TASKS
 
-### 🔴 HIGH PRIORITY
-1. **Price Display Consistency** - Some products show ₹0 or no price
-   - File: `/app/frontend/src/components/ProductCard.jsx` (line ~347-356)
-   - Check `getMinPrice()` function
-
-2. **Product Detail Page Scroll** - Mobile scroll doesn't work below fold
-   - File: `/app/frontend/src/pages/ProductDetailPage.jsx`
-   - CSS issue with fixed positioning
-
-3. **Paperwork Pillar Images** - Only 70% coverage
+### HIGH PRIORITY
+1. **Paperwork Pillar Images** - Only 70% coverage
    - Run: `POST /api/admin/migrate-product-images`
 
-### 🟡 MEDIUM PRIORITY
-4. **Test Ask Mira Search** - Verify search suggestions work
-5. **Test Guest Emergency Flow** - Submit test emergency as guest
-6. **Celebrate Broken Images** - Some Shopify products have test URLs
-   - These sync from doggybakery.com - may need Shopify sync
+2. **Broken Shopify Images** - Some products have test URLs
+   - Syncs from doggybakery.com - may need Shopify data check
 
-### 🟢 INTEGRATIONS (Need API Keys)
-7. **Razorpay** - Payment gateway for checkout
-8. **Google Places API** - Hotel search for Stay pillar
-9. **WhatsApp Business** - Meta API verification
+### MEDIUM PRIORITY
+3. **Test Ask Mira Search** - Verify search suggestions work
+4. **Test Guest Emergency Flow** - Submit test emergency as guest
 
-### 🔵 CODE REFACTORING (Future)
-10. **Admin.jsx** - 2600+ lines, needs splitting
-11. **DoggyServiceDesk.jsx** - 6000+ lines
-12. **MiraDemoPage.jsx** - 5000+ lines
-13. **Admin Auth** - Move from hardcoded to backend roles
+### INTEGRATIONS (Need API Keys)
+5. **Razorpay** - Payment gateway for checkout
+6. **Google Places API** - Hotel search for Stay pillar
+7. **WhatsApp Business** - Meta API verification
+
+### CODE REFACTORING (Future)
+8. **Admin.jsx** - 2600+ lines, needs splitting
+9. **DoggyServiceDesk.jsx** - 6000+ lines
+10. **MiraDemoPage.jsx** - 5000+ lines
+11. **Admin Auth** - Move from hardcoded to backend roles
 
 ---
 
@@ -138,23 +116,23 @@ The Doggy Company is a "Pet Life Operating System" - a comprehensive platform th
 │   ├── AboutPage.jsx         # About + Philosophy (Kouros image)
 │   ├── Login.jsx             # Login + Mystique memorial
 │   ├── ShopPage.jsx          # Main shop with pillars
-│   ├── ProductDetailPage.jsx # Product details (scroll issue)
+│   ├── ProductDetailPage.jsx # Product details (FIXED scroll)
 │   └── Pillars/
 │       └── EmergencyPage.jsx # Emergency flow (guest support)
 ├── components/
-│   ├── ProductCard.jsx       # Product cards (price display)
+│   ├── ProductCard.jsx       # Product cards (FIXED price display)
 │   ├── MobileNavBar.jsx      # Bottom nav (active state)
 │   ├── MiraAI.jsx            # Mira chat interface
 │   └── Navbar.jsx            # Top navigation
 ├── config/
 │   └── pillarConfig.js       # Pillar colors & config
-└── index.css                 # Global styles (nav active state)
+└── index.css                 # Global styles (FIXED nav active state)
 ```
 
 ### Backend
 ```
 /app/backend/
-├── server.py                 # Main server + Master Sync
+├── server.py                 # Main server + Master Sync (7 steps)
 ├── product_intelligence.py   # Allergy filtering
 ├── dine_routes.py           # Dine products seed
 ├── care_routes.py           # Care products seed
@@ -168,14 +146,14 @@ The Doggy Company is a "Pet Life Operating System" - a comprehensive platform th
 
 ## 7. MASTER SYNC STEPS
 
-When you click 🚀 MASTER SYNC in Admin:
-1. ✅ Shopify sync (doggybakery.com products)
-2. ✅ Care products seed
-3. ✅ Dine products seed  
-4. ✅ Breed catalogue seed
-5. ✅ Default data seed
-6. ✅ Mira context update
-7. ✅ **Product images migration** (NEW - auto-applies AI images)
+When you click MASTER SYNC in Admin:
+1. Shopify sync (doggybakery.com products)
+2. Care products seed
+3. Dine products seed  
+4. Breed catalogue seed
+5. Default data seed
+6. Mira context update
+7. **Product images migration** (auto-applies AI images)
 
 ---
 
@@ -208,12 +186,12 @@ Pets have soul scores (0-100%) that affect personalization:
 ## 10. DEPLOYMENT CHECKLIST
 
 After deploying to production:
-1. ✅ Go to Admin panel (`/admin`)
-2. ✅ Click **🚀 MASTER SYNC**
-3. ✅ Wait for all 7 steps to complete
-4. ✅ Verify images appear on Shop page
-5. ✅ Test a product detail page
-6. ✅ Test mobile bottom nav
+1. Go to Admin panel (`/admin`)
+2. Click **MASTER SYNC**
+3. Wait for all 7 steps to complete
+4. Verify images appear on Shop page
+5. Test a product detail page
+6. Test mobile bottom nav
 
 ---
 
@@ -224,7 +202,6 @@ After deploying to production:
 | WebSocket connection | Workaround | Graceful fallback in place |
 | Production DB from preview | Blocked | Needs IP whitelist in Atlas |
 | Some Shopify images broken | Known | Test URLs in Shopify data |
-| Product detail scroll | Bug | CSS fix needed |
 
 ---
 
@@ -232,9 +209,34 @@ After deploying to production:
 
 - **Shopify Store:** https://thedoggybakery.com
 - **Admin Panel:** /admin (aditya/lola4304)
-- **Mira AI:** Click ✨ button or use Ask Mira search
+- **Mira AI:** Click button or use Ask Mira search
 - **Documentation:** /complete-documentation.html
 
 ---
 
-*Built with love for Kouros & Mystique* 🐕💜
+## 13. RECENT FIXES (December 6, 2025)
+
+### Mobile Nav Active State Enhancement
+**File:** `/app/frontend/src/index.css`
+- Increased gradient opacity from 0.15 to 0.25
+- Enhanced box shadow with inset glow
+- Increased icon scale from 1.1 to 1.2
+- Strengthened drop shadow effect
+- Bolder font weight (800 vs 700)
+- Added letter-spacing for better readability
+
+### Price Display Consistency
+**File:** `/app/frontend/src/components/ProductCard.jsx`
+- Added conditional check for `minPrice > 0`
+- Products with zero/missing price now show "Price on request"
+- Purple text styling for request-based pricing
+
+### Mobile Product Detail Scroll Fix
+**File:** `/app/frontend/src/pages/ProductDetailPage.jsx`
+- Added `overflow-y-auto` to main container
+- Added `pb-24` padding for mobile nav clearance
+- Ensures all product content is scrollable on mobile
+
+---
+
+*Built with love for Kouros & Mystique*
