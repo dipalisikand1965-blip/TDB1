@@ -30,40 +30,40 @@ import { API_URL } from '../utils/api';
 
 const BREED_AVATARS = [
   // Indian Breeds
-  { breed: 'Indie', emoji: '🐕', color: 'from-amber-400 to-orange-500' },
-  { breed: 'Rajapalayam', emoji: '🦮', color: 'from-gray-100 to-gray-300' },
-  { breed: 'Mudhol Hound', emoji: '🐕', color: 'from-amber-600 to-amber-800' },
-  { breed: 'Chippiparai', emoji: '🦮', color: 'from-amber-200 to-amber-400' },
+  { breed: 'Indie', initials: 'IN', color: 'from-amber-400 to-orange-500' },
+  { breed: 'Rajapalayam', initials: 'RP', color: 'from-slate-100 to-slate-300' },
+  { breed: 'Mudhol Hound', initials: 'MH', color: 'from-amber-600 to-amber-800' },
+  { breed: 'Chippiparai', initials: 'CP', color: 'from-amber-200 to-amber-400' },
   // Popular International
-  { breed: 'Labrador', emoji: '🦮', color: 'from-yellow-400 to-amber-500' },
-  { breed: 'Golden Retriever', emoji: '🐕', color: 'from-yellow-300 to-amber-400' },
-  { breed: 'German Shepherd', emoji: '🐕‍🦺', color: 'from-amber-700 to-stone-800' },
-  { breed: 'Beagle', emoji: '🐕', color: 'from-amber-200 to-white' },
-  { breed: 'Poodle', emoji: '🐩', color: 'from-gray-200 to-white' },
-  { breed: 'Bulldog', emoji: '🐕', color: 'from-amber-100 to-amber-300' },
-  { breed: 'Rottweiler', emoji: '🐕', color: 'from-stone-800 to-amber-700' },
-  { breed: 'Boxer', emoji: '🐕', color: 'from-amber-500 to-amber-700' },
-  { breed: 'Dachshund', emoji: '🐕', color: 'from-amber-600 to-amber-800' },
-  { breed: 'Shih Tzu', emoji: '🐕', color: 'from-amber-100 to-white' },
-  { breed: 'Pomeranian', emoji: '🐕', color: 'from-orange-300 to-amber-500' },
-  { breed: 'Husky', emoji: '🐺', color: 'from-gray-400 to-white' },
-  { breed: 'Doberman', emoji: '🐕', color: 'from-stone-900 to-amber-700' },
-  { breed: 'Great Dane', emoji: '🦮', color: 'from-gray-600 to-gray-800' },
-  { breed: 'Pug', emoji: '🐕', color: 'from-amber-200 to-amber-400' },
-  { breed: 'Cocker Spaniel', emoji: '🐕', color: 'from-amber-400 to-amber-600' },
-  { breed: 'Border Collie', emoji: '🐕', color: 'from-stone-900 to-white' },
-  { breed: 'Australian Shepherd', emoji: '🐕', color: 'from-gray-600 to-amber-400' },
-  { breed: 'Maltese', emoji: '🐕', color: 'from-white to-gray-100' },
-  { breed: 'Yorkshire Terrier', emoji: '🐕', color: 'from-amber-500 to-gray-600' },
-  { breed: 'Chihuahua', emoji: '🐕', color: 'from-amber-300 to-amber-500' },
-  { breed: 'French Bulldog', emoji: '🐕', color: 'from-gray-400 to-amber-200' },
-  { breed: 'Lhasa Apso', emoji: '🐕', color: 'from-amber-200 to-white' },
-  { breed: 'Saint Bernard', emoji: '🐕', color: 'from-amber-600 to-white' },
-  { breed: 'Dalmatian', emoji: '🐕', color: 'from-white to-gray-900' },
-  { breed: 'Pit Bull', emoji: '🐕', color: 'from-gray-500 to-amber-400' },
-  { breed: 'Corgi', emoji: '🐕', color: 'from-amber-400 to-white' },
-  { breed: 'Akita', emoji: '🐕', color: 'from-amber-500 to-white' },
-  { breed: 'Mixed Breed', emoji: '🐕', color: 'from-purple-400 to-pink-400' },
+  { breed: 'Labrador', initials: 'LB', color: 'from-yellow-400 to-amber-500' },
+  { breed: 'Golden Retriever', initials: 'GR', color: 'from-yellow-300 to-amber-400' },
+  { breed: 'German Shepherd', initials: 'GS', color: 'from-amber-700 to-stone-800' },
+  { breed: 'Beagle', initials: 'BG', color: 'from-amber-200 to-white' },
+  { breed: 'Poodle', initials: 'PD', color: 'from-slate-200 to-white' },
+  { breed: 'Bulldog', initials: 'BD', color: 'from-amber-100 to-amber-300' },
+  { breed: 'Rottweiler', initials: 'RW', color: 'from-stone-800 to-amber-700' },
+  { breed: 'Boxer', initials: 'BX', color: 'from-amber-500 to-amber-700' },
+  { breed: 'Dachshund', initials: 'DH', color: 'from-amber-600 to-amber-800' },
+  { breed: 'Shih Tzu', initials: 'ST', color: 'from-amber-100 to-slate-100' },
+  { breed: 'Pomeranian', initials: 'PM', color: 'from-orange-300 to-amber-500' },
+  { breed: 'Husky', initials: 'HK', color: 'from-slate-400 to-white' },
+  { breed: 'Doberman', initials: 'DB', color: 'from-stone-900 to-amber-700' },
+  { breed: 'Great Dane', initials: 'GD', color: 'from-slate-600 to-slate-800' },
+  { breed: 'Pug', initials: 'PG', color: 'from-amber-200 to-amber-400' },
+  { breed: 'Cocker Spaniel', initials: 'CS', color: 'from-amber-400 to-amber-600' },
+  { breed: 'Border Collie', initials: 'BC', color: 'from-stone-900 to-white' },
+  { breed: 'Australian Shepherd', initials: 'AS', color: 'from-slate-600 to-amber-400' },
+  { breed: 'Maltese', initials: 'MT', color: 'from-white to-slate-100' },
+  { breed: 'Yorkshire Terrier', initials: 'YT', color: 'from-amber-500 to-slate-600' },
+  { breed: 'Chihuahua', initials: 'CH', color: 'from-amber-300 to-amber-500' },
+  { breed: 'French Bulldog', initials: 'FB', color: 'from-slate-400 to-amber-200' },
+  { breed: 'Lhasa Apso', initials: 'LA', color: 'from-amber-200 to-white' },
+  { breed: 'Saint Bernard', initials: 'SB', color: 'from-amber-600 to-white' },
+  { breed: 'Dalmatian', initials: 'DL', color: 'from-white to-slate-900' },
+  { breed: 'Pit Bull', initials: 'PB', color: 'from-slate-500 to-amber-400' },
+  { breed: 'Corgi', initials: 'CG', color: 'from-amber-400 to-white' },
+  { breed: 'Akita', initials: 'AK', color: 'from-amber-500 to-white' },
+  { breed: 'Mixed Breed', initials: 'MX', color: 'from-purple-400 to-pink-400' },
 ];
 
 const PROTEIN_OPTIONS = ['Chicken', 'Lamb', 'Fish', 'Beef', 'Vegetarian', 'No preference'];
@@ -326,7 +326,7 @@ const MiraMeetsYourPet = () => {
       <h1 className="text-3xl md:text-4xl font-bold text-white text-center mb-3">
         How many furry friends do you have?
       </h1>
-      <p className="text-slate-400 text-center mb-8">
+      <p className="text-white/80 text-center mb-8">
         We'll get to know each one personally
       </p>
       
@@ -468,20 +468,23 @@ const MiraMeetsYourPet = () => {
               />
               
               {/* Avatar grid - larger on mobile for touch */}
-              <div className="text-xs text-slate-500 mb-2">or choose a breed avatar:</div>
-              <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2 sm:gap-2 max-h-48 overflow-y-auto p-1 -mx-1">
+              <div className="text-xs text-white/70 mb-2">or choose a breed:</div>
+              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 max-h-64 overflow-y-auto p-1 -mx-1">
                 {BREED_AVATARS.map((avatar, avatarIndex) => (
                   <button
                     key={avatarIndex}
                     onClick={() => handleAvatarSelect(index, avatar)}
-                    className={`w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br ${avatar.color} flex items-center justify-center text-xl sm:text-lg transition-all ${
+                    className={`flex flex-col items-center p-2 rounded-xl transition-all ${
                       pet.avatar?.breed === avatar.breed
-                        ? 'ring-2 ring-pink-500 ring-offset-2 ring-offset-slate-800 scale-110'
-                        : 'hover:scale-105 active:scale-95'
+                        ? 'bg-pink-500/20 ring-2 ring-pink-500 scale-105'
+                        : 'bg-slate-800/50 hover:bg-slate-700/50 active:scale-95'
                     }`}
                     title={avatar.breed}
                   >
-                    {avatar.emoji}
+                    <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${avatar.color} flex items-center justify-center mb-1 shadow-lg`}>
+                      <span className="text-xs font-bold text-slate-800">{avatar.initials}</span>
+                    </div>
+                    <span className="text-[10px] text-white/70 text-center leading-tight truncate w-full">{avatar.breed}</span>
                   </button>
                 ))}
               </div>
