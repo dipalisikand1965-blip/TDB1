@@ -152,12 +152,15 @@ const UnifiedProductBox = () => {
       const sanitizedProduct = {};
       const allowedFields = [
         'name', 'product_type', 'short_description', 'long_description', 'description',
-        'category', 'subcategory', 'tags', 'image', 'image_url', 'images', 'media', 'pricing',
-        'variants', 'options', 'has_variants', 'in_stock', 'visibility',
+        'category', 'subcategory', 'tags', 'image', 'image_url', 'images', 'media', 
+        'price', 'originalPrice', 'base_price', 'pricing', 'gst_rate',
+        'variants', 'options', 'has_variants', 'in_stock', 'visibility', 'available',
         'primary_pillar', 'pillars', 'paw_rewards', 'pet_safety', 'mira_visibility',
         'shopify_handle', 'sku', 'intelligent_tags', 'search_keywords',
         'breed_tags', 'health_tags', 'occasion_tags', 'diet_tags', 'lifestage_tags', 'size_tags',
-        'breed_metadata', 'mira_hint', 'locally_edited'
+        'breed_metadata', 'mira_hint', 'locally_edited',
+        'reward_eligible', 'reward_value', 'reward_triggers',
+        'mira_can_suggest', 'mira_can_reference'
       ];
       
       for (const field of allowedFields) {
