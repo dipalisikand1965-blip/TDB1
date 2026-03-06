@@ -8,34 +8,26 @@
 
 | Priority | Count | Description |
 |----------|-------|-------------|
-| 🔴 Critical | 3 | Blocks usage or major UX issue |
-| 🟡 Important | 8 | Looks bad, confusing, or inconsistent |
+| 🔴 Critical | 0 | ~~All fixed!~~ |
+| 🟡 Important | 5 | Needs attention |
 | 🟢 Polish | 6 | Nice to fix for perfection |
 
 ---
 
-## 🔴 CRITICAL ISSUES (Must Fix Before Launch)
+## ✅ FIXED ISSUES
 
-### C1. Login Page - Mobile Shows Wrong Dog Image
-- **Page:** `/login` (Mobile view)
-- **Issue:** Desktop shows Mystique memorial beautifully, but mobile shows a generic Shih Tzu instead
-- **Expected:** Mystique's photo with memorial text on both desktop AND mobile
-- **Impact:** The heart of your vision (Mystique's memory) is missing on mobile
-- **Fix:** Update Login.jsx mobile responsive layout to show Mystique
+### ~~C1. Login Page - Mobile Shows Wrong Dog Image~~ → FIXED!
+- **Fix Applied:** Added memorial text ("In loving memory of Mystique") to mobile view
+- **Result:** Mobile now shows Mystique's photo with memorial like desktop
 
-### C2. Products Not Loading on Shop & Pillar Pages (CRITICAL!)
-- **Page:** `/shop`, `/celebrate`, `/dine`, all pillar pages
-- **Issue:** Products show as skeleton loaders everywhere (desktop AND mobile)
-- **ROOT CAUSE FOUND:** In Admin Product Box: Total=2572, but **Active=2**
-- **Only 2 products are marked "Active"** - the rest are inactive/draft!
-- **Impact:** MAJOR - customers cannot browse or buy products anywhere
-- **Fix:** Go to Admin → Product Box → Bulk activate products (or use Seed All button)
+### ~~C2. Products Not Loading~~ → FIXED BY USER!
+- **Fix Applied:** User ran "Seed All" in Admin panel
+- **Result:** Products now loading on Shop and all pillar pages
 
-### C3. Landing Page - No Footer Visible / Can't Scroll
-- **Page:** `/` (Landing page)
-- **Issue:** Cannot scroll to see footer or additional sections below hero
-- **Impact:** Users can't see full landing page content, footer links, legal info
-- **Fix:** Check CSS overflow or page structure preventing scroll
+### ~~C3. Landing Page - No Footer Visible / Can't Scroll~~ → FIXED!
+- **Root Cause:** CSS had `height: 100%` on html, body, and #root which constrained page to viewport
+- **Fix Applied:** Changed to `min-height: 100%` in index.css
+- **Result:** Page now scrolls properly, all 8 sections + footer visible (6279px total height)
 
 ---
 

@@ -146,12 +146,12 @@ const Login = () => {
       {/* Right Panel - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12 relative">
         <div className="w-full max-w-md relative z-10">
-          {/* Mobile - Mystique Portrait */}
-          <div className="lg:hidden flex flex-col items-center mb-8">
+          {/* Mobile - Mystique Portrait & Memorial */}
+          <div className="lg:hidden flex flex-col items-center mb-6">
             {/* Mystique's Portrait for Mobile */}
-            <div className="relative mb-6">
+            <div className="relative mb-4">
               <div className="absolute -inset-3 bg-gradient-to-tr from-amber-400/30 via-pink-500/20 to-purple-500/30 rounded-full blur-lg opacity-60" />
-              <div className="relative w-32 h-32 rounded-full overflow-hidden shadow-xl shadow-purple-500/30 ring-2 ring-purple-500/30">
+              <div className="relative w-28 h-28 rounded-full overflow-hidden shadow-xl shadow-purple-500/30 ring-2 ring-purple-500/30">
                 <img 
                   src={MYSTIQUE_IMAGE}
                   alt="Mystique"
@@ -165,14 +165,23 @@ const Login = () => {
               </div>
             </div>
             
+            {/* Memorial Text - Mobile */}
+            <p className="text-xs text-amber-300/70 mb-1">In loving memory of</p>
+            <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <span className="bg-gradient-to-r from-amber-300 via-pink-400 to-purple-400 bg-clip-text text-transparent">Mystique</span>
+            </h2>
+            <p className="text-xs text-slate-400 text-center px-4 italic leading-relaxed mb-4">
+              "Her eyes held a universe of love"
+            </p>
+            
             {/* Logo */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/30">
-                <PawPrint className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-pink-500/30">
+                <PawPrint className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>thedoggycompany</h2>
-                <p className="text-xs text-pink-300/70 tracking-wider">PET CONCIERGE®</p>
+                <h2 className="text-sm font-bold text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>thedoggycompany</h2>
+                <p className="text-[10px] text-pink-300/70 tracking-wider">PET CONCIERGE®</p>
               </div>
             </div>
           </div>
