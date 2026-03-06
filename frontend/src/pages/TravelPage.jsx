@@ -416,23 +416,19 @@ const TravelPage = () => {
           <div className="flex items-center justify-center gap-8 md:gap-16 flex-wrap text-white">
             <div className="flex items-center gap-2">
               <Plane className="w-5 h-5 text-yellow-300" />
-              <span className="font-bold text-lg">500+</span>
-              <span className="text-white/80 text-sm">trips completed</span>
+              <span className="text-white/80 text-sm">Stress-free pet travel</span>
             </div>
             <div className="flex items-center gap-2">
               <Shield className="w-5 h-5 text-green-300" />
-              <span className="font-bold text-lg">100%</span>
-              <span className="text-white/80 text-sm">safe arrivals</span>
+              <span className="text-white/80 text-sm">Safety-first approach</span>
             </div>
             <div className="flex items-center gap-2">
               <Star className="w-5 h-5 text-yellow-300 fill-yellow-300" />
-              <span className="font-bold text-lg">4.9</span>
-              <span className="text-white/80 text-sm">travel rating</span>
+              <span className="text-white/80 text-sm">Concierge-managed journeys</span>
             </div>
             <div className="flex items-center gap-2">
               <MapPin className="w-5 h-5 text-pink-300" />
-              <span className="font-bold text-lg">50+</span>
-              <span className="text-white/80 text-sm">cities covered</span>
+              <span className="text-white/80 text-sm">Across India</span>
             </div>
           </div>
         </div>

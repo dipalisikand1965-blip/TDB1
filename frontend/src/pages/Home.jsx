@@ -354,7 +354,7 @@ const Home = () => {
                     <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                   ))}
                 </div>
-                <span className="text-purple-200 text-sm font-semibold">10,000+ families</span>
+                <span className="text-purple-200 text-sm font-semibold">Loved by pet families</span>
               </motion.div>
             </div>
             
@@ -413,7 +413,7 @@ const Home = () => {
                         <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <p className="text-white/50 text-sm">Loved by 10,000+ pet families</p>
+                    <p className="text-white/50 text-sm">Loved by pet families everywhere</p>
                   </div>
                 </div>
               </motion.div>
@@ -1041,7 +1041,7 @@ const Home = () => {
               </h2>
               
               <p className="text-white/60 text-lg mb-8 max-w-2xl mx-auto">
-                Join thousands of pet parents who've discovered a better way to care for their furry family members.
+                Discover a better way to care for your furry family member — with someone who truly knows them.
               </p>
               
               <div className="flex flex-wrap justify-center gap-4">
@@ -1053,7 +1053,7 @@ const Home = () => {
               </div>
               
               <p className="text-white/40 text-sm mt-6">
-                Join 10,000+ pet families who chose extraordinary.
+                Be among the first to experience extraordinary pet care.
               </p>
             </motion.div>
           </div>

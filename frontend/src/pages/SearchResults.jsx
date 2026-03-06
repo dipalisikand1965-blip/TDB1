@@ -42,7 +42,7 @@ const QUICK_CATEGORIES = [
 const FAQ_DATA = [
   { q: 'How do I book a pet hotel?', a: 'Go to Stay > Pet Hotels and select your dates', category: 'Booking' },
   { q: 'What if my dog has allergies?', a: 'Mira AI remembers allergies and filters unsafe products automatically', category: 'Health' },
-  { q: 'Do you deliver pan-India?', a: 'Yes! We deliver to 500+ cities across India', category: 'Delivery' },
+  { q: 'Do you deliver pan-India?', a: 'Yes! We deliver across India', category: 'Delivery' },
   { q: 'How does Pet Soul work?', a: 'Pet Soul creates an intelligent profile that learns and remembers your pet', category: 'Features' },
   { q: 'Can I cancel my order?', a: 'Yes, orders can be cancelled within 24 hours of placing', category: 'Orders' },
 ];
