@@ -495,119 +495,116 @@ const TravelPage = () => {
         </div>
       </div>
 
-      {/* ==================== TRANSFORMATION STORIES ==================== */}
+      {/* ==================== TRANSFORMATION STORIES - Large Format ==================== */}
       <div className="py-12 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-8">
-            <Badge className="bg-purple-100 text-purple-700 mb-3">Success Stories</Badge>
-            <h2 className="text-2xl font-bold text-gray-900">Happy Travels, Happy Tails</h2>
+            <Badge className="bg-gradient-to-r from-purple-500 to-violet-500 text-white px-4 py-1.5 mb-3">
+              <Sparkles className="w-3.5 h-3.5 mr-1.5 inline" />
+              Community Stories
+            </Badge>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Happy Travels, Happy Tails</h2>
             <p className="text-gray-600">Real journeys from our travel community</p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Story 1: Flight Success */}
-            <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl p-5 border border-purple-100 hover:shadow-lg transition-all">
-              <div className="flex gap-3 mb-4">
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
-                    <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop" alt="Before" className="w-full h-full object-cover" />
+          {/* Horizontally scrollable on mobile */}
+          <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-2 lg:grid-cols-4 md:overflow-visible">
+            {/* Story 1: Rocky's Flight */}
+            <div className="flex-shrink-0 w-[280px] md:w-auto snap-start bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-lg hover:shadow-xl transition-all">
+              <img 
+                src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=600&h=400&fit=crop" 
+                alt="Rocky - Golden Retriever" 
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-5">
+                <h3 className="font-bold text-gray-900 text-lg">Rocky</h3>
+                <p className="text-sm text-gray-500 mb-2">Golden Retriever</p>
+                <p className="text-purple-600 font-medium text-sm mb-2">First flight at 3 years old!</p>
+                <p className="text-sm text-gray-600 mb-3">&quot;They handled all the airline paperwork. Rocky was calm the entire journey!&quot;</p>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-gray-400">— Neha P., Mumbai → Bangalore</span>
+                  <div className="flex items-center gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />
+                    ))}
                   </div>
-                  <span className="text-xs text-gray-500">Mumbai</span>
-                </div>
-                <div className="flex items-center">
-                  <Plane className="w-5 h-5 text-purple-400" />
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-purple-300 shadow-md mb-1">
-                    <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop" alt="After" className="w-full h-full object-cover" />
-                  </div>
-                  <span className="text-xs text-purple-600 font-medium">Bangalore</span>
                 </div>
               </div>
-              <h4 className="font-bold text-gray-900">Rocky</h4>
-              <p className="text-sm text-gray-500 mb-2">Golden Retriever</p>
-              <p className="text-sm text-purple-700 font-medium mb-2">First flight at 3 years old!</p>
-              <p className="text-xs text-gray-600 italic">&quot;They handled all the airline paperwork. Rocky was calm the entire journey!&quot;</p>
-              <p className="text-xs text-gray-400 mt-2">— Neha P., Mumbai</p>
             </div>
 
-            {/* Story 2: Road Trip */}
-            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-5 border border-blue-100 hover:shadow-lg transition-all">
-              <div className="flex gap-3 mb-4">
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
-                    <img src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=200&h=200&fit=crop" alt="Before" className="w-full h-full object-cover" />
+            {/* Story 2: Simba & Luna Road Trip */}
+            <div className="flex-shrink-0 w-[280px] md:w-auto snap-start bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-lg hover:shadow-xl transition-all">
+              <img 
+                src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=600&h=400&fit=crop" 
+                alt="Simba & Luna - Huskies" 
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-5">
+                <h3 className="font-bold text-gray-900 text-lg">Simba &amp; Luna</h3>
+                <p className="text-sm text-gray-500 mb-2">Huskies</p>
+                <p className="text-blue-600 font-medium text-sm mb-2">600km road trip with 2 dogs</p>
+                <p className="text-sm text-gray-600 mb-3">&quot;They planned every pet-friendly stop. Both dogs loved the mountain adventure!&quot;</p>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-gray-400">— Arjun M., Delhi → Manali</span>
+                  <div className="flex items-center gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />
+                    ))}
                   </div>
-                  <span className="text-xs text-gray-500">Delhi</span>
-                </div>
-                <div className="flex items-center">
-                  <Car className="w-5 h-5 text-blue-400" />
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-blue-300 shadow-md mb-1">
-                    <img src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=200&h=200&fit=crop" alt="After" className="w-full h-full object-cover" />
-                  </div>
-                  <span className="text-xs text-blue-600 font-medium">Manali</span>
                 </div>
               </div>
-              <h4 className="font-bold text-gray-900">Simba &amp; Luna</h4>
-              <p className="text-sm text-gray-500 mb-2">Huskies</p>
-              <p className="text-sm text-blue-700 font-medium mb-2">600km road trip with 2 dogs</p>
-              <p className="text-xs text-gray-600 italic">&quot;They planned every pet-friendly stop. Both dogs loved the mountain adventure!&quot;</p>
-              <p className="text-xs text-gray-400 mt-2">— Arjun M., Delhi</p>
             </div>
 
-            {/* Story 3: International Relocation */}
-            <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-100 hover:shadow-lg transition-all">
-              <div className="flex gap-3 mb-4">
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
-                    <img src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=200&h=200&fit=crop" alt="Before" className="w-full h-full object-cover" />
+            {/* Story 3: Milo's International Move */}
+            <div className="flex-shrink-0 w-[280px] md:w-auto snap-start bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-lg hover:shadow-xl transition-all">
+              <img 
+                src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=600&h=400&fit=crop" 
+                alt="Milo - French Bulldog" 
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-5">
+                <h3 className="font-bold text-gray-900 text-lg">Milo</h3>
+                <p className="text-sm text-gray-500 mb-2">French Bulldog</p>
+                <p className="text-amber-600 font-medium text-sm mb-2">International relocation</p>
+                <p className="text-sm text-gray-600 mb-3">&quot;All the import permits, quarantine paperwork — they handled everything flawlessly.&quot;</p>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-gray-400">— Priya S., Bangalore → Dubai</span>
+                  <div className="flex items-center gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />
+                    ))}
                   </div>
-                  <span className="text-xs text-gray-500">Bangalore</span>
-                </div>
-                <div className="flex items-center">
-                  <Truck className="w-5 h-5 text-amber-400" />
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-amber-300 shadow-md mb-1">
-                    <img src="https://images.unsplash.com/photo-1517849845537-4d257902454a?w=200&h=200&fit=crop" alt="After" className="w-full h-full object-cover" />
-                  </div>
-                  <span className="text-xs text-amber-600 font-medium">Dubai</span>
                 </div>
               </div>
-              <h4 className="font-bold text-gray-900">Milo</h4>
-              <p className="text-sm text-gray-500 mb-2">French Bulldog</p>
-              <p className="text-sm text-amber-700 font-medium mb-2">International relocation</p>
-              <p className="text-xs text-gray-600 italic">&quot;All the import permits, quarantine paperwork — they handled everything flawlessly.&quot;</p>
-              <p className="text-xs text-gray-400 mt-2">— Priya S., Bangalore</p>
             </div>
 
-            {/* Story 4: Train Journey */}
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-5 border border-green-100 hover:shadow-lg transition-all">
-              <div className="flex gap-3 mb-4">
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
-                    <img src="https://images.unsplash.com/photo-1568572933382-74d440642117?w=200&h=200&fit=crop" alt="Before" className="w-full h-full object-cover" />
+            {/* Story 4: Cookie's Train Journey */}
+            <div className="flex-shrink-0 w-[280px] md:w-auto snap-start bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-lg hover:shadow-xl transition-all">
+              <img 
+                src="https://images.unsplash.com/photo-1568572933382-74d440642117?w=600&h=400&fit=crop" 
+                alt="Cookie - Indie Mix" 
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-5">
+                <h3 className="font-bold text-gray-900 text-lg">Cookie</h3>
+                <p className="text-sm text-gray-500 mb-2">Indie Mix</p>
+                <p className="text-green-600 font-medium text-sm mb-2">First train journey</p>
+                <p className="text-sm text-gray-600 mb-3">&quot;They secured the pet compartment and even packed snacks. Cookie slept the whole way!&quot;</p>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-gray-400">— Kavitha R., Chennai → Ooty</span>
+                  <div className="flex items-center gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />
+                    ))}
                   </div>
-                  <span className="text-xs text-gray-500">Chennai</span>
-                </div>
-                <div className="flex items-center">
-                  <Train className="w-5 h-5 text-green-400" />
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-green-300 shadow-md mb-1">
-                    <img src="https://images.unsplash.com/photo-1544568100-847a948585b9?w=200&h=200&fit=crop" alt="After" className="w-full h-full object-cover" />
-                  </div>
-                  <span className="text-xs text-green-600 font-medium">Ooty</span>
                 </div>
               </div>
-              <h4 className="font-bold text-gray-900">Cookie</h4>
-              <p className="text-sm text-gray-500 mb-2">Indie Mix</p>
-              <p className="text-sm text-green-700 font-medium mb-2">First train journey</p>
-              <p className="text-xs text-gray-600 italic">&quot;They secured the pet compartment and even packed snacks. Cookie slept the whole way!&quot;</p>
-              <p className="text-xs text-gray-400 mt-2">— Kavitha R., Chennai</p>
             </div>
+          </div>
+          
+          {/* Mobile scroll hint */}
+          <div className="flex justify-center mt-4 md:hidden">
+            <span className="text-xs text-gray-400">← Swipe for more stories →</span>
           </div>
         </div>
       </div>
