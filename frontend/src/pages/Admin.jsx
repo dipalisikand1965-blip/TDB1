@@ -2092,47 +2092,60 @@ const Admin = () => {
               
               {/* 📚 DOCUMENTATION BUTTONS */}
               <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
-                <p className="text-xs text-gray-500 text-center font-medium">📚 Owner's Guide</p>
+                <p className="text-xs text-gray-500 text-center font-medium">📚 Documentation</p>
+                
+                {/* Owner's Guide */}
                 <div className="flex gap-2">
                   <a
                     href="/owners-guide.html"
                     target="_blank"
                     className="flex-1 p-2 bg-purple-100 text-purple-700 rounded-lg text-center text-sm font-medium hover:bg-purple-200"
                   >
-                    📖 View
+                    📖 Simple Guide
                   </a>
+                  <a
+                    href="/complete-documentation.html"
+                    target="_blank"
+                    className="flex-1 p-2 bg-indigo-100 text-indigo-700 rounded-lg text-center text-sm font-medium hover:bg-indigo-200"
+                  >
+                    📚 Full Docs
+                  </a>
+                </div>
+                
+                {/* Download & Email */}
+                <div className="flex gap-2">
                   <a
                     href={`${API_URL}/api/admin/download-documentation`}
                     className="flex-1 p-2 bg-blue-100 text-blue-700 rounded-lg text-center text-sm font-medium hover:bg-blue-200"
                   >
                     📥 Download
                   </a>
-                </div>
-                <button
-                  onClick={async () => {
-                    try {
-                      const res = await fetch(`${API_URL}/api/admin/send-documentation-email`, {
-                        method: 'POST',
-                        headers: { 
-                          'Content-Type': 'application/json',
-                          'Authorization': 'Basic ' + btoa('aditya:lola4304')
-                        },
-                        body: JSON.stringify({ email: 'dipali@clubconcierge.in' })
-                      });
-                      const data = await res.json();
-                      if (data.success) {
-                        alert('✅ Documentation sent to dipali@clubconcierge.in!');
-                      } else {
-                        alert('❌ Failed: ' + data.detail);
+                  <button
+                    onClick={async () => {
+                      try {
+                        const res = await fetch(`${API_URL}/api/admin/send-documentation-email`, {
+                          method: 'POST',
+                          headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Basic ' + btoa('aditya:lola4304')
+                          },
+                          body: JSON.stringify({ email: 'dipali.sikand1965@gmail.com' })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                          alert('✅ Documentation sent to your Gmail!');
+                        } else {
+                          alert('❌ Failed: ' + data.detail);
+                        }
+                      } catch (e) {
+                        alert('❌ Error sending email');
                       }
-                    } catch (e) {
-                      alert('❌ Error sending email');
-                    }
-                  }}
-                  className="w-full p-2 bg-pink-100 text-pink-700 rounded-lg text-sm font-medium hover:bg-pink-200"
-                >
-                  📧 Email to Dipali
-                </button>
+                    }}
+                    className="flex-1 p-2 bg-pink-100 text-pink-700 rounded-lg text-center text-sm font-medium hover:bg-pink-200"
+                  >
+                    📧 Email Me
+                  </button>
+                </div>
               </div>
             </div>
           </div>
