@@ -2688,6 +2688,15 @@ async def delete_dine_product(product_id: str, username: str = Depends(verify_ad
 async def seed_dine_products(username: str = Depends(verify_admin)):
     """Seed dine products with sample data"""
     
+    # Generated product images
+    DINE_IMAGES = {
+        "travel_bowl": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/f3ea3c7b0c2dcf256b49c43c5c83eaf87abe9b4abbf9225f0279452996bacdfa.png",
+        "water_bottle": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/f3167bc3672788d73eec74e620735a6e98a991b756bac42d3a314cb0b5063555.png",
+        "restaurant": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/728b02e0a03338506fbf304d09d5798d7f494bfdd469db7826f53ef519729394.png",
+        "party": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/6a8ce9ad223308f72bad1b5f6dc678e8672ff06b19659a67bf821fae03d4daf5.png",
+        "fresh_meal": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/3146111d57a2be957970b2269af83f52a77f95aec2b43e7d50bb0f654abccede.png",
+    }
+    
     # Check if products already exist
     existing_count = await db.products_master.count_documents({"category": "dine"})
     if existing_count > 0:
@@ -2706,7 +2715,9 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
             "pet_sizes": ["small", "medium", "large"],
             "in_stock": True,
             "paw_reward_points": 6,
-            "is_birthday_perk": False
+            "is_birthday_perk": False,
+            "image": DINE_IMAGES["travel_bowl"],
+            "images": [DINE_IMAGES["travel_bowl"]]
         },
         {
             "id": "dine-placemat",
@@ -2720,7 +2731,9 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
             "pet_sizes": ["small", "medium", "large"],
             "in_stock": True,
             "paw_reward_points": 4,
-            "is_birthday_perk": False
+            "is_birthday_perk": False,
+            "image": DINE_IMAGES["travel_bowl"],
+            "images": [DINE_IMAGES["travel_bowl"]]
         },
         {
             "id": "dine-water-bottle",
@@ -2735,7 +2748,9 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
             "in_stock": True,
             "paw_reward_points": 8,
             "is_birthday_perk": True,
-            "birthday_discount_percent": 15
+            "birthday_discount_percent": 15,
+            "image": DINE_IMAGES["water_bottle"],
+            "images": [DINE_IMAGES["water_bottle"]]
         },
         {
             "id": "dine-treat-pouch",
@@ -2749,7 +2764,9 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
             "pet_sizes": ["small", "medium", "large"],
             "in_stock": True,
             "paw_reward_points": 5,
-            "is_birthday_perk": False
+            "is_birthday_perk": False,
+            "image": DINE_IMAGES["restaurant"],
+            "images": [DINE_IMAGES["restaurant"]]
         },
         {
             "id": "dine-calming-spray",
@@ -2763,7 +2780,9 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
             "pet_sizes": ["small", "medium", "large"],
             "in_stock": True,
             "paw_reward_points": 7,
-            "is_birthday_perk": False
+            "is_birthday_perk": False,
+            "image": DINE_IMAGES["restaurant"],
+            "images": [DINE_IMAGES["restaurant"]]
         },
         {
             "id": "dine-bandana",
@@ -2778,7 +2797,9 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
             "in_stock": True,
             "paw_reward_points": 4,
             "is_birthday_perk": True,
-            "birthday_discount_percent": 25
+            "birthday_discount_percent": 25,
+            "image": DINE_IMAGES["restaurant"],
+            "images": [DINE_IMAGES["restaurant"]]
         },
         {
             "id": "dine-pup-cup",
@@ -2792,7 +2813,9 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
             "pet_sizes": ["small", "medium", "large"],
             "in_stock": True,
             "paw_reward_points": 3,
-            "is_birthday_perk": False
+            "is_birthday_perk": False,
+            "image": DINE_IMAGES["water_bottle"],
+            "images": [DINE_IMAGES["water_bottle"]]
         },
         {
             "id": "dine-portable-mat",
@@ -2806,7 +2829,9 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
             "pet_sizes": ["small", "medium", "large"],
             "in_stock": True,
             "paw_reward_points": 12,
-            "is_birthday_perk": False
+            "is_birthday_perk": False,
+            "image": DINE_IMAGES["travel_bowl"],
+            "images": [DINE_IMAGES["travel_bowl"]]
         },
         {
             "id": "dine-cooling-vest",
@@ -2820,7 +2845,9 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
             "pet_sizes": ["small", "medium", "large"],
             "in_stock": True,
             "paw_reward_points": 15,
-            "is_birthday_perk": False
+            "is_birthday_perk": False,
+            "image": DINE_IMAGES["restaurant"],
+            "images": [DINE_IMAGES["restaurant"]]
         },
         {
             "id": "dine-etiquette-guide",
@@ -2834,7 +2861,9 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
             "pet_sizes": ["small", "medium", "large"],
             "in_stock": True,
             "paw_reward_points": 3,
-            "is_birthday_perk": False
+            "is_birthday_perk": False,
+            "image": DINE_IMAGES["restaurant"],
+            "images": [DINE_IMAGES["restaurant"]]
         },
         {
             "id": "dine-fresh-breath",
@@ -2848,7 +2877,9 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
             "pet_sizes": ["small", "medium", "large"],
             "in_stock": True,
             "paw_reward_points": 5,
-            "is_birthday_perk": False
+            "is_birthday_perk": False,
+            "image": DINE_IMAGES["restaurant"],
+            "images": [DINE_IMAGES["restaurant"]]
         },
         {
             "id": "dine-photo-props",
@@ -2863,7 +2894,9 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
             "in_stock": True,
             "paw_reward_points": 5,
             "is_birthday_perk": True,
-            "birthday_discount_percent": 20
+            "birthday_discount_percent": 20,
+            "image": DINE_IMAGES["party"],
+            "images": [DINE_IMAGES["party"]]
         }
     ]
     
