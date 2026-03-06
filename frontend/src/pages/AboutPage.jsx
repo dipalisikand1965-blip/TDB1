@@ -12,7 +12,7 @@ import SEOHead from '../components/SEOHead';
 // Brand images
 const BRAND_IMAGES = {
   // Kouros - The beautiful BLACK dog with golden eyes - the soul behind The Doggy Company
-  kouros: 'https://customer-assets.emergentagent.com/job_f8fcb8e7-1e5e-4376-99c7-472b9035c75b/artifacts/kwdztd95_image.png',
+  kouros: 'https://customer-assets.emergentagent.com/job_b6abcc1b-6413-431e-bf32-8399a0ee6fd9/artifacts/cj78ybnk_image.png',
   // Mystique - The Shih Tzu whose memory we honor
   mystique: 'https://customer-assets.emergentagent.com/job_cd02345e-97d9-4ea2-a1d7-1a248ceced0d/artifacts/t980z9hw_image.png',
   // Mira - The AI assistant
