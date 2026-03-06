@@ -206,6 +206,16 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  // Login directly with token (used after onboarding when we already have the token)
+  const loginWithToken = (accessToken, userData) => {
+    console.log('[AuthContext] loginWithToken called');
+    localStorage.setItem(TOKEN_KEY, accessToken);
+    localStorage.setItem('user', JSON.stringify(userData));
+    setToken(accessToken);
+    setUser(userData);
+    return userData;
+  };
+
   // Auto-detect geolocation after login
   useEffect(() => {
     const detectLocation = async () => {
@@ -293,6 +303,7 @@ export const AuthProvider = ({ children }) => {
       user, 
       token, 
       login, 
+      loginWithToken,
       register, 
       logout, 
       loading,

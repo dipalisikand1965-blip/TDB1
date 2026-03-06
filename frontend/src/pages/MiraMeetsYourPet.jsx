@@ -115,7 +115,7 @@ const createEmptyPet = (index) => ({
 const MiraMeetsYourPet = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { login } = useAuth();
+  const { loginWithToken } = useAuth();
   const fileInputRefs = useRef({});
   
   // Check if adding pet to existing account
@@ -280,7 +280,7 @@ const MiraMeetsYourPet = () => {
       
       // Login the user
       if (data.access_token) {
-        login(data.access_token, data.user);
+        loginWithToken(data.access_token, data.user);
       }
       
       // Go to welcome screen
