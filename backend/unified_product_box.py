@@ -795,6 +795,7 @@ async def update_product(product_id: str, updates: Dict[str, Any], admin_user: s
         updates["updated_at"] = datetime.now(timezone.utc).isoformat()
         updates["updated_by"] = admin_user
         updates["version"] = existing.get("version", 1) + 1
+        updates["locally_edited"] = True  # Mark as locally edited to prevent sync overwrites
         
         await db.products_master.update_one(
             {"id": product_id},
