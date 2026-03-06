@@ -462,19 +462,24 @@ const PersonalizedPillarSection = ({
     <>
       {/* Section Container */}
       <div 
-        className={`bg-gradient-to-br ${theme.gradient} rounded-2xl p-5 sm:p-6`} 
+        className={`bg-gradient-to-br ${theme.gradient} rounded-2xl p-5 sm:p-6 relative overflow-hidden`} 
         data-testid={`personalized-${pillar}-section`}
       >
-        {/* Header */}
-        <div className="mb-4">
-          <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
-            <Sparkles className={`w-4 h-4 text-${theme.accent}-400`} />
-            {title} for {pet.name}
-          </h3>
-          <p className={`text-xs text-${theme.accent}-400/70 mt-1`}>
-            {subtitle} - Concierge® creates these
-          </p>
-        </div>
+        {/* Add a semi-transparent overlay to improve text readability */}
+        <div className="absolute inset-0 bg-black/40" />
+        
+        {/* Content wrapper with relative positioning to appear above overlay */}
+        <div className="relative z-10">
+          {/* Header */}
+          <div className="mb-4">
+            <h3 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2 drop-shadow-lg">
+              <Sparkles className={`w-4 h-4 text-${theme.accent}-300`} />
+              {title} for {pet.name}
+            </h3>
+            <p className="text-sm text-white/90 mt-1 drop-shadow">
+              {subtitle} - Concierge® creates these
+            </p>
+          </div>
 
         {/* Horizontal Scrollable Cards */}
         <div className="relative group">
@@ -566,6 +571,7 @@ const PersonalizedPillarSection = ({
             <span className="text-xs text-gray-400/50">← Swipe for more →</span>
           </div>
         </div>
+        </div> {/* Close relative z-10 wrapper */}
       </div>
 
       {/* Request Modal */}
