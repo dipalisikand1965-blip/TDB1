@@ -56,6 +56,7 @@ import AdvancedAnalyticsDashboard from '../components/admin/AdvancedAnalyticsDas
 import UnifiedProductBox from '../components/admin/UnifiedProductBox';
 import ServiceBox from '../components/admin/ServiceBox';
 import ConciergeExperiencesAdmin from '../components/admin/ConciergeExperiencesAdmin';
+import EnjoyExperiencesAdmin from '../components/admin/EnjoyExperiencesAdmin';
 import PillarQueues from '../components/admin/PillarQueues';
 import AdminGuideDashboard from '../components/admin/AdminGuideDashboard';
 import AdminRainbowBridge from '../components/admin/AdminRainbowBridge';
@@ -2774,6 +2775,11 @@ const Admin = () => {
         {/* Service Box Tab */}
         {activeTab === 'service-box' && (
           <ServiceBox />
+        )}
+
+        {/* Enjoy Experiences Admin Tab - Events & Experiences */}
+        {activeTab === 'experiences' && (
+          <EnjoyExperiencesAdmin getAuthHeader={getAuthHeaders} />
         )}
 
         {/* Concierge Experiences Admin Tab */}
