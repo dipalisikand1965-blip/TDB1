@@ -33,20 +33,20 @@
 
 ## 🟡 IMPORTANT ISSUES (Should Fix)
 
-### I1. About Page - Content May Be Limited
-- **Page:** `/about`
-- **Issue:** Page loads but scrolling seems limited - need to verify full content is displaying
-- **Vision Check:** Should tell the story of why this company exists (Mystique, love, knowing not just owning)
-- **Fix:** Review About page content against SOUL_PHILOSOPHY_SSOT.md
+### ~~I1. About Page - Content May Be Limited~~ → ENHANCED!
+- **Fix Applied:** Added comprehensive "Our Philosophy" section with the core message:
+  - "A dog is not in your life. You are in theirs."
+  - Full philosophy text about being known, being seen, being loved with accuracy
+- **Result:** About page now tells the deeper story
 
-### I2. Onboarding Form - Readability on Mobile
+### I2. Onboarding Form - Readability on Mobile → FIXED!
 - **Page:** `/join` (All steps)
-- **Issue:** Form works but could benefit from:
-  - Larger tap targets for avatar selection
-  - Better spacing between form fields
-  - Clearer labels for date inputs
-- **Impact:** Users might struggle on small phones
-- **Fix:** Increase padding, font sizes, button sizes for mobile
+- **Fix Applied:**
+  - Changed pale blue text to readable white (`text-white/80`)
+  - Replaced generic emoji avatars with breed initials + names
+  - Added 64 breeds with Golden Retriever first
+  - Added "Can't find your breed?" custom text input
+- **Result:** Much more readable and usable on mobile
 
 ### I3. Emergency Pillar - Verify Functionality
 - **Page:** `/emergency`
@@ -72,11 +72,14 @@
 - **Impact:** Sets user expectation but may not work
 - **Fix:** Verify Mira search functionality or clarify purpose
 
-### I7. Stats Numbers - Verify Accuracy
-- **Various Pillar Pages**
-- **Issue:** Pages show stats like "847 fitness journeys started", "500+ events hosted"
-- **Question:** Are these real numbers from database or hardcoded?
-- **Fix:** Either connect to real data or remove/clarify as illustrative
+### ~~I7. Stats Numbers - Verify Accuracy~~ → FIXED!
+- **Fix Applied:** Removed all fake/placeholder stats across the site
+- **Changes:**
+  - "10,000+ families" → "Loved by pet families everywhere"
+  - "500+ events hosted" → "Curated experiences for your pet"
+  - "500+ trips completed" → "Stress-free pet travel"
+  - And many more placeholder numbers removed
+- **Real stats kept:** 45,000+ (Doggy Bakery), 1M+ (Concierge) - confirmed real by user
 
 ### I8. "For You" Tab on Shop - Personalization
 - **Page:** `/shop`
