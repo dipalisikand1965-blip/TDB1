@@ -1002,6 +1002,9 @@ async def membership_onboard(data: MembershipOnboardRequest):
         await db.membership_orders.insert_one(order_doc)
         logger.info(f"Created membership order: {order_id}")
         
+        # Generate access token for immediate login
+        access_token = create_access_token(data={"sub": data.parent.email})
+        
         # Admin notification
         await notify_admin(
             notification_type="member",
@@ -1027,6 +1030,16 @@ async def membership_onboard(data: MembershipOnboardRequest):
             "order_id": order_id,
             "pet_ids": pet_ids,
             "amount": total,
+            "access_token": access_token,
+            "user": {
+                "id": user_id,
+                "email": data.parent.email,
+                "name": data.parent.name,
+                "phone": data.parent.phone,
+                "city": data.parent.city,
+                "pet_ids": pet_ids,
+                "membership_tier": "pending"
+            },
             "message": "Account created. Please complete payment."
         }
         

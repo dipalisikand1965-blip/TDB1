@@ -266,7 +266,7 @@ const MiraMeetsYourPet = () => {
         }))
       };
       
-      const response = await fetch(`${API_URL}/api/onboarding/membership`, {
+      const response = await fetch(`${API_URL}/api/auth/membership/onboard`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
