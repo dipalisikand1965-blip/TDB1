@@ -9731,6 +9731,70 @@ async def export_products_csv(
     )
 
 
+@api_router.post("/admin/send-documentation-email")
+async def send_documentation_email(
+    request: Request,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Send the Owner's Guide documentation to the specified email"""
+    verify_admin(credentials)
+    
+    try:
+        data = await request.json()
+        to_email = data.get("email", "dipali@clubconcierge.in")
+        
+        # Read the HTML guide
+        html_path = "/app/frontend/public/owners-guide.html"
+        if os.path.exists(html_path):
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+        else:
+            raise HTTPException(status_code=404, detail="Documentation file not found")
+        
+        # Send email via Resend
+        params = {
+            "from": "The Doggy Company <onboarding@resend.dev>",
+            "to": [to_email],
+            "subject": "🐕 Your Owner's Guide - The Doggy Company",
+            "html": html_content
+        }
+        
+        email_response = resend.Emails.send(params)
+        logger.info(f"Documentation email sent to {to_email}: {email_response}")
+        
+        return {
+            "success": True,
+            "message": f"Documentation sent to {to_email}",
+            "email_id": email_response.get("id") if isinstance(email_response, dict) else str(email_response)
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to send documentation email: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/admin/download-documentation")
+async def download_documentation(
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Download the Owner's Guide as HTML file"""
+    verify_admin(credentials)
+    
+    html_path = "/app/frontend/public/owners-guide.html"
+    if not os.path.exists(html_path):
+        raise HTTPException(status_code=404, detail="Documentation file not found")
+    
+    with open(html_path, 'r', encoding='utf-8') as f:
+        html_content = f.read()
+    
+    from fastapi.responses import StreamingResponse
+    return StreamingResponse(
+        iter([html_content]),
+        media_type="text/html",
+        headers={"Content-Disposition": "attachment; filename=TheDoggyCompany_OwnersGuide.html"}
+    )
+
+
 @api_router.get("/admin/export/unified-products-csv")
 async def export_unified_products_csv(
     credentials: HTTPBasicCredentials = Depends(security)
