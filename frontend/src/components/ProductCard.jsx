@@ -497,6 +497,19 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   // miraContext is now always passed (effectiveMiraContext from parent)
   // onAddToPicks - callback for Mira picks panel (instead of cart)
   
+  // Get valid product image - same logic as ProductCard
+  const PLACEHOLDER_IMAGE = 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579';
+  const getValidProductImage = () => {
+    if (product.image && product.image.startsWith('http')) {
+      return product.image;
+    }
+    if (product.images?.[0] && product.images[0].startsWith('http')) {
+      return product.images[0];
+    }
+    return PLACEHOLDER_IMAGE;
+  };
+  const productImage = getValidProductImage();
+  
   // Extract options from product (e.g., Base, Flavour, Weight)
   const productOptions = product.options || [];
   const variants = product.variants || [];
@@ -998,10 +1011,10 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
         <div className="grid md:grid-cols-2">
           <div className="relative aspect-square bg-gray-100">
             <img
-              src={product.image && product.image.trim() !== '' ? product.image : 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579'}
+              src={productImage}
               alt={product.name}
               className="w-full h-full object-cover"
-              onError={(e) => { e.target.src = 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579'; }}
+              onError={(e) => { e.target.src = PLACEHOLDER_IMAGE; }}
             />
             <div className="absolute top-3 left-3 flex flex-col gap-2">
               {product.isNew && <Badge className="bg-purple-600">New</Badge>}
