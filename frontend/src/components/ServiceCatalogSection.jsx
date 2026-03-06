@@ -256,19 +256,34 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
               onClick={() => handleServiceClick(service)}
               data-testid={`service-card-${service.id}`}
             >
-              {/* Image or Gradient Header - Smaller on mobile */}
-              <div className={`h-16 sm:h-24 bg-gradient-to-br ${
-                service.pillar === 'care' ? 'from-rose-400 to-pink-500' :
-                service.pillar === 'fit' ? 'from-green-400 to-emerald-500' :
-                service.pillar === 'travel' ? 'from-blue-400 to-indigo-500' :
-                service.pillar === 'celebrate' ? 'from-pink-400 to-rose-500' :
-                service.pillar === 'dine' ? 'from-orange-400 to-amber-500' :
-                service.pillar === 'stay' ? 'from-blue-400 to-sky-500' :
-                service.pillar === 'enjoy' ? 'from-green-400 to-teal-500' :
-                service.pillar === 'learn' ? 'from-purple-400 to-indigo-500' :
-                'from-purple-400 to-violet-500'
-              } flex items-center justify-center`}>
-                <span className="text-2xl sm:text-4xl">{service.pillar_icon || '💊'}</span>
+              {/* Image Header - Show actual service image */}
+              <div className="h-24 sm:h-32 relative overflow-hidden">
+                {service.image && service.image.startsWith('http') ? (
+                  <img 
+                    src={service.image}
+                    alt={service.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.parentElement.classList.add('bg-gradient-to-br', 'from-rose-400', 'to-pink-500', 'flex', 'items-center', 'justify-center');
+                      e.target.parentElement.innerHTML = `<span class="text-4xl">${service.pillar_icon || '✨'}</span>`;
+                    }}
+                  />
+                ) : (
+                  <div className={`w-full h-full bg-gradient-to-br ${
+                    service.pillar === 'care' ? 'from-rose-400 to-pink-500' :
+                    service.pillar === 'fit' ? 'from-green-400 to-emerald-500' :
+                    service.pillar === 'travel' ? 'from-blue-400 to-indigo-500' :
+                    service.pillar === 'celebrate' ? 'from-pink-400 to-rose-500' :
+                    service.pillar === 'dine' ? 'from-orange-400 to-amber-500' :
+                    service.pillar === 'stay' ? 'from-blue-400 to-sky-500' :
+                    service.pillar === 'enjoy' ? 'from-green-400 to-teal-500' :
+                    service.pillar === 'learn' ? 'from-purple-400 to-indigo-500' :
+                    'from-purple-400 to-violet-500'
+                  } flex items-center justify-center`}>
+                    <span className="text-4xl">{service.pillar_icon || '✨'}</span>
+                  </div>
+                )}
               </div>
               
               <div className="p-2 sm:p-4">
