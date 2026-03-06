@@ -266,20 +266,28 @@ const MiraMeetsYourPet = () => {
         }))
       };
       
-      const response = await fetch(`${API_URL}/api/auth/membership/onboard`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+      // Use XMLHttpRequest to avoid Emergent's fetch interceptor consuming the response body
+      const data = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `${API_URL}/api/auth/membership/onboard`);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = function() {
+          try {
+            const response = JSON.parse(xhr.responseText);
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve(response);
+            } else {
+              reject(new Error(response.detail || 'Failed to create account'));
+            }
+          } catch (e) {
+            reject(new Error('Failed to parse response'));
+          }
+        };
+        xhr.onerror = function() {
+          reject(new Error('Network error. Please try again.'));
+        };
+        xhr.send(JSON.stringify(payload));
       });
-      
-      // Clone response before reading to avoid "body stream already read" error
-      // (Emergent monitoring script may read the body for error logging)
-      const responseClone = response.clone();
-      const data = await responseClone.json();
-      
-      if (!response.ok) {
-        throw new Error(data.detail || 'Failed to create account');
-      }
       
       // Login the user
       if (data.access_token) {
