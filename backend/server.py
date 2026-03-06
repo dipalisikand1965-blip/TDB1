@@ -8728,6 +8728,179 @@ async def bulk_untag_products(data: dict):
         {"$pull": {"display_tags": {"$in": tags_to_remove}}}
     )
     
+
+
+# ==========================================
+# PRODUCT IMAGE MIGRATION ENDPOINT
+# ==========================================
+
+@api_router.post("/admin/migrate-product-images")
+async def migrate_product_images():
+    """One-time migration to add AI-generated images to Dine & Care products"""
+    
+    # Generated product images
+    DINE_IMAGES = {
+        "travel_bowl": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/f3ea3c7b0c2dcf256b49c43c5c83eaf87abe9b4abbf9225f0279452996bacdfa.png",
+        "water_bottle": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/f3167bc3672788d73eec74e620735a6e98a991b756bac42d3a314cb0b5063555.png",
+        "restaurant": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/728b02e0a03338506fbf304d09d5798d7f494bfdd469db7826f53ef519729394.png",
+        "party": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/6a8ce9ad223308f72bad1b5f6dc678e8672ff06b19659a67bf821fae03d4daf5.png",
+        "fresh_chicken": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/3146111d57a2be957970b2269af83f52a77f95aec2b43e7d50bb0f654abccede.png",
+        "veggie": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/90381993cb50b338010257f2e6e7b717da8431b2dcdbae14bc67ed210929c60f.png",
+        "fish": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/d32a3f72f293628ccb617bfae5d4014c46a3dd2a0384a1fb5034aab228909f72.png",
+        "slow_feeder": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/76ec043c1f62e0c9bed61e291e61cb9add6cdae6c576fc866c5eda584aec523f.png",
+        "elevated_bowl": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/fcad98a104cb6fc6fd36c46328728b23f2cf434b0bc0d6a24547d9ad57c8e0df.png",
+        "ceramic_bowl": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/17dcf53b58167dcd86b44ab1a916f1600c51f65cd64f04de268a10a873016e6b.png",
+    }
+    
+    CARE_IMAGES = {
+        "first_aid": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/3da07f6b1601bdbb38d16d5b4dcdfa4d20a87e27c74b9b8d8ccb67b191e3a57f.png",
+        "dental_kit": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/b9d1c5ec207f7f6cb8bfd02f40825e3303ad21f6e20b31a53eaf562e31b00249.png",
+        "grooming_tools": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/38f25e8f6394cff725369aba2c94d9bef2a51bfcf7efcfb5cde566783579828f.png",
+        "calming": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/8f7856620594ae0e6f2ca4040c89d50fd22c30f6ff6cd7a60712097993f8cfaa.png",
+        "harness_leash": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/be415eaacc1871d33fb396296872ac0dfd681c1c67c342e5df9a5997b772b843.png",
+        "supplements": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/85f71a8e4920cf93b30c15a0fb6131faae8e3e50ca23d4d78d4f01263199f830.png",
+        "spa_kit": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/c6708bdaf472f60f058c530651ae68d8be925316e237865de8f307fa6e97b90b.png",
+        "training_kit": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/1dc275124fe082dcb60c0c5e73760ec39f740b4e9dfdc6dcf232649ecde07840.png",
+        "vet_wellness": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/dd0cdc28d614a0034ad32c4d09e224d2413b93c628d9fd6a5b5061d2e24514ed.png",
+        "grooming_service": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/ac3db8f7c61ede3febe302a7ebbd6d6937338233b38e3d7adcf7bd7ad945a72a.png",
+        "eco_bags": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/cbba57451ccc0a9cec816ce4ead9a99c7fa02a3205178d52f95834cf84f874ea.png",
+        "agility": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/bf0b8070dba4aa932bc55709b0920720897bee4bfbac9a6f3e00665327375b2a.png",
+        "massage": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/cfbced3ad11570a9d786ef8de3124dd1baffdca5a57c2b5f392609ced6bc1ffe.png",
+        "daycare": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/91831145c20a6a1e31a01a41a3488f89dc43cb9c36334bec0733bb2f10e61973.png",
+        "wipes": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/59e05141d4a723f0bb45775680866f9c66556176c17e1e9f1cda8da4e84a940f.png",
+    }
+    
+    def get_dine_image(name):
+        name_lower = name.lower()
+        if 'chicken' in name_lower or 'rice' in name_lower or 'lamb' in name_lower or 'turkey' in name_lower:
+            return DINE_IMAGES["fresh_chicken"]
+        if 'veggie' in name_lower or 'pumpkin' in name_lower or 'oats' in name_lower or 'senior' in name_lower:
+            return DINE_IMAGES["veggie"]
+        if 'fish' in name_lower or 'quinoa' in name_lower or 'salmon' in name_lower:
+            return DINE_IMAGES["fish"]
+        if 'slow feeder' in name_lower or 'puzzle' in name_lower:
+            return DINE_IMAGES["slow_feeder"]
+        if 'travel' in name_lower or 'collapsible' in name_lower or 'portable' in name_lower:
+            return DINE_IMAGES["travel_bowl"]
+        if 'water bottle' in name_lower or 'pup cup' in name_lower:
+            return DINE_IMAGES["water_bottle"]
+        if 'elevated' in name_lower:
+            return DINE_IMAGES["elevated_bowl"]
+        if 'ceramic' in name_lower or 'personalized' in name_lower:
+            return DINE_IMAGES["ceramic_bowl"]
+        if 'photo' in name_lower or 'party' in name_lower or 'birthday' in name_lower:
+            return DINE_IMAGES["party"]
+        return DINE_IMAGES["restaurant"]
+    
+    def get_care_image(name):
+        name_lower = name.lower()
+        if 'first aid' in name_lower or 'wound' in name_lower or 'emergency' in name_lower:
+            return CARE_IMAGES["first_aid"]
+        if 'dental' in name_lower or 'tooth' in name_lower:
+            return CARE_IMAGES["dental_kit"]
+        if 'brush' in name_lower or 'clipper' in name_lower or 'deshed' in name_lower or 'ear clean' in name_lower:
+            return CARE_IMAGES["grooming_tools"]
+        if 'shampoo' in name_lower or 'conditioner' in name_lower or 'bath' in name_lower:
+            return CARE_IMAGES["spa_kit"]
+        if 'calm' in name_lower or 'anxiety' in name_lower or 'stress' in name_lower:
+            return CARE_IMAGES["calming"]
+        if 'train' in name_lower or 'clicker' in name_lower:
+            return CARE_IMAGES["training_kit"]
+        if 'harness' in name_lower or 'leash' in name_lower or 'collar' in name_lower:
+            return CARE_IMAGES["harness_leash"]
+        if 'poop' in name_lower or 'waste' in name_lower or 'bag' in name_lower:
+            return CARE_IMAGES["eco_bags"]
+        if 'supplement' in name_lower or 'vitamin' in name_lower or 'joint' in name_lower or 'probiotic' in name_lower:
+            return CARE_IMAGES["supplements"]
+        if 'wellness' in name_lower or 'vet' in name_lower or 'checkup' in name_lower:
+            return CARE_IMAGES["vet_wellness"]
+        if 'groom' in name_lower or 'spa' in name_lower:
+            return CARE_IMAGES["grooming_service"]
+        if 'daycare' in name_lower or 'boarding' in name_lower:
+            return CARE_IMAGES["daycare"]
+        if 'agility' in name_lower or 'fitness' in name_lower:
+            return CARE_IMAGES["agility"]
+        if 'massage' in name_lower or 'yoga' in name_lower:
+            return CARE_IMAGES["massage"]
+        if 'wipe' in name_lower:
+            return CARE_IMAGES["wipes"]
+        return CARE_IMAGES["grooming_tools"]
+    
+    updated_count = 0
+    
+    # Get all products without images in Dine and Care pillars
+    cursor = db.products_master.find({
+        "$and": [
+            {"$or": [
+                {"pillars": {"$in": ["dine", "feed", "care"]}},
+                {"category": {"$in": ["dine", "care"]}}
+            ]},
+            {"$or": [
+                {"image": {"$in": [None, ""]}},
+                {"image": {"$exists": False}},
+                {"images": {"$size": 0}},
+                {"images": {"$exists": False}}
+            ]}
+        ]
+    })
+    
+    products = await cursor.to_list(length=500)
+    logger.info(f"[IMAGE MIGRATION] Found {len(products)} products without images")
+    
+    for product in products:
+        name = product.get('name', '')
+        pillars = product.get('pillars', [])
+        category = product.get('category', '')
+        
+        # Determine which image to use
+        if 'dine' in pillars or 'feed' in pillars or category == 'dine':
+            image_url = get_dine_image(name)
+        else:
+            image_url = get_care_image(name)
+        
+        # Update the product
+        await db.products_master.update_one(
+            {"_id": product["_id"]},
+            {"$set": {"image": image_url, "images": [image_url]}}
+        )
+        updated_count += 1
+    
+    # Also update services
+    cursor = db.services.find({
+        "$and": [
+            {"pillar": {"$in": ["dine", "care"]}},
+            {"$or": [
+                {"image": {"$in": [None, ""]}},
+                {"image": {"$exists": False}}
+            ]}
+        ]
+    })
+    services = await cursor.to_list(length=200)
+    
+    for service in services:
+        name = service.get('name', '')
+        pillar = service.get('pillar', '')
+        
+        if pillar == 'dine':
+            image_url = get_dine_image(name)
+        else:
+            image_url = get_care_image(name)
+        
+        await db.services.update_one(
+            {"_id": service["_id"]},
+            {"$set": {"image": image_url}}
+        )
+        updated_count += 1
+    
+    logger.info(f"[IMAGE MIGRATION] Updated {updated_count} products/services with images")
+    
+    return {
+        "success": True,
+        "message": f"Migration complete: {updated_count} products/services updated with images",
+        "updated_count": updated_count
+    }
+
+
     return {"success": True, "modified_count": result.modified_count}
 
 @api_router.get("/admin/products/all-pillars")
