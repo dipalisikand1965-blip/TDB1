@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import Dict, Any
 
 class DoggyCompanyAPITester:
-    def __init__(self, base_url="https://authenticity-check-35.preview.emergentagent.com"):
+    def __init__(self, base_url="https://pet-os-v1.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.tests_run = 0
