@@ -16,49 +16,50 @@ import { useAuth } from '../context/AuthContext';
  * DOG SOUL COLORS - How a dog FEELS in each moment
  * These gradients reflect the emotional essence of each pillar from a dog's perspective
  * Mira sees and knows these feelings - this is the Pet Operating System soul
+ * EACH PILLAR HAS A UNIQUE COLOR - NO DUPLICATES!
  */
 const PILLAR_GRADIENTS = {
   // RECOMMENDED - The default Mira purple, omniscient and knowing
   recommended: 'from-[#4A1942] via-[#2D1B4E] to-[#1E3A5F]',
   
-  // CELEBRATE - Pure joy, tail wagging, party excitement! Golden warmth meets playful pink
+  // CELEBRATE - Pure joy, tail wagging, party excitement! Festive pink to purple
   celebrate: 'from-[#D4458B] via-[#9B4DCA] to-[#4A1942]',
   
-  // DINE - Warm, satisfied belly, the comfort of a good meal. Warm amber to cozy brown
+  // DINE - Warm, satisfied belly, the comfort of a good meal. Rich amber to chocolate
   dine: 'from-[#D97706] via-[#92400E] to-[#451A03]',
   
   // CARE - Gentle touch, being groomed, feeling pampered. Fresh teal to soothing aqua
   care: 'from-[#14B8A6] via-[#0D9488] to-[#134E4A]',
   
-  // ENJOY - Playful energy! Chasing balls, pure happiness. Bright blue to energetic cyan
-  enjoy: 'from-[#0EA5E9] via-[#6366F1] to-[#1E1B4B]',
+  // ENJOY - Playful energy! Pure happiness. Vibrant coral to sunset orange
+  enjoy: 'from-[#F43F5E] via-[#E11D48] to-[#4C0519]',
   
-  // TRAVEL - Adventure calling! Open roads, new smells. Deep blue to explorer teal
-  travel: 'from-[#0D9488] via-[#1E40AF] to-[#0C1929]',
+  // TRAVEL - Adventure calling! Open roads. Deep ocean blue to midnight
+  travel: 'from-[#0369A1] via-[#075985] to-[#0C1929]',
   
-  // STAY - Safe, cozy, home. The warm feeling of belonging. Forest green to earthy brown
-  stay: 'from-[#059669] via-[#065F46] to-[#1F2937]',
+  // STAY - Safe, cozy, home. Warm terracotta to earthy brown
+  stay: 'from-[#C2410C] via-[#9A3412] to-[#431407]',
   
-  // FIT - Active, alive, running free! Vibrant green to energetic lime
-  fit: 'from-[#22C55E] via-[#14532D] to-[#0A0F0D]',
+  // FIT - Active, alive, running free! Energetic lime to forest green
+  fit: 'from-[#84CC16] via-[#4D7C0F] to-[#1A2E05]',
   
-  // LEARN - Focused, curious, tail-wagging attention. Wise blue to growth green
-  learn: 'from-[#3B82F6] via-[#1D4ED8] to-[#1E1B4B]',
+  // LEARN - Focused, curious, seeking knowledge. Royal indigo to deep navy
+  learn: 'from-[#818CF8] via-[#4F46E5] to-[#1E1B4B]',
   
-  // ADVISORY - Trust, wisdom, guidance. Calming indigo to reassuring purple
-  advisory: 'from-[#6366F1] via-[#4338CA] to-[#1E1B4B]',
+  // ADVISORY - Trust, wisdom, guidance. Elegant violet to plum
+  advisory: 'from-[#A78BFA] via-[#7C3AED] to-[#3B0764]',
   
-  // EMERGENCY - Alert but cared for. Urgent red tempered with calming blue
+  // EMERGENCY - Alert but cared for. Urgent red to deep crimson
   emergency: 'from-[#DC2626] via-[#991B1B] to-[#450A0A]',
   
-  // PAPERWORK - Calm, simple, handled. Neutral slate with hints of organization
-  paperwork: 'from-[#475569] via-[#334155] to-[#0F172A]',
+  // PAPERWORK - Calm, organized, handled. Neutral slate blue
+  paperwork: 'from-[#64748B] via-[#475569] to-[#0F172A]',
   
-  // FAREWELL - Gentle, peaceful, rainbow bridge. Soft violet to serene twilight
-  farewell: 'from-[#8B5CF6] via-[#5B21B6] to-[#2E1065]',
+  // FAREWELL - Gentle, peaceful, rainbow bridge. Soft lavender to twilight
+  farewell: 'from-[#C4B5FD] via-[#8B5CF6] to-[#2E1065]',
   
-  // ADOPT - Hope, new beginnings, love waiting. Warm orange to hopeful gold
-  adopt: 'from-[#F59E0B] via-[#D97706] to-[#451A03]',
+  // ADOPT - Hope, new beginnings! Warm golden sunshine to honey
+  adopt: 'from-[#FBBF24] via-[#F59E0B] to-[#78350F]',
   
   // SHOP/ALL/SERVICES - The full Mira spectrum
   all: 'from-[#4A1942] via-[#2D1B4E] to-[#1E3A5F]',
