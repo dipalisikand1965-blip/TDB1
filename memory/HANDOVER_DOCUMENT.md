@@ -12,7 +12,7 @@
 | **Mira OS** | `/mira-demo` (THE MAIN OS - NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` or `/my-pets` |
-| **Preview** | `https://pet-os-preview.preview.emergentagent.com` |
+| **Preview** | `https://authenticity-check-35.preview.emergentagent.com` |
 
 ## Test Credentials
 | Role | Email/Username | Password |

@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://pet-os-preview.preview.emergentagent.com
+**Preview URL:** https://authenticity-check-35.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
