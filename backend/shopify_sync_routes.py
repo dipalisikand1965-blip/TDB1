@@ -56,9 +56,20 @@ async def sync_shopify_products_startup(database):
         shopify_products = await fetch_shopify_products()
         
         synced = 0
+        skipped_local = 0
         for sp in shopify_products:
             existing = await db.products_master.find_one({"shopify_id": sp["id"]})
             transformed = transform_shopify_product(sp)
+            
+            # Skip overwriting products that were locally edited by admin
+            if existing and existing.get("locally_edited"):
+                # Only update availability status for locally edited products
+                await db.products_master.update_one(
+                    {"shopify_id": sp["id"]},
+                    {"$set": {"available": transformed.get("available", True), "shopify_updated_at": transformed.get("updated_at")}}
+                )
+                skipped_local += 1
+                continue
             
             # Preserve hardcoded options
             if existing and existing.get("hardcoded_options") == True:
@@ -75,8 +86,8 @@ async def sync_shopify_products_startup(database):
             )
             synced += 1
         
-        logger.info(f"Auto Shopify sync completed: {synced} products")
-        return {"synced": synced, "success": True}
+        logger.info(f"Auto Shopify sync completed: {synced} products synced, {skipped_local} locally-edited skipped")
+        return {"synced": synced, "skipped_local": skipped_local, "success": True}
         
     except Exception as e:
         logger.error(f"Auto Shopify sync failed: {e}")
@@ -479,6 +490,15 @@ async def cron_sync_products(secret: str):
             # Check if product exists
             existing = await db.products_master.find_one({"shopify_id": sp["id"]})
             
+            # Skip overwriting products that were locally edited by admin
+            if existing and existing.get("locally_edited"):
+                # Only update availability for locally edited products
+                await db.products_master.update_one(
+                    {"shopify_id": sp["id"]},
+                    {"$set": {"available": transform_shopify_product(sp).get("available", True)}}
+                )
+                continue
+            
             transformed = transform_shopify_product(sp)
             
             # IMPORTANT: Preserve hardcoded options - don't overwrite!
@@ -538,9 +558,20 @@ async def admin_sync_products(username: str = Depends(verify_admin)):
         new_products = []
         updated_products = []
         preserved_options = 0
+        skipped_local = 0
         
         for sp in shopify_products:
             existing = await db.products_master.find_one({"shopify_id": sp["id"]})
+            
+            # Skip overwriting products that were locally edited by admin
+            if existing and existing.get("locally_edited"):
+                # Only update availability for locally edited products
+                await db.products_master.update_one(
+                    {"shopify_id": sp["id"]},
+                    {"$set": {"available": transform_shopify_product(sp).get("available", True)}}
+                )
+                skipped_local += 1
+                continue
             
             transformed = transform_shopify_product(sp)
             
@@ -573,14 +604,16 @@ async def admin_sync_products(username: str = Depends(verify_admin)):
             "triggered_by": username,
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "total_synced": synced,
+            "skipped_local_edits": skipped_local,
             "new_products": len(new_products),
             "status": "success"
         })
         
-        logger.info(f"Admin sync completed: {synced} products")
+        logger.info(f"Admin sync completed: {synced} products synced, {skipped_local} locally-edited preserved")
         return {
             "message": "Sync completed",
             "synced": synced,
+            "skipped_local_edits": skipped_local,
             "new_products": new_products[:10],  # Show first 10
             "new_count": len(new_products),
             "updated_count": len(updated_products)
