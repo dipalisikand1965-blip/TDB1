@@ -9,6 +9,9 @@ import { Lock, Mail, PawPrint, Heart, Shield, Sparkles, ArrowRight, Eye, EyeOff,
 // Mystique's soulful image - in loving memory 👑
 const MYSTIQUE_IMAGE = "https://customer-assets.emergentagent.com/job_cd02345e-97d9-4ea2-a1d7-1a248ceced0d/artifacts/t980z9hw_image.png";
 
+// Kouros - The beautiful BLACK Newfoundland with golden eyes
+const KOUROS_IMAGE = "https://customer-assets.emergentagent.com/job_b6abcc1b-6413-431e-bf32-8399a0ee6fd9/artifacts/cj78ybnk_image.png";
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -81,34 +84,49 @@ const Login = () => {
           {/* Animated glow behind the portrait */}
           <div className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-amber-500/30 via-pink-500/20 to-purple-600/30 rounded-full blur-[80px] animate-pulse" />
           
-          {/* The Portrait */}
-          <div className="relative group">
-            {/* Outer glow ring */}
-            <div className="absolute -inset-4 bg-gradient-to-tr from-amber-400/20 via-pink-500/20 to-purple-500/20 rounded-full blur-xl opacity-60 group-hover:opacity-80 transition-opacity duration-700" />
-            
-            {/* Portrait container */}
-            <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-2xl shadow-purple-500/30 ring-4 ring-purple-500/20">
-              <img 
-                src={MYSTIQUE_IMAGE}
-                alt="Mystique - Our Soulful Guardian"
-                className="w-full h-full object-cover transform scale-110 group-hover:scale-105 transition-transform duration-700"
-                data-testid="mystique-portrait"
-              />
+          {/* Dual Portrait - Kouros and Mystique */}
+          <div className="relative flex items-center gap-4">
+            {/* Kouros Portrait */}
+            <div className="relative group">
+              <div className="absolute -inset-3 bg-gradient-to-tr from-amber-400/20 via-yellow-500/20 to-orange-500/20 rounded-full blur-xl opacity-60 group-hover:opacity-80 transition-opacity duration-700" />
+              <div className="relative w-36 h-36 rounded-full overflow-hidden shadow-2xl shadow-amber-500/30 ring-4 ring-amber-500/20">
+                <img 
+                  src={KOUROS_IMAGE}
+                  alt="Kouros - The Founder"
+                  className="w-full h-full object-cover transform scale-110 group-hover:scale-105 transition-transform duration-700"
+                  data-testid="kouros-portrait"
+                />
+              </div>
             </div>
             
-            {/* Floating stars around the portrait */}
-            <div className="absolute -top-6 -right-2 text-amber-400/80 animate-pulse">
-              <Star className="w-4 h-4 fill-current" />
+            {/* Heart connector */}
+            <div className="text-pink-400 animate-pulse">
+              <Heart className="w-6 h-6 fill-current" />
             </div>
-            <div className="absolute top-1/4 -left-8 text-pink-400/60 animate-pulse" style={{ animationDelay: '0.5s' }}>
-              <Star className="w-3 h-3 fill-current" />
+            
+            {/* Mystique Portrait */}
+            <div className="relative group">
+              <div className="absolute -inset-3 bg-gradient-to-tr from-pink-400/20 via-purple-500/20 to-violet-500/20 rounded-full blur-xl opacity-60 group-hover:opacity-80 transition-opacity duration-700" />
+              <div className="relative w-36 h-36 rounded-full overflow-hidden shadow-2xl shadow-purple-500/30 ring-4 ring-purple-500/20">
+                <img 
+                  src={MYSTIQUE_IMAGE}
+                  alt="Mystique - Our Soulful Guardian"
+                  className="w-full h-full object-cover transform scale-110 group-hover:scale-105 transition-transform duration-700"
+                  data-testid="mystique-portrait"
+                />
+              </div>
             </div>
-            <div className="absolute bottom-1/4 -right-6 text-purple-400/70 animate-pulse" style={{ animationDelay: '1s' }}>
-              <Star className="w-3 h-3 fill-current" />
-            </div>
-            <div className="absolute -bottom-4 left-1/4 text-amber-300/50 animate-pulse" style={{ animationDelay: '1.5s' }}>
-              <Star className="w-2 h-2 fill-current" />
-            </div>
+          </div>
+            
+          {/* Floating stars */}
+          <div className="absolute top-1/4 left-1/4 text-amber-400/80 animate-pulse">
+            <Star className="w-4 h-4 fill-current" />
+          </div>
+          <div className="absolute top-1/3 right-1/4 text-pink-400/60 animate-pulse" style={{ animationDelay: '0.5s' }}>
+            <Star className="w-3 h-3 fill-current" />
+          </div>
+          <div className="absolute bottom-1/3 left-1/3 text-purple-400/70 animate-pulse" style={{ animationDelay: '1s' }}>
+            <Star className="w-3 h-3 fill-current" />
           </div>
         </div>
         
@@ -128,15 +146,17 @@ const Login = () => {
           {/* Bottom Memorial Text */}
           <div className="max-w-md">
             <p className="text-sm text-amber-300/70 mb-2 tracking-wide font-medium">In loving memory of</p>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>
-              <span className="bg-gradient-to-r from-amber-300 via-pink-400 to-purple-400 bg-clip-text text-transparent">Mystique</span>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">Kouros</span>
+              <span className="text-pink-400 mx-2">&</span>
+              <span className="bg-gradient-to-r from-pink-400 via-purple-400 to-violet-400 bg-clip-text text-transparent">Mystique</span>
             </h1>
-            <p className="text-lg text-slate-300 leading-relaxed italic">
-              "Her eyes held a universe of love. She taught us that to know a pet is to know a soul."
+            <p className="text-base text-slate-300 leading-relaxed italic">
+              "They taught us that to know a pet is to know a soul."
             </p>
-            <div className="mt-6 pt-6 border-t border-white/10">
+            <div className="mt-4 pt-4 border-t border-white/10">
               <p className="text-slate-400 text-sm">
-                This platform was built in her honor — to help every pet parent truly <span className="text-amber-300">know</span> their companion, not just care for them.
+                This platform was built in their honor — to help every pet parent truly <span className="text-amber-300">know</span> their companion.
               </p>
             </div>
           </div>
@@ -146,32 +166,49 @@ const Login = () => {
       {/* Right Panel - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12 relative">
         <div className="w-full max-w-md relative z-10">
-          {/* Mobile - Mystique Portrait & Memorial */}
+          {/* Mobile - Kouros & Mystique Portrait & Memorial */}
           <div className="lg:hidden flex flex-col items-center mb-6">
-            {/* Mystique's Portrait for Mobile */}
-            <div className="relative mb-4">
-              <div className="absolute -inset-3 bg-gradient-to-tr from-amber-400/30 via-pink-500/20 to-purple-500/30 rounded-full blur-lg opacity-60" />
-              <div className="relative w-28 h-28 rounded-full overflow-hidden shadow-xl shadow-purple-500/30 ring-2 ring-purple-500/30">
-                <img 
-                  src={MYSTIQUE_IMAGE}
-                  alt="Mystique"
-                  className="w-full h-full object-cover transform scale-110"
-                  data-testid="mystique-portrait-mobile"
-                />
+            {/* Dual Portrait for Mobile */}
+            <div className="relative mb-4 flex items-center gap-2">
+              {/* Kouros */}
+              <div className="relative">
+                <div className="absolute -inset-2 bg-gradient-to-tr from-amber-400/30 to-orange-500/30 rounded-full blur-lg opacity-60" />
+                <div className="relative w-20 h-20 rounded-full overflow-hidden shadow-xl shadow-amber-500/30 ring-2 ring-amber-500/30">
+                  <img 
+                    src={KOUROS_IMAGE}
+                    alt="Kouros"
+                    className="w-full h-full object-cover transform scale-110"
+                    data-testid="kouros-portrait-mobile"
+                  />
+                </div>
               </div>
-              {/* Floating star */}
-              <div className="absolute -top-2 -right-1 text-amber-400/80 animate-pulse">
-                <Star className="w-3 h-3 fill-current" />
+              
+              {/* Heart */}
+              <Heart className="w-4 h-4 text-pink-400 fill-current animate-pulse" />
+              
+              {/* Mystique */}
+              <div className="relative">
+                <div className="absolute -inset-2 bg-gradient-to-tr from-pink-500/30 to-purple-500/30 rounded-full blur-lg opacity-60" />
+                <div className="relative w-20 h-20 rounded-full overflow-hidden shadow-xl shadow-purple-500/30 ring-2 ring-purple-500/30">
+                  <img 
+                    src={MYSTIQUE_IMAGE}
+                    alt="Mystique"
+                    className="w-full h-full object-cover transform scale-110"
+                    data-testid="mystique-portrait-mobile"
+                  />
+                </div>
               </div>
             </div>
             
             {/* Memorial Text - Mobile */}
             <p className="text-xs text-amber-300/70 mb-1">In loving memory of</p>
-            <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
-              <span className="bg-gradient-to-r from-amber-300 via-pink-400 to-purple-400 bg-clip-text text-transparent">Mystique</span>
+            <h2 className="text-xl font-bold mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">Kouros</span>
+              <span className="text-pink-400 mx-1">&</span>
+              <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">Mystique</span>
             </h2>
             <p className="text-xs text-slate-400 text-center px-4 italic leading-relaxed mb-4">
-              "Her eyes held a universe of love"
+              "They taught us to know a pet is to know a soul"
             </p>
             
             {/* Logo */}
