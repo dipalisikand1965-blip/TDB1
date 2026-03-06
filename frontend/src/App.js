@@ -202,6 +202,7 @@ import SearchResults from "./pages/SearchResults";
 const OccasionBoxPage = lazy(() => import("./pages/OccasionBoxPage"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 
 // =====================================================
 // LAZY LOADED PAGES (code-split for smaller initial bundle)
@@ -350,21 +351,21 @@ function AppRouter() {
         <Route path="/demo/dreamfolks" element={<DreamfolksDemo />} />
         
         {/* Agent Portal - Standalone Service Desk for agents */}
-        <Route path="/agent" element={<AgentPortal />} />
+        <Route path="/agent" element={<AdminProtectedRoute><AgentPortal /></AdminProtectedRoute>} />
         
         {/* Full-Screen Service Desk - NO navbar/footer */}
-        <Route path="/admin/service-desk" element={<ServiceDeskPage />} />
-        <Route path="/admin/services" element={<ServiceCRUDAdmin />} />
+        <Route path="/admin/service-desk" element={<AdminProtectedRoute><ServiceDeskPage /></AdminProtectedRoute>} />
+        <Route path="/admin/services" element={<AdminProtectedRoute><ServiceCRUDAdmin /></AdminProtectedRoute>} />
         
         {/* Full-Screen Concierge® Dashboard - NO navbar/footer */}
-        <Route path="/admin/concierge" element={<ConciergeRequestsDashboard />} />
+        <Route path="/admin/concierge" element={<AdminProtectedRoute><ConciergeRequestsDashboard /></AdminProtectedRoute>} />
         
         {/* Real-time Concierge Dashboard - WebSocket-powered Golden Standard */}
-        <Route path="/admin/concierge-realtime" element={<AdminConciergeDashboard />} />
+        <Route path="/admin/concierge-realtime" element={<AdminProtectedRoute><AdminConciergeDashboard /></AdminProtectedRoute>} />
         
         {/* NEW: Mira Concierge Dashboard - Handoff tickets management */}
-        <Route path="/admin/mira-concierge" element={<ConciergeDashboard />} />
-        <Route path="/concierge-dashboard" element={<ConciergeDashboard />} />
+        <Route path="/admin/mira-concierge" element={<AdminProtectedRoute><ConciergeDashboard /></AdminProtectedRoute>} />
+        <Route path="/concierge-dashboard" element={<AdminProtectedRoute><ConciergeDashboard /></AdminProtectedRoute>} />
         
         {/* Full-Screen Mira Pages - NO navbar/footer for immersive experience */}
         <Route path="/mira" element={<MiraPage />} />
@@ -474,8 +475,8 @@ function MainLayout() {
           <Route path="/meal-plan" element={<MealPlanPage />} />
           <Route path="/admin/forgot-password" element={<ForgotPassword />} />
           <Route path="/admin/reset-password" element={<ResetPassword />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/admin/docs" element={<AdminDocs />} />
+          <Route path="/admin" element={<AdminProtectedRoute><Admin /></AdminProtectedRoute>} />
+          <Route path="/admin/docs" element={<AdminProtectedRoute><AdminDocs /></AdminProtectedRoute>} />
           <Route path="/voice-order" element={<ProtectedRoute><VoiceOrder /></ProtectedRoute>} />
           
           {/* NPS Feedback - Public access */}
