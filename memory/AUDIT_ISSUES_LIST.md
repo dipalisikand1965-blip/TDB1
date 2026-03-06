@@ -23,12 +23,13 @@
 - **Impact:** The heart of your vision (Mystique's memory) is missing on mobile
 - **Fix:** Update Login.jsx mobile responsive layout to show Mystique
 
-### C2. Shop Page - Products Not Loading on Mobile
-- **Page:** `/shop` (Mobile view)
-- **Issue:** Products show as empty skeleton loaders / not loading
-- **Desktop:** Works fine, products load correctly
-- **Impact:** Mobile users can't shop - major conversion blocker
-- **Fix:** Debug API call or loading state on mobile viewport
+### C2. Products Not Loading on Shop & Pillar Pages (CRITICAL!)
+- **Page:** `/shop`, `/celebrate`, `/dine`, all pillar pages
+- **Issue:** Products show as skeleton loaders everywhere (desktop AND mobile)
+- **ROOT CAUSE FOUND:** In Admin Product Box: Total=2572, but **Active=2**
+- **Only 2 products are marked "Active"** - the rest are inactive/draft!
+- **Impact:** MAJOR - customers cannot browse or buy products anywhere
+- **Fix:** Go to Admin → Product Box → Bulk activate products (or use Seed All button)
 
 ### C3. Landing Page - No Footer Visible / Can't Scroll
 - **Page:** `/` (Landing page)
