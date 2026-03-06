@@ -134,7 +134,7 @@ soulReason={getSoulBasedReason(activePet, 'celebrate')}  // or 'stay', 'dine', e
 ---
 
 ## PREVIEW URL
-https://mystique-memorial.preview.emergentagent.com
+https://pet-os-preview.preview.emergentagent.com
 
 ---
 

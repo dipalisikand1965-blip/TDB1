@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mystique-memorial.preview.emergentagent.com
+https://pet-os-preview.preview.emergentagent.com
 ```
 
 ---

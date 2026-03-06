@@ -62,7 +62,81 @@ import {
 
 const AdminGuideDashboard = () => {
   const [downloading, setDownloading] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
+  const [emailing, setEmailing] = useState(false);
   const [expandedSection, setExpandedSection] = useState('command-center');
+
+  // Regenerate documentation function
+  const regenerateDocumentation = async () => {
+    setRegenerating(true);
+    try {
+      toast({ title: '🔄 Regenerating Documentation...', description: 'Compiling all project files' });
+      
+      const response = await fetch(`${API_URL}/api/admin/regenerate-documentation`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Basic ' + btoa('aditya:lola4304')
+        }
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        toast({ 
+          title: '✅ Documentation Updated!', 
+          description: 'Refresh the docs page to see changes',
+          duration: 5000
+        });
+      } else {
+        throw new Error(data.detail || 'Failed to regenerate');
+      }
+    } catch (error) {
+      console.error('Regenerate error:', error);
+      toast({ 
+        title: '❌ Regeneration Failed', 
+        description: error.message,
+        variant: 'destructive'
+      });
+    } finally {
+      setRegenerating(false);
+    }
+  };
+
+  // Email documentation function
+  const emailDocumentation = async () => {
+    setEmailing(true);
+    try {
+      toast({ title: '📧 Sending Documentation...', description: 'Emailing to dipali.sikand1965@gmail.com' });
+      
+      const response = await fetch(`${API_URL}/api/admin/send-documentation-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Basic ' + btoa('aditya:lola4304')
+        },
+        body: JSON.stringify({ email: 'dipali.sikand1965@gmail.com' })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        toast({ 
+          title: '✅ Documentation Sent!', 
+          description: 'Check your Gmail inbox',
+          duration: 5000
+        });
+      } else {
+        throw new Error(data.detail || 'Failed to send');
+      }
+    } catch (error) {
+      console.error('Email error:', error);
+      toast({ 
+        title: '❌ Email Failed', 
+        description: error.message,
+        variant: 'destructive'
+      });
+    } finally {
+      setEmailing(false);
+    }
+  };
 
   // Database download function
   const downloadDatabase = async () => {
@@ -434,6 +508,90 @@ const AdminGuideDashboard = () => {
             </p>
           </div>
         </div>
+      </Card>
+
+      {/* 📚 DOCUMENTATION TOOLS - Easy access to project docs */}
+      <Card className="bg-gradient-to-r from-purple-900/50 to-indigo-900/50 border-purple-500/30 p-6" data-testid="documentation-tools-card">
+        <h2 className="text-lg font-bold text-white flex items-center gap-2 mb-4">
+          <BookOpen className="w-5 h-5 text-purple-400" />
+          📚 Project Documentation
+        </h2>
+        <p className="text-slate-400 text-sm mb-4">
+          Access your project's complete documentation. Updated automatically when the server starts, or regenerate manually anytime.
+        </p>
+        
+        {/* View Documentation Links */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <a
+            href="/owners-guide.html"
+            target="_blank"
+            className="p-3 bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/30 rounded-lg text-center transition-all"
+            data-testid="view-owners-guide-btn"
+          >
+            <span className="text-purple-300 font-medium">📖 Simple Owner's Guide</span>
+            <p className="text-purple-400 text-xs mt-1">Non-technical overview</p>
+          </a>
+          <a
+            href="/complete-documentation.html"
+            target="_blank"
+            className="p-3 bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-500/30 rounded-lg text-center transition-all"
+            data-testid="view-full-docs-btn"
+          >
+            <span className="text-indigo-300 font-medium">📚 Complete Documentation</span>
+            <p className="text-indigo-400 text-xs mt-1">All project files (105 docs)</p>
+          </a>
+        </div>
+        
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-3">
+          <Button 
+            onClick={regenerateDocumentation}
+            disabled={regenerating}
+            variant="outline"
+            className="flex-1 border-green-500/50 text-green-400 hover:bg-green-500/20"
+            data-testid="regenerate-docs-btn"
+          >
+            {regenerating ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="w-4 h-4 mr-2" />
+            )}
+            {regenerating ? 'Updating...' : '🔄 Update Docs'}
+          </Button>
+          
+          <a
+            href={`${API_URL}/api/admin/download-documentation`}
+            className="flex-1"
+          >
+            <Button 
+              variant="outline"
+              className="w-full border-blue-500/50 text-blue-400 hover:bg-blue-500/20"
+              data-testid="download-docs-btn"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              📥 Download
+            </Button>
+          </a>
+          
+          <Button 
+            onClick={emailDocumentation}
+            disabled={emailing}
+            variant="outline"
+            className="flex-1 border-pink-500/50 text-pink-400 hover:bg-pink-500/20"
+            data-testid="email-docs-btn"
+          >
+            {emailing ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Send className="w-4 h-4 mr-2" />
+            )}
+            {emailing ? 'Sending...' : '📧 Email Me'}
+          </Button>
+        </div>
+        
+        <p className="text-slate-500 text-xs mt-3 text-center">
+          Docs auto-regenerate on every server restart. Last update timestamp shown on docs pages.
+        </p>
       </Card>
 
       {/* Quick Stats */}
