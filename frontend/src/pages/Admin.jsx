@@ -2112,6 +2112,34 @@ const Admin = () => {
                   </a>
                 </div>
                 
+                {/* Regenerate Button */}
+                <button
+                  onClick={async () => {
+                    try {
+                      const btn = document.activeElement;
+                      btn.textContent = '🔄 Regenerating...';
+                      btn.disabled = true;
+                      const res = await fetch(`${API_URL}/api/admin/regenerate-documentation`, {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Basic ' + btoa('aditya:lola4304') }
+                      });
+                      const data = await res.json();
+                      if (data.success) {
+                        alert('✅ Documentation updated! Refresh the docs page to see changes.');
+                      } else {
+                        alert('❌ Failed: ' + data.detail);
+                      }
+                      btn.textContent = '🔄 Update Docs';
+                      btn.disabled = false;
+                    } catch (e) {
+                      alert('❌ Error regenerating docs');
+                    }
+                  }}
+                  className="w-full p-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium hover:bg-green-200"
+                >
+                  🔄 Update Docs
+                </button>
+                
                 {/* Download & Email */}
                 <div className="flex gap-2">
                   <a
