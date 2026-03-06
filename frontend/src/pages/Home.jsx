@@ -996,7 +996,7 @@ const Home = () => {
                 Loved by Pet Families
               </h2>
               <p className="text-white/60 text-lg">
-                Join thousands of pet parents who've transformed their pet care journey
+                Real stories from pet parents who've discovered a better way to care
               </p>
             </motion.div>
             
