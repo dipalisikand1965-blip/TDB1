@@ -2,7 +2,7 @@
 ## Product Requirements Document
 
 **Last Updated:** December 6, 2025
-**Version:** 2.6.0
+**Version:** 2.7.0
 **Status:** Production Ready for Investor Demo
 
 ---
@@ -33,146 +33,112 @@ The Doggy Company is a "Pet Life Operating System" - a comprehensive platform th
 - `users` - User accounts
 - `pets` - Pet profiles with soul scores
 - `products_master` - All products (~2200+)
-- `services` / `services_master` - Services (~1100+)
+- `services_master` - Services (~1100+)
 - `unified_products` - Unified product view
 - `tickets` / `mira_tickets` - Service requests
+- `enjoy_experiences` - Events & Experiences
 
 ---
 
 ## 3. THE 14 PILLARS
 
-| Pillar | Purpose | Status |
-|--------|---------|--------|
-| **Celebrate** | Birthdays, parties, cakes | Shopify synced |
-| **Dine** | Fresh meals, restaurants | 100% images |
-| **Stay** | Hotels, boarding, daycare | 100% images |
-| **Travel** | Trips, carriers, planning | 100% images |
-| **Care** | Grooming, vet, wellness | 94% images |
-| **Enjoy** | Experiences, outings | 100% images |
-| **Play** | Toys, games, activities | 100% images |
-| **Fit** | Exercise, fitness, agility | 93% images |
-| **Learn** | Training, education | 100% images |
-| **Paperwork** | Insurance, documents | 70% images |
-| **Advisory** | Consultations, planning | 100% images |
-| **Emergency** | 24/7 urgent care | 100% images |
-| **Farewell** | Memorial services | 100% images |
-| **Adopt** | Rescue, adoption | 100% images |
+| Pillar | Purpose | Image Status |
+|--------|---------|--------------|
+| **Celebrate** | Birthdays, parties, cakes | ✅ Shopify + Services |
+| **Dine** | Fresh meals, restaurants | ✅ 100% |
+| **Stay** | Hotels, boarding, daycare | ✅ 100% |
+| **Travel** | Trips, carriers, planning | ✅ 100% |
+| **Care** | Grooming, vet, wellness | ✅ 100% |
+| **Enjoy** | Experiences, outings | ✅ 100% |
+| **Play** | Toys, games, activities | ✅ 100% |
+| **Fit** | Exercise, fitness, agility | ✅ 100% |
+| **Learn** | Training, education | ✅ 100% |
+| **Paperwork** | Insurance, documents | ✅ 100% |
+| **Advisory** | Consultations, planning | ✅ 100% |
+| **Emergency** | 24/7 urgent care | ✅ 100% |
+| **Farewell** | Memorial services | ✅ 100% |
+| **Adopt** | Rescue, adoption | ✅ 100% |
 
 ---
 
-## 4. COMPLETED WORK
+## 4. COMPLETED WORK - December 6, 2025
 
-### Session - December 6, 2025: UI Polish & Handover
-- Fixed **Bottom Nav Active State** - Enhanced with stronger gradient, shadow, scale, and glow effects
-- Fixed **Price Display Consistency** - Products with ₹0 now show "Price on request" 
-- Fixed **Mobile Product Detail Scroll** - Added `overflow-y-auto` and `pb-24` for proper scrolling
-- Updated PRD.md with comprehensive documentation
+### Session Highlights
 
-### Previous Sessions: Major Features
-- **AI Image Generation** for ALL 14 pillars (~2000+ products, ~1100+ services)
-- **Master Sync Step 7** - Auto-applies images on deployment
-- **Soul Score Board** - Verified working (74%, 83%, etc.)
-- **Allergy Filtering** - Products filter based on pet allergies
-- **Emergency Guest Flow** - Guests can report without login
-- **Kouros Image Fix** - Correct black dog on About page
-- **Breed Selection** - 64 breeds + custom input
-- **Pillar Colors** - Each pillar has unique gradient
+#### Image & Content Fixes
+- **Travel Services**: 10 unique AI images (Pet Taxi, Airport Transfer, Relocation, etc.)
+- **Paperwork Services**: 5 insurance/document images
+- **Celebrate Services**: 11 contextual party/celebration images
+- **Shopify Fix**: "Love in the Air Mini" broken image replaced
+- **ServiceCatalogSection**: Now shows actual images instead of gradient+emoji
 
----
+#### UI/UX Improvements
+- **Load More Buttons**: Added to Enjoy page products
+- **Removed "X of Y" Text**: From all pillar pages (Dine, Fit, Stay, Travel, Celebrate, ProductListing)
+- **Mobile Nav Active State**: Enhanced with stronger gradient, shadow, scale effects
+- **Price Display**: Products with ₹0 now show "Price on request"
+- **Mobile Product Scroll**: Fixed overflow on ProductDetailPage
+- **Text Readability**: Improved contrast on PersonalizedPillarSection dark backgrounds
 
-## 5. PENDING TASKS
+#### Transformation Stories
+- **Large Card Format**: Single dog photos (not confusing before/after)
+- **Click Modal**: View full story details with before/after comparison
+- **Mobile Scrollable**: Horizontal swipe with snap points
+- **Truthful Content**: "Share Your Story" invitation when no real stories exist
 
-### HIGH PRIORITY
-1. **Paperwork Pillar Images** - Only 70% coverage
-   - Run: `POST /api/admin/migrate-product-images`
+#### Kouros & Mystique Memorial
+- **Login Page**: Now shows BOTH Kouros & Mystique side by side with heart
+- **About Page**: Updated Kouros image (beautiful black Newfoundland with amber eyes)
+- **Memorial Text**: "In loving memory of Kouros & Mystique"
 
-2. **Broken Shopify Images** - Some products have test URLs
-   - Syncs from doggybakery.com - may need Shopify data check
+#### Product Card/Modal Fix
+- **Image Mismatch Bug**: Fixed - card and modal now show same image
+- **Consistent Logic**: Both use `product.image` → `product.images[0]` → placeholder
 
-### MEDIUM PRIORITY
-3. **Test Ask Mira Search** - Verify search suggestions work
-4. **Test Guest Emergency Flow** - Submit test emergency as guest
-
-### INTEGRATIONS (Need API Keys)
-5. **Razorpay** - Payment gateway for checkout
-6. **WhatsApp Business** - Meta API verification
-
-### INTEGRATIONS (Already Working)
-- **Google Places API** - FULLY INTEGRATED for hotels, vets, restaurants, dog parks, pet stores, groomers, photographers (API key configured)
-
-### CODE REFACTORING (Future)
-8. **Admin.jsx** - 2600+ lines, needs splitting
-9. **DoggyServiceDesk.jsx** - 6000+ lines
-10. **MiraDemoPage.jsx** - 5000+ lines
-11. **Admin Auth** - Move from hardcoded to backend roles
+#### Master Sync Updates
+- **Step 7**: Product images migration (all pillars)
+- **Step 8 (NEW)**: Service images migration (Celebrate + Travel services)
 
 ---
 
-## 6. KEY FILES REFERENCE
-
-### Frontend
-```
-/app/frontend/src/
-├── pages/
-│   ├── Home.jsx              # Landing page (Kouros hero)
-│   ├── AboutPage.jsx         # About + Philosophy (Kouros image)
-│   ├── Login.jsx             # Login + Mystique memorial
-│   ├── ShopPage.jsx          # Main shop with pillars
-│   ├── ProductDetailPage.jsx # Product details (FIXED scroll)
-│   └── Pillars/
-│       └── EmergencyPage.jsx # Emergency flow (guest support)
-├── components/
-│   ├── ProductCard.jsx       # Product cards (FIXED price display)
-│   ├── MobileNavBar.jsx      # Bottom nav (active state)
-│   ├── MiraAI.jsx            # Mira chat interface
-│   └── Navbar.jsx            # Top navigation
-├── config/
-│   └── pillarConfig.js       # Pillar colors & config
-└── index.css                 # Global styles (FIXED nav active state)
-```
-
-### Backend
-```
-/app/backend/
-├── server.py                 # Main server + Master Sync (7 steps)
-├── product_intelligence.py   # Allergy filtering
-├── dine_routes.py           # Dine products seed
-├── care_routes.py           # Care products seed
-├── documentation_generator.py # Doc generation
-└── scripts/
-    ├── update_dine_images_api.py
-    └── update_care_images_api.py
-```
-
----
-
-## 7. MASTER SYNC STEPS
+## 5. MASTER SYNC STEPS
 
 When you click MASTER SYNC in Admin:
 1. Shopify sync (doggybakery.com products)
 2. Care products seed
-3. Dine products seed  
+3. Dine products seed
 4. Breed catalogue seed
 5. Default data seed
 6. Mira context update
-7. **Product images migration** (auto-applies AI images)
+7. Product images migration (auto-applies AI images)
+8. **Service images migration (Celebrate + Travel services)**
 
 ---
 
-## 8. SOUL SCORE SYSTEM
+## 6. KEY FEATURES
 
-Pets have soul scores (0-100%) that affect personalization:
+### Soul Score System
+- Pets have soul scores (0-100%) affecting personalization
 - Higher score = Better recommendations
-- Tracks: allergies, preferences, health conditions
 - Achievement badges: "Soul Guardian" at 75%
 
-**Allergy Filtering:**
+### Allergy Filtering
 - Checks: `pet.allergies`, `preferences.allergies`, `doggy_soul_answers.allergies`
 - Example: Chicken allergy → No chicken products in "For You"
 
+### Events & Experiences (Enjoy)
+- **Admin Location**: Admin → 14 PILLARS → Enjoy → Enjoy Manager
+- 16 experiences with RSVPs, Partners, Products tabs
+- Add/Edit/Delete/Feature events
+
+### Google Places API (Already Integrated)
+- Pet-friendly hotels, vets, restaurants, dog parks
+- Pet stores, groomers, photographers
+- API key configured in backend/.env
+
 ---
 
-## 9. CREDENTIALS
+## 7. CREDENTIALS
 
 ### Test User
 - Email: `dipali@clubconcierge.in`
@@ -185,19 +151,56 @@ Pets have soul scores (0-100%) that affect personalization:
 
 ---
 
-## 10. DEPLOYMENT CHECKLIST
+## 8. KEY FILES REFERENCE
 
-After deploying to production:
-1. Go to Admin panel (`/admin`)
-2. Click **MASTER SYNC**
-3. Wait for all 7 steps to complete
-4. Verify images appear on Shop page
-5. Test a product detail page
-6. Test mobile bottom nav
+### Frontend
+```
+/app/frontend/src/
+├── pages/
+│   ├── Login.jsx              # Kouros & Mystique memorial
+│   ├── AboutPage.jsx          # Updated Kouros image
+│   ├── CelebratePage.jsx      # Shopify products + services
+│   ├── TravelPage.jsx         # Large format transformation stories
+│   ├── EnjoyPage.jsx          # Load More + Share Your Story
+│   └── ProductDetailPage.jsx  # Mobile scroll fixed
+├── components/
+│   ├── ProductCard.jsx        # Image mismatch fixed
+│   ├── TransformationStories.jsx # Click modal + large format
+│   ├── ServiceCatalogSection.jsx # Shows actual images now
+│   └── PersonalizedPillarSection.jsx # Text readability improved
+└── index.css                  # Mobile nav active state enhanced
+```
+
+### Backend
+```
+/app/backend/
+├── server.py                  # Master Sync with Step 7 & 8
+├── services/
+│   └── google_places_service.py # Hotels, vets, restaurants
+└── enjoy_routes.py            # Events & Experiences API
+```
 
 ---
 
-## 11. KNOWN ISSUES
+## 9. PENDING TASKS
+
+### HIGH PRIORITY
+1. **Payment Integration** - Add Razorpay API keys for checkout testing
+2. **WhatsApp Business** - Meta API verification pending
+
+### MEDIUM PRIORITY
+3. **Add More Transformation Stories** - Via Admin or API
+4. **E-commerce Expansion** - HUFT, Amazon integration
+
+### CODE REFACTORING (Future)
+5. **Admin.jsx** - 2600+ lines, needs splitting
+6. **DoggyServiceDesk.jsx** - 6000+ lines
+7. **MiraDemoPage.jsx** - 5000+ lines
+8. **Admin Auth** - Move from hardcoded to backend roles
+
+---
+
+## 10. KNOWN ISSUES
 
 | Issue | Status | Notes |
 |-------|--------|-------|
@@ -207,7 +210,35 @@ After deploying to production:
 
 ---
 
-## 12. CONTACT & RESOURCES
+## 11. 3RD PARTY INTEGRATIONS
+
+| Integration | Status | Notes |
+|-------------|--------|-------|
+| OpenAI GPT | ✅ Working | Via Emergent LLM Key |
+| MongoDB Atlas | ✅ Working | Preview blocked by IP |
+| Shopify | ✅ Working | doggybakery.com sync |
+| Google Places API | ✅ Working | Hotels, vets, restaurants |
+| YouTube | ✅ Working | Video embeds |
+| Razorpay | ⏳ Needs Keys | Payment gateway |
+| Resend | ✅ Configured | Email service |
+| WhatsApp | ⏳ Needs Verification | Meta API |
+
+---
+
+## 12. DEPLOYMENT CHECKLIST
+
+After deploying to production:
+1. Go to Admin panel (`/admin`)
+2. Click **MASTER SYNC**
+3. Wait for all 8 steps to complete
+4. Verify images appear on Shop page
+5. Test a product detail page
+6. Test mobile bottom nav
+7. Check Celebrate services have images
+
+---
+
+## 13. CONTACT & RESOURCES
 
 - **Shopify Store:** https://thedoggybakery.com
 - **Admin Panel:** /admin (aditya/lola4304)
@@ -216,29 +247,4 @@ After deploying to production:
 
 ---
 
-## 13. RECENT FIXES (December 6, 2025)
-
-### Mobile Nav Active State Enhancement
-**File:** `/app/frontend/src/index.css`
-- Increased gradient opacity from 0.15 to 0.25
-- Enhanced box shadow with inset glow
-- Increased icon scale from 1.1 to 1.2
-- Strengthened drop shadow effect
-- Bolder font weight (800 vs 700)
-- Added letter-spacing for better readability
-
-### Price Display Consistency
-**File:** `/app/frontend/src/components/ProductCard.jsx`
-- Added conditional check for `minPrice > 0`
-- Products with zero/missing price now show "Price on request"
-- Purple text styling for request-based pricing
-
-### Mobile Product Detail Scroll Fix
-**File:** `/app/frontend/src/pages/ProductDetailPage.jsx`
-- Added `overflow-y-auto` to main container
-- Added `pb-24` padding for mobile nav clearance
-- Ensures all product content is scrollable on mobile
-
----
-
-*Built with love for Kouros & Mystique*
+*Built with love for Kouros & Mystique* 🐾
