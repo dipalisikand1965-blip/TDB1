@@ -29,41 +29,43 @@ import { API_URL } from '../utils/api';
 // ============================================================
 
 const BREED_AVATARS = [
-  // Most Popular First (easier to find!)
-  { breed: 'Shih Tzu', initials: 'ST', color: 'from-white to-amber-100' },
-  { breed: 'Labrador', initials: 'LB', color: 'from-yellow-400 to-amber-500' },
+  // Most Popular in India (in order of popularity)
   { breed: 'Golden Retriever', initials: 'GR', color: 'from-yellow-300 to-amber-400' },
+  { breed: 'Labrador', initials: 'LB', color: 'from-yellow-400 to-amber-500' },
   { breed: 'German Shepherd', initials: 'GS', color: 'from-amber-700 to-stone-800' },
-  { breed: 'Pomeranian', initials: 'PM', color: 'from-orange-300 to-amber-500' },
-  { breed: 'Beagle', initials: 'BG', color: 'from-amber-200 to-white' },
+  { breed: 'Shih Tzu', initials: 'ST', color: 'from-white to-amber-100' },
   { breed: 'Pug', initials: 'PG', color: 'from-amber-200 to-amber-400' },
+  { breed: 'Beagle', initials: 'BG', color: 'from-amber-200 to-white' },
+  { breed: 'Pomeranian', initials: 'PM', color: 'from-orange-300 to-amber-500' },
   { breed: 'Indie', initials: 'IN', color: 'from-amber-400 to-orange-500' },
-  { breed: 'French Bulldog', initials: 'FB', color: 'from-slate-400 to-amber-200' },
-  { breed: 'Husky', initials: 'HK', color: 'from-slate-400 to-white' },
   { breed: 'Rottweiler', initials: 'RW', color: 'from-stone-800 to-amber-700' },
-  { breed: 'Cocker Spaniel', initials: 'CS', color: 'from-amber-400 to-amber-600' },
   { breed: 'Doberman', initials: 'DB', color: 'from-stone-900 to-amber-700' },
-  { breed: 'Boxer', initials: 'BX', color: 'from-amber-500 to-amber-700' },
+  { breed: 'Cocker Spaniel', initials: 'CS', color: 'from-amber-400 to-amber-600' },
   { breed: 'Great Dane', initials: 'GD', color: 'from-slate-600 to-slate-800' },
+  { breed: 'Boxer', initials: 'BX', color: 'from-amber-500 to-amber-700' },
   { breed: 'Dachshund', initials: 'DH', color: 'from-amber-600 to-amber-800' },
   { breed: 'Lhasa Apso', initials: 'LA', color: 'from-amber-200 to-white' },
+  { breed: 'Dalmatian', initials: 'DL', color: 'from-white to-slate-900' },
+  { breed: 'Saint Bernard', initials: 'SB', color: 'from-amber-600 to-white' },
+  { breed: 'Husky', initials: 'HK', color: 'from-slate-400 to-white' },
+  { breed: 'French Bulldog', initials: 'FB', color: 'from-slate-400 to-amber-200' },
+  { breed: 'English Bulldog', initials: 'EB', color: 'from-amber-100 to-amber-300' },
   { breed: 'Poodle', initials: 'PD', color: 'from-slate-200 to-white' },
   { breed: 'Maltese', initials: 'MT', color: 'from-white to-slate-100' },
   { breed: 'Yorkshire Terrier', initials: 'YT', color: 'from-amber-500 to-slate-600' },
   { breed: 'Chihuahua', initials: 'CH', color: 'from-amber-300 to-amber-500' },
   { breed: 'Border Collie', initials: 'BC', color: 'from-stone-900 to-white' },
-  { breed: 'Bulldog', initials: 'BD', color: 'from-amber-100 to-amber-300' },
   { breed: 'Corgi', initials: 'CG', color: 'from-amber-400 to-white' },
+  { breed: 'Pit Bull', initials: 'PB', color: 'from-slate-500 to-amber-400' },
+  { breed: 'Akita', initials: 'AK', color: 'from-amber-500 to-white' },
   // Large & Giant Breeds
   { breed: 'Newfoundland', initials: 'NF', color: 'from-stone-900 to-stone-700' },
-  { breed: 'Saint Bernard', initials: 'SB', color: 'from-amber-600 to-white' },
   { breed: 'Bernese Mountain', initials: 'BM', color: 'from-stone-900 to-amber-500' },
   { breed: 'Irish Setter', initials: 'IS', color: 'from-red-700 to-amber-600' },
   { breed: 'Weimaraner', initials: 'WM', color: 'from-slate-400 to-slate-500' },
   { breed: 'Vizsla', initials: 'VZ', color: 'from-amber-500 to-amber-600' },
   { breed: 'Rhodesian Ridgeback', initials: 'RR', color: 'from-amber-500 to-amber-700' },
   // More Popular Breeds
-  { breed: 'Pit Bull', initials: 'PB', color: 'from-slate-500 to-amber-400' },
   { breed: 'Australian Shepherd', initials: 'AS', color: 'from-slate-600 to-amber-400' },
   { breed: 'Cavalier King Charles', initials: 'CK', color: 'from-amber-300 to-white' },
   { breed: 'Miniature Schnauzer', initials: 'MS', color: 'from-slate-500 to-slate-300' },
@@ -72,23 +74,27 @@ const BREED_AVATARS = [
   { breed: 'Havanese', initials: 'HV', color: 'from-amber-200 to-white' },
   { breed: 'Springer Spaniel', initials: 'SS', color: 'from-amber-700 to-white' },
   { breed: 'Bichon Frise', initials: 'BF', color: 'from-white to-slate-50' },
-  { breed: 'Dalmatian', initials: 'DL', color: 'from-white to-slate-900' },
-  { breed: 'Akita', initials: 'AK', color: 'from-amber-500 to-white' },
   { breed: 'Samoyed', initials: 'SM', color: 'from-white to-slate-100' },
   { breed: 'Chow Chow', initials: 'CC', color: 'from-amber-600 to-amber-800' },
   { breed: 'Shar Pei', initials: 'SP', color: 'from-amber-400 to-amber-600' },
   { breed: 'Basenji', initials: 'BJ', color: 'from-amber-500 to-white' },
   { breed: 'Whippet', initials: 'WH', color: 'from-slate-300 to-white' },
   { breed: 'Greyhound', initials: 'GH', color: 'from-slate-400 to-slate-200' },
+  { breed: 'Jack Russell', initials: 'JR', color: 'from-white to-amber-300' },
+  { breed: 'Scottish Terrier', initials: 'SC', color: 'from-stone-900 to-stone-800' },
+  { breed: 'West Highland', initials: 'WE', color: 'from-white to-slate-100' },
+  { breed: 'Tibetan Mastiff', initials: 'TM', color: 'from-stone-800 to-amber-700' },
   // Indian Breeds
   { breed: 'Rajapalayam', initials: 'RP', color: 'from-slate-100 to-slate-300' },
   { breed: 'Mudhol Hound', initials: 'MH', color: 'from-amber-600 to-amber-800' },
   { breed: 'Chippiparai', initials: 'CP', color: 'from-amber-200 to-amber-400' },
   { breed: 'Kombai', initials: 'KM', color: 'from-amber-700 to-amber-900' },
   { breed: 'Kanni', initials: 'KN', color: 'from-stone-800 to-amber-600' },
+  { breed: 'Rampur Greyhound', initials: 'RG', color: 'from-slate-400 to-slate-600' },
+  { breed: 'Gaddi Kutta', initials: 'GK', color: 'from-stone-700 to-amber-600' },
+  { breed: 'Bakharwal', initials: 'BK', color: 'from-stone-800 to-stone-600' },
   // Always Last
   { breed: 'Mixed Breed', initials: 'MX', color: 'from-purple-400 to-pink-400' },
-  { breed: 'Other', initials: '?', color: 'from-slate-500 to-slate-600' },
 ];
 
 const PROTEIN_OPTIONS = ['Chicken', 'Lamb', 'Fish', 'Beef', 'Vegetarian', 'No preference'];
@@ -493,8 +499,8 @@ const MiraMeetsYourPet = () => {
               />
               
               {/* Avatar grid - larger on mobile for touch */}
-              <div className="text-xs text-white/70 mb-2">or choose a breed:</div>
-              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 max-h-64 overflow-y-auto p-1 -mx-1">
+              <div className="text-xs text-white/70 mb-2">Choose a breed:</div>
+              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 max-h-56 overflow-y-auto p-1 -mx-1">
                 {BREED_AVATARS.map((avatar, avatarIndex) => (
                   <button
                     key={avatarIndex}
@@ -513,6 +519,27 @@ const MiraMeetsYourPet = () => {
                   </button>
                 ))}
               </div>
+              
+              {/* Custom breed input */}
+              <div className="mt-3 flex items-center gap-2">
+                <span className="text-xs text-white/50">Can't find your breed?</span>
+                <input
+                  type="text"
+                  placeholder="Type breed name..."
+                  className="flex-1 bg-slate-800/50 border border-slate-600/50 rounded-lg px-3 py-1.5 text-sm text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none"
+                  onChange={(e) => {
+                    if (e.target.value.trim()) {
+                      handleAvatarSelect(index, {
+                        breed: e.target.value.trim(),
+                        initials: e.target.value.trim().substring(0, 2).toUpperCase(),
+                        color: 'from-purple-400 to-pink-400'
+                      });
+                    }
+                  }}
+                  data-testid="custom-breed-input"
+                />
+              </div>
+              
               {pet.avatar && (
                 <p className="text-xs text-pink-400 mt-2">Selected: {pet.avatar.breed}</p>
               )}
