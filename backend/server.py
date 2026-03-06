@@ -28,6 +28,9 @@ import jwt
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.encoders import jsonable_encoder
+
+# Documentation generator
+from documentation_generator import regenerate_all_documentation
 import razorpay
 
 # Import models from models.py
@@ -1317,6 +1320,13 @@ async def lifespan(app: FastAPI):
     # Run Master Sync in background (non-blocking for fast startup)
     asyncio.create_task(master_sync_on_startup())
     logger.info("🚀 Master Sync scheduled (runs in background)")
+    
+    # Auto-regenerate documentation on startup
+    try:
+        doc_results = regenerate_all_documentation()
+        logger.info(f"📚 Documentation auto-regenerated on startup: {doc_results}")
+    except Exception as e:
+        logger.warning(f"Documentation regeneration skipped: {e}")
     
     # Initialize role database connection
     set_role_db(db)
@@ -9793,6 +9803,28 @@ async def download_documentation(
         media_type="text/html",
         headers={"Content-Disposition": "attachment; filename=TheDoggyCompany_OwnersGuide.html"}
     )
+
+
+@api_router.post("/admin/regenerate-documentation")
+async def regenerate_documentation_endpoint(
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Regenerate all documentation files from markdown sources"""
+    verify_admin(credentials)
+    
+    try:
+        results = regenerate_all_documentation()
+        if results:
+            return {
+                "success": True,
+                "message": "Documentation regenerated successfully",
+                "details": results
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to regenerate documentation")
+    except Exception as e:
+        logger.error(f"Documentation regeneration failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @api_router.get("/admin/export/unified-products-csv")
