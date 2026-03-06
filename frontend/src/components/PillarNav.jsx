@@ -184,8 +184,8 @@ const PillarNav = ({
                   {/* Label */}
                   <span className="whitespace-nowrap">{pillar.label}</span>
                   
-                  {/* Pet name indicator for "For You" */}
-                  {pillar.id === 'recommended' && !shoppingForOther && (
+                  {/* Pet name indicator for "For You" - only show if we have a real pet name */}
+                  {pillar.id === 'recommended' && !shoppingForOther && petName && petName !== 'Your Pet' && (
                     <span className={`text-xs ${isSelected ? 'text-white/80' : 'text-purple-500'}`}>
                       ({petName})
                     </span>

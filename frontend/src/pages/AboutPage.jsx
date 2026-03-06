@@ -11,9 +11,13 @@ import SEOHead from '../components/SEOHead';
 
 // Brand images
 const BRAND_IMAGES = {
-  founder1: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/4oryz05r_shutterstock_131282603%20%281%29.jpg',
-  founder2: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/s4qmsach_shutterstock_199063937.jpg',
+  // Kouros - The beautiful BLACK dog from the landing page hero - the soul behind The Doggy Company
+  kouros: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/einpahqm_dog-813103%20%281%29.jpg',
+  // Mystique - The Shih Tzu whose memory we honor
+  mystique: 'https://customer-assets.emergentagent.com/job_cd02345e-97d9-4ea2-a1d7-1a248ceced0d/artifacts/t980z9hw_image.png',
+  // Mira - The AI assistant
   mira: 'https://customer-assets.emergentagent.com/job_2dad3d7e-c3ab-4896-a445-d39e2953ce1d/artifacts/hfy5z95e_Mira%20Aunty.png',
+  // Team/Legacy images
   team: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/q0alj5za_dog-1194087_1920%20%281%29.jpg',
 };
 
@@ -223,11 +227,18 @@ const AboutPage = () => {
               
               <div className="relative">
                 <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur-lg opacity-30" />
-                <img 
-                  src={BRAND_IMAGES.founder1} 
-                  alt="Founders" 
-                  className="relative rounded-3xl border border-white/10 w-full"
-                />
+                {/* Kouros - The beautiful black dog who inspired it all */}
+                <div className="relative rounded-3xl border border-white/10 overflow-hidden">
+                  <img 
+                    src={BRAND_IMAGES.kouros} 
+                    alt="Kouros - Built for him, carried forward by Mystique" 
+                    className="w-full h-auto"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6">
+                    <p className="text-white font-semibold text-lg">Kouros</p>
+                    <p className="text-white/70 text-sm italic">"Built for him. Carried forward by Mystique."</p>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -278,6 +289,23 @@ const AboutPage = () => {
                     "A dog cannot speak, but they can be known. Love without attention is just affection. 
                     And they don't live long enough — so know them better, while you have them."
                   </p>
+                </div>
+                
+                {/* Mystique Memorial */}
+                <div className="flex justify-center my-8">
+                  <div className="text-center">
+                    <div className="relative inline-block">
+                      <div className="absolute -inset-2 bg-gradient-to-tr from-amber-400/30 via-pink-500/20 to-purple-500/30 rounded-full blur-lg opacity-60" />
+                      <img 
+                        src={BRAND_IMAGES.mystique}
+                        alt="Mystique"
+                        className="relative w-24 h-24 rounded-full object-cover border-2 border-purple-500/30 shadow-xl"
+                      />
+                    </div>
+                    <p className="text-amber-300/70 text-xs mt-3">In loving memory of</p>
+                    <p className="text-white font-semibold bg-gradient-to-r from-amber-300 via-pink-400 to-purple-400 bg-clip-text text-transparent">Mystique</p>
+                    <p className="text-white/50 text-xs mt-1 italic">Her eyes held a universe of love</p>
+                  </div>
                 </div>
                 
                 <p className="text-center text-lg text-white">
