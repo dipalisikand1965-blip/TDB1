@@ -1469,6 +1469,57 @@ async def lifespan(app: FastAPI):
             except Exception as e:
                 logger.warning(f"[MASTER SYNC 7/7] Image migration skipped: {e}")
             
+            # Step 8: Migrate SERVICE images (ALL PILLARS)
+            logger.info("[MASTER SYNC 8/8] Adding images to ALL pillar services...")
+            try:
+                SERVICE_IMAGES = {
+                    # CELEBRATE services
+                    "Birthday Party - Venue": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
+                    "Birthday Party - Home": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/3f8f60d3d6ab494c0d5804181180acb8f6f7c8acd969ffaa0f680d714bdeab95.png",
+                    "Birthday Party": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
+                    "Gotcha Day Celebration": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/c6b989379fea2659b7a568f5925af655d4b5b85888aa60f8edf9172cce34bb74.png",
+                    "Milestone Celebration": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/e7a11005e785d5b3b29639030764bc2bd86582d31521d3b849b2bbab3f952960.png",
+                    "Milestone Celebration Kit": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/e7a11005e785d5b3b29639030764bc2bd86582d31521d3b849b2bbab3f952960.png",
+                    "Custom Cake Consultation": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/f467fd13355a348bfdc9c2353aab9e643bfd8af401a86a63066b494ea71ce5f4.png",
+                    "Life Moment Tracking": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/5e764b728058c7d1d1e70fcfc12209c4c39850590de3100b5349c41681f5187c.png",
+                    "Festive Celebration Planning": "https://images.unsplash.com/photo-1512568400610-62da28bc8a13?w=800",
+                    "Surprise Coordination": "https://images.unsplash.com/photo-1502673530728-f79b4cab31b1?w=800",
+                    "Surprise Delivery Service": "https://images.unsplash.com/photo-1502673530728-f79b4cab31b1?w=800",
+                    "Pawty Package (Full Celebration)": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
+                    "Pet-Friendly Venue Booking": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
+                    "Birthday Party Planning": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
+                    "Professional Pet Photography": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
+                    "Professional Pet Photoshoot": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
+                    # TRAVEL services
+                    "Pet Taxi": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/c876103d3b245b387497075a69a5ebc95ef70b32bd0f28a12152f4860d4f08cf.png",
+                    "Airport Transfer": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/34febffa9542ff79e60fa5bb6a93df3d9a87f6885aa1d94d617f5b0b08e5eec9.png",
+                    "Pet Relocation": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/8b698c9709dcd9dd22d78cee18d43debbfbac9d325388495c7e3578eabae91f0.png",
+                    "Pet Relocation Service": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/4ba256b37fc2442d672a5550e52cc4016c22438a806da770511b76c2e15c3f25.png",
+                    "Pet-Friendly Cab Service": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/96b2191ac971d679dbd1848a3f90af405092fcc39da786b8fa142e9f987fa595.png",
+                    "Pet-Friendly Hotel Stay": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/5c8b2a7019aab1b7f156e2d4391638e7b03925eeae57864031e2f0a8cb5d98c2.png",
+                    "Domestic Flight Coordination": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/2fb568029b66fb6c6185db17a49eefb822414fe3d1434c7e9c4df637ecee0053.png",
+                    "Airline Policy Interpretation": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/e64b72929bbc3534969dce846f806f1a4d9431404f3c5b425300a0df912d5d06.png",
+                    "Cabin vs Cargo Advisory": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/a0709fefc69550bcc98b5f891c184c8e841a5bfbe30ec59a29336788770944a2.png",
+                    "Train & Road Travel Planning": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/3a5bedcbdbdf6e4183a40ab67e33ba662d5a23e087d214779496271c136c0d1c.png",
+                    "Destination Pet Rules": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/3cfab2f7e2f88d7eebca29336996a4535b73f04dd787f4a5a3b519787d13d74f.png",
+                    "Domestic Relocation Planning": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/aa4c4b9f49de2414954fff52bf2a8877b7ed0a8cb9b1bf40e93b1ebb0a0289ef.png",
+                    "International Relocation": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/8b698c9709dcd9dd22d78cee18d43debbfbac9d325388495c7e3578eabae91f0.png",
+                    "Transit & Handling Guidance": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/ea27f49859c08667f132740a2f19138ad844cfa9d4a37f5e55aa8c5816660d7b.png",
+                }
+                
+                # Update services with direct name matching
+                services_updated = 0
+                for name, image_url in SERVICE_IMAGES.items():
+                    result = await db.services_master.update_many(
+                        {"name": name},
+                        {"$set": {"image": image_url, "images": [image_url]}}
+                    )
+                    services_updated += result.modified_count
+                
+                logger.info(f"[MASTER SYNC 8/8] ✅ Added images to {services_updated} services across all pillars")
+            except Exception as e:
+                logger.warning(f"[MASTER SYNC 8/8] Service image migration skipped: {e}")
+            
             # ========== AUTO-LINK ORPHAN PETS ==========
             # DISABLED: This code was reassigning new users' pets to dipali on server restart
             # Pets should ONLY belong to the user who created them during onboarding
