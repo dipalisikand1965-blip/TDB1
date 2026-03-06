@@ -1,5 +1,5 @@
 # The Doggy Company - Complete Documentation
-## Compiled: March 06, 2026 at 12:08
+## Compiled: March 06, 2026 at 14:14
 
 ---
 
@@ -33,6 +33,7 @@
 - [ASSET_DIRECTORY.md](#memory-asset-directory-md) (154 lines)
 - [AUDIT.md](#memory-audit-md) (362 lines)
 - [AUDIT_CELEBRATE_DINE_PILLARS.md](#memory-audit-celebrate-dine-pillars-md) (262 lines)
+- [AUDIT_ISSUES_LIST.md](#memory-audit-issues-list-md) (194 lines)
 - [B2B2C_STRATEGY.md](#memory-b2b2c-strategy-md) (464 lines)
 - [BIBLE_INDEX.md](#memory-bible-index-md) (152 lines)
 - [BIBLE_SYNC_CHECK.md](#memory-bible-sync-check-md) (219 lines)
@@ -98,6 +99,7 @@
 - [HANDOFF_SUMMARY_20260218.md](#memory-handoff-summary-20260218-md) (301 lines)
 - [HANDOVER.md](#memory-handover-md) (342 lines)
 - [HANDOVER_20260303.md](#memory-handover-20260303-md) (253 lines)
+- [HANDOVER_20260306.md](#memory-handover-20260306-md) (265 lines)
 - [HANDOVER_CRITICAL.md](#memory-handover-critical-md) (376 lines)
 - [HANDOVER_DOCUMENT.md](#memory-handover-document-md) (375 lines)
 - [HANDOVER_FEB14_2026.md](#memory-handover-feb14-2026-md) (174 lines)
@@ -112,16 +114,14 @@
 - [HEADER_SHELL_MAPPING.md](#memory-header-shell-mapping-md) (225 lines)
 - [HEALTH_CHECK_FEB4_2026.md](#memory-health-check-feb4-2026-md) (134 lines)
 - [INSTRUCTIONS.md](#memory-instructions-md) (91 lines)
-- [INTEGRATION_SETUP.md](#memory-integration-setup-md) (180 lines)
-- [INTENT_ENGINE_BIBLE.md](#memory-intent-engine-bible-md) (395 lines)
 
 
 ---
 
 # STATISTICS
 - **Total Files Included:** 105
-- **Total Lines:** 30,392
-- **Compiled:** 2026-03-06T12:08:04.464602
+- **Total Lines:** 30,276
+- **Compiled:** 2026-03-06T14:14:36.097598
 
 ---
 
@@ -8183,6 +8183,209 @@ golden retriever, labrador, german shepherd, beagle, indie, etc.
 ---
 
 *This audit reflects the current state of Celebrate and Dine pillars as of December 2025.*
+
+
+
+---
+
+<a name="memory-audit-issues-list-md"></a>
+# 📄 AUDIT_ISSUES_LIST.md
+**Path:** `memory/AUDIT_ISSUES_LIST.md`
+**Lines:** 194
+
+# THE DOGGY COMPANY - COMPREHENSIVE AUDIT REPORT
+## Production Site: thedoggycompany.com
+## Date: March 6, 2026
+
+---
+
+## SUMMARY
+
+| Priority | Count | Description |
+|----------|-------|-------------|
+| 🔴 Critical | 0 | ~~All fixed!~~ |
+| 🟡 Important | 5 | Needs attention |
+| 🟢 Polish | 6 | Nice to fix for perfection |
+
+---
+
+## ✅ FIXED ISSUES
+
+### ~~C1. Login Page - Mobile Shows Wrong Dog Image~~ → FIXED!
+- **Fix Applied:** Added memorial text ("In loving memory of Mystique") to mobile view
+- **Result:** Mobile now shows Mystique's photo with memorial like desktop
+
+### ~~C2. Products Not Loading~~ → FIXED BY USER!
+- **Fix Applied:** User ran "Seed All" in Admin panel
+- **Result:** Products now loading on Shop and all pillar pages
+
+### ~~C3. Landing Page - No Footer Visible / Can't Scroll~~ → FIXED!
+- **Root Cause:** CSS had `height: 100%` on html, body, and #root which constrained page to viewport
+- **Fix Applied:** Changed to `min-height: 100%` in index.css
+- **Result:** Page now scrolls properly, all 8 sections + footer visible (6279px total height)
+
+---
+
+## 🟡 IMPORTANT ISSUES (Should Fix)
+
+### I1. About Page - Content May Be Limited
+- **Page:** `/about`
+- **Issue:** Page loads but scrolling seems limited - need to verify full content is displaying
+- **Vision Check:** Should tell the story of why this company exists (Mystique, love, knowing not just owning)
+- **Fix:** Review About page content against SOUL_PHILOSOPHY_SSOT.md
+
+### I2. Onboarding Form - Readability on Mobile
+- **Page:** `/join` (All steps)
+- **Issue:** Form works but could benefit from:
+  - Larger tap targets for avatar selection
+  - Better spacing between form fields
+  - Clearer labels for date inputs
+- **Impact:** Users might struggle on small phones
+- **Fix:** Increase padding, font sizes, button sizes for mobile
+
+### I3. Emergency Pillar - Verify Functionality
+- **Page:** `/emergency`
+- **Issue:** Shows "24/7 Emergency Support" but need to verify actual emergency contact flow works
+- **Vision Check:** This is critical - pet emergencies are life-or-death
+- **Fix:** Test full emergency flow end-to-end
+
+### I4. Farewell Pillar - Memorial Service Flow
+- **Page:** `/farewell`
+- **Issue:** Beautiful "Rainbow Bridge Memorial" section visible, but verify booking/inquiry flow
+- **Vision Check:** This pillar is closest to Mystique's memory - must be handled with extreme care
+- **Fix:** Test memorial service request flow
+
+### I5. Navigation Header - Consistency
+- **All Pages**
+- **Issue:** Some pages show full navigation, some show simplified header
+- **Impact:** Inconsistent experience as user browses
+- **Fix:** Standardize header across all pillar pages
+
+### I6. "Ask Mira" Search Bar - Placeholder Text
+- **All Pages with Header**
+- **Issue:** Search bar says "Ask Mira anything..." but is it functional?
+- **Impact:** Sets user expectation but may not work
+- **Fix:** Verify Mira search functionality or clarify purpose
+
+### I7. Stats Numbers - Verify Accuracy
+- **Various Pillar Pages**
+- **Issue:** Pages show stats like "847 fitness journeys started", "500+ events hosted"
+- **Question:** Are these real numbers from database or hardcoded?
+- **Fix:** Either connect to real data or remove/clarify as illustrative
+
+### I8. "For You" Tab on Shop - Personalization
+- **Page:** `/shop`
+- **Issue:** Shows "For You ()" with empty parentheses - suggests missing count or personalization not working
+- **Impact:** Personalization is core to your "knowing, not just owning" philosophy
+- **Fix:** Fix the counter or remove if not yet implemented
+
+---
+
+## 🟢 POLISH ISSUES (Nice to Have)
+
+### P1. Pillar Hero Images - Some Use Gradients Only
+- **Various Pillars**
+- **Issue:** Some pillars have beautiful hero images (Celebrate, Dine), others have gradient backgrounds only
+- **Suggestion:** Add meaningful pet photos to all pillar heroes
+- **Vision:** Makes it feel more personal, less template-y
+
+### P2. Category Chips - Horizontal Scroll Indicator
+- **Pillar Pages**
+- **Issue:** Category chips (Birthday Cakes, Breed Cakes, etc.) are horizontally scrollable but no visual indicator
+- **Fix:** Add subtle scroll indicator or arrows
+
+### P3. Bottom Navigation Bar - Active State
+- **Mobile**
+- **Issue:** Bottom nav shows icons but active state could be more prominent
+- **Fix:** Stronger highlight for current section
+
+### P4. "Mira" Chat Bubble - Position on Desktop
+- **All Pages**
+- **Issue:** "Ask Mira" button in bottom-right - verify it doesn't overlap with content
+- **Fix:** Test on various screen sizes
+
+### P5. Product Cards - Price Display
+- **Shop, Pillar Pages**
+- **Issue:** Some products show prices, some don't - need consistent display
+- **Fix:** Either all show price or have clear "Request Quote" for premium items
+
+### P6. Loading States - Skeleton Design
+- **Various**
+- **Issue:** Skeleton loaders are functional but could match brand colors better
+- **Fix:** Purple/pink tinted skeleton loaders instead of gray
+
+---
+
+## 💜 VISION & PHILOSOPHY CHECK
+
+### What's Working Well:
+1. ✅ **Mystique Memorial (Desktop Login)** - Beautiful, touching, sets the tone
+2. ✅ **"They Can't Tell You. But I Can."** - Perfect Mira introduction on landing
+3. ✅ **14 Pillars Structure** - Comprehensive life coverage for pets
+4. ✅ **Warm Copy Throughout** - "Mark the moments that matter", "Finding the Right Companion"
+5. ✅ **Soul Score Concept** - "This is YOUR pet" badge is lovely
+6. ✅ **Farewell Pillar** - "Rainbow Bridge Memorial" handles sensitive topic with grace
+
+### What Needs Alignment:
+1. ⚠️ **Mobile Experience** - The soul of the platform isn't fully present on mobile
+2. ⚠️ **About Page** - Needs to tell Mystique's story and the "why" more prominently
+3. ⚠️ **Onboarding Tone** - "How many furry friends" is cute but could be more soulful
+4. ⚠️ **Stats Feel Generic** - "10,000+ families" feels like marketing, not relationship
+
+### Philosophy Alignment Score: 75/100
+The desktop experience captures the vision beautifully. Mobile needs work to carry the same emotional weight.
+
+---
+
+## RECOMMENDED FIX ORDER
+
+### Phase 1: Critical (This Week)
+1. Fix mobile login page to show Mystique
+2. Fix shop page products loading on mobile
+3. Fix landing page scroll/footer issue
+
+### Phase 2: Important (Next Week)
+4. Review and enhance About page content
+5. Improve onboarding form mobile UX
+6. Verify emergency and farewell flows work
+7. Fix "For You" personalization display
+
+### Phase 3: Polish (Before Major Launch)
+8. Add hero images to all pillars
+9. Improve loading states
+10. Consistency pass on all pages
+
+---
+
+## PAGES TESTED
+
+| Page | Desktop | Mobile | Status |
+|------|---------|--------|--------|
+| Landing `/` | ✅ Good | ⚠️ Scroll issue | Needs fix |
+| Login `/login` | ✅ Beautiful | 🔴 Wrong image | Critical |
+| Join `/join` | ✅ Works | ⚠️ UX polish | Important |
+| About `/about` | ⚠️ Review | ⚠️ Review | Check content |
+| Shop `/shop` | ✅ Works | 🔴 Not loading | Critical |
+| Celebrate | ✅ Great | ✅ Good | OK |
+| Dine | ✅ Great | ✅ Good | OK |
+| Stay | ✅ Great | ✅ Good | OK |
+| Travel | ✅ Good | ✅ Good | OK |
+| Care | ✅ Good | ✅ Good | OK |
+| Enjoy | ✅ Good | ✅ Good | OK |
+| Fit | ✅ Good | ✅ Good | OK |
+| Learn | ✅ Good | ✅ Good | OK |
+| Paperwork | ✅ Good | ✅ Good | OK |
+| Advisory | ✅ Good | ✅ Good | OK |
+| Emergency | ✅ Good | ✅ Good | Verify flow |
+| Farewell | ✅ Beautiful | ✅ Good | Verify flow |
+| Adopt | ✅ Good | ✅ Good | OK |
+| Admin `/admin` | ✅ Works | N/A | OK |
+
+---
+
+*This audit was conducted against the production site thedoggycompany.com and checked against the Soul Philosophy (SOUL_PHILOSOPHY_SSOT.md)*
+
+Last Updated: March 6, 2026
 
 
 
@@ -27441,6 +27644,280 @@ The Rainbow Bridge Memorial feature ensures that pets like Mystique are:
 
 ---
 
+<a name="memory-handover-20260306-md"></a>
+# 📄 HANDOVER_20260306.md
+**Path:** `memory/HANDOVER_20260306.md`
+**Lines:** 265
+
+# The Doggy Company - Handover Document
+## Session: March 6, 2026
+
+---
+
+## 🎯 ORIGINAL PROBLEM STATEMENT
+
+**The Doggy Company** is a "Pet Life Operating System" built in loving memory of **Mystique** (the founder's late dog). The core mission is to help pet parents move beyond generic ownership into a deep, knowing relationship with their pets as individual beings.
+
+**Key Philosophy:** "Dogs are not pets first. They are beings first."
+
+---
+
+## 🚨 CRITICAL FOR NEXT AGENT: PREVIEW SETUP
+
+**READ THIS FIRST:** `/app/memory/PREVIEW_SETUP.md`
+
+The preview environment uses **LOCAL MongoDB** that starts EMPTY. Before doing ANY work:
+
+1. Login to Admin (`/admin`) → `aditya / lola4304` (twice)
+2. Enable **Master Sync** for Products & Services
+3. **Seed each pillar page** (Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt, Shop)
+4. **Seed Service Box**
+5. **Seed Concierge Experiences**
+
+Without this, admin panels will be empty!
+
+---
+
+## ✅ COMPLETED IN THIS SESSION
+
+### 1. Mystique Memorial Login Page
+- **File:** `/app/frontend/src/pages/Login.jsx`
+- Beautiful login page featuring Mystique's photo
+- Glowing purple ring, floating stars, memorial quote
+- Responsive on mobile and desktop
+- Image URL: User-provided photo of Mystique (golden Shih Tzu)
+
+### 2. Kouros Landing Page
+- **File:** `/app/frontend/src/pages/Home.jsx`
+- Landing page features Kouros (black dog, first pet)
+- Full circular frame with purple glow all around
+- Badge at bottom, sparkles animation
+- Responsive design
+
+### 3. Admin Security
+- **File:** `/app/frontend/src/components/AdminProtectedRoute.jsx`
+- All `/admin/*` routes now require login
+- Credentials: `aditya / lola4304`
+- 8-hour session expiry
+- Protected routes: `/admin`, `/admin/docs`, `/admin/service-desk`, `/admin/services`, `/admin/concierge`, `/admin/concierge-realtime`, `/admin/mira-concierge`, `/agent`, `/concierge-dashboard`
+
+### 4. Admin Product/Service Editing Fix
+- **Files:** 
+  - `/app/frontend/src/components/admin/UnifiedProductBox.jsx`
+  - `/app/backend/unified_product_box.py`
+  - `/app/backend/shopify_sync_routes.py`
+- Fixed duplicate modal bug (removed 1525 lines of old code)
+- Image URL now saves correctly
+- Price now saves correctly
+- Added `locally_edited: True` flag to prevent Shopify sync overwriting admin edits
+
+### 5. Join Flow Bug Fix
+- **Files:**
+  - `/app/frontend/src/pages/MiraMeetsYourPet.jsx`
+  - `/app/frontend/src/context/AuthContext.jsx`
+  - `/app/backend/auth_routes.py`
+- Fixed "body stream already read" error
+- Switched from `fetch` to `XMLHttpRequest` (bypasses Emergent monitoring interference)
+- Added `loginWithToken()` method for direct token auth after signup
+- Fixed API endpoint path
+- Backend now returns `access_token` and `user` object
+
+### 6. Auto-Updating Documentation System
+- **Files:**
+  - `/app/backend/documentation_generator.py`
+  - `/app/memory/OWNERS_GUIDE_DIPALI.md`
+  - `/app/memory/PREVIEW_SETUP.md`
+  - `/app/frontend/public/owners-guide.html`
+  - `/app/frontend/public/complete-documentation.html`
+- Documentation auto-regenerates on server startup
+- Admin panel has buttons: View, Download, Email, Update Docs
+- Beautiful HTML output readable in any browser
+
+---
+
+## 📁 KEY FILES REFERENCE
+
+### Frontend
+| File | Purpose |
+|------|---------|
+| `/app/frontend/src/pages/Login.jsx` | Login page with Mystique |
+| `/app/frontend/src/pages/Home.jsx` | Landing page with Kouros |
+| `/app/frontend/src/pages/MiraMeetsYourPet.jsx` | Join/signup flow |
+| `/app/frontend/src/pages/Admin.jsx` | Admin panel (6000+ lines) |
+| `/app/frontend/src/components/AdminProtectedRoute.jsx` | Admin route security |
+| `/app/frontend/src/components/admin/UnifiedProductBox.jsx` | Product management |
+| `/app/frontend/src/components/admin/ServiceBox.jsx` | Service management |
+| `/app/frontend/src/components/admin/ProductBoxEditor.jsx` | Product editor modal |
+| `/app/frontend/src/context/AuthContext.jsx` | Authentication context |
+| `/app/frontend/public/owners-guide.html` | Owner's documentation |
+| `/app/frontend/public/complete-documentation.html` | Full documentation |
+
+### Backend
+| File | Purpose |
+|------|---------|
+| `/app/backend/server.py` | Main server (20,000+ lines) |
+| `/app/backend/auth_routes.py` | Authentication & signup |
+| `/app/backend/unified_product_box.py` | Product API |
+| `/app/backend/service_box_routes.py` | Service API |
+| `/app/backend/shopify_sync_routes.py` | Shopify integration |
+| `/app/backend/documentation_generator.py` | Doc generation |
+
+### Memory/Documentation
+| File | Purpose |
+|------|---------|
+| `/app/memory/PRD.md` | Product requirements |
+| `/app/memory/PREVIEW_SETUP.md` | Setup checklist for agents |
+| `/app/memory/OWNERS_GUIDE_DIPALI.md` | Simple guide for owner |
+| `/app/memory/SOUL_PHILOSOPHY_SSOT.md` | Platform philosophy |
+
+---
+
+## 🔐 CREDENTIALS
+
+| System | Username | Password |
+|--------|----------|----------|
+| Admin Route Guard | aditya | lola4304 |
+| Admin Panel | aditya | lola4304 |
+| Test User | dipali@clubconcierge.in | test123 |
+| Production Site | thedoggycompany.com | - |
+| Preview Site | mystique-memorial.preview.emergentagent.com | - |
+
+---
+
+## 🔌 INTEGRATIONS STATUS
+
+| Integration | Status | Notes |
+|-------------|--------|-------|
+| OpenAI (Mira AI) | ✅ Working | Via Emergent LLM Key |
+| MongoDB Atlas | ⚠️ Blocked from Preview | IP whitelist needed |
+| Local MongoDB | ✅ Working | For preview |
+| Shopify (Doggy Bakery) | ✅ Working | Product sync |
+| Resend (Email) | ✅ Working | Limited to verified emails |
+| Razorpay | ⏳ Needs keys | Payment processing |
+| WhatsApp | ⏳ Needs verification | Meta Business API |
+| Google Places API | ⏳ Not started | For Stay pillar |
+
+---
+
+## 🐛 KNOWN ISSUES
+
+### 1. WebSocket for Concierge
+- **Status:** Workaround implemented
+- **Issue:** Preview environment terminates WebSocket connections
+- **Impact:** Real-time chat doesn't work; falls back to polling
+- **Solution:** Will work in production deployment
+
+### 2. Production DB from Preview
+- **Status:** Blocked
+- **Issue:** MongoDB Atlas IP whitelist doesn't include preview environment
+- **Solution:** User needs to add 0.0.0.0/0 to Atlas Network Access, or use production deployment
+
+---
+
+## 📋 PENDING TASKS (Priority Order)
+
+### P0 - Critical
+1. **Payment Integration** - Add Razorpay API keys and test checkout
+2. **Deploy to Production** - All fixes are preview-only until deployed
+
+### P1 - High
+3. **Google Places API** - Pet-friendly hotels for Stay pillar
+4. **WhatsApp Integration** - Verify Meta Business API
+5. **Service Desk E2E Test** - Stay Request Form → Ticket → Reply flow
+
+### P2 - Medium
+6. **Enhance Fit Pillar** - Activity tracking features
+7. **Enhance Paperwork Pillar** - Document upload functionality
+8. **Code Refactoring** - Break down large files:
+   - `MiraDemoPage.jsx` (5000+ lines)
+   - `Admin.jsx` (6000+ lines)
+   - `DoggyServiceDesk.jsx` (6000+ lines)
+
+### P3 - Future
+9. **Pet Brand Partnerships** - HUFT, Drools, Wiggles (emails drafted)
+10. **Embed Philosophy** - Review all 14 pillar pages for alignment
+11. **Production DB Connection** - When IP whitelist resolved
+
+---
+
+## 🏗️ ARCHITECTURE OVERVIEW
+
+```
+/app
+├── backend/                    # Python FastAPI
+│   ├── server.py              # Main server (20k+ lines)
+│   ├── auth_routes.py         # Auth & signup
+│   ├── unified_product_box.py # Products API
+│   ├── service_box_routes.py  # Services API
+│   ├── shopify_sync_routes.py # Shopify sync
+│   ├── documentation_generator.py # Auto-docs
+│   └── .env                   # Environment vars
+│
+├── frontend/                   # React
+│   ├── src/
+│   │   ├── pages/            # Page components
+│   │   ├── components/       # Reusable components
+│   │   │   ├── ui/          # Shadcn components
+│   │   │   └── admin/       # Admin components
+│   │   ├── context/         # React contexts
+│   │   └── hooks/           # Custom hooks
+│   ├── public/              # Static files
+│   │   ├── owners-guide.html
+│   │   └── complete-documentation.html
+│   └── .env                 # Frontend env vars
+│
+├── memory/                    # Documentation
+│   ├── PRD.md               # Requirements
+│   ├── PREVIEW_SETUP.md     # Agent setup guide
+│   ├── OWNERS_GUIDE_DIPALI.md # Owner's guide
+│   └── seeds/               # Seed data specs
+│
+└── user_artifacts/           # User uploads
+```
+
+---
+
+## 💡 TIPS FOR NEXT AGENT
+
+1. **Always run PREVIEW_SETUP.md steps first** - Data won't exist otherwise
+2. **Test on preview before production** - Use the preview URL
+3. **The admin has TWO logins** - Route guard + Admin.jsx internal login
+4. **Large files are monoliths** - Be careful editing, use search_replace
+5. **`locally_edited` flag is critical** - Prevents Shopify sync overwriting admin edits
+6. **Documentation auto-updates** - On server restart, or click "Update Docs" in admin
+7. **Email only works to dipali.sikand1965@gmail.com** - Resend test limitation
+8. **Check backend logs** - `tail -50 /var/log/supervisor/backend.err.log`
+
+---
+
+## 🙏 SPECIAL NOTES
+
+This platform was built in loving memory of **Mystique** 💜🐾
+
+The owner (Dipali) is non-technical - please:
+- Update `/app/memory/OWNERS_GUIDE_DIPALI.md` with any new features
+- Keep explanations simple
+- Use the documentation system to keep her informed
+- Remember the philosophy: "To know a pet is to know a soul"
+
+---
+
+## 📞 CONTACT
+
+- **Owner:** Dipali
+- **Email:** dipali@clubconcierge.in (business), dipali.sikand1965@gmail.com (personal)
+- **Production:** thedoggycompany.com
+- **Admin:** thedoggycompany.com/admin
+
+---
+
+*Handover created: March 6, 2026*
+*Session summary: Fixed admin editing, secured admin routes, beautified login/landing pages, created documentation system*
+
+
+
+---
+
 <a name="memory-handover-critical-md"></a>
 # 📄 HANDOVER_CRITICAL.md
 **Path:** `memory/HANDOVER_CRITICAL.md`
@@ -30870,597 +31347,4 @@ Each Today card MUST have a clear action:
 ---
 
 *Last Updated: February 2026*
-
-
-
----
-
-<a name="memory-integration-setup-md"></a>
-# 📄 INTEGRATION_SETUP.md
-**Path:** `memory/INTEGRATION_SETUP.md`
-**Lines:** 180
-
-# Mira OS - Integration Setup Guide
-
-## ✅ WORKING APIS
-
-| API | Status | What it does |
-|-----|--------|--------------|
-| **Google Places** | ✅ Working | Pet-friendly restaurants, bakeries, vets, groomers |
-| **Google Geocoding** | ✅ Working | Reverse geocode coordinates → city name |
-| **OpenWeather** | ✅ Working | Weather alerts, "good walk day" detection |
-| **YouTube** | ✅ Working | Pet training videos, tutorials |
-| **Eventbrite** | ✅ Working | Pet events (0 found currently in Bangalore) |
-| **Foursquare** | ✅ Configured | Venue details and ratings |
-| **Amadeus** | ✅ Configured | Pet-friendly hotels |
-| **Google Vision** | ✅ Configured | Pet photo analysis |
-
-## ⚠️ NEEDS SETUP
-
-### 1. Resend (Email Notifications)
-
-**Current Status**: Domain not verified
-
-**To Fix**:
-1. Go to https://resend.com/domains
-2. Add domain: `thedoggycompany.com`
-3. Add DNS records (Resend will provide):
-   - SPF record
-   - DKIM record
-   - Return-Path record
-4. Wait for verification (usually < 24 hours)
-5. Update `.env`:
-   ```
-   SENDER_EMAIL=mira@thedoggycompany.com
-   ```
-
-**Test endpoint**: `GET /api/test/notification?channel=email`
-
----
-
-### 2. Gupshup (WhatsApp/SMS)
-
-**Current Status**: Invalid App Details
-
-**To Fix**:
-1. Log in to https://www.gupshup.io
-2. Go to WhatsApp Settings
-3. Verify your Business Account
-4. Register source number: `+919739908844`
-5. Update `.env`:
-   ```
-   GUPSHUP_APP_NAME=THEDOGGYCOMPANY
-   GUPSHUP_SOURCE_NUMBER=919739908844
-   ```
-6. Submit WhatsApp Business verification (can take 1-3 days)
-
-**Test endpoint**: `GET /api/test/notification?channel=whatsapp`
-
----
-
-## 🔗 API USAGE BY PILLAR
-
-### CELEBRATE
-```
-APIs: Google Places, Eventbrite, YouTube
-Queries: pet bakery, pet party venue, pet photographer
-Videos: dog birthday party ideas
-```
-
-### DINE
-```
-APIs: Google Places, Foursquare, OpenWeather
-Queries: pet friendly restaurant, pet friendly cafe, dog park
-Weather alerts for walks
-```
-
-### STAY
-```
-APIs: Amadeus, Google Places
-Queries: pet friendly hotel, pet boarding, kennel
-```
-
-### TRAVEL
-```
-APIs: Amadeus, Viator, Google Places
-Queries: pet travel carrier, pet airline policy
-```
-
-### CARE
-```
-APIs: Google Places, YouTube
-Queries: veterinary clinic, pet hospital, 24 hour vet
-Videos: dog first aid, pet health tips
-```
-
-### ENJOY
-```
-APIs: Google Places, Foursquare
-Queries: pet grooming, dog spa, pet salon
-```
-
-### FIT
-```
-APIs: Google Places, OpenWeather, YouTube
-Queries: dog park, hiking trail pet friendly
-Videos: dog exercise routines
-Weather alerts
-```
-
-### LEARN
-```
-APIs: YouTube, Google Places
-Queries: dog training center, puppy school
-Videos: dog training basics
-```
-
----
-
-## 📱 TEST ENDPOINTS
-
-All require Bearer token in Authorization header:
-
-```bash
-# Weather
-GET /api/test/weather?lat=12.9716&lng=77.5946
-
-# YouTube Videos
-GET /api/test/youtube?query=dog+training
-
-# Pet Events
-GET /api/test/events?city=Bangalore
-
-# Combined Pillar Data
-GET /api/test/pillar-data/dine
-GET /api/test/pillar-data/celebrate
-GET /api/test/pillar-data/care
-
-# Notifications
-GET /api/test/notification?channel=email
-GET /api/test/notification?channel=whatsapp
-GET /api/test/notification?channel=sms
-```
-
----
-
-## 🔑 CURRENT API KEYS (.env)
-
-```
-# Google
-GOOGLE_PLACES_API_KEY=AIzaSy... ✅
-GOOGLE_VISION_API_KEY=AIzaSy... ✅
-GOOGLE_CALENDAR_API_KEY=AIzaSy... ✅
-
-# Weather
-OPENWEATHER_API_KEY=53f54942... ✅
-
-# Discovery
-FOURSQUARE_API_KEY=fsq3... ✅
-
-# Travel
-AMADEUS_API_KEY=qUCq... ✅
-AMADEUS_API_SECRET=7qCs... ✅
-VIATOR_API_KEY=5ee7... ✅
-
-# Events
-EVENTBRITE_API_KEY=NBVCN... ✅
-EVENTBRITE_PRIVATE_TOKEN=KAAG... ✅
-
-# Media
-YOUTUBE_API_KEY=AIzaSy... ✅
-
-# Communication (needs setup)
-RESEND_API_KEY=re_fi1... ⚠️ Domain needs verification
-GUPSHUP_API_KEY=sk_26... ⚠️ App needs verification
-GUPSHUP_SOURCE_NUMBER=919739908844
-TEST_MOBILE_NUMBER=919739908844
-```
-
----
-
-*Last Updated: February 23, 2026*
-
-
-
----
-
-<a name="memory-intent-engine-bible-md"></a>
-# 📄 INTENT_ENGINE_BIBLE.md
-**Path:** `memory/INTENT_ENGINE_BIBLE.md`
-**Lines:** 395
-
-# INTENT ENGINE BIBLE
-## The Master Doctrine for Intent-Driven Dynamic Cards
-### HARDCODED SPECIFICATION FOR ALL FUTURE AGENTS
-
-**Last Updated:** February 2026
-**Status:** CANONICAL - DO NOT DEVIATE
-
----
-
-# CORE PHILOSOPHY
-
-```
-MIRA = THE BRAIN
-  └─ Understands pet + context
-  └─ Detects user intent
-  └─ Generates recommendations
-
-CONCIERGE = THE HANDS
-  └─ Receives MIRA's instructions
-  └─ Sources products (no catalogue)
-  └─ Arranges services
-  └─ Fulfills requests
-
-PET FIRST DOCTRINE
-  └─ Everything is for THAT pet
-  └─ "{Pet} needs this" - always personalized
-  └─ Never generic, always specific
-```
-
----
-
-# INTENT DETECTION SYSTEM
-
-## How Intent Detection Works
-
-```
-User Message: "I want to house train Lola"
-    ↓
-1. KEYWORD MATCHING
-   - "house train" → matches "house_training" keywords
-   - Score = count of keyword matches
-    ↓
-2. INTENT SELECTION
-   - Highest scoring intent wins
-   - Minimum score: 1 keyword match
-    ↓
-3. RECOMMENDATION GENERATION
-   - Lookup INTENT_RECOMMENDATIONS[intent]
-   - Generate dynamic picks (Concierge-sourced)
-   - Generate dynamic services (Concierge-arranged)
-    ↓
-4. PERSONALIZATION
-   - Add pet name to all cards
-   - Add breed-specific reasons
-   - Set shelf title: "{Pet} needs this for {Intent}"
-```
-
----
-
-# INTENT CATEGORIES (CANONICAL LIST)
-
-| Intent Key | Display Name | Keywords |
-|------------|--------------|----------|
-| `house_training` | House Training | house train, potty train, toilet train, pee, poop, accident, indoor training, housebreak |
-| `obedience_training` | Obedience Training | obedience, sit, stay, come, heel, commands, basic training, listen |
-| `behavior_training` | Behavior Training | behavior, aggression, biting, barking, jumping, pulling, reactive, fear |
-| `grooming` | Grooming | groom, bath, haircut, nail, brush, mat, shed, fur, coat |
-| `health_check` | Health Check | health, checkup, vet, sick, unwell, symptoms, check up |
-| `dental` | Dental Care | dental, teeth, breath, plaque, gum, mouth |
-| `travel` | Travel | travel, trip, vacation, flight, car ride, journey, relocate, moving |
-| `food` | Food & Nutrition | food, eat, feed, diet, nutrition, meal, hungry |
-| `diet` | Diet & Weight | weight, fat, overweight, slim, diet, calories, portion |
-| `boarding` | Boarding & Sitting | boarding, pet hotel, sitter, daycare, leave, going away, vacation care |
-| `walking` | Walking & Exercise | walk, exercise, run, hike, outdoor, leash |
-| `birthday` | Birthday Celebration | birthday, celebrate, party, anniversary, gotcha day, adoption day |
-| `anxiety` | Anxiety & Comfort | anxiety, scared, nervous, stress, thunder, fireworks, separation, afraid, panic |
-
----
-
-# DYNAMIC PICKS SPECIFICATION
-
-## What Are Dynamic Picks?
-
-Dynamic picks are **Concierge-sourced products** that:
-1. Are NOT from the product catalogue
-2. Have NO fixed price (Concierge sources)
-3. Are generated based on detected intent
-4. Are personalized to the specific pet
-
-## Pick Card Structure
-
-```json
-{
-  "id": "intent-pick-house_training-pee-pads",
-  "name": "Pee Pads",
-  "display_name": "Pee Pads for Lola",
-  "description": "Essential for indoor training",
-  "reason": "Perfect for Malteses like Lola",
-  "icon": "🐾",
-  "category": "training",
-  "type": "concierge_pick",
-  "is_dynamic": true,
-  "intent": "house_training",
-  "intent_display": "House Training",
-  "pet_name": "Lola",
-  "price": null,
-  "price_display": "Concierge will source",
-  "cta": "Arrange for me",
-  "badge": "For Lola",
-  "source": "mira_intent_engine"
-}
-```
-
-## Picks Per Intent
-
-### house_training
-- 🐾 Pee Pads - Essential for indoor training
-- 🦴 Training Treats - Positive reinforcement rewards
-- ✨ Enzymatic Cleaner - Eliminates accident odors
-- 🏠 Crate or Playpen - Safe space for training
-- 🔔 Bell for Door - Teaches to signal bathroom needs
-
-### grooming
-- 🧴 Breed-Specific Shampoo - Formulated for coat type
-- 🪮 Slicker Brush - Removes tangles and loose fur
-- ✂️ Nail Clippers - Safe at-home nail care
-- 👂 Ear Cleaner - Prevents infections
-
-### health_check
-- 🩹 Pet First Aid Kit - Emergency essentials
-- 🛡️ Flea & Tick Prevention - Monthly protection
-- 🦷 Dental Chews - Daily oral health
-
-### travel
-- 🧳 Travel Carrier - Safe transport
-- 💧 Portable Water Bottle - Hydration on the go
-- 🩹 Travel First Aid Kit - Emergency supplies
-- 🌿 Calming Treats - Reduces travel anxiety
-- 🚗 Car Seat Cover - Vehicle protection
-
-### birthday
-- 🎂 Dog-Safe Birthday Cake - Safe celebration
-- 🎀 Birthday Bandana - Festive photo op
-- 🎁 Party Treats Box - Shareable goodies
-- 🧸 Birthday Toy - Special day gift
-
-### anxiety
-- 🌿 Calming Treats - Natural stress relief
-- 👕 Thunder Shirt - Gentle calming pressure
-- 🕯️ Calming Diffuser - Pheromone therapy
-- 🛏️ Anxiety Bed - Cozy secure space
-
----
-
-# DYNAMIC SERVICES SPECIFICATION
-
-## What Are Dynamic Services?
-
-Dynamic services are **Concierge-arranged services** that:
-1. Are NOT fixed-price services
-2. Concierge coordinates and arranges
-3. Are generated based on detected intent
-4. Are personalized to the specific pet
-
-## Service Card Structure
-
-```json
-{
-  "id": "intent-service-house_training-dog-trainer",
-  "name": "Dog Trainer",
-  "display_name": "Dog Trainer for Lola",
-  "description": "Professional house training guidance",
-  "reason": "For Lola's house training",
-  "icon": "🎓",
-  "duration": "Per session",
-  "type": "concierge_service",
-  "is_dynamic": true,
-  "intent": "house_training",
-  "intent_display": "House Training",
-  "pet_name": "Lola",
-  "price": null,
-  "price_display": "Concierge arranges",
-  "cta": "Book for Lola",
-  "badge": "Lola needs this",
-  "source": "mira_intent_engine"
-}
-```
-
-## Services Per Intent
-
-### house_training
-- 🎓 Dog Trainer - Professional guidance (Per session)
-- 📚 Puppy School - Group classes (6-8 weeks)
-- 🏡 Home Visit Training - Trainer at home (Per visit)
-
-### grooming
-- ✨ Full Grooming Session - Bath, haircut, nails (2-3 hours)
-- 🛁 Bath & Brush - Quick refresh (1 hour)
-- 🚐 Mobile Groomer - At your doorstep (Varies)
-
-### health_check
-- 🏥 Vet Checkup - Health assessment (30-60 min)
-- 💉 Vaccination - Immunizations (15-30 min)
-- 🔬 Blood Work Panel - Health insights (24-48h results)
-
-### travel
-- 🚕 Pet Taxi - Door-to-door transport (Per trip)
-- ✈️ Airport Pickup/Drop - Airport transfers (Per trip)
-- 📄 Pet Passport Service - Documentation (1-2 weeks)
-- 🌍 Pet Relocation - Moving assistance (Varies)
-
-### birthday
-- 📸 Birthday Photoshoot - Capture memories (1 hour)
-- 🎉 Pawty Planning - Full party setup (Event)
-- 🎂 Custom Cake Order - Made for your pet (2-3 days)
-
----
-
-# API SPECIFICATION
-
-## Endpoint: POST /api/mira/intent-driven-cards
-
-### Request
-```json
-{
-  "message": "I want to house train Lola",
-  "pet_name": "Lola",
-  "pet_id": "pet-e6348b13c975",
-  "pet_context": {
-    "breed": "Maltese",
-    "name": "Lola",
-    "age": 3
-  }
-}
-```
-
-### Response
-```json
-{
-  "success": true,
-  "has_recommendations": true,
-  "intent": "house_training",
-  "intent_display": "House Training",
-  "shelf_title": "Lola needs this for House Training",
-  "picks": [...],
-  "services": [...]
-}
-```
-
----
-
-# SHELF DISPLAY RULES
-
-## Shelf Title Format
-```
-"{Pet Name} needs this for {Intent Display}"
-```
-
-Examples:
-- "Lola needs this for House Training"
-- "Bruno needs this for Grooming"
-- "Mystique needs this for Birthday Celebration"
-
-## Badge Format
-- Picks: "For {Pet Name}"
-- Services: "{Pet Name} needs this"
-
-## Reason Format (with breed)
-```
-"Perfect for {Breed}s like {Pet Name}"
-```
-
-Example: "Perfect for Malteses like Lola"
-
----
-
-# INTEGRATION POINTS
-
-## 1. Chat Response
-When user sends message:
-1. Detect intent from message
-2. Generate dynamic cards
-3. Include in response as `intent_driven` object
-4. Frontend displays "{Pet} needs this" shelf
-
-## 2. PICKS Panel
-When user opens PICKS:
-1. Check `user_learn_intents` for current intent
-2. Generate dynamic picks for that intent
-3. Display as top shelf: "{Pet} needs this for {Intent}"
-
-## 3. SERVICES Panel
-When user opens SERVICES:
-1. Check `user_learn_intents` for current intent
-2. Generate dynamic services for that intent
-3. Display as top shelf: "{Pet} needs this for {Intent}"
-
-## 4. Concierge Tab Sync
-When user confirms "Send to Concierge":
-1. Create `concierge_tasks` entry (admin)
-2. Create `concierge_threads` entry (member) ← CRITICAL
-3. Create `admin_notifications` entry
-4. Request visible in BOTH admin AND member Concierge tabs
-
----
-
-# CONCIERGE TAB SYNC DOCTRINE
-
-## The Rule (NEVER VIOLATE)
-```
-Every request to Concierge MUST appear in BOTH:
-1. Admin Service Desk (concierge_tasks)
-2. Member Concierge Tab (concierge_threads)
-```
-
-## Implementation
-```python
-# When creating concierge request:
-await db.concierge_tasks.insert_one(task_doc)      # Admin sees this
-await db.concierge_threads.insert_one(thread_doc)  # Member sees this
-await db.admin_notifications.insert_one(notif_doc) # Admin gets notified
-```
-
-## Why Both?
-- Member expects to see their request in Concierge tab
-- Admin expects to see request in Service Desk
-- Without both, requests "disappear" from user's view
-
----
-
-# FILE LOCATIONS
-
-| File | Purpose |
-|------|---------|
-| `/app/backend/intent_driven_cards.py` | Core intent engine |
-| `/app/backend/mira_routes.py` | API endpoints |
-| `/app/backend/app/api/top_picks_routes.py` | PICKS integration |
-| `/app/backend/services_routes.py` | SERVICES integration |
-| `/app/memory/INTENT_ENGINE_BIBLE.md` | This documentation |
-
----
-
-# ADDING NEW INTENTS
-
-## Step 1: Add Keywords
-```python
-INTENT_KEYWORDS = {
-    ...
-    "new_intent": ["keyword1", "keyword2", "keyword3"],
-}
-```
-
-## Step 2: Add Recommendations
-```python
-INTENT_RECOMMENDATIONS = {
-    ...
-    "new_intent": {
-        "display_name": "New Intent Display",
-        "picks": [
-            {"name": "Product 1", "reason": "Why needed", "icon": "🐾", "category": "cat"},
-            ...
-        ],
-        "services": [
-            {"name": "Service 1", "reason": "Why needed", "icon": "🎯", "duration": "X hours"},
-            ...
-        ]
-    }
-}
-```
-
-## Step 3: Test
-```bash
-curl -X POST /api/mira/intent-driven-cards \
-  -d '{"message": "keyword1 keyword2", "pet_name": "TestPet"}'
-```
-
----
-
-# GOLDEN RULES
-
-1. **MIRA is the Brain** - Always generate recommendations based on understanding
-2. **Concierge is the Hands** - Never show prices for dynamic cards
-3. **Pet First** - Always personalize to "{Pet} needs this"
-4. **Concierge Tab Sync** - ALWAYS create both task AND thread
-5. **No Empty States** - Always show Concierge fallback if no catalogue match
-6. **Intent Drives Content** - Chat intent flows to PICKS, SERVICES, LEARN
-
----
-
-*This Bible is CANONICAL. All future agents MUST follow these specifications.*
-*Any deviation requires explicit approval and Bible update.*
-
-**Bible Version:** 1.0
-**Last Updated:** February 2026
 
