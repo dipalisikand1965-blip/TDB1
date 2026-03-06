@@ -429,16 +429,21 @@ body {
 }
 
 .mobile-nav-item.active {
-  background: rgba(147, 51, 234, 0.1);
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(236, 72, 153, 0.15) 100%);
+  box-shadow: 0 0 12px rgba(147, 51, 234, 0.2);
+  transform: translateY(-2px);
 }
 
 .mobile-nav-item.active .nav-icon {
   color: var(--color-mira);
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 4px rgba(147, 51, 234, 0.4));
 }
 
 .mobile-nav-item.active .nav-label {
   color: var(--color-mira);
-  font-weight: 600;
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(147, 51, 234, 0.3);
 }
 
 .nav-icon {
