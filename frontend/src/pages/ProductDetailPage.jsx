@@ -164,7 +164,7 @@ const ProductDetailPage = () => {
   const discountPercent = hasDiscount ? Math.round((1 - price / comparePrice) * 100) : 0;
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white" data-testid="product-detail-page">
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white overflow-y-auto pb-24" data-testid="product-detail-page">
       {/* Back Button */}
       <div className="max-w-7xl mx-auto px-4 py-4">
         <Button 

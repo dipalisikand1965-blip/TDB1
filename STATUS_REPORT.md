@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://authenticity-check-35.preview.emergentagent.com
+**Preview URL:** https://pet-os-v1.preview.emergentagent.com
 
 ---
 

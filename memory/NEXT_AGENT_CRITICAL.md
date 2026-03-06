@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://authenticity-check-35.preview.emergentagent.com
+https://pet-os-v1.preview.emergentagent.com
 
 ---
 

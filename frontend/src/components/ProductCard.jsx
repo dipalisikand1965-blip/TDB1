@@ -454,9 +454,15 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
 
           <h3 className="font-semibold text-gray-900 line-clamp-2 text-xs sm:text-sm">{product.name}</h3>
 
-          <p className="text-sm sm:text-base font-bold text-gray-900">
-            From ₹{minPrice.toLocaleString('en-IN')}
-          </p>
+          {minPrice > 0 ? (
+            <p className="text-sm sm:text-base font-bold text-gray-900">
+              From ₹{minPrice.toLocaleString('en-IN')}
+            </p>
+          ) : (
+            <p className="text-sm sm:text-base font-medium text-purple-600">
+              Price on request
+            </p>
+          )}
           
           {/* Quiet grey hint - pillar specific, non-clicky */}
           <p className="text-[8px] sm:text-[9px] text-gray-400 leading-tight mt-1">

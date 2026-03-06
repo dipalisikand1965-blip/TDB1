@@ -151,8 +151,8 @@ await db.concierge_threads.insert_one(concierge_thread)
 
 ## TEST URLS
 
-- **Main Demo**: https://authenticity-check-35.preview.emergentagent.com/mira-demo
-- **Pure OS Test**: https://authenticity-check-35.preview.emergentagent.com/mira-pure-os
+- **Main Demo**: https://pet-os-v1.preview.emergentagent.com/mira-demo
+- **Pure OS Test**: https://pet-os-v1.preview.emergentagent.com/mira-pure-os
 - **Login**: `dipali@clubconcierge.in` / `test123`
 
 ## TEST SCENARIOS
