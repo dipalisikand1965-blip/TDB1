@@ -1,8 +1,8 @@
 # Pet Life Operating System - The Doggy Company
 ## Product Requirements Document
 
-**Last Updated:** December 6, 2025
-**Version:** 2.8.0
+**Last Updated:** March 7, 2026
+**Version:** 2.8.1
 **Status:** Production Ready for Investor Demo
 
 ---
@@ -336,10 +336,14 @@ After deploying to production:
 
 | Issue | Status | Workaround |
 |-------|--------|------------|
-| Mobile inbox shaking | 🔴 Bug | Needs fix |
+| Mobile inbox shaking | ✅ Fixed | Container uses min-h-screen + 100dvh |
+| Pet name overflow | ✅ Fixed | Pet switcher uses overflow-x-auto |
+| Footer services links | ✅ Fixed | Routes now use /services?pillar=X |
+| Pet Soul page content | ✅ Updated | Philosophy-driven messaging |
+| iOS hamburger menu | ⚠️ Needs Testing | Touch handlers added |
 | WebSocket chat | ⚠️ Degraded | Graceful fallback |
 | Preview → Prod DB | 🚫 Blocked | Whitelist Atlas IP |
-| Some Shopify images | ⚠️ Broken | Check Shopify admin |
+| Services pillar filter | ⚠️ Data Issue | Services need pillar values assigned |
 
 ---
 
