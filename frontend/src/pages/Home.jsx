@@ -17,12 +17,12 @@ import { motion } from 'framer-motion';
 const BRAND_IMAGES = {
   hero: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/einpahqm_dog-813103%20%281%29.jpg',
   goldenRetriever: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/q0alj5za_dog-1194087_1920%20%281%29.jpg',
-  bulldog: 'https://customer-assets.emergentagent.com/job_2dad3d7e-c3ab-4896-a445-d39e2953ce1d/artifacts/4i3swxen_image.png',
+  bulldog: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=200&h=200&fit=crop&crop=faces',
   petWithOwner: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/4oryz05r_shutterstock_131282603%20%281%29.jpg',
-  happyPet: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/s4qmsach_shutterstock_199063937.jpg',
+  happyPet: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop&crop=faces',
   lifestyle1: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/sj6layzi_shutterstock_504980047%20%282%29.jpg',
   lifestyle2: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/tfel85m7_shutterstock_139089332%20%281%29.jpg',
-  blackLab: 'https://images.unsplash.com/photo-1636320004437-1f34a9babea4?w=200&h=200&fit=crop',
+  blackLab: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop&crop=faces',
 };
 
 // Mira's Living Soul Orb - Simplified
@@ -79,7 +79,14 @@ const TestimonialCard = ({ quote, name, pet, image }) => (
     <Quote className="w-8 h-8 text-purple-400 mb-4" />
     <p className="text-white/80 text-sm leading-relaxed mb-4 italic">"{quote}"</p>
     <div className="flex items-center gap-3">
-      <img src={image} alt={name} className="w-10 h-10 rounded-full object-cover" />
+      <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-gray-700">
+        <img 
+          src={image} 
+          alt={name} 
+          className="w-full h-full object-cover object-center"
+          onError={(e) => { e.target.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + name; }}
+        />
+      </div>
       <div>
         <p className="text-white font-medium text-sm">{name}</p>
         <p className="text-white/50 text-xs">Pet parent of {pet}</p>
