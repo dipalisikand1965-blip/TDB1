@@ -556,11 +556,11 @@ const MembershipPage = () => {
 
               <div className="space-y-3">
                 <div className="flex justify-between items-center p-3 bg-white/10 rounded-lg">
-                  <span className="text-white/70">Favorite Treat</span>
+                  <span className="text-white/70">Favourite Treat</span>
                   <span className="font-medium">{SAMPLE_PET_SOUL.favorites.treat}</span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-white/10 rounded-lg">
-                  <span className="text-white/70">Favorite Activity</span>
+                  <span className="text-white/70">Favourite Activity</span>
                   <span className="font-medium">{SAMPLE_PET_SOUL.favorites.activity}</span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-white/10 rounded-lg">
