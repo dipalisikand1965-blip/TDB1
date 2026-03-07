@@ -10,7 +10,7 @@ import base64
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://panel-refresh-debug.preview.emergentagent.com"
+    BASE_URL = "https://doggy-ecommerce-test.preview.emergentagent.com"
 
 # Admin credentials
 ADMIN_USER = "aditya"

@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://panel-refresh-debug.preview.emergentagent.com
+https://doggy-ecommerce-test.preview.emergentagent.com
 ```
 
 ---

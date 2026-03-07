@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://panel-refresh-debug.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://doggy-ecommerce-test.preview.emergentagent.com').rstrip('/')
 
 class TestFitPillar:
     """Tests for Fit pillar endpoints"""

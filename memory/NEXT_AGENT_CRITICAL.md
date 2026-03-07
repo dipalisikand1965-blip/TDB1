@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://panel-refresh-debug.preview.emergentagent.com
+https://doggy-ecommerce-test.preview.emergentagent.com
 
 ---
 
