@@ -19113,6 +19113,17 @@ from mira_care_plan import care_plan_router
 app.include_router(care_plan_router)  # Care Plan at /api/mira/care-plan/*
 logger.info("Mira Care Plan Intelligence initialized")
 
+# Pet Wrapped - The viral acquisition engine
+from routes.wrapped.soul_history import router as wrapped_history_router
+from routes.wrapped.generate import router as wrapped_generate_router
+from routes.wrapped.ai_memory import router as wrapped_memory_router
+from routes.wrapped.share import router as wrapped_share_router
+app.include_router(wrapped_history_router)  # Soul score history tracking
+app.include_router(wrapped_generate_router)  # Generate Pet Wrapped data
+app.include_router(wrapped_memory_router)  # AI memory generation
+app.include_router(wrapped_share_router)  # Shareable cards
+logger.info("🎁 Pet Wrapped routes initialized (Launch: May 20, 2026)")
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""

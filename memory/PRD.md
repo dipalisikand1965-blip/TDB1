@@ -242,11 +242,21 @@ Handle pet loss with compassion and dignity.
 All critical features complete!
 
 ### P0 - CRITICAL (LAUNCH DATE: MAY 20, 2026)
-- [ ] **PET WRAPPED** — World's first Pet Wrapped for Mystique on her birthday
-  - Design: COMPLETE (`/app/frontend/public/pet-wrapped-mystique.html`)
-  - Spec: COMPLETE (`/app/memory/PET_WRAPPED_SPEC.md`)
-  - Build: 53 days remaining
-  - This is not a feature. This is a product launch.
+- [x] **PET WRAPPED BACKEND** — COMPLETE ✅
+  - Soul Score History: `/api/wrapped/admin/backfill-soul-scores` (tracks the journey)
+  - Generate Wrapped: `/api/wrapped/generate/{pet_id}` (all 6 cards data)
+  - AI Memory: `/api/wrapped/generate-memory/{pet_id}` (Mira's specific memory)
+  - Share Card: `/api/wrapped/share/{pet_id}` (single viral card)
+  - Admin Component: `/app/frontend/src/components/admin/PetWrappedAdmin.jsx`
+  - Design Template: `/app/frontend/public/pet-wrapped-mystique.html`
+  - Spec: `/app/memory/PET_WRAPPED_SPEC.md`
+
+- [ ] **REMAINING FOR MAY 20:**
+  - Add Pet Wrapped tab to main Admin panel
+  - Create frontend card renderer (React components)
+  - Build WhatsApp/Instagram share flow
+  - Create `/wrapped-welcome` landing page
+  - Test with real data from Mystique
 
 ### P1 - High Priority
 - [ ] Run MASTER SYNC on production
