@@ -174,26 +174,47 @@ const ProductTagsManager = ({ credentials }) => {
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/admin/products/all-pillars?limit=500`, {
-        headers: { 'Authorization': getAuthHeader() }
-      });
+      // Fetch BOTH products AND services for complete coverage
+      const [productsRes, servicesRes] = await Promise.all([
+        fetch(`${API_URL}/api/admin/products/all-pillars?limit=3000`, {
+          headers: { 'Authorization': getAuthHeader() }
+        }),
+        fetch(`${API_URL}/api/service-box/services?limit=2000`, {
+          headers: { 'Authorization': getAuthHeader() }
+        })
+      ]);
       
-      if (response.ok) {
-        const data = await response.json();
-        const prods = data.products || [];
-        setProducts(prods);
-        setFilteredProducts(prods);
-        
-        // Extract unique categories
-        const cats = [...new Set(prods.map(p => p.category).filter(Boolean))];
-        setCategories(cats.sort());
-        
-        // Calculate stats
-        const withTags = prods.filter(p => p.display_tags && p.display_tags.length > 0).length;
-        setStats({ total: prods.length, withTags });
+      let allItems = [];
+      
+      if (productsRes.ok) {
+        const data = await productsRes.json();
+        const prods = (data.products || []).map(p => ({ ...p, item_type: 'product' }));
+        allItems = [...allItems, ...prods];
       }
+      
+      if (servicesRes.ok) {
+        const data = await servicesRes.json();
+        const services = (data.services || data || []).map(s => ({ ...s, item_type: 'service' }));
+        allItems = [...allItems, ...services];
+      }
+      
+      setProducts(allItems);
+      setFilteredProducts(allItems);
+      
+      // Extract unique categories from both products and services
+      const cats = [...new Set(allItems.map(p => p.category || p.pillar).filter(Boolean))];
+      setCategories(cats.sort());
+      
+      // Calculate stats (both products and services)
+      const withTags = allItems.filter(p => 
+        (p.display_tags && p.display_tags.length > 0) || 
+        (p.tags && p.tags.length > 0) ||
+        (p.ai_tags && p.ai_tags.length > 0)
+      ).length;
+      setStats({ total: allItems.length, withTags });
+      
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('Error fetching products & services:', error);
     }
     setLoading(false);
   }, [credentials]);
@@ -421,7 +442,7 @@ const ProductTagsManager = ({ credentials }) => {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card className="p-4 text-center">
           <div className="text-2xl font-bold text-purple-600">{stats.total}</div>
-          <div className="text-xs text-gray-500">Total Products</div>
+          <div className="text-xs text-gray-500">Total Products & Services</div>
         </Card>
         <Card className="p-4 text-center">
           <div className="text-2xl font-bold text-green-600">{stats.withTags}</div>
