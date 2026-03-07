@@ -10,6 +10,18 @@ export const getApiUrl = (path = '') => {
   return path;  // Always use relative paths
 };
 
+/**
+ * Get the correct base URL for API calls that open in new windows/tabs.
+ * For production (thedoggycompany.com), use the current origin.
+ * For preview, use empty string (relative path).
+ */
+export const getWrappedApiBase = () => {
+  if (typeof window !== 'undefined' && window.location.hostname.includes('thedoggycompany.com')) {
+    return window.location.origin;
+  }
+  return '';  // Use relative path for preview
+};
+
 // Get auth headers for admin API calls
 // Reads credentials from localStorage (set during admin login)
 export const getAuthHeaders = () => {
