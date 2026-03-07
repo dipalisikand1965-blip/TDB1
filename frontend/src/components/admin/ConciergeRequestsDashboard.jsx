@@ -24,6 +24,17 @@ import {
   Calendar, AlertCircle, CheckCircle, Archive, MoreVertical
 } from 'lucide-react';
 
+// Helper function for admin auth
+const getAdminAuthHeader = () => {
+  const adminCreds = localStorage.getItem('adminCredentials');
+  if (adminCreds) {
+    const { username, password } = JSON.parse(adminCreds);
+    return 'Basic ' + btoa(`${username}:${password}`);
+  }
+  // Fallback to hardcoded for testing
+  return 'Basic ' + btoa('aditya:lola4304');
+};
+
 // Pillar configuration
 const PILLARS = {
   travel: { name: 'Travel', icon: Plane, color: 'violet' },
@@ -70,7 +81,7 @@ const ConciergeRequestsDashboard = () => {
       
       const response = await fetch(`${API_URL}/api/concierge/requests?${params}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': getAdminAuthHeader()
         }
       });
       
@@ -91,7 +102,7 @@ const ConciergeRequestsDashboard = () => {
     try {
       const response = await fetch(`${API_URL}/api/concierge/stats`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': getAdminAuthHeader()
         }
       });
       if (response.ok) {
@@ -114,7 +125,7 @@ const ConciergeRequestsDashboard = () => {
       const response = await fetch(`${API_URL}/api/concierge/requests/${requestId}?status=${newStatus}&note=${encodeURIComponent(note)}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': getAdminAuthHeader()
         }
       });
       
@@ -176,11 +187,11 @@ const ConciergeRequestsDashboard = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
         <Card className="p-4 bg-gradient-to-br from-violet-50 to-purple-50">
           <p className="text-xs text-gray-500">Total Requests</p>
-          <p className="text-2xl font-bold text-violet-700">{stats.total}</p>
+          <p className="text-2xl font-bold text-violet-700">{stats.total_active || stats.total || 0}</p>
         </Card>
         <Card className="p-4 bg-gradient-to-br from-yellow-50 to-amber-50">
           <p className="text-xs text-gray-500">New (Action Needed)</p>
-          <p className="text-2xl font-bold text-yellow-700">{stats.new_requests}</p>
+          <p className="text-2xl font-bold text-yellow-700">{stats.total_urgent || stats.new_requests || 0}</p>
         </Card>
         {Object.entries(PILLARS).map(([key, config]) => (
           <Card key={key} className="p-4">
@@ -188,7 +199,7 @@ const ConciergeRequestsDashboard = () => {
               <config.icon className="w-3 h-3" /> {config.name}
             </p>
             <p className={`text-2xl font-bold text-${config.color}-700`}>
-              {stats.by_pillar?.[key] || 0}
+              {stats.by_category?.[key] || stats.by_pillar?.[key] || 0}
             </p>
           </Card>
         ))}

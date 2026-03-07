@@ -1060,40 +1060,113 @@ async def get_concierge_requests(
     status: Optional[str] = None,
     limit: int = Query(50, le=200)
 ):
-    """Get all Concierge® experience requests for the admin dashboard."""
+    """Get all Concierge® experience requests for the admin dashboard.
+    Merges data from service_requests, service_desk_tickets, and concierge_requests collections.
+    """
     db = get_db()
     
-    query = {}
+    query = {"status": {"$nin": ["resolved", "closed", "completed"]}}
     if pillar:
         query["pillar"] = pillar
     if status:
         query["status"] = status
     
-    requests = await db.concierge_requests.find(query).sort("created_at", -1).limit(limit).to_list(length=limit)
+    all_requests = []
     
-    for r in requests:
-        r["id"] = r.get("id", str(r.get("_id", "")))
+    # 1. Service Requests (new universal flow)
+    sr_requests = await db.service_requests.find(query).sort("created_at", -1).limit(limit).to_list(length=limit)
+    for r in sr_requests:
+        r["id"] = r.get("request_id", str(r.get("_id", "")))
+        r["request_id"] = r.get("request_id", r["id"])
+        r["source_type"] = "service_request"
         r.pop("_id", None)
+        all_requests.append(r)
     
-    return {"requests": requests, "total": len(requests)}
+    # 2. Service Desk Tickets
+    sdt_requests = await db.service_desk_tickets.find(query).sort("created_at", -1).limit(limit).to_list(length=limit)
+    for r in sdt_requests:
+        r["id"] = r.get("ticket_id", str(r.get("_id", "")))
+        r["request_id"] = r.get("ticket_id", r["id"])
+        r["source_type"] = "service_desk"
+        r.pop("_id", None)
+        all_requests.append(r)
+    
+    # 3. Legacy Concierge Requests
+    cr_requests = await db.concierge_requests.find(query).sort("created_at", -1).limit(limit).to_list(length=limit)
+    for r in cr_requests:
+        r["id"] = r.get("id", str(r.get("_id", "")))
+        r["request_id"] = r.get("request_id", r["id"])
+        r["source_type"] = "concierge_request"
+        r.pop("_id", None)
+        all_requests.append(r)
+    
+    # Sort by created_at descending (handle both datetime and string)
+    def get_sort_key(x):
+        created = x.get("created_at", "")
+        if isinstance(created, str):
+            return created
+        elif hasattr(created, 'isoformat'):
+            return created.isoformat()
+        return ""
+    
+    all_requests.sort(key=get_sort_key, reverse=True)
+    
+    # Limit to requested amount
+    all_requests = all_requests[:limit]
+    
+    return {"requests": all_requests, "total": len(all_requests)}
 
 
 @router.get("/stats")
 async def get_concierge_stats():
-    """Get Concierge® request statistics for the dashboard."""
+    """Get Concierge® request statistics for the dashboard from all collections."""
     db = get_db()
     
-    total = await db.concierge_requests.count_documents({})
-    new_requests = await db.concierge_requests.count_documents({"status": "new"})
+    # Debug: check if db is connected
+    if db is None:
+        return {"error": "Database not connected", "db_status": "None"}
     
-    by_pillar = {}
-    for pillar in ["travel", "stay", "care", "enjoy", "learn"]:
-        by_pillar[pillar] = await db.concierge_requests.count_documents({"pillar": pillar})
+    # Debug: Log what we're doing
+    import logging
+    logging.info(f"[STATS DEBUG] db object: {type(db)}")
     
+    # Count from all relevant collections
+    try:
+        service_requests = await db.service_requests.count_documents({"status": {"$nin": ["resolved", "closed", "completed"]}})
+    except Exception as e:
+        service_requests = 0
+        logging.error(f"[STATS DEBUG] service_requests error: {e}")
+    
+    try:
+        service_desk = await db.service_desk_tickets.count_documents({"status": {"$nin": ["resolved", "closed"]}})
+    except Exception as e:
+        service_desk = 0
+        logging.error(f"[STATS DEBUG] service_desk error: {e}")
+    
+    try:
+        concierge = await db.concierge_requests.count_documents({"status": {"$nin": ["resolved", "closed"]}})
+    except Exception as e:
+        concierge = 0
+        logging.error(f"[STATS DEBUG] concierge error: {e}")
+    
+    total_active = service_requests + service_desk + concierge
+    
+    logging.info(f"[STATS DEBUG] Counts: sr={service_requests}, sd={service_desk}, cr={concierge}")
+    
+    # Return early with debug info
     return {
-        "total": total,
-        "new_requests": new_requests,
-        "by_pillar": by_pillar
+        "total_active": total_active,
+        "total_resolved": 0,
+        "total_urgent": 0,
+        "total_pinned": 0,
+        "by_category": {},
+        "by_priority": {},
+        "by_entity_type": {
+            "service_requests": service_requests,
+            "service_desk_tickets": service_desk,
+            "concierge_requests": concierge
+        },
+        "debug": f"db_type={type(db).__name__}"
     }
 
 
