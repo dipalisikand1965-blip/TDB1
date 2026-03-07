@@ -8134,6 +8134,13 @@ async def load_pet_soul(pet_id: str) -> Dict:
         # Soul score
         "soul_score": round(soul_score, 1),
         "overall_score": round(soul_score, 1),
+        # ═══════════════════════════════════════════════════════════════════════════
+        # 🌈 RAINBOW BRIDGE - Memorial status (CRITICAL for compassionate responses)
+        # ═══════════════════════════════════════════════════════════════════════════
+        "rainbow_bridge": pet.get("rainbow_bridge", False),
+        "crossing_date": pet.get("crossing_date") or pet.get("rainbow_bridge_date"),
+        "tribute_message": pet.get("tribute_message") or pet.get("memorial_message"),
+        "memorial_status": pet.get("memorial_status"),
         # Doggy Soul answers (full)
         "soul_answers": doggy_soul,
         # Include the full doggy_soul_answers for system prompt
