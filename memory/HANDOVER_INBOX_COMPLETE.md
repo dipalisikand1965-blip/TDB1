@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://rainbow-bridge-3.preview.emergentagent.com
+https://mira-memory-cards.preview.emergentagent.com
 ```
 
 ---
