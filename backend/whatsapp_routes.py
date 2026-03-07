@@ -928,21 +928,101 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     """
     Generate Mira's intelligent AI response for WhatsApp messages.
     Uses OpenAI via Emergent LLM Key for natural conversation.
+    Includes user context: pets, orders, membership, conversation history.
     Falls back to pattern matching if AI fails.
     """
     import os
+    from database import get_db
     
-    # Try AI response first
+    # Build user context
+    context_parts = []
+    db = get_db()
+    
+    if db and user_phone:
+        try:
+            # Clean phone for lookup
+            phone_clean = ''.join(filter(str.isdigit, str(user_phone)))
+            if len(phone_clean) == 12 and phone_clean.startswith('91'):
+                phone_clean = phone_clean[2:]  # Remove country code for search
+            
+            # Find user by phone
+            user = await db.users.find_one({
+                "$or": [
+                    {"phone": {"$regex": phone_clean}},
+                    {"whatsapp": {"$regex": phone_clean}},
+                    {"phone": user_phone},
+                    {"whatsapp": user_phone}
+                ]
+            })
+            
+            if user:
+                user_email = user.get("email")
+                user_name = user.get("name") or user.get("parent_name") or user_name
+                
+                # Get membership status
+                membership = user.get("membership", {})
+                if membership.get("tier"):
+                    context_parts.append(f"Member tier: {membership.get('tier')} (expires: {membership.get('expires_at', 'N/A')[:10]})")
+                
+                # Get user's pets
+                pets = await db.pets.find({"owner_email": user_email}).to_list(10)
+                if pets:
+                    pet_names = [p.get("name") for p in pets if p.get("name")]
+                    pet_info = []
+                    for p in pets[:3]:  # Max 3 pets for context
+                        info = f"{p.get('name')} ({p.get('breed', 'Unknown breed')})"
+                        if p.get("date_of_birth"):
+                            info += f", DOB: {p.get('date_of_birth')[:10]}"
+                        pet_info.append(info)
+                    context_parts.append(f"Their pets: {'; '.join(pet_info)}")
+                
+                # Get recent orders (last 3)
+                orders = await db.orders.find({"email": user_email}).sort("created_at", -1).limit(3).to_list(3)
+                if orders:
+                    order_summary = [f"Order #{o.get('order_id', 'N/A')[:8]} - ₹{o.get('total', 0)}" for o in orders]
+                    context_parts.append(f"Recent orders: {', '.join(order_summary)}")
+                
+                # Get recent conversation/tickets
+                recent_tickets = await db.tickets.find({
+                    "$or": [
+                        {"member.email": user_email},
+                        {"member.phone": {"$regex": phone_clean}}
+                    ]
+                }).sort("created_at", -1).limit(2).to_list(2)
+                
+                if recent_tickets:
+                    ticket_summary = []
+                    for t in recent_tickets:
+                        subject = t.get("subject", t.get("description", ""))[:50]
+                        status = t.get("status", "open")
+                        ticket_summary.append(f"{subject}... ({status})")
+                    context_parts.append(f"Recent requests: {'; '.join(ticket_summary)}")
+                    
+        except Exception as ctx_err:
+            logger.warning(f"[MIRA-AI] Context fetch error: {ctx_err}")
+    
+    # Try AI response with context
     try:
         from emergentintegrations.llm.openai import chat, Message
         
-        system_prompt = """You are Mira, the friendly AI pet concierge at The Doggy Company - India's first Pet Life Operating System.
+        context_block = ""
+        if context_parts:
+            context_block = f"""
+
+USER CONTEXT (use this to personalize your response):
+{chr(10).join('- ' + c for c in context_parts)}
+"""
+        
+        system_prompt = f"""You are Mira, the friendly AI pet concierge at The Doggy Company - India's first Pet Life Operating System.
 
 Your personality:
 - Warm, caring, and enthusiastic about pets
 - Use emojis naturally (🐾 🐕 💜)
 - Keep responses concise (under 200 words) - this is WhatsApp!
 - Be helpful and proactive in suggesting services
+- PERSONALIZE responses using the user context provided
+- If you know their pet's name, use it!
+- Reference their membership tier benefits when relevant
 
 You can help with:
 - 14 Life Pillars: Celebrate, Dine, Stay, Travel, Care, Enjoy, Play, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt
@@ -952,7 +1032,7 @@ You can help with:
 
 Website: thedoggycompany.com
 WhatsApp: +91 8971702582
-
+{context_block}
 Always end with a helpful question or suggestion. Be conversational, not robotic."""
 
         messages = [
@@ -967,7 +1047,7 @@ Always end with a helpful question or suggestion. Be conversational, not robotic
         )
         
         if response and response.content:
-            logger.info(f"[MIRA-AI] Generated AI response for {user_phone[:6] if user_phone else 'unknown'}***")
+            logger.info(f"[MIRA-AI] Generated contextual AI response for {user_phone[:6] if user_phone else 'unknown'}*** with {len(context_parts)} context items")
             return response.content
             
     except Exception as ai_err:
