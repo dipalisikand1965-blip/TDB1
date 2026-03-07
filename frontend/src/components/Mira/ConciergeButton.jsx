@@ -169,12 +169,51 @@ const ConciergeButton = ({
     }
   };
   
-  // Open WhatsApp Click-to-Chat
-  const handleWhatsApp = () => {
+  // Open WhatsApp Click-to-Chat - Creates service desk ticket FIRST
+  const handleWhatsApp = async () => {
     const petContext = petName ? `about ${petName}` : '';
     const pillarContext = pillar !== 'general' ? `from ${pillar} page` : '';
-    const message = encodeURIComponent(`Hi! I need help ${petContext} ${pillarContext}`.trim());
-    // Use wa.me format - works better across browsers and devices
+    const messageText = `Hi! I need help ${petContext} ${pillarContext}`.trim();
+    
+    // 🎯 UNIVERSAL SERVICE FLOW: Create service desk ticket BEFORE opening WhatsApp
+    try {
+      const ticketPayload = {
+        type: 'whatsapp_intent',
+        pillar: pillar || 'general',
+        source: 'concierge_button_whatsapp',
+        customer: {
+          name: user?.name || 'Guest User',
+          email: user?.email || 'guest@thedoggycompany.com',
+          phone: user?.phone || '',
+          user_id: user?.id || 'anonymous'
+        },
+        details: {
+          message: `[WhatsApp Intent] User clicked WhatsApp button. Message: "${messageText}"`,
+          pet_name: petName || 'Not specified',
+          pet_id: petId || '',
+          channel: 'whatsapp',
+          source_component: 'ConciergeButton'
+        },
+        priority: 'medium'
+      };
+      
+      // Create service request (tracked in admin)
+      await fetch(`${getApiUrl()}/api/service-requests`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify(ticketPayload)
+      });
+      console.log('[ConciergeButton] Service ticket created for WhatsApp intent');
+    } catch (err) {
+      console.warn('[ConciergeButton] Could not create service ticket:', err);
+      // Continue to WhatsApp even if ticket creation fails
+    }
+    
+    // Now open WhatsApp
+    const message = encodeURIComponent(messageText);
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
     window.open(whatsappUrl, '_blank');
     setShowOptions(false);

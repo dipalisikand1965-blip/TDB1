@@ -39,11 +39,41 @@ const FloatingContactButton = ({ user, isLoggedIn }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // WhatsApp handler
-  const openWhatsApp = () => {
-    const message = encodeURIComponent(
-      `Hi! I'm ${user?.name || 'a member'} and I need assistance.`
-    );
+  // WhatsApp handler - Creates service desk ticket FIRST
+  const openWhatsApp = async () => {
+    const messageText = `Hi! I'm ${user?.name || 'a member'} and I need assistance.`;
+    
+    // 🎯 UNIVERSAL SERVICE FLOW: Create service desk ticket BEFORE opening WhatsApp
+    try {
+      const ticketPayload = {
+        type: 'whatsapp_intent',
+        pillar: 'general',
+        source: 'floating_contact_button',
+        customer: {
+          name: user?.name || 'Guest User',
+          email: user?.email || 'guest@thedoggycompany.com',
+          phone: user?.phone || '',
+          user_id: user?.id || 'anonymous'
+        },
+        details: {
+          message: `[WhatsApp Intent] User clicked WhatsApp button. Message: "${messageText}"`,
+          channel: 'whatsapp',
+          source_component: 'FloatingContactButton'
+        },
+        priority: 'medium'
+      };
+      
+      await fetch(`${API_URL}/api/service-requests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ticketPayload)
+      });
+      console.log('[FloatingContactButton] Service ticket created for WhatsApp intent');
+    } catch (err) {
+      console.warn('[FloatingContactButton] Could not create service ticket:', err);
+    }
+    
+    const message = encodeURIComponent(messageText);
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
     setIsOpen(false);
   };
