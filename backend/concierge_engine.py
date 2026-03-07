@@ -387,48 +387,66 @@ async def search_notes(
 
 
 @concierge_router.get("/stats")
-async def get_notes_stats(username: str = Depends(verify_admin)):
-    """Get concierge notes statistics"""
+async def get_concierge_dashboard_stats(username: str = Depends(verify_admin)):
+    """Get comprehensive concierge/service desk statistics from all collections"""
     
-    # Count by category
-    category_pipeline = [
-        {"$match": {"is_resolved": {"$ne": True}}},
-        {"$group": {"_id": "$category", "count": {"$sum": 1}}}
-    ]
-    by_category = await db.concierge_notes.aggregate(category_pipeline).to_list(20)
+    # Service Requests (new universal flow)
+    service_requests_active = await db.service_requests.count_documents({"status": {"$nin": ["resolved", "closed", "completed"]}})
+    service_requests_resolved = await db.service_requests.count_documents({"status": {"$in": ["resolved", "completed"]}})
     
-    # Count by priority
-    priority_pipeline = [
-        {"$match": {"is_resolved": {"$ne": True}}},
-        {"$group": {"_id": "$priority", "count": {"$sum": 1}}}
-    ]
-    by_priority = await db.concierge_notes.aggregate(priority_pipeline).to_list(10)
+    # Service Desk Tickets
+    service_desk_active = await db.service_desk_tickets.count_documents({"status": {"$nin": ["resolved", "closed"]}})
+    service_desk_resolved = await db.service_desk_tickets.count_documents({"status": {"$in": ["resolved", "closed"]}})
     
-    # Count by entity type
-    entity_pipeline = [
-        {"$match": {"is_resolved": {"$ne": True}}},
-        {"$group": {"_id": "$entity_type", "count": {"$sum": 1}}}
-    ]
-    by_entity = await db.concierge_notes.aggregate(entity_pipeline).to_list(10)
+    # Legacy Concierge Notes
+    notes_active = await db.concierge_notes.count_documents({"is_resolved": {"$ne": True}})
+    notes_resolved = await db.concierge_notes.count_documents({"is_resolved": True})
     
-    # Total counts
-    total_active = await db.concierge_notes.count_documents({"is_resolved": {"$ne": True}})
-    total_resolved = await db.concierge_notes.count_documents({"is_resolved": True})
-    total_urgent = await db.concierge_notes.count_documents({
-        "is_resolved": {"$ne": True},
-        "priority": "urgent"
-    })
-    total_pinned = await db.concierge_notes.count_documents({
-        "is_resolved": {"$ne": True},
-        "is_pinned": True
-    })
+    # Totals
+    total_active = service_requests_active + service_desk_active + notes_active
+    total_resolved = service_requests_resolved + service_desk_resolved + notes_resolved
+    
+    # Urgent counts
+    urgent_sr = await db.service_requests.count_documents({"priority": {"$in": ["urgent", "high"]}, "status": {"$nin": ["resolved", "completed"]}})
+    urgent_sd = await db.service_desk_tickets.count_documents({"priority": {"$in": ["urgent", "high"]}, "status": {"$nin": ["resolved", "closed"]}})
+    urgent_notes = await db.concierge_notes.count_documents({"priority": "urgent", "is_resolved": {"$ne": True}})
+    total_urgent = urgent_sr + urgent_sd + urgent_notes
+    
+    # Pinned
+    pinned_notes = await db.concierge_notes.count_documents({"is_pinned": True, "is_resolved": {"$ne": True}})
+    pinned_sd = await db.service_desk_tickets.count_documents({"pinned": True})
+    total_pinned = pinned_notes + pinned_sd
+    
+    # By category/pillar
+    by_category = {}
+    for pillar in ["celebrate", "dine", "stay", "travel", "care", "enjoy", "learn", "fit", "advisory", "shop", "paperwork", "emergency", "farewell", "adopt"]:
+        count_sr = await db.service_requests.count_documents({"pillar": pillar, "status": {"$nin": ["resolved", "completed"]}})
+        count_sd = await db.service_desk_tickets.count_documents({"pillar": pillar, "status": {"$nin": ["resolved", "closed"]}})
+        count_notes = await db.concierge_notes.count_documents({"category": pillar, "is_resolved": {"$ne": True}})
+        total = count_sr + count_sd + count_notes
+        if total > 0:
+            by_category[pillar] = total
+    
+    # By priority
+    by_priority = {}
+    for priority in ["urgent", "high", "medium", "normal", "low"]:
+        count_sr = await db.service_requests.count_documents({"priority": priority, "status": {"$nin": ["resolved", "completed"]}})
+        count_sd = await db.service_desk_tickets.count_documents({"priority": priority, "status": {"$nin": ["resolved", "closed"]}})
+        count_notes = await db.concierge_notes.count_documents({"priority": priority, "is_resolved": {"$ne": True}})
+        total = count_sr + count_sd + count_notes
+        if total > 0:
+            by_priority[priority] = total
     
     return {
         "total_active": total_active,
         "total_resolved": total_resolved,
         "total_urgent": total_urgent,
         "total_pinned": total_pinned,
-        "by_category": {item["_id"]: item["count"] for item in by_category},
-        "by_priority": {item["_id"]: item["count"] for item in by_priority},
-        "by_entity_type": {item["_id"]: item["count"] for item in by_entity}
+        "by_category": by_category,
+        "by_priority": by_priority,
+        "by_entity_type": {
+            "service_requests": service_requests_active,
+            "service_desk_tickets": service_desk_active,
+            "concierge_notes": notes_active
+        }
     }
