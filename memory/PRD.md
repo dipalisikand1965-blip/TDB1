@@ -52,7 +52,7 @@
 
 ### URLs
 - **Production:** https://thedoggycompany.com
-- **Preview:** https://panel-refresh-debug.preview.emergentagent.com
+- **Preview:** https://doggy-ecommerce-test.preview.emergentagent.com
 
 ### E2E Test Results (March 7, 2026)
 | Component | Status |
@@ -391,7 +391,7 @@ WHATSAPP_NUMBER=918971702582
 
 ### Frontend .env
 ```
-REACT_APP_BACKEND_URL=https://panel-refresh-debug.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://doggy-ecommerce-test.preview.emergentagent.com
 ```
 
 ---
