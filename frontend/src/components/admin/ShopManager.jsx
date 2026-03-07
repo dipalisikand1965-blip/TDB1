@@ -84,10 +84,7 @@ const ShopManager = ({ getAuthHeader }) => {
       const authHeader = typeof getAuthHeader === 'function' ? getAuthHeader() : getAuthHeader;
       
       const [productsRes, ordersRes, statsRes, inventoryRes, settingsRes, syncRes, salesRes] = await Promise.all([
-        // Fetch from Unified Product Box first for single source of truth
-        axios.get(`${API_URL}/api/product-box/by-pillar/shop`).catch(() => 
-          axios.get(`${API_URL}/api/shop/products?limit=200`)
-        ),
+        axios.get(`${API_URL}/api/shop/products?limit=200`),
         axios.get(`${API_URL}/api/shop/orders?limit=100`, authHeader),
         axios.get(`${API_URL}/api/shop/stats`),
         axios.get(`${API_URL}/api/shop/inventory`),
@@ -96,9 +93,7 @@ const ShopManager = ({ getAuthHeader }) => {
         axios.get(`${API_URL}/api/shop/reports/sales?period=month`, authHeader).catch(() => ({ data: {} }))
       ]);
       
-      // Handle both unified product box response and legacy response
-      const productData = productsRes.data.products || productsRes.data || [];
-      setProducts(Array.isArray(productData) ? productData : []);
+      setProducts(productsRes.data.products || []);
       setOrders(ordersRes.data.orders || []);
       setStats(statsRes.data || {});
       setInventory(inventoryRes.data || { low_stock: [], out_of_stock: [] });
