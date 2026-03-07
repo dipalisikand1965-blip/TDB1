@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://doggy-handover.preview.emergentagent.com
+**Preview URL:** https://doggy-unified-os.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

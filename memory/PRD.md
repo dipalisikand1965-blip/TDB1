@@ -45,7 +45,7 @@
 
 ### URLs
 - **Production:** https://thedoggycompany.com
-- **Preview:** https://doggy-handover.preview.emergentagent.com
+- **Preview:** https://doggy-unified-os.preview.emergentagent.com
 
 ---
 
@@ -608,7 +608,7 @@ SITE_URL=https://thedoggycompany.com
 
 ### Frontend (.env)
 ```env
-REACT_APP_BACKEND_URL=https://doggy-handover.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://doggy-unified-os.preview.emergentagent.com
 ```
 
 ---
