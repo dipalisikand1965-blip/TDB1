@@ -1003,7 +1003,7 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     
     # Try AI response with context
     try:
-        from emergentintegrations.llm.openai import chat, Message
+        from emergentintegrations.llm.openai import LlmChat, UserMessage
         
         context_block = ""
         if context_parts:
@@ -1035,20 +1035,18 @@ WhatsApp: +91 8971702582
 {context_block}
 Always end with a helpful question or suggestion. Be conversational, not robotic."""
 
-        messages = [
-            Message(role="system", content=system_prompt),
-            Message(role="user", content=f"User {user_name} says: {message_text}")
-        ]
+        import uuid as uuid_mod
+        chat = LlmChat(
+            api_key=os.environ.get("EMERGENT_LLM_KEY"),
+            session_id=f"whatsapp-{user_phone or uuid_mod.uuid4().hex[:8]}",
+            system_message=system_prompt
+        ).with_model("openai", "gpt-4o-mini")
         
-        response = await chat(
-            model="gpt-4o-mini",
-            messages=messages,
-            emergent_api_key=os.environ.get("EMERGENT_LLM_KEY")
-        )
+        response = await chat.send_message(UserMessage(text=f"User {user_name} says: {message_text}"))
         
-        if response and response.content:
+        if response:
             logger.info(f"[MIRA-AI] Generated contextual AI response for {user_phone[:6] if user_phone else 'unknown'}*** with {len(context_parts)} context items")
-            return response.content
+            return response
             
     except Exception as ai_err:
         logger.warning(f"[MIRA-AI] AI response failed, using patterns: {ai_err}")
