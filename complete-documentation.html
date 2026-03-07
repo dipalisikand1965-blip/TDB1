@@ -10,6 +10,8 @@
             --pink: #ec4899;
             --dark: #1f2937;
             --light: #f9fafb;
+            --green: #10b981;
+            --amber: #f59e0b;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
@@ -41,39 +43,60 @@
         .toc a:hover { text-decoration: underline; }
         .env-table td:first-child { font-family: monospace; font-weight: 600; }
         .highlight { background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .success-box { background: #dcfce7; border-left: 4px solid var(--green); padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .warning-box { background: #fef3c7; border-left: 4px solid var(--amber); padding: 15px; border-radius: 8px; margin: 15px 0; }
         footer { background: var(--dark); color: white; text-align: center; padding: 30px; margin-top: 40px; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🐾 The Doggy Company</h1>
+        <h1>The Doggy Company</h1>
         <p>Pet Life Operating System - Complete Technical Documentation</p>
-        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: December 7, 2026 | Version 3.2.0</p>
+        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: December 7, 2026 | Version 4.0.0</p>
     </div>
 
     <div class="container">
+        <!-- E2E Test Results -->
+        <div class="section">
+            <h2>E2E Test Results (December 7, 2026)</h2>
+            <div class="success-box">
+                <strong>All Systems Verified and Working</strong>
+                <p>Complete service flow tested: User Action → Service Request → Ticket → Admin Notification → Dashboard Update</p>
+            </div>
+            <table>
+                <tr><th>Component</th><th>Status</th><th>Details</th></tr>
+                <tr><td>Service Requests</td><td><span class="badge badge-live">WORKING</span></td><td>Creates tickets in service_desk_tickets</td></tr>
+                <tr><td>Admin Dashboard</td><td><span class="badge badge-live">WORKING</span></td><td>350 total requests, 19 action needed</td></tr>
+                <tr><td>WhatsApp (Gupshup)</td><td><span class="badge badge-live">WORKING</span></td><td>Messages submitted successfully</td></tr>
+                <tr><td>Email (Resend)</td><td><span class="badge badge-live">WORKING</span></td><td>Sending from woof@thedoggycompany.com</td></tr>
+                <tr><td>Razorpay</td><td><span class="badge badge-live">LIVE</span></td><td>Configured for thedoggycompany.com</td></tr>
+            </table>
+        </div>
+
         <!-- Table of Contents -->
         <div class="section toc">
-            <h2>📚 Table of Contents</h2>
+            <h2>Table of Contents</h2>
             <div class="grid">
                 <div>
                     <a href="#credentials">1. Credentials</a>
                     <a href="#integrations">2. Integrations Status</a>
                     <a href="#env-keys">3. Environment Keys</a>
                     <a href="#membership">4. Membership Plans</a>
+                    <a href="#service-flow">5. Universal Service Flow</a>
                 </div>
                 <div>
-                    <a href="#api">5. API Endpoints</a>
-                    <a href="#database">6. Database Schema</a>
-                    <a href="#notifications">7. Notification System</a>
-                    <a href="#deployment">8. Deployment Guide</a>
+                    <a href="#api">6. API Endpoints</a>
+                    <a href="#database">7. Database Schema</a>
+                    <a href="#notifications">8. Notification System</a>
+                    <a href="#deployment">9. Deployment Guide</a>
+                    <a href="#changelog">10. Changelog</a>
                 </div>
             </div>
         </div>
 
         <!-- Credentials -->
         <div class="section" id="credentials">
-            <h2>🔐 Credentials</h2>
+            <h2>1. Credentials</h2>
             <div class="grid">
                 <div class="card">
                     <h4>Test User Account</h4>
@@ -85,14 +108,14 @@
                     <p><strong>URL:</strong> <code>/admin</code></p>
                     <p><strong>Username:</strong> <code>aditya</code></p>
                     <p><strong>Password:</strong> <code>lola4304</code></p>
-                    <p style="margin-top: 10px; font-size: 0.9em; color: #666;">⚠️ Two-step login required</p>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #666;">Two-step login required</p>
                 </div>
             </div>
         </div>
 
         <!-- Integrations -->
         <div class="section" id="integrations">
-            <h2>🔌 Integrations Status</h2>
+            <h2>2. Integrations Status</h2>
             <table>
                 <tr>
                     <th>Integration</th>
@@ -100,267 +123,268 @@
                     <th>Details</th>
                 </tr>
                 <tr>
-                    <td><strong>Razorpay</strong></td>
-                    <td><span class="badge badge-live">✅ LIVE</span></td>
-                    <td>Key: <code>rzp_live_<REDACTED_ROTATED></code> - Payment orders working</td>
+                    <td><strong>Razorpay Payments</strong></td>
+                    <td><span class="badge badge-live">LIVE</span></td>
+                    <td>Key: <code>rzp_live_<REDACTED_ROTATED></code> | Domain: thedoggycompany.com</td>
                 </tr>
                 <tr>
                     <td><strong>Gupshup WhatsApp</strong></td>
-                    <td><span class="badge badge-live">✅ LIVE</span></td>
-                    <td>App: <code>The Doggy Company</code> | Phone: <code>918971702582</code></td>
+                    <td><span class="badge badge-live">LIVE</span></td>
+                    <td>App: "The Doggy Company" | Number: 918971702582</td>
                 </tr>
                 <tr>
                     <td><strong>Resend Email</strong></td>
-                    <td><span class="badge badge-live">✅ VERIFIED</span></td>
-                    <td>From: <code>woof@thedoggycompany.com</code> | Domain verified in Tokyo (ap-northeast-1)</td>
+                    <td><span class="badge badge-live">VERIFIED</span></td>
+                    <td>From: <code>woof@thedoggycompany.com</code> | Domain verified</td>
                 </tr>
                 <tr>
                     <td><strong>OpenAI (Mira AI)</strong></td>
-                    <td><span class="badge badge-success">✅ Working</span></td>
-                    <td>Via Emergent LLM Key - gpt-4o-mini for WhatsApp responses</td>
-                </tr>
-                <tr>
-                    <td><strong>MongoDB</strong></td>
-                    <td><span class="badge badge-success">✅ Working</span></td>
-                    <td>Local instance + Atlas ready</td>
+                    <td><span class="badge badge-live">LIVE</span></td>
+                    <td>Using Emergent LLM Key for GPT-4</td>
                 </tr>
                 <tr>
                     <td><strong>Shopify</strong></td>
-                    <td><span class="badge badge-success">✅ Working</span></td>
-                    <td>Synced from thedoggybakery.com - 2,197 products</td>
+                    <td><span class="badge badge-live">SYNCED</span></td>
+                    <td>thedoggybakery.com | 2,197+ products</td>
                 </tr>
                 <tr>
-                    <td><strong>ElevenLabs</strong></td>
-                    <td><span class="badge badge-success">✅ Working</span></td>
-                    <td>British voice (Lily) for Mira</td>
+                    <td><strong>MongoDB Atlas</strong></td>
+                    <td><span class="badge badge-live">CONNECTED</span></td>
+                    <td>Database: pet-os-live-test_database</td>
                 </tr>
                 <tr>
-                    <td><strong>Google Places</strong></td>
-                    <td><span class="badge badge-success">✅ Working</span></td>
-                    <td>Pet-friendly location search</td>
+                    <td><strong>YouTube API</strong></td>
+                    <td><span class="badge badge-live">LIVE</span></td>
+                    <td>Learn page video content</td>
                 </tr>
                 <tr>
-                    <td><strong>YouTube</strong></td>
-                    <td><span class="badge badge-success">✅ Working</span></td>
-                    <td>Video embeds for Learn pillar</td>
+                    <td><strong>Google Places API</strong></td>
+                    <td><span class="badge badge-live">LIVE</span></td>
+                    <td>Location-based services</td>
+                </tr>
+                <tr>
+                    <td><strong>ElevenLabs TTS</strong></td>
+                    <td><span class="badge badge-info">CONFIGURED</span></td>
+                    <td>Voice for Mira AI</td>
                 </tr>
             </table>
         </div>
 
         <!-- Environment Keys -->
         <div class="section" id="env-keys">
-            <h2>🔑 Environment Keys</h2>
-            <p>Location: <code>/app/backend/.env</code></p>
-            
-            <h3>Payment & Messaging</h3>
+            <h2>3. Environment Keys</h2>
+            <h3>Backend (.env)</h3>
             <table class="env-table">
                 <tr><th>Key</th><th>Value</th><th>Purpose</th></tr>
-                <tr><td>RAZORPAY_KEY_ID</td><td><code>rzp_live_<REDACTED_ROTATED></code></td><td>Razorpay Live API Key</td></tr>
-                <tr><td>RAZORPAY_KEY_SECRET</td><td><code>wNWqcJvv5K6b39kmMzOKVsQ3</code></td><td>Razorpay Secret</td></tr>
-                <tr><td>GUPSHUP_API_KEY</td><td><code>sk_2609497ce757467f87a955015da8854d</code></td><td>Gupshup WhatsApp API</td></tr>
-                <tr><td>GUPSHUP_APP_NAME</td><td><code>"The Doggy Company"</code></td><td>Must have quotes (spaces)</td></tr>
-                <tr><td>GUPSHUP_SOURCE_NUMBER</td><td><code>918971702582</code></td><td>WhatsApp Business Number</td></tr>
-                <tr><td>RESEND_API_KEY</td><td><code>re_RyFymGmF_QE6qJSpEH4CSKTiN3WQYUU9G</code></td><td>Email service (.com domain)</td></tr>
-                <tr><td>SENDER_EMAIL</td><td><code>woof@thedoggycompany.com</code></td><td>From email address</td></tr>
-            </table>
-
-            <h3>AI & External Services</h3>
-            <table class="env-table">
-                <tr><th>Key</th><th>Value</th><th>Purpose</th></tr>
-                <tr><td>EMERGENT_LLM_KEY</td><td><code>sk-emergent-cEb0eF956Fa6741A31</code></td><td>OpenAI via Emergent</td></tr>
-                <tr><td>ELEVENLABS_API_KEY</td><td><code>2738ad21884d7bf3ff...</code></td><td>Voice synthesis</td></tr>
-                <tr><td>GOOGLE_PLACES_API_KEY</td><td><code>AIzaSy<REDACTED_ROTATED></code></td><td>Location search</td></tr>
-                <tr><td>YOUTUBE_API_KEY</td><td><code>AIzaSyCEqC2I04NYLTvJmPNU7sWsrfcKLIwOWpU</code></td><td>Video content</td></tr>
-            </table>
-
-            <h3>Database & Core</h3>
-            <table class="env-table">
-                <tr><th>Key</th><th>Value</th><th>Purpose</th></tr>
-                <tr><td>MONGO_URL</td><td><code>mongodb://localhost:27017</code></td><td>MongoDB connection</td></tr>
+                <tr><td>MONGO_URL</td><td><code>mongodb://localhost:27017</code></td><td>Database connection</td></tr>
                 <tr><td>DB_NAME</td><td><code>pet-os-live-test_database</code></td><td>Database name</td></tr>
-                <tr><td>JWT_SECRET</td><td><code>tdb_super_secret_key_2025_woof</code></td><td>JWT signing</td></tr>
-                <tr><td>SHOPIFY_PRODUCTS_URL</td><td><code>https://thedoggybakery.com/products.json</code></td><td>Product sync</td></tr>
+                <tr><td>RAZORPAY_KEY_ID</td><td><code>rzp_live_<REDACTED_ROTATED></code></td><td>Payment gateway</td></tr>
+                <tr><td>RESEND_API_KEY</td><td><code>re_RyFymGmF_QE6qJSpEH4CSKTiN3WQYUU9G</code></td><td>Email service (.com domain)</td></tr>
+                <tr><td>SENDER_EMAIL</td><td><code>woof@thedoggycompany.com</code></td><td>From address</td></tr>
+                <tr><td>GUPSHUP_API_KEY</td><td><code>sk4wevmqj8cvrcvj9rnlsn8wr2eqg5zo</code></td><td>WhatsApp API</td></tr>
+                <tr><td>GUPSHUP_APP_NAME</td><td><code>"The Doggy Company"</code></td><td>WhatsApp app (quotes required!)</td></tr>
+                <tr><td>WHATSAPP_NUMBER</td><td><code>918971702582</code></td><td>Business WhatsApp</td></tr>
             </table>
+            <div class="warning-box">
+                <strong>Important:</strong> GUPSHUP_APP_NAME must be in quotes because it contains spaces!
+            </div>
         </div>
 
-        <!-- Membership -->
+        <!-- Membership Plans -->
         <div class="section" id="membership">
-            <h2>💳 Membership Plans (3-Tier Model)</h2>
+            <h2>4. Membership Plans</h2>
             <table>
                 <tr>
-                    <th>Tier</th>
-                    <th>Price (Yearly)</th>
-                    <th>Price (Monthly)</th>
-                    <th>Key Features</th>
+                    <th>Plan</th>
+                    <th>Price</th>
+                    <th>Features</th>
                 </tr>
                 <tr>
                     <td><strong>Free</strong></td>
-                    <td>₹0</td>
-                    <td>-</td>
-                    <td>Pet Soul profile, unlimited pets, Mira basic, browse pillars, book services</td>
+                    <td>0</td>
+                    <td>Basic access, limited Mira queries (3/day)</td>
                 </tr>
                 <tr>
-                    <td><strong>Essential</strong> <span class="badge badge-info">Popular</span></td>
-                    <td>₹2,499 (+18% GST)</td>
-                    <td>₹249</td>
-                    <td>+ Mira full access, Mira OS, Concierge chat, Health Vault, Paw Points 2x</td>
+                    <td><strong>Essential</strong></td>
+                    <td>2,499/month</td>
+                    <td>10% discounts, unlimited Mira, priority support, birthday rewards</td>
                 </tr>
                 <tr>
-                    <td><strong>Premium</strong> <span class="badge badge-warning">VIP</span></td>
-                    <td>₹9,999 (+18% GST)</td>
-                    <td>₹999</td>
-                    <td>+ Dedicated Pet Manager, White-glove, 24/7 VIP, Exclusive events, Birthday gift</td>
+                    <td><strong>Premium</strong></td>
+                    <td>9,999/month</td>
+                    <td>20% discounts, VIP concierge, exclusive events, all Essential features</td>
                 </tr>
             </table>
+        </div>
+
+        <!-- Universal Service Flow -->
+        <div class="section" id="service-flow">
+            <h2>5. Universal Service Command Flow</h2>
             <div class="highlight">
-                <strong>All tiers include:</strong> Unlimited pets, Access to all 14 pillars, Book & pay for services, Upgrade anytime
+                <strong>Flow:</strong> User Intent → Service Request → Service Desk Ticket → Admin Notification → Member Notification → Pillar Request → Channel Intakes
             </div>
+            <h3>Service Request Sources</h3>
+            <ul>
+                <li><strong>Mira OS:</strong> Posts to <code>/api/concierge/mira-request</code></li>
+                <li><strong>Learn (Ask Mira):</strong> Posts to <code>/api/service-requests</code></li>
+                <li><strong>Checkout/Orders:</strong> Posts to <code>/api/orders</code> (auto-creates ticket)</li>
+                <li><strong>Service Booking:</strong> Posts to <code>/api/service-requests</code></li>
+            </ul>
+            <h3>Collections Updated</h3>
+            <table>
+                <tr><th>Collection</th><th>Count</th><th>Purpose</th></tr>
+                <tr><td>service_requests</td><td>86+</td><td>New universal requests</td></tr>
+                <tr><td>service_desk_tickets</td><td>262+</td><td>All service desk items</td></tr>
+                <tr><td>tickets</td><td>80+</td><td>Legacy tickets</td></tr>
+                <tr><td>admin_notifications</td><td>496+</td><td>Admin alerts</td></tr>
+                <tr><td>member_notifications</td><td>Varies</td><td>User notifications</td></tr>
+            </table>
         </div>
 
         <!-- API Endpoints -->
         <div class="section" id="api">
-            <h2>🔗 Key API Endpoints</h2>
+            <h2>6. Key API Endpoints</h2>
             
             <h3>Authentication</h3>
-            <pre><code>POST /api/auth/register      - User registration
-POST /api/auth/login         - User login  
-GET  /api/auth/me            - Get current user</code></pre>
+            <pre><code>POST /api/auth/login     - User login (returns access_token)
+POST /api/auth/register  - New user registration
+GET  /api/auth/me        - Get current user profile</code></pre>
 
-            <h3>Membership & Payments</h3>
-            <pre><code>GET  /api/membership/plans                - List all plans
-POST /api/membership/create-order         - Create Razorpay order
-POST /api/membership/payment/verify       - Verify payment
-GET  /api/membership/status?email={email} - Check membership</code></pre>
-
-            <h3>Services (Unified)</h3>
-            <pre><code>GET  /api/service-box/services            - All services
-GET  /api/service-box/services?pillar=care - Filter by pillar
-PUT  /api/service-box/services/{id}       - Update (admin)</code></pre>
-
-            <h3>WhatsApp (Gupshup)</h3>
-            <pre><code>GET  /api/whatsapp/status          - Configuration status
-POST /api/whatsapp/webhook         - Receive incoming messages
-POST /api/whatsapp/gupshup/send    - Send text message
-POST /api/whatsapp/test-notification - Test notifications
-POST /api/whatsapp/mira-reply      - Send Mira AI response</code></pre>
-
-            <h3>Multi-Channel Messaging</h3>
-            <pre><code>POST /api/tickets/messaging/reply/multi-channel
-  Body: { ticket_id, message, channels: ["in_app", "whatsapp", "email"] }</code></pre>
+            <h3>Service Flow</h3>
+            <pre><code>POST /api/service-requests           - Create service request (universal)
+POST /api/concierge/mira-request     - Mira conversation ticket
+POST /api/orders                     - Create order (auto-creates ticket)
+GET  /api/concierge/requests         - Admin: Get all requests
+GET  /api/concierge/stats            - Admin: Dashboard statistics
+GET  /api/concierge/queue            - Admin: Service desk queue</code></pre>
 
             <h3>Learn Content & Ask Mira</h3>
             <pre><code>GET  /api/learn/guides       - Get learn guides
 GET  /api/learn/videos       - Get learn videos
 POST /api/os/learn/ask-mira  - Ask Mira AI a question (Learn page)</code></pre>
+
+            <h3>Products & Services</h3>
+            <pre><code>GET /api/products                    - Get products (supports category filter)
+GET /api/service-box/services        - Get services by pillar
+GET /api/membership/plans            - Get membership plans
+POST /api/membership/create-order    - Create Razorpay payment order</code></pre>
+
+            <h3>Notifications</h3>
+            <pre><code>POST /api/whatsapp/test-notification - Test WhatsApp (welcome, booking, payment, membership)
+POST /api/admin/communications/test-email - Test email sending
+GET  /api/whatsapp/status            - Check WhatsApp integration status</code></pre>
+
+            <h3>Admin Dashboard</h3>
+            <pre><code>GET /api/admin/dashboard             - Comprehensive stats from all collections</code></pre>
         </div>
 
-        <!-- Database -->
+        <!-- Database Schema -->
         <div class="section" id="database">
-            <h2>🗄️ Database Schema</h2>
+            <h2>7. Database Schema</h2>
+            <h3>Key Collections</h3>
             <table>
-                <tr><th>Collection</th><th>Count</th><th>Purpose</th></tr>
-                <tr><td><code>services_master</code></td><td>1,115+</td><td><strong>Primary source</strong> for all services</td></tr>
-                <tr><td><code>products_master</code></td><td>2,197+</td><td>Shopify-synced products</td></tr>
-                <tr><td><code>users</code></td><td>-</td><td>User accounts with membership</td></tr>
-                <tr><td><code>pets</code></td><td>-</td><td>Pet profiles with soul scores</td></tr>
-                <tr><td><code>tickets</code></td><td>-</td><td>Service desk tickets</td></tr>
-                <tr><td><code>memberships</code></td><td>-</td><td>Membership orders</td></tr>
-                <tr><td><code>[pillar]_bundles</code></td><td>-</td><td>Pillar-specific bundles</td></tr>
-                <tr><td><code>learn_guides</code></td><td>-</td><td>Learn pillar content</td></tr>
+                <tr><th>Collection</th><th>Documents</th><th>Purpose</th></tr>
+                <tr><td>users</td><td>9+</td><td>User accounts</td></tr>
+                <tr><td>pets</td><td>19+</td><td>Pet profiles</td></tr>
+                <tr><td>memberships</td><td>3+</td><td>Active memberships</td></tr>
+                <tr><td>products</td><td>2,197+</td><td>Shopify products</td></tr>
+                <tr><td>services_master</td><td>1,115+</td><td>All services</td></tr>
+                <tr><td>service_requests</td><td>86+</td><td>Universal requests</td></tr>
+                <tr><td>service_desk_tickets</td><td>262+</td><td>Service desk items</td></tr>
+                <tr><td>orders</td><td>3+</td><td>Product orders</td></tr>
+                <tr><td>admin_notifications</td><td>496+</td><td>Admin alerts</td></tr>
             </table>
-            <div class="highlight">
-                ⚠️ <strong>Important:</strong> Always use <code>services_master</code> for services. The <code>service_catalog</code> collection (84 items) is deprecated.
+        </div>
+
+        <!-- Notification System -->
+        <div class="section" id="notifications">
+            <h2>8. Notification System</h2>
+            
+            <h3>WhatsApp Notification Types</h3>
+            <ul>
+                <li><code>welcome</code> - New user registration</li>
+                <li><code>payment</code> - Payment received confirmation</li>
+                <li><code>membership</code> - Membership activated</li>
+                <li><code>booking</code> - Service booked confirmation</li>
+                <li><code>birthday</code> - Pet birthday reminder</li>
+            </ul>
+
+            <h3>Email Notifications</h3>
+            <ul>
+                <li>Service request confirmation</li>
+                <li>Order confirmation</li>
+                <li>Membership welcome</li>
+                <li>Admin ticket reply</li>
+            </ul>
+
+            <div class="success-box">
+                <strong>Tested & Working:</strong> Both WhatsApp (via Gupshup) and Email (via Resend) notifications verified on December 7, 2026.
             </div>
         </div>
 
-        <!-- Notifications -->
-        <div class="section" id="notifications">
-            <h2>🔔 Multi-Channel Notification System</h2>
-            <p>When events occur, notifications are sent via all available channels:</p>
-            <table>
-                <tr>
-                    <th>Event</th>
-                    <th>WhatsApp</th>
-                    <th>Email</th>
-                    <th>In-App</th>
-                </tr>
-                <tr><td>New user registration</td><td>✅</td><td>-</td><td>-</td></tr>
-                <tr><td>Payment received</td><td>✅</td><td>✅</td><td>✅</td></tr>
-                <tr><td>Membership activated</td><td>✅</td><td>✅</td><td>✅</td></tr>
-                <tr><td>Service booked</td><td>✅</td><td>✅</td><td>✅</td></tr>
-                <tr><td>Concierge reply</td><td>✅</td><td>✅</td><td>✅</td></tr>
-                <tr><td>Pet birthday (7 days)</td><td>✅</td><td>✅</td><td>-</td></tr>
-                <tr><td>Order shipped</td><td>✅</td><td>✅</td><td>-</td></tr>
-                <tr><td>Incoming WhatsApp</td><td>✅ Mira AI auto-reply</td><td>-</td><td>Ticket created</td></tr>
-            </table>
-
-            <h3>Mira AI WhatsApp Auto-Response</h3>
-            <p>When users message the WhatsApp number <code>918971702582</code>:</p>
-            <ol>
-                <li>Message received via Gupshup webhook</li>
-                <li>Ticket created in Service Desk</li>
-                <li>Mira AI generates intelligent response (GPT-4o-mini)</li>
-                <li>Auto-reply sent via Gupshup</li>
-                <li>Admin notified for follow-up</li>
-            </ol>
-        </div>
-
-        <!-- Deployment -->
+        <!-- Deployment Guide -->
         <div class="section" id="deployment">
-            <h2>🚀 Deployment Checklist</h2>
-            <ol>
-                <li>☐ Go to Admin panel (<code>/admin</code>)</li>
-                <li>☐ Login with aditya/lola4304 (two-step)</li>
-                <li>☐ Click <strong>MASTER SYNC</strong> button</li>
-                <li>☐ Wait for all 8 steps to complete</li>
-                <li>☐ Verify Shopify products appear</li>
-                <li>☐ Test membership purchase with Razorpay</li>
-                <li>☐ Configure Gupshup webhook: <code>https://thedoggycompany.com/api/whatsapp/webhook</code></li>
-                <li>☐ Test WhatsApp messaging</li>
-                <li>☐ Whitelist MongoDB Atlas IPs</li>
-            </ol>
+            <h2>9. Deployment Checklist</h2>
+            <h3>Pre-Deployment</h3>
+            <ul>
+                <li>Verify all environment variables in production .env</li>
+                <li>Ensure GUPSHUP_APP_NAME is quoted: <code>"The Doggy Company"</code></li>
+                <li>Configure Gupshup webhook URL to production domain</li>
+                <li>Verify Razorpay is configured for thedoggycompany.com</li>
+            </ul>
+            
+            <h3>Post-Deployment</h3>
+            <ul>
+                <li>Run MASTER SYNC in Admin panel</li>
+                <li>Test one membership payment</li>
+                <li>Test WhatsApp message delivery</li>
+                <li>Verify email delivery</li>
+                <li>Monitor service desk for incoming tickets</li>
+            </ul>
 
-            <h3>Common Commands</h3>
-            <pre><code># Restart services
-sudo supervisorctl restart backend
-sudo supervisorctl restart frontend
-
-# Check logs
-tail -n 100 /var/log/supervisor/backend.err.log
-
-# Test APIs
-curl https://thedoggycompany.com/api/health
-curl https://thedoggycompany.com/api/whatsapp/status</code></pre>
+            <h3>Gupshup Webhook Configuration</h3>
+            <pre><code>Webhook URL: https://thedoggycompany.com/api/whatsapp/webhook
+Method: POST
+Content-Type: application/json</code></pre>
         </div>
 
-        <!-- File Structure -->
-        <div class="section">
-            <h2>📁 Key Files</h2>
-            <pre><code>/app
-├── backend/
-│   ├── server.py                 # Main FastAPI app
-│   ├── membership_routes.py      # Razorpay integration
-│   ├── whatsapp_routes.py        # Gupshup + Mira AI
-│   ├── whatsapp_notifications.py # Notification templates
-│   ├── mira_service_desk.py      # Service desk + multi-channel
-│   ├── ticket_messaging.py       # Email/WhatsApp messaging
-│   └── .env                      # Environment variables
-└── frontend/
-    └── src/
-        ├── pages/
-        │   ├── MembershipPage.jsx    # 3-tier pricing
-        │   ├── DinePage.jsx          # Dine pillar
-        │   └── LearnPage.jsx         # Learn content
-        └── components/
-            └── Mira/
-                └── ConciergeButton.jsx # C® button (In-App + WhatsApp)</code></pre>
+        <!-- Changelog -->
+        <div class="section" id="changelog">
+            <h2>10. Changelog - December 7, 2026</h2>
+            
+            <h3>Critical Fixes</h3>
+            <ul>
+                <li><strong>MiraDemoPage:</strong> Fixed ticket creation - now posts to backend instead of local state only</li>
+                <li><strong>LearnPage Ask Mira:</strong> Added service request creation after every inquiry</li>
+                <li><strong>Admin Dashboard:</strong> Now shows comprehensive stats from all collections (350 total, 19 urgent)</li>
+                <li><strong>Concierge Stats:</strong> Fixed duplicate endpoint issue - merged all collections</li>
+                <li><strong>ConciergeRequestsDashboard:</strong> Fixed auth (Basic instead of Bearer) and stats display</li>
+            </ul>
+
+            <h3>Celebrate Page Fixes</h3>
+            <ul>
+                <li>Fixed breed cakes filtering - URL params now read correctly</li>
+                <li>Enhanced ProductCard modal with flavors, sizes, and breed tags</li>
+                <li>Added "Load More" button to ServiceCatalogSection</li>
+            </ul>
+
+            <h3>Email Domain Fix</h3>
+            <ul>
+                <li>Updated all 30 occurrences of <code>thedoggycompany.in</code> to <code>thedoggycompany.com</code></li>
+                <li>Updated Resend API key for .com domain</li>
+            </ul>
+
+            <h3>WhatsApp Fix</h3>
+            <ul>
+                <li>Changed click-to-chat from <code>api.whatsapp.com</code> to <code>wa.me</code></li>
+            </ul>
         </div>
     </div>
 
     <footer>
-        <p>🐾 Built with love for Kouros & Mystique</p>
-        <p style="margin-top: 10px; opacity: 0.7;">The Doggy Company - Pet Life Operating System</p>
-        <p style="margin-top: 5px; opacity: 0.5;">Documentation generated: December 7, 2026</p>
+        <p><strong>The Doggy Company</strong> - Pet Life Operating System</p>
+        <p style="margin-top: 10px; opacity: 0.7;">Built with love, in memory of Kouros & Mystique</p>
+        <p style="margin-top: 5px; opacity: 0.5;">Documentation generated: December 7, 2026 | Version 4.0.0</p>
     </footer>
 </body>
 </html>

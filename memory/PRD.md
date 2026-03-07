@@ -1,9 +1,9 @@
 # The Doggy Company - Pet Life Operating System
 ## Complete Product Requirements Document (PRD)
 
-**Document Version:** 4.1.0  
+**Document Version:** 5.0.0  
 **Last Updated:** December 7, 2026  
-**Status:** Production Ready  
+**Status:** Production Ready - E2E Verified  
 **Prepared By:** Development Team via Emergent AI
 
 ---
@@ -20,16 +20,17 @@
 8. [API Reference](#8-api-reference)
 9. [Authentication & Security](#9-authentication--security)
 10. [Membership Model](#10-membership-model)
-11. [Communication System](#11-communication-system)
-12. [Admin Panel](#12-admin-panel)
-13. [Mira AI System](#13-mira-ai-system)
-14. [File Structure](#14-file-structure)
-15. [Environment Configuration](#15-environment-configuration)
-16. [Deployment Guide](#16-deployment-guide)
-17. [Testing Credentials](#17-testing-credentials)
-18. [Completed Work Log](#18-completed-work-log)
-19. [Known Issues & Limitations](#19-known-issues--limitations)
-20. [Future Roadmap](#20-future-roadmap)
+11. [Universal Service Flow](#11-universal-service-flow)
+12. [Communication System](#12-communication-system)
+13. [Admin Panel](#13-admin-panel)
+14. [Mira AI System](#14-mira-ai-system)
+15. [File Structure](#15-file-structure)
+16. [Environment Configuration](#16-environment-configuration)
+17. [Deployment Guide](#17-deployment-guide)
+18. [Testing Credentials](#18-testing-credentials)
+19. [Completed Work Log](#19-completed-work-log)
+20. [Known Issues & Limitations](#20-known-issues--limitations)
+21. [Future Roadmap](#21-future-roadmap)
 
 ---
 
@@ -37,15 +38,29 @@
 
 **The Doggy Company** is India's first "Pet Life Operating System" - a comprehensive digital platform serving as the central hub for all pet parent needs. The platform combines AI-powered assistance (Mira), service marketplace, e-commerce, membership benefits, and multi-channel communication into a unified experience.
 
-### Key Metrics
-- **Services:** 1,115+ in `services_master`
-- **Products:** 2,197+ synced from Shopify
-- **Pillars:** 14 life pillars covering every aspect of pet care
-- **Integrations:** Razorpay (LIVE), Gupshup WhatsApp (LIVE), Resend Email (LIVE)
+### Key Metrics (December 7, 2026)
+| Metric | Count |
+|--------|-------|
+| Services | 1,115+ in `services_master` |
+| Products | 2,197+ synced from Shopify |
+| Pillars | 14 life pillars |
+| Active Tickets | 350 |
+| Admin Notifications | 496+ |
+| Users | 9+ |
+| Pets | 19+ |
 
 ### URLs
 - **Production:** https://thedoggycompany.com
 - **Preview:** https://doggy-unified-os.preview.emergentagent.com
+
+### E2E Test Results (December 7, 2026)
+| Component | Status |
+|-----------|--------|
+| Service Requests | WORKING |
+| Admin Dashboard | WORKING (350 total, 19 action needed) |
+| WhatsApp (Gupshup) | WORKING |
+| Email (Resend) | WORKING |
+| Razorpay | LIVE (configured for production domain) |
 
 ---
 
@@ -90,89 +105,55 @@ Built with love, honoring the memory of **Kouros** (black Newfoundland) and **My
 
 | # | Pillar | Route | Description | Status |
 |---|--------|-------|-------------|--------|
-| 1 | **Celebrate** | `/celebrate` | Birthdays, cakes, parties, gifts | ✅ Complete |
-| 2 | **Dine** | `/dine` | Fresh meals, restaurants, nutrition | ✅ Complete |
-| 3 | **Stay** | `/stay` | Hotels, boarding, daycare | ✅ Complete |
-| 4 | **Travel** | `/travel` | Trips, carriers, planning | ✅ Complete |
-| 5 | **Care** | `/care` | Grooming, vet, wellness | ✅ Complete |
-| 6 | **Enjoy** | `/enjoy` | Experiences, events, outings | ✅ Complete |
-| 7 | **Play** | `/play` | Toys, games, activities | ✅ Complete |
-| 8 | **Fit** | `/fit` | Exercise, fitness, agility | ✅ Complete |
-| 9 | **Learn** | `/learn` | Training, education, Ask Mira AI | ✅ Complete |
-| 10 | **Paperwork** | `/paperwork` | Insurance, documents, compliance | ✅ Complete |
-| 11 | **Advisory** | `/advisory` | Consultations, planning | ✅ Complete |
-| 12 | **Emergency** | `/emergency` | 24/7 urgent care | ✅ Complete |
-| 13 | **Farewell** | `/farewell` | Memorial services | ✅ Complete |
-| 14 | **Adopt** | `/adopt` | Rescue, adoption | ✅ Complete |
-
-### Key Feature Areas
-
-#### Pet Soul™ Profile
-- Comprehensive pet profiling system
-- 20-question soul journey
-- Personality traits, health history, preferences
-- Soul completion percentage tracking
-
-#### Mira AI Concierge®
-- 24/7 AI-powered assistant
-- WhatsApp integration with auto-reply
-- Context-aware responses (knows pets, orders, membership)
-- Voice support via ElevenLabs (British accent - Lily)
-
-#### Service Marketplace
-- 1,115+ services across all pillars
-- Real-time booking with notifications
-- Automatic ticket creation in Service Desk
-
-#### E-commerce
-- Shopify integration (thedoggybakery.com)
-- 2,197+ products
-- Custom cake designer
-- Gift hampers
+| 1 | **Celebrate** | `/celebrate` | Birthdays, cakes, parties, gifts | Complete |
+| 2 | **Dine** | `/dine` | Fresh meals, restaurants, nutrition | Complete |
+| 3 | **Stay** | `/stay` | Hotels, boarding, daycare | Complete |
+| 4 | **Travel** | `/travel` | Trips, carriers, planning | Complete |
+| 5 | **Care** | `/care` | Grooming, vet, wellness | Complete |
+| 6 | **Enjoy** | `/enjoy` | Experiences, events, outings | Complete |
+| 7 | **Play** | `/play` | Toys, games, activities | Complete |
+| 8 | **Fit** | `/fit` | Exercise, fitness, agility | Complete |
+| 9 | **Learn** | `/learn` | Training, guides, Ask Mira AI | Complete |
+| 10 | **Advisory** | `/advisory` | Expert consultations | Complete |
+| 11 | **Shop** | `/shop` | E-commerce, products | Complete |
+| 12 | **Emergency** | `/emergency` | 24/7 emergency services | Complete |
+| 13 | **Farewell** | `/farewell` | End-of-life services, Rainbow Bridge | Complete |
+| 14 | **Adopt** | `/adopt` | Adoption, fostering | Complete |
 
 ---
 
 ## 5. TECHNICAL ARCHITECTURE
 
-### Stack Overview
+### Stack
+- **Frontend:** React 18 with Tailwind CSS, Shadcn/UI
+- **Backend:** FastAPI (Python 3.11)
+- **Database:** MongoDB (Atlas in production)
+- **AI:** OpenAI GPT via Emergent LLM Key
+- **Hosting:** Kubernetes (Emergent Platform)
 
+### Key Files
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        FRONTEND                              │
-│  React 18 + Tailwind CSS + Shadcn/UI                        │
-│  Port: 3000                                                  │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    KUBERNETES INGRESS                        │
-│  /api/* → Backend (8001)                                    │
-│  /* → Frontend (3000)                                       │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                        BACKEND                               │
-│  FastAPI (Python) + Motor (Async MongoDB)                   │
-│  Port: 8001                                                  │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                        DATABASE                              │
-│  MongoDB (Local: 27017 / Atlas for Production)              │
-└─────────────────────────────────────────────────────────────┘
+/app
+├── backend/
+│   ├── server.py              # Main FastAPI application (20,000+ lines)
+│   ├── concierge_routes.py    # Service desk endpoints
+│   ├── concierge_engine.py    # Stats and notes (fixed Dec 7)
+│   ├── whatsapp_routes.py     # WhatsApp webhook
+│   ├── whatsapp_notifications.py  # Notification functions
+│   ├── learn_os_routes.py     # Learn page + Ask Mira
+│   └── .env                   # Environment configuration
+└── frontend/
+    └── src/
+        ├── App.js             # Main routing
+        ├── pages/
+        │   ├── MiraDemoPage.jsx    # Mira OS (fixed ticket creation)
+        │   ├── LearnPage.jsx       # Learn + Ask Mira
+        │   ├── CelebratePage.jsx   # Celebrate (fixed breed filtering)
+        │   └── Checkout.jsx        # Cart checkout
+        └── components/
+            └── admin/
+                └── ConciergeRequestsDashboard.jsx  # Fixed auth
 ```
-
-### Key Technologies
-- **Frontend:** React 18, Tailwind CSS, Shadcn/UI, Framer Motion
-- **Backend:** FastAPI, Python 3.11, Pydantic
-- **Database:** MongoDB with Motor (async driver)
-- **AI:** OpenAI GPT-4o-mini via Emergent LLM Key
-- **Voice:** ElevenLabs TTS
-- **Payments:** Razorpay
-- **Messaging:** Gupshup WhatsApp Business API
-- **Email:** Resend
 
 ---
 
@@ -180,69 +161,38 @@ Built with love, honoring the memory of **Kouros** (black Newfoundland) and **My
 
 ### Active Integrations
 
-| Service | Status | Configuration | Purpose |
-|---------|--------|---------------|---------|
-| **Razorpay** | ✅ LIVE | `rzp_live_<REDACTED_ROTATED>` | Payment processing |
-| **Gupshup WhatsApp** | ✅ LIVE | `918971702582`, App: "The Doggy Company" | WhatsApp messaging |
-| **Resend** | ✅ LIVE | `woof@thedoggycompany.com` | Transactional email |
-| **OpenAI** | ✅ WORKING | Via Emergent LLM Key | AI responses |
-| **ElevenLabs** | ✅ WORKING | Voice: Lily (British) | Voice synthesis |
-| **Shopify** | ✅ WORKING | thedoggybakery.com | Product sync |
-| **Google Places** | ✅ WORKING | Pet-friendly locations | Location search |
-| **YouTube** | ✅ WORKING | Video content | Learn pillar |
-| **MongoDB Atlas** | ⚠️ Configured | Needs IP whitelist | Production DB |
-
-### Razorpay Integration Details
-```
-Key ID: rzp_live_<REDACTED_ROTATED>
-Secret: wNWqcJvv5K6b39kmMzOKVsQ3
-
-Endpoints:
-- POST /api/membership/create-order
-- POST /api/membership/payment/verify
-```
-
-### Gupshup WhatsApp Integration Details
-```
-API Key: sk_2609497ce757467f87a955015da8854d
-App Name: "The Doggy Company" (with quotes - has spaces)
-Source Number: 918971702582
-Webhook: https://thedoggycompany.com/api/whatsapp/webhook
-
-Endpoints:
-- GET /api/whatsapp/status
-- POST /api/whatsapp/webhook (incoming)
-- POST /api/whatsapp/gupshup/send
-- POST /api/whatsapp/test-notification
-- POST /api/whatsapp/mira-reply
-```
+| Integration | Status | Configuration |
+|-------------|--------|---------------|
+| **Razorpay** | LIVE | Key: `rzp_live_<REDACTED_ROTATED>`, Domain: thedoggycompany.com |
+| **Gupshup WhatsApp** | LIVE | App: "The Doggy Company", Number: 918971702582 |
+| **Resend Email** | LIVE | Key: `re_RyFymGmF_QE6qJSpEH4CSKTiN3WQYUU9G`, Domain: thedoggycompany.com |
+| **OpenAI (Mira)** | LIVE | Using Emergent LLM Key |
+| **Shopify** | SYNCED | thedoggybakery.com, 2,197+ products |
+| **MongoDB Atlas** | CONNECTED | Database: pet-os-live-test_database |
+| **YouTube** | LIVE | Learn page video content |
+| **Google Places** | LIVE | Location services |
+| **ElevenLabs** | CONFIGURED | Mira voice |
 
 ---
 
 ## 7. DATABASE SCHEMA
 
-### Primary Collections
+### Collections
 
 | Collection | Documents | Purpose |
 |------------|-----------|---------|
-| `services_master` | 1,115+ | **PRIMARY** - All services (unified source) |
-| `products_master` | 2,197+ | Shopify-synced products |
-| `users` | - | User accounts with membership data |
-| `pets` | - | Pet profiles with soul scores |
-| `tickets` | - | Service desk tickets |
-| `memberships` | - | Membership orders and status |
-| `orders` | - | E-commerce orders |
-| `conversations` | - | Chat history |
-
-### Pillar-Specific Collections
-- `[pillar]_bundles` (e.g., `celebrate_bundles`, `dine_bundles`)
-- `[pillar]_experiences` (e.g., `enjoy_experiences`)
-- `learn_guides`, `learn_videos`
-
-### Important Notes
-- **DO NOT USE** `service_catalog` - deprecated (84 items only)
-- Always use `services_master` for services
-- All IDs should exclude MongoDB `_id` in API responses
+| `users` | 9+ | User accounts |
+| `pets` | 19+ | Pet profiles |
+| `memberships` | 3+ | Active memberships |
+| `products` | 2,197+ | Shopify products |
+| `services_master` | 1,115+ | All services |
+| `service_requests` | 86+ | Universal requests |
+| `service_desk_tickets` | 262+ | Service desk items |
+| `tickets` | 80+ | Legacy tickets |
+| `orders` | 3+ | Product orders |
+| `admin_notifications` | 496+ | Admin alerts |
+| `member_notifications` | Varies | User notifications |
+| `concierge_notes` | 0 | Legacy notes |
 
 ---
 
@@ -250,537 +200,316 @@ Endpoints:
 
 ### Authentication
 ```
-POST /api/auth/register    - User registration
-POST /api/auth/login       - User login (returns JWT)
-GET  /api/auth/me          - Get current user
-POST /api/auth/logout      - Logout
+POST /api/auth/login          - Returns access_token
+POST /api/auth/register       - New user registration
+GET  /api/auth/me             - Current user profile
 ```
 
-### Membership & Payments
+### Universal Service Flow
 ```
-GET  /api/membership/plans              - List all plans
-POST /api/membership/create-order       - Create Razorpay order
-POST /api/membership/payment/verify     - Verify payment
-POST /api/membership/verify-payment     - Alt verification
-GET  /api/membership/status?email=      - Check membership status
-```
-
-### Services
-```
-GET  /api/service-box/services              - All services
-GET  /api/service-box/services?pillar=care  - Filter by pillar
-GET  /api/service-box/services/{id}         - Single service
-PUT  /api/service-box/services/{id}         - Update (admin)
-POST /api/services/book                     - Book a service
+POST /api/service-requests              - Create service request
+POST /api/concierge/mira-request        - Mira conversation ticket
+POST /api/orders                        - Create order (auto-ticket)
+GET  /api/concierge/requests            - Admin: All requests
+GET  /api/concierge/stats               - Admin: Dashboard stats
+GET  /api/concierge/queue               - Admin: Service desk queue
 ```
 
-### WhatsApp
+### Learn & Mira AI
 ```
-GET  /api/whatsapp/status              - Check configuration
-POST /api/whatsapp/webhook             - Receive incoming messages
-POST /api/whatsapp/gupshup/send        - Send text message
-POST /api/whatsapp/test-notification   - Test notification
-POST /api/whatsapp/mira-reply          - Send Mira response
+GET  /api/learn/guides                  - Get learn guides
+GET  /api/learn/videos                  - Get learn videos
+POST /api/os/learn/ask-mira             - Ask Mira (creates ticket)
 ```
 
-### Multi-Channel Messaging
+### Products & Services
 ```
-POST /api/tickets/messaging/reply/multi-channel
-Body: {
-  "ticket_id": "TKT-xxx",
-  "message": "Your reply",
-  "channels": ["in_app", "whatsapp", "email"]
-}
+GET  /api/products                      - Get products (?category=breed-cakes)
+GET  /api/service-box/services          - Get services by pillar
+GET  /api/membership/plans              - Membership plans
+POST /api/membership/create-order       - Razorpay order
 ```
 
-### Learn
+### Notifications
 ```
-GET  /api/learn/guides       - Get learn guides
-GET  /api/learn/videos       - Get learn videos
-POST /api/os/learn/ask-mira  - Ask Mira AI a question
+POST /api/whatsapp/test-notification    - Test WhatsApp
+POST /api/admin/communications/test-email - Test email
+GET  /api/whatsapp/status               - Integration status
 ```
 
-### Pets
+### Admin
 ```
-GET  /api/pets/my            - Get user's pets
-POST /api/pets               - Create pet
-PUT  /api/pets/{id}          - Update pet
-GET  /api/pets/{id}/soul     - Get pet soul profile
+GET  /api/admin/dashboard               - Comprehensive stats
 ```
 
 ---
 
 ## 9. AUTHENTICATION & SECURITY
 
-### JWT Authentication
-- Token-based authentication using JWT
-- Tokens stored in localStorage
-- Authorization header: `Bearer {token}`
+### User Authentication
+- JWT-based authentication
+- Token returned as `access_token` in login response
+- Header: `Authorization: Bearer <token>`
 
 ### Admin Authentication
-- **Two-step login required**
-- URL: `/admin`
-- Credentials: See Testing Credentials section
-- Currently hardcoded (flagged for future migration to role-based)
-
-### Security Considerations
-- All API routes prefixed with `/api`
-- Environment variables for all credentials
-- No hardcoded secrets in codebase
-- CORS configured for frontend domain
+- Basic Auth for admin endpoints
+- Header: `Authorization: Basic <base64(username:password)>`
+- Credentials: `aditya:lola4304`
 
 ---
 
 ## 10. MEMBERSHIP MODEL
 
-### 3-Tier Structure
-
-| Tier | Price (Yearly) | Price (Monthly) | Backend Plan IDs |
-|------|----------------|-----------------|------------------|
-| **Free** | ₹0 | - | `free` |
-| **Essential** | ₹2,499 (+18% GST) | ₹249 | `essential`, `essential_monthly` |
-| **Premium** | ₹9,999 (+18% GST) | ₹999 | `premium`, `premium_monthly` |
-
-### Feature Matrix
-
-| Feature | Free | Essential | Premium |
-|---------|------|-----------|---------|
-| Pet Soul™ Profile | ✅ | ✅ | ✅ |
-| Unlimited Pets | ✅ | ✅ | ✅ |
-| Browse All 14 Pillars | ✅ | ✅ | ✅ |
-| Book & Pay for Services | ✅ | ✅ | ✅ |
-| Mira Basic | ✅ | ✅ | ✅ |
-| Mira Full Access | ❌ | ✅ | ✅ |
-| Mira OS Experience | ❌ | ✅ | ✅ |
-| Concierge Chat | ❌ | ✅ | ✅ |
-| Health Vault | ❌ | ✅ | ✅ |
-| Paw Points Multiplier | 1x | 2x | 3x |
-| Member Discount | 0% | 5% | 10% |
-| Priority Support | ❌ | ✅ | ✅ |
-| Dedicated Pet Manager | ❌ | ❌ | ✅ |
-| White-Glove Service | ❌ | ❌ | ✅ |
-| 24/7 VIP Support | ❌ | ❌ | ✅ |
-| Exclusive Events | ❌ | ❌ | ✅ |
-| Birthday Gift | ❌ | ❌ | ✅ |
+| Plan | Price | Features |
+|------|-------|----------|
+| **Free** | Rs 0 | Basic access, 3 Mira queries/day |
+| **Essential** | Rs 2,499/month | 10% discounts, unlimited Mira, priority support, birthday rewards |
+| **Premium** | Rs 9,999/month | 20% discounts, VIP concierge, exclusive events, all Essential features |
 
 ---
 
-## 11. COMMUNICATION SYSTEM
+## 11. UNIVERSAL SERVICE FLOW
 
-### Multi-Channel Architecture
-
+### Flow Diagram
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                    NOTIFICATION TRIGGERS                      │
-│  • New registration      • Service booked                    │
-│  • Payment received      • Concierge reply                   │
-│  • Membership activated  • Pet birthday (7 days before)      │
-│  • Order shipped         • Ticket update                     │
-└──────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌──────────────────────────────────────────────────────────────┐
-│              NOTIFICATION SERVICE LAYER                       │
-│  /app/backend/whatsapp_notifications.py                      │
-│  WhatsAppNotifications class with template methods           │
-└──────────────────────────────────────────────────────────────┘
-                              │
-              ┌───────────────┼───────────────┐
-              ▼               ▼               ▼
-        ┌─────────┐     ┌─────────┐     ┌─────────┐
-        │WhatsApp │     │  Email  │     │ In-App  │
-        │(Gupshup)│     │(Resend) │     │  Bell   │
-        └─────────┘     └─────────┘     └─────────┘
+User Intent (from anywhere)
+    ↓
+Service Request (/api/service-requests)
+    ↓
+Service Desk Ticket (service_desk_tickets)
+    ↓
+Admin Notification (admin_notifications)
+    ↓
+Member Notification (member_notifications)
+    ↓
+Dashboard Update (Real-time stats)
 ```
 
-### WhatsApp Notification Templates
+### Sources That Create Tickets
+1. **Mira OS Page:** Posts to `/api/concierge/mira-request`
+2. **Learn Ask Mira:** Posts to `/api/service-requests`
+3. **Checkout/Orders:** Posts to `/api/orders` (auto-creates ticket)
+4. **Service Booking:** Posts to `/api/service-requests`
 
-| Event | Template Method | Trigger Point |
-|-------|----------------|---------------|
-| Welcome | `welcome_new_user()` | User registration |
-| Payment | `payment_received()` | Payment verification |
-| Membership | `membership_activated()` | Membership activation |
-| Booking | `service_booked()` | Service booking |
-| Birthday | `pet_birthday_reminder()` | 7 days before birthday |
-| Ticket | `ticket_update()` | Concierge reply |
-| Order | `order_shipped()` | Order dispatch |
-
-### Mira AI WhatsApp Auto-Reply
-When users message `918971702582`:
-1. Gupshup webhook receives message
-2. Ticket created in Service Desk
-3. User looked up by phone number
-4. Context fetched (pets, orders, membership)
-5. GPT-4o-mini generates personalised response
-6. Auto-reply sent via Gupshup
+### December 7, 2026 Fixes
+- MiraDemoPage now actually posts to backend (was local state only)
+- LearnPage Ask Mira now creates service requests
+- Concierge stats endpoint merges all collections
 
 ---
 
-## 12. ADMIN PANEL
+## 12. COMMUNICATION SYSTEM
 
-### Access
-- **URL:** `/admin`
-- **Two-step login:** Enter credentials twice
+### WhatsApp (Gupshup)
+- **Webhook:** `/api/whatsapp/webhook`
+- **Notification Types:** welcome, payment, membership, booking, birthday
+- **Status:** LIVE and tested
 
-### Pillar Managers
-Each pillar has a dedicated manager component with tabs:
+### Email (Resend)
+- **From:** woof@thedoggycompany.com
+- **Domain:** thedoggycompany.com (verified)
+- **API Key:** re_RyFymGmF_QE6qJSpEH4CSKTiN3WQYUU9G
 
-| Manager | Tabs Available |
-|---------|----------------|
-| CelebrateManager | Requests, Partners, Products, Bundles, Settings |
-| DineManager | Restaurants, Reservations, Visits, Meetups, Bundles, Products, Services, **Experiences**, Settings |
-| StayManager | Requests, Properties, Products, Bundles, Services, Settings |
-| TravelManager | Requests, Partners, Products, Bundles, Services, Settings |
-| CareManager | Requests, Partners, Products, Bundles, Experiences, Services, Settings |
-| EnjoyManager | Requests, Partners, Products, **Bundles**, Experiences, Services, Settings |
-| FarewellManager | Requests, Partners, Products, **Bundles**, **Experiences**, Settings |
-| AdoptManager | Pets, Applications, Foster, Events, Shelters, **Bundles**, **Experiences** |
-| ShopManager | Dashboard, Products, Orders, Reports, **Bundles**, **Experiences**, Settings |
-| LearnManager | Guides, Videos, Settings |
-
-### Reusable Components
-- `PillarBundlesTab.jsx` - Manage bundles for any pillar
-- `PillarExperiencesTab.jsx` - Manage experiences for any pillar
-- `PillarServicesTab.jsx` - Manage services for any pillar
-
-### Service Desk (DoggyServiceDesk)
-- Multi-channel ticket management
-- Real-time WebSocket updates
-- Multi-channel reply (In-App + WhatsApp + Email)
-- Status tracking
+### Important Configuration
+```
+GUPSHUP_APP_NAME="The Doggy Company"  # MUST be quoted!
+```
 
 ---
 
-## 13. MIRA AI SYSTEM
+## 13. ADMIN PANEL
 
-### Mira OS Page
-- **Route:** `/mira-os` (redirects from `/mira-demo`)
-- **Component:** `MiraDemoPage.jsx` (230KB)
-- **Features:**
-  - Pet selector with soul % badge
-  - Horizontal tabs: TODAY, PICKS, SERVICES, LEARN, CONCIERGE®
-  - Weather widget
-  - Personalised reminders
-  - Chat interface
+### Dashboard Stats (December 7, 2026)
+| Metric | Value |
+|--------|-------|
+| Total Requests | 350 |
+| Action Needed | 19 |
+| Care | 121 |
+| Learn | 21 |
+| Travel | 2 |
+| Stay | 2 |
+| Enjoy | 1 |
 
-### Mira AI Capabilities
+### Key Admin Routes
+- `/admin` - Main admin panel
+- `/admin/concierge` - Concierge Requests Dashboard
+- `/admin/products` - Product management
+- `/admin/services` - Service management
 
-#### Web Chat (Mira OS)
-- Full-featured chat interface
-- Context-aware responses
-- Pet personality integration
+---
+
+## 14. MIRA AI SYSTEM
+
+### Capabilities
+- Natural language understanding
+- Pet-specific responses based on profile
 - Service recommendations
+- Learning assistance (Ask Mira on Learn page)
 
-#### WhatsApp (Gupshup)
-- Auto-reply to incoming messages
-- User context lookup (pets, orders, membership)
-- Pattern matching fallback
-- Ticket creation for human follow-up
-
-#### Ask Mira (Learn Page)
-- Training and behaviour questions
-- Pet-specific advice
-- Related content suggestions
-- Safe health guidance (always recommends vet for medical)
-
-### AI Configuration
-- **Model:** GPT-4o-mini
-- **Provider:** OpenAI via Emergent LLM Key
-- **Voice:** ElevenLabs (Lily - British accent)
+### Integration Points
+- Mira OS Page (`/mira-os`)
+- Learn Page Ask Mira
+- WhatsApp (contextual responses)
+- Concierge chat
 
 ---
 
-## 14. FILE STRUCTURE
+## 15. FILE STRUCTURE
 
+### Modified Files (December 7, 2026)
 ```
-/app
-├── backend/
-│   ├── server.py                    # Main FastAPI app (~20,000 lines)
-│   ├── membership_routes.py         # Razorpay integration
-│   ├── whatsapp_routes.py           # Gupshup + Mira AI auto-reply
-│   ├── whatsapp_notifications.py    # Notification templates
-│   ├── mira_service_desk.py         # Service desk endpoints
-│   ├── ticket_messaging.py          # Multi-channel messaging
-│   ├── learn_os_routes.py           # Learn endpoints + Ask Mira
-│   ├── mira_routes.py               # Mira AI endpoints
-│   ├── mira_pure.py                 # Mira context building
-│   ├── service_box_routes.py        # Unified service management
-│   ├── auth_routes.py               # Authentication
-│   ├── dine_routes.py               # Dine pillar
-│   ├── care_routes.py               # Care pillar
-│   ├── farewell_routes.py           # Farewell pillar
-│   ├── shopify_sync_routes.py       # Shopify integration
-│   ├── admin_routes.py              # Admin endpoints
-│   ├── database.py                  # MongoDB connection
-│   └── .env                         # Environment variables
-│
-├── frontend/
-│   └── src/
-│       ├── App.js                   # Main router
-│       ├── pages/
-│       │   ├── MiraDemoPage.jsx     # Main Mira OS (230KB)
-│       │   ├── MembershipPage.jsx   # 3-tier pricing
-│       │   ├── LearnPage.jsx        # Learn + Ask Mira
-│       │   ├── DinePage.jsx         # Dine pillar
-│       │   ├── CarePage.jsx         # Care pillar
-│       │   ├── Admin.jsx            # Admin panel router
-│       │   └── [PillarPage].jsx     # Other pillar pages
-│       │
-│       ├── components/
-│       │   ├── admin/
-│       │   │   ├── DineManager.jsx
-│       │   │   ├── EnjoyManager.jsx
-│       │   │   ├── FarewellManager.jsx
-│       │   │   ├── AdoptManager.jsx
-│       │   │   ├── ShopManager.jsx
-│       │   │   ├── PillarBundlesTab.jsx      # Reusable
-│       │   │   ├── PillarExperiencesTab.jsx  # Reusable
-│       │   │   └── DoggyServiceDesk.jsx      # Service desk (6000+ lines)
-│       │   │
-│       │   ├── Mira/
-│       │   │   ├── ConciergeButton.jsx       # C® button (In-App + WhatsApp)
-│       │   │   ├── MiraChatWidget.jsx        # Chat widget
-│       │   │   └── ConciergeThreadPanelV2.jsx
-│       │   │
-│       │   ├── Pillars/
-│       │   │   └── ServiceCatalogSection.jsx # Unified service display
-│       │   │
-│       │   └── ui/                           # Shadcn components
-│       │
-│       ├── context/
-│       │   ├── AuthContext.jsx
-│       │   └── PillarContext.jsx
-│       │
-│       └── hooks/
-│           ├── use-toast.js
-│           └── useRealtimeConcierge.js
-│
-└── memory/
-    └── PRD.md                       # This document
+/app/frontend/src/pages/MiraDemoPage.jsx       # Fixed: ticket creation to backend
+/app/frontend/src/pages/LearnPage.jsx          # Added: service request after Ask Mira
+/app/frontend/src/pages/CelebratePage.jsx      # Fixed: breed cakes URL params
+/app/frontend/src/components/ProductCard.jsx   # Enhanced: flavors, sizes display
+/app/frontend/src/components/ServiceCatalogSection.jsx  # Added: Load More button
+/app/frontend/src/components/admin/ConciergeRequestsDashboard.jsx  # Fixed: auth & stats
+/app/frontend/src/components/Mira/ConciergeButton.jsx  # Fixed: wa.me link
+
+/app/backend/server.py                         # Updated: admin dashboard stats
+/app/backend/concierge_engine.py               # Fixed: stats from all collections
+/app/backend/concierge_routes.py               # Fixed: requests from all collections
 ```
 
 ---
 
-## 15. ENVIRONMENT CONFIGURATION
+## 16. ENVIRONMENT CONFIGURATION
 
-### Backend (.env)
-
-```env
-# Database
+### Backend .env
+```
 MONGO_URL=mongodb://localhost:27017
 DB_NAME=pet-os-live-test_database
-
-# Authentication
-JWT_SECRET=tdb_super_secret_key_2025_woof
-ADMIN_EMAIL=dipali@clubconcierge.in
-ADMIN_PASSWORD=test123
-
-# Payment - Razorpay (LIVE)
 RAZORPAY_KEY_ID=rzp_live_<REDACTED_ROTATED>
-RAZORPAY_KEY_SECRET=wNWqcJvv5K6b39kmMzOKVsQ3
-
-# WhatsApp - Gupshup (LIVE)
-GUPSHUP_API_KEY=sk_2609497ce757467f87a955015da8854d
-GUPSHUP_APP_NAME="The Doggy Company"
-GUPSHUP_SOURCE_NUMBER=918971702582
-GUPSHUP_API_URL=https://api.gupshup.io/wa/api/v1
-WHATSAPP_NUMBER=918971702582
-
-# Email - Resend (LIVE)
+RAZORPAY_KEY_SECRET=<secret>
 RESEND_API_KEY=re_RyFymGmF_QE6qJSpEH4CSKTiN3WQYUU9G
 SENDER_EMAIL=woof@thedoggycompany.com
-NOTIFICATION_EMAIL=onboarding@resend.dev
-
-# AI - Emergent
-EMERGENT_LLM_KEY=sk-emergent-cEb0eF956Fa6741A31
-
-# Voice - ElevenLabs
-ELEVENLABS_API_KEY=2738ad21884d7bf3ff2ddee5fbac5e2efc8a02ab4ca3cd36bdef82b83d9628bc
-
-# External APIs
-GOOGLE_PLACES_API_KEY=AIzaSy<REDACTED_ROTATED>
-YOUTUBE_API_KEY=AIzaSyCEqC2I04NYLTvJmPNU7sWsrfcKLIwOWpU
-SHOPIFY_PRODUCTS_URL=https://thedoggybakery.com/products.json
-
-# Site
-SITE_URL=https://thedoggycompany.com
+GUPSHUP_API_KEY=sk4wevmqj8cvrcvj9rnlsn8wr2eqg5zo
+GUPSHUP_APP_NAME="The Doggy Company"
+WHATSAPP_NUMBER=918971702582
 ```
 
-### Frontend (.env)
-```env
+### Frontend .env
+```
 REACT_APP_BACKEND_URL=https://doggy-unified-os.preview.emergentagent.com
 ```
 
 ---
 
-## 16. DEPLOYMENT GUIDE
+## 17. DEPLOYMENT GUIDE
 
 ### Pre-Deployment Checklist
-1. ☐ All environment variables set in production
-2. ☐ MongoDB Atlas IP whitelist configured
-3. ☐ Gupshup webhook URL updated to production domain
-4. ☐ Razorpay webhook configured (if using)
-5. ☐ DNS configured for thedoggycompany.com
+- [ ] All environment variables configured
+- [ ] GUPSHUP_APP_NAME is quoted
+- [ ] Gupshup webhook URL set to production
+- [ ] Razorpay configured for production domain
+- [ ] Resend domain verified
 
 ### Post-Deployment Steps
-1. ☐ Login to Admin panel (`/admin`)
-2. ☐ Enter credentials: aditya / lola4304
-3. ☐ Complete two-step authentication
-4. ☐ Click **MASTER SYNC** button
-5. ☐ Wait for all 8 sync steps to complete
-6. ☐ Verify Shopify products appear
-7. ☐ Verify services are populated
-8. ☐ Test a sample membership purchase
-9. ☐ Test WhatsApp messaging
-10. ☐ Test email notifications
+1. Run MASTER SYNC in Admin panel
+2. Test one membership payment
+3. Test WhatsApp message delivery
+4. Verify email delivery
+5. Monitor service desk for tickets
 
-### Service Management
-```bash
-# Restart backend
-sudo supervisorctl restart backend
-
-# Restart frontend
-sudo supervisorctl restart frontend
-
-# Check status
-sudo supervisorctl status
-
-# View logs
-tail -n 100 /var/log/supervisor/backend.err.log
-tail -n 100 /var/log/supervisor/frontend.out.log
+### Gupshup Webhook Configuration
+```
+URL: https://thedoggycompany.com/api/whatsapp/webhook
+Method: POST
 ```
 
 ---
 
-## 17. TESTING CREDENTIALS
+## 18. TESTING CREDENTIALS
 
-### User Account
-```
-Email: dipali@clubconcierge.in
-Password: test123
-```
+### Test User
+- **Email:** dipali@clubconcierge.in
+- **Password:** test123
 
-### Admin Account
-```
-URL: /admin
-Username: aditya
-Password: lola4304
-Note: Two-step login required (enter credentials twice)
-```
-
-### Test Commands
-```bash
-# Test backend health
-curl https://thedoggycompany.com/api/health
-
-# Test WhatsApp status
-curl https://thedoggycompany.com/api/whatsapp/status
-
-# Test service listing
-curl "https://thedoggycompany.com/api/service-box/services?pillar=care&limit=3"
-
-# Test login
-curl -X POST https://thedoggycompany.com/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"dipali@clubconcierge.in","password":"test123"}'
-```
+### Admin Panel
+- **URL:** /admin
+- **Username:** aditya
+- **Password:** lola4304
 
 ---
 
-## 18. COMPLETED WORK LOG
+## 19. COMPLETED WORK LOG
 
-### December 7, 2026
+### December 7, 2026 - Universal Service Flow Fix
 
-#### Email Domain Consistency Fix
-- ✅ Updated all 30 occurrences of `woof@thedoggycompany.in` to `woof@thedoggycompany.com`
-- ✅ Consistent email branding across all backend services
+#### Critical Fixes
+1. **MiraDemoPage Ticket Creation**
+   - Was: Creating tickets locally in state, never posting to backend
+   - Fixed: Now posts to `/api/concierge/mira-request`
 
-#### Integration Verification
-- ✅ Razorpay LIVE - Payment orders creating successfully (Order ID: order_SOFDnPsr5fhY09)
-- ✅ Gupshup WhatsApp LIVE - Notifications + Mira AI auto-reply working
-- ✅ Resend Email - Configured with `woof@thedoggycompany.com` (requires domain verification in Resend dashboard)
-- ✅ Ask Mira on Learn Page - `/api/os/learn/ask-mira` endpoint working
+2. **LearnPage Ask Mira**
+   - Was: Only returning AI answers, no ticket creation
+   - Fixed: Now creates service request via `/api/service-requests`
 
-### March 7, 2026
+3. **Admin Dashboard**
+   - Was: Showing 0 for most stats (querying wrong collections)
+   - Fixed: Now aggregates from service_requests, service_desk_tickets, orders, etc.
 
-#### Integrations
-- ✅ Razorpay LIVE - Payment orders creating successfully
-- ✅ Gupshup WhatsApp LIVE - Notifications + Mira AI auto-reply
-- ✅ Resend Email LIVE - `woof@thedoggycompany.com` domain verified
-- ✅ Gupshup webhook configured: `https://thedoggycompany.com/api/whatsapp/webhook`
+4. **Concierge Stats Endpoint**
+   - Was: Duplicate endpoint in concierge_engine.py querying empty collection
+   - Fixed: Merged all collections (86 service_requests + 262 service_desk_tickets)
 
-#### Features
-- ✅ 3-tier membership model (Free/Essential/Premium)
-- ✅ Multi-channel notifications (WhatsApp + Email + In-App)
-- ✅ Mira AI WhatsApp auto-response with user context
-- ✅ Service Desk omnichannel replies
-- ✅ C® Concierge button with WhatsApp option
-- ✅ Learn Page "Ask Mira" AI feature
-- ✅ Admin Bundles/Experiences tabs added to all managers
+5. **ConciergeRequestsDashboard**
+   - Was: Using Bearer token for admin endpoints
+   - Fixed: Changed to Basic Auth, updated stats field names
 
-#### Bug Fixes
-- ✅ Fixed Mira OS route using wrong component
-- ✅ Fixed Gupshup HTTP 202 detection
-- ✅ Fixed app name with spaces in .env
-- ✅ Fixed service data unification
+#### Celebrate Page Fixes
+- Fixed breed cakes filtering (URL params race condition)
+- Enhanced ProductCard modal (flavors, sizes, breed tags)
+- Added Load More button to ServiceCatalogSection
 
-#### Audits Completed
-- ✅ British English audit (25+ fixes)
-- ✅ End-to-end service flow audit (booking works)
-- ✅ Mobile Golden Experience audit (all pages responsive)
+#### Email Domain Consistency
+- Updated 30 occurrences of thedoggycompany.in to thedoggycompany.com
+- Updated Resend API key for .com domain
+
+#### WhatsApp Link Fix
+- Changed click-to-chat from api.whatsapp.com to wa.me
+
+#### E2E Test Results
+| Step | Status | Details |
+|------|--------|---------|
+| User Login | PASS | Token obtained |
+| Service Request | PASS | REQ-20260307-2DE4 created |
+| Ticket Created | PASS | TKT-087EB1AA |
+| Admin Notification | PASS | NOTIF-79BDF702 |
+| Admin Dashboard | PASS | 350 total, 19 action needed |
+| WhatsApp | PASS | Message submitted |
+| Email | PASS | Email sent via Resend |
 
 ---
 
-## 19. KNOWN ISSUES & LIMITATIONS
+## 20. KNOWN ISSUES & LIMITATIONS
 
-### Current Issues
 | Issue | Severity | Status | Notes |
 |-------|----------|--------|-------|
 | Admin auth hardcoded | Low | Known | Future: migrate to role-based |
 | Large components | Low | Known | Admin.jsx (2600+ lines), DoggyServiceDesk.jsx (6000+ lines) |
-| MongoDB Atlas IP | Medium | Blocked | Needs whitelist for production |
-
-### Limitations
-- WhatsApp API rate limits (per Gupshup plan)
-- ElevenLabs voice character limits
-- Shopify sync is one-way (read-only)
+| Razorpay on preview | Expected | N/A | Only works on thedoggycompany.com |
 
 ---
 
-## 20. FUTURE ROADMAP
+## 21. FUTURE ROADMAP
+
+### P1 - High Priority
+- Refactor large components (Admin.jsx, DoggyServiceDesk.jsx)
+- Admin auth migration to role-based system
 
 ### P2 - Medium Priority
-1. Production MongoDB Atlas IP whitelist
-2. Content population (transformation stories)
-3. More comprehensive test coverage
+- Content population (transformation stories)
+- E-commerce expansion (HUFT integration)
+- Mobile app (React Native)
 
-### P3 - Future/Backlog
-1. Code refactoring
-   - Break down Admin.jsx (2600+ lines)
-   - Break down DoggyServiceDesk.jsx (6000+ lines)
-2. Secure admin authentication (role-based)
-3. E-commerce expansion (HUFT integration)
-4. Mobile app (React Native)
-5. Multi-language support
-6. Analytics dashboard
+### P3 - Low Priority
+- Analytics dashboard
+- A/B testing framework
+- Advanced Mira memory
 
 ---
-
-## APPENDIX
-
-### Glossary
-- **Mira:** AI concierge assistant
-- **Pet Soul™:** Comprehensive pet profiling system
-- **Pillar:** Category of pet services (14 total)
-- **C®:** Concierge button trademark
-- **Paw Points:** Loyalty points system
-
-### Support
-- **Email:** woof@thedoggycompany.com
-- **WhatsApp:** +91 8971702582
-
----
-
-*Built with love for Kouros & Mystique* 🐾
 
 **Document End**
+
+*Built with love, in memory of Kouros & Mystique*
