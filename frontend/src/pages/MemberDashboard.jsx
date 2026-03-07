@@ -1225,7 +1225,7 @@ const MemberDashboard = () => {
                 {/* Add Pet Button */}
                 <div 
                   className="relative bg-black/10 backdrop-blur-md rounded-xl p-2.5 md:p-4 text-center cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border border-dashed border-white/30 hover:border-pink-400/70 hover:bg-black/20 touch-manipulation flex flex-col items-center justify-center min-h-[140px]"
-                  onClick={() => navigate('/join')}
+                  onClick={() => navigate('/add-pet')}
                   data-testid="add-pet-btn"
                 >
                   <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center mb-2">

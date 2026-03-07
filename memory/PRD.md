@@ -381,6 +381,37 @@ curl -X POST $API_URL/api/wrapped/trigger-welcome/699fa0a513e44c977327ad57
 
 ## CHANGELOG
 
+### March 7, 2026 (Session 4)
+- **NEW:** Add Pet Page (`/add-pet`) for existing logged-in users
+  - 3-step flow: Name & Photo → Basic Info → Soul Snapshot
+  - Streamlined experience (doesn't require account creation)
+  - Redirects to Pet Home after completion
+
+- **FIXED:** "Add Your Pet" button redirects (Gap 1 - CRITICAL)
+  - Changed from `/join` to `/add-pet` on:
+    - PetHomePage.jsx (pet selector strip)
+    - PetHomePage.jsx (empty state)
+    - MemberDashboard.jsx (add pet card)
+    - PetGateModal.jsx (modal CTA)
+
+- **ENHANCED:** "Complete Pet Soul" CTA on Dashboard (Gap 5)
+  - Now shows for ALL pets with Soul Score < 80%
+  - Prominent gradient button for scores < 50%
+  - Subtle border button for scores 50-80%
+  - Shows current percentage and target
+
+- **ENHANCED:** Upcoming Events on Dashboard (Gap 6)
+  - Added Gotcha Day / Adoption Anniversary alerts
+  - Added Vaccination due reminders
+  - Events sorted by priority (imminent events first)
+  - Shows up to 4 alerts
+
+- **NEW:** Pet Selector in Checkout (Gap 10)
+  - Logged-in users see their pets as selectable cards
+  - Auto-selects first pet and fills name/breed
+  - "Other Pet" option for manual entry
+  - Guest users see original input fields
+
 ### March 7, 2026 (Session 3)
 - **NEW:** Main Investor Page (`/investor.html`)
   - Full platform overview mirroring the PowerPoint investor deck

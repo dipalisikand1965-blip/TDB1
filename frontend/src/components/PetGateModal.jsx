@@ -27,7 +27,7 @@ const PetGateModal = ({
 
   const handleAddPet = () => {
     onClose();
-    navigate('/pet-soul-onboard');
+    navigate('/add-pet');
   };
 
   const benefits = [
