@@ -39,57 +39,143 @@ if RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET:
     razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
 
-# Membership Plans Configuration
+# Membership Plans Configuration - 3-Tier Model (Free, Essential, Premium)
 MEMBERSHIP_PLANS = {
-    "founding_yearly": {
-        "id": "founding_yearly",
-        "name": "Founding Member (Yearly)",
-        "price": 499,
-        "original_price": 999,
-        "duration_months": 12,
-        "is_founding": True,
-        "max_pets": 5,
+    "free": {
+        "id": "free",
+        "name": "Free",
+        "price": 0,
+        "original_price": 0,
+        "duration_months": 0,  # No expiry
+        "max_pets": "unlimited",
+        "tier": "free",
         "benefits": {
-            "paw_points_multiplier": 2,
-            "free_shipping_threshold": 500,
-            "member_discount_percent": 15,
-            "priority_support": True,
-            "exclusive_access": True,
-            "birthday_perks": True
+            "pet_soul_profile": True,
+            "unlimited_pets": True,
+            "mira_basic": True,
+            "browse_pillars": True,
+            "book_services": True,
+            "paw_points_multiplier": 1,
+            "member_discount_percent": 0,
+            "priority_support": False,
+            "mira_full_access": False,
+            "mira_os": False,
+            "concierge_chat": False,
+            "health_vault": False,
+            "exclusive_events": False,
+            "birthday_gift": False
         }
     },
-    "yearly": {
-        "id": "yearly",
-        "name": "Family Member (Yearly)",
+    "essential": {
+        "id": "essential",
+        "name": "Essential",
+        "price": 2499,
+        "price_monthly": 249,
+        "original_price": 2499,
+        "duration_months": 12,
+        "max_pets": "unlimited",
+        "tier": "essential",
+        "benefits": {
+            "pet_soul_profile": True,
+            "unlimited_pets": True,
+            "mira_basic": True,
+            "browse_pillars": True,
+            "book_services": True,
+            "paw_points_multiplier": 2,
+            "member_discount_percent": 5,
+            "priority_support": True,
+            "mira_full_access": True,
+            "mira_os": True,
+            "concierge_chat": True,
+            "health_vault": True,
+            "priority_booking": True,
+            "exclusive_events": False,
+            "birthday_gift": False
+        }
+    },
+    "essential_monthly": {
+        "id": "essential_monthly",
+        "name": "Essential (Monthly)",
+        "price": 249,
+        "original_price": 249,
+        "duration_months": 1,
+        "max_pets": "unlimited",
+        "tier": "essential",
+        "benefits": {
+            "pet_soul_profile": True,
+            "unlimited_pets": True,
+            "mira_basic": True,
+            "browse_pillars": True,
+            "book_services": True,
+            "paw_points_multiplier": 2,
+            "member_discount_percent": 5,
+            "priority_support": True,
+            "mira_full_access": True,
+            "mira_os": True,
+            "concierge_chat": True,
+            "health_vault": True,
+            "priority_booking": True,
+            "exclusive_events": False,
+            "birthday_gift": False
+        }
+    },
+    "premium": {
+        "id": "premium",
+        "name": "Premium",
+        "price": 9999,
+        "price_monthly": 999,
+        "original_price": 9999,
+        "duration_months": 12,
+        "max_pets": "unlimited",
+        "tier": "premium",
+        "benefits": {
+            "pet_soul_profile": True,
+            "unlimited_pets": True,
+            "mira_basic": True,
+            "browse_pillars": True,
+            "book_services": True,
+            "paw_points_multiplier": 3,
+            "member_discount_percent": 10,
+            "priority_support": True,
+            "mira_full_access": True,
+            "mira_os": True,
+            "concierge_chat": True,
+            "health_vault": True,
+            "priority_booking": True,
+            "dedicated_pet_manager": True,
+            "white_glove_service": True,
+            "vip_support_24_7": True,
+            "exclusive_events": True,
+            "birthday_gift": True
+        }
+    },
+    "premium_monthly": {
+        "id": "premium_monthly",
+        "name": "Premium (Monthly)",
         "price": 999,
         "original_price": 999,
-        "duration_months": 12,
-        "is_founding": False,
-        "max_pets": 5,
-        "benefits": {
-            "paw_points_multiplier": 2,
-            "free_shipping_threshold": 500,
-            "member_discount_percent": 10,
-            "priority_support": True,
-            "exclusive_access": True,
-            "birthday_perks": True
-        }
-    },
-    "monthly": {
-        "id": "monthly",
-        "name": "Family Member (Monthly)",
-        "price": 99,
-        "original_price": 99,
         "duration_months": 1,
-        "is_founding": False,
-        "max_pets": 5,
+        "max_pets": "unlimited",
+        "tier": "premium",
         "benefits": {
-            "paw_points_multiplier": 2,
-            "free_shipping_threshold": 500,
+            "pet_soul_profile": True,
+            "unlimited_pets": True,
+            "mira_basic": True,
+            "browse_pillars": True,
+            "book_services": True,
+            "paw_points_multiplier": 3,
             "member_discount_percent": 10,
             "priority_support": True,
-            "exclusive_access": True,
-            "birthday_perks": True
+            "mira_full_access": True,
+            "mira_os": True,
+            "concierge_chat": True,
+            "health_vault": True,
+            "priority_booking": True,
+            "dedicated_pet_manager": True,
+            "white_glove_service": True,
+            "vip_support_24_7": True,
+            "exclusive_events": True,
+            "birthday_gift": True
         }
     }
 }
