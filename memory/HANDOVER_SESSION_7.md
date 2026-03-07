@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://doggy-ecommerce-test.preview.emergentagent.com
+https://rainbow-bridge-3.preview.emergentagent.com
 
 ---
 

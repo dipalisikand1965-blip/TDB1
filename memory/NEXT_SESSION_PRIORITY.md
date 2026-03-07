@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://doggy-ecommerce-test.preview.emergentagent.com
+**Preview URL:** https://rainbow-bridge-3.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
