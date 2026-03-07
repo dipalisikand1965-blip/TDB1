@@ -447,7 +447,19 @@ Method: POST
    - Fixed: Added `key={...Date.now()}` to force component re-mount on tab switch
    - Added `refreshCounter` state to useEffect dependencies
 
-3. **Affected Components (All Fixed)**
+3. **🎯 Universal Service Command Flow - WhatsApp Intent Tracking**
+   - Was: WhatsApp button clicks opened WhatsApp directly without creating service desk tickets
+   - Fixed: ALL WhatsApp clicks now create service tickets BEFORE opening WhatsApp
+   - Components updated:
+     - ConciergeButton.jsx
+     - FloatingContactButton.jsx
+     - ConciergePanel.jsx
+     - InlineConciergeCard.jsx
+     - MiraUniversalBar.jsx
+   - Ticket type: `whatsapp_intent`
+   - Admin can now track ALL user intents including WhatsApp clicks
+
+4. **Affected Admin Components (All Fixed)**
    - EmergencyManager: `key={emergency-${Date.now()}}`
    - FarewellManager: `key={farewell-${Date.now()}}`
    - MembershipManager: `key={membership-${Date.now()}}`
@@ -461,13 +473,10 @@ Method: POST
 |---------|--------|---------|
 | MASTER SYNC | PASS | 9 steps, services included |
 | seed-all-services API | PASS | 1115 services seeded |
-| Emergency Tab | PASS | Data refreshes on tab switch |
-| Farewell Tab | PASS | Data refreshes on tab switch |
-| Membership Tab | PASS | 9 members, 400 paw points |
-| Celebrations Tab | PASS | 2 birthdays, 1 gotcha day |
-| Site Status Tab | PASS | 12 features working |
-| Breeds Tab | PASS | Loads correctly |
-| Memorial Wall Tab | PASS | 0 memorials (empty collection) |
+| Admin Tabs Refresh | PASS | All 7 tabs refresh on switch |
+| WhatsApp Intent Tracking | PASS | All 5 components create tickets |
+| Service Request API | PASS | New payload format verified |
+| Admin Notifications | PASS | WhatsApp intents visible |
 
 ---
 
