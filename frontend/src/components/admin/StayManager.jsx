@@ -175,16 +175,6 @@ const StayManager = ({ getAuthHeader }) => {
 
   const fetchProducts = async () => {
     try {
-      // Try Unified Product Box first for single source of truth
-      const unifiedResponse = await fetch(`${API_URL}/api/product-box/by-pillar/stay`);
-      if (unifiedResponse.ok) {
-        const data = await unifiedResponse.json();
-        const productData = data.products || data || [];
-        setProducts(Array.isArray(productData) ? productData : []);
-        return;
-      }
-      
-      // Fallback to legacy endpoint
       const response = await fetch(`${API_URL}/api/admin/stay/products`, {
         headers: getAuthHeader()
       });

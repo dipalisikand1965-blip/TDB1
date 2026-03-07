@@ -112,10 +112,7 @@ const FitManager = ({ getAuthHeader }) => {
         axios.get(`${API_URL}/api/fit/requests`, getAuthHeader()),
         axios.get(`${API_URL}/api/fit/plans`, getAuthHeader()),
         axios.get(`${API_URL}/api/fit/admin/partners`, getAuthHeader()),
-        // Fetch from Unified Product Box first for single source of truth
-        axios.get(`${API_URL}/api/product-box/by-pillar/fit`).catch(() => 
-          axios.get(`${API_URL}/api/fit/products`, getAuthHeader())
-        ),
+        axios.get(`${API_URL}/api/fit/products`, getAuthHeader()),
         axios.get(`${API_URL}/api/fit/bundles`, getAuthHeader()),
         axios.get(`${API_URL}/api/fit/stats`, getAuthHeader()),
         axios.get(`${API_URL}/api/fit/admin/settings`, getAuthHeader()),
@@ -126,9 +123,7 @@ const FitManager = ({ getAuthHeader }) => {
       setRequests(reqRes.data.requests || []);
       setPlans(planRes.data.plans || []);
       setPartners(partnerRes.data.partners || []);
-      // Handle both unified product box response and legacy response
-      const productData = productRes.data.products || productRes.data || [];
-      setProducts(Array.isArray(productData) ? productData : []);
+      setProducts(productRes.data.products || []);
       setBundles(bundleRes.data.bundles || []);
       setStats(statsRes.data || {});
       setSettings(settingsRes.data || {});

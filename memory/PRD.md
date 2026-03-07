@@ -342,8 +342,8 @@ After deploying to production:
 | Pet Soul page content | ✅ Updated | Philosophy-driven messaging |
 | Catalogue product modals | ✅ Fixed | Modal opens before add-to-cart |
 | CMS not seeded | ✅ Fixed | 16 pages seeded with default content |
-| Pillar managers → Unified Box | ✅ Fixed | 12 managers now fetch from unified source |
 | Navbar sub-pillar navigation | ✅ Fixed | Pages read query params & scroll to sections |
+| Pillar manager products | ✅ Fixed | Reverted to original API endpoints |
 | iOS hamburger menu | ⚠️ Needs Testing | Touch handlers added |
 | WebSocket chat | ⚠️ Degraded | Graceful fallback |
 | Preview → Prod DB | 🚫 Blocked | Whitelist Atlas IP |
