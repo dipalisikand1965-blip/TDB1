@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://doggy-unified-os.preview.emergentagent.com/mira-demo**
+**https://panel-refresh-debug.preview.emergentagent.com/mira-demo**
 
 ---
 

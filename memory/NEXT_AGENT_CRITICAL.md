@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://doggy-unified-os.preview.emergentagent.com
+https://panel-refresh-debug.preview.emergentagent.com
 
 ---
 
