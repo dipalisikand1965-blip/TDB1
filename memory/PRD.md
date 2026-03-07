@@ -2,7 +2,7 @@
 ## Product Requirements Document
 
 **Last Updated:** March 7, 2026
-**Version:** 2.8.3
+**Version:** 2.8.4
 **Status:** Production Ready for Investor Demo
 
 ---
@@ -17,7 +17,7 @@ The Doggy Company is a "Pet Life Operating System" - a comprehensive platform th
 
 **URLs:**
 - **Production:** https://thedoggycompany.com
-- **Preview:** https://chat-flow-ready.preview.emergentagent.com
+- **Preview:** https://pet-life-admin.preview.emergentagent.com
 
 ---
 
@@ -55,12 +55,13 @@ Password: lola4304
 users              - User accounts
 pets               - Pet profiles with soul scores
 products_master    - All products (~2200+)
-services_master    - Services (~1100+)
-unified_products   - Unified product view
+services_master    - Services (~1115)
+unified_products   - Unified product view (DO NOT USE - deprecated)
 tickets            - Service requests
 mira_tickets       - Mira-created tickets
 enjoy_experiences  - Events & Experiences (16 items)
 transformation_stories - Community success stories
+pages              - CMS content for frontend pages
 ```
 
 ### Environment Files
@@ -132,51 +133,40 @@ When deployed to production, ALWAYS run Master Sync to populate data:
 
 ---
 
-## 7. COMPLETED WORK - December 6, 2025
+## 7. COMPLETED WORK - March 7, 2026
 
-### Images & Content
-- ✅ Travel services: 10 unique AI images
-- ✅ Paperwork services: 5 insurance images
-- ✅ Celebrate services: 11 party/celebration images
-- ✅ "Love in the Air Mini" Shopify image fixed
-- ✅ ServiceCatalogSection shows actual images (not gradients)
-- ✅ Testimonial images on Home page (proper aspect ratio)
+### Bug Fixes Verified
+- ✅ **Pillar Assignment Bug FIXED** - Service pillar changes now save correctly in admin Service Box
+  - Verified: Changed service from empty pillar to "celebrate" and confirmed persistence
+  - API endpoint `/api/service-box/services/{id}` working correctly
 
-### UI/UX Fixes
-- ✅ Load More buttons on pillar pages
-- ✅ Removed "X of Y products" text everywhere
-- ✅ Mobile nav active state enhanced
-- ✅ Price display: "Price on request" for ₹0 items
-- ✅ Mobile product detail scroll fixed
-- ✅ Text readability on dark sections improved
-
-### Transformation Stories
-- ✅ Large card format (single dog photos)
-- ✅ Click-to-view modal with full details
-- ✅ Mobile horizontal scroll with snap
-- ✅ "Share Your Story" for pillars without stories
-
-### Memorial Updates
-- ✅ Login page: Shows BOTH Kouros & Mystique with heart
-- ✅ About page: New Kouros image (black Newfoundland)
-
-### Bug Fixes
-- ✅ Product card/modal image mismatch
-- ✅ iOS hamburger menu tap target (44x44px)
-- ✅ "Continue in Chat" now opens pillar-specific Mira widget
+### UI/UX Fixes (Previous Session)
+- ✅ Mobile inbox "shaking" - Container uses min-h-screen + 100dvh
+- ✅ Pet name overflow - Pet switcher uses overflow-x-auto  
+- ✅ Footer services links - Routes now use /services?pillar=X
+- ✅ Pet Soul page content - Philosophy-driven messaging
+- ✅ Catalogue product modals - Modal opens before add-to-cart
+- ✅ CMS seeded - 16 pages seeded with default content
+- ✅ Navbar sub-pillar navigation - Pages read query params & scroll to sections
+- ✅ Pillar manager products restored - Reverted to original API endpoints
 
 ---
 
-## 8. PENDING BUGS TO FIX
+## 8. PENDING ISSUES
 
-### 🔴 HIGH PRIORITY
-1. **Mobile Inbox Shaking** - Notifications page shakes when opened on mobile
-   - File: `/app/frontend/src/pages/NotificationsInbox.jsx`
-   - Likely CSS animation or transform issue
+### 🔴 HIGH PRIORITY (P0)
+1. **iOS Hamburger Menu** - Reported as problematic, touch handlers added but needs verification
+2. **End-to-End Service Flow Audit** - Member Request → Service Desk → Inbox → Concierge Reply needs testing
+3. **575 Services Missing Pillar** - Many services in DB have empty pillar value (shown with warning in UI)
 
-### 🟡 MEDIUM PRIORITY
-2. **Broken Shopify Images** - Some products have test URLs
-3. **WebSocket Connection** - Graceful fallback in place
+### 🟡 MEDIUM PRIORITY (P1)
+4. **Pillar Manager Enhancement** - Add "Bundles" and "Experiences" tabs similar to Services tab
+5. **Mobile Golden Experience** - Full responsiveness audit needed
+6. **WebSocket Connection** - Graceful fallback in place
+
+### 🟢 LOW PRIORITY (P2)
+7. **Production DB Connection** - MongoDB Atlas IP whitelist issue (recurring)
+8. **Some Shopify Images** - May have test URLs
 
 ---
 
@@ -228,7 +218,7 @@ When deployed to production, ALWAYS run Master Sync to populate data:
 │   ├── CelebratePage.jsx     # Shopify products + services
 │   ├── TravelPage.jsx        # Large transformation stories
 │   ├── EnjoyPage.jsx         # Load More + events
-│   ├── NotificationsInbox.jsx # BUG: Shakes on mobile
+│   ├── NotificationsInbox.jsx # Mobile shaking fixed
 │   └── ProductDetailPage.jsx # Mobile scroll fixed
 ├── components/
 │   ├── Navbar.jsx            # iOS hamburger fix
@@ -237,14 +227,17 @@ When deployed to production, ALWAYS run Master Sync to populate data:
 │   ├── MiraChatWidget.jsx    # Pillar-aware chat
 │   ├── TransformationStories.jsx # Click modal
 │   ├── ServiceCatalogSection.jsx # Shows real images
-│   └── MobileNavBar.jsx      # Bottom navigation
+│   ├── MobileNavBar.jsx      # Bottom navigation
+│   └── admin/
+│       └── ServiceBox.jsx    # Service CRUD with pillar assignment
 └── index.css                 # Mobile nav active state
 ```
 
 ### Backend Structure
 ```
 /app/backend/
-├── server.py                 # Master Sync Steps 1-8
+├── server.py                 # Master Sync Steps 1-8 (20,000+ lines)
+├── service_box_routes.py     # Service Box CRUD API
 ├── services/
 │   └── google_places_service.py # Hotels, vets, etc.
 ├── enjoy_routes.py           # Events & Experiences API
@@ -253,7 +246,28 @@ When deployed to production, ALWAYS run Master Sync to populate data:
 
 ---
 
-## 11. COMMON TASKS
+## 11. KEY API ENDPOINTS
+
+### Service Box (Admin)
+- `GET /api/service-box/services` - List services with filters
+- `GET /api/service-box/services/{id}` - Get single service
+- `PUT /api/service-box/services/{id}` - Update service (pillar, price, etc.)
+- `POST /api/service-box/services` - Create new service
+- `DELETE /api/service-box/services/{id}` - Archive service
+- `GET /api/service-box/stats` - Service statistics
+
+### Products
+- `GET /api/products?pillar={name}` - Get Shopify products by pillar
+- `GET /api/care/products` - Care pillar products
+- `GET /api/travel/products` - Travel pillar products
+- (etc. for each pillar)
+
+### CMS
+- `POST /api/admin/cms/seed-all` - Seed CMS with page content
+
+---
+
+## 12. COMMON TASKS
 
 ### How to Add a New Product Image
 ```python
@@ -267,27 +281,18 @@ When deployed to production, ALWAYS run Master Sync to populate data:
 "Service Name": "https://image-url.png",
 ```
 
-### How to Add Transformation Story
+### How to Test Service Pillar Assignment
 ```bash
-curl -X POST https://chat-flow-ready.preview.emergentagent.com/api/engagement/transformations \
-  -H "Content-Type: application/json" \
-  -d '{
-    "pet_name": "Rocky",
-    "breed": "Golden Retriever",
-    "owner_name": "Priya M.",
-    "pillar": "care",
-    "headline": "Amazing grooming transformation",
-    "testimonial": "The groomer was so gentle...",
-    "before_image": "https://...",
-    "after_image": "https://...",
-    "rating": 5,
-    "is_active": true
-  }'
-```
+API_URL=https://pet-life-admin.preview.emergentagent.com
 
-### How to Test on Mobile
-1. Use screenshot tool with viewport `390x844` (iPhone)
-2. Or visit preview URL on actual device
+# Update a service pillar
+curl -X PUT "$API_URL/api/service-box/services/svc-care-vet" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Vet Consultation","pillar":"travel",...}'
+
+# Verify the change
+curl "$API_URL/api/service-box/services/svc-care-vet"
+```
 
 ### How to Debug Backend
 ```bash
@@ -303,7 +308,7 @@ sudo supervisorctl restart frontend
 
 ---
 
-## 12. 3RD PARTY INTEGRATIONS
+## 13. 3RD PARTY INTEGRATIONS
 
 | Integration | Status | Notes |
 |-------------|--------|-------|
@@ -318,7 +323,7 @@ sudo supervisorctl restart frontend
 
 ---
 
-## 13. DEPLOYMENT CHECKLIST
+## 14. DEPLOYMENT CHECKLIST
 
 After deploying to production:
 1. ☐ Go to Admin panel (`/admin`)
@@ -332,25 +337,27 @@ After deploying to production:
 
 ---
 
-## 14. KNOWN ISSUES
+## 15. KNOWN ISSUES & STATUS
 
-| Issue | Status | Workaround |
-|-------|--------|------------|
+| Issue | Status | Notes |
+|-------|--------|-------|
+| Pillar assignment not saving | ✅ FIXED | Verified working March 7, 2026 |
 | Mobile inbox shaking | ✅ Fixed | Container uses min-h-screen + 100dvh |
 | Pet name overflow | ✅ Fixed | Pet switcher uses overflow-x-auto |
 | Footer services links | ✅ Fixed | Routes now use /services?pillar=X |
 | Pet Soul page content | ✅ Updated | Philosophy-driven messaging |
 | Catalogue product modals | ✅ Fixed | Modal opens before add-to-cart |
 | CMS not seeded | ✅ Fixed | 16 pages seeded with default content |
-| Navbar sub-pillar navigation | ✅ Fixed | Pages read query params & scroll to sections |
+| Navbar sub-pillar navigation | ✅ Fixed | Pages read query params & scroll |
 | Pillar manager products | ✅ Fixed | Reverted to original API endpoints |
 | iOS hamburger menu | ⚠️ Needs Testing | Touch handlers added |
 | WebSocket chat | ⚠️ Degraded | Graceful fallback |
 | Preview → Prod DB | 🚫 Blocked | Whitelist Atlas IP |
+| 575 services empty pillar | ⚠️ Data Issue | Shows warning, saves correctly |
 
 ---
 
-## 15. USEFUL COMMANDS
+## 16. USEFUL COMMANDS
 
 ```bash
 # Check frontend logs
@@ -360,7 +367,7 @@ tail -f /var/log/supervisor/frontend.out.log
 tail -f /var/log/supervisor/backend.err.log
 
 # Test API
-curl https://chat-flow-ready.preview.emergentagent.com/api/products?pillar=celebrate&limit=5
+curl https://pet-life-admin.preview.emergentagent.com/api/products?pillar=celebrate&limit=5
 
 # Check MongoDB collections
 cd /app/backend && python3 -c "
@@ -370,16 +377,48 @@ db = client['pet-os-live-test_database']
 for coll in db.list_collection_names():
     print(f'{coll}: {db[coll].count_documents({})} docs')
 "
+
+# Check services with empty pillar
+cd /app/backend && python3 -c "
+import asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
+
+async def check():
+    client = AsyncIOMotorClient('mongodb://localhost:27017')
+    db = client['pet-os-live-test_database']
+    empty = await db.services_master.count_documents({'pillar': ''})
+    print(f'Services with empty pillar: {empty}')
+
+asyncio.run(check())
+"
 ```
 
 ---
 
-## 16. CONTACT & RESOURCES
+## 17. NEXT STEPS FOR NEW DEVELOPER
 
-- **Shopify Store:** https://thedoggybakery.com
-- **Admin Panel:** /admin
-- **Mira AI:** Click floating button or Ask Mira search bar
-- **Documentation:** /complete-documentation.html
+1. **Immediate:** Test iOS hamburger menu on actual device
+2. **Short-term:** Audit end-to-end service flow (Member Request → Concierge Reply)
+3. **Medium-term:** Add Bundles/Experiences tabs to pillar managers
+4. **Future:** Break down large components (Admin.jsx, DoggyServiceDesk.jsx)
+
+---
+
+## 18. DATA NOTES
+
+### Services with Empty Pillar
+575 out of 1115 services have `pillar: ""` (empty string). This doesn't break functionality:
+- UI shows fallback "Care" in dropdown
+- Warning message displayed: "⚠️ Please select a pillar"
+- When user saves, pillar is correctly persisted
+
+To bulk-update these services:
+```javascript
+db.services_master.updateMany(
+  { pillar: "" },
+  { $set: { pillar: "shop" } }  // or appropriate pillar
+)
+```
 
 ---
 

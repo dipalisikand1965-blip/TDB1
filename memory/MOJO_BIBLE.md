@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://chat-flow-ready.preview.emergentagent.com
+https://pet-life-admin.preview.emergentagent.com
 ```
 
 ---

@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://chat-flow-ready.preview.emergentagent.com
+**Preview URL:** https://pet-life-admin.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
