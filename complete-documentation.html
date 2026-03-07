@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Doggy Company - Complete Documentation</title>
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --primary-dark: #7c3aed;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 3rem 0;
+            text-align: center;
+        }
+        header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        header p { opacity: 0.9; font-size: 1.1rem; }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 0.25rem;
+        }
+        .badge-success { background: var(--success); color: white; }
+        .badge-warning { background: var(--warning); color: black; }
+        .badge-error { background: var(--error); color: white; }
+        .badge-info { background: var(--primary); color: white; }
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+        .card h2 { color: var(--primary); margin-bottom: 1rem; font-size: 1.5rem; }
+        .card h3 { color: var(--text); margin: 1rem 0 0.5rem; font-size: 1.2rem; }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { color: var(--primary); font-weight: 600; }
+        code {
+            background: var(--bg);
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+        }
+        pre {
+            background: var(--bg);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        pre code { background: none; padding: 0; }
+        ul, ol { margin-left: 1.5rem; margin-bottom: 1rem; }
+        li { margin-bottom: 0.5rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+        .pillar-card {
+            background: var(--bg);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .pillar-icon { font-size: 2rem; }
+        .nav { position: sticky; top: 0; background: var(--card-bg); padding: 1rem; margin-bottom: 2rem; border-radius: 8px; z-index: 100; }
+        .nav a { color: var(--primary); text-decoration: none; margin: 0 1rem; }
+        .nav a:hover { text-decoration: underline; }
+        .highlight { background: rgba(139, 92, 246, 0.2); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--primary); margin: 1rem 0; }
+        footer { text-align: center; padding: 2rem; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>The Doggy Company</h1>
+            <p>Pet Life Operating System - Complete Technical Documentation</p>
+            <div style="margin-top: 1rem;">
+                <span class="badge badge-success">v2.8.4</span>
+                <span class="badge badge-info">March 7, 2026</span>
+                <span class="badge badge-success">Production Ready</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <nav class="nav">
+            <a href="#overview">Overview</a>
+            <a href="#credentials">Credentials</a>
+            <a href="#architecture">Architecture</a>
+            <a href="#pillars">14 Pillars</a>
+            <a href="#api">API Reference</a>
+            <a href="#issues">Issues</a>
+            <a href="#tasks">Pending Tasks</a>
+        </nav>
+
+        <section id="overview" class="card">
+            <h2>Project Overview</h2>
+            <p>The Doggy Company is a comprehensive "Pet Life Operating System" - a platform serving as the central hub for all pet parent needs. Built with love, honoring the memory of <strong>Kouros</strong> (black Newfoundland) and <strong>Mystique</strong> (Shih Tzu).</p>
+            
+            <div class="highlight">
+                <strong>Core Philosophy:</strong><br>
+                "A dog is not in your life. You are in theirs."<br>
+                "To be known. To be seen. To be loved. With accuracy."
+            </div>
+
+            <h3>URLs</h3>
+            <table>
+                <tr><td><strong>Production</strong></td><td><code>https://thedoggycompany.com</code></td></tr>
+                <tr><td><strong>Preview</strong></td><td><code>https://pet-life-admin.preview.emergentagent.com</code></td></tr>
+            </table>
+        </section>
+
+        <section id="credentials" class="card">
+            <h2>Credentials</h2>
+            
+            <h3>Test User Account</h3>
+            <pre><code>Email: dipali@clubconcierge.in
+Password: test123</code></pre>
+
+            <h3>Admin Panel Access</h3>
+            <pre><code>URL: /admin
+Username: aditya
+Password: lola4304</code></pre>
+            
+            <div class="highlight">
+                <strong>Important:</strong> Admin requires TWO-STEP login:
+                <ol>
+                    <li>First form: Enter username + password → Click "Access Admin Panel"</li>
+                    <li>Second form: Enter same username + password → Click "Sign In"</li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="architecture" class="card">
+            <h2>Architecture</h2>
+            
+            <h3>Tech Stack</h3>
+            <table>
+                <tr><th>Layer</th><th>Technology</th></tr>
+                <tr><td>Frontend</td><td>React 18 + Tailwind CSS + Shadcn/UI</td></tr>
+                <tr><td>Backend</td><td>FastAPI (Python)</td></tr>
+                <tr><td>Database</td><td>MongoDB (Emergent local / Atlas production)</td></tr>
+                <tr><td>AI</td><td>OpenAI GPT (via Emergent LLM Key)</td></tr>
+                <tr><td>E-commerce</td><td>Shopify sync (thedoggybakery.com)</td></tr>
+            </table>
+
+            <h3>Key Database Collections</h3>
+            <table>
+                <tr><th>Collection</th><th>Purpose</th><th>Count</th></tr>
+                <tr><td><code>users</code></td><td>User accounts</td><td>—</td></tr>
+                <tr><td><code>pets</code></td><td>Pet profiles with soul scores</td><td>—</td></tr>
+                <tr><td><code>products_master</code></td><td>All products</td><td>~2200+</td></tr>
+                <tr><td><code>services_master</code></td><td>Services</td><td>1115</td></tr>
+                <tr><td><code>enjoy_experiences</code></td><td>Events & Experiences</td><td>16</td></tr>
+                <tr><td><code>pages</code></td><td>CMS content</td><td>16</td></tr>
+            </table>
+            
+            <div class="highlight" style="border-left-color: var(--warning);">
+                <strong>Warning:</strong> <code>unified_products</code> collection is DEPRECATED. Do not use.
+            </div>
+        </section>
+
+        <section id="pillars" class="card">
+            <h2>The 14 Pillars</h2>
+            <div class="grid">
+                <div class="pillar-card"><span class="pillar-icon">🎂</span><div><strong>Celebrate</strong><br>Birthdays, cakes (Shopify)</div></div>
+                <div class="pillar-card"><span class="pillar-icon">🍽️</span><div><strong>Dine</strong><br>Fresh meals, restaurants</div></div>
+                <div class="pillar-card"><span class="pillar-icon">🏨</span><div><strong>Stay</strong><br>Hotels, boarding, daycare</div></div>
+                <div class="pillar-card"><span class="pillar-icon">✈️</span><div><strong>Travel</strong><br>Trips, carriers, planning</div></div>
+                <div class="pillar-card"><span class="pillar-icon">💊</span><div><strong>Care</strong><br>Grooming, vet, wellness</div></div>
+                <div class="pillar-card"><span class="pillar-icon">🎾</span><div><strong>Enjoy</strong><br>Experiences, events, outings</div></div>
+                <div class="pillar-card"><span class="pillar-icon">🎮</span><div><strong>Play</strong><br>Toys, games, activities</div></div>
+                <div class="pillar-card"><span class="pillar-icon">🏃</span><div><strong>Fit</strong><br>Exercise, fitness, agility</div></div>
+                <div class="pillar-card"><span class="pillar-icon">🎓</span><div><strong>Learn</strong><br>Training, education</div></div>
+                <div class="pillar-card"><span class="pillar-icon">📄</span><div><strong>Paperwork</strong><br>Insurance, documents</div></div>
+                <div class="pillar-card"><span class="pillar-icon">📋</span><div><strong>Advisory</strong><br>Consultations, planning</div></div>
+                <div class="pillar-card"><span class="pillar-icon">🚨</span><div><strong>Emergency</strong><br>24/7 urgent care</div></div>
+                <div class="pillar-card"><span class="pillar-icon">🌈</span><div><strong>Farewell</strong><br>Memorial services</div></div>
+                <div class="pillar-card"><span class="pillar-icon">🐾</span><div><strong>Adopt</strong><br>Rescue, adoption</div></div>
+            </div>
+        </section>
+
+        <section id="api" class="card">
+            <h2>API Reference</h2>
+            
+            <h3>Service Box (Admin)</h3>
+            <table>
+                <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/service-box/services</code></td><td>List services with filters</td></tr>
+                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/service-box/services/{id}</code></td><td>Get single service</td></tr>
+                <tr><td><span class="badge badge-warning">PUT</span></td><td><code>/api/service-box/services/{id}</code></td><td>Update service (pillar, price, etc.)</td></tr>
+                <tr><td><span class="badge badge-success">POST</span></td><td><code>/api/service-box/services</code></td><td>Create new service</td></tr>
+                <tr><td><span class="badge badge-error">DELETE</span></td><td><code>/api/service-box/services/{id}</code></td><td>Archive service</td></tr>
+                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/service-box/stats</code></td><td>Service statistics</td></tr>
+            </table>
+
+            <h3>Products</h3>
+            <table>
+                <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/products?pillar={name}</code></td><td>Get Shopify products by pillar</td></tr>
+                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/care/products</code></td><td>Care pillar products</td></tr>
+                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/travel/products</code></td><td>Travel pillar products</td></tr>
+            </table>
+
+            <h3>Example: Update Service Pillar</h3>
+            <pre><code>curl -X PUT "https://pet-life-admin.preview.emergentagent.com/api/service-box/services/svc-care-vet" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Vet Consultation",
+    "pillar": "care",
+    "description": "Professional veterinary consultation",
+    "is_bookable": true,
+    "base_price": 500,
+    "duration_minutes": 30,
+    "is_active": true
+  }'</code></pre>
+        </section>
+
+        <section id="issues" class="card">
+            <h2>Known Issues & Status</h2>
+            <table>
+                <tr><th>Issue</th><th>Status</th><th>Notes</th></tr>
+                <tr><td>Pillar assignment not saving</td><td><span class="badge badge-success">FIXED</span></td><td>Verified March 7, 2026</td></tr>
+                <tr><td>Mobile inbox shaking</td><td><span class="badge badge-success">FIXED</span></td><td>Uses min-h-screen + 100dvh</td></tr>
+                <tr><td>Pet name overflow</td><td><span class="badge badge-success">FIXED</span></td><td>overflow-x-auto on pet switcher</td></tr>
+                <tr><td>Footer service links</td><td><span class="badge badge-success">FIXED</span></td><td>Routes use /services?pillar=X</td></tr>
+                <tr><td>CMS not seeded</td><td><span class="badge badge-success">FIXED</span></td><td>16 pages seeded</td></tr>
+                <tr><td>iOS hamburger menu</td><td><span class="badge badge-warning">NEEDS TEST</span></td><td>Touch handlers added</td></tr>
+                <tr><td>WebSocket chat</td><td><span class="badge badge-warning">DEGRADED</span></td><td>Graceful fallback in place</td></tr>
+                <tr><td>575 services empty pillar</td><td><span class="badge badge-warning">DATA ISSUE</span></td><td>Shows warning, saves correctly</td></tr>
+                <tr><td>Preview → Prod DB</td><td><span class="badge badge-error">BLOCKED</span></td><td>Needs Atlas IP whitelist</td></tr>
+            </table>
+        </section>
+
+        <section id="tasks" class="card">
+            <h2>Pending Tasks</h2>
+            
+            <h3>🔴 High Priority (P0)</h3>
+            <ul>
+                <li><strong>iOS Hamburger Menu</strong> - Test on actual iOS device</li>
+                <li><strong>Service Flow Audit</strong> - Test Member Request → Service Desk → Inbox → Concierge Reply</li>
+                <li><strong>Razorpay Integration</strong> - Add API keys, test checkout flow</li>
+            </ul>
+
+            <h3>🟡 Medium Priority (P1)</h3>
+            <ul>
+                <li><strong>Pillar Manager Enhancement</strong> - Add Bundles/Experiences tabs</li>
+                <li><strong>Mobile Golden Experience</strong> - Full responsiveness audit</li>
+                <li><strong>WhatsApp Business</strong> - Pending Meta API verification</li>
+            </ul>
+
+            <h3>🟢 Future/Backlog (P2)</h3>
+            <ul>
+                <li>Add transformation stories for more pillars</li>
+                <li>E-commerce expansion (HUFT, Amazon)</li>
+                <li>Code refactoring (Admin.jsx, DoggyServiceDesk.jsx)</li>
+                <li>Migrate admin auth from hardcoded to backend roles</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Master Sync</h2>
+            <p><strong>Location:</strong> Admin Panel → Click "MASTER SYNC" button</p>
+            
+            <div class="highlight">
+                <strong>Important:</strong> When deployed to production, ALWAYS run Master Sync to populate data.
+            </div>
+            
+            <table>
+                <tr><th>Step</th><th>Action</th></tr>
+                <tr><td>1</td><td>Shopify sync (thedoggybakery.com products)</td></tr>
+                <tr><td>2</td><td>Care products seed</td></tr>
+                <tr><td>3</td><td>Dine products seed</td></tr>
+                <tr><td>4</td><td>Breed catalogue seed</td></tr>
+                <tr><td>5</td><td>Default data seed</td></tr>
+                <tr><td>6</td><td>Mira context update</td></tr>
+                <tr><td>7</td><td>Product images migration (all pillars)</td></tr>
+                <tr><td>8</td><td>Service images migration (Celebrate + Travel)</td></tr>
+            </table>
+        </section>
+
+        <section class="card">
+            <h2>3rd Party Integrations</h2>
+            <table>
+                <tr><th>Integration</th><th>Status</th><th>Notes</th></tr>
+                <tr><td>OpenAI GPT</td><td><span class="badge badge-success">Working</span></td><td>Via Emergent LLM Key</td></tr>
+                <tr><td>MongoDB</td><td><span class="badge badge-success">Working</span></td><td>Local + Atlas</td></tr>
+                <tr><td>Shopify</td><td><span class="badge badge-success">Working</span></td><td>thedoggybakery.com</td></tr>
+                <tr><td>Google Places</td><td><span class="badge badge-success">Working</span></td><td>Hotels, vets, restaurants</td></tr>
+                <tr><td>YouTube</td><td><span class="badge badge-success">Working</span></td><td>Video embeds</td></tr>
+                <tr><td>Razorpay</td><td><span class="badge badge-warning">Needs Keys</span></td><td>Payment gateway</td></tr>
+                <tr><td>Resend</td><td><span class="badge badge-success">Configured</span></td><td>Email service</td></tr>
+                <tr><td>WhatsApp</td><td><span class="badge badge-warning">Needs Verification</span></td><td>Meta API</td></tr>
+            </table>
+        </section>
+
+        <section class="card">
+            <h2>Useful Commands</h2>
+            
+            <h3>Check Logs</h3>
+            <pre><code># Frontend logs
+tail -f /var/log/supervisor/frontend.out.log
+
+# Backend logs  
+tail -f /var/log/supervisor/backend.err.log</code></pre>
+
+            <h3>Restart Services</h3>
+            <pre><code>sudo supervisorctl restart backend
+sudo supervisorctl restart frontend</code></pre>
+
+            <h3>Test API</h3>
+            <pre><code>curl https://pet-life-admin.preview.emergentagent.com/api/products?pillar=celebrate&limit=5</code></pre>
+
+            <h3>Check MongoDB</h3>
+            <pre><code>cd /app/backend && python3 -c "
+from pymongo import MongoClient
+client = MongoClient('mongodb://localhost:27017')
+db = client['pet-os-live-test_database']
+for coll in db.list_collection_names():
+    print(f'{coll}: {db[coll].count_documents({})} docs')
+"</code></pre>
+        </section>
+    </div>
+
+    <footer>
+        <p>Built with love for Kouros & Mystique 🐾</p>
+        <p>The Doggy Company - Pet Life Operating System</p>
+        <p>Documentation generated: March 7, 2026</p>
+    </footer>
+</body>
+</html>
