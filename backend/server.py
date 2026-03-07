@@ -19119,11 +19119,13 @@ from routes.wrapped.generate import router as wrapped_generate_router
 from routes.wrapped.ai_memory import router as wrapped_memory_router
 from routes.wrapped.share import router as wrapped_share_router
 from routes.wrapped.welcome import router as wrapped_welcome_router
+from routes.wrapped.delivery import router as wrapped_delivery_router
 app.include_router(wrapped_history_router)  # Soul score history tracking
 app.include_router(wrapped_generate_router)  # Generate Pet Wrapped data
 app.include_router(wrapped_memory_router)  # AI memory generation
 app.include_router(wrapped_share_router)  # Shareable cards
 app.include_router(wrapped_welcome_router)  # Welcome/First Soul wrapped
+app.include_router(wrapped_delivery_router)  # Delivery via Modal/WhatsApp/Email
 logger.info("🎁 Pet Wrapped routes initialized (Launch: May 20, 2026)")
 
 @app.on_event("startup")
