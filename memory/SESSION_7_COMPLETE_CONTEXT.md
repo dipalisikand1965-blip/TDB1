@@ -134,7 +134,7 @@ soulReason={getSoulBasedReason(activePet, 'celebrate')}  // or 'stay', 'dine', e
 ---
 
 ## PREVIEW URL
-https://chat-flow-ready.preview.emergentagent.com
+https://pet-life-admin.preview.emergentagent.com
 
 ---
 
