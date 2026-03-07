@@ -220,10 +220,10 @@ const MiraSearchPanel = ({
         message: query,
         initialQuery: query,
         miraResponse: miraResponse,
-        pet: pet  // Pass pet context
+        pet: selectedPet  // Pass pet context (was: pet - undefined)
       }
     }));
-    console.log('[MiraSearchPanel] Opening Mira with pillar:', currentPillar, 'pet:', pet?.name);
+    console.log('[MiraSearchPanel] Opening Mira with pillar:', currentPillar, 'pet:', selectedPet?.name);
     setShowResults(false);
     setQuery('');
   };
