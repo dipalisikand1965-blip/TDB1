@@ -350,9 +350,25 @@ Content-Type: application/json</code></pre>
 
         <!-- Changelog -->
         <div class="section" id="changelog">
-            <h2>10. Changelog - December 7, 2026</h2>
+            <h2>10. Changelog - March 7, 2026</h2>
             
-            <h3>Critical Fixes</h3>
+            <h3>Rainbow Bridge Memorial System 💜</h3>
+            <ul>
+                <li><strong>New Feature:</strong> Mark pets as "crossed Rainbow Bridge" without removing them</li>
+                <li><strong>Pet Dashboard:</strong> Separate section for memorial pets with "Forever in Our Hearts" UI</li>
+                <li><strong>Mira AI Sensitivity:</strong> AI now uses past tense and is sensitive to pet loss</li>
+                <li><strong>Memorial Wall:</strong> Public memorial wall at <code>/rainbow-bridge</code></li>
+                <li><strong>Tribute System:</strong> Anyone can pay tributes to memorial pets</li>
+            </ul>
+            
+            <h3>Admin Panel Fixes</h3>
+            <ul>
+                <li><strong>MASTER SYNC:</strong> Now 9 steps - includes services_master sync and breed tags</li>
+                <li><strong>Tab Refresh:</strong> All admin tabs now refresh data on switch</li>
+                <li><strong>Universal Service Flow:</strong> WhatsApp button clicks now create service tickets</li>
+            </ul>
+
+            <h3>Previous Updates (December 7, 2026)</h3>
             <ul>
                 <li><strong>MiraDemoPage:</strong> Fixed ticket creation - now posts to backend instead of local state only</li>
                 <li><strong>LearnPage Ask Mira:</strong> Added service request creation after every inquiry</li>
@@ -360,31 +376,127 @@ Content-Type: application/json</code></pre>
                 <li><strong>Concierge Stats:</strong> Fixed duplicate endpoint issue - merged all collections</li>
                 <li><strong>ConciergeRequestsDashboard:</strong> Fixed auth (Basic instead of Bearer) and stats display</li>
             </ul>
+        </div>
 
-            <h3>Celebrate Page Fixes</h3>
-            <ul>
-                <li>Fixed breed cakes filtering - URL params now read correctly</li>
-                <li>Enhanced ProductCard modal with flavors, sizes, and breed tags</li>
-                <li>Added "Load More" button to ServiceCatalogSection</li>
-            </ul>
-
-            <h3>Email Domain Fix</h3>
-            <ul>
-                <li>Updated all 30 occurrences of <code>thedoggycompany.in</code> to <code>thedoggycompany.com</code></li>
-                <li>Updated Resend API key for .com domain</li>
-            </ul>
-
-            <h3>WhatsApp Fix</h3>
-            <ul>
-                <li>Changed click-to-chat from <code>api.whatsapp.com</code> to <code>wa.me</code></li>
-            </ul>
+        <!-- Admin Panel Guide -->
+        <div class="section" id="admin-guide">
+            <h2>11. Admin Panel Guide</h2>
+            <p>Complete guide to each admin tab and its functionality. Access at <code>/admin</code></p>
+            
+            <h3>📊 CORE OPERATIONS</h3>
+            <table>
+                <tr><th>Tab</th><th>Purpose</th><th>Key Features</th></tr>
+                <tr><td><strong>Dashboard</strong></td><td>Overview of all metrics</td><td>Total orders, revenue, active users, pending tickets</td></tr>
+                <tr><td><strong>Service Desk</strong></td><td>All customer requests</td><td>Unified view of all tickets, priority sorting, filters</td></tr>
+                <tr><td><strong>Unified Inbox</strong></td><td>All communications</td><td>WhatsApp, Email, Chat in one view</td></tr>
+                <tr><td><strong>Finance</strong></td><td>Revenue & payments</td><td>Daily/monthly revenue, Razorpay transactions</td></tr>
+            </table>
+            
+            <h3>👥 CUSTOMER MANAGEMENT</h3>
+            <table>
+                <tr><th>Tab</th><th>Purpose</th><th>Key Features</th></tr>
+                <tr><td><strong>Pet Parents</strong></td><td>Customer directory</td><td>View all members, their pets, order history</td></tr>
+                <tr><td><strong>Pet Profiles</strong></td><td>All registered pets</td><td>Pet details, soul scores, health data</td></tr>
+                <tr><td><strong>Membership</strong></td><td>Membership management</td><td>Tiers (Free/Gold/Platinum), upgrades, expiry</td></tr>
+                <tr><td><strong>Loyalty</strong></td><td>Paw Points system</td><td>Points balance, redemption history, rewards</td></tr>
+                <tr><td><strong>Engagement</strong></td><td>User activity tracking</td><td>Last visit, actions, retention metrics</td></tr>
+                <tr><td><strong>Celebrations</strong></td><td>Pet birthdays calendar</td><td>Upcoming birthdays, gotcha days, reminders</td></tr>
+            </table>
+            
+            <h3>🛒 COMMERCE</h3>
+            <table>
+                <tr><th>Tab</th><th>Purpose</th><th>Key Features</th></tr>
+                <tr><td><strong>Orders</strong></td><td>Order management</td><td>All orders, status updates, fulfillment</td></tr>
+                <tr><td><strong>Fulfilment</strong></td><td>Delivery tracking</td><td>Pending/shipped/delivered orders</td></tr>
+                <tr><td><strong>Product Box</strong></td><td>Product catalog</td><td>Add/edit products, inventory, pricing</td></tr>
+                <tr><td><strong>Service Box</strong></td><td>Services catalog</td><td>All pillar services, providers</td></tr>
+                <tr><td><strong>Collections</strong></td><td>Product groupings</td><td>Category management, featured collections</td></tr>
+                <tr><td><strong>Pricing</strong></td><td>Price management</td><td>Bulk price updates, discounts</td></tr>
+                <tr><td><strong>Autoship</strong></td><td>Subscriptions</td><td>Recurring orders, schedule management</td></tr>
+                <tr><td><strong>Abandoned</strong></td><td>Cart recovery</td><td>Abandoned carts, recovery emails</td></tr>
+                <tr><td><strong>Discounts</strong></td><td>Coupon management</td><td>Create codes, usage tracking</td></tr>
+            </table>
+            
+            <h3>🏛️ THE 14 PILLARS (Pillar Managers)</h3>
+            <table>
+                <tr><th>Tab</th><th>Pillar</th><th>Manages</th></tr>
+                <tr><td>🎂 Celebrate</td><td>Celebrations</td><td>Cakes, party boxes, custom orders</td></tr>
+                <tr><td>🍽️ Dine</td><td>Pet-Friendly Dining</td><td>Restaurant listings, reservations</td></tr>
+                <tr><td>🏨 Stay</td><td>Boarding & Hotels</td><td>Pet hotels, day boarding, homestays</td></tr>
+                <tr><td>✈️ Travel</td><td>Pet Travel</td><td>Relocation, transport, documentation</td></tr>
+                <tr><td>💊 Care</td><td>Healthcare</td><td>Vet clinics, grooming, wellness</td></tr>
+                <tr><td>🎾 Enjoy</td><td>Activities</td><td>Dog parks, events, playdates</td></tr>
+                <tr><td>🏃 Fit</td><td>Fitness</td><td>Weight management, exercise plans</td></tr>
+                <tr><td>🎓 Learn</td><td>Training</td><td>Training classes, behavioral support</td></tr>
+                <tr><td>📄 Paperwork</td><td>Documentation</td><td>Pet passports, certificates</td></tr>
+                <tr><td>📋 Advisory</td><td>Consultations</td><td>Expert advice, guidance</td></tr>
+                <tr><td>🚨 Emergency</td><td>24/7 Help</td><td>Emergency contacts, lost pet assistance</td></tr>
+                <tr><td>🌈 Farewell</td><td>End-of-Life</td><td>Memorial services, cremation</td></tr>
+                <tr><td>💜 Memorial Wall</td><td>Rainbow Bridge</td><td>Pet memorials, tributes</td></tr>
+                <tr><td>🐾 Adopt</td><td>Adoption</td><td>Adoption listings, rehoming</td></tr>
+                <tr><td>🛒 Shop</td><td>E-commerce</td><td>All products, Shopify sync</td></tr>
+            </table>
+            
+            <h3>🤖 MIRA AI</h3>
+            <table>
+                <tr><th>Tab</th><th>Purpose</th><th>Key Features</th></tr>
+                <tr><td><strong>Mira Chats</strong></td><td>Chat history</td><td>All Mira conversations, user questions</td></tr>
+                <tr><td><strong>Live Threads</strong></td><td>Active support</td><td>Ongoing conversations needing attention</td></tr>
+                <tr><td><strong>Memory</strong></td><td>Mira's knowledge</td><td>Learned facts, preferences, corrections</td></tr>
+            </table>
+            
+            <h3>📢 COMMUNICATIONS</h3>
+            <table>
+                <tr><th>Tab</th><th>Purpose</th><th>Key Features</th></tr>
+                <tr><td><strong>Communications</strong></td><td>Message history</td><td>All sent emails/WhatsApp</td></tr>
+                <tr><td><strong>Reminders</strong></td><td>Scheduled messages</td><td>Birthday reminders, follow-ups</td></tr>
+                <tr><td><strong>Campaigns</strong></td><td>Marketing</td><td>Bulk messaging, promotions</td></tr>
+                <tr><td><strong>Proactive</strong></td><td>Automated outreach</td><td>Win-back, re-engagement</td></tr>
+                <tr><td><strong>Push</strong></td><td>Push notifications</td><td>App notifications</td></tr>
+            </table>
+            
+            <h3>📈 ANALYTICS & REPORTS</h3>
+            <table>
+                <tr><th>Tab</th><th>Purpose</th><th>Key Features</th></tr>
+                <tr><td><strong>Live MIS</strong></td><td>Real-time metrics</td><td>Today's numbers, live stats</td></tr>
+                <tr><td><strong>Reports</strong></td><td>Generated reports</td><td>Daily/weekly/monthly summaries</td></tr>
+                <tr><td><strong>Analytics</strong></td><td>Deep analytics</td><td>Trends, patterns, insights</td></tr>
+                <tr><td><strong>Reviews</strong></td><td>Customer reviews</td><td>Product reviews, ratings</td></tr>
+                <tr><td><strong>Pawmoter</strong></td><td>NPS scoring</td><td>Net Promoter Score tracking</td></tr>
+            </table>
+            
+            <h3>⚙️ CONTENT & SETTINGS</h3>
+            <table>
+                <tr><th>Tab</th><th>Purpose</th><th>Key Features</th></tr>
+                <tr><td><strong>Site Status</strong></td><td>System health</td><td>All collection counts, API status</td></tr>
+                <tr><td><strong>Blog</strong></td><td>Blog management</td><td>Articles, publishing</td></tr>
+                <tr><td><strong>Testimonials</strong></td><td>Customer stories</td><td>Reviews to display on site</td></tr>
+                <tr><td><strong>FAQs</strong></td><td>FAQ management</td><td>Questions and answers</td></tr>
+                <tr><td><strong>Transformations</strong></td><td>Success stories</td><td>Before/after stories</td></tr>
+                <tr><td><strong>Breeds</strong></td><td>Breed database</td><td>Dog breed information, tags</td></tr>
+                <tr><td><strong>Guide & Backup</strong></td><td>Documentation</td><td>Admin guide, data export</td></tr>
+            </table>
+            
+            <h3>🔄 MASTER SYNC Button</h3>
+            <p>The <strong>MASTER SYNC</strong> button at the bottom performs 9 operations:</p>
+            <ol>
+                <li>Sync Shopify Products - Pull latest from store</li>
+                <li>Product Intelligence - Add mira_hints & breed_tags</li>
+                <li>AI Semantic Tagging - Smart product categorization</li>
+                <li>Seed All Pillars - Products to all 14 pillars</li>
+                <li>Seed Services Master - Sync services_master collection</li>
+                <li>Seed Breed Services - Breed-specific services</li>
+                <li>Seed Breed Tags - Breed metadata on products</li>
+                <li>Add Mira Whispers - Personalization data</li>
+                <li>Seed Production Data - FAQs, collections</li>
+            </ol>
         </div>
     </div>
 
     <footer>
         <p><strong>The Doggy Company</strong> - Pet Life Operating System</p>
-        <p style="margin-top: 10px; opacity: 0.7;">Built with love, in memory of Kouros & Mystique</p>
-        <p style="margin-top: 5px; opacity: 0.5;">Documentation generated: December 7, 2026 | Version 4.0.0</p>
+        <p style="margin-top: 10px; opacity: 0.7;">Built with love, in memory of Kouros & Mystique 💜</p>
+        <p style="margin-top: 5px; opacity: 0.5;">Documentation generated: March 7, 2026 | Version 4.1.0</p>
     </footer>
 </body>
 </html>
