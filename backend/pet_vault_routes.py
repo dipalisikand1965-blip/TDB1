@@ -801,7 +801,7 @@ async def send_health_reminder_email(to_email: str, subject: str, pet_name: str,
                 <p>You can manage all of {pet_name}'s health records in their Pet Vault.</p>
                 
                 <center>
-                    <a href="https://thedoggycompany.in/my-pets" class="button">
+                    <a href="https://thedoggycompany.com/my-pets" class="button">
                         View Pet Vault →
                     </a>
                 </center>
@@ -824,7 +824,7 @@ async def send_health_reminder_email(to_email: str, subject: str, pet_name: str,
                     "Content-Type": "application/json"
                 },
                 json={
-                    "from": "The Doggy Company <hello@thedoggycompany.in>",
+                    "from": "The Doggy Company <hello@thedoggycompany.com>",
                     "to": to_email,
                     "subject": subject,
                     "html": html_content

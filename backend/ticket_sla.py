@@ -31,7 +31,7 @@ def get_resend():
     return None
 
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
-BUSINESS_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggycompany.in")
+BUSINESS_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggycompany.com")
 
 # ============== MODELS ==============
 
@@ -578,7 +578,7 @@ async def send_escalation_notification(ticket: dict, reason: str, emails: List[s
                         <hr style="border: none; border-top: 1px solid #e5e7eb;">
                         <p><strong>Description:</strong></p>
                         <p style="background:#fff3cd;padding:15px;border-radius:8px;">{ticket.get('description', '')[:500]}...</p>
-                        <p style="margin-top:20px;"><a href="https://thedoggycompany.in/admin" style="background:#9333ea;color:white;padding:12px 24px;border-radius:5px;text-decoration:none;font-weight:bold;">Open Service Desk →</a></p>
+                        <p style="margin-top:20px;"><a href="https://thedoggycompany.com/admin" style="background:#9333ea;color:white;padding:12px 24px;border-radius:5px;text-decoration:none;font-weight:bold;">Open Service Desk →</a></p>
                     </div>
                 """
             })

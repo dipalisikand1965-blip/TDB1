@@ -1,8 +1,8 @@
 # The Doggy Company - Pet Life Operating System
 ## Complete Product Requirements Document (PRD)
 
-**Document Version:** 4.0.0  
-**Last Updated:** March 7, 2026  
+**Document Version:** 4.1.0  
+**Last Updated:** December 7, 2026  
 **Status:** Production Ready  
 **Prepared By:** Development Team via Emergent AI
 
@@ -689,6 +689,18 @@ curl -X POST https://thedoggycompany.com/api/auth/login \
 
 ## 18. COMPLETED WORK LOG
 
+### December 7, 2026
+
+#### Email Domain Consistency Fix
+- ✅ Updated all 30 occurrences of `woof@thedoggycompany.in` to `woof@thedoggycompany.com`
+- ✅ Consistent email branding across all backend services
+
+#### Integration Verification
+- ✅ Razorpay LIVE - Payment orders creating successfully (Order ID: order_SOFDnPsr5fhY09)
+- ✅ Gupshup WhatsApp LIVE - Notifications + Mira AI auto-reply working
+- ✅ Resend Email - Configured with `woof@thedoggycompany.com` (requires domain verification in Resend dashboard)
+- ✅ Ask Mira on Learn Page - `/api/os/learn/ask-mira` endpoint working
+
 ### March 7, 2026
 
 #### Integrations
@@ -724,6 +736,7 @@ curl -X POST https://thedoggycompany.com/api/auth/login \
 ### Current Issues
 | Issue | Severity | Status | Notes |
 |-------|----------|--------|-------|
+| Resend domain verification | Medium | Action Required | `thedoggycompany.com` domain needs to be verified at https://resend.com/domains for emails to send from `woof@thedoggycompany.com`. Currently falls back to `onboarding@resend.dev` |
 | Admin auth hardcoded | Low | Known | Future: migrate to role-based |
 | Large components | Low | Known | Admin.jsx (2600+ lines), DoggyServiceDesk.jsx (6000+ lines) |
 | MongoDB Atlas IP | Medium | Blocked | Needs whitelist for production |

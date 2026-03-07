@@ -591,7 +591,7 @@ async def create_booking_request(booking: BookingRequest):
                         </div>
                     </div>
                     <div style="background: #1f2937; padding: 20px; text-align: center;">
-                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggycompany.in</p>
+                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggycompany.com</p>
                     </div>
                 </div>
                 """

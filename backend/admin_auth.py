@@ -160,7 +160,7 @@ async def request_password_reset(request: PasswordResetRequest, background_tasks
     
     # Send reset email
     if send_email:
-        reset_url = f"https://thedoggycompany.in/admin/reset-password?token={reset_token}"
+        reset_url = f"https://thedoggycompany.com/admin/reset-password?token={reset_token}"
         
         email_html = f"""
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -180,7 +180,7 @@ async def request_password_reset(request: PasswordResetRequest, background_tasks
                 <p style="color: #666; font-size: 14px;">If you didn't request this, you can safely ignore this email.</p>
             </div>
             <div style="background: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; color: #666;">
-                The Doggy Company | woof@thedoggycompany.in
+                The Doggy Company | woof@thedoggycompany.com
             </div>
         </div>
         """
@@ -289,7 +289,7 @@ async def create_admin(admin: AdminCreate, background_tasks: BackgroundTasks):
                     <li>Password: (as provided by your administrator)</li>
                 </ul>
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="https://thedoggycompany.in/admin" style="background: #7c3aed; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+                    <a href="https://thedoggycompany.com/admin" style="background: #7c3aed; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold;">
                         Go to Admin Panel
                     </a>
                 </div>

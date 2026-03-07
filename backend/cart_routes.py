@@ -32,7 +32,7 @@ security = HTTPBasic()
 
 # Email configuration
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.com")
 
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
@@ -438,20 +438,20 @@ async def send_abandoned_cart_email(to_email: str, name: str, items: list,
                     </table>
                     
                     <div style="text-align: center; margin: 30px 0;">
-                        <a href="https://thedoggycompany.in/checkout" class="cta-button">
+                        <a href="https://thedoggycompany.com/checkout" class="cta-button">
                             Complete Your Order 🛒
                         </a>
                     </div>
                     
                     <p style="color: #6b7280; font-size: 14px;">
-                        Questions? Chat with Mira, our Concierge®, or contact us at woof@thedoggycompany.in
+                        Questions? Chat with Mira, our Concierge®, or contact us at woof@thedoggycompany.com
                     </p>
                 </div>
                 <div class="footer">
                     <p>The Doggy Bakery | Baking happiness for your furry friends</p>
-                    <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.in</p>
+                    <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.com</p>
                     <p style="font-size: 11px; color: #9ca3af;">
-                        <a href="https://thedoggycompany.in/unsubscribe?cart={cart_id}" style="color: #9333ea;">Unsubscribe from cart reminders</a>
+                        <a href="https://thedoggycompany.com/unsubscribe?cart={cart_id}" style="color: #9333ea;">Unsubscribe from cart reminders</a>
                     </p>
                 </div>
             </div>

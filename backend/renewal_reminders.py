@@ -119,7 +119,7 @@ async def send_renewal_reminder_email(user: dict, days_until_expiry: int, pet_na
                     
                     <p>Your pet's memories, preferences, and care history are safe with us. Renew to keep the full Pet Pass experience.</p>
                     
-                    <a href="https://thedoggycompany.in/membership" class="cta-button">
+                    <a href="https://thedoggycompany.com/membership" class="cta-button">
                         Renew Pet Pass Now →
                     </a>
                     

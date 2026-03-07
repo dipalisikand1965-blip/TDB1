@@ -256,7 +256,7 @@ async def send_ticket_acknowledgment(
                     <p>In the meantime, feel free to chat with <strong>Mira®</strong>, our AI concierge, for instant assistance!</p>
                     
                     <div style="text-align: center;">
-                        <a href="https://thedoggycompany.in/ask-mira" class="cta-button">
+                        <a href="https://thedoggycompany.com/ask-mira" class="cta-button">
                             Chat with Mira®
                         </a>
                     </div>
@@ -265,7 +265,7 @@ async def send_ticket_acknowledgment(
                 </div>
                 <div class="footer">
                     <p>🐕 The Doggy Company | Your Pet's Life Operating System</p>
-                    <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.in</p>
+                    <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.com</p>
                     <p style="margin-top: 10px; font-size: 11px;">Reference: {ticket_id}</p>
                 </div>
             </div>
@@ -273,7 +273,7 @@ async def send_ticket_acknowledgment(
         </html>
         """
         
-        sender_email = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
+        sender_email = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.com")
         
         params = {
             "from": f"The Doggy Company <{sender_email}>",
@@ -360,7 +360,7 @@ async def send_nps_survey(
         survey_token = hashlib.sha256(f"{ticket_id}{member_email}{datetime.now().isoformat()}".encode()).hexdigest()[:16]
         
         # Build survey URL
-        survey_url = f"https://thedoggycompany.in/feedback?ticket={ticket_id}&token={survey_token}"
+        survey_url = f"https://thedoggycompany.com/feedback?ticket={ticket_id}&token={survey_token}"
         
         html_content = f"""
         <!DOCTYPE html>
@@ -433,7 +433,7 @@ async def send_nps_survey(
         </html>
         """
         
-        sender_email = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
+        sender_email = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.com")
         
         params = {
             "from": f"The Doggy Company <{sender_email}>",
