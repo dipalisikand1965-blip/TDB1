@@ -309,14 +309,43 @@ const MiraUniversalBar = ({
                         <strong>This needs your Pet Concierge</strong>
                         <p>This request involves planning, coordination, or personalized service that our concierge team handles best.</p>
                       </div>
-                      <a 
-                        href={`https://wa.me/919663185747?text=${encodeURIComponent(`Hi, I need help with ${currentPet.name} (${currentPet.breed}). ${searchQuery}`)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button 
+                        onClick={async () => {
+                          const messageText = `Hi, I need help with ${currentPet.name} (${currentPet.breed}). ${searchQuery}`;
+                          // 🎯 UNIVERSAL SERVICE FLOW: Create ticket BEFORE opening WhatsApp
+                          try {
+                            await fetch(`${API_URL}/api/service-requests`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                type: 'whatsapp_intent',
+                                pillar: currentPillar?.id || 'general',
+                                source: 'mira_universal_bar',
+                                customer: {
+                                  name: 'Search Bar User',
+                                  email: 'guest@thedoggycompany.com',
+                                  phone: ''
+                                },
+                                details: {
+                                  message: `[WhatsApp Intent] User clicked Connect with Concierge from Universal Search Bar. Query: "${searchQuery}"`,
+                                  pet_name: currentPet.name,
+                                  channel: 'whatsapp',
+                                  source_component: 'MiraUniversalBar'
+                                },
+                                priority: 'medium'
+                              })
+                            });
+                            console.log('[MiraUniversalBar] Service ticket created');
+                          } catch (err) {
+                            console.warn('[MiraUniversalBar] Ticket error:', err);
+                          }
+                          window.open(`https://wa.me/919663185747?text=${encodeURIComponent(messageText)}`, '_blank');
+                        }}
                         className="mira-concierge-btn"
+                        style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)', border: 'none', cursor: 'pointer', color: 'white', padding: '8px 16px', borderRadius: '20px', fontWeight: '600' }}
                       >
                         Connect with Concierge
-                      </a>
+                      </button>
                     </div>
                   )}
                   

@@ -9,6 +9,7 @@
 
 import React from 'react';
 import { Phone, MessageSquare, Mail, Headphones, RefreshCw } from 'lucide-react';
+import { API_URL } from '../../utils/api';
 
 /**
  * InlineConciergeCard Component
@@ -18,16 +19,59 @@ import { Phone, MessageSquare, Mail, Headphones, RefreshCw } from 'lucide-react'
  * @param {Function} props.onChatHandoff - Called when chat option is clicked
  * @param {string} props.context - Optional context about why concierge is being offered
  * @param {Function} props.onNewTopic - Called when New Topic is clicked
+ * @param {Object} props.user - User object for service ticket creation
  */
 const InlineConciergeCard = ({ 
   pet = { name: 'your pet', breed: '' },
   onChatHandoff,
   context = null,
-  onNewTopic
+  onNewTopic,
+  user = null
 }) => {
   const whatsappMessage = encodeURIComponent(
     `Hi, I need help with ${pet.name}${pet.breed ? ` (${pet.breed})` : ''}.`
   );
+  
+  // 🎯 UNIVERSAL SERVICE FLOW: Handle WhatsApp click with ticket creation
+  const handleWhatsAppClick = async (e) => {
+    e.preventDefault();
+    
+    const messageText = `Hi, I need help with ${pet.name}${pet.breed ? ` (${pet.breed})` : ''}.`;
+    
+    // Create service ticket BEFORE opening WhatsApp
+    try {
+      const ticketPayload = {
+        type: 'whatsapp_intent',
+        pillar: 'mira_chat',
+        source: 'inline_concierge_card',
+        customer: {
+          name: user?.name || 'Guest User',
+          email: user?.email || 'guest@thedoggycompany.com',
+          phone: user?.phone || '',
+          user_id: user?.id || 'anonymous'
+        },
+        details: {
+          message: `[WhatsApp Intent] User clicked WhatsApp from InlineConciergeCard. Message: "${messageText}"${context ? ` Context: ${context}` : ''}`,
+          pet_name: pet?.name || 'Not specified',
+          channel: 'whatsapp',
+          source_component: 'InlineConciergeCard'
+        },
+        priority: 'medium'
+      };
+      
+      await fetch(`${API_URL}/api/service-requests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ticketPayload)
+      });
+      console.log('[InlineConciergeCard] Service ticket created for WhatsApp intent');
+    } catch (err) {
+      console.warn('[InlineConciergeCard] Could not create service ticket:', err);
+    }
+    
+    // Now open WhatsApp
+    window.open(`https://wa.me/919663185747?text=${whatsappMessage}`, '_blank');
+  };
   
   return (
     <div 
@@ -141,10 +185,8 @@ const InlineConciergeCard = ({
         }}
       >
         {/* WhatsApp Button */}
-        <a 
-          href={`https://wa.me/919663185747?text=${whatsappMessage}`}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button 
+          onClick={handleWhatsAppClick}
           data-testid="inline-concierge-whatsapp"
           style={{
             display: 'flex',
@@ -158,7 +200,9 @@ const InlineConciergeCard = ({
             fontWeight: '600',
             fontSize: '13px',
             transition: 'all 0.2s ease',
-            boxShadow: '0 2px 10px rgba(37, 211, 102, 0.3)'
+            boxShadow: '0 2px 10px rgba(37, 211, 102, 0.3)',
+            border: 'none',
+            cursor: 'pointer'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'translateY(-2px)';
@@ -170,7 +214,7 @@ const InlineConciergeCard = ({
           }}
         >
           <Phone size={16} /> WhatsApp
-        </a>
+        </button>
         
         {/* Chat Button */}
         <button 
