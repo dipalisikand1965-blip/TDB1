@@ -257,6 +257,7 @@ const MembershipPage = lazy(() => import("./pages/MembershipPage"));
 const MembershipOnboarding = lazy(() => import("./pages/MembershipOnboarding"));
 const MiraMeetsYourPet = lazy(() => import("./pages/MiraMeetsYourPet")); // New world-class onboarding
 const PetHomePage = lazy(() => import("./pages/PetHomePage")); // Pet-first landing page after onboarding
+const AddPetPage = lazy(() => import("./pages/AddPetPage")); // Add pet flow for existing users
 // Soul Builder - 8-chapter onboarding (lazy loaded)
 import SoulBuilder from "./pages/SoulBuilder"; // Direct import for debugging
 const Policies = lazy(() => import("./pages/Policies"));
@@ -417,6 +418,9 @@ function AppRouter() {
         
         {/* Pet Home - Default landing page after onboarding */}
         <Route path="/pet-home" element={<ProtectedRoute><PetHomePage /></ProtectedRoute>} />
+        
+        {/* Add Pet - For existing logged-in users */}
+        <Route path="/add-pet" element={<ProtectedRoute><AddPetPage /></ProtectedRoute>} />
         
         {/* Membership Payment Page - Cart/Checkout with Razorpay */}
         <Route path="/membership/payment" element={<MembershipPayment />} />

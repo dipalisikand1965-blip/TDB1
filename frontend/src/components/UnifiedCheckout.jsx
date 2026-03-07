@@ -50,6 +50,10 @@ const UnifiedCheckout = () => {
   // Config from backend
   const [config, setConfig] = useState(null);
   const [loadingConfig, setLoadingConfig] = useState(true);
+  
+  // User's pets for pet selector
+  const [userPets, setUserPets] = useState([]);
+  const [selectedPetId, setSelectedPetId] = useState('');
 
   // Form state
   const [customer, setCustomer] = useState({
@@ -137,6 +141,55 @@ const UnifiedCheckout = () => {
       }));
     }
   }, [user]);
+  
+  // Fetch user's pets for pet selector
+  useEffect(() => {
+    const fetchUserPets = async () => {
+      if (!user || !token) return;
+      try {
+        const response = await fetch(`${API_URL}/api/pets`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUserPets(data.pets || []);
+          // Auto-select first pet if available
+          if (data.pets && data.pets.length > 0) {
+            const firstPet = data.pets[0];
+            setSelectedPetId(firstPet.id);
+            setOrderInfo(prev => ({
+              ...prev,
+              petName: firstPet.name,
+              petBreed: firstPet.breed || ''
+            }));
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch user pets:', err);
+      }
+    };
+    fetchUserPets();
+  }, [user, token]);
+  
+  // Handle pet selection change
+  const handlePetSelect = (petId) => {
+    setSelectedPetId(petId);
+    if (petId === 'manual') {
+      // Clear for manual entry
+      setOrderInfo(prev => ({ ...prev, petName: '', petBreed: '' }));
+    } else {
+      const selectedPet = userPets.find(p => p.id === petId);
+      if (selectedPet) {
+        setOrderInfo(prev => ({
+          ...prev,
+          petName: selectedPet.name,
+          petBreed: selectedPet.breed || ''
+        }));
+      }
+    }
+  };
   
   // Fetch smart recommendations based on cart items AND user's pet profile (Mira-powered)
   useEffect(() => {
@@ -601,28 +654,111 @@ const UnifiedCheckout = () => {
                 <div className="mt-6 pt-6 border-t">
                   <h3 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
                     <PawPrint className="w-4 h-4 text-purple-600" />
-                    Pet Details (Optional)
+                    Who is this order for?
                   </h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="petName" className="text-xs">Pet&apos;s Name</Label>
-                      <Input
-                        id="petName"
-                        placeholder="e.g., Bruno"
-                        value={orderInfo.petName}
-                        onChange={(e) => setOrderInfo(prev => ({ ...prev, petName: e.target.value }))}
-                      />
+                  
+                  {/* Pet Selector for logged-in users with pets */}
+                  {user && userPets.length > 0 ? (
+                    <div className="space-y-3">
+                      {/* Pet Cards */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {userPets.map((pet) => (
+                          <button
+                            key={pet.id}
+                            onClick={() => handlePetSelect(pet.id)}
+                            className={`p-3 rounded-lg border-2 transition-all text-left ${
+                              selectedPetId === pet.id
+                                ? 'border-purple-500 bg-purple-50'
+                                : 'border-gray-200 hover:border-purple-300'
+                            }`}
+                            data-testid={`pet-select-${pet.id}`}
+                          >
+                            <div className="flex items-center gap-2">
+                              {pet.photo ? (
+                                <img src={pet.photo} alt={pet.name} className="w-8 h-8 rounded-full object-cover" />
+                              ) : (
+                                <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                                  <PawPrint className="w-4 h-4 text-purple-600" />
+                                </div>
+                              )}
+                              <div className="min-w-0">
+                                <p className="font-medium text-sm truncate">{pet.name}</p>
+                                <p className="text-xs text-gray-500 truncate">{pet.breed || 'Good Boy/Girl'}</p>
+                              </div>
+                            </div>
+                            {selectedPetId === pet.id && (
+                              <CheckCircle className="w-4 h-4 text-purple-600 absolute top-2 right-2" />
+                            )}
+                          </button>
+                        ))}
+                        {/* Option for manual entry */}
+                        <button
+                          onClick={() => handlePetSelect('manual')}
+                          className={`p-3 rounded-lg border-2 border-dashed transition-all text-left ${
+                            selectedPetId === 'manual'
+                              ? 'border-purple-500 bg-purple-50'
+                              : 'border-gray-300 hover:border-purple-300'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                              <Plus className="w-4 h-4 text-gray-500" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-sm text-gray-600">Other Pet</p>
+                              <p className="text-xs text-gray-400">Enter manually</p>
+                            </div>
+                          </div>
+                        </button>
+                      </div>
+                      
+                      {/* Manual entry fields (show when "manual" selected) */}
+                      {selectedPetId === 'manual' && (
+                        <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t">
+                          <div>
+                            <Label htmlFor="petName" className="text-xs">Pet&apos;s Name</Label>
+                            <Input
+                              id="petName"
+                              placeholder="e.g., Bruno"
+                              value={orderInfo.petName}
+                              onChange={(e) => setOrderInfo(prev => ({ ...prev, petName: e.target.value }))}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="petBreed" className="text-xs">Breed</Label>
+                            <Input
+                              id="petBreed"
+                              placeholder="e.g., Labrador"
+                              value={orderInfo.petBreed}
+                              onChange={(e) => setOrderInfo(prev => ({ ...prev, petBreed: e.target.value }))}
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div>
-                      <Label htmlFor="petBreed" className="text-xs">Breed</Label>
-                      <Input
-                        id="petBreed"
-                        placeholder="e.g., Labrador"
-                        value={orderInfo.petBreed}
-                        onChange={(e) => setOrderInfo(prev => ({ ...prev, petBreed: e.target.value }))}
-                      />
+                  ) : (
+                    /* Original fields for guests or users without pets */
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label htmlFor="petName" className="text-xs">Pet&apos;s Name</Label>
+                        <Input
+                          id="petName"
+                          placeholder="e.g., Bruno"
+                          value={orderInfo.petName}
+                          onChange={(e) => setOrderInfo(prev => ({ ...prev, petName: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="petBreed" className="text-xs">Breed</Label>
+                        <Input
+                          id="petBreed"
+                          placeholder="e.g., Labrador"
+                          value={orderInfo.petBreed}
+                          onChange={(e) => setOrderInfo(prev => ({ ...prev, petBreed: e.target.value }))}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
                 
                 {/* Smart Recommendations / Add-ons */}
