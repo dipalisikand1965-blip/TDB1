@@ -159,6 +159,12 @@ const LearnPage = () => {
   const [youtubeLoading, setYoutubeLoading] = useState(false);
   const [videoTopic, setVideoTopic] = useState('basic_training');
   
+  // Ask Mira - AI Learning Assistant
+  const [askMiraQuestion, setAskMiraQuestion] = useState('');
+  const [askMiraResponse, setAskMiraResponse] = useState(null);
+  const [askMiraLoading, setAskMiraLoading] = useState(false);
+  const [showAskMira, setShowAskMira] = useState(false);
+  
   const [requestForm, setRequestForm] = useState({
     learn_type: 'basic_obedience',
     training_goals: [],
@@ -261,6 +267,40 @@ const LearnPage = () => {
       console.error('Failed to fetch breed videos:', error);
     } finally {
       setYoutubeLoading(false);
+    }
+  };
+
+  // Ask Mira - AI Learning Assistant
+  const handleAskMira = async () => {
+    if (!askMiraQuestion.trim()) return;
+    
+    setAskMiraLoading(true);
+    setShowAskMira(true);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/os/learn/ask-mira`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          question: askMiraQuestion,
+          pet_id: selectedPet?.id || null
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setAskMiraResponse(data);
+      } else {
+        toast({ title: 'Failed to get response', variant: 'destructive' });
+      }
+    } catch (error) {
+      console.error('Ask Mira error:', error);
+      toast({ title: 'Something went wrong', variant: 'destructive' });
+    } finally {
+      setAskMiraLoading(false);
     }
   };
 
@@ -456,6 +496,126 @@ const LearnPage = () => {
       {/* Training Types Quick Access */}
       <div className="py-12 bg-white border-b">
         <div className="max-w-7xl mx-auto px-4">
+          {/* Ask Mira - AI Learning Assistant */}
+          <div className="mb-12">
+            <div className="max-w-2xl mx-auto">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
+                  <Brain className="w-4 h-4" />
+                  Ask Mira - AI Learning Assistant
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">Have a question about your pet?</h2>
+                <p className="text-gray-600 mt-2">Ask Mira anything about training, behaviour, health, or care</p>
+              </div>
+              
+              <div className="relative">
+                <Input
+                  value={askMiraQuestion}
+                  onChange={(e) => setAskMiraQuestion(e.target.value)}
+                  placeholder="e.g., How do I stop my puppy from biting? Why does my dog bark at strangers?"
+                  className="pr-12 py-6 text-lg rounded-xl border-2 border-gray-200 focus:border-blue-500"
+                  onKeyDown={(e) => e.key === 'Enter' && handleAskMira()}
+                  data-testid="ask-mira-input"
+                />
+                <Button
+                  onClick={handleAskMira}
+                  disabled={askMiraLoading || !askMiraQuestion.trim()}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                  size="sm"
+                  data-testid="ask-mira-submit"
+                >
+                  {askMiraLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                </Button>
+              </div>
+              
+              {/* Quick question chips */}
+              <div className="flex flex-wrap gap-2 mt-4 justify-center">
+                {['Puppy biting', 'Leash pulling', 'Separation anxiety', 'House training', 'Barking'].map((q) => (
+                  <button
+                    key={q}
+                    onClick={() => { setAskMiraQuestion(q); handleAskMira(); }}
+                    className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition-colors"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          {/* Ask Mira Response */}
+          {showAskMira && (
+            <div className="max-w-2xl mx-auto mb-12">
+              <Card className="overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 text-white">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                      <Sparkles className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Mira's Answer</h3>
+                      <p className="text-sm text-blue-100">Your AI Pet Learning Assistant</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-6">
+                  {askMiraLoading ? (
+                    <div className="flex items-center gap-3 text-gray-500">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>Mira is thinking...</span>
+                    </div>
+                  ) : askMiraResponse ? (
+                    <div>
+                      <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap">
+                        {askMiraResponse.answer}
+                      </div>
+                      
+                      {/* Related Content */}
+                      {(askMiraResponse.related_guides?.length > 0 || askMiraResponse.related_videos?.length > 0) && (
+                        <div className="mt-6 pt-6 border-t">
+                          <h4 className="text-sm font-semibold text-gray-900 mb-3">Related Learn Content</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {askMiraResponse.related_guides?.map((g) => (
+                              <button
+                                key={g.id}
+                                onClick={() => navigate(`/os?tab=learn&open=guide:${g.id}`)}
+                                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 rounded-lg text-sm text-blue-700 flex items-center gap-1"
+                              >
+                                <BookOpen className="w-3 h-3" />
+                                {g.title}
+                              </button>
+                            ))}
+                            {askMiraResponse.related_videos?.map((v) => (
+                              <button
+                                key={v.id}
+                                onClick={() => navigate(`/os?tab=learn&open=video:${v.id}`)}
+                                className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 rounded-lg text-sm text-purple-700 flex items-center gap-1"
+                              >
+                                <Play className="w-3 h-3" />
+                                {v.title}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Ask another */}
+                      <div className="mt-4 flex justify-end">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => { setShowAskMira(false); setAskMiraQuestion(''); setAskMiraResponse(null); }}
+                        >
+                          Ask another question
+                        </Button>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </Card>
+            </div>
+          )}
+
           <h2 className="text-2xl font-bold text-center mb-8">What Would You Like to Learn?</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {Object.entries(LEARN_TYPES).map(([key, config]) => {
