@@ -10,12 +10,26 @@ import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { 
   Sparkles, ChevronLeft, ChevronRight, Gift, Heart,
-  ShoppingCart, Loader2, PawPrint, User
+  ShoppingCart, Loader2, PawPrint, User, Cake, Coffee,
+  Frame, PartyPopper, Image, Key, Crown, Star
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+
+// Category icon mapping for beautiful icon cards
+const CATEGORY_ICONS = {
+  'breed-cakes': { icon: Cake, gradient: 'from-pink-400 to-rose-500', bg: 'bg-gradient-to-br from-pink-50 to-rose-100' },
+  'cakes': { icon: Cake, gradient: 'from-pink-400 to-rose-500', bg: 'bg-gradient-to-br from-pink-50 to-rose-100' },
+  'celebration': { icon: PartyPopper, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-100' },
+  'cups_merch': { icon: Coffee, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-100' },
+  'bandanas': { icon: Crown, gradient: 'from-purple-400 to-violet-500', bg: 'bg-gradient-to-br from-purple-50 to-violet-100' },
+  'accessories': { icon: Star, gradient: 'from-blue-400 to-indigo-500', bg: 'bg-gradient-to-br from-blue-50 to-indigo-100' },
+  'celebration_addons': { icon: PartyPopper, gradient: 'from-green-400 to-emerald-500', bg: 'bg-gradient-to-br from-green-50 to-emerald-100' },
+  'treats': { icon: Gift, gradient: 'from-red-400 to-pink-500', bg: 'bg-gradient-to-br from-red-50 to-pink-100' },
+  'default': { icon: Gift, gradient: 'from-gray-400 to-slate-500', bg: 'bg-gradient-to-br from-gray-50 to-slate-100' }
+};
 
 // Pillar-specific configurations
 const PILLAR_CONFIG = {
@@ -390,43 +404,64 @@ const PersonalizedPicks = ({
         </div>
       ) : (
         <>
-          {/* Recommended Products Carousel */}
+          {/* Recommended Products Carousel - Beautiful Icon Cards */}
           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-            {recommendations.slice(0, maxProducts).map(product => (
-              <div key={product.id || product._id} className="flex-shrink-0 w-40">
-                <div 
-                  onClick={() => navigate(`/product/${product.id || product._id}`)}
-                  className="block group cursor-pointer"
-                >
-                  <div className="relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                    <div className="aspect-square bg-gray-100">
-                      <img 
-                        src={
-                          (product.image && product.image.startsWith('http')) 
-                            ? product.image 
-                            : (product.images?.[0] && product.images[0].startsWith('http'))
-                              ? product.images[0]
-                              : 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop'
-                        } 
-                        alt={product.title || product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
-                        }}
-                      />
+            {recommendations.slice(0, maxProducts).map(product => {
+              // Get icon config based on category
+              const categoryKey = product.category || product.sub_category || 'default';
+              const iconConfig = CATEGORY_ICONS[categoryKey] || CATEGORY_ICONS['default'];
+              const IconComponent = iconConfig.icon;
+              
+              return (
+                <div key={product.id || product._id} className="flex-shrink-0 w-44">
+                  <div 
+                    onClick={() => navigate(`/product/${product.id || product._id}`)}
+                    className="block group cursor-pointer"
+                  >
+                    <div className="relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100">
+                      {/* Icon-based header instead of product image */}
+                      <div className={`aspect-square ${iconConfig.bg} flex items-center justify-center relative`}>
+                        {/* Gradient circle with icon */}
+                        <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${iconConfig.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                          <IconComponent className="w-10 h-10 text-white" />
+                        </div>
+                        {/* Decorative elements */}
+                        <div className="absolute top-3 left-3 w-2 h-2 rounded-full bg-white/60" />
+                        <div className="absolute top-6 left-6 w-1.5 h-1.5 rounded-full bg-white/40" />
+                        <div className="absolute bottom-3 right-3 w-2 h-2 rounded-full bg-white/60" />
+                        {/* For Pet Badge */}
+                        <Badge className={`absolute top-2 right-2 bg-gradient-to-r ${iconConfig.gradient} text-white text-[10px] border-0 shadow-sm`}>
+                          For {selectedPet?.name}
+                        </Badge>
+                      </div>
+                      {/* Product info */}
+                      <div className="p-3 space-y-1">
+                        <p className="text-sm font-semibold text-gray-900 line-clamp-2 leading-tight">
+                          {product.what_is || product.title || product.name}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate">
+                          {product.why_fits || product.category || 'Special Edition'}
+                        </p>
+                        <div className="flex items-center justify-between pt-1">
+                          <p className={`text-sm font-bold bg-gradient-to-r ${iconConfig.gradient} bg-clip-text text-transparent`}>
+                            ₹{product.price || product.minPrice || '999'}
+                          </p>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleAddToCart(product);
+                            }}
+                            className={`p-1.5 rounded-full bg-gradient-to-r ${iconConfig.gradient} text-white hover:opacity-90 transition-opacity`}
+                          >
+                            <ShoppingCart className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="p-2">
-                      <p className="text-xs font-medium text-gray-900 truncate">{product.title || product.name}</p>
-                      <p className={`text-xs ${config.accent} font-bold`}>₹{product.price || product.minPrice}</p>
-                    </div>
-                    <Badge className={`absolute top-2 right-2 ${config.accentBg} text-white text-[10px]`}>
-                      For {selectedPet?.name}
-                    </Badge>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           
           {/* Footer Actions - Simplified */}
