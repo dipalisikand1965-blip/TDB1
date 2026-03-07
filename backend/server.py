@@ -281,8 +281,8 @@ except Exception as e:
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
-NOTIFICATION_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggycompany.in")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.com")
+NOTIFICATION_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggycompany.com")
 WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "919663185747")
 
 # Razorpay configuration
@@ -624,7 +624,7 @@ async def send_celebration_email(to_email: str, owner_name: str, pet_name: str,
                     <p>Make it extra special with delicious treats from The Doggy Bakery! 🎂</p>
                     
                     <div style="text-align: center;">
-                        <a href="https://thedoggycompany.in/cakes" class="cta-button">
+                        <a href="https://thedoggycompany.com/cakes" class="cta-button">
                             🎁 Shop Birthday Treats
                         </a>
                     </div>
@@ -647,10 +647,10 @@ async def send_celebration_email(to_email: str, owner_name: str, pet_name: str,
                 </div>
                 <div class="footer">
                     <p>The Doggy Bakery | Baking happiness for your furry friends</p>
-                    <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.in</p>
+                    <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.com</p>
                     <p style="font-size: 11px; color: #9ca3af;">
                         You're receiving this because you enabled celebration reminders for {pet_name}. 
-                        <a href="https://thedoggycompany.in/my-pets" style="color: #9333ea;">Manage preferences</a>
+                        <a href="https://thedoggycompany.com/my-pets" style="color: #9333ea;">Manage preferences</a>
                     </p>
                 </div>
             </div>
@@ -699,7 +699,7 @@ Reminder: {celebration['name']} is {days_text} ({celebration['date']})!
 
 Make it special with treats from The Doggy Bakery! 🐾
 
-🎂 Shop now: https://thedoggycompany.in/cakes
+🎂 Shop now: https://thedoggycompany.com/cakes
 
 Need help choosing? Chat with Mira, our Concierge®!"""
     
@@ -3910,7 +3910,7 @@ async def forgot_password(email: str = Body(..., embed=True)):
     
     # Send reset email
     try:
-        frontend_url = os.environ.get("FRONTEND_URL", "https://thedoggycompany.in")
+        frontend_url = os.environ.get("FRONTEND_URL", "https://thedoggycompany.com")
         reset_link = f"{frontend_url}/admin/reset-password?token={reset_token}"
         
         html_content = f"""
@@ -6103,7 +6103,7 @@ async def get_site_content(username: str = Depends(verify_admin)):
             ],
             "bannerText": "Enjoy the convenience of SAME DAY DELIVERY in Mumbai, Bangalore & Gurgaon for all orders placed by 6:00 PM",
             "whatsappNumber": "+91 96631 85747",
-            "contactEmail": "woof@thedoggycompany.in"
+            "contactEmail": "woof@thedoggycompany.com"
         }
     return content
 
@@ -6307,7 +6307,7 @@ async def seed_page_content(username: str = Depends(verify_admin)):
                     {"title": "How We Use Information", "text": "To provide services, personalize your experience, send updates, and improve our platform."},
                     {"title": "Data Security", "text": "We implement industry-standard security measures to protect your data."},
                     {"title": "Your Rights", "text": "You can access, update, or delete your data at any time through your account settings."},
-                    {"title": "Contact", "text": "For privacy concerns, contact privacy@thedoggycompany.in"}
+                    {"title": "Contact", "text": "For privacy concerns, contact privacy@thedoggycompany.com"}
                 ],
                 "last_updated": "January 2026"
             },
@@ -6453,7 +6453,7 @@ async def seed_all_page_content(username: str = Depends(verify_admin)):
                     "subtitle": "We'd love to hear from you"
                 },
                 "contact_info": {
-                    "email": "hello@thedoggycompany.in",
+                    "email": "hello@thedoggycompany.com",
                     "phone": "+91 9876543210",
                     "whatsapp": "+91 9876543210",
                     "address": "Mumbai, India"
@@ -6479,7 +6479,7 @@ async def seed_all_page_content(username: str = Depends(verify_admin)):
                     {"title": "Product Returns", "content": "Perishable items like cakes and treats cannot be returned due to health and safety reasons. Non-perishable items can be returned within 7 days if unused and in original packaging."},
                     {"title": "Membership Refunds", "content": "Membership fees are non-refundable once the subscription period begins. You may cancel anytime to prevent future renewals."},
                     {"title": "Service Cancellations", "content": "Bookings cancelled 24+ hours in advance receive a full refund. Cancellations within 24 hours may incur a 50% fee."},
-                    {"title": "How to Request", "content": "Contact us at support@thedoggycompany.in with your order details to initiate a refund request."}
+                    {"title": "How to Request", "content": "Contact us at support@thedoggycompany.com with your order details to initiate a refund request."}
                 ],
                 "seo": {
                     "meta_title": "Refund Policy | The Doggy Company®",
@@ -14346,7 +14346,7 @@ Prepare your camera for those precious moments! 📸"""
     return {
         "subject": subject,
         "message": message,
-        "whatsapp_message": message.replace("[Link]", "https://thedoggycompany.in/" + collection),
+        "whatsapp_message": message.replace("[Link]", "https://thedoggycompany.com/" + collection),
         "collection": collection,
         "persona": persona,
         "message_style": persona_info.get("message_style")
@@ -14801,7 +14801,7 @@ async def submit_franchise_inquiry(inquiry: dict):
     try:
         params = {
             "from": SENDER_EMAIL,
-            "to": os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggycompany.in"),  # Resend expects a string
+            "to": os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggycompany.com"),  # Resend expects a string
             "subject": f"New Franchise Inquiry from {inquiry_doc['name']} - {inquiry_doc['city']}",
             "html": f"""
             <h2>New Franchise Inquiry!</h2>
@@ -17084,7 +17084,7 @@ async def send_admin_email(to_email: str, subject: str, html_content: str):
     try:
         resend.api_key = RESEND_API_KEY
         resend.Emails.send({
-            "from": "The Doggy Company <woof@thedoggycompany.in>",
+            "from": "The Doggy Company <woof@thedoggycompany.com>",
             "to": to_email,
             "subject": subject,
             "html": html_content

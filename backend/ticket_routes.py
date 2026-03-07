@@ -112,7 +112,7 @@ async def send_ticket_notification(ticket: dict, notification_type: str = "creat
                     <hr>
                     <p><strong>Request:</strong></p>
                     <p style="background:#fff3cd;padding:15px;border-radius:8px;">{ticket.get('description', '')}</p>
-                    <p><a href="https://thedoggycompany.in/admin">View in Service Desk →</a></p>
+                    <p><a href="https://thedoggycompany.com/admin">View in Service Desk →</a></p>
                 """
             })
         
@@ -1008,8 +1008,8 @@ async def get_concierges():
     
     if not concierges:
         concierges = [
-            {"id": "aditya", "name": "Aditya", "email": "aditya@thedoggycompany.in", "role": "admin"},
-            {"id": "concierge1", "name": "Concierge 1", "email": "concierge1@thedoggycompany.in", "role": "junior"},
+            {"id": "aditya", "name": "Aditya", "email": "aditya@thedoggycompany.com", "role": "admin"},
+            {"id": "concierge1", "name": "Concierge 1", "email": "concierge1@thedoggycompany.com", "role": "junior"},
         ]
     else:
         for c in concierges:
@@ -2170,7 +2170,7 @@ async def add_reply(ticket_id: str, reply: TicketReply):
                                 <div style="padding: 20px 32px; background: #f5f5f5; border-radius: 0 0 16px 16px; text-align: center;">
                                     <p style="color: #888; font-size: 12px; margin: 0;">
                                         With love, from The Doggy Company 💜<br>
-                                        <a href="https://thedoggycompany.in" style="color: #9333ea;">thedoggycompany.in</a>
+                                        <a href="https://thedoggycompany.com" style="color: #9333ea;">thedoggycompany.com</a>
                                     </p>
                                 </div>
                             </div>
@@ -2470,7 +2470,7 @@ async def send_option_cards(ticket_id: str, request: SendOptionsRequest):
                                 <h3 style="color:#333;">{request.question}</h3>
                                 {options_html}
                                 <p style="margin-top:20px;">
-                                    <a href="https://thedoggycompany.in/mira-demo?tab=concierge&ticket={ticket_id}" 
+                                    <a href="https://thedoggycompany.com/mira-demo?tab=concierge&ticket={ticket_id}" 
                                        style="background:#9333ea;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;">
                                         Choose in App
                                     </a>
@@ -4224,7 +4224,7 @@ async def handle_email_reply_webhook(email: InboundEmailWebhook):
     
     Matching Logic:
     1. Check if ticket_id is in subject line (e.g., "[Ticket #TKT-123]")
-    2. Check the to_email for ticket routing (e.g., ticket-123@support.thedoggycompany.in)
+    2. Check the to_email for ticket routing (e.g., ticket-123@support.thedoggycompany.com)
     3. Search by customer email to find their open tickets
     """
     db = get_db()

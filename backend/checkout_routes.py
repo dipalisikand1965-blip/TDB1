@@ -65,7 +65,7 @@ BUSINESS_DETAILS = {
     "gstin": "29AABCT1332L1ZC",  # Placeholder - update with real GSTIN
     "pan": "AABCT1332L",
     "address": "147, 8th Main Rd, 3rd Block, Koramangala, Bengaluru 560034",
-    "email": "woof@thedoggycompany.in",
+    "email": "woof@thedoggycompany.com",
     "phone": "+91 9663185747",
     "state": "Karnataka",
     "state_code": "29"
@@ -73,7 +73,7 @@ BUSINESS_DETAILS = {
 
 # Resend Email Configuration
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.com")
 
 # ==================== MODELS ====================
 
@@ -233,7 +233,7 @@ async def send_order_confirmation_email(order: dict) -> bool:
                     </table>
                     
                     <div style="text-align: center; margin: 30px 0;">
-                        <a href="https://thedoggycompany.in/api/checkout/order/{order_id}/invoice/pdf" class="btn">
+                        <a href="https://thedoggycompany.com/api/checkout/order/{order_id}/invoice/pdf" class="btn">
                             📄 Download Invoice (PDF)
                         </a>
                     </div>
@@ -244,7 +244,7 @@ async def send_order_confirmation_email(order: dict) -> bool:
                 </div>
                 <div class="footer">
                     <p>The Doggy Company | India's #1 Pet Life Operating System</p>
-                    <p>📞 +91 9663185747 | 📧 woof@thedoggycompany.in</p>
+                    <p>📞 +91 9663185747 | 📧 woof@thedoggycompany.com</p>
                 </div>
             </div>
         </body>

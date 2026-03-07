@@ -471,7 +471,7 @@ async def get_shareable_card_data(pet_id: str, template_id: str = "classic"):
             "soul_score": pet.get("overall_score", 0),
         },
         "template": template,
-        "share_url": f"https://thedoggycompany.in/pet/{pet_id}/card"
+        "share_url": f"https://thedoggycompany.com/pet/{pet_id}/card"
     }
 
 # ==================== STREAK ENDPOINTS ====================
