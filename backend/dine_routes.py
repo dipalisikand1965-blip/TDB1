@@ -112,7 +112,7 @@ ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
 
 # Resend configuration
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.com")
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "woof2025")
@@ -564,7 +564,7 @@ async def create_reservation(reservation: ReservationRequest):
                         </p>
                     </div>
                     <div style="background: #1f2937; padding: 20px; text-align: center;">
-                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggycompany.in</p>
+                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggycompany.com</p>
                     </div>
                 </div>
                 """
@@ -1286,11 +1286,11 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
                         <p style="color: #4b5563;">When someone wants to meet up with you, you'll receive a notification via {visit.notification_preference}. Check back on the Dine page to see who else is visiting!</p>
                         
                         <p style="margin-top: 20px;">
-                            <a href="https://thedoggycompany.in/dine" style="background: #8b5cf6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block;">View Pet Buddies</a>
+                            <a href="https://thedoggycompany.com/dine" style="background: #8b5cf6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block;">View Pet Buddies</a>
                         </p>
                     </div>
                     <div style="background: #1f2937; padding: 20px; text-align: center;">
-                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggycompany.in</p>
+                        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2026 The Doggy Company | woof@thedoggycompany.com</p>
                     </div>
                 </div>
                 """
@@ -1527,7 +1527,7 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
                             </div>
                             
                             <p style="text-align: center; margin: 20px 0;">
-                                <a href="https://thedoggycompany.in/dine" style="background: #9333ea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">
+                                <a href="https://thedoggycompany.com/dine" style="background: #9333ea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">
                                     View Request & Respond
                                 </a>
                             </p>

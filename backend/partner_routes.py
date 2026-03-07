@@ -569,10 +569,10 @@ async def process_partner_action(
                         <li>You'll receive access to the partner dashboard</li>
                     </ul>
                 </div>
-                <p>If you have any questions, reply to this email or contact us at woof@thedoggycompany.in</p>
+                <p>If you have any questions, reply to this email or contact us at woof@thedoggycompany.com</p>
             </div>
             <div style="background: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; color: #666;">
-                The Doggy Company | woof@thedoggycompany.in
+                The Doggy Company | woof@thedoggycompany.com
             </div>
         </div>
         """
@@ -598,10 +598,10 @@ async def process_partner_action(
                 <p>After careful review, we regret to inform you that we're unable to move forward with your application for <strong>{application.get('business_name')}</strong> at this time.</p>
                 {f'<p><strong>Reason:</strong> {action_data.reason}</p>' if action_data.reason else ''}
                 <p>This decision was based on our current requirements and operational capacity. We encourage you to apply again in the future as our needs evolve.</p>
-                <p>If you have questions or would like feedback, please contact us at woof@thedoggycompany.in</p>
+                <p>If you have questions or would like feedback, please contact us at woof@thedoggycompany.com</p>
             </div>
             <div style="background: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; color: #666;">
-                The Doggy Company | woof@thedoggycompany.in
+                The Doggy Company | woof@thedoggycompany.com
             </div>
         </div>
         """
@@ -631,7 +631,7 @@ async def process_partner_action(
                 <p>Please reply to this email with the requested information, or contact us if you have any questions.</p>
             </div>
             <div style="background: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; color: #666;">
-                The Doggy Company | woof@thedoggycompany.in
+                The Doggy Company | woof@thedoggycompany.com
             </div>
         </div>
         """
