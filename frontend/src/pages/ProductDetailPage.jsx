@@ -259,7 +259,7 @@ const ProductDetailPage = () => {
               <div className="space-y-4 p-4 bg-purple-50 rounded-xl border border-purple-100">
                 <h3 className="font-semibold text-gray-900 flex items-center gap-2">
                   <Package className="w-5 h-5 text-purple-600" />
-                  Customize Your Order
+                  Customise Your Order
                 </h3>
                 {product.options.map((option, optIdx) => (
                   // Skip "Default Title" options

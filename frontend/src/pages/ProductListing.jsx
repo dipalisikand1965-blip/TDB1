@@ -80,7 +80,7 @@ const CATEGORY_HERO_CONTENT = {
     color: 'from-emerald-600 via-teal-500 to-green-500'
   },
   'pizzas-burgers': {
-    badge: 'Fun Favorites',
+    badge: 'Fun Favourites',
     title: 'Pizzas &',
     highlight: 'Burgers 🍕',
     subtitle: 'Pet-safe versions of your favourite comfort foods!',
@@ -401,7 +401,7 @@ const PILLAR_RECOMMENDATION_CONFIG = {
   dine: {
     icon: '🍽️',
     title: (petName) => `Meals suited to ${petName}'s dietary needs`,
-    subtitle: (pet) => `Personalized for ${pet.name} • ${pet.weight ? `${pet.weight}kg` : ''} ${pet.breed || 'Mixed'}`,
+    subtitle: (pet) => `Personalised for ${pet.name} • ${pet.weight ? `${pet.weight}kg` : ''} ${pet.breed || 'Mixed'}`,
     bgColor: 'from-emerald-50 to-teal-50',
     borderColor: 'border-emerald-200',
     accentColor: 'text-emerald-900',
@@ -1506,7 +1506,7 @@ const ProductListing = ({ category = 'all' }) => {
           </p>
         </div>
         
-        {/* NEW: Mira Support Filters Row - Personalized guidance for your pet */}
+        {/* NEW: Mira Support Filters Row - Personalised guidance for your pet */}
         {selectedPet && supportFilters.length > 0 && (() => {
           const recConfig = getPillarRecommendationConfig(pillar);
           return (
@@ -1515,7 +1515,7 @@ const ProductListing = ({ category = 'all' }) => {
                 <div className="flex items-center gap-2">
                   <Sparkles className={`w-4 h-4 ${recConfig.accentColor}`} />
                   <span className={`text-sm font-medium ${recConfig.accentColor}`}>
-                    Personalized for {selectedPet.name}
+                    Personalised for {selectedPet.name}
                   </span>
                   {activeSupportFilters.length > 0 && (
                     <span className={`text-xs ${recConfig.accentColor} bg-white/50 px-2 py-0.5 rounded-full`}>

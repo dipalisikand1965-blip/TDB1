@@ -45,7 +45,7 @@ const SOUL_QUESTION_LABELS = {
   love_language: "Love Language",
   personality_tag: "Personality Tag",
   morning_routine: "Morning Routine",
-  favorite_nap_spot: "Favorite Nap Spot",
+  favorite_nap_spot: "Favourite Nap Spot",
   reaction_to_bath: "Reaction to Bath",
   superpower: "Superpower",
   guilty_pleasure: "Guilty Pleasure"
@@ -1073,7 +1073,7 @@ const MyPets = () => {
                                 <div>
                                   <h5 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
                                     <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
-                                    Saved Favorites ({petFavorites[pet.id].length})
+                                    Saved Favourites ({petFavorites[pet.id].length})
                                   </h5>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                     {petFavorites[pet.id].slice(0, 4).map((fav, idx) => (
@@ -1092,7 +1092,7 @@ const MyPets = () => {
                                   </div>
                                   {petFavorites[pet.id].length > 4 && (
                                     <p className="text-xs text-gray-500 mt-2 text-center">
-                                      + {petFavorites[pet.id].length - 4} more favorites
+                                      + {petFavorites[pet.id].length - 4} more favourites
                                     </p>
                                   )}
                                 </div>

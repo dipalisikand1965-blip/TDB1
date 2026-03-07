@@ -447,7 +447,7 @@ Which package sounds perfect? I'll start planning! 🎊`,
 
 🏠 **Private Training (Home)** - ₹1,500/session
 • One-on-one attention
-• Customized to Dollar's needs
+• Customised to Dollar's needs
 • Trainer: Anjali (Poodle specialist)
 ⭐ 4.9/5 • 50+ dogs trained
 
@@ -940,7 +940,7 @@ const TOUR_STEPS = [
   { id: 'intro', title: 'Welcome to Mira OS™', description: 'This is a 2-minute guided tour showing Mira\'s intelligence capabilities. Click "Start Tour" to begin!', target: null },
   { id: 'chat', title: 'The Chat Interface', description: 'This is where conversations happen. Mira already knows Dollar - his breed, allergies, preferences, and history.', target: 'chat-interface' },
   { id: 'scenario-1', title: 'Health Detection', description: 'Try this scenario to see how Mira detects health concerns from natural language.', target: 'scenario-0', autoClick: true },
-  { id: 'scenario-5', title: 'Emergency Mode', description: 'Watch how Mira immediately recognizes emergencies and provides urgent guidance.', target: 'scenario-4', autoClick: true },
+  { id: 'scenario-5', title: 'Emergency Mode', description: 'Watch how Mira immediately recognises emergencies and provides urgent guidance.', target: 'scenario-4', autoClick: true },
   { id: 'scenario-2', title: 'Multi-Intent Handling', description: 'Mira can handle multiple requests in a single message - grooming AND treats.', target: 'scenario-1', autoClick: true },
   { id: 'heritage', title: 'Our Heritage', description: '30 years of concierge expertise combined with AI intelligence. The Soul, The Brains, and The Hands.', target: 'heritage-section' },
   { id: 'complete', title: 'Tour Complete!', description: 'You\'ve seen Mira\'s key capabilities. Ready to discuss a partnership?', target: null },
