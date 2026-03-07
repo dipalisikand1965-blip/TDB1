@@ -382,11 +382,17 @@ curl -X POST $API_URL/api/wrapped/trigger-welcome/699fa0a513e44c977327ad57
 ## CHANGELOG
 
 ### March 7, 2026 (Session 3)
-- **NEW:** Investor-Ready Pet Wrapped Page (`/investor-pet-wrapped.html`)
-  - Comprehensive investor pitch for Pet Wrapped as viral acquisition engine
-  - Includes: CAC comparison, viral funnel diagram, competitive moat analysis
-  - Revenue projections, tech stack overview, founder credentials
-  - Links to main introduction page for full platform overview
+- **NEW:** Main Investor Page (`/investor.html`)
+  - Full platform overview mirroring the PowerPoint investor deck
+  - Heritage journey (1998-2026), Mira Sikand story, Soul Profile™
+  - 14 Life Pillars, Scale & Proof (615K lines, 38 APIs)
+  - 5 Compounding Moats (Data, Intelligence, Architecture, Emotional, Network)
+  - Competitive comparison vs HUFT/Supertails/Zigly
+  - Revenue projections, The Ask, Founder credentials
+
+- **NEW:** Pet Wrapped Investor Page (`/investor-pet-wrapped.html`)
+  - Deep-dive on Pet Wrapped as viral acquisition engine
+  - Viral funnel diagram, CAC comparison, revenue potential
 
 ### March 7, 2026 (Session 2)
 - **NEW:** Pet Wrapped Download Button on Pet Home Page
@@ -444,6 +450,7 @@ curl -X POST $API_URL/api/wrapped/trigger-welcome/699fa0a513e44c977327ad57
 |------|-----|
 | Introduction (Investor) | https://mira-ai-soul.preview.emergentagent.com/introduction.html |
 | Pet Wrapped Investor Pitch | https://mira-ai-soul.preview.emergentagent.com/investor-pet-wrapped.html |
+| **Main Investor Page** | https://mira-ai-soul.preview.emergentagent.com/investor.html |
 | Mystique's Pet Wrapped | https://mira-ai-soul.preview.emergentagent.com/api/wrapped/download/699fa0a513e44c977327ad57 |
 | Static Mystique HTML | https://mira-ai-soul.preview.emergentagent.com/pet-wrapped-mystique.html |
 | Complete Documentation | https://mira-ai-soul.preview.emergentagent.com/complete-documentation.html |
