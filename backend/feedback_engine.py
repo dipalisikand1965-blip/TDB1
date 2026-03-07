@@ -410,7 +410,7 @@ async def send_feedback_request(feedback_id: str) -> Dict[str, Any]:
             """
             
             resend.Emails.send({
-                "from": f"The Doggy Company <{SENDER_EMAIL}>",
+                "from": f"THEDOGGYCOMPANY <{SENDER_EMAIL}>",
                 "to": email,
                 "subject": email_subject,
                 "html": email_html

@@ -610,7 +610,7 @@ async def send_celebration_email(to_email: str, owner_name: str, pet_name: str,
         <body>
             <div class="container">
                 <div class="header">
-                    <h1 style="margin: 0;">🐾 The Doggy Bakery</h1>
+                    <h1 style="margin: 0;">🐾 The Doggy Company</h1>
                     <p style="margin: 10px 0 0 0; opacity: 0.9;">Pet Celebration Reminder</p>
                 </div>
                 <div class="content">
@@ -621,7 +621,7 @@ async def send_celebration_email(to_email: str, owner_name: str, pet_name: str,
                     
                     <p>Get ready to celebrate! <strong>{pet_name}</strong>, your {persona}, has a special day coming up on <strong>{celebration['date']}</strong>.</p>
                     
-                    <p>Make it extra special with delicious treats from The Doggy Bakery! 🎂</p>
+                    <p>Make it extra special with delicious treats from The Doggy Company! 🎂</p>
                     
                     <div style="text-align: center;">
                         <a href="https://thedoggycompany.com/cakes" class="cta-button">
@@ -643,10 +643,10 @@ async def send_celebration_email(to_email: str, owner_name: str, pet_name: str,
                     
                     <p>Wishing {pet_name} the happiest celebration! 🎉</p>
                     
-                    <p>With love,<br><strong>The Doggy Bakery Team</strong> 🐕</p>
+                    <p>With love,<br><strong>The Doggy Company Team</strong> 🐕</p>
                 </div>
                 <div class="footer">
-                    <p>The Doggy Bakery | Baking happiness for your furry friends</p>
+                    <p>The Doggy Company | Baking happiness for your furry friends</p>
                     <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.com</p>
                     <p style="font-size: 11px; color: #9ca3af;">
                         You're receiving this because you enabled celebration reminders for {pet_name}. 
@@ -659,7 +659,7 @@ async def send_celebration_email(to_email: str, owner_name: str, pet_name: str,
         '''
         
         params = {
-            "from": f"The Doggy Bakery <{SENDER_EMAIL}>",
+            "from": f"THEDOGGYCOMPANY <{SENDER_EMAIL}>",
             "to": to_email,  # Resend expects a string, not a list
             "subject": subject,
             "html": html_content
@@ -697,7 +697,7 @@ def generate_whatsapp_reminder_link(pet_name: str, celebration: dict, owner_name
 
 Reminder: {celebration['name']} is {days_text} ({celebration['date']})!
 
-Make it special with treats from The Doggy Bakery! 🐾
+Make it special with treats from The Doggy Company! 🐾
 
 🎂 Shop now: https://thedoggycompany.com/cakes
 
@@ -2292,7 +2292,7 @@ async def websocket_health_check():
 @app.get("/")
 def root():
     """Root endpoint"""
-    return {"message": "The Doggy Bakery API", "version": "2.0", "health": "ok"}
+    return {"message": "The Doggy Company API", "version": "2.0", "health": "ok"}
 
 # Security - support both Basic Auth and Bearer Token
 security = HTTPBasic(auto_error=False)
@@ -3057,7 +3057,7 @@ async def send_email_notification(chat_data: dict):
             
             <div style="background: #1f2937; padding: 15px; text-align: center;">
                 <p style="color: #9ca3af; margin: 0; font-size: 12px;">
-                    The Doggy Bakery Admin Notification
+                    The Doggy Company Admin Notification
                 </p>
             </div>
         </div>
@@ -3176,7 +3176,7 @@ async def extract_chat_details(messages: List[dict]) -> dict:
 
 @api_router.get("/")
 async def root():
-    return {"message": "The Doggy Bakery API", "version": "2.0"}
+    return {"message": "The Doggy Company API", "version": "2.0"}
 
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
@@ -6181,7 +6181,7 @@ async def get_site_content(username: str = Depends(verify_admin)):
                     "id": "4",
                     "title": "Meet Our Team",
                     "thumbnail": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600",
-                    "description": "The passionate team behind The Doggy Bakery",
+                    "description": "The passionate team behind The Doggy Company",
                     "videoUrl": "https://www.instagram.com/thedoggycompany/"
                 }
             ],
@@ -6504,7 +6504,7 @@ async def seed_all_page_content(username: str = Depends(verify_admin)):
                 },
                 "proof_blocks": [
                     {"value": "45,000+", "label": "Pets Served"},
-                    {"value": "Since 2020", "label": "The Doggy Bakery®"},
+                    {"value": "Since 2020", "label": "The Doggy Company®"},
                     {"value": "Since 1998", "label": "Concierge Legacy"},
                     {"value": "30+ Years", "label": "Service Excellence"}
                 ],
@@ -10300,7 +10300,7 @@ async def send_documentation_email(
         
         # Send email via Resend
         params = {
-            "from": "The Doggy Company <onboarding@resend.dev>",
+            "from": "THEDOGGYCOMPANY <onboarding@resend.dev>",
             "to": [to_email],
             "subject": "🐕 Your Owner's Guide - The Doggy Company",
             "html": html_content
@@ -14467,7 +14467,7 @@ Haven't ordered yet? There's still time for same-day treats!"""
         # Shadow / Soulmate style
         if days_until == 7:
             subject = "A special milestone for your best friend... 🐾"
-            message = f"""Hi {owner_name}, just a quiet reminder from The Doggy Bakery.
+            message = f"""Hi {owner_name}, just a quiet reminder from The Doggy Company.
 
 We noticed {pet_name}'s {occasion_name} is coming up in seven days! We know {pet_name} isn't just a pet—they are your '{persona_info['name']}' and your soulmate.
 
@@ -17253,7 +17253,7 @@ async def send_admin_email(to_email: str, subject: str, html_content: str):
     try:
         resend.api_key = RESEND_API_KEY
         resend.Emails.send({
-            "from": "The Doggy Company <woof@thedoggycompany.com>",
+            "from": "THEDOGGYCOMPANY <woof@thedoggycompany.com>",
             "to": to_email,
             "subject": subject,
             "html": html_content

@@ -542,7 +542,7 @@ The Doggy Company Team
             'name': 'SMS Quick Acknowledgment',
             'type': 'sms',
             'subject': '',
-            'body': 'Hi {{customer_name}}! The Doggy Company here 🐕 We received your request #{{ticket_id}}. Our team will respond within 24hrs. Track it at thedoggycompany.in/my-account',
+            'body': 'Hi {{customer_name}}! The Doggy Company here 🐕 We received your request #{{ticket_id}}. Our team will respond within 24hrs. Track it at thedoggycompany.com/my-account',
             'auto_trigger': 'new_ticket',
             'created_at': now
         }

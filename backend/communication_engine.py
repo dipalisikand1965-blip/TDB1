@@ -646,7 +646,7 @@ class CommunicationEngine:
             html_content = self._build_email_html(subject, body, pet_name, parent_name)
             
             params = {
-                "from": f"The Doggy Company <{SENDER_EMAIL}>",
+                "from": f"THEDOGGYCOMPANY <{SENDER_EMAIL}>",
                 "to": to_email.strip(),
                 "subject": subject,
                 "html": html_content

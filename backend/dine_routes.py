@@ -530,7 +530,7 @@ async def create_reservation(reservation: ReservationRequest):
                 """
             
             resend.Emails.send({
-                "from": f"The Doggy Company <{SENDER_EMAIL}>",
+                "from": f"THEDOGGYCOMPANY <{SENDER_EMAIL}>",
                 "to": reservation.email,
                 "subject": f"🍽️ Reservation Request - {restaurant.get('name')}",
                 "html": f"""
@@ -720,7 +720,7 @@ async def admin_update_reservation_status(
                     message = f"We're sorry, but your reservation at {reservation.get('restaurant_name')} on {reservation.get('date')} has been cancelled. Please contact us for assistance."
                 
                 resend.Emails.send({
-                    "from": f"The Doggy Company <{SENDER_EMAIL}>",
+                    "from": f"THEDOGGYCOMPANY <{SENDER_EMAIL}>",
                     "to": reservation.get("email"),
                     "subject": subject,
                     "html": f"""
@@ -1257,7 +1257,7 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
                 """
             
             resend.Emails.send({
-                "from": f"The Doggy Company <{SENDER_EMAIL}>",
+                "from": f"THEDOGGYCOMPANY <{SENDER_EMAIL}>",
                 "to": confirmation_email,
                 "subject": f"🐕 Pet Buddy Visit Scheduled - {restaurant.get('name')}",
                 "html": f"""

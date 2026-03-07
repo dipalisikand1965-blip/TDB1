@@ -1117,7 +1117,7 @@ async def concierge_reply(
                     
                     if resend.api_key:
                         email_result = resend.Emails.send({
-                            "from": f"The Doggy Company <{sender_email}>",
+                            "from": f"THEDOGGYCOMPANY <{sender_email}>",
                             "to": member_email,
                             "reply_to": f"ticket+{ticket_id}@replies.thedoggycompany.com",
                             "subject": f"Re: Ticket {ticket_id} - Concierge Update",
