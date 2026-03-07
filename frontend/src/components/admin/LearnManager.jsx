@@ -129,19 +129,14 @@ const LearnManager = ({ getAuthHeader }) => {
         axios.get(`${API_URL}/api/learn/requests`, getAuthHeader()),
         axios.get(`${API_URL}/api/learn/programs`, getAuthHeader()),
         axios.get(`${API_URL}/api/learn/trainers`, getAuthHeader()),
-        // Fetch from Unified Product Box first for single source of truth
-        axios.get(`${API_URL}/api/product-box/by-pillar/learn`).catch(() => 
-          axios.get(`${API_URL}/api/learn/products`, getAuthHeader())
-        ),
+        axios.get(`${API_URL}/api/learn/products`, getAuthHeader()),
         axios.get(`${API_URL}/api/learn/bundles`, getAuthHeader())
       ]);
       
       setRequests(reqRes.data.requests || []);
       setPrograms(programRes.data.programs || []);
       setTrainers(trainerRes.data.trainers || []);
-      // Handle both unified product box response and legacy response
-      const productData = productRes.data.products || productRes.data || [];
-      setProducts(Array.isArray(productData) ? productData : []);
+      setProducts(productRes.data.products || []);
       setBundles(bundleRes.data.bundles || []);
       
       // Calculate stats
