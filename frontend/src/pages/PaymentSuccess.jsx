@@ -216,7 +216,7 @@ const PaymentSuccess = () => {
             </Button>
             
             <Button 
-              onClick={() => navigate('/mira-demo')}
+              onClick={() => navigate('/mira-os')}
               variant="outline"
               className="w-full border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white py-6 text-lg rounded-xl"
               data-testid="chat-with-mira-btn"

@@ -586,7 +586,7 @@ const Navbar = () => {
 
   const openMiraAI = () => {
     // Navigate to Mira OS sandbox for full experience
-    window.location.href = '/mira-demo';
+    window.location.href = '/mira-os';
   };
 
   const handleMouseEnter = (pillarId) => {

@@ -2530,7 +2530,7 @@ const SoulBuilder = () => {
             <button
               onClick={async () => {
                 await saveSoulAnswers(answers);
-                navigate('/mira-demo');
+                navigate('/mira-os');
               }}
               className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30"
               data-testid="go-to-today-btn"
@@ -2568,7 +2568,7 @@ const SoulBuilder = () => {
                 See {petName}'s MOJO
               </button>
               <button
-                onClick={() => navigate('/mira-demo')}
+                onClick={() => navigate('/mira-os')}
                 className="flex-1 py-3 px-4 bg-white/10 text-white rounded-full hover:bg-white/20 transition-colors text-sm"
               >
                 Ask Mira

@@ -2655,7 +2655,7 @@ const MiraDemoBackupPage = () => {
             city: pet?.city || pet?.location?.city || userCity || 'Mumbai',
             location: { city: pet?.city || pet?.location?.city || userCity || 'Mumbai' }
           },
-          page_context: 'mira-demo',
+          page_context: 'mira-os',
           // SESSION PERSISTENCE - Pass session_id for conversation tracking
           session_id: sessionId,
           // MIRA DOCTRINE: Always let AI decide when products are relevant

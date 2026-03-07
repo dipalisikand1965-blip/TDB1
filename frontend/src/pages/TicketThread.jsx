@@ -263,7 +263,7 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
       navigate(-1);
     } else {
       // Full mode fallback: go to mira-demo
-      navigate('/mira-demo');
+      navigate('/mira-os');
     }
   };
 
