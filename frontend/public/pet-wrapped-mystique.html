@@ -804,11 +804,14 @@
       </div>
 
       <div class="share-block">
-        <div class="share-label">Give your dog a Soul Profile</div>
-        <button class="share-btn" onclick="window.open('https://thedoggycompany.com','_blank')">
-          🐾 Create theirs now
+        <div class="share-label">Save & Share Mystique's Year</div>
+        <button class="share-btn" onclick="downloadWrapped()" style="margin-bottom: 12px;">
+          📥 Download Pet Wrapped
         </button>
-        <div class="cta-text">
+        <button class="share-btn" onclick="shareWrapped()" style="background: var(--rose);">
+          📤 Share to WhatsApp
+        </button>
+        <div class="cta-text" style="margin-top: 16px;">
           Every dog deserves to be truly known.<br>
           <a href="https://thedoggycompany.com">thedoggycompany.com</a>
         </div>
@@ -824,6 +827,30 @@
   <p>"Her eyes held a universe of love.<br>And she left it behind — in all of them."</p>
   <div class="footer-brand">The Doggy Company · thedoggycompany.com · Built in memory of Mystique</div>
 </footer>
+
+<script>
+function downloadWrapped() {
+  // Get the full HTML content
+  const html = document.documentElement.outerHTML;
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  
+  // Create download link
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'PetWrapped_Mystique_2026.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function shareWrapped() {
+  const text = encodeURIComponent("💜 Mystique's Pet Wrapped 2026\n\n87 Soul Score • 12 Mira Conversations • 56 Questions Answered\n\n\"Her eyes held a universe of love. And she left it behind.\"\n\nDoes your dog have a Soul Profile yet? 🐾\n\n");
+  const url = encodeURIComponent(window.location.href);
+  window.open(`https://wa.me/?text=${text}${url}`, '_blank');
+}
+</script>
 
 </body>
 </html>
