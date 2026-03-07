@@ -242,25 +242,64 @@ Handle pet loss with compassion and dignity.
 All critical features complete!
 
 ### P0 - CRITICAL (LAUNCH DATE: MAY 20, 2026)
-- [x] **PET WRAPPED BACKEND** — COMPLETE ✅
-  - Soul Score History: `/api/wrapped/admin/backfill-soul-scores` (tracks the journey)
-  - Generate Wrapped: `/api/wrapped/generate/{pet_id}` (all 6 cards data)
-  - AI Memory: `/api/wrapped/generate-memory/{pet_id}` (Mira's specific memory)
-  - Share Card: `/api/wrapped/share/{pet_id}` (single viral card)
-  
-- [x] **PET WRAPPED FRONTEND** — COMPLETE ✅
-  - Card Components: `/app/frontend/src/components/wrapped/WrappedCards.jsx`
-  - Viewer Page: `/app/frontend/src/pages/PetWrappedViewer.jsx` (`/wrapped/:petId`)
-  - Landing Page: `/app/frontend/src/pages/WrappedWelcomePage.jsx` (`/wrapped-welcome`)
-  - Admin Component: `/app/frontend/src/components/admin/PetWrappedAdmin.jsx`
-  - Admin Tab: Added (🎁 Pet Wrapped)
-  - Design Template: `/app/frontend/public/pet-wrapped-mystique.html`
-  - Spec: `/app/memory/PET_WRAPPED_SPEC.md`
+
+#### PET WRAPPED — THE VIRAL ACQUISITION ENGINE ✅
+
+**What is Pet Wrapped?**
+A Spotify Wrapped-style feature creating beautiful, shareable cards summarizing a pet's journey. The #1 acquisition channel through organic viral sharing.
+
+**The Complete System:**
+| Type | Trigger | Purpose |
+|------|---------|---------|
+| **Welcome Wrapped** | Soul Profile completion | INSTANT share after onboarding |
+| **Annual Wrapped** | December | Spotify moment — everyone shares together |
+| **Birthday Wrapped** | Pet's birthday | Personal, emotional, sacred |
+| **Gotcha Day** | Adoption anniversary | For rescue parents |
+| **Memorial Wrapped** | Rainbow Bridge | Honor those who've passed |
+
+**The Viral Funnel:**
+```
+Gift (6 Cards) → Share → Single Card → Landing Page → Soul Profile → Pet Parent for Life
+```
+
+**Backend APIs (All Working):**
+- `GET /api/wrapped/admin/pets` - List all pets (19 available)
+- `POST /api/wrapped/admin/backfill-soul-scores` - Initialize history
+- `GET /api/wrapped/generate/{pet_id}` - Full 6-card data
+- `POST /api/wrapped/generate-memory/{pet_id}` - Mira's AI memory
+- `GET /api/wrapped/share/{pet_id}` - Shareable card HTML
+- `GET /api/wrapped/welcome/{pet_id}` - Welcome wrapped data (instant share)
+- `GET /api/wrapped/welcome-card/{pet_id}` - Welcome card HTML
+
+**Frontend Pages:**
+- `/wrapped/:petId` - 6-card viewer with swipe navigation
+- `/wrapped-welcome` - Conversion landing page
+- Admin → 🎁 Pet Wrapped tab
+
+**The 6 Cards:**
+1. Cover (name, breed, tagline)
+2. Soul Score (journey arc: 42 → 68 → 94)
+3. Mira Moments (conversations, questions, AI memory)
+4. Legacy (babies, partners, family)
+5. Pillars (top activities, treats count)
+6. Closing (philosophy, CTA)
+
+**Key Files:**
+- Design: `/app/frontend/public/pet-wrapped-mystique.html`
+- Spec: `/app/memory/PET_WRAPPED_SPEC.md`
+- Cards: `/app/frontend/src/components/wrapped/WrappedCards.jsx`
+- Viewer: `/app/frontend/src/pages/PetWrappedViewer.jsx`
+- Landing: `/app/frontend/src/pages/WrappedWelcomePage.jsx`
+- Admin: `/app/frontend/src/components/admin/PetWrappedAdmin.jsx`
+
+**Launch:** May 20, 2026 — Mystique's Birthday 🎂
+
+---
 
 - [ ] **REMAINING FOR MAY 20:**
   - Test full flow with Mystique's data on production
-  - WhatsApp/Instagram native share integration (via Web Share API)
-  - Generate Pet Wrapped images as downloadable PNGs
+  - WhatsApp/Instagram native share integration
+  - PNG export for downloadable cards
 
 ### P1 - High Priority
 - [ ] Run MASTER SYNC on production

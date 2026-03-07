@@ -9,6 +9,7 @@ from .soul_history import router as soul_history_router
 from .generate import router as generate_router
 from .ai_memory import router as ai_memory_router
 from .share import router as share_router
+from .welcome import router as welcome_router
 
 # Create combined router
 router = APIRouter()
@@ -20,5 +21,6 @@ __all__ = [
     "soul_history_router",
     "generate_router", 
     "ai_memory_router",
-    "share_router"
+    "share_router",
+    "welcome_router"
 ]
