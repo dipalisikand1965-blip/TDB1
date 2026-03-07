@@ -17,12 +17,14 @@ router = APIRouter(prefix="/api/mira/voice", tags=["mira-voice"])
 
 # ElevenLabs Configuration
 ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY")
-VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel - warm, friendly female voice (similar to Eloise)
+# Using Alice - British female voice (confident, news-style delivery)
+VOICE_ID = "Xb7hH8MSUJpSbSDYk0k2"  # Alice - British accent, middle-aged, confident
 
-# Alternative voices to try:
-# - "EXAVITQu4vr4xnSDxMaL" - Bella (warm)
-# - "pNInz6obpgDQGcFmaJgB" - Adam (male)
-# - "yoZ06aMxZJJ28mfd3POQ" - Sam (narrative)
+# Alternative British voices:
+# - "pFZP5JQG7iQjIQuC4Bku" - Lily (British, raspy, narration)
+# - "5TRppDPuxBF23owe37hG" - Articulate British Female
+# - "ptBd2v6mebIps3ZQEXD7" - Adela (Neutral British Female)
+# - "21m00Tcm4TlvDq8ikWAM" - Rachel (American, warm, friendly)
 
 class TTSRequest(BaseModel):
     text: str

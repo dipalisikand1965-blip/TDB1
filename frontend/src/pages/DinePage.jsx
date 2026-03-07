@@ -422,7 +422,7 @@ const DinePage = () => {
               Curated Dining for {activePet.name}
             </h2>
             <p className="ios-subhead text-gray-600 max-w-xl mx-auto">
-              Personalized meal plans, reservations, and dining experiences - all tickets, all concierge.
+              Personalised meal plans, reservations, and dining experiences - all tickets, all concierge.
             </p>
           </div>
           
@@ -498,7 +498,7 @@ const DinePage = () => {
               badge="Signature"
               badgeColor="bg-orange-500"
               highlights={[
-                "Menu customized for pet dietary needs",
+                "Menu customised for pet dietary needs",
                 "Human & pet courses paired together",
                 "Available for celebrations & events",
                 "Hypoallergenic options available"
@@ -1182,6 +1182,13 @@ const DinePage = () => {
       />
       </>
       )}
+      
+      {/* Concierge® Button - Blue C® for Service Desk chat */}
+      <ConciergeButton 
+        pillar="dine" 
+        position="bottom-right"
+        showLabel
+      />
       
       {/* Close the theme wrapper */}
       </div>
@@ -2744,12 +2751,6 @@ const RestaurantBookingModal = ({ restaurant, onClose, user, activePet }) => {
           </p>
         </form>
       </Card>
-      {/* Concierge® Button - Blue C® for Service Desk chat */}
-      <ConciergeButton 
-        pillar="dine" 
-        position="bottom-right"
-        showLabel
-      />
       
       {/* Map Modal for viewing places */}
       <MapModal

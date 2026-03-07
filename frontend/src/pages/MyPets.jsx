@@ -1482,7 +1482,7 @@ const MyPets = () => {
             </div>
             <h3 className="text-2xl font-bold text-gray-700 mb-2">No pets yet!</h3>
             <p className="text-gray-500 mb-6">
-              Create a profile for your furry friend and unlock personalized celebrations
+              Create a profile for your furry friend and unlock personalised celebrations
             </p>
             <Link to="/pet-profile">
               <Button className="bg-teal-600 hover:bg-teal-700">

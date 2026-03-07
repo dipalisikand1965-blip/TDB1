@@ -445,7 +445,7 @@ const CARD_CONFIGS = [
   {
     id: CANONICAL_CARD_IDS.TRIAL_PACK,
     title: 'Trial Pack for {Pet}',
-    description: 'Start with a curated trial to discover what your pet loves. 5 questions, personalized selection.',
+    description: 'Start with a curated trial to discover what your pet loves. 5 questions, personalised selection.',
     image: CARD_IMAGES.trialPack,
     cta: 'Start Trial',
     recommended: false
@@ -696,7 +696,7 @@ const MealsPage = () => {
             {/* Fresh Meals Hero - Allergy-aware */}
             <FreshMealsHero pet={activePet} />
             
-            {/* Mira's Fresh Meals Curated Picks - 4 personalized cards */}
+            {/* Mira's Fresh Meals Curated Picks - 4 personalised cards */}
             <div className="mb-8">
               <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-4 md:p-6 shadow-xl">
                 {/* Quick CTA Row */}
