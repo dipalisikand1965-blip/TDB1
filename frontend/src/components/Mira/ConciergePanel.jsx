@@ -12,6 +12,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Phone, MessageSquare, Mail, BookOpen, Send } from 'lucide-react';
+import { API_URL } from '../../utils/api';
 
 /**
  * ConciergePanel Component
@@ -22,13 +23,15 @@ import { X, Phone, MessageSquare, Mail, BookOpen, Send } from 'lucide-react';
  * @param {Object} props.pet - Pet object { name, breed }
  * @param {Function} props.onChatHandoff - Called when chat option is clicked
  * @param {Object} props.initialContext - Context from LEARN layer (optional)
+ * @param {Object} props.user - User object for service ticket creation
  */
 const ConciergePanel = ({ 
   isOpen, 
   onClose, 
   pet = { name: 'your pet', breed: '' },
   onChatHandoff,
-  initialContext = null
+  initialContext = null,
+  user = null
 }) => {
   const [message, setMessage] = useState('');
   
@@ -49,6 +52,49 @@ const ConciergePanel = ({
       ? initialContext.initialMessage
       : `Hi, I need help with ${pet.name}${pet.breed ? ` (${pet.breed})` : ''}.`
   );
+  
+  // 🎯 UNIVERSAL SERVICE FLOW: Handle WhatsApp click with ticket creation
+  const handleWhatsAppClick = async (e) => {
+    e.preventDefault();
+    
+    const messageText = initialContext?.initialMessage 
+      ? initialContext.initialMessage
+      : `Hi, I need help with ${pet.name}${pet.breed ? ` (${pet.breed})` : ''}.`;
+    
+    // Create service ticket BEFORE opening WhatsApp
+    try {
+      const ticketPayload = {
+        type: 'whatsapp_intent',
+        pillar: initialContext?.source || 'general',
+        source: 'concierge_panel',
+        customer: {
+          name: user?.name || 'Guest User',
+          email: user?.email || 'guest@thedoggycompany.com',
+          phone: user?.phone || '',
+          user_id: user?.id || 'anonymous'
+        },
+        details: {
+          message: `[WhatsApp Intent] User clicked WhatsApp from ConciergePanel. Message: "${messageText}"`,
+          pet_name: pet?.name || 'Not specified',
+          channel: 'whatsapp',
+          source_component: 'ConciergePanel'
+        },
+        priority: 'medium'
+      };
+      
+      await fetch(`${API_URL}/api/service-requests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ticketPayload)
+      });
+      console.log('[ConciergePanel] Service ticket created for WhatsApp intent');
+    } catch (err) {
+      console.warn('[ConciergePanel] Could not create service ticket:', err);
+    }
+    
+    // Now open WhatsApp
+    window.open(`https://wa.me/919663185747?text=${whatsappMessage}`, '_blank');
+  };
   
   // Handle chat with context
   const handleChatWithContext = () => {
@@ -159,15 +205,13 @@ const ConciergePanel = ({
       </p>
       
       <div className="mp-concierge-panel-options">
-        <a 
-          href={`https://wa.me/919663185747?text=${whatsappMessage}`}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button 
+          onClick={handleWhatsAppClick}
           className="concierge-panel-opt whatsapp"
           data-testid="concierge-whatsapp"
         >
           <Phone size={16} /> WhatsApp
-        </a>
+        </button>
         
         <button 
           onClick={handleChatWithContext} 
