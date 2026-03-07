@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Doggy Company® · Investor Overview · March 2026</title>
+<meta name="description" content="India's first Pet Life Operating System. Soul Profile™, Mira AI, 14 Life Pillars. $1M+ invested by founders. Live in production.">
+<meta property="og:title" content="The Doggy Company® · Investor Overview">
+<meta property="og:description" content="Most pet companies were built by people who saw a market. We were built by people who saw what love was missing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --deep:    #0e0620;
+  --purple:  #4B2680;
+  --violet:  #7B4DB5;
+  --gold:    #C9973A;
+  --goldL:   #F0C060;
+  --rose:    #C4607A;
+  --roseL:   #E8A0B0;
+  --mist:    #7a85a0;
+  --white:   #FFFFFF;
+  --green:   #2D7A4A;
+  --greenL:  #6BCB8B;
+  --blue:    #3B82F6;
+  --blueL:   #60A5FA;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: #07021a;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--white);
+  overflow-x: hidden;
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 60px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-orb {
+  position: absolute; border-radius: 50%; filter: blur(100px); pointer-events: none;
+}
+.hero-orb-1 { width: 600px; height: 600px; background: #3a1870; top: -200px; left: -200px; opacity: 0.5; }
+.hero-orb-2 { width: 500px; height: 500px; background: #8a2040; bottom: -150px; right: -150px; opacity: 0.35; }
+.hero-orb-3 { width: 300px; height: 300px; background: #c9973a; top: 40%; left: 50%; transform: translate(-50%,-50%); opacity: 0.12; }
+
+.hero-badge {
+  font-size: 10px; letter-spacing: 4px; color: var(--gold);
+  text-transform: uppercase; margin-bottom: 32px;
+  padding: 8px 20px;
+  border: 1px solid rgba(201,151,58,0.3);
+  border-radius: 100px;
+  animation: fadeUp 1s ease both;
+}
+.hero-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(48px, 12vw, 100px);
+  font-weight: 300;
+  line-height: 0.95; color: var(--white);
+  animation: fadeUp 1s ease 0.15s both;
+}
+.hero-name em { font-style: italic; color: var(--goldL); }
+.hero-tagline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(18px, 3vw, 26px);
+  font-style: italic;
+  color: rgba(255,255,255,0.6);
+  margin-top: 24px;
+  max-width: 700px;
+  line-height: 1.5;
+  animation: fadeUp 1s ease 0.3s both;
+}
+.hero-metrics {
+  display: flex; gap: 40px; margin-top: 56px;
+  flex-wrap: wrap; justify-content: center;
+  animation: fadeUp 1s ease 0.45s both;
+}
+.hero-metric {
+  text-align: center;
+  padding: 0 20px;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+.hero-metric:last-child { border-right: none; }
+.hero-metric-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 44px; font-weight: 300; color: var(--goldL);
+}
+.hero-metric-lbl {
+  font-size: 10px; letter-spacing: 2px; color: var(--mist);
+  text-transform: uppercase; margin-top: 4px;
+}
+.hero-memorial {
+  font-size: 12px; color: rgba(255,255,255,0.4);
+  margin-top: 48px;
+  font-style: italic;
+  animation: fadeUp 1s ease 0.6s both;
+}
+.scroll-hint {
+  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+  font-size: 11px; letter-spacing: 3px; color: var(--mist);
+  text-transform: uppercase;
+  animation: fadeUp 1s ease 1s both, pulse 2s ease 2s infinite;
+}
+
+/* ── SECTION DIVIDER ── */
+.section-divider {
+  text-align: center; padding: 100px 24px 50px;
+  position: relative;
+}
+.section-divider::before {
+  content: '';
+  display: block; width: 1px; height: 60px;
+  background: linear-gradient(to bottom, transparent, var(--gold));
+  margin: 0 auto 24px;
+}
+.section-divider .div-label {
+  font-size: 10px; letter-spacing: 5px; color: var(--gold);
+  text-transform: uppercase;
+}
+.section-divider .div-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 6vw, 48px);
+  font-weight: 300; color: var(--white);
+  margin-top: 12px; line-height: 1.2;
+}
+.section-divider .div-title em { font-style: italic; color: var(--goldL); }
+
+/* ── CONTAINER ── */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* ── CARD SECTION ── */
+.card-section {
+  background: linear-gradient(135deg, #12082a, #1e0e3e);
+  border: 1px solid rgba(201,151,58,0.15);
+  border-radius: 28px;
+  padding: 56px 48px;
+  margin-bottom: 28px;
+  position: relative; overflow: hidden;
+}
+.card-section::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent 5%, var(--gold) 50%, transparent 95%);
+}
+.card-section.rose::before { background: linear-gradient(90deg, transparent 5%, var(--rose) 50%, transparent 95%); }
+.card-section.green::before { background: linear-gradient(90deg, transparent 5%, var(--greenL) 50%, transparent 95%); }
+.card-section.violet::before { background: linear-gradient(90deg, transparent 5%, var(--violet) 50%, transparent 95%); }
+
+.card-tag { font-size: 10px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; margin-bottom: 16px; }
+.card-tag.rose { color: var(--rose); }
+.card-tag.green { color: var(--greenL); }
+.card-tag.violet { color: var(--violet); }
+
+.card-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 4.5vw, 48px); font-weight: 300; color: var(--white); line-height: 1.15; margin-bottom: 16px; }
+.card-title em { font-style: italic; color: var(--goldL); }
+.card-sub { font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.7; max-width: 700px; margin-bottom: 40px; }
+
+/* ── TIMELINE ── */
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 32px;
+}
+.timeline-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 24px; right: 24px;
+  height: 3px;
+  background: var(--gold);
+  border-radius: 0 0 3px 3px;
+}
+.timeline-year {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px; color: var(--goldL);
+  margin-bottom: 8px;
+}
+.timeline-title {
+  font-size: 14px; font-weight: 500;
+  color: var(--white); margin-bottom: 8px;
+}
+.timeline-desc {
+  font-size: 12px; color: var(--mist);
+  line-height: 1.5;
+}
+
+/* ── STAT GRID ── */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }
+.stat-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px; text-align: center; }
+.stat-card .big { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; color: var(--goldL); line-height: 1; }
+.stat-card .lbl { font-size: 11px; color: var(--mist); margin-top: 6px; line-height: 1.4; }
+.stat-card.rose .big { color: var(--roseL); }
+.stat-card.green .big { color: var(--greenL); }
+.stat-card.violet .big { color: var(--violet); }
+
+/* ── PILLARS GRID ── */
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 32px;
+}
+.pillar-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 18px 14px;
+  text-align: center;
+  transition: all 0.25s ease;
+}
+.pillar-card:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(201,151,58,0.25);
+  transform: translateY(-3px);
+}
+.pillar-card .emoji { font-size: 28px; margin-bottom: 8px; }
+.pillar-card .name { font-size: 13px; font-weight: 500; color: var(--white); }
+.pillar-card.highlight { border-color: rgba(196,96,122,0.4); background: rgba(196,96,122,0.08); }
+
+/* ── MOAT CARDS ── */
+.moat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 32px;
+}
+.moat-card {
+  background: linear-gradient(135deg, rgba(75,38,128,0.15), rgba(75,38,128,0.05));
+  border: 1px solid rgba(123,77,181,0.25);
+  border-radius: 20px;
+  padding: 28px;
+}
+.moat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 48px; color: var(--violet);
+  opacity: 0.4; margin-bottom: 8px;
+}
+.moat-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; color: var(--white);
+  margin-bottom: 12px;
+}
+.moat-compare {
+  font-size: 12px; line-height: 1.6;
+}
+.moat-compare .them {
+  color: var(--mist);
+  margin-bottom: 8px;
+}
+.moat-compare .us {
+  color: var(--goldL);
+}
+
+/* ── QUOTE BOX ── */
+.quote-box {
+  background: linear-gradient(135deg, rgba(196,96,122,0.12), rgba(75,38,128,0.1));
+  border: 1px solid rgba(196,96,122,0.22);
+  border-radius: 20px;
+  padding: 40px;
+  margin: 40px 0;
+  text-align: center;
+}
+.quote-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(20px, 3.5vw, 28px);
+  font-style: italic;
+  color: var(--white);
+  line-height: 1.5;
+  max-width: 750px;
+  margin: 0 auto;
+}
+.quote-text em { color: var(--goldL); }
+.quote-attr {
+  font-size: 12px; color: var(--rose);
+  letter-spacing: 1px;
+  margin-top: 20px;
+}
+
+/* ── COMPARISON TABLE ── */
+.compare-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 32px 0;
+  font-size: 13px;
+}
+.compare-table th {
+  background: rgba(75,38,128,0.3);
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--goldL);
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(201,151,58,0.2);
+}
+.compare-table th:first-child { border-radius: 12px 0 0 0; }
+.compare-table th:last-child { border-radius: 0 12px 0 0; }
+.compare-table td {
+  padding: 12px 16px;
+  color: rgba(255,255,255,0.75);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+}
+.compare-table tr:last-child td:first-child { border-radius: 0 0 0 12px; }
+.compare-table tr:last-child td:last-child { border-radius: 0 0 12px 0; }
+.compare-table .yes { color: var(--greenL); }
+.compare-table .no { color: var(--mist); opacity: 0.6; }
+.compare-table .partial { color: var(--gold); }
+.compare-table .ours { color: var(--goldL); font-weight: 500; }
+
+/* ── REVENUE TABLE ── */
+.revenue-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 32px 0;
+}
+.revenue-card {
+  background: rgba(45,122,74,0.08);
+  border: 1px solid rgba(107,203,139,0.2);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+}
+.revenue-card .year {
+  font-size: 11px; color: var(--greenL);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.revenue-card .amount {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px; color: var(--white);
+}
+.revenue-card .label {
+  font-size: 11px; color: var(--mist);
+  margin-top: 4px;
+}
+.revenue-card.highlight {
+  border-color: var(--goldL);
+  background: rgba(201,151,58,0.1);
+}
+.revenue-card.highlight .amount { color: var(--goldL); }
+
+/* ── ASK SECTION ── */
+.ask-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-top: 32px;
+}
+.ask-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(201,151,58,0.15);
+  border-radius: 18px;
+  padding: 28px;
+}
+.ask-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px; color: var(--gold);
+  margin-bottom: 12px;
+}
+.ask-title {
+  font-size: 16px; font-weight: 500;
+  color: var(--white); margin-bottom: 10px;
+}
+.ask-desc {
+  font-size: 13px; color: var(--mist);
+  line-height: 1.55;
+}
+
+/* ── SOUL QUESTIONS ── */
+.soul-questions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 32px;
+}
+.soul-q {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(196,96,122,0.2);
+  border-left: 3px solid var(--rose);
+  border-radius: 0 14px 14px 0;
+  padding: 20px;
+}
+.soul-q .pillar {
+  font-size: 10px; letter-spacing: 2px;
+  color: var(--rose); text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.soul-q .question {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px; font-style: italic;
+  color: var(--white); line-height: 1.5;
+}
+
+/* ── FINAL CTA ── */
+.final-cta {
+  text-align: center;
+  padding: 100px 24px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.final-cta .fc-tag {
+  font-size: 10px; letter-spacing: 4px;
+  color: var(--gold); text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.final-cta .fc-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 300; color: var(--white);
+  line-height: 1.2; margin-bottom: 20px;
+}
+.final-cta .fc-title em { font-style: italic; color: var(--goldL); }
+.final-cta .fc-sub {
+  font-size: 15px; color: rgba(255,255,255,0.5);
+  max-width: 600px; margin: 0 auto 40px;
+  line-height: 1.7;
+}
+.final-cta .fc-btn {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--deep);
+  font-size: 14px; font-weight: 600;
+  padding: 18px 40px;
+  border-radius: 100px;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  margin: 0 10px 16px;
+}
+.final-cta .fc-btn:hover {
+  background: var(--goldL);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px rgba(201,151,58,0.3);
+}
+.final-cta .fc-btn.secondary {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+}
+.final-cta .fc-btn.secondary:hover {
+  background: rgba(201,151,58,0.1);
+  box-shadow: none;
+}
+.final-cta .fc-contact {
+  margin-top: 40px;
+  font-size: 13px; color: var(--mist);
+  line-height: 1.8;
+}
+.final-cta .fc-contact a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+.reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.8s ease, transform 0.8s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .card-section { padding: 40px 24px; }
+  .stats-grid, .pillars-grid, .moat-grid, .ask-grid, .soul-questions { grid-template-columns: 1fr; }
+  .revenue-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-metrics { flex-direction: column; gap: 20px; }
+  .hero-metric { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
+  .hero-metric:last-child { border-bottom: none; }
+  .timeline { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+  
+  <div class="hero-badge">Confidential Investor Brief · March 2026</div>
+  <div class="hero-name">The Doggy <em>Company</em>®</div>
+  <div class="hero-tagline">
+    Most pet companies were built by people who saw a market.<br>
+    We were built by people who saw what love was missing.
+  </div>
+  
+  <div class="hero-metrics">
+    <div class="hero-metric">
+      <div class="hero-metric-num">$1M+</div>
+      <div class="hero-metric-lbl">Invested by Founders</div>
+    </div>
+    <div class="hero-metric">
+      <div class="hero-metric-num">615K</div>
+      <div class="hero-metric-lbl">Lines of Code, Live</div>
+    </div>
+    <div class="hero-metric">
+      <div class="hero-metric-num">45K+</div>
+      <div class="hero-metric-lbl">Warm Customer Base</div>
+    </div>
+    <div class="hero-metric">
+      <div class="hero-metric-num">Live</div>
+      <div class="hero-metric-lbl">In Production Today</div>
+    </div>
+  </div>
+  
+  <div class="hero-memorial">Built in loving memory of Mystique · and in honour of Kouros, who started it all</div>
+  <div class="scroll-hint">Scroll to explore</div>
+</section>
+
+<!-- ══ HERITAGE ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">The Heritage Journey</div>
+  <div class="div-title">30 years of service excellence. <em>Now building it for pets.</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section reveal">
+    <div class="card-tag">Our Story</div>
+    <div class="card-title">From LesConcierges to <em>The Doggy Company</em></div>
+    <div class="card-sub">
+      Every venture we've built has been about one thing — making sure the people who cannot advocate for themselves, are advocated for. 
+      LesConcierges did it for employees. MindEscapes did it for minds. The Doggy Company does it for dogs.
+    </div>
+    
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-year">1998</div>
+        <div class="timeline-title">LesConcierges® Founded</div>
+        <div class="timeline-desc">Started with ₹5,000. Grew to serve 1.6M employees across 23 global cities. Rakesh Jhunjhunwala invested in 2002.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2020</div>
+        <div class="timeline-title">The Doggy Bakery® Born</div>
+        <div class="timeline-desc">Aditya launches handcrafted pet treats. Grandma Mira's hands in the early batches. 45,000+ pets celebrated.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2024</div>
+        <div class="timeline-title">MindEscapes® & Nilgiris</div>
+        <div class="timeline-desc">Innovation centre, Anma Diner, Hill of Flowers. Same philosophy — look after those who cannot advocate for themselves.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2026</div>
+        <div class="timeline-title">The Doggy Company® Launches</div>
+        <div class="timeline-desc">Three decades of concierge excellence converge into India's first Pet Life Operating System. Built at midnight, sitting with Mystique.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ THE SOUL ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">The Soul Behind The Name</div>
+  <div class="div-title">Mira is not a product name. <em>She is a philosophy.</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section rose reveal">
+    <div class="card-tag rose">Who Is Mira?</div>
+    <div class="card-title">Mira AI remembers because <em>Mira Sikand remembered</em></div>
+    <div class="card-sub">
+      Mira is Mrs. Mira Sikand — Dipali's mother, Aditya and Diya's beloved grandmother.
+      Long before search engines existed, she was a living reference desk — an encyclopaedia, a solutionist, 
+      the warm force behind every 'yes' the team delivered. At The Doggy Bakery, Grandma Mira's hands were in the early batches.
+    </div>
+    
+    <div class="quote-box" style="margin-top:0;">
+      <div class="quote-text">
+        "You cannot copy a 30-year service lineage. You cannot copy grief. <em>You cannot hire a grandmother.</em>"
+      </div>
+      <div class="quote-attr">— The Moat Is The Meaning</div>
+    </div>
+    
+    <div class="stats-grid" style="margin-top:32px;">
+      <div class="stat-card rose"><div class="big">51</div><div class="lbl">Soul Profile™ Questions</div></div>
+      <div class="stat-card rose"><div class="big">8</div><div class="lbl">Golden Pillars</div></div>
+      <div class="stat-card rose"><div class="big">485</div><div class="lbl">Real Mira Sessions</div></div>
+      <div class="stat-card rose"><div class="big">0-100%</div><div class="lbl">Soul Score</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SOUL PROFILE ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">The Soul Profile™</div>
+  <div class="div-title">Questions no pet app <em>has ever dared to ask</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section reveal">
+    <div class="card-tag">The Heart of The Platform</div>
+    <div class="card-title">51 questions that transform <em>owning into knowing</em></div>
+    <div class="card-sub">
+      The Soul Score (0–100%) is not a feature. It is the platform's moral spine.
+      These questions were written by the founder, not a developer. They are literature as much as they are product design.
+    </div>
+    
+    <div class="soul-questions">
+      <div class="soul-q">
+        <div class="pillar">Joy & Delight</div>
+        <div class="question">"What makes your dog's eyes light up? Not just food or walks — what brings them genuine delight?"</div>
+      </div>
+      <div class="soul-q">
+        <div class="pillar">Relationship & Bond</div>
+        <div class="question">"What has your dog seen you through? The hard years. The quiet ones. The ones you don't talk about."</div>
+      </div>
+      <div class="soul-q">
+        <div class="pillar">Forgiveness</div>
+        <div class="question">"What has your dog forgiven you for? The times you were distracted. The times you forgot."</div>
+      </div>
+      <div class="soul-q">
+        <div class="pillar">The Final Question</div>
+        <div class="question">"When the time comes — what do you want to be able to say about how you loved them?"</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 14 PILLARS ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">The Architecture of Pet Life</div>
+  <div class="div-title">14 pillars. Every moment <em>of a dog's life, covered.</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section reveal">
+    <div class="card-tag">From First Birthday to Farewell</div>
+    <div class="card-title">Not an app. <em>A life operating system.</em></div>
+    <div class="card-sub">
+      HUFT has 4 pillars. Supertails has 3. Zigly has 2. The Doggy Company has 14 — fully integrated, Mira-aware, 
+      covering every chapter of a dog's life from the day they arrive to the day they say goodbye.
+    </div>
+    
+    <div class="pillars-grid">
+      <div class="pillar-card"><div class="emoji">🎉</div><div class="name">Celebrate</div></div>
+      <div class="pillar-card"><div class="emoji">🍽️</div><div class="name">Dine</div></div>
+      <div class="pillar-card"><div class="emoji">🏠</div><div class="name">Stay</div></div>
+      <div class="pillar-card"><div class="emoji">✈️</div><div class="name">Travel</div></div>
+      <div class="pillar-card"><div class="emoji">💊</div><div class="name">Care</div></div>
+      <div class="pillar-card"><div class="emoji">🎮</div><div class="name">Enjoy</div></div>
+      <div class="pillar-card"><div class="emoji">🏃</div><div class="name">Fit</div></div>
+      <div class="pillar-card"><div class="emoji">📚</div><div class="name">Learn</div></div>
+      <div class="pillar-card"><div class="emoji">📋</div><div class="name">Paperwork</div></div>
+      <div class="pillar-card"><div class="emoji">👨‍⚕️</div><div class="name">Advisory</div></div>
+      <div class="pillar-card"><div class="emoji">🚨</div><div class="name">Emergency</div></div>
+      <div class="pillar-card highlight"><div class="emoji">🌈</div><div class="name">Farewell</div></div>
+      <div class="pillar-card"><div class="emoji">🐾</div><div class="name">Adopt</div></div>
+      <div class="pillar-card"><div class="emoji">🛒</div><div class="name">Shop</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ WHAT'S BUILT ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">Scale & Proof</div>
+  <div class="div-title">Two months. One non-technical founder. <em>Real numbers.</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section green reveal">
+    <div class="card-tag green">Live In Production</div>
+    <div class="card-title">Seven systems. <em>All working together.</em></div>
+    <div class="card-sub">
+      Everything you see is live. Not a prototype. Not a demo. A full production system serving real users,
+      built by a 61-year-old founder using AI, in 8 weeks. ~$500K–$1M equivalent dev value.
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card green"><div class="big">615K</div><div class="lbl">Lines of Code</div></div>
+      <div class="stat-card green"><div class="big">38</div><div class="lbl">Live API Integrations</div></div>
+      <div class="stat-card green"><div class="big">1,074</div><div class="lbl">API Endpoints</div></div>
+      <div class="stat-card green"><div class="big">230</div><div class="lbl">Database Collections</div></div>
+      <div class="stat-card green"><div class="big">86</div><div class="lbl">Frontend Pages</div></div>
+      <div class="stat-card green"><div class="big">2,214</div><div class="lbl">Products in Catalog</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ WHY WE WIN ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">The Compounding Advantage</div>
+  <div class="div-title">Five moats. <em>The longer you use us, the stronger we get.</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section violet reveal">
+    <div class="card-tag violet">Why We Win</div>
+    <div class="card-title">They sell products. <em>We build relationships.</em></div>
+    <div class="card-sub">
+      Asking HUFT to copy us is like asking a taxi company to become Uber. They'd have to fundamentally change what they are.
+      18–36 months minimum. Still behind on data.
+    </div>
+    
+    <div class="moat-grid">
+      <div class="moat-card">
+        <div class="moat-num">1</div>
+        <div class="moat-title">Data Moat — The Soul Graph</div>
+        <div class="moat-compare">
+          <div class="them">❌ HUFT knows: "Customer bought dog food"</div>
+          <div class="us">✓ We know: Mojo is an Indie, allergic to chicken, loves salmon, friends with Bruno. Every conversation adds context.</div>
+        </div>
+      </div>
+      <div class="moat-card">
+        <div class="moat-num">2</div>
+        <div class="moat-title">Intelligence Moat — Mira's Brain</div>
+        <div class="moat-compare">
+          <div class="them">❌ HUFT chatbot: "Here are our dog foods: [list]"</div>
+          <div class="us">✓ Mira: "For Mojo's allergy and love of fish, the salmon formula. His energy levels mean higher protein."</div>
+        </div>
+      </div>
+      <div class="moat-card">
+        <div class="moat-num">3</div>
+        <div class="moat-title">Architecture Moat — 14 Pillars</div>
+        <div class="moat-compare">
+          <div class="them">❌ HUFT: Products | Grooming | Training — 3 silos, no memory</div>
+          <div class="us">✓ 14 pillars, fully integrated. Mira knows context across all of them. Birth to farewell.</div>
+        </div>
+      </div>
+      <div class="moat-card">
+        <div class="moat-num">4</div>
+        <div class="moat-title">Emotional Moat — Rainbow Bridge</div>
+        <div class="moat-compare">
+          <div class="them">❌ HUFT: No concept of pet loss exists in their product</div>
+          <div class="us">✓ "Mystique crossed the Rainbow Bridge... Would you like to write a tribute together?"</div>
+        </div>
+      </div>
+      <div class="moat-card">
+        <div class="moat-num">5</div>
+        <div class="moat-title">Network Moat — Pet Wrapped™</div>
+        <div class="moat-compare">
+          <div class="them">❌ HUFT has no annual relationship — only the last transaction</div>
+          <div class="us">✓ Every December: Soul Score journey. Milestones. Mira's memory. A year in the life of your dog. People share this.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ COMPETITIVE ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">Competitive Landscape</div>
+  <div class="div-title">The gap <em>no one has addressed</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section reveal">
+    <div class="card-tag">Market Position</div>
+    <div class="card-title">We are not a slice of the market. <em>We are the layer it runs on.</em></div>
+    <div class="card-sub">
+      Every market report measures transactions — food sold, services booked. That is the 85% of the market that HUFT, Supertails, and Pedigree are competing for.
+      Nobody has built the relationship layer that sits above all of those transactions. Until now.
+    </div>
+    
+    <table class="compare-table">
+      <tr>
+        <th>Capability</th>
+        <th>HUFT</th>
+        <th>Supertails</th>
+        <th>Zigly</th>
+        <th>The Doggy Company</th>
+      </tr>
+      <tr>
+        <td>Products & Commerce</td>
+        <td class="yes">10,000+</td>
+        <td class="yes">8,000+</td>
+        <td class="yes">5,000+</td>
+        <td class="ours">2,214 curated</td>
+      </tr>
+      <tr>
+        <td>AI Companion</td>
+        <td class="no">None</td>
+        <td class="partial">Generic</td>
+        <td class="no">None</td>
+        <td class="ours">Mira AI — knows your pet by soul</td>
+      </tr>
+      <tr>
+        <td>Soul Profile™</td>
+        <td class="no">❌</td>
+        <td class="no">❌</td>
+        <td class="no">❌</td>
+        <td class="ours">51 questions. Unreplicable.</td>
+      </tr>
+      <tr>
+        <td>Human Concierge</td>
+        <td class="no">❌</td>
+        <td class="partial">Phone only</td>
+        <td class="no">❌</td>
+        <td class="ours">1,000+ trained professionals</td>
+      </tr>
+      <tr>
+        <td>Life Pillars</td>
+        <td class="partial">4 only</td>
+        <td class="partial">3 only</td>
+        <td class="partial">2 only</td>
+        <td class="ours">All 14 — Birth to Farewell</td>
+      </tr>
+      <tr>
+        <td>Pet Memory & History</td>
+        <td class="no">❌</td>
+        <td class="no">❌</td>
+        <td class="no">❌</td>
+        <td class="ours">Mira remembers forever</td>
+      </tr>
+      <tr>
+        <td>End-of-Life (Farewell)</td>
+        <td class="no">❌</td>
+        <td class="no">❌</td>
+        <td class="no">❌</td>
+        <td class="ours">Compassionate, built-in</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══ MARKET ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">The Market Opportunity</div>
+  <div class="div-title">₹2.1 trillion market. <em>Nobody has built the relationship layer.</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section reveal">
+    <div class="card-tag">Market Size</div>
+    <div class="card-title">The gap no one has addressed — <em>until now</em></div>
+    
+    <div class="stats-grid">
+      <div class="stat-card"><div class="big">₹2.1T</div><div class="lbl">India pet market by 2032</div></div>
+      <div class="stat-card"><div class="big">20%</div><div class="lbl">CAGR</div></div>
+      <div class="stat-card"><div class="big">100M</div><div class="lbl">Pets in India today</div></div>
+      <div class="stat-card"><div class="big">30M</div><div class="lbl">In urban households</div></div>
+      <div class="stat-card"><div class="big">$500B</div><div class="lbl">Global pet care 2030</div></div>
+      <div class="stat-card"><div class="big">70%</div><div class="lbl">First-time pet parents 2024</div></div>
+    </div>
+    
+    <div class="quote-box">
+      <div class="quote-text">
+        "70% of pet parents in India are first-time owners. They don't know what they're doing. 
+        <em>They need Mira most.</em>"
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ REVENUE ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">The Numbers</div>
+  <div class="div-title">Profitable by design. <em>Built for retention.</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section green reveal">
+    <div class="card-tag green">Revenue Projections</div>
+    <div class="card-title">Three revenue streams. <em>All ready to activate.</em></div>
+    <div class="card-sub">
+      B2C Memberships (₹999–₹9,999/yr) + B2B Vet Partners (₹2,999/month SaaS) + Enterprise (Banks, Insurers).
+      70–80% gross margin. &lt;1 month payback. 120%+ net revenue retention.
+    </div>
+    
+    <div class="revenue-grid">
+      <div class="revenue-card">
+        <div class="year">Year 1</div>
+        <div class="amount">₹2.1Cr</div>
+        <div class="label">10K users</div>
+      </div>
+      <div class="revenue-card">
+        <div class="year">Year 2</div>
+        <div class="amount">₹10.3Cr</div>
+        <div class="label">50K users</div>
+      </div>
+      <div class="revenue-card highlight">
+        <div class="year">Year 3</div>
+        <div class="amount">₹42.2Cr</div>
+        <div class="label">200K users</div>
+      </div>
+      <div class="revenue-card">
+        <div class="year">LTV:CAC</div>
+        <div class="amount">100:1</div>
+        <div class="label">to 1,400:1</div>
+      </div>
+    </div>
+    
+    <div class="stats-grid" style="margin-top:32px;">
+      <div class="stat-card"><div class="big">₹999</div><div class="lbl">Essential / year</div></div>
+      <div class="stat-card"><div class="big">₹4,999</div><div class="lbl">Premium / year</div></div>
+      <div class="stat-card"><div class="big">₹9,999</div><div class="lbl">Royalty / year</div></div>
+      <div class="stat-card green"><div class="big">₹0-50</div><div class="lbl">CAC (warm audience)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ THE ASK ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">The Ask</div>
+  <div class="div-title">We have put $1M+ into this. <em>Now we want partners.</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section reveal">
+    <div class="card-tag">What We're Looking For</div>
+    <div class="card-title">Not just capital. <em>The right hands, reach, and belief.</em></div>
+    <div class="card-sub">
+      The foundation is live, funded by founders, and ready. We are looking for partners who understand that 
+      the soul is built — now we need the spine, the scale, and the reach.
+    </div>
+    
+    <div class="ask-grid">
+      <div class="ask-card">
+        <div class="ask-num">01</div>
+        <div class="ask-title">Technical Co-Founder or CTO</div>
+        <div class="ask-desc">615K lines of live code needs architectural rigour to scale globally. A technical partner who can refactor, strengthen, and build the engineering team.</div>
+      </div>
+      <div class="ask-card">
+        <div class="ask-num">02</div>
+        <div class="ask-title">Capital to Scale</div>
+        <div class="ask-desc">₹2–4 crore for 15–20% equity. Pre-money: ₹12–18 crore. To grow from 45K to millions. To hire the team.</div>
+      </div>
+      <div class="ask-card">
+        <div class="ask-num">03</div>
+        <div class="ask-title">Strategic Partner: HUFT / Supertails</div>
+        <div class="ask-desc">You have the customers. We have the soul layer. License it, co-build it, or acquire it. The window is open now.</div>
+      </div>
+      <div class="ask-card">
+        <div class="ask-num">04</div>
+        <div class="ask-title">Global Distribution</div>
+        <div class="ask-desc">The Pet Life OS works in every market where pets are loved like family. Gulf, UK, US, Southeast Asia. We need partners who can open those doors.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOUNDER ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">The Founder</div>
+  <div class="div-title">The person <em>behind the platform</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section reveal" style="text-align:center;">
+    <div class="quote-box" style="margin-top:0;">
+      <div class="quote-text">
+        "I am 61. I have met thousands of dogs through this life — Kouros, Mystique, her ten babies. 
+        I want to make sure this is a legacy for them, <em>beyond my small life.</em>"
+      </div>
+      <div class="quote-attr">— Dipali Sikand, Founder</div>
+    </div>
+    
+    <div class="stats-grid" style="margin-top:32px; text-align:left;">
+      <div class="stat-card"><div class="big">30</div><div class="lbl">Years building service businesses</div></div>
+      <div class="stat-card rose"><div class="big">₹500Cr</div><div class="lbl">LesConcierges peak valuation</div></div>
+      <div class="stat-card"><div class="big">1.6M</div><div class="lbl">Employees served globally</div></div>
+      <div class="stat-card"><div class="big">23</div><div class="lbl">Cities across the world</div></div>
+      <div class="stat-card green"><div class="big">45K+</div><div class="lbl">Pets celebrated at Doggy Bakery</div></div>
+      <div class="stat-card"><div class="big">$1M+</div><div class="lbl">Personal capital invested</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FINAL CTA ══ -->
+<div class="final-cta reveal">
+  <div class="fc-tag">The Doggy Company® · Live in Production · March 2026</div>
+  <div class="fc-title">Every dog deserves<br>to be <em>truly known.</em></div>
+  <div class="fc-sub">
+    For every dog, everywhere, who cannot speak but deserves to be seen.
+    The platform is live. The soul is built. Now we scale.
+  </div>
+  <a href="https://thedoggycompany.com" class="fc-btn">Visit thedoggycompany.com</a>
+  <a href="https://mira-ai-soul.preview.emergentagent.com/introduction.html" class="fc-btn secondary">See Pet Wrapped Demo</a>
+  <div class="fc-contact">
+    <strong>Dipali Sikand</strong> · Founder<br>
+    <a href="mailto:dipali@clubconcierge.in">dipali@clubconcierge.in</a><br><br>
+    <span style="opacity:0.5;font-size:11px;">
+      Built in memory of Mystique and Kouros · January–March 2026 · Bengaluru, India<br>
+      Confidential · For Investor Discussion Only
+    </span>
+  </div>
+</div>
+
+<script>
+// Intersection observer for reveal animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(el => {
+    if (el.isIntersecting) {
+      el.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
