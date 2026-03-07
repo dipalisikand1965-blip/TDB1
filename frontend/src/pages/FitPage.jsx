@@ -806,7 +806,7 @@ const FitPage = () => {
       <ServiceCatalogSection 
         pillar="fit"
         title="Fit, Personalised"
-        subtitle="See your personalized price based on your city, pet size, and requirements"
+        subtitle="See your personalised price based on your city, pet size, and requirements"
         maxServices={8}
       />
       

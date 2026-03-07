@@ -169,6 +169,7 @@ const MiraChatWidget = ({
   // Pillar-specific configurations
   const pillarConfig = {
     general: { icon: '🐾', name: 'General', color: 'from-purple-600 to-indigo-600' },
+    services: { icon: '✨', name: 'Services', color: 'from-purple-500 to-pink-500' },
     stay: { icon: '🏨', name: 'Stay', color: 'from-purple-500 to-violet-500' },
     travel: { icon: '✈️', name: 'Travel', color: 'from-blue-500 to-cyan-500' },
     care: { icon: '💊', name: 'Care', color: 'from-rose-500 to-pink-600' },
@@ -182,7 +183,8 @@ const MiraChatWidget = ({
     emergency: { icon: '🚨', name: 'Emergency', color: 'from-red-500 to-rose-600' },
     farewell: { icon: '🌈', name: 'Farewell', color: 'from-indigo-400 to-purple-400' },
     adopt: { icon: '🐾', name: 'Adopt', color: 'from-green-500 to-emerald-500' },
-    shop: { icon: '🛒', name: 'Shop', color: 'from-indigo-500 to-purple-500' }
+    shop: { icon: '🛒', name: 'Shop', color: 'from-indigo-500 to-purple-500' },
+    play: { icon: '🎮', name: 'Play', color: 'from-green-500 to-teal-500' }
   };
   
   const config = pillarConfig[pillar] || pillarConfig.general;

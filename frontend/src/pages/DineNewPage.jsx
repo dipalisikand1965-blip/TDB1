@@ -420,7 +420,7 @@ const DineNewPage = () => {
     {
       id: 'fresh-subscription',
       name: 'Fresh Food Subscription',
-      description: 'Weekly fresh meals delivered, customized for your dog',
+      description: 'Weekly fresh meals delivered, customised for your dog',
       icon: Truck,
       color: 'from-emerald-500 to-green-500',
       price: null,
