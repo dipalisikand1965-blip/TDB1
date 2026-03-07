@@ -304,7 +304,7 @@ Test Pets:
 ## Services
 - Backend: Running on port 8001
 - Frontend: Running on port 3000
-- Preview URL: https://panel-refresh-debug.preview.emergentagent.com
+- Preview URL: https://doggy-ecommerce-test.preview.emergentagent.com
 
 ---
 

@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://panel-refresh-debug.preview.emergentagent.com
+**Preview URL:** https://doggy-ecommerce-test.preview.emergentagent.com
 
 ---
 
