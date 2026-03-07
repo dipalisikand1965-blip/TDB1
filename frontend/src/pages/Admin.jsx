@@ -445,6 +445,22 @@ const Admin = () => {
         console.log('[Master Sync] Breed products error:', e);
       }
       
+      // Step 6.6: Sync breed products to Admin Product Box
+      toast({ title: '📦 Step 6.6/10: Syncing to Admin...', description: 'Making PICKS visible in admin' });
+      
+      try {
+        const syncRes = await fetch(`${API_URL}/api/breed-catalogue/admin/sync-breed-to-admin`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (syncRes.ok) {
+          const data = await syncRes.json();
+          console.log('[Master Sync] Breed products synced to admin:', data.synced_unified);
+        }
+      } catch (e) {
+        console.log('[Master Sync] Breed sync to admin error:', e);
+      }
+      
       // Step 7: Seed breed tags for products
       toast({ title: '🏷️ Step 7/10: Seeding Breed Tags...', description: 'Adding breed metadata to products' });
       
