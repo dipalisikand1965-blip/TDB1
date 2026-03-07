@@ -3285,6 +3285,11 @@ async def chat_with_mira_legacy(request: ChatRequest):
 - Age: {identity.get('age', pet.get('age', pet.get('age_years', 'Unknown')))} 
 - Weight: {identity.get('weight', pet.get('weight', 'Not specified'))}
 """
+                        # 💜 RAINBOW BRIDGE STATUS - CRITICAL FOR SENSITIVITY
+                        if pet.get('rainbow_bridge'):
+                            rb_date = pet.get('rainbow_bridge_date', 'Recently')
+                            pet_soul_context += f"- 💜 **RAINBOW BRIDGE**: {pet_name} has crossed the Rainbow Bridge ({rb_date}). Be sensitive and honor their memory. Use past tense.\n"
+                        
                         # Add allergies (CRITICAL for recommendations) - PUT FIRST
                         # BIBLE COMPLIANCE: Merge allergies from ALL sources - preferences, doggy_soul_answers, root level
                         all_allergies = set()
@@ -3516,7 +3521,31 @@ RESPONSE FORMAT
 - Include relevant pet data (allergies, preferences, personality)
 - Bold **important details**
 - End with clear next step or question
-- Professional warmth throughout"""
+- Professional warmth throughout
+
+═══════════════════════════════════════════════════════════
+💜 RAINBOW BRIDGE SENSITIVITY PROTOCOL 💜
+═══════════════════════════════════════════════════════════
+
+When a pet has crossed the Rainbow Bridge (rainbow_bridge: true in profile):
+1. ALWAYS honor their memory with gentleness and respect
+2. NEVER suggest products/services for that pet as if they're still alive
+3. Use past tense lovingly: "I remember how [Pet] loved..." or "[Pet] was such a special soul"
+4. If the parent has other pets, be extra gentle: "I know losing [Pet] was hard. I'm here to help with [Other Pet's Name]"
+5. If discussing the departed pet, offer memorial support: "Would you like to add a tribute to [Pet]'s memorial?"
+6. Be compassionate: "Their love stays with us forever. How can I help you today?"
+
+NEVER:
+- Recommend products for a rainbow bridge pet
+- Use present tense for departed pets
+- Ignore the loss when discussing the family's pets
+- Be clinical or cold about the loss
+
+EXAMPLE - SENSITIVE RESPONSE:
+User: "I need treats for my dogs"
+[If user has Mojo (active) and Mystique (rainbow bridge)]
+Mira: "I'd love to help you find the perfect treats for Mojo! 💜 I also remember how special Mystique was. If you'd ever like to add to their memorial, just let me know. Now, for Mojo's treats - since Mojo loves [preferences]..."
+═══════════════════════════════════════════════════════════"""
 
         # Build full context
         full_context = f"""{pet_soul_context}
@@ -12719,6 +12748,7 @@ async def mark_pet_rainbow_bridge(pet_id: str, memorial_data: dict, current_user
         "favorite_memory": memorial_update["favorite_memory"],
         "legacy_quote": memorial_update["legacy_quote"],
         "birth_date": pet.get("birth_date") or pet.get("dob"),
+        "memorial_status": "active",  # Required for display on memorial wall
         "created_at": get_utc_timestamp()
     }
     await db.rainbow_bridge_memorials.insert_one(memorial_entry)
@@ -12888,6 +12918,51 @@ async def get_memorial_tributes(pet_id: str):
         "tributes": tributes,
         "count": len(tributes)
     }
+
+
+@api_router.post("/admin/rainbow-bridge/fix-memorials")
+async def fix_rainbow_bridge_memorials(username: str = Depends(verify_admin)):
+    """Fix existing memorials that are missing the memorial_status field"""
+    # Update all memorials that don't have memorial_status
+    result = await db.rainbow_bridge_memorials.update_many(
+        {"memorial_status": {"$exists": False}},
+        {"$set": {"memorial_status": "active"}}
+    )
+    
+    # Also sync from pets collection for any pets marked as rainbow_bridge
+    pets_with_rb = await db.pets.find(
+        {"rainbow_bridge": True}
+    ).to_list(length=100)
+    
+    created = 0
+    for pet in pets_with_rb:
+        # Check if memorial exists
+        existing = await db.rainbow_bridge_memorials.find_one({"pet_id": pet.get("id")})
+        if not existing:
+            memorial_entry = {
+                "id": f"memorial-{uuid.uuid4().hex[:12]}",
+                "pet_id": pet.get("id"),
+                "pet_name": pet.get("name", "Beloved Pet"),
+                "breed": pet.get("breed", ""),
+                "photo": pet.get("photo") or pet.get("photo_url"),
+                "owner_email": pet.get("owner_email"),
+                "crossing_date": pet.get("crossing_date") or pet.get("rainbow_bridge_date", datetime.now(timezone.utc).strftime("%Y-%m-%d")),
+                "tribute_message": pet.get("tribute_message", "Forever in our hearts 💜"),
+                "favorite_memory": pet.get("favorite_memory", "Every moment was precious"),
+                "legacy_quote": pet.get("legacy_quote", "Until we meet again at the Rainbow Bridge"),
+                "memorial_status": "active",
+                "created_at": get_utc_timestamp()
+            }
+            await db.rainbow_bridge_memorials.insert_one(memorial_entry)
+            created += 1
+    
+    return {
+        "success": True,
+        "message": f"Fixed {result.modified_count} existing memorials, created {created} new memorials",
+        "updated": result.modified_count,
+        "created": created
+    }
+
 
 
 
