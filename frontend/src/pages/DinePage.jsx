@@ -1057,54 +1057,9 @@ const DinePage = () => {
                   </div>
                 )}
 
-                {/* Dog Parks Grid */}
-                {nearbyParks.length > 0 && (
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <Trees className="w-5 h-5 text-green-600" />
-                      Dog Parks in {selectedNearbyCity.charAt(0).toUpperCase() + selectedNearbyCity.slice(1)}
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      {nearbyParks.slice(0, 4).map((park, idx) => (
-                        <Card key={idx} className="overflow-hidden hover:shadow-lg transition-all" data-testid={`park-card-${idx}`}>
-                          <div className="p-4">
-                            <div className="flex items-start gap-3">
-                              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-xl">
-                                🌳
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-semibold text-gray-800 text-sm line-clamp-1">{park.name}</h4>
-                                <p className="text-xs text-gray-500">{park.address || park.area || selectedNearbyCity}</p>
-                              </div>
-                            </div>
-                            <div className="mt-3">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="w-full text-xs"
-                                onClick={() => {
-                                  setSelectedPlace({
-                                    name: park.name,
-                                    address: park.address || park.area || selectedNearbyCity,
-                                    city: park.city || selectedNearbyCity,
-                                    lat: park.lat,
-                                    lng: park.lng
-                                  });
-                                  setMapModalOpen(true);
-                                }}
-                                data-testid={`park-map-btn-${idx}`}
-                              >
-                                <MapPin className="w-3 h-3 mr-1" /> View on Map
-                              </Button>
-                            </div>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                {/* Dog Parks removed from Dine page - belongs in Enjoy/Fit pillar */}
 
-                {nearbyCafes.length === 0 && nearbyParks.length === 0 && (
+                {nearbyCafes.length === 0 && (
                   <div className="text-center py-8">
                     <Dog className="w-12 h-12 mx-auto text-gray-300 mb-2" />
                     <p className="text-gray-500">No places found for this city. Try another!</p>
