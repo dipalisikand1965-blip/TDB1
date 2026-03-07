@@ -404,13 +404,20 @@ const PersonalizedPicks = ({
         </div>
       ) : (
         <>
-          {/* Recommended Products Carousel - Beautiful Icon Cards */}
+          {/* Recommended Products Carousel - Real images for Shopify, Icons for PICKS */}
           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
             {recommendations.slice(0, maxProducts).map(product => {
-              // Get icon config based on category
+              // Detect if this is a breed-specific PICK (seeded product) vs real Shopify product
+              const isBreedPick = product.who_for || product.id?.startsWith('bp-') || product.what_is;
+              
+              // Get icon config for breed picks
               const categoryKey = product.category || product.sub_category || 'default';
               const iconConfig = CATEGORY_ICONS[categoryKey] || CATEGORY_ICONS['default'];
               const IconComponent = iconConfig.icon;
+              
+              // Check if product has a real image (Shopify products)
+              const hasRealImage = product.image?.startsWith('http') || product.images?.[0]?.startsWith('http');
+              const productImage = product.image || product.images?.[0];
               
               return (
                 <div key={product.id || product._id} className="flex-shrink-0 w-44">
@@ -419,31 +426,47 @@ const PersonalizedPicks = ({
                     className="block group cursor-pointer"
                   >
                     <div className="relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100">
-                      {/* Icon-based header instead of product image */}
-                      <div className={`aspect-square ${iconConfig.bg} flex items-center justify-center relative`}>
-                        {/* Gradient circle with icon */}
-                        <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${iconConfig.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                          <IconComponent className="w-10 h-10 text-white" />
+                      {/* Show real image for Shopify products, icon for PICKS */}
+                      {hasRealImage && !isBreedPick ? (
+                        // Real Shopify product with image
+                        <div className="aspect-square bg-gray-100">
+                          <img 
+                            src={productImage} 
+                            alt={product.title || product.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
+                            }}
+                          />
+                          <Badge className={`absolute top-2 right-2 ${config.accentBg} text-white text-[10px]`}>
+                            For {selectedPet?.name}
+                          </Badge>
                         </div>
-                        {/* Decorative elements */}
-                        <div className="absolute top-3 left-3 w-2 h-2 rounded-full bg-white/60" />
-                        <div className="absolute top-6 left-6 w-1.5 h-1.5 rounded-full bg-white/40" />
-                        <div className="absolute bottom-3 right-3 w-2 h-2 rounded-full bg-white/60" />
-                        {/* For Pet Badge */}
-                        <Badge className={`absolute top-2 right-2 bg-gradient-to-r ${iconConfig.gradient} text-white text-[10px] border-0 shadow-sm`}>
-                          For {selectedPet?.name}
-                        </Badge>
-                      </div>
+                      ) : (
+                        // Breed-specific PICK with beautiful icon card
+                        <div className={`aspect-square ${iconConfig.bg} flex items-center justify-center relative`}>
+                          <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${iconConfig.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                            <IconComponent className="w-10 h-10 text-white" />
+                          </div>
+                          <div className="absolute top-3 left-3 w-2 h-2 rounded-full bg-white/60" />
+                          <div className="absolute top-6 left-6 w-1.5 h-1.5 rounded-full bg-white/40" />
+                          <div className="absolute bottom-3 right-3 w-2 h-2 rounded-full bg-white/60" />
+                          <Badge className={`absolute top-2 right-2 bg-gradient-to-r ${iconConfig.gradient} text-white text-[10px] border-0 shadow-sm`}>
+                            For {selectedPet?.name}
+                          </Badge>
+                        </div>
+                      )}
                       {/* Product info */}
                       <div className="p-3 space-y-1">
                         <p className="text-sm font-semibold text-gray-900 line-clamp-2 leading-tight">
-                          {product.what_is || product.title || product.name}
+                          {product.title || product.what_is || product.name}
                         </p>
                         <p className="text-xs text-gray-500 truncate">
-                          {product.why_fits || product.category || 'Special Edition'}
+                          {product.why_fits || product.vendor || product.category || 'Special Edition'}
                         </p>
                         <div className="flex items-center justify-between pt-1">
-                          <p className={`text-sm font-bold bg-gradient-to-r ${iconConfig.gradient} bg-clip-text text-transparent`}>
+                          <p className={`text-sm font-bold ${config.accent}`}>
                             ₹{product.price || product.minPrice || '999'}
                           </p>
                           <button 
@@ -451,7 +474,7 @@ const PersonalizedPicks = ({
                               e.stopPropagation();
                               handleAddToCart(product);
                             }}
-                            className={`p-1.5 rounded-full bg-gradient-to-r ${iconConfig.gradient} text-white hover:opacity-90 transition-opacity`}
+                            className={`p-1.5 rounded-full ${config.accentBg} text-white hover:opacity-90 transition-opacity`}
                           >
                             <ShoppingCart className="w-3.5 h-3.5" />
                           </button>
