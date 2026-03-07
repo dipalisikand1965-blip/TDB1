@@ -1043,8 +1043,58 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
 
             <h2 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h2>
             
+            {/* Full Description - Expandable */}
             {product.description && (
-              <p className="text-sm text-gray-600 mb-4 line-clamp-2">{product.description}</p>
+              <div className="mb-4">
+                <p className="text-sm text-gray-600">{product.description}</p>
+              </div>
+            )}
+
+            {/* Flavors Display - For Cakes */}
+            {product.flavors && product.flavors.length > 0 && (
+              <div className="mb-4 p-3 bg-amber-50 rounded-lg border border-amber-100">
+                <h4 className="text-sm font-semibold text-amber-800 mb-2 flex items-center gap-2">
+                  <span>🍰</span> Available Flavours
+                </h4>
+                <div className="flex flex-wrap gap-1.5">
+                  {product.flavors.map((flavor, idx) => (
+                    <span 
+                      key={idx} 
+                      className="px-2 py-1 bg-white text-xs rounded-full border border-amber-200 text-amber-700"
+                    >
+                      {flavor.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Sizes Display - For Cakes with multiple sizes */}
+            {product.sizes && product.sizes.length > 1 && (
+              <div className="mb-4 p-3 bg-purple-50 rounded-lg border border-purple-100">
+                <h4 className="text-sm font-semibold text-purple-800 mb-2 flex items-center gap-2">
+                  <span>📏</span> Available Sizes
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {product.sizes.map((size, idx) => (
+                    <span 
+                      key={idx} 
+                      className="px-3 py-1 bg-white text-xs rounded-full border border-purple-200 text-purple-700 font-medium"
+                    >
+                      {size.name} - ₹{size.price}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Breed Tag - For Breed Cakes */}
+            {product.breed_tags && product.breed_tags.length > 0 && (
+              <div className="mb-4">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-100 text-pink-700 text-xs font-medium rounded-full">
+                  <span>🐕</span> Perfect for {product.breed_tags.join(', ')}
+                </span>
+              </div>
             )}
 
             {/* Dynamic Options Selector */}
