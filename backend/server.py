@@ -166,6 +166,7 @@ from admin_auth import (
 from unified_flow_middleware import init_unified_flow_middleware
 from product_intelligence import ProductIntelligenceEngine, add_stock_images_to_products
 from ai_description_enhancer import AIDescriptionEnhancer
+from ai_service_enhancer import AIServiceEnhancer
 
 # Pricing Sync Service
 from pricing_sync_service import (
@@ -10553,7 +10554,196 @@ async def enhance_product_descriptions(
     }
 
 
-@api_router.post("/admin/products/enhance-single/{product_id}")
+# ============================================================
+# 🚀 BACKGROUND TASK ENHANCERS (No Timeout!)
+# ============================================================
+
+# Global status tracking for background tasks
+enhancement_status = {
+    "products": {"running": False, "progress": 0, "total": 0, "completed": 0, "errors": []},
+    "services": {"running": False, "progress": 0, "total": 0, "completed": 0, "errors": []}
+}
+
+async def _enhance_products_background(batch_size: int = 50):
+    """Background task to enhance product descriptions"""
+    global enhancement_status
+    enhancement_status["products"]["running"] = True
+    enhancement_status["products"]["errors"] = []
+    enhancement_status["products"]["completed"] = 0
+    
+    try:
+        enhancer = AIDescriptionEnhancer(db)
+        
+        # Count total products needing enhancement
+        total = await db.unified_products.count_documents({
+            "$or": [
+                {"ai_enhanced_description": {"$exists": False}},
+                {"ai_enhanced_description": None},
+                {"ai_enhanced_description": ""}
+            ]
+        })
+        enhancement_status["products"]["total"] = total
+        
+        # Process in batches
+        processed = 0
+        while processed < total:
+            results = await enhancer.enhance_all_products(batch_size=batch_size, update_db=True)
+            processed += results.get("total_processed", 0)
+            enhancement_status["products"]["completed"] = results.get("enhanced", 0)
+            enhancement_status["products"]["progress"] = int((processed / total) * 100) if total > 0 else 100
+            
+            if results.get("total_processed", 0) == 0:
+                break  # No more products to process
+                
+    except Exception as e:
+        enhancement_status["products"]["errors"].append(str(e))
+        logger.error(f"Background product enhancement error: {e}")
+    finally:
+        enhancement_status["products"]["running"] = False
+
+
+async def _enhance_services_background(batch_size: int = 50):
+    """Background task to enhance service descriptions"""
+    global enhancement_status
+    enhancement_status["services"]["running"] = True
+    enhancement_status["services"]["errors"] = []
+    enhancement_status["services"]["completed"] = 0
+    
+    try:
+        enhancer = AIServiceEnhancer(db)
+        
+        # Count total services needing enhancement
+        total = await db.services_master.count_documents({
+            "$or": [
+                {"ai_enhanced_description": {"$exists": False}},
+                {"ai_enhanced_description": None},
+                {"ai_enhanced_description": ""}
+            ]
+        })
+        enhancement_status["services"]["total"] = total
+        
+        # Process in batches
+        processed = 0
+        while processed < total:
+            results = await enhancer.enhance_all_services(batch_size=batch_size, update_db=True)
+            processed += results.get("total_processed", 0)
+            enhancement_status["services"]["completed"] = results.get("enhanced", 0)
+            enhancement_status["services"]["progress"] = int((processed / total) * 100) if total > 0 else 100
+            
+            if results.get("total_processed", 0) == 0:
+                break  # No more services to process
+                
+    except Exception as e:
+        enhancement_status["services"]["errors"].append(str(e))
+        logger.error(f"Background service enhancement error: {e}")
+    finally:
+        enhancement_status["services"]["running"] = False
+
+
+@api_router.post("/admin/products/enhance-descriptions-async")
+async def enhance_product_descriptions_async(
+    background_tasks: BackgroundTasks,
+    batch_size: int = 50,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """
+    🚀 Start AI product description enhancement in BACKGROUND (No Timeout!)
+    Returns immediately - check /admin/enhance-status for progress
+    """
+    verify_admin(credentials)
+    
+    if enhancement_status["products"]["running"]:
+        return {
+            "success": False,
+            "message": "Product enhancement already running",
+            "status": enhancement_status["products"]
+        }
+    
+    background_tasks.add_task(_enhance_products_background, batch_size)
+    
+    return {
+        "success": True,
+        "message": "🚀 Product description enhancement started in background!",
+        "tip": "Check /api/admin/enhance-status for progress"
+    }
+
+
+@api_router.post("/admin/services/enhance-descriptions")
+async def enhance_service_descriptions(
+    batch_size: int = 20,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """
+    Use AI to enhance service descriptions (synchronous - limited batch).
+    For large batches, use /admin/services/enhance-descriptions-async
+    """
+    verify_admin(credentials)
+    
+    enhancer = AIServiceEnhancer(db)
+    results = await enhancer.enhance_all_services(batch_size=batch_size, update_db=True)
+    
+    return {
+        "success": True,
+        "message": f"Enhanced {results['enhanced']} service descriptions",
+        "results": results
+    }
+
+
+@api_router.post("/admin/services/enhance-descriptions-async")
+async def enhance_service_descriptions_async(
+    background_tasks: BackgroundTasks,
+    batch_size: int = 50,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """
+    🚀 Start AI service description enhancement in BACKGROUND (No Timeout!)
+    Returns immediately - check /admin/enhance-status for progress
+    """
+    verify_admin(credentials)
+    
+    if enhancement_status["services"]["running"]:
+        return {
+            "success": False,
+            "message": "Service enhancement already running",
+            "status": enhancement_status["services"]
+        }
+    
+    background_tasks.add_task(_enhance_services_background, batch_size)
+    
+    return {
+        "success": True,
+        "message": "🚀 Service description enhancement started in background!",
+        "tip": "Check /api/admin/enhance-status for progress"
+    }
+
+
+@api_router.post("/admin/services/enhance-single/{service_id}")
+async def enhance_single_service_description(
+    service_id: str,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Enhance description for a single service using AI"""
+    verify_admin(credentials)
+    
+    enhancer = AIServiceEnhancer(db)
+    result = await enhancer.enhance_single_service(service_id)
+    
+    return result
+
+
+@api_router.get("/admin/enhance-status")
+async def get_enhancement_status(
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """
+    📊 Check status of background enhancement tasks
+    """
+    verify_admin(credentials)
+    
+    return {
+        "products": enhancement_status["products"],
+        "services": enhancement_status["services"]
+    }
 async def enhance_single_product_description(
     product_id: str,
     credentials: HTTPBasicCredentials = Depends(security)
