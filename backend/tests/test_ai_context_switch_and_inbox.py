@@ -16,7 +16,7 @@ import os
 import json
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pet-life-admin.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://doggy-handover.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 TEST_USER_EMAIL = "dipali@clubconcierge.in"

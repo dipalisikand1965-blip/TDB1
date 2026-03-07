@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://pet-life-admin.preview.emergentagent.com
+https://doggy-handover.preview.emergentagent.com
 
 ---
 

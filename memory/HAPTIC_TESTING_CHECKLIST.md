@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://pet-life-admin.preview.emergentagent.com/mira-demo**
+**https://doggy-handover.preview.emergentagent.com/mira-demo**
 
 ---
 
