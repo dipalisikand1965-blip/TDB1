@@ -75,6 +75,7 @@ import {
   RefreshCw,
   Send,
   CheckCircle,
+  AlertTriangle,
   Clock,
   MapPin,
   ChevronRight,
@@ -491,6 +492,104 @@ const Admin = () => {
       });
     } finally {
       setSyncingShopify(false);
+    }
+  };
+
+  // 🔍 VERIFY DATA SYNC - Check all collection counts
+  const [verifyingData, setVerifyingData] = useState(false);
+  const [verifyResults, setVerifyResults] = useState(null);
+  
+  const verifyDataSync = async () => {
+    setVerifyingData(true);
+    setVerifyResults(null);
+    
+    try {
+      toast({ title: '🔍 Verifying Data...', description: 'Checking all collections' });
+      
+      // Fetch site status which has all counts
+      const statusRes = await fetch(`${API_URL}/api/admin/site-status`);
+      const statusData = await statusRes.json();
+      const stats = statusData.stats || {};
+      
+      // Expected minimum counts (based on preview data)
+      const expectedCounts = {
+        products: 2000,
+        services: 1000,
+        members: 5,
+        pets: 10,
+        faqs: 10,
+        breeds: 50
+      };
+      
+      const results = {
+        timestamp: new Date().toLocaleString(),
+        collections: [
+          { 
+            name: 'Products', 
+            count: stats.products || 0, 
+            expected: expectedCounts.products,
+            status: (stats.products || 0) >= expectedCounts.products ? 'pass' : 'low'
+          },
+          { 
+            name: 'Services', 
+            count: stats.services || 0, 
+            expected: expectedCounts.services,
+            status: (stats.services || 0) >= expectedCounts.services ? 'pass' : 'low'
+          },
+          { 
+            name: 'Members', 
+            count: stats.members || 0, 
+            expected: expectedCounts.members,
+            status: (stats.members || 0) >= expectedCounts.members ? 'pass' : 'low'
+          },
+          { 
+            name: 'Pets', 
+            count: stats.pets || 0, 
+            expected: expectedCounts.pets,
+            status: (stats.pets || 0) >= expectedCounts.pets ? 'pass' : 'low'
+          },
+          { 
+            name: 'FAQs', 
+            count: stats.faqs || 0, 
+            expected: expectedCounts.faqs,
+            status: (stats.faqs || 0) >= expectedCounts.faqs ? 'pass' : 'low'
+          },
+          { 
+            name: 'Tickets Open', 
+            count: stats.tickets_open || 0, 
+            expected: 0,
+            status: 'info'
+          },
+          { 
+            name: 'Admin Notifications', 
+            count: stats.admin_notifications || 0, 
+            expected: 0,
+            status: 'info'
+          }
+        ],
+        totalItems: (stats.products || 0) + (stats.services || 0),
+        overallStatus: (stats.products || 0) >= expectedCounts.products && 
+                       (stats.services || 0) >= expectedCounts.services ? 'healthy' : 'needs_sync'
+      };
+      
+      setVerifyResults(results);
+      
+      const statusEmoji = results.overallStatus === 'healthy' ? '✅' : '⚠️';
+      toast({ 
+        title: `${statusEmoji} Data Verification Complete`,
+        description: `Products: ${results.collections[0].count} | Services: ${results.collections[1].count} | Total: ${results.totalItems}`,
+        duration: 10000
+      });
+      
+    } catch (error) {
+      console.error('[Verify Data] Error:', error);
+      toast({ 
+        title: 'Verification Error', 
+        description: error.message, 
+        variant: 'destructive'
+      });
+    } finally {
+      setVerifyingData(false);
     }
   };
 
@@ -2649,7 +2748,80 @@ const Admin = () => {
                 {syncingShopify ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
                 {syncingShopify ? 'Syncing Everything...' : '🚀 MASTER SYNC'}
               </Button>
+              
+              {/* 🔍 VERIFY DATA Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white border-0 text-sm font-bold shadow-lg px-4 ml-2"
+                onClick={verifyDataSync}
+                disabled={verifyingData}
+                data-testid="verify-data-btn"
+              >
+                {verifyingData ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
+                {verifyingData ? 'Verifying...' : '🔍 VERIFY DATA'}
+              </Button>
             </div>
+            
+            {/* Verify Results Panel */}
+            {verifyResults && (
+              <div className="mt-4 bg-slate-800 rounded-xl p-4 border border-slate-700">
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="text-white font-bold flex items-center gap-2">
+                    {verifyResults.overallStatus === 'healthy' ? (
+                      <><CheckCircle className="w-5 h-5 text-green-400" /> Data Healthy</>
+                    ) : (
+                      <><AlertTriangle className="w-5 h-5 text-yellow-400" /> Needs MASTER SYNC</>
+                    )}
+                  </h4>
+                  <span className="text-xs text-slate-400">{verifyResults.timestamp}</span>
+                </div>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {verifyResults.collections.map((col, idx) => (
+                    <div 
+                      key={idx}
+                      className={`p-3 rounded-lg border ${
+                        col.status === 'pass' ? 'bg-green-500/10 border-green-500/30' :
+                        col.status === 'low' ? 'bg-yellow-500/10 border-yellow-500/30' :
+                        'bg-slate-700/50 border-slate-600'
+                      }`}
+                    >
+                      <div className="text-xs text-slate-400 mb-1">{col.name}</div>
+                      <div className={`text-xl font-bold ${
+                        col.status === 'pass' ? 'text-green-400' :
+                        col.status === 'low' ? 'text-yellow-400' :
+                        'text-white'
+                      }`}>
+                        {col.count.toLocaleString()}
+                      </div>
+                      {col.expected > 0 && (
+                        <div className="text-[10px] text-slate-500">
+                          Expected: {col.expected.toLocaleString()}+
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="mt-3 pt-3 border-t border-slate-700 flex justify-between items-center">
+                  <span className="text-sm text-slate-300">
+                    <strong>Total Items:</strong> {verifyResults.totalItems.toLocaleString()} (Products + Services)
+                  </span>
+                  {verifyResults.overallStatus !== 'healthy' && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-yellow-400 border-yellow-400/30 hover:bg-yellow-400/10"
+                      onClick={syncAllData}
+                      disabled={syncingShopify}
+                    >
+                      <RefreshCw className="w-3 h-3 mr-1" /> Run MASTER SYNC
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
