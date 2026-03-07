@@ -366,11 +366,15 @@ def get_pillar_usage(pet_id: str, year: int, owner_email: str = None) -> list:
     })
     
     pillar_icons = {
-        "celebrate": "🎉", "dine": "🍽️", "stay": "🏠", "travel": "✈️",
-        "care": "💊", "enjoy": "🎮", "fit": "🏃", "learn": "📚",
+        # Core Learn categories (matching app)
+        "grooming": "✂️", "groom": "✂️", "health": "❤️", "food": "🍖",
+        "behaviour": "🧠", "behavior": "🧠", "travel": "✈️", "boarding": "🏠", "board": "🏠",
+        # The 14 Pillars
+        "soul": "💜", "celebrate": "🎉", "dine": "🍽️", "stay": "🏨",
+        "care": "💊", "enjoy": "🎾", "fit": "🏃", "learn": "📚",
         "paperwork": "📋", "advisory": "👨‍⚕️", "emergency": "🚨",
-        "farewell": "🌈", "adopt": "🐾", "shop": "🛒", "groom": "✂️",
-        "play": "🎾", "community": "🤝", "soul": "💜"
+        "farewell": "🌈", "adopt": "🐾", "shop": "🛒",
+        "play": "🎾", "community": "🤝", "engagement": "💬"
     }
     
     for ticket in tickets:
@@ -512,17 +516,40 @@ async def download_pet_wrapped(pet_id: str, year: Optional[int] = None):
     
     # Build pillar rows HTML
     pillar_rows = ""
+    # Pillar icons matching the app's Learn section design
+    # Categories: Grooming, Health, Food, Behaviour, Travel, Boarding + other pillars
     pillar_icons = {
+        # Core Learn categories (matching your app)
+        "grooming": ("✂️", "#A87ADB", "rgba(75,38,128,0.2)"),
+        "groom": ("✂️", "#A87ADB", "rgba(75,38,128,0.2)"),
+        "health": ("❤️", "#E8A0B0", "rgba(196,96,122,0.15)"),
+        "food": ("🍖", "#6BCB8B", "rgba(45,122,74,0.15)"),
+        "behaviour": ("🧠", "#87CEEB", "rgba(135,206,235,0.15)"),
+        "behavior": ("🧠", "#87CEEB", "rgba(135,206,235,0.15)"),
+        "travel": ("✈️", "#FFB6C1", "rgba(255,182,193,0.15)"),
+        "boarding": ("🏠", "#F0C060", "rgba(201,151,58,0.15)"),
+        "board": ("🏠", "#F0C060", "rgba(201,151,58,0.15)"),
+        
+        # The 14 Pillars
+        "soul": ("💜", "#A87ADB", "rgba(75,38,128,0.2)"),
         "celebrate": ("🎉", "#F0C060", "rgba(201,151,58,0.15)"),
         "dine": ("🍽️", "#6BCB8B", "rgba(45,122,74,0.15)"),
         "care": ("💊", "#E8A0B0", "rgba(196,96,122,0.15)"),
+        "stay": ("🏨", "#87CEEB", "rgba(135,206,235,0.15)"),
         "advisory": ("👨‍⚕️", "#A87ADB", "rgba(75,38,128,0.2)"),
-        "travel": ("✈️", "#87CEEB", "rgba(135,206,235,0.15)"),
-        "learn": ("📚", "#C0C8D8", "rgba(201,151,58,0.1)"),
-        "enjoy": ("🎮", "#FFB6C1", "rgba(255,182,193,0.15)"),
-        "farewell": ("🌈", "#E8A0B0", "rgba(196,96,122,0.15)"),
-        "paperwork": ("📋", "#C0C8D8", "rgba(136,146,164,0.15)"),
+        "learn": ("📚", "#FFB6C1", "rgba(255,182,193,0.15)"),
+        "enjoy": ("🎾", "#6BCB8B", "rgba(45,122,74,0.15)"),
         "shop": ("🛒", "#F0C060", "rgba(201,151,58,0.15)"),
+        "play": ("🎾", "#87CEEB", "rgba(135,206,235,0.15)"),
+        "community": ("🤝", "#E8A0B0", "rgba(196,96,122,0.15)"),
+        "farewell": ("🌈", "#C4607A", "rgba(196,96,122,0.2)"),
+        "paperwork": ("📋", "#8892A4", "rgba(136,146,164,0.15)"),
+        "fit": ("🏃", "#6BCB8B", "rgba(45,122,74,0.15)"),
+        "emergency": ("🚨", "#FF6B6B", "rgba(255,107,107,0.15)"),
+        "adopt": ("🐾", "#A87ADB", "rgba(75,38,128,0.15)"),
+        
+        # Additional tracking
+        "engagement": ("💬", "#87CEEB", "rgba(135,206,235,0.15)"),
     }
     
     pillars_explored = mira_moments.get("pillars_explored", {})
