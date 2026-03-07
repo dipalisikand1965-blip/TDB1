@@ -744,7 +744,7 @@ const EmergencyPage = () => {
                   <Textarea
                     value={requestForm.distinctive_features}
                     onChange={(e) => setRequestForm({...requestForm, distinctive_features: e.target.value})}
-                    placeholder="Collar color, unique markings, tags..."
+                    placeholder="Collar colour, unique markings, tags..."
                     rows={2}
                   />
                 </div>
