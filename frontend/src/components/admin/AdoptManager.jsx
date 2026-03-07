@@ -20,6 +20,8 @@ import {
   Building2, Clock, RefreshCw, FileText, Loader2, Download, Sparkles
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
+import PillarBundlesTab from './PillarBundlesTab';
+import PillarExperiencesTab from './PillarExperiencesTab';
 
 // Removed getApiUrl function - use imported API_URL instead
 
@@ -417,6 +419,8 @@ const AdoptManager = ({ authHeaders }) => {
           <TabsTrigger value="foster"><Heart className="w-4 h-4 mr-1" /> Foster</TabsTrigger>
           <TabsTrigger value="events"><Calendar className="w-4 h-4 mr-1" /> Events</TabsTrigger>
           <TabsTrigger value="shelters"><Building2 className="w-4 h-4 mr-1" /> Shelters</TabsTrigger>
+          <TabsTrigger value="bundles"><PawPrint className="w-4 h-4 mr-1" /> Bundles</TabsTrigger>
+          <TabsTrigger value="experiences"><Sparkles className="w-4 h-4 mr-1" /> Experiences</TabsTrigger>
         </TabsList>
 
         {/* PETS TAB */}
@@ -648,6 +652,24 @@ const AdoptManager = ({ authHeaders }) => {
               </Card>
             ))}
           </div>
+        </TabsContent>
+
+        {/* Bundles Tab */}
+        <TabsContent value="bundles" className="space-y-4">
+          <PillarBundlesTab 
+            pillar="adopt"
+            credentials={authHeaders}
+            accentColor="pink"
+          />
+        </TabsContent>
+
+        {/* Experiences Tab */}
+        <TabsContent value="experiences" className="space-y-4">
+          <PillarExperiencesTab 
+            pillar="adopt"
+            credentials={authHeaders}
+            accentColor="pink"
+          />
         </TabsContent>
       </Tabs>
 

@@ -24,6 +24,8 @@ import {
 import axios from 'axios';
 import { toast } from '../../hooks/use-toast';
 import { API_URL } from '../../utils/api';
+import PillarBundlesTab from './PillarBundlesTab';
+import PillarExperiencesTab from './PillarExperiencesTab';
 
 const FarewellManager = ({ getAuthHeader }) => {
   const [activeSubTab, setActiveSubTab] = useState('requests');
@@ -375,6 +377,12 @@ const FarewellManager = ({ getAuthHeader }) => {
           </TabsTrigger>
           <TabsTrigger value="products" data-testid="farewell-tab-products">
             <Package className="w-4 h-4 mr-2" /> Products
+          </TabsTrigger>
+          <TabsTrigger value="bundles" data-testid="farewell-tab-bundles">
+            <Gift className="w-4 h-4 mr-2" /> Bundles
+          </TabsTrigger>
+          <TabsTrigger value="experiences" data-testid="farewell-tab-experiences">
+            <Sparkles className="w-4 h-4 mr-2" /> Experiences
           </TabsTrigger>
           <TabsTrigger value="settings" data-testid="farewell-tab-settings">
             <Settings className="w-4 h-4 mr-2" /> Settings
@@ -752,6 +760,24 @@ const FarewellManager = ({ getAuthHeader }) => {
               <Button className="mt-4" onClick={seedProducts}>Seed Default Products</Button>
             </Card>
           )}
+        </TabsContent>
+
+        {/* Bundles Tab */}
+        <TabsContent value="bundles" className="space-y-4">
+          <PillarBundlesTab 
+            pillar="farewell"
+            credentials={getAuthHeader}
+            accentColor="purple"
+          />
+        </TabsContent>
+
+        {/* Experiences Tab */}
+        <TabsContent value="experiences" className="space-y-4">
+          <PillarExperiencesTab 
+            pillar="farewell"
+            credentials={getAuthHeader}
+            accentColor="purple"
+          />
         </TabsContent>
 
         {/* Settings Tab */}

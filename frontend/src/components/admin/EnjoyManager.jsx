@@ -18,6 +18,7 @@ import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 import axios from 'axios';
 import PillarServicesTab from './PillarServicesTab';
+import PillarBundlesTab from './PillarBundlesTab';
 import {
   PartyPopper, Calendar, MapPin, Users, Ticket, Building2, Package,
   Settings, Search, Plus, Edit2, Trash2, RefreshCw, Eye, Clock,
@@ -443,6 +444,9 @@ const EnjoyManager = ({ getAuthHeader }) => {
           <TabsTrigger value="products" data-testid="enjoy-tab-products">
             <Package className="w-4 h-4 mr-2" /> Products
           </TabsTrigger>
+          <TabsTrigger value="bundles" data-testid="enjoy-tab-bundles">
+            <Package className="w-4 h-4 mr-2" /> Bundles
+          </TabsTrigger>
           <TabsTrigger value="services" data-testid="enjoy-tab-services">
             <Briefcase className="w-4 h-4 mr-2" /> Services
           </TabsTrigger>
@@ -788,6 +792,15 @@ const EnjoyManager = ({ getAuthHeader }) => {
               <p className="text-gray-500">No products yet. Click &quot;Add Product&quot; to create one.</p>
             </Card>
           )}
+        </TabsContent>
+
+        {/* Bundles Tab */}
+        <TabsContent value="bundles" className="space-y-4">
+          <PillarBundlesTab 
+            pillar="enjoy"
+            credentials={credentials}
+            accentColor="purple"
+          />
         </TabsContent>
 
         {/* Services Tab */}
