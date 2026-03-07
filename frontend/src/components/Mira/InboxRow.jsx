@@ -119,12 +119,70 @@ const InboxRow = ({
     // Strip markdown formatting (** bold **, * italic *, etc.)
     snippet = snippet.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1').replace(/__(.*?)__/g, '$1');
     
+    // Make generic messages more friendly
+    if (snippet.includes("We've received your") && snippet.includes("request")) {
+      const pillar = notification.pillar || 'general';
+      const friendlyMessages = {
+        care: "Your pet care request is being reviewed by our team...",
+        dine: "We're finding the best pet-friendly spots for you...",
+        travel: "Your travel request is with our concierge team...",
+        celebrate: "Party planning in progress! We'll be in touch...",
+        advisory: "Our experts are reviewing your question...",
+        shop: "Your shopping request is being processed...",
+        enjoy: "Finding fun activities for your furry friend...",
+        fit: "Your fitness request is with our wellness team...",
+        learn: "Our training experts are on it...",
+        stay: "Finding the perfect stay for your pet...",
+        emergency: "Our emergency team is prioritizing your request!",
+        farewell: "Our compassionate team is here to help...",
+        default: "Our team is working on your request..."
+      };
+      snippet = friendlyMessages[pillar.toLowerCase()] || friendlyMessages.default;
+    }
+    
     // Truncate long snippets
-    if (snippet.length > 80) {
-      snippet = snippet.substring(0, 77) + '...';
+    if (snippet.length > 85) {
+      snippet = snippet.substring(0, 82) + '...';
     }
     
     return snippet;
+  };
+  
+  // Get friendly title (simplify verbose titles)
+  const getFriendlyTitle = () => {
+    let title = notification.title || 'New Notification';
+    
+    // Simplify "Request Received: Pet - Long query..." to something cleaner
+    if (title.startsWith('Request Received:') || title.startsWith('✨ Request Received:')) {
+      title = title.replace('✨ ', '').replace('Request Received: ', '');
+      // If title is just pet name or too short, make it better
+      if (title.length < 15 && petName) {
+        const pillar = notification.pillar || 'general';
+        const pillarTitles = {
+          care: `${petName}'s Care Request`,
+          dine: `${petName}'s Dining Request`,
+          travel: `${petName}'s Travel Request`,
+          celebrate: `${petName}'s Celebration`,
+          advisory: `Question about ${petName}`,
+          shop: `Shopping for ${petName}`,
+          enjoy: `Fun Activity for ${petName}`,
+          fit: `${petName}'s Wellness Request`,
+          learn: `Training for ${petName}`,
+          stay: `${petName}'s Stay Request`,
+          emergency: `🚨 Emergency - ${petName}`,
+          farewell: `${petName}'s Memorial`,
+          default: `Request for ${petName}`
+        };
+        title = pillarTitles[pillar.toLowerCase()] || pillarTitles.default;
+      }
+    }
+    
+    // Truncate if still too long
+    if (title.length > 50) {
+      title = title.substring(0, 47) + '...';
+    }
+    
+    return title;
   };
 
   // Handle touch events for swipe
@@ -169,6 +227,7 @@ const InboxRow = ({
 
   const ticketLine = getTicketLine();
   const snippet = getSnippet();
+  const friendlyTitle = getFriendlyTitle();
 
   return (
     <div 
@@ -248,9 +307,9 @@ const InboxRow = ({
         
         {/* Content */}
         <div className="flex-1 min-w-0">
-          {/* Headline - bold if unread */}
+          {/* Headline - bold if unread, using friendly title */}
           <h3 className={`text-sm sm:truncate line-clamp-2 sm:line-clamp-1 ${isUnread ? 'font-semibold text-white' : 'font-medium text-gray-200'}`}>
-            {notification.title}
+            {friendlyTitle}
           </h3>
           
           {/* TCK + Pillar + Pet line - ALWAYS visible for trackability */}
