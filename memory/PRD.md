@@ -1,9 +1,9 @@
 # The Doggy Company - Pet Life Operating System
 ## Complete Product Requirements Document (PRD)
 
-**Document Version:** 5.1.0  
+**Document Version:** 5.2.0  
 **Last Updated:** March 7, 2026  
-**Status:** Production Ready - E2E Verified  
+**Status:** Production Ready - PICKS Feature Complete  
 **Prepared By:** Development Team via Emergent AI
 
 ---
@@ -546,6 +546,7 @@ Method: POST
 ### P1 - High Priority
 - Refactor large components (Admin.jsx, DoggyServiceDesk.jsx)
 - Admin auth migration to role-based system
+- Fix AI Description Enhancer timeout (refactor to background task)
 
 ### P2 - Medium Priority
 - Content population (transformation stories)
@@ -556,6 +557,45 @@ Method: POST
 - Analytics dashboard
 - A/B testing framework
 - Advanced Mira memory
+
+---
+
+## 22. COMPLETED WORK LOG (MARCH 7, 2026 - Session 2)
+
+### PICKS Feature Implementation ✅
+**Status:** COMPLETE - All Tests Passing
+
+#### What Was Implemented:
+1. **Breed Product Seeding**
+   - Endpoint: `/api/breed-catalogue/admin/seed-breed-products`
+   - Result: 160 products seeded (20 breeds × 8 product types)
+   - Categories: breed-cakes, cups_merch, bandanas, accessories, celebration_addons
+
+2. **Pillar-Specific Picks API**
+   - Endpoint: `/api/mira/top-picks/{petName}/pillar/{pillar}`
+   - Returns: 5 catalogue + 5 concierge picks filtered by pillar
+   - Soul-aware: Uses pet breed, allergies, size, age for scoring
+
+3. **Frontend Integration**
+   - `/celebrate` page: "By Breed" filter shows 42 breed-specific cakes
+   - `PersonalizedPicks` component: Pillar-aware recommendations
+   - `PersonalizedPicksPanel` (Mira FAB): Curated content per pet
+
+#### Test Results (iteration_68.json):
+| Feature | Status |
+|---------|--------|
+| Breed Products Seeding | PASS |
+| Pillar-Specific Picks API | PASS |
+| Celebrate Breed Cakes Filter | PASS |
+| Personalized Picks (Logged In) | PASS |
+| Breed Products in Main Collection | PASS |
+| Mira Panel | PASS |
+
+#### Key Files:
+- `/app/backend/breed_catalogue.py` - Breed product seeding & APIs
+- `/app/backend/app/api/top_picks_routes.py` - Pillar picks logic (lines 1521-2090)
+- `/app/frontend/src/components/PersonalizedPicks.jsx` - Pillar-aware UI
+- `/app/backend/tests/test_breed_picks_feature.py` - 13 pytest tests (all passing)
 
 ---
 
