@@ -224,7 +224,11 @@ const CareManager = ({ getAuthHeader }) => {
     try {
       const [requestsRes, productsRes, bundlesRes, statsRes, settingsRes, partnersRes] = await Promise.all([
         axios.get(`${API_URL}/api/care/requests`),
-        axios.get(`${API_URL}/api/care/products`),
+        // Fetch from Unified Product Box with pillar filter for single source of truth
+        axios.get(`${API_URL}/api/product-box/by-pillar/care`).catch(() => 
+          // Fallback to legacy endpoint
+          axios.get(`${API_URL}/api/care/products`)
+        ),
         axios.get(`${API_URL}/api/care/bundles`),
         axios.get(`${API_URL}/api/care/stats`),
         axios.get(`${API_URL}/api/care/admin/settings`),
@@ -232,7 +236,9 @@ const CareManager = ({ getAuthHeader }) => {
       ]);
       
       setRequests(requestsRes.data.requests || []);
-      setProducts(productsRes.data.products || []);
+      // Handle both unified product box response and legacy response
+      const productData = productsRes.data.products || productsRes.data || [];
+      setProducts(Array.isArray(productData) ? productData : []);
       setBundles(bundlesRes.data.bundles || []);
       setStats(statsRes.data || {});
       setSettings(settingsRes.data || {});

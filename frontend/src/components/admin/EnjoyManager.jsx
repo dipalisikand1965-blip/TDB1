@@ -119,14 +119,19 @@ const EnjoyManager = ({ getAuthHeader }) => {
         axios.get(`${API_URL}/api/enjoy/rsvps`),
         axios.get(`${API_URL}/api/enjoy/admin/partners`),
         axios.get(`${API_URL}/api/enjoy/stats`),
-        axios.get(`${API_URL}/api/enjoy/products`)
+        // Fetch from Unified Product Box first for single source of truth
+        axios.get(`${API_URL}/api/product-box/by-pillar/enjoy`).catch(() => 
+          axios.get(`${API_URL}/api/enjoy/products`)
+        )
       ]);
       
       setExperiences(expRes.data.experiences || []);
       setRsvps(rsvpRes.data.rsvps || []);
       setPartners(partnerRes.data.partners || []);
       setStats(statsRes.data || {});
-      setProducts(prodRes.data.products || []);
+      // Handle both unified product box response and legacy response
+      const productData = prodRes.data.products || prodRes.data || [];
+      setProducts(Array.isArray(productData) ? productData : []);
     } catch (error) {
       console.error('Error fetching enjoy data:', error);
       toast({ title: 'Error', description: 'Failed to load enjoy data', variant: 'destructive' });
