@@ -134,7 +134,7 @@ soulReason={getSoulBasedReason(activePet, 'celebrate')}  // or 'stay', 'dine', e
 ---
 
 ## PREVIEW URL
-https://rainbow-bridge-3.preview.emergentagent.com
+https://mira-memory-cards.preview.emergentagent.com
 
 ---
 

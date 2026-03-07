@@ -58,7 +58,7 @@ Be patient. Be thorough. Honor the Sikand legacy.
 - Admin: `aditya` / `lola4304`
 
 ## 🌐 PREVIEW URL
-https://rainbow-bridge-3.preview.emergentagent.com
+https://mira-memory-cards.preview.emergentagent.com
 
 ---
 

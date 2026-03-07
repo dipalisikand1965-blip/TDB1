@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://rainbow-bridge-3.preview.emergentagent.com/mira-demo**
+**https://mira-memory-cards.preview.emergentagent.com/mira-demo**
 
 ---
 
