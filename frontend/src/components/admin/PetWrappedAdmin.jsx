@@ -22,7 +22,7 @@ const PetWrappedAdmin = () => {
 
   const fetchPets = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/pets`);
+      const res = await fetch(`${API_URL}/api/wrapped/admin/pets`);
       if (res.ok) {
         const data = await res.json();
         setPets(Array.isArray(data) ? data : data.pets || []);
