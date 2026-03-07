@@ -491,12 +491,188 @@ Content-Type: application/json</code></pre>
                 <li>Seed Production Data - FAQs, collections</li>
             </ol>
         </div>
+
+        <!-- AI Description Enhancer -->
+        <div class="section" id="ai-enhancer">
+            <h2>12. AI Product Description Enhancer</h2>
+            <p>Uses Emergent LLM (GPT-4) to automatically rewrite product descriptions for better engagement and Mira AI understanding.</p>
+            
+            <h3>🤖 What It Does</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4>Input (Original Description)</h4>
+                    <p>"Dog cake with chicken flavor. 500g."</p>
+                </div>
+                <div class="card">
+                    <h4>Output (AI Enhanced)</h4>
+                    <p>"Treat your furry friend to this delicious chicken-flavored birthday cake! 🎂 Made with love for your pet's special day, this 500g celebration cake is perfect for making memories."</p>
+                </div>
+            </div>
+            
+            <h3>📋 Features</h3>
+            <ul>
+                <li><strong>Batch Processing:</strong> Enhances up to 20 products at a time</li>
+                <li><strong>Warm Tone:</strong> Speaks to pet parents with professional yet friendly language</li>
+                <li><strong>Emoji Integration:</strong> Adds 1-2 relevant emojis for engagement</li>
+                <li><strong>Mira-Optimized:</strong> Descriptions help Mira AI recommend products better</li>
+                <li><strong>Database Update:</strong> Saves enhanced descriptions to <code>ai_description</code> field</li>
+            </ul>
+            
+            <h3>⚙️ API Endpoints</h3>
+            <table>
+                <tr><th>Endpoint</th><th>Method</th><th>Purpose</th></tr>
+                <tr><td><code>/api/admin/products/enhance-descriptions</code></td><td>POST</td><td>Enhance all products (batch)</td></tr>
+                <tr><td><code>/api/admin/products/enhance-single/{id}</code></td><td>POST</td><td>Enhance single product</td></tr>
+            </table>
+            
+            <div class="warning-box">
+                <strong>⚠️ Note:</strong> Batch enhancement takes 2-5 minutes as it processes products one by one to respect API rate limits.
+            </div>
+        </div>
+
+        <!-- Production Secrets & Configuration -->
+        <div class="section" id="production-secrets">
+            <h2>13. Production Secrets & Configuration</h2>
+            <p><strong>⚠️ CONFIDENTIAL:</strong> These are production credentials. Keep secure!</p>
+            
+            <h3>🔗 URLs & GitHub</h3>
+            <table class="env-table">
+                <tr><th>Resource</th><th>URL</th></tr>
+                <tr><td>Production Site</td><td><code>https://thedoggycompany.com</code></td></tr>
+                <tr><td>Preview Environment</td><td><code>https://panel-refresh-debug.preview.emergentagent.com</code></td></tr>
+                <tr><td>GitHub Repository</td><td><code>https://github.com/TheDoggyCompany/pet-os</code></td></tr>
+                <tr><td>Shopify Store</td><td><code>https://thedoggybakery.com</code></td></tr>
+            </table>
+            
+            <h3>🗄️ MongoDB Configuration</h3>
+            <table class="env-table">
+                <tr><th>Variable</th><th>Value</th></tr>
+                <tr><td>MONGO_URL</td><td><code>mongodb://localhost:27017</code> (local) or MongoDB Atlas for production</td></tr>
+                <tr><td>DB_NAME</td><td><code>pet-os-live-test_database</code></td></tr>
+            </table>
+            
+            <h3>🔐 Authentication & Security</h3>
+            <table class="env-table">
+                <tr><th>Variable</th><th>Value</th><th>Purpose</th></tr>
+                <tr><td>JWT_SECRET</td><td><code>tdb_super_secret_key_2025_woof</code></td><td>JWT token signing</td></tr>
+                <tr><td>ADMIN_USERNAME</td><td><code>aditya</code></td><td>Admin panel login</td></tr>
+                <tr><td>ADMIN_PASSWORD</td><td><code>lola4304</code></td><td>Admin panel password</td></tr>
+                <tr><td>ADMIN_EMAIL</td><td><code>dipali@clubconcierge.in</code></td><td>Admin notifications</td></tr>
+                <tr><td>CRON_SECRET</td><td><code>midnight-sync-tdb-2025</code></td><td>Scheduled job auth</td></tr>
+            </table>
+            
+            <h3>🤖 AI & LLM Keys</h3>
+            <table class="env-table">
+                <tr><th>Variable</th><th>Value</th><th>Purpose</th></tr>
+                <tr><td>EMERGENT_LLM_KEY</td><td><code>sk-emergent-cEb0eF956Fa6741A31</code></td><td>Mira AI, descriptions, all LLM calls</td></tr>
+            </table>
+            
+            <h3>💳 Payment Gateway (Razorpay)</h3>
+            <table class="env-table">
+                <tr><th>Variable</th><th>Value</th><th>Mode</th></tr>
+                <tr><td>RAZORPAY_KEY_ID</td><td><code>rzp_live_<REDACTED_ROTATED></code></td><td>LIVE (Production)</td></tr>
+                <tr><td>RAZORPAY_KEY_SECRET</td><td><code>wNWqcJvv5K6b39kmMzOKVsQ3</code></td><td>LIVE (Production)</td></tr>
+            </table>
+            <div class="warning-box">
+                <strong>⚠️ Note:</strong> Razorpay LIVE keys only work on <code>thedoggycompany.com</code> domain. Preview URLs will show "Website does not match" error - this is expected behavior.
+            </div>
+            
+            <h3>📧 Email (Resend)</h3>
+            <table class="env-table">
+                <tr><th>Variable</th><th>Value</th></tr>
+                <tr><td>RESEND_API_KEY</td><td><code>re_RyFymGmF_QE6qJSpEH4CSKTiN3WQYUU9G</code></td></tr>
+                <tr><td>SENDER_EMAIL</td><td><code>woof@thedoggycompany.com</code></td></tr>
+                <tr><td>NOTIFICATION_EMAIL</td><td><code>onboarding@resend.dev</code></td></tr>
+            </table>
+            
+            <h3>📱 WhatsApp (Gupshup)</h3>
+            <table class="env-table">
+                <tr><th>Variable</th><th>Value</th></tr>
+                <tr><td>GUPSHUP_API_KEY</td><td><code>sk_2609497ce757467f87a955015da8854d</code></td></tr>
+                <tr><td>GUPSHUP_APP_NAME</td><td><code>The Doggy Company</code></td></tr>
+                <tr><td>GUPSHUP_SOURCE_NUMBER</td><td><code>918971702582</code></td></tr>
+                <tr><td>GUPSHUP_API_URL</td><td><code>https://api.gupshup.io/wa/api/v1</code></td></tr>
+                <tr><td>WHATSAPP_NUMBER</td><td><code>918971702582</code></td></tr>
+            </table>
+            
+            <h3>🗺️ Google APIs</h3>
+            <table class="env-table">
+                <tr><th>Variable</th><th>Value</th><th>Purpose</th></tr>
+                <tr><td>GOOGLE_PLACES_API_KEY</td><td><code>AIzaSy<REDACTED_ROTATED></code></td><td>Location search</td></tr>
+                <tr><td>GOOGLE_CALENDAR_API_KEY</td><td><code>AIzaSyCQ411BKtnJiUMk7hPBUJyVw1WgVkTlOpA</code></td><td>Calendar integration</td></tr>
+                <tr><td>GOOGLE_VISION_API_KEY</td><td><code>AIzaSyAHADX86gYQNPTy8EjOkwUlI1196vxoKas</code></td><td>Image analysis</td></tr>
+                <tr><td>YOUTUBE_API_KEY</td><td><code>AIzaSyCEqC2I04NYLTvJmPNU7sWsrfcKLIwOWpU</code></td><td>Video embeds</td></tr>
+            </table>
+            
+            <h3>🎤 Voice & Audio (ElevenLabs)</h3>
+            <table class="env-table">
+                <tr><th>Variable</th><th>Value</th></tr>
+                <tr><td>ELEVENLABS_API_KEY</td><td><code>2738ad21884d7bf3ff2ddee5fbac5e2efc8a02ab4ca3cd36bdef82b83d9628bc</code></td></tr>
+            </table>
+            
+            <h3>🌐 Other APIs</h3>
+            <table class="env-table">
+                <tr><th>Variable</th><th>Value</th><th>Purpose</th></tr>
+                <tr><td>FOURSQUARE_API_KEY</td><td><code>XZ2D4H0TKX4NR2VC1AMF5FDSJ0TFXHANH2PM12RUXIB5UKQN</code></td><td>Venue search</td></tr>
+                <tr><td>FOURSQUARE_LEGACY_API_KEY</td><td><code>fsq3UISTe99WBkl+2of3Gyp3mylGaXByON+Vud59SZSl450=</code></td><td>Legacy API</td></tr>
+                <tr><td>AMADEUS_API_KEY</td><td><code>SO6flvJXlIFxNM7jYQckpOkFJoJAp4Ed</code></td><td>Travel booking</td></tr>
+                <tr><td>AMADEUS_API_SECRET</td><td><code>M0H1ZYYHkaTMvNkd</code></td><td>Travel booking</td></tr>
+                <tr><td>OPENWEATHER_API_KEY</td><td><code>53f54942766320a15584e440644000e3</code></td><td>Weather data</td></tr>
+                <tr><td>EVENTBRITE_API_KEY</td><td><code>NBVCN6S3G4D6LKPMMD</code></td><td>Events</td></tr>
+                <tr><td>EVENTBRITE_PRIVATE_TOKEN</td><td><code>KAAG3FKCP2N3WSP2OZKE</code></td><td>Events</td></tr>
+            </table>
+            
+            <h3>🏪 Shopify Integration</h3>
+            <table class="env-table">
+                <tr><th>Variable</th><th>Value</th></tr>
+                <tr><td>SHOPIFY_PRODUCTS_URL</td><td><code>https://thedoggybakery.com/products.json</code></td></tr>
+                <tr><td>SITE_URL</td><td><code>https://thedoggycompany.com</code></td></tr>
+                <tr><td>BUSINESS_NAME</td><td><code>The Doggy Company</code></td></tr>
+            </table>
+            
+            <h3>📋 Complete .env File (Backend)</h3>
+            <pre><code># MongoDB
+MONGO_URL=mongodb://localhost:27017
+DB_NAME=pet-os-live-test_database
+
+# Authentication
+JWT_SECRET=tdb_super_secret_key_2025_woof
+ADMIN_USERNAME=aditya
+ADMIN_PASSWORD=lola4304
+ADMIN_EMAIL=dipali@clubconcierge.in
+
+# AI/LLM
+EMERGENT_LLM_KEY=sk-emergent-cEb0eF956Fa6741A31
+
+# Razorpay (LIVE)
+RAZORPAY_KEY_ID=rzp_live_<REDACTED_ROTATED>
+RAZORPAY_KEY_SECRET=wNWqcJvv5K6b39kmMzOKVsQ3
+
+# Email (Resend)
+RESEND_API_KEY=re_RyFymGmF_QE6qJSpEH4CSKTiN3WQYUU9G
+SENDER_EMAIL=woof@thedoggycompany.com
+
+# WhatsApp (Gupshup)
+GUPSHUP_API_KEY=sk_2609497ce757467f87a955015da8854d
+GUPSHUP_SOURCE_NUMBER=918971702582
+
+# Google APIs
+GOOGLE_PLACES_API_KEY=AIzaSy<REDACTED_ROTATED>
+YOUTUBE_API_KEY=AIzaSyCEqC2I04NYLTvJmPNU7sWsrfcKLIwOWpU
+
+# ElevenLabs
+ELEVENLABS_API_KEY=2738ad21884d7bf3ff2ddee5fbac5e2efc8a02ab4ca3cd36bdef82b83d9628bc
+
+# Shopify
+SHOPIFY_PRODUCTS_URL=https://thedoggybakery.com/products.json
+SITE_URL=https://thedoggycompany.com</code></pre>
+        </div>
     </div>
 
     <footer>
         <p><strong>The Doggy Company</strong> - Pet Life Operating System</p>
         <p style="margin-top: 10px; opacity: 0.7;">Built with love, in memory of Kouros & Mystique 💜</p>
-        <p style="margin-top: 5px; opacity: 0.5;">Documentation generated: March 7, 2026 | Version 4.1.0</p>
+        <p style="margin-top: 5px; opacity: 0.5;">Documentation generated: March 7, 2026 | Version 4.2.0</p>
     </footer>
 </body>
 </html>
