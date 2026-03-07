@@ -33,6 +33,7 @@
         .badge-warning { background: #fef3c7; color: #92400e; }
         .badge-info { background: #dbeafe; color: #1e40af; }
         .badge-live { background: #dcfce7; color: #166534; }
+        .badge-new { background: #fce7f3; color: #be185d; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
         .card { background: var(--light); padding: 20px; border-radius: 8px; border-left: 4px solid var(--purple); }
         .card h4 { color: var(--purple); margin-bottom: 10px; }
@@ -41,673 +42,346 @@
         .toc { background: var(--light); padding: 20px; border-radius: 8px; }
         .toc a { color: var(--purple); text-decoration: none; display: block; padding: 5px 0; }
         .toc a:hover { text-decoration: underline; }
-        .env-table td:first-child { font-family: monospace; font-weight: 600; }
         .highlight { background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 15px; border-radius: 8px; margin: 15px 0; }
         .success-box { background: #dcfce7; border-left: 4px solid var(--green); padding: 15px; border-radius: 8px; margin: 15px 0; }
         .warning-box { background: #fef3c7; border-left: 4px solid var(--amber); padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .hero-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
+        .stat-card { background: linear-gradient(135deg, var(--purple), var(--pink)); color: white; padding: 20px; border-radius: 12px; text-align: center; }
+        .stat-card .number { font-size: 2.5rem; font-weight: bold; }
+        .stat-card .label { opacity: 0.9; font-size: 0.9rem; }
         footer { background: var(--dark); color: white; text-align: center; padding: 30px; margin-top: 40px; }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>The Doggy Company</h1>
-        <p>Pet Life Operating System - Complete Technical Documentation</p>
-        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: December 7, 2026 | Version 4.0.0</p>
+        <p>Mira-OS: The Pet Life Operating System</p>
+        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: March 7, 2026 | Version 5.3.0</p>
     </div>
 
     <div class="container">
-        <!-- E2E Test Results -->
+        <!-- What You've Built -->
         <div class="section">
-            <h2>E2E Test Results (December 7, 2026)</h2>
+            <h2>What You've Built: A World-Class Pet Life Platform</h2>
             <div class="success-box">
-                <strong>All Systems Verified and Working</strong>
-                <p>Complete service flow tested: User Action → Service Request → Ticket → Admin Notification → Dashboard Update</p>
+                <strong>This is NOT just a website. This is Mira-OS - a full Pet Life Operating System.</strong>
+                <p>You've built an AI-powered concierge platform that knows each pet deeply and helps parents navigate every aspect of pet life.</p>
             </div>
+            
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="number">14</div>
+                    <div class="label">Life Pillars</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">1,115+</div>
+                    <div class="label">Services</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">2,197+</div>
+                    <div class="label">Products</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">160</div>
+                    <div class="label">Breed PICKS</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">48</div>
+                    <div class="label">Soul Questions</div>
+                </div>
+            </div>
+
+            <h3>The 14 Life Pillars</h3>
+            <p>Every aspect of a pet's life, organized and accessible:</p>
+            <div class="grid">
+                <div class="card">
+                    <h4>Celebrate</h4>
+                    <p>Birthday cakes, parties, photoshoots, custom treats</p>
+                </div>
+                <div class="card">
+                    <h4>Dine</h4>
+                    <p>Nutrition, meal plans, fresh food, treats, supplements</p>
+                </div>
+                <div class="card">
+                    <h4>Stay</h4>
+                    <p>Boarding, pet hotels, home stays, daycare</p>
+                </div>
+                <div class="card">
+                    <h4>Travel</h4>
+                    <p>Pet-friendly destinations, transport, documentation</p>
+                </div>
+                <div class="card">
+                    <h4>Care</h4>
+                    <p>Veterinary, grooming, wellness, senior care</p>
+                </div>
+                <div class="card">
+                    <h4>Enjoy</h4>
+                    <p>Parks, cafes, events, playdates, activities</p>
+                </div>
+                <div class="card">
+                    <h4>Fit</h4>
+                    <p>Exercise, training, weight management, sports</p>
+                </div>
+                <div class="card">
+                    <h4>Learn</h4>
+                    <p>Training resources, breed guides, health info</p>
+                </div>
+                <div class="card">
+                    <h4>Paperwork</h4>
+                    <p>Registration, insurance, legal, documentation</p>
+                </div>
+                <div class="card">
+                    <h4>Advisory</h4>
+                    <p>Behavior consults, nutrition advice, expert guidance</p>
+                </div>
+                <div class="card">
+                    <h4>Emergency</h4>
+                    <p>24/7 vet access, lost pet, urgent care</p>
+                </div>
+                <div class="card">
+                    <h4>Farewell</h4>
+                    <p>End-of-life care, memorials, grief support</p>
+                </div>
+                <div class="card">
+                    <h4>Adopt</h4>
+                    <p>Rescue connections, fostering, adoption support</p>
+                </div>
+                <div class="card">
+                    <h4>Shop</h4>
+                    <p>Curated products, accessories, gifts</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mira AI Intelligence -->
+        <div class="section">
+            <h2>Mira AI: The Soul-Aware Intelligence</h2>
+            <div class="highlight">
+                <strong>Mira isn't a chatbot. She's a pet concierge with a soul.</strong>
+                <p>She knows each pet deeply - their personality, allergies, preferences, family, and history.</p>
+            </div>
+
+            <h3>What Mira Knows About Each Pet</h3>
             <table>
-                <tr><th>Component</th><th>Status</th><th>Details</th></tr>
-                <tr><td>Service Requests</td><td><span class="badge badge-live">WORKING</span></td><td>Creates tickets in service_desk_tickets</td></tr>
-                <tr><td>Admin Dashboard</td><td><span class="badge badge-live">WORKING</span></td><td>350 total requests, 19 action needed</td></tr>
-                <tr><td>WhatsApp (Gupshup)</td><td><span class="badge badge-live">WORKING</span></td><td>Messages submitted successfully</td></tr>
-                <tr><td>Email (Resend)</td><td><span class="badge badge-live">WORKING</span></td><td>Sending from woof@thedoggycompany.com</td></tr>
-                <tr><td>Razorpay</td><td><span class="badge badge-live">LIVE</span></td><td>Configured for thedoggycompany.com</td></tr>
+                <tr><th>Category</th><th>Data Points</th><th>Status</th></tr>
+                <tr><td>Basic Info</td><td>Name, breed, gender, age, coat type</td><td><span class="badge badge-live">WORKING</span></td></tr>
+                <tr><td>Personality</td><td>Temperament, energy level, anxiety triggers</td><td><span class="badge badge-live">WORKING</span></td></tr>
+                <tr><td>Social</td><td>Behavior with dogs, people, strangers</td><td><span class="badge badge-live">WORKING</span></td></tr>
+                <tr><td>Health</td><td>Allergies, medical conditions, life stage</td><td><span class="badge badge-live">WORKING</span></td></tr>
+                <tr><td>Food</td><td>Favorite treats, food motivation, restrictions</td><td><span class="badge badge-live">WORKING</span></td></tr>
+                <tr><td>Relationships</td><td>Dog friends, favorite humans, pet sitter</td><td><span class="badge badge-live">WORKING</span></td></tr>
+                <tr><td>Family</td><td>Pet parent name, siblings, household</td><td><span class="badge badge-live">WORKING</span></td></tr>
+                <tr><td>Activity</td><td>Recent service requests, intents</td><td><span class="badge badge-live">WORKING</span></td></tr>
+                <tr><td>Purchases</td><td>Order history (when available)</td><td><span class="badge badge-live">WORKING</span></td></tr>
+                <tr><td>Rainbow Bridge</td><td>Memorial status, crossing date, tribute</td><td><span class="badge badge-new">NEW</span></td></tr>
             </table>
+
+            <h3>Soul Score System</h3>
+            <p>Each pet has a "Soul Score" (0-100%) indicating how well Mira knows them:</p>
+            <ul>
+                <li><strong>0-25%:</strong> Basic info only - name, breed</li>
+                <li><strong>26-50%:</strong> Personality emerging - temperament, energy</li>
+                <li><strong>51-75%:</strong> Deep knowledge - allergies, preferences, social behavior</li>
+                <li><strong>76-100%:</strong> Complete soul - family, relationships, full history</li>
+            </ul>
         </div>
 
-        <!-- Table of Contents -->
-        <div class="section toc">
-            <h2>Table of Contents</h2>
-            <div class="grid">
-                <div>
-                    <a href="#credentials">1. Credentials</a>
-                    <a href="#integrations">2. Integrations Status</a>
-                    <a href="#env-keys">3. Environment Keys</a>
-                    <a href="#membership">4. Membership Plans</a>
-                    <a href="#service-flow">5. Universal Service Flow</a>
-                </div>
-                <div>
-                    <a href="#api">6. API Endpoints</a>
-                    <a href="#database">7. Database Schema</a>
-                    <a href="#notifications">8. Notification System</a>
-                    <a href="#deployment">9. Deployment Guide</a>
-                    <a href="#changelog">10. Changelog</a>
-                </div>
+        <!-- PICKS Feature -->
+        <div class="section">
+            <h2>PICKS: Personalized Product Recommendations <span class="badge badge-new">NEW</span></h2>
+            <div class="success-box">
+                <strong>90-100% Breed-Specific Personalization</strong>
+                <p>Products are automatically matched to each pet's breed, showing "Made with love for [Pet Name]"</p>
             </div>
+
+            <h3>How PICKS Works</h3>
+            <ol>
+                <li><strong>Breed Detection:</strong> System reads pet's breed from their profile</li>
+                <li><strong>Product Matching:</strong> Filters products designed for that breed</li>
+                <li><strong>Pillar Context:</strong> Only shows products relevant to current pillar (e.g., cakes on /celebrate)</li>
+                <li><strong>Beautiful Display:</strong> Icon cards for breed PICKS, real images for Shopify products</li>
+            </ol>
+
+            <h3>Breed Products Seeded</h3>
+            <p>160 personalized products across 20 breeds:</p>
+            <ul>
+                <li>Labrador, Golden Retriever, German Shepherd, Beagle, Poodle</li>
+                <li>Bulldog, Rottweiler, Boxer, Dachshund, Shih Tzu</li>
+                <li>Siberian Husky, Doberman, Great Dane, Chihuahua, Pug</li>
+                <li>Cocker Spaniel, Border Collie, Maltese, Yorkshire Terrier, <strong>Indie</strong></li>
+            </ul>
+            <p>Each breed has 8 product types: Birthday Cake, Ceramic Mug, Designer Bandana, Personalized Collar, Party Decoration Kit, Memory Frame, Gourmet Treat Box, Custom ID Tag</p>
         </div>
 
-        <!-- Credentials -->
-        <div class="section" id="credentials">
-            <h2>1. Credentials</h2>
-            <div class="grid">
-                <div class="card">
-                    <h4>Test User Account</h4>
-                    <p><strong>Email:</strong> <code>dipali@clubconcierge.in</code></p>
-                    <p><strong>Password:</strong> <code>test123</code></p>
-                </div>
-                <div class="card">
-                    <h4>Admin Panel Access</h4>
-                    <p><strong>URL:</strong> <code>/admin</code></p>
-                    <p><strong>Username:</strong> <code>aditya</code></p>
-                    <p><strong>Password:</strong> <code>lola4304</code></p>
-                    <p style="margin-top: 10px; font-size: 0.9em; color: #666;">Two-step login required</p>
-                </div>
-            </div>
+        <!-- Admin Panel -->
+        <div class="section">
+            <h2>Admin Panel Features</h2>
+            
+            <h3>MASTER SYNC (10 Steps)</h3>
+            <p>Run this after deployment to populate all data:</p>
+            <ol>
+                <li>Sync Shopify Products (2,197+ products)</li>
+                <li>Enhance Product Intelligence (tags, categories)</li>
+                <li>AI Semantic Tagging</li>
+                <li>Seed Pillars & Collections</li>
+                <li>Seed Services (1,115+ services)</li>
+                <li>Seed Breed Services</li>
+                <li><strong>Seed Breed Products (PICKS)</strong> <span class="badge badge-new">NEW</span></li>
+                <li><strong>Sync to Admin Product Box</strong> <span class="badge badge-new">NEW</span></li>
+                <li>Seed Breed Tags for Products</li>
+                <li>Add Mira Whispers to Services</li>
+            </ol>
+
+            <h3>AI Description Enhancers <span class="badge badge-new">NEW</span></h3>
+            <table>
+                <tr><th>Endpoint</th><th>Type</th><th>Description</th></tr>
+                <tr><td><code>/api/admin/products/enhance-descriptions-async</code></td><td>POST</td><td>Background task - no timeout</td></tr>
+                <tr><td><code>/api/admin/services/enhance-descriptions-async</code></td><td>POST</td><td>Background task - no timeout</td></tr>
+                <tr><td><code>/api/admin/enhance-status</code></td><td>GET</td><td>Check progress of enhancement</td></tr>
+            </table>
+
+            <h3>Data Verification</h3>
+            <p>Use the <strong>VERIFY DATA</strong> button in admin to check:</p>
+            <ul>
+                <li>Products count in products_master</li>
+                <li>Services count in services_master</li>
+                <li>Breed products in breed_products</li>
+                <li>Users and pets counts</li>
+            </ul>
         </div>
 
         <!-- Integrations -->
         <div class="section" id="integrations">
-            <h2>2. Integrations Status</h2>
+            <h2>Active Integrations</h2>
             <table>
-                <tr>
-                    <th>Integration</th>
-                    <th>Status</th>
-                    <th>Details</th>
-                </tr>
-                <tr>
-                    <td><strong>Razorpay Payments</strong></td>
-                    <td><span class="badge badge-live">LIVE</span></td>
-                    <td>Key: <code>rzp_live_<REDACTED_ROTATED></code> | Domain: thedoggycompany.com</td>
-                </tr>
-                <tr>
-                    <td><strong>Gupshup WhatsApp</strong></td>
-                    <td><span class="badge badge-live">LIVE</span></td>
-                    <td>App: "The Doggy Company" | Number: 918971702582</td>
-                </tr>
-                <tr>
-                    <td><strong>Resend Email</strong></td>
-                    <td><span class="badge badge-live">VERIFIED</span></td>
-                    <td>From: <code>woof@thedoggycompany.com</code> | Domain verified</td>
-                </tr>
-                <tr>
-                    <td><strong>OpenAI (Mira AI)</strong></td>
-                    <td><span class="badge badge-live">LIVE</span></td>
-                    <td>Using Emergent LLM Key for GPT-4</td>
-                </tr>
-                <tr>
-                    <td><strong>Shopify</strong></td>
-                    <td><span class="badge badge-live">SYNCED</span></td>
-                    <td>thedoggybakery.com | 2,197+ products</td>
-                </tr>
-                <tr>
-                    <td><strong>MongoDB Atlas</strong></td>
-                    <td><span class="badge badge-live">CONNECTED</span></td>
-                    <td>Database: pet-os-live-test_database</td>
-                </tr>
-                <tr>
-                    <td><strong>YouTube API</strong></td>
-                    <td><span class="badge badge-live">LIVE</span></td>
-                    <td>Learn page video content</td>
-                </tr>
-                <tr>
-                    <td><strong>Google Places API</strong></td>
-                    <td><span class="badge badge-live">LIVE</span></td>
-                    <td>Location-based services</td>
-                </tr>
-                <tr>
-                    <td><strong>ElevenLabs TTS</strong></td>
-                    <td><span class="badge badge-info">CONFIGURED</span></td>
-                    <td>Voice for Mira AI</td>
-                </tr>
+                <tr><th>Service</th><th>Purpose</th><th>Status</th></tr>
+                <tr><td>OpenAI (GPT)</td><td>Mira AI conversations, product enhancement</td><td><span class="badge badge-live">LIVE</span></td></tr>
+                <tr><td>MongoDB Atlas</td><td>Database</td><td><span class="badge badge-live">LIVE</span></td></tr>
+                <tr><td>Shopify</td><td>Product catalog sync</td><td><span class="badge badge-live">LIVE</span></td></tr>
+                <tr><td>Razorpay</td><td>Payments</td><td><span class="badge badge-live">LIVE</span></td></tr>
+                <tr><td>Resend</td><td>Email (woof@thedoggycompany.com)</td><td><span class="badge badge-live">LIVE</span></td></tr>
+                <tr><td>Gupshup</td><td>WhatsApp messaging</td><td><span class="badge badge-live">LIVE</span></td></tr>
+                <tr><td>ElevenLabs</td><td>Voice AI</td><td><span class="badge badge-live">LIVE</span></td></tr>
+                <tr><td>Google Places</td><td>Location services</td><td><span class="badge badge-live">LIVE</span></td></tr>
+                <tr><td>YouTube</td><td>Video content</td><td><span class="badge badge-live">LIVE</span></td></tr>
             </table>
         </div>
 
-        <!-- Environment Keys -->
-        <div class="section" id="env-keys">
-            <h2>3. Environment Keys</h2>
-            <h3>Backend (.env)</h3>
-            <table class="env-table">
-                <tr><th>Key</th><th>Value</th><th>Purpose</th></tr>
-                <tr><td>MONGO_URL</td><td><code>mongodb://localhost:27017</code></td><td>Database connection</td></tr>
-                <tr><td>DB_NAME</td><td><code>pet-os-live-test_database</code></td><td>Database name</td></tr>
-                <tr><td>RAZORPAY_KEY_ID</td><td><code>rzp_live_<REDACTED_ROTATED></code></td><td>Payment gateway</td></tr>
-                <tr><td>RESEND_API_KEY</td><td><code>re_RyFymGmF_QE6qJSpEH4CSKTiN3WQYUU9G</code></td><td>Email service (.com domain)</td></tr>
-                <tr><td>SENDER_EMAIL</td><td><code>woof@thedoggycompany.com</code></td><td>From address</td></tr>
-                <tr><td>GUPSHUP_API_KEY</td><td><code>sk4wevmqj8cvrcvj9rnlsn8wr2eqg5zo</code></td><td>WhatsApp API</td></tr>
-                <tr><td>GUPSHUP_APP_NAME</td><td><code>"The Doggy Company"</code></td><td>WhatsApp app (quotes required!)</td></tr>
-                <tr><td>WHATSAPP_NUMBER</td><td><code>918971702582</code></td><td>Business WhatsApp</td></tr>
-            </table>
+        <!-- Credentials -->
+        <div class="section" id="credentials">
+            <h2>Credentials</h2>
             <div class="warning-box">
-                <strong>Important:</strong> GUPSHUP_APP_NAME must be in quotes because it contains spaces!
+                <strong>Keep these secure!</strong> Only share with authorized team members.
             </div>
-        </div>
-
-        <!-- Membership Plans -->
-        <div class="section" id="membership">
-            <h2>4. Membership Plans</h2>
             <table>
-                <tr>
-                    <th>Plan</th>
-                    <th>Price</th>
-                    <th>Features</th>
-                </tr>
-                <tr>
-                    <td><strong>Free</strong></td>
-                    <td>0</td>
-                    <td>Basic access, limited Mira queries (3/day)</td>
-                </tr>
-                <tr>
-                    <td><strong>Essential</strong></td>
-                    <td>2,499/month</td>
-                    <td>10% discounts, unlimited Mira, priority support, birthday rewards</td>
-                </tr>
-                <tr>
-                    <td><strong>Premium</strong></td>
-                    <td>9,999/month</td>
-                    <td>20% discounts, VIP concierge, exclusive events, all Essential features</td>
-                </tr>
+                <tr><th>Access</th><th>Username/Email</th><th>Password</th></tr>
+                <tr><td>Admin Panel</td><td><code>aditya</code></td><td><code>lola4304</code></td></tr>
+                <tr><td>Test User</td><td><code>dipali@clubconcierge.in</code></td><td><code>test123</code></td></tr>
             </table>
         </div>
 
-        <!-- Universal Service Flow -->
-        <div class="section" id="service-flow">
-            <h2>5. Universal Service Command Flow</h2>
+        <!-- Rainbow Bridge -->
+        <div class="section">
+            <h2>Rainbow Bridge Feature <span class="badge badge-new">NEW</span></h2>
             <div class="highlight">
-                <strong>Flow:</strong> User Intent → Service Request → Service Desk Ticket → Admin Notification → Member Notification → Pillar Request → Channel Intakes
+                <strong>Handling pet loss with compassion and dignity.</strong>
             </div>
-            <h3>Service Request Sources</h3>
-            <ul>
-                <li><strong>Mira OS:</strong> Posts to <code>/api/concierge/mira-request</code></li>
-                <li><strong>Learn (Ask Mira):</strong> Posts to <code>/api/service-requests</code></li>
-                <li><strong>Checkout/Orders:</strong> Posts to <code>/api/orders</code> (auto-creates ticket)</li>
-                <li><strong>Service Booking:</strong> Posts to <code>/api/service-requests</code></li>
-            </ul>
-            <h3>Collections Updated</h3>
-            <table>
-                <tr><th>Collection</th><th>Count</th><th>Purpose</th></tr>
-                <tr><td>service_requests</td><td>86+</td><td>New universal requests</td></tr>
-                <tr><td>service_desk_tickets</td><td>262+</td><td>All service desk items</td></tr>
-                <tr><td>tickets</td><td>80+</td><td>Legacy tickets</td></tr>
-                <tr><td>admin_notifications</td><td>496+</td><td>Admin alerts</td></tr>
-                <tr><td>member_notifications</td><td>Varies</td><td>User notifications</td></tr>
-            </table>
+            
+            <h3>How It Works</h3>
+            <ol>
+                <li>Pet parent marks their pet as "crossed the rainbow bridge"</li>
+                <li>Pet record is preserved (never deleted)</li>
+                <li>UI shows gentle memorial indicators</li>
+                <li>Mira AI becomes aware and responds with compassion</li>
+                <li>No product suggestions - only emotional support</li>
+            </ol>
+
+            <h3>Mira's Response</h3>
+            <p>When asked about a pet that has passed:</p>
+            <blockquote style="background: #f3e8ff; padding: 15px; border-radius: 8px; border-left: 4px solid var(--purple); margin: 15px 0;">
+                "I'm so sorry for your loss. Mystique crossed the rainbow bridge on March 7, 2026. She was such a calm, golden little Shih Tzu who loved liver treats and cheese... If you'd like, we can talk about her, write a tribute together, or think of a way to honor her memory."
+            </blockquote>
         </div>
 
         <!-- API Endpoints -->
         <div class="section" id="api">
-            <h2>6. Key API Endpoints</h2>
+            <h2>Key API Endpoints</h2>
             
-            <h3>Authentication</h3>
-            <pre><code>POST /api/auth/login     - User login (returns access_token)
-POST /api/auth/register  - New user registration
-GET  /api/auth/me        - Get current user profile</code></pre>
-
-            <h3>Service Flow</h3>
-            <pre><code>POST /api/service-requests           - Create service request (universal)
-POST /api/concierge/mira-request     - Mira conversation ticket
-POST /api/orders                     - Create order (auto-creates ticket)
-GET  /api/concierge/requests         - Admin: Get all requests
-GET  /api/concierge/stats            - Admin: Dashboard statistics
-GET  /api/concierge/queue            - Admin: Service desk queue</code></pre>
-
-            <h3>Learn Content & Ask Mira</h3>
-            <pre><code>GET  /api/learn/guides       - Get learn guides
-GET  /api/learn/videos       - Get learn videos
-POST /api/os/learn/ask-mira  - Ask Mira AI a question (Learn page)</code></pre>
-
-            <h3>Products & Services</h3>
-            <pre><code>GET /api/products                    - Get products (supports category filter)
-GET /api/service-box/services        - Get services by pillar
-GET /api/membership/plans            - Get membership plans
-POST /api/membership/create-order    - Create Razorpay payment order</code></pre>
-
-            <h3>Notifications</h3>
-            <pre><code>POST /api/whatsapp/test-notification - Test WhatsApp (welcome, booking, payment, membership)
-POST /api/admin/communications/test-email - Test email sending
-GET  /api/whatsapp/status            - Check WhatsApp integration status</code></pre>
-
-            <h3>Admin Dashboard</h3>
-            <pre><code>GET /api/admin/dashboard             - Comprehensive stats from all collections</code></pre>
-        </div>
-
-        <!-- Database Schema -->
-        <div class="section" id="database">
-            <h2>7. Database Schema</h2>
-            <h3>Key Collections</h3>
+            <h3>PICKS & Recommendations</h3>
             <table>
-                <tr><th>Collection</th><th>Documents</th><th>Purpose</th></tr>
-                <tr><td>users</td><td>9+</td><td>User accounts</td></tr>
-                <tr><td>pets</td><td>19+</td><td>Pet profiles</td></tr>
-                <tr><td>memberships</td><td>3+</td><td>Active memberships</td></tr>
-                <tr><td>products</td><td>2,197+</td><td>Shopify products</td></tr>
-                <tr><td>services_master</td><td>1,115+</td><td>All services</td></tr>
-                <tr><td>service_requests</td><td>86+</td><td>Universal requests</td></tr>
-                <tr><td>service_desk_tickets</td><td>262+</td><td>Service desk items</td></tr>
-                <tr><td>orders</td><td>3+</td><td>Product orders</td></tr>
-                <tr><td>admin_notifications</td><td>496+</td><td>Admin alerts</td></tr>
+                <tr><th>Endpoint</th><th>Method</th><th>Description</th></tr>
+                <tr><td><code>/api/products/recommendations/for-pet/{pet_id}</code></td><td>GET</td><td>Personalized product recommendations</td></tr>
+                <tr><td><code>/api/mira/top-picks/{pet_name}/pillar/{pillar}</code></td><td>GET</td><td>Pillar-specific picks</td></tr>
+                <tr><td><code>/api/breed-catalogue/products</code></td><td>GET</td><td>Query breed-specific products</td></tr>
+                <tr><td><code>/api/breed-catalogue/admin/seed-breed-products</code></td><td>POST</td><td>Seed breed products</td></tr>
+            </table>
+
+            <h3>Mira AI</h3>
+            <table>
+                <tr><th>Endpoint</th><th>Method</th><th>Description</th></tr>
+                <tr><td><code>/api/mira/chat</code></td><td>POST</td><td>Main chat endpoint (soul-aware)</td></tr>
+                <tr><td><code>/api/mira/search</code></td><td>POST</td><td>Universal search bar</td></tr>
+                <tr><td><code>/api/mira/soul-context/{pet_id}</code></td><td>GET</td><td>Get pet's soul context</td></tr>
+            </table>
+
+            <h3>Admin</h3>
+            <table>
+                <tr><th>Endpoint</th><th>Method</th><th>Description</th></tr>
+                <tr><td><code>/api/admin/verify-data-counts</code></td><td>GET</td><td>Data health check</td></tr>
+                <tr><td><code>/api/admin/enhance-status</code></td><td>GET</td><td>AI enhancement progress</td></tr>
+                <tr><td><code>/api/admin/products/enhance-descriptions-async</code></td><td>POST</td><td>Background product enhancement</td></tr>
+                <tr><td><code>/api/admin/services/enhance-descriptions-async</code></td><td>POST</td><td>Background service enhancement</td></tr>
             </table>
         </div>
 
-        <!-- Notification System -->
-        <div class="section" id="notifications">
-            <h2>8. Notification System</h2>
-            
-            <h3>WhatsApp Notification Types</h3>
-            <ul>
-                <li><code>welcome</code> - New user registration</li>
-                <li><code>payment</code> - Payment received confirmation</li>
-                <li><code>membership</code> - Membership activated</li>
-                <li><code>booking</code> - Service booked confirmation</li>
-                <li><code>birthday</code> - Pet birthday reminder</li>
-            </ul>
-
-            <h3>Email Notifications</h3>
-            <ul>
-                <li>Service request confirmation</li>
-                <li>Order confirmation</li>
-                <li>Membership welcome</li>
-                <li>Admin ticket reply</li>
-            </ul>
-
-            <div class="success-box">
-                <strong>Tested & Working:</strong> Both WhatsApp (via Gupshup) and Email (via Resend) notifications verified on December 7, 2026.
-            </div>
-        </div>
-
-        <!-- Deployment Guide -->
+        <!-- Deployment Checklist -->
         <div class="section" id="deployment">
-            <h2>9. Deployment Checklist</h2>
-            <h3>Pre-Deployment</h3>
-            <ul>
-                <li>Verify all environment variables in production .env</li>
-                <li>Ensure GUPSHUP_APP_NAME is quoted: <code>"The Doggy Company"</code></li>
-                <li>Configure Gupshup webhook URL to production domain</li>
-                <li>Verify Razorpay is configured for thedoggycompany.com</li>
-            </ul>
-            
-            <h3>Post-Deployment</h3>
-            <ul>
-                <li>Run MASTER SYNC in Admin panel</li>
-                <li>Test one membership payment</li>
-                <li>Test WhatsApp message delivery</li>
-                <li>Verify email delivery</li>
-                <li>Monitor service desk for incoming tickets</li>
-            </ul>
-
-            <h3>Gupshup Webhook Configuration</h3>
-            <pre><code>Webhook URL: https://thedoggycompany.com/api/whatsapp/webhook
-Method: POST
-Content-Type: application/json</code></pre>
+            <h2>Production Deployment Checklist</h2>
+            <ol>
+                <li><strong>Deploy to production</strong> via Emergent platform</li>
+                <li><strong>Login to Admin Panel</strong> at /admin</li>
+                <li><strong>Click MASTER SYNC</strong> - wait for all 10 steps to complete</li>
+                <li><strong>Click VERIFY DATA</strong> - confirm counts match preview</li>
+                <li><strong>Test a user flow</strong> - login, browse, chat with Mira</li>
+                <li><strong>Check WhatsApp</strong> - test a "Contact Us" button</li>
+                <li><strong>Verify emails</strong> - should come from woof@thedoggycompany.com</li>
+            </ol>
         </div>
 
         <!-- Changelog -->
         <div class="section" id="changelog">
-            <h2>10. Changelog - March 7, 2026</h2>
+            <h2>Recent Changelog (March 7, 2026)</h2>
             
-            <h3>📧 Email Sender Fixed (Latest)</h3>
+            <h3>Session 3 - World-Class Polish</h3>
             <ul>
-                <li><strong>Before:</strong> "The Doggy Bakery &lt;woof@thedoggycompany.in&gt;"</li>
-                <li><strong>After:</strong> "THEDOGGYCOMPANY &lt;woof@thedoggycompany.com&gt;"</li>
-                <li>Fixed all 30+ email sending locations in backend</li>
-                <li>Changed .in to .com domain across all files</li>
-            </ul>
-            
-            <h3>🔍 VERIFY DATA Feature</h3>
-            <ul>
-                <li><strong>New Button:</strong> Click to verify all collection counts</li>
-                <li><strong>Visual Panel:</strong> Shows Products, Services, Members, Pets, FAQs counts</li>
-                <li><strong>Status Indicators:</strong> Green = Healthy, Yellow = Needs MASTER SYNC</li>
-                <li><strong>Quick Action:</strong> Direct "Run MASTER SYNC" button if data low</li>
-            </ul>
-            
-            <h3>Rainbow Bridge Memorial System 💜</h3>
-            <ul>
-                <li><strong>New Feature:</strong> Mark pets as "crossed Rainbow Bridge" without removing them</li>
-                <li><strong>Pet Dashboard:</strong> Separate section for memorial pets with "Forever in Our Hearts" UI</li>
-                <li><strong>Mira AI Sensitivity:</strong> AI now uses past tense and is sensitive to pet loss</li>
-                <li><strong>Memorial Wall:</strong> Public memorial wall at <code>/rainbow-bridge</code></li>
-                <li><strong>Tribute System:</strong> Anyone can pay tributes to memorial pets</li>
-            </ul>
-            
-            <h3>Admin Panel Fixes</h3>
-            <ul>
-                <li><strong>MASTER SYNC:</strong> Now 9 steps - includes services_master sync and breed tags</li>
-                <li><strong>Tab Refresh:</strong> All admin tabs now refresh data on switch</li>
-                <li><strong>Universal Service Flow:</strong> WhatsApp button clicks now create service tickets</li>
+                <li><strong>PICKS Feature Complete:</strong> 160 breed products, modal with flavors/sizes</li>
+                <li><strong>Mira Soul Intelligence:</strong> Now knows family, friends, orders, intents</li>
+                <li><strong>Rainbow Bridge:</strong> Compassionate handling of pet loss</li>
+                <li><strong>AI Enhancers:</strong> Background tasks for products & services (no timeout)</li>
+                <li><strong>Bug Fix:</strong> "Continue in Chat" error resolved</li>
             </ul>
 
-            <h3>Previous Updates (December 7, 2026)</h3>
+            <h3>Session 2 - Admin Overhaul</h3>
             <ul>
-                <li><strong>MiraDemoPage:</strong> Fixed ticket creation - now posts to backend instead of local state only</li>
-                <li><strong>LearnPage Ask Mira:</strong> Added service request creation after every inquiry</li>
-                <li><strong>Admin Dashboard:</strong> Now shows comprehensive stats from all collections (350 total, 19 urgent)</li>
-                <li><strong>Concierge Stats:</strong> Fixed duplicate endpoint issue - merged all collections</li>
-                <li><strong>ConciergeRequestsDashboard:</strong> Fixed auth (Basic instead of Bearer) and stats display</li>
+                <li>MASTER SYNC fixed (10 steps)</li>
+                <li>Data refresh issues resolved</li>
+                <li>VERIFY DATA button added</li>
+                <li>Email sender fixed to THEDOGGYCOMPANY</li>
             </ul>
-        </div>
 
-        <!-- Admin Panel Guide -->
-        <div class="section" id="admin-guide">
-            <h2>11. Admin Panel Guide</h2>
-            <p>Complete guide to each admin tab and its functionality. Access at <code>/admin</code></p>
-            
-            <h3>📊 CORE OPERATIONS</h3>
-            <table>
-                <tr><th>Tab</th><th>Purpose</th><th>Key Features</th></tr>
-                <tr><td><strong>Dashboard</strong></td><td>Overview of all metrics</td><td>Total orders, revenue, active users, pending tickets</td></tr>
-                <tr><td><strong>Service Desk</strong></td><td>All customer requests</td><td>Unified view of all tickets, priority sorting, filters</td></tr>
-                <tr><td><strong>Unified Inbox</strong></td><td>All communications</td><td>WhatsApp, Email, Chat in one view</td></tr>
-                <tr><td><strong>Finance</strong></td><td>Revenue & payments</td><td>Daily/monthly revenue, Razorpay transactions</td></tr>
-            </table>
-            
-            <h3>👥 CUSTOMER MANAGEMENT</h3>
-            <table>
-                <tr><th>Tab</th><th>Purpose</th><th>Key Features</th></tr>
-                <tr><td><strong>Pet Parents</strong></td><td>Customer directory</td><td>View all members, their pets, order history</td></tr>
-                <tr><td><strong>Pet Profiles</strong></td><td>All registered pets</td><td>Pet details, soul scores, health data</td></tr>
-                <tr><td><strong>Membership</strong></td><td>Membership management</td><td>Tiers (Free/Gold/Platinum), upgrades, expiry</td></tr>
-                <tr><td><strong>Loyalty</strong></td><td>Paw Points system</td><td>Points balance, redemption history, rewards</td></tr>
-                <tr><td><strong>Engagement</strong></td><td>User activity tracking</td><td>Last visit, actions, retention metrics</td></tr>
-                <tr><td><strong>Celebrations</strong></td><td>Pet birthdays calendar</td><td>Upcoming birthdays, gotcha days, reminders</td></tr>
-            </table>
-            
-            <h3>🛒 COMMERCE</h3>
-            <table>
-                <tr><th>Tab</th><th>Purpose</th><th>Key Features</th></tr>
-                <tr><td><strong>Orders</strong></td><td>Order management</td><td>All orders, status updates, fulfillment</td></tr>
-                <tr><td><strong>Fulfilment</strong></td><td>Delivery tracking</td><td>Pending/shipped/delivered orders</td></tr>
-                <tr><td><strong>Product Box</strong></td><td>Product catalog</td><td>Add/edit products, inventory, pricing</td></tr>
-                <tr><td><strong>Service Box</strong></td><td>Services catalog</td><td>All pillar services, providers</td></tr>
-                <tr><td><strong>Collections</strong></td><td>Product groupings</td><td>Category management, featured collections</td></tr>
-                <tr><td><strong>Pricing</strong></td><td>Price management</td><td>Bulk price updates, discounts</td></tr>
-                <tr><td><strong>Autoship</strong></td><td>Subscriptions</td><td>Recurring orders, schedule management</td></tr>
-                <tr><td><strong>Abandoned</strong></td><td>Cart recovery</td><td>Abandoned carts, recovery emails</td></tr>
-                <tr><td><strong>Discounts</strong></td><td>Coupon management</td><td>Create codes, usage tracking</td></tr>
-            </table>
-            
-            <h3>🏛️ THE 14 PILLARS (Pillar Managers)</h3>
-            <table>
-                <tr><th>Tab</th><th>Pillar</th><th>Manages</th></tr>
-                <tr><td>🎂 Celebrate</td><td>Celebrations</td><td>Cakes, party boxes, custom orders</td></tr>
-                <tr><td>🍽️ Dine</td><td>Pet-Friendly Dining</td><td>Restaurant listings, reservations</td></tr>
-                <tr><td>🏨 Stay</td><td>Boarding & Hotels</td><td>Pet hotels, day boarding, homestays</td></tr>
-                <tr><td>✈️ Travel</td><td>Pet Travel</td><td>Relocation, transport, documentation</td></tr>
-                <tr><td>💊 Care</td><td>Healthcare</td><td>Vet clinics, grooming, wellness</td></tr>
-                <tr><td>🎾 Enjoy</td><td>Activities</td><td>Dog parks, events, playdates</td></tr>
-                <tr><td>🏃 Fit</td><td>Fitness</td><td>Weight management, exercise plans</td></tr>
-                <tr><td>🎓 Learn</td><td>Training</td><td>Training classes, behavioral support</td></tr>
-                <tr><td>📄 Paperwork</td><td>Documentation</td><td>Pet passports, certificates</td></tr>
-                <tr><td>📋 Advisory</td><td>Consultations</td><td>Expert advice, guidance</td></tr>
-                <tr><td>🚨 Emergency</td><td>24/7 Help</td><td>Emergency contacts, lost pet assistance</td></tr>
-                <tr><td>🌈 Farewell</td><td>End-of-Life</td><td>Memorial services, cremation</td></tr>
-                <tr><td>💜 Memorial Wall</td><td>Rainbow Bridge</td><td>Pet memorials, tributes</td></tr>
-                <tr><td>🐾 Adopt</td><td>Adoption</td><td>Adoption listings, rehoming</td></tr>
-                <tr><td>🛒 Shop</td><td>E-commerce</td><td>All products, Shopify sync</td></tr>
-            </table>
-            
-            <h3>🤖 MIRA AI</h3>
-            <table>
-                <tr><th>Tab</th><th>Purpose</th><th>Key Features</th></tr>
-                <tr><td><strong>Mira Chats</strong></td><td>Chat history</td><td>All Mira conversations, user questions</td></tr>
-                <tr><td><strong>Live Threads</strong></td><td>Active support</td><td>Ongoing conversations needing attention</td></tr>
-                <tr><td><strong>Memory</strong></td><td>Mira's knowledge</td><td>Learned facts, preferences, corrections</td></tr>
-            </table>
-            
-            <h3>📢 COMMUNICATIONS</h3>
-            <table>
-                <tr><th>Tab</th><th>Purpose</th><th>Key Features</th></tr>
-                <tr><td><strong>Communications</strong></td><td>Message history</td><td>All sent emails/WhatsApp</td></tr>
-                <tr><td><strong>Reminders</strong></td><td>Scheduled messages</td><td>Birthday reminders, follow-ups</td></tr>
-                <tr><td><strong>Campaigns</strong></td><td>Marketing</td><td>Bulk messaging, promotions</td></tr>
-                <tr><td><strong>Proactive</strong></td><td>Automated outreach</td><td>Win-back, re-engagement</td></tr>
-                <tr><td><strong>Push</strong></td><td>Push notifications</td><td>App notifications</td></tr>
-            </table>
-            
-            <h3>📈 ANALYTICS & REPORTS</h3>
-            <table>
-                <tr><th>Tab</th><th>Purpose</th><th>Key Features</th></tr>
-                <tr><td><strong>Live MIS</strong></td><td>Real-time metrics</td><td>Today's numbers, live stats</td></tr>
-                <tr><td><strong>Reports</strong></td><td>Generated reports</td><td>Daily/weekly/monthly summaries</td></tr>
-                <tr><td><strong>Analytics</strong></td><td>Deep analytics</td><td>Trends, patterns, insights</td></tr>
-                <tr><td><strong>Reviews</strong></td><td>Customer reviews</td><td>Product reviews, ratings</td></tr>
-                <tr><td><strong>Pawmoter</strong></td><td>NPS scoring</td><td>Net Promoter Score tracking</td></tr>
-            </table>
-            
-            <h3>⚙️ CONTENT & SETTINGS</h3>
-            <table>
-                <tr><th>Tab</th><th>Purpose</th><th>Key Features</th></tr>
-                <tr><td><strong>Site Status</strong></td><td>System health</td><td>All collection counts, API status</td></tr>
-                <tr><td><strong>Blog</strong></td><td>Blog management</td><td>Articles, publishing</td></tr>
-                <tr><td><strong>Testimonials</strong></td><td>Customer stories</td><td>Reviews to display on site</td></tr>
-                <tr><td><strong>FAQs</strong></td><td>FAQ management</td><td>Questions and answers</td></tr>
-                <tr><td><strong>Transformations</strong></td><td>Success stories</td><td>Before/after stories</td></tr>
-                <tr><td><strong>Breeds</strong></td><td>Breed database</td><td>Dog breed information, tags</td></tr>
-                <tr><td><strong>Guide & Backup</strong></td><td>Documentation</td><td>Admin guide, data export</td></tr>
-            </table>
-            
-            <h3>🔄 MASTER SYNC Button</h3>
-            <p>The <strong>MASTER SYNC</strong> button at the bottom performs 9 operations:</p>
-            <ol>
-                <li>Sync Shopify Products - Pull latest from store</li>
-                <li>Product Intelligence - Add mira_hints & breed_tags</li>
-                <li>AI Semantic Tagging - Smart product categorization</li>
-                <li>Seed All Pillars - Products to all 14 pillars</li>
-                <li>Seed Services Master - Sync services_master collection</li>
-                <li>Seed Breed Services - Breed-specific services</li>
-                <li>Seed Breed Tags - Breed metadata on products</li>
-                <li>Add Mira Whispers - Personalization data</li>
-                <li>Seed Production Data - FAQs, collections</li>
-            </ol>
-            
-            <h3>🔍 VERIFY DATA Button</h3>
-            <p>Click <strong>VERIFY DATA</strong> to check if all collections are synced properly:</p>
-            <table>
-                <tr><th>Collection</th><th>Expected Count</th><th>Status Meaning</th></tr>
-                <tr><td>Products</td><td>2,000+</td><td>Green = Healthy, Yellow = Run MASTER SYNC</td></tr>
-                <tr><td>Services</td><td>1,000+</td><td>Green = Healthy, Yellow = Run MASTER SYNC</td></tr>
-                <tr><td>Members</td><td>5+</td><td>User registrations</td></tr>
-                <tr><td>Pets</td><td>10+</td><td>Pet profiles created</td></tr>
-                <tr><td>FAQs</td><td>10+</td><td>FAQ entries</td></tr>
-                <tr><td>Tickets Open</td><td>Any</td><td>Active service desk tickets</td></tr>
-            </table>
-            <div class="warning-box">
-                <strong>After deploying:</strong> Click VERIFY DATA → If status shows "⚠️ Needs MASTER SYNC" → Run MASTER SYNC → Verify again
-            </div>
-        </div>
-
-        <!-- AI Description Enhancer -->
-        <div class="section" id="ai-enhancer">
-            <h2>12. AI Product Description Enhancer</h2>
-            <p>Uses Emergent LLM (GPT-4) to automatically rewrite product descriptions for better engagement and Mira AI understanding.</p>
-            
-            <h3>🤖 What It Does</h3>
-            <div class="grid">
-                <div class="card">
-                    <h4>Input (Original Description)</h4>
-                    <p>"Dog cake with chicken flavor. 500g."</p>
-                </div>
-                <div class="card">
-                    <h4>Output (AI Enhanced)</h4>
-                    <p>"Treat your furry friend to this delicious chicken-flavored birthday cake! 🎂 Made with love for your pet's special day, this 500g celebration cake is perfect for making memories."</p>
-                </div>
-            </div>
-            
-            <h3>📋 Features</h3>
+            <h3>Session 1 - Foundation</h3>
             <ul>
-                <li><strong>Batch Processing:</strong> Enhances up to 20 products at a time</li>
-                <li><strong>Warm Tone:</strong> Speaks to pet parents with professional yet friendly language</li>
-                <li><strong>Emoji Integration:</strong> Adds 1-2 relevant emojis for engagement</li>
-                <li><strong>Mira-Optimized:</strong> Descriptions help Mira AI recommend products better</li>
-                <li><strong>Database Update:</strong> Saves enhanced descriptions to <code>ai_description</code> field</li>
+                <li>Universal Service Flow implemented</li>
+                <li>WhatsApp integration (Gupshup)</li>
+                <li>Service desk ticket system</li>
+                <li>Admin notification system</li>
             </ul>
-            
-            <h3>⚙️ API Endpoints</h3>
-            <table>
-                <tr><th>Endpoint</th><th>Method</th><th>Purpose</th></tr>
-                <tr><td><code>/api/admin/products/enhance-descriptions</code></td><td>POST</td><td>Enhance all products (batch)</td></tr>
-                <tr><td><code>/api/admin/products/enhance-single/{id}</code></td><td>POST</td><td>Enhance single product</td></tr>
-            </table>
-            
-            <div class="warning-box">
-                <strong>⚠️ Note:</strong> Batch enhancement takes 2-5 minutes as it processes products one by one to respect API rate limits.
-            </div>
-        </div>
-
-        <!-- Production Secrets & Configuration -->
-        <div class="section" id="production-secrets">
-            <h2>13. Production Secrets & Configuration</h2>
-            <p><strong>⚠️ CONFIDENTIAL:</strong> These are production credentials. Keep secure!</p>
-            
-            <h3>🔗 URLs & GitHub</h3>
-            <table class="env-table">
-                <tr><th>Resource</th><th>URL</th></tr>
-                <tr><td>Production Site</td><td><code>https://thedoggycompany.com</code></td></tr>
-                <tr><td>Preview Environment</td><td><code>https://doggy-ecommerce-test.preview.emergentagent.com</code></td></tr>
-                <tr><td>GitHub Repository</td><td><code>https://github.com/TheDoggyCompany/pet-os</code></td></tr>
-                <tr><td>Shopify Store</td><td><code>https://thedoggybakery.com</code></td></tr>
-            </table>
-            
-            <h3>🗄️ MongoDB Configuration</h3>
-            <table class="env-table">
-                <tr><th>Variable</th><th>Value</th></tr>
-                <tr><td>MONGO_URL</td><td><code>mongodb://localhost:27017</code> (local) or MongoDB Atlas for production</td></tr>
-                <tr><td>DB_NAME</td><td><code>pet-os-live-test_database</code></td></tr>
-            </table>
-            
-            <h3>🔐 Authentication & Security</h3>
-            <table class="env-table">
-                <tr><th>Variable</th><th>Value</th><th>Purpose</th></tr>
-                <tr><td>JWT_SECRET</td><td><code>tdb_super_secret_key_2025_woof</code></td><td>JWT token signing</td></tr>
-                <tr><td>ADMIN_USERNAME</td><td><code>aditya</code></td><td>Admin panel login</td></tr>
-                <tr><td>ADMIN_PASSWORD</td><td><code>lola4304</code></td><td>Admin panel password</td></tr>
-                <tr><td>ADMIN_EMAIL</td><td><code>dipali@clubconcierge.in</code></td><td>Admin notifications</td></tr>
-                <tr><td>CRON_SECRET</td><td><code>midnight-sync-tdb-2025</code></td><td>Scheduled job auth</td></tr>
-            </table>
-            
-            <h3>🤖 AI & LLM Keys</h3>
-            <table class="env-table">
-                <tr><th>Variable</th><th>Value</th><th>Purpose</th></tr>
-                <tr><td>EMERGENT_LLM_KEY</td><td><code>sk-emergent-cEb0eF956Fa6741A31</code></td><td>Mira AI, descriptions, all LLM calls</td></tr>
-            </table>
-            
-            <h3>💳 Payment Gateway (Razorpay)</h3>
-            <table class="env-table">
-                <tr><th>Variable</th><th>Value</th><th>Mode</th></tr>
-                <tr><td>RAZORPAY_KEY_ID</td><td><code>rzp_live_<REDACTED_ROTATED></code></td><td>LIVE (Production)</td></tr>
-                <tr><td>RAZORPAY_KEY_SECRET</td><td><code>wNWqcJvv5K6b39kmMzOKVsQ3</code></td><td>LIVE (Production)</td></tr>
-            </table>
-            <div class="warning-box">
-                <strong>⚠️ Note:</strong> Razorpay LIVE keys only work on <code>thedoggycompany.com</code> domain. Preview URLs will show "Website does not match" error - this is expected behavior.
-            </div>
-            
-            <h3>📧 Email (Resend)</h3>
-            <table class="env-table">
-                <tr><th>Variable</th><th>Value</th><th>Notes</th></tr>
-                <tr><td>RESEND_API_KEY</td><td><code>re_RyFymGmF_QE6qJSpEH4CSKTiN3WQYUU9G</code></td><td>For .com domain</td></tr>
-                <tr><td>SENDER_EMAIL</td><td><code>woof@thedoggycompany.com</code></td><td>Must be .com NOT .in</td></tr>
-                <tr><td>SENDER_NAME</td><td><code>THEDOGGYCOMPANY</code></td><td>Uppercase, no spaces</td></tr>
-                <tr><td>NOTIFICATION_EMAIL</td><td><code>onboarding@resend.dev</code></td><td>Fallback for testing</td></tr>
-            </table>
-            <div class="warning-box">
-                <strong>📧 Email Format:</strong> All emails are sent as <code>THEDOGGYCOMPANY &lt;woof@thedoggycompany.com&gt;</code>
-            </div>
-            
-            <h3>📱 WhatsApp (Gupshup)</h3>
-            <table class="env-table">
-                <tr><th>Variable</th><th>Value</th></tr>
-                <tr><td>GUPSHUP_API_KEY</td><td><code>sk_2609497ce757467f87a955015da8854d</code></td></tr>
-                <tr><td>GUPSHUP_APP_NAME</td><td><code>The Doggy Company</code></td></tr>
-                <tr><td>GUPSHUP_SOURCE_NUMBER</td><td><code>918971702582</code></td></tr>
-                <tr><td>GUPSHUP_API_URL</td><td><code>https://api.gupshup.io/wa/api/v1</code></td></tr>
-                <tr><td>WHATSAPP_NUMBER</td><td><code>918971702582</code></td></tr>
-            </table>
-            
-            <h3>🗺️ Google APIs</h3>
-            <table class="env-table">
-                <tr><th>Variable</th><th>Value</th><th>Purpose</th></tr>
-                <tr><td>GOOGLE_PLACES_API_KEY</td><td><code>AIzaSy<REDACTED_ROTATED></code></td><td>Location search</td></tr>
-                <tr><td>GOOGLE_CALENDAR_API_KEY</td><td><code>AIzaSyCQ411BKtnJiUMk7hPBUJyVw1WgVkTlOpA</code></td><td>Calendar integration</td></tr>
-                <tr><td>GOOGLE_VISION_API_KEY</td><td><code>AIzaSyAHADX86gYQNPTy8EjOkwUlI1196vxoKas</code></td><td>Image analysis</td></tr>
-                <tr><td>YOUTUBE_API_KEY</td><td><code>AIzaSyCEqC2I04NYLTvJmPNU7sWsrfcKLIwOWpU</code></td><td>Video embeds</td></tr>
-            </table>
-            
-            <h3>🎤 Voice & Audio (ElevenLabs)</h3>
-            <table class="env-table">
-                <tr><th>Variable</th><th>Value</th></tr>
-                <tr><td>ELEVENLABS_API_KEY</td><td><code>2738ad21884d7bf3ff2ddee5fbac5e2efc8a02ab4ca3cd36bdef82b83d9628bc</code></td></tr>
-            </table>
-            
-            <h3>🌐 Other APIs</h3>
-            <table class="env-table">
-                <tr><th>Variable</th><th>Value</th><th>Purpose</th></tr>
-                <tr><td>FOURSQUARE_API_KEY</td><td><code>XZ2D4H0TKX4NR2VC1AMF5FDSJ0TFXHANH2PM12RUXIB5UKQN</code></td><td>Venue search</td></tr>
-                <tr><td>FOURSQUARE_LEGACY_API_KEY</td><td><code>fsq3UISTe99WBkl+2of3Gyp3mylGaXByON+Vud59SZSl450=</code></td><td>Legacy API</td></tr>
-                <tr><td>AMADEUS_API_KEY</td><td><code>SO6flvJXlIFxNM7jYQckpOkFJoJAp4Ed</code></td><td>Travel booking</td></tr>
-                <tr><td>AMADEUS_API_SECRET</td><td><code>M0H1ZYYHkaTMvNkd</code></td><td>Travel booking</td></tr>
-                <tr><td>OPENWEATHER_API_KEY</td><td><code>53f54942766320a15584e440644000e3</code></td><td>Weather data</td></tr>
-                <tr><td>EVENTBRITE_API_KEY</td><td><code>NBVCN6S3G4D6LKPMMD</code></td><td>Events</td></tr>
-                <tr><td>EVENTBRITE_PRIVATE_TOKEN</td><td><code>KAAG3FKCP2N3WSP2OZKE</code></td><td>Events</td></tr>
-            </table>
-            
-            <h3>🏪 Shopify Integration</h3>
-            <table class="env-table">
-                <tr><th>Variable</th><th>Value</th></tr>
-                <tr><td>SHOPIFY_PRODUCTS_URL</td><td><code>https://thedoggybakery.com/products.json</code></td></tr>
-                <tr><td>SITE_URL</td><td><code>https://thedoggycompany.com</code></td></tr>
-                <tr><td>BUSINESS_NAME</td><td><code>The Doggy Company</code></td></tr>
-            </table>
-            
-            <h3>📋 Complete .env File (Backend)</h3>
-            <pre><code># MongoDB
-MONGO_URL=mongodb://localhost:27017
-DB_NAME=pet-os-live-test_database
-
-# Authentication
-JWT_SECRET=tdb_super_secret_key_2025_woof
-ADMIN_USERNAME=aditya
-ADMIN_PASSWORD=lola4304
-ADMIN_EMAIL=dipali@clubconcierge.in
-
-# AI/LLM
-EMERGENT_LLM_KEY=sk-emergent-cEb0eF956Fa6741A31
-
-# Razorpay (LIVE)
-RAZORPAY_KEY_ID=rzp_live_<REDACTED_ROTATED>
-RAZORPAY_KEY_SECRET=wNWqcJvv5K6b39kmMzOKVsQ3
-
-# Email (Resend)
-RESEND_API_KEY=re_RyFymGmF_QE6qJSpEH4CSKTiN3WQYUU9G
-SENDER_EMAIL=woof@thedoggycompany.com
-
-# WhatsApp (Gupshup)
-GUPSHUP_API_KEY=sk_2609497ce757467f87a955015da8854d
-GUPSHUP_SOURCE_NUMBER=918971702582
-
-# Google APIs
-GOOGLE_PLACES_API_KEY=AIzaSy<REDACTED_ROTATED>
-YOUTUBE_API_KEY=AIzaSyCEqC2I04NYLTvJmPNU7sWsrfcKLIwOWpU
-
-# ElevenLabs
-ELEVENLABS_API_KEY=2738ad21884d7bf3ff2ddee5fbac5e2efc8a02ab4ca3cd36bdef82b83d9628bc
-
-# Shopify
-SHOPIFY_PRODUCTS_URL=https://thedoggybakery.com/products.json
-SITE_URL=https://thedoggycompany.com</code></pre>
         </div>
     </div>
 
     <footer>
-        <p><strong>The Doggy Company</strong> - Pet Life Operating System</p>
-        <p style="margin-top: 10px; opacity: 0.7;">Built with love, in memory of Kouros & Mystique 💜</p>
-        <p style="margin-top: 5px; opacity: 0.5;">Documentation generated: March 7, 2026 | Version 4.3.0</p>
+        <p>The Doggy Company - Mira-OS v5.3.0</p>
+        <p style="opacity: 0.7; margin-top: 10px;">Built with love, in memory of Kouros & Mystique</p>
     </footer>
 </body>
 </html>
