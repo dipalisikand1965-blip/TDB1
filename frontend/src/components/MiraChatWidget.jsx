@@ -1204,11 +1204,25 @@ const MiraChatWidget = ({
   // This allows MiraChatWidget on pillar pages to respond to the mobile nav FAB
   useEffect(() => {
     const handleOpenMira = (event) => {
-      // Only respond if we're on a pillar page matching our pillar prop
-      // or if the event specifies our pillar
-      if (event.detail?.pillar === pillar || event.detail?.source === 'mobile_nav') {
-        console.log('[MiraChatWidget] Opening for pillar:', pillar);
+      // Respond if:
+      // 1. Event specifies our pillar OR
+      // 2. Event is from mobile_nav OR
+      // 3. Event is from search_panel (universal bar "Continue in Chat")
+      const shouldOpen = 
+        event.detail?.pillar === pillar || 
+        event.detail?.source === 'mobile_nav' ||
+        event.detail?.source === 'search_panel';
+      
+      if (shouldOpen) {
+        console.log('[MiraChatWidget] Opening for pillar:', pillar, 'source:', event.detail?.source);
         setIsOpen(true);
+        
+        // If there's a message/query, set it as input
+        if (event.detail?.message || event.detail?.initialQuery) {
+          const msg = event.detail.message || event.detail.initialQuery;
+          setInputValue(msg);
+          console.log('[MiraChatWidget] Pre-filled query:', msg);
+        }
       }
     };
     
