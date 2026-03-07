@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pet Wrapped · Mystique · 2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --deep:    #120826;
+    --purple:  #4B2680;
+    --violet:  #7B4DB5;
+    --gold:    #C9973A;
+    --goldL:   #F0C060;
+    --rose:    #C4607A;
+    --roseL:   #E8A0B0;
+    --cream:   #FAF7F2;
+    --mist:    #8892A4;
+    --white:   #FFFFFF;
+  }
+
+  body {
+    background: #0a0618;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 80px;
+    gap: 0;
+  }
+
+  /* Header */
+  .site-header {
+    text-align: center;
+    margin-bottom: 60px;
+    animation: fadeUp 1s ease both;
+  }
+  .site-header .brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    letter-spacing: 5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .site-header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 6vw, 52px);
+    font-weight: 300;
+    color: var(--white);
+    letter-spacing: 2px;
+  }
+  .site-header h1 em {
+    font-style: italic;
+    color: var(--goldL);
+  }
+  .site-header .sub {
+    font-size: 13px;
+    color: var(--mist);
+    margin-top: 10px;
+    letter-spacing: 1px;
+  }
+
+  /* Card wrapper — scrollable row on desktop, stack on mobile */
+  .cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 32px;
+    max-width: 1400px;
+    width: 100%;
+  }
+
+  /* Each card: 390×844 (iPhone Pro ratio) */
+  .card {
+    width: 390px;
+    height: 844px;
+    border-radius: 32px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+    animation: fadeUp 0.8s ease both;
+  }
+  .card:nth-child(2) { animation-delay: 0.15s; }
+  .card:nth-child(3) { animation-delay: 0.3s; }
+  .card:nth-child(4) { animation-delay: 0.45s; }
+  .card:nth-child(5) { animation-delay: 0.6s; }
+  .card:nth-child(6) { animation-delay: 0.75s; }
+
+  /* ── CARD 1: COVER ── */
+  .card-cover {
+    background: var(--deep);
+  }
+  .card-cover .bg-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+  }
+  .card-cover .orb1 { width: 360px; height: 360px; background: #4B2680; top: -80px; left: -80px; }
+  .card-cover .orb2 { width: 300px; height: 300px; background: #C4607A; bottom: 60px; right: -60px; opacity: 0.35; }
+  .card-cover .orb3 { width: 200px; height: 200px; background: #C9973A; top: 300px; left: 80px; opacity: 0.25; }
+  .card-cover .noise {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.15;
+  }
+  .card-cover .content {
+    position: relative; z-index: 2;
+    height: 100%;
+    display: flex; flex-direction: column;
+    padding: 48px 36px 40px;
+  }
+  .card-cover .tag {
+    font-size: 10px; letter-spacing: 4px; color: var(--gold);
+    text-transform: uppercase; font-weight: 500;
+  }
+  .card-cover .year {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 120px; font-weight: 300; line-height: 1;
+    color: rgba(255,255,255,0.06);
+    margin-top: -8px; margin-left: -4px;
+    letter-spacing: -4px;
+  }
+  .card-cover .name-block {
+    margin-top: auto;
+  }
+  .card-cover .paw { font-size: 28px; margin-bottom: 12px; }
+  .card-cover .pet-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 64px; font-weight: 400; line-height: 1;
+    color: var(--white); letter-spacing: 1px;
+  }
+  .card-cover .pet-name em { font-style: italic; color: var(--goldL); }
+  .card-cover .pet-breed {
+    font-size: 13px; color: var(--roseL); letter-spacing: 2px;
+    text-transform: uppercase; margin-top: 8px;
+  }
+  .card-cover .divider {
+    width: 48px; height: 1px; background: var(--gold);
+    margin: 24px 0;
+  }
+  .card-cover .cover-line {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-style: italic; font-weight: 300;
+    color: rgba(255,255,255,0.7); line-height: 1.5;
+  }
+  .card-cover .bottom-brand {
+    margin-top: 32px;
+    font-size: 10px; letter-spacing: 3px; color: var(--mist);
+    text-transform: uppercase;
+  }
+
+  /* ── CARD 2: SOUL SCORE ── */
+  .card-soul {
+    background: linear-gradient(160deg, #1a0a2e 0%, #2d1250 50%, #1a0a2e 100%);
+  }
+  .card-soul .gold-bar {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .card-soul .content {
+    position: relative; z-index: 2; height: 100%;
+    display: flex; flex-direction: column;
+    padding: 48px 36px 40px;
+  }
+  .card-soul .section-label {
+    font-size: 10px; letter-spacing: 4px; color: var(--violet);
+    text-transform: uppercase; font-weight: 500;
+  }
+  .card-soul .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 40px; font-weight: 400; color: var(--white);
+    line-height: 1.1; margin-top: 8px;
+  }
+  .card-soul .section-title em { font-style: italic; color: var(--goldL); }
+  .card-soul .score-arc {
+    margin: 36px auto 0;
+    position: relative; width: 260px; height: 260px;
+  }
+  .card-soul .score-arc svg { width: 100%; height: 100%; }
+  .card-soul .score-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .card-soul .score-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 72px; font-weight: 300; color: var(--white);
+    line-height: 1;
+  }
+  .card-soul .score-label {
+    font-size: 11px; letter-spacing: 2px; color: var(--gold);
+    text-transform: uppercase; margin-top: 4px;
+  }
+  .card-soul .journey {
+    margin-top: 32px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .card-soul .j-step {
+    flex: 1; text-align: center;
+  }
+  .card-soul .j-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px; font-weight: 400; color: var(--mist);
+  }
+  .card-soul .j-num.active { color: var(--goldL); }
+  .card-soul .j-label { font-size: 10px; color: var(--mist); margin-top: 2px; }
+  .card-soul .j-arrow { color: var(--gold); font-size: 20px; }
+  .card-soul .soul-quote {
+    margin-top: auto;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px; font-style: italic; font-weight: 300;
+    color: rgba(255,255,255,0.65); line-height: 1.6;
+    border-left: 2px solid var(--gold); padding-left: 16px;
+  }
+  .card-soul .bottom-brand {
+    margin-top: 20px;
+    font-size: 10px; letter-spacing: 3px; color: var(--mist);
+    text-transform: uppercase;
+  }
+
+  /* ── CARD 3: MIRA MOMENTS ── */
+  .card-mira {
+    background: #0d0520;
+  }
+  .card-mira .stars {
+    position: absolute; inset: 0; overflow: hidden;
+  }
+  .card-mira .stars::before, .card-mira .stars::after {
+    content: '';
+    position: absolute;
+    width: 2px; height: 2px;
+    background: white; border-radius: 50%;
+    box-shadow:
+      40px 80px 0 rgba(255,255,255,0.3),
+      120px 40px 0 rgba(255,255,255,0.2),
+      200px 150px 0 rgba(255,255,255,0.4),
+      280px 60px 0 rgba(255,255,255,0.2),
+      60px 200px 0 rgba(255,255,255,0.3),
+      340px 180px 0 rgba(255,255,255,0.2),
+      160px 280px 0 rgba(255,255,255,0.3),
+      300px 320px 0 rgba(255,255,255,0.2),
+      80px 380px 0 rgba(255,255,255,0.25),
+      240px 420px 0 rgba(255,255,255,0.2),
+      20px 480px 0 rgba(255,255,255,0.3),
+      360px 500px 0 rgba(255,255,255,0.15),
+      140px 560px 0 rgba(255,255,255,0.2),
+      310px 620px 0 rgba(255,255,255,0.3);
+  }
+  .card-mira .rose-glow {
+    position: absolute; bottom: -100px; left: 50%;
+    transform: translateX(-50%);
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(196,96,122,0.25) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .card-mira .content {
+    position: relative; z-index: 2; height: 100%;
+    display: flex; flex-direction: column;
+    padding: 48px 36px 40px;
+  }
+  .card-mira .section-label {
+    font-size: 10px; letter-spacing: 4px; color: var(--rose);
+    text-transform: uppercase; font-weight: 500;
+  }
+  .card-mira .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 40px; font-weight: 400; color: var(--white);
+    line-height: 1.1; margin-top: 8px;
+  }
+  .card-mira .mira-stats {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px; margin-top: 36px;
+  }
+  .card-mira .stat-box {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 20px 16px;
+  }
+  .card-mira .stat-box.full { grid-column: 1 / -1; }
+  .card-mira .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 48px; font-weight: 300; color: var(--roseL);
+    line-height: 1;
+  }
+  .card-mira .stat-unit { font-size: 14px; color: var(--mist); margin-top: 2px; }
+  .card-mira .stat-detail { font-size: 11px; color: var(--mist); margin-top: 8px; line-height: 1.4; }
+  .card-mira .memory-card {
+    margin-top: 24px;
+    background: linear-gradient(135deg, rgba(196,96,122,0.15), rgba(75,38,128,0.15));
+    border: 1px solid rgba(196,96,122,0.25);
+    border-radius: 20px; padding: 24px;
+  }
+  .card-mira .memory-label {
+    font-size: 9px; letter-spacing: 3px; color: var(--rose);
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+  .card-mira .memory-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-style: italic; font-weight: 300;
+    color: var(--white); line-height: 1.6;
+  }
+  .card-mira .bottom-brand {
+    margin-top: auto; padding-top: 24px;
+    font-size: 10px; letter-spacing: 3px; color: var(--mist);
+    text-transform: uppercase;
+  }
+
+  /* ── CARD 4: THE BABIES ── */
+  .card-babies {
+    background: linear-gradient(180deg, #0f1a0f 0%, #0a1208 100%);
+  }
+  .card-babies .green-glow {
+    position: absolute; top: -50px; right: -50px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(45,122,74,0.3) 0%, transparent 70%);
+  }
+  .card-babies .content {
+    position: relative; z-index: 2; height: 100%;
+    display: flex; flex-direction: column;
+    padding: 48px 36px 40px;
+  }
+  .card-babies .section-label {
+    font-size: 10px; letter-spacing: 4px; color: #6BCB8B;
+    text-transform: uppercase; font-weight: 500;
+  }
+  .card-babies .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 40px; font-weight: 400; color: var(--white);
+    line-height: 1.1; margin-top: 8px;
+  }
+  .card-babies .section-title em { font-style: italic; color: #A8E6BE; }
+  .card-babies .m-squad {
+    margin-top: 32px;
+    display: flex; flex-wrap: wrap; gap: 10px;
+  }
+  .card-babies .m-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px; font-weight: 400; font-style: italic;
+    color: var(--white);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(107,203,139,0.2);
+    border-radius: 100px;
+    padding: 6px 18px;
+    transition: all 0.2s;
+  }
+  .card-babies .m-name:hover {
+    background: rgba(107,203,139,0.12);
+    border-color: rgba(107,203,139,0.4);
+  }
+  .card-babies .parents-block {
+    margin-top: 32px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(107,203,139,0.15);
+    border-radius: 20px; padding: 24px;
+  }
+  .card-babies .parents-label {
+    font-size: 9px; letter-spacing: 3px; color: #6BCB8B;
+    text-transform: uppercase; margin-bottom: 16px;
+  }
+  .card-babies .parents-row {
+    display: flex; gap: 24px;
+  }
+  .card-babies .parent {
+    flex: 1;
+  }
+  .card-babies .parent-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px; font-weight: 400; color: var(--white);
+  }
+  .card-babies .parent-role {
+    font-size: 11px; color: var(--mist); margin-top: 2px;
+  }
+  .card-babies .legacy-line {
+    margin-top: auto;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-style: italic; font-weight: 300;
+    color: rgba(255,255,255,0.5); line-height: 1.6;
+    border-left: 2px solid #6BCB8B; padding-left: 16px;
+  }
+  .card-babies .bottom-brand {
+    margin-top: 20px;
+    font-size: 10px; letter-spacing: 3px; color: var(--mist);
+    text-transform: uppercase;
+  }
+
+  /* ── CARD 5: YEAR IN PILLARS ── */
+  .card-pillars {
+    background: #0c0818;
+  }
+  .card-pillars .gold-mesh {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(201,151,58,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(75,38,128,0.2) 0%, transparent 50%);
+  }
+  .card-pillars .content {
+    position: relative; z-index: 2; height: 100%;
+    display: flex; flex-direction: column;
+    padding: 48px 36px 40px;
+  }
+  .card-pillars .section-label {
+    font-size: 10px; letter-spacing: 4px; color: var(--gold);
+    text-transform: uppercase; font-weight: 500;
+  }
+  .card-pillars .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 40px; font-weight: 400; color: var(--white);
+    line-height: 1.1; margin-top: 8px;
+  }
+  .card-pillars .pillar-list {
+    margin-top: 32px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .card-pillars .pillar-row {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .card-pillars .pillar-icon {
+    width: 38px; height: 38px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .card-pillars .pillar-name {
+    flex: 1;
+    font-size: 14px; color: var(--white); font-weight: 400;
+  }
+  .card-pillars .pillar-bar-wrap {
+    flex: 2; height: 6px; background: rgba(255,255,255,0.08);
+    border-radius: 3px; overflow: hidden;
+  }
+  .card-pillars .pillar-bar {
+    height: 100%; border-radius: 3px;
+    transition: width 1.5s ease;
+  }
+  .card-pillars .pillar-val {
+    font-size: 12px; color: var(--mist); width: 32px; text-align: right;
+  }
+  .card-pillars .total-treats {
+    margin-top: 28px;
+    background: linear-gradient(135deg, rgba(201,151,58,0.12), rgba(75,38,128,0.1));
+    border: 1px solid rgba(201,151,58,0.2);
+    border-radius: 20px; padding: 20px 24px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .card-pillars .treat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px; font-weight: 300; color: var(--goldL); line-height: 1;
+  }
+  .card-pillars .treat-text {
+    font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.5;
+  }
+  .card-pillars .treat-text strong { color: var(--goldL); display: block; font-weight: 500; }
+  .card-pillars .bottom-brand {
+    margin-top: auto; padding-top: 20px;
+    font-size: 10px; letter-spacing: 3px; color: var(--mist);
+    text-transform: uppercase;
+  }
+
+  /* ── CARD 6: CLOSING ── */
+  .card-closing {
+    background: var(--deep);
+    overflow: hidden;
+  }
+  .card-closing .bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 60%, rgba(196,96,122,0.2) 0%, transparent 60%),
+      radial-gradient(ellipse at 70% 20%, rgba(75,38,128,0.3) 0%, transparent 60%);
+  }
+  .card-closing .large-text {
+    position: absolute;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 200px; font-weight: 300; font-style: italic;
+    color: rgba(255,255,255,0.025);
+    line-height: 1; letter-spacing: -8px;
+    bottom: -20px; left: -10px;
+    white-space: nowrap;
+  }
+  .card-closing .content {
+    position: relative; z-index: 2; height: 100%;
+    display: flex; flex-direction: column;
+    padding: 48px 36px 40px;
+    justify-content: space-between;
+  }
+  .card-closing .top-tag {
+    font-size: 10px; letter-spacing: 4px; color: var(--gold);
+    text-transform: uppercase; font-weight: 500;
+  }
+  .card-closing .main-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px; font-weight: 300; font-style: italic;
+    color: var(--white); line-height: 1.35;
+  }
+  .card-closing .main-quote em { color: var(--goldL); font-style: italic; }
+  .card-closing .attribution {
+    font-size: 12px; color: var(--rose); letter-spacing: 1px;
+    margin-top: 16px;
+  }
+  .card-closing .share-block {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; padding: 24px;
+  }
+  .card-closing .share-label {
+    font-size: 10px; letter-spacing: 3px; color: var(--gold);
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .card-closing .share-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--gold); color: var(--deep);
+    font-size: 13px; font-weight: 500; letter-spacing: 0.5px;
+    padding: 12px 24px; border-radius: 100px;
+    cursor: pointer; border: none;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .card-closing .share-btn:hover { background: var(--goldL); transform: translateY(-1px); }
+  .card-closing .cta-text {
+    font-size: 12px; color: var(--mist); margin-top: 12px; line-height: 1.5;
+  }
+  .card-closing .cta-text a {
+    color: var(--roseL); text-decoration: none; border-bottom: 1px solid rgba(232,160,176,0.3);
+  }
+  .card-closing .bottom-brand {
+    font-size: 10px; letter-spacing: 3px; color: rgba(255,255,255,0.25);
+    text-transform: uppercase; text-align: center;
+  }
+
+  /* Footer */
+  .site-footer {
+    margin-top: 72px; text-align: center;
+    animation: fadeUp 1s ease 0.8s both;
+  }
+  .site-footer p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px; font-style: italic; color: rgba(255,255,255,0.35);
+    line-height: 1.6;
+  }
+  .site-footer .footer-brand {
+    font-size: 10px; letter-spacing: 3px; color: var(--mist);
+    text-transform: uppercase; margin-top: 16px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SVG arc animation */
+  .arc-progress {
+    stroke-dasharray: 628;
+    stroke-dashoffset: 628;
+    animation: arcDraw 2s ease 0.5s forwards;
+  }
+  @keyframes arcDraw {
+    to { stroke-dashoffset: 157; } /* 75% = 628 * 0.25 */
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">The Doggy Company · Pet Wrapped</div>
+  <h1><em>Mystique's</em> Year</h1>
+  <p class="sub">20 May 2020 — 20 May 2025 · In loving memory</p>
+</header>
+
+<div class="cards-row">
+
+  <!-- CARD 1: COVER -->
+  <div class="card card-cover">
+    <div class="bg-orb orb1"></div>
+    <div class="bg-orb orb2"></div>
+    <div class="bg-orb orb3"></div>
+    <div class="noise"></div>
+    <div class="content">
+      <div class="tag">Pet Wrapped · 2025</div>
+      <div class="year">2025</div>
+      <div class="name-block">
+        <div class="paw">🐾</div>
+        <div class="pet-name"><em>Mystique</em></div>
+        <div class="pet-breed">Shih Tzu · Empress · Mother</div>
+        <div class="divider"></div>
+        <div class="cover-line">
+          "Her eyes held a universe of love.<br>
+          And she left it behind."
+        </div>
+      </div>
+      <div class="bottom-brand">thedoggycompany.com</div>
+    </div>
+  </div>
+
+  <!-- CARD 2: SOUL SCORE -->
+  <div class="card card-soul">
+    <div class="gold-bar"></div>
+    <div class="content">
+      <div class="section-label">Soul Journey</div>
+      <div class="section-title">Her <em>Soul Score</em><br>this year</div>
+
+      <div class="score-arc">
+        <svg viewBox="0 0 260 260" fill="none">
+          <!-- Track -->
+          <circle cx="130" cy="130" r="100" stroke="rgba(255,255,255,0.06)" stroke-width="12" fill="none"/>
+          <!-- Progress arc — 94% -->
+          <circle cx="130" cy="130" r="100"
+            stroke="url(#goldGrad)" stroke-width="12" fill="none"
+            stroke-linecap="round"
+            stroke-dasharray="628"
+            stroke-dashoffset="38"
+            transform="rotate(-90 130 130)"
+            style="transition: stroke-dashoffset 2s ease;"/>
+          <!-- Inner ring -->
+          <circle cx="130" cy="130" r="82" stroke="rgba(201,151,58,0.12)" stroke-width="1" fill="none"/>
+          <defs>
+            <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#C9973A"/>
+              <stop offset="100%" stop-color="#F0C060"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="score-center">
+          <div class="score-num">94</div>
+          <div class="score-label">Soul Score</div>
+        </div>
+      </div>
+
+      <div class="journey">
+        <div class="j-step">
+          <div class="j-num">42</div>
+          <div class="j-label">Jan 2025</div>
+        </div>
+        <div class="j-arrow">→</div>
+        <div class="j-step">
+          <div class="j-num">68</div>
+          <div class="j-label">Mid year</div>
+        </div>
+        <div class="j-arrow">→</div>
+        <div class="j-step">
+          <div class="j-num active">94</div>
+          <div class="j-label">May 2025</div>
+        </div>
+      </div>
+
+      <div class="soul-quote" style="margin-top: 28px;">
+        "What has Mystique forgiven you for? The times you were distracted. The times you forgot."
+      </div>
+      <div class="bottom-brand">thedoggycompany.com</div>
+    </div>
+  </div>
+
+  <!-- CARD 3: MIRA MOMENTS -->
+  <div class="card card-mira">
+    <div class="stars"></div>
+    <div class="rose-glow"></div>
+    <div class="content">
+      <div class="section-label">Mira Moments</div>
+      <div class="section-title" style="font-family:'Cormorant Garamond',serif; font-size:40px; color:white; line-height:1.1; margin-top:8px;">
+        What Mira<br><em style="font-style:italic; color:#F0C060;">remembers</em>
+      </div>
+
+      <div class="mira-stats">
+        <div class="stat-box">
+          <div class="stat-num">127</div>
+          <div class="stat-unit">conversations</div>
+          <div class="stat-detail">with Mira this year</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">51</div>
+          <div class="stat-unit">questions</div>
+          <div class="stat-detail">answered in Soul Profile</div>
+        </div>
+        <div class="stat-box full">
+          <div class="stat-num">8</div>
+          <div class="stat-unit">pillars explored</div>
+          <div class="stat-detail">Celebrate · Dine · Care · Farewell · Stay · Advisory · Learn · Enjoy</div>
+        </div>
+      </div>
+
+      <div class="memory-card">
+        <div class="memory-label">Mira's Favourite Memory</div>
+        <div class="memory-text">
+          "The night Dipali sat beside Mystique and answered the last question. She was quiet for a long time after. That silence was love."
+        </div>
+      </div>
+
+      <div class="bottom-brand">thedoggycompany.com</div>
+    </div>
+  </div>
+
+  <!-- CARD 4: THE BABIES -->
+  <div class="card card-babies">
+    <div class="green-glow"></div>
+    <div class="content">
+      <div class="section-label">Her Legacy</div>
+      <div class="section-title">The <em>M-Squad</em></div>
+
+      <div class="m-squad">
+        <span class="m-name">Mynx</span>
+        <span class="m-name">Max</span>
+        <span class="m-name">Mojo</span>
+        <span class="m-name">Mia</span>
+        <span class="m-name">Magica</span>
+        <span class="m-name">Mahi</span>
+        <span class="m-name">Miracle</span>
+        <span class="m-name">Mars</span>
+        <span class="m-name">Maya</span>
+        <span class="m-name">Moon</span>
+      </div>
+
+      <div class="parents-block">
+        <div class="parents-label">Her Two Beloved Partners</div>
+        <div class="parents-row">
+          <div class="parent">
+            <div class="parent-name">Meister</div>
+            <div class="parent-role">Father of first five · Grieves loudest</div>
+          </div>
+          <div class="parent">
+            <div class="parent-name">Mercury</div>
+            <div class="parent-role">Father of second five · Grieves quietly</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="legacy-line">
+        She didn't leave the house. She distributed herself through every living thing she loved.
+      </div>
+
+      <div class="bottom-brand">thedoggycompany.com</div>
+    </div>
+  </div>
+
+  <!-- CARD 5: PILLARS & TREATS -->
+  <div class="card card-pillars">
+    <div class="gold-mesh"></div>
+    <div class="content">
+      <div class="section-label">Life Pillars</div>
+      <div class="section-title" style="font-family:'Cormorant Garamond',serif; font-size:40px; color:white; line-height:1.1; margin-top:8px;">
+        A life<br><em style="font-style:italic; color:#F0C060;">fully lived</em>
+      </div>
+
+      <div class="pillar-list">
+        <div class="pillar-row">
+          <div class="pillar-icon" style="background:rgba(201,151,58,0.15);">🎉</div>
+          <div class="pillar-name">Celebrate</div>
+          <div class="pillar-bar-wrap"><div class="pillar-bar" style="width:95%; background:linear-gradient(90deg,#C9973A,#F0C060);"></div></div>
+          <div class="pillar-val" style="color:#F0C060;">95%</div>
+        </div>
+        <div class="pillar-row">
+          <div class="pillar-icon" style="background:rgba(196,96,122,0.15);">🌈</div>
+          <div class="pillar-name">Farewell</div>
+          <div class="pillar-bar-wrap"><div class="pillar-bar" style="width:90%; background:linear-gradient(90deg,#C4607A,#E8A0B0);"></div></div>
+          <div class="pillar-val" style="color:#E8A0B0;">90%</div>
+        </div>
+        <div class="pillar-row">
+          <div class="pillar-icon" style="background:rgba(75,38,128,0.2);">💊</div>
+          <div class="pillar-name">Care</div>
+          <div class="pillar-bar-wrap"><div class="pillar-bar" style="width:82%; background:linear-gradient(90deg,#7B4DB5,#A87ADB);"></div></div>
+          <div class="pillar-val" style="color:#A87ADB;">82%</div>
+        </div>
+        <div class="pillar-row">
+          <div class="pillar-icon" style="background:rgba(45,122,74,0.15);">🍽️</div>
+          <div class="pillar-name">Dine</div>
+          <div class="pillar-bar-wrap"><div class="pillar-bar" style="width:74%; background:linear-gradient(90deg,#2D7A4A,#6BCB8B);"></div></div>
+          <div class="pillar-val" style="color:#6BCB8B;">74%</div>
+        </div>
+        <div class="pillar-row">
+          <div class="pillar-icon" style="background:rgba(201,151,58,0.1);">📚</div>
+          <div class="pillar-name">Learn</div>
+          <div class="pillar-bar-wrap"><div class="pillar-bar" style="width:60%; background:linear-gradient(90deg,#8892A4,#C0C8D8);"></div></div>
+          <div class="pillar-val" style="color:#C0C8D8;">60%</div>
+        </div>
+      </div>
+
+      <div class="total-treats">
+        <div class="treat-num">23</div>
+        <div class="treat-text">
+          <strong>Doggy Bakery treats</strong>
+          Mystique enjoyed handcrafted celebrations from The Doggy Bakery this year
+        </div>
+      </div>
+
+      <div class="bottom-brand">thedoggycompany.com</div>
+    </div>
+  </div>
+
+  <!-- CARD 6: CLOSING -->
+  <div class="card card-closing">
+    <div class="bg"></div>
+    <div class="large-text">love</div>
+    <div class="content">
+      <div class="top-tag">Pet Wrapped · 2025 · In Memory</div>
+
+      <div>
+        <div class="main-quote">
+          "A dog is not in your life.<br>
+          You are in theirs.<br><br>
+          <em>Mystique knew that.</em><br>
+          She lived it completely."
+        </div>
+        <div class="attribution">— Dipali Sikand · The Doggy Company</div>
+      </div>
+
+      <div class="share-block">
+        <div class="share-label">Give your dog a Soul Profile</div>
+        <button class="share-btn" onclick="window.open('https://thedoggycompany.com','_blank')">
+          🐾 Create theirs now
+        </button>
+        <div class="cta-text">
+          Every dog deserves to be truly known.<br>
+          <a href="https://thedoggycompany.com">thedoggycompany.com</a>
+        </div>
+      </div>
+
+      <div class="bottom-brand">The Doggy Company · Pet Wrapped · 2025</div>
+    </div>
+  </div>
+
+</div><!-- /cards-row -->
+
+<footer class="site-footer">
+  <p>"Her eyes held a universe of love.<br>And she left it behind — in all of them."</p>
+  <div class="footer-brand">The Doggy Company · thedoggycompany.com · Built in memory of Mystique</div>
+</footer>
+
+</body>
+</html>
