@@ -45,6 +45,9 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
   const [selectedService, setSelectedService] = useState(null);
   const [showPriceModal, setShowPriceModal] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [displayCount, setDisplayCount] = useState(maxServices);
+  const [totalServices, setTotalServices] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
   
   // Price calculator state
   const [priceConfig, setPriceConfig] = useState({
@@ -75,9 +78,11 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
     const fetchServices = async () => {
       try {
         // Use service-box endpoint which fetches from services_master (1115 services)
-        const response = await fetch(`${API_URL}/api/service-box/services?pillar=${pillar}&limit=${maxServices}&is_active=true`);
+        // Fetch more than display to know if there are more
+        const response = await fetch(`${API_URL}/api/service-box/services?pillar=${pillar}&limit=100&is_active=true`);
         const data = await response.json();
         setServices(data.services || []);
+        setTotalServices(data.total || data.services?.length || 0);
       } catch (err) {
         console.error('Error fetching services:', err);
       } finally {
@@ -250,7 +255,7 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
 
         {/* Services Grid - Mobile First: 2x2 */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-          {services.map((service) => (
+          {services.slice(0, displayCount).map((service) => (
             <Card 
               key={service.id}
               className="group cursor-pointer hover:shadow-lg transition-all duration-300 overflow-hidden border-2 border-transparent hover:border-rose-200"
@@ -344,6 +349,20 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
             </Card>
           ))}
         </div>
+        
+        {/* Load More Button - Only show if there are more services */}
+        {services.length > displayCount && (
+          <div className="mt-6 text-center">
+            <Button
+              variant="outline"
+              onClick={() => setDisplayCount(prev => prev + 8)}
+              className="px-8 py-2 border-rose-200 text-rose-600 hover:bg-rose-50 hover:border-rose-300"
+              data-testid="load-more-services"
+            >
+              Load More
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Price Calculator Modal - Mobile Optimized */}
