@@ -16299,6 +16299,29 @@ async def seed_all_pillars():
     }
 
 
+@api_router.post("/admin/seed-all-services")
+async def seed_all_services_endpoint(username: str = Depends(verify_admin)):
+    """Seed all services to services_master collection - MASTER SYNC services component"""
+    try:
+        # Call the auto_seed_all_services function
+        await auto_seed_all_services()
+        
+        # Count how many services are now in the collection
+        services_count = await db.services_master.count_documents({})
+        
+        logger.info(f"[MASTER SYNC] Services master seeded: {services_count} total services")
+        
+        return {
+            "message": "Services master seeded successfully",
+            "services_seeded": services_count,
+            "seeded": services_count
+        }
+    except Exception as e:
+        logger.error(f"Failed to seed services: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
 @api_router.post("/admin/seed-sample-tickets")
 async def seed_sample_tickets():
     """Seed sample tickets for Command Center testing"""

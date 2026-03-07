@@ -192,6 +192,9 @@ const Admin = () => {
   const [seedingProduction, setSeedingProduction] = useState(false);
   const [syncingShopify, setSyncingShopify] = useState(false);
   
+  // Refresh counter for forcing data re-fetch
+  const [refreshCounter, setRefreshCounter] = useState(0);
+  
   // Collapsible sidebar state for mobile
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
@@ -319,11 +322,11 @@ const Admin = () => {
   // 🚀 MASTER SYNC - Syncs ALL products & services to all pillars
   const syncAllData = async () => {
     setSyncingShopify(true);
-    const results = { shopify: 0, products: 0, services: 0, enhanced: 0, aiTagged: 0 };
+    const results = { shopify: 0, products: 0, services: 0, enhanced: 0, aiTagged: 0, breeds: 0 };
     
     try {
       // Step 1: Sync Shopify Products (real products from your store)
-      toast({ title: '🛍️ Step 1/6: Syncing Shopify Products...', description: 'Pulling latest products from your store' });
+      toast({ title: '🛍️ Step 1/9: Syncing Shopify Products...', description: 'Pulling latest products from your store' });
       
       try {
         const shopifyRes = await fetch(`${API_URL}/api/admin/sync-products`, {
@@ -340,7 +343,7 @@ const Admin = () => {
       }
       
       // Step 2: Run Product Intelligence Engine (mira_hints, breed_tags, pillars)
-      toast({ title: '🧠 Step 2/6: Running Product Intelligence...', description: 'Adding mira hints & breed tags' });
+      toast({ title: '🧠 Step 2/9: Running Product Intelligence...', description: 'Adding mira hints & breed tags' });
       
       try {
         const tagRes = await fetch(`${API_URL}/api/admin/enhance-tags`, {
@@ -356,8 +359,8 @@ const Admin = () => {
         console.log('[Master Sync] Tag enhancement error:', e);
       }
       
-      // Step 3: 🤖 AI SEMANTIC TAGGING (NEW!)
-      toast({ title: '🤖 Step 3/6: Running AI Semantic Tagging...', description: 'Tagging products/services for Mira intelligence' });
+      // Step 3: 🤖 AI SEMANTIC TAGGING
+      toast({ title: '🤖 Step 3/9: Running AI Semantic Tagging...', description: 'Tagging products/services for Mira intelligence' });
       
       try {
         const aiTagRes = await fetch(`${API_URL}/api/mira/admin/run-ai-tagging`, {
@@ -374,7 +377,7 @@ const Admin = () => {
       }
       
       // Step 4: Seed pillar products (products for each pillar)
-      toast({ title: '📦 Step 4/6: Seeding All Pillars...', description: 'Products & services to all 14 pillars' });
+      toast({ title: '📦 Step 4/9: Seeding All Pillars...', description: 'Products & services to all 14 pillars' });
       
       try {
         const pillarRes = await fetch(`${API_URL}/api/admin/universal-seed`, {
@@ -390,8 +393,25 @@ const Admin = () => {
         console.log('[Master Sync] Pillar seed error:', e);
       }
       
-      // Step 5: Seed breed-specific services
-      toast({ title: '🐕 Step 5/6: Seeding Breed Services...', description: 'Adding breed-specific services' });
+      // Step 5: 🐾 SEED SERVICES MASTER (NEW - syncs all services)
+      toast({ title: '🐾 Step 5/9: Seeding Services Master...', description: 'Syncing all services to services_master' });
+      
+      try {
+        const servicesRes = await fetch(`${API_URL}/api/admin/seed-all-services`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (servicesRes.ok) {
+          const data = await servicesRes.json();
+          results.services += data.services_seeded || data.seeded || 0;
+          console.log('[Master Sync] Services master:', results.services);
+        }
+      } catch (e) {
+        console.log('[Master Sync] Services master error:', e);
+      }
+      
+      // Step 6: Seed breed-specific services
+      toast({ title: '🐕 Step 6/9: Seeding Breed Services...', description: 'Adding breed-specific services' });
       
       try {
         const breedRes = await fetch(`${API_URL}/api/service-box/seed-breed-services`, {
@@ -407,8 +427,25 @@ const Admin = () => {
         console.log('[Master Sync] Breed services error:', e);
       }
       
-      // Step 6: Update all services with Mira whispers
-      toast({ title: '✨ Step 6/6: Adding Mira Whispers...', description: 'Personalizing all services' });
+      // Step 7: Seed breed tags for products
+      toast({ title: '🏷️ Step 7/9: Seeding Breed Tags...', description: 'Adding breed metadata to products' });
+      
+      try {
+        const breedTagRes = await fetch(`${API_URL}/api/admin/products/bulk-seed-breed-metadata`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (breedTagRes.ok) {
+          const data = await breedTagRes.json();
+          results.breeds = data.updated || 0;
+          console.log('[Master Sync] Breed tags:', results.breeds);
+        }
+      } catch (e) {
+        console.log('[Master Sync] Breed tags error:', e);
+      }
+      
+      // Step 8: Update all services with Mira whispers
+      toast({ title: '✨ Step 8/9: Adding Mira Whispers...', description: 'Personalizing all services' });
       
       try {
         const whisperRes = await fetch(`${API_URL}/api/service-box/update-all-whispers`, {
@@ -423,8 +460,8 @@ const Admin = () => {
         console.log('[Master Sync] Whisper update error:', e);
       }
       
-      // Step 7: Seed production data (FAQs, collections, etc.)
-      toast({ title: '📋 Finalizing...', description: 'Setting up FAQs & collections' });
+      // Step 9: Seed production data (FAQs, collections, etc.)
+      toast({ title: '📋 Step 9/9: Finalizing...', description: 'Setting up FAQs & collections' });
       
       try {
         const prodRes = await fetch(`${API_URL}/api/admin/seed-production`, {
@@ -441,7 +478,7 @@ const Admin = () => {
       // Final toast
       toast({
         title: '✅ MASTER SYNC COMPLETE!',
-        description: `Shopify: ${results.shopify} | Enhanced: ${results.enhanced} | AI Tagged: ${results.aiTagged} | Services: ${results.services}`,
+        description: `Shopify: ${results.shopify} | Enhanced: ${results.enhanced} | AI Tagged: ${results.aiTagged} | Services: ${results.services} | Breeds: ${results.breeds}`,
         duration: 10000
       });
       
@@ -488,6 +525,13 @@ const Admin = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [filterCity, setFilterCity] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  
+  // Helper function to switch tabs with refresh trigger
+  const switchTab = (tabId) => {
+    // Increment refresh counter to force re-fetch if same tab
+    setRefreshCounter(prev => prev + 1);
+    setActiveTab(tabId);
+  };
   
   // Products
   const [products, setProducts] = useState([]);
@@ -1784,7 +1828,7 @@ const Admin = () => {
       else if (activeTab === 'franchise') fetchFranchiseInquiries();
       else if (activeTab === 'streaties') fetchStreatiesStats();
     }
-  }, [isAuthenticated, activeTab, filterCity, filterStatus, productFilter, orderFilter]);
+  }, [isAuthenticated, activeTab, filterCity, filterStatus, productFilter, orderFilter, refreshCounter]);
 
   // Fetch health vault data when modal opens
   useEffect(() => {
@@ -2625,7 +2669,7 @@ const Admin = () => {
 
         {/* Site Status Report Tab */}
         {activeTab === 'site-status' && (
-          <SiteStatusReport />
+          <SiteStatusReport key={`site-status-${Date.now()}`} />
         )}
 
         {/* Product Tags Tab */}
@@ -2660,12 +2704,12 @@ const Admin = () => {
 
         {/* Celebrations Calendar */}
         {activeTab === 'celebrations' && (
-          <CelebrationsCalendar />
+          <CelebrationsCalendar key={`celebrations-${Date.now()}`} />
         )}
 
         {/* Breed Tags Manager */}
         {activeTab === 'breed-tags' && (
-          <BreedTagsManager />
+          <BreedTagsManager key={`breed-tags-${Date.now()}`} />
         )}
 
         {/* Admin Guide Dashboard - Help & Database Backup */}
@@ -2725,7 +2769,7 @@ const Admin = () => {
 
         {/* Membership Manager Tab */}
         {activeTab === 'membership' && (
-          <MembershipManager />
+          <MembershipManager key={`membership-${Date.now()}`} />
         )}
 
         {/* Members/Customers Tab */}
@@ -3558,17 +3602,17 @@ const Admin = () => {
 
         {/* Emergency Tab */}
         {activeTab === 'emergency' && (
-          <EmergencyManager getAuthHeader={getAuthHeaders} />
+          <EmergencyManager key={`emergency-${Date.now()}`} getAuthHeader={getAuthHeaders} />
         )}
 
         {/* Farewell Tab */}
         {activeTab === 'farewell' && (
-          <FarewellManager getAuthHeader={getAuthHeaders} />
+          <FarewellManager key={`farewell-${Date.now()}`} getAuthHeader={getAuthHeaders} />
         )}
 
         {/* Rainbow Bridge Memorial Admin */}
         {activeTab === 'rainbow-bridge' && (
-          <AdminRainbowBridge />
+          <AdminRainbowBridge key={`rainbow-bridge-${Date.now()}`} />
         )}
 
         {/* Adopt Tab */}
