@@ -7,7 +7,7 @@ import {
   Users, Play, ChevronDown, Crown, Utensils, 
   Hotel, GraduationCap, PartyPopper, HeartPulse,
   Phone, Mail, Quote, Plane, Gamepad2, Dumbbell,
-  FileText, Lightbulb, AlertCircle, Rainbow
+  FileText, Lightbulb, AlertCircle, Rainbow, Gift, Download
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import SEOHead from '../components/SEOHead';
@@ -831,6 +831,111 @@ const Home = () => {
                 </div>
               </motion.div>
             </div>
+          </div>
+        </section>
+
+        {/* Pet Wrapped Section - NEW */}
+        <section className="py-16 md:py-24 relative overflow-hidden bg-gradient-to-b from-gray-900 via-purple-950/50 to-gray-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <div className="inline-flex items-center gap-2 bg-amber-500/20 border border-amber-500/30 rounded-full px-4 py-1.5 mb-6">
+                <Gift className="w-4 h-4 text-amber-400" />
+                <span className="text-amber-400 text-sm font-medium">Coming Soon</span>
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black text-white mb-4">
+                <span className="text-amber-400">Pet Wrapped</span> — Your Dog's Year
+              </h2>
+              <p className="text-purple-200 text-base md:text-lg max-w-2xl mx-auto">
+                Like Spotify Wrapped, but for your pet. A beautiful, shareable summary of their journey — 
+                their Soul Score, their milestones, their story.
+              </p>
+            </motion.div>
+
+            {/* Preview Cards */}
+            <div className="flex justify-center gap-4 md:gap-6 overflow-x-auto pb-4 px-2">
+              {/* Mini Preview Card 1 */}
+              <motion.div
+                initial={{ opacity: 0, y: 30, rotate: -3 }}
+                whileInView={{ opacity: 1, y: 0, rotate: -3 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="flex-shrink-0 w-40 md:w-52 h-56 md:h-72 bg-gradient-to-br from-purple-900 to-purple-950 rounded-2xl p-4 md:p-5 border border-purple-700/30 shadow-xl transform hover:scale-105 transition-transform"
+              >
+                <div className="text-[8px] md:text-xs text-amber-400 tracking-widest mb-1">PET WRAPPED · 2026</div>
+                <div className="text-3xl md:text-5xl font-light text-white/5">2026</div>
+                <div className="mt-auto pt-12 md:pt-16">
+                  <div className="text-lg mb-1">🐾</div>
+                  <div className="text-xl md:text-2xl font-light italic text-white">Your Pet</div>
+                  <div className="text-[8px] md:text-xs text-pink-400 tracking-wider mt-1">THEIR STORY</div>
+                </div>
+              </motion.div>
+
+              {/* Mini Preview Card 2 */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="flex-shrink-0 w-40 md:w-52 h-56 md:h-72 bg-gradient-to-br from-purple-900 to-indigo-950 rounded-2xl p-4 md:p-5 border border-amber-500/20 shadow-xl transform hover:scale-105 transition-transform"
+              >
+                <div className="text-[8px] md:text-xs text-purple-400 tracking-widest mb-1">SOUL JOURNEY</div>
+                <div className="text-lg md:text-xl text-white font-light">Soul Score</div>
+                <div className="flex items-center justify-center h-24 md:h-32">
+                  <div className="text-center">
+                    <div className="text-4xl md:text-5xl font-light text-white">87</div>
+                    <div className="text-[8px] md:text-xs text-amber-400 tracking-wider mt-1">TRULY KNOWN</div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Mini Preview Card 3 */}
+              <motion.div
+                initial={{ opacity: 0, y: 30, rotate: 3 }}
+                whileInView={{ opacity: 1, y: 0, rotate: 3 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+                className="flex-shrink-0 w-40 md:w-52 h-56 md:h-72 bg-gradient-to-br from-gray-900 to-purple-950 rounded-2xl p-4 md:p-5 border border-pink-500/20 shadow-xl transform hover:scale-105 transition-transform"
+              >
+                <div className="text-[8px] md:text-xs text-pink-400 tracking-widest mb-1">MIRA MOMENTS</div>
+                <div className="text-lg md:text-xl text-white font-light">Memories</div>
+                <div className="mt-4 md:mt-6 space-y-2">
+                  <div className="bg-white/5 rounded-lg p-2">
+                    <div className="text-2xl md:text-3xl text-pink-400 font-light">12</div>
+                    <div className="text-[8px] md:text-xs text-gray-500">conversations</div>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-2">
+                    <div className="text-2xl md:text-3xl text-pink-400 font-light">51</div>
+                    <div className="text-[8px] md:text-xs text-gray-500">questions answered</div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* CTA */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mt-10"
+            >
+              <p className="text-gray-400 text-sm mb-4">
+                Download. Share. Celebrate your pet's unique journey.
+              </p>
+              <Link to="/membership">
+                <Button 
+                  size="lg"
+                  className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
+                >
+                  <Gift className="w-5 h-5 mr-2" />
+                  Get Pet Wrapped
+                </Button>
+              </Link>
+            </motion.div>
           </div>
         </section>
 
