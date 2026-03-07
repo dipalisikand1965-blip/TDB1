@@ -91,19 +91,25 @@ async def send_whatsapp_message(
             )
             
             result = response.json()
+            result_status = str(result.get("status", "")).strip().lower()
+            http_code = response.status_code
             
-            if response.status_code == 200 and result.get("status") != "error":
-                logger.info(f"[WHATSAPP-{log_context.upper()}] Message sent to {formatted_phone[:6]}***")
+            # Gupshup returns HTTP 202 (Accepted) and status: "submitted" on success
+            if http_code in [200, 202] and result_status in ["submitted", "success"]:
+                logger.info(f"[WHATSAPP-{log_context.upper()}] ✅ Message sent to {formatted_phone[:6]}*** | ID: {result.get('messageId')}")
                 return {
                     "success": True,
                     "message_id": result.get("messageId"),
+                    "status": result_status,
                     "to": formatted_phone
                 }
             else:
-                logger.error(f"[WHATSAPP-{log_context.upper()}] Failed: {result}")
+                logger.error(f"[WHATSAPP-{log_context.upper()}] ❌ Failed - HTTP: {http_code}, Status: '{result_status}', Response: {result}")
                 return {
                     "success": False,
-                    "error": result.get("message", "Unknown error")
+                    "error": result.get("message", "Unknown error"),
+                    "gupshup_status": result_status,
+                    "http_code": http_code
                 }
                 
     except Exception as e:
