@@ -323,7 +323,7 @@ const Admin = () => {
   // 🚀 MASTER SYNC - Syncs ALL products & services to all pillars
   const syncAllData = async () => {
     setSyncingShopify(true);
-    const results = { shopify: 0, products: 0, services: 0, enhanced: 0, aiTagged: 0, breeds: 0 };
+    const results = { shopify: 0, products: 0, services: 0, enhanced: 0, aiTagged: 0, breeds: 0, breedProducts: 0 };
     
     try {
       // Step 1: Sync Shopify Products (real products from your store)
@@ -412,7 +412,7 @@ const Admin = () => {
       }
       
       // Step 6: Seed breed-specific services
-      toast({ title: '🐕 Step 6/9: Seeding Breed Services...', description: 'Adding breed-specific services' });
+      toast({ title: '🐕 Step 6/10: Seeding Breed Services...', description: 'Adding breed-specific services' });
       
       try {
         const breedRes = await fetch(`${API_URL}/api/service-box/seed-breed-services`, {
@@ -428,8 +428,25 @@ const Admin = () => {
         console.log('[Master Sync] Breed services error:', e);
       }
       
+      // Step 6.5: 🎂 SEED BREED PRODUCTS (PICKS feature)
+      toast({ title: '🎂 Step 6.5/10: Seeding Breed Products...', description: 'Creating personalized PICKS for all breeds' });
+      
+      try {
+        const breedProductRes = await fetch(`${API_URL}/api/breed-catalogue/admin/seed-breed-products`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (breedProductRes.ok) {
+          const data = await breedProductRes.json();
+          results.breedProducts = data.created || 0;
+          console.log('[Master Sync] Breed products for PICKS:', data.created);
+        }
+      } catch (e) {
+        console.log('[Master Sync] Breed products error:', e);
+      }
+      
       // Step 7: Seed breed tags for products
-      toast({ title: '🏷️ Step 7/9: Seeding Breed Tags...', description: 'Adding breed metadata to products' });
+      toast({ title: '🏷️ Step 7/10: Seeding Breed Tags...', description: 'Adding breed metadata to products' });
       
       try {
         const breedTagRes = await fetch(`${API_URL}/api/admin/products/bulk-seed-breed-metadata`, {
@@ -446,7 +463,7 @@ const Admin = () => {
       }
       
       // Step 8: Update all services with Mira whispers
-      toast({ title: '✨ Step 8/9: Adding Mira Whispers...', description: 'Personalizing all services' });
+      toast({ title: '✨ Step 8/10: Adding Mira Whispers...', description: 'Personalizing all services' });
       
       try {
         const whisperRes = await fetch(`${API_URL}/api/service-box/update-all-whispers`, {
@@ -462,7 +479,7 @@ const Admin = () => {
       }
       
       // Step 9: Seed production data (FAQs, collections, etc.)
-      toast({ title: '📋 Step 9/9: Finalizing...', description: 'Setting up FAQs & collections' });
+      toast({ title: '📋 Step 9/10: Finalizing...', description: 'Setting up FAQs & collections' });
       
       try {
         const prodRes = await fetch(`${API_URL}/api/admin/seed-production`, {
@@ -479,7 +496,7 @@ const Admin = () => {
       // Final toast
       toast({
         title: '✅ MASTER SYNC COMPLETE!',
-        description: `Shopify: ${results.shopify} | Enhanced: ${results.enhanced} | AI Tagged: ${results.aiTagged} | Services: ${results.services} | Breeds: ${results.breeds}`,
+        description: `Shopify: ${results.shopify} | Enhanced: ${results.enhanced} | AI Tagged: ${results.aiTagged} | Services: ${results.services} | Breeds: ${results.breeds} | PICKS: ${results.breedProducts}`,
         duration: 10000
       });
       
