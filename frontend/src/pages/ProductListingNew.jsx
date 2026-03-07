@@ -298,7 +298,7 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
       'breed-cakes': { title: 'Breed Cakes', moment: 'celebration', desc: 'Shaped like your beloved breed' },
       treats: { title: 'Treats & Rewards', moment: 'daily', desc: 'For training, walks, and everyday joy' },
       hampers: { title: 'Celebration Boxes', moment: 'celebration', desc: 'Complete party packages' },
-      desi: { title: 'Desi Treats', moment: 'special', desc: 'Traditional Indian flavors, pet-safe' },
+      desi: { title: 'Desi Treats', moment: 'special', desc: 'Traditional Indian flavours, pet-safe' },
       accessories: { title: 'Celebration Gear', moment: 'celebration', desc: 'Bandanas, toys, and party essentials' },
       'frozen-treats': { title: 'Frozen Delights', moment: 'daily', desc: 'Cool treats for hot days' },
       pupcakes: { title: 'Pupcakes & Dognuts', moment: 'celebration', desc: 'Mini celebration treats' }
@@ -448,7 +448,7 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
                 className="inline-flex items-center gap-2 text-sm text-amber-700 hover:text-amber-800 mt-4"
               >
                 <PawPrint className="w-4 h-4" />
-                Add your pet for personalized recommendations
+                Add your pet for personalised recommendations
                 <ChevronRight className="w-4 h-4" />
               </Link>
             )}

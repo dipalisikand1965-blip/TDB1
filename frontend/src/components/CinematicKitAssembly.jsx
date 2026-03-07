@@ -290,7 +290,7 @@ const CinematicKitAssembly = ({
       setShowSummary(true);
       if (voiceEnabled) {
         setTimeout(() => {
-          speakText(`And that's your complete ${kitName}! ${items.length} items hand-picked for ${petName}. You can customize your selection before adding to cart.`);
+          speakText(`And that's your complete ${kitName}! ${items.length} items hand-picked for ${petName}. You can customise your selection before adding to cart.`);
         }, 500);
       }
     }
