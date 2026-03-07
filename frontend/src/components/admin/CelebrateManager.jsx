@@ -18,11 +18,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 import axios from 'axios';
+import PillarServicesTab from './PillarServicesTab';
 import {
   Cake, Gift, Heart, ShoppingBag, Settings, Search,
   Plus, Edit2, Trash2, RefreshCw, Upload, Download, ChevronRight,
   Clock, CheckCircle, XCircle, User, Phone, Mail, MapPin, Star,
-  Calendar, Filter, Eye, Package, Building2, Sparkles, PartyPopper
+  Calendar, Filter, Eye, Package, Building2, Sparkles, PartyPopper, Briefcase
 } from 'lucide-react';
 
 const CATEGORY_OPTIONS = [
@@ -604,6 +605,9 @@ const CelebrateManager = ({ getAuthHeader }) => {
           <TabsTrigger value="products" data-testid="celebrate-tab-products" className="data-[state=active]:bg-pink-600 data-[state=active]:text-white">
             <Cake className="w-4 h-4 mr-2" /> Products
           </TabsTrigger>
+          <TabsTrigger value="services" data-testid="celebrate-tab-services" className="data-[state=active]:bg-pink-600 data-[state=active]:text-white">
+            <Briefcase className="w-4 h-4 mr-2" /> Services
+          </TabsTrigger>
           <TabsTrigger value="bundles" data-testid="celebrate-tab-bundles" className="data-[state=active]:bg-pink-600 data-[state=active]:text-white">
             <Gift className="w-4 h-4 mr-2" /> Bundles
           </TabsTrigger>
@@ -826,6 +830,16 @@ const CelebrateManager = ({ getAuthHeader }) => {
               </Card>
             ))}
           </div>
+        </TabsContent>
+
+        {/* SERVICES TAB */}
+        <TabsContent value="services" className="space-y-4">
+          <PillarServicesTab 
+            pillar="celebrate"
+            pillarName="Celebrate"
+            pillarIcon="🎂"
+            pillarColor="bg-pink-500"
+          />
         </TabsContent>
 
         {/* BUNDLES TAB */}

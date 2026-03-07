@@ -11,11 +11,12 @@ import {
   Plane, Car, Train, Truck, Package, Gift, Settings, RefreshCw, Upload, Download,
   Plus, Edit2, Trash2, Search, Filter, Eye, Calendar, Clock, MapPin, User, Phone, Mail,
   PawPrint, AlertTriangle, CheckCircle, XCircle, Loader2, ChevronDown, ChevronUp,
-  TrendingUp, DollarSign, Star, Bell, FileText, Building2, Globe, Shield, Award
+  TrendingUp, DollarSign, Star, Bell, FileText, Building2, Globe, Shield, Award, Briefcase
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from '../../hooks/use-toast';
 import { API_URL } from '../../utils/api';
+import PillarServicesTab from './PillarServicesTab';
 
 const TravelManager = ({ getAuthHeader }) => {
   const [activeSubTab, setActiveSubTab] = useState('requests');
@@ -459,6 +460,9 @@ const TravelManager = ({ getAuthHeader }) => {
           <TabsTrigger value="products" data-testid="travel-tab-products">
             <Package className="w-4 h-4 mr-2" /> Products
           </TabsTrigger>
+          <TabsTrigger value="services" data-testid="travel-tab-services">
+            <Briefcase className="w-4 h-4 mr-2" /> Services
+          </TabsTrigger>
           <TabsTrigger value="bundles" data-testid="travel-tab-bundles">
             <Gift className="w-4 h-4 mr-2" /> Bundles
           </TabsTrigger>
@@ -879,6 +883,16 @@ const TravelManager = ({ getAuthHeader }) => {
               <Button className="mt-4" onClick={seedProducts}>Seed Default Products</Button>
             </Card>
           )}
+        </TabsContent>
+
+        {/* Services Tab */}
+        <TabsContent value="services" className="space-y-4">
+          <PillarServicesTab 
+            pillar="travel"
+            pillarName="Travel"
+            pillarIcon="✈️"
+            pillarColor="bg-blue-500"
+          />
         </TabsContent>
 
         {/* Bundles Tab */}
