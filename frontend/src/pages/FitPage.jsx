@@ -4,8 +4,8 @@
  * Elegant, service-soul-driven design with social proof & engagement
  */
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -334,11 +334,26 @@ const FitPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const servicesSectionRef = useRef(null);
+  
+  // Get fitness category from URL query params
+  const urlCategory = searchParams.get('type') || searchParams.get('category');
   
   // Scroll to top when page loads
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  
+  // Handle URL type parameter - scroll to services section
+  useEffect(() => {
+    if (urlCategory && servicesSectionRef.current) {
+      // Scroll to services section after a short delay
+      setTimeout(() => {
+        servicesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 500);
+    }
+  }, [urlCategory]);
   
   // Data states
   const [services, setServices] = useState([]);
@@ -732,7 +747,7 @@ const FitPage = () => {
       </section>
       
       {/* ==================== CONCIERGE® SERVICES SECTION ==================== */}
-      <section id="services" className="py-12 md:py-16 bg-gradient-to-b from-teal-50/30 to-white">
+      <section ref={servicesSectionRef} id="services" className="py-12 md:py-16 bg-gradient-to-b from-teal-50/30 to-white">
         <div className="max-w-7xl mx-auto px-4">
           {/* Section Header */}
           <div className="mb-8">
