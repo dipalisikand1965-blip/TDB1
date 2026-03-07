@@ -12470,6 +12470,32 @@ async def mira_chat(
                         pet_ctx = pet_doc
                         pet_name = pet_ctx.get("name") or "your pet"
                         logger.info(f"[SOULFUL] Loaded pet context from DB for {pet_name}: soul_score={pet_ctx.get('soul_score')}, learned_facts={len(pet_ctx.get('learned_facts', []))}")
+                        
+                        # ════════════════════════════════════════════════════════════
+                        # ENRICH pet_ctx with order history and user intents
+                        # ════════════════════════════════════════════════════════════
+                        owner_email = pet_ctx.get("owner_email")
+                        if owner_email:
+                            try:
+                                # Load recent orders for this user
+                                recent_orders = await db.orders.find(
+                                    {"user_email": owner_email},
+                                    {"_id": 0, "items": 1, "products": 1, "created_at": 1, "status": 1}
+                                ).sort("created_at", -1).limit(5).to_list(5)
+                                if recent_orders:
+                                    pet_ctx["order_history"] = recent_orders
+                                    logger.info(f"[SOULFUL] Loaded {len(recent_orders)} orders for {pet_name}")
+                                
+                                # Load recent service requests/intents
+                                recent_intents = await db.service_requests.find(
+                                    {"user_email": owner_email},
+                                    {"_id": 0, "type": 1, "intent_type": 1, "pillar": 1, "status": 1}
+                                ).sort("created_at", -1).limit(5).to_list(5)
+                                if recent_intents:
+                                    pet_ctx["recent_intents"] = recent_intents
+                                    logger.info(f"[SOULFUL] Loaded {len(recent_intents)} intents for {pet_name}")
+                            except Exception as enrich_err:
+                                logger.warning(f"[SOULFUL] Could not enrich context with orders/intents: {enrich_err}")
                     else:
                         logger.warning(f"[SOULFUL] Pet not found in DB for id={pet_id}")
                 except Exception as pet_fetch_err:

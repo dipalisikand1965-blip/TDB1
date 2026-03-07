@@ -799,12 +799,77 @@ async def get_soulful_response(
         if preferences.get("dislikes"):
             context_parts.append(f"Dislikes: {', '.join(preferences['dislikes'])}")
     
-    # Relationships
-    relationships = pet_context.get("relationships", [])
-    if relationships and isinstance(relationships, list):
-        friends = [r.get("name") for r in relationships if isinstance(r, dict) and r.get("type") == "friend"]
-        if friends:
-            context_parts.append(f"Dog friends: {', '.join(friends)}")
+    # ═══════════════════════════════════════════════════════════════════════════
+    # RELATIONSHIPS & FAMILY - Who the pet knows and loves
+    # ═══════════════════════════════════════════════════════════════════════════
+    relationships = pet_context.get("relationships", {})
+    if relationships:
+        if isinstance(relationships, dict):
+            # New format: {"dog_friends": [...], "human_favorites": [...], "pet_sitter": "..."}
+            dog_friends = relationships.get("dog_friends", [])
+            if dog_friends:
+                context_parts.append(f"Dog friends: {', '.join(dog_friends)}")
+            
+            human_favorites = relationships.get("human_favorites", [])
+            if human_favorites:
+                context_parts.append(f"Favorite humans: {', '.join(human_favorites)}")
+            
+            pet_sitter = relationships.get("pet_sitter")
+            if pet_sitter:
+                context_parts.append(f"Pet sitter: {pet_sitter}")
+        elif isinstance(relationships, list):
+            # Old format: [{"name": "...", "type": "friend"}]
+            friends = [r.get("name") for r in relationships if isinstance(r, dict) and r.get("type") == "friend"]
+            if friends:
+                context_parts.append(f"Dog friends: {', '.join(friends)}")
+    
+    # Pet siblings (other pets in the same family)
+    siblings = pet_context.get("siblings") or pet_context.get("pet_siblings")
+    if siblings:
+        if isinstance(siblings, list):
+            context_parts.append(f"Pet siblings: {', '.join(siblings)}")
+        else:
+            context_parts.append(f"Pet siblings: {siblings}")
+    
+    # Pet parent info
+    owner_email = pet_context.get("owner_email")
+    owner_name = pet_context.get("owner_name") or pet_context.get("parent_name")
+    if owner_name:
+        context_parts.append(f"Pet parent: {owner_name}")
+    elif owner_email:
+        # Extract name from email if not explicitly set
+        parent_name = owner_email.split('@')[0].replace('.', ' ').replace('_', ' ').title()
+        context_parts.append(f"Pet parent: {parent_name}")
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ORDER/PURCHASE HISTORY - What they've bought before
+    # ═══════════════════════════════════════════════════════════════════════════
+    order_history = pet_context.get("order_history") or pet_context.get("purchase_history") or []
+    if order_history:
+        recent_orders = order_history[:5] if isinstance(order_history, list) else []
+        if recent_orders:
+            order_items = []
+            for order in recent_orders:
+                if isinstance(order, dict):
+                    items = order.get("items", order.get("products", []))
+                    for item in items[:2]:  # Max 2 items per order
+                        item_name = item.get("name", item.get("title", ""))
+                        if item_name:
+                            order_items.append(item_name)
+            if order_items:
+                context_parts.append(f"Recent purchases: {', '.join(order_items[:5])}")
+    
+    # User intents/requests from service desk
+    recent_intents = pet_context.get("recent_intents") or pet_context.get("service_requests") or []
+    if recent_intents:
+        intent_summaries = []
+        for intent in recent_intents[:3]:
+            if isinstance(intent, dict):
+                intent_type = intent.get("type", intent.get("intent_type", ""))
+                if intent_type:
+                    intent_summaries.append(intent_type)
+        if intent_summaries:
+            context_parts.append(f"Recent requests: {', '.join(intent_summaries)}")
     
     context_string = "\n".join(context_parts) if context_parts else "No specific details available yet."
     
