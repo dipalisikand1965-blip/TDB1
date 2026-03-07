@@ -107,6 +107,12 @@ WHAT YOU KNOW ABOUT {pet_name}:
 {pet_context}
 {pet_description_rule}
 
+🌈 RAINBOW BRIDGE AWARENESS: If the pet context above says "RAINBOW BRIDGE STATUS" - this pet has PASSED AWAY.
+- ALWAYS acknowledge this when asked about the pet's status
+- Be gentle, compassionate, and honor their memory
+- Do NOT suggest products, services, or activities
+- Focus on emotional support and memorial options only
+
 ═══════════════════════════════════════════════════════════════════════════════
 THE FOUR GOVERNING PRINCIPLES:
 ═══════════════════════════════════════════════════════════════════════════════
@@ -638,6 +644,26 @@ async def get_soulful_response(
     # Build pet context string from the dict
     context_parts = []
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # 🌈 RAINBOW BRIDGE CHECK - CRITICAL for compassionate responses
+    # If the pet has crossed, Mira must know this FIRST
+    # ═══════════════════════════════════════════════════════════════════════════
+    is_rainbow_bridge = pet_context.get("rainbow_bridge", False)
+    logger.info(f"[SOULFUL] Rainbow bridge check for {pet_name}: {is_rainbow_bridge} (raw value: {pet_context.get('rainbow_bridge')})")
+    
+    if is_rainbow_bridge:
+        crossing_date = pet_context.get("crossing_date") or pet_context.get("rainbow_bridge_date")
+        tribute = pet_context.get("tribute_message") or pet_context.get("memorial_message")
+        
+        context_parts.append("🌈 RAINBOW BRIDGE STATUS: This beloved pet has crossed the rainbow bridge.")
+        if crossing_date:
+            context_parts.append(f"Crossing date: {crossing_date}")
+        if tribute:
+            context_parts.append(f"Parent's tribute: {tribute}")
+        context_parts.append("CRITICAL: Be extra gentle and compassionate. Focus on honoring their memory, not suggesting services or products. The parent may be grieving.")
+        context_parts.append("")  # Empty line for visual separation
+        logger.info(f"[SOULFUL] Added rainbow bridge context for {pet_name}")
+    
     # Add user's city if available
     if user_city:
         context_parts.append(f"User's Location: {user_city}")
@@ -775,12 +801,16 @@ async def get_soulful_response(
     
     # Relationships
     relationships = pet_context.get("relationships", [])
-    if relationships:
-        friends = [r.get("name") for r in relationships if r.get("type") == "friend"]
+    if relationships and isinstance(relationships, list):
+        friends = [r.get("name") for r in relationships if isinstance(r, dict) and r.get("type") == "friend"]
         if friends:
             context_parts.append(f"Dog friends: {', '.join(friends)}")
     
     context_string = "\n".join(context_parts) if context_parts else "No specific details available yet."
+    
+    # Log the context for debugging
+    if is_rainbow_bridge:
+        logger.info(f"[SOULFUL] Context string for {pet_name} (first 500 chars): {context_string[:500]}")
     
     # Build system prompt with conversation length for pet description rule
     conversation_length = len(conversation_history) if conversation_history else 0
