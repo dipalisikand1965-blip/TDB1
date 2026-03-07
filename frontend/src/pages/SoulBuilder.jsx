@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import BreedAutocomplete from '../components/BreedAutocomplete';
+import WelcomeWrappedModal from '../components/wrapped/WelcomeWrappedModal';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // SOUL BUILDER QUESTIONS - Following Soul Score Doctrine (8 Golden Pillars)
@@ -308,6 +309,10 @@ const SoulBuilder = () => {
   
   // Current working pet object (for displaying correct score)
   const [currentPet, setCurrentPet] = useState(null);
+  
+  // Welcome Wrapped Modal - shows after first Soul Profile completion
+  const [showWelcomeWrapped, setShowWelcomeWrapped] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
   
   // Multi-pet support
   const [existingPets, setExistingPets] = useState([]);
@@ -637,7 +642,17 @@ const SoulBuilder = () => {
         if (navigateAfter === 'pet-home') {
           // Navigate with pet context
           const petId = result.pet_id || currentPetId;
-          if (petId) {
+          
+          // Check if this is first-time Soul Profile completion (score >= 10 and no wrapped shown yet)
+          const wrappedShownKey = `wrapped_shown_${petId}`;
+          const hasShownWrapped = localStorage.getItem(wrappedShownKey);
+          
+          if (calculatedScore >= 10 && !hasShownWrapped && petId) {
+            // Show Welcome Wrapped modal for first completion
+            localStorage.setItem(wrappedShownKey, 'true');
+            setPendingNavigation(petId);
+            setShowWelcomeWrapped(true);
+          } else if (petId) {
             window.location.href = `/pet-home?active_pet=${petId}`;
           } else {
             window.location.href = '/pet-home';
@@ -2577,6 +2592,32 @@ const SoulBuilder = () => {
           </div>
         </div>
       </div>
+    );
+  }
+  
+  // Handle Welcome Wrapped modal close
+  const handleWelcomeWrappedClose = () => {
+    setShowWelcomeWrapped(false);
+    if (pendingNavigation) {
+      window.location.href = `/pet-home?active_pet=${pendingNavigation}`;
+    } else {
+      window.location.href = '/pet-home';
+    }
+  };
+  
+  // Render Welcome Wrapped Modal if triggered
+  if (showWelcomeWrapped) {
+    return (
+      <WelcomeWrappedModal
+        isOpen={showWelcomeWrapped}
+        onClose={handleWelcomeWrappedClose}
+        petId={pendingNavigation || currentPetId}
+        petData={{
+          name: petName,
+          breed: petData.breed || detectedBreed,
+          soul_score: soulScore
+        }}
+      />
     );
   }
   

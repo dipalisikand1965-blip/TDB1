@@ -165,12 +165,12 @@ Design/Docs:
 
 | URL | What It Shows |
 |-----|---------------|
-| https://rainbow-bridge-3.preview.emergentagent.com/api/wrapped/share/699fa0a513e44c977327ad57 | Mystique's shareable card |
-| https://rainbow-bridge-3.preview.emergentagent.com/api/wrapped/welcome-card/699fa0a513e44c977327ad57 | Welcome wrapped card |
-| https://rainbow-bridge-3.preview.emergentagent.com/wrapped/699fa0a513e44c977327ad57 | Full 6-card viewer |
-| https://rainbow-bridge-3.preview.emergentagent.com/wrapped-welcome | Conversion landing page |
-| https://rainbow-bridge-3.preview.emergentagent.com/pet-wrapped-mystique.html | Design template |
-| https://rainbow-bridge-3.preview.emergentagent.com/investor-deck.html | Investor presentation |
+| https://mira-memory-cards.preview.emergentagent.com/api/wrapped/share/699fa0a513e44c977327ad57 | Mystique's shareable card |
+| https://mira-memory-cards.preview.emergentagent.com/api/wrapped/welcome-card/699fa0a513e44c977327ad57 | Welcome wrapped card |
+| https://mira-memory-cards.preview.emergentagent.com/wrapped/699fa0a513e44c977327ad57 | Full 6-card viewer |
+| https://mira-memory-cards.preview.emergentagent.com/wrapped-welcome | Conversion landing page |
+| https://mira-memory-cards.preview.emergentagent.com/pet-wrapped-mystique.html | Design template |
+| https://mira-memory-cards.preview.emergentagent.com/investor-deck.html | Investor presentation |
 
 ### Mira's AI Memory Example (Mystique)
 > "I remember the day when Mystique raced around the garden, her tail a blur, bursting with energy as she leapt into the air with a joyful happy dance at walk time... She radiated pure love, a wonderful reminder of how deeply she cherished every shared adventure with you, Dipali."
@@ -319,7 +319,7 @@ Pet Wrapped is the #1 priority. It's a Spotify Wrapped-style viral acquisition e
 
 ### 2. Test Pet Wrapped APIs
 ```bash
-API_URL=https://rainbow-bridge-3.preview.emergentagent.com
+API_URL=https://mira-memory-cards.preview.emergentagent.com
 
 # List all pets
 curl $API_URL/api/wrapped/admin/pets
@@ -376,6 +376,20 @@ curl -X POST $API_URL/api/wrapped/trigger-welcome/699fa0a513e44c977327ad57
 
 - **Founder:** Dipali Sikand (dipali@clubconcierge.in)
 - **Platform:** The Doggy Company (thedoggycompany.com)
+
+---
+
+## CHANGELOG
+
+### March 7, 2025
+- **FIXED:** Pet Wrapped Admin Panel - Pet list now loading correctly for all pets (19 pets showing)
+- **COMPLETED:** Multi-channel delivery system integration in SoulBuilder.jsx
+  - WelcomeWrappedModal triggers after first Soul Profile completion
+  - WhatsApp delivery via Gupshup working
+  - Email delivery via Resend working
+  - In-app celebration modal with confetti effect
+- **VERIFIED:** End-to-end Pet Wrapped flow working:
+  - Admin panel → Select pet → Generate wrapped → View share card → WhatsApp/Email delivery
 
 ---
 

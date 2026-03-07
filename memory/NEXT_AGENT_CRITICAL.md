@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://rainbow-bridge-3.preview.emergentagent.com
+https://mira-memory-cards.preview.emergentagent.com
 
 ---
 
