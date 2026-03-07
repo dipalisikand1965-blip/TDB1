@@ -144,7 +144,7 @@ async def send_via_channel(
             
             resend.api_key = api_key
             resend.Emails.send({
-                "from": "The Doggy Company <woof@thedoggycompany.in>",
+                "from": "The Doggy Company <woof@thedoggycompany.com>",
                 "to": to_email,
                 "subject": f"Re: Your request (#{conversation_id[-8:]})",
                 "html": f"""
@@ -157,7 +157,7 @@ async def send_via_channel(
                         <p>— The Doggy Company Concierge Team</p>
                     </div>
                 """,
-                "reply_to": f"support+{conversation_id}@thedoggycompany.in"
+                "reply_to": f"support+{conversation_id}@thedoggycompany.com"
             })
             logger.info(f"Email sent to {to_email}")
             return True

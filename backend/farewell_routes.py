@@ -499,7 +499,7 @@ async def get_farewell_settings():
             },
             "grief_support": {
                 "enabled": True,
-                "counsellor_email": "support@thedoggycompany.in"
+                "counsellor_email": "support@thedoggycompany.com"
             }
         }
     

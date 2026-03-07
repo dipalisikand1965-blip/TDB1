@@ -1081,6 +1081,81 @@ async def concierge_reply(
     
     logger.info(f"[SERVICE_DESK] Concierge {concierge_name} replied to ticket: {ticket_id}")
     
+    # ═══════════════════════════════════════════════════════════════════
+    # SEND WHATSAPP & EMAIL NOTIFICATIONS
+    # Notify member via all available channels for omnichannel experience
+    # ═══════════════════════════════════════════════════════════════════
+    try:
+        if ticket:
+            member_email = ticket.get("member", {}).get("email") or ticket.get("user_email")
+            member_phone = ticket.get("member", {}).get("phone") or ticket.get("member", {}).get("whatsapp") or ticket.get("user_phone")
+            member_name = ticket.get("member", {}).get("name") or ticket.get("user_name") or "Valued Customer"
+            
+            # Send WhatsApp notification
+            if member_phone:
+                try:
+                    from whatsapp_notifications import WhatsAppNotifications
+                    wa_result = await WhatsAppNotifications.ticket_update(
+                        phone=member_phone,
+                        user_name=member_name,
+                        ticket_id=ticket_id,
+                        status="updated",
+                        message_preview=message[:100] if len(message) > 100 else message
+                    )
+                    if wa_result.get("success"):
+                        logger.info(f"[SERVICE_DESK] WhatsApp notification sent to {member_phone[:6]}*** for ticket {ticket_id}")
+                except Exception as wa_err:
+                    logger.warning(f"[SERVICE_DESK] WhatsApp notification failed: {wa_err}")
+            
+            # Send Email notification
+            if member_email:
+                try:
+                    import resend
+                    import os
+                    resend.api_key = os.environ.get("RESEND_API_KEY")
+                    sender_email = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.com")
+                    
+                    if resend.api_key:
+                        email_result = resend.Emails.send({
+                            "from": f"The Doggy Company <{sender_email}>",
+                            "to": member_email,
+                            "reply_to": f"ticket+{ticket_id}@replies.thedoggycompany.com",
+                            "subject": f"Re: Ticket {ticket_id} - Concierge Update",
+                            "html": f"""
+                                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                                    <div style="background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%); padding: 20px; border-radius: 8px 8px 0 0;">
+                                        <h2 style="color: white; margin: 0;">The Doggy Company</h2>
+                                        <p style="color: rgba(255,255,255,0.8); margin: 5px 0 0 0;">Concierge Update</p>
+                                    </div>
+                                    <div style="background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; border-top: none;">
+                                        <p>Hi {member_name},</p>
+                                        <p><strong>{concierge_name}</strong> from our Concierge team has responded to your request:</p>
+                                        <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; margin: 15px 0;">
+                                            {message.replace(chr(10), '<br>')}
+                                        </div>
+                                        <p style="color: #6b7280; font-size: 12px;">
+                                            Reply to this email or message us on WhatsApp to continue the conversation.
+                                        </p>
+                                    </div>
+                                    <div style="background: #1f2937; padding: 15px; border-radius: 0 0 8px 8px; text-align: center;">
+                                        <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                                            The Doggy Company Concierge® | woof@thedoggycompany.com
+                                        </p>
+                                    </div>
+                                </div>
+                            """,
+                            "headers": {
+                                "X-Ticket-ID": ticket_id,
+                                "References": f"<{ticket_id}@thedoggycompany.com>",
+                                "In-Reply-To": f"<{ticket_id}@thedoggycompany.com>"
+                            }
+                        })
+                        logger.info(f"[SERVICE_DESK] Email notification sent to {member_email} for ticket {ticket_id}")
+                except Exception as email_err:
+                    logger.warning(f"[SERVICE_DESK] Email notification failed: {email_err}")
+    except Exception as notify_err:
+        logger.warning(f"[SERVICE_DESK] Multi-channel notification error: {notify_err}")
+    
     return {
         "success": True, 
         "ticket_id": ticket_id,

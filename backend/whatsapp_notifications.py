@@ -146,7 +146,7 @@ What you get:
 
 {"Your membership is valid until " + expires_at[:10] if tier.lower() != "free" else ""}
 
-Start your journey: thedoggycompany.in/my-pets
+Start your journey: thedoggycompany.com/my-pets
 
 Questions? Just reply here! 💜
 
@@ -257,7 +257,7 @@ Make it special with:
 🎁 Celebration hamper
 📸 Pawty photoshoot
 
-Shop now: thedoggycompany.in/celebrate
+Shop now: thedoggycompany.com/celebrate
 
 Need help planning? Just reply! 💜
 
@@ -291,7 +291,7 @@ Your request #{ticket_id} has been updated.
 
 Status: *{status.replace('_', ' ').title()}*{preview}
 
-View details: thedoggycompany.in/inbox
+View details: thedoggycompany.com/inbox
 
 Reply here if you need anything else!
 
@@ -318,7 +318,7 @@ What we offer:
 🏥 Health records & reminders
 
 Start by creating your Pet Soul™ profile:
-👉 thedoggycompany.in/pet-soul-onboard
+👉 thedoggycompany.com/pet-soul-onboard
 
 Questions? Just message us here!
 
@@ -349,3 +349,51 @@ Questions? Reply here!
 — The Doggy Company 🐕"""
         
         return await send_whatsapp_message(phone, message, "shipping")
+    
+    @staticmethod
+    async def order_confirmed(
+        phone: str,
+        user_name: str,
+        order_id: str,
+        items: str,
+        total: float
+    ) -> Dict[str, Any]:
+        """Send order confirmation notification"""
+        message = f"""🛍️ Order Confirmed!
+
+Hi {user_name},
+
+Thank you for your order!
+
+📦 Order #{order_id}
+{items}
+
+💰 Total: ₹{total:,.0f}
+
+We'll notify you when it's shipped.
+
+Questions? Reply here!
+
+— The Doggy Company 🐕"""
+        
+        return await send_whatsapp_message(phone, message, "order")
+    
+    @staticmethod
+    async def concierge_message(
+        phone: str,
+        user_name: str,
+        message_content: str,
+        from_name: str = "Concierge Team"
+    ) -> Dict[str, Any]:
+        """Send a direct message from concierge to member"""
+        message = f"""💬 Message from {from_name}
+
+Hi {user_name},
+
+{message_content}
+
+Reply here to continue the conversation.
+
+— The Doggy Company Concierge® 🐕"""
+        
+        return await send_whatsapp_message(phone, message, "concierge")
