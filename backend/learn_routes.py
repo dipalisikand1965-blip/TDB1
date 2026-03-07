@@ -474,6 +474,82 @@ async def get_learn_products(limit: int = 20):
     return {"products": products, "count": len(products)}
 
 
+# ==================== GUIDES ====================
+
+@router.get("/guides")
+async def get_learn_guides(
+    category: Optional[str] = None,
+    topic: Optional[str] = None,
+    limit: int = Query(default=20, le=100)
+):
+    """
+    Get training guides and articles.
+    The "Learn Bible" - comprehensive training content.
+    """
+    db = get_db()
+    
+    query = {}
+    if category:
+        query["category"] = category
+    if topic:
+        query["topic"] = {"$regex": topic, "$options": "i"}
+    
+    guides = await db.learn_guides.find(query, {"_id": 0}).limit(limit).to_list(limit)
+    
+    return {
+        "guides": guides,
+        "count": len(guides),
+        "categories": await db.learn_guides.distinct("category")
+    }
+
+
+@router.get("/videos")
+async def get_learn_videos(
+    topic: Optional[str] = None,
+    category: Optional[str] = None,
+    breed: Optional[str] = None,
+    max_results: int = Query(default=10, le=50)
+):
+    """
+    Get training videos from database + YouTube.
+    Combines curated videos with live YouTube search.
+    """
+    db = get_db()
+    
+    # Get curated videos from database
+    query = {}
+    if topic:
+        query["topic"] = {"$regex": topic, "$options": "i"}
+    if category:
+        query["category"] = category
+    
+    db_videos = await db.learn_videos.find(query, {"_id": 0}).limit(max_results).to_list(max_results)
+    
+    # Also fetch from YouTube for fresh content
+    youtube_videos = []
+    try:
+        from services.youtube_service import search_youtube_videos
+        
+        search_query = topic or "dog training"
+        if breed:
+            search_query = f"{breed} {search_query}"
+        
+        youtube_results = await search_youtube_videos(
+            query=search_query,
+            max_results=max_results
+        )
+        youtube_videos = youtube_results or []
+    except Exception as e:
+        logger.warning(f"YouTube fetch failed: {e}")
+    
+    return {
+        "curated_videos": db_videos,
+        "youtube_videos": youtube_videos,
+        "total_curated": len(db_videos),
+        "total_youtube": len(youtube_videos)
+    }
+
+
 # ==================== BUNDLES ====================
 
 @router.get("/bundles")
