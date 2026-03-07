@@ -1636,3 +1636,177 @@ async def get_today_learn_deep_links():
         "success": True,
         "map": enriched_map
     }
+
+
+
+# ============================================================
+# ASK MIRA - AI Learning Assistant
+# ============================================================
+
+from pydantic import BaseModel
+
+
+class AskMiraRequest(BaseModel):
+    """Request model for Ask Mira learning questions"""
+    question: str
+    pet_id: Optional[str] = None
+    topic: Optional[str] = None  # Optional topic context
+
+
+@router.post("/ask-mira")
+async def ask_mira_learn(
+    request: AskMiraRequest,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Ask Mira a pet learning question.
+    Uses AI to provide helpful, personalized answers based on:
+    - User's question
+    - Selected pet's profile (if provided)
+    - Learn content from database
+    
+    Returns AI response + related Learn content.
+    """
+    import os
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database unavailable")
+    
+    user = await get_user_from_token(authorization)
+    user_id = user.get("user_id") if user else None
+    
+    # Build context
+    context_parts = []
+    pet_context = ""
+    
+    # Get pet info if provided
+    if request.pet_id and user_id:
+        try:
+            pet = await db.pets.find_one({"id": request.pet_id})
+            if pet:
+                pet_context = f"""
+Pet Profile:
+- Name: {pet.get('name', 'Unknown')}
+- Breed: {pet.get('breed', 'Unknown')}
+- Age: {pet.get('age', 'Unknown')}
+- Life Stage: {pet.get('life_stage', 'adult')}
+- Temperament: {pet.get('temperament', 'N/A')}
+- Known Issues: {', '.join(pet.get('behavior_issues', [])) or 'None reported'}
+"""
+                context_parts.append(f"Pet: {pet.get('name')} ({pet.get('breed', 'Unknown')})")
+        except Exception as e:
+            logger.warning(f"[ASK-MIRA] Failed to fetch pet: {e}")
+    
+    # Search for related Learn content
+    related_guides = []
+    related_videos = []
+    try:
+        # Search guides
+        guide_filter = {
+            "is_active": True,
+            "$or": [
+                {"title": {"$regex": request.question, "$options": "i"}},
+                {"summary": {"$regex": request.question, "$options": "i"}},
+            ]
+        }
+        if request.topic:
+            guide_filter["topic"] = request.topic.lower()
+            
+        guides = await db.learn_guides.find(guide_filter, {"_id": 0}).limit(3).to_list(3)
+        related_guides = [{"id": g.get("id"), "title": g.get("title"), "topic": g.get("topic")} for g in guides]
+        
+        # Search videos
+        video_filter = {
+            "is_active": True,
+            "$or": [
+                {"title": {"$regex": request.question, "$options": "i"}},
+            ]
+        }
+        if request.topic:
+            video_filter["topic"] = request.topic.lower()
+            
+        videos = await db.learn_videos.find(video_filter, {"_id": 0}).limit(3).to_list(3)
+        related_videos = [{"id": v.get("id"), "title": v.get("title"), "topic": v.get("topic")} for v in videos]
+        
+    except Exception as e:
+        logger.warning(f"[ASK-MIRA] Failed to search content: {e}")
+    
+    # Generate AI response
+    try:
+        from emergentintegrations.llm.openai import LlmChat, UserMessage
+        
+        related_content_text = ""
+        if related_guides or related_videos:
+            content_items = []
+            for g in related_guides[:2]:
+                content_items.append(f"- Guide: {g['title']}")
+            for v in related_videos[:2]:
+                content_items.append(f"- Video: {v['title']}")
+            related_content_text = f"""
+
+Related Learn content in our library:
+{chr(10).join(content_items)}
+(Mention these as resources they can explore)
+"""
+        
+        system_prompt = f"""You are Mira, the expert pet learning assistant at The Doggy Company.
+
+Your role:
+- Answer pet care, training, health, and behavior questions
+- Be warm, encouraging, and practical
+- Keep answers concise (150-250 words) - focus on actionable advice
+- Use emojis naturally 🐾 🐕 💜
+- Always recommend professional help for medical issues
+- Reference the user's pet by name if provided
+{pet_context}
+{related_content_text}
+
+SAFETY RULES:
+- Never diagnose medical conditions
+- Always recommend vet consultation for health concerns
+- No certainty on health-adjacent topics
+- Be encouraging, not alarming
+
+End with a helpful follow-up question or suggestion."""
+
+        chat = LlmChat(
+            api_key=os.environ.get("EMERGENT_LLM_KEY"),
+            session_id=f"learn-{user_id or 'anon'}-{uuid.uuid4().hex[:8]}",
+            system_message=system_prompt
+        ).with_model("openai", "gpt-4o-mini")
+        
+        response = await chat.send_message(UserMessage(text=request.question))
+        
+        if response:
+            logger.info(f"[ASK-MIRA] Generated response for: {request.question[:50]}...")
+            return {
+                "success": True,
+                "answer": response,
+                "related_guides": related_guides,
+                "related_videos": related_videos,
+                "pet_context": context_parts if context_parts else None
+            }
+        
+    except Exception as ai_err:
+        logger.error(f"[ASK-MIRA] AI error: {ai_err}")
+    
+    # Fallback response
+    fallback = f"""Great question! 🐾
+
+While I'm having a moment, here's what I'd suggest:
+
+1. Check our Learn library for guides on this topic
+2. Our Behavior Architect® service can help with specific training needs
+3. For health concerns, always consult your vet
+
+Would you like me to connect you with one of our pet experts? Just tap the C® button!
+
+— Mira 💜"""
+    
+    return {
+        "success": True,
+        "answer": fallback,
+        "related_guides": related_guides,
+        "related_videos": related_videos,
+        "fallback": True
+    }
