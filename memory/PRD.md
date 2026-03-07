@@ -2,7 +2,7 @@
 ## Product Requirements Document
 
 **Last Updated:** March 7, 2026
-**Version:** 2.8.1
+**Version:** 2.8.2
 **Status:** Production Ready for Investor Demo
 
 ---
@@ -340,10 +340,13 @@ After deploying to production:
 | Pet name overflow | ✅ Fixed | Pet switcher uses overflow-x-auto |
 | Footer services links | ✅ Fixed | Routes now use /services?pillar=X |
 | Pet Soul page content | ✅ Updated | Philosophy-driven messaging |
+| Catalogue product modals | ✅ Fixed | Modal opens before add-to-cart |
+| CMS not seeded | ✅ Fixed | 16 pages seeded with default content |
+| Pillar managers → Unified Box | ✅ Fixed | 12 managers now fetch from unified source |
 | iOS hamburger menu | ⚠️ Needs Testing | Touch handlers added |
 | WebSocket chat | ⚠️ Degraded | Graceful fallback |
 | Preview → Prod DB | 🚫 Blocked | Whitelist Atlas IP |
-| Services pillar filter | ⚠️ Data Issue | Services need pillar values assigned |
+| Navbar sub-pillar scroll | ⚠️ Pending | Pages need query param handling |
 
 ---
 

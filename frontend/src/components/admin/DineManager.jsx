@@ -222,6 +222,21 @@ const DineManager = ({ credentials }) => {
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
+      // Try Unified Product Box first for single source of truth
+      const unifiedResponse = await fetch(`${API_URL}/api/product-box/by-pillar/dine`);
+      if (unifiedResponse.ok) {
+        const data = await unifiedResponse.json();
+        const productList = data.products || data || [];
+        setProducts(Array.isArray(productList) ? productList : []);
+        setProductStats({
+          total: productList.length,
+          in_stock: productList.filter(p => p.in_stock !== false).length,
+          out_of_stock: productList.filter(p => p.in_stock === false).length
+        });
+        return;
+      }
+      
+      // Fallback to legacy endpoint
       const response = await fetch(`${API_URL}/api/dine/products`, {
         headers: { 'Authorization': getAuthHeader() }
       });

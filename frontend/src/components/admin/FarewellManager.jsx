@@ -92,14 +92,19 @@ const FarewellManager = ({ getAuthHeader }) => {
       
       const [requestsRes, productsRes, statsRes, settingsRes, partnersRes] = await Promise.all([
         axios.get(`${API_URL}/api/farewell/requests`, authHeader),
-        axios.get(`${API_URL}/api/farewell/products`),
+        // Fetch from Unified Product Box first for single source of truth
+        axios.get(`${API_URL}/api/product-box/by-pillar/farewell`).catch(() => 
+          axios.get(`${API_URL}/api/farewell/products`)
+        ),
         axios.get(`${API_URL}/api/farewell/stats`),
         axios.get(`${API_URL}/api/farewell/admin/settings`, authHeader).catch(() => ({ data: {} })),
         axios.get(`${API_URL}/api/farewell/admin/partners`, authHeader).catch(() => ({ data: { partners: [] } }))
       ]);
       
       setRequests(requestsRes.data.requests || []);
-      setProducts(productsRes.data.products || []);
+      // Handle both unified product box response and legacy response
+      const productData = productsRes.data.products || productsRes.data || [];
+      setProducts(Array.isArray(productData) ? productData : []);
       setStats(statsRes.data || {});
       setSettings(settingsRes.data || {});
       setPartners(partnersRes.data.partners || []);
