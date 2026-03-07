@@ -294,6 +294,41 @@ const LearnPage = () => {
       if (response.ok) {
         const data = await response.json();
         setAskMiraResponse(data);
+        
+        // Create service desk ticket for the learning inquiry
+        // Universal Flow: User Intent → Service Desk Ticket → Admin Notification
+        try {
+          await fetch(`${API_URL}/api/service-requests`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token && { Authorization: `Bearer ${token}` })
+            },
+            body: JSON.stringify({
+              type: 'learn_inquiry',
+              pillar: 'learn',
+              source: 'ask_mira_learn',
+              intent: 'learning_question',
+              customer: {
+                name: user?.name || 'Guest',
+                email: user?.email,
+                phone: user?.phone || user?.whatsapp
+              },
+              details: {
+                question: askMiraQuestion,
+                pet_name: selectedPet?.name || 'N/A',
+                pet_id: selectedPet?.id,
+                mira_response_preview: data.answer?.substring(0, 200) + '...',
+                related_guides: data.related_guides?.length || 0,
+                related_videos: data.related_videos?.length || 0
+              },
+              priority: 'low'
+            })
+          });
+          console.log('[LEARN] Service desk ticket created for Ask Mira inquiry');
+        } catch (ticketError) {
+          console.error('[LEARN] Failed to create service ticket:', ticketError);
+        }
       } else {
         toast({ title: 'Failed to get response', variant: 'destructive' });
       }

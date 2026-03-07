@@ -2563,10 +2563,44 @@ const MiraDemoPage = () => {
     setCurrentTicket(newTicket);
     console.log('[TICKET] Created new service ticket:', newTicket.id, 'Pillar:', determinedPillar);
     
-    // In production: POST to /api/tickets/create
-    // For now, we log it
+    // POST to backend to create service desk ticket
+    try {
+      const response = await fetch(`${API_URL}/api/concierge/mira-request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          type: 'mira_conversation',
+          pillar: determinedPillar.toLowerCase(),
+          pet_id: pet?.id,
+          pet_name: pet?.name,
+          user_message: message,
+          mira_response: miraResponse || '',
+          intent: intent || 'general',
+          customer: {
+            name: user?.name || 'Guest',
+            email: user?.email,
+            phone: user?.phone || user?.whatsapp
+          }
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('[TICKET] Backend ticket created:', data.ticket_id || data.request_id);
+        // Update local ticket with backend ID
+        newTicket.backend_ticket_id = data.ticket_id || data.request_id;
+      } else {
+        console.error('[TICKET] Failed to create backend ticket:', response.statusText);
+      }
+    } catch (error) {
+      console.error('[TICKET] Error creating backend ticket:', error);
+    }
+    
     return newTicket;
-  }, [currentTicket, pet, user]);
+  }, [currentTicket, pet, user, token]);
   
   // Engage Concierge - Flip ticket status, NOT create new ticket
   const engageConcierge = useCallback(async (reason, contextData = {}) => {
