@@ -60,6 +60,7 @@ import EnjoyExperiencesAdmin from '../components/admin/EnjoyExperiencesAdmin';
 import PillarQueues from '../components/admin/PillarQueues';
 import AdminGuideDashboard from '../components/admin/AdminGuideDashboard';
 import AdminRainbowBridge from '../components/admin/AdminRainbowBridge';
+import PetWrappedAdmin from '../components/admin/PetWrappedAdmin';
 import { testimonials as mockTestimonials, faqs as mockFaqs } from '../mockData';
 import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
@@ -2623,6 +2624,7 @@ const Admin = () => {
               { id: 'emergency', emoji: '🚨', label: 'Emergency' },
               { id: 'farewell', emoji: '🌈', label: 'Farewell' },
               { id: 'rainbow-bridge', emoji: '💜', label: 'Memorial Wall' },
+              { id: 'pet-wrapped', emoji: '🎁', label: 'Pet Wrapped' },
               { id: 'adopt', emoji: '🐾', label: 'Adopt' },
               { id: 'shop', emoji: '🛒', label: 'Shop' },
               { id: 'service-box', emoji: '🔧', label: 'Services' },
@@ -3819,6 +3821,11 @@ const Admin = () => {
         {/* Rainbow Bridge Memorial Admin */}
         {activeTab === 'rainbow-bridge' && (
           <AdminRainbowBridge key={`rainbow-bridge-${Date.now()}`} />
+        )}
+
+        {/* Pet Wrapped Admin - Launch: May 20, 2026 */}
+        {activeTab === 'pet-wrapped' && (
+          <PetWrappedAdmin key={`pet-wrapped-${Date.now()}`} />
         )}
 
         {/* Adopt Tab */}

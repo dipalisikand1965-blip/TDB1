@@ -247,16 +247,20 @@ All critical features complete!
   - Generate Wrapped: `/api/wrapped/generate/{pet_id}` (all 6 cards data)
   - AI Memory: `/api/wrapped/generate-memory/{pet_id}` (Mira's specific memory)
   - Share Card: `/api/wrapped/share/{pet_id}` (single viral card)
+  
+- [x] **PET WRAPPED FRONTEND** — COMPLETE ✅
+  - Card Components: `/app/frontend/src/components/wrapped/WrappedCards.jsx`
+  - Viewer Page: `/app/frontend/src/pages/PetWrappedViewer.jsx` (`/wrapped/:petId`)
+  - Landing Page: `/app/frontend/src/pages/WrappedWelcomePage.jsx` (`/wrapped-welcome`)
   - Admin Component: `/app/frontend/src/components/admin/PetWrappedAdmin.jsx`
+  - Admin Tab: Added (🎁 Pet Wrapped)
   - Design Template: `/app/frontend/public/pet-wrapped-mystique.html`
   - Spec: `/app/memory/PET_WRAPPED_SPEC.md`
 
 - [ ] **REMAINING FOR MAY 20:**
-  - Add Pet Wrapped tab to main Admin panel
-  - Create frontend card renderer (React components)
-  - Build WhatsApp/Instagram share flow
-  - Create `/wrapped-welcome` landing page
-  - Test with real data from Mystique
+  - Test full flow with Mystique's data on production
+  - WhatsApp/Instagram native share integration (via Web Share API)
+  - Generate Pet Wrapped images as downloadable PNGs
 
 ### P1 - High Priority
 - [ ] Run MASTER SYNC on production
