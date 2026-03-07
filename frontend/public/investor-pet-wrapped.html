@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pet Wrapped · The Viral Engine · Investor Overview</title>
+<meta name="description" content="Pet Wrapped: Spotify Wrapped for pets. A viral acquisition engine that converts emotion into exponential growth.">
+<meta property="og:title" content="Pet Wrapped · The Viral Engine">
+<meta property="og:description" content="How we turn love into growth. The acquisition strategy that markets itself.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --deep:    #0e0620;
+  --purple:  #4B2680;
+  --violet:  #7B4DB5;
+  --gold:    #C9973A;
+  --goldL:   #F0C060;
+  --rose:    #C4607A;
+  --roseL:   #E8A0B0;
+  --cream:   #FAF7F2;
+  --mist:    #7a85a0;
+  --white:   #FFFFFF;
+  --dark:    #2A1650;
+  --green:   #2D7A4A;
+  --greenL:  #6BCB8B;
+  --blue:    #3B82F6;
+  --blueL:   #60A5FA;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: #07021a;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--white);
+  overflow-x: hidden;
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 60px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-orb {
+  position: absolute; border-radius: 50%; filter: blur(100px); pointer-events: none;
+}
+.hero-orb-1 { width: 600px; height: 600px; background: #3a1870; top: -200px; left: -200px; opacity: 0.5; }
+.hero-orb-2 { width: 500px; height: 500px; background: #2D7A4A; bottom: -150px; right: -150px; opacity: 0.35; }
+.hero-orb-3 { width: 300px; height: 300px; background: #c9973a; top: 40%; left: 50%; transform: translate(-50%,-50%); opacity: 0.12; }
+
+.hero-tag {
+  font-size: 11px; letter-spacing: 5px; color: var(--greenL);
+  text-transform: uppercase; margin-bottom: 24px;
+  animation: fadeUp 1s ease both;
+}
+.hero-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(56px, 14vw, 110px);
+  font-weight: 300; font-style: italic;
+  line-height: 0.95; color: var(--white);
+  animation: fadeUp 1s ease 0.15s both;
+}
+.hero-name span { color: var(--goldL); }
+.hero-sub {
+  font-size: 15px; letter-spacing: 2px; color: rgba(255,255,255,0.6);
+  margin-top: 24px; max-width: 600px; line-height: 1.7;
+  animation: fadeUp 1s ease 0.3s both;
+}
+.hero-metric {
+  display: flex; gap: 48px; margin-top: 48px;
+  animation: fadeUp 1s ease 0.45s both;
+}
+.hero-metric-item {
+  text-align: center;
+}
+.hero-metric-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 52px; font-weight: 300; color: var(--goldL);
+}
+.hero-metric-lbl {
+  font-size: 11px; letter-spacing: 2px; color: var(--mist);
+  text-transform: uppercase; margin-top: 4px;
+}
+.scroll-hint {
+  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+  font-size: 11px; letter-spacing: 3px; color: var(--mist);
+  text-transform: uppercase;
+  animation: fadeUp 1s ease 1s both, pulse 2s ease 2s infinite;
+}
+
+/* ── SECTION DIVIDER ── */
+.section-divider {
+  text-align: center; padding: 100px 24px 50px;
+  position: relative;
+}
+.section-divider::before {
+  content: '';
+  display: block; width: 1px; height: 60px;
+  background: linear-gradient(to bottom, transparent, var(--gold));
+  margin: 0 auto 24px;
+}
+.section-divider .div-label {
+  font-size: 10px; letter-spacing: 5px; color: var(--gold);
+  text-transform: uppercase;
+}
+.section-divider .div-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 6vw, 48px);
+  font-weight: 300; color: var(--white);
+  margin-top: 12px; line-height: 1.2;
+}
+.section-divider .div-title em { font-style: italic; color: var(--goldL); }
+
+/* ── CONTAINER ── */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* ── CARD SECTION ── */
+.card-section {
+  background: linear-gradient(135deg, #12082a, #1e0e3e);
+  border: 1px solid rgba(201,151,58,0.15);
+  border-radius: 28px;
+  padding: 56px 48px;
+  margin-bottom: 28px;
+  position: relative; overflow: hidden;
+}
+.card-section::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent 5%, var(--gold) 50%, transparent 95%);
+}
+.card-tag { font-size: 10px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; margin-bottom: 16px; }
+.card-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 5vw, 52px); font-weight: 300; color: var(--white); line-height: 1.1; margin-bottom: 12px; }
+.card-title em { font-style: italic; color: var(--goldL); }
+.card-sub { font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.7; max-width: 700px; margin-bottom: 40px; }
+
+/* ── STAT GRID ── */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 40px; }
+.stat-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 24px 20px; }
+.stat-card .big { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300; color: var(--goldL); line-height: 1; }
+.stat-card .lbl { font-size: 11px; color: var(--mist); margin-top: 6px; line-height: 1.4; }
+.stat-card.green .big { color: var(--greenL); }
+.stat-card.rose .big { color: var(--roseL); }
+.stat-card.blue .big { color: var(--blueL); }
+
+/* ── FUNNEL DIAGRAM ── */
+.funnel {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(201,151,58,0.15);
+  border-radius: 20px;
+  padding: 40px;
+  margin: 40px 0;
+}
+.funnel-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px; font-style: italic;
+  color: var(--goldL); margin-bottom: 32px;
+  text-align: center;
+}
+.funnel-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.funnel-step {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  position: relative;
+}
+.funnel-step::after {
+  content: '';
+  position: absolute;
+  left: 36px;
+  top: 60px;
+  width: 2px;
+  height: calc(100% - 40px);
+  background: linear-gradient(to bottom, var(--gold), rgba(201,151,58,0.2));
+}
+.funnel-step:last-child::after { display: none; }
+.funnel-num {
+  width: 52px; height: 52px;
+  background: linear-gradient(135deg, var(--gold), var(--goldL));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 600;
+  color: var(--deep);
+  flex-shrink: 0;
+  z-index: 1;
+}
+.funnel-content { flex: 1; }
+.funnel-label {
+  font-size: 10px; letter-spacing: 2px;
+  color: var(--gold); text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.funnel-text {
+  font-size: 15px; color: var(--white);
+  line-height: 1.5;
+}
+.funnel-text strong { color: var(--goldL); }
+
+/* ── COMPARISON TABLE ── */
+.compare-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 40px 0;
+}
+.compare-table th {
+  background: rgba(75,38,128,0.3);
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--goldL);
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(201,151,58,0.2);
+}
+.compare-table th:first-child { border-radius: 12px 0 0 0; }
+.compare-table th:last-child { border-radius: 0 12px 0 0; }
+.compare-table td {
+  padding: 16px 20px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.8);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+}
+.compare-table tr:last-child td:first-child { border-radius: 0 0 0 12px; }
+.compare-table tr:last-child td:last-child { border-radius: 0 0 12px 0; }
+.compare-table .highlight { color: var(--greenL); font-weight: 500; }
+.compare-table .dim { color: var(--mist); }
+
+/* ── WRAPPED TYPES ── */
+.wrapped-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 32px;
+}
+.wrapped-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.25s ease;
+}
+.wrapped-card:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(201,151,58,0.25);
+  transform: translateY(-4px);
+}
+.wrapped-card .emoji { font-size: 32px; margin-bottom: 12px; }
+.wrapped-card .name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; color: var(--white);
+  margin-bottom: 8px;
+}
+.wrapped-card .trigger {
+  font-size: 11px; color: var(--gold);
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.wrapped-card .desc {
+  font-size: 12px; color: var(--mist);
+  line-height: 1.5;
+}
+
+/* ── DATA MOAT ── */
+.moat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 32px;
+}
+.moat-card {
+  background: linear-gradient(135deg, rgba(45,122,74,0.1), rgba(45,122,74,0.02));
+  border: 1px solid rgba(107,203,139,0.2);
+  border-radius: 18px;
+  padding: 28px;
+}
+.moat-icon { font-size: 28px; margin-bottom: 14px; }
+.moat-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; color: var(--greenL);
+  margin-bottom: 10px;
+}
+.moat-desc {
+  font-size: 13px; color: rgba(255,255,255,0.6);
+  line-height: 1.6;
+}
+
+/* ── REVENUE POTENTIAL ── */
+.revenue-section {
+  background: linear-gradient(135deg, #0a1a0a, #0e1408);
+  border: 1px solid rgba(107,203,139,0.15);
+}
+.revenue-section::before {
+  background: linear-gradient(90deg, transparent 5%, var(--greenL) 50%, transparent 95%);
+}
+.revenue-projection {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 40px 0;
+}
+.revenue-year {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(107,203,139,0.15);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+}
+.revenue-year .year {
+  font-size: 12px; color: var(--greenL);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.revenue-year .amount {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px; color: var(--white);
+}
+.revenue-year .label {
+  font-size: 11px; color: var(--mist);
+  margin-top: 4px;
+}
+.revenue-year.highlight {
+  border-color: var(--goldL);
+  background: rgba(201,151,58,0.08);
+}
+.revenue-year.highlight .amount { color: var(--goldL); }
+
+/* ── TECH STACK ── */
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-top: 32px;
+}
+.tech-chip {
+  background: rgba(123,77,181,0.1);
+  border: 1px solid rgba(123,77,181,0.2);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+.tech-chip .icon { font-size: 24px; margin-bottom: 8px; }
+.tech-chip .name { font-size: 13px; color: var(--white); font-weight: 500; }
+.tech-chip .sub { font-size: 10px; color: var(--mist); margin-top: 4px; }
+
+/* ── TIMELINE ── */
+.timeline {
+  margin: 40px 0;
+  position: relative;
+  padding-left: 40px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--gold), var(--rose), var(--greenL));
+}
+.timeline-item {
+  position: relative;
+  padding-bottom: 32px;
+}
+.timeline-item:last-child { padding-bottom: 0; }
+.timeline-dot {
+  position: absolute;
+  left: -34px;
+  top: 4px;
+  width: 16px; height: 16px;
+  background: var(--gold);
+  border-radius: 50%;
+  border: 3px solid #07021a;
+}
+.timeline-date {
+  font-size: 11px; color: var(--gold);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.timeline-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; color: var(--white);
+  margin-bottom: 4px;
+}
+.timeline-desc {
+  font-size: 13px; color: var(--mist);
+  line-height: 1.5;
+}
+
+/* ── QUOTE BOX ── */
+.quote-box {
+  background: linear-gradient(135deg, rgba(196,96,122,0.12), rgba(75,38,128,0.1));
+  border: 1px solid rgba(196,96,122,0.22);
+  border-radius: 20px;
+  padding: 40px;
+  margin: 40px 0;
+  text-align: center;
+}
+.quote-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(22px, 4vw, 32px);
+  font-style: italic;
+  color: var(--white);
+  line-height: 1.45;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.quote-text em { color: var(--goldL); }
+.quote-attr {
+  font-size: 12px; color: var(--rose);
+  letter-spacing: 1px;
+  margin-top: 20px;
+}
+
+/* ── FINAL CTA ── */
+.final-cta {
+  text-align: center;
+  padding: 100px 24px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.final-cta .fc-tag {
+  font-size: 10px; letter-spacing: 4px;
+  color: var(--gold); text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.final-cta .fc-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 6vw, 56px);
+  font-weight: 300; color: var(--white);
+  line-height: 1.15; margin-bottom: 20px;
+}
+.final-cta .fc-title em { font-style: italic; color: var(--goldL); }
+.final-cta .fc-sub {
+  font-size: 16px; color: rgba(255,255,255,0.5);
+  max-width: 550px; margin: 0 auto 40px;
+  line-height: 1.7;
+}
+.final-cta .fc-btn {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--deep);
+  font-size: 14px; font-weight: 600;
+  padding: 18px 40px;
+  border-radius: 100px;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+.final-cta .fc-btn:hover {
+  background: var(--goldL);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px rgba(201,151,58,0.3);
+}
+.final-cta .fc-contact {
+  margin-top: 32px;
+  font-size: 13px; color: var(--mist);
+}
+.final-cta .fc-contact a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+.reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.8s ease, transform 0.8s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .card-section { padding: 40px 24px; }
+  .stats-grid, .wrapped-grid, .moat-grid, .tech-grid { grid-template-columns: 1fr; }
+  .revenue-projection { grid-template-columns: repeat(2, 1fr); }
+  .hero-metric { flex-direction: column; gap: 24px; }
+  .funnel { padding: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+  
+  <div class="hero-tag">The Doggy Company · Investor Overview</div>
+  <div class="hero-name"><span>Pet Wrapped</span></div>
+  <div class="hero-sub">
+    Spotify Wrapped for pets. A viral acquisition engine that turns love into exponential growth. 
+    Every share becomes a customer. Every customer becomes a sharer.
+  </div>
+  
+  <div class="hero-metric">
+    <div class="hero-metric-item">
+      <div class="hero-metric-num">$0</div>
+      <div class="hero-metric-lbl">CAC Target</div>
+    </div>
+    <div class="hero-metric-item">
+      <div class="hero-metric-num">∞</div>
+      <div class="hero-metric-lbl">Viral Coefficient</div>
+    </div>
+    <div class="hero-metric-item">
+      <div class="hero-metric-num">6</div>
+      <div class="hero-metric-lbl">Share Moments/Year</div>
+    </div>
+  </div>
+  
+  <div class="scroll-hint">Scroll to explore</div>
+</section>
+
+<!-- ══ THE PROBLEM ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">The Opportunity</div>
+  <div class="div-title">Pet platforms have a <em>growth problem</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section reveal">
+    <div class="card-tag">Market Reality</div>
+    <div class="card-title">CAC is eating pet tech alive.<br><em>We found another way.</em></div>
+    <div class="card-sub">
+      Indian pet startups spend ₹800-2000 to acquire a single customer. 
+      They compete for the same paid channels, the same influencers, the same keywords.
+      Pet Wrapped changes the equation entirely.
+    </div>
+    
+    <table class="compare-table">
+      <tr>
+        <th>Metric</th>
+        <th>Industry Average</th>
+        <th>Pet Wrapped Model</th>
+      </tr>
+      <tr>
+        <td>Customer Acquisition Cost</td>
+        <td class="dim">₹800 - ₹2,000</td>
+        <td class="highlight">₹0 (organic viral)</td>
+      </tr>
+      <tr>
+        <td>Viral Coefficient</td>
+        <td class="dim">&lt; 0.3</td>
+        <td class="highlight">Target: 1.5+</td>
+      </tr>
+      <tr>
+        <td>Share Triggers per Year</td>
+        <td class="dim">0 - 1 (manual)</td>
+        <td class="highlight">6 (automated)</td>
+      </tr>
+      <tr>
+        <td>Emotional Hook</td>
+        <td class="dim">Transactional (buy, book)</td>
+        <td class="highlight">Identity (my dog's story)</td>
+      </tr>
+      <tr>
+        <td>Content Creation</td>
+        <td class="dim">Company produces</td>
+        <td class="highlight">User generates & shares</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══ WHAT IS PET WRAPPED ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">The Product</div>
+  <div class="div-title">Spotify Wrapped, but for <em>the beings you love most</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section reveal">
+    <div class="card-tag">Product Overview</div>
+    <div class="card-title">Beautiful. Shareable. <em>Irresistible.</em></div>
+    <div class="card-sub">
+      Pet Wrapped generates stunning, personalized cards summarizing a pet's journey on our platform.
+      Soul Score, Mira conversations, pillar activity, family connections — all rendered in
+      share-worthy visuals that pet parents can't help but post.
+    </div>
+    
+    <div class="wrapped-grid">
+      <div class="wrapped-card">
+        <div class="emoji">🎁</div>
+        <div class="name">Welcome Wrapped</div>
+        <div class="trigger">Instant · On Profile Complete</div>
+        <div class="desc">The moment they finish their Soul Profile, they get something beautiful to share. Immediate gratification, immediate virality.</div>
+      </div>
+      <div class="wrapped-card">
+        <div class="emoji">🎂</div>
+        <div class="name">Birthday Wrapped</div>
+        <div class="trigger">Annual · Pet's Birthday</div>
+        <div class="desc">Every birthday becomes a celebration AND a share moment. "Look what we've done together this year."</div>
+      </div>
+      <div class="wrapped-card">
+        <div class="emoji">🎄</div>
+        <div class="name">Annual Wrapped</div>
+        <div class="trigger">December · Year End</div>
+        <div class="desc">The Spotify moment. Everyone shares together. Cultural phenomenon potential.</div>
+      </div>
+      <div class="wrapped-card">
+        <div class="emoji">🏠</div>
+        <div class="name">Gotcha Day</div>
+        <div class="trigger">Annual · Adoption Anniversary</div>
+        <div class="desc">For rescue parents, this is sacred. Deep emotional resonance = high share rate.</div>
+      </div>
+      <div class="wrapped-card">
+        <div class="emoji">🌈</div>
+        <div class="name">Rainbow Bridge</div>
+        <div class="trigger">On Request · Memorial</div>
+        <div class="desc">When pets pass, families want to celebrate their life. The only platform handling this with grace.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ THE VIRAL FUNNEL ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">The Mechanism</div>
+  <div class="div-title">How love becomes <em>exponential growth</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section reveal">
+    <div class="card-tag">Viral Loop Architecture</div>
+    <div class="card-title">Every share creates <em>the next customer</em></div>
+    <div class="card-sub">
+      Pet Wrapped isn't a feature — it's a growth engine built into the product itself.
+      The emotional moment of completing a Soul Profile is immediately channeled into acquisition.
+    </div>
+    
+    <div class="funnel">
+      <div class="funnel-title">"The Share Moment Loop"</div>
+      <div class="funnel-steps">
+        <div class="funnel-step">
+          <div class="funnel-num">1</div>
+          <div class="funnel-content">
+            <div class="funnel-label">Complete Soul Profile</div>
+            <div class="funnel-text">User answers 51 questions about their dog. <strong>Emotional investment: HIGH</strong></div>
+          </div>
+        </div>
+        <div class="funnel-step">
+          <div class="funnel-num">2</div>
+          <div class="funnel-content">
+            <div class="funnel-label">Receive Pet Wrapped</div>
+            <div class="funnel-text">Instant celebration modal + WhatsApp + Email. <strong>3 channels simultaneously</strong></div>
+          </div>
+        </div>
+        <div class="funnel-step">
+          <div class="funnel-num">3</div>
+          <div class="funnel-content">
+            <div class="funnel-label">Share the Card</div>
+            <div class="funnel-text">Beautiful, brag-worthy content. <strong>Social proof of being a good pet parent</strong></div>
+          </div>
+        </div>
+        <div class="funnel-step">
+          <div class="funnel-num">4</div>
+          <div class="funnel-content">
+            <div class="funnel-label">Friend Sees Card</div>
+            <div class="funnel-text">"Wait, my dog doesn't have this?" <strong>FOMO + jealousy = click</strong></div>
+          </div>
+        </div>
+        <div class="funnel-step">
+          <div class="funnel-num">5</div>
+          <div class="funnel-content">
+            <div class="funnel-label">Land on Viral Page</div>
+            <div class="funnel-text">Conversion-optimized landing: "Create yours in 5 minutes"</div>
+          </div>
+        </div>
+        <div class="funnel-step">
+          <div class="funnel-num">6</div>
+          <div class="funnel-content">
+            <div class="funnel-label">Create Soul Profile</div>
+            <div class="funnel-text">New user completes profile → <strong>Gets their own Pet Wrapped → REPEAT</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="quote-box">
+      <div class="quote-text">
+        "With a viral coefficient of 1.5, every 100 users become 150, then 225, then 337.
+        <em>Growth that compounds without spend.</em>"
+      </div>
+      <div class="quote-attr">— The Math That Changes Everything</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ THE MOAT ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">Defensibility</div>
+  <div class="div-title">Why this can't be <em>copied easily</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section reveal">
+    <div class="card-tag">Competitive Moat</div>
+    <div class="card-title">Pet Wrapped requires what <em>we've already built</em></div>
+    <div class="card-sub">
+      Any competitor can make shareable cards. None can make them meaningful.
+      Pet Wrapped's power comes from the data underneath — the Soul Profile, the Mira conversations,
+      the 14 pillars of engagement. Competitors would need to rebuild the entire platform.
+    </div>
+    
+    <div class="moat-grid">
+      <div class="moat-card">
+        <div class="moat-icon">🧠</div>
+        <div class="moat-title">Soul Profile Data</div>
+        <div class="moat-desc">51 questions across 8 emotional pillars. Each pet has a unique psychological fingerprint that powers personalized content. No competitor has this depth.</div>
+      </div>
+      <div class="moat-card">
+        <div class="moat-icon">💬</div>
+        <div class="moat-title">Mira Conversation Memory</div>
+        <div class="moat-desc">Every chat, every question, every recommendation remembered. The more users engage, the richer their Wrapped becomes. Compounding advantage.</div>
+      </div>
+      <div class="moat-card">
+        <div class="moat-icon">🎯</div>
+        <div class="moat-title">14 Pillar Engagement</div>
+        <div class="moat-desc">From Celebrate to Farewell — we track meaningful life events, not just transactions. Pet Wrapped reflects a life, not a purchase history.</div>
+      </div>
+      <div class="moat-card">
+        <div class="moat-icon">❤️</div>
+        <div class="moat-title">Emotional Design Language</div>
+        <div class="moat-desc">Built with the philosophy of Mystique. Cards that feel sacred, not promotional. This tone took 8 weeks to develop and can't be copied in code.</div>
+      </div>
+    </div>
+    
+    <div class="stats-grid" style="margin-top:40px;">
+      <div class="stat-card"><div class="big">563K</div><div class="lbl">Lines of production code</div></div>
+      <div class="stat-card"><div class="big">38</div><div class="lbl">API integrations</div></div>
+      <div class="stat-card"><div class="big">14</div><div class="lbl">Life pillars</div></div>
+      <div class="stat-card"><div class="big">51</div><div class="lbl">Soul questions</div></div>
+      <div class="stat-card green"><div class="big">485</div><div class="lbl">Real Mira sessions</div></div>
+      <div class="stat-card green"><div class="big">19</div><div class="lbl">Pets in system</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ REVENUE MODEL ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">Monetization</div>
+  <div class="div-title">How Pet Wrapped drives <em>revenue</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section revenue-section reveal">
+    <div class="card-tag" style="color:var(--greenL);">Revenue Potential</div>
+    <div class="card-title">Free to share. <em>Profitable to upgrade.</em></div>
+    <div class="card-sub">
+      Pet Wrapped is the top of the funnel. Users come for the beautiful cards, 
+      stay for Mira AI, and upgrade for premium features. The viral engine feeds a proven 
+      membership + e-commerce business model.
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card green"><div class="big">₹999</div><div class="lbl">Essential membership/year</div></div>
+      <div class="stat-card green"><div class="big">₹2,999</div><div class="lbl">Premium membership/year</div></div>
+      <div class="stat-card green"><div class="big">₹9,999</div><div class="lbl">Royalty membership/year</div></div>
+      <div class="stat-card"><div class="big">2,214</div><div class="lbl">Products in catalog</div></div>
+    </div>
+    
+    <div class="revenue-projection">
+      <div class="revenue-year">
+        <div class="year">Year 1</div>
+        <div class="amount">10K</div>
+        <div class="label">Users via viral</div>
+      </div>
+      <div class="revenue-year">
+        <div class="year">Year 2</div>
+        <div class="amount">75K</div>
+        <div class="label">Users via viral</div>
+      </div>
+      <div class="revenue-year highlight">
+        <div class="year">Year 3</div>
+        <div class="amount">500K</div>
+        <div class="label">Users via viral</div>
+      </div>
+      <div class="revenue-year">
+        <div class="year">At Scale</div>
+        <div class="amount">$0</div>
+        <div class="label">CAC maintained</div>
+      </div>
+    </div>
+    
+    <div class="quote-box" style="background: linear-gradient(135deg, rgba(45,122,74,0.15), rgba(107,203,139,0.05)); border-color: rgba(107,203,139,0.25);">
+      <div class="quote-text">
+        "With a 10% conversion to Essential (₹999) and 20% to Premium (₹2,999),
+        <em>500K viral users = ₹350+ Cr ARR potential</em>"
+      </div>
+      <div class="quote-attr" style="color:var(--greenL);">— Unit Economics at Scale</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TIMELINE ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">Execution</div>
+  <div class="div-title">What we've built. <em>What's next.</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section reveal">
+    <div class="card-tag">Development Timeline</div>
+    <div class="card-title">8 weeks from idea to <em>production</em></div>
+    <div class="card-sub">
+      Pet Wrapped and the entire platform was built January–March 2026.
+      No technical co-founder. Using AI. Live in production.
+    </div>
+    
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">January 2026</div>
+        <div class="timeline-title">Platform Foundation</div>
+        <div class="timeline-desc">Core architecture, MongoDB setup, authentication, Mira AI v1</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:var(--violet)"></div>
+        <div class="timeline-date">February 2026</div>
+        <div class="timeline-title">Soul Profile + 14 Pillars</div>
+        <div class="timeline-desc">51 questions, pillar pages, Shopify integration, admin panel</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:var(--rose)"></div>
+        <div class="timeline-date">March 2026</div>
+        <div class="timeline-title">Pet Wrapped Complete</div>
+        <div class="timeline-desc">6 card types, multi-channel delivery, viral landing page, download API</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:var(--greenL)"></div>
+        <div class="timeline-date">May 20, 2026</div>
+        <div class="timeline-title">Official Launch</div>
+        <div class="timeline-desc">Mystique's birthday. The first Pet Wrapped in the world belongs to her.</div>
+      </div>
+    </div>
+    
+    <div class="tech-grid">
+      <div class="tech-chip"><div class="icon">⚛️</div><div class="name">React</div><div class="sub">Frontend</div></div>
+      <div class="tech-chip"><div class="icon">🐍</div><div class="name">FastAPI</div><div class="sub">Backend</div></div>
+      <div class="tech-chip"><div class="icon">🍃</div><div class="name">MongoDB</div><div class="sub">Database</div></div>
+      <div class="tech-chip"><div class="icon">🤖</div><div class="name">GPT-4</div><div class="sub">Mira AI</div></div>
+      <div class="tech-chip"><div class="icon">💳</div><div class="name">Razorpay</div><div class="sub">Payments</div></div>
+      <div class="tech-chip"><div class="icon">📱</div><div class="name">Gupshup</div><div class="sub">WhatsApp</div></div>
+      <div class="tech-chip"><div class="icon">✉️</div><div class="name">Resend</div><div class="sub">Email</div></div>
+      <div class="tech-chip"><div class="icon">🛒</div><div class="name">Shopify</div><div class="sub">E-commerce</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ THE FOUNDER ══ -->
+<div class="section-divider reveal">
+  <div class="div-label">The Builder</div>
+  <div class="div-title">Why <em>this founder</em></div>
+</div>
+
+<div class="container">
+  <div class="card-section reveal" style="text-align:center;">
+    <div class="quote-box" style="margin-top:0;">
+      <div class="quote-text">
+        "I built LesConcierges from ₹5,000 to ₹500 Cr valuation. 
+        Rakesh Jhunjhunwala backed me in 2002. 
+        <em>I know how to build service businesses that scale with care.</em>"
+      </div>
+      <div class="quote-attr">— Dipali Sikand · Founder</div>
+    </div>
+    
+    <div class="stats-grid" style="text-align:left;">
+      <div class="stat-card"><div class="big">27</div><div class="lbl">Years building concierge/service businesses</div></div>
+      <div class="stat-card rose"><div class="big">₹500Cr</div><div class="lbl">LesConcierges peak valuation</div></div>
+      <div class="stat-card"><div class="big">1.6M</div><div class="lbl">Employees served across 23 cities</div></div>
+      <div class="stat-card green"><div class="big">45K+</div><div class="lbl">Pets celebrated at Doggy Bakery</div></div>
+      <div class="stat-card blue"><div class="big">$1M+</div><div class="lbl">Personal capital invested</div></div>
+      <div class="stat-card"><div class="big">61</div><div class="lbl">Years old · "Building my legacy"</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FINAL CTA ══ -->
+<div class="final-cta reveal">
+  <div class="fc-tag">The Doggy Company · Pet Wrapped · 2026</div>
+  <div class="fc-title">Emotion that <em>scales.</em><br>Growth that <em>compounds.</em></div>
+  <div class="fc-sub">
+    Pet Wrapped turns the most powerful marketing force — love for our pets — 
+    into a systematic acquisition engine. Every card shared is a customer earned.
+    Zero CAC. Infinite potential.
+  </div>
+  <a href="https://mira-ai-soul.preview.emergentagent.com/introduction.html" class="fc-btn">See Full Platform Introduction</a>
+  <div class="fc-contact">
+    Investor inquiries: <a href="mailto:dipali@clubconcierge.in">dipali@clubconcierge.in</a><br>
+    <span style="opacity:0.5;font-size:11px;">Built in memory of Mystique · Bengaluru, India · 2026</span>
+  </div>
+</div>
+
+<script>
+// Intersection observer for reveal animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(el => {
+    if (el.isIntersecting) {
+      el.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
