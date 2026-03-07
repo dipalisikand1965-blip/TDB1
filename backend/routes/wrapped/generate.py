@@ -109,14 +109,29 @@ async def generate_pet_wrapped(pet_id: str, year: Optional[int] = None):
     # ============================================
     # CARD 3: MIRA MOMENTS
     # ============================================
-    # Count Mira conversations
+    # Get owner email for broader queries
+    owner_email = pet.get("owner_email")
+    
+    # Count Mira conversations from multiple sources
     convo_count = db.mira_conversations.count_documents({"pet_id": pet_id})
     
-    # Count Soul Profile questions answered
-    questions_answered = count_soul_questions(soul_data)
+    # Also count conversation memories stored on pet
+    conversation_memories = pet.get("conversation_memories", [])
+    convo_count = max(convo_count, len(conversation_memories))
+    
+    # Count from mira_sessions if available
+    if owner_email:
+        mira_session_count = db.mira_sessions.count_documents({"user_email": owner_email})
+        convo_count = max(convo_count, mira_session_count)
+    
+    # Count Soul Profile questions answered from doggy_soul_answers
+    doggy_soul_answers = pet.get("doggy_soul_answers", {})
+    questions_answered = sum(1 for v in doggy_soul_answers.values() if v and str(v).strip())
+    if questions_answered == 0:
+        questions_answered = count_soul_questions(soul_data)
     
     # Get pillars explored from conversations and tickets
-    pillars_explored = get_pillars_explored(pet_id)
+    pillars_explored = get_pillars_explored(pet_id, owner_email)
     
     mira_moments_data = {
         "conversation_count": convo_count,
@@ -135,11 +150,14 @@ async def generate_pet_wrapped(pet_id: str, year: Optional[int] = None):
     babies = []
     partners = []
     siblings = []
+    pet_friends = []
     
+    # Check relationships stored on the pet
     if relationships:
         baby_ids = relationships.get("babies", [])
         partner_ids = relationships.get("partners", [])
         sibling_ids = relationships.get("siblings", [])
+        dog_friends = relationships.get("dog_friends", [])
         
         for baby_id in baby_ids[:10]:
             try:
@@ -156,24 +174,48 @@ async def generate_pet_wrapped(pet_id: str, year: Optional[int] = None):
                     partners.append({"name": partner.get("name"), "id": str(partner["_id"])})
             except:
                 pass
+        
+        # Add dog_friends to pet_friends
+        for friend_name in dog_friends[:5]:
+            if isinstance(friend_name, str):
+                pet_friends.append(friend_name)
+    
+    # If no babies/partners found, look for pets with same owner that might be family
+    if not babies and not partners and owner_email:
+        same_owner_pets = list(db.pets.find({
+            "owner_email": owner_email,
+            "_id": {"$ne": ObjectId(pet_id)}
+        }))
+        
+        # Check if pet names start with same letter (M-Squad pattern)
+        pet_first_letter = pet_name[0].upper() if pet_name else ""
+        matching_letter_pets = [p for p in same_owner_pets if p.get("name", "")[0].upper() == pet_first_letter]
+        
+        if len(matching_letter_pets) >= 3:
+            # This looks like a family dynasty (M-Squad pattern)
+            for family_pet in matching_letter_pets[:10]:
+                babies.append({
+                    "name": family_pet.get("name"),
+                    "id": str(family_pet["_id"])
+                })
     
     legacy_data = {
         "has_legacy": len(babies) > 0 or len(partners) > 0,
         "babies": babies,
         "partners": partners,
         "siblings": siblings,
-        "family_humans": relationships.get("family", []),
-        "pet_friends": relationships.get("pet_friends", [])
+        "family_humans": relationships.get("family", relationships.get("human_favorites", [])),
+        "pet_friends": pet_friends
     }
     
     # ============================================
     # CARD 5: PILLARS & TREATS
     # ============================================
     # Get service tickets by pillar
-    pillar_usage = get_pillar_usage(pet_id, year)
+    pillar_usage = get_pillar_usage(pet_id, year, owner_email)
     
     # Get Doggy Bakery orders (if available)
-    treat_count = get_treat_count(owner_id, year) if owner_id else 0
+    treat_count = get_treat_count(owner_id, year, owner_email) if owner_id else 0
     
     pillars_data = {
         "top_pillars": pillar_usage[:5],
@@ -266,28 +308,50 @@ def count_soul_questions(soul_data: dict) -> int:
     return min(count, 51)  # Max 51 questions
 
 
-def get_pillars_explored(pet_id: str) -> dict:
+def get_pillars_explored(pet_id: str, owner_email: str = None) -> dict:
     """Get pillars explored from Mira conversations and service tickets."""
     pillars = {}
     
-    # From conversations
+    # From conversations - check pet_id
     convos = db.mira_conversations.find({"pet_id": pet_id})
     for convo in convos:
         pillar = convo.get("pillar_context") or convo.get("pillar")
         if pillar:
             pillars[pillar] = pillars.get(pillar, 0) + 1
     
-    # From service tickets
+    # From service tickets - check by pet_id
     tickets = db.service_desk_tickets.find({"pet_id": pet_id})
     for ticket in tickets:
         pillar = ticket.get("pillar")
         if pillar:
             pillars[pillar] = pillars.get(pillar, 0) + 1
     
+    # Also check by owner email (most tickets use member.email)
+    if owner_email:
+        email_tickets = db.service_desk_tickets.find({"member.email": owner_email})
+        for ticket in email_tickets:
+            pillar = ticket.get("pillar")
+            if pillar:
+                pillars[pillar] = pillars.get(pillar, 0) + 1
+        
+        # Check mira_tickets too
+        mira_tickets = db.mira_tickets.find({"member.email": owner_email})
+        for ticket in mira_tickets:
+            pillar = ticket.get("pillar")
+            if pillar:
+                pillars[pillar] = pillars.get(pillar, 0) + 1
+        
+        # Check tickets collection
+        all_tickets = db.tickets.find({"member.email": owner_email})
+        for ticket in all_tickets:
+            pillar = ticket.get("pillar")
+            if pillar:
+                pillars[pillar] = pillars.get(pillar, 0) + 1
+    
     return pillars
 
 
-def get_pillar_usage(pet_id: str, year: int) -> list:
+def get_pillar_usage(pet_id: str, year: int, owner_email: str = None) -> list:
     """Get pillar usage statistics for the year."""
     pillar_counts = {}
     
@@ -295,6 +359,7 @@ def get_pillar_usage(pet_id: str, year: int) -> list:
     start_date = datetime(year, 1, 1, tzinfo=timezone.utc)
     end_date = datetime(year, 12, 31, 23, 59, 59, tzinfo=timezone.utc)
     
+    # Check by pet_id
     tickets = db.service_desk_tickets.find({
         "pet_id": pet_id,
         "created_at": {"$gte": start_date, "$lte": end_date}
@@ -304,13 +369,45 @@ def get_pillar_usage(pet_id: str, year: int) -> list:
         "celebrate": "🎉", "dine": "🍽️", "stay": "🏠", "travel": "✈️",
         "care": "💊", "enjoy": "🎮", "fit": "🏃", "learn": "📚",
         "paperwork": "📋", "advisory": "👨‍⚕️", "emergency": "🚨",
-        "farewell": "🌈", "adopt": "🐾", "shop": "🛒"
+        "farewell": "🌈", "adopt": "🐾", "shop": "🛒", "groom": "✂️",
+        "play": "🎾", "community": "🤝", "soul": "💜"
     }
     
     for ticket in tickets:
         pillar = ticket.get("pillar", "").lower()
         if pillar:
             pillar_counts[pillar] = pillar_counts.get(pillar, 0) + 1
+    
+    # Also check by owner email
+    if owner_email:
+        email_tickets = db.service_desk_tickets.find({
+            "member.email": owner_email,
+            "created_at": {"$gte": start_date, "$lte": end_date}
+        })
+        for ticket in email_tickets:
+            pillar = ticket.get("pillar", "").lower()
+            if pillar:
+                pillar_counts[pillar] = pillar_counts.get(pillar, 0) + 1
+        
+        # Check tickets collection
+        all_tickets = db.tickets.find({
+            "member.email": owner_email,
+            "created_at": {"$gte": start_date, "$lte": end_date}
+        })
+        for ticket in all_tickets:
+            pillar = ticket.get("pillar", "").lower()
+            if pillar:
+                pillar_counts[pillar] = pillar_counts.get(pillar, 0) + 1
+        
+        # Check pillar_requests
+        pillar_reqs = db.pillar_requests.find({
+            "user_email": owner_email,
+            "created_at": {"$gte": start_date, "$lte": end_date}
+        })
+        for req in pillar_reqs:
+            pillar = req.get("pillar", "").lower()
+            if pillar:
+                pillar_counts[pillar] = pillar_counts.get(pillar, 0) + 1
     
     # Sort by count and format
     sorted_pillars = sorted(pillar_counts.items(), key=lambda x: x[1], reverse=True)
@@ -329,21 +426,39 @@ def get_pillar_usage(pet_id: str, year: int) -> list:
     return result
 
 
-def get_treat_count(user_id: str, year: int) -> int:
+def get_treat_count(user_id: str, year: int, owner_email: str = None) -> int:
     """Get count of Doggy Bakery treats ordered."""
     try:
         start_date = datetime(year, 1, 1, tzinfo=timezone.utc)
         end_date = datetime(year, 12, 31, 23, 59, 59, tzinfo=timezone.utc)
         
+        count = 0
+        
+        # Check by user_id
         orders = db.orders.find({
             "user_id": user_id,
             "created_at": {"$gte": start_date, "$lte": end_date}
         })
         
-        count = 0
         for order in orders:
             items = order.get("items", [])
             count += len(items)
+        
+        # Also check by email
+        if owner_email:
+            email_orders = db.orders.find({
+                "customer_email": owner_email,
+                "created_at": {"$gte": start_date, "$lte": end_date}
+            })
+            for order in email_orders:
+                items = order.get("items", [])
+                count += len(items)
+            
+            # Check membership_orders for treats
+            membership_orders = db.membership_orders.find({
+                "email": owner_email
+            })
+            count += membership_orders.count()
         
         return count
     except:
