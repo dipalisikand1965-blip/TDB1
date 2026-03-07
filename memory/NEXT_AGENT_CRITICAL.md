@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://mira-memory-cards.preview.emergentagent.com
+https://mira-ai-soul.preview.emergentagent.com
 
 ---
 

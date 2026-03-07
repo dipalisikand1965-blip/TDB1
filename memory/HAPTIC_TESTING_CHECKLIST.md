@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://mira-memory-cards.preview.emergentagent.com/mira-demo**
+**https://mira-ai-soul.preview.emergentagent.com/mira-demo**
 
 ---
 
