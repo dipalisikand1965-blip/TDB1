@@ -587,7 +587,7 @@ GUPSHUP_API_URL=https://api.gupshup.io/wa/api/v1
 WHATSAPP_NUMBER=918971702582
 
 # Email - Resend (LIVE)
-RESEND_API_KEY=re_fi1hZ47r_PRTTcKUpDsZSScn3fdRWKHPt
+RESEND_API_KEY=re_RyFymGmF_QE6qJSpEH4CSKTiN3WQYUU9G
 SENDER_EMAIL=woof@thedoggycompany.com
 NOTIFICATION_EMAIL=onboarding@resend.dev
 
