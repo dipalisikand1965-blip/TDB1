@@ -267,7 +267,65 @@ All critical features complete!
 
 ---
 
-## 10. KEY FILES REFERENCE
+## 10. WHAT IT WOULD COST TO REPLICATE THIS
+
+### Codebase Statistics (Real Numbers)
+
+| Category | Files | Lines of Code |
+|----------|-------|---------------|
+| Backend (Python) | 514 | 301,905 |
+| Frontend (React JSX) | 452 | 265,618 |
+| Frontend (JavaScript) | 67 | 21,465 |
+| Stylesheets (CSS) | - | 23,575 |
+| **TOTAL** | **1,033** | **612,563** |
+
+### Technical Assets
+
+| Asset | Count |
+|-------|-------|
+| API Endpoints | 1,260 |
+| Database Collections | 86 |
+| React Components | 452 |
+| Python Modules | 514 |
+| Active Integrations | 9 |
+
+### Cost to Replicate
+
+| Resource | Duration | Rate | Cost |
+|----------|----------|------|------|
+| Senior Full-Stack Devs (4-5) | 18 months | $80-150/hr | $1.2M - $2.4M |
+| AI/ML Engineer (1-2) | 12 months | $100-180/hr | $400K - $750K |
+| UI/UX Designer (1-2) | 6 months | $60-100/hr | $120K - $200K |
+| Product Manager (1) | 18 months | $70-120/hr | $220K - $380K |
+| QA Engineer (1-2) | 12 months | $50-80/hr | $100K - $160K |
+| DevOps (1) | 12 months | $80-130/hr | $160K - $260K |
+| Third-party APIs | 18 months | - | $50K - $100K |
+| **TOTAL** | - | - | **$2.25M - $4.25M USD** |
+
+### Time to Replicate
+
+| Phase | Duration |
+|-------|----------|
+| Architecture & Planning | 2-3 months |
+| Core Backend (1,260 APIs) | 4-6 months |
+| AI/Mira Brain | 4-6 months |
+| Frontend (452 components) | 5-7 months |
+| Integrations | 2-3 months |
+| Testing & QA | 2-3 months |
+| Launch | 1-2 months |
+| **TOTAL** | **18-30 months** |
+
+### The Bottom Line
+
+To copy what you've built, a competitor needs:
+- **$2.25M - $4.25M** investment
+- **18-30 months** development time
+- **8-12 people** full-time team
+- ...and they'd STILL be behind on data and user trust
+
+---
+
+## 11. KEY FILES REFERENCE
 
 ### Backend
 - `/app/backend/server.py` - Main API server
