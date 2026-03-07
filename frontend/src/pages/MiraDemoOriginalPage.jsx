@@ -157,7 +157,7 @@ const MiraDemoOriginalPage = () => {
             sensitivities: pet.sensitivities,
             favorites: pet.favorites
           },
-          page_context: 'mira-demo'
+          page_context: 'mira-os'
         })
       });
       

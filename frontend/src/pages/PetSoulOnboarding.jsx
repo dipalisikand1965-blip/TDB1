@@ -302,7 +302,7 @@ const PetSoulOnboarding = ({ userId, onComplete }) => {
       if (response.ok) {
         hapticFeedback.success();
         onComplete?.(petData);
-        navigate('/mira-demo');
+        navigate('/mira-os');
       } else {
         throw new Error('Failed to save pet');
       }

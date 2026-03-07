@@ -531,7 +531,7 @@ const NotificationsInbox = () => {
     } else if (window.history.length > 1) {
       navigate(-1);
     } else {
-      navigate('/mira-demo');
+      navigate('/mira-os');
     }
   };
 

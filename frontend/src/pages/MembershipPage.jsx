@@ -759,7 +759,7 @@ const MembershipPage = () => {
                 {[
                   'Everything in Free +',
                   'Mira AI full access',
-                  'Full /mira-demo experience',
+                  'Full Mira OS experience',
                   'Concierge® chat access',
                   'Paw Points rewards',
                   'Health Vault & Records',
