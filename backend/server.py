@@ -5078,30 +5078,101 @@ async def get_pets_status(username: str = Depends(verify_admin)):
 
 @admin_router.get("/dashboard")
 async def admin_dashboard(username: str = Depends(verify_admin)):
-    """Get dashboard summary"""
+    """Get comprehensive dashboard summary from all collections"""
+    
+    # Service Desk Stats
+    total_tickets = await db.tickets.count_documents({})
+    open_tickets = await db.tickets.count_documents({"status": {"$nin": ["resolved", "closed"]}})
+    service_desk_tickets = await db.service_desk_tickets.count_documents({})
+    pending_service_tickets = await db.service_desk_tickets.count_documents({"status": {"$nin": ["resolved", "closed"]}})
+    
+    # Service Requests
+    total_service_requests = await db.service_requests.count_documents({})
+    pending_requests = await db.service_requests.count_documents({"status": {"$nin": ["completed", "resolved"]}})
+    
+    # Orders
+    total_orders = await db.orders.count_documents({})
+    pending_orders = await db.orders.count_documents({"status": {"$in": ["pending", "processing", "confirmed"]}})
+    
+    # Notifications
+    total_admin_notifications = await db.admin_notifications.count_documents({})
+    unread_notifications = await db.admin_notifications.count_documents({"read": {"$ne": True}})
+    
+    # Members & Pets
+    total_users = await db.users.count_documents({})
+    total_pets = await db.pets.count_documents({})
+    
+    # Memberships
+    total_memberships = await db.memberships.count_documents({})
+    active_memberships = await db.memberships.count_documents({"status": "active"})
+    
+    # Mira Chats (legacy)
     total_chats = await db.mira_chats.count_documents({})
     active_chats = await db.mira_chats.count_documents({"status": "active"})
+    
+    # Custom Requests (legacy)
     total_custom_requests = await db.custom_cake_requests.count_documents({})
-    pending_requests = await db.custom_cake_requests.count_documents({"status": "pending"})
+    pending_custom = await db.custom_cake_requests.count_documents({"status": "pending"})
     
-    # Get recent chats
-    recent_chats = await db.mira_chats.find({}, {"_id": 0}).sort("updated_at", -1).limit(5).to_list(5)
+    # Get recent activity
+    recent_tickets = await db.service_desk_tickets.find(
+        {}, {"_id": 0, "ticket_id": 1, "category": 1, "status": 1, "created_at": 1}
+    ).sort("created_at", -1).limit(5).to_list(5)
     
-    # Get city breakdown
-    city_stats = await db.mira_chats.aggregate([
-        {"$match": {"city": {"$ne": None}}},
-        {"$group": {"_id": "$city", "count": {"$sum": 1}}}
+    recent_orders = await db.orders.find(
+        {}, {"_id": 0, "orderId": 1, "total": 1, "status": 1, "created_at": 1}
+    ).sort("created_at", -1).limit(5).to_list(5)
+    
+    recent_notifications = await db.admin_notifications.find(
+        {}, {"_id": 0, "type": 1, "title": 1, "created_at": 1}
+    ).sort("created_at", -1).limit(5).to_list(5)
+    
+    # Channel Intakes Stats
+    channel_stats = await db.channel_intakes.aggregate([
+        {"$group": {"_id": "$channel", "count": {"$sum": 1}}}
+    ]).to_list(100)
+    
+    # Pillar Stats
+    pillar_stats = await db.pillar_requests.aggregate([
+        {"$group": {"_id": "$pillar", "count": {"$sum": 1}}}
     ]).to_list(100)
     
     return {
         "summary": {
-            "total_chats": total_chats,
-            "active_chats": active_chats,
-            "total_custom_requests": total_custom_requests,
-            "pending_requests": pending_requests
+            "service_desk": {
+                "total_tickets": total_tickets + service_desk_tickets,
+                "open_tickets": open_tickets + pending_service_tickets,
+                "service_requests": total_service_requests,
+                "pending_requests": pending_requests
+            },
+            "orders": {
+                "total": total_orders,
+                "pending": pending_orders
+            },
+            "notifications": {
+                "total": total_admin_notifications,
+                "unread": unread_notifications
+            },
+            "members": {
+                "total_users": total_users,
+                "total_pets": total_pets,
+                "total_memberships": total_memberships,
+                "active_memberships": active_memberships
+            },
+            "legacy": {
+                "total_chats": total_chats,
+                "active_chats": active_chats,
+                "total_custom_requests": total_custom_requests,
+                "pending_requests": pending_custom
+            }
         },
-        "recent_chats": recent_chats,
-        "city_breakdown": city_stats
+        "recent_activity": {
+            "tickets": recent_tickets,
+            "orders": recent_orders,
+            "notifications": recent_notifications
+        },
+        "channel_breakdown": {c["_id"]: c["count"] for c in channel_stats if c["_id"]},
+        "pillar_breakdown": {p["_id"]: p["count"] for p in pillar_stats if p["_id"]}
     }
 
 
