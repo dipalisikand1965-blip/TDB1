@@ -42,15 +42,12 @@ class AIDescriptionEnhancer:
             if opt.get("values"):
                 options_str += f"\n- {opt.get('name')}: {', '.join(opt.get('values', []))}"
         
-        prompt = f"""You are a professional copywriter for The Doggy Company, a premium pet products company.
-
-Rewrite the product description for this pet product to be:
+        prompt = f"""Rewrite the product description for this pet product to be:
 - Engaging and warm, speaking to pet parents
 - Highlighting key benefits for pets
 - Professional yet friendly tone
-- Mentioning any customization options available
 - 2-3 sentences maximum
-- Include relevant emojis sparingly (1-2 max)
+- Include 1-2 relevant emojis
 
 Product: {name}
 Category: {category}
@@ -65,13 +62,12 @@ Write ONLY the new description, nothing else:"""
                 api_key=self.api_key,
                 session_id=f"desc-enhance-{product.get('id', 'unknown')[:20]}",
                 system_message="You are a professional pet product copywriter. Write concise, engaging descriptions."
-            ).with_model("openai", "gpt-4.1-mini")
+            )
             
-            user_message = UserMessage(text=prompt)
-            response = await chat.send_message(user_message)
+            response = await chat.send_message(UserMessage(prompt))
             
-            # Clean up response
-            enhanced = response.strip().strip('"').strip()
+            # Response is a string directly
+            enhanced = response.strip().strip('"').strip() if isinstance(response, str) else str(response).strip()
             
             # Fallback if response is empty or too short
             if not enhanced or len(enhanced) < 20:
