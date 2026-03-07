@@ -66,6 +66,28 @@ async def backfill_soul_scores():
     }
 
 
+@router.get("/admin/pets")
+async def get_all_pets_for_wrapped():
+    """
+    Get all pets for the Pet Wrapped admin panel.
+    No auth required for admin panel usage.
+    """
+    pets = list(db.pets.find({}, {
+        "_id": 1, 
+        "name": 1, 
+        "breed": 1, 
+        "soul_score": 1,
+        "rainbow_bridge": 1,
+        "birthday": 1
+    }).limit(100))
+    
+    # Convert ObjectId to string
+    for pet in pets:
+        pet["_id"] = str(pet["_id"])
+    
+    return {"pets": pets, "total": len(pets)}
+
+
 @router.get("/soul-history/{pet_id}")
 async def get_soul_score_history(pet_id: str):
     """
