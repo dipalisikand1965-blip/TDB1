@@ -21,6 +21,9 @@ router = APIRouter(prefix="/api/membership", tags=["Membership"])
 # Import canonical ticket spine helper (SINGLE ENTRY POINT for all tickets)
 from utils.spine_helper import handoff_to_spine
 
+# Import WhatsApp notifications
+from whatsapp_notifications import WhatsAppNotifications
+
 
 # Get database and logger from main app
 def get_db():
@@ -605,6 +608,35 @@ async def verify_payment_alt(request: PaymentVerifyRequestAlt):
     
     logger.info(f"Payment verified for order: {request.order_id}, user: {user_email}, amount: ₹{total_amount}")
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SEND WHATSAPP NOTIFICATIONS
+    # ═══════════════════════════════════════════════════════════════════════════
+    user_phone = membership.get("user_phone") or membership.get("phone")
+    user_name = membership.get("user_name") or membership.get("parent_name", "Member")
+    plan_tier = plan.get("tier", plan_id) if plan else "essential"
+    
+    if user_phone:
+        try:
+            # Send payment confirmation
+            await WhatsAppNotifications.payment_received(
+                phone=user_phone,
+                user_name=user_name,
+                amount=total_amount,
+                plan_name=plan["name"] if plan else "Pet Pass",
+                order_id=request.order_id
+            )
+            
+            # Send membership activation
+            await WhatsAppNotifications.membership_activated(
+                phone=user_phone,
+                user_name=user_name,
+                tier=plan_tier,
+                expires_at=expires_at.isoformat()
+            )
+            logger.info(f"[WHATSAPP] Notifications sent to {user_phone[:6]}*** for order {request.order_id}")
+        except Exception as wa_err:
+            logger.warning(f"[WHATSAPP] Failed to send notifications: {wa_err}")
+    
     return {
         "success": True,
         "message": "Payment verified and membership activated!",
@@ -782,6 +814,35 @@ async def verify_payment(request: PaymentVerifyRequest):
         logger.info(f"[SPINE-MIGRATED] membership_routes.py:/membership/verify-payment → {spine_result['ticket_id']} | pillar=membership category=new_member_onboarding")
     
     logger.info(f"Membership activated: {request.membership_id} for {membership['user_email']}")
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SEND WHATSAPP NOTIFICATIONS
+    # ═══════════════════════════════════════════════════════════════════════════
+    user_phone = membership.get("user_phone")
+    user_name = membership.get("user_name", "Member")
+    plan_tier = plan.get("tier", membership["plan_id"]) if plan else "essential"
+    
+    if user_phone:
+        try:
+            # Send payment confirmation
+            await WhatsAppNotifications.payment_received(
+                phone=user_phone,
+                user_name=user_name,
+                amount=membership.get("price_paid", 0),
+                plan_name=plan["name"] if plan else "Pet Pass",
+                order_id=request.membership_id
+            )
+            
+            # Send membership activation
+            await WhatsAppNotifications.membership_activated(
+                phone=user_phone,
+                user_name=user_name,
+                tier=plan_tier,
+                expires_at=expires_at.isoformat()
+            )
+            logger.info(f"[WHATSAPP] Notifications sent to {user_phone[:6]}*** for membership {request.membership_id}")
+        except Exception as wa_err:
+            logger.warning(f"[WHATSAPP] Failed to send notifications: {wa_err}")
     
     # Auto-create ticket for Command Center
     try:
