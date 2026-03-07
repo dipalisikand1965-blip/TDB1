@@ -634,7 +634,6 @@ const Navbar = () => {
             {/* Left: Hamburger Menu - Opens Paw Sidebar on mobile */}
             <button
               onClick={(e) => {
-                e.preventDefault();
                 e.stopPropagation();
                 console.log('[Navbar] Hamburger clicked');
                 // Try both methods - event and direct function call
@@ -644,23 +643,20 @@ const Navbar = () => {
                   window.__openMemberMobileNav();
                 }
               }}
-              onTouchStart={(e) => {
-                // iOS Safari needs touchstart for immediate feedback
-                e.currentTarget.classList.add('bg-white/20');
-              }}
               onTouchEnd={(e) => {
-                e.preventDefault();
-                e.currentTarget.classList.remove('bg-white/20');
+                e.stopPropagation();
                 console.log('[Navbar] Hamburger touchEnd');
                 window.dispatchEvent(new CustomEvent('openPetSidebar'));
                 if (typeof window.__openMemberMobileNav === 'function') {
                   window.__openMemberMobileNav();
                 }
               }}
-              className="p-2 hover:bg-white/10 rounded-lg active:bg-white/20 touch-manipulation"
+              className="p-3 -m-1 hover:bg-white/10 rounded-lg active:bg-white/20 touch-manipulation cursor-pointer select-none"
               style={{ 
-                WebkitTapHighlightColor: 'transparent',
-                touchAction: 'manipulation'
+                WebkitTapHighlightColor: 'rgba(255,255,255,0.2)',
+                touchAction: 'manipulation',
+                minWidth: '44px',
+                minHeight: '44px'
               }}
               data-testid="navbar-mobile-menu-btn"
               aria-label="Open navigation menu"

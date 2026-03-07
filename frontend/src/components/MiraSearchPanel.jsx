@@ -208,13 +208,22 @@ const MiraSearchPanel = ({
   
   // Handle concierge handoff
   const handleConciergeClick = () => {
-    // Open concierge modal or navigate to concierge page
+    // Get current pillar from URL path
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const currentPillar = pathParts[0] || 'general';
+    
+    // Open Mira widget with pillar context, search query, and pet info
     window.dispatchEvent(new CustomEvent('openMiraAI', { 
       detail: { 
+        pillar: currentPillar,
+        source: 'search_panel',
+        message: query,
         initialQuery: query,
-        miraResponse: miraResponse 
+        miraResponse: miraResponse,
+        pet: pet  // Pass pet context
       }
     }));
+    console.log('[MiraSearchPanel] Opening Mira with pillar:', currentPillar, 'pet:', pet?.name);
     setShowResults(false);
     setQuery('');
   };
