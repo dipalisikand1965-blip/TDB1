@@ -89,16 +89,46 @@ const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-p
   });
   
   // Assign service to this pillar
-  const assignToPillar = async (serviceId) => {
+  const assignToPillar = async (service) => {
     try {
-      const response = await fetch(`${API_URL}/api/service-box/services/${serviceId}`, {
+      // Get the full service data first
+      const serviceData = {
+        ...service,
+        pillar: pillar,  // Set the new pillar
+        description: service.description || '',
+        base_price: service.base_price || service.price || 0,
+        duration_minutes: service.duration_minutes || 60,
+        city_pricing: service.city_pricing || {},
+        pet_size_pricing: service.pet_size_pricing || {},
+        pet_count_pricing: service.pet_count_pricing || {},
+        deposit_percentage: service.deposit_percentage || 20,
+        payment_timing: service.payment_timing || 'configurable',
+        available_cities: service.available_cities || [],
+        available_days: service.available_days || [],
+        available_time_slots: service.available_time_slots || [],
+        includes: service.includes || [],
+        add_ons: service.add_ons || [],
+        image_url: service.image_url || service.image || '',
+        paw_points_eligible: service.paw_points_eligible !== false,
+        paw_points_value: service.paw_points_value || 10,
+        is_active: service.is_active !== false,
+        is_bookable: service.is_bookable !== false,
+        requires_consultation: service.requires_consultation || false,
+        is_free: service.is_free || false,
+        is_24x7: service.is_24x7 || false
+      };
+      
+      const response = await fetch(`${API_URL}/api/service-box/services/${service.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pillar })
+        body: JSON.stringify(serviceData)
       });
       if (response.ok) {
         toast({ title: 'Success', description: `Service assigned to ${pillarName}` });
         fetchServices();
+      } else {
+        const err = await response.json();
+        toast({ title: 'Error', description: err.detail || 'Failed to assign service', variant: 'destructive' });
       }
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to assign service', variant: 'destructive' });
@@ -176,7 +206,7 @@ const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-p
                 size="sm" 
                 variant="outline"
                 className="mt-2 text-xs"
-                onClick={() => assignToPillar(service.id)}
+                onClick={() => assignToPillar(service)}
               >
                 Assign to {pillarName}
               </Button>

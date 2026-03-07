@@ -118,6 +118,33 @@ const ServiceBox = () => {
   const saveService = async () => {
     if (!selectedService) return;
     
+    // Ensure pillar is set
+    const serviceToSave = {
+      ...selectedService,
+      pillar: selectedService.pillar || 'care',
+      description: selectedService.description || '',
+      base_price: selectedService.base_price || 0,
+      duration_minutes: selectedService.duration_minutes || 60,
+      city_pricing: selectedService.city_pricing || {},
+      pet_size_pricing: selectedService.pet_size_pricing || {},
+      pet_count_pricing: selectedService.pet_count_pricing || {},
+      deposit_percentage: selectedService.deposit_percentage || 20,
+      payment_timing: selectedService.payment_timing || 'configurable',
+      available_cities: selectedService.available_cities || [],
+      available_days: selectedService.available_days || [],
+      available_time_slots: selectedService.available_time_slots || [],
+      includes: selectedService.includes || [],
+      add_ons: selectedService.add_ons || [],
+      image_url: selectedService.image_url || '',
+      paw_points_eligible: selectedService.paw_points_eligible !== false,
+      paw_points_value: selectedService.paw_points_value || 10,
+      is_active: selectedService.is_active !== false,
+      is_bookable: selectedService.is_bookable !== false,
+      requires_consultation: selectedService.requires_consultation || false,
+      is_free: selectedService.is_free || false,
+      is_24x7: selectedService.is_24x7 || false
+    };
+    
     setSaving(true);
     try {
       const isNew = !selectedService.id || selectedService.id.startsWith('NEW-');
@@ -129,7 +156,7 @@ const ServiceBox = () => {
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(selectedService)
+        body: JSON.stringify(serviceToSave)
       });
       
       if (response.ok) {
@@ -870,7 +897,7 @@ const ServiceBox = () => {
                   <div>
                     <Label>Pillar *</Label>
                     <select
-                      value={selectedService.pillar}
+                      value={selectedService.pillar || 'care'}
                       onChange={(e) => handleInputChange('pillar', e.target.value)}
                       className="w-full border rounded-md px-3 py-2 bg-white"
                       data-testid="service-pillar-select"
@@ -879,6 +906,9 @@ const ServiceBox = () => {
                         <option key={p.id} value={p.id}>{p.icon} {p.name}</option>
                       ))}
                     </select>
+                    {(!selectedService.pillar || selectedService.pillar === '') && (
+                      <p className="text-xs text-amber-600 mt-1">⚠️ Please select a pillar</p>
+                    )}
                   </div>
                   
                   <div>
