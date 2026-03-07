@@ -846,3 +846,255 @@ async def auto_tag_all_services():
         "updated": updated
     }
 
+
+
+# ============================================
+# SEED BREED-SPECIFIC PRODUCTS
+# ============================================
+
+# Top 20 dog breeds for personalized products
+TOP_BREEDS = [
+    "Golden Retriever", "Labrador", "German Shepherd", "Beagle", "Shih Tzu",
+    "Pug", "Rottweiler", "Doberman", "Husky", "Cocker Spaniel",
+    "Boxer", "Poodle", "Dachshund", "French Bulldog", "Indie",
+    "Great Dane", "Dalmatian", "Chihuahua", "Pomeranian", "Border Collie"
+]
+
+# Product templates for each breed
+BREED_PRODUCT_TEMPLATES = [
+    {
+        "what_is": "Birthday Cake",
+        "why_fits": "Custom Design",
+        "category": "breed-cakes",
+        "pillars": ["celebrate"],
+        "price": 1899,
+        "description_template": "Celebrate your {breed}'s special day with this beautifully crafted birthday cake! Made with dog-safe ingredients and decorated with iconic {breed} features.",
+        "mira_hint_template": "🎂 Perfect for {breed} birthdays! Customized with breed-specific design"
+    },
+    {
+        "what_is": "Ceramic Mug",
+        "why_fits": "Pet Parent Gift",
+        "category": "cups_merch",
+        "pillars": ["celebrate", "shop"],
+        "price": 599,
+        "description_template": "Show off your love for your {breed} with this stunning ceramic mug featuring beautiful breed artwork. Perfect for pet parents!",
+        "mira_hint_template": "☕ Pet parent must-have! Beautiful {breed} artwork on premium ceramic"
+    },
+    {
+        "what_is": "Designer Bandana",
+        "why_fits": "Birthday Edition",
+        "category": "bandanas",
+        "pillars": ["celebrate", "shop"],
+        "price": 399,
+        "description_template": "Make your {breed} the star of the party with this stylish birthday bandana! Soft, comfortable, and adorably designed.",
+        "mira_hint_template": "🎀 Party-ready! Stylish {breed} birthday bandana"
+    },
+    {
+        "what_is": "Photo Frame",
+        "why_fits": "Memorial Edition",
+        "category": "accessories",
+        "pillars": ["celebrate", "farewell"],
+        "price": 799,
+        "description_template": "Cherish every moment with your {breed} in this beautifully crafted photo frame. Features breed silhouette and custom engravings.",
+        "mira_hint_template": "📷 Treasure memories! Custom {breed} photo frame"
+    },
+    {
+        "what_is": "Treat Box",
+        "why_fits": "Celebration Pack",
+        "category": "celebration_addons",
+        "pillars": ["celebrate"],
+        "price": 699,
+        "description_template": "Complete celebration pack for your {breed}! Includes breed-appropriate treats, mini cake, and party accessories.",
+        "mira_hint_template": "🎁 Complete party pack! Everything for {breed}'s celebration"
+    },
+    {
+        "what_is": "Canvas Print",
+        "why_fits": "Art Collection",
+        "category": "cups_merch",
+        "pillars": ["celebrate", "shop"],
+        "price": 1299,
+        "description_template": "Beautiful canvas artwork featuring a majestic {breed} portrait. Museum-quality print that makes a stunning home decoration.",
+        "mira_hint_template": "🎨 Wall art! Stunning {breed} portrait on premium canvas"
+    },
+    {
+        "what_is": "Breed Keychain",
+        "why_fits": "Accessory",
+        "category": "accessories",
+        "pillars": ["shop", "celebrate"],
+        "price": 199,
+        "description_template": "Cute {breed} shaped keychain - carry your love for your pet wherever you go! Premium metal with detailed breed features.",
+        "mira_hint_template": "🔑 Pocket-sized love! Adorable {breed} keychain"
+    },
+    {
+        "what_is": "Party Hat",
+        "why_fits": "Birthday Special",
+        "category": "celebration_addons",
+        "pillars": ["celebrate"],
+        "price": 249,
+        "description_template": "The cutest party hat for your {breed}! Adjustable elastic strap ensures comfortable fit for birthday celebrations.",
+        "mira_hint_template": "🎩 Party essential! Adorable {breed}-sized birthday hat"
+    }
+]
+
+# Placeholder images by category (beautiful icons)
+CATEGORY_IMAGES = {
+    "breed-cakes": [
+        "https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=400",  # Dog cake
+        "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400"  # Birthday cake
+    ],
+    "cups_merch": [
+        "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=400",  # Mug
+        "https://images.unsplash.com/photo-1577937927133-66ef06acdf18?w=400"  # Canvas
+    ],
+    "bandanas": [
+        "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400",  # Dog with bandana
+        "https://images.unsplash.com/photo-1601758124096-1fd661873b95?w=400"
+    ],
+    "accessories": [
+        "https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?w=400",  # Pet accessories
+        "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400"
+    ],
+    "celebration_addons": [
+        "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=400",  # Party dog
+        "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400"
+    ]
+}
+
+
+@router.post("/admin/seed-breed-products")
+async def seed_breed_products():
+    """
+    🎯 SEED BREED-SPECIFIC PRODUCTS
+    Creates personalized products for top 20 breeds × 8 product types = 160 products
+    These appear in PICKS for each pet based on their breed!
+    """
+    created = 0
+    skipped = 0
+    
+    for breed in TOP_BREEDS:
+        for template in BREED_PRODUCT_TEMPLATES:
+            # Create unique product for this breed
+            product_name = f"{breed} · {template['what_is']} · {template['why_fits']}"
+            
+            # Check if already exists
+            existing = await db.breed_products.find_one({"name": product_name})
+            if existing:
+                skipped += 1
+                continue
+            
+            product = {
+                "id": f"bp-{breed.lower().replace(' ', '-')}-{template['what_is'].lower().replace(' ', '-')}-{uuid.uuid4().hex[:6]}",
+                "name": product_name,
+                "who_for": breed,
+                "what_is": template["what_is"],
+                "why_fits": template["why_fits"],
+                "short_description": template["description_template"].format(breed=breed),
+                "long_description": f"Specially designed for {breed} lovers! {template['description_template'].format(breed=breed)}",
+                "category": template["category"],
+                "sub_category": f"{breed.lower().replace(' ', '-')}-special",
+                "pillars": template["pillars"],
+                "breed_tags": {
+                    "breeds": [breed],
+                    "sizes": [],
+                    "age_groups": [],
+                    "coat_types": [],
+                    "sensitivities": []
+                },
+                "price": template["price"],
+                "compare_price": template["price"] * 1.25,  # 25% "discount"
+                "pricing_model": "fixed",
+                "sku": f"BP-{breed[:3].upper()}-{template['what_is'][:3].upper()}-{uuid.uuid4().hex[:4].upper()}",
+                "vendor": "The Doggy Company",
+                "in_stock": True,
+                "stock_quantity": 100,
+                "images": CATEGORY_IMAGES.get(template["category"], CATEGORY_IMAGES["accessories"]),
+                "primary_image": CATEGORY_IMAGES.get(template["category"], CATEGORY_IMAGES["accessories"])[0],
+                "mira_hint": template["mira_hint_template"].format(breed=breed),
+                "ai_tags": [breed.lower(), template["what_is"].lower(), "personalized", "breed-specific", "picks", "mira-picks"],
+                "is_active": True,
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            }
+            
+            await db.breed_products.insert_one(product)
+            created += 1
+    
+    # Also update the products collection with breed associations
+    # So they show up in regular product searches too
+    await sync_breed_products_to_main()
+    
+    return {
+        "success": True,
+        "message": f"Seeded {created} breed-specific products for PICKS! ({skipped} already existed)",
+        "created": created,
+        "skipped": skipped,
+        "total_breeds": len(TOP_BREEDS),
+        "products_per_breed": len(BREED_PRODUCT_TEMPLATES),
+        "expected_total": len(TOP_BREEDS) * len(BREED_PRODUCT_TEMPLATES)
+    }
+
+
+async def sync_breed_products_to_main():
+    """Sync breed_products to main products collection for unified search"""
+    breed_products = await db.breed_products.find({"is_active": True}).to_list(500)
+    
+    synced = 0
+    for bp in breed_products:
+        # Check if exists in main products
+        existing = await db.products.find_one({"id": bp["id"]})
+        if not existing:
+            # Convert to main product format
+            main_product = {
+                "id": bp["id"],
+                "name": bp["name"],
+                "title": bp["name"],
+                "description": bp.get("short_description", ""),
+                "short_description": bp.get("short_description", ""),
+                "category": bp.get("category", ""),
+                "pillar": bp.get("pillars", ["celebrate"])[0] if bp.get("pillars") else "celebrate",
+                "pillars": bp.get("pillars", []),
+                "price": bp.get("price", 0),
+                "compare_at_price": bp.get("compare_price"),
+                "images": bp.get("images", []),
+                "image": bp.get("primary_image", ""),
+                "tags": bp.get("ai_tags", []),
+                "breed_tags": bp.get("breed_tags", {}),
+                "mira_hint": bp.get("mira_hint", ""),
+                "vendor": bp.get("vendor", "The Doggy Company"),
+                "in_stock": bp.get("in_stock", True),
+                "is_breed_product": True,
+                "source": "breed_catalogue",
+                "created_at": bp.get("created_at"),
+                "updated_at": datetime.now(timezone.utc)
+            }
+            await db.products.insert_one(main_product)
+            synced += 1
+    
+    logging.info(f"[Breed Sync] Synced {synced} breed products to main collection")
+    return synced
+
+
+@router.get("/admin/breed-products-stats")
+async def get_breed_products_stats():
+    """Get statistics about breed-specific products"""
+    total = await db.breed_products.count_documents({"is_active": True})
+    
+    # Group by breed
+    by_breed = await db.breed_products.aggregate([
+        {"$match": {"is_active": True}},
+        {"$group": {"_id": "$who_for", "count": {"$sum": 1}}}
+    ]).to_list(100)
+    
+    # Group by category
+    by_category = await db.breed_products.aggregate([
+        {"$match": {"is_active": True}},
+        {"$group": {"_id": "$category", "count": {"$sum": 1}}}
+    ]).to_list(50)
+    
+    return {
+        "total_breed_products": total,
+        "by_breed": {item["_id"]: item["count"] for item in by_breed},
+        "by_category": {item["_id"]: item["count"] for item in by_category},
+        "breeds_covered": len(by_breed),
+        "categories_covered": len(by_category)
+    }
