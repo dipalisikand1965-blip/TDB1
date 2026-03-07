@@ -625,6 +625,18 @@ const DinePage = () => {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {/* DINE SERVICES - From services_master collection */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        <section className="mt-12" data-testid="dine-services-section">
+          <ServiceCatalogSection 
+            pillar="dine"
+            title="Dining Services"
+            subtitle="Restaurant discovery, reservations, and personalized dining experiences for you and your pet"
+            maxServices={8}
+          />
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
         {/* DINE ESSENTIALS - Feeding Tools & Supplements with Sub-sections */}
         {/* ═══════════════════════════════════════════════════════════════════════ */}
         {bundles.length > 0 && (

@@ -919,6 +919,18 @@ const CarePage = () => {
         </div>
       </div>
 
+      {/* === CARE SERVICES === */}
+      <div id="care-services" className="py-12 sm:py-16 bg-white" data-testid="care-services-section">
+        <div className="max-w-7xl mx-auto px-4">
+          <ServiceCatalogSection 
+            pillar="care"
+            title="Care Services"
+            subtitle="Professional grooming, vet visits, wellness checks, and more - all personalized for your pet"
+            maxServices={8}
+          />
+        </div>
+      </div>
+
       {/* === CARE PRODUCTS === */}
       <div id="care-products" className="py-12 sm:py-16 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4">
