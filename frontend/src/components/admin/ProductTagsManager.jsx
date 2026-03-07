@@ -88,7 +88,11 @@ const ProductTagsManager = ({ credentials }) => {
       }
     } catch (error) {
       console.error('AI enhancement error:', error);
-      alert('Failed to enhance descriptions. Check console for details.');
+      toast({ 
+        title: "Enhancement Error",
+        description: `Failed to enhance descriptions: ${error.message || 'Network error'}. Please try again.`,
+        variant: "destructive"
+      });
     }
     
     setAiEnhancing(false);
