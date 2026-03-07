@@ -305,27 +305,26 @@ async def get_breed_products(
         query["pillars"] = pillar
     if breed:
         normalized_breed = normalize_breed(breed)
+        # Check both simple breed_tags list and the full breed_tags_full structure
         query["$or"] = [
-            {"breed_tags.breeds": {"$size": 0}},  # Universal products
-            {"breed_tags.breeds": normalized_breed}
+            {"breed_tags": {"$size": 0}},  # Universal products (empty list)
+            {"breed_tags": normalized_breed},  # Simple list match
+            {"breed_tags_full.breeds": normalized_breed},  # Full structure match
+            {"who_for": {"$regex": breed, "$options": "i"}}  # Match who_for field
         ]
     if size:
         query["$or"] = [
-            {"breed_tags.sizes": {"$size": 0}},
-            {"breed_tags.sizes": size}
+            {"breed_tags_full.sizes": {"$size": 0}},
+            {"breed_tags_full.sizes": size}
         ]
     if age_group:
         query["$or"] = [
-            {"breed_tags.age_groups": {"$size": 0}},
-            {"breed_tags.age_groups": age_group}
+            {"breed_tags_full.age_groups": {"$size": 0}},
+            {"breed_tags_full.age_groups": age_group}
         ]
     
     total = await db.breed_products.count_documents(query)
-    products = await db.breed_products.find(query).skip(offset).limit(limit).to_list(limit)
-    
-    # Convert ObjectId to string
-    for p in products:
-        p["_id"] = str(p["_id"])
+    products = await db.breed_products.find(query, {"_id": 0}).skip(offset).limit(limit).to_list(limit)
     
     return {
         "products": products,
@@ -961,6 +960,28 @@ CATEGORY_IMAGES = {
 }
 
 
+# Default flavors for cakes
+CAKE_FLAVORS = [
+    {"name": "Chicken", "price": 0},
+    {"name": "Chicken Liver", "price": 0},
+    {"name": "Mutton", "price": 50},
+    {"name": "Banana", "price": 0},
+    {"name": "Cheeku", "price": 0},
+    {"name": "Coconut", "price": 0},
+    {"name": "Mango", "price": 0},
+    {"name": "Veggies", "price": 0}
+]
+
+# Default base options for cakes
+CAKE_BASES = ["Oats", "Ragi"]
+
+# Default cake sizes
+CAKE_SIZES = [
+    {"name": "Mini (200g)", "price": 999},
+    {"name": "Regular (500g)", "price": 1499},
+    {"name": "Large (1kg)", "price": 1899}
+]
+
 @router.post("/admin/seed-breed-products")
 async def seed_breed_products():
     """
@@ -982,18 +1003,25 @@ async def seed_breed_products():
                 skipped += 1
                 continue
             
+            # Build product with appropriate options based on category
+            is_cake = template["category"] in ["breed-cakes", "cakes"]
+            
             product = {
                 "id": f"bp-{breed.lower().replace(' ', '-')}-{template['what_is'].lower().replace(' ', '-')}-{uuid.uuid4().hex[:6]}",
                 "name": product_name,
+                "title": product_name,  # For modal compatibility
                 "who_for": breed,
                 "what_is": template["what_is"],
                 "why_fits": template["why_fits"],
                 "short_description": template["description_template"].format(breed=breed),
                 "long_description": f"Specially designed for {breed} lovers! {template['description_template'].format(breed=breed)}",
+                "description": template["description_template"].format(breed=breed),  # For modal compatibility
                 "category": template["category"],
                 "sub_category": f"{breed.lower().replace(' ', '-')}-special",
                 "pillars": template["pillars"],
-                "breed_tags": {
+                "pillar": template["pillars"][0] if template["pillars"] else "celebrate",  # For modal
+                "breed_tags": [breed],  # Simple list for modal "Perfect for" badge
+                "breed_tags_full": {
                     "breeds": [breed],
                     "sizes": [],
                     "age_groups": [],
@@ -1008,12 +1036,31 @@ async def seed_breed_products():
                 "in_stock": True,
                 "stock_quantity": 100,
                 "images": CATEGORY_IMAGES.get(template["category"], CATEGORY_IMAGES["accessories"]),
+                "image": CATEGORY_IMAGES.get(template["category"], CATEGORY_IMAGES["accessories"])[0],  # For modal
                 "primary_image": CATEGORY_IMAGES.get(template["category"], CATEGORY_IMAGES["accessories"])[0],
                 "mira_hint": template["mira_hint_template"].format(breed=breed),
                 "ai_tags": [breed.lower(), template["what_is"].lower(), "personalized", "breed-specific", "picks", "mira-picks"],
                 "is_active": True,
                 "created_at": datetime.now(timezone.utc),
-                "updated_at": datetime.now(timezone.utc)
+                "updated_at": datetime.now(timezone.utc),
+                # Add cake-specific options for cakes
+                "flavors": CAKE_FLAVORS if is_cake else [],
+                "sizes": CAKE_SIZES if is_cake else [],
+                "options": [
+                    {"name": "Base", "values": CAKE_BASES},
+                    {"name": "Flavour", "values": [f["name"] for f in CAKE_FLAVORS]}
+                ] if is_cake else [],
+                "variants": [
+                    {
+                        "id": f"var-{uuid.uuid4().hex[:8]}",
+                        "option1": base,
+                        "option2": flavor["name"],
+                        "price": template["price"],
+                        "available": True
+                    }
+                    for base in CAKE_BASES
+                    for flavor in CAKE_FLAVORS
+                ] if is_cake else []
             }
             
             await db.breed_products.insert_one(product)
@@ -1031,6 +1078,24 @@ async def seed_breed_products():
         "total_breeds": len(TOP_BREEDS),
         "products_per_breed": len(BREED_PRODUCT_TEMPLATES),
         "expected_total": len(TOP_BREEDS) * len(BREED_PRODUCT_TEMPLATES)
+    }
+
+
+@router.delete("/admin/clear-breed-products")
+async def clear_breed_products():
+    """Clear all breed products to allow re-seeding with updated structure"""
+    # Delete from breed_products collection
+    result1 = await db.breed_products.delete_many({})
+    
+    # Delete synced breed products from main products collection
+    result2 = await db.products.delete_many({"id": {"$regex": "^bp-"}})
+    result3 = await db.products_master.delete_many({"id": {"$regex": "^bp-"}})
+    
+    return {
+        "success": True,
+        "deleted_breed_products": result1.deleted_count,
+        "deleted_from_products": result2.deleted_count,
+        "deleted_from_products_master": result3.deleted_count
     }
 
 

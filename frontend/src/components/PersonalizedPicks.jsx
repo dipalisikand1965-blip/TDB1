@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
@@ -17,6 +18,7 @@ import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { ProductDetailModal } from './ProductCard';
 
 // Category icon mapping for beautiful icon cards
 const CATEGORY_ICONS = {
@@ -159,6 +161,10 @@ const PersonalizedPicks = ({
   const [repeatSuggestions, setRepeatSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  
+  // Modal state for product detail
+  const [showModal, setShowModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   
   const config = PILLAR_CONFIG[pillar] || PILLAR_CONFIG.shop;
 
@@ -422,7 +428,14 @@ const PersonalizedPicks = ({
               return (
                 <div key={product.id || product._id} className="flex-shrink-0 w-44">
                   <div 
-                    onClick={() => navigate(`/product/${product.id || product._id}`)}
+                    data-testid={`pick-card-${product.id || product._id}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      // Open modal instead of navigating
+                      setSelectedProduct(product);
+                      setShowModal(true);
+                    }}
                     className="block group cursor-pointer"
                   >
                     <div className="relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100">
@@ -502,6 +515,20 @@ const PersonalizedPicks = ({
               Browse All →
             </button>
           </div>
+          
+          {/* Product Detail Modal - Using Portal for proper z-index */}
+          {showModal && selectedProduct && createPortal(
+            <ProductDetailModal 
+              product={selectedProduct}
+              pillar={pillar}
+              selectedPet={selectedPet}
+              onClose={() => {
+                setShowModal(false);
+                setSelectedProduct(null);
+              }}
+            />,
+            document.body
+          )}
         </>
       )}
     </div>
