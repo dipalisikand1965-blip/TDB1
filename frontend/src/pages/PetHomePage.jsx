@@ -44,7 +44,9 @@ import {
   PawPrint,
   LayoutDashboard,
   Users,
-  Dog
+  Dog,
+  Gift,
+  Download
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 
@@ -592,6 +594,19 @@ const PetHomePage = () => {
               >
                 <Sparkles className="w-4 h-4" />
                 Teach Mira more about {pet?.name}
+              </button>
+            )}
+            
+            {/* Pet Wrapped Download Button */}
+            {soulScore >= 10 && (pet?._id || pet?.id) && (
+              <button
+                onClick={() => window.open(`${API_URL}/api/wrapped/download/${pet._id || pet.id}`, '_blank')}
+                className="mt-3 w-full py-2.5 bg-gradient-to-r from-amber-500/20 to-orange-600/20 border border-amber-500/30 rounded-xl text-amber-400 text-sm font-medium flex items-center justify-center gap-2 hover:bg-amber-500/30 hover:border-amber-500/50 transition-all"
+                data-testid="pet-wrapped-download-btn"
+              >
+                <Gift className="w-4 h-4" />
+                Download {pet?.name}'s Pet Wrapped
+                <Download className="w-3.5 h-3.5 ml-1 opacity-70" />
               </button>
             )}
           </div>
