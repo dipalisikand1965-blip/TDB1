@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://doggy-ecommerce-test.preview.emergentagent.com
+https://rainbow-bridge-3.preview.emergentagent.com
 ```
 
 ---
