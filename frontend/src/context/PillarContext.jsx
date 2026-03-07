@@ -25,7 +25,7 @@ const PILLAR_MESSAGES = {
     messages: (name, breed) => [
       `I'll refine this as I learn what suits ${name}`,
       `🍖 ${name}'s tummy is ready for yummy!`,
-      `🦴 We know ${name}'s favorite treats by heart`,
+      `🦴 We know ${name}'s favourite treats by heart`,
       `🥩 Premium nutrition for your precious ${name}`
     ],
     tagline: 'Chosen around {name}\'s taste, energy, and needs'
@@ -42,7 +42,7 @@ const PILLAR_MESSAGES = {
   enjoy: {
     messages: (name, breed) => [
       `I notice what brings out ${name}'s spark`,
-      `🎾 Playtime is ${name}'s favorite word!`,
+      `🎾 Playtime is ${name}'s favourite word!`,
       `🧸 New toys? ${name}'s tail is already wagging!`,
       `⚡ Burn that ${name} energy with the best toys`
     ],

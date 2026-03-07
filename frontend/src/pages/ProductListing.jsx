@@ -83,7 +83,7 @@ const CATEGORY_HERO_CONTENT = {
     badge: 'Fun Favorites',
     title: 'Pizzas &',
     highlight: 'Burgers 🍕',
-    subtitle: 'Pet-safe versions of your favorite comfort foods!',
+    subtitle: 'Pet-safe versions of your favourite comfort foods!',
     color: 'from-red-600 via-orange-500 to-yellow-500'
   },
   treats: {

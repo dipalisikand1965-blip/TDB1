@@ -150,7 +150,7 @@ const UnifiedCheckout = () => {
         // Use Mira-powered personalized endpoint if user is logged in
         let endpoint = `${API_URL}/api/products/recommendations?categories=${categories.join(',')}&limit=6&exclude_ids=${cartIds}`;
         
-        // If user is logged in, use personalized recommendations
+        // If user is logged in, use personalised recommendations
         if (user?.id) {
           endpoint = `${API_URL}/api/products/recommendations/personalized?user_id=${user.id}&categories=${categories.join(',')}&limit=6&exclude_ids=${cartIds}`;
         }
