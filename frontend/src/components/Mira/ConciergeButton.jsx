@@ -174,7 +174,8 @@ const ConciergeButton = ({
     const petContext = petName ? `about ${petName}` : '';
     const pillarContext = pillar !== 'general' ? `from ${pillar} page` : '';
     const message = encodeURIComponent(`Hi! I need help ${petContext} ${pillarContext}`.trim());
-    const whatsappUrl = `https://api.whatsapp.com/send/?phone=${WHATSAPP_NUMBER}&text=${message}&type=phone_number&app_absent=0`;
+    // Use wa.me format - works better across browsers and devices
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
     window.open(whatsappUrl, '_blank');
     setShowOptions(false);
   };
