@@ -1,9 +1,21 @@
 # The Doggy Company - Complete Product Requirements Document
 
-**Document Version:** 6.0.0  
-**Last Updated:** December 2025  
+**Document Version:** 6.1.0  
+**Last Updated:** March 7, 2026  
 **Status:** Production Ready - Pet Wrapped Launch Pending (May 20, 2026)  
 **Prepared By:** Development Team via Emergent AI
+
+---
+
+## QUICK REFERENCE
+
+### Key Documentation Files
+| Document | Purpose |
+|----------|---------|
+| `BUSINESS_LOGIC.md` | Soul Score, Badges, Membership, Paw Points - ALL business rules |
+| `complete-documentation.html` | Full aggregated documentation (auto-updated) |
+| `introduction.html` | Investor/Partner showcase page |
+| `investor.html` | Investor pitch deck (web version) |
 
 ---
 
