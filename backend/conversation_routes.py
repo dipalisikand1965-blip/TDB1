@@ -144,7 +144,7 @@ async def send_via_channel(
             
             resend.api_key = api_key
             resend.Emails.send({
-                "from": "The Doggy Company <woof@thedoggycompany.com>",
+                "from": "THEDOGGYCOMPANY <woof@thedoggycompany.com>",
                 "to": to_email,
                 "subject": f"Re: Your request (#{conversation_id[-8:]})",
                 "html": f"""

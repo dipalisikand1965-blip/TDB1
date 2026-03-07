@@ -293,7 +293,7 @@ class MultiChannelReply(BaseModel):
     """Send reply via all available channels (In-App, WhatsApp, Email)"""
     ticket_id: str
     message: str
-    sender_name: str = "The Doggy Company"
+    sender_name: str = "THEDOGGYCOMPANY"
     channels: List[str] = ["in_app", "whatsapp", "email"]  # Which channels to use
 
 
@@ -366,7 +366,7 @@ async def send_multi_channel_reply(reply: MultiChannelReply, background_tasks: B
             if resend_client:
                 reply_to = generate_reply_email_id(reply.ticket_id)
                 email_result = resend_client.Emails.send({
-                    "from": f"The Doggy Company <{SENDER_EMAIL}>",
+                    "from": f"THEDOGGYCOMPANY <{SENDER_EMAIL}>",
                     "to": member_email,
                     "reply_to": reply_to,
                     "subject": f"Re: Ticket {reply.ticket_id} - The Doggy Company",

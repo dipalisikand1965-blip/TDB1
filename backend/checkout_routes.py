@@ -61,7 +61,7 @@ IGST_RATE = 0.18  # Integrated GST (different state)
 # Business details for invoices
 BUSINESS_DETAILS = {
     "name": "The Doggy Company",
-    "legal_name": "The Doggy Bakery Pvt Ltd",
+    "legal_name": "The Doggy Company Pvt Ltd",
     "gstin": "29AABCT1332L1ZC",  # Placeholder - update with real GSTIN
     "pan": "AABCT1332L",
     "address": "147, 8th Main Rd, 3rd Block, Koramangala, Bengaluru 560034",
@@ -252,7 +252,7 @@ async def send_order_confirmation_email(order: dict) -> bool:
         '''
         
         params = {
-            "from": f"The Doggy Company <{SENDER_EMAIL}>",
+            "from": f"THEDOGGYCOMPANY <{SENDER_EMAIL}>",
             "to": customer_email,
             "subject": f"Order Confirmed! #{order_id} 🐕",
             "html": html_content
