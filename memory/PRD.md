@@ -381,6 +381,13 @@ curl -X POST $API_URL/api/wrapped/trigger-welcome/699fa0a513e44c977327ad57
 
 ## CHANGELOG
 
+### March 7, 2026 (Session 3)
+- **NEW:** Investor-Ready Pet Wrapped Page (`/investor-pet-wrapped.html`)
+  - Comprehensive investor pitch for Pet Wrapped as viral acquisition engine
+  - Includes: CAC comparison, viral funnel diagram, competitive moat analysis
+  - Revenue projections, tech stack overview, founder credentials
+  - Links to main introduction page for full platform overview
+
 ### March 7, 2026 (Session 2)
 - **NEW:** Pet Wrapped Download Button on Pet Home Page
   - Shows for any pet with Soul Score ≥ 10%
@@ -436,6 +443,7 @@ curl -X POST $API_URL/api/wrapped/trigger-welcome/699fa0a513e44c977327ad57
 | Page | URL |
 |------|-----|
 | Introduction (Investor) | https://mira-ai-soul.preview.emergentagent.com/introduction.html |
+| Pet Wrapped Investor Pitch | https://mira-ai-soul.preview.emergentagent.com/investor-pet-wrapped.html |
 | Mystique's Pet Wrapped | https://mira-ai-soul.preview.emergentagent.com/api/wrapped/download/699fa0a513e44c977327ad57 |
 | Static Mystique HTML | https://mira-ai-soul.preview.emergentagent.com/pet-wrapped-mystique.html |
 | Complete Documentation | https://mira-ai-soul.preview.emergentagent.com/complete-documentation.html |
