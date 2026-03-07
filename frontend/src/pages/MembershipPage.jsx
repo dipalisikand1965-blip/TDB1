@@ -701,98 +701,136 @@ const MembershipPage = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Annual Plan - FIRST (Foundation) */}
-            <Card className="p-8 border-2 border-teal-500 relative overflow-hidden order-1">
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-teal-500 to-pink-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                RECOMMENDED
-              </div>
-
+          {/* 3-Tier Pricing Grid */}
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            
+            {/* FREE Tier */}
+            <Card className="p-6 border-2 border-gray-200 hover:border-gray-300 transition-colors relative">
               <div className="text-center mb-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Pet Pass — Foundation</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Free</h3>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-4xl font-bold text-gray-900">₹4,999</span>
-                  <span className="text-gray-500">/year</span>
+                  <span className="text-4xl font-bold text-gray-900">₹0</span>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">+ 18% GST</p>
-                <p className="text-sm text-green-600 mt-2 font-medium">Full concierge relationship</p>
+                <p className="text-sm text-gray-500 mt-2">Get started, no commitment</p>
               </div>
 
               <ul className="space-y-3 mb-8">
                 {[
-                  'Full Pet Soul™ Profile',
-                  'Unlimited Mira AI Concierge®',
-                  'All 14 Life Pillars Unlocked',
-                  'Health Vault & Records',
-                  'Priority Concierge Support',
-                  'Double Paw Points (2x)',
-                  'Birthday Surprise Gift',
-                  'Early Access to New Features'
+                  'Pet Soul™ Profile',
+                  'Unlimited pets',
+                  'Mira basic on pillar pages',
+                  'Browse all 14 pillars',
+                  'Book & pay for services',
+                  'Upgrade anytime'
                 ].map((item, idx) => (
-                  <li key={idx} className="flex items-center gap-2 text-gray-700">
-                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  <li key={idx} className="flex items-center gap-2 text-gray-700 text-sm">
+                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
                     {item}
                   </li>
                 ))}
               </ul>
 
               <Button 
-                className="w-full bg-gradient-to-r from-teal-600 to-pink-600 hover:from-teal-700 hover:to-pink-700 py-6 text-lg"
-                onClick={() => handleSelectPlan('annual')}
-                data-testid="annual-plan-btn"
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 py-5"
+                onClick={() => handleSelectPlan('free')}
+                data-testid="free-plan-btn"
               >
-                <Crown className="w-5 h-5 mr-2" />
-                Activate Pet Pass
+                Start Free
               </Button>
             </Card>
 
-            {/* Trial Plan */}
-            <Card className="p-8 border-2 border-gray-200 hover:border-purple-300 transition-colors order-2 relative">
-              <div className="absolute top-4 right-4 bg-amber-100 text-amber-700 text-xs font-semibold px-3 py-1 rounded-full">
-                TRIAL
+            {/* ESSENTIAL Tier - RECOMMENDED */}
+            <Card className="p-6 border-2 border-teal-500 relative overflow-hidden transform md:scale-105 shadow-xl">
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-teal-500 to-pink-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                MOST POPULAR
               </div>
 
               <div className="text-center mb-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Pet Pass — Trial</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Essential</h3>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-4xl font-bold text-gray-900">₹499</span>
-                  <span className="text-gray-500">/1 month</span>
+                  <span className="text-4xl font-bold text-gray-900">₹2,499</span>
+                  <span className="text-gray-500">/year</span>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">+ 18% GST</p>
-                <p className="text-sm text-amber-600 mt-2 font-medium">Introduction to the concierge experience</p>
+                <p className="text-xs text-gray-400 mt-1">or ₹249/month • + 18% GST</p>
+                <p className="text-sm text-green-600 mt-2 font-medium">Full concierge experience</p>
               </div>
 
               <ul className="space-y-3 mb-8">
                 {[
-                  'Full Pet Soul™ Profile',
-                  'Unlimited Mira AI Concierge®',
-                  'All 14 Life Pillars Unlocked',
+                  'Everything in Free +',
+                  'Mira AI full access',
+                  'Full /mira-demo experience',
+                  'Concierge® chat access',
+                  'Paw Points rewards',
                   'Health Vault & Records',
-                  'Priority Concierge Support',
-                  'Paw Rewards'
+                  'Priority booking'
                 ].map((item, idx) => (
-                  <li key={idx} className="flex items-center gap-2 text-gray-700">
-                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  <li key={idx} className="flex items-center gap-2 text-gray-700 text-sm">
+                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
                     {item}
                   </li>
                 ))}
               </ul>
 
               <Button 
-                className="w-full bg-gray-900 hover:bg-gray-800 py-6"
-                onClick={() => handleSelectPlan('trial')}
-                data-testid="trial-plan-btn"
+                className="w-full bg-gradient-to-r from-teal-600 to-pink-600 hover:from-teal-700 hover:to-pink-700 py-5 text-lg"
+                onClick={() => handleSelectPlan('essential')}
+                data-testid="essential-plan-btn"
               >
-                Start Trial
+                <Crown className="w-5 h-5 mr-2" />
+                Get Essential
+              </Button>
+            </Card>
+
+            {/* PREMIUM Tier */}
+            <Card className="p-6 border-2 border-purple-400 relative overflow-hidden bg-gradient-to-b from-purple-50 to-white">
+              <div className="absolute top-4 right-4 bg-purple-600 text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1">
+                <Crown className="w-3 h-3" /> VIP
+              </div>
+
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Premium</h3>
+                <div className="flex items-baseline justify-center gap-1">
+                  <span className="text-4xl font-bold text-gray-900">₹9,999</span>
+                  <span className="text-gray-500">/year</span>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">or ₹999/month • + 18% GST</p>
+                <p className="text-sm text-purple-600 mt-2 font-medium">White-glove service</p>
+              </div>
+
+              <ul className="space-y-3 mb-8">
+                {[
+                  'Everything in Essential +',
+                  'Priority concierge response',
+                  'Dedicated Pet Manager',
+                  'White-glove service',
+                  '24/7 VIP support',
+                  'Exclusive events access',
+                  'Birthday surprise gift'
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-gray-700 text-sm">
+                    <Check className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <Button 
+                className="w-full bg-purple-600 hover:bg-purple-700 py-5"
+                onClick={() => handleSelectPlan('premium')}
+                data-testid="premium-plan-btn"
+              >
+                <Crown className="w-5 h-5 mr-2" />
+                Go Premium
               </Button>
             </Card>
           </div>
 
-          {/* Multi-Pet Note */}
+          {/* Unlimited Pets Note */}
           <div className="mt-8 text-center">
-            <Card className="inline-block p-4 bg-purple-50 border-purple-200">
-              <p className="text-purple-900">
-                <strong>🐾 Multiple pets?</strong> Each pet gets their own Pet Pass at ₹2,499/year or ₹249/trial (+ GST)
+            <Card className="inline-block p-4 bg-green-50 border-green-200">
+              <p className="text-green-900">
+                <strong>🐾 Unlimited pets at every tier!</strong> Add as many furry family members as you like — no extra cost.
               </p>
             </Card>
           </div>
@@ -806,17 +844,27 @@ const MembershipPage = () => {
             Ready to begin your pet&apos;s concierge journey?
           </h2>
           <p className="text-white/80 mb-8 max-w-2xl mx-auto">
-            Pet Pass creates a living relationship between your pet, you, and our care system.
+            Start free, upgrade anytime. Your pet deserves a living relationship with care.
           </p>
-          <Button 
-            size="lg"
-            className="bg-white text-teal-600 hover:bg-gray-100 px-8 py-6 text-lg"
-            onClick={() => handleSelectPlan('annual')}
-            data-testid="final-cta-btn"
-          >
-            <Crown className="w-5 h-5 mr-2" />
-            Activate Pet Pass <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              size="lg"
+              className="bg-white text-teal-600 hover:bg-gray-100 px-8 py-6 text-lg"
+              onClick={() => handleSelectPlan('free')}
+              data-testid="final-cta-free-btn"
+            >
+              Start Free
+            </Button>
+            <Button 
+              size="lg"
+              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-6 text-lg"
+              onClick={() => handleSelectPlan('essential')}
+              data-testid="final-cta-essential-btn"
+            >
+              <Crown className="w-5 h-5 mr-2" />
+              Get Essential <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -846,7 +894,7 @@ const MembershipPage = () => {
                 {isLogin ? 'Welcome Back!' : 'Join The Pack'}
               </h2>
               <p className="text-gray-500 mt-1">
-                {isLogin ? 'Sign in to continue' : selectedPlan === 'annual' ? '₹4,999/year (+ GST)' : '₹499/month (+ GST)'}
+                {isLogin ? 'Sign in to continue' : selectedPlan === 'free' ? 'Free forever' : selectedPlan === 'essential' ? '₹2,499/year (+ GST)' : selectedPlan === 'premium' ? '₹9,999/year (+ GST)' : 'Choose a plan'}
               </p>
             </div>
 
