@@ -17,11 +17,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 import axios from 'axios';
+import PillarServicesTab from './PillarServicesTab';
 import {
   PartyPopper, Calendar, MapPin, Users, Ticket, Building2, Package,
   Settings, Search, Plus, Edit2, Trash2, RefreshCw, Eye, Clock,
   CheckCircle, XCircle, Star, Coffee, Mountain, GraduationCap, Heart,
-  Download, Upload, Database
+  Download, Upload, Database, Briefcase
 } from 'lucide-react';
 
 const EXPERIENCE_TYPE_ICONS = {
@@ -442,6 +443,9 @@ const EnjoyManager = ({ getAuthHeader }) => {
           <TabsTrigger value="products" data-testid="enjoy-tab-products">
             <Package className="w-4 h-4 mr-2" /> Products
           </TabsTrigger>
+          <TabsTrigger value="services" data-testid="enjoy-tab-services">
+            <Briefcase className="w-4 h-4 mr-2" /> Services
+          </TabsTrigger>
           <TabsTrigger value="settings" data-testid="enjoy-tab-settings">
             <Settings className="w-4 h-4 mr-2" /> Settings
           </TabsTrigger>
@@ -784,6 +788,16 @@ const EnjoyManager = ({ getAuthHeader }) => {
               <p className="text-gray-500">No products yet. Click &quot;Add Product&quot; to create one.</p>
             </Card>
           )}
+        </TabsContent>
+
+        {/* Services Tab */}
+        <TabsContent value="services" className="space-y-4">
+          <PillarServicesTab 
+            pillar="enjoy"
+            pillarName="Enjoy"
+            pillarIcon="🎉"
+            pillarColor="bg-purple-500"
+          />
         </TabsContent>
 
         {/* Settings Tab */}
