@@ -8194,7 +8194,28 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
     # When on a pillar page, ONLY show products from that pillar
     # Breed matching happens WITHIN the pillar context
     
-    # Fetch breed-specific products WITHIN the pillar if breed is known
+    # 🎯 PRIORITY 1: Check breed_products collection for personalized PICKS
+    # These are specially created products for each breed (Birthday Cake, Mug, Bandana, etc.)
+    if breed:
+        breed_products_query = {
+            "is_active": True,
+            "$or": [
+                {"who_for": {"$regex": breed, "$options": "i"}},
+                {"breed_tags.breeds": {"$elemMatch": {"$regex": breed, "$options": "i"}}}
+            ]
+        }
+        # Add pillar filter if specified
+        if pillar:
+            breed_products_query["pillars"] = pillar
+        
+        breed_specific_products = await db.breed_products.find(breed_products_query, {"_id": 0}).limit(8).to_list(8)
+        
+        if breed_specific_products:
+            logger.info(f"[PICKS] Found {len(breed_specific_products)} breed-specific products for {breed}")
+            # Add these at the front - they're the most relevant!
+            products = breed_specific_products + products
+    
+    # Fetch breed-specific products WITHIN the pillar if breed is known (fallback from products_master)
     if breed and pillar:
         breed_pillar_query = {
             "pillar": pillar,
@@ -8205,8 +8226,9 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
             ]
         }
         breed_pillar_products = await db.products_master.find(breed_pillar_query, {"_id": 0}).limit(10).to_list(10)
-        # Add breed-specific pillar products to the front
-        products = breed_pillar_products + [p for p in products if p.get('id') not in [bp.get('id') for bp in breed_pillar_products]]
+        # Add breed-specific pillar products (avoid duplicates)
+        existing_ids = {p.get('id') for p in products}
+        products = products + [p for p in breed_pillar_products if p.get('id') not in existing_ids]
     
     # If pillar specified but no products found, create concierge suggestion cards
     # (Per doctrine: "If a product is not there we create non-priced concierge cards")
