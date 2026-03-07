@@ -2493,6 +2493,7 @@ const Admin = () => {
               { id: 'rainbow-bridge', emoji: '💜', label: 'Memorial Wall' },
               { id: 'adopt', emoji: '🐾', label: 'Adopt' },
               { id: 'shop', emoji: '🛒', label: 'Shop' },
+              { id: 'service-box', emoji: '🔧', label: 'Services' },
             ].map((tab) => (
               <Button
                 key={tab.id}
