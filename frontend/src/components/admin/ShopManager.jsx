@@ -24,6 +24,8 @@ import {
 import axios from 'axios';
 import { toast } from '../../hooks/use-toast';
 import { API_URL } from '../../utils/api';
+import PillarBundlesTab from './PillarBundlesTab';
+import PillarExperiencesTab from './PillarExperiencesTab';
 
 const ShopManager = ({ getAuthHeader }) => {
   const [activeSubTab, setActiveSubTab] = useState('products');
@@ -389,6 +391,12 @@ const ShopManager = ({ getAuthHeader }) => {
           </TabsTrigger>
           <TabsTrigger value="reports" data-testid="shop-tab-reports">
             <BarChart3 className="w-4 h-4 mr-2" /> Reports
+          </TabsTrigger>
+          <TabsTrigger value="bundles" data-testid="shop-tab-bundles">
+            <Package className="w-4 h-4 mr-2" /> Bundles
+          </TabsTrigger>
+          <TabsTrigger value="experiences" data-testid="shop-tab-experiences">
+            <Heart className="w-4 h-4 mr-2" /> Experiences
           </TabsTrigger>
           <TabsTrigger value="settings" data-testid="shop-tab-settings">
             <Settings className="w-4 h-4 mr-2" /> Settings
@@ -862,6 +870,24 @@ const ShopManager = ({ getAuthHeader }) => {
               </div>
             )}
           </Card>
+        </TabsContent>
+
+        {/* Bundles Tab */}
+        <TabsContent value="bundles" className="space-y-4">
+          <PillarBundlesTab 
+            pillar="shop"
+            credentials={getAuthHeader}
+            accentColor="blue"
+          />
+        </TabsContent>
+
+        {/* Experiences Tab */}
+        <TabsContent value="experiences" className="space-y-4">
+          <PillarExperiencesTab 
+            pillar="shop"
+            credentials={getAuthHeader}
+            accentColor="blue"
+          />
         </TabsContent>
 
         {/* Settings Tab */}
