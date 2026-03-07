@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://mira-memory-cards.preview.emergentagent.com
+https://mira-ai-soul.preview.emergentagent.com
 
 ---
 
