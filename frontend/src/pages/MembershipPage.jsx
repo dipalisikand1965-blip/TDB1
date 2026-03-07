@@ -741,11 +741,12 @@ const MembershipPage = () => {
 
             {/* ESSENTIAL Tier - RECOMMENDED */}
             <Card className="p-6 border-2 border-teal-500 relative overflow-hidden transform md:scale-105 shadow-xl">
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-teal-500 to-pink-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+              {/* Most Popular Badge - Fixed Position */}
+              <div className="absolute -top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-teal-500 to-pink-500 text-white text-xs font-semibold px-4 py-1.5 rounded-b-lg shadow-lg">
                 MOST POPULAR
               </div>
 
-              <div className="text-center mb-6">
+              <div className="text-center mb-6 mt-4">
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Essential</h3>
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-4xl font-bold text-gray-900">₹2,499</span>
@@ -763,10 +764,11 @@ const MembershipPage = () => {
                   'Concierge® chat access',
                   'Paw Points rewards',
                   'Health Vault & Records',
-                  'Priority booking'
+                  'Priority booking',
+                  '🎁 Annual Pet Wrapped'
                 ].map((item, idx) => (
-                  <li key={idx} className="flex items-center gap-2 text-gray-700 text-sm">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                  <li key={idx} className={`flex items-center gap-2 text-sm ${item.includes('Pet Wrapped') ? 'text-amber-600 font-medium' : 'text-gray-700'}`}>
+                    <Check className={`w-4 h-4 flex-shrink-0 ${item.includes('Pet Wrapped') ? 'text-amber-500' : 'text-green-500'}`} />
                     {item}
                   </li>
                 ))}
@@ -806,10 +808,11 @@ const MembershipPage = () => {
                   'White-glove service',
                   '24/7 VIP support',
                   'Exclusive events access',
-                  'Birthday surprise gift'
+                  'Birthday surprise gift',
+                  '🎁 Pet Wrapped + Birthday Edition'
                 ].map((item, idx) => (
-                  <li key={idx} className="flex items-center gap-2 text-gray-700 text-sm">
-                    <Check className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                  <li key={idx} className={`flex items-center gap-2 text-sm ${item.includes('Pet Wrapped') ? 'text-amber-600 font-medium' : 'text-gray-700'}`}>
+                    <Check className={`w-4 h-4 flex-shrink-0 ${item.includes('Pet Wrapped') ? 'text-amber-500' : 'text-purple-500'}`} />
                     {item}
                   </li>
                 ))}
@@ -833,6 +836,111 @@ const MembershipPage = () => {
                 <strong>🐾 Unlimited pets at every tier!</strong> Add as many furry family members as you like — no extra cost.
               </p>
             </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* Pet Wrapped Showcase Section */}
+      <div className="bg-gradient-to-b from-gray-900 via-purple-950 to-gray-900 py-20">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-amber-500/20 border border-amber-500/30 rounded-full px-4 py-1.5 mb-6">
+              <Gift className="w-4 h-4 text-amber-400" />
+              <span className="text-amber-400 text-sm font-medium">Included with Essential & Premium</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              <span className="text-amber-400">Pet Wrapped</span> — Your Dog's Year, Beautifully Told
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Like Spotify Wrapped, but for your pet. A beautiful, shareable summary of their journey — 
+              their Soul Score, their milestones, their story.
+            </p>
+          </div>
+
+          {/* Preview Cards */}
+          <div className="flex gap-6 overflow-x-auto pb-4 px-4 -mx-4 scrollbar-hide">
+            {/* Card 1: Cover */}
+            <div className="flex-shrink-0 w-64 h-96 bg-gradient-to-br from-purple-900 to-purple-950 rounded-2xl p-6 border border-purple-700/30 shadow-xl">
+              <div className="text-xs text-amber-400 tracking-widest mb-2">PET WRAPPED · 2026</div>
+              <div className="text-6xl font-light text-white/5 -ml-1">2026</div>
+              <div className="mt-auto pt-20">
+                <div className="text-2xl mb-1">🐾</div>
+                <div className="text-3xl font-light italic text-white">Mystique</div>
+                <div className="text-xs text-pink-400 tracking-wider mt-1">SHIH TZU · IN MEMORY</div>
+              </div>
+            </div>
+
+            {/* Card 2: Soul Score */}
+            <div className="flex-shrink-0 w-64 h-96 bg-gradient-to-br from-purple-900 to-indigo-950 rounded-2xl p-6 border border-amber-500/20 shadow-xl">
+              <div className="text-xs text-purple-400 tracking-widest mb-2">SOUL JOURNEY</div>
+              <div className="text-2xl text-white font-light">Soul Score</div>
+              <div className="flex items-center justify-center h-40">
+                <div className="text-center">
+                  <div className="text-6xl font-light text-white">87</div>
+                  <div className="text-xs text-amber-400 tracking-wider mt-1">SOUL SCORE</div>
+                </div>
+              </div>
+              <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                <span>45</span> <span className="text-amber-500">→</span> <span>72</span> <span className="text-amber-500">→</span> <span className="text-amber-400 font-bold">87</span>
+              </div>
+            </div>
+
+            {/* Card 3: Mira Moments */}
+            <div className="flex-shrink-0 w-64 h-96 bg-gradient-to-br from-gray-900 to-purple-950 rounded-2xl p-6 border border-pink-500/20 shadow-xl">
+              <div className="text-xs text-pink-400 tracking-widest mb-2">MIRA MOMENTS</div>
+              <div className="text-2xl text-white font-light">What Mira <em className="text-pink-400">remembers</em></div>
+              <div className="mt-6 space-y-3">
+                <div className="bg-white/5 rounded-xl p-3">
+                  <div className="text-3xl text-pink-400 font-light">12</div>
+                  <div className="text-xs text-gray-500">conversations</div>
+                </div>
+                <div className="bg-white/5 rounded-xl p-3">
+                  <div className="text-3xl text-pink-400 font-light">56</div>
+                  <div className="text-xs text-gray-500">questions answered</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 4: Pillars */}
+            <div className="flex-shrink-0 w-64 h-96 bg-gradient-to-br from-gray-900 to-gray-950 rounded-2xl p-6 border border-amber-500/20 shadow-xl">
+              <div className="text-xs text-amber-400 tracking-widest mb-2">LIFE PILLARS</div>
+              <div className="text-2xl text-white font-light">A life <em className="text-amber-400">fully lived</em></div>
+              <div className="mt-6 space-y-2">
+                {[
+                  { name: 'Advisory', val: 66, color: 'bg-purple-500' },
+                  { name: 'Care', val: 58, color: 'bg-pink-500' },
+                  { name: 'Dine', val: 57, color: 'bg-green-500' },
+                  { name: 'Celebrate', val: 34, color: 'bg-amber-500' },
+                ].map((p, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500 w-16">{p.name}</span>
+                    <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                      <div className={`h-full ${p.color}`} style={{ width: `${(p.val/66)*100}%` }} />
+                    </div>
+                    <span className="text-xs text-gray-500">{p.val}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-auto pt-8 text-center">
+                <div className="text-4xl font-light text-amber-400">236</div>
+                <div className="text-xs text-gray-500">total interactions</div>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="text-center mt-12">
+            <p className="text-gray-400 mb-6">
+              Download. Share. Celebrate your pet's unique journey.
+            </p>
+            <Button 
+              size="lg"
+              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-8 py-6 text-lg"
+              onClick={() => handleSelectPlan('essential')}
+            >
+              <Gift className="w-5 h-5 mr-2" />
+              Get Pet Wrapped with Essential
+            </Button>
           </div>
         </div>
       </div>
