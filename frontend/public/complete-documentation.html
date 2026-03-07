@@ -42,7 +42,7 @@
             <h2 style="border: none; margin-top: 0; padding-top: 0;">Complete Documentation</h2>
         </div>
         <div class="timestamp">
-            📅 Last Updated: March 07, 2026 at 13:48 | 🔄 Auto-generated
+            📅 Last Updated: March 07, 2026 at 13:54 | 🔄 Auto-generated
         </div>
         <div class="stats">
             <strong>📊 Statistics:</strong> 105 documents | 30,455 lines | Everything you've built!
@@ -1072,7 +1072,107 @@ Dogs civilize us, if we let them.</p>
 <li>✅ Verify emails (woof@thedoggycompany.com)</li>
 </ol>
 <hr />
-<h2>10. WHAT IT WOULD COST TO REPLICATE THIS</h2>
+
+<h2>10. PET WRAPPED — THE VIRAL ACQUISITION ENGINE</h2>
+
+<blockquote>
+"Every share is an ad you didn't pay for. The Soul Profile it links back to — that is where you convert."
+</blockquote>
+
+<h3>What is Pet Wrapped?</h3>
+<p>Pet Wrapped is a Spotify Wrapped-style feature that creates beautiful, shareable cards summarizing a pet's year/journey. It's designed to be the #1 acquisition channel through organic viral sharing.</p>
+
+<h3>The Complete Wrapped System</h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Trigger</th><th>Purpose</th><th>API Endpoint</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Welcome Wrapped</strong></td><td>Soul Profile completion</td><td>Instant viral share after onboarding</td><td><code>GET /api/wrapped/welcome/{pet_id}</code></td></tr>
+<tr><td><strong>Annual Wrapped</strong></td><td>December (like Spotify)</td><td>Everyone shares at the same time — creates a wave</td><td><code>GET /api/wrapped/generate/{pet_id}</code></td></tr>
+<tr><td><strong>Birthday Wrapped</strong></td><td>Pet's birthday</td><td>Personal, emotional, sacred</td><td><code>GET /api/wrapped/generate/{pet_id}</code></td></tr>
+<tr><td><strong>Gotcha Day</strong></td><td>Adoption anniversary</td><td>For rescue parents</td><td><code>GET /api/wrapped/generate/{pet_id}</code></td></tr>
+<tr><td><strong>Memorial Wrapped</strong></td><td>Rainbow Bridge anniversary</td><td>Honor those who've passed</td><td><code>GET /api/wrapped/generate/{pet_id}</code></td></tr>
+</tbody>
+</table>
+
+<h3>The 6 Wrapped Cards</h3>
+<ol>
+<li><strong>Cover Card</strong> — Pet name, breed, year, emotional tagline</li>
+<li><strong>Soul Score Card</strong> — The journey arc (42 → 68 → 94) + meaningful quote</li>
+<li><strong>Mira Moments Card</strong> — Conversation count, questions answered, AI-generated memory</li>
+<li><strong>Legacy Card</strong> — Relationships, babies, partners, family</li>
+<li><strong>Pillars Card</strong> — Top pillars used, Doggy Bakery treats count</li>
+<li><strong>Closing Card</strong> — Philosophy quote, CTA to create Soul Profile</li>
+</ol>
+
+<h3>The Viral Funnel</h3>
+<pre>
+Gift (Full 6 Cards) → Share Button → Single Shareable Card → 
+Landing Page (/wrapped-welcome) → Soul Profile Creation → Pet Parent for Life
+</pre>
+
+<h4>Sharing Strategy:</h4>
+<ul>
+<li><strong>Pet parent receives:</strong> Full 6-card experience (the private gift)</li>
+<li><strong>What gets shared:</strong> Single beautiful card with pet name, Soul Score, one Mira memory line</li>
+<li><strong>The receiver sees:</strong> "Does your dog have a Soul Profile yet?" + CTA</li>
+<li><strong>Conversion point:</strong> <code>/wrapped-welcome</code> landing page</li>
+</ul>
+
+<h3>API Endpoints</h3>
+<table>
+<thead>
+<tr><th>Endpoint</th><th>Method</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>/api/wrapped/admin/pets</code></td><td>GET</td><td>List all pets for admin panel</td></tr>
+<tr><td><code>/api/wrapped/admin/backfill-soul-scores</code></td><td>POST</td><td>Initialize soul score history for all pets</td></tr>
+<tr><td><code>/api/wrapped/generate/{pet_id}</code></td><td>GET</td><td>Generate full wrapped data (all 6 cards)</td></tr>
+<tr><td><code>/api/wrapped/generate-memory/{pet_id}</code></td><td>POST</td><td>Generate Mira's AI memory for the pet</td></tr>
+<tr><td><code>/api/wrapped/memory/{pet_id}</code></td><td>GET</td><td>Get stored Mira memory</td></tr>
+<tr><td><code>/api/wrapped/share/{pet_id}</code></td><td>GET</td><td>Get shareable card HTML</td></tr>
+<tr><td><code>/api/wrapped/welcome/{pet_id}</code></td><td>GET</td><td>Get welcome wrapped data (instant share)</td></tr>
+<tr><td><code>/api/wrapped/welcome-card/{pet_id}</code></td><td>GET</td><td>Get welcome card HTML</td></tr>
+<tr><td><code>/api/wrapped/soul-history/{pet_id}</code></td><td>GET</td><td>Get soul score history for journey arc</td></tr>
+</tbody>
+</table>
+
+<h3>Mira's AI Memory</h3>
+<p>The most powerful element of Pet Wrapped. Mira writes one specific, beautiful memory for each pet using:</p>
+<ul>
+<li>Soul Profile answers</li>
+<li>Top pillars explored</li>
+<li>Conversation count</li>
+<li>Relationships (babies, partners, siblings)</li>
+<li>Parent's name</li>
+</ul>
+
+<h4>Example Memory (Mystique):</h4>
+<blockquote>
+"I remember the day when Mystique raced around the garden, her tail a blur, bursting with energy as she leapt into the air with a joyful happy dance at walk time... She radiated pure love, a wonderful reminder of how deeply she cherished every shared adventure with you, Dipali."
+</blockquote>
+
+<h3>Frontend Pages</h3>
+<table>
+<thead>
+<tr><th>Route</th><th>Component</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>/wrapped/:petId</code></td><td>PetWrappedViewer.jsx</td><td>View all 6 cards with swipe navigation</td></tr>
+<tr><td><code>/wrapped-welcome</code></td><td>WrappedWelcomePage.jsx</td><td>Conversion landing page for viral traffic</td></tr>
+<tr><td>Admin Panel → 🎁 Pet Wrapped</td><td>PetWrappedAdmin.jsx</td><td>Generate and manage wrapped for all pets</td></tr>
+</tbody>
+</table>
+
+<h3>Launch Date: May 20, 2026</h3>
+<p><strong>Mystique's Birthday.</strong> The world's first Pet Wrapped ever created — for the dog who inspired the entire platform — goes live on her birthday.</p>
+<blockquote>
+"You cannot copy a grieving founder sharing her dog's Pet Wrapped on the dog's birthday. That is not a feature. That is a story."
+</blockquote>
+
+<hr />
+<h2>11. WHAT IT WOULD COST TO REPLICATE THIS</h2>
 <h3>Codebase Statistics (Real Numbers)</h3>
 <table>
 <thead>
