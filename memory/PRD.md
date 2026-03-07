@@ -736,7 +736,6 @@ curl -X POST https://thedoggycompany.com/api/auth/login \
 ### Current Issues
 | Issue | Severity | Status | Notes |
 |-------|----------|--------|-------|
-| Resend domain verification | Medium | Action Required | `thedoggycompany.com` domain needs to be verified at https://resend.com/domains for emails to send from `woof@thedoggycompany.com`. Currently falls back to `onboarding@resend.dev` |
 | Admin auth hardcoded | Low | Known | Future: migrate to role-based |
 | Large components | Low | Known | Admin.jsx (2600+ lines), DoggyServiceDesk.jsx (6000+ lines) |
 | MongoDB Atlas IP | Medium | Blocked | Needs whitelist for production |
