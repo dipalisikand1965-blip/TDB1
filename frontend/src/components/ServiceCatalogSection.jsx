@@ -70,11 +70,12 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
   const [showCrossSell, setShowCrossSell] = useState(false);
   const [bookedService, setBookedService] = useState(null);
 
-  // Fetch services
+  // Fetch services from services_master (unified service source)
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/service-catalog/services?pillar=${pillar}&limit=${maxServices}`);
+        // Use service-box endpoint which fetches from services_master (1115 services)
+        const response = await fetch(`${API_URL}/api/service-box/services?pillar=${pillar}&limit=${maxServices}&is_active=true`);
         const data = await response.json();
         setServices(data.services || []);
       } catch (err) {
