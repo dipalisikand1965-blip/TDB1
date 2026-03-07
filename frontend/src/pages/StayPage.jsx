@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -101,13 +101,19 @@ const StayPage = () => {
   const { addToCart } = useCart();
   const { user, token } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const servicesSectionRef = useRef(null);
+  
+  // Get stay type from URL query params
+  const urlStayType = searchParams.get('type');
+  
   const [activeSection, setActiveSection] = useState('stays');
   const [properties, setProperties] = useState([]);
   const [bundles, setBundles] = useState([]);
   const [socials, setSocials] = useState([]);
   const [boardingFacilities, setBoardingFacilities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('stays'); // 'stays' or 'boarding'
+  const [activeTab, setActiveTab] = useState(urlStayType === 'boarding' ? 'boarding' : 'stays'); // 'stays' or 'boarding'
   const [propertiesToShow, setPropertiesToShow] = useState(8); // Load More state
   const [heroIndex, setHeroIndex] = useState(0);
   const [userPets, setUserPets] = useState([]);
@@ -117,6 +123,21 @@ const StayPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  
+  // Handle URL type parameter - switch tab and scroll to section
+  useEffect(() => {
+    if (urlStayType && servicesSectionRef.current) {
+      if (urlStayType === 'boarding' || urlStayType === 'daycare') {
+        setActiveTab('boarding');
+      } else if (urlStayType === 'hotel' || urlStayType === 'resort' || urlStayType === 'stays') {
+        setActiveTab('stays');
+      }
+      // Scroll to services section after a short delay
+      setTimeout(() => {
+        servicesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 500);
+    }
+  }, [urlStayType]);
   
   const [filters, setFilters] = useState({
     city: '',
@@ -751,7 +772,7 @@ ${stayRequestForm.special_requests || 'None'}
         </div>
         
         {/* Tabs: Stays vs Boarding */}
-        <div className="flex justify-center gap-4 mt-6">
+        <div ref={servicesSectionRef} id="services" className="flex justify-center gap-4 mt-6">
           <button
             onClick={() => { setActiveTab('stays'); window.history.pushState({}, '', '/stay'); }}
             className={`px-6 py-3 rounded-xl font-semibold transition-all ${

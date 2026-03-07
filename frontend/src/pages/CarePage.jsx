@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -234,7 +234,12 @@ const CarePage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const formRef = useRef(null);
+  const servicesSectionRef = useRef(null);
+  
+  // Get service type from URL query params
+  const urlServiceType = searchParams.get('type');
   
   // Use PillarContext for pet selection (synced across all pillar components)
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
@@ -259,6 +264,26 @@ const CarePage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  
+  // Handle URL type parameter - scroll to services and open relevant flow
+  useEffect(() => {
+    if (urlServiceType && servicesSectionRef.current) {
+      const typeMapping = {
+        'grooming': 'grooming',
+        'vet': 'vet_clinic_booking',
+        'boarding': 'boarding_daycare',
+        'daycare': 'boarding_daycare',
+        'sitting': 'pet_sitting',
+        'walking': 'pet_sitting',
+        'emergency': 'emergency_help'
+      };
+      const mappedType = typeMapping[urlServiceType] || urlServiceType;
+      // Scroll to services section after a short delay
+      setTimeout(() => {
+        servicesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 500);
+    }
+  }, [urlServiceType]);
   
   // Service Booking Modal (legacy - for services without dedicated FlowModal)
   const [showBookingModal, setShowBookingModal] = useState(false);
@@ -621,7 +646,7 @@ const CarePage = () => {
       {/* ═══════════════════════════════════════════════════════════════════════════════
           ALL CARE SERVICES - For browsing (secondary to Mira's recommendations)
           ═══════════════════════════════════════════════════════════════════════════════ */}
-      <div className="py-10 sm:py-12 bg-white">
+      <div ref={servicesSectionRef} id="services" className="py-10 sm:py-12 bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">All Care Services</h2>

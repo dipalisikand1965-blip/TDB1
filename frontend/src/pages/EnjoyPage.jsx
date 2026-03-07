@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -115,7 +115,12 @@ const EnjoyPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const formRef = useRef(null);
+  const experiencesSectionRef = useRef(null);
+  
+  // Get type from URL query params
+  const urlType = searchParams.get('type');
   
   // Scroll to top when page loads
   useEffect(() => {
@@ -127,7 +132,7 @@ const EnjoyPage = () => {
   const [products, setProducts] = useState([]);
   const [bundles, setBundles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedType, setSelectedType] = useState(null);
+  const [selectedType, setSelectedType] = useState(urlType || null);
   const [selectedCity, setSelectedCity] = useState('');
   const [showRsvpModal, setShowRsvpModal] = useState(false);
   const [selectedExperience, setSelectedExperience] = useState(null);
@@ -141,6 +146,29 @@ const EnjoyPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [availableCities, setAvailableCities] = useState([]);
   const [productsToShow, setProductsToShow] = useState(8);
+  
+  // Handle URL type parameter - scroll to experiences and set filter
+  useEffect(() => {
+    if (urlType && experiencesSectionRef.current) {
+      // Map URL types to EXPERIENCE_TYPES keys
+      const typeMapping = {
+        'event': 'event',
+        'park': 'trail',
+        'meetup': 'meetup',
+        'cafe': 'cafe',
+        'workshop': 'workshop',
+        'wellness': 'wellness'
+      };
+      const mappedType = typeMapping[urlType] || urlType;
+      if (EXPERIENCE_TYPES[mappedType]) {
+        setSelectedType(mappedType);
+        // Scroll to experiences section after a short delay
+        setTimeout(() => {
+          experiencesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 500);
+      }
+    }
+  }, [urlType]);
   
   const [rsvpForm, setRsvpForm] = useState({
     number_of_pets: 1,
@@ -530,7 +558,7 @@ const EnjoyPage = () => {
       </div>
 
       {/* === UPCOMING EVENTS === */}
-      <div id="experiences" className="py-12 sm:py-16 bg-white">
+      <div id="experiences" ref={experiencesSectionRef} className="py-12 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 sm:mb-8 gap-4">
             <div>

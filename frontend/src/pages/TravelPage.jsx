@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -144,7 +144,12 @@ const TravelPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const formRef = useRef(null);
+  const servicesSectionRef = useRef(null);
+  
+  // Get travel type from URL query params
+  const urlTravelType = searchParams.get('type');
   
   // State
   const [showWizard, setShowWizard] = useState(false);
@@ -164,6 +169,31 @@ const TravelPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  
+  // Handle URL type parameter - scroll to services section
+  useEffect(() => {
+    if (urlTravelType && servicesSectionRef.current) {
+      const typeMapping = {
+        'cab': 'cab',
+        'road': 'cab',
+        'train': 'train',
+        'flight': 'flight',
+        'air': 'flight',
+        'relocation': 'relocation'
+      };
+      const mappedType = typeMapping[urlTravelType] || urlTravelType;
+      if (TRAVEL_TYPES[mappedType]) {
+        setSelectedType(mappedType);
+        // Open wizard with pre-selected type
+        setShowWizard(true);
+        setWizardStep(1);
+      }
+      // Scroll to services section after a short delay
+      setTimeout(() => {
+        servicesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 500);
+    }
+  }, [urlTravelType]);
   
   // Form Data
   const [formData, setFormData] = useState({
@@ -610,7 +640,7 @@ const TravelPage = () => {
       </div>
 
       {/* === TRAVEL TYPES STRIP === */}
-      <div className="bg-white border-b shadow-sm sticky top-0 z-40">
+      <div ref={servicesSectionRef} id="services" className="bg-white border-b shadow-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4 overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-3 flex-shrink-0">
