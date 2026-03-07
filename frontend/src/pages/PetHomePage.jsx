@@ -183,7 +183,7 @@ const PetSelector = ({ pets, selectedPet, onPetChange }) => {
         );
       })}
       <button
-        onClick={() => window.location.href = '/join'}
+        onClick={() => window.location.href = '/add-pet'}
         data-testid="add-pet-selector-btn"
         className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-800 border border-dashed border-slate-600 text-slate-400 hover:border-pink-500 hover:text-pink-400 whitespace-nowrap flex-shrink-0"
       >
@@ -231,11 +231,11 @@ const PetHomePage = () => {
   // Generate proactive alerts based on pet data
   const generateAlerts = useCallback((petData) => {
     const newAlerts = [];
+    const today = new Date();
     
     // Birthday alert
     if (petData.birth_date) {
       const birthDate = new Date(petData.birth_date);
-      const today = new Date();
       const nextBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
       if (nextBirthday < today) {
         nextBirthday.setFullYear(today.getFullYear() + 1);
@@ -247,9 +247,56 @@ const PetHomePage = () => {
           id: 'birthday',
           type: 'celebration',
           icon: Cake,
-          title: daysUntil === 0 ? `Happy Birthday ${petData.name}!` : `${petData.name}'s birthday is in ${daysUntil} days`,
-          action: '/celebrate',
-          actionLabel: 'Plan celebration'
+          title: daysUntil === 0 ? `Happy Birthday ${petData.name}! 🎂` : `${petData.name}'s birthday in ${daysUntil} days`,
+          path: '/celebrate',
+          actionLabel: 'Plan celebration',
+          priority: daysUntil <= 7 ? 1 : 2
+        });
+      }
+    }
+    
+    // Gotcha Day / Adoption Anniversary
+    if (petData.gotcha_date) {
+      const gotchaDate = new Date(petData.gotcha_date);
+      const nextGotcha = new Date(today.getFullYear(), gotchaDate.getMonth(), gotchaDate.getDate());
+      if (nextGotcha < today) {
+        nextGotcha.setFullYear(today.getFullYear() + 1);
+      }
+      const daysUntil = Math.ceil((nextGotcha - today) / (1000 * 60 * 60 * 24));
+      
+      if (daysUntil <= 30) {
+        newAlerts.push({
+          id: 'gotcha-day',
+          type: 'celebration',
+          icon: Heart,
+          title: daysUntil === 0 ? `Happy Gotcha Day ${petData.name}! 🏠` : `Gotcha Day in ${daysUntil} days`,
+          path: '/celebrate',
+          actionLabel: 'Celebrate adoption',
+          priority: daysUntil <= 7 ? 1 : 2
+        });
+      }
+    }
+    
+    // Vaccination reminder - check if vaccinations are due
+    if (petData.vaccinations && petData.vaccinations.length > 0) {
+      const upcomingVax = petData.vaccinations.find(v => {
+        if (!v.next_due) return false;
+        const dueDate = new Date(v.next_due);
+        const daysUntil = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+        return daysUntil <= 30 && daysUntil >= 0;
+      });
+      
+      if (upcomingVax) {
+        const dueDate = new Date(upcomingVax.next_due);
+        const daysUntil = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+        newAlerts.push({
+          id: 'vaccination',
+          type: 'health',
+          icon: Shield,
+          title: `${upcomingVax.name || 'Vaccination'} due in ${daysUntil} days`,
+          path: '/care',
+          actionLabel: 'Book appointment',
+          priority: daysUntil <= 7 ? 1 : 2
         });
       }
     }
@@ -261,9 +308,10 @@ const PetHomePage = () => {
         id: 'soul-low',
         type: 'insight',
         icon: Sparkles,
-        title: 'Help Mira understand your pet better',
-        action: '/soul-builder',
-        actionLabel: 'Grow Soul'
+        title: `Complete ${petData.name}'s Soul Profile`,
+        path: '/soul-builder',
+        actionLabel: 'Grow Soul',
+        priority: 3
       });
     }
     
@@ -274,12 +322,15 @@ const PetHomePage = () => {
         type: 'health',
         icon: Stethoscope,
         title: 'Schedule a wellness check',
-        action: '/care',
-        actionLabel: 'Book visit'
+        path: '/care',
+        actionLabel: 'Book visit',
+        priority: 4
       });
     }
     
-    setAlerts(newAlerts.slice(0, 3));
+    // Sort by priority and take top 3
+    newAlerts.sort((a, b) => (a.priority || 10) - (b.priority || 10));
+    setAlerts(newAlerts.slice(0, 4));
   }, []);
   
   // Update context when pet changes - MUST be defined BEFORE useEffect that uses it
@@ -465,7 +516,7 @@ const PetHomePage = () => {
           <h2 className="text-2xl font-bold text-white mb-2">No pets found</h2>
           <p className="text-slate-400 mb-6">Let's add your first pet to get started!</p>
           <button
-            onClick={() => navigate('/join')}
+            onClick={() => navigate('/add-pet')}
             className="px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-medium"
             data-testid="add-first-pet-btn"
           >
@@ -585,15 +636,22 @@ const PetHomePage = () => {
               <SoulRing percentage={soulScore} size={70} strokeWidth={5} />
             </div>
             
-            {/* Teach Mira More */}
-            {soulScore < 50 && (
+            {/* Teach Mira More - ALWAYS show if soul score < 80 */}
+            {soulScore < 80 && (
               <button
                 onClick={() => navigate('/soul-builder')}
-                className="mt-4 w-full py-2 bg-gradient-to-r from-pink-500/20 to-purple-600/20 border border-pink-500/30 rounded-xl text-pink-400 text-sm font-medium flex items-center justify-center gap-2 hover:bg-pink-500/30 transition-all"
-                data-testid="teach-mira-btn"
+                className={`mt-4 w-full py-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all ${
+                  soulScore < 50
+                    ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50'
+                    : 'bg-gradient-to-r from-pink-500/20 to-purple-600/20 border border-pink-500/30 text-pink-400 hover:bg-pink-500/30'
+                }`}
+                data-testid="complete-soul-cta-btn"
               >
                 <Sparkles className="w-4 h-4" />
-                Teach Mira more about {pet?.name}
+                {soulScore < 50 
+                  ? `Complete ${pet?.name}'s Soul Profile (${soulScore}% → 80%+)`
+                  : `Teach Mira more about ${pet?.name} (${soulScore}%)`
+                }
               </button>
             )}
             
@@ -648,7 +706,7 @@ const PetHomePage = () => {
                     </div>
                     <div className="flex-1">
                       <p className="text-white font-medium text-sm">{alert.title}</p>
-                      <p className="text-pink-400 text-xs">{alert.action} →</p>
+                      <p className="text-pink-400 text-xs">{alert.actionLabel} →</p>
                     </div>
                   </motion.button>
                 );
