@@ -381,7 +381,45 @@ curl -X POST $API_URL/api/wrapped/trigger-welcome/699fa0a513e44c977327ad57
 
 ## CHANGELOG
 
-### March 7, 2025
+### March 7, 2026 (Session 2)
+- **NEW:** Pet Wrapped Download Button on Pet Home Page
+  - Shows for any pet with Soul Score ≥ 10%
+  - Downloads beautiful standalone HTML file
+  - Also added to PetProfile.jsx and My Pets list
+
+- **NEW:** Dynamic Pet Wrapped API (`/api/wrapped/download/{pet_id}`)
+  - Generates full 6-card HTML with REAL data for ANY pet
+  - Pulls from: tickets, pillar_requests, conversation_memories, doggy_soul_answers
+  - Includes AI-generated Mira memory
+
+- **NEW:** Introduction Page (`/introduction.html`)
+  - Beautiful showcase page for investors/partners
+  - Shows Pet Wrapped cards + platform depth
+  - Includes: 563K lines of code, 38 APIs, 14 pillars, Mira AI, Founder story
+
+- **FIXED:** Membership Page Pricing Cards
+  - "MOST POPULAR" badge now properly positioned at top center
+  - Added "🎁 Annual Pet Wrapped" to Essential tier
+  - Added "🎁 Pet Wrapped + Birthday Edition" to Premium tier
+
+- **NEW:** Pet Wrapped Showcase Section on Membership Page
+  - Beautiful dark section with 4 preview cards
+  - Shows Soul Score, Mira Moments, Life Pillars
+  - CTA: "Get Pet Wrapped with Essential"
+
+- **NEW:** Pet Wrapped Section on Landing Page (Home.jsx)
+  - 3 animated preview cards
+  - "Coming Soon" badge
+  - CTA: "Get Pet Wrapped" → links to /membership
+
+- **NEW:** Learn Content Seeded
+  - 24 learn items across 6 topics
+  - Grooming, Health, Food, Behaviour, Travel, Boarding
+
+- **UPDATED:** Pillar Icons to match app's Learn section
+  - Grooming ✂️, Health ❤️, Food 🍖, Behaviour 🧠, Travel ✈️, Boarding 🏠
+
+### March 7, 2026 (Session 1)
 - **FIXED:** Pet Wrapped Admin Panel - Pet list now loading correctly for all pets (19 pets showing)
 - **COMPLETED:** Multi-channel delivery system integration in SoulBuilder.jsx
   - WelcomeWrappedModal triggers after first Soul Profile completion
@@ -390,6 +428,19 @@ curl -X POST $API_URL/api/wrapped/trigger-welcome/699fa0a513e44c977327ad57
   - In-app celebration modal with confetti effect
 - **VERIFIED:** End-to-end Pet Wrapped flow working:
   - Admin panel → Select pet → Generate wrapped → View share card → WhatsApp/Email delivery
+
+---
+
+## KEY URLS (Preview)
+
+| Page | URL |
+|------|-----|
+| Introduction (Investor) | https://mira-memory-cards.preview.emergentagent.com/introduction.html |
+| Mystique's Pet Wrapped | https://mira-memory-cards.preview.emergentagent.com/api/wrapped/download/699fa0a513e44c977327ad57 |
+| Static Mystique HTML | https://mira-memory-cards.preview.emergentagent.com/pet-wrapped-mystique.html |
+| Complete Documentation | https://mira-memory-cards.preview.emergentagent.com/complete-documentation.html |
+| Viral Landing Page | https://mira-memory-cards.preview.emergentagent.com/wrapped-welcome |
+| Membership Page | https://mira-memory-cards.preview.emergentagent.com/membership |
 
 ---
 
