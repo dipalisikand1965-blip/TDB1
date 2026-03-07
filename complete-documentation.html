@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Doggy Company - Complete Documentation</title>
+    <title>The Doggy Company - Complete Technical Documentation</title>
     <style>
         :root {
             --primary: #8b5cf6;
             --primary-dark: #7c3aed;
+            --teal: #14b8a6;
+            --pink: #ec4899;
             --bg: #0f172a;
             --card-bg: #1e293b;
             --text: #f1f5f9;
@@ -26,7 +28,7 @@
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
         header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: linear-gradient(135deg, var(--teal), var(--pink));
             padding: 3rem 0;
             text-align: center;
         }
@@ -44,6 +46,7 @@
         .badge-warning { background: var(--warning); color: black; }
         .badge-error { background: var(--error); color: white; }
         .badge-info { background: var(--primary); color: white; }
+        .badge-teal { background: var(--teal); color: white; }
         .card {
             background: var(--card-bg);
             border-radius: 12px;
@@ -51,11 +54,11 @@
             margin-bottom: 1.5rem;
             border: 1px solid var(--border);
         }
-        .card h2 { color: var(--primary); margin-bottom: 1rem; font-size: 1.5rem; }
+        .card h2 { color: var(--teal); margin-bottom: 1rem; font-size: 1.5rem; }
         .card h3 { color: var(--text); margin: 1rem 0 0.5rem; font-size: 1.2rem; }
         table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
         th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
-        th { color: var(--primary); font-weight: 600; }
+        th { color: var(--teal); font-weight: 600; }
         code {
             background: var(--bg);
             padding: 0.125rem 0.375rem;
@@ -83,11 +86,16 @@
             gap: 1rem;
         }
         .pillar-icon { font-size: 2rem; }
-        .nav { position: sticky; top: 0; background: var(--card-bg); padding: 1rem; margin-bottom: 2rem; border-radius: 8px; z-index: 100; }
-        .nav a { color: var(--primary); text-decoration: none; margin: 0 1rem; }
-        .nav a:hover { text-decoration: underline; }
-        .highlight { background: rgba(139, 92, 246, 0.2); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--primary); margin: 1rem 0; }
+        .nav { position: sticky; top: 0; background: var(--card-bg); padding: 1rem; margin-bottom: 2rem; border-radius: 8px; z-index: 100; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .nav a { color: var(--teal); text-decoration: none; padding: 0.25rem 0.5rem; border-radius: 4px; }
+        .nav a:hover { background: var(--bg); }
+        .highlight { background: rgba(20, 184, 166, 0.2); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--teal); margin: 1rem 0; }
+        .warning { background: rgba(245, 158, 11, 0.2); border-left-color: var(--warning); }
         footer { text-align: center; padding: 2rem; color: var(--text-muted); }
+        .tier-card { text-align: center; padding: 1.5rem; border-radius: 12px; }
+        .tier-free { background: linear-gradient(135deg, #374151, #1f2937); }
+        .tier-essential { background: linear-gradient(135deg, var(--teal), var(--pink)); }
+        .tier-premium { background: linear-gradient(135deg, var(--primary), #9333ea); }
     </style>
 </head>
 <body>
@@ -96,8 +104,8 @@
             <h1>The Doggy Company</h1>
             <p>Pet Life Operating System - Complete Technical Documentation</p>
             <div style="margin-top: 1rem;">
-                <span class="badge badge-success">v2.8.4</span>
-                <span class="badge badge-info">March 7, 2026</span>
+                <span class="badge badge-success">v3.0.0</span>
+                <span class="badge badge-teal">March 7, 2026</span>
                 <span class="badge badge-success">Production Ready</span>
             </div>
         </div>
@@ -107,16 +115,19 @@
         <nav class="nav">
             <a href="#overview">Overview</a>
             <a href="#credentials">Credentials</a>
+            <a href="#membership">Membership</a>
             <a href="#architecture">Architecture</a>
             <a href="#pillars">14 Pillars</a>
-            <a href="#api">API Reference</a>
-            <a href="#issues">Issues</a>
-            <a href="#tasks">Pending Tasks</a>
+            <a href="#mira">Mira OS</a>
+            <a href="#api">APIs</a>
+            <a href="#integrations">Integrations</a>
+            <a href="#issues">Status</a>
         </nav>
 
+        <!-- OVERVIEW -->
         <section id="overview" class="card">
             <h2>Project Overview</h2>
-            <p>The Doggy Company is a comprehensive "Pet Life Operating System" - a platform serving as the central hub for all pet parent needs. Built with love, honoring the memory of <strong>Kouros</strong> (black Newfoundland) and <strong>Mystique</strong> (Shih Tzu).</p>
+            <p>The Doggy Company is a comprehensive "Pet Life Operating System" - a platform serving as the central hub for all pet parent needs. Built with love, honouring the memory of <strong>Kouros</strong> (black Newfoundland) and <strong>Mystique</strong> (Shih Tzu).</p>
             
             <div class="highlight">
                 <strong>Core Philosophy:</strong><br>
@@ -131,6 +142,7 @@
             </table>
         </section>
 
+        <!-- CREDENTIALS -->
         <section id="credentials" class="card">
             <h2>Credentials</h2>
             
@@ -143,7 +155,7 @@ Password: test123</code></pre>
 Username: aditya
 Password: lola4304</code></pre>
             
-            <div class="highlight">
+            <div class="highlight warning">
                 <strong>Important:</strong> Admin requires TWO-STEP login:
                 <ol>
                     <li>First form: Enter username + password → Click "Access Admin Panel"</li>
@@ -152,6 +164,66 @@ Password: lola4304</code></pre>
             </div>
         </section>
 
+        <!-- MEMBERSHIP -->
+        <section id="membership" class="card">
+            <h2>Membership Tiers (NEW)</h2>
+            
+            <div class="grid" style="margin: 1.5rem 0;">
+                <div class="tier-card tier-free">
+                    <h3 style="color: white;">Free</h3>
+                    <p style="font-size: 2rem; font-weight: bold;">₹0</p>
+                    <p style="opacity: 0.8;">Forever</p>
+                    <ul style="text-align: left; margin-top: 1rem; font-size: 0.9rem;">
+                        <li>Soul Profile</li>
+                        <li>Unlimited pets</li>
+                        <li>Mira basic on pillars</li>
+                        <li>Browse all 14 pillars</li>
+                        <li>Book & pay for services</li>
+                        <li>Upgrade anytime</li>
+                    </ul>
+                </div>
+                
+                <div class="tier-card tier-essential">
+                    <h3 style="color: white;">Essential</h3>
+                    <p style="font-size: 2rem; font-weight: bold;">₹2,499/yr</p>
+                    <p style="opacity: 0.8;">or ₹249/month + GST</p>
+                    <ul style="text-align: left; margin-top: 1rem; font-size: 0.9rem;">
+                        <li>Everything in Free +</li>
+                        <li>Full Mira OS access</li>
+                        <li>Concierge® chat</li>
+                        <li>Paw Points rewards</li>
+                        <li>Health Vault</li>
+                        <li>Priority booking</li>
+                    </ul>
+                </div>
+                
+                <div class="tier-card tier-premium">
+                    <h3 style="color: white;">Premium</h3>
+                    <p style="font-size: 2rem; font-weight: bold;">₹9,999/yr</p>
+                    <p style="opacity: 0.8;">or ₹999/month + GST</p>
+                    <ul style="text-align: left; margin-top: 1rem; font-size: 0.9rem;">
+                        <li>Everything in Essential +</li>
+                        <li>Priority concierge</li>
+                        <li>Dedicated Pet Manager</li>
+                        <li>White-glove service</li>
+                        <li>24/7 VIP support</li>
+                        <li>Birthday surprise gift</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlight">
+                <strong>Key Features:</strong>
+                <ul>
+                    <li>✅ <strong>Unlimited pets</strong> at every tier (no extra cost)</li>
+                    <li>✅ <strong>Book services</strong> even on Free tier (revenue on transactions)</li>
+                    <li>✅ <strong>Upgrade anytime</strong> from any tier</li>
+                    <li>✅ <strong>Skip Payment</strong> gives Free tier access</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ARCHITECTURE -->
         <section id="architecture" class="card">
             <h2>Architecture</h2>
             
@@ -162,25 +234,27 @@ Password: lola4304</code></pre>
                 <tr><td>Backend</td><td>FastAPI (Python)</td></tr>
                 <tr><td>Database</td><td>MongoDB (Emergent local / Atlas production)</td></tr>
                 <tr><td>AI</td><td>OpenAI GPT (via Emergent LLM Key)</td></tr>
+                <tr><td>Voice</td><td>ElevenLabs (British accent) + OpenAI TTS backup</td></tr>
+                <tr><td>Payments</td><td>Razorpay (Live keys configured)</td></tr>
+                <tr><td>WhatsApp</td><td>Gupshup Business API</td></tr>
                 <tr><td>E-commerce</td><td>Shopify sync (thedoggybakery.com)</td></tr>
             </table>
 
             <h3>Key Database Collections</h3>
             <table>
                 <tr><th>Collection</th><th>Purpose</th><th>Count</th></tr>
-                <tr><td><code>users</code></td><td>User accounts</td><td>—</td></tr>
+                <tr><td><code>users</code></td><td>User accounts + membership</td><td>—</td></tr>
                 <tr><td><code>pets</code></td><td>Pet profiles with soul scores</td><td>—</td></tr>
                 <tr><td><code>products_master</code></td><td>All products</td><td>~2200+</td></tr>
-                <tr><td><code>services_master</code></td><td>Services</td><td>1115</td></tr>
+                <tr><td><code>services_master</code></td><td>Services (unified source)</td><td>1115</td></tr>
                 <tr><td><code>enjoy_experiences</code></td><td>Events & Experiences</td><td>16</td></tr>
-                <tr><td><code>pages</code></td><td>CMS content</td><td>16</td></tr>
+                <tr><td><code>learn_guides</code></td><td>Training guides ("Bible")</td><td>36</td></tr>
+                <tr><td><code>learn_videos</code></td><td>Training videos</td><td>22</td></tr>
+                <tr><td><code>payment_orders</code></td><td>Razorpay orders</td><td>—</td></tr>
             </table>
-            
-            <div class="highlight" style="border-left-color: var(--warning);">
-                <strong>Warning:</strong> <code>unified_products</code> collection is DEPRECATED. Do not use.
-            </div>
         </section>
 
+        <!-- 14 PILLARS -->
         <section id="pillars" class="card">
             <h2>The 14 Pillars</h2>
             <div class="grid">
@@ -199,91 +273,155 @@ Password: lola4304</code></pre>
                 <div class="pillar-card"><span class="pillar-icon">🌈</span><div><strong>Farewell</strong><br>Memorial services</div></div>
                 <div class="pillar-card"><span class="pillar-icon">🐾</span><div><strong>Adopt</strong><br>Rescue, adoption</div></div>
             </div>
+            
+            <h3>Services Per Pillar (from services_master)</h3>
+            <table>
+                <tr><th>Pillar</th><th>Services</th><th>Pillar</th><th>Services</th></tr>
+                <tr><td>Care</td><td>26</td><td>Enjoy</td><td>5</td></tr>
+                <tr><td>Dine</td><td>8</td><td>Advisory</td><td>8</td></tr>
+                <tr><td>Travel</td><td>11</td><td>Paperwork</td><td>14</td></tr>
+                <tr><td>Stay</td><td>9</td><td>Emergency</td><td>8</td></tr>
+                <tr><td>Celebrate</td><td>14</td><td>Farewell</td><td>8</td></tr>
+                <tr><td>Fit</td><td>22</td><td>Adopt</td><td>9</td></tr>
+                <tr><td>Learn</td><td>11</td><td>Play</td><td>0</td></tr>
+            </table>
         </section>
 
+        <!-- MIRA OS -->
+        <section id="mira" class="card">
+            <h2>Mira OS</h2>
+            
+            <p>Mira is the AI concierge that powers the platform. She learns about each pet through the Soul Builder and provides personalised recommendations.</p>
+            
+            <h3>URL Structure</h3>
+            <table>
+                <tr><th>URL</th><th>Purpose</th><th>Access</th></tr>
+                <tr><td><code>/mira-os</code></td><td>Main Mira OS experience (7-dimension header)</td><td>Essential+ tier</td></tr>
+                <tr><td><code>/mira-demo</code></td><td>Redirects to /mira-os</td><td>—</td></tr>
+                <tr><td><code>/mira-os-original</code></td><td>Day 1 version for comparison</td><td>Essential+ tier</td></tr>
+                <tr><td><code>/mira-os-backup</code></td><td>Untouched backup</td><td>Essential+ tier</td></tr>
+                <tr><td><code>/mira-pure</code></td><td>Clean AI test page</td><td>All users</td></tr>
+            </table>
+            
+            <h3>Soul Builder - 8 Chapters, 51 Questions</h3>
+            <table>
+                <tr><th>#</th><th>Chapter</th><th>Questions</th></tr>
+                <tr><td>1</td><td>🎭 Identity & Temperament</td><td>6</td></tr>
+                <tr><td>2</td><td>👨‍👩‍👧‍👦 Family & Pack</td><td>6</td></tr>
+                <tr><td>3</td><td>⏰ Rhythm & Routine</td><td>7</td></tr>
+                <tr><td>4</td><td>🏠 Home Comforts</td><td>5</td></tr>
+                <tr><td>5</td><td>✈️ Travel Style</td><td>4</td></tr>
+                <tr><td>6</td><td>🍖 Taste & Treat</td><td>6</td></tr>
+                <tr><td>7</td><td>🎓 Training & Behaviour</td><td>6</td></tr>
+                <tr><td>8</td><td>🌅 Long Horizon</td><td>5</td></tr>
+            </table>
+            
+            <h3>Voice Configuration</h3>
+            <p><strong>ElevenLabs:</strong> Lily (British accent) - Voice ID: <code>pFZP5JQG7iQjIQuC4Bku</code></p>
+            <p><strong>Backup:</strong> OpenAI TTS (tts-1 model, nova voice)</p>
+        </section>
+
+        <!-- API REFERENCE -->
         <section id="api" class="card">
             <h2>API Reference</h2>
             
-            <h3>Service Box (Admin)</h3>
+            <h3>Service Box (Unified Services)</h3>
             <table>
                 <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
-                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/service-box/services</code></td><td>List services with filters</td></tr>
-                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/service-box/services/{id}</code></td><td>Get single service</td></tr>
-                <tr><td><span class="badge badge-warning">PUT</span></td><td><code>/api/service-box/services/{id}</code></td><td>Update service (pillar, price, etc.)</td></tr>
-                <tr><td><span class="badge badge-success">POST</span></td><td><code>/api/service-box/services</code></td><td>Create new service</td></tr>
-                <tr><td><span class="badge badge-error">DELETE</span></td><td><code>/api/service-box/services/{id}</code></td><td>Archive service</td></tr>
-                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/service-box/stats</code></td><td>Service statistics</td></tr>
+                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/service-box/services</code></td><td>List all services (1115 total)</td></tr>
+                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/service-box/services?pillar=dine</code></td><td>Filter by pillar</td></tr>
+                <tr><td><span class="badge badge-warning">PUT</span></td><td><code>/api/service-box/services/{id}</code></td><td>Update service</td></tr>
             </table>
-
-            <h3>Products</h3>
-            <table>
-                <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
-                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/products?pillar={name}</code></td><td>Get Shopify products by pillar</td></tr>
-                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/care/products</code></td><td>Care pillar products</td></tr>
-                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/travel/products</code></td><td>Travel pillar products</td></tr>
-            </table>
-
-            <h3>Example: Update Service Pillar</h3>
-            <pre><code>curl -X PUT "https://pet-life-admin.preview.emergentagent.com/api/service-box/services/svc-care-vet" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Vet Consultation",
-    "pillar": "care",
-    "description": "Professional veterinary consultation",
-    "is_bookable": true,
-    "base_price": 500,
-    "duration_minutes": 30,
-    "is_active": true
-  }'</code></pre>
-        </section>
-
-        <section id="issues" class="card">
-            <h2>Known Issues & Status</h2>
-            <table>
-                <tr><th>Issue</th><th>Status</th><th>Notes</th></tr>
-                <tr><td>Pillar assignment not saving</td><td><span class="badge badge-success">FIXED</span></td><td>Verified March 7, 2026</td></tr>
-                <tr><td>Mobile inbox shaking</td><td><span class="badge badge-success">FIXED</span></td><td>Uses min-h-screen + 100dvh</td></tr>
-                <tr><td>Pet name overflow</td><td><span class="badge badge-success">FIXED</span></td><td>overflow-x-auto on pet switcher</td></tr>
-                <tr><td>Footer service links</td><td><span class="badge badge-success">FIXED</span></td><td>Routes use /services?pillar=X</td></tr>
-                <tr><td>CMS not seeded</td><td><span class="badge badge-success">FIXED</span></td><td>16 pages seeded</td></tr>
-                <tr><td>iOS hamburger menu</td><td><span class="badge badge-warning">NEEDS TEST</span></td><td>Touch handlers added</td></tr>
-                <tr><td>WebSocket chat</td><td><span class="badge badge-warning">DEGRADED</span></td><td>Graceful fallback in place</td></tr>
-                <tr><td>575 services empty pillar</td><td><span class="badge badge-warning">DATA ISSUE</span></td><td>Shows warning, saves correctly</td></tr>
-                <tr><td>Preview → Prod DB</td><td><span class="badge badge-error">BLOCKED</span></td><td>Needs Atlas IP whitelist</td></tr>
-            </table>
-        </section>
-
-        <section id="tasks" class="card">
-            <h2>Pending Tasks</h2>
             
-            <h3>🔴 High Priority (P0)</h3>
-            <ul>
-                <li><strong>iOS Hamburger Menu</strong> - Test on actual iOS device</li>
-                <li><strong>Service Flow Audit</strong> - Test Member Request → Service Desk → Inbox → Concierge Reply</li>
-                <li><strong>Razorpay Integration</strong> - Add API keys, test checkout flow</li>
-            </ul>
-
-            <h3>🟡 Medium Priority (P1)</h3>
-            <ul>
-                <li><strong>Pillar Manager Enhancement</strong> - Add Bundles/Experiences tabs</li>
-                <li><strong>Mobile Golden Experience</strong> - Full responsiveness audit</li>
-                <li><strong>WhatsApp Business</strong> - Pending Meta API verification</li>
-            </ul>
-
-            <h3>🟢 Future/Backlog (P2)</h3>
-            <ul>
-                <li>Add transformation stories for more pillars</li>
-                <li>E-commerce expansion (HUFT, Amazon)</li>
-                <li>Code refactoring (Admin.jsx, DoggyServiceDesk.jsx)</li>
-                <li>Migrate admin auth from hardcoded to backend roles</li>
-            </ul>
+            <h3>Learn "Bible"</h3>
+            <table>
+                <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/learn/guides</code></td><td>Training guides (36)</td></tr>
+                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/learn/videos?topic=behaviour</code></td><td>Curated + YouTube videos</td></tr>
+                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/learn/programs</code></td><td>Training programs</td></tr>
+            </table>
+            
+            <h3>Payments (Razorpay)</h3>
+            <table>
+                <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+                <tr><td><span class="badge badge-info">GET</span></td><td><code>/api/payments/config</code></td><td>Get plans & public key</td></tr>
+                <tr><td><span class="badge badge-success">POST</span></td><td><code>/api/payments/create-order</code></td><td>Create payment order</td></tr>
+                <tr><td><span class="badge badge-success">POST</span></td><td><code>/api/payments/verify</code></td><td>Verify payment</td></tr>
+                <tr><td><span class="badge badge-success">POST</span></td><td><code>/api/payments/webhook</code></td><td>Razorpay webhooks</td></tr>
+            </table>
+            
+            <h3>External APIs (All Working)</h3>
+            <table>
+                <tr><th>API</th><th>Endpoint</th><th>Coverage</th></tr>
+                <tr><td>YouTube</td><td><code>/api/mira/youtube/videos</code></td><td>Up to 50 results per query</td></tr>
+                <tr><td>Google Places</td><td><code>/api/mira/google-places/hotels?city=london</code></td><td>Worldwide</td></tr>
+                <tr><td>Weather</td><td><code>/api/mira/weather/pet-activity?city=sydney</code></td><td>Location-based</td></tr>
+            </table>
         </section>
 
+        <!-- INTEGRATIONS -->
+        <section id="integrations" class="card">
+            <h2>3rd Party Integrations</h2>
+            <table>
+                <tr><th>Integration</th><th>Status</th><th>Notes</th></tr>
+                <tr><td>OpenAI GPT</td><td><span class="badge badge-success">Working</span></td><td>Via Emergent LLM Key</td></tr>
+                <tr><td>MongoDB</td><td><span class="badge badge-success">Working</span></td><td>Local + Atlas</td></tr>
+                <tr><td>Shopify</td><td><span class="badge badge-success">Working</span></td><td>thedoggybakery.com</td></tr>
+                <tr><td>Google Places</td><td><span class="badge badge-success">Working</span></td><td>Hotels, vets, restaurants (worldwide)</td></tr>
+                <tr><td>YouTube</td><td><span class="badge badge-success">Working</span></td><td>Full access, up to 50 results</td></tr>
+                <tr><td>Weather</td><td><span class="badge badge-success">Working</span></td><td>Location-based forecasts</td></tr>
+                <tr><td>ElevenLabs</td><td><span class="badge badge-success">Working</span></td><td>British voice (Lily)</td></tr>
+                <tr><td>Razorpay</td><td><span class="badge badge-success">Configured</span></td><td>Live keys: rzp_live_<REDACTED_ROTATED></td></tr>
+                <tr><td>Gupshup WhatsApp</td><td><span class="badge badge-success">Configured</span></td><td>API key added, routes pending</td></tr>
+                <tr><td>Resend</td><td><span class="badge badge-success">Configured</span></td><td>Email service</td></tr>
+            </table>
+            
+            <h3>API Keys Location</h3>
+            <pre><code>/app/backend/.env contains:
+- RAZORPAY_KEY_ID=rzp_live_<REDACTED_ROTATED>
+- RAZORPAY_KEY_SECRET=wNWqcJvv5K6b39kmMzOKVsQ3
+- GUPSHUP_API_KEY=sk_2609497ce757467f87a955015da8854d
+- ELEVENLABS_API_KEY=...
+- GOOGLE_PLACES_API_KEY=...
+- YOUTUBE_API_KEY=...</code></pre>
+        </section>
+
+        <!-- STATUS -->
+        <section id="issues" class="card">
+            <h2>Current Status & Issues</h2>
+            
+            <h3>✅ Completed (March 7, 2026)</h3>
+            <table>
+                <tr><th>Item</th><th>Details</th></tr>
+                <tr><td>Membership 3-tier pricing</td><td>Free, Essential (₹2,499/yr), Premium (₹9,999/yr)</td></tr>
+                <tr><td>Unlimited pets</td><td>All tiers, no extra cost</td></tr>
+                <tr><td>/mira-demo → /mira-os rename</td><td>All links updated, redirect added</td></tr>
+                <tr><td>Services on all pillar pages</td><td>Fetching from services_master (1115)</td></tr>
+                <tr><td>C® Concierge button</td><td>Fixed on Dine page</td></tr>
+                <tr><td>British English</td><td>Personalised, favourite, colour, etc.</td></tr>
+                <tr><td>ElevenLabs British voice</td><td>Lily + OpenAI backup</td></tr>
+                <tr><td>Learn Bible endpoints</td><td>/api/learn/guides, /api/learn/videos</td></tr>
+                <tr><td>Razorpay integration</td><td>Routes created, live keys configured</td></tr>
+                <tr><td>Dine page cleanup</td><td>Removed Dog Parks, moved Pawty bundle</td></tr>
+            </table>
+            
+            <h3>⏳ Pending</h3>
+            <table>
+                <tr><th>Item</th><th>Priority</th><th>Notes</th></tr>
+                <tr><td>Gupshup WhatsApp routes</td><td>P0</td><td>API key added, routes need implementation</td></tr>
+                <tr><td>Payment flow testing</td><td>P0</td><td>Test with Razorpay test cards</td></tr>
+                <tr><td>Tier access control</td><td>P1</td><td>Verify /mira-os requires Essential+</td></tr>
+                <tr><td>iOS hamburger menu</td><td>P1</td><td>Needs real device testing</td></tr>
+                <tr><td>MongoDB Atlas whitelist</td><td>P2</td><td>Add 0.0.0.0/0 for production</td></tr>
+            </table>
+        </section>
+
+        <!-- MASTER SYNC -->
         <section class="card">
-            <h2>Master Sync</h2>
+            <h2>Master Sync (Post-Deployment)</h2>
             <p><strong>Location:</strong> Admin Panel → Click "MASTER SYNC" button</p>
             
-            <div class="highlight">
+            <div class="highlight warning">
                 <strong>Important:</strong> When deployed to production, ALWAYS run Master Sync to populate data.
             </div>
             
@@ -296,25 +434,11 @@ Password: lola4304</code></pre>
                 <tr><td>5</td><td>Default data seed</td></tr>
                 <tr><td>6</td><td>Mira context update</td></tr>
                 <tr><td>7</td><td>Product images migration (all pillars)</td></tr>
-                <tr><td>8</td><td>Service images migration (Celebrate + Travel)</td></tr>
+                <tr><td>8</td><td>Service images migration</td></tr>
             </table>
         </section>
 
-        <section class="card">
-            <h2>3rd Party Integrations</h2>
-            <table>
-                <tr><th>Integration</th><th>Status</th><th>Notes</th></tr>
-                <tr><td>OpenAI GPT</td><td><span class="badge badge-success">Working</span></td><td>Via Emergent LLM Key</td></tr>
-                <tr><td>MongoDB</td><td><span class="badge badge-success">Working</span></td><td>Local + Atlas</td></tr>
-                <tr><td>Shopify</td><td><span class="badge badge-success">Working</span></td><td>thedoggybakery.com</td></tr>
-                <tr><td>Google Places</td><td><span class="badge badge-success">Working</span></td><td>Hotels, vets, restaurants</td></tr>
-                <tr><td>YouTube</td><td><span class="badge badge-success">Working</span></td><td>Video embeds</td></tr>
-                <tr><td>Razorpay</td><td><span class="badge badge-warning">Needs Keys</span></td><td>Payment gateway</td></tr>
-                <tr><td>Resend</td><td><span class="badge badge-success">Configured</span></td><td>Email service</td></tr>
-                <tr><td>WhatsApp</td><td><span class="badge badge-warning">Needs Verification</span></td><td>Meta API</td></tr>
-            </table>
-        </section>
-
+        <!-- USEFUL COMMANDS -->
         <section class="card">
             <h2>Useful Commands</h2>
             
@@ -329,17 +453,18 @@ tail -f /var/log/supervisor/backend.err.log</code></pre>
             <pre><code>sudo supervisorctl restart backend
 sudo supervisorctl restart frontend</code></pre>
 
-            <h3>Test API</h3>
-            <pre><code>curl https://pet-life-admin.preview.emergentagent.com/api/products?pillar=celebrate&limit=5</code></pre>
+            <h3>Test APIs</h3>
+            <pre><code># Services
+curl https://pet-life-admin.preview.emergentagent.com/api/service-box/services?pillar=dine&limit=5
 
-            <h3>Check MongoDB</h3>
-            <pre><code>cd /app/backend && python3 -c "
-from pymongo import MongoClient
-client = MongoClient('mongodb://localhost:27017')
-db = client['pet-os-live-test_database']
-for coll in db.list_collection_names():
-    print(f'{coll}: {db[coll].count_documents({})} docs')
-"</code></pre>
+# Learn guides
+curl https://pet-life-admin.preview.emergentagent.com/api/learn/guides?limit=5
+
+# Weather (any city)
+curl https://pet-life-admin.preview.emergentagent.com/api/mira/weather/pet-activity?city=london
+
+# Google Places (worldwide)
+curl https://pet-life-admin.preview.emergentagent.com/api/mira/google-places/hotels?city=tokyo</code></pre>
         </section>
     </div>
 
