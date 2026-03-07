@@ -84,6 +84,7 @@ const CelebratePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('products'); // 'products' | 'services'
   const [selectedSubcat, setSelectedSubcat] = useState(null);
+  const [initialCategoryLoaded, setInitialCategoryLoaded] = useState(false);
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -215,13 +216,18 @@ const CelebratePage = () => {
     fetchDynamicPicks();
   }, [activePet?.name, token]);
   
-  // Read category from URL params on mount
+  // Read category from URL params on mount and when searchParams changes
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category');
     if (categoryFromUrl && CATEGORY_API_MAP[categoryFromUrl]) {
       setSelectedSubcat(categoryFromUrl);
+      // Scroll to products section after a short delay
+      setTimeout(() => {
+        document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
+      }, 500);
     }
-  }, []);
+    setInitialCategoryLoaded(true);
+  }, [searchParams]);
   
   // Update URL when category changes (for sharing/bookmarking)
   const handleSubcategoryChange = (subcatId) => {
@@ -461,12 +467,14 @@ const CelebratePage = () => {
     }
   }, [searchParams, setSearchParams]);
 
-  // Reset pagination when filters change
+  // Reset pagination when filters change - wait for URL params to be read first
   useEffect(() => {
+    if (!initialCategoryLoaded) return; // Don't fetch until we've checked URL params
+    
     setCurrentPage(1);
     setSelectedShape(null);
     fetchFeaturedProducts(selectedSubcat, 1, null);
-  }, [selectedSubcat]);
+  }, [selectedSubcat, initialCategoryLoaded]);
 
   const fetchFeaturedProducts = async (category = null, page = 1, shapeFilter = null, append = false) => {
     if (page === 1) {
