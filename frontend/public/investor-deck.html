@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Doggy Company - Confidential Investor Brief</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6b46c1;
+            --primary-dark: #553c9a;
+            --primary-light: #9f7aea;
+            --gold: #d4af37;
+            --gold-light: #f4e4bc;
+            --bg-cream: #faf8f5;
+            --text-dark: #1a1a2e;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Slide Container */
+        .slide {
+            min-height: 100vh;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            page-break-after: always;
+        }
+
+        .slide:nth-child(odd) {
+            background: linear-gradient(135deg, #faf8f5 0%, #ffffff 100%);
+        }
+
+        /* Title Slide Special */
+        .slide-title {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+            color: white;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide-title h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .slide-title .tagline {
+            font-size: 1.3rem;
+            font-weight: 300;
+            max-width: 700px;
+            margin: 20px auto;
+            opacity: 0.95;
+            font-style: italic;
+        }
+
+        .slide-title .dedication {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            margin-top: 30px;
+        }
+
+        .slide-title .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 50px;
+        }
+
+        .slide-title .stat {
+            text-align: center;
+        }
+
+        .slide-title .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .slide-title .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        /* Regular Slide Header */
+        .slide-header {
+            margin-bottom: 40px;
+        }
+
+        .slide-number {
+            font-size: 0.75rem;
+            color: var(--primary);
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .slide-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+
+        .slide-header .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Content Styles */
+        .slide-content {
+            flex: 1;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+
+        .three-column {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .four-column {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(107, 70, 193, 0.08);
+            border: 1px solid #f0e6ff;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--gold) 100%);
+            border-radius: 3px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 35px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -40px;
+            top: 5px;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border: 4px solid var(--primary);
+            border-radius: 50%;
+        }
+
+        .timeline-year {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+
+        .timeline-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .timeline-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0e6ff;
+            font-size: 0.9rem;
+        }
+
+        tr:hover td {
+            background: #faf5ff;
+        }
+
+        tr:last-child td:first-child {
+            border-radius: 0 0 0 8px;
+        }
+
+        tr:last-child td:last-child {
+            border-radius: 0 0 8px 0;
+        }
+
+        /* Comparison Table */
+        .comparison-table td:first-child {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .check { color: var(--success); font-weight: bold; }
+        .cross { color: var(--danger); }
+        .partial { color: var(--warning); }
+        .highlight-cell {
+            background: #f0fdf4 !important;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-card .value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* Quote Box */
+        .quote-box {
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            border-left: 5px solid var(--primary);
+            padding: 30px 35px;
+            border-radius: 0 16px 16px 0;
+            margin: 30px 0;
+        }
+
+        .quote-box p {
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--primary-dark);
+            line-height: 1.8;
+        }
+
+        .quote-box .author {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            font-style: normal;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Pillar Grid */
+        .pillar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .pillar {
+            background: white;
+            border: 2px solid #f0e6ff;
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .pillar:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(107, 70, 193, 0.15);
+        }
+
+        .pillar-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .pillar-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        /* Team Section */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .team-card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(107, 70, 193, 0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover {
+            border-color: var(--gold);
+        }
+
+        .team-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .team-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+        }
+
+        .team-role {
+            font-size: 0.85rem;
+            color: var(--gold);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .team-bio {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Army Cards */
+        .army-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .army-card {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .army-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .army-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+
+        .army-desc {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* Ask Boxes */
+        .ask-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .ask-card {
+            background: white;
+            border: 2px solid #f0e6ff;
+            border-radius: 16px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ask-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .ask-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #f0e6ff;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .ask-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+
+        .ask-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Soul Questions */
+        .soul-question {
+            background: white;
+            border-radius: 16px;
+            padding: 25px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(107, 70, 193, 0.08);
+            border-left: 4px solid var(--gold);
+        }
+
+        .soul-category {
+            font-size: 0.75rem;
+            color: var(--gold);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .soul-text {
+            font-size: 1.05rem;
+            color: var(--primary-dark);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .slide-footer {
+            margin-top: auto;
+            padding-top: 30px;
+            border-top: 1px solid #f0e6ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .slide-footer .logo {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Confidential Badge */
+        .confidential {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--danger);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            z-index: 1000;
+        }
+
+        /* Print Styles */
+        @media print {
+            .slide {
+                page-break-after: always;
+                min-height: 100vh;
+            }
+            .confidential {
+                position: absolute;
+            }
+        }
+
+        /* Dog Story Slide */
+        .dog-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(107, 70, 193, 0.1);
+        }
+
+        .dog-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .dog-avatar {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .dog-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+        }
+
+        .dog-years {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .dog-breed {
+            font-size: 0.85rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* Eco System */
+        .ecosystem-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            border: 2px solid #f0e6ff;
+            margin-bottom: 20px;
+        }
+
+        .ecosystem-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .ecosystem-name {
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .ecosystem-reach {
+            font-size: 0.85rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* Use of Funds */
+        .funds-bar {
+            display: flex;
+            height: 50px;
+            border-radius: 25px;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+
+        .fund-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .fund-segment:nth-child(1) { background: var(--primary-dark); flex: 40; }
+        .fund-segment:nth-child(2) { background: var(--primary); flex: 25; }
+        .fund-segment:nth-child(3) { background: var(--primary-light); flex: 20; }
+        .fund-segment:nth-child(4) { background: var(--gold); flex: 15; }
+
+        /* Final Slide */
+        .slide-final {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide-final h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 400;
+            max-width: 800px;
+            line-height: 1.6;
+            margin-bottom: 50px;
+        }
+
+        .ventures-list {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .venture {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .venture strong {
+            color: var(--gold);
+        }
+
+        .final-contact {
+            margin-top: 40px;
+        }
+
+        .final-contact a {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Revenue Table Highlight */
+        .revenue-highlight {
+            background: #f0fdf4;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0e6ff;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin: 20px 0;
+        }
+
+        .highlight-box p {
+            color: #92400e;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="confidential">CONFIDENTIAL</div>
+
+    <!-- SLIDE 1: Title -->
+    <div class="slide slide-title">
+        <p style="font-size: 0.9rem; letter-spacing: 3px; text-transform: uppercase; opacity: 0.8; margin-bottom: 20px;">CONFIDENTIAL INVESTOR BRIEF · MARCH 2026</p>
+        <h1>The Doggy Company®</h1>
+        <p class="tagline">"Most pet companies were built by people who saw a market.<br>We were built by people who saw what love was missing."</p>
+        <p class="dedication">Built in loving memory of Mystique · and in honour of Kouros, who started it all</p>
+        <div class="stats-row">
+            <div class="stat">
+                <div class="stat-value">$1M+</div>
+                <div class="stat-label">Invested by Founders</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">563K</div>
+                <div class="stat-label">Lines of Code, Live</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">45K+</div>
+                <div class="stat-label">Warm Customer Base</div>
+            </div>
+        </div>
+        <p style="margin-top: 50px; font-size: 0.9rem; opacity: 0.8;">thedoggycompany.com · dipali@clubconcierge.in</p>
+    </div>
+
+    <!-- SLIDE 2: Heritage Journey -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 02</div>
+            <h2>The Heritage Journey</h2>
+            <p class="subtitle">30 years of service excellence. Now building it for pets.</p>
+        </div>
+        <div class="slide-content">
+            <div class="two-column">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-year">1998</div>
+                        <div class="timeline-title">LesConcierges® Founded</div>
+                        <div class="timeline-desc">Started with ₹5,000 and one belief — every person deserves to be looked after properly. With Mrs. Mira Sikand as the quiet force behind the philosophy.</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2002</div>
+                        <div class="timeline-title">Rakesh Jhunjhunwala Invests</div>
+                        <div class="timeline-desc">India's greatest investor backs the vision. Les Concierges expands to 23 global cities — Dubai, Singapore, Japan, South Africa — serving Fortune 500 companies.</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2020</div>
+                        <div class="timeline-title">The Doggy Bakery® Born</div>
+                        <div class="timeline-desc">Aditya launches handcrafted pet treats. Grandma Mira's hands in the early batches. 45,000+ pets celebrated across India.</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2024</div>
+                        <div class="timeline-title">MindEscapes® & The Nilgiris Legacy</div>
+                        <div class="timeline-desc">Innovation centre, Anma Diner (all-female team), Hill of Flowers, FC Bisons. Every venture the same philosophy.</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2026</div>
+                        <div class="timeline-title">The Doggy Company® Launches</div>
+                        <div class="timeline-desc">Three decades of concierge excellence converge into India's first Pet Life Operating System. Built at midnight. Sitting with Mystique.</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="team-grid" style="grid-template-columns: 1fr;">
+                        <div class="team-card">
+                            <div class="team-avatar">D</div>
+                            <div class="team-name">Dipali Sikand</div>
+                            <div class="team-role">Founder</div>
+                        </div>
+                        <div class="team-card">
+                            <div class="team-avatar">A</div>
+                            <div class="team-name">Aditya</div>
+                            <div class="team-role">Co-Founder, The Doggy Bakery®</div>
+                        </div>
+                        <div class="team-card">
+                            <div class="team-avatar">M</div>
+                            <div class="team-name">Mrs. Mira Sikand</div>
+                            <div class="team-role">The Spirit Behind Everything</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 3: The Founder -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 03</div>
+            <h2>The Founder</h2>
+            <p class="subtitle">The person behind the platform.</p>
+        </div>
+        <div class="slide-content">
+            <div class="two-column">
+                <div>
+                    <div class="quote-box">
+                        <p>In 1998, Dipali Sikand started LesConcierges® with ₹5,000 and one belief — every person deserves to be looked after properly.</p>
+                        <p style="margin-top: 15px;">That company reaches <strong>1.6 million people</strong> across the globe. Rakesh Jhunjhunwala believed in it. The world's greatest brands trusted it.</p>
+                        <p style="margin-top: 15px;">In 2025, sitting with her dog Mystique through her final days, she applied that same belief to the one relationship most companies have never taken seriously: <strong>The bond between a person and their dog.</strong></p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="section-title">Founder Experience</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 12px 0; border-bottom: 1px solid #f0e6ff;">
+                            <strong style="color: var(--primary);">Pioneer</strong> of the world's first corporate concierge industry
+                        </li>
+                        <li style="padding: 12px 0; border-bottom: 1px solid #f0e6ff;">
+                            <strong style="color: var(--primary);">Serial entrepreneur</strong> behind Club Concierge, MindEscapes, and The Doggy Company ecosystem
+                        </li>
+                        <li style="padding: 12px 0; border-bottom: 1px solid #f0e6ff;">
+                            <strong style="color: var(--primary);">Built high-touch loyalty platforms</strong> for premium brands and affluent audiences
+                        </li>
+                        <li style="padding: 12px 0; border-bottom: 1px solid #f0e6ff;">
+                            <strong style="color: var(--primary);">Deep operator</strong> in personalization-led businesses where trust drives growth
+                        </li>
+                        <li style="padding: 12px 0;">
+                            <strong style="color: var(--primary);">Purpose-led founder</strong> known for building emotionally resonant brands
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: The Story Begins With A Dog -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 04</div>
+            <h2>The Story Begins With A Dog</h2>
+            <p class="subtitle">Every line of code has a name behind it.</p>
+        </div>
+        <div class="slide-content">
+            <div class="two-column">
+                <div class="dog-card">
+                    <div class="dog-header">
+                        <div class="dog-avatar">🐕</div>
+                        <div>
+                            <div class="dog-name">Kouros</div>
+                            <div class="dog-years">1982–1996</div>
+                            <div class="dog-breed">Black Newfoundland</div>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.7;">
+                        He stood beside Dipali through the most turbulent years of a first marriage — and helped raise Aditya.
+                        <br><br>
+                        He was the first best friend. The first proof that a dog is not a pet.
+                        <br><br>
+                        <strong style="color: var(--primary-dark);">He is why all of this exists. Not Mystique alone. Kouros first.</strong>
+                    </p>
+                </div>
+                <div class="dog-card">
+                    <div class="dog-header">
+                        <div class="dog-avatar">🐾</div>
+                        <div>
+                            <div class="dog-name">Mystique</div>
+                            <div class="dog-years">2020–2025</div>
+                            <div class="dog-breed">Shih Tzu</div>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.7;">
+                        Left behind 10 babies and 2 beloved partners.
+                        <br><br>
+                        Built at midnight, sitting beside Mystique in her final months. The Soul Profile questions — <em>'What has she forgiven you for?'</em> — came from those quiet hours.
+                        <br><br>
+                        Dipali didn't give away her 10 babies because <strong style="color: var(--primary-dark);">'it wasn't right by her.'</strong>
+                    </p>
+                </div>
+            </div>
+            <div class="quote-box" style="margin-top: 40px;">
+                <p><strong>The Philosophy of The Doggy Company:</strong><br>
+                A dog is not in your life. You are in theirs. They cannot speak. But with the right questions, they can be known.<br>
+                <em>For every dog, everywhere, who cannot speak but deserves to be truly seen.</em></p>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: The Soul Behind The Name -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 05</div>
+            <h2>The Soul Behind The Name</h2>
+            <p class="subtitle">Mira is not a product name. She is a philosophy, encoded in software.</p>
+        </div>
+        <div class="slide-content">
+            <div class="two-column">
+                <div>
+                    <h3 class="section-title">Who is Mira?</h3>
+                    <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.8;">
+                        <strong style="color: var(--primary-dark);">Mira is Mrs. Mira Sikand</strong> — Dipali's mother, Aditya and Diya's beloved grandmother.
+                        <br><br>
+                        She was not the headline. She was the quiet force.
+                        <br><br>
+                        Long before search engines existed, she was a living reference desk — an encyclopaedia, a solutionist, the warm force behind every 'yes' the team delivered.
+                        <br><br>
+                        At The Doggy Bakery®, <strong>Grandma Mira's hands were in the early batches.</strong> Not inspiration in theory. In practice.
+                        <br><br>
+                        <em style="color: var(--gold);">Mira AI remembers because Mira Sikand remembered.</em>
+                    </p>
+                </div>
+                <div>
+                    <h3 class="section-title">The Moat is the Meaning</h3>
+                    <div class="card" style="margin-bottom: 20px;">
+                        <h3>Not Replicable</h3>
+                        <p>You cannot copy a 30-year service lineage. You cannot copy grief. You cannot hire a grandmother.</p>
+                    </div>
+                    <div class="card" style="margin-bottom: 20px;">
+                        <h3>Built-in Brand Mythology</h3>
+                        <p>Mira AI's origin story is media-ready. It writes itself. No marketing budget can manufacture this.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Literature as Product</h3>
+                        <p>The question <em>'What has your dog forgiven you for?'</em> was written by a founder, not a developer. It is literature.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: What's Been Built -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 06</div>
+            <h2>What's Been Built</h2>
+            <p class="subtitle">Seven systems. All working together. Live today.</p>
+        </div>
+        <div class="slide-content">
+            <div class="three-column">
+                <div class="card">
+                    <div class="card-icon">🤖</div>
+                    <h3>Mira AI</h3>
+                    <p>Personalised AI companion. Knows each pet by name, history, soul profile. 485 real sessions logged. Named after Mrs. Mira Sikand.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💜</div>
+                    <h3>Soul Profile™</h3>
+                    <p>51 questions. 8 golden pillars. A Soul Score (0–100%). Not a form — an act of seeing. The one thing no competitor can replicate.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🎧</div>
+                    <h3>Concierge® Desk</h3>
+                    <p>Mira hands off to real humans. Full ticket system, WhatsApp notifications, real-time comms. 3,077+ service tickets capacity.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🛒</div>
+                    <h3>E-Commerce</h3>
+                    <p>2,214 products + 2,406 services across all 14 pillars. Synced live from Doggy Bakery Shopify. Admin operable by founder.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">👑</div>
+                    <h3>Memberships</h3>
+                    <p>Free → Essential → Premium → Royalty. ₹999–₹9,999/yr. Recurring revenue built in from day one.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📱</div>
+                    <h3>Mira OS</h3>
+                    <p>Full dashboard: TODAY, PICKS, SERVICES, LEARN, CONCIERGE. Weather, reminders, Soul Score display. A living relationship, not an app.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 7: Soul Profile -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 07</div>
+            <h2>The Soul Profile™ — The Heart of the Platform</h2>
+            <p class="subtitle">Questions no pet app has ever dared to ask.</p>
+        </div>
+        <div class="slide-content">
+            <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 30px;">
+                The Soul Score (0–100%) is not a feature. It is the platform's moral spine. 51 questions across 8 golden pillars help pet parents move from <strong>owning to knowing</strong>. These questions were written by the founder, not a developer. They are literature as much as they are product design.
+            </p>
+            <div class="two-column">
+                <div>
+                    <div class="soul-question">
+                        <div class="soul-category">Joy & Delight</div>
+                        <div class="soul-text">"What makes [Name]'s eyes light up? Not just food or walks — what brings them genuine delight?"</div>
+                    </div>
+                    <div class="soul-question">
+                        <div class="soul-category">Relationship & Bond</div>
+                        <div class="soul-text">"What has [Name] seen you through? The hard years. The quiet ones. The ones you don't talk about."</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="soul-question">
+                        <div class="soul-category">Forgiveness</div>
+                        <div class="soul-text">"What has [Name] forgiven you for? The times you were distracted. The times you forgot."</div>
+                    </div>
+                    <div class="soul-question">
+                        <div class="soul-category">The Final Question</div>
+                        <div class="soul-text">"When the time comes — what do you want to be able to say about how you loved them?"</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 8: 14 Pillars -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 08</div>
+            <h2>The Architecture of Pet Life</h2>
+            <p class="subtitle">14 pillars. Every moment of a dog's life, covered.</p>
+        </div>
+        <div class="slide-content">
+            <div class="pillar-grid">
+                <div class="pillar">
+                    <div class="pillar-icon">🎉</div>
+                    <div class="pillar-name">Celebrate</div>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon">🍽️</div>
+                    <div class="pillar-name">Dine</div>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon">🏠</div>
+                    <div class="pillar-name">Stay</div>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon">✈️</div>
+                    <div class="pillar-name">Travel</div>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon">💊</div>
+                    <div class="pillar-name">Care</div>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon">🎮</div>
+                    <div class="pillar-name">Enjoy</div>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon">🏃</div>
+                    <div class="pillar-name">Fit</div>
+                </div>
+            </div>
+            <div class="pillar-grid">
+                <div class="pillar">
+                    <div class="pillar-icon">📚</div>
+                    <div class="pillar-name">Learn</div>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon">📋</div>
+                    <div class="pillar-name">Paperwork</div>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon">👨‍⚕️</div>
+                    <div class="pillar-name">Advisory</div>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon">🚨</div>
+                    <div class="pillar-name">Emergency</div>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon">🌈</div>
+                    <div class="pillar-name">Farewell</div>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon">🐾</div>
+                    <div class="pillar-name">Adopt</div>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon">🛒</div>
+                    <div class="pillar-name">Shop</div>
+                </div>
+            </div>
+            <div class="highlight-box" style="text-align: center; margin-top: 30px;">
+                <p style="font-size: 1.1rem;"><strong>From first birthday to farewell — every chapter of their life has a home here.</strong></p>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 9: Scale & Proof -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 09</div>
+            <h2>Scale & Proof</h2>
+            <p class="subtitle">Two months. One non-technical founder. Real numbers.</p>
+        </div>
+        <div class="slide-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="value">563,920</div>
+                    <div class="label">Lines of Code</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value">$500K-$1M</div>
+                    <div class="label">Equivalent Dev Value</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value">38</div>
+                    <div class="label">Live API Integrations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value">1,074</div>
+                    <div class="label">API Endpoints</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value">230</div>
+                    <div class="label">Database Collections</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value">86</div>
+                    <div class="label">Frontend Pages</div>
+                </div>
+            </div>
+            <div class="highlight-box" style="text-align: center;">
+                <p style="font-size: 1.3rem; margin: 0;"><strong style="color: var(--primary);">45,000+</strong> Warm Audience</p>
+                <p style="margin-top: 5px;">Existing Doggy Bakery customers ready to convert</p>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 10: Market Opportunity -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 10</div>
+            <h2>The Market Opportunity</h2>
+            <p class="subtitle">₹2.1 trillion market. Nobody has built the relationship layer.</p>
+        </div>
+        <div class="slide-content">
+            <div class="two-column">
+                <div>
+                    <h3 class="section-title">India Market</h3>
+                    <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+                        <div class="stat-card">
+                            <div class="value">₹2.1T</div>
+                            <div class="label">India pet market by 2032</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value">20%</div>
+                            <div class="label">CAGR</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value">100M</div>
+                            <div class="label">Pets in India today</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value">30M</div>
+                            <div class="label">In urban households</div>
+                        </div>
+                    </div>
+                    <h3 class="section-title">Global Market</h3>
+                    <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+                        <div class="stat-card" style="background: linear-gradient(135deg, var(--gold) 0%, #b8860b 100%);">
+                            <div class="value">$500B</div>
+                            <div class="label">Global pet care 2030</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, var(--gold) 0%, #b8860b 100%);">
+                            <div class="value">70%</div>
+                            <div class="label">First-time pet parents in India 2024</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="section-title">The Gap No One Has Addressed</h3>
+                    <div class="quote-box">
+                        <p>Every market report measures transactions — food sold, services booked, products shipped. That is the 85% of the market that HUFT, Supertails, and Pedigree are competing for.</p>
+                        <p style="margin-top: 15px;"><strong>Nobody has built the relationship layer that sits above all of those transactions.</strong></p>
+                        <p style="margin-top: 15px;">The Soul Profile. The Soul Score. Mira's memory. The question 'What has your dog forgiven you for?' — that is not a product. It is the operating system the entire market runs on.</p>
+                        <p style="margin-top: 15px; color: var(--gold); font-weight: 600;">We are not a slice of the market. We are the layer the market needs to stay relevant.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 11: Competition (NEW) -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 11</div>
+            <h2>Why We Win — The Moat They Cannot Cross</h2>
+            <p class="subtitle">They sell products. We build relationships.</p>
+        </div>
+        <div class="slide-content">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Capability</th>
+                        <th>HUFT</th>
+                        <th>Supertails</th>
+                        <th>Zigly</th>
+                        <th style="background: var(--gold);">The Doggy Company</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Products & E-commerce</td>
+                        <td><span class="check">✓</span> 10,000+ SKUs</td>
+                        <td><span class="check">✓</span> 8,000+ SKUs</td>
+                        <td><span class="check">✓</span> 5,000+ SKUs</td>
+                        <td class="highlight-cell"><span class="check">✓</span> 2,214 curated</td>
+                    </tr>
+                    <tr>
+                        <td>AI Chatbot</td>
+                        <td><span class="cross">✗</span> None</td>
+                        <td><span class="partial">~</span> Generic FAQ</td>
+                        <td><span class="cross">✗</span> None</td>
+                        <td class="highlight-cell"><strong>Mira AI</strong> — knows your pet</td>
+                    </tr>
+                    <tr>
+                        <td>Soul Profile™</td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="cross">✗</span></td>
+                        <td class="highlight-cell"><strong>51 questions. Unreplicable.</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Human Concierge</td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="partial">~</span> Phone support</td>
+                        <td><span class="cross">✗</span></td>
+                        <td class="highlight-cell"><strong>1,000+ trained concierge</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Life Coverage</td>
+                        <td><span class="partial">~</span> 4 pillars</td>
+                        <td><span class="partial">~</span> 3 pillars</td>
+                        <td><span class="partial">~</span> 2 pillars</td>
+                        <td class="highlight-cell"><strong>All 14 — Birth to Farewell</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Pet Memory/History</td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="cross">✗</span></td>
+                        <td class="highlight-cell"><strong>Mira remembers forever</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Emotional Connection</td>
+                        <td><span class="cross">✗</span> Transactional</td>
+                        <td><span class="cross">✗</span> Transactional</td>
+                        <td><span class="cross">✗</span> Transactional</td>
+                        <td class="highlight-cell"><strong>"What has your dog forgiven you for?"</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="highlight-box" style="margin-top: 30px;">
+                <p style="text-align: center; margin: 0;">
+                    <strong>Time to Replicate Us:</strong> Code: 18-30 months, $2-4M USD · Soul Profile questions: <strong>Cannot be copied</strong> — written by a grieving founder · Concierge DNA: <strong>30 years</strong> — you cannot hire a grandmother
+                </p>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 12: The Team (NEW) -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 12</div>
+            <h2>The Team — 1,025+ Ready to Serve</h2>
+            <p class="subtitle">Not a startup team. A 30-year service army, redirected.</p>
+        </div>
+        <div class="slide-content">
+            <h3 class="section-title">Leadership</h3>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar">D</div>
+                    <div class="team-name">Dipali Sikand</div>
+                    <div class="team-role">Founder & CEO</div>
+                    <div class="team-bio">30 years building LesConcierges. Served Fortune 500. Backed by Rakesh Jhunjhunwala. Pioneer of corporate concierge industry.</div>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">A</div>
+                    <div class="team-name">Aditya</div>
+                    <div class="team-role">Co-Founder</div>
+                    <div class="team-bio">Founder, The Doggy Bakery. 45,000+ pets celebrated. The operational heart of the company.</div>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">M</div>
+                    <div class="team-name">Mrs. Mira Sikand</div>
+                    <div class="team-role">The Soul</div>
+                    <div class="team-bio">The quiet force. The philosophy. The reason Mira AI has a soul. The encyclopaedia behind every 'yes'.</div>
+                </div>
+            </div>
+            <h3 class="section-title">The Ready Army</h3>
+            <div class="army-grid">
+                <div class="army-card">
+                    <div class="army-number">1,000</div>
+                    <div class="army-title">LesConcierges & Club Concierge</div>
+                    <div class="army-desc">Trained concierge professionals across 23 cities. Pet lovers. Ready to serve pet parents with white-glove standard.</div>
+                </div>
+                <div class="army-card">
+                    <div class="army-number">25</div>
+                    <div class="army-title">The Doggy Bakery Chefs</div>
+                    <div class="army-desc">Pet chefs par excellence. Handcraft 45,000+ celebrations/year. The soul of our product quality.</div>
+                </div>
+                <div class="army-card">
+                    <div class="army-number">∞</div>
+                    <div class="army-title">Operations & Support</div>
+                    <div class="army-desc">Logistics, customer success, WhatsApp response, quality assurance — ready to scale.</div>
+                </div>
+            </div>
+            <div class="quote-box" style="margin-top: 30px; text-align: center;">
+                <p>"Most startups hire their first 10 people after funding. We have <strong>1,025</strong> who already know what 'No is never an answer' means."</p>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 13: Unit Economics (NEW) -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 13</div>
+            <h2>The Numbers — Profitable by Design</h2>
+            <p class="subtitle">Built for retention, not just acquisition.</p>
+        </div>
+        <div class="slide-content">
+            <div class="two-column">
+                <div>
+                    <h3 class="section-title">Customer Acquisition Cost</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Segment</th>
+                                <th>CAC</th>
+                                <th>Why</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>B2C</strong></td>
+                                <td style="color: var(--success); font-weight: 700;">₹0-50</td>
+                                <td>45K warm Doggy Bakery + 1.6M LC/CC network</td>
+                            </tr>
+                            <tr>
+                                <td><strong>B2B</strong></td>
+                                <td style="color: var(--success); font-weight: 700;">₹5K-10K</td>
+                                <td>Warm vet clinic outreach</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Enterprise</strong></td>
+                                <td style="color: var(--success); font-weight: 700;">₹0</td>
+                                <td>27-year corporate relationships</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h3 class="section-title">Lifetime Value</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tier</th>
+                                <th>Annual</th>
+                                <th>LTV (5yr)</th>
+                                <th>LTV:CAC</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Essential</td>
+                                <td>₹999</td>
+                                <td>₹4,995</td>
+                                <td style="color: var(--success); font-weight: 700;">100:1</td>
+                            </tr>
+                            <tr>
+                                <td>Premium</td>
+                                <td>₹4,999</td>
+                                <td>₹24,995</td>
+                                <td style="color: var(--success); font-weight: 700;">500:1</td>
+                            </tr>
+                            <tr>
+                                <td>Royalty</td>
+                                <td>₹9,999</td>
+                                <td>₹69,993</td>
+                                <td style="color: var(--success); font-weight: 700;">1,400:1</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <h3 class="section-title">Revenue Projections</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Users</th>
+                                <th>B2C</th>
+                                <th>B2B</th>
+                                <th>Total ARR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Y1</strong></td>
+                                <td>10K</td>
+                                <td>₹1.5Cr</td>
+                                <td>₹61L</td>
+                                <td class="revenue-highlight">₹2.1Cr</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Y2</strong></td>
+                                <td>50K</td>
+                                <td>₹7.5Cr</td>
+                                <td>₹2.8Cr</td>
+                                <td class="revenue-highlight">₹10.3Cr</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Y3</strong></td>
+                                <td>200K</td>
+                                <td>₹30Cr</td>
+                                <td>₹12.2Cr</td>
+                                <td class="revenue-highlight">₹42.2Cr</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h3 class="section-title">The Magic Numbers</h3>
+                    <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 15px;">
+                        <div class="stat-card" style="padding: 20px;">
+                            <div class="value" style="font-size: 1.8rem;">70-80%</div>
+                            <div class="label">Gross Margin</div>
+                        </div>
+                        <div class="stat-card" style="padding: 20px;">
+                            <div class="value" style="font-size: 1.8rem;">&lt;1 mo</div>
+                            <div class="label">Payback Period</div>
+                        </div>
+                        <div class="stat-card" style="padding: 20px;">
+                            <div class="value" style="font-size: 1.8rem;">120%+</div>
+                            <div class="label">Net Revenue Retention</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 14: Ecosystem -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 14</div>
+            <h2>Our Ecosystem — Warm Audiences</h2>
+            <p class="subtitle">We enter the market with over 1 million warm relationships. Zero acquisition cost.</p>
+        </div>
+        <div class="slide-content">
+            <div class="two-column">
+                <div>
+                    <div class="ecosystem-card">
+                        <div class="ecosystem-header">
+                            <span class="ecosystem-name">LesConcierges® & Club Concierge®</span>
+                            <span class="ecosystem-reach">1.6M+ employees</span>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">Samsung, Tata, Godrej, IBM, Accenture, Intel</p>
+                        <p style="font-size: 0.85rem; color: var(--primary); margin-top: 10px;"><strong>Conversion:</strong> Personal outreach from Dipali — 'I built this for your dog.'</p>
+                    </div>
+                    <div class="ecosystem-card">
+                        <div class="ecosystem-header">
+                            <span class="ecosystem-name">MindEscapes® Guests</span>
+                            <span class="ecosystem-reach">Premium HNIs</span>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">Innovation leaders, CEOs, founders</p>
+                        <p style="font-size: 0.85rem; color: var(--primary); margin-top: 10px;"><strong>Conversion:</strong> They already speak Soul Profile language. Natural Royalty tier.</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="ecosystem-card">
+                        <div class="ecosystem-header">
+                            <span class="ecosystem-name">The Doggy Bakery® Parents</span>
+                            <span class="ecosystem-reach">45,000+ families</span>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">Bengaluru, Mumbai, Delhi — ordering today</p>
+                        <p style="font-size: 0.85rem; color: var(--primary); margin-top: 10px;"><strong>Conversion:</strong> Soul Profile invitation inside every order confirmation.</p>
+                    </div>
+                    <div class="ecosystem-card">
+                        <div class="ecosystem-header">
+                            <span class="ecosystem-name">Luminaire Club®</span>
+                            <span class="ecosystem-reach">Ultra-Premium</span>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">HNIs, luxury housing, bespoke lifestyle</p>
+                        <p style="font-size: 0.85rem; color: var(--primary); margin-top: 10px;"><strong>Conversion:</strong> Already pay for needs to be anticipated. Natural Premium & Royalty.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="highlight-box" style="text-align: center; margin-top: 30px;">
+                <p style="font-size: 1.1rem; margin: 0;"><strong>1M+ people who already trust this family</strong><br>Cost to reach them: a personal message from Dipali Sikand</p>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 15: Go-To-Market -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 15</div>
+            <h2>Go-To-Market Strategy</h2>
+            <p class="subtitle">How we grow — without spending to acquire what we already have.</p>
+        </div>
+        <div class="slide-content">
+            <div class="three-column">
+                <div class="card">
+                    <div style="font-size: 3rem; font-weight: 700; color: #f0e6ff; margin-bottom: 10px;">01</div>
+                    <h3>The First 100 — This Month</h3>
+                    <ul style="margin-top: 15px; font-size: 0.9rem; color: var(--text-muted);">
+                        <li>100 Doggy Bakery customers personally invited</li>
+                        <li>Soul Profile as free entry — no barrier</li>
+                        <li>Mira sends first message based on Soul Score</li>
+                        <li>Their love for the platform is the first marketing</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div style="font-size: 3rem; font-weight: 700; color: #f0e6ff; margin-bottom: 10px;">02</div>
+                    <h3>The Warm 45K — Month 2–3</h3>
+                    <ul style="margin-top: 15px; font-size: 0.9rem; color: var(--text-muted);">
+                        <li>Soul Profile in every order confirmation</li>
+                        <li>'Mystique had a Soul Profile. Would you like one?'</li>
+                        <li>Razorpay live, WhatsApp active</li>
+                        <li>Target: 500 active Soul Scores</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div style="font-size: 3rem; font-weight: 700; color: #f0e6ff; margin-bottom: 10px;">03</div>
+                    <h3>The Ecosystem — Month 3–6</h3>
+                    <ul style="margin-top: 15px; font-size: 0.9rem; color: var(--text-muted);">
+                        <li>MindEscapes guests — Royalty tier launch</li>
+                        <li>LC/CC/Luminaire network — Premium tier</li>
+                        <li>5 vet clinics — white-label concierge</li>
+                        <li>First HUFT/Supertails conversation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 16: Business Model -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 16</div>
+            <h2>Business Model — Three Revenue Streams</h2>
+            <p class="subtitle">All three designed, specced, and ready to activate.</p>
+        </div>
+        <div class="slide-content">
+            <div class="three-column">
+                <div class="card">
+                    <div class="card-icon">👤</div>
+                    <h3>B2C Memberships</h3>
+                    <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin: 15px 0;">₹999–₹9,999/yr</p>
+                    <ul style="font-size: 0.85rem; color: var(--text-muted);">
+                        <li><strong>Free:</strong> Soul Profile, Mira basic</li>
+                        <li><strong>Essential:</strong> Mira full, concierge access</li>
+                        <li><strong>Premium:</strong> Priority concierge, all pillars</li>
+                        <li><strong>Royalty:</strong> White-glove, dedicated manager</li>
+                        <li>+ 2% transaction fee on products</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🏥</div>
+                    <h3>B2B Vet & Pet Partners</h3>
+                    <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin: 15px 0;">₹2,999/month</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">50,000+ vet clinics in India</p>
+                    <ul style="font-size: 0.85rem; color: var(--text-muted);">
+                        <li>White-label Pet Life OS to clinics</li>
+                        <li>Appointments, records, e-pharmacy</li>
+                        <li>WhatsApp integration built in</li>
+                        <li>Groomer & boarding network</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🏦</div>
+                    <h3>Enterprise — Banks & Insurers</h3>
+                    <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin: 15px 0;">₹5–50 lakhs/deal</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">HDFC, ICICI, Axis, Amex</p>
+                    <ul style="font-size: 0.85rem; color: var(--text-muted);">
+                        <li>'Pet Benefits' for premium cards</li>
+                        <li>Health data for pet insurance</li>
+                        <li>Co-branded programs</li>
+                        <li>30-year warm relationships</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 17: Use of Funds (NEW) -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 17</div>
+            <h2>Use of Funds — ₹2-4 Crore</h2>
+            <p class="subtitle">Strategic allocation for scale.</p>
+        </div>
+        <div class="slide-content">
+            <div class="funds-bar">
+                <div class="fund-segment">Engineering 40%</div>
+                <div class="fund-segment">Growth 25%</div>
+                <div class="fund-segment">Operations 20%</div>
+                <div class="fund-segment">Reserve 15%</div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Allocation</th>
+                        <th>%</th>
+                        <th>Amount</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Engineering & CTO</strong></td>
+                        <td>40%</td>
+                        <td>₹80L–1.6Cr</td>
+                        <td>Technical co-founder, architecture refactor, scale infrastructure</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Growth & Marketing</strong></td>
+                        <td>25%</td>
+                        <td>₹50L–1Cr</td>
+                        <td>Soul Profile campaigns, vet clinic acquisition, brand building</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Operations</strong></td>
+                        <td>20%</td>
+                        <td>₹40L–80L</td>
+                        <td>Concierge team expansion, customer success, quality</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reserve</strong></td>
+                        <td>15%</td>
+                        <td>₹30L–60L</td>
+                        <td>Runway extension, opportunistic hiring</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 18: Vision -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 18</div>
+            <h2>The Vision — Why This Must Exist Beyond India</h2>
+            <p class="subtitle">For every dog, everywhere, who cannot speak but deserves to be known.</p>
+        </div>
+        <div class="slide-content">
+            <div class="quote-box" style="margin-bottom: 40px;">
+                <p>"I am 61. I have met thousands of dogs through this life — Kouros, Mystique, her ten babies, her two beloved partners, and through Aditya's work at The Doggy Bakery, thousands more. I want to make sure this is a legacy for them, beyond my small life. Every dog who gets a Soul Profile — who gets to be truly known — is the reason this platform exists."</p>
+                <div class="author">— Dipali Sikand, Founder</div>
+            </div>
+            <div class="four-column">
+                <div class="card" style="text-align: center;">
+                    <h3 style="color: var(--gold);">NOW</h3>
+                    <p style="font-weight: 600; margin: 10px 0;">India — First 100</p>
+                    <p style="font-size: 0.85rem;">Fix, stabilise, prove Soul Score changes behaviour</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h3 style="color: var(--gold);">6 MONTHS</h3>
+                    <p style="font-weight: 600; margin: 10px 0;">India — 50K Souls</p>
+                    <p style="font-size: 0.85rem;">All 45K Bakery parents. Vet B2B launched. First HUFT talk.</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h3 style="color: var(--gold);">12 MONTHS</h3>
+                    <p style="font-weight: 600; margin: 10px 0;">Platform of Record</p>
+                    <p style="font-size: 0.85rem;">100K+ Soul Scores. Bank & insurer deals. The proof.</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h3 style="color: var(--gold);">3 YEARS</h3>
+                    <p style="font-weight: 600; margin: 10px 0;">The World</p>
+                    <p style="font-size: 0.85rem;">Gulf, UK, US, Southeast Asia. The global soul layer.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 19: The Ask -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 19</div>
+            <h2>The Ask</h2>
+            <p class="subtitle">We have put $1M+ into building this. Now we want partners to take it to the world.</p>
+        </div>
+        <div class="slide-content">
+            <div class="ask-grid">
+                <div class="ask-card">
+                    <div class="ask-number">01</div>
+                    <div class="ask-title">Technical Co-Founder or CTO</div>
+                    <div class="ask-desc">563K lines of live code needs architectural rigour to scale globally. A technical partner who can refactor, strengthen, and build the engineering team. The soul is built. We need the spine.</div>
+                </div>
+                <div class="ask-card">
+                    <div class="ask-number">02</div>
+                    <div class="ask-title">Capital to Scale</div>
+                    <div class="ask-desc"><strong>₹2–4 crore for 15–20% equity</strong><br>Pre-money: ₹12–18 crore<br>To grow from 45K to millions. To hire the team. Founders have invested $1M+. We know the value of what we've built.</div>
+                </div>
+                <div class="ask-card">
+                    <div class="ask-number">03</div>
+                    <div class="ask-title">Strategic Partner: HUFT / Supertails</div>
+                    <div class="ask-desc">You have the customers. We have the soul layer. License it, co-build it, or acquire it. The window is open now. If you build a Soul-type feature in 12 months, the conversation changes.</div>
+                </div>
+                <div class="ask-card">
+                    <div class="ask-number">04</div>
+                    <div class="ask-title">Global Distribution</div>
+                    <div class="ask-desc">The Pet Life OS works in every market where pets are loved like family. Gulf, UK, US, Southeast Asia. We need partners who can open those doors.</div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 20: Message to Pet Industry -->
+    <div class="slide">
+        <div class="slide-header">
+            <div class="slide-number">Slide 20</div>
+            <h2>A Message to the Pet Industry</h2>
+            <p class="subtitle">You have the customers. We have the soul layer.</p>
+        </div>
+        <div class="slide-content">
+            <div class="two-column">
+                <div>
+                    <h3 class="section-title">What You Have</h3>
+                    <ul style="font-size: 1rem; line-height: 2;">
+                        <li>Millions of customers</li>
+                        <li>Strong capital backing</li>
+                        <li>Brand recognition</li>
+                        <li>Logistics & fulfilment</li>
+                        <li>Product catalogues</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="section-title">What We Have</h3>
+                    <ul style="font-size: 1rem; line-height: 2;">
+                        <li><strong>The Soul Profile™</strong> — 51 questions that make customers feel seen, not sold to</li>
+                        <li><strong>Mira AI</strong> — concierge-grade memory, not generic chatbot</li>
+                        <li><strong>14-pillar Pet Life OS</strong> — from first birthday to farewell</li>
+                        <li><strong>30 years of concierge lineage</strong>, encoded in software</li>
+                        <li><strong>The emotional dataset</strong> from pet parenting at scale</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="highlight-box" style="text-align: center; margin-top: 40px;">
+                <p style="font-size: 1.2rem; margin: 0;"><strong>Together:</strong> a complete pet platform.<br><strong>Separately:</strong> a product catalogue with an AI skin.<br><br><em>Let's talk.</em></p>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span class="logo">The Doggy Company®</span>
+            <span>Confidential · March 2026</span>
+        </div>
+    </div>
+
+    <!-- SLIDE 21: Final -->
+    <div class="slide slide-final">
+        <h2>"Everything we have ever built has been about one thing.<br>Making sure the people who cannot advocate for themselves,<br>are advocated for."</h2>
+        <div class="ventures-list">
+            <div class="venture"><strong>LesConcierges®</strong> did it for employees.</div>
+            <div class="venture"><strong>MindEscapes®</strong> did it for minds that needed space.</div>
+            <div class="venture"><strong>FC Bisons®</strong> did it for boys with Nilgiri dreams.</div>
+            <div class="venture"><strong>Hill of Flowers®</strong> did it for women who needed dignity.</div>
+            <div class="venture"><strong>The Doggy Company®</strong> does it for dogs.</div>
+        </div>
+        <div style="margin-top: 40px;">
+            <div style="font-size: 1.5rem; color: var(--gold); margin-bottom: 10px;">$1M+ invested by founders · Live in production</div>
+            <div style="font-size: 1.1rem; opacity: 0.9;">thedoggycompany.com</div>
+        </div>
+        <div class="final-contact">
+            <p><strong>Dipali Sikand</strong><br><a href="mailto:dipali@clubconcierge.in">dipali@clubconcierge.in</a></p>
+        </div>
+        <p style="margin-top: 50px; font-size: 0.9rem; opacity: 0.7;">In memory of Mystique and Kouros · Built January–March 2026</p>
+    </div>
+
+</body>
+</html>
