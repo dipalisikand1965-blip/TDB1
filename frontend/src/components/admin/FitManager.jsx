@@ -1134,8 +1134,8 @@ const FitManager = ({ getAuthHeader }) => {
               <Select value={partnerForm.partner_type} onValueChange={(val) => setPartnerForm({...partnerForm, partner_type: val})}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="fitness_center">Fitness Center</SelectItem>
-                  <SelectItem value="agility_center">Agility Center</SelectItem>
+                  <SelectItem value="fitness_center">Fitness Centre</SelectItem>
+                  <SelectItem value="agility_center">Agility Centre</SelectItem>
                   <SelectItem value="hydrotherapy">Hydrotherapy</SelectItem>
                   <SelectItem value="trainer_network">Trainer Network</SelectItem>
                   <SelectItem value="nutritionist">Nutritionist</SelectItem>

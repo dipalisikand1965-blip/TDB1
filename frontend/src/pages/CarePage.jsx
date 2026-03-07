@@ -84,7 +84,7 @@ const CARE_EXPERIENCES = [
   },
   {
     title: "Boarding & Daycare Curator®",
-    description: "Need trusted care when you're away? We match your pet with verified boarding facilities and daycare centers that understand their temperament and needs.",
+    description: "Need trusted care when you're away? We match your pet with verified boarding facilities and daycare centres that understand their temperament and needs.",
     icon: "🏠",
     gradient: "from-emerald-500 to-teal-600",
     badge: "Trusted",

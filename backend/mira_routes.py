@@ -1518,7 +1518,7 @@ You ADORE this pet. You know them completely. You're genuinely invested.
 - "I've got you. Let's keep [Pet] safe."
 
 CONTEXT-ADAPTIVE VOICE (CRITICAL):
-- TREATS/FOOD: Knowing delight + personalized from profile
+- TREATS/FOOD: Knowing delight + personalised from profile
 - HEALTH CONCERN: Calm, caring, safety-first questions
 - VET/PLACES: Ask for location FIRST before showing results
 - BOOKING: Calm, in-control (NOT "Great idea!" energy)
@@ -3692,7 +3692,7 @@ async def search_real_products(
 ) -> List[Dict[str, Any]]:
     """
     Search real products from the database based on Mira's understanding.
-    Returns actual products with images, prices, and personalized "why for pet" reasons.
+    Returns actual products with images, prices, and personalised "why for pet" reasons.
     
     PILLAR-FIRST SEARCH: Always filter by pillar to prevent cross-contamination.
     e.g., asking about grooming should NEVER show birthday cakes.
@@ -4237,7 +4237,7 @@ async def search_real_products(
                     score += 3
                     relevance_score += 0.05
             
-            # Generate personalized "why for pet" reason
+            # Generate personalised "why for pet" reason
             if not why_reasons:
                 if "soft" in product_name or "soft" in product_desc:
                     why_reasons.append("Soft texture, easy on teeth")
@@ -4334,7 +4334,7 @@ async def search_real_products(
             # Check if pillar/context match (high score)
             elif item.get("score", 0) >= 5:
                 match_type = "pillar"
-            # Default to pet match if personalized
+            # Default to pet match if personalised
             elif pet_name and pet_name.lower() in why_for_pet.lower():
                 match_type = "pet"
             
@@ -4448,7 +4448,7 @@ async def search_services_from_db(
         
         logger.info(f"[SERVICE SEARCH] Matched categories: {matched_categories}")
         
-        # Query services collection
+        # Query services_master collection (unified service source with 1115 services)
         service_query = {
             "is_active": {"$ne": False},
             "$or": [
@@ -4458,7 +4458,7 @@ async def search_services_from_db(
             ]
         }
         
-        cursor = db.services.find(service_query, {"_id": 0}).limit(limit * 2)
+        cursor = db.services_master.find(service_query, {"_id": 0}).limit(limit * 2)
         raw_services = await cursor.to_list(length=limit * 2)
         
         logger.info(f"[SERVICE SEARCH] Found {len(raw_services)} services from DB")
@@ -4676,7 +4676,7 @@ async def mira_os_understand_with_products(
     MIRA OS - Enhanced understanding endpoint with REAL products.
     1. Uses LLM to understand intent and extract entities
     2. Queries real product database based on entities
-    3. Returns personalized results with actual products
+    3. Returns personalised results with actual products
     
     ANTI-LOOP: Uses completed_steps and step_history to prevent repeating questions.
     SESSION PERSISTENCE: Loads full conversation from database if session_id provided.
@@ -4833,7 +4833,7 @@ async def mira_os_understand_with_products(
         # ═══════════════════════════════════════════════════════════════════════════
         # INTENT-DRIVEN DYNAMIC CARDS - MIRA (Brain) → CONCIERGE (Hands)
         # Generate dynamic recommendations based on what MIRA understands the pet needs
-        # "{Pet} needs this" - Always personalized to THAT pet
+        # "{Pet} needs this" - Always personalised to THAT pet
         # ═══════════════════════════════════════════════════════════════════════════
         intent_driven_data = {
             "intent": None,
@@ -4909,7 +4909,7 @@ async def mira_os_understand_with_products(
         
         # ═══════════════════════════════════════════════════════════════════════════
         # CHECK FOR PERSONALIZED PICKS REQUEST - Opens the Picks Vault UI
-        # "Show me personalized picks for Mojo" triggers the picks vault
+        # "Show me personalised picks for Mojo" triggers the picks vault
         # ═══════════════════════════════════════════════════════════════════════════
         # Get user's pets for name matching
         db = get_db()
@@ -4918,7 +4918,7 @@ async def mira_os_understand_with_products(
             # Use pet from enriched context (with full soul data)
             user_pets = [enriched_pet_context]
         
-        picks_intent = detect_personalized_picks_intent(request.input, user_pets)
+        picks_intent = detect_personalised_picks_intent(request.input, user_pets)
         
         if picks_intent.get("is_picks_request"):
             pet_name = picks_intent.get("pet_name") or enriched_pet_context.get("name") if enriched_pet_context else None
@@ -4928,7 +4928,7 @@ async def mira_os_understand_with_products(
             
             return {
                 "response": {
-                    "message": f"Here are personalized picks curated just for {pet_name}! 🎁",
+                    "message": f"Here are personalised picks curated just for {pet_name}! 🎁",
                     "intent": "picks",
                     "pillar": "shop",
                     "products": [],  # Products will be loaded by the vault component
@@ -8603,9 +8603,9 @@ def detect_intent(message: str) -> str:
     return "advisory"
 
 
-def detect_personalized_picks_intent(message: str, pets: list = None) -> dict:
+def detect_personalised_picks_intent(message: str, pets: list = None) -> dict:
     """
-    Detect if user is asking to see personalized picks for their pet.
+    Detect if user is asking to see personalised picks for their pet.
     
     Returns:
         {
@@ -8618,8 +8618,8 @@ def detect_personalized_picks_intent(message: str, pets: list = None) -> dict:
     
     # Patterns that trigger the picks vault
     picks_patterns = [
-        "show me personalized picks",
-        "personalized picks for",
+        "show me personalised picks",
+        "personalised picks for",
         "show picks for",
         "show me picks for",
         "top picks for",
@@ -9721,7 +9721,7 @@ Your **{action_type_display}** request for {pet_names} has been received.
 
 **Category:** {category_display_msg}
 
-Our Concierge® team will review your request and get back to you shortly with personalized options.
+Our Concierge® team will review your request and get back to you shortly with personalised options.
 
 Thank you for choosing The Doggy Company! 🐾"""
     
@@ -10828,7 +10828,7 @@ Only mention price if the user asks.
 
 9.5.1 When Providing Nutrition/Meal Plan Guidance:
 • Use ONLY factual, breed-specific data from our verified database
-• ALWAYS add disclaimer: "This is general guidance. Every pet is unique - consult your vet for personalized advice."
+• ALWAYS add disclaimer: "This is general guidance. Every pet is unique - consult your vet for personalised advice."
 • Base recommendations on: breed, age (puppy/adult/senior), weight, activity level
 • Reference established pet nutrition guidelines (PetMD, AKC, The Spruce Pets)
 
@@ -11158,7 +11158,7 @@ How it's calculated:
   • Basic info (name, breed) = lower weight
   • Safety-critical info (allergies, medical) = higher weight
 Why it matters:
-  • Higher scores = more personalized recommendations
+  • Higher scores = more personalised recommendations
   • Helps us match perfect services (boarding, daycare, grooming)
   • Ensures safety when your dog is in our care
   • Unlocks member rewards at milestones (25%, 50%, 75%, 100%)
@@ -13768,9 +13768,9 @@ Would you like me to show you safe treats in one of those flavors?"""
     
     # ═══════════════════════════════════════════════════════════════════════════
     # CHECK FOR PERSONALIZED PICKS REQUEST FIRST
-    # "Show me personalized picks for Mojo" should open the picks vault
+    # "Show me personalised picks for Mojo" should open the picks vault
     # ═══════════════════════════════════════════════════════════════════════════
-    picks_intent = detect_personalized_picks_intent(user_message, pets)
+    picks_intent = detect_personalised_picks_intent(user_message, pets)
     
     if picks_intent.get("is_picks_request"):
         # Find the pet to show picks for
@@ -13795,7 +13795,7 @@ Would you like me to show you safe treats in one of those flavors?"""
         
         return {
             "success": True,
-            "response": f"Here are personalized picks curated just for {pet_name}! 🎁",
+            "response": f"Here are personalised picks curated just for {pet_name}! 🎁",
             "session_id": session_id,
             "ui_action": {
                 "type": "open_picks_vault",
@@ -14142,7 +14142,7 @@ Would you like me to show you safe treats in one of those flavors?"""
                             "place_type": place_type
                         })
                     
-                    # Build personalized response
+                    # Build personalised response
                     place_type_display = {
                         "restaurant": "pet-friendly restaurants",
                         "hotel": "pet-friendly stays",
@@ -14289,7 +14289,7 @@ Would you like me to show you safe treats in one of those flavors?"""
     
     # ═══════════════════════════════════════════════════════════════════════════
     # MIRA OS: Handle location/seating response → Show CURATED results with ACTION
-    # When user provides location OR answers seating question, show personalized picks
+    # When user provides location OR answers seating question, show personalised picks
     # ═══════════════════════════════════════════════════════════════════════════
     
     seating_keywords = ["outdoor", "outside", "patio", "garden", "terrace", "alfresco", "indoor", "inside", "ac", "air-conditioned", "either", "both", "any"]
@@ -14345,7 +14345,7 @@ Would you like me to show you safe treats in one of those flavors?"""
                     places = await search_dog_parks_in_city(search_location, max_results=4)
                 
                 if places and len(places) > 0:
-                    # Build personalized response based on pet traits
+                    # Build personalised response based on pet traits
                     pet_trait_mention = ""
                     if pet_temperament:
                         pet_trait_mention = f"Given {pet_name}'s {pet_temperament.lower() if isinstance(pet_temperament, str) else ''} nature, "
@@ -14409,7 +14409,7 @@ Would you like me to show you safe treats in one of those flavors?"""
                         # Every café query refreshes these automatically
                         # ═══════════════════════════════════════════════════════════
                         "picks": {
-                            "type": "personalized_places",
+                            "type": "personalised_places",
                             "title": f"Picks for {pet_name}",
                             "items": [
                                 {
@@ -15178,15 +15178,15 @@ I can help with any of these - or all of them! Just let me know what excites you
                     "service_type": "party_coordination"
                 })
             
-            # If we detected items, generate personalized picks
+            # If we detected items, generate personalised picks
             if requested_items:
                 location_stored = existing_ticket.get("ai_context", {}).get("celebrate_location", "your chosen spot")
                 size_stored = existing_ticket.get("ai_context", {}).get("celebrate_size", "your party")
                 
-                # Build personalized picks for the panel
-                personalized_picks = []
+                # Build personalised picks for the panel
+                personalised_picks = []
                 for idx, item in enumerate(requested_items):
-                    personalized_picks.append({
+                    personalised_picks.append({
                         "id": f"celebrate-{item['category']}-{pet_name.lower().replace(' ', '-')}-{idx}",
                         "pick_type": item["type"],
                         "title": item["name"],
@@ -15197,7 +15197,7 @@ I can help with any of these - or all of them! Just let me know what excites you
                         "service_type": item["service_type"],
                         "category": "celebrate",
                         "pet_name": pet_name,
-                        "is_personalized": True,
+                        "is_personalised": True,
                         "source": "concierge_curated",
                         "badge": f"For {pet_name}"
                     })
@@ -15205,7 +15205,7 @@ I can help with any of these - or all of them! Just let me know what excites you
                 # Format response with what we understood
                 items_summary = ", ".join([item["name"].split(" for ")[0] for item in requested_items])
                 
-                celebrate_response = f"""Got it! I've noted your request. Our Concierge® is on it and will get back to you with personalized options shortly!
+                celebrate_response = f"""Got it! I've noted your request. Our Concierge® is on it and will get back to you with personalised options shortly!
 
 📋 **Request #{ticket_id}** is being processed by our team.
 
@@ -15248,8 +15248,8 @@ Our Concierge® will reach out via WhatsApp/Email with curated options. Is there
                     "celebrate_stage": "processing",
                     "handoff_complete": True,
                     # Return the dynamically generated picks
-                    "picks": personalized_picks,
-                    "products": personalized_picks,  # Also in products for compatibility
+                    "picks": personalised_picks,
+                    "products": personalised_picks,  # Also in products for compatibility
                     "concierge": {
                         "show": True,
                         "mode": "primary",
@@ -16053,7 +16053,7 @@ Give generic advice appropriate for any pet unless user provides specific detail
         is_health_query = any(kw in user_lower for kw in health_keywords)
         is_care_query = any(kw in user_lower for kw in care_keywords)
         
-        # Soul-First applies to any personalized query
+        # Soul-First applies to any personalised query
         needs_soul_first = is_grooming_query or is_diet_query or is_health_query or is_care_query
         
         if SOUL_FIRST_AVAILABLE and selected_pet and needs_soul_first and not is_asking_about_another_pet:
@@ -16225,7 +16225,7 @@ FOLLOW-UP CONCISENESS RULE:
             still_asking_questions = response_lower.count("?") > 1  # Multiple questions = still gathering info
             
             if gives_advice and not still_asking_questions:
-                response = str(response) + "\n\n📋 *Disclaimer: This is general guidance based on pet nutrition research. Every pet is unique. Please consult your veterinarian for personalized dietary advice, especially for puppies, seniors, or pets with health conditions.*"
+                response = str(response) + "\n\n📋 *Disclaimer: This is general guidance based on pet nutrition research. Every pet is unique. Please consult your veterinarian for personalised dietary advice, especially for puppies, seniors, or pets with health conditions.*"
         
         # Also check conversation history for nutrition context
         if request.history:
@@ -16378,11 +16378,11 @@ FOLLOW-UP CONCISENESS RULE:
             handoff_messages = {
                 "stay": "I've captured all your stay preferences. Our concierge team is now searching for pet-friendly accommodations and will share the best options with you here within 2 hours. You'll receive a notification when options are ready!",
                 "dine": "I've noted your dining preferences. Our concierge team is checking pet-friendly restaurants and will share options with you shortly!",
-                "travel": "I've logged your travel plans. Our team is curating pet-friendly options and will get back to you with personalized recommendations!",
+                "travel": "I've logged your travel plans. Our team is curating pet-friendly options and will get back to you with personalised recommendations!",
                 "enjoy": "Your activity preferences are noted. Our team will find the best pet-friendly options for you!"
             }
             
-            handoff_msg = handoff_messages.get(pillar, "I've noted your request. Our concierge team is on it and will get back to you with personalized options shortly!")
+            handoff_msg = handoff_messages.get(pillar, "I've noted your request. Our concierge team is on it and will get back to you with personalised options shortly!")
             
             # Replace looping response with handoff
             response = f"""Got it! {handoff_msg}
@@ -18634,7 +18634,7 @@ async def get_pet_recommendations(
     limit: int = 6
 ):
     """
-    Get personalized product recommendations for a specific pet.
+    Get personalised product recommendations for a specific pet.
     Uses pet's soul profile (breed, age, health conditions) to suggest relevant products.
     """
     db = get_db()
@@ -18778,7 +18778,7 @@ async def get_mira_context(
     authorization: Optional[str] = Header(None)
 ):
     """
-    Get personalized Mira context for a pillar.
+    Get personalised Mira context for a pillar.
     Returns pillar-specific notes and proactive suggestions.
     """
     db = get_db()
@@ -19021,7 +19021,7 @@ async def get_mira_context(
 ):
     """
     Get contextual Mira data for pillar pages.
-    Returns personalized suggestions based on Pet Soul.
+    Returns personalised suggestions based on Pet Soul.
     """
     current_pillar = request.current_pillar
     current_category = request.current_category  # Get category for specific suggestions
@@ -19042,17 +19042,17 @@ async def get_mira_context(
         pillar_greetings = {
             "travel": "Welcome to our Travel services! Sign in to get pet-specific travel recommendations.",
             "stay": "Welcome to our Stay services! Sign in to find perfect accommodations for your pet.",
-            "care": "Welcome to our Care services! Sign in for personalized health and grooming options.",
+            "care": "Welcome to our Care services! Sign in for personalised health and grooming options.",
             "dine": "Welcome to Dine! Sign in to discover pet-friendly restaurants near you.",
             "celebrate": "Welcome to Celebrate! Sign in to plan the perfect celebration for your pet.",
             "enjoy": "Welcome to Enjoy! Sign in to find activities your pet will love.",
             "shop": "Welcome to our Shop! Sign in for recommendations tailored to your pet.",
             "fit": "Welcome to Fit! Sign in for fitness and activity suggestions for your pet.",
-            "advisory": "Welcome to Advisory! Sign in for personalized guidance for your pet.",
+            "advisory": "Welcome to Advisory! Sign in for personalised guidance for your pet.",
             "paperwork": "Welcome to Paperwork! Sign in to manage your pet's documents.",
             "emergency": "Need emergency assistance? Sign in for quick access to your pet's health records."
         }
-        response["pillar_note"] = pillar_greetings.get(current_pillar, "Welcome! Sign in for personalized recommendations for your pet.")
+        response["pillar_note"] = pillar_greetings.get(current_pillar, "Welcome! Sign in for personalised recommendations for your pet.")
         return response
     
     pets = await load_user_pets(user.get("email"), user.get("user_id"))
@@ -19093,7 +19093,7 @@ async def get_mira_context(
         response["pillar_note"] = pillar_notes.get(current_pillar, f"Hi **{user_name}**! How can I help you with **{pet_name}** today?")
     elif response.get("user"):
         # User logged in but no pets
-        response["pillar_note"] = f"Hi **{user_name}**! Add your pet to get personalized recommendations across all our services."
+        response["pillar_note"] = f"Hi **{user_name}**! Add your pet to get personalised recommendations across all our services."
     
     # Get product suggestions based on pillar, category, and pet
     if current_pillar and response["selected_pet"]:
@@ -20747,7 +20747,7 @@ async def get_smart_bundles(pet_id: str, occasion: str = None, limit: int = 4):
     
     # Add personalization
     for bundle in bundles:
-        bundle["personalized_name"] = bundle.get("name", "").replace("Pet", pet_name)
+        bundle["personalised_name"] = bundle.get("name", "").replace("Pet", pet_name)
         if bundle.get("savings"):
             bundle["savings_text"] = f"Save ₹{bundle['savings']}"
     
@@ -22193,13 +22193,17 @@ async def semantic_product_search(request: Request):
         logger.error(f"Semantic search error: {e}")
         products = []
     
-    # Fetch services
+    # Fetch services from services_master (unified source)
     services = []
     if config.get("service_types"):
         try:
-            service_cursor = db.services.find(
-                {"type": {"$in": config["service_types"]}},
-                {"_id": 0, "id": 1, "name": 1, "type": 1, "description": 1, "price": 1}
+            service_cursor = db.services_master.find(
+                {"$or": [
+                    {"type": {"$in": config["service_types"]}},
+                    {"pillar": {"$in": config["service_types"]}},
+                    {"category": {"$in": config["service_types"]}}
+                ]},
+                {"_id": 0, "id": 1, "name": 1, "type": 1, "pillar": 1, "description": 1, "base_price": 1}
             ).limit(4)
             services = await service_cursor.to_list(4)
         except:
@@ -22242,7 +22246,7 @@ async def get_intent_driven_cards(
     MIRA (Brain) → Understands what pet needs → Generates recommendations
     CONCIERGE (Hands) → Fulfills these recommendations
     
-    "{Pet} needs this for {Intent}" - Always personalized to THAT pet
+    "{Pet} needs this for {Intent}" - Always personalised to THAT pet
     
     Request:
     {
@@ -24360,12 +24364,12 @@ async def run_ai_tagging():
                 )
                 results["products"] += 1
         
-        # Tag Services
-        services = await db.services.find({}).to_list(5000)
+        # Tag Services from services_master
+        services = await db.services_master.find({}).to_list(5000)
         for service in services:
             intents = analyze_for_semantic_tags(service)
             if intents:
-                await db.services.update_one(
+                await db.services_master.update_one(
                     {"_id": service["_id"]},
                     {"$set": {"semantic_intents": intents}}
                 )
@@ -24495,7 +24499,7 @@ async def get_youtube_by_topic(
 
 @router.get("/youtube/recommended/{pet_id}")
 async def get_youtube_recommended(pet_id: str, max_results: int = 6):
-    """Get personalized video recommendations for a specific pet."""
+    """Get personalised video recommendations for a specific pet."""
     try:
         from services.youtube_service import get_recommended_videos_for_pet
         db = get_db()
@@ -24587,7 +24591,7 @@ async def get_learn_video_support(
     try:
         from services.youtube_service import search_youtube_videos
         
-        # Get pet context for personalized search (or use defaults for "generic")
+        # Get pet context for personalised search (or use defaults for "generic")
         pet = None
         if pet_id and pet_id != "generic":
             pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "breed": 1, "age_years": 1, "name": 1})
@@ -24677,7 +24681,7 @@ async def get_learn_video_support(
                 "topic": topic,
                 "behavior": behavior,
                 "life_stage": life_stage,
-                "personalized_for": pet_name
+                "personalised_for": pet_name
             },
             "usage_note": "This video is supporting content for the training guide. It is not a content feed."
         }
@@ -24955,7 +24959,7 @@ async def get_amadeus_travel_tips(
     check_in: str = None,
     check_out: str = None
 ):
-    """Get personalized travel recommendations for traveling with a pet."""
+    """Get personalised travel recommendations for traveling with a pet."""
     try:
         from services.amadeus_service import get_travel_recommendations_for_pet
         db = get_db()
@@ -25484,7 +25488,7 @@ async def viator_recommended_for_pet(
     pet_id: str,
     destination: str = "mumbai"
 ):
-    """Get personalized travel experiences for a pet."""
+    """Get personalised travel experiences for a pet."""
     try:
         from services.viator_service import get_travel_experiences_for_pet
         db = get_db()
@@ -25976,7 +25980,7 @@ async def get_curated_set(
     db=Depends(get_db)
 ):
     """
-    Get a personalized curated set of picks for a pet and pillar.
+    Get a personalised curated set of picks for a pet and pillar.
     
     This is the main endpoint for the Intelligence Layer.
     
@@ -26054,7 +26058,7 @@ async def get_curated_set(
             "personality": pet.get("personality", {}),
             "soul": pet.get("soul", {}),
             "temperament": pet.get("temperament", ""),
-            # 🌍 LOCATION-AWARE: Include user location for personalized recommendations
+            # 🌍 LOCATION-AWARE: Include user location for personalised recommendations
             "user_location": user_location
         }
         

@@ -143,7 +143,42 @@ When deployed to production, ALWAYS run Master Sync to populate data:
 - ✅ **Services Not Showing on Frontend FIXED** - Added ServiceCatalogSection to DinePage and CarePage
   - DinePage now displays 8 Dine services (Restaurant Discovery, Reservations, etc.)
   - CarePage now displays 8 Care services (Vet Consultations, Grooming, etc.)
-  - Services are fetched from `services_master` collection via `/api/service-catalog/services`
+  - Services are fetched from `services_master` collection via `/api/service-box/services`
+
+- ✅ **C® Concierge Button on Dine Page FIXED** - Moved from wrong component to correct location
+  - Root cause: Button was inside nested helper component instead of main DinePage
+  
+- ✅ **Mira "Browsing General" FIXED** - Added "services" pillar to MiraChatWidget config
+  - Now says "I see you're browsing Services..." on /services page
+
+- ✅ **Mira Product/Service Recommendations FIXED** - Updated to fetch from services_master
+  - Changed `db.services` → `db.services_master` in mira_routes.py (3 locations)
+
+- ✅ **Removed Irrelevant Content from Dine Page**
+  - Removed "Dog Parks" section (belongs in Enjoy/Fit)
+  - Moved "Pawty Birthday Package" from dine_bundles to celebrate_bundles
+
+### Voice & Language Updates
+- ✅ **ElevenLabs British Accent** - Changed from Rachel (American) to Lily (British)
+  - Voice ID: pFZP5JQG7iQjIQuC4Bku
+  - Added OpenAI TTS as backup
+
+- ✅ **British English Audit** - Fixed key spellings:
+  - personalized → personalised (multiple files)
+  - customized → customised
+  - favorite → favourite  
+  - center → centre
+  - color → colour (in visible text)
+
+### API Health Check
+All major APIs verified working:
+- ✅ Service Box API - 1115 services
+- ✅ Products API - Working
+- ✅ YouTube API - 25 videos returned
+- ✅ Google Places API - Hotels working
+- ✅ Weather API - Mumbai data returned
+- ✅ Enjoy Experiences API - 16 experiences
+- ✅ Voice TTS API - Working with backup
 
 ### UI/UX Fixes (Previous Session)
 - ✅ Mobile inbox "shaking" - Container uses min-h-screen + 100dvh
