@@ -10,7 +10,8 @@ import {
   PawPrint, Heart, Calendar, Camera, Sparkles, Gift, 
   ChevronRight, ChevronLeft, Check, Plus, X, Crown,
   Moon, Mountain, Sofa, Users, Utensils, Zap, Smile,
-  Stethoscope, Syringe, Pill, AlertCircle, Phone, FileText
+  Stethoscope, Syringe, Pill, AlertCircle, Phone, FileText,
+  Download
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
@@ -1428,6 +1429,24 @@ const PetProfile = ({ isEmbed = false }) => {
           </>
         )}
       </div>
+      
+      {/* Pet Wrapped Download Button */}
+      {createdPet?._id && (
+        <div className="mt-6 text-center">
+          <Button 
+            variant="outline"
+            onClick={() => window.open(`${API_URL}/api/wrapped/download/${createdPet._id}`, '_blank')}
+            className="border-amber-500/50 text-amber-600 hover:bg-amber-50 hover:border-amber-500"
+            data-testid="pet-wrapped-download-btn"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Download {createdPet?.name}'s Pet Wrapped
+          </Button>
+          <p className="text-xs text-gray-500 mt-2">
+            A beautiful summary of {createdPet?.name}'s soul profile
+          </p>
+        </div>
+      )}
     </div>
   );
 
@@ -1478,8 +1497,18 @@ const PetProfile = ({ isEmbed = false }) => {
                 </div>
                 <p className="text-sm text-gray-500 truncate">{pet.breed || pet.species}</p>
               </div>
-              <div className="text-right text-xs text-gray-400">
-                {pet.birth_date && <p>🎂 {new Date(pet.birth_date).toLocaleDateString()}</p>}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => window.open(`${API_URL}/api/wrapped/download/${pet.id || pet._id}`, '_blank')}
+                  className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                  title={`Download ${pet.name}'s Pet Wrapped`}
+                  data-testid={`pet-wrapped-btn-${pet.id || pet._id}`}
+                >
+                  <Gift className="w-5 h-5" />
+                </button>
+                <div className="text-right text-xs text-gray-400">
+                  {pet.birth_date && <p>🎂 {new Date(pet.birth_date).toLocaleDateString()}</p>}
+                </div>
               </div>
             </div>
           );
