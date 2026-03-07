@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize Resend
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.com")
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
 
@@ -410,7 +410,7 @@ async def send_daily_report_email(
             {''.join(reports_html)}
             
             <div style="text-align: center; margin-top: 25px;">
-                <a href="https://thedoggycompany.in/admin" style="display: inline-block; background: #9333ea; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+                <a href="https://thedoggycompany.com/admin" style="display: inline-block; background: #9333ea; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
                     Open Admin Dashboard →
                 </a>
             </div>

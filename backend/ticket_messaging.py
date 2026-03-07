@@ -35,7 +35,7 @@ def get_resend():
     return None
 
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
-BUSINESS_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggycompany.in")
+BUSINESS_EMAIL = os.environ.get("NOTIFICATION_EMAIL", "woof@thedoggycompany.com")
 WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "919663185747")
 WEBHOOK_SECRET = os.environ.get("WEBHOOK_SECRET", "tdb-webhook-secret-2025")
 
@@ -109,8 +109,8 @@ def clean_email_reply(body: str) -> str:
 
 def generate_reply_email_id(ticket_id: str) -> str:
     """Generate a trackable reply-to email ID"""
-    # Format: ticket+TKT-XXXXXXXX-XXX@replies.thedoggycompany.in
-    return f"ticket+{ticket_id}@replies.thedoggycompany.in"
+    # Format: ticket+TKT-XXXXXXXX-XXX@replies.thedoggycompany.com
+    return f"ticket+{ticket_id}@replies.thedoggycompany.com"
 
 async def add_message_to_ticket(ticket_id: str, message_data: dict):
     """Add a message to a ticket's conversation thread"""
@@ -214,8 +214,8 @@ async def send_outbound_message(message: OutboundMessage, background_tasks: Back
                     """,
                     "headers": {
                         "X-Ticket-ID": message.ticket_id,
-                        "References": f"<{message.ticket_id}@thedoggycompany.in>",
-                        "In-Reply-To": f"<{message.ticket_id}@thedoggycompany.in>"
+                        "References": f"<{message.ticket_id}@thedoggycompany.com>",
+                        "In-Reply-To": f"<{message.ticket_id}@thedoggycompany.com>"
                     }
                 })
                 result["success"] = True
@@ -226,7 +226,7 @@ async def send_outbound_message(message: OutboundMessage, background_tasks: Back
             result["error"] = "No email address available for this customer"
     
     elif message.channel == "whatsapp":
-        # Generate WhatsApp click-to-chat link
+        # Send via Gupshup WhatsApp API
         phone = member_phone
         if phone:
             # Clean phone number
@@ -234,11 +234,36 @@ async def send_outbound_message(message: OutboundMessage, background_tasks: Back
             if not phone.startswith('91') and len(phone) == 10:
                 phone = '91' + phone
             
-            wa_message = f"*Ticket {message.ticket_id}*\n\n{message.message}\n\n_The Doggy Company Concierge_"
-            encoded_message = wa_message.replace(' ', '%20').replace('\n', '%0A')
-            
-            result["success"] = True
-            result["whatsapp_url"] = f"https://wa.me/{phone}?text={encoded_message}"
+            try:
+                from whatsapp_notifications import WhatsAppNotifications
+                wa_result = await WhatsAppNotifications.ticket_update(
+                    phone=phone,
+                    user_name=member_name,
+                    ticket_id=message.ticket_id,
+                    status="in_progress",
+                    message_preview=message.message[:100] if len(message.message) > 100 else message.message
+                )
+                
+                if wa_result.get("success"):
+                    result["success"] = True
+                    result["message_id"] = wa_result.get("message_id")
+                    logger.info(f"[TICKET] WhatsApp message sent for {message.ticket_id} to {phone[:6]}***")
+                else:
+                    # Fallback to click-to-chat link
+                    wa_message = f"*Ticket {message.ticket_id}*\n\n{message.message}\n\n_The Doggy Company Concierge_"
+                    encoded_message = wa_message.replace(' ', '%20').replace('\n', '%0A')
+                    result["success"] = True
+                    result["whatsapp_url"] = f"https://wa.me/{phone}?text={encoded_message}"
+                    result["note"] = "Gupshup failed, generated click-to-chat link"
+            except Exception as e:
+                logger.error(f"[TICKET] WhatsApp send error: {e}")
+                # Fallback to click-to-chat link
+                wa_message = f"*Ticket {message.ticket_id}*\n\n{message.message}\n\n_The Doggy Company Concierge_"
+                encoded_message = wa_message.replace(' ', '%20').replace('\n', '%0A')
+                result["success"] = True
+                result["whatsapp_url"] = f"https://wa.me/{phone}?text={encoded_message}"
+        else:
+            result["error"] = "No phone number available for this customer"
     
     # Add message to ticket thread
     if result["success"] and not message.is_internal:
@@ -260,6 +285,138 @@ async def send_outbound_message(message: OutboundMessage, background_tasks: Back
             )
     
     return result
+
+
+# ============== MULTI-CHANNEL REPLY ==============
+
+class MultiChannelReply(BaseModel):
+    """Send reply via all available channels (In-App, WhatsApp, Email)"""
+    ticket_id: str
+    message: str
+    sender_name: str = "The Doggy Company"
+    channels: List[str] = ["in_app", "whatsapp", "email"]  # Which channels to use
+
+
+@router.post("/reply/multi-channel")
+async def send_multi_channel_reply(reply: MultiChannelReply, background_tasks: BackgroundTasks):
+    """
+    Send a reply to a ticket via multiple channels simultaneously.
+    Useful for ensuring the member receives the message regardless of their preferred channel.
+    """
+    db = get_db()
+    
+    # Get ticket
+    ticket = await db.tickets.find_one({"ticket_id": reply.ticket_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    member = ticket.get("member", {})
+    member_email = member.get("email") or ticket.get("customer_email")
+    member_phone = member.get("phone") or member.get("whatsapp") or ticket.get("customer_phone")
+    member_name = member.get("name") or ticket.get("customer_name") or "Valued Customer"
+    
+    results = {
+        "ticket_id": reply.ticket_id,
+        "channels_attempted": [],
+        "channels_succeeded": [],
+        "channels_failed": []
+    }
+    
+    # In-App message (always added to ticket thread)
+    if "in_app" in reply.channels:
+        results["channels_attempted"].append("in_app")
+        try:
+            await add_message_to_ticket(reply.ticket_id, {
+                "type": "outbound",
+                "content": reply.message,
+                "sender": "concierge",
+                "sender_name": reply.sender_name,
+                "channel": "in_app",
+                "is_internal": False
+            })
+            results["channels_succeeded"].append("in_app")
+        except Exception as e:
+            results["channels_failed"].append({"channel": "in_app", "error": str(e)})
+    
+    # WhatsApp via Gupshup
+    if "whatsapp" in reply.channels and member_phone:
+        results["channels_attempted"].append("whatsapp")
+        try:
+            from whatsapp_notifications import WhatsAppNotifications
+            wa_result = await WhatsAppNotifications.ticket_update(
+                phone=member_phone,
+                user_name=member_name,
+                ticket_id=reply.ticket_id,
+                status="updated",
+                message_preview=reply.message[:100] if len(reply.message) > 100 else reply.message
+            )
+            if wa_result.get("success"):
+                results["channels_succeeded"].append("whatsapp")
+                results["whatsapp_message_id"] = wa_result.get("message_id")
+            else:
+                results["channels_failed"].append({"channel": "whatsapp", "error": wa_result.get("error", "Unknown")})
+        except Exception as e:
+            results["channels_failed"].append({"channel": "whatsapp", "error": str(e)})
+    
+    # Email via Resend
+    if "email" in reply.channels and member_email:
+        results["channels_attempted"].append("email")
+        try:
+            resend_client = get_resend()
+            if resend_client:
+                reply_to = generate_reply_email_id(reply.ticket_id)
+                email_result = resend_client.Emails.send({
+                    "from": f"The Doggy Company <{SENDER_EMAIL}>",
+                    "to": member_email,
+                    "reply_to": reply_to,
+                    "subject": f"Re: Ticket {reply.ticket_id} - The Doggy Company",
+                    "html": f"""
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                            <div style="background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%); padding: 20px; border-radius: 8px 8px 0 0;">
+                                <h2 style="color: white; margin: 0;">The Doggy Company</h2>
+                                <p style="color: rgba(255,255,255,0.8); margin: 5px 0 0 0;">Service Desk Update</p>
+                            </div>
+                            <div style="background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; border-top: none;">
+                                <p>Hi {member_name},</p>
+                                <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; margin: 15px 0;">
+                                    {reply.message.replace(chr(10), '<br>')}
+                                </div>
+                                <p style="color: #6b7280; font-size: 12px;">
+                                    Reply to this email or message us on WhatsApp to continue the conversation.
+                                </p>
+                            </div>
+                            <div style="background: #1f2937; padding: 15px; border-radius: 0 0 8px 8px; text-align: center;">
+                                <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                                    The Doggy Company Concierge® | woof@thedoggycompany.com
+                                </p>
+                            </div>
+                        </div>
+                    """,
+                    "headers": {
+                        "X-Ticket-ID": reply.ticket_id,
+                        "References": f"<{reply.ticket_id}@thedoggycompany.com>",
+                        "In-Reply-To": f"<{reply.ticket_id}@thedoggycompany.com>"
+                    }
+                })
+                results["channels_succeeded"].append("email")
+                results["email_id"] = email_result.get("id") if isinstance(email_result, dict) else str(email_result)
+            else:
+                results["channels_failed"].append({"channel": "email", "error": "Resend not configured"})
+        except Exception as e:
+            results["channels_failed"].append({"channel": "email", "error": str(e)})
+    
+    # Update ticket status
+    now = datetime.now(timezone.utc).isoformat()
+    await db.tickets.update_one(
+        {"ticket_id": reply.ticket_id},
+        {"$set": {"status": "waiting_on_member", "updated_at": now, "last_reply_at": now}}
+    )
+    
+    results["success"] = len(results["channels_succeeded"]) > 0
+    logger.info(f"[MULTI-CHANNEL] Ticket {reply.ticket_id}: Sent via {results['channels_succeeded']}, Failed: {results['channels_failed']}")
+    
+    return results
+
 
 # ============== WEBHOOK ENDPOINTS ==============
 
@@ -420,7 +577,7 @@ async def resend_inbound_webhook(request: Request, background_tasks: BackgroundT
                         <p><strong>Assigned To:</strong> {assigned}</p>
                         <p><strong>Message:</strong></p>
                         <div style="background:#f5f5f5;padding:15px;border-radius:8px;white-space:pre-wrap;">{clean_content}</div>
-                        <p><a href="https://thedoggycompany.in/admin">View in Service Desk →</a></p>
+                        <p><a href="https://thedoggycompany.com/admin">View in Service Desk →</a></p>
                     """
                 })
             
@@ -545,7 +702,7 @@ async def create_ticket_from_email(email_data: dict) -> str:
                 <p><strong>Category:</strong> {category}</p>
                 <p><strong>Message:</strong></p>
                 <div style="background:#fff3cd;padding:15px;border-radius:8px;">{clean_email_reply(text_body)[:500]}...</div>
-                <p><a href="https://thedoggycompany.in/admin">View in Service Desk →</a></p>
+                <p><a href="https://thedoggycompany.com/admin">View in Service Desk →</a></p>
             """
         })
     

@@ -30,7 +30,7 @@ db: AsyncIOMotorDatabase = None
 SHOPIFY_PRODUCTS_URL = os.environ.get("SHOPIFY_PRODUCTS_URL", "https://thedoggybakery.com/products.json")
 CRON_SECRET = os.environ.get("CRON_SECRET", "midnight-sync-tdb-2025")
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.com")
 
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY

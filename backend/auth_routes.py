@@ -484,7 +484,7 @@ async def member_forgot_password(request: ForgotPasswordRequest):
         if resend_key:
             resend.api_key = resend_key
             
-            frontend_url = os.environ.get("FRONTEND_URL", "https://thedoggycompany.in")
+            frontend_url = os.environ.get("FRONTEND_URL", "https://thedoggycompany.com")
             reset_link = f"{frontend_url}/reset-password?token={reset_token}"
             
             user_name = user.get("name", "Pet Parent")
