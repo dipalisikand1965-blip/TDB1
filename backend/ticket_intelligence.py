@@ -276,7 +276,7 @@ async def send_ticket_acknowledgment(
         sender_email = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.com")
         
         params = {
-            "from": f"The Doggy Company <{sender_email}>",
+            "from": f"THEDOGGYCOMPANY <{sender_email}>",
             "to": member_email,
             "subject": f"✅ We've received your request - {ticket_id}",
             "html": html_content
@@ -436,7 +436,7 @@ async def send_nps_survey(
         sender_email = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.com")
         
         params = {
-            "from": f"The Doggy Company <{sender_email}>",
+            "from": f"THEDOGGYCOMPANY <{sender_email}>",
             "to": member_email,
             "subject": f"🐾 How did we do? Share your experience!",
             "html": html_content

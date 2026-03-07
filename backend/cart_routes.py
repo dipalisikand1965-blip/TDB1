@@ -407,7 +407,7 @@ async def send_abandoned_cart_email(to_email: str, name: str, items: list,
         <body>
             <div class="container">
                 <div class="header">
-                    <h1 style="margin: 0;">🐾 The Doggy Bakery</h1>
+                    <h1 style="margin: 0;">🐾 The Doggy Company</h1>
                     <p style="margin: 10px 0 0 0; opacity: 0.9;">Don't forget your treats!</p>
                 </div>
                 <div class="content">
@@ -448,7 +448,7 @@ async def send_abandoned_cart_email(to_email: str, name: str, items: list,
                     </p>
                 </div>
                 <div class="footer">
-                    <p>The Doggy Bakery | Baking happiness for your furry friends</p>
+                    <p>The Doggy Company | Baking happiness for your furry friends</p>
                     <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.com</p>
                     <p style="font-size: 11px; color: #9ca3af;">
                         <a href="https://thedoggycompany.com/unsubscribe?cart={cart_id}" style="color: #9333ea;">Unsubscribe from cart reminders</a>
@@ -460,7 +460,7 @@ async def send_abandoned_cart_email(to_email: str, name: str, items: list,
         '''
         
         params = {
-            "from": f"The Doggy Bakery <{SENDER_EMAIL}>",
+            "from": f"THEDOGGYCOMPANY <{SENDER_EMAIL}>",
             "to": to_email,  # Resend expects a string, not a list
             "subject": subject,
             "html": html_content

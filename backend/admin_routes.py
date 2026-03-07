@@ -279,7 +279,7 @@ async def send_draft_checkout_link(
     
     if method == "whatsapp":
         # Generate WhatsApp click-to-chat link
-        message = f"""🐾 *Your Order from The Doggy Bakery*
+        message = f"""🐾 *Your Order from The Doggy Company*
 
 Hi {customer.get('name')}! 
 
@@ -294,7 +294,7 @@ Complete your order here:
 Questions? Reply to this message!
 
 With love,
-The Doggy Bakery Team 🐕"""
+The Doggy Company Team 🐕"""
         
         phone = customer.get("phone", "").replace("+", "").replace(" ", "")
         if not phone.startswith("91"):
@@ -319,7 +319,7 @@ The Doggy Bakery Team 🐕"""
                 </div>
                 <div style="padding: 30px; background: #fdf4ff;">
                     <p>Hi {customer.get('name')}!</p>
-                    <p>Your personalized order from The Doggy Bakery is ready for checkout.</p>
+                    <p>Your personalized order from The Doggy Company is ready for checkout.</p>
                     
                     <div style="background: white; padding: 20px; border-radius: 12px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">📦 Order Summary</h3>
@@ -339,7 +339,7 @@ The Doggy Bakery Team 🐕"""
             """
             
             resend.Emails.send({
-                "from": f"The Doggy Bakery <{SENDER_EMAIL}>",
+                "from": f"THEDOGGYCOMPANY <{SENDER_EMAIL}>",
                 "to": customer.get("email"),
                 "subject": "🐾 Your Order is Ready - Complete Checkout",
                 "html": email_html
@@ -557,13 +557,13 @@ async def send_status_notification(order: dict, status: str) -> Optional[dict]:
     if not phone.startswith("91"):
         phone = f"91{phone}"
     
-    full_message = f"""🐾 *The Doggy Bakery - Order Update*
+    full_message = f"""🐾 *The Doggy Company - Order Update*
 
 {message}
 
 Order: #{order.get('orderId')}
 
-Thank you for choosing The Doggy Bakery! 🐕
+Thank you for choosing The Doggy Company! 🐕
 """
     
     whatsapp_link = f"https://wa.me/{phone}?text={__import__('urllib.parse', fromlist=['quote']).quote(full_message)}"
@@ -577,7 +577,7 @@ Thank you for choosing The Doggy Bakery! 🐕
             label = status_info.get("label", status) if status_info else status
             
             resend.Emails.send({
-                "from": f"The Doggy Bakery <{SENDER_EMAIL}>",
+                "from": f"THEDOGGYCOMPANY <{SENDER_EMAIL}>",
                 "to": customer.get("email"),
                 "subject": f"{emoji} Order Update: {label}",
                 "html": f"""
@@ -591,7 +591,7 @@ Thank you for choosing The Doggy Bakery! 🐕
                         <p style="background: white; padding: 15px; border-radius: 8px; margin: 20px 0;">
                             <strong>Order ID:</strong> {order.get('orderId')}
                         </p>
-                        <p style="color: #6b7280;">Thank you for choosing The Doggy Bakery!</p>
+                        <p style="color: #6b7280;">Thank you for choosing The Doggy Company!</p>
                     </div>
                 </div>
                 """

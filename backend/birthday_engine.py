@@ -485,7 +485,7 @@ The Doggy Company Team 🐕
             """
             
             resend.Emails.send({
-                "from": f"The Doggy Company <{SENDER_EMAIL}>",
+                "from": f"THEDOGGYCOMPANY <{SENDER_EMAIL}>",
                 "to": owner_email,
                 "subject": f"🎉 {celebration_info['emoji']} {pet_name}'s {celebration_info['label']} - {discount_percent}% Off Inside!",
                 "html": email_html

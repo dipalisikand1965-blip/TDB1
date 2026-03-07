@@ -562,7 +562,7 @@ async def create_booking_request(booking: BookingRequest):
     if RESEND_API_KEY and booking.guest_email:
         try:
             resend.Emails.send({
-                "from": f"The Doggy Company Stay <{SENDER_EMAIL}>",
+                "from": f"THEDOGGYCOMPANY Stay <{SENDER_EMAIL}>",
                 "to": booking.guest_email,
                 "subject": f"🏨 Stay Booking Request - {property.get('name')}",
                 "html": f"""
@@ -2238,7 +2238,7 @@ async def admin_update_booking_status(
                     message = f"Unfortunately, your stay at {booking.get('property_name')} has been cancelled."
                 
                 resend.Emails.send({
-                    "from": f"The Doggy Company Stay <{SENDER_EMAIL}>",
+                    "from": f"THEDOGGYCOMPANY Stay <{SENDER_EMAIL}>",
                     "to": booking.get("guest_email"),
                     "subject": subject,
                     "html": f"""

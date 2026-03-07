@@ -401,7 +401,7 @@ async def send_product_match_email(pet: dict, product: dict, match_reason: str):
             </div>
             
             <p>Hi {owner_name},</p>
-            <p>We spotted something new at The Doggy Bakery that {reason_text}!</p>
+            <p>We spotted something new at The Doggy Company that {reason_text}!</p>
             
             <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; text-align: center; margin: 20px 0;">
                 <img src="{product_image}" alt="{product_name}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px;">
@@ -420,7 +420,7 @@ async def send_product_match_email(pet: dict, product: dict, match_reason: str):
         """
         
         params = {
-            "from": f"The Doggy Bakery <{SENDER_EMAIL}>",
+            "from": f"THEDOGGYCOMPANY <{SENDER_EMAIL}>",
             "to": owner_email,
             "subject": f"🐾 Perfect Match for {pet_name}: {product_name}",
             "html": html_content

@@ -951,7 +951,7 @@ async def seed_celebrate_data():
     sample_partners = [
         {
             "id": "cel-ptr-001",
-            "name": "The Doggy Bakery Mumbai",
+            "name": "The Doggy Company Mumbai",
             "type": "bakery",
             "description": "Original Doggy Company bakery - premium pet cakes since 2018",
             "logo": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=200",
