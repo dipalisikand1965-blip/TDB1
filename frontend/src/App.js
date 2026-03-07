@@ -115,6 +115,11 @@ function PetSoulJourneyRedirect() {
   return <Navigate to={`/pets/${petId}/soul`} replace />;
 }
 
+// Redirect from old /mira-demo to new /mira-os
+function MiraDemoRedirect() {
+  return <Navigate to="/mira-os" replace />;
+}
+
 // Redirect component for celebrate sub-categories to main celebrate page
 function CelebrateRedirect() {
   const { category } = useParams();
@@ -372,13 +377,16 @@ function AppRouter() {
         <Route path="/ask-mira" element={<MiraPage />} />
         
         {/* MIRA OS - Protected behind login + membership */}
-        <Route path="/mira-demo" element={<ProtectedRoute requireMembership={true}><MiraDemoPage /></ProtectedRoute>} />
+        <Route path="/mira-os" element={<ProtectedRoute requireMembership={true}><MiraOSPage /></ProtectedRoute>} />
+        
+        {/* Redirect old /mira-demo to /mira-os */}
+        <Route path="/mira-demo" element={<MiraDemoRedirect />} />
         
         {/* MIRA OS ORIGINAL - Day 1 clean version for comparison */}
-        <Route path="/mira-demo-original" element={<ProtectedRoute requireMembership={true}><MiraDemoOriginalPage /></ProtectedRoute>} />
+        <Route path="/mira-os-original" element={<ProtectedRoute requireMembership={true}><MiraDemoOriginalPage /></ProtectedRoute>} />
         
         {/* MIRA OS BACKUP - UNTOUCHED version for comparison during refactoring */}
-        <Route path="/mira-demobackup" element={<ProtectedRoute requireMembership={true}><MiraDemoBackupPage /></ProtectedRoute>} />
+        <Route path="/mira-os-backup" element={<ProtectedRoute requireMembership={true}><MiraDemoBackupPage /></ProtectedRoute>} />
         
         {/* MIRA PURE - Clean soulful AI test page (no hardcoded logic) */}
         <Route path="/mira-pure" element={<MiraPurePage />} />
