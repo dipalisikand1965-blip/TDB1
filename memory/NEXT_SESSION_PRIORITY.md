@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://pet-os-v1.preview.emergentagent.com
+**Preview URL:** https://chat-flow-ready.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

@@ -536,7 +536,7 @@ const NotificationsInbox = () => {
   };
 
   return (
-    <div className="h-screen bg-[#0a0a14] flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-[#0a0a14] flex flex-col overflow-x-hidden" style={{ minHeight: '100dvh' }}>
       {/* Global Navigation: Dashboard | Inbox + Pet Switcher */}
       <GlobalNav 
         unreadCount={unreadCount} 

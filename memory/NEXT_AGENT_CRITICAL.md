@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://pet-os-v1.preview.emergentagent.com
+https://chat-flow-ready.preview.emergentagent.com
 
 ---
 
