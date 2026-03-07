@@ -49,6 +49,7 @@ import {
   Download
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import { getWrappedApiBase } from '../utils/api';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -658,7 +659,10 @@ const PetHomePage = () => {
             {/* Pet Wrapped Download Button */}
             {soulScore >= 10 && (pet?._id || pet?.id) && (
               <button
-                onClick={() => window.open(`${API_URL}/api/wrapped/download/${pet._id || pet.id}`, '_blank')}
+                onClick={() => {
+                  const baseUrl = getWrappedApiBase();
+                  window.open(`${baseUrl}/api/wrapped/download/${pet._id || pet.id}`, '_blank');
+                }}
                 className="mt-3 w-full py-2.5 bg-gradient-to-r from-amber-500/20 to-orange-600/20 border border-amber-500/30 rounded-xl text-amber-400 text-sm font-medium flex items-center justify-center gap-2 hover:bg-amber-500/30 hover:border-amber-500/50 transition-all"
                 data-testid="pet-wrapped-download-btn"
               >

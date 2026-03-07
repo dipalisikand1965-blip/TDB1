@@ -13,7 +13,7 @@ import {
   Stethoscope, Syringe, Pill, AlertCircle, Phone, FileText,
   Download
 } from 'lucide-react';
-import { API_URL } from '../utils/api';
+import { API_URL, getWrappedApiBase } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 
 
@@ -1435,7 +1435,10 @@ const PetProfile = ({ isEmbed = false }) => {
         <div className="mt-6 text-center">
           <Button 
             variant="outline"
-            onClick={() => window.open(`${API_URL}/api/wrapped/download/${createdPet._id}`, '_blank')}
+            onClick={() => {
+              const baseUrl = getWrappedApiBase();
+              window.open(`${baseUrl}/api/wrapped/download/${createdPet._id}`, '_blank');
+            }}
             className="border-amber-500/50 text-amber-600 hover:bg-amber-50 hover:border-amber-500"
             data-testid="pet-wrapped-download-btn"
           >
@@ -1499,7 +1502,10 @@ const PetProfile = ({ isEmbed = false }) => {
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => window.open(`${API_URL}/api/wrapped/download/${pet.id || pet._id}`, '_blank')}
+                  onClick={() => {
+                    const baseUrl = getWrappedApiBase();
+                    window.open(`${baseUrl}/api/wrapped/download/${pet.id || pet._id}`, '_blank');
+                  }}
                   className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
                   title={`Download ${pet.name}'s Pet Wrapped`}
                   data-testid={`pet-wrapped-btn-${pet.id || pet._id}`}
