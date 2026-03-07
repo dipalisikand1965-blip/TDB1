@@ -17,10 +17,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
+import PillarServicesTab from './PillarServicesTab';
 import {
   Hotel, Building2, Home, Tent, TreePine, MapPin, Users, Package,
   Settings, Search, Plus, Edit2, Trash2, RefreshCw, Eye, Clock,
-  CheckCircle, XCircle, Star, Download, Upload, Database, Calendar,
+  CheckCircle, XCircle, Star, Download, Upload, Database, Calendar, Briefcase,
   PawPrint, Phone, Mail, DollarSign, Shield, Award, Sparkles
 } from 'lucide-react';
 
@@ -567,11 +568,12 @@ const StayManager = ({ getAuthHeader }) => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-4 md:grid-cols-8 gap-1">
+        <TabsList className="grid grid-cols-5 md:grid-cols-9 gap-1">
           <TabsTrigger value="requests" className="text-xs">Requests</TabsTrigger>
           <TabsTrigger value="properties" className="text-xs">Properties</TabsTrigger>
           <TabsTrigger value="partners" className="text-xs">Partners</TabsTrigger>
           <TabsTrigger value="products" className="text-xs">Products</TabsTrigger>
+          <TabsTrigger value="services" className="text-xs">Services</TabsTrigger>
           <TabsTrigger value="bundles" className="text-xs">Bundles</TabsTrigger>
           <TabsTrigger value="stories" className="text-xs">Stories</TabsTrigger>
           <TabsTrigger value="tips" className="text-xs">Tips</TabsTrigger>
@@ -877,6 +879,16 @@ const StayManager = ({ getAuthHeader }) => {
               </Button>
             </Card>
           )}
+        </TabsContent>
+
+        {/* Services Tab */}
+        <TabsContent value="services" className="space-y-4">
+          <PillarServicesTab 
+            pillar="stay"
+            pillarName="Stay"
+            pillarIcon="🏠"
+            pillarColor="bg-indigo-500"
+          />
         </TabsContent>
 
         {/* Bundles Tab */}

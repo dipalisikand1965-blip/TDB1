@@ -17,12 +17,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 import axios from 'axios';
+import PillarServicesTab from './PillarServicesTab';
 import {
   Scissors, PawPrint, GraduationCap, Stethoscope, AlertTriangle, Heart,
   ClipboardList, Bell, Building2, Package, Gift, Settings, Search,
   Plus, Edit2, Trash2, RefreshCw, Upload, Download, ChevronRight,
   Clock, CheckCircle, XCircle, User, Phone, Mail, MapPin, Star,
-  Calendar, Filter, Eye, Sparkles, Database
+  Calendar, Filter, Eye, Sparkles, Database, Briefcase
 } from 'lucide-react';
 
 // Care Type Icons
@@ -584,6 +585,9 @@ const CareManager = ({ getAuthHeader }) => {
           <TabsTrigger value="products" data-testid="care-tab-products">
             <Package className="w-4 h-4 mr-2" /> Products
           </TabsTrigger>
+          <TabsTrigger value="services" data-testid="care-tab-services">
+            <Briefcase className="w-4 h-4 mr-2" /> Services
+          </TabsTrigger>
           <TabsTrigger value="bundles" data-testid="care-tab-bundles">
             <Gift className="w-4 h-4 mr-2" /> Bundles
           </TabsTrigger>
@@ -953,6 +957,16 @@ const CareManager = ({ getAuthHeader }) => {
               <Button className="mt-4" onClick={seedProducts}>Seed Default Products</Button>
             </Card>
           )}
+        </TabsContent>
+
+        {/* Services Tab */}
+        <TabsContent value="services" className="space-y-4">
+          <PillarServicesTab 
+            pillar="care"
+            pillarName="Care"
+            pillarIcon="💊"
+            pillarColor="bg-green-500"
+          />
         </TabsContent>
 
         {/* Bundles Tab */}

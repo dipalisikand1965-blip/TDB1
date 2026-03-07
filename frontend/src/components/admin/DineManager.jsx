@@ -4,7 +4,7 @@ import {
   UtensilsCrossed, Check, AlertCircle, Phone, Globe, Instagram,
   RefreshCw, Upload, Download, FileSpreadsheet, Image as ImageIcon,
   ExternalLink, MessageSquare, Sparkles, Calendar, Users, Clock,
-  PawPrint, Heart, UserCheck, XCircle, Eye, Settings, ShoppingBag, Package
+  PawPrint, Heart, UserCheck, XCircle, Eye, Settings, ShoppingBag, Package, Briefcase
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -13,6 +13,7 @@ import { Badge } from '../ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { toast } from '../../hooks/use-toast';
 import { API_URL } from '../../utils/api';
+import PillarServicesTab from './PillarServicesTab';
 
 
 const DineManager = ({ credentials }) => {
@@ -725,6 +726,13 @@ const DineManager = ({ credentials }) => {
           className={activeTab === 'products' ? 'bg-blue-500 hover:bg-blue-600' : ''}
         >
           <ShoppingBag className="w-4 h-4 mr-2" /> Products
+        </Button>
+        <Button 
+          variant={activeTab === 'services' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('services')}
+          className={activeTab === 'services' ? 'bg-teal-500 hover:bg-teal-600' : ''}
+        >
+          <Briefcase className="w-4 h-4 mr-2" /> Services
         </Button>
         <Button 
           variant={activeTab === 'settings' ? 'default' : 'ghost'}
@@ -2192,6 +2200,16 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
             </form>
           </Card>
         </div>
+      )}
+      
+      {/* ============ SERVICES TAB ============ */}
+      {activeTab === 'services' && (
+        <PillarServicesTab 
+          pillar="dine"
+          pillarName="Dine"
+          pillarIcon="🍽️"
+          pillarColor="bg-orange-500"
+        />
       )}
       
       {/* ============ SETTINGS TAB ============ */}
