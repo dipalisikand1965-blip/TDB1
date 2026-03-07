@@ -303,6 +303,10 @@ const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const MembershipPayment = lazy(() => import("./pages/MembershipPayment"));
 const DreamfolksDemo = lazy(() => import("./pages/DreamfolksDemo"));
 
+// Pet Wrapped
+const PetWrappedViewer = lazy(() => import("./pages/PetWrappedViewer"));
+const WrappedWelcomePage = lazy(() => import("./pages/WrappedWelcomePage"));
+
 // Notifications Inbox + Ticket Thread (iOS Mail-style)
 const NotificationsInbox = lazy(() => import("./pages/NotificationsInbox"));
 const TicketThread = lazy(() => import("./pages/TicketThread"));
@@ -632,6 +636,10 @@ function MainLayout() {
         
         {/* Campaign Collections */}
         <Route path="/collections/:slug" element={<CollectionPage />} />
+        
+        {/* Pet Wrapped - The viral acquisition engine */}
+        <Route path="/wrapped/:petId" element={<PetWrappedViewer />} />
+        <Route path="/wrapped-welcome" element={<WrappedWelcomePage />} />
         
         {/* Partner Onboarding */}
         <Route path="/partner" element={<PartnerOnboarding />} />
