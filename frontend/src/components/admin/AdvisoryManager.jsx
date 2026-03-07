@@ -159,6 +159,16 @@ const AdvisoryManager = () => {
 
   const fetchProducts = async () => {
     try {
+      // Try Unified Product Box first for single source of truth
+      const unifiedRes = await fetch(`${API_URL}/api/product-box/by-pillar/advisory`);
+      if (unifiedRes.ok) {
+        const data = await unifiedRes.json();
+        const productData = data.products || data || [];
+        setProducts(Array.isArray(productData) ? productData : []);
+        return;
+      }
+      
+      // Fallback to legacy endpoint
       const res = await fetch(`${API_URL}/api/advisory/products`);
       if (res.ok) {
         const data = await res.json();

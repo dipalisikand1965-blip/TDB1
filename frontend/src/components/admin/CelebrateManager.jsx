@@ -121,20 +121,27 @@ const CelebrateManager = ({ getAuthHeader }) => {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      // Fetch from public products endpoint (Shopify synced) - no auth required
+      // Fetch from Unified Product Box first for single source of truth
       const [requestsRes, productsRes, bundlesRes, settingsRes, partnersRes] = await Promise.all([
         axios.get(`${API_URL}/api/celebrate/requests`),
-        axios.get(`${API_URL}/api/products?limit=1000`),
+        axios.get(`${API_URL}/api/product-box/by-pillar/celebrate`).catch(() => 
+          // Fallback to public products endpoint (Shopify synced)
+          axios.get(`${API_URL}/api/products?limit=1000`)
+        ),
         axios.get(`${API_URL}/api/celebrate/admin/bundles`),
         axios.get(`${API_URL}/api/celebrate/admin/settings`),
         axios.get(`${API_URL}/api/celebrate/admin/partners`)
       ]);
       
       setRequests(requestsRes.data.requests || []);
-      // Filter products for celebrate categories (cakes, treats, hampers, pupcakes, dognuts, frozen-treats, etc.)
-      const allProducts = productsRes.data.products || [];
+      // Handle both unified product box response and legacy response
+      const productData = productsRes.data.products || productsRes.data || [];
+      const allProducts = Array.isArray(productData) ? productData : [];
+      
+      // If from legacy endpoint, filter for celebrate categories
       const celebrateCategories = ['cakes', 'treats', 'hampers', 'pupcakes', 'dognuts', 'frozen', 'celebrate', 'breed-cakes', 'mini-cakes', 'desi-treats'];
       const celebrateProducts = allProducts.filter(p => 
+        (p.pillars && p.pillars.includes('celebrate')) ||
         celebrateCategories.some(cat => 
           (p.category || '').toLowerCase().includes(cat) ||
           (p.subcategory || '').toLowerCase().includes(cat)
