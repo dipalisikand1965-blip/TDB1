@@ -31,7 +31,7 @@ const SHAPES = [
 // Flavor options
 const FLAVORS = [
   { id: 'banana', name: 'Banana', price: 0, icon: '🍌', description: 'Sweet & healthy banana base' },
-  { id: 'chicken', name: 'Chicken', price: 50, icon: '🍗', description: 'Savory chicken flavor (+₹50)' },
+  { id: 'chicken', name: 'Chicken', price: 50, icon: '🍗', description: 'Savoury chicken flavour (+₹50)' },
 ];
 
 const CustomCakeDesigner = () => {
@@ -161,7 +161,7 @@ const CustomCakeDesigner = () => {
     
     toast({
       title: 'Custom cake added! 🎂',
-      description: `${shape.icon} ${shape.name} cake with ${flavor.name} flavor`,
+      description: `${shape.icon} ${shape.name} cake with ${flavor.name} flavour`,
     });
     
     setTimeout(() => {
@@ -182,7 +182,7 @@ const CustomCakeDesigner = () => {
             🎂 Build Your Cake
           </h1>
           <p className="text-gray-600 max-w-xl mx-auto">
-            Create a personalized cake for your furry friend! Choose shape, flavor, add custom text, 
+            Create a personalised cake for your furry friend! Choose shape, flavour, add custom text, 
             and upload a reference image.
           </p>
         </div>

@@ -762,7 +762,7 @@ const MiraOSPage = () => {
       // Add Mira's response
       setConversationHistory(prev => [...prev, {
         type: 'mira',
-        content: data.response || data.message || 'I apologize, I had trouble understanding that.',
+        content: data.response || data.message || 'I apologise, I had trouble understanding that.',
         timestamp: new Date(),
         pillar: data.pillar,
         picks: data.picks,
@@ -822,7 +822,7 @@ const MiraOSPage = () => {
       console.error('[MIRA CHAT] Error:', error);
       setConversationHistory(prev => [...prev, {
         type: 'mira',
-        content: 'I apologize, I encountered an error. Please try again.',
+        content: 'I apologise, I encountered an error. Please try again.',
         timestamp: new Date(),
         isError: true
       }]);

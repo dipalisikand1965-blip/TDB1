@@ -2084,7 +2084,7 @@ POST /api/learn/admin/seed       # Seed sample data`
         {
           title: 'Integration',
           content: `• Every order creates Command Center ticket
-• Customer recognized automatically
+• Customer recognised automatically
 • Paw Rewards integration
 • Autoship for recurring orders`
         }

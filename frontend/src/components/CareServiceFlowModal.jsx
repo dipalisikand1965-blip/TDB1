@@ -136,7 +136,7 @@ const SERVICE_OPTIONS = {
     icon: Package,
     gradient: 'from-orange-500 to-amber-600',
     options: [
-      { id: 'diet_planning', name: 'Diet Planning', description: 'Customized meal planning consultation', popular: true, forBreeds: ['all'] },
+      { id: 'diet_planning', name: 'Diet Planning', description: 'Customised meal planning consultation', popular: true, forBreeds: ['all'] },
       { id: 'weight_management', name: 'Weight Management', description: 'Healthy weight guidance', forBreeds: ['all'] },
       { id: 'allergy_diet', name: 'Allergy-Safe Diet', description: 'Diet planning for food allergies', forBreeds: ['all'] },
       { id: 'senior_nutrition', name: 'Senior Nutrition', description: 'Nutrition for aging pets', forBreeds: ['all'] },

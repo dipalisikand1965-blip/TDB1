@@ -26,7 +26,7 @@ const SOUL_PILLARS = [
   { icon: '💊', name: 'Care', desc: 'Veterinary care, grooming, health', color: 'from-green-500 to-emerald-500', path: '/care' },
   { icon: '🎾', name: 'Enjoy', desc: 'Toys, accessories, enrichment', color: 'from-yellow-500 to-amber-500', path: '/enjoy' },
   { icon: '🏃', name: 'Fit', desc: 'Exercise programs, swimming', color: 'from-teal-500 to-cyan-500', path: '/fit' },
-  { icon: '🎓', name: 'Learn', desc: 'Training, behavior modification', color: 'from-blue-600 to-indigo-600', path: '/learn' },
+  { icon: '🎓', name: 'Learn', desc: 'Training, behaviour modification', color: 'from-blue-600 to-indigo-600', path: '/learn' },
   { icon: '📄', name: 'Paperwork', desc: 'Registration, licenses', color: 'from-gray-500 to-slate-500', path: '/paperwork' },
   { icon: '📋', name: 'Advisory', desc: 'Legal advice, insurance', color: 'from-slate-500 to-gray-600', path: '/advisory' },
   { icon: '🚨', name: 'Emergency', desc: '24/7 emergency care', color: 'from-red-500 to-orange-500', path: '/emergency' },
@@ -40,7 +40,7 @@ const WHAT_SOUL_LEARNS = [
   { icon: Heart, title: 'Personality & Temperament', desc: 'Playful, calm, anxious, or energetic nature' },
   { icon: Activity, title: 'Health & Medical History', desc: 'Vaccinations, allergies, medications, vet visits' },
   { icon: Calendar, title: 'Important Dates', desc: 'Birthdays, adoption anniversaries, vaccination due dates' },
-  { icon: PawPrint, title: 'Preferences & Favorites', desc: 'Favorite treats, toys, sleeping spots' },
+  { icon: PawPrint, title: 'Preferences & Favourites', desc: 'Favourite treats, toys, sleeping spots' },
   { icon: Users, title: 'Social Behavior', desc: 'How they interact with pets, children, strangers' },
   { icon: Clock, title: 'Routines & Schedules', desc: 'Feeding times, walk schedules, sleep patterns' }
 ];

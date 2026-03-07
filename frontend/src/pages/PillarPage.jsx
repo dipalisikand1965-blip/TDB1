@@ -11,7 +11,7 @@ const pillarConfig = {
     color: 'from-orange-500 to-red-500',
     description: 'Fresh meals, nutrition plans & premium pet food',
     features: [
-      'Customized meal plans for your pet',
+      'Customised meal plans for your pet',
       'Fresh, vet-approved recipes',
       'Subscription meal delivery',
       'Nutrition consultations',
@@ -79,7 +79,7 @@ const pillarConfig = {
     description: 'Premium nutrition & fresh meals',
     features: [
       'Fresh, human-grade meals',
-      'Customized nutrition plans',
+      'Customised nutrition plans',
       'Prescription diet support',
       'Subscription delivery',
     ],
@@ -118,7 +118,7 @@ const pillarConfig = {
     description: 'Professional training & behavior',
     features: [
       'Puppy training classes',
-      'Behavior modification',
+      'Behaviour modification',
       'Agility & tricks training',
       'Virtual training sessions',
     ],

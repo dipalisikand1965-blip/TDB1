@@ -1087,7 +1087,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
             {isHamperProduct && (
               <div className="space-y-4 mb-4 pt-3 border-t bg-gradient-to-br from-pink-50 to-purple-50 -mx-6 px-6 py-4">
                 <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                  🎁 Customize Your Hamper
+                  🎁 Customise Your Hamper
                 </h4>
                 
                 {/* Select Cake */}
