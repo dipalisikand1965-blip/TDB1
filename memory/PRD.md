@@ -241,6 +241,13 @@ Handle pet loss with compassion and dignity.
 ### P0 - Critical (None)
 All critical features complete!
 
+### P0 - CRITICAL (LAUNCH DATE: MAY 20, 2026)
+- [ ] **PET WRAPPED** — World's first Pet Wrapped for Mystique on her birthday
+  - Design: COMPLETE (`/app/frontend/public/pet-wrapped-mystique.html`)
+  - Spec: COMPLETE (`/app/memory/PET_WRAPPED_SPEC.md`)
+  - Build: 53 days remaining
+  - This is not a feature. This is a product launch.
+
 ### P1 - High Priority
 - [ ] Run MASTER SYNC on production
 - [ ] Monitor AI enhancement completion
