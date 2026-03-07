@@ -1100,15 +1100,16 @@ async def clear_breed_products():
 
 
 async def sync_breed_products_to_main():
-    """Sync breed_products to main products collection for unified search"""
+    """Sync breed_products to main products collection AND unified_products for admin visibility"""
     breed_products = await db.breed_products.find({"is_active": True}).to_list(500)
     
-    synced = 0
+    synced_products = 0
+    synced_unified = 0
+    
     for bp in breed_products:
-        # Check if exists in main products
+        # 1. Sync to products collection
         existing = await db.products.find_one({"id": bp["id"]})
         if not existing:
-            # Convert to main product format
             main_product = {
                 "id": bp["id"],
                 "name": bp["name"],
@@ -1133,10 +1134,62 @@ async def sync_breed_products_to_main():
                 "updated_at": datetime.now(timezone.utc)
             }
             await db.products.insert_one(main_product)
-            synced += 1
+            synced_products += 1
+        
+        # 2. Sync to unified_products (Admin Product Box)
+        existing_unified = await db.unified_products.find_one({"id": bp["id"]})
+        if not existing_unified:
+            unified_product = {
+                "id": bp["id"],
+                "name": bp["name"],
+                "title": bp["name"],
+                "description": bp.get("short_description", ""),
+                "long_description": bp.get("long_description", ""),
+                "category": bp.get("category", ""),
+                "sub_category": bp.get("sub_category", ""),
+                "pillar": bp.get("pillars", ["celebrate"])[0] if bp.get("pillars") else "celebrate",
+                "pillars": bp.get("pillars", []),
+                "price": bp.get("price", 0),
+                "compare_at_price": bp.get("compare_price"),
+                "images": bp.get("images", []),
+                "primary_image": bp.get("primary_image", ""),
+                "tags": bp.get("ai_tags", []),
+                "breed_tags": bp.get("breed_tags", []),
+                "mira_hint": bp.get("mira_hint", ""),
+                "vendor": bp.get("vendor", "The Doggy Company"),
+                "sku": bp.get("sku", ""),
+                "in_stock": bp.get("in_stock", True),
+                "stock_quantity": bp.get("stock_quantity", 100),
+                "flavors": bp.get("flavors", []),
+                "sizes": bp.get("sizes", []),
+                "options": bp.get("options", []),
+                "variants": bp.get("variants", []),
+                "is_active": bp.get("is_active", True),
+                "is_breed_product": True,
+                "source": "breed_catalogue",
+                "product_type": "breed_pick",
+                "created_at": bp.get("created_at"),
+                "updated_at": datetime.now(timezone.utc)
+            }
+            await db.unified_products.insert_one(unified_product)
+            synced_unified += 1
     
-    logging.info(f"[Breed Sync] Synced {synced} breed products to main collection")
-    return synced
+    logging.info(f"[Breed Sync] Synced {synced_products} to products, {synced_unified} to unified_products")
+    return {"synced_products": synced_products, "synced_unified": synced_unified}
+
+
+@router.post("/admin/sync-breed-to-admin")
+async def sync_breed_products_to_admin():
+    """
+    🔄 SYNC BREED PRODUCTS TO ADMIN
+    Makes breed products visible in the Admin Unified Product Box
+    """
+    result = await sync_breed_products_to_main()
+    return {
+        "success": True,
+        "message": f"Synced {result['synced_unified']} breed products to Admin Product Box",
+        **result
+    }
 
 
 @router.get("/admin/breed-products-stats")
