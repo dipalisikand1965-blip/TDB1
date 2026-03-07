@@ -1,0 +1,359 @@
+"""
+Razorpay Payment Integration for The Doggy Company
+Handles membership subscriptions: Free, Essential (₹2,499/yr), Premium (₹9,999/yr)
+"""
+
+import os
+import razorpay
+import logging
+from datetime import datetime, timezone
+from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel
+from typing import Optional
+from motor.motor_asyncio import AsyncIOMotorClient
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter(prefix="/api/payments", tags=["payments"])
+
+# Razorpay Configuration
+RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET")
+
+# Initialize Razorpay client
+razorpay_client = None
+if RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET:
+    razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+    logger.info("[RAZORPAY] Client initialized successfully")
+else:
+    logger.warning("[RAZORPAY] API keys not configured")
+
+# MongoDB connection
+MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+DB_NAME = os.environ.get("DB_NAME", "pet-os-live-test_database")
+mongo_client = AsyncIOMotorClient(MONGO_URL)
+db = mongo_client[DB_NAME]
+
+# Membership Plans Configuration
+MEMBERSHIP_PLANS = {
+    "free": {
+        "name": "Free",
+        "amount": 0,
+        "currency": "INR",
+        "period": "lifetime",
+        "features": ["Soul Profile", "Mira basic", "Browse", "Book services", "Unlimited pets"]
+    },
+    "essential_monthly": {
+        "name": "Essential Monthly",
+        "amount": 24900,  # ₹249 in paise
+        "currency": "INR",
+        "period": "monthly",
+        "features": ["Mira full", "Mira OS", "Concierge chat", "Paw Points", "Health Vault"]
+    },
+    "essential_yearly": {
+        "name": "Essential Yearly",
+        "amount": 249900,  # ₹2,499 in paise
+        "currency": "INR",
+        "period": "yearly",
+        "features": ["Mira full", "Mira OS", "Concierge chat", "Paw Points", "Health Vault"]
+    },
+    "premium_monthly": {
+        "name": "Premium Monthly",
+        "amount": 99900,  # ₹999 in paise
+        "currency": "INR",
+        "period": "monthly",
+        "features": ["Priority concierge", "Dedicated manager", "White-glove", "VIP support"]
+    },
+    "premium_yearly": {
+        "name": "Premium Yearly",
+        "amount": 999900,  # ₹9,999 in paise
+        "currency": "INR",
+        "period": "yearly",
+        "features": ["Priority concierge", "Dedicated manager", "White-glove", "VIP support"]
+    }
+}
+
+
+class CreateOrderRequest(BaseModel):
+    plan_id: str  # essential_monthly, essential_yearly, premium_monthly, premium_yearly
+    user_id: str
+    user_email: str
+    user_name: Optional[str] = None
+    user_phone: Optional[str] = None
+
+
+class VerifyPaymentRequest(BaseModel):
+    razorpay_order_id: str
+    razorpay_payment_id: str
+    razorpay_signature: str
+    user_id: str
+
+
+@router.get("/config")
+async def get_payment_config():
+    """Get Razorpay public key and plan details for frontend"""
+    return {
+        "razorpay_key_id": RAZORPAY_KEY_ID,
+        "plans": {
+            plan_id: {
+                "name": plan["name"],
+                "amount": plan["amount"],
+                "amount_display": f"₹{plan['amount'] // 100}",
+                "currency": plan["currency"],
+                "period": plan["period"],
+                "features": plan["features"]
+            }
+            for plan_id, plan in MEMBERSHIP_PLANS.items()
+            if plan["amount"] > 0  # Exclude free plan
+        }
+    }
+
+
+@router.post("/create-order")
+async def create_order(request: CreateOrderRequest):
+    """Create a Razorpay order for membership payment"""
+    
+    if not razorpay_client:
+        raise HTTPException(status_code=500, detail="Payment gateway not configured")
+    
+    plan = MEMBERSHIP_PLANS.get(request.plan_id)
+    if not plan:
+        raise HTTPException(status_code=400, detail=f"Invalid plan: {request.plan_id}")
+    
+    if plan["amount"] == 0:
+        raise HTTPException(status_code=400, detail="Free plan doesn't require payment")
+    
+    try:
+        # Calculate GST (18%)
+        base_amount = plan["amount"]
+        gst_amount = int(base_amount * 0.18)
+        total_amount = base_amount + gst_amount
+        
+        # Create Razorpay order
+        order_data = {
+            "amount": total_amount,  # Amount in paise
+            "currency": plan["currency"],
+            "receipt": f"order_{request.user_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}",
+            "notes": {
+                "user_id": request.user_id,
+                "plan_id": request.plan_id,
+                "user_email": request.user_email
+            }
+        }
+        
+        razorpay_order = razorpay_client.order.create(data=order_data)
+        
+        # Store order in database
+        order_record = {
+            "order_id": razorpay_order["id"],
+            "user_id": request.user_id,
+            "user_email": request.user_email,
+            "user_name": request.user_name,
+            "user_phone": request.user_phone,
+            "plan_id": request.plan_id,
+            "plan_name": plan["name"],
+            "base_amount": base_amount,
+            "gst_amount": gst_amount,
+            "total_amount": total_amount,
+            "currency": plan["currency"],
+            "status": "created",
+            "created_at": datetime.now(timezone.utc)
+        }
+        
+        await db.payment_orders.insert_one(order_record)
+        
+        logger.info(f"[RAZORPAY] Order created: {razorpay_order['id']} for user {request.user_id}")
+        
+        return {
+            "order_id": razorpay_order["id"],
+            "amount": total_amount,
+            "amount_display": f"₹{total_amount // 100}",
+            "base_amount": base_amount,
+            "gst_amount": gst_amount,
+            "currency": plan["currency"],
+            "plan_name": plan["name"],
+            "key_id": RAZORPAY_KEY_ID,
+            "prefill": {
+                "name": request.user_name or "",
+                "email": request.user_email,
+                "contact": request.user_phone or ""
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"[RAZORPAY] Order creation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to create order: {str(e)}")
+
+
+@router.post("/verify")
+async def verify_payment(request: VerifyPaymentRequest):
+    """Verify Razorpay payment signature and activate membership"""
+    
+    if not razorpay_client:
+        raise HTTPException(status_code=500, detail="Payment gateway not configured")
+    
+    try:
+        # Verify signature
+        params_dict = {
+            "razorpay_order_id": request.razorpay_order_id,
+            "razorpay_payment_id": request.razorpay_payment_id,
+            "razorpay_signature": request.razorpay_signature
+        }
+        
+        razorpay_client.utility.verify_payment_signature(params_dict)
+        
+        # Get order details
+        order = await db.payment_orders.find_one({"order_id": request.razorpay_order_id})
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        # Update order status
+        await db.payment_orders.update_one(
+            {"order_id": request.razorpay_order_id},
+            {
+                "$set": {
+                    "status": "paid",
+                    "payment_id": request.razorpay_payment_id,
+                    "paid_at": datetime.now(timezone.utc)
+                }
+            }
+        )
+        
+        # Determine membership tier
+        plan_id = order["plan_id"]
+        if "premium" in plan_id:
+            membership_tier = "premium"
+        elif "essential" in plan_id:
+            membership_tier = "essential"
+        else:
+            membership_tier = "free"
+        
+        # Calculate expiry
+        if "yearly" in plan_id:
+            from datetime import timedelta
+            expiry_date = datetime.now(timezone.utc) + timedelta(days=365)
+        else:
+            from datetime import timedelta
+            expiry_date = datetime.now(timezone.utc) + timedelta(days=30)
+        
+        # Update user membership
+        await db.users.update_one(
+            {"_id": order["user_id"]} if len(order["user_id"]) == 24 else {"id": order["user_id"]},
+            {
+                "$set": {
+                    "membership_tier": membership_tier,
+                    "membership_plan": plan_id,
+                    "membership_status": "active",
+                    "membership_expiry": expiry_date,
+                    "last_payment_id": request.razorpay_payment_id,
+                    "updated_at": datetime.now(timezone.utc)
+                }
+            }
+        )
+        
+        logger.info(f"[RAZORPAY] Payment verified: {request.razorpay_payment_id} for user {request.user_id}")
+        
+        return {
+            "success": True,
+            "message": "Payment verified successfully",
+            "membership_tier": membership_tier,
+            "expiry_date": expiry_date.isoformat()
+        }
+        
+    except razorpay.errors.SignatureVerificationError:
+        logger.error(f"[RAZORPAY] Signature verification failed for order {request.razorpay_order_id}")
+        raise HTTPException(status_code=400, detail="Payment signature verification failed")
+    except Exception as e:
+        logger.error(f"[RAZORPAY] Payment verification error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Payment verification failed: {str(e)}")
+
+
+@router.post("/webhook")
+async def handle_webhook(request: Request):
+    """Handle Razorpay webhook events"""
+    
+    try:
+        payload = await request.json()
+        event = payload.get("event")
+        
+        logger.info(f"[RAZORPAY] Webhook received: {event}")
+        
+        if event == "payment.captured":
+            payment = payload.get("payload", {}).get("payment", {}).get("entity", {})
+            order_id = payment.get("order_id")
+            payment_id = payment.get("id")
+            
+            # Update order status
+            await db.payment_orders.update_one(
+                {"order_id": order_id},
+                {
+                    "$set": {
+                        "status": "captured",
+                        "payment_id": payment_id,
+                        "captured_at": datetime.now(timezone.utc)
+                    }
+                }
+            )
+            
+        elif event == "payment.failed":
+            payment = payload.get("payload", {}).get("payment", {}).get("entity", {})
+            order_id = payment.get("order_id")
+            error = payment.get("error_description", "Unknown error")
+            
+            await db.payment_orders.update_one(
+                {"order_id": order_id},
+                {
+                    "$set": {
+                        "status": "failed",
+                        "error": error,
+                        "failed_at": datetime.now(timezone.utc)
+                    }
+                }
+            )
+            
+        return {"status": "processed"}
+        
+    except Exception as e:
+        logger.error(f"[RAZORPAY] Webhook error: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
+
+@router.get("/history/{user_id}")
+async def get_payment_history(user_id: str):
+    """Get payment history for a user"""
+    
+    orders = await db.payment_orders.find(
+        {"user_id": user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    
+    return {
+        "payments": orders,
+        "count": len(orders)
+    }
+
+
+@router.post("/upgrade")
+async def upgrade_membership(user_id: str, new_plan_id: str):
+    """Initiate membership upgrade"""
+    
+    # Get current membership
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    current_tier = user.get("membership_tier", "free")
+    
+    # Validate upgrade path
+    tier_order = {"free": 0, "essential": 1, "premium": 2}
+    new_tier = "premium" if "premium" in new_plan_id else "essential" if "essential" in new_plan_id else "free"
+    
+    if tier_order.get(new_tier, 0) <= tier_order.get(current_tier, 0):
+        raise HTTPException(status_code=400, detail="Cannot downgrade through this endpoint")
+    
+    return {
+        "can_upgrade": True,
+        "current_tier": current_tier,
+        "new_tier": new_tier,
+        "message": "Proceed to create order"
+    }
