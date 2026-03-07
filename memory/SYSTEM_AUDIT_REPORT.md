@@ -423,7 +423,7 @@ const handleServiceComplete = async (ticket) => {
 | Admin URL | `/admin` |
 | Admin Username | `aditya` |
 | Admin Password | `lola4304` |
-| Preview URL | `https://doggy-unified-os.preview.emergentagent.com` |
+| Preview URL | `https://panel-refresh-debug.preview.emergentagent.com` |
 
 ---
 
