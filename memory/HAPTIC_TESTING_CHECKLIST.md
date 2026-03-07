@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://doggy-ecommerce-test.preview.emergentagent.com/mira-demo**
+**https://rainbow-bridge-3.preview.emergentagent.com/mira-demo**
 
 ---
 

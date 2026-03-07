@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://doggy-ecommerce-test.preview.emergentagent.com
+https://rainbow-bridge-3.preview.emergentagent.com
 
 ---
 

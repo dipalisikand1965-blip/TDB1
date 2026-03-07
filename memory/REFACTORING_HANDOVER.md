@@ -229,7 +229,7 @@ useSession: sessionId, setSessionId, sessionRecovered, setSessionRecovered
 
 - **Email**: `dipali@clubconcierge.in`
 - **Password**: `lola4304`
-- **Preview URL**: `https://doggy-ecommerce-test.preview.emergentagent.com`
+- **Preview URL**: `https://rainbow-bridge-3.preview.emergentagent.com`
 
 ---
 
