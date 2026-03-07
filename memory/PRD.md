@@ -165,12 +165,12 @@ Design/Docs:
 
 | URL | What It Shows |
 |-----|---------------|
-| https://mira-memory-cards.preview.emergentagent.com/api/wrapped/share/699fa0a513e44c977327ad57 | Mystique's shareable card |
-| https://mira-memory-cards.preview.emergentagent.com/api/wrapped/welcome-card/699fa0a513e44c977327ad57 | Welcome wrapped card |
-| https://mira-memory-cards.preview.emergentagent.com/wrapped/699fa0a513e44c977327ad57 | Full 6-card viewer |
-| https://mira-memory-cards.preview.emergentagent.com/wrapped-welcome | Conversion landing page |
-| https://mira-memory-cards.preview.emergentagent.com/pet-wrapped-mystique.html | Design template |
-| https://mira-memory-cards.preview.emergentagent.com/investor-deck.html | Investor presentation |
+| https://mira-ai-soul.preview.emergentagent.com/api/wrapped/share/699fa0a513e44c977327ad57 | Mystique's shareable card |
+| https://mira-ai-soul.preview.emergentagent.com/api/wrapped/welcome-card/699fa0a513e44c977327ad57 | Welcome wrapped card |
+| https://mira-ai-soul.preview.emergentagent.com/wrapped/699fa0a513e44c977327ad57 | Full 6-card viewer |
+| https://mira-ai-soul.preview.emergentagent.com/wrapped-welcome | Conversion landing page |
+| https://mira-ai-soul.preview.emergentagent.com/pet-wrapped-mystique.html | Design template |
+| https://mira-ai-soul.preview.emergentagent.com/investor-deck.html | Investor presentation |
 
 ### Mira's AI Memory Example (Mystique)
 > "I remember the day when Mystique raced around the garden, her tail a blur, bursting with energy as she leapt into the air with a joyful happy dance at walk time... She radiated pure love, a wonderful reminder of how deeply she cherished every shared adventure with you, Dipali."
@@ -319,7 +319,7 @@ Pet Wrapped is the #1 priority. It's a Spotify Wrapped-style viral acquisition e
 
 ### 2. Test Pet Wrapped APIs
 ```bash
-API_URL=https://mira-memory-cards.preview.emergentagent.com
+API_URL=https://mira-ai-soul.preview.emergentagent.com
 
 # List all pets
 curl $API_URL/api/wrapped/admin/pets
@@ -435,12 +435,12 @@ curl -X POST $API_URL/api/wrapped/trigger-welcome/699fa0a513e44c977327ad57
 
 | Page | URL |
 |------|-----|
-| Introduction (Investor) | https://mira-memory-cards.preview.emergentagent.com/introduction.html |
-| Mystique's Pet Wrapped | https://mira-memory-cards.preview.emergentagent.com/api/wrapped/download/699fa0a513e44c977327ad57 |
-| Static Mystique HTML | https://mira-memory-cards.preview.emergentagent.com/pet-wrapped-mystique.html |
-| Complete Documentation | https://mira-memory-cards.preview.emergentagent.com/complete-documentation.html |
-| Viral Landing Page | https://mira-memory-cards.preview.emergentagent.com/wrapped-welcome |
-| Membership Page | https://mira-memory-cards.preview.emergentagent.com/membership |
+| Introduction (Investor) | https://mira-ai-soul.preview.emergentagent.com/introduction.html |
+| Mystique's Pet Wrapped | https://mira-ai-soul.preview.emergentagent.com/api/wrapped/download/699fa0a513e44c977327ad57 |
+| Static Mystique HTML | https://mira-ai-soul.preview.emergentagent.com/pet-wrapped-mystique.html |
+| Complete Documentation | https://mira-ai-soul.preview.emergentagent.com/complete-documentation.html |
+| Viral Landing Page | https://mira-ai-soul.preview.emergentagent.com/wrapped-welcome |
+| Membership Page | https://mira-ai-soul.preview.emergentagent.com/membership |
 
 ---
 
