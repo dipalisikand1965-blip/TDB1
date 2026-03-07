@@ -216,6 +216,9 @@ from realtime_notifications import sio, notification_manager, get_connection_sta
 # WhatsApp Integration
 from whatsapp_routes import router as whatsapp_router
 
+# WhatsApp Notifications Service
+from whatsapp_notifications import WhatsAppNotifications
+
 # TTS Routes (ElevenLabs)
 from tts_routes import tts_router
 
@@ -520,6 +523,20 @@ async def check_upcoming_celebrations():
                         owner_name=owner_name
                     )
                     logger.info(f"WhatsApp reminder link for {pet_name}: {whatsapp_link}")
+                    
+                    # Send actual WhatsApp message via Gupshup
+                    try:
+                        if celebration.get("occasion") == "birthday":
+                            await WhatsAppNotifications.pet_birthday_reminder(
+                                phone=owner_phone,
+                                user_name=owner_name,
+                                pet_name=pet_name,
+                                birthday_date=celebration.get("date", ""),
+                                days_until=celebration.get("days_until", 7)
+                            )
+                            logger.info(f"[WHATSAPP] Birthday reminder sent for {pet_name} to {owner_phone[:6]}***")
+                    except Exception as wa_err:
+                        logger.warning(f"[WHATSAPP] Birthday reminder failed: {wa_err}")
                 
                 # Record that we sent this reminder
                 await db.celebration_reminders.insert_one({
@@ -7638,6 +7655,23 @@ Additional Notes: {request.additional_notes or 'None'}
     
     logger.info(f"[UNIFIED FLOW] COMPLETE: Service booking {booking_id} | Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id})")
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SEND WHATSAPP BOOKING CONFIRMATION
+    # ═══════════════════════════════════════════════════════════════════════════
+    if customer_phone:
+        try:
+            await WhatsAppNotifications.service_booked(
+                phone=customer_phone,
+                user_name=customer_name,
+                pet_name=pet_name,
+                service_name=request.service_name,
+                booking_date=request.schedule.get('preferred_date', 'TBD'),
+                booking_time=request.schedule.get('preferred_time')
+            )
+            logger.info(f"[WHATSAPP] Booking confirmation sent to {customer_phone[:6]}***")
+        except Exception as wa_err:
+            logger.warning(f"[WHATSAPP] Booking confirmation failed: {wa_err}")
+    
     return {
         "success": True,
         "booking_id": booking_id,
@@ -12187,6 +12221,20 @@ async def membership_onboard(data: MembershipOnboardModel):
         }
         await db.service_desk_tickets.insert_one(ticket_doc)
         logger.info(f"[ONBOARDING] Service desk ticket created: {ticket_id} for {data.parent.email}")
+        
+        # ═══════════════════════════════════════════════════════════════════════════
+        # SEND WHATSAPP WELCOME MESSAGE
+        # ═══════════════════════════════════════════════════════════════════════════
+        if data.parent.phone or data.parent.whatsapp:
+            try:
+                phone_to_use = data.parent.whatsapp or data.parent.phone
+                await WhatsAppNotifications.welcome_new_user(
+                    phone=phone_to_use,
+                    user_name=data.parent.name
+                )
+                logger.info(f"[WHATSAPP] Welcome message sent to {phone_to_use[:6]}***")
+            except Exception as wa_err:
+                logger.warning(f"[WHATSAPP] Welcome message failed: {wa_err}")
         
         return {
             "success": True,

@@ -75,11 +75,21 @@ GUPSHUP_APP_NAME=TheDoggyCompany
 GUPSHUP_SOURCE_NUMBER=919663185747
 ```
 
+**⚠️ IMPORTANT:** The app name must match EXACTLY what is registered in the Gupshup dashboard. If messages fail with "Invalid App Details", verify the app name in the Gupshup console.
+
+**WhatsApp Notifications Now Trigger On:**
+- ✅ New user registration (welcome message)
+- ✅ Payment received confirmation
+- ✅ Membership activation
+- ✅ Service booking confirmation
+- ✅ Pet birthday reminders (7 days before)
+
 **Endpoints:**
 - `GET /api/whatsapp/status` - Check configuration status
 - `POST /api/whatsapp/webhook` - Receive incoming messages
 - `POST /api/whatsapp/gupshup/send` - Send text messages
 - `POST /api/whatsapp/gupshup/send-template` - Send template messages
+- `POST /api/whatsapp/test-notification` - Test notification types
 
 ---
 

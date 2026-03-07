@@ -1021,3 +1021,88 @@ async def send_auto_mira_reply(from_number: str, incoming_message: str, sender_n
             
     except Exception as e:
         logger.error(f"Error sending Mira auto-reply: {e}")
+
+
+
+# ==================== TEST NOTIFICATION ENDPOINT ====================
+
+class TestNotificationRequest(BaseModel):
+    phone: str
+    notification_type: str  # welcome, payment, membership, booking, birthday
+    # Optional fields based on type
+    user_name: str = "Test User"
+    amount: Optional[float] = None
+    plan_name: Optional[str] = None
+    order_id: Optional[str] = None
+    tier: Optional[str] = None
+    expires_at: Optional[str] = None
+    pet_name: Optional[str] = None
+    service_name: Optional[str] = None
+    booking_date: Optional[str] = None
+
+
+@router.post("/test-notification")
+async def test_whatsapp_notification(request: TestNotificationRequest):
+    """
+    Test endpoint to manually trigger WhatsApp notifications
+    Only for testing - requires authentication in production
+    """
+    from whatsapp_notifications import WhatsAppNotifications
+    
+    try:
+        result = None
+        
+        if request.notification_type == "welcome":
+            result = await WhatsAppNotifications.welcome_new_user(
+                phone=request.phone,
+                user_name=request.user_name
+            )
+        
+        elif request.notification_type == "payment":
+            result = await WhatsAppNotifications.payment_received(
+                phone=request.phone,
+                user_name=request.user_name,
+                amount=request.amount or 2499,
+                plan_name=request.plan_name or "Essential",
+                order_id=request.order_id or "TEST-ORDER-123"
+            )
+        
+        elif request.notification_type == "membership":
+            result = await WhatsAppNotifications.membership_activated(
+                phone=request.phone,
+                user_name=request.user_name,
+                tier=request.tier or "essential",
+                expires_at=request.expires_at or "2027-03-07T00:00:00"
+            )
+        
+        elif request.notification_type == "booking":
+            result = await WhatsAppNotifications.service_booked(
+                phone=request.phone,
+                user_name=request.user_name,
+                pet_name=request.pet_name or "Buddy",
+                service_name=request.service_name or "Grooming Session",
+                booking_date=request.booking_date or "March 15, 2026"
+            )
+        
+        elif request.notification_type == "birthday":
+            result = await WhatsAppNotifications.pet_birthday_reminder(
+                phone=request.phone,
+                user_name=request.user_name,
+                pet_name=request.pet_name or "Buddy",
+                birthday_date=request.booking_date or "March 15",
+                days_until=7
+            )
+        
+        else:
+            return {"success": False, "error": f"Unknown notification type: {request.notification_type}"}
+        
+        return {
+            "success": result.get("success", False) if result else False,
+            "notification_type": request.notification_type,
+            "phone": request.phone[:6] + "***",
+            "result": result
+        }
+        
+    except Exception as e:
+        logger.error(f"Test notification error: {e}")
+        return {"success": False, "error": str(e)}
