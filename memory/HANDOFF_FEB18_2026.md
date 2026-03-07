@@ -304,7 +304,7 @@ Test Pets:
 ## Services
 - Backend: Running on port 8001
 - Frontend: Running on port 3000
-- Preview URL: https://pet-os-v1.preview.emergentagent.com
+- Preview URL: https://chat-flow-ready.preview.emergentagent.com
 
 ---
 

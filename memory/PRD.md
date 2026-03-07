@@ -17,7 +17,7 @@ The Doggy Company is a "Pet Life Operating System" - a comprehensive platform th
 
 **URLs:**
 - **Production:** https://thedoggycompany.com
-- **Preview:** https://pet-os-v1.preview.emergentagent.com
+- **Preview:** https://chat-flow-ready.preview.emergentagent.com
 
 ---
 
@@ -269,7 +269,7 @@ When deployed to production, ALWAYS run Master Sync to populate data:
 
 ### How to Add Transformation Story
 ```bash
-curl -X POST https://pet-os-v1.preview.emergentagent.com/api/engagement/transformations \
+curl -X POST https://chat-flow-ready.preview.emergentagent.com/api/engagement/transformations \
   -H "Content-Type: application/json" \
   -d '{
     "pet_name": "Rocky",
@@ -353,7 +353,7 @@ tail -f /var/log/supervisor/frontend.out.log
 tail -f /var/log/supervisor/backend.err.log
 
 # Test API
-curl https://pet-os-v1.preview.emergentagent.com/api/products?pillar=celebrate&limit=5
+curl https://chat-flow-ready.preview.emergentagent.com/api/products?pillar=celebrate&limit=5
 
 # Check MongoDB collections
 cd /app/backend && python3 -c "

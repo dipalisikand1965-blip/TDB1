@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://pet-os-v1.preview.emergentagent.com
+https://chat-flow-ready.preview.emergentagent.com
 ```
 
 ---

@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://pet-os-v1.preview.emergentagent.com
+https://chat-flow-ready.preview.emergentagent.com
 
 ---
 

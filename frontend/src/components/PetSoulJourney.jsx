@@ -466,12 +466,12 @@ const PetSoulJourney = ({ user, pets = [], onOpenMira }) => {
           
           {/* Pet Switcher */}
           {pets.length > 1 && (
-            <div className="flex gap-2 mt-8 pt-6 border-t border-white/20 justify-center md:justify-start">
+            <div className="flex gap-2 mt-8 pt-6 border-t border-white/20 justify-center md:justify-start overflow-x-auto pb-2 scrollbar-hide">
               {pets.map((pet) => (
                 <button
                   key={pet.id}
                   onClick={() => setSelectedPet(pet)}
-                  className={`px-4 py-2 rounded-full text-sm transition-all ${
+                  className={`px-4 py-2 rounded-full text-sm transition-all whitespace-nowrap flex-shrink-0 ${
                     selectedPet?.id === pet.id
                       ? 'bg-white text-purple-700 font-semibold shadow-lg'
                       : 'bg-white/20 text-white hover:bg-white/30'

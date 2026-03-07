@@ -152,9 +152,13 @@ const PetSoulPage = () => {
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
             Pet Soul™
           </h1>
-          <p className="text-xl text-purple-200 max-w-2xl mx-auto mb-8">
-            Your pet's unique digital identity that learns, remembers, and grows — 
-            making every interaction personalized across all 14 life pillars.
+          <p className="text-xl text-purple-200 max-w-2xl mx-auto mb-4">
+            Because they can't tell us what they need — so we learn to understand.
+          </p>
+          <p className="text-lg text-purple-300/80 max-w-3xl mx-auto mb-8">
+            Pet Soul™ is your pet's evolving digital portrait. It learns their quirks, remembers their 
+            preferences, and ensures every interaction — from a groomer's touch to a vet visit — 
+            honors who they truly are.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -198,9 +202,10 @@ const PetSoulPage = () => {
               <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">What is Pet Soul™?</h2>
                 <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                  Pet Soul™ is an intelligent profile system that captures everything about your pet — 
-                  their personality, preferences, health history, and life milestones. It's a living memory 
-                  that makes your pet's experience better every time.
+                  Your pet has a unique soul — a way of being that's theirs alone. Pet Soul™ is our 
+                  promise to truly see them. It captures not just health records, but the little things 
+                  that make them who they are: the way they greet you, their favorite sleeping spot, 
+                  what makes them anxious, and what makes them light up with joy.
                 </p>
               </div>
 
@@ -209,24 +214,24 @@ const PetSoulPage = () => {
                   <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white">
                     <Brain className="w-8 h-8" />
                   </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">Intelligent Memory</h3>
-                  <p className="text-gray-600">Every interaction teaches us more about your pet, creating a smarter experience over time.</p>
+                  <h3 className="font-bold text-lg text-gray-900 mb-2">Quiet Attention</h3>
+                  <p className="text-gray-600">We learn through observation, not interrogation. Every interaction teaches us more — naturally, over time.</p>
                 </Card>
                 
                 <Card className="p-6 text-center border-2 border-pink-200 bg-pink-50/50">
                   <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-white">
                     <Heart className="w-8 h-8" />
                   </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">Personalized Care</h3>
-                  <p className="text-gray-600">From food recommendations to care schedules, everything is tailored to your pet's unique needs.</p>
+                  <h3 className="font-bold text-lg text-gray-900 mb-2">Thoughtful Care</h3>
+                  <p className="text-gray-600">From the food they eat to the hands that groom them — everything is curated to honor their individuality.</p>
                 </Card>
                 
                 <Card className="p-6 text-center border-2 border-blue-200 bg-blue-50/50">
                   <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white">
                     <Shield className="w-8 h-8" />
                   </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">Connected Ecosystem</h3>
-                  <p className="text-gray-600">One profile connects across all 14 pillars — from boarding to travel to celebrations.</p>
+                  <h3 className="font-bold text-lg text-gray-900 mb-2">One Connected Life</h3>
+                  <p className="text-gray-600">Whether they're boarding, traveling, or celebrating a birthday — their soul travels with them.</p>
                 </Card>
               </div>
             </div>
