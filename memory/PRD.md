@@ -140,6 +140,11 @@ When deployed to production, ALWAYS run Master Sync to populate data:
   - Verified: Changed service from empty pillar to "celebrate" and confirmed persistence
   - API endpoint `/api/service-box/services/{id}` working correctly
 
+- ✅ **Services Not Showing on Frontend FIXED** - Added ServiceCatalogSection to DinePage and CarePage
+  - DinePage now displays 8 Dine services (Restaurant Discovery, Reservations, etc.)
+  - CarePage now displays 8 Care services (Vet Consultations, Grooming, etc.)
+  - Services are fetched from `services_master` collection via `/api/service-catalog/services`
+
 ### UI/UX Fixes (Previous Session)
 - ✅ Mobile inbox "shaking" - Container uses min-h-screen + 100dvh
 - ✅ Pet name overflow - Pet switcher uses overflow-x-auto  
