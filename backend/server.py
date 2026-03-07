@@ -8592,6 +8592,13 @@ async def get_product_detail(product_id: str):
         )
     
     if not product:
+        # 🎯 Try breed_products collection (PICKS feature - personalized breed products)
+        product = await db.breed_products.find_one(
+            {"id": product_id},
+            {"_id": 0}
+        )
+    
+    if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
     return {"product": product}
