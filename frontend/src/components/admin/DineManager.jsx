@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { toast } from '../../hooks/use-toast';
 import { API_URL } from '../../utils/api';
 import PillarServicesTab from './PillarServicesTab';
+import PillarExperiencesTab from './PillarExperiencesTab';
 
 
 const DineManager = ({ credentials }) => {
@@ -733,6 +734,14 @@ const DineManager = ({ credentials }) => {
           className={activeTab === 'services' ? 'bg-teal-500 hover:bg-teal-600' : ''}
         >
           <Briefcase className="w-4 h-4 mr-2" /> Services
+        </Button>
+        <Button 
+          variant={activeTab === 'experiences' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('experiences')}
+          className={activeTab === 'experiences' ? 'bg-indigo-500 hover:bg-indigo-600' : ''}
+          data-testid="dine-tab-experiences"
+        >
+          <Sparkles className="w-4 h-4 mr-2" /> Experiences
         </Button>
         <Button 
           variant={activeTab === 'settings' ? 'default' : 'ghost'}
@@ -2209,6 +2218,15 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
           pillarName="Dine"
           pillarIcon="🍽️"
           pillarColor="bg-orange-500"
+        />
+      )}
+      
+      {/* ============ EXPERIENCES TAB ============ */}
+      {activeTab === 'experiences' && (
+        <PillarExperiencesTab 
+          pillar="dine"
+          credentials={credentials}
+          accentColor="orange"
         />
       )}
       
