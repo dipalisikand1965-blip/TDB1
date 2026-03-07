@@ -19,15 +19,18 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, ShoppingCart, MessageCircle, Heart, ChevronRight, 
-  Package, Clock, RefreshCw, AlertCircle, Check, Star
+  Package, Clock, RefreshCw, AlertCircle, Check, Star, X, Plus, Eye
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import { toast } from '../hooks/use-toast';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -87,93 +90,248 @@ const FALLBACK_PICKS_BY_PILLAR = {
 };
 
 /**
- * ProductPickCard - For catalogue products (direct purchase)
+ * Product Detail Modal - Shows before adding to cart
  */
-const ProductPickCard = ({ pick, pet, onAddToCart }) => {
+const ProductDetailModal = ({ product, pet, pillar, onClose, onAddToCart }) => {
   const [isAdding, setIsAdding] = useState(false);
   
   const handleAdd = async () => {
     setIsAdding(true);
-    await onAddToCart(pick);
+    await onAddToCart(product);
     setIsAdding(false);
+    onClose();
   };
   
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) onClose();
+  };
+  
+  const hasPrice = product.price && product.price > 0;
+  
+  return createPortal(
+    <div 
+      className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[9999]"
+      onClick={handleBackdropClick}
     >
-      {/* Product Image */}
-      <div className="aspect-square bg-gray-50 relative overflow-hidden">
-        {pick.image_url || pick.image ? (
-          <img 
-            src={pick.image_url || pick.image} 
-            alt={pick.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Package className="w-12 h-12 text-gray-300" />
-          </div>
-        )}
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl relative"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close Button */}
+        <button 
+          className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+          onClick={onClose}
+        >
+          <X className="w-5 h-5 text-gray-600" />
+        </button>
         
-        {/* Badges */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
-          {pick.seasonal && (
-            <span className="px-2 py-0.5 bg-orange-500 text-white text-[10px] font-medium rounded-full">
-              Seasonal
-            </span>
+        {/* Product Image */}
+        <div className="aspect-square bg-gray-100 relative overflow-hidden">
+          {product.image_url || product.image ? (
+            <img 
+              src={product.image_url || product.image} 
+              alt={product.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-100 to-pink-100">
+              <Package className="w-16 h-16 text-purple-300" />
+            </div>
           )}
-          {pick.trending && (
-            <span className="px-2 py-0.5 bg-pink-500 text-white text-[10px] font-medium rounded-full">
-              Trending
-            </span>
-          )}
-          {pick.new && (
-            <span className="px-2 py-0.5 bg-green-500 text-white text-[10px] font-medium rounded-full">
-              New
-            </span>
-          )}
-        </div>
-      </div>
-      
-      {/* Content */}
-      <div className="p-3">
-        <h4 className="font-medium text-gray-900 text-sm line-clamp-2 mb-1">
-          {pick.name}
-        </h4>
-        
-        {/* Why it fits - Soul-aware */}
-        {pick.why_it_fits && (
-          <p className="text-xs text-purple-600 mb-2 line-clamp-2">
-            {pick.why_it_fits}
-          </p>
-        )}
-        
-        {/* Price & Action */}
-        <div className="flex items-center justify-between mt-2">
-          <span className="font-semibold text-gray-900">
-            {pick.price ? `₹${pick.price}` : 'Ask Mira'}
-          </span>
           
-          <button
-            onClick={handleAdd}
-            disabled={isAdding}
-            className="flex items-center gap-1 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded-full transition-colors disabled:opacity-50"
-          >
-            {isAdding ? (
-              <RefreshCw className="w-3 h-3 animate-spin" />
-            ) : (
-              <>
-                <ShoppingCart className="w-3 h-3" />
-                <span>Add</span>
-              </>
+          {/* Badges */}
+          <div className="absolute top-3 left-3 flex flex-col gap-2">
+            {product.seasonal && (
+              <Badge className="bg-orange-500 text-white">Seasonal</Badge>
             )}
-          </button>
+            {product.trending && (
+              <Badge className="bg-pink-500 text-white">Trending</Badge>
+            )}
+            {product.new && (
+              <Badge className="bg-green-500 text-white">New</Badge>
+            )}
+          </div>
         </div>
-      </div>
-    </motion.div>
+        
+        {/* Content */}
+        <div className="p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h2>
+          
+          {/* Description */}
+          {product.description && (
+            <p className="text-gray-600 text-sm mb-4">{product.description}</p>
+          )}
+          
+          {/* Why it fits - Soul-aware */}
+          {product.why_it_fits && (
+            <div className="bg-purple-50 rounded-lg p-3 mb-4">
+              <p className="text-sm text-purple-700 font-medium flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                Why it's perfect for {pet?.name || 'your pet'}
+              </p>
+              <p className="text-sm text-purple-600 mt-1">{product.why_it_fits}</p>
+            </div>
+          )}
+          
+          {/* Additional details from mira_hint */}
+          {product.mira_hint && (
+            <p className="text-xs text-gray-500 italic mb-4">✨ {product.mira_hint}</p>
+          )}
+          
+          {/* Features if available */}
+          {product.features && product.features.length > 0 && (
+            <div className="mb-4">
+              <h4 className="text-sm font-semibold text-gray-700 mb-2">Features</h4>
+              <ul className="space-y-1">
+                {product.features.slice(0, 4).map((feature, idx) => (
+                  <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {/* Price & Add to Cart */}
+          <div className="flex items-center justify-between pt-4 border-t">
+            <div>
+              {hasPrice ? (
+                <>
+                  <p className="text-xs text-gray-500">Price</p>
+                  <p className="text-2xl font-bold text-gray-900">₹{product.price.toLocaleString()}</p>
+                </>
+              ) : (
+                <p className="text-sm text-purple-600 font-medium">Ask Mira for pricing</p>
+              )}
+            </div>
+            <Button
+              onClick={handleAdd}
+              disabled={isAdding}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-6"
+            >
+              {isAdding ? (
+                <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+              ) : (
+                <Plus className="w-4 h-4 mr-2" />
+              )}
+              {hasPrice ? 'Add to Cart' : 'Request Quote'}
+            </Button>
+          </div>
+        </div>
+      </motion.div>
+    </div>,
+    document.body
+  );
+};
+
+/**
+ * ProductPickCard - For catalogue products (opens modal before purchase)
+ */
+const ProductPickCard = ({ pick, pet, pillar, onAddToCart }) => {
+  const [showModal, setShowModal] = useState(false);
+  
+  const hasPrice = pick.price && pick.price > 0;
+  
+  return (
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+        onClick={() => setShowModal(true)}
+        data-testid={`catalogue-product-${pick.id}`}
+      >
+        {/* Product Image */}
+        <div className="aspect-square bg-gray-50 relative overflow-hidden">
+          {pick.image_url || pick.image ? (
+            <img 
+              src={pick.image_url || pick.image} 
+              alt={pick.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Package className="w-12 h-12 text-gray-300" />
+            </div>
+          )}
+          
+          {/* Badges */}
+          <div className="absolute top-2 left-2 flex flex-col gap-1">
+            {pick.seasonal && (
+              <span className="px-2 py-0.5 bg-orange-500 text-white text-[10px] font-medium rounded-full">
+                Seasonal
+              </span>
+            )}
+            {pick.trending && (
+              <span className="px-2 py-0.5 bg-pink-500 text-white text-[10px] font-medium rounded-full">
+                Trending
+              </span>
+            )}
+            {pick.new && (
+              <span className="px-2 py-0.5 bg-green-500 text-white text-[10px] font-medium rounded-full">
+                New
+              </span>
+            )}
+          </div>
+          
+          {/* View Details Overlay */}
+          <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 hover:opacity-100">
+            <span className="bg-white/90 px-3 py-1.5 rounded-full text-xs font-medium text-gray-700 flex items-center gap-1">
+              <Eye className="w-3 h-3" /> View Details
+            </span>
+          </div>
+        </div>
+        
+        {/* Content */}
+        <div className="p-3">
+          <h4 className="font-medium text-gray-900 text-sm line-clamp-2 mb-1">
+            {pick.name}
+          </h4>
+          
+          {/* Why it fits - Soul-aware */}
+          {pick.why_it_fits && (
+            <p className="text-xs text-purple-600 mb-2 line-clamp-2">
+              {pick.why_it_fits}
+            </p>
+          )}
+          
+          {/* Price & View Button */}
+          <div className="flex items-center justify-between mt-2">
+            {hasPrice ? (
+              <span className="font-semibold text-gray-900">
+                ₹{pick.price.toLocaleString()}
+              </span>
+            ) : (
+              <span className="text-xs text-purple-600">Ask Mira</span>
+            )}
+            
+            <button
+              className="flex items-center gap-1 px-3 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs font-medium rounded-full transition-colors"
+            >
+              <Eye className="w-3 h-3" />
+              <span>View</span>
+            </button>
+          </div>
+        </div>
+      </motion.div>
+      
+      {/* Modal */}
+      <AnimatePresence>
+        {showModal && (
+          <ProductDetailModal
+            product={pick}
+            pet={pet}
+            pillar={pillar}
+            onClose={() => setShowModal(false)}
+            onAddToCart={onAddToCart}
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
@@ -469,6 +627,7 @@ const PillarPicksSection = ({
                 key={pick.id || index}
                 pick={pick}
                 pet={pet}
+                pillar={pillar}
                 onAddToCart={handleAddToCart}
               />
             ))}
