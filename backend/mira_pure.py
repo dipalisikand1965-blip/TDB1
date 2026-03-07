@@ -152,9 +152,9 @@ async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
         if prefs.get("favorite_activities"):
             context_parts.append(f"Loves: {', '.join(prefs.get('favorite_activities', [])[:5])}")
         if prefs.get("favorite_foods"):
-            context_parts.append(f"Favorite foods: {', '.join(prefs.get('favorite_foods', [])[:3])}")
+            context_parts.append(f"Favourite foods: {', '.join(prefs.get('favorite_foods', [])[:3])}")
         if prefs.get("favorite_toys"):
-            context_parts.append(f"Favorite toys: {', '.join(prefs.get('favorite_toys', [])[:3])}")
+            context_parts.append(f"Favourite toys: {', '.join(prefs.get('favorite_toys', [])[:3])}")
         
         # Dislikes
         dislikes = soul.get("dislikes", [])

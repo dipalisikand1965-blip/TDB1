@@ -430,7 +430,7 @@ const MiraPage = () => {
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "I apologize, but I'm having trouble connecting. Please try again.",
+        content: "I apologise, but I'm having trouble connecting. Please try again.",
         timestamp: new Date().toISOString()
       }]);
     } finally {

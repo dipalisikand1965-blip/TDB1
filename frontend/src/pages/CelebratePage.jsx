@@ -841,7 +841,7 @@ const CelebratePage = () => {
               { emoji: '🥜', label: 'Allergy Safe', filter: 'allergy-free', desc: 'No wheat, no nuts' },
               { emoji: '💰', label: 'Under ₹500', filter: 'budget', desc: 'Sweet savings' },
               { emoji: '⚡', label: 'Same Day', filter: 'same-day', desc: 'Order now, get today' },
-              { emoji: '🏆', label: 'Bestsellers', filter: 'bestsellers', desc: 'Fan favorites' },
+              { emoji: '🏆', label: 'Bestsellers', filter: 'bestsellers', desc: 'Fan favourites' },
               { emoji: '🐱', label: 'Cat Cakes', filter: 'cat-treats', desc: 'Feline friends' },
               { emoji: '✨', label: 'Premium', filter: 'premium', desc: 'Luxury treats' },
             ].map((item) => (

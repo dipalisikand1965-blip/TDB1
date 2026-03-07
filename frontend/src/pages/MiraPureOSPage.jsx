@@ -171,7 +171,7 @@ const getPillarPicks = (pillar, petName, allergies = []) => {
       { id: 'd2', name: 'Birthday Cake', desc: isChickenFree ? 'Chicken-free, dog-safe' : 'Dog-safe celebration cake', price: '₹650', icon: '🎂', type: 'product' },
       { id: 'd3', name: 'Dental Treats', desc: 'Keeps teeth clean naturally', price: '₹320/pack', icon: '🦷', type: 'product' },
       { id: 'd4', name: 'Freeze-dried Treats', desc: 'Single ingredient, healthy', price: '₹480', icon: '🍖', type: 'product' },
-      { id: 'd5', name: 'Fresh Meal Plan', desc: 'Customized fresh meals delivered', price: 'From ₹200/meal', icon: '🥗', type: 'service' },
+      { id: 'd5', name: 'Fresh Meal Plan', desc: 'Customised fresh meals delivered', price: 'From ₹200/meal', icon: '🥗', type: 'service' },
     ],
     care: [
       { id: 'care1', name: 'Dog Walking', desc: 'Professional walker for daily walks', price: '₹300/walk', icon: '🚶', type: 'service' },

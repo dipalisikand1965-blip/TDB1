@@ -89,7 +89,7 @@ const PILLAR_MESSAGES = {
       `I'll help you choose, not overwhelm you`,
       `💬 Expert advice for ${name}'s needs`,
       `🩺 ${name}'s health questions answered`,
-      `📋 Personalized guidance for ${name}`
+      `📋 Personalised guidance for ${name}`
     ],
     tagline: 'When clarity helps before deciding'
   },
@@ -106,7 +106,7 @@ const PILLAR_MESSAGES = {
     messages: (name, breed) => [
       `You shouldn't have to think about this`,
       `📄 ${name}'s documents, sorted!`,
-      `✅ Keep ${name}'s records organized`,
+      `✅ Keep ${name}'s records organised`,
       `📋 Hassle-free paperwork for ${name}`
     ],
     tagline: 'Handled quietly, without stress'
@@ -134,7 +134,7 @@ const PILLAR_MESSAGES = {
       `Based on what I know so far`,
       `✨ Handpicked just for ${name}!`,
       `💕 We know what ${name} loves`,
-      `🎯 Personalized picks for ${name}`
+      `🎯 Personalised picks for ${name}`
     ],
     tagline: 'Curated with love for {name}'
   },

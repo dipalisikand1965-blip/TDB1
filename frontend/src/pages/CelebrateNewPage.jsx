@@ -534,7 +534,7 @@ const BuildBoxCTA = ({ onBuildBox }) => {
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-bold text-gray-900">Build Your Own Hamper</h3>
-          <p className="text-sm text-gray-600 mt-0.5">Customize with cakes, treats & accessories!</p>
+          <p className="text-sm text-gray-600 mt-0.5">Customise with cakes, treats & accessories!</p>
         </div>
         <Button
           onClick={() => {
