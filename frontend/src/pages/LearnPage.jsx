@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -566,8 +567,21 @@ const LearnPage = () => {
                     </div>
                   ) : askMiraResponse ? (
                     <div>
-                      <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap">
-                        {askMiraResponse.answer}
+                      <div className="prose prose-sm max-w-none text-gray-700">
+                        <ReactMarkdown
+                          components={{
+                            p: ({children}) => <p className="mb-3 last:mb-0">{children}</p>,
+                            strong: ({children}) => <strong className="font-semibold text-gray-900">{children}</strong>,
+                            ul: ({children}) => <ul className="list-disc list-inside mb-3 space-y-1">{children}</ul>,
+                            ol: ({children}) => <ol className="list-decimal list-inside mb-3 space-y-1">{children}</ol>,
+                            li: ({children}) => <li className="text-gray-700">{children}</li>,
+                            h1: ({children}) => <h1 className="text-lg font-bold mb-2">{children}</h1>,
+                            h2: ({children}) => <h2 className="text-base font-bold mb-2">{children}</h2>,
+                            h3: ({children}) => <h3 className="text-sm font-bold mb-2">{children}</h3>,
+                          }}
+                        >
+                          {askMiraResponse.answer}
+                        </ReactMarkdown>
                       </div>
                       
                       {/* Related Content */}
