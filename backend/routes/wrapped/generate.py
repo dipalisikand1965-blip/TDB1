@@ -471,3 +471,407 @@ def get_philosophy_quote(pet: dict) -> str:
         return "A dog is not in your life.\nYou are in theirs.\n\nThey knew that.\nThey lived it completely."
     else:
         return "A dog is not in your life.\nYou are in theirs.\n\nAnd this year, they were truly known."
+
+
+
+# ============================================
+# DOWNLOADABLE HTML GENERATION
+# ============================================
+
+from fastapi.responses import HTMLResponse
+
+@router.get("/download/{pet_id}", response_class=HTMLResponse)
+async def download_pet_wrapped(pet_id: str, year: Optional[int] = None):
+    """
+    Generate a downloadable HTML Pet Wrapped for any pet.
+    Returns a beautiful, self-contained HTML file with all real data.
+    """
+    # Get the wrapped data first
+    wrapped_data = await generate_pet_wrapped(pet_id, year)
+    
+    cards = wrapped_data.get("cards", {})
+    cover = cards.get("cover", {})
+    soul_score = cards.get("soul_score", {})
+    mira_moments = cards.get("mira_moments", {})
+    legacy = cards.get("legacy", {})
+    pillars = cards.get("pillars", {})
+    closing = cards.get("closing", {})
+    
+    pet_name = wrapped_data.get("pet_name", "Pet")
+    year = wrapped_data.get("year", datetime.now().year)
+    
+    # Get AI memory if available
+    try:
+        memory_doc = db.pet_wrapped_memories.find_one({"pet_id": pet_id})
+        ai_memory = memory_doc.get("memory", "") if memory_doc else ""
+    except:
+        ai_memory = ""
+    
+    if not ai_memory:
+        ai_memory = f"Every moment with {pet_name} was a gift. The way they looked at you, the joy they brought to ordinary days."
+    
+    # Build pillar rows HTML
+    pillar_rows = ""
+    pillar_icons = {
+        "celebrate": ("🎉", "#F0C060", "rgba(201,151,58,0.15)"),
+        "dine": ("🍽️", "#6BCB8B", "rgba(45,122,74,0.15)"),
+        "care": ("💊", "#E8A0B0", "rgba(196,96,122,0.15)"),
+        "advisory": ("👨‍⚕️", "#A87ADB", "rgba(75,38,128,0.2)"),
+        "travel": ("✈️", "#87CEEB", "rgba(135,206,235,0.15)"),
+        "learn": ("📚", "#C0C8D8", "rgba(201,151,58,0.1)"),
+        "enjoy": ("🎮", "#FFB6C1", "rgba(255,182,193,0.15)"),
+        "farewell": ("🌈", "#E8A0B0", "rgba(196,96,122,0.15)"),
+        "paperwork": ("📋", "#C0C8D8", "rgba(136,146,164,0.15)"),
+        "shop": ("🛒", "#F0C060", "rgba(201,151,58,0.15)"),
+    }
+    
+    pillars_explored = mira_moments.get("pillars_explored", {})
+    sorted_pillars = sorted(pillars_explored.items(), key=lambda x: x[1], reverse=True)[:5]
+    max_count = sorted_pillars[0][1] if sorted_pillars else 1
+    
+    for pillar, count in sorted_pillars:
+        icon, color, bg = pillar_icons.get(pillar.lower(), ("📌", "#C0C8D8", "rgba(136,146,164,0.15)"))
+        width = int((count / max_count) * 100)
+        pillar_rows += f'''
+        <div class="pillar-row">
+          <div class="pillar-icon" style="background:{bg};">{icon}</div>
+          <div class="pillar-name">{pillar.capitalize()}</div>
+          <div class="pillar-bar-wrap"><div class="pillar-bar" style="width:{width}%; background:linear-gradient(90deg,{color}80,{color});"></div></div>
+          <div class="pillar-val" style="color:{color};">{count}</div>
+        </div>'''
+    
+    # Build family HTML
+    family_html = ""
+    babies = legacy.get("babies", [])
+    if babies:
+        for baby in babies[:5]:
+            family_html += f'<span class="m-name">{baby.get("name", "")}</span>'
+    
+    pet_friends = legacy.get("pet_friends", [])
+    friends_html = ""
+    if pet_friends:
+        for i, friend in enumerate(pet_friends[:2]):
+            role = "Best friend" if i == 0 else "Playmate"
+            friends_html += f'''
+            <div class="parent">
+              <div class="parent-name">{friend}</div>
+              <div class="parent-role">{role}</div>
+            </div>'''
+    
+    # Rainbow bridge indicator
+    rainbow_bridge = cover.get("rainbow_bridge", False)
+    memorial_text = "In loving memory 🌈" if rainbow_bridge else f"Pet Wrapped {year}"
+    breed_suffix = " · In Loving Memory" if rainbow_bridge else ""
+    
+    # Soul journey HTML
+    journey = soul_score.get("journey", [])
+    journey_html = ""
+    for i, step in enumerate(journey):
+        active = "active" if i == len(journey) - 1 else ""
+        journey_html += f'''
+        <div class="j-step">
+          <div class="j-num {active}">{int(step.get("score", 0))}</div>
+          <div class="j-label">{step.get("label", "")}</div>
+        </div>'''
+        if i < len(journey) - 1:
+            journey_html += '<div class="j-arrow">→</div>'
+    
+    # All pillars list
+    all_pillars = list(pillars_explored.keys())[:12]
+    pillars_list_text = " · ".join([p.capitalize() for p in all_pillars])
+    
+    total_interactions = sum(pillars_explored.values())
+    
+    html = f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pet Wrapped · {pet_name} · {year}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  :root {{
+    --deep: #120826; --purple: #4B2680; --violet: #7B4DB5;
+    --gold: #C9973A; --goldL: #F0C060; --rose: #C4607A;
+    --roseL: #E8A0B0; --cream: #FAF7F2; --mist: #8892A4; --white: #FFFFFF;
+  }}
+  body {{
+    background: #0a0618; font-family: 'DM Sans', sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 40px 20px 80px; gap: 0;
+  }}
+  .site-header {{ text-align: center; margin-bottom: 60px; animation: fadeUp 1s ease both; }}
+  .site-header .brand {{ font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 5px; color: var(--gold); text-transform: uppercase; margin-bottom: 12px; }}
+  .site-header h1 {{ font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 6vw, 52px); font-weight: 300; color: var(--white); letter-spacing: 2px; }}
+  .site-header h1 em {{ font-style: italic; color: var(--goldL); }}
+  .site-header .sub {{ font-size: 13px; color: var(--mist); margin-top: 10px; letter-spacing: 1px; }}
+  .cards-row {{ display: flex; flex-wrap: wrap; justify-content: center; gap: 32px; max-width: 1400px; width: 100%; }}
+  .card {{ width: 390px; height: 844px; border-radius: 32px; position: relative; overflow: hidden; flex-shrink: 0; box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06); animation: fadeUp 0.8s ease both; }}
+  .card:nth-child(2) {{ animation-delay: 0.15s; }} .card:nth-child(3) {{ animation-delay: 0.3s; }}
+  .card:nth-child(4) {{ animation-delay: 0.45s; }} .card:nth-child(5) {{ animation-delay: 0.6s; }} .card:nth-child(6) {{ animation-delay: 0.75s; }}
+  .card-cover {{ background: var(--deep); }}
+  .card-cover .bg-orb {{ position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; }}
+  .card-cover .orb1 {{ width: 360px; height: 360px; background: #4B2680; top: -80px; left: -80px; }}
+  .card-cover .orb2 {{ width: 300px; height: 300px; background: #C4607A; bottom: 60px; right: -60px; opacity: 0.35; }}
+  .card-cover .content {{ position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; padding: 48px 36px 40px; }}
+  .card-cover .tag {{ font-size: 10px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; font-weight: 500; }}
+  .card-cover .year {{ font-family: 'Cormorant Garamond', serif; font-size: 120px; font-weight: 300; line-height: 1; color: rgba(255,255,255,0.06); margin-top: -8px; letter-spacing: -4px; }}
+  .card-cover .name-block {{ margin-top: auto; }}
+  .card-cover .paw {{ font-size: 28px; margin-bottom: 12px; }}
+  .card-cover .pet-name {{ font-family: 'Cormorant Garamond', serif; font-size: 64px; font-weight: 400; line-height: 1; color: var(--white); letter-spacing: 1px; }}
+  .card-cover .pet-name em {{ font-style: italic; color: var(--goldL); }}
+  .card-cover .pet-breed {{ font-size: 13px; color: var(--roseL); letter-spacing: 2px; text-transform: uppercase; margin-top: 8px; }}
+  .card-cover .divider {{ width: 48px; height: 1px; background: var(--gold); margin: 24px 0; }}
+  .card-cover .cover-line {{ font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.7); line-height: 1.5; }}
+  .card-cover .bottom-brand {{ margin-top: 32px; font-size: 10px; letter-spacing: 3px; color: var(--mist); text-transform: uppercase; }}
+  .card-soul {{ background: linear-gradient(160deg, #1a0a2e 0%, #2d1250 50%, #1a0a2e 100%); }}
+  .card-soul .gold-bar {{ position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }}
+  .card-soul .content {{ position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; padding: 48px 36px 40px; }}
+  .card-soul .section-label {{ font-size: 10px; letter-spacing: 4px; color: var(--violet); text-transform: uppercase; font-weight: 500; }}
+  .card-soul .section-title {{ font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 400; color: var(--white); line-height: 1.1; margin-top: 8px; }}
+  .card-soul .section-title em {{ font-style: italic; color: var(--goldL); }}
+  .card-soul .score-arc {{ margin: 36px auto 0; position: relative; width: 260px; height: 260px; }}
+  .card-soul .score-center {{ position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }}
+  .card-soul .score-num {{ font-family: 'Cormorant Garamond', serif; font-size: 72px; font-weight: 300; color: var(--white); line-height: 1; }}
+  .card-soul .score-label {{ font-size: 11px; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-top: 4px; }}
+  .card-soul .journey {{ margin-top: 32px; display: flex; align-items: center; gap: 12px; justify-content: center; }}
+  .card-soul .j-step {{ text-align: center; }}
+  .card-soul .j-num {{ font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 400; color: var(--mist); }}
+  .card-soul .j-num.active {{ color: var(--goldL); }}
+  .card-soul .j-label {{ font-size: 10px; color: var(--mist); margin-top: 2px; }}
+  .card-soul .j-arrow {{ color: var(--gold); font-size: 20px; }}
+  .card-soul .soul-quote {{ margin-top: auto; font-family: 'Cormorant Garamond', serif; font-size: 17px; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.65); line-height: 1.6; border-left: 2px solid var(--gold); padding-left: 16px; }}
+  .card-soul .bottom-brand {{ margin-top: 20px; font-size: 10px; letter-spacing: 3px; color: var(--mist); text-transform: uppercase; }}
+  .card-mira {{ background: #0d0520; }}
+  .card-mira .rose-glow {{ position: absolute; bottom: -100px; left: 50%; transform: translateX(-50%); width: 400px; height: 400px; background: radial-gradient(circle, rgba(196,96,122,0.25) 0%, transparent 70%); border-radius: 50%; }}
+  .card-mira .content {{ position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; padding: 48px 36px 40px; }}
+  .card-mira .section-label {{ font-size: 10px; letter-spacing: 4px; color: var(--rose); text-transform: uppercase; font-weight: 500; }}
+  .card-mira .section-title {{ font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 400; color: var(--white); line-height: 1.1; margin-top: 8px; }}
+  .card-mira .mira-stats {{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 36px; }}
+  .card-mira .stat-box {{ background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px 16px; }}
+  .card-mira .stat-box.full {{ grid-column: 1 / -1; }}
+  .card-mira .stat-num {{ font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300; color: var(--roseL); line-height: 1; }}
+  .card-mira .stat-unit {{ font-size: 14px; color: var(--mist); margin-top: 2px; }}
+  .card-mira .stat-detail {{ font-size: 11px; color: var(--mist); margin-top: 8px; line-height: 1.4; }}
+  .card-mira .memory-card {{ margin-top: 24px; background: linear-gradient(135deg, rgba(196,96,122,0.15), rgba(75,38,128,0.15)); border: 1px solid rgba(196,96,122,0.25); border-radius: 20px; padding: 24px; }}
+  .card-mira .memory-label {{ font-size: 9px; letter-spacing: 3px; color: var(--rose); text-transform: uppercase; margin-bottom: 10px; }}
+  .card-mira .memory-text {{ font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic; font-weight: 300; color: var(--white); line-height: 1.6; }}
+  .card-mira .bottom-brand {{ margin-top: auto; padding-top: 24px; font-size: 10px; letter-spacing: 3px; color: var(--mist); text-transform: uppercase; }}
+  .card-babies {{ background: linear-gradient(180deg, #0f1a0f 0%, #0a1208 100%); }}
+  .card-babies .green-glow {{ position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(45,122,74,0.3) 0%, transparent 70%); }}
+  .card-babies .content {{ position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; padding: 48px 36px 40px; }}
+  .card-babies .section-label {{ font-size: 10px; letter-spacing: 4px; color: #6BCB8B; text-transform: uppercase; font-weight: 500; }}
+  .card-babies .section-title {{ font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 400; color: var(--white); line-height: 1.1; margin-top: 8px; }}
+  .card-babies .section-title em {{ font-style: italic; color: #A8E6BE; }}
+  .card-babies .m-squad {{ margin-top: 32px; display: flex; flex-wrap: wrap; gap: 10px; }}
+  .card-babies .m-name {{ font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; font-style: italic; color: var(--white); background: rgba(255,255,255,0.05); border: 1px solid rgba(107,203,139,0.2); border-radius: 100px; padding: 6px 18px; }}
+  .card-babies .parents-block {{ margin-top: 32px; background: rgba(255,255,255,0.03); border: 1px solid rgba(107,203,139,0.15); border-radius: 20px; padding: 24px; }}
+  .card-babies .parents-label {{ font-size: 9px; letter-spacing: 3px; color: #6BCB8B; text-transform: uppercase; margin-bottom: 16px; }}
+  .card-babies .parents-row {{ display: flex; gap: 24px; }}
+  .card-babies .parent {{ flex: 1; }}
+  .card-babies .parent-name {{ font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400; color: var(--white); }}
+  .card-babies .parent-role {{ font-size: 11px; color: var(--mist); margin-top: 2px; }}
+  .card-babies .legacy-line {{ margin-top: auto; font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.5); line-height: 1.6; border-left: 2px solid #6BCB8B; padding-left: 16px; }}
+  .card-babies .bottom-brand {{ margin-top: 20px; font-size: 10px; letter-spacing: 3px; color: var(--mist); text-transform: uppercase; }}
+  .card-pillars {{ background: #0c0818; }}
+  .card-pillars .content {{ position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; padding: 48px 36px 40px; }}
+  .card-pillars .section-label {{ font-size: 10px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; font-weight: 500; }}
+  .card-pillars .section-title {{ font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 400; color: var(--white); line-height: 1.1; margin-top: 8px; }}
+  .card-pillars .pillar-list {{ margin-top: 32px; display: flex; flex-direction: column; gap: 12px; }}
+  .card-pillars .pillar-row {{ display: flex; align-items: center; gap: 14px; }}
+  .card-pillars .pillar-icon {{ width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }}
+  .card-pillars .pillar-name {{ flex: 1; font-size: 14px; color: var(--white); font-weight: 400; }}
+  .card-pillars .pillar-bar-wrap {{ flex: 2; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }}
+  .card-pillars .pillar-bar {{ height: 100%; border-radius: 3px; }}
+  .card-pillars .pillar-val {{ font-size: 12px; color: var(--mist); width: 32px; text-align: right; }}
+  .card-pillars .total-treats {{ margin-top: 28px; background: linear-gradient(135deg, rgba(201,151,58,0.12), rgba(75,38,128,0.1)); border: 1px solid rgba(201,151,58,0.2); border-radius: 20px; padding: 20px 24px; display: flex; align-items: center; gap: 16px; }}
+  .card-pillars .treat-num {{ font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--goldL); line-height: 1; }}
+  .card-pillars .treat-text {{ font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.5; }}
+  .card-pillars .treat-text strong {{ color: var(--goldL); display: block; font-weight: 500; }}
+  .card-pillars .bottom-brand {{ margin-top: auto; padding-top: 20px; font-size: 10px; letter-spacing: 3px; color: var(--mist); text-transform: uppercase; }}
+  .card-closing {{ background: var(--deep); overflow: hidden; }}
+  .card-closing .bg {{ position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 60%, rgba(196,96,122,0.2) 0%, transparent 60%), radial-gradient(ellipse at 70% 20%, rgba(75,38,128,0.3) 0%, transparent 60%); }}
+  .card-closing .large-text {{ position: absolute; font-family: 'Cormorant Garamond', serif; font-size: 200px; font-weight: 300; font-style: italic; color: rgba(255,255,255,0.025); line-height: 1; letter-spacing: -8px; bottom: -20px; left: -10px; white-space: nowrap; }}
+  .card-closing .content {{ position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; padding: 48px 36px 40px; justify-content: space-between; }}
+  .card-closing .top-tag {{ font-size: 10px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; font-weight: 500; }}
+  .card-closing .main-quote {{ font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; font-style: italic; color: var(--white); line-height: 1.35; }}
+  .card-closing .main-quote em {{ color: var(--goldL); font-style: italic; }}
+  .card-closing .attribution {{ font-size: 12px; color: var(--rose); letter-spacing: 1px; margin-top: 16px; }}
+  .card-closing .share-block {{ background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 24px; }}
+  .card-closing .share-label {{ font-size: 10px; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; margin-bottom: 12px; }}
+  .card-closing .share-btn {{ display: inline-flex; align-items: center; gap: 8px; background: var(--gold); color: var(--deep); font-size: 13px; font-weight: 500; letter-spacing: 0.5px; padding: 12px 24px; border-radius: 100px; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; margin-right: 8px; margin-bottom: 8px; }}
+  .card-closing .share-btn:hover {{ background: var(--goldL); }}
+  .card-closing .cta-text {{ font-size: 12px; color: var(--mist); margin-top: 12px; line-height: 1.5; }}
+  .card-closing .cta-text a {{ color: var(--roseL); text-decoration: none; border-bottom: 1px solid rgba(232,160,176,0.3); }}
+  .card-closing .bottom-brand {{ font-size: 10px; letter-spacing: 3px; color: rgba(255,255,255,0.25); text-transform: uppercase; text-align: center; }}
+  .site-footer {{ margin-top: 72px; text-align: center; animation: fadeUp 1s ease 0.8s both; }}
+  .site-footer p {{ font-family: 'Cormorant Garamond', serif; font-size: 16px; font-style: italic; color: rgba(255,255,255,0.35); line-height: 1.6; }}
+  .site-footer .footer-brand {{ font-size: 10px; letter-spacing: 3px; color: var(--mist); text-transform: uppercase; margin-top: 16px; }}
+  @keyframes fadeUp {{ from {{ opacity: 0; transform: translateY(24px); }} to {{ opacity: 1; transform: translateY(0); }} }}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">The Doggy Company · Pet Wrapped</div>
+  <h1><em>{pet_name}'s</em> Year</h1>
+  <p class="sub">{memorial_text}</p>
+</header>
+
+<div class="cards-row">
+
+  <!-- CARD 1: COVER -->
+  <div class="card card-cover">
+    <div class="bg-orb orb1"></div>
+    <div class="bg-orb orb2"></div>
+    <div class="content">
+      <div class="tag">Pet Wrapped · {year}</div>
+      <div class="year">{year}</div>
+      <div class="name-block">
+        <div class="paw">🐾</div>
+        <div class="pet-name"><em>{pet_name}</em></div>
+        <div class="pet-breed">{cover.get("breed", "Beloved Companion")}{breed_suffix}</div>
+        <div class="divider"></div>
+        <div class="cover-line">{cover.get("tagline", "A year of being truly known.")}</div>
+      </div>
+      <div class="bottom-brand">thedoggycompany.com</div>
+    </div>
+  </div>
+
+  <!-- CARD 2: SOUL SCORE -->
+  <div class="card card-soul">
+    <div class="gold-bar"></div>
+    <div class="content">
+      <div class="section-label">Soul Journey</div>
+      <div class="section-title">Their <em>Soul Score</em><br>this year</div>
+      <div class="score-arc">
+        <svg viewBox="0 0 260 260" fill="none">
+          <circle cx="130" cy="130" r="100" stroke="rgba(255,255,255,0.06)" stroke-width="12" fill="none"/>
+          <circle cx="130" cy="130" r="100" stroke="url(#goldGrad)" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="628" stroke-dashoffset="{int(628 * (1 - soul_score.get('current_score', 0) / 100))}" transform="rotate(-90 130 130)"/>
+          <defs><linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C9973A"/><stop offset="100%" stop-color="#F0C060"/></linearGradient></defs>
+        </svg>
+        <div class="score-center">
+          <div class="score-num">{int(soul_score.get("current_score", 0))}</div>
+          <div class="score-label">Soul Score</div>
+        </div>
+      </div>
+      <div class="journey">{journey_html}</div>
+      <div class="soul-quote">{soul_score.get("soul_quote", "Every dog deserves to be truly known.")}</div>
+      <div class="bottom-brand">thedoggycompany.com</div>
+    </div>
+  </div>
+
+  <!-- CARD 3: MIRA MOMENTS -->
+  <div class="card card-mira">
+    <div class="rose-glow"></div>
+    <div class="content">
+      <div class="section-label">Mira Moments</div>
+      <div class="section-title">What Mira<br><em>remembers</em></div>
+      <div class="mira-stats">
+        <div class="stat-box">
+          <div class="stat-num">{mira_moments.get("conversation_count", 0)}</div>
+          <div class="stat-unit">conversations</div>
+          <div class="stat-detail">with Mira this year</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">{mira_moments.get("questions_answered", 0)}</div>
+          <div class="stat-unit">questions</div>
+          <div class="stat-detail">answered in Soul Profile</div>
+        </div>
+        <div class="stat-box full">
+          <div class="stat-num">{len(pillars_explored)}</div>
+          <div class="stat-unit">pillars explored</div>
+          <div class="stat-detail">{pillars_list_text}</div>
+        </div>
+      </div>
+      <div class="memory-card">
+        <div class="memory-label">Mira's Favourite Memory</div>
+        <div class="memory-text">"{ai_memory}"</div>
+      </div>
+      <div class="bottom-brand">thedoggycompany.com</div>
+    </div>
+  </div>
+
+  <!-- CARD 4: FAMILY -->
+  <div class="card card-babies">
+    <div class="green-glow"></div>
+    <div class="content">
+      <div class="section-label">Their Family</div>
+      <div class="section-title">The <em>Pack</em></div>
+      <div class="m-squad">{family_html if family_html else '<span class="m-name">Family of One</span>'}</div>
+      <div class="parents-block">
+        <div class="parents-label">Best Friends</div>
+        <div class="parents-row">{friends_html if friends_html else '<div class="parent"><div class="parent-name">Everyone!</div><div class="parent-role">Friend to all</div></div>'}</div>
+      </div>
+      <div class="legacy-line">Every dog they met became family. Every human they loved became theirs forever.</div>
+      <div class="bottom-brand">thedoggycompany.com</div>
+    </div>
+  </div>
+
+  <!-- CARD 5: PILLARS -->
+  <div class="card card-pillars">
+    <div class="content">
+      <div class="section-label">Life Pillars</div>
+      <div class="section-title">A life<br><em>fully lived</em></div>
+      <div class="pillar-list">{pillar_rows}</div>
+      <div class="total-treats">
+        <div class="treat-num">{total_interactions}</div>
+        <div class="treat-text"><strong>Total pillar interactions</strong>{pet_name} explored {len(pillars_explored)} pillars this year</div>
+      </div>
+      <div class="bottom-brand">thedoggycompany.com</div>
+    </div>
+  </div>
+
+  <!-- CARD 6: CLOSING -->
+  <div class="card card-closing">
+    <div class="bg"></div>
+    <div class="large-text">love</div>
+    <div class="content">
+      <div class="top-tag">Pet Wrapped · {year}</div>
+      <div>
+        <div class="main-quote">{closing.get("philosophy_quote", "A dog is not in your life. You are in theirs.")}</div>
+        <div class="attribution">— {closing.get("parent_name", "Pet Parent")} · The Doggy Company</div>
+      </div>
+      <div class="share-block">
+        <div class="share-label">Save & Share</div>
+        <button class="share-btn" onclick="downloadWrapped()">📥 Download</button>
+        <button class="share-btn" onclick="shareWrapped()" style="background:#C4607A;">📤 Share</button>
+        <div class="cta-text">Every dog deserves to be truly known.<br><a href="https://thedoggycompany.com">thedoggycompany.com</a></div>
+      </div>
+      <div class="bottom-brand">The Doggy Company · Pet Wrapped · {year}</div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <p>"Every dog deserves to be truly known.<br>{pet_name} was."</p>
+  <div class="footer-brand">The Doggy Company · thedoggycompany.com</div>
+</footer>
+
+<script>
+function downloadWrapped() {{
+  const html = document.documentElement.outerHTML;
+  const blob = new Blob([html], {{ type: 'text/html' }});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'PetWrapped_{pet_name}_{year}.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}}
+function shareWrapped() {{
+  const text = encodeURIComponent("💜 {pet_name}'s Pet Wrapped {year}\\n\\n{int(soul_score.get('current_score', 0))} Soul Score\\n\\nDoes your dog have a Soul Profile yet? 🐾\\n\\n");
+  const url = encodeURIComponent(window.location.href);
+  window.open('https://wa.me/?text=' + text + url, '_blank');
+}}
+</script>
+
+</body>
+</html>'''
+    
+    return HTMLResponse(content=html)
