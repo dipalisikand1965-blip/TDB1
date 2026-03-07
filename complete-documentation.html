@@ -48,7 +48,7 @@
     <div class="header">
         <h1>🐾 The Doggy Company</h1>
         <p>Pet Life Operating System - Complete Technical Documentation</p>
-        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: March 7, 2026 | Version 3.1.0</p>
+        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: December 7, 2026 | Version 3.2.0</p>
     </div>
 
     <div class="container">
@@ -111,8 +111,8 @@
                 </tr>
                 <tr>
                     <td><strong>Resend Email</strong></td>
-                    <td><span class="badge badge-live">✅ LIVE</span></td>
-                    <td>From: <code>woof@thedoggycompany.com</code> | Domain verified</td>
+                    <td><span class="badge badge-warning">⚠️ NEEDS VERIFY</span></td>
+                    <td>From: <code>woof@thedoggycompany.com</code> | Domain requires verification at <a href="https://resend.com/domains">resend.com/domains</a></td>
                 </tr>
                 <tr>
                     <td><strong>OpenAI (Mira AI)</strong></td>
@@ -248,9 +248,10 @@ POST /api/whatsapp/mira-reply      - Send Mira AI response</code></pre>
             <pre><code>POST /api/tickets/messaging/reply/multi-channel
   Body: { ticket_id, message, channels: ["in_app", "whatsapp", "email"] }</code></pre>
 
-            <h3>Learn Content</h3>
-            <pre><code>GET /api/learn/guides  - Get learn guides
-GET /api/learn/videos  - Get learn videos</code></pre>
+            <h3>Learn Content & Ask Mira</h3>
+            <pre><code>GET  /api/learn/guides       - Get learn guides
+GET  /api/learn/videos       - Get learn videos
+POST /api/os/learn/ask-mira  - Ask Mira AI a question (Learn page)</code></pre>
         </div>
 
         <!-- Database -->
@@ -359,7 +360,7 @@ curl https://thedoggycompany.com/api/whatsapp/status</code></pre>
     <footer>
         <p>🐾 Built with love for Kouros & Mystique</p>
         <p style="margin-top: 10px; opacity: 0.7;">The Doggy Company - Pet Life Operating System</p>
-        <p style="margin-top: 5px; opacity: 0.5;">Documentation generated: March 7, 2026</p>
+        <p style="margin-top: 5px; opacity: 0.5;">Documentation generated: December 7, 2026</p>
     </footer>
 </body>
 </html>

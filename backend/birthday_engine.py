@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize Resend
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.com")
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
 
@@ -396,7 +396,7 @@ async def send_birthday_promotion(
     
     # Build occasion box link
     occasion_type_param = "birthday" if celebration_type == "birthday" else "gotcha_day" if celebration_type == "gotcha_day" else "festival"
-    box_builder_link = f"https://thedoggycompany.in/celebrate?build_box={occasion_type_param}"
+    box_builder_link = f"https://thedoggycompany.com/celebrate?build_box={occasion_type_param}"
     
     base_message = custom_message if custom_message else f"""
 🎉 {celebration_info['emoji']} Special Celebration Alert!
@@ -473,7 +473,7 @@ The Doggy Company Team 🐕
                     {products_html}
                     
                     <div style="text-align: center; margin-top: 25px;">
-                        <a href="https://thedoggycompany.in" style="display: inline-block; background: linear-gradient(135deg, #9333ea, #ec4899); color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px;">
+                        <a href="https://thedoggycompany.com" style="display: inline-block; background: linear-gradient(135deg, #9333ea, #ec4899); color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px;">
                             Shop Now 🛍️
                         </a>
                     </div>

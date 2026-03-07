@@ -29,7 +29,7 @@ try:
 except ImportError:
     RESEND_AVAILABLE = False
 
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.com")
 WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "919663185747")
 
 logger = logging.getLogger(__name__)
@@ -704,10 +704,10 @@ class CommunicationEngine:
                 </div>
                 <div class="footer">
                     <p>The Doggy Company | Pet Life OS®</p>
-                    <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.in</p>
+                    <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.com</p>
                     <p style="font-size: 11px; color: #9ca3af; margin-top: 10px;">
                         You're receiving this because you're part of The Doggy Company family. 
-                        <a href="https://thedoggycompany.in/settings">Manage preferences</a>
+                        <a href="https://thedoggycompany.com/settings">Manage preferences</a>
                     </p>
                 </div>
             </div>

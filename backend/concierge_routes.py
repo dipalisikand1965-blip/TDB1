@@ -3013,14 +3013,14 @@ async def send_email_reply(
             </div>
             <div style="background: #f9fafb; padding: 20px; text-align: center;">
                 <p style="color: #9ca3af; margin: 0; font-size: 12px;">
-                    🐾 The Doggy Company | woof@thedoggycompany.in
+                    🐾 The Doggy Company | woof@thedoggycompany.com
                 </p>
             </div>
         </div>
         """
         
         response = resend.Emails.send({
-            "from": "THEDOGGYCOMPANY <woof@thedoggycompany.in>",
+            "from": "THEDOGGYCOMPANY <woof@thedoggycompany.com>",
             "to": [recipient_email],
             "subject": email_subject,
             "html": html_content

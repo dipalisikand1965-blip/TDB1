@@ -233,7 +233,7 @@ async def create_draft_order(order: CreateDraftOrder, username: str = Depends(ve
     # Generate checkout link
     checkout_token = uuid.uuid4().hex
     draft_order["checkout_token"] = checkout_token
-    draft_order["checkout_link"] = f"https://thedoggycompany.in/checkout/draft/{draft_order['id']}?token={checkout_token}"
+    draft_order["checkout_link"] = f"https://thedoggycompany.com/checkout/draft/{draft_order['id']}?token={checkout_token}"
     
     await db.draft_orders.insert_one(draft_order)
     

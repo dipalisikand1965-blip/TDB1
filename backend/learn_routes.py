@@ -1119,7 +1119,7 @@ async def seed_learn_data():
             "rating": 4.9,
             "reviews_count": 156,
             "city": "Bangalore",
-            "contact_email": "priya@thedoggycompany.in",
+            "contact_email": "priya@thedoggycompany.com",
             "image": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400",
             "is_featured": True,
             "is_active": True
@@ -1134,7 +1134,7 @@ async def seed_learn_data():
             "rating": 4.8,
             "reviews_count": 98,
             "city": "Mumbai",
-            "contact_email": "raj@thedoggycompany.in",
+            "contact_email": "raj@thedoggycompany.com",
             "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
             "is_featured": True,
             "is_active": True

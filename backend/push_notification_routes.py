@@ -39,7 +39,7 @@ def set_database(database: AsyncIOMotorDatabase):
 VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY", "")
 VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
 VAPID_CLAIMS = {
-    "sub": "mailto:woof@thedoggycompany.in"
+    "sub": "mailto:woof@thedoggycompany.com"
 }
 
 async def get_or_create_vapid_keys() -> Dict[str, str]:

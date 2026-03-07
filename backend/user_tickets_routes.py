@@ -19,7 +19,7 @@ router = APIRouter(prefix="/api/user", tags=["user-tickets"])
 db = None
 
 # Email and notification configuration
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.com")
 WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "919663185747")
 
 def set_db(database):
@@ -88,7 +88,7 @@ async def send_ticket_update_email(
                     </div>
                     
                     <p>
-                        <a href="https://thedoggycompany.in/member" class="cta-button">
+                        <a href="https://thedoggycompany.com/member" class="cta-button">
                             View Full Conversation →
                         </a>
                     </p>
@@ -99,7 +99,7 @@ async def send_ticket_update_email(
                 </div>
                 <div class="footer">
                     <p>The Doggy Company | Your Pet's Life Operating System</p>
-                    <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.in</p>
+                    <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.com</p>
                 </div>
             </div>
         </body>
@@ -111,10 +111,10 @@ async def send_ticket_update_email(
             "to": to_email,
             "subject": subject,
             "html": html_content,
-            "reply_to": f"ticket+{ticket_id}@replies.thedoggycompany.in",
+            "reply_to": f"ticket+{ticket_id}@replies.thedoggycompany.com",
             "headers": {
                 "X-Ticket-ID": ticket_id,
-                "References": f"<{ticket_id}@thedoggycompany.in>"
+                "References": f"<{ticket_id}@thedoggycompany.com>"
             }
         })
         
