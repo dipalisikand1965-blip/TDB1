@@ -196,16 +196,19 @@ Admin Dashboard, Service Desk (working), Services CRUD, Concierge Dashboard, Rea
 
 # RECOMMENDED NEXT STEPS (IN ORDER)
 
-1. **Fix notifications default tab** → change to "All" or add request_received to Primary
-2. **Add "Ask Mira" navigation** to Dashboard/Inbox headers
-3. **Test admin reply → member notification flow** (the Concierge loop)
+## ✅ COMPLETED (March 8, 2026)
+1. ~~Fix notifications default tab~~ → Done
+2. ~~Add "Ask Mira" navigation~~ → Floating button added to Dashboard
+3. ~~Add voice opt-in toggle~~ → Default OFF in MiraPage.jsx
+4. ~~Test Checkout flow~~ → Razorpay keys live
+5. ~~Add proactive alerts~~ → Birthday, Gotcha Day, Vaccination alerts on dashboard
+
+## 🔴 REMAINING (Automation/Scale Features)
+1. **Automated birthday triggers** → Cron job needed for auto-sending birthday wrapped
+2. **December annual wrapped generation** → Batch job for year-end wrapped
+3. **Instagram Stories direct share** → API integration with Meta/Instagram
 4. **Fix breed data** for Bruno, Buddy (show actual breed)
 5. **Fix pet personality traits** per pet (not all same)
-6. **Test Soul Builder** (/soul-builder) — the core gamified experience
-7. **Test Onboarding** (/join) full flow
-8. **Add voice opt-in toggle** (default OFF)
-9. **Test Checkout flow** (may need Razorpay test keys)
-10. **Add proactive alerts** to Today tab
 
 ---
 
