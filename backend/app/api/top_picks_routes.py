@@ -1681,6 +1681,32 @@ async def get_pillar_picks(
         more = await db.unified_products.find(array_query, {"_id": 0}).limit(5).to_list(length=5)
         products.extend(more)
     
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # CELEBRATE PILLAR: Also fetch real products from products_master (Shopify)
+    # This includes cakes, treats, hampers etc. from thedoggybakery.com
+    # ALWAYS include these for variety, regardless of unified_products count
+    # ═══════════════════════════════════════════════════════════════════════════════
+    if pillar == "celebrate":
+        celebrate_categories = ['cakes', 'treats', 'hampers', 'mini-cakes', 'desi-treats', 'frozen-treats', 'dognuts']
+        shopify_products = await db.products_master.find({
+            "category": {"$in": celebrate_categories},
+            "shopify_id": {"$exists": True}
+            # Note: Not filtering by in_stock as Shopify sync may not set this correctly
+        }, {"_id": 0}).limit(20).to_list(20)
+        
+        # Add shopify products at the beginning for prominence
+        existing_ids = set(p.get("id") or p.get("shopify_id") for p in products)
+        shopify_to_add = []
+        for sp in shopify_products:
+            sp_id = sp.get("id") or sp.get("shopify_id")
+            if sp_id and sp_id not in existing_ids:
+                shopify_to_add.append(sp)
+                existing_ids.add(sp_id)
+        
+        # Prepend Shopify products so they get higher priority in picks
+        products = shopify_to_add[:10] + products
+        logger.info(f"[TOP-PICKS] Added {len(shopify_to_add)} Shopify products for celebrate pillar")
+    
     # Also get services for this pillar
     service_cursor = db.services.find({"pillar": pillar}, {"_id": 0}).limit(10)
     services = await service_cursor.to_list(length=10)
@@ -1964,6 +1990,7 @@ async def get_top_picks(
         pillar_picks[pillar_id] = {
             "pillar": pillar_info,
             "picks": catalogue_picks[:5],  # Up to 5 catalogue
+            "catalogue_picks": catalogue_picks[:5],  # Alias for frontend compatibility
             "concierge_picks": concierge_picks[:5],  # Up to 5 concierge
             "total_picks": len(catalogue_picks) + len(concierge_picks),
         }
