@@ -1,236 +1,112 @@
-# MIRA OS - AGENT START HERE (MANDATORY READ)
-## The Doggy Company - Pet Life Operating System
+# 🚨 AGENT START HERE - READ THIS FIRST 🚨
 
-> **STOP. READ THIS ENTIRE FILE BEFORE DOING ANYTHING.**
-> This is the single source of truth for all agents working on MIRA OS.
-
----
-
-## WHAT IS MIRA OS?
-
-**MIRA is a MOBILE-FIRST PET LIFE OPERATING SYSTEM.**
-
-It is:
-- An intelligent OS that runs a pet's entire life
-- Memory-driven, context-aware, proactive
-- Built for iOS and Android mobile devices FIRST
-
-It is NOT:
-- An e-commerce platform
-- A chatbot
-- A web-first application
-- A content feed or social network
+> **Last Updated:** March 8, 2026 15:15 IST
+> **By:** Previous Agent
 
 ---
 
-## GOLDEN RULES FOR UI/UX (NON-NEGOTIABLE)
+## CURRENT STATUS
 
-### Mobile-First Design Requirements
-
-ALL UI/UX work MUST be 100% compliant with these rules for best rendering on iOS and Android across ALL devices without exception:
-
-| Rule | Requirement |
-|------|-------------|
-| **Touch Targets** | Minimum 44x44px (iOS) / 48x48dp (Android) |
-| **Safe Areas** | Respect iOS notch, Android gesture nav |
-| **Font Scaling** | Support dynamic type / font scaling |
-| **Contrast** | WCAG AA minimum (4.5:1 for text) |
-| **Loading States** | Skeleton screens, not spinners |
-| **Haptic Feedback** | Implement for all confirmations |
-| **Gestures** | Support swipe, pull-to-refresh, long-press |
-| **Offline** | Graceful degradation, queue actions |
-| **Performance** | First paint < 1.5s, interactive < 3s |
-| **Viewport** | Never break on any screen width 320px-428px |
-
-### Typography Scale (Mobile)
+### Mockup Generation
 ```
-H1: text-2xl (24px) - Page titles only
-H2: text-xl (20px) - Section headers
-H3: text-lg (18px) - Card titles
-Body: text-base (16px) - Default
-Small: text-sm (14px) - Secondary info
-Caption: text-xs (12px) - Timestamps, labels
+STATUS: RUNNING ✅
+Check: curl -s "$API_URL/api/mockups/status"
+Resume if stopped: curl -X POST "$API_URL/api/mockups/generate-batch" -H "Content-Type: application/json" -d '{"limit": 500}'
 ```
 
-### Spacing System
+### Priority Breeds DONE ✅
+- ✅ Indie (Mojo's breed) - 11/11
+- ✅ Shih Tzu (Mystique's breed) - 11/11  
+- ✅ Labrador (Bruno's breed) - 11/11
+
+### Data Persists in MongoDB
+- All mockups saved permanently
+- No need to regenerate after deployment (same DB)
+- Only running processes stop on restart
+
+---
+
+## WHAT WAS FIXED TODAY (March 8, 2026)
+
+1. ✅ **Product Mixing Bug** - Soul Made products now separate from Shopify products
+2. ✅ **Pet Avatar Fix** - Now checks `image` field (Mystique's photo works)
+3. ✅ **Breed Filtering** - Mira picks show correct breed products only
+4. ✅ **Cart Integration** - Soul Made products can be added to cart
+5. ✅ **Documentation** - PILLAR_AUDIT.md, DEPLOYMENT_GUIDE.md created
+
+---
+
+## KNOWN GAPS (NOT STARTED)
+
+### CELEBRATE Pillar
+- ❌ Birthday reminder notifications
+- ❌ Birthday countdown widget
+- ❌ Plan My Party wizard
+
+### DINE Pillar  
+- ❌ "Safe for Pet" badge on products
+- ❌ Tummy Profile Dashboard
+- ❌ Allergy-based product filtering
+
+---
+
+## KEY FILES
+
+| What | File |
+|------|------|
+| Feature Status | `/app/memory/PILLAR_AUDIT.md` |
+| Deployment Guide | `/app/memory/DEPLOYMENT_GUIDE.md` |
+| PRD | `/app/memory/PRD.md` |
+| Soul Made Component | `/app/frontend/src/components/SoulMadeCollection.jsx` |
+| Mockup API | `/app/backend/app/api/mockup_routes.py` |
+| Top Picks (Mira) | `/app/backend/app/api/top_picks_routes.py` |
+
+---
+
+## TEST ACCOUNTS
+
+| User | Password | Pet |
+|------|----------|-----|
+| dipali@clubconcierge.in | test123 | Mojo (Indie), Mystique (Shih Tzu), Bruno (Labrador) |
+
+---
+
+## QUICK COMMANDS
+
+```bash
+# Check mockup status
+API_URL=$(grep REACT_APP_BACKEND_URL /app/frontend/.env | cut -d '=' -f2)
+curl -s "$API_URL/api/mockups/status"
+
+# Check overall stats
+curl -s "$API_URL/api/mockups/stats"
+
+# Resume mockup generation if stopped
+curl -X POST "$API_URL/api/mockups/generate-batch" -H "Content-Type: application/json" -d '{"limit": 500}'
+
+# Regenerate documentation
+cd /app/backend && python3 -c "from documentation_generator import generate_complete_documentation; generate_complete_documentation()"
 ```
-xs: 4px  - Tight groupings
-sm: 8px  - Related elements
-md: 16px - Standard spacing
-lg: 24px - Section separation
-xl: 32px - Major divisions
-```
 
 ---
 
-## TEST CREDENTIALS (USE THESE)
+## DO NOT BREAK
 
-| Role | Email/Username | Password |
-|------|----------------|----------|
-| **Test User** | dipali@clubconcierge.in | test123 |
-| **Admin** | aditya | lola4304 |
-
-**Preview URL:** https://soul-made-pets.preview.emergentagent.com
+1. **Breed exclusion pattern** in `/app/backend/server.py` (line ~7085) - Keeps Soul Made separate from Shopify
+2. **BREED_EXCLUSION_PATTERN** in `/app/backend/app/api/top_picks_routes.py` - Filters Mira picks by pet's breed
+3. **Pet avatar check** in `/app/frontend/src/utils/petAvatar.js` - Checks `image` field for uploaded photos
 
 ---
 
-## THE 14 PILLARS (LIFE DOMAINS)
+## IF USER ASKS ABOUT...
 
-These are how a pet LIVES across its lifetime:
-
-| # | Pillar | Purpose |
-|---|--------|---------|
-| 1 | **CARE** | Physical wellbeing, grooming, hygiene |
-| 2 | **DINE** | Nutrition, feeding, diet |
-| 3 | **STAY** | Boarding, daycare, home setup |
-| 4 | **TRAVEL** | Transport, trips, relocation |
-| 5 | **ENJOY** | Play, enrichment, social |
-| 6 | **FIT** | Exercise, mobility, fitness |
-| 7 | **LEARN** | Training, behavior, education |
-| 8 | **CELEBRATE** | Birthdays, milestones, memories |
-| 9 | **ADOPT** | Adoption, integration, new pets |
-| 10 | **ADVISORY** | Professional guidance, consults |
-| 11 | **PAPERWORK** | Documents, licenses, records |
-| 12 | **EMERGENCY** | Urgent care, crisis response |
-| 13 | **FAREWELL** | End-of-life, memorial |
-| 14 | **SERVICES** | Execution layer (NOT a pillar!) |
-
-**CRITICAL:** SERVICES is the "hands" that execute actions. It is NOT a life domain pillar.
+| Topic | Answer |
+|-------|--------|
+| "Mockups not generating" | Check `/api/mockups/status`, may need to resume |
+| "Wrong breed showing" | Check pet's breed in DB, check BREED_KEY_MAP |
+| "Products mixed" | Breed exclusion pattern may be missing |
+| "Photo not showing" | Check `image` field in pets collection |
 
 ---
 
-## MIRA OS LIFE MODEL
-
-| Layer | Purpose | Status |
-|-------|---------|--------|
-| **SOUL/MOJO** | Who the pet is | Implemented |
-| **TODAY** | What matters now | Partial |
-| **PICKS** | What should happen | Basic |
-| **SERVICES** | What gets done | Working |
-| **INSIGHTS** | What patterns exist | Planned |
-| **LEARN** | What parent understands | Basic |
-| **CONCIERGE** | When humans step in | Working |
-
----
-
-## CORE DOCTRINES (NEVER VIOLATE)
-
-### 1. Profile-First Doctrine
-- Always use specific pet profile data
-- NEVER assume based on breed alone
-- ASK for missing information, don't guess
-
-### 2. Remember → Ask → Confirm → Act
-- REMEMBER: What you know about the pet
-- ASK: Clarifying questions first
-- CONFIRM: Align before acting
-- ACT: Execute only after alignment
-
-### 3. Concierge® Branding
-- Always write "Concierge®" with trademark symbol
-- Never say "support" or "escalation"
-- Frame as premium burden relief
-
-### 4. Products After Alignment
-- Never show products on first message
-- Products are optional suggestions
-- Service intents = NO products by default
-
----
-
-## CRITICAL FILES TO READ
-
-| Priority | File | Purpose |
-|----------|------|---------|
-| P0 | `/app/memory/MIRA_OS_14_PILLARS_BIBLE.md` | Definitive pillar reference |
-| P0 | `/app/memory/PICKS_ENGINE_SPEC_v1.md` | **PICKS ENGINE COMPLETE SPEC (FINAL)** |
-| P0 | `/app/memory/PRD.md` | Product requirements |
-| P0 | `/app/memory/MOBILE_FIRST_GOLDEN_RULES.md` | UI/UX compliance rules |
-| P1 | `/app/memory/MIRA_OS_ROADMAP.md` | Enhancement roadmap |
-| P1 | `/app/memory/MIRA_OS_AUDIT.md` | Current system audit |
-| P1 | `/app/memory/seeds/CANONICAL_TAGS_SEED.md` | Canonical tags data |
-| P1 | `/app/memory/seeds/TAG_SYNONYMS_SEED.md` | Tag synonyms mapping |
-| P1 | `/app/memory/seeds/SERVICE_TYPES_SPEC.md` | Service types spec |
-| P2 | `/app/memory/PICKS_ENGINE_SPEC_v1_ORIGINAL_DISCUSSION.md` | Original v1 spec for reference |
-| P2 | `/app/backend/server.py` | Core backend logic |
-| P2 | `/app/backend/mira_routes.py` | Chat & pillar detection |
-
----
-
-## KEY TECHNICAL INFO
-
-### Backend
-- **Framework:** FastAPI (Python)
-- **Database:** MongoDB (motor async)
-- **LLM:** Claude/GPT via emergentintegrations
-
-### Frontend
-- **Framework:** React 18
-- **UI:** Tailwind CSS + Shadcn/UI
-- **State:** React hooks (custom hooks in `/hooks/mira/`)
-
-### API Base
-- All API routes prefixed with `/api`
-- Backend runs on port 8001 internally
-- Use `REACT_APP_BACKEND_URL` from frontend `.env`
-
----
-
-## WHAT'S WORKING (Feb 2026)
-
-| Feature | Status | Notes |
-|---------|--------|-------|
-| User Auth | Working | JWT-based |
-| Pet Profiles | Working | Soul data integrated |
-| Chat (Mira) | Working | 14 pillars detection |
-| Intelligence Score | Working | Multi-source aggregation |
-| Memory System | Working | Conversation extraction |
-| YouTube (LEARN) | Working | API integrated |
-| Service Desk | Working | Ticket creation |
-| Concierge Handoff | Working | Inline cards |
-| Products to Avoid | Working | Feedback loop |
-
----
-
-## WHAT'S NOT COMPLETE
-
-| Feature | Status | Blocker |
-|---------|--------|---------|
-| Picks Engine | Basic | Needs re-ranking logic |
-| Today Surface | Planned | UI not built |
-| Insights | Planned | Analytics not built |
-| Full Services UI | Partial | Task tracking UI needed |
-| Offline Mode | Not started | PWA setup needed |
-
----
-
-## CURRENT AUDIT SCORE
-
-**Overall: 68/100**
-
-| Domain | Score | Priority |
-|--------|-------|----------|
-| Memory System | 60/100 | P1 |
-| Soul Intelligence | 75/100 | P2 |
-| Conversational Context | 75/100 | P2 |
-| Picks Engine | 35/100 | P0 |
-| Services Execution | 50/100 | P1 |
-| Proactive System | 40/100 | P1 |
-| 14 Pillars Coverage | 55/100 | P2 |
-| UI/UX Mobile | 80/100 | P1 |
-| Infrastructure | 95/100 | - |
-
----
-
-## ENHANCEMENT ROADMAP LOCATION
-
-See `/app/memory/MIRA_OS_ROADMAP.md` for full roadmap with:
-- P0 Critical (This Sprint)
-- P1 High Priority (Next Sprint)
-- P2 Medium Priority (Backlog)
-- P3 Future (Wishlist)
-
----
-
-*Last Updated: February 12, 2026*
-*Status: PRODUCTION (Core) | Mobile-First Target: 100%*
+*When you complete work, UPDATE THIS FILE and run the documentation generator!*

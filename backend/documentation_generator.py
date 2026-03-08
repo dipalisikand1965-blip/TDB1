@@ -109,8 +109,9 @@ def generate_complete_documentation():
         total_files = 0
         total_lines = 0
         
-        # Priority files
+        # Priority files - AGENT_START_HERE must be FIRST
         priority_files = [
+            "/app/memory/AGENT_START_HERE.md",
             "/app/memory/OWNERS_GUIDE_DIPALI.md",
             "/app/memory/PRD.md",
             "/app/memory/PILLAR_AUDIT.md",
