@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://soul-profile-3.preview.emergentagent.com
+https://pet-wrapped.preview.emergentagent.com
 
 ---
 
