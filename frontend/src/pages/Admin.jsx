@@ -513,6 +513,22 @@ const Admin = () => {
         console.log('[Master Sync] Production seed error:', e);
       }
       
+      // Step 10: FORCE FULL SYNC - Clean images, update restaurants, sync everything
+      toast({ title: '🔄 Step 10/10: Force Full Sync...', description: 'Cleaning images, updating restaurants, syncing all data' });
+      
+      try {
+        const forceRes = await fetch(`${API_URL}/api/admin/force-full-sync?password=lola4304`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (forceRes.ok) {
+          const data = await forceRes.json();
+          console.log('[Master Sync] Force Full Sync:', data);
+        }
+      } catch (e) {
+        console.log('[Master Sync] Force sync error:', e);
+      }
+      
       // Final toast
       toast({
         title: '✅ MASTER SYNC COMPLETE!',
