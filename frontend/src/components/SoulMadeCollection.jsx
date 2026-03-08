@@ -458,14 +458,68 @@ const SoulMadeCollection = ({
     });
   }, [currentPet?.id, currentPet?.name, currentPet?.breed, petBreedKey, pillar, products.length, archetype, products]);
 
+  // Fallback products when breed mockups aren't ready yet
+  const fallbackProducts = [
+    {
+      id: 'fallback-custom-mug',
+      name: 'Custom Photo Mug',
+      product_type: 'mug',
+      breed_name: petName ? `For ${petName}` : 'Custom',
+      description: 'Your pet\'s photo on a beautiful ceramic mug',
+      price: 599,
+      mockup_url: null,
+      is_fallback: true
+    },
+    {
+      id: 'fallback-custom-bandana',
+      name: 'Custom Name Bandana',
+      product_type: 'bandana',
+      breed_name: petName ? `For ${petName}` : 'Custom',
+      description: 'Stylish bandana with your pet\'s name',
+      price: 399,
+      mockup_url: null,
+      is_fallback: true
+    },
+    {
+      id: 'fallback-custom-frame',
+      name: 'Pet Portrait Frame',
+      product_type: 'frame',
+      breed_name: petName ? `For ${petName}` : 'Custom',
+      description: 'Beautiful frame for your favorite pet photo',
+      price: 799,
+      mockup_url: null,
+      is_fallback: true
+    },
+    {
+      id: 'fallback-custom-tag',
+      name: 'Custom ID Tag',
+      product_type: 'collar_tag',
+      breed_name: petName ? `For ${petName}` : 'Custom',
+      description: 'Engraved with name and your contact info',
+      price: 299,
+      mockup_url: null,
+      is_fallback: true
+    }
+  ];
+
+  // Use fallback products if no breed products available
+  const displayProducts = products.length > 0 ? products : fallbackProducts;
+  const usingFallback = products.length === 0;
+
   // Don't render if no pet or no breed
   if (!currentPet || !petBreedKey) {
     return null;
   }
 
-  // Don't render if empty (after loading)
-  if (!loading && products.length === 0) {
-    return null;
+  // Show loading state
+  if (loading) {
+    return (
+      <div className={`${className}`} data-testid="soul-made-collection-loading">
+        <div className="animate-pulse flex space-x-4">
+          <div className="h-48 bg-purple-100 rounded-xl w-full"></div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -519,22 +573,35 @@ const SoulMadeCollection = ({
       )}
 
       {/* Product Grid */}
-      {!loading && products.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {products.map(product => (
-            <SoulMadeProductCard
-              key={product.id}
-              product={product}
-              petName={petName}
-              archetype={archetype}
-              onViewDetails={handleProductClick}
-            />
-          ))}
-        </div>
+      {!loading && displayProducts.length > 0 && (
+        <>
+          {usingFallback && (
+            <div className="mb-4 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-100">
+              <p className="text-sm text-purple-700 flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                <span>
+                  <strong>Breed-specific designs coming soon!</strong> 
+                  {' '}Meanwhile, explore these custom options for {petName}.
+                </span>
+              </p>
+            </div>
+          )}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {displayProducts.map(product => (
+              <SoulMadeProductCard
+                key={product.id}
+                product={product}
+                petName={petName}
+                archetype={archetype}
+                onViewDetails={handleProductClick}
+              />
+            ))}
+          </div>
+        </>
       )}
 
       {/* Soul-Level Personalization Note */}
-      {!loading && products.length > 0 && (
+      {!loading && displayProducts.length > 0 && (
         <p className="text-xs text-gray-400 text-center mt-6 flex items-center justify-center gap-1">
           <Sparkles className="w-3 h-3" />
           Soul-Level Personalization • Objects shaped around who {petName} really is
