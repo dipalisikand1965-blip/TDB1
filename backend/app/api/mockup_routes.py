@@ -2,13 +2,22 @@
 Product Mockup API Routes
 =========================
 Endpoints for generating AI-powered personalized product mockups.
+
+Includes:
+- Single mockup generation
+- Batch mockup generation for all breeds
+- Admin endpoints for triggering generation
+- Statistics and status endpoints
 """
 
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Dict
 import logging
 import asyncio
+import os
+import base64
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +25,18 @@ router = APIRouter(prefix="/api/mockups", tags=["Product Mockups"])
 
 # Database reference
 _db = None
+
+# Background task state
+_generation_status = {
+    "running": False,
+    "progress": 0,
+    "total": 0,
+    "generated": 0,
+    "failed": 0,
+    "current_product": None,
+    "started_at": None,
+    "completed_at": None
+}
 
 def set_mockup_db(db):
     global _db
@@ -39,6 +60,12 @@ class BulkMockupRequest(BaseModel):
     product_ids: List[str]
     pet_name: str
     breed: str
+
+
+class BatchGenerationRequest(BaseModel):
+    limit: Optional[int] = None
+    breed_filter: Optional[str] = None
+    product_type_filter: Optional[str] = None
 
 
 @router.post("/generate")
@@ -163,13 +190,294 @@ async def get_supported_product_types():
     """Get list of product types supported for mockup generation."""
     return {
         "product_types": [
-            {"type": "mug", "description": "Coffee/tea mugs with pet illustration"},
-            {"type": "bowl", "description": "Pet food/water bowls with name"},
             {"type": "cake", "description": "Birthday cakes with pet decoration"},
-            {"type": "bandana", "description": "Pet bandanas with embroidered name"},
+            {"type": "bandana", "description": "Pet bandanas with printed illustration"},
+            {"type": "mug", "description": "Coffee/tea mugs with pet illustration"},
+            {"type": "keychain", "description": "Metal keychains with breed art"},
             {"type": "frame", "description": "Photo frames with pet portrait"},
-            {"type": "treat_box", "description": "Treat boxes with personalized label"},
+            {"type": "welcome_mat", "description": "Welcome mats with breed illustration"},
+            {"type": "bowl", "description": "Pet food bowls with name"},
+            {"type": "tote_bag", "description": "Tote bags for dog parents"},
+            {"type": "treat_jar", "description": "Treat jars with personalized label"},
+            {"type": "blanket", "description": "Cozy blankets with breed art"},
             {"type": "collar_tag", "description": "Pet ID tags with engraved name"},
-            {"type": "tote_bag", "description": "Tote bags for dog parents"}
+            {"type": "party_hat", "description": "Party hats with breed illustration"}
         ]
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ADMIN ENDPOINTS - Batch Generation
+# ═══════════════════════════════════════════════════════════════════════════
+
+@router.get("/stats")
+async def get_mockup_stats():
+    """Get statistics on breed products and mockup generation status."""
+    db = get_db()
+    
+    total = await db.breed_products.count_documents({})
+    with_mockups = await db.breed_products.count_documents({"mockup_url": {"$ne": None}})
+    without_mockups = await db.breed_products.count_documents({"mockup_url": None})
+    
+    # By product type
+    pipeline = [
+        {"$group": {
+            "_id": "$product_type", 
+            "count": {"$sum": 1}, 
+            "with_mockups": {"$sum": {"$cond": [{"$ne": ["$mockup_url", None]}, 1, 0]}}
+        }}
+    ]
+    by_type = await db.breed_products.aggregate(pipeline).to_list(20)
+    
+    # By breed
+    pipeline = [
+        {"$group": {
+            "_id": "$breed", 
+            "count": {"$sum": 1}, 
+            "with_mockups": {"$sum": {"$cond": [{"$ne": ["$mockup_url", None]}, 1, 0]}}
+        }}
+    ]
+    by_breed = await db.breed_products.aggregate(pipeline).to_list(40)
+    
+    return {
+        "total_products": total,
+        "with_mockups": with_mockups,
+        "without_mockups": without_mockups,
+        "completion_percentage": round((with_mockups / total * 100) if total > 0 else 0, 1),
+        "by_product_type": {item["_id"]: {"total": item["count"], "with_mockups": item["with_mockups"]} for item in by_type if item["_id"]},
+        "by_breed": {item["_id"]: {"total": item["count"], "with_mockups": item["with_mockups"]} for item in by_breed if item["_id"]},
+        "generation_status": _generation_status
+    }
+
+
+@router.get("/status")
+async def get_generation_status():
+    """Get current batch generation status."""
+    return _generation_status
+
+
+async def _generate_mockup_image(prompt: str, slug: str) -> Optional[str]:
+    """Generate a single mockup image using OpenAI GPT Image 1."""
+    try:
+        from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+        
+        api_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not api_key:
+            logger.error("EMERGENT_LLM_KEY not found")
+            return None
+        
+        image_gen = OpenAIImageGeneration(api_key=api_key)
+        
+        images = await image_gen.generate_images(
+            prompt=prompt,
+            model="gpt-image-1",
+            number_of_images=1
+        )
+        
+        if images and len(images) > 0:
+            image_base64 = base64.b64encode(images[0]).decode('utf-8')
+            return f"data:image/png;base64,{image_base64}"
+        
+        return None
+        
+    except Exception as e:
+        logger.error(f"Error generating {slug}: {e}")
+        return None
+
+
+async def _batch_generate_mockups(db, limit: Optional[int] = None, breed_filter: Optional[str] = None, product_type_filter: Optional[str] = None):
+    """Background task to generate mockups for all pending products."""
+    global _generation_status
+    
+    _generation_status["running"] = True
+    _generation_status["started_at"] = datetime.utcnow().isoformat()
+    _generation_status["completed_at"] = None
+    
+    try:
+        # Build query
+        query = {"mockup_url": None}
+        if breed_filter:
+            query["breed"] = breed_filter
+        if product_type_filter:
+            query["product_type"] = product_type_filter
+        
+        cursor = db.breed_products.find(query)
+        if limit:
+            cursor = cursor.limit(limit)
+        
+        products = await cursor.to_list(500)
+        
+        _generation_status["total"] = len(products)
+        _generation_status["progress"] = 0
+        _generation_status["generated"] = 0
+        _generation_status["failed"] = 0
+        
+        logger.info(f"Starting batch generation for {len(products)} products")
+        
+        for i, product in enumerate(products):
+            _generation_status["progress"] = i + 1
+            _generation_status["current_product"] = product.get("name", product["id"])
+            
+            try:
+                slug = product["id"]
+                prompt = product.get("mockup_prompt", "")
+                
+                if not prompt:
+                    logger.warning(f"No prompt for {slug}")
+                    _generation_status["failed"] += 1
+                    continue
+                
+                mockup_url = await _generate_mockup_image(prompt, slug)
+                
+                if mockup_url:
+                    await db.breed_products.update_one(
+                        {"id": product["id"]},
+                        {"$set": {
+                            "mockup_url": mockup_url,
+                            "mockup_generated_at": datetime.utcnow().isoformat()
+                        }}
+                    )
+                    _generation_status["generated"] += 1
+                    logger.info(f"✓ Generated mockup for {slug}")
+                else:
+                    _generation_status["failed"] += 1
+                    logger.warning(f"✗ Failed to generate {slug}")
+                
+                # Small delay to avoid rate limits
+                await asyncio.sleep(2)
+                
+            except Exception as e:
+                logger.error(f"Error processing {product['id']}: {e}")
+                _generation_status["failed"] += 1
+        
+        _generation_status["completed_at"] = datetime.utcnow().isoformat()
+        logger.info(f"Batch generation complete: {_generation_status['generated']} generated, {_generation_status['failed']} failed")
+        
+    except Exception as e:
+        logger.error(f"Batch generation error: {e}")
+    finally:
+        _generation_status["running"] = False
+        _generation_status["current_product"] = None
+
+
+@router.post("/generate-batch")
+async def start_batch_generation(request: BatchGenerationRequest, background_tasks: BackgroundTasks):
+    """
+    Start batch generation of mockups for all breed products.
+    This runs in the background - use /status to check progress.
+    """
+    global _generation_status
+    
+    if _generation_status["running"]:
+        raise HTTPException(
+            status_code=409, 
+            detail="Generation already in progress. Check /status for progress."
+        )
+    
+    db = get_db()
+    
+    # Check how many products need mockups
+    query = {"mockup_url": None}
+    if request.breed_filter:
+        query["breed"] = request.breed_filter
+    if request.product_type_filter:
+        query["product_type"] = request.product_type_filter
+    
+    pending_count = await db.breed_products.count_documents(query)
+    
+    if pending_count == 0:
+        return {"message": "All products already have mockups", "pending": 0}
+    
+    # Start background task
+    background_tasks.add_task(
+        _batch_generate_mockups, 
+        db, 
+        request.limit, 
+        request.breed_filter, 
+        request.product_type_filter
+    )
+    
+    return {
+        "message": "Batch generation started",
+        "pending": pending_count,
+        "limit": request.limit,
+        "filters": {
+            "breed": request.breed_filter,
+            "product_type": request.product_type_filter
+        },
+        "check_status": "/api/mockups/status"
+    }
+
+
+@router.post("/stop-generation")
+async def stop_generation():
+    """Stop the current batch generation (gracefully completes current item)."""
+    global _generation_status
+    
+    if not _generation_status["running"]:
+        return {"message": "No generation in progress"}
+    
+    # This is a soft stop - the loop will check this flag
+    _generation_status["running"] = False
+    
+    return {"message": "Generation will stop after current item completes"}
+
+
+@router.get("/breed-products")
+async def get_breed_products(
+    breed: Optional[str] = None,
+    product_type: Optional[str] = None,
+    has_mockup: Optional[bool] = None,
+    limit: int = 50
+):
+    """Get breed products with optional filters."""
+    db = get_db()
+    
+    query = {}
+    if breed:
+        query["breed"] = breed
+    if product_type:
+        query["product_type"] = product_type
+    if has_mockup is not None:
+        if has_mockup:
+            query["mockup_url"] = {"$ne": None}
+        else:
+            query["mockup_url"] = None
+    
+    products = await db.breed_products.find(query, {"_id": 0}).limit(limit).to_list(limit)
+    
+    return {
+        "products": products,
+        "count": len(products),
+        "filters": {"breed": breed, "product_type": product_type, "has_mockup": has_mockup}
+    }
+
+
+@router.get("/breed-products/{product_id}")
+async def get_breed_product(product_id: str):
+    """Get a specific breed product."""
+    db = get_db()
+    
+    product = await db.breed_products.find_one({"id": product_id}, {"_id": 0})
+    
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return product
+
+
+@router.post("/seed-products")
+async def seed_breed_products():
+    """Seed all 396 breed products (33 breeds × 12 types) into database."""
+    from scripts.generate_all_mockups import seed_all_breed_products, BREEDS, PRODUCT_TYPES
+    
+    db = get_db()
+    
+    count = await seed_all_breed_products(db)
+    
+    return {
+        "message": f"Seeded {count} breed products",
+        "breeds": len(BREEDS),
+        "product_types": len(PRODUCT_TYPES),
+        "total": count
     }

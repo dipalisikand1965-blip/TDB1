@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -19,7 +19,11 @@ import {
   Crown,
   Star,
   Package,
-  Eye
+  Eye,
+  Image,
+  Play,
+  Square,
+  Loader2
 } from 'lucide-react';
 
 /**
@@ -70,6 +74,15 @@ const SoulProductsManager = () => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [bulkTier, setBulkTier] = useState('');
   const [computingArchetypes, setComputingArchetypes] = useState(false);
+  
+  // Mockup generation state
+  const [mockupStats, setMockupStats] = useState(null);
+  const [generationStatus, setGenerationStatus] = useState(null);
+  const [breedProducts, setBreedProducts] = useState([]);
+  const [loadingMockups, setLoadingMockups] = useState(false);
+  const [generationLimit, setGenerationLimit] = useState(10);
+  const [selectedBreed, setSelectedBreed] = useState('');
+  const [selectedProductType, setSelectedProductType] = useState('');
 
   // Fetch products
   useEffect(() => {
@@ -117,6 +130,127 @@ const SoulProductsManager = () => {
       setCategories(['cakes', 'breed-cakes', 'accessories', 'treats', 'hampers', 'dognuts', 'frozen-treats']);
     }
   };
+
+  // Mockup functions
+  const fetchMockupStats = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/mockups/stats`);
+      if (res.ok) {
+        const data = await res.json();
+        setMockupStats(data);
+        setGenerationStatus(data.generation_status);
+      }
+    } catch (error) {
+      console.error('Failed to fetch mockup stats:', error);
+    }
+  }, []);
+
+  const fetchBreedProducts = async (hasM = null) => {
+    setLoadingMockups(true);
+    try {
+      let url = `${API_URL}/api/mockups/breed-products?limit=100`;
+      if (selectedBreed) url += `&breed=${selectedBreed}`;
+      if (selectedProductType) url += `&product_type=${selectedProductType}`;
+      if (hasM !== null) url += `&has_mockup=${hasM}`;
+      
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        setBreedProducts(data.products || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch breed products:', error);
+    }
+    setLoadingMockups(false);
+  };
+
+  const seedBreedProducts = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/mockups/seed-products`, { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        toast({ title: 'Products Seeded', description: `Created ${data.total} breed products` });
+        fetchMockupStats();
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to seed products', variant: 'destructive' });
+    }
+  };
+
+  const startMockupGeneration = async () => {
+    try {
+      const body = {
+        limit: generationLimit > 0 ? generationLimit : null,
+        breed_filter: selectedBreed || null,
+        product_type_filter: selectedProductType || null
+      };
+      
+      const res = await fetch(`${API_URL}/api/mockups/generate-batch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        toast({ title: 'Generation Started', description: data.message });
+        // Start polling for status
+        pollGenerationStatus();
+      } else {
+        const err = await res.json();
+        toast({ title: 'Error', description: err.detail || 'Failed to start generation', variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to start generation', variant: 'destructive' });
+    }
+  };
+
+  const stopMockupGeneration = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/mockups/stop-generation`, { method: 'POST' });
+      if (res.ok) {
+        toast({ title: 'Stopping', description: 'Generation will stop after current item' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to stop generation', variant: 'destructive' });
+    }
+  };
+
+  const pollGenerationStatus = () => {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/mockups/status`);
+        if (res.ok) {
+          const status = await res.json();
+          setGenerationStatus(status);
+          
+          // Stop polling when generation is complete
+          if (!status.running && status.completed_at) {
+            clearInterval(interval);
+            fetchMockupStats();
+            fetchBreedProducts(true);
+            toast({ 
+              title: 'Generation Complete', 
+              description: `Generated ${status.generated} mockups` 
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error polling status:', error);
+      }
+    }, 3000);
+    
+    // Clear interval after 30 minutes max
+    setTimeout(() => clearInterval(interval), 30 * 60 * 1000);
+  };
+
+  // Load mockup data when switching to mockups tab
+  useEffect(() => {
+    if (activeSubTab === 'mockups') {
+      fetchMockupStats();
+      fetchBreedProducts(true);
+    }
+  }, [activeSubTab, fetchMockupStats]);
 
   const updateProductTier = async (productId, tier) => {
     try {
@@ -221,10 +355,11 @@ const SoulProductsManager = () => {
       </div>
 
       {/* Sub Tabs */}
-      <div className="flex gap-2 border-b pb-2">
+      <div className="flex gap-2 border-b pb-2 overflow-x-auto">
         {[
           { id: 'products', label: 'Product Tiers', icon: Package },
           { id: 'archetypes', label: 'Soul Archetypes', icon: Crown },
+          { id: 'mockups', label: 'AI Mockups', icon: Image },
           { id: 'preview', label: 'Preview', icon: Eye }
         ].map(tab => (
           <Button
@@ -235,6 +370,11 @@ const SoulProductsManager = () => {
           >
             <tab.icon className="w-4 h-4 mr-2" />
             {tab.label}
+            {tab.id === 'mockups' && mockupStats && (
+              <Badge className="ml-2 bg-green-100 text-green-700 text-xs">
+                {mockupStats.with_mockups}/{mockupStats.total_products}
+              </Badge>
+            )}
           </Button>
         ))}
       </div>
@@ -641,6 +781,184 @@ const SoulProductsManager = () => {
                 <p className="text-gray-300">🎁 Gift suggestions for Mojo's humans</p>
               </div>
             </div>
+          </Card>
+        </div>
+      )}
+
+      {/* AI Mockups Tab */}
+      {activeSubTab === 'mockups' && (
+        <div className="space-y-6">
+          {/* Stats Overview */}
+          {mockupStats && (
+            <div className="grid grid-cols-4 gap-4">
+              <Card className="p-4 bg-gradient-to-br from-purple-50 to-pink-50">
+                <div className="text-3xl font-bold text-purple-700">{mockupStats.total_products}</div>
+                <div className="text-sm text-gray-600">Total Breed Products</div>
+              </Card>
+              <Card className="p-4 bg-gradient-to-br from-green-50 to-emerald-50">
+                <div className="text-3xl font-bold text-green-700">{mockupStats.with_mockups}</div>
+                <div className="text-sm text-gray-600">With Mockups</div>
+              </Card>
+              <Card className="p-4 bg-gradient-to-br from-amber-50 to-orange-50">
+                <div className="text-3xl font-bold text-amber-700">{mockupStats.without_mockups}</div>
+                <div className="text-sm text-gray-600">Pending</div>
+              </Card>
+              <Card className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
+                <div className="text-3xl font-bold text-blue-700">{mockupStats.completion_percentage}%</div>
+                <div className="text-sm text-gray-600">Complete</div>
+              </Card>
+            </div>
+          )}
+
+          {/* Generation Controls */}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              AI Mockup Generation
+            </h3>
+            
+            {/* Generation Status */}
+            {generationStatus?.running && (
+              <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-blue-800 flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Generation in Progress
+                  </span>
+                  <Button size="sm" variant="outline" onClick={stopMockupGeneration}>
+                    <Square className="w-3 h-3 mr-1" /> Stop
+                  </Button>
+                </div>
+                <div className="w-full bg-blue-200 rounded-full h-2">
+                  <div 
+                    className="bg-blue-600 h-2 rounded-full transition-all"
+                    style={{ width: `${(generationStatus.progress / generationStatus.total) * 100}%` }}
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-blue-700 mt-1">
+                  <span>Progress: {generationStatus.progress}/{generationStatus.total}</span>
+                  <span>Generated: {generationStatus.generated} | Failed: {generationStatus.failed}</span>
+                </div>
+                {generationStatus.current_product && (
+                  <div className="text-xs text-blue-600 mt-1">
+                    Current: {generationStatus.current_product}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Controls */}
+            <div className="grid grid-cols-4 gap-4 mb-4">
+              <div>
+                <label className="text-xs font-medium text-gray-600 block mb-1">Limit (0 = all)</label>
+                <Input 
+                  type="number" 
+                  value={generationLimit}
+                  onChange={(e) => setGenerationLimit(parseInt(e.target.value) || 0)}
+                  className="text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-600 block mb-1">Filter by Breed</label>
+                <select 
+                  value={selectedBreed}
+                  onChange={(e) => setSelectedBreed(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg text-sm"
+                >
+                  <option value="">All Breeds</option>
+                  {mockupStats?.by_breed && Object.keys(mockupStats.by_breed).sort().map(breed => (
+                    <option key={breed} value={breed}>{breed}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-600 block mb-1">Filter by Type</label>
+                <select 
+                  value={selectedProductType}
+                  onChange={(e) => setSelectedProductType(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg text-sm"
+                >
+                  <option value="">All Types</option>
+                  {mockupStats?.by_product_type && Object.keys(mockupStats.by_product_type).sort().map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-end gap-2">
+                <Button 
+                  onClick={startMockupGeneration}
+                  disabled={generationStatus?.running}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Generate
+                </Button>
+                <Button onClick={seedBreedProducts} variant="outline">
+                  Seed Products
+                </Button>
+              </div>
+            </div>
+
+            <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
+              <strong>Note:</strong> Each mockup takes ~30-60 seconds to generate using AI.
+              Generation runs in the background - you can close this page and check back later.
+              <br />
+              <strong>33 breeds × 12 product types = 396 total mockups</strong>
+            </div>
+          </Card>
+
+          {/* Generated Mockups Gallery */}
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Generated Mockups</h3>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => fetchBreedProducts(true)}>
+                  <RefreshCw className="w-4 h-4 mr-1" /> Refresh
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => fetchBreedProducts(false)}>
+                  Show Pending
+                </Button>
+              </div>
+            </div>
+
+            {loadingMockups ? (
+              <div className="text-center py-8">
+                <RefreshCw className="w-8 h-8 animate-spin mx-auto text-purple-600" />
+                <p className="mt-2 text-gray-500">Loading mockups...</p>
+              </div>
+            ) : breedProducts.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Image className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                <p>No mockups generated yet</p>
+                <p className="text-sm">Click "Generate" to start creating AI mockups</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {breedProducts.map(product => (
+                  <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    <div className="aspect-square bg-gray-100">
+                      {product.mockup_url ? (
+                        <img 
+                          src={product.mockup_url}
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <Image className="w-8 h-8" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-2">
+                      <Badge className={`text-[10px] mb-1 ${product.mockup_url ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                        {product.product_type}
+                      </Badge>
+                      <h5 className="font-medium text-xs truncate">{product.breed_name}</h5>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
           </Card>
         </div>
       )}
