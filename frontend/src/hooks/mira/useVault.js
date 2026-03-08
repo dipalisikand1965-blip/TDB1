@@ -153,6 +153,35 @@ const useVault = () => {
     return miraPicks.safetyOverride?.level || 'normal';
   }, [miraPicks.safetyOverride]);
   
+  // NEW: Fetch default picks for a pet (called on page load / pet change)
+  const fetchDefaultPicks = useCallback(async (petId, token, apiUrl) => {
+    if (!petId) return;
+    
+    try {
+      console.log(`[VAULT] Fetching default picks for pet: ${petId}`);
+      const response = await fetch(`${apiUrl}/api/mira/picks/default/${petId}`, {
+        headers: {
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.picks && data.picks.length > 0) {
+          console.log(`[VAULT] Loaded ${data.picks.length} default picks for ${data.pet_name}`);
+          setMiraPicks(prev => ({
+            ...prev,
+            enginePicks: data.picks,
+            lastUpdated: new Date().toISOString(),
+            hasNew: true
+          }));
+        }
+      }
+    } catch (err) {
+      console.error('[VAULT] Error fetching default picks:', err);
+    }
+  }, []);
+  
   return {
     // Vault visibility
     showVault,
@@ -186,7 +215,8 @@ const useVault = () => {
     getCombinedPicks,
     getLastUpdatedText,
     isInSafetyMode,
-    getSafetyLevel
+    getSafetyLevel,
+    fetchDefaultPicks  // NEW: Fetch default picks on page load
   };
 };
 
