@@ -7,6 +7,11 @@ from datetime import datetime, timezone
 from bson import ObjectId
 from typing import Optional
 import os
+import sys
+
+# Add the parent directory to the path to import from main backend
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from pet_score_logic import calculate_pet_soul_score
 
 router = APIRouter(prefix="/api/wrapped", tags=["Pet Wrapped"])
 
@@ -93,7 +98,18 @@ async def generate_pet_wrapped(pet_id: str, year: Optional[int] = None):
         {"pet_id": pet_id}
     ).sort("recorded_at", 1))
     
-    current_score = pet.get("soul_score", 0)
+    # Calculate score using the same weighted scoring as /api/pets/my-pets
+    # This ensures consistency across all components
+    stored_score = pet.get("overall_score", 0) or pet.get("soul_score", 0) or 0
+    answers = pet.get("doggy_soul_answers", {}) or pet.get("soul_answers", {})
+    
+    if answers:
+        score_data = calculate_pet_soul_score(answers)
+        calculated_score = score_data["total_score"]
+        # Use the HIGHER of stored vs calculated score
+        current_score = max(stored_score, calculated_score)
+    else:
+        current_score = stored_score
     
     if len(soul_history) >= 3:
         journey = [
