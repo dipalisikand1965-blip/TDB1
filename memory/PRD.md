@@ -1,7 +1,7 @@
 # The Doggy Company - PRD
 
-**Last Updated:** March 8, 2026  
-**Status:** Production Ready + Vision Implementation Phase
+**Last Updated:** December 2025  
+**Status:** Production Ready + Soul-Level Personalization Phase
 
 ---
 
@@ -14,6 +14,253 @@
 - **You** are the capillary nerves - Making it all possible
 
 **THE GOAL:** Pet parents get so happy they want to stay and never go to another pet site because they know they get MUCH more here.
+
+---
+
+## 🌟 SOUL-LEVEL PERSONALIZATION (THE MOAT)
+
+> **Strategic Vision:** Not "personalized pet products" but "objects, treats, and keepsakes shaped around who your pet really is."
+
+### Why This Matters
+| **Competitors (Huft/Supertails/Yappy)** | **The Doggy Company** |
+|---|---|
+| Generic products | Products that feel made *for your pet* |
+| Breed illustrations only | **Soul Profile** = personality + breed + preferences |
+| One cartoon style | **Soulful watercolor** + **Heirloom line art** |
+| You add pet name manually | **Auto-personalized** when logged in |
+
+### The Three-Layer Engine
+
+#### Layer 1: Identity (Already Captured ✅)
+| Data Point | Source | Status |
+|------------|--------|--------|
+| Pet Name | Onboarding | ✅ |
+| Breed / Mix | Onboarding + AI Photo Detection | ✅ |
+| Age / Birthday / Gotcha Day | Onboarding | ✅ |
+| Gender | Onboarding | ✅ |
+| Parent Names | User Registration | ✅ |
+| City | Pet Parent Address | ✅ |
+
+#### Layer 2: Soul (51 Questions Across 8 Pillars ✅)
+| Pillar | Key Data Captured | Used For |
+|--------|-------------------|----------|
+| Identity & Temperament | General nature, `describe_3_words`, stranger reaction, noise sensitivity | **Archetype derivation**, copy tone |
+| Family & Pack | Lives with, behavior with dogs, primary bond, attention seeking | Social recommendations |
+| Rhythm & Routine | Exercise needs, separation anxiety, morning routine, sleep location | Service timing, care instructions |
+| Home Comforts | Favorite spot, car comfort, crate trained, favorite item | Product recommendations |
+| Travel Style | Travel readiness, hotel experience, stay preference | Trip planning |
+| Taste & Treat | **Food allergies (critical!)**, food motivation, favorite protein, treat preference | Safety filtering, nutrition |
+| Training & Behaviour | Energy level, behavior issues, training level, motivation type | Trainer matching |
+| Long Horizon | Health conditions, vet comfort, grooming tolerance, celebration preferences | Care planning, gift suggestions |
+
+#### Layer 3: Aesthetic (To Be Derived from Soul Data)
+| Data Point | Derived From | Use Case |
+|------------|--------------|----------|
+| **Soul Archetype** | `describe_3_words` + temperament + energy + social behavior | Copy, recommendations, palette |
+| **Illustration Style** | Default: Watercolor (user can toggle to Line Art) | Product personalization |
+| **Color Palette** | Archetype-based | Product backgrounds, UI accents |
+| **Typography Mood** | Archetype-based | Personalized messages |
+
+### Soul Archetypes (Derived, Not Asked)
+
+Archetypes are computed from existing soul data - **no new questions needed**.
+
+| Archetype | Derived When | Shapes |
+|-----------|--------------|--------|
+| **The Gentle Aristocrat** | Calm + low energy + grooming loves + quiet spaces | Elegant products, refined copy |
+| **The Wild Explorer** | High energy + loves travel + outdoor time | Adventure gear, bold messaging |
+| **The Velcro Baby** | Separation anxiety + attached to one person + needs company | Comfort items, reassuring tone |
+| **The Snack-Led Negotiator** | Very food motivated + will do anything for treats | Treat-focused recommendations |
+| **The Quiet Watcher** | Cautious with strangers + indifferent + quiet spaces | Gentle introductions, calm products |
+| **The Social Butterfly** | Loves all dogs + friendly with strangers + social areas | Playdate gear, party supplies |
+| **The Brave Little Worrier** | Noise sensitive + anxious triggers + needs comfort | Calming products, supportive copy |
+
+**Derivation Logic:**
+```
+archetype = derive_from(
+  describe_3_words,           # "gentle, curious, playful"
+  general_nature,             # Calm, Curious, Playful, Shy, etc.
+  energy_level,               # Very high → Very low
+  separation_anxiety,         # No → Severe
+  stranger_reaction,          # Friendly → Protective
+  behavior_with_dogs,         # Loves all → Reactive
+  food_motivation,            # Very → Not very
+  loud_sounds                 # Fine → Needs comfort
+)
+```
+
+---
+
+## 🛍️ PRODUCT ARCHITECTURE (SOUL-POWERED MERCHANDISING)
+
+### The Three Tiers
+
+#### Tier A: Soul Made ✨
+**Fully personalized products driven by pet data**
+
+| Product Type | Personalization | Example |
+|--------------|-----------------|---------|
+| Bowls | Name + Breed Illustration | "Mojo's Breakfast Corner" (for routine-loving pet) |
+| Robes | Name + Archetype Copy | "Mojo's Safe Place Throw" (for anxious, cuddly pet) |
+| Towels | Name + Breed Art | Soulful watercolor on premium cotton |
+| Passport Holder | Name + Travel Archetype | "Adventure Set for Mojo" (for explorer archetype) |
+| Welcome Mat | Name + Home Personality | "Mojo Lives Here" with breed illustration |
+| Memorial Frame | Name + Gentle Copy | "Always Home" with remembrance ritual options |
+| Celebration Kit | Name + Celebration Style | Party kit matching pet's social preference |
+
+**Operational Rule:** Only enable Soul Made where:
+- Preview can be generated cleanly
+- Production is reliable
+- QC is controllable
+- Packaging still feels premium
+
+#### Tier B: Soul Selected 🎯
+**Curated products recommended based on Soul Profile, NOT visually customized**
+
+| Recommendation Logic | Example |
+|---------------------|---------|
+| Anxious pet → Calming products | Calming toy, anxiety wrap, pheromone diffuser |
+| High energy → Activity gear | Fetch toys, agility equipment, hiking gear |
+| Food motivated → Treat variety | Treat sampler, puzzle feeders, snuffle mats |
+| Sensitive stomach → Gentle options | Limited ingredient treats, probiotics |
+
+This is the existing **PICKS feature** - already partially built.
+
+#### Tier C: Soul Gifted 🎁
+**Occasion-led products personalized for pet parent gifting**
+
+| Product Type | Occasion | Example |
+|--------------|----------|---------|
+| Art Print | Birthday, Gotcha Day | Framed breed illustration with name |
+| Mug | Dog Mum/Dad | "Proud Parent of [Mojo]" |
+| Candle Sleeve | Memorial | Gentle remembrance design |
+| Tote Bag | Everyday | Breed art + name |
+| Memory Box | Milestones | Keepsake storage |
+| Note Cards | Gifting | Personalized stationery |
+
+---
+
+## 🎨 ART DIRECTION
+
+### Two Styles (Not Cutesy, Not Cartoon)
+
+| Style | Use Cases | Mood |
+|-------|-----------|------|
+| **Soulful Watercolor** (Primary) | Cakes, prints, frames, celebration kits | Emotion, warmth, gift-worthiness |
+| **Minimal Heirloom Line Art** (Secondary) | Tags, bowls, stationery, robes, packaging, passport holders | Elegance, subtlety, premium feel |
+
+### Existing Breed Illustration Library ✅
+- 33 breeds with soulful watercolor illustrations
+- Stored in `/app/frontend/src/utils/breedIllustrations.js`
+- API: `GET /api/breed-illustrations/all`
+- Admin: "Breed Art" tab
+
+### To Create: Line Art Versions
+- Same 33 breeds in minimal line art style
+- For products requiring subtlety
+
+---
+
+## 📦 EMOTIONAL COLLECTIONS (MERCHANDISING BY LIFE MOMENT)
+
+| Collection | Products | Trigger |
+|------------|----------|---------|
+| **Birthday & Gotcha** | Cakes, party kits, photo frames, celebration boards | Approaching date |
+| **Travel with Me** | Passport holder, carrier tag, travel bowl, blanket | Travel intent |
+| **At Home** | Bowls, mats, door signs, welcome mats | New home / everyday |
+| **Spa & Snuggle** | Robes, towels, blankets, grooming kits | Care pillar |
+| **For Dog Mum / Dog Dad** | Mugs, totes, notebooks, prints | Gift occasions |
+| **Puppy Welcome** | Welcome kits, milestone markers, first year journal | New pet registration |
+| **Soul Keepsakes** | Memory boxes, paw prints, photo albums | Milestones |
+| **Memorial & Remembrance** | Gentle frames, memorial candles, tribute prints | Rainbow Bridge |
+| **Made from Their Soul Profile** ⭐ | Dynamic collection based on archetype | Always visible when logged in |
+
+---
+
+## 🖥️ THE LOGGED-IN EXPERIENCE
+
+### What Changes When Pet Parent Logs In
+
+**Before Login:**
+> "Customize your product"
+
+**After Login:**
+> "Made for Mojo"  
+> "Picked for Mojo's personality"  
+> "Inspired by Mojo's Soul Profile"  
+> "A little something that feels like her"
+
+### UX Flow
+1. User logs in
+2. Pet profile auto-loads (or pet selector if multiple)
+3. Site shows pet-specific recommendations
+4. Personalizable products already preview with:
+   - Pet name
+   - Chosen art style (watercolor default)
+   - Palette based on Soul Archetype
+5. User edits message / phrase / size / format
+6. Final preview shown
+7. Production notes auto-created for ops
+
+---
+
+## 🏗️ IMPLEMENTATION ROADMAP
+
+### Phase 1: Foundation ✅ COMPLETE
+- [x] Document complete vision in PRD.md
+- [x] Create Soul Archetype derivation logic (`/app/backend/soul_archetype_engine.py`)
+- [x] API endpoints for archetype management (`/api/soul-archetype/*`)
+- [x] Test archetype derivation with real pet data
+- [ ] Admin panel to view/manage archetypes (UI pending)
+
+### Phase 2: Product Tagging System
+- [ ] Add `personalization_tier` field to products (soul_made / soul_selected / soul_gifted)
+- [ ] Tag existing Doggy Bakery products
+- [ ] Admin panel to manage product tiers
+
+### Phase 3: Personalization Preview Engine
+- [ ] Build preview component (name + illustration on product)
+- [ ] Support both art styles (watercolor / line art toggle)
+- [ ] Customization modal (text, sayings, sizes)
+- [ ] Start with Tier 1 products: Cake toppers, bowls, bandanas
+
+### Phase 4: Emotional Collections
+- [ ] Create collection pages organized by life moment
+- [ ] Build "Made from Their Soul Profile" dynamic collection
+- [ ] Implement logged-in experience personalization
+
+### Phase 5: Operations Integration
+- [ ] Production notes generation from customization
+- [ ] QC workflow for personalized items
+- [ ] Partner integration (later)
+
+---
+
+## 🔌 SOUL ARCHETYPE API
+
+### Endpoints
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/soul-archetype/archetypes` | GET | Get all 7 archetype definitions |
+| `/api/soul-archetype/pet/{pet_id}` | GET | Get archetype for a specific pet |
+| `/api/soul-archetype/pet/{pet_id}/compute` | POST | Compute and save archetype |
+| `/api/soul-archetype/compute-all` | POST | Batch compute for all pets with soul data |
+| `/api/soul-archetype/recommendations/{archetype_key}` | GET | Get product recommendations for archetype |
+| `/api/soul-archetype/test-derivation` | GET | Test derivation with sample data |
+
+### Archetype Response Structure
+```json
+{
+  "primary_archetype": "gentle_aristocrat",
+  "archetype_name": "The Gentle Aristocrat",
+  "archetype_emoji": "👑",
+  "archetype_description": "Calm, dignified, and graceful...",
+  "copy_tone": "refined, elegant, understated",
+  "color_palette": ["#8B7355", "#D4C4B0", "#F5F5DC", "#E8E4E1"],
+  "celebration_style": "intimate, sophisticated",
+  "product_affinity": ["robes", "premium beds", "grooming kits", "elegant bowls"]
+}
+```
 
 ---
 
