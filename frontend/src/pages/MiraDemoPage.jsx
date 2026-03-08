@@ -382,7 +382,8 @@ const MiraDemoPage = () => {
     showMiraTray,
     setShowMiraTray,
     clearPicks,
-    markPicksSeen
+    markPicksSeen,
+    fetchDefaultPicks  // NEW: Fetch default picks on page load
   } = useVault();
   
   // ═══════════════════════════════════════════════════════════════════════════════
@@ -2068,13 +2069,16 @@ const MiraDemoPage = () => {
       
       try {
         // Fetch celebrations, health reminders, health vault status, weather, bundles, AND new proactive alerts
-        const [celebResponse, healthResponse, vaultResponse, weatherResponse, bundlesResponse, proactiveResponse] = await Promise.all([
+        const [celebResponse, healthResponse, vaultResponse, weatherResponse, bundlesResponse, proactiveResponse, picksResponse] = await Promise.all([
           fetch(`${API_URL}/api/mira/celebrations/${pet.id}`),
           fetch(`${API_URL}/api/mira/health-reminders/${pet.id}`),
           fetch(`${API_URL}/api/mira/health-vault/status/${pet.id}`),
           fetch(`${API_URL}/api/mira/weather-suggestions/${pet.id}`),
           fetch(`${API_URL}/api/mira/bundles/${pet.id}`),
-          fetch(`${API_URL}/api/mira/proactive/alerts/${pet.id}`)  // NEW: Vaccination, Birthday, Grooming alerts
+          fetch(`${API_URL}/api/mira/proactive/alerts/${pet.id}`),  // NEW: Vaccination, Birthday, Grooming alerts
+          fetch(`${API_URL}/api/mira/picks/default/${pet.id}`, {    // NEW: Default picks for pet
+            headers: token ? { Authorization: `Bearer ${token}` } : {}
+          })
         ]);
         
         const celebData = celebResponse.ok ? await celebResponse.json() : { celebrations: [] };
@@ -2083,6 +2087,18 @@ const MiraDemoPage = () => {
         const weatherData = weatherResponse.ok ? await weatherResponse.json() : { suggestions: [] };
         const bundlesData = bundlesResponse.ok ? await bundlesResponse.json() : { bundles: [] };
         const proactiveData = proactiveResponse.ok ? await proactiveResponse.json() : { alerts: [], critical_count: 0 };
+        const picksData = picksResponse.ok ? await picksResponse.json() : { picks: [] };
+        
+        // Load default picks if any
+        if (picksData.picks && picksData.picks.length > 0) {
+          console.log(`[MIRA] Loaded ${picksData.picks.length} default picks for ${pet.name}`);
+          setMiraPicks(prev => ({
+            ...prev,
+            enginePicks: picksData.picks,
+            lastUpdated: new Date().toISOString(),
+            hasNew: conversationHistory.length === 0  // Only show as new if no conversation yet
+          }));
+        }
         
         setProactiveAlerts({
           celebrations: celebData.celebrations || [],
@@ -2274,6 +2290,8 @@ const MiraDemoPage = () => {
         setCurrentTicket(null);
         // MULTI-PET FIX: Clear Mira Picks when switching pets
         clearPicks();
+        // NEW: Fetch default picks for new pet
+        fetchDefaultPicks(newPet.id, token, API_URL);
       }
     } catch (err) {
       console.error('[PET SWITCH] Error:', err);
@@ -2281,6 +2299,8 @@ const MiraDemoPage = () => {
       startNewSession();
       // MULTI-PET FIX: Also clear Mira Picks on error
       clearPicks();
+      // NEW: Still try to fetch default picks
+      fetchDefaultPicks(newPet.id, token, API_URL);
     }
   };
   
