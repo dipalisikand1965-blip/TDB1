@@ -900,10 +900,11 @@ const SoulProductsManager = () => {
             </div>
 
             <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
-              <strong>Note:</strong> Each mockup takes ~30-60 seconds to generate using AI.
-              Generation runs in the background - you can close this page and check back later.
+              <strong>Note:</strong> Soul Made products are auto-seeded on deployment via MasterSync.
               <br />
-              <strong>33 breeds × 12 product types = 396 total mockups</strong>
+              Mockup generation takes ~30-60 seconds per image. Click Generate to start batch processing.
+              <br />
+              <strong>33 breeds × 11 product types = 363 total mockups (no cakes - use TheDoggyBakery)</strong>
             </div>
           </Card>
 

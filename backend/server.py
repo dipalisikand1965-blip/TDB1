@@ -1559,6 +1559,27 @@ async def lifespan(app: FastAPI):
             except Exception as e:
                 logger.warning(f"[MASTER SYNC 8/8] Service image migration skipped: {e}")
             
+            # Step 9: Soul Made Breed Products - Seed 33 breeds × 11 product types
+            logger.info("[MASTER SYNC 9/9] Seeding Soul Made Breed Products...")
+            try:
+                from scripts.generate_all_mockups import seed_all_breed_products, BREEDS, PRODUCT_TYPES
+                
+                # Check if breed products already exist
+                existing_count = await db.breed_products.count_documents({})
+                
+                if existing_count < 300:  # Less than expected 363
+                    count = await seed_all_breed_products(db)
+                    logger.info(f"[MASTER SYNC 9/9] ✅ Seeded {count} Soul Made breed products ({len(BREEDS)} breeds × {len(PRODUCT_TYPES)} types)")
+                else:
+                    logger.info(f"[MASTER SYNC 9/9] ✅ Soul Made breed products already exist: {existing_count}")
+                
+                # Log mockup generation status
+                with_mockups = await db.breed_products.count_documents({"mockup_url": {"$ne": None}})
+                logger.info(f"[MASTER SYNC 9/9] Mockups generated: {with_mockups}/{existing_count if existing_count >= 300 else 363}")
+                
+            except Exception as e:
+                logger.warning(f"[MASTER SYNC 9/9] Soul Made seeding skipped: {e}")
+            
             # ========== AUTO-LINK ORPHAN PETS ==========
             # DISABLED: This code was reassigning new users' pets to dipali on server restart
             # Pets should ONLY belong to the user who created them during onboarding
