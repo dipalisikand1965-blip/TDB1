@@ -7082,6 +7082,16 @@ async def get_public_products(
     else:
         unified_query = {"visibility.status": {"$in": ["active", None]}}
     
+    # IMPORTANT: Exclude breed-specific "Soul Made" products from unified_products
+    # These have breed names in their titles (e.g., "German Shepherd · Birthday Cake")
+    # Soul Made products should ONLY be shown in their dedicated section via /api/mockups/breed-products
+    breed_exclusion_pattern = r"^(Labrador|Golden Retriever|German Shepherd|Beagle|Bulldog|Poodle|Rottweiler|Yorkshire|Boxer|Dachshund|Siberian Husky|Husky|Doberman|Great Dane|Shih Tzu|Pug|Chihuahua|Pomeranian|Maltese|Cocker Spaniel|Border Collie|Cavalier|French Bulldog|Indie|Indian Pariah|American Bully|Chow Chow|Dalmatian|Jack Russell|Lhasa Apso|Italian Greyhound|Scottish Terrier|St Bernard|Schnoodle|Irish Setter)\s*[·:]"
+    
+    unified_query = {"$and": [
+        unified_query,
+        {"name": {"$not": {"$regex": breed_exclusion_pattern, "$options": "i"}}}
+    ]}
+    
     try:
         # Sort by created_at descending to show newest items first
         unified_products = await db.unified_products.find(unified_query, {"_id": 0}).sort("created_at", -1).to_list(500)

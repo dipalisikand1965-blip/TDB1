@@ -304,7 +304,7 @@ Test Pets:
 ## Services
 - Backend: Running on port 8001
 - Frontend: Running on port 3000
-- Preview URL: https://mockup-engine.preview.emergentagent.com
+- Preview URL: https://soul-made-pets.preview.emergentagent.com
 
 ---
 
