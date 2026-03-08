@@ -30,6 +30,8 @@ import { Button } from './ui/button';
 import { API_URL } from '../utils/api';
 import { usePillarContext } from '../context/PillarContext';
 import { useAuth } from '../context/AuthContext';
+import SoulMadeProductModal from './SoulMadeProductModal';
+import { useToast } from '../hooks/use-toast';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // EMOTIONAL COLLECTIONS - Organize by life moment, NOT just product type
@@ -288,17 +290,39 @@ const SoulMadeCollection = ({
 }) => {
   const { currentPet } = usePillarContext();
   const { token } = useAuth();
+  const { toast } = useToast();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [archetype, setArchetype] = useState(null);
+  
+  // Modal state
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Get breed key and pet info
   const petBreedKey = currentPet?.breed ? getBreedKey(currentPet.breed) : null;
   const petName = currentPet?.name || 'Your Pet';
+  const breedName = currentPet?.breed || '';
 
   // Get pillar-specific configuration
   const pillarConfig = EMOTIONAL_COLLECTIONS[pillar] || EMOTIONAL_COLLECTIONS.celebrate;
+
+  // Handle product click - open modal
+  const handleProductClick = (product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  // Handle add to cart from modal
+  const handleAddToCart = (cartItem) => {
+    console.log('[SoulMadeCollection] Add to cart:', cartItem);
+    toast({
+      title: "Added to Cart",
+      description: `${cartItem.name} has been added to your cart`,
+    });
+    // TODO: Integrate with actual cart system
+  };
 
   // Fetch archetype for styling
   useEffect(() => {
@@ -324,6 +348,7 @@ const SoulMadeCollection = ({
   // Fetch breed-specific products
   const fetchBreedProducts = useCallback(async () => {
     if (!petBreedKey) {
+      console.log('[SoulMadeCollection] No breed key, skipping fetch');
       setProducts([]);
       return;
     }
@@ -332,8 +357,7 @@ const SoulMadeCollection = ({
     setError(null);
 
     try {
-      // Build query with pillar-specific product types
-      const productTypes = pillarConfig.product_types.join(',');
+      // Build query
       let url = `${API_URL}/api/mockups/breed-products?breed=${petBreedKey}&has_mockup=true&limit=${maxItems}`;
       
       // Add pillar filter
@@ -341,27 +365,32 @@ const SoulMadeCollection = ({
         url += `&pillar=${pillar}`;
       }
 
-      const response = await fetch(url, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      });
+      console.log('[SoulMadeCollection] Fetching:', url);
+
+      const response = await fetch(url);
+
+      console.log('[SoulMadeCollection] Response status:', response.status);
 
       if (response.ok) {
         const data = await response.json();
+        console.log('[SoulMadeCollection] Got products:', data.count);
+        
         let filteredProducts = data.products || [];
         
-        // Filter out excluded product types for this pillar
+        // Filter out excluded product types (exact match on product_type)
         if (pillarConfig.exclude.length > 0) {
           filteredProducts = filteredProducts.filter(p => {
             const pType = (p.product_type || '').toLowerCase();
-            const pName = (p.name || '').toLowerCase();
-            return !pillarConfig.exclude.some(ex => 
-              pType.includes(ex) || pName.includes(ex)
-            );
+            // Only exclude if product_type exactly matches an excluded type
+            return !pillarConfig.exclude.includes(pType);
           });
         }
         
+        console.log('[SoulMadeCollection] After filter:', filteredProducts.length);
         setProducts(filteredProducts);
       } else {
+        const errorText = await response.text();
+        console.error('[SoulMadeCollection] API error:', errorText);
         throw new Error('Failed to fetch products');
       }
     } catch (err) {
@@ -370,7 +399,7 @@ const SoulMadeCollection = ({
     } finally {
       setLoading(false);
     }
-  }, [petBreedKey, pillar, pillarConfig, maxItems, token]);
+  }, [petBreedKey, pillar, pillarConfig, maxItems]);
 
   // Load products when dependencies change
   useEffect(() => {
@@ -458,10 +487,7 @@ const SoulMadeCollection = ({
               product={product}
               petName={petName}
               archetype={archetype}
-              onViewDetails={(p) => {
-                console.log('[SoulMadeCollection] View product:', p.id);
-                // TODO: Open product detail modal
-              }}
+              onViewDetails={handleProductClick}
             />
           ))}
         </div>
@@ -474,6 +500,19 @@ const SoulMadeCollection = ({
           Soul-Level Personalization • Objects shaped around who {petName} really is
         </p>
       )}
+
+      {/* Product Detail Modal */}
+      <SoulMadeProductModal
+        product={selectedProduct}
+        petName={petName}
+        breedName={breedName}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedProduct(null);
+        }}
+        onAddToCart={handleAddToCart}
+      />
     </div>
   );
 };
