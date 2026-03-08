@@ -4345,6 +4345,30 @@ const MiraDemoPage = () => {
             />
           )}
           
+          {/* SOUL KNOWLEDGE TICKER - "What Mira Knows" about the pet */}
+          {/* Shows soul traits, favorites, allergies - builds trust and engagement */}
+          {pet && conversationHistory.length === 0 && (
+            <SoulKnowledgeTicker
+              petId={pet.id}
+              petName={pet.name}
+              petPhoto={pet.photo}
+              soulScore={pet.soulScore || pet.overall_score || 0}
+              knowledgeItems={[
+                ...(pet.soul?.personality_tag ? [{ category: 'personality', text: pet.soul.personality_tag }] : []),
+                ...(pet.doggy_soul_answers?.general_nature ? [{ category: 'soul', text: `${pet.doggy_soul_answers.general_nature} nature` }] : []),
+                ...(pet.soul?.love_language ? [{ category: 'personality', text: `Loves ${pet.soul.love_language}` }] : []),
+                ...(pet.sensitivities?.length > 0 ? pet.sensitivities.map(s => ({ category: 'health', text: s })) : []),
+                ...(pet.favorites?.length > 0 ? pet.favorites.map(f => ({ category: 'diet', text: `Loves ${f}` })) : [])
+              ]}
+              onSoulQuestionClick={() => setShowSoulFormModal(true)}
+              onKnowledgeItemClick={(item) => handleQuickReply(`Tell me more about ${pet.name}'s ${item.category}`)}
+              onSoulBadgeClick={() => setShowMojoModal(true)}
+              apiUrl={API_URL}
+              token={token}
+              className="mb-4"
+            />
+          )}
+          
           {/* Welcome State - Extracted to WelcomeHero component (Stage 5) */}
           {conversationHistory.length === 0 && !isProcessing && (
             <WelcomeHero

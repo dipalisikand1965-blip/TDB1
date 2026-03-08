@@ -4359,18 +4359,46 @@ const MiraDemoBackupPage = () => {
                     </div>
                   )}
                   
-                  {/* Soul Traits */}
+                  {/* Soul Traits - Generate from pet data */}
                   <div className="soul-traits">
-                    {(pet.soulTraits || [
-                      { label: 'Glamorous soul', icon: '✨' },
-                      { label: 'Elegant paws', icon: '🎀' },
-                      { label: 'Devoted friend', icon: '💖' }
-                    ]).map((trait, i) => (
-                      <div key={i} className="trait-chip">
-                        <span className="trait-icon">{trait.icon}</span>
-                        <span className="trait-label">{trait.label}</span>
-                      </div>
-                    ))}
+                    {(() => {
+                      // Generate traits dynamically from pet soul data
+                      const traits = [];
+                      
+                      // 1. Personality tag (if set)
+                      if (pet.soul?.personality_tag) {
+                        traits.push({ label: pet.soul.personality_tag, icon: '✨', color: '#a855f7' });
+                      } else if (pet.doggy_soul_answers?.general_nature) {
+                        traits.push({ label: `${pet.doggy_soul_answers.general_nature} soul`, icon: '✨', color: '#a855f7' });
+                      }
+                      
+                      // 2. Love language or describe words
+                      if (pet.soul?.love_language) {
+                        traits.push({ label: `${pet.soul.love_language} lover`, icon: '❤️', color: '#ef4444' });
+                      } else if (pet.doggy_soul_answers?.describe_3_words) {
+                        const firstWord = pet.doggy_soul_answers.describe_3_words.split(',')[0]?.trim();
+                        if (firstWord) traits.push({ label: firstWord, icon: '🎀', color: '#ec4899' });
+                      }
+                      
+                      // 3. Energy level or special trait
+                      if (pet.soul?.energy_level) {
+                        traits.push({ label: `${pet.soul.energy_level} energy`, icon: '⚡', color: '#f59e0b' });
+                      } else if (pet.doggy_soul_answers?.energy_level) {
+                        traits.push({ label: pet.doggy_soul_answers.energy_level, icon: '⚡', color: '#f59e0b' });
+                      }
+                      
+                      // Use soulTraits from prop if available
+                      const finalTraits = pet.soulTraits?.length > 0 ? pet.soulTraits : 
+                                          traits.length > 0 ? traits : 
+                                          [{ label: 'Unique soul', icon: '⭐', color: '#f59e0b' }];
+                      
+                      return finalTraits.slice(0, 3).map((trait, i) => (
+                        <div key={i} className="trait-chip">
+                          <span className="trait-icon">{trait.icon}</span>
+                          <span className="trait-label">{trait.label}</span>
+                        </div>
+                      ));
+                    })()}
                   </div>
                   
                   {/* Personalized Picks Card - "Mira knows" style */}
