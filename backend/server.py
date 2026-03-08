@@ -253,6 +253,9 @@ from app.api.breed_illustrations_routes import router as breed_illustrations_rou
 # Milestone Illustrations Routes (Kits, Surprise Delivery, Special Occasions)
 from app.api.milestone_illustrations_routes import router as milestone_illustrations_router
 
+# Soul Archetype Routes (Personality archetype derivation)
+from app.api.archetype_routes import router as archetype_router, set_archetype_db
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -19020,6 +19023,10 @@ app.include_router(top_picks_router)  # Top Picks at /api/mira/top-picks/*
 set_top_picks_db(db)  # Initialize Top Picks with database
 set_mira_db(db)  # Initialize Mira with database
 set_intelligence_db(db)  # Initialize Intelligence with database
+
+# Initialize Soul Archetype Engine
+app.include_router(archetype_router)  # Soul Archetype at /api/soul-archetype/*
+set_archetype_db(db)  # Initialize Archetype with database
 
 # Initialize Mira Structured Engine (feature-flagged)
 try:
