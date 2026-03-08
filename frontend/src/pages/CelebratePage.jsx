@@ -44,6 +44,7 @@ import CelebrationMemoryWall from '../components/celebrate/CelebrationMemoryWall
 import ShareCelebrationModal from '../components/celebrate/ShareCelebrationModal';
 import CakeRevealSection from '../components/celebrate/CakeRevealSection';
 import CelebrationAlbum from '../components/celebrate/CelebrationAlbum';
+import PersonalizedBreedCollection from '../components/PersonalizedBreedCollection';
 
 // Lazy load Soul Explainer for footer link
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
@@ -678,6 +679,19 @@ const CelebratePage = () => {
                 pet={activePet}
                 token={token}
                 userEmail={user?.email}
+              />
+            </div>
+            
+            {/* ═══════════════════════════════════════════════════════════════════════ */}
+            {/* PERSONALIZED BREED COLLECTION - AI-Generated Mockups */}
+            {/* Shows breed-specific products for logged-in user's pet */}
+            {/* SEPARATE from Shopify products - pure Soul Made experience */}
+            {/* ═══════════════════════════════════════════════════════════════════════ */}
+            <div className="mt-8" data-testid="personalized-breed-collection-wrapper">
+              <PersonalizedBreedCollection
+                pillar="celebrate"
+                maxItems={12}
+                showTitle={true}
               />
             </div>
             
