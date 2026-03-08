@@ -301,7 +301,7 @@ const Home = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
-                className="text-center px-2"
+                className="text-center px-2 mt-8"
               >
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-400/30 rounded-full mb-4">
                   <Sparkles className="w-4 h-4 text-purple-300" />
