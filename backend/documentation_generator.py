@@ -113,6 +113,7 @@ def generate_complete_documentation():
         priority_files = [
             "/app/memory/OWNERS_GUIDE_DIPALI.md",
             "/app/memory/PRD.md",
+            "/app/memory/PILLAR_AUDIT.md",
             "/app/memory/PERSONALIZATION_VISION.md",
             "/app/memory/PREVIEW_SETUP.md",
             "/app/memory/SOUL_PHILOSOPHY_SSOT.md",
