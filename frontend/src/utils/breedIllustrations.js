@@ -319,6 +319,35 @@ export const getBreedByKey = (breedKey) => {
 };
 
 /**
+ * Get breed illustration URL by breed name
+ * @param {string} breedName - Breed name (e.g., 'Labrador', 'German Shepherd', 'Indie')
+ * @returns {string|null} - Illustration URL or null
+ */
+export const getBreedIllustrationByName = (breedName) => {
+  if (!breedName) return null;
+  
+  const normalizedName = breedName.toLowerCase().trim();
+  
+  // Check all breeds for a match
+  for (const [key, data] of Object.entries(BREED_ILLUSTRATIONS)) {
+    // Check name match
+    if (data.name.toLowerCase() === normalizedName) {
+      return data.imageUrl;
+    }
+    // Check aliases
+    if (data.aliases?.some(alias => alias.toLowerCase() === normalizedName)) {
+      return data.imageUrl;
+    }
+    // Check key match
+    if (key === normalizedName.replace(/ /g, '_')) {
+      return data.imageUrl;
+    }
+  }
+  
+  return null;
+};
+
+/**
  * Get all available breeds
  * @returns {array} - Array of breed objects
  */
@@ -335,5 +364,6 @@ export default {
   findBreedIllustration,
   getProductImage,
   getBreedByKey,
+  getBreedIllustrationByName,
   getAllBreeds
 };
