@@ -58,7 +58,7 @@ Be patient. Be thorough. Honor the Sikand legacy.
 - Admin: `aditya` / `lola4304`
 
 ## 🌐 PREVIEW URL
-https://doggy-platform-2.preview.emergentagent.com
+https://soul-profile-2.preview.emergentagent.com
 
 ---
 

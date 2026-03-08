@@ -12,7 +12,7 @@
 | **Mira OS** | `/mira-demo` (THE MAIN OS - NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` or `/my-pets` |
-| **Preview** | `https://doggy-platform-2.preview.emergentagent.com` |
+| **Preview** | `https://soul-profile-2.preview.emergentagent.com` |
 
 ## Test Credentials
 | Role | Email/Username | Password |

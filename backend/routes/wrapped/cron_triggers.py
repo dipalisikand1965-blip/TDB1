@@ -39,9 +39,13 @@ async def check_birthday_wrappeds():
     
     today = datetime.now(timezone.utc)
     
-    # Get all pets with birth_date
+    # Get all pets with birth_date (excluding rainbow bridge pets)
     pets_cursor = db.pets.find({
-        "birth_date": {"$exists": True, "$ne": None}
+        "birth_date": {"$exists": True, "$ne": None},
+        "$or": [
+            {"rainbow_bridge": {"$exists": False}},
+            {"rainbow_bridge": False}
+        ]
     })
     pets = await pets_cursor.to_list(1000)
     
@@ -167,16 +171,22 @@ async def generate_annual_wrappeds():
         logger.info(f"[SKIP] Past December 20th. Annual Wrapped window closed.")
         return {"status": "skipped", "reason": "past_window", "current_day": today.day}
     
-    # Get all pets with owners (active pets)
+    # Get all pets with owners (active pets, excluding rainbow bridge)
     pets_cursor = db.pets.find({
-        "$or": [
-            {"owner_email": {"$exists": True, "$ne": None}},
-            {"user_id": {"$exists": True, "$ne": None}}
+        "$and": [
+            {"$or": [
+                {"owner_email": {"$exists": True, "$ne": None}},
+                {"user_id": {"$exists": True, "$ne": None}}
+            ]},
+            {"$or": [
+                {"rainbow_bridge": {"$exists": False}},
+                {"rainbow_bridge": False}
+            ]}
         ]
     })
     pets = await pets_cursor.to_list(5000)
     
-    logger.info(f"Found {len(pets)} active pets for Annual Wrapped")
+    logger.info(f"Found {len(pets)} active pets for Annual Wrapped (excluding memorial pets)")
     
     processed = 0
     sent = 0

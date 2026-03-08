@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://doggy-platform-2.preview.emergentagent.com
+https://soul-profile-2.preview.emergentagent.com
 
 ---
 

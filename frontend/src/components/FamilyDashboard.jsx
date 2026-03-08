@@ -333,29 +333,38 @@ const FamilyDashboard = ({
         {pets.map((pet) => {
           const soulCompleteness = getSoulCompleteness(pet);
           const persona = getPersonaDisplay(pet);
+          const isRainbowBridge = pet.rainbow_bridge;
           
           return (
             <Card 
               key={pet.id}
-              className="overflow-hidden cursor-pointer hover:shadow-lg transition-all group"
+              className={`overflow-hidden cursor-pointer hover:shadow-lg transition-all group ${isRainbowBridge ? 'ring-2 ring-violet-300' : ''}`}
               onClick={() => onSelectPet?.(pet.id)}
             >
               {/* Pet Photo Header */}
-              <div className="relative h-32 bg-gradient-to-br from-purple-100 to-pink-100">
+              <div className={`relative h-32 ${isRainbowBridge ? 'bg-gradient-to-br from-violet-200 to-purple-200' : 'bg-gradient-to-br from-purple-100 to-pink-100'}`}>
+                {/* Rainbow Bridge Glow Effect */}
+                {isRainbowBridge && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-violet-400/30 via-purple-400/30 to-pink-400/30 animate-pulse" />
+                )}
                 {pet.photo_url ? (
                   <img 
                     src={pet.photo_url} 
                     alt={pet.name}
-                    className="w-full h-full object-cover"
+                    className={`w-full h-full object-cover ${isRainbowBridge ? 'grayscale-[30%]' : ''}`}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <PawPrint className="w-16 h-16 text-purple-300" />
+                    <PawPrint className={`w-16 h-16 ${isRainbowBridge ? 'text-violet-300' : 'text-purple-300'}`} />
                   </div>
                 )}
                 
-                {/* Persona Badge */}
-                {persona && (
+                {/* Rainbow Bridge Badge or Persona Badge */}
+                {isRainbowBridge ? (
+                  <div className="absolute top-2 right-2 px-2 py-1 rounded-full bg-gradient-to-r from-violet-500 to-purple-600 text-white text-xs font-medium">
+                    🌈 In Memory
+                  </div>
+                ) : persona && (
                   <div className={`absolute top-2 right-2 px-2 py-1 rounded-full ${persona.bg} text-xs font-medium`}>
                     {typeof persona.icon === 'string' ? persona.icon : <persona.icon className="w-3 h-3 inline mr-1" />}
                     {persona.name}
@@ -366,12 +375,15 @@ const FamilyDashboard = ({
               <CardContent className="pt-4">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="font-bold text-lg text-gray-800">{pet.name}</h3>
+                    <h3 className={`font-bold text-lg ${isRainbowBridge ? 'text-violet-800' : 'text-gray-800'}`}>
+                      {pet.name} {isRainbowBridge && '🌈'}
+                    </h3>
                     <p className="text-sm text-gray-500">
                       {pet.breed || 'Unknown breed'} • {pet.species || 'Dog'}
+                      {isRainbowBridge && ' • Forever Loved'}
                     </p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-purple-500 transition-colors" />
+                  <ChevronRight className={`w-5 h-5 ${isRainbowBridge ? 'text-violet-400 group-hover:text-violet-600' : 'text-gray-400 group-hover:text-purple-500'} transition-colors`} />
                 </div>
                 
                 {/* Soul Completeness */}
