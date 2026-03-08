@@ -73,11 +73,19 @@ const SoulMadeProductModal = ({
   useEffect(() => {
     if (product) {
       setCustomName(defaultPetName);
-      setSelectedSize(null);
-      // Default to 'White' for mugs as the illustrations look best on white
+      // Default to 'm' (Medium) size as most common pet size
       const productType = product.product_type || '';
+      const availableSizes = SIZE_OPTIONS[productType];
+      if (availableSizes && availableSizes.length > 0) {
+        // Try to default to 'm' (medium), otherwise first available size
+        const defaultSize = availableSizes.find(s => s.id === 'm') || availableSizes[0];
+        setSelectedSize(defaultSize.id);
+      } else {
+        setSelectedSize(null);
+      }
+      // Default to 'White' for products with color options
       if (COLOR_OPTIONS[productType]) {
-        setSelectedColor('White'); // Default to white for mugs
+        setSelectedColor('White');
       } else {
         setSelectedColor(null);
       }
