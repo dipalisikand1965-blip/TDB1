@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://soul-profile-3.preview.emergentagent.com
+https://pet-wrapped.preview.emergentagent.com
 ```
 
 ---
