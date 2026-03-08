@@ -97,7 +97,7 @@ const initialShellState = {
       isDisabled: false,
       draftKey: null,
       attachmentsEnabled: true,
-      voiceEnabled: true,
+      voiceEnabled: false, // Default OFF - voice should be opt-in
     },
 
     quickReplies: { ...initialQuickReplyContext },
