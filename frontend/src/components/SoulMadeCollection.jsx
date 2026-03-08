@@ -410,17 +410,26 @@ const SoulMadeCollection = ({
     fetchBreedProducts();
   }, [fetchBreedProducts]);
 
-  // Debug logging
+  // Clear products when pet changes to prevent stale data
   useEffect(() => {
-    console.log('[SoulMadeCollection] State:', {
-      pet: petName,
-      breed: currentPet?.breed,
-      breedKey: petBreedKey,
+    console.log('[SoulMadeCollection] 🔄 Pet changed, clearing products');
+    setProducts([]);
+  }, [currentPet?.id]);
+
+  // Debug logging - Enhanced for breed tracking
+  useEffect(() => {
+    console.log('[SoulMadeCollection] 🐕 Pet State:', {
+      petId: currentPet?.id,
+      petName: currentPet?.name,
+      petBreed: currentPet?.breed,
+      computedBreedKey: petBreedKey,
+      expectedApiUrl: petBreedKey ? `${API_URL}/api/mockups/breed-products?breed=${petBreedKey}` : 'N/A',
       pillar,
       productsCount: products.length,
+      firstProductBreed: products[0]?.breed_name || 'N/A',
       archetype
     });
-  }, [petName, currentPet?.breed, petBreedKey, pillar, products.length, archetype]);
+  }, [currentPet?.id, currentPet?.name, currentPet?.breed, petBreedKey, pillar, products.length, archetype, products]);
 
   // Don't render if no pet or no breed
   if (!currentPet || !petBreedKey) {
