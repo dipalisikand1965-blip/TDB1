@@ -73,7 +73,7 @@ const BREED_PHOTOS = {
   'chihuahua': 'https://images.unsplash.com/photo-1612195583950-b8fd34c87093?w=400&h=400&fit=crop&q=80',
   'maltese': 'https://images.unsplash.com/photo-1587559045816-8b0a54d1d99d?w=400&h=400&fit=crop&q=80',
   'pug': 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400&h=400&fit=crop&q=80',
-  'shih tzu': 'https://images.unsplash.com/photo-1588943211346-0908a1fb0b01?w=400&h=400&fit=crop&q=80',
+  'shih tzu': 'https://images.unsplash.com/photo-1740011962598-73f722075dc1?w=400&h=400&fit=crop&q=80',
   'yorkshire terrier': 'https://images.unsplash.com/photo-1587559045816-8b0a54d1d99d?w=400&h=400&fit=crop&q=80',
   'yorkie': 'https://images.unsplash.com/photo-1587559045816-8b0a54d1d99d?w=400&h=400&fit=crop&q=80',
   'french bulldog': 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400&h=400&fit=crop&q=80',
@@ -88,6 +88,7 @@ const BREED_PHOTOS = {
   'shiba inu': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop&q=80',
   'corgi': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop&q=80',
   'pembroke welsh corgi': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop&q=80',
+  'lhasa apso': 'https://images.unsplash.com/photo-1765974918658-fbba97cad60d?w=400&h=400&fit=crop&q=80',
   
   // Medium breeds
   'cocker spaniel': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop&q=80',
@@ -139,7 +140,7 @@ const BREED_PHOTOS = {
 
 /**
  * Main function to resolve pet avatar
- * @param {Object} pet - Pet object with photo_url, breed, name, id
+ * @param {Object} pet - Pet object with photo_url, image, breed, name, id
  * @returns {Object} { photoUrl, needsUpload, uploadPrompt, isBreedPhoto }
  */
 export function resolvePetAvatar(pet) {
@@ -155,9 +156,11 @@ export function resolvePetAvatar(pet) {
   const petName = pet.name || 'your pet';
   const petId = pet.id || '';
   
-  // 1. Check if member uploaded a photo
-  if (pet.photo_url) {
-    let photoUrl = pet.photo_url;
+  // 1. Check if member uploaded a photo (check multiple fields)
+  const uploadedPhoto = pet.photo_url || pet.image || pet.profile_image || pet.avatar;
+  
+  if (uploadedPhoto) {
+    let photoUrl = uploadedPhoto;
     
     // Convert any old formats to new simplified API route
     // Old format 1: /api/pet-photo/petid/filename.jpg
@@ -172,12 +175,13 @@ export function resolvePetAvatar(pet) {
       }
     }
     
-    // Handle relative URLs
+    // Handle relative URLs (but not external URLs like customer-assets.emergentagent.com)
     if (photoUrl.startsWith('/')) {
       photoUrl = `${API_URL}${photoUrl}`;
     } else if (!photoUrl.startsWith('http')) {
       photoUrl = `${API_URL}/${photoUrl}`;
     }
+    // External URLs (https://...) are used as-is
     
     return {
       photoUrl,

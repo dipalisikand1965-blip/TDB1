@@ -598,7 +598,46 @@ Trusted vet/trainer on speed dial.
 
 ## CHANGELOG
 
-### March 8, 2026 - Soul Made Product Separation Fix
+### March 8, 2026 - Session 2: Cart Integration, Pet Avatar Fix, Mockup Generation
+
+**Features Completed:**
+
+1. **ProductDetailModal - Cart Integration ✅**
+   - Wired `SoulMadeProductModal` to CartContext
+   - Pet name customization, size/color selection working
+   - Shows "Added to Cart" toast notification
+   - Opens cart drawer automatically after adding
+   - File: `/app/frontend/src/components/SoulMadeCollection.jsx`
+
+2. **Cake Reveal Feature ✅** (Already Implemented)
+   - Full customer delight workflow for custom cake orders
+   - Stages: Creating → Sneak Peek → Ready → Revealed
+   - Confetti celebration on final reveal
+   - Backend routes: `/api/cake-reveal/*`
+   - Frontend: `/app/frontend/src/components/celebrate/CakeRevealSection.jsx`
+
+3. **Pet Avatar Fix ✅**
+   - Fixed: `resolvePetAvatar()` now checks `image`, `photo_url`, `profile_image`, `avatar` fields
+   - Fixed: Shih Tzu stock photo now shows correct breed image
+   - File: `/app/frontend/src/utils/petAvatar.js`
+
+4. **Mobile Pet Selector Styling ✅**
+   - Fixed overlapping dog emojis in pet dashboard selector
+   - File: `/app/frontend/src/pages/MemberDashboard.jsx`
+
+5. **Pet Switching Fix ✅**
+   - Added product cache clearing when user switches pets
+   - Prevents stale breed products from showing
+   - Enhanced debug logging for breed tracking
+
+**Mockup Generation Status:**
+- Triggered batch generation for all 33 breeds
+- Currently running in background
+- Check progress: `GET /api/mockups/status`
+
+---
+
+### March 8, 2026 - Session 1: Soul Made Product Separation Fix
 
 **Issues Fixed:**
 1. **Product mixing resolved** - Soul Made breed-specific products (mugs, bandanas, frames) are now completely separated from Shopify products (TheDoggyBakery cakes, treats)
@@ -615,6 +654,22 @@ Trusted vet/trainer on speed dial.
 - `/app/backend/server.py` - Lines 7079-7093
 
 **Testing Status:** ✅ All core tests passing (see `/app/test_reports/iteration_75.json`)
+
+---
+
+## KEY FILE REFERENCES
+
+| Feature | File Path |
+|---------|-----------|
+| Soul Made Collection | `/app/frontend/src/components/SoulMadeCollection.jsx` |
+| Soul Made Product Modal | `/app/frontend/src/components/SoulMadeProductModal.jsx` |
+| Pet Avatar Utility | `/app/frontend/src/utils/petAvatar.js` |
+| Cake Reveal Section | `/app/frontend/src/components/celebrate/CakeRevealSection.jsx` |
+| Cake Reveal API | `/app/backend/app/api/cake_reveal_routes.py` |
+| Mockup Generation | `/app/backend/app/api/mockup_routes.py` |
+| Product Seeding | `/app/backend/scripts/seed_products.py` |
+| Member Dashboard | `/app/frontend/src/pages/MemberDashboard.jsx` |
+| Celebrate Page | `/app/frontend/src/pages/CelebratePage.jsx` |
 
 ---
 
