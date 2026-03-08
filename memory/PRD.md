@@ -17,6 +17,60 @@
 
 ---
 
+## 🐕 BREED ILLUSTRATION LIBRARY (CRITICAL FOR AGENTS)
+
+### Location & Access
+- **Admin Panel:** Go to "Breed Art" tab to view all 33 breed illustrations
+- **API Endpoint:** `GET /api/breed-illustrations/all`
+- **Frontend Utility:** `/app/frontend/src/utils/breedIllustrations.js`
+
+### ⚠️ INSTRUCTIONS FOR FUTURE AGENTS
+When creating breed-related products (cakes, keychains, mugs, mats, bandanas, etc.):
+
+1. **ALWAYS use illustrations from the Breed Library** - Do NOT use generic/mismatched images
+2. The ProductCard component automatically detects breed names and displays correct portraits
+3. Visit Admin → "Breed Art" tab to copy image URLs for any breed
+
+### Available Breeds (33 total):
+- **Retrievers:** Labrador, Golden Retriever, Cocker Spaniel, Irish Setter
+- **Working Dogs:** German Shepherd, Rottweiler, Doberman, Boxer, St Bernard, Great Dane, American Bully
+- **Northern/Spitz:** Husky (Black/Grey), Pomeranian, Chow Chow
+- **Herding:** Border Collie
+- **Hounds:** Beagle, Dachshund, Italian Greyhound, Dalmatian
+- **Terriers:** Jack Russell, Yorkshire, Scottish Terrier
+- **Toy/Companion:** Pug, Shih Tzu, Chihuahua, Maltese, Lhasa Apso, Cavalier King Charles
+- **Bulldogs:** French Bulldog, English Bulldog
+- **Poodles:** Poodle, Toy Poodle, Schnoodle
+- **Indian:** Indie/Desi Dog
+
+### Breed Product Types (create for each breed):
+- Birthday Cake, Party Hat, Bandana
+- Keychain, Photo Frame, Mug
+- Welcome Mat, Food Bowl, Collar
+- Plush Toy, Treat Jar, Cozy Blanket
+
+---
+
+## 🎁 MILESTONE & KIT ILLUSTRATIONS
+
+### API Endpoint: `GET /api/milestone-illustrations/all`
+
+### Available Illustrations:
+| Key | Name | Use Case |
+|-----|------|----------|
+| milestone_celebration | Milestone Celebration | General birthdays, achievements |
+| first_birthday_kit | First Birthday Kit | Puppy's 1st birthday |
+| gotcha_day_kit | Gotcha Day Kit | Adoption anniversaries |
+| senior_milestone | Senior Milestone | Golden years celebrations |
+| recovery_celebration | Recovery Celebration | Post-surgery/illness recovery |
+| surprise_delivery | Surprise Delivery | Gift delivery moments |
+| welcome_home_kit | Welcome Home Kit | New puppy welcome |
+| travel_adventure_kit | Travel Adventure Kit | Travel accessories |
+
+**Use these for:** Milestone Kit products, Surprise Delivery images, Special Occasion pages
+
+---
+
 ## SOUL DATA FLOW ✅ VERIFIED
 
 ```

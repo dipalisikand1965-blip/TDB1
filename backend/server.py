@@ -250,6 +250,9 @@ from app.api.cake_reveal_routes import router as cake_reveal_router
 # Breed Illustrations Routes (Soulful watercolor breed portraits)
 from app.api.breed_illustrations_routes import router as breed_illustrations_router
 
+# Milestone Illustrations Routes (Kits, Surprise Delivery, Special Occasions)
+from app.api.milestone_illustrations_routes import router as milestone_illustrations_router
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -19239,7 +19242,8 @@ logger.info("🎁 Pet Wrapped routes initialized (Launch: May 20, 2026)")
 app.include_router(celebration_wall_router)  # Celebration Wall at /api/celebration-wall/*
 app.include_router(cake_reveal_router)  # Cake Reveal at /api/cake-reveal/*
 app.include_router(breed_illustrations_router)  # Breed Illustrations at /api/breed-illustrations/*
-logger.info("🎂 Celebration Wall, Cake Reveal & Breed Illustrations routes initialized")
+app.include_router(milestone_illustrations_router)  # Milestone Illustrations at /api/milestone-illustrations/*
+logger.info("🎂 Celebration Wall, Cake Reveal, Breed & Milestone Illustrations routes initialized")
 
 @app.on_event("startup")
 async def startup_load_admin_credentials():

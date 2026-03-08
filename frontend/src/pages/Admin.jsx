@@ -46,6 +46,7 @@ import UnifiedInbox from '../components/admin/UnifiedInbox';
 import CelebrationsCalendar from '../components/admin/CelebrationsCalendar';
 import CelebrationWallManager from '../components/admin/CelebrationWallManager';
 import BreedTagsManager from '../components/admin/BreedTagsManager';
+import BreedIllustrationLibrary from '../components/admin/BreedIllustrationLibrary';
 import AgentManagement from '../components/admin/AgentManagement';
 import CommunicationsManager from '../components/admin/CommunicationsManager';
 import MiraMemoryManager from '../components/admin/MiraMemoryManager';
@@ -2755,7 +2756,8 @@ const Admin = () => {
               { id: 'members', label: 'Customers', icon: Users },
               { id: 'concierge-experiences', label: 'Concierge XP', icon: Sparkles },
               { id: 'product-tags', label: 'Tags', icon: Tag },
-              { id: 'breed-tags', label: 'Breeds', icon: PawPrint },
+              { id: 'breed-tags', label: 'Breed Tags', icon: PawPrint },
+              { id: 'breed-library', label: 'Breed Art', icon: Image },
               { id: 'requests', label: 'Custom Cakes', icon: Cake },
               { id: 'streaties', label: 'Streaties', icon: Heart },
               { id: 'franchise', label: 'Franchise', icon: Building },
@@ -2926,6 +2928,11 @@ const Admin = () => {
         {/* Breed Tags Manager */}
         {activeTab === 'breed-tags' && (
           <BreedTagsManager key={`breed-tags-${Date.now()}`} />
+        )}
+
+        {/* Breed Illustration Library */}
+        {activeTab === 'breed-library' && (
+          <BreedIllustrationLibrary key={`breed-library-${Date.now()}`} />
         )}
 
         {/* Admin Guide Dashboard - Help & Database Backup */}
