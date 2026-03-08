@@ -13,7 +13,8 @@ router = APIRouter(prefix="/api/wrapped", tags=["Pet Wrapped"])
 # MongoDB connection
 from pymongo import MongoClient
 client = MongoClient(os.environ.get("MONGO_URL"))
-db = client[os.environ.get("DB_NAME", "doggy_company")]
+db_name = os.environ.get("DB_NAME") or "test_database"
+db = client[db_name]
 
 
 # ============================================
@@ -194,9 +195,17 @@ async def generate_pet_wrapped(pet_id: str, year: Optional[int] = None):
     
     # If no babies/partners found, look for pets with same owner that might be family
     if not babies and not partners and owner_email:
+        # Handle both pet-XXXX format and ObjectId format
+        exclude_filter = {"id": {"$ne": pet_id}} if pet_id.startswith("pet-") else {}
+        try:
+            if not pet_id.startswith("pet-"):
+                exclude_filter = {"_id": {"$ne": ObjectId(pet_id)}}
+        except:
+            pass
+        
         same_owner_pets = list(db.pets.find({
             "owner_email": owner_email,
-            "_id": {"$ne": ObjectId(pet_id)}
+            **exclude_filter
         }))
         
         # Check if pet names start with same letter (M-Squad pattern)
