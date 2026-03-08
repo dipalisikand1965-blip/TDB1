@@ -42,8 +42,10 @@ Resume if stopped: curl -X POST "$API_URL/api/mockups/generate-batch" -H "Conten
 8. ✅ **Mobile Pet Dashboard UI** - Verified pet selector and soul journey cards display correctly
 9. ✅ **Fallback Verification** - SoulMadeCollection shows placeholder UI for products without mockup images
 10. ✅ **Pet Wrapped Soul Score Fix** - Now uses same weighted scoring as dashboard (was showing old score, now shows 89% for Mojo)
-11. ✅ **PersonalizedPicks Pet Switch Bug** - Fixed stale data when switching pets - now clears recommendations and refetches
+11. ✅ **PersonalizedPicks Pet Switch Bug** - Added key prop to force remount when pet changes
 12. ✅ **Pet Wrapped Conversation Count** - Now correctly counts from live_conversation_threads (was showing 3, now shows 156 for Mojo)
+13. ✅ **Cake Reveal Section** - Temporarily disabled (visual issues). Backend API ready, documented in complete-html.
+14. ✅ **Purple Fallback Image** - Products without images now show purple gradient with heart icon
 
 ---
 

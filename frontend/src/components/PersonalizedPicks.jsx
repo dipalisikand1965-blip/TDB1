@@ -241,22 +241,14 @@ const PersonalizedPicks = ({
     const fetchRecommendations = async () => {
       if (!selectedPet) return;
       
-      // Clear existing recommendations immediately to prevent showing stale data
-      setRecommendations([]);
-      setRepeatSuggestions([]);
       setLoading(true);
-      
       try {
-        // Fetch personalized recommendations using pet ID
-        const petId = selectedPet.id || selectedPet._id;
-        console.log(`[PersonalizedPicks] Fetching recommendations for pet: ${selectedPet.name} (${petId}), breed: ${selectedPet.breed}`);
-        
+        // Fetch personalized recommendations
         const res = await fetch(
-          `${API_URL}/api/products/recommendations/for-pet/${petId}?limit=${maxProducts}&pillar=${pillar}`
+          `${API_URL}/api/products/recommendations/for-pet/${selectedPet.id || selectedPet._id}?limit=${maxProducts}&pillar=${pillar}`
         );
         if (res.ok) {
           const data = await res.json();
-          console.log(`[PersonalizedPicks] Got ${data.recommendations?.length || 0} recommendations for ${selectedPet.name}`);
           setRecommendations(data.recommendations || []);
         }
         
@@ -467,8 +459,11 @@ const PersonalizedPicks = ({
                               alt={product.title || product.name}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                               onError={(e) => {
+                                // Use purple gradient as fallback
                                 e.target.onerror = null;
-                                e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
+                                e.target.style.display = 'none';
+                                e.target.parentElement.classList.add('bg-gradient-to-br', 'from-purple-500', 'to-pink-500');
+                                e.target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center"><svg class="w-12 h-12 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg></div>';
                               }}
                             />
                           )}
