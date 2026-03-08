@@ -23,7 +23,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Sparkles, ChevronRight, RefreshCw, PawPrint, Heart } from 'lucide-react';
+import { Sparkles, ChevronRight, RefreshCw, PawPrint, Heart, ShoppingCart } from 'lucide-react';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
@@ -268,7 +268,7 @@ const SoulMadeProductCard = ({ product, petName, archetype, onViewDetails }) => 
         <p className="text-xs text-gray-500 mb-2">
           {product.breed_name || 'Personalized'}
         </p>
-        {/* Price */}
+        {/* Price and Add to Cart */}
         <div className="flex items-center justify-between">
           <p className="text-base font-bold text-purple-600">
             {price}
@@ -277,6 +277,19 @@ const SoulMadeProductCard = ({ product, petName, archetype, onViewDetails }) => 
             {product.product_type?.replace('_', ' ')}
           </Badge>
         </div>
+        
+        {/* Quick Add to Cart Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent card click
+            onViewDetails?.(product);
+          }}
+          className="w-full mt-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:from-purple-700 hover:to-pink-700 transition-all duration-200 flex items-center justify-center gap-2"
+          data-testid={`add-to-cart-${product.id}`}
+        >
+          <ShoppingCart className="w-4 h-4" />
+          Personalize & Add
+        </button>
       </div>
     </Card>
   );
