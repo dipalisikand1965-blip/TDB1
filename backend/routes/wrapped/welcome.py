@@ -7,6 +7,11 @@ from fastapi import APIRouter, HTTPException
 from datetime import datetime, timezone
 from bson import ObjectId
 import os
+import sys
+
+# Add the parent directory to the path to import from main backend
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from pet_score_logic import calculate_pet_soul_score
 
 router = APIRouter(prefix="/api/wrapped", tags=["Pet Wrapped"])
 
@@ -38,7 +43,18 @@ async def generate_welcome_wrapped(pet_id: str):
     
     pet_name = pet.get("name", "Your Pet")
     breed = pet.get("breed", "Beloved Companion")
-    soul_score = pet.get("soul_score", 0)
+    
+    # Calculate score using the same weighted scoring as dashboard
+    stored_score = pet.get("overall_score", 0) or pet.get("soul_score", 0) or 0
+    answers = pet.get("doggy_soul_answers", {}) or pet.get("soul_answers", {})
+    
+    if answers:
+        score_data = calculate_pet_soul_score(answers)
+        calculated_score = score_data["total_score"]
+        soul_score = max(stored_score, calculated_score)
+    else:
+        soul_score = stored_score
+    
     soul_data = pet.get("soul_data", {})
     
     # Get a highlight from their Soul Profile answers
@@ -134,7 +150,18 @@ async def get_welcome_card_html(pet_id: str):
     
     pet_name = pet.get("name", "A Beloved Pet")
     breed = pet.get("breed", "Beloved Companion")
-    soul_score = pet.get("soul_score", 0)
+    
+    # Calculate score using the same weighted scoring as dashboard
+    stored_score = pet.get("overall_score", 0) or pet.get("soul_score", 0) or 0
+    answers = pet.get("doggy_soul_answers", {}) or pet.get("soul_answers", {})
+    
+    if answers:
+        score_data = calculate_pet_soul_score(answers)
+        calculated_score = score_data["total_score"]
+        soul_score = max(stored_score, calculated_score)
+    else:
+        soul_score = stored_score
+    
     soul_data = pet.get("soul_data", {})
     
     insight = get_soul_insight(soul_data, pet_name)

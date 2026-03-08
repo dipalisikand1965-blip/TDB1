@@ -41,6 +41,7 @@ Resume if stopped: curl -X POST "$API_URL/api/mockups/generate-batch" -H "Conten
 ### Session 3 (Current):
 8. ✅ **Mobile Pet Dashboard UI** - Verified pet selector and soul journey cards display correctly
 9. ✅ **Fallback Verification** - SoulMadeCollection shows placeholder UI for products without mockup images
+10. ✅ **Pet Wrapped Soul Score Fix** - Now uses same weighted scoring as dashboard (was showing old score, now shows 89% for Mojo)
 
 ---
 
