@@ -899,6 +899,37 @@ const ShopPage = () => {
             )}
           </div>
           
+          {/* Custom Cake Designer Banner - Shows in Celebrate pillar */}
+          {selectedPillar === 'celebrate' && (
+            <div 
+              onClick={() => window.location.href = '/custom-cake'}
+              className="mb-6 relative overflow-hidden rounded-2xl cursor-pointer group"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 opacity-90"></div>
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yIDItNCAyLTRzMiAyIDIgNGMwIDItMiA0LTIgNHMtMi0yLTItNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30"></div>
+              <div className="relative flex items-center justify-between p-4 sm:p-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                    <span className="text-3xl sm:text-4xl">🎂</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                      Design {petName}'s Birthday Cake
+                      <Sparkles className="w-5 h-5 text-yellow-300" />
+                    </h3>
+                    <p className="text-sm text-white/80 mt-0.5">
+                      Custom shape, flavour & text • Dog-safe ingredients only
+                    </p>
+                  </div>
+                </div>
+                <div className="hidden sm:flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full group-hover:bg-white/30 transition">
+                  <span className="text-white font-semibold">Start Designing</span>
+                  <ChevronRight className="w-5 h-5 text-white group-hover:translate-x-1 transition" />
+                </div>
+              </div>
+            </div>
+          )}
+          
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               {[...Array(8)].map((_, i) => (
