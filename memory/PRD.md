@@ -1,8 +1,8 @@
 # The Doggy Company - Complete Product Requirements Document
 
-**Document Version:** 6.1.0  
-**Last Updated:** March 7, 2026  
-**Status:** Production Ready - Pet Wrapped Launch Pending (May 20, 2026)  
+**Document Version:** 6.2.0  
+**Last Updated:** March 8, 2026  
+**Status:** Production Ready - Pet Wrapped COMPLETE  
 **Prepared By:** Development Team via Emergent AI
 
 ---
@@ -13,6 +13,7 @@
 | Document | Purpose |
 |----------|---------|
 | `BUSINESS_LOGIC.md` | Soul Score, Badges, Membership, Paw Points - ALL business rules |
+| `PET_WRAPPED_SYSTEM.md` | Complete Pet Wrapped technical documentation |
 | `complete-documentation.html` | Full aggregated documentation (auto-updated) |
 | `introduction.html` | Investor/Partner showcase page |
 | `investor.html` | Investor pitch deck (web version) |
@@ -31,249 +32,72 @@ The Doggy Company is a **Pet Life Operating System** — the world's first platf
 1. **Soul Profile™** — 51 questions that transform how pet parents see their dogs
 2. **Mira AI** — Named after Mrs. Mira Sikand, an AI that remembers everything
 3. **14 Life Pillars** — From first birthday to farewell, every chapter covered
-4. **Pet Wrapped** — Spotify Wrapped-style shareable cards (LAUNCH: May 20, 2026)
+4. **Pet Wrapped** — Spotify Wrapped-style shareable cards ✅ COMPLETE
 
 ---
 
-## ARCHITECTURE OVERVIEW
+## 🎁 PET WRAPPED — FEATURE COMPLETE (March 8, 2026)
 
-```
-/app
-├── backend/                 # FastAPI Python backend
-│   ├── routes/
-│   │   ├── admin/          # Admin panel APIs
-│   │   ├── mira/           # Mira AI chat system
-│   │   ├── products/       # E-commerce & recommendations
-│   │   ├── wrapped/        # 🎁 PET WRAPPED SYSTEM (NEW)
-│   │   │   ├── soul_history.py    # Soul score tracking
-│   │   │   ├── generate.py        # Generate 6-card wrapped
-│   │   │   ├── ai_memory.py       # Mira's AI memory
-│   │   │   ├── share.py           # Shareable viral card
-│   │   │   ├── welcome.py         # Welcome wrapped (instant)
-│   │   │   └── delivery.py        # WhatsApp/Email/Modal delivery
-│   │   └── ...
-│   ├── services/
-│   │   └── mira/           # Mira AI brain & constants
-│   └── server.py           # Main FastAPI server
-│
-├── frontend/               # React frontend
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── admin/      # Admin panel components
-│   │   │   │   └── PetWrappedAdmin.jsx  # 🎁 Pet Wrapped admin
-│   │   │   ├── wrapped/    # 🎁 PET WRAPPED COMPONENTS (NEW)
-│   │   │   │   ├── WrappedCards.jsx         # 6 card components
-│   │   │   │   └── WelcomeWrappedModal.jsx  # Celebration popup
-│   │   │   └── ...
-│   │   ├── pages/
-│   │   │   ├── PetWrappedViewer.jsx    # /wrapped/:petId
-│   │   │   ├── WrappedWelcomePage.jsx  # /wrapped-welcome landing
-│   │   │   └── ...
-│   │   └── App.js
-│   └── public/
-│       ├── pet-wrapped-mystique.html   # Design template
-│       ├── investor-deck.html          # Investor presentation
-│       └── complete-documentation.html # Full docs
-│
-└── memory/
-    ├── PRD.md              # This file
-    ├── PET_WRAPPED_SPEC.md # Pet Wrapped technical spec
-    └── ...
-```
+### All Wrapped Types
+| Type | Trigger | Status |
+|------|---------|--------|
+| **Welcome Wrapped** | Soul Profile completion | ✅ LIVE |
+| **Birthday Wrapped** | 7 days before birthday | ✅ AUTOMATED (Daily cron) |
+| **Annual Wrapped** | December 10th | ✅ AUTOMATED (Batch job) |
+| **Gotcha Day** | Adoption anniversary | ✅ LIVE |
+| **Rainbow Bridge** | Pet memorial | ✅ LIVE |
+
+### Delivery Channels (All Working)
+| Channel | Integration | Status |
+|---------|-------------|--------|
+| **In-App Modal** | WelcomeWrappedModal.jsx | ✅ |
+| **Email** | Resend API | ✅ |
+| **WhatsApp** | Gupshup API | ✅ |
+| **Instagram Stories** | Story card + guide | ✅ NEW |
+| **Service Desk** | Auto-ticket | ✅ |
+| **Admin Notification** | Real-time alert | ✅ |
+| **Member Inbox** | Action link | ✅ |
+
+### Scheduler Jobs
+| Job ID | Schedule | Function |
+|--------|----------|----------|
+| `pet_wrapped_birthday` | Daily 9 AM IST | Finds birthdays in next 7 days |
+| `pet_wrapped_annual` | Dec 10, 10 AM IST | Year-end batch for all pets |
+
+### Instagram Stories Integration
+- **Story Card:** `GET /api/wrapped/instagram-story/{pet_id}` (1080x1920 HTML)
+- **Share Assets:** `GET /api/wrapped/share-assets/{pet_id}` (URLs + instructions)
+- **Track Shares:** `POST /api/wrapped/log-share/{pet_id}` (Viral coefficient)
+- **UI:** "IG Story" button with Instagram gradient in WelcomeWrappedModal
 
 ---
 
-## 🎁 PET WRAPPED — THE VIRAL ACQUISITION ENGINE
+## WHAT'S REMAINING FOR PRODUCTION
 
-### What is Pet Wrapped?
-A Spotify Wrapped-style feature creating beautiful, shareable cards summarizing a pet's journey. Designed to be the **#1 acquisition channel** through organic viral sharing.
+### P0 - Must Have
+- [ ] **Deploy to Production** — Run MASTER SYNC after deployment
+- [ ] **(Optional) PNG Export** — Allow downloading cards as images
 
-### Launch Date: MAY 20, 2026 — MYSTIQUE'S BIRTHDAY
-The world's first Pet Wrapped ever created — for the dog who inspired the entire platform.
-
-### The Complete Wrapped System
-
-| Wrapped Type | Trigger | Purpose | Status |
-|--------------|---------|---------|--------|
-| **Welcome Wrapped** | Soul Profile completion | INSTANT viral share after onboarding | ✅ BUILT |
-| **Annual Wrapped** | December | Spotify moment — everyone shares together | ✅ BUILT |
-| **Birthday Wrapped** | Pet's birthday | Personal, emotional, sacred | ✅ BUILT |
-| **Gotcha Day** | Adoption anniversary | For rescue parents | ✅ BUILT |
-| **Memorial Wrapped** | Rainbow Bridge | Honor those who've passed | ✅ BUILT |
-
-### The 6 Wrapped Cards
-1. **Cover Card** — Pet name, breed, year, emotional tagline
-2. **Soul Score Card** — Journey arc (42 → 68 → 94) + meaningful quote
-3. **Mira Moments Card** — Conversation count, questions answered, AI-generated memory
-4. **Legacy Card** — Relationships (babies, partners, family)
-5. **Pillars Card** — Top pillars used, Doggy Bakery treats count
-6. **Closing Card** — Philosophy quote, CTA to create Soul Profile
-
-### The Viral Funnel
-```
-Complete Soul Profile 
-    → Celebration Modal (In-App) + WhatsApp + Email (ALL 3 SIMULTANEOUSLY)
-    → Pet Parent shares single card
-    → Friend sees card, clicks "Create Yours"
-    → Lands on /wrapped-welcome
-    → Creates Soul Profile
-    → Gets their own Wrapped
-    → Shares... (REPEAT)
-```
-
-### Pet Wrapped API Endpoints
-
-| Endpoint | Method | Purpose | Status |
-|----------|--------|---------|--------|
-| `/api/wrapped/admin/pets` | GET | List ALL pets for admin (19 pets) | ✅ Working |
-| `/api/wrapped/admin/backfill-soul-scores` | POST | Initialize soul score history | ✅ Working |
-| `/api/wrapped/generate/{pet_id}` | GET | Generate full 6-card wrapped data | ✅ Working |
-| `/api/wrapped/generate-memory/{pet_id}` | POST | Generate Mira's AI memory | ✅ Working |
-| `/api/wrapped/memory/{pet_id}` | GET | Get stored Mira memory | ✅ Working |
-| `/api/wrapped/share/{pet_id}` | GET | Get shareable card HTML | ✅ Working |
-| `/api/wrapped/welcome/{pet_id}` | GET | Get welcome wrapped data | ✅ Working |
-| `/api/wrapped/welcome-card/{pet_id}` | GET | Get welcome card HTML | ✅ Working |
-| `/api/wrapped/soul-history/{pet_id}` | GET | Get soul score journey | ✅ Working |
-| `/api/wrapped/trigger-welcome/{pet_id}` | POST | Trigger ALL 3 delivery channels | ✅ Working |
-| `/api/wrapped/delivery-status/{pet_id}` | GET | Check delivery status | ✅ Working |
-
-### Pet Wrapped Frontend Routes
-
-| Route | Component | Purpose |
-|-------|-----------|---------|
-| `/wrapped/:petId` | PetWrappedViewer.jsx | View all 6 cards with swipe navigation |
-| `/wrapped-welcome` | WrappedWelcomePage.jsx | Conversion landing page for viral traffic |
-| Admin → 🎁 Pet Wrapped | PetWrappedAdmin.jsx | Generate and manage wrapped for all pets |
-
-### Pet Wrapped Files Reference
-
-```
-Backend:
-├── /app/backend/routes/wrapped/
-│   ├── __init__.py           # Route package
-│   ├── soul_history.py       # Soul score tracking over time
-│   ├── generate.py           # Main 6-card generation
-│   ├── ai_memory.py          # Mira's AI-generated memory
-│   ├── share.py              # Single shareable card
-│   ├── welcome.py            # Welcome wrapped (instant share)
-│   └── delivery.py           # WhatsApp/Email/Modal delivery
-
-Frontend:
-├── /app/frontend/src/components/wrapped/
-│   ├── WrappedCards.jsx          # All 6 card React components
-│   └── WelcomeWrappedModal.jsx   # Celebration popup with confetti
-├── /app/frontend/src/pages/
-│   ├── PetWrappedViewer.jsx      # /wrapped/:petId viewer
-│   └── WrappedWelcomePage.jsx    # /wrapped-welcome landing
-├── /app/frontend/src/components/admin/
-│   └── PetWrappedAdmin.jsx       # Admin panel for Pet Wrapped
-
-Design/Docs:
-├── /app/frontend/public/pet-wrapped-mystique.html  # Design template
-├── /app/memory/PET_WRAPPED_SPEC.md                 # Technical spec
-```
-
-### Live URLs (Preview Environment)
-
-| URL | What It Shows |
-|-----|---------------|
-| https://doggy-platform-2.preview.emergentagent.com/api/wrapped/share/699fa0a513e44c977327ad57 | Mystique's shareable card |
-| https://doggy-platform-2.preview.emergentagent.com/api/wrapped/welcome-card/699fa0a513e44c977327ad57 | Welcome wrapped card |
-| https://doggy-platform-2.preview.emergentagent.com/wrapped/699fa0a513e44c977327ad57 | Full 6-card viewer |
-| https://doggy-platform-2.preview.emergentagent.com/wrapped-welcome | Conversion landing page |
-| https://doggy-platform-2.preview.emergentagent.com/pet-wrapped-mystique.html | Design template |
-| https://doggy-platform-2.preview.emergentagent.com/investor-deck.html | Investor presentation |
-
-### Mira's AI Memory Example (Mystique)
-> "I remember the day when Mystique raced around the garden, her tail a blur, bursting with energy as she leapt into the air with a joyful happy dance at walk time... She radiated pure love, a wonderful reminder of how deeply she cherished every shared adventure with you, Dipali."
+### P1 - Nice to Have (Completed)
+- [x] Automated birthday triggers ✅
+- [x] December annual wrapped ✅
+- [x] Instagram Stories share ✅
 
 ---
 
-## DELIVERY SYSTEM (WhatsApp + Email + Modal)
+## API ENDPOINTS REFERENCE
 
-### How Pet Wrapped Gets Delivered
-
-When a pet parent completes their Soul Profile, **ALL 3 channels fire simultaneously**:
-
-1. **In-App Modal** (Immediate)
-   - Celebration popup with confetti
-   - Shows Soul Score and shareable card
-   - Share buttons for WhatsApp, native share
-   - Component: `WelcomeWrappedModal.jsx`
-
-2. **WhatsApp** (Background, via Gupshup)
-   - Sends personalized message with share link
-   - Format: "🎉 {Pet}'s Soul Profile is Complete! Soul Score: {score}%"
-   - Requires: `GUPSHUP_API_KEY`, `GUPSHUP_SOURCE_NUMBER`
-
-3. **Email** (Background, via Resend)
-   - Beautiful HTML email with embedded card
-   - From: "Mira <woof@thedoggycompany.com>"
-   - Subject: "🎉 {Pet}'s Soul Profile is Complete! Soul Score: {score}%"
-   - Requires: `RESEND_API_KEY`
-
-### Trigger Endpoint
-```
-POST /api/wrapped/trigger-welcome/{pet_id}
-
-Returns:
-{
-  "success": true,
-  "pet_name": "Mystique",
-  "soul_score": 87,
-  "delivery": {
-    "modal": "showing now",
-    "whatsapp": "sending",
-    "email": "sending"
-  }
-}
-```
-
----
-
-## WHAT'S REMAINING FOR PET WRAPPED LAUNCH
-
-### P0 - Must Have Before May 20
-- [x] **Hook trigger into Soul Profile completion flow** — ✅ DONE (WelcomeWrappedModal triggers after completion)
-- [x] **Test WhatsApp delivery** — ✅ DONE (Gupshup working, verified March 8)
-- [x] **Test Email delivery** — ✅ DONE (Resend working, verified March 8)
-- [ ] **PNG export** — Allow downloading cards as images (optional)
-- [ ] **Run on production** — Deploy and run MASTER SYNC
-
-### P1 - COMPLETED (March 8, 2026)
-- [x] **Automated birthday triggers (cron job)** — ✅ DONE (Daily 9 AM IST)
-- [x] **December annual wrapped generation (batch)** — ✅ DONE (Dec 10, 10 AM IST)
-- [x] **Instagram Stories direct share** — ✅ DONE (New button + story card generator)
-
----
-
-## OTHER CORE FEATURES
-
-### Soul Profile™
-- 51 questions across 8 golden pillars
-- Soul Score 0-100%
-- Tracks: joy, forgiveness, bond, personality, fears, quirks, etc.
-
-### Mira AI
-- Named after Mrs. Mira Sikand (founder's mother)
-- Knows each pet by name, history, soul profile
-- Rainbow Bridge aware — responds with empathy for deceased pets
-- Uses Emergent LLM Key with GPT-4o-mini
-
-### 14 Life Pillars
-Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt, Shop
-
-### E-commerce
-- 2,214 products synced from Shopify
-- 2,406 services across all pillars
-- Personalized PICKS based on breed
-- Razorpay payment integration
-
-### Admin Panel
-- MASTER SYNC for data population
-- All 14 pillars manageable
-- Pet Wrapped tab (🎁) for generating wrapped
-- Service desk for tickets
+### Pet Wrapped APIs
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/wrapped/generate/{pet_id}` | GET | Generate full 6-card wrapped |
+| `/api/wrapped/download/{pet_id}` | GET | Download HTML file |
+| `/api/wrapped/trigger-welcome/{pet_id}` | POST | All 3 delivery channels |
+| `/api/wrapped/trigger-birthday/{pet_id}` | POST | Birthday wrapped delivery |
+| `/api/wrapped/trigger-annual/{pet_id}` | POST | Annual wrapped delivery |
+| `/api/wrapped/instagram-story/{pet_id}` | GET | 1080x1920 story card |
+| `/api/wrapped/share-assets/{pet_id}` | GET | All share URLs |
+| `/api/wrapped/log-share/{pet_id}` | POST | Track shares |
 
 ---
 
@@ -291,231 +115,46 @@ Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Advisory, Eme
 
 ---
 
-## DATABASE
-
-### Key Collections
-- `pets` — All pet profiles (19 in preview)
-- `users` — User accounts
-- `soul_score_history` — Soul score snapshots for journey arc
-- `mira_conversations` — Chat history with Mira
-- `pet_wrapped` — Generated wrapped data (cached)
-- `pet_wrapped_memories` — Mira's AI-generated memories
-- `wrapped_deliveries` — Delivery tracking (modal/whatsapp/email)
-
-### Database Name
-- Preview: `pet-os-live-test_database`
-- Production: Set via `DB_NAME` in backend/.env
-
----
-
 ## THIRD-PARTY INTEGRATIONS
 
 | Service | Purpose | Status |
 |---------|---------|--------|
 | OpenAI (GPT-4o-mini) | Mira AI brain | ✅ Via Emergent LLM Key |
-| Gupshup | WhatsApp messaging | ✅ Configured |
-| Resend | Email delivery | ✅ Configured |
+| Gupshup | WhatsApp messaging | ✅ Verified |
+| Resend | Email delivery | ✅ Verified |
 | Razorpay | Payments | ✅ Configured |
 | Shopify | Product sync | ✅ Configured |
 | MongoDB Atlas | Database | ✅ Configured |
-| YouTube | Video content | ✅ Configured |
-| Google Places | Location services | ✅ Configured |
-| ElevenLabs | Voice (future) | ✅ Configured |
-
----
-
-## QUICK START FOR NEXT AGENT
-
-### 1. Understanding Pet Wrapped
-Pet Wrapped is the #1 priority. It's a Spotify Wrapped-style viral acquisition engine. The first one launches May 20, 2026 for Mystique (founder's deceased dog).
-
-### 2. Test Pet Wrapped APIs
-```bash
-API_URL=https://doggy-platform-2.preview.emergentagent.com
-
-# List all pets
-curl $API_URL/api/wrapped/admin/pets
-
-# Generate wrapped for Mystique
-curl $API_URL/api/wrapped/generate/699fa0a513e44c977327ad57
-
-# Generate Mira's memory
-curl -X POST $API_URL/api/wrapped/generate-memory/699fa0a513e44c977327ad57
-
-# View shareable card
-open $API_URL/api/wrapped/share/699fa0a513e44c977327ad57
-
-# Trigger all 3 delivery channels
-curl -X POST $API_URL/api/wrapped/trigger-welcome/699fa0a513e44c977327ad57
-```
-
-### 3. Access Admin Panel
-1. Go to /admin
-2. Login: `aditya` / `lola4304` (twice - there's a nested login)
-3. Click "🎁 Pet Wrapped" tab
-4. See all 19 pets listed
-5. Click any pet to generate their wrapped
-
-### 4. Key Files to Review
-- `/app/backend/routes/wrapped/` — All Pet Wrapped backend
-- `/app/frontend/src/components/wrapped/` — Frontend components
-- `/app/memory/PET_WRAPPED_SPEC.md` — Technical spec
-- `/app/frontend/public/pet-wrapped-mystique.html` — Design template
-
----
-
-## WHAT USER ASKED IN THIS SESSION
-
-1. ✅ Created investor deck HTML
-2. ✅ Built complete Pet Wrapped backend (6 APIs)
-3. ✅ Built Pet Wrapped frontend (viewer, landing, admin)
-4. ✅ Built delivery system (WhatsApp + Email + Modal)
-5. ✅ Added Pet Wrapped to admin panel
-6. ✅ Updated complete-documentation.html
-7. ✅ Created celebration modal with confetti
-
----
-
-## KNOWN ISSUES
-
-1. **Production Database Sync** — Must run MASTER SYNC after deployment
-2. **Admin Double Login** — There's a nested login (access → portal)
-3. **WhatsApp/Email Not Tested** — Delivery configured but needs live testing
-
----
-
-## CONTACTS
-
-- **Founder:** Dipali Sikand (dipali@clubconcierge.in)
-- **Platform:** The Doggy Company (thedoggycompany.com)
 
 ---
 
 ## CHANGELOG
 
-### March 8, 2026 (Session 5) - Pet Wrapped Final Features
-- **NEW:** Automated Birthday Wrapped Triggers
-  - Daily cron job at 9 AM IST checks for upcoming birthdays
-  - Sends Birthday Wrapped 7 days before pet's birthday
-  - Deduplication prevents duplicate sends in same year
-  - Scheduler ID: `pet_wrapped_birthday`
-
-- **NEW:** December Annual Wrapped Batch Job
-  - Runs December 10th at 10 AM IST
-  - Generates "Spotify Wrapped"-style year-end summary for ALL active pets
-  - Only runs in Dec 1-20 window
-  - Scheduler ID: `pet_wrapped_annual`
-
+### March 8, 2026 (Session 5) - Pet Wrapped COMPLETE
+- **NEW:** Automated Birthday Wrapped (daily cron at 9 AM IST)
+- **NEW:** December Annual Wrapped (batch job Dec 10, 10 AM IST)
 - **NEW:** Instagram Stories Direct Share
-  - Added "IG Story" button to WelcomeWrappedModal.jsx
-  - Generates 1080x1920 optimized story card
-  - Shows step-by-step sharing guide
-  - Tracks shares via `/api/wrapped/log-share` endpoint
-  - New endpoint: `GET /api/wrapped/instagram-story/{pet_id}`
-
-- **NEW:** Instagram Share Assets API
-  - `GET /api/wrapped/share-assets/{pet_id}` returns all share URLs
-  - `POST /api/wrapped/log-share/{pet_id}` tracks viral coefficient
-
-- **UPDATED:** Documentation
-  - Updated PET_WRAPPED_SYSTEM.md with all new features
-  - Regenerated complete-documentation.html
-
-- **REGISTERED:** Instagram Router in server.py
-  - Added `wrapped_instagram_router` to main app
-  - Fixed route prefix from `/wrapped` to `/api/wrapped`
+  - "IG Story" button in WelcomeWrappedModal
+  - 1080x1920 optimized story card generator
+  - Step-by-step sharing guide
+  - Viral coefficient tracking
+- **REGISTERED:** Instagram router in server.py
+- **UPDATED:** Documentation (PET_WRAPPED_SYSTEM.md, PRD.md)
+- **TESTED:** 14/14 backend tests passed, frontend verified
 
 ### March 7, 2026 (Session 4)
-- **NEW:** Add Pet Page (`/add-pet`) for existing logged-in users
-  - 3-step flow: Name & Photo → Basic Info → Soul Snapshot
-  - Streamlined experience (doesn't require account creation)
-  - Redirects to Pet Home after completion
+- Add Pet Page for existing users
+- Fixed "Add Your Pet" button redirects
+- Enhanced Soul Profile CTAs
+- Added upcoming events on dashboard
+- Pet selector in checkout
 
-- **FIXED:** "Add Your Pet" button redirects (Gap 1 - CRITICAL)
-  - Changed from `/join` to `/add-pet` on:
-    - PetHomePage.jsx (pet selector strip)
-    - PetHomePage.jsx (empty state)
-    - MemberDashboard.jsx (add pet card)
-    - PetGateModal.jsx (modal CTA)
-
-- **ENHANCED:** "Complete Pet Soul" CTA on Dashboard (Gap 5)
-  - Now shows for ALL pets with Soul Score < 80%
-  - Prominent gradient button for scores < 50%
-  - Subtle border button for scores 50-80%
-  - Shows current percentage and target
-
-- **ENHANCED:** Upcoming Events on Dashboard (Gap 6)
-  - Added Gotcha Day / Adoption Anniversary alerts
-  - Added Vaccination due reminders
-  - Events sorted by priority (imminent events first)
-  - Shows up to 4 alerts
-
-- **NEW:** Pet Selector in Checkout (Gap 10)
-  - Logged-in users see their pets as selectable cards
-  - Auto-selects first pet and fills name/breed
-  - "Other Pet" option for manual entry
-  - Guest users see original input fields
-
-### March 7, 2026 (Session 3)
-- **NEW:** Main Investor Page (`/investor.html`)
-  - Full platform overview mirroring the PowerPoint investor deck
-  - Heritage journey (1998-2026), Mira Sikand story, Soul Profile™
-  - 14 Life Pillars, Scale & Proof (615K lines, 38 APIs)
-  - 5 Compounding Moats (Data, Intelligence, Architecture, Emotional, Network)
-  - Competitive comparison vs HUFT/Supertails/Zigly
-  - Revenue projections, The Ask, Founder credentials
-
-- **NEW:** Pet Wrapped Investor Page (`/investor-pet-wrapped.html`)
-  - Deep-dive on Pet Wrapped as viral acquisition engine
-  - Viral funnel diagram, CAC comparison, revenue potential
-
-### March 7, 2026 (Session 2)
-- **NEW:** Pet Wrapped Download Button on Pet Home Page
-  - Shows for any pet with Soul Score ≥ 10%
-  - Downloads beautiful standalone HTML file
-  - Also added to PetProfile.jsx and My Pets list
-
-- **NEW:** Dynamic Pet Wrapped API (`/api/wrapped/download/{pet_id}`)
-  - Generates full 6-card HTML with REAL data for ANY pet
-  - Pulls from: tickets, pillar_requests, conversation_memories, doggy_soul_answers
-  - Includes AI-generated Mira memory
-
-- **NEW:** Introduction Page (`/introduction.html`)
-  - Beautiful showcase page for investors/partners
-  - Shows Pet Wrapped cards + platform depth
-  - Includes: 563K lines of code, 38 APIs, 14 pillars, Mira AI, Founder story
-
-- **FIXED:** Membership Page Pricing Cards
-  - "MOST POPULAR" badge now properly positioned at top center
-  - Added "🎁 Annual Pet Wrapped" to Essential tier
-  - Added "🎁 Pet Wrapped + Birthday Edition" to Premium tier
-
-- **NEW:** Pet Wrapped Showcase Section on Membership Page
-  - Beautiful dark section with 4 preview cards
-  - Shows Soul Score, Mira Moments, Life Pillars
-  - CTA: "Get Pet Wrapped with Essential"
-
-- **NEW:** Pet Wrapped Section on Landing Page (Home.jsx)
-  - 3 animated preview cards
-  - "Coming Soon" badge
-  - CTA: "Get Pet Wrapped" → links to /membership
-
-- **NEW:** Learn Content Seeded
-  - 24 learn items across 6 topics
-  - Grooming, Health, Food, Behaviour, Travel, Boarding
-
-- **UPDATED:** Pillar Icons to match app's Learn section
-  - Grooming ✂️, Health ❤️, Food 🍖, Behaviour 🧠, Travel ✈️, Boarding 🏠
-
-### March 7, 2026 (Session 1)
-- **FIXED:** Pet Wrapped Admin Panel - Pet list now loading correctly for all pets (19 pets showing)
-- **COMPLETED:** Multi-channel delivery system integration in SoulBuilder.jsx
-  - WelcomeWrappedModal triggers after first Soul Profile completion
-  - WhatsApp delivery via Gupshup working
-  - Email delivery via Resend working
-  - In-app celebration modal with confetti effect
-- **VERIFIED:** End-to-end Pet Wrapped flow working:
-  - Admin panel → Select pet → Generate wrapped → View share card → WhatsApp/Email delivery
+### March 7, 2026 (Sessions 1-3)
+- Multi-channel delivery system (Modal + WhatsApp + Email)
+- Pet Wrapped Admin Panel
+- Investor pages (investor.html, investor-pet-wrapped.html)
+- Download button on Pet Home
+- Membership page Pet Wrapped showcase
 
 ---
 
@@ -523,14 +162,10 @@ curl -X POST $API_URL/api/wrapped/trigger-welcome/699fa0a513e44c977327ad57
 
 | Page | URL |
 |------|-----|
-| Introduction (Investor) | https://doggy-platform-2.preview.emergentagent.com/introduction.html |
-| Pet Wrapped Investor Pitch | https://doggy-platform-2.preview.emergentagent.com/investor-pet-wrapped.html |
-| **Main Investor Page** | https://doggy-platform-2.preview.emergentagent.com/investor.html |
-| Mystique's Pet Wrapped | https://doggy-platform-2.preview.emergentagent.com/api/wrapped/download/699fa0a513e44c977327ad57 |
-| Static Mystique HTML | https://doggy-platform-2.preview.emergentagent.com/pet-wrapped-mystique.html |
-| Complete Documentation | https://doggy-platform-2.preview.emergentagent.com/complete-documentation.html |
-| Viral Landing Page | https://doggy-platform-2.preview.emergentagent.com/wrapped-welcome |
-| Membership Page | https://doggy-platform-2.preview.emergentagent.com/membership |
+| Instagram Story Card | `/api/wrapped/instagram-story/{pet_id}` |
+| Share Assets | `/api/wrapped/share-assets/{pet_id}` |
+| Complete Documentation | `/complete-documentation.html` |
+| Investor Page | `/investor.html` |
 
 ---
 
