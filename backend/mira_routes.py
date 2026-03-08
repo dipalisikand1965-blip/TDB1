@@ -12648,14 +12648,19 @@ async def mira_chat(
                         owner_email = pet_ctx.get("owner_email")
                         if owner_email:
                             try:
-                                # Load recent orders for this user
+                                # Load recent orders for this user (check both user_email and customer.email)
                                 recent_orders = await db.orders.find(
-                                    {"user_email": owner_email},
-                                    {"_id": 0, "items": 1, "products": 1, "created_at": 1, "status": 1}
+                                    {"$or": [
+                                        {"user_email": owner_email},
+                                        {"customer.email": owner_email}
+                                    ]},
+                                    {"_id": 0, "items": 1, "products": 1, "created_at": 1, "status": 1, "total": 1}
                                 ).sort("created_at", -1).limit(5).to_list(5)
                                 if recent_orders:
                                     pet_ctx["order_history"] = recent_orders
                                     logger.info(f"[SOULFUL] Loaded {len(recent_orders)} orders for {pet_name}")
+                                else:
+                                    logger.info(f"[SOULFUL] No orders found for {owner_email}")
                                 
                                 # Load recent service requests/intents
                                 recent_intents = await db.service_requests.find(

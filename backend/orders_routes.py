@@ -122,7 +122,9 @@ async def get_my_orders(current_user: dict = Depends(get_current_user_from_token
 @orders_router.post("/orders")
 async def create_order(order: dict):
     """Create a new order with reference images and auto-create service desk ticket"""
-    order["id"] = str(uuid.uuid4())
+    order_id = str(uuid.uuid4())
+    order["id"] = order_id
+    order["orderId"] = order.get("orderId") or order_id  # Support both fields
     order["created_at"] = datetime.now(timezone.utc).isoformat()
     order["updated_at"] = datetime.now(timezone.utc).isoformat()
     
@@ -157,7 +159,13 @@ async def create_order(order: dict):
     if reference_images:
         order["reference_images"] = reference_images
     
-    await db.orders.insert_one(order)
+    # Save order to database
+    try:
+        await db.orders.insert_one(order)
+        logger.info(f"[ORDERS] Order {order_id} saved to database successfully")
+    except Exception as db_err:
+        logger.error(f"[ORDERS] Failed to save order {order_id}: {db_err}")
+        raise HTTPException(status_code=500, detail=f"Failed to save order: {db_err}")
     
     # Determine pillar from items
     items = order.get("items", [])
