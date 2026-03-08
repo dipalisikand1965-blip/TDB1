@@ -228,7 +228,7 @@ _Every dog deserves to be truly known._
 — Mira, The Doggy Company 🐾"""
     
     try:
-        url = "https://api.gupshup.io/sm/api/v1/msg"
+        url = "https://api.gupshup.io/wa/api/v1/msg"  # WhatsApp Business API
         headers = {
             "apikey": GUPSHUP_API_KEY,
             "Content-Type": "application/x-www-form-urlencoded"
@@ -242,7 +242,7 @@ _Every dog deserves to be truly known._
         }
         
         response = requests.post(url, headers=headers, data=data, timeout=10)
-        print(f"WhatsApp sent to {phone} for {pet_name}: {response.status_code}")
+        print(f"WhatsApp sent to {phone} for {pet_name}: {response.status_code} - {response.text[:100]}")
         
         # Log the send
         db.wrapped_deliveries.update_one(
