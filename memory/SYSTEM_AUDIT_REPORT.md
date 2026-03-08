@@ -423,7 +423,7 @@ const handleServiceComplete = async (ticket) => {
 | Admin URL | `/admin` |
 | Admin Username | `aditya` |
 | Admin Password | `lola4304` |
-| Preview URL | `https://mockup-engine.preview.emergentagent.com` |
+| Preview URL | `https://soul-made-pets.preview.emergentagent.com` |
 
 ---
 

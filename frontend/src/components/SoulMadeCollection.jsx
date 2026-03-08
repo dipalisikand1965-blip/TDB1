@@ -228,10 +228,13 @@ const SoulMadeProductCard = ({ product, petName, archetype, onViewDetails }) => 
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50">
-            <div className="text-center">
-              <PawPrint className="w-12 h-12 text-purple-300 mx-auto mb-2" />
-              <p className="text-xs text-purple-400">Generating...</p>
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-100 via-pink-50 to-amber-50">
+            <div className="text-center px-4">
+              <div className="w-16 h-16 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center mx-auto mb-3 shadow-lg">
+                <Heart className="w-8 h-8 text-purple-500" />
+              </div>
+              <p className="text-sm font-medium text-purple-700">{product.breed_name}</p>
+              <p className="text-xs text-gray-500 mt-1">Personalized for {petName}</p>
             </div>
           </div>
         )}
@@ -357,8 +360,9 @@ const SoulMadeCollection = ({
     setError(null);
 
     try {
-      // Build query
-      let url = `${API_URL}/api/mockups/breed-products?breed=${petBreedKey}&has_mockup=true&limit=${maxItems}`;
+      // Build query - Don't require mockups, show products even without images
+      // The component will show a placeholder for products without mockups
+      let url = `${API_URL}/api/mockups/breed-products?breed=${petBreedKey}&limit=${maxItems}`;
       
       // Add pillar filter
       if (pillar && pillar !== 'all') {
