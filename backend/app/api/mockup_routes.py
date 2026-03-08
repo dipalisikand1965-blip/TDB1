@@ -428,6 +428,7 @@ async def get_breed_products(
     breed: Optional[str] = None,
     product_type: Optional[str] = None,
     has_mockup: Optional[bool] = None,
+    pillar: Optional[str] = None,
     limit: int = 50
 ):
     """Get breed products with optional filters."""
@@ -438,6 +439,8 @@ async def get_breed_products(
         query["breed"] = breed
     if product_type:
         query["product_type"] = product_type
+    if pillar:
+        query["pillar"] = pillar
     if has_mockup is not None:
         if has_mockup:
             query["mockup_url"] = {"$ne": None}
@@ -449,7 +452,7 @@ async def get_breed_products(
     return {
         "products": products,
         "count": len(products),
-        "filters": {"breed": breed, "product_type": product_type, "has_mockup": has_mockup}
+        "filters": {"breed": breed, "product_type": product_type, "pillar": pillar, "has_mockup": has_mockup}
     }
 
 
