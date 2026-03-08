@@ -11,6 +11,7 @@ from .ai_memory import router as ai_memory_router
 from .share import router as share_router
 from .welcome import router as welcome_router
 from .delivery import router as delivery_router
+from .instagram import router as instagram_router
 
 # Create combined router
 router = APIRouter()
@@ -24,5 +25,6 @@ __all__ = [
     "ai_memory_router",
     "share_router",
     "welcome_router",
-    "delivery_router"
+    "delivery_router",
+    "instagram_router"
 ]
