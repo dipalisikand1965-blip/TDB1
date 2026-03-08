@@ -110,7 +110,7 @@ Step 4: Welcome!
 ---
 
 ## PREVIEW URL
-`https://doggy-platform-2.preview.emergentagent.com`
+`https://soul-profile-2.preview.emergentagent.com`
 
 ## SERVICES
 - Frontend: Running on port 3000 (hot reload)

@@ -45,9 +45,10 @@ Soul Builder (51 Q) → doggy_soul_answers → Mira OS + Pet Wrapped + Picks Eng
 - Score calculation working
 
 ### Pet Wrapped ✅
-- All types (Welcome, Birthday, Annual)
+- All types (Welcome, Birthday, Annual, Memorial)
 - Instagram Stories share
 - Uses soul data
+- Automated birthday/annual cron jobs (exclude memorial pets)
 
 ### Custom Cake Designer ✅
 - Shape, flavor, text selection
@@ -59,6 +60,22 @@ Soul Builder (51 Q) → doggy_soul_answers → Mira OS + Pet Wrapped + Picks Eng
 - Soul Questions in Chat
 - Default Picks on Load
 - "Why this pick?" tooltips
+
+### Emergency Flow ✅
+- 8 emergency types (Lost Pet, Medical, Poisoning, etc.)
+- 24/7 Emergency Hotline display
+- Guest reporting (no login required)
+- Emergency partners/vets section
+- Emergency products & bundles
+
+### Farewell / Rainbow Bridge ✅
+- Mark pet as "crossed rainbow bridge": `POST /api/pets/{id}/rainbow-bridge`
+- Visual "halo" indicator on pet cards (purple gradient, glow effect)
+- "🌈 In Memory" badge on pet profiles
+- Memorial Wall (community tributes)
+- Mira AI responds empathetically to rainbow bridge pets
+- Automatic exclusion from birthday/annual notifications
+- Memorial Wrapped generation support
 
 ---
 
@@ -73,6 +90,7 @@ Soul Builder (51 Q) → doggy_soul_answers → Mira OS + Pet Wrapped + Picks Eng
 
 - [ ] Production Deployment
 - [ ] Onboarding E2E Test
+- [ ] Full Viral Loop Test (share link → new user signup)
 
 ---
 
