@@ -596,4 +596,26 @@ Trusted vet/trainer on speed dial.
 
 ---
 
+## CHANGELOG
+
+### March 8, 2026 - Soul Made Product Separation Fix
+
+**Issues Fixed:**
+1. **Product mixing resolved** - Soul Made breed-specific products (mugs, bandanas, frames) are now completely separated from Shopify products (TheDoggyBakery cakes, treats)
+2. **"Could not load personalized products" error fixed** - Removed `has_mockup=true` filter from SoulMadeCollection API call
+3. **Breed mismatch resolved** - When user selects a pet, only that pet's breed products are shown
+
+**Technical Changes:**
+- `frontend/src/components/SoulMadeCollection.jsx`: Removed `has_mockup=true` filter to show products even without generated images
+- `backend/server.py`: Added breed exclusion pattern (line 7085) to prevent Soul Made products from appearing in `/api/products` endpoint
+- Generated Shih Tzu mockups (11 products) via batch generation
+
+**Files Modified:**
+- `/app/frontend/src/components/SoulMadeCollection.jsx` - Line 361
+- `/app/backend/server.py` - Lines 7079-7093
+
+**Testing Status:** ✅ All core tests passing (see `/app/test_reports/iteration_75.json`)
+
+---
+
 *"No one knows your pet better than Mira."*
