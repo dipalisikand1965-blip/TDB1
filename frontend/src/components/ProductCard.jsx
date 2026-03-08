@@ -395,10 +395,12 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
       >
         {/* MOBILE: Larger images (h-44 = 176px vs h-40 = 160px) */}
       <div className="relative overflow-hidden aspect-[4/5] sm:aspect-square">
-          {/* Check for pre-generated mockup first, then fall back to regular image */}
+          {/* Check for pre-generated mockup ONLY for Soul Made products, never for regular Shopify products */}
           {(() => {
-            // Try to get a pre-generated mockup for this product + pet breed
-            const mockup = selectedPet?.breed ? getProductMockup(product, selectedPet.breed) : null;
+            // IMPORTANT: Only apply mockups to soul_made products
+            // Regular Shopify products should ALWAYS use their original product images
+            const isSoulMade = product.soul_tier === 'soul_made';
+            const mockup = (isSoulMade && selectedPet?.breed) ? getProductMockup(product, selectedPet.breed) : null;
             const displayImage = mockup?.mockupUrl || productImage;
             
             return (
