@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://soul-made-test.preview.emergentagent.com
+**Preview URL:** https://doggy-preview.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
