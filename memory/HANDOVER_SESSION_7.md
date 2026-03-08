@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://soul-profile-2.preview.emergentagent.com
+https://soul-profile-3.preview.emergentagent.com
 
 ---
 

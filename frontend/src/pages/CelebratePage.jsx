@@ -42,6 +42,8 @@ import BirthdayCountdown from '../components/celebrate/BirthdayCountdown';
 import PlanMyPartyWizard from '../components/celebrate/PlanMyPartyWizard';
 import CelebrationMemoryWall from '../components/celebrate/CelebrationMemoryWall';
 import ShareCelebrationModal from '../components/celebrate/ShareCelebrationModal';
+import CakeRevealSection from '../components/celebrate/CakeRevealSection';
+import CelebrationAlbum from '../components/celebrate/CelebrationAlbum';
 
 // Lazy load Soul Explainer for footer link
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
@@ -69,6 +71,7 @@ const CelebratePage = () => {
   const [showPartyWizard, setShowPartyWizard] = useState(false);
   const [showPlanMyPartyWizard, setShowPlanMyPartyWizard] = useState(false);
   const [showShareCelebration, setShowShareCelebration] = useState(false);
+  const [showCelebrationAlbum, setShowCelebrationAlbum] = useState(false);
   const [showConciergeModal, setShowConciergeModal] = useState(false);
   const [conciergeSubmitting, setConciergeSubmitting] = useState(false);
   const [showSoulExplainer, setShowSoulExplainer] = useState(false);
@@ -734,6 +737,20 @@ const CelebratePage = () => {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* CAKE REVEAL SECTION - Sneak peeks and reveals for custom cake orders */}
+      {/* VISION: Build anticipation and excitement for celebrations */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {activePet && token && (
+        <div className="max-w-6xl mx-auto px-4 py-6 section-fade-in">
+          <CakeRevealSection
+            pet={activePet}
+            token={token}
+            userEmail={user?.email}
+          />
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* CELEBRATION MEMORY WALL - Real moments from the community */}
       {/* VISION: Create emotional connection through real customer stories */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
@@ -744,6 +761,7 @@ const CelebratePage = () => {
             // Navigate to full gallery or show modal
             toast.info('Full gallery coming soon! 📸');
           }}
+          onCreateAlbum={() => setShowCelebrationAlbum(true)}
         />
       </div>
 
@@ -1428,6 +1446,18 @@ const CelebratePage = () => {
           console.log('[CelebratePage] Celebration shared!');
         }}
       />
+      
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* CELEBRATION ALBUM - Post-party mini-wrapped experience */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {showCelebrationAlbum && (
+        <CelebrationAlbum
+          pet={activePet}
+          token={token}
+          userEmail={user?.email}
+          onClose={() => setShowCelebrationAlbum(false)}
+        />
+      )}
       
       {/* Close the theme wrapper */}
       </div>

@@ -25,79 +25,101 @@ import { Dialog, DialogContent } from '../ui/dialog';
 import { API_URL } from '../../utils/api';
 
 // Real celebration photos from TheDoggyBakery Shopify Store
-// These are actual product images showing dogs enjoying cakes & celebrations
+// These are actual product images and customer photos showing dogs with their birthday cakes
 const CELEBRATION_PHOTOS = [
   {
     id: 1,
-    imageUrl: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/2N9A0879copy.jpg?v=1768627176',
-    petName: 'Bruno',
+    imageUrl: 'https://thedoggybakery.com/cdn/shop/files/the_doggy_bakery_do_checkout_for_more_variety_in_cakes_and_treats_._Euro_love_it_._birthdayc.jpg?v=1759753685&width=800',
+    petName: 'Euro',
     occasion: 'Birthday',
-    caption: 'Bruno turned 3 with the most pawfect cake! 🎂',
+    caption: 'Euro loved his birthday cake! The best day ever 🎂',
     likes: 234,
     location: 'Mumbai',
     date: '2 days ago'
   },
   {
     id: 2,
-    imageUrl: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Designer_5.png?v=1761639445',
-    petName: 'Cookie',
-    occasion: 'Gotcha Day',
-    caption: 'Celebrating 2 years of unconditional love 💕',
-    likes: 189,
+    imageUrl: 'https://thedoggybakery.com/cdn/shop/files/If_Love_had_a_profile_picture_you_re_looking_at_it_..Glad_you_enjoyed_your_birthday_Simba_.._dogfood_dogs_doggygoals_celebratingpets_cakesfordogs_doggydesserts_dogtreats_dogfoodie_pet.jpg?v=1759753273&width=800',
+    petName: 'Simba',
+    occasion: 'Birthday',
+    caption: 'If love had a profile picture, you\'re looking at it 💕',
+    likes: 389,
     location: 'Bangalore',
     date: '5 days ago'
   },
   {
     id: 3,
-    imageUrl: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_11.jpg?v=1758792193',
-    petName: 'Max',
+    imageUrl: 'https://thedoggybakery.com/cdn/shop/files/zippy-april-4-1024x1024.png?v=1759752249&width=800',
+    petName: 'Zippy',
     occasion: 'Birthday',
-    caption: 'The face when the cake arrives! Pure joy!',
+    caption: 'Birthday celebrations with the whole cake! 🎉',
     likes: 312,
     location: 'Delhi',
     date: '1 week ago'
   },
   {
     id: 4,
-    imageUrl: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Breed_Birthday_Cake_Hamper_Toy.png?v=1723637829',
-    petName: 'Luna',
+    imageUrl: 'https://thedoggybakery.com/cdn/shop/files/BOBA_MILK_TEA_7_f31d3215-5971-4b5b-bf65-da4157fed6d9.jpg?v=1759752285&width=800',
+    petName: 'Boba',
     occasion: 'First Birthday',
-    caption: 'Our little princess is 1! Time flies 🥺',
+    caption: 'Our little one turns 1! Time flies so fast 🥺',
     likes: 445,
     location: 'Pune',
     date: '1 week ago'
   },
   {
     id: 5,
-    imageUrl: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/IMG-0406.jpg?v=1759236219',
-    petName: 'Rocky',
-    occasion: 'Recovery Party',
-    caption: 'Celebrating Rocky beating cancer! Strongest boy 💪',
+    imageUrl: 'https://thedoggybakery.com/cdn/shop/files/438102159_450377974383140_7930303494133678708_n_78132051-77d9-455c-8a9c-3050abdeef81.jpg?v=1725448195&width=800',
+    petName: 'Muffin',
+    occasion: 'Birthday',
+    caption: 'Best birthday party ever with all my friends! 💪',
     likes: 892,
     location: 'Chennai',
     date: '2 weeks ago'
   },
   {
     id: 6,
-    imageUrl: 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/UntitledDesign-3-Edited.png?v=1759234000',
-    petName: 'Coco',
-    occasion: 'Birthday',
-    caption: 'Someone was very excited for their special day!',
+    imageUrl: 'https://thedoggybakery.com/cdn/shop/files/Breed_Birthday_Cake_Hamper_Toy.png?v=1723637829&width=800',
+    petName: 'Luna',
+    occasion: 'Gotcha Day',
+    caption: 'Celebrating 3 years since Luna joined our family!',
     likes: 267,
     location: 'Hyderabad',
     date: '2 weeks ago'
+  },
+  {
+    id: 7,
+    imageUrl: 'https://thedoggybakery.com/cdn/shop/files/Breed_Cake_Party_Box.png?v=1723638074&width=800',
+    petName: 'Rocky',
+    occasion: 'Birthday',
+    caption: 'The breed cake looked exactly like me! 🐕',
+    likes: 523,
+    location: 'Gurgaon',
+    date: '3 weeks ago'
+  },
+  {
+    id: 8,
+    imageUrl: 'https://thedoggybakery.com/cdn/shop/files/Untitled_design_16.png?v=1723638287&width=800',
+    petName: 'Charlie',
+    occasion: 'First Birthday',
+    caption: 'The pawfect party box for Charlie\'s big day!',
+    likes: 678,
+    location: 'Kolkata',
+    date: '3 weeks ago'
   }
 ];
 
-// Additional product images for fallback
+// Additional product images for fallback - all from TheDoggyBakery
 const PRODUCT_CELEBRATION_IMAGES = [
-  'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Untitleddesign-2026-01-20T122636.295.png?v=1768892215',
-  'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/Designer_4.png?v=1761635507',
-  'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/zippy-april-4-1024x1024.png?v=1759752249',
-  'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/BOBA_MILK_TEA_7_f31d3215-5971-4b5b-bf65-da4157fed6d9.jpg?v=1759752285',
+  'https://thedoggybakery.com/cdn/shop/products/WhatsAppImage2022-05-13at3.24.11PM.jpg?v=1655357921&width=800',
+  'https://thedoggybakery.com/cdn/shop/products/16E90556-0B54-4E9F-8DC1-668012C199AF.png?v=1656737240&width=800',
+  'https://thedoggybakery.com/cdn/shop/files/Untitled_design_17.png?v=1723638766&width=800',
+  'https://thedoggybakery.com/cdn/shop/files/Untitled_design_18.png?v=1723638716&width=800',
+  'https://thedoggybakery.com/cdn/shop/products/7BED8A33-AE80-4DF6-830A-5519103A8013.png?v=1656737380&width=800',
+  'https://thedoggybakery.com/cdn/shop/products/FC144498-711C-42A4-8867-99638A34FB8C.png?v=1656737324&width=800',
 ];
 
-const CelebrationMemoryWall = ({ onShareStory, onViewAll }) => {
+const CelebrationMemoryWall = ({ onShareStory, onViewAll, onCreateAlbum }) => {
   const [photos, setPhotos] = useState(CELEBRATION_PHOTOS);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [likedPhotos, setLikedPhotos] = useState(new Set());
@@ -176,6 +198,18 @@ const CelebrationMemoryWall = ({ onShareStory, onViewAll }) => {
         </div>
         
         <div className="flex items-center gap-2">
+          {onCreateAlbum && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={onCreateAlbum}
+              className="hidden sm:flex border-purple-200 text-purple-600 hover:bg-purple-50"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              Create Album
+            </Button>
+          )}
+          
           <Button 
             variant="outline" 
             size="sm"
@@ -334,14 +368,24 @@ const CelebrationMemoryWall = ({ onShareStory, onViewAll }) => {
       </div>
       
       {/* Mobile Share Button */}
-      <div className="sm:hidden mt-4">
+      <div className="sm:hidden mt-4 flex gap-2">
         <Button 
           onClick={onShareStory}
-          className="w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl"
+          className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl"
         >
           <Camera className="w-4 h-4 mr-2" />
-          Share Your Celebration
+          Share Story
         </Button>
+        {onCreateAlbum && (
+          <Button 
+            onClick={onCreateAlbum}
+            variant="outline"
+            className="flex-1 border-purple-300 text-purple-600 rounded-xl"
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            Create Album
+          </Button>
+        )}
       </div>
       
       {/* Photo Detail Modal */}
