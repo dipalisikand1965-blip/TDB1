@@ -392,3 +392,297 @@ async def get_delivery_status(pet_id: str):
         "found": True,
         "delivery": delivery
     }
+
+
+
+# =========================================
+# BIRTHDAY WRAPPED TRIGGER
+# =========================================
+@router.post("/trigger-birthday/{pet_id}")
+async def trigger_birthday_wrapped(pet_id: str, background_tasks: BackgroundTasks):
+    """
+    Trigger Birthday Wrapped for a pet.
+    Called by cron job or manually for pets with upcoming birthdays.
+    """
+    # Find pet
+    pet = None
+    if pet_id.startswith("pet-"):
+        pet = db.pets.find_one({"id": pet_id})
+    if not pet:
+        try:
+            pet = db.pets.find_one({"_id": ObjectId(pet_id)})
+        except:
+            pass
+    if not pet:
+        pet = db.pets.find_one({"_id": pet_id})
+    
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    pet_name = pet.get("name", "Your Pet")
+    breed = pet.get("breed", "Good Boy/Girl")
+    soul_score = pet.get("overall_score", 0)
+    owner_email = pet.get("owner_email")
+    owner_phone = pet.get("owner_phone")
+    birth_date = pet.get("birth_date")
+    
+    # Get owner name
+    parent_name = "Pet Parent"
+    if owner_email:
+        user = db.users.find_one({"email": owner_email})
+        if user:
+            parent_name = user.get("name", "Pet Parent")
+            if not owner_phone:
+                owner_phone = user.get("phone")
+    
+    # Calculate age
+    age = "?"
+    if birth_date:
+        try:
+            if isinstance(birth_date, str):
+                bd = datetime.fromisoformat(birth_date.replace('Z', '+00:00'))
+            else:
+                bd = birth_date
+            age = datetime.now().year - bd.year
+        except:
+            pass
+    
+    # Generate message
+    message = f"""🎂 *Happy Birthday {pet_name}!* 🎉
+
+{pet_name} turns {age} today! 
+
+Soul Score: *{soul_score}%*
+
+Celebrate this special day with your furry family member! 🐾
+
+From everyone at The Doggy Company 💜"""
+    
+    share_url = f"https://thedoggycompany.com/api/wrapped/birthday-card/{pet_id}"
+    
+    # Send via all channels
+    if owner_phone:
+        background_tasks.add_task(send_whatsapp_wrapped, pet_id, pet_name, breed, soul_score, owner_phone, parent_name, message, share_url)
+    
+    if owner_email:
+        background_tasks.add_task(send_email_wrapped, pet_id, pet_name, breed, soul_score, owner_email, parent_name, message, share_url)
+    
+    # Universal Service Flow
+    ticket_id = f"birthday-{pet_id}-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+    db.service_desk_tickets.insert_one({
+        "ticket_id": ticket_id,
+        "type": "pet_wrapped",
+        "subtype": "birthday_wrapped",
+        "status": "completed",
+        "priority": "low",
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "user_email": owner_email,
+        "title": f"Birthday Wrapped sent for {pet_name}",
+        "description": f"Happy {age}th Birthday {pet_name}! Wrapped delivered.",
+        "created_at": datetime.now(timezone.utc),
+        "auto_generated": True
+    })
+    
+    db.admin_notifications.insert_one({
+        "type": "pet_wrapped",
+        "title": f"🎂 Birthday Wrapped sent for {pet_name}!",
+        "message": f"{pet_name} turns {age} today! Birthday Wrapped delivered.",
+        "pet_id": pet_id,
+        "created_at": datetime.now(timezone.utc)
+    })
+    
+    db.member_notifications.insert_one({
+        "user_email": owner_email,
+        "type": "pet_wrapped",
+        "category": "celebration",
+        "title": f"🎂 Happy Birthday {pet_name}!",
+        "message": f"{pet_name} turns {age} today! We've prepared a special Birthday Wrapped.",
+        "action_url": f"/pet-home?pet={pet_id}",
+        "action_label": "View Birthday Wrapped",
+        "read": False,
+        "created_at": datetime.now(timezone.utc)
+    })
+    
+    # Log delivery
+    db.wrapped_deliveries.insert_one({
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "wrapped_type": "birthday",
+        "owner_email": owner_email,
+        "owner_phone": owner_phone,
+        "age": age,
+        "triggered_at": datetime.now(timezone.utc),
+        "channels": {
+            "modal": False,
+            "whatsapp": bool(owner_phone),
+            "email": bool(owner_email)
+        }
+    })
+    
+    return {
+        "success": True,
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "age": age,
+        "wrapped_type": "birthday",
+        "delivery": {
+            "whatsapp": "sending" if owner_phone else "no phone",
+            "email": "sending" if owner_email else "no email"
+        }
+    }
+
+
+# =========================================
+# ANNUAL WRAPPED TRIGGER (December)
+# =========================================
+@router.post("/trigger-annual/{pet_id}")
+async def trigger_annual_wrapped(pet_id: str, background_tasks: BackgroundTasks, year: int = None):
+    """
+    Trigger Annual Wrapped (Year in Review) for a pet.
+    Called by cron job in December or manually.
+    """
+    if year is None:
+        year = datetime.now().year
+    
+    # Find pet
+    pet = None
+    if pet_id.startswith("pet-"):
+        pet = db.pets.find_one({"id": pet_id})
+    if not pet:
+        try:
+            pet = db.pets.find_one({"_id": ObjectId(pet_id)})
+        except:
+            pass
+    if not pet:
+        pet = db.pets.find_one({"_id": pet_id})
+    
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    pet_name = pet.get("name", "Your Pet")
+    breed = pet.get("breed", "Good Boy/Girl")
+    soul_score = pet.get("overall_score", 0)
+    owner_email = pet.get("owner_email")
+    owner_phone = pet.get("owner_phone")
+    
+    # Get owner name
+    parent_name = "Pet Parent"
+    if owner_email:
+        user = db.users.find_one({"email": owner_email})
+        if user:
+            parent_name = user.get("name", "Pet Parent")
+            if not owner_phone:
+                owner_phone = user.get("phone")
+    
+    # Count year stats
+    mira_chats = db.conversation_memories.count_documents({
+        "pet_id": pet_id,
+        "created_at": {"$gte": datetime(year, 1, 1), "$lt": datetime(year + 1, 1, 1)}
+    })
+    
+    orders = db.orders.count_documents({
+        "user_email": owner_email,
+        "created_at": {"$gte": datetime(year, 1, 1), "$lt": datetime(year + 1, 1, 1)}
+    })
+    
+    # Generate message
+    message = f"""🎄 *{pet_name}'s {year} Wrapped is Here!* ✨
+
+What a year it's been! Here's {pet_name}'s journey:
+
+🐾 Soul Score: *{soul_score}%*
+💬 Mira Conversations: *{mira_chats}*
+🛒 Orders Together: *{orders}*
+
+Thank you for being part of The Doggy Company family! 
+
+Here's to more adventures in {year + 1}! 🥂
+
+With love,
+Mira & The Doggy Company Team 💜"""
+    
+    share_url = f"https://thedoggycompany.com/api/wrapped/download/{pet_id}?year={year}"
+    
+    # Send via all channels
+    if owner_phone:
+        background_tasks.add_task(send_whatsapp_wrapped, pet_id, pet_name, breed, soul_score, owner_phone, parent_name, message, share_url)
+    
+    if owner_email:
+        background_tasks.add_task(send_email_wrapped, pet_id, pet_name, breed, soul_score, owner_email, parent_name, message, share_url)
+    
+    # Universal Service Flow
+    ticket_id = f"annual-{pet_id}-{year}-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+    db.service_desk_tickets.insert_one({
+        "ticket_id": ticket_id,
+        "type": "pet_wrapped",
+        "subtype": "annual_wrapped",
+        "status": "completed",
+        "priority": "low",
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "user_email": owner_email,
+        "title": f"{year} Annual Wrapped sent for {pet_name}",
+        "description": f"{pet_name}'s Year in Review delivered. Soul Score: {soul_score}%",
+        "created_at": datetime.now(timezone.utc),
+        "auto_generated": True,
+        "year": year
+    })
+    
+    db.admin_notifications.insert_one({
+        "type": "pet_wrapped",
+        "title": f"🎄 {year} Annual Wrapped sent for {pet_name}!",
+        "message": f"{pet_name}'s Year in Review delivered.",
+        "pet_id": pet_id,
+        "year": year,
+        "created_at": datetime.now(timezone.utc)
+    })
+    
+    db.member_notifications.insert_one({
+        "user_email": owner_email,
+        "type": "pet_wrapped",
+        "category": "celebration",
+        "title": f"🎄 {pet_name}'s {year} Wrapped is Here!",
+        "message": f"Your year in review with {pet_name} is ready!",
+        "action_url": f"/pet-home?pet={pet_id}",
+        "action_label": f"View {year} Wrapped",
+        "read": False,
+        "created_at": datetime.now(timezone.utc)
+    })
+    
+    # Log delivery
+    db.wrapped_deliveries.insert_one({
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "wrapped_type": "annual",
+        "year": year,
+        "owner_email": owner_email,
+        "owner_phone": owner_phone,
+        "stats": {
+            "soul_score": soul_score,
+            "mira_chats": mira_chats,
+            "orders": orders
+        },
+        "triggered_at": datetime.now(timezone.utc),
+        "channels": {
+            "whatsapp": bool(owner_phone),
+            "email": bool(owner_email)
+        }
+    })
+    
+    return {
+        "success": True,
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "year": year,
+        "wrapped_type": "annual",
+        "stats": {
+            "soul_score": soul_score,
+            "mira_chats": mira_chats,
+            "orders": orders
+        },
+        "delivery": {
+            "whatsapp": "sending" if owner_phone else "no phone",
+            "email": "sending" if owner_email else "no email"
+        }
+    }
