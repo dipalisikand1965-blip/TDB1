@@ -1102,7 +1102,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
               </div>
             )}
 
-            <h2 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-2 pr-8">{product.name}</h2>
             
             {/* Full Description - Expandable */}
             {product.description && (
