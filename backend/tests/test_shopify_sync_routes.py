@@ -22,7 +22,7 @@ import os
 import time
 
 # Get base URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://soul-made-test.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://doggy-preview.preview.emergentagent.com').rstrip('/')
 
 # Admin credentials
 ADMIN_USERNAME = "aditya"
