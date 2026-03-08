@@ -633,8 +633,13 @@ const CelebratePage = () => {
         </div>
 
         {/* Personalized Picks for User's Pet - Shows filtered Shopify products */}
+        {/* Key forces remount when pet changes to ensure fresh data */}
         <div className="mb-8">
-          <PersonalizedPicks pillar="celebrate" maxProducts={6} />
+          <PersonalizedPicks 
+            key={`personalized-picks-${activePet?.id || 'default'}`}
+            pillar="celebrate" 
+            maxProducts={6} 
+          />
         </div>
         
         {/* NEW: Curated Concierge Section - Dynamic picks from Intelligence Layer */}
@@ -757,7 +762,9 @@ const CelebratePage = () => {
       {/* CAKE REVEAL SECTION - Sneak peeks and reveals for custom cake orders */}
       {/* VISION: Build anticipation and excitement for celebrations */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {activePet && token && (
+      {/* TEMPORARILY DISABLED - CakeRevealSection has visual issues, keeping in backend for future */}
+      {/* TODO: Re-enable after fixing animation/CSS issues */}
+      {/* {activePet && token && (
         <div className="max-w-6xl mx-auto px-4 py-6 section-fade-in">
           <CakeRevealSection
             pet={activePet}
@@ -765,7 +772,7 @@ const CelebratePage = () => {
             userEmail={user?.email}
           />
         </div>
-      )}
+      )} */}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* CELEBRATION MEMORY WALL - Real moments from the community */}
