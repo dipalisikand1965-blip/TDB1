@@ -32,6 +32,9 @@ import { usePillarContext } from '../context/PillarContext';
 import FreshMealsTab from '../components/dine/FreshMealsTab';
 import MapModal from '../components/MapModal';
 import PersonalizedDineSection from '../components/dine/PersonalizedDineSection';
+import TummyProfileDashboard from '../components/dine/TummyProfileDashboard';
+import SafeForPetBadge from '../components/dine/SafeForPetBadge';
+import TasteTestFeature from '../components/dine/TasteTestFeature';
 
 // Get user from AuthContext or localStorage
 const getUser = () => {
@@ -391,6 +394,19 @@ const DinePage = () => {
     >
       {/* Main Content with iOS Safe Area Bottom Padding */}
       <div className="pb-24 theme-dine" data-testid="dine-page">
+      
+      {/* ═══════════════════════════════════════════════════════════════════════════════ */}
+      {/* TUMMY PROFILE DASHBOARD - Personalized nutrition insights */}
+      {/* VISION: Feel like a personal nutritionist who knows your dog's tummy */}
+      {/* ═══════════════════════════════════════════════════════════════════════════════ */}
+      {activePet && token && (
+        <div className="max-w-6xl mx-auto px-4 pt-6 pb-2 section-fade-in">
+          <TummyProfileDashboard
+            pet={activePet}
+            onEditProfile={() => window.location.href = `/soul-builder/${activePet.id}`}
+          />
+        </div>
+      )}
       
       {/* ═══════════════════════════════════════════════════════════════════════════════ */}
       {/* TAB CONTENT ROUTING - Render different content based on activeTab             */}

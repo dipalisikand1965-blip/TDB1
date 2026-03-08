@@ -241,6 +241,12 @@ from source_download_routes import router as source_download_router, set_source_
 # Finance & Reconciliation Routes
 from finance_routes import create_finance_routes
 
+# Celebration Wall Routes (Admin manageable celebration photos)
+from app.api.celebration_wall_routes import router as celebration_wall_router
+
+# Cake Reveal Notification Routes (WhatsApp, Email, Inbox notifications)
+from app.api.cake_reveal_routes import router as cake_reveal_router
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -19223,6 +19229,13 @@ app.include_router(wrapped_welcome_router)  # Welcome/First Soul wrapped
 app.include_router(wrapped_delivery_router)  # Delivery via Modal/WhatsApp/Email
 app.include_router(wrapped_instagram_router)  # Instagram Stories share
 logger.info("🎁 Pet Wrapped routes initialized (Launch: May 20, 2026)")
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CELEBRATION WALL & CAKE REVEAL ROUTES
+# ═══════════════════════════════════════════════════════════════════════════════
+app.include_router(celebration_wall_router)  # Celebration Wall at /api/celebration-wall/*
+app.include_router(cake_reveal_router)  # Cake Reveal at /api/cake-reveal/*
+logger.info("🎂 Celebration Wall & Cake Reveal routes initialized")
 
 @app.on_event("startup")
 async def startup_load_admin_credentials():
