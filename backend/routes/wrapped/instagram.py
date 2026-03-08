@@ -18,7 +18,7 @@ client = MongoClient(os.environ.get("MONGO_URL"))
 db_name = os.environ.get("DB_NAME") or "test_database"
 db = client[db_name]
 
-router = APIRouter(prefix="/wrapped", tags=["Instagram Stories"])
+router = APIRouter(prefix="/api/wrapped", tags=["Instagram Stories"])
 
 
 @router.get("/instagram-story/{pet_id}", response_class=HTMLResponse)
@@ -280,11 +280,17 @@ async def log_share_action(pet_id: str, platform: str = "unknown"):
         "shared_at": datetime.now(timezone.utc)
     })
     
-    # Update share count on delivery
-    db.wrapped_deliveries.update_one(
+    # Update share count on the most recent delivery
+    # Find and update the latest delivery for this pet
+    latest_delivery = db.wrapped_deliveries.find_one(
         {"pet_id": pet_id},
-        {"$inc": {"share_count": 1}},
         sort=[("triggered_at", -1)]
     )
     
-    return {"success": True, "message": "Share logged"}
+    if latest_delivery:
+        db.wrapped_deliveries.update_one(
+            {"_id": latest_delivery["_id"]},
+            {"$inc": {"share_count": 1}}
+        )
+    
+    return {"success": True, "message": "Share logged", "platform": platform}

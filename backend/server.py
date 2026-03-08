@@ -1753,8 +1753,47 @@ async def lifespan(app: FastAPI):
         replace_existing=True
     )
     
+    # ========== PET WRAPPED AUTOMATED TRIGGERS ==========
+    
+    # Birthday Wrapped Check - Daily at 9 AM IST (3:30 AM UTC)
+    # Sends birthday wrapped 7 days before pet's birthday
+    async def wrapped_birthday_check():
+        """Daily check for upcoming pet birthdays"""
+        try:
+            result = await check_birthday_wrappeds()
+            logger.info(f"[PET WRAPPED] Birthday check: {result.get('birthdays_found', 0)} birthdays found, {result.get('wrappeds_sent', 0)} sent")
+        except Exception as e:
+            logger.error(f"[PET WRAPPED] Birthday check error: {e}")
+    
+    scheduler.add_job(
+        wrapped_birthday_check,
+        CronTrigger(hour=3, minute=30),  # 9 AM IST = 3:30 AM UTC
+        id="pet_wrapped_birthday",
+        replace_existing=True
+    )
+    
+    # Annual Wrapped Generation - December 10th at 10 AM IST
+    # Generates year-end "Spotify Wrapped" for all pets
+    async def wrapped_annual_batch():
+        """December annual wrapped batch job"""
+        try:
+            result = await generate_annual_wrappeds()
+            if result.get('status') == 'skipped':
+                logger.info(f"[PET WRAPPED] Annual batch skipped: {result.get('reason')}")
+            else:
+                logger.info(f"[PET WRAPPED] Annual batch: {result.get('sent', 0)} sent, {result.get('skipped', 0)} skipped")
+        except Exception as e:
+            logger.error(f"[PET WRAPPED] Annual batch error: {e}")
+    
+    scheduler.add_job(
+        wrapped_annual_batch,
+        CronTrigger(month=12, day=10, hour=4, minute=30),  # Dec 10, 10 AM IST
+        id="pet_wrapped_annual",
+        replace_existing=True
+    )
+    
     scheduler.start()
-    logger.info("Schedulers started: celebration reminders, abandoned cart, feedback, daily reports, escalation checks (15 min), health reminders (daily 9 AM), Mira nudges (daily 10 AM)")
+    logger.info("Schedulers started: celebration reminders, abandoned cart, feedback, daily reports, escalation checks (15 min), health reminders (daily 9 AM), Mira nudges (daily 10 AM), PET WRAPPED birthday (daily 9 AM), PET WRAPPED annual (Dec 10)")
     
     yield
     
@@ -19120,12 +19159,15 @@ from routes.wrapped.ai_memory import router as wrapped_memory_router
 from routes.wrapped.share import router as wrapped_share_router
 from routes.wrapped.welcome import router as wrapped_welcome_router
 from routes.wrapped.delivery import router as wrapped_delivery_router
+from routes.wrapped.instagram import router as wrapped_instagram_router
+from routes.wrapped.cron_triggers import check_birthday_wrappeds, generate_annual_wrappeds
 app.include_router(wrapped_history_router)  # Soul score history tracking
 app.include_router(wrapped_generate_router)  # Generate Pet Wrapped data
 app.include_router(wrapped_memory_router)  # AI memory generation
 app.include_router(wrapped_share_router)  # Shareable cards
 app.include_router(wrapped_welcome_router)  # Welcome/First Soul wrapped
 app.include_router(wrapped_delivery_router)  # Delivery via Modal/WhatsApp/Email
+app.include_router(wrapped_instagram_router)  # Instagram Stories share
 logger.info("🎁 Pet Wrapped routes initialized (Launch: May 20, 2026)")
 
 @app.on_event("startup")

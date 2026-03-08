@@ -177,12 +177,12 @@ Design/Docs:
 
 | URL | What It Shows |
 |-----|---------------|
-| https://mira-ai-soul.preview.emergentagent.com/api/wrapped/share/699fa0a513e44c977327ad57 | Mystique's shareable card |
-| https://mira-ai-soul.preview.emergentagent.com/api/wrapped/welcome-card/699fa0a513e44c977327ad57 | Welcome wrapped card |
-| https://mira-ai-soul.preview.emergentagent.com/wrapped/699fa0a513e44c977327ad57 | Full 6-card viewer |
-| https://mira-ai-soul.preview.emergentagent.com/wrapped-welcome | Conversion landing page |
-| https://mira-ai-soul.preview.emergentagent.com/pet-wrapped-mystique.html | Design template |
-| https://mira-ai-soul.preview.emergentagent.com/investor-deck.html | Investor presentation |
+| https://doggy-platform-2.preview.emergentagent.com/api/wrapped/share/699fa0a513e44c977327ad57 | Mystique's shareable card |
+| https://doggy-platform-2.preview.emergentagent.com/api/wrapped/welcome-card/699fa0a513e44c977327ad57 | Welcome wrapped card |
+| https://doggy-platform-2.preview.emergentagent.com/wrapped/699fa0a513e44c977327ad57 | Full 6-card viewer |
+| https://doggy-platform-2.preview.emergentagent.com/wrapped-welcome | Conversion landing page |
+| https://doggy-platform-2.preview.emergentagent.com/pet-wrapped-mystique.html | Design template |
+| https://doggy-platform-2.preview.emergentagent.com/investor-deck.html | Investor presentation |
 
 ### Mira's AI Memory Example (Mystique)
 > "I remember the day when Mystique raced around the garden, her tail a blur, bursting with energy as she leapt into the air with a joyful happy dance at walk time... She radiated pure love, a wonderful reminder of how deeply she cherished every shared adventure with you, Dipali."
@@ -234,16 +234,16 @@ Returns:
 ## WHAT'S REMAINING FOR PET WRAPPED LAUNCH
 
 ### P0 - Must Have Before May 20
-- [ ] **Hook trigger into Soul Profile completion flow** — When user finishes Soul Profile, call `/api/wrapped/trigger-welcome/{pet_id}`
-- [ ] **Test WhatsApp delivery** — Verify Gupshup integration works
-- [ ] **Test Email delivery** — Verify Resend integration works
-- [ ] **PNG export** — Allow downloading cards as images
+- [x] **Hook trigger into Soul Profile completion flow** — ✅ DONE (WelcomeWrappedModal triggers after completion)
+- [x] **Test WhatsApp delivery** — ✅ DONE (Gupshup working, verified March 8)
+- [x] **Test Email delivery** — ✅ DONE (Resend working, verified March 8)
+- [ ] **PNG export** — Allow downloading cards as images (optional)
 - [ ] **Run on production** — Deploy and run MASTER SYNC
 
-### P1 - Nice to Have
-- [ ] Automated birthday triggers (cron job)
-- [ ] December annual wrapped generation (batch)
-- [ ] Instagram Stories direct share
+### P1 - COMPLETED (March 8, 2026)
+- [x] **Automated birthday triggers (cron job)** — ✅ DONE (Daily 9 AM IST)
+- [x] **December annual wrapped generation (batch)** — ✅ DONE (Dec 10, 10 AM IST)
+- [x] **Instagram Stories direct share** — ✅ DONE (New button + story card generator)
 
 ---
 
@@ -331,7 +331,7 @@ Pet Wrapped is the #1 priority. It's a Spotify Wrapped-style viral acquisition e
 
 ### 2. Test Pet Wrapped APIs
 ```bash
-API_URL=https://mira-ai-soul.preview.emergentagent.com
+API_URL=https://doggy-platform-2.preview.emergentagent.com
 
 # List all pets
 curl $API_URL/api/wrapped/admin/pets
@@ -392,6 +392,38 @@ curl -X POST $API_URL/api/wrapped/trigger-welcome/699fa0a513e44c977327ad57
 ---
 
 ## CHANGELOG
+
+### March 8, 2026 (Session 5) - Pet Wrapped Final Features
+- **NEW:** Automated Birthday Wrapped Triggers
+  - Daily cron job at 9 AM IST checks for upcoming birthdays
+  - Sends Birthday Wrapped 7 days before pet's birthday
+  - Deduplication prevents duplicate sends in same year
+  - Scheduler ID: `pet_wrapped_birthday`
+
+- **NEW:** December Annual Wrapped Batch Job
+  - Runs December 10th at 10 AM IST
+  - Generates "Spotify Wrapped"-style year-end summary for ALL active pets
+  - Only runs in Dec 1-20 window
+  - Scheduler ID: `pet_wrapped_annual`
+
+- **NEW:** Instagram Stories Direct Share
+  - Added "IG Story" button to WelcomeWrappedModal.jsx
+  - Generates 1080x1920 optimized story card
+  - Shows step-by-step sharing guide
+  - Tracks shares via `/api/wrapped/log-share` endpoint
+  - New endpoint: `GET /api/wrapped/instagram-story/{pet_id}`
+
+- **NEW:** Instagram Share Assets API
+  - `GET /api/wrapped/share-assets/{pet_id}` returns all share URLs
+  - `POST /api/wrapped/log-share/{pet_id}` tracks viral coefficient
+
+- **UPDATED:** Documentation
+  - Updated PET_WRAPPED_SYSTEM.md with all new features
+  - Regenerated complete-documentation.html
+
+- **REGISTERED:** Instagram Router in server.py
+  - Added `wrapped_instagram_router` to main app
+  - Fixed route prefix from `/wrapped` to `/api/wrapped`
 
 ### March 7, 2026 (Session 4)
 - **NEW:** Add Pet Page (`/add-pet`) for existing logged-in users
@@ -491,14 +523,14 @@ curl -X POST $API_URL/api/wrapped/trigger-welcome/699fa0a513e44c977327ad57
 
 | Page | URL |
 |------|-----|
-| Introduction (Investor) | https://mira-ai-soul.preview.emergentagent.com/introduction.html |
-| Pet Wrapped Investor Pitch | https://mira-ai-soul.preview.emergentagent.com/investor-pet-wrapped.html |
-| **Main Investor Page** | https://mira-ai-soul.preview.emergentagent.com/investor.html |
-| Mystique's Pet Wrapped | https://mira-ai-soul.preview.emergentagent.com/api/wrapped/download/699fa0a513e44c977327ad57 |
-| Static Mystique HTML | https://mira-ai-soul.preview.emergentagent.com/pet-wrapped-mystique.html |
-| Complete Documentation | https://mira-ai-soul.preview.emergentagent.com/complete-documentation.html |
-| Viral Landing Page | https://mira-ai-soul.preview.emergentagent.com/wrapped-welcome |
-| Membership Page | https://mira-ai-soul.preview.emergentagent.com/membership |
+| Introduction (Investor) | https://doggy-platform-2.preview.emergentagent.com/introduction.html |
+| Pet Wrapped Investor Pitch | https://doggy-platform-2.preview.emergentagent.com/investor-pet-wrapped.html |
+| **Main Investor Page** | https://doggy-platform-2.preview.emergentagent.com/investor.html |
+| Mystique's Pet Wrapped | https://doggy-platform-2.preview.emergentagent.com/api/wrapped/download/699fa0a513e44c977327ad57 |
+| Static Mystique HTML | https://doggy-platform-2.preview.emergentagent.com/pet-wrapped-mystique.html |
+| Complete Documentation | https://doggy-platform-2.preview.emergentagent.com/complete-documentation.html |
+| Viral Landing Page | https://doggy-platform-2.preview.emergentagent.com/wrapped-welcome |
+| Membership Page | https://doggy-platform-2.preview.emergentagent.com/membership |
 
 ---
 

@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://mira-ai-soul.preview.emergentagent.com
+https://doggy-platform-2.preview.emergentagent.com
 
 ---
 

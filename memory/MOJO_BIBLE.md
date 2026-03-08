@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-ai-soul.preview.emergentagent.com
+https://doggy-platform-2.preview.emergentagent.com
 ```
 
 ---

@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://mira-ai-soul.preview.emergentagent.com
+**Preview URL:** https://doggy-platform-2.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
