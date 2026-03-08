@@ -40,6 +40,8 @@ import MiraBirthdayBoxCard from '../components/celebrate/MiraBirthdayBoxCard';
 import PersonalizedItemsSection from '../components/celebrate/PersonalizedItemsSection';
 import BirthdayCountdown from '../components/celebrate/BirthdayCountdown';
 import PlanMyPartyWizard from '../components/celebrate/PlanMyPartyWizard';
+import CelebrationMemoryWall from '../components/celebrate/CelebrationMemoryWall';
+import ShareCelebrationModal from '../components/celebrate/ShareCelebrationModal';
 
 // Lazy load Soul Explainer for footer link
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
@@ -66,6 +68,7 @@ const CelebratePage = () => {
   const [boxOccasion, setBoxOccasion] = useState('birthday');
   const [showPartyWizard, setShowPartyWizard] = useState(false);
   const [showPlanMyPartyWizard, setShowPlanMyPartyWizard] = useState(false);
+  const [showShareCelebration, setShowShareCelebration] = useState(false);
   const [showConciergeModal, setShowConciergeModal] = useState(false);
   const [conciergeSubmitting, setConciergeSubmitting] = useState(false);
   const [showSoulExplainer, setShowSoulExplainer] = useState(false);
@@ -728,6 +731,20 @@ const CelebratePage = () => {
             </div>
           </div>
         )}
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* CELEBRATION MEMORY WALL - Real moments from the community */}
+      {/* VISION: Create emotional connection through real customer stories */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12 section-fade-in">
+        <CelebrationMemoryWall 
+          onShareStory={() => setShowShareCelebration(true)}
+          onViewAll={() => {
+            // Navigate to full gallery or show modal
+            toast.info('Full gallery coming soon! 📸');
+          }}
+        />
       </div>
 
       {/* Elevated Concierge® Experiences */}
@@ -1397,6 +1414,18 @@ const CelebratePage = () => {
         onComplete={(partyPlan) => {
           console.log('[CelebratePage] Party plan created:', partyPlan);
           toast.success(`${activePet?.name}'s party plan is ready! 🎉`);
+        }}
+      />
+      
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SHARE CELEBRATION MODAL - UGC capture */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <ShareCelebrationModal
+        isOpen={showShareCelebration}
+        onClose={() => setShowShareCelebration(false)}
+        pet={activePet}
+        onSuccess={() => {
+          console.log('[CelebratePage] Celebration shared!');
         }}
       />
       
