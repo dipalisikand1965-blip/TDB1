@@ -44,6 +44,7 @@ import LandingPageManager from '../components/admin/LandingPageManager';
 import NotificationBell from '../components/admin/NotificationBell';
 import UnifiedInbox from '../components/admin/UnifiedInbox';
 import CelebrationsCalendar from '../components/admin/CelebrationsCalendar';
+import CelebrationWallManager from '../components/admin/CelebrationWallManager';
 import BreedTagsManager from '../components/admin/BreedTagsManager';
 import AgentManagement from '../components/admin/AgentManagement';
 import CommunicationsManager from '../components/admin/CommunicationsManager';
@@ -2439,6 +2440,7 @@ const Admin = () => {
                         { id: 'loyalty', label: 'Loyalty', icon: Star },
                         { id: 'engagement', label: 'Engagement', icon: Flame },
                         { id: 'celebrations', label: 'Celebrations', icon: Calendar },
+                        { id: 'celebration-wall', label: 'Celebration Wall', icon: Image },
                       ].map(tab => (
                         <button
                           key={tab.id}
@@ -2564,6 +2566,7 @@ const Admin = () => {
               { id: 'loyalty', label: 'Loyalty', icon: Star },
               { id: 'engagement', label: 'Engagement', icon: Flame },
               { id: 'celebrations', label: 'Celebrations', icon: Calendar },
+              { id: 'celebration-wall', label: 'Celebration Wall', icon: Image },
             ].map((tab) => (
               <Button
                 key={tab.id}
@@ -2913,6 +2916,11 @@ const Admin = () => {
         {/* Celebrations Calendar */}
         {activeTab === 'celebrations' && (
           <CelebrationsCalendar key={`celebrations-${Date.now()}`} />
+        )}
+
+        {/* Celebration Wall Manager - Photos & Cake Reveal Notifications */}
+        {activeTab === 'celebration-wall' && (
+          <CelebrationWallManager key={`celebration-wall-${Date.now()}`} />
         )}
 
         {/* Breed Tags Manager */}
