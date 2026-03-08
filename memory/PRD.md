@@ -657,6 +657,70 @@ Trusted vet/trainer on speed dial.
 
 ---
 
+## DEPLOYMENT & DATA PERSISTENCE
+
+> **CRITICAL:** Understanding what persists across deployments and agent sessions.
+
+### What Persists After Deployment?
+
+| Data Type | Persists? | Where Stored |
+|-----------|-----------|--------------|
+| **Mockup Images** | ✅ YES | MongoDB `breed_products.mockup_url` (Base64) |
+| **User Data** | ✅ YES | MongoDB `users`, `pets` |
+| **Orders** | ✅ YES | MongoDB `orders` |
+| **Products (Shopify)** | ✅ YES | MongoDB `products_master` |
+| **Soul Made Products** | ✅ YES | MongoDB `breed_products` (363 items) |
+| **Running Processes** | ❌ NO | Server memory (stops on restart) |
+
+### When Agent Loses Context / New Agent Starts
+- ✅ Mockup generation **continues running** on server
+- ✅ All database data remains intact
+- ✅ Code changes persist
+- ⚠️ New agent should check `/api/mockups/status`
+
+### When Redeploying (Same Database)
+- ✅ All MongoDB data persists
+- ❌ **Mockup generation STOPS** (server restarts)
+- ⚠️ Resume generation after: `POST /api/mockups/generate-batch`
+
+### When Fresh Deployment (New Database)
+- ❌ All data lost - need to regenerate mockups
+- ✅ MasterSync auto-seeds breed_products on startup (without mockups)
+- ⚠️ Trigger mockup generation manually (Admin → AI Mockups → Generate)
+
+### Mockup Generation Commands
+```bash
+# Check status
+curl -s "$API_URL/api/mockups/status"
+
+# Check overall stats  
+curl -s "$API_URL/api/mockups/stats"
+
+# Resume/Start generation (all breeds)
+curl -X POST "$API_URL/api/mockups/generate-batch" -H "Content-Type: application/json" -d '{"limit": 500}'
+
+# Generate specific breed
+curl -X POST "$API_URL/api/mockups/generate-batch" -H "Content-Type: application/json" -d '{"breed_filter": "indie", "limit": 11}'
+```
+
+### Time Estimates for Mockup Generation
+| Scope | Products | Time | Cost |
+|-------|----------|------|------|
+| 1 breed | 11 | ~3 min | ~$0.50 |
+| Priority breeds (3) | 33 | ~10 min | ~$1.50 |
+| All breeds (33) | 363 | ~2 hours | ~$16 |
+
+---
+
+## FOR NEW AGENTS: Session Start Checklist
+
+1. Read `/app/memory/PILLAR_AUDIT.md` - Feature status
+2. Read `/app/memory/DEPLOYMENT_GUIDE.md` - Data persistence
+3. Check mockup status: `GET /api/mockups/status`
+4. Check PRD priorities (this file)
+
+---
+
 ## KEY FILE REFERENCES
 
 | Feature | File Path |

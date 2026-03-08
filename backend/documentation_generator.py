@@ -114,6 +114,7 @@ def generate_complete_documentation():
             "/app/memory/OWNERS_GUIDE_DIPALI.md",
             "/app/memory/PRD.md",
             "/app/memory/PILLAR_AUDIT.md",
+            "/app/memory/DEPLOYMENT_GUIDE.md",
             "/app/memory/PERSONALIZATION_VISION.md",
             "/app/memory/PREVIEW_SETUP.md",
             "/app/memory/SOUL_PHILOSOPHY_SSOT.md",
