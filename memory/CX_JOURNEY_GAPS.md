@@ -1,52 +1,51 @@
 # Pet Parent Customer Experience (CX) Journey Gap Analysis
 
-## Date: January 24, 2026
+## Date: March 8, 2026 (Updated)
 
 ## Journey Overview
 New Visitor → Awareness → Signup → Add Pet → Browse → Purchase → Return Visit
 
 ---
 
-## 🔴 CRITICAL GAPS (Blocking Conversion)
+## ✅ RESOLVED GAPS (March 7-8, 2026)
 
-### Gap 1: "Add Your Pet" Button Goes Nowhere
-**Location**: `/pet-soul` page, `MiraContextPanel.jsx`
-**Issue**: Button points to `/pets/add` which doesn't exist as a route
-**Impact**: User clicks but nothing happens - dead end
-**Fix**: 
-- Create AddPet flow OR 
-- Redirect to `/pet-soul-onboard` (membership onboarding which includes pet registration)
+### Gap 1: "Add Your Pet" Button - ✅ FIXED
+**Fix Applied**: Created `/add-pet` page (AddPetPage.jsx)
+- 3-step flow: Name/Photo → Basic Info → Soul Snapshot
+- Works for logged-in users
+- All "Add Pet" buttons updated to use `/add-pet`
 
-### Gap 2: No Direct Pet Registration for Existing Users
-**Location**: App routing
-**Issue**: Logged-in users who want to add another pet have no clear path
-**Current Options**: 
-- `/my-pets` shows existing pets but "Add Pet" doesn't work
-- `/pet-soul-onboard` is designed for new membership, not existing users
-**Fix**: Create a simple "Add Pet" modal or page for existing users
+### Gap 2: No Direct Pet Registration for Existing Users - ✅ FIXED
+**Fix Applied**: AddPetPage.jsx handles this case
 
-### Gap 3: Signup Doesn't Collect Pet Info
-**Location**: `/register` page
-**Issue**: User signs up without adding pet - then has no clear path to add one
-**Impact**: Users get stuck after signup
-**Fix**: Either:
-- Add pet info to signup flow OR
-- Auto-redirect to "Add Pet" after signup
+### Gap 3: Signup Doesn't Collect Pet Info - ✅ ALREADY WORKING
+**Status**: The `/join` flow (MiraMeetsYourPet.jsx) includes pet info collection
+
+### Gap 5: Dashboard Missing "Complete Your Pet Soul" CTA - ✅ FIXED
+**Fix Applied**: 
+- Shows for ALL pets with Soul Score < 80%
+- Prominent gradient button for scores < 50%
+- Subtle button for scores 50-80%
+
+### Gap 6: No Upcoming Event Alerts - ✅ FIXED
+**Fix Applied**: Added to PetHomePage.jsx
+- Birthday alerts (within 30 days)
+- Gotcha Day / Adoption Anniversary
+- Vaccination due reminders
+- Sorted by priority
+
+### Gap 10: Checkout Missing Pet Selection - ✅ FIXED
+**Fix Applied**: UnifiedCheckout.jsx
+- Shows user's pets as selectable cards
+- Auto-selects first pet
+- "Other Pet" option for manual entry
 
 ---
 
-## 🟠 HIGH PRIORITY GAPS (Friction Points)
+## ⚠️ REMAINING GAPS
 
 ### Gap 4: Pet Soul Score Shows 0% for Non-Logged Users
-**Location**: `/pet-soul` page
-**Issue**: Confusing to show 0% when user isn't logged in
-**Fix**: Show "Sign up to track your score" instead
-
-### Gap 5: Dashboard Missing "Complete Your Pet Soul" CTA
-**Location**: `/dashboard` page
-**Issue**: User with 18% Pet Soul score sees no prominent call to action
-**Impact**: Users don't know they should complete their profile
-**Fix**: Add prominent "Complete Your Pet Soul - 82% remaining" card with one-click start
+**Status**: ⚠️ Low priority - edge case
 
 ### Gap 6: No Upcoming Events/Reminders on Dashboard
 **Location**: `/dashboard` page
