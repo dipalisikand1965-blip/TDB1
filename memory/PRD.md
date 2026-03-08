@@ -1,4 +1,4 @@
-# The Doggy Company - PRD & Changelog
+# The Doggy Company - PRD
 
 **Last Updated:** March 8, 2026  
 **Status:** Production Ready
@@ -7,88 +7,58 @@
 
 ## CORE PHILOSOPHY
 
-> "A dog is not in your life. You are in theirs. They cannot speak. But with the right questions, they can be known."
+> "A dog is not in your life. You are in theirs."
 
-**Mira** is the soul and brain - she remembers everything
-**Concierge** is the hands - they execute with care  
-**You** are the capillary nerves - making it all possible
+- **Mira** is the soul and brain - She remembers everything
+- **Concierge** is the hands - They execute with care  
+- **You** are the capillary nerves - Making it all possible
+
+---
+
+## SOUL DATA FLOW ✅ VERIFIED
+
+```
+Soul Builder (51 Q) → doggy_soul_answers → Mira OS + Pet Wrapped + Picks Engine
+```
+
+### Mira Knows (from get_pet_context):
+- Name, breed, age, birthday
+- General nature, personality, temperament
+- Morning routine, bedtime ritual
+- ⚠️ ALLERGIES (critical)
+- Love language, quirks
+- Favorite treats, with strangers, when alone
+
+### Pet Wrapped Shows:
+- Soul Score: 78.0%
+- Questions Answered: 39/51
+- Mira Conversations: 3
+- Pillars Explored
 
 ---
 
 ## WHAT'S COMPLETE
 
-### Soul Builder - 51 Questions, 8 Chapters ✅
-| Chapter | Topics | Questions |
-|---------|--------|-----------|
-| 1. Identity & Temperament | Name, life stage, personality | 8 |
-| 2. Family & Pack | Siblings, socializing | 5 |
-| 3. Rhythm & Routine | Morning, feeding, sleep | 7 |
-| 4. Taste & Treat World | Diet, favorites, allergies | 8 |
-| 5. Care & Grooming | Frequency, sensitivities | 5 |
-| 6. Health & Safety | Conditions, vaccinations | 6 |
-| 7. Travel & Adventure | Car rides, preferences | 5 |
-| 8. Celebration & Memories | Gotcha day, birthdays | 7 |
-
-**Soul Score Calculation:** 26 canonical fields = 100 points
-
-### Custom Cake Designer ✅
-- Shape selection (Bone, Heart, Round, Square)
-- Flavor selection (Peanut Butter, Banana, etc.)
-- Custom text and reference image upload
-- **Backend Save:** `POST /api/custom-cakes/save-design`
-- **Database:** `custom_cake_designs` collection
-- **Shop Integration:** Prominent banner in Celebrate pillar
+### Soul Builder ✅
+- 51 questions, 8 chapters
+- Data saves to `doggy_soul_answers`
+- Score calculation working
 
 ### Pet Wrapped ✅
-- Welcome, Birthday, Annual Wrapped
+- All types (Welcome, Birthday, Annual)
 - Instagram Stories share
-- Multi-channel delivery (Modal, Email, WhatsApp)
+- Uses soul data
+
+### Custom Cake Designer ✅
+- Shape, flavor, text selection
+- Backend save: `POST /api/custom-cakes/save-design`
+- Prominent banner in Celebrate pillar
 
 ### Mira Intelligence ✅
-- Dynamic Soul Traits
 - Soul Knowledge Ticker
 - Soul Questions in Chat
-- Default Picks on Page Load
+- Default Picks on Load
 - "Why this pick?" tooltips
-
----
-
-## CHANGELOG
-
-### March 8, 2026 - Session 5 Part 4: Soul Builder & Custom Cake
-
-**Custom Cake Designer:**
-- Created `POST /api/custom-cakes/save-design` endpoint
-- Frontend saves design to backend on add-to-cart
-- Added "Design Birthday Cake" banner in Celebrate pillar
-
-**Soul Builder Verified:**
-- 51 questions across 8 chapters
-- Comprehensive coverage of dog's entire life
-- Soul score calculation working (78% for Mojo)
-- Knowledge display: allergies, personality, preferences
-
-### Earlier Today
-- Pet Wrapped final features (Birthday/Annual cron, Instagram)
-- Soul Questions in chat
-- Admin reply flow fixed
-- Default picks loading
-
----
-
-## API ENDPOINTS
-
-### Custom Cake
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/custom-cakes/save-design` | POST | Save cake design to DB |
-| `/api/custom-cakes/upload-reference` | POST | Upload reference image |
-
-### Soul
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/pet-soul/answer` | POST | Save soul question answer |
-| `/api/pet-score/{id}/quick-questions` | GET | Get unanswered questions |
 
 ---
 
@@ -101,16 +71,9 @@
 
 ## REMAINING
 
-### P1 - Testing
-- [ ] Onboarding/Join E2E flow
-- [ ] Product/Service detail pages
-
-### P2 - Future
-- Global Search
-- Voice Order
+- [ ] Production Deployment
+- [ ] Onboarding E2E Test
 
 ---
-
-*Built in loving memory of Mystique and Kouros* 💜
 
 *"No one knows your pet better than Mira."*

@@ -111,6 +111,8 @@ async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
                 pet = await db.pets.find_one({"_id": ObjectId(pet_id)})
             except:
                 pet = await db.pets.find_one({"id": pet_id})
+                if not pet:
+                    pet = await db.pets.find_one({"id": {"$regex": pet_id, "$options": "i"}})
         
         if not pet and pet_name:
             pet = await db.pets.find_one({"name": {"$regex": f"^{pet_name}$", "$options": "i"}})
@@ -118,8 +120,10 @@ async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
         if not pet:
             return {"name": pet_name or "your pet", "context": "No specific details available.", "soul_data": {}}
         
-        # Build comprehensive context from soul data
+        # Build comprehensive context from ALL soul data sources
         soul = pet.get("soul_data", {})
+        soul_simple = pet.get("soul", {})  # Simple soul data
+        doggy_answers = pet.get("doggy_soul_answers", {})  # Soul Builder answers
         health = pet.get("health_data", {})
         
         context_parts = []
@@ -130,41 +134,61 @@ async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
             context_parts.append(f"Breed: {pet.get('breed')}")
         if pet.get("age"):
             context_parts.append(f"Age: {pet.get('age')}")
-        if pet.get("birthday"):
-            context_parts.append(f"Birthday: {pet.get('birthday')}")
+        if pet.get("birthday") or pet.get("birth_date"):
+            context_parts.append(f"Birthday: {pet.get('birthday') or pet.get('birth_date')}")
         
-        # Personality (THE SOUL)
-        personality = soul.get("personality", [])
+        # Personality from ALL sources (THE SOUL)
+        personality = soul.get("personality", []) or soul_simple.get("personality_tag")
         if personality:
             if isinstance(personality, list):
                 context_parts.append(f"Personality: {', '.join(personality)}")
             else:
                 context_parts.append(f"Personality: {personality}")
         
-        if soul.get("temperament"):
-            context_parts.append(f"Temperament: {soul.get('temperament')}")
+        # From doggy_soul_answers (Soul Builder)
+        if doggy_answers.get("general_nature"):
+            context_parts.append(f"General nature: {doggy_answers.get('general_nature')}")
+        if doggy_answers.get("describe_3_words"):
+            context_parts.append(f"Described as: {doggy_answers.get('describe_3_words')}")
+        if doggy_answers.get("stranger_reaction"):
+            context_parts.append(f"With strangers: {doggy_answers.get('stranger_reaction')}")
         
-        if soul.get("energy_level"):
-            context_parts.append(f"Energy level: {soul.get('energy_level')}/10")
+        temperament = soul.get("temperament") or doggy_answers.get("temperament")
+        if temperament:
+            context_parts.append(f"Temperament: {temperament}")
         
-        # Preferences
-        prefs = soul.get("preferences", {})
+        energy = soul.get("energy_level") or doggy_answers.get("energy_level")
+        if energy:
+            context_parts.append(f"Energy level: {energy}")
+        
+        # Preferences from all sources
+        prefs = soul.get("preferences", {}) or soul_simple.get("preferences", {})
         if prefs.get("favorite_activities"):
             context_parts.append(f"Loves: {', '.join(prefs.get('favorite_activities', [])[:5])}")
-        if prefs.get("favorite_foods"):
-            context_parts.append(f"Favourite foods: {', '.join(prefs.get('favorite_foods', [])[:3])}")
+        if prefs.get("favorite_foods") or doggy_answers.get("favorite_treat"):
+            foods = prefs.get("favorite_foods", [doggy_answers.get("favorite_treat")]) if prefs.get("favorite_foods") else [doggy_answers.get("favorite_treat")]
+            context_parts.append(f"Favourite foods: {', '.join([f for f in foods if f][:3])}")
         if prefs.get("favorite_toys"):
             context_parts.append(f"Favourite toys: {', '.join(prefs.get('favorite_toys', [])[:3])}")
         
         # Dislikes
-        dislikes = soul.get("dislikes", [])
+        dislikes = soul.get("dislikes", []) or soul_simple.get("dislikes", [])
         if dislikes:
             context_parts.append(f"Dislikes: {', '.join(dislikes[:4])}")
         
-        # Health - CRITICAL for safety
-        allergies = health.get("allergies", []) or pet.get("allergies", [])
+        # Health - CRITICAL for safety (from ALL sources)
+        allergies = (
+            health.get("allergies", []) or 
+            pet.get("allergies", []) or 
+            pet.get("sensitivities", []) or
+            doggy_answers.get("allergies") or
+            doggy_answers.get("food_allergies")
+        )
         if allergies:
-            context_parts.append(f"⚠️ ALLERGIES: {', '.join(allergies)}")
+            if isinstance(allergies, list):
+                context_parts.append(f"⚠️ ALLERGIES: {', '.join(allergies)}")
+            else:
+                context_parts.append(f"⚠️ ALLERGIES: {allergies}")
         
         conditions = health.get("chronic_conditions")
         if conditions:
@@ -175,12 +199,28 @@ async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
             context_parts.append(f"Sensitivities: {', '.join(sensitivities)}")
         
         # Love language & quirks
-        if soul.get("love_language"):
-            context_parts.append(f"Love language: {soul.get('love_language')}")
+        love_lang = soul.get("love_language") or soul_simple.get("love_language") or doggy_answers.get("love_language")
+        if love_lang:
+            context_parts.append(f"Love language: {love_lang}")
         
-        quirks = soul.get("quirks", [])
+        quirks = soul.get("quirks", []) or soul_simple.get("quirk")
         if quirks:
-            context_parts.append(f"Quirks: {', '.join(quirks[:3])}")
+            if isinstance(quirks, list):
+                context_parts.append(f"Quirks: {', '.join(quirks[:3])}")
+            else:
+                context_parts.append(f"Quirk: {quirks}")
+        
+        # Routine (from doggy_soul_answers)
+        if doggy_answers.get("morning_routine"):
+            context_parts.append(f"Morning routine: {doggy_answers.get('morning_routine')}")
+        if doggy_answers.get("bedtime_ritual"):
+            context_parts.append(f"Bedtime: {doggy_answers.get('bedtime_ritual')}")
+        
+        # Social behavior
+        if doggy_answers.get("behavior_with_dogs"):
+            context_parts.append(f"With other dogs: {doggy_answers.get('behavior_with_dogs')}")
+        if doggy_answers.get("alone_behavior"):
+            context_parts.append(f"When alone: {doggy_answers.get('alone_behavior')}")
         
         # Relationships
         relationships = pet.get("relationships", {})
@@ -191,6 +231,7 @@ async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
             "name": pet.get("name", pet_name or "your pet"),
             "context": "\n".join(context_parts) if context_parts else "A beloved pet.",
             "soul_data": soul,
+            "doggy_soul_answers": doggy_answers,
             "health_data": health,
             "full_pet": pet
         }
