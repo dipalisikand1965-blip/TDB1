@@ -301,7 +301,7 @@ const CelebratePage = () => {
     return () => clearInterval(interval);
   }, [HERO_IMAGES.length]);
   
-  // Fetch pets and soul data
+  // Fetch pets and soul data - consolidated
   useEffect(() => {
     const fetchPetData = async () => {
       if (!token) return;
@@ -313,17 +313,6 @@ const CelebratePage = () => {
           const data = await response.json();
           const pets = data.pets || [];
           setUserPets(pets);
-          // Note: activePet now comes from PillarContext (synced with global pet selector)
-          // Fetch soul data for the currently selected pet
-          if (activePet?.id) {
-            const soulRes = await fetch(`${API_URL}/api/pets/${activePet.id}/soul`, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
-            if (soulRes.ok) {
-              const soulData = await soulRes.json();
-              setPetSoulData(soulData);
-            }
-          }
         }
       } catch (err) {
         console.debug('Failed to fetch pet data:', err);
@@ -331,6 +320,25 @@ const CelebratePage = () => {
     };
     fetchPetData();
   }, [token]);
+  
+  // Fetch soul data when activePet changes
+  useEffect(() => {
+    const fetchSoulData = async () => {
+      if (!token || !activePet?.id) return;
+      try {
+        const soulRes = await fetch(`${API_URL}/api/pets/${activePet.id}/soul`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (soulRes.ok) {
+          const soulData = await soulRes.json();
+          setPetSoulData(soulData);
+        }
+      } catch (err) {
+        console.debug('Failed to fetch soul data:', err);
+      }
+    };
+    fetchSoulData();
+  }, [token, activePet?.id]);
   
   // Concierge request form state
   const [conciergeForm, setConciergeForm] = useState({
@@ -368,29 +376,6 @@ const CelebratePage = () => {
       }));
     }
   }, [user]);
-  
-  // Fetch user's pets
-  useEffect(() => {
-    const fetchPets = async () => {
-      if (!user || !token) return;
-      
-      try {
-        const response = await fetch(`${getApiUrl()}/api/pets/my-pets`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          const pets = data.pets || data || [];
-          setUserPets(pets);
-          // Note: activePet now comes from PillarContext
-        }
-      } catch (error) {
-        console.error('[CelebratePage] Error fetching pets:', error);
-      }
-    };
-    
-    fetchPets();
-  }, [user, token]);
 
   // Listen for openSoulExplainer event from footer
   useEffect(() => {
