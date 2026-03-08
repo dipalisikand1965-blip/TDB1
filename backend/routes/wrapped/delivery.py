@@ -99,6 +99,73 @@ async def trigger_welcome_wrapped(pet_id: str, background_tasks: BackgroundTasks
     if owner_email:
         background_tasks.add_task(send_email_wrapped, pet_id, pet_name, breed, soul_score, owner_email, parent_name, message, share_url)
     
+    # =========================================
+    # UNIVERSAL SERVICE FLOW INTEGRATION
+    # =========================================
+    
+    # 1. Create Service Desk Ticket (for tracking)
+    ticket_id = f"wrapped-{pet_id}-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+    service_ticket = {
+        "ticket_id": ticket_id,
+        "type": "pet_wrapped",
+        "subtype": "welcome_wrapped",
+        "status": "completed",
+        "priority": "low",
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "user_email": owner_email,
+        "title": f"Welcome Wrapped sent for {pet_name}",
+        "description": f"Soul Profile completed ({soul_score}%). Welcome Wrapped delivered via modal" + 
+                      (", WhatsApp" if owner_phone else "") + 
+                      (", email" if owner_email else "") + ".",
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc),
+        "auto_generated": True
+    }
+    db.service_desk_tickets.insert_one(service_ticket)
+    
+    # 2. Create Admin Notification
+    admin_notif = {
+        "type": "pet_wrapped",
+        "title": f"🎁 Pet Wrapped sent to {parent_name}",
+        "message": f"{pet_name}'s Welcome Wrapped delivered (Soul Score: {soul_score}%)",
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "user_email": owner_email,
+        "priority": "info",
+        "read": False,
+        "created_at": datetime.now(timezone.utc),
+        "metadata": {
+            "soul_score": soul_score,
+            "channels": {
+                "modal": True,
+                "whatsapp": bool(owner_phone),
+                "email": bool(owner_email)
+            }
+        }
+    }
+    db.admin_notifications.insert_one(admin_notif)
+    
+    # 3. Create Member Inbox Notification
+    member_notif = {
+        "user_email": owner_email,
+        "type": "pet_wrapped",
+        "category": "celebration",
+        "title": f"🎉 {pet_name}'s Soul Profile is Complete!",
+        "message": f"You've unlocked {pet_name}'s Welcome Wrapped with a Soul Score of {soul_score}%.",
+        "action_url": f"/pet-home?pet={pet_id}",
+        "action_label": "View Pet Wrapped",
+        "read": False,
+        "created_at": datetime.now(timezone.utc),
+        "metadata": {
+            "pet_id": pet_id,
+            "pet_name": pet_name,
+            "soul_score": soul_score,
+            "share_url": share_url
+        }
+    }
+    db.member_notifications.insert_one(member_notif)
+    
     # Log the delivery
     db.wrapped_deliveries.insert_one({
         "pet_id": pet_id,
