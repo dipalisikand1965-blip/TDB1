@@ -21113,3 +21113,40 @@ async def get_user_tickets(
         "tickets": all_tickets[:limit],
         "count": len(all_tickets[:limit])
     }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CLEANUP: Remove wrong Emergent-generated images from products
+# The 'images' array was populated with AI-generated images that had wrong breed toppers
+# ═══════════════════════════════════════════════════════════════════════════════
+@api_router.post("/admin/cleanup-product-images")
+async def cleanup_product_images(password: str):
+    """Clear incorrect images array from all products - admin only"""
+    if password != "lola4304":
+        raise HTTPException(status_code=403, detail="Invalid admin password")
+    
+    try:
+        # Collections to clean
+        collections = ["products_master", "celebrate_products", "dine_products", "care_products", "play_products"]
+        
+        total_cleaned = 0
+        results = {}
+        
+        for collection_name in collections:
+            collection = db[collection_name]
+            # Clear images array where it contains emergent URLs
+            result = collection.update_many(
+                {"images": {"$regex": "emergentagent"}},
+                {"$set": {"images": []}}
+            )
+            results[collection_name] = result.modified_count
+            total_cleaned += result.modified_count
+        
+        return {
+            "success": True,
+            "total_cleaned": total_cleaned,
+            "details": results
+        }
+    except Exception as e:
+        logger.error(f"Error cleaning product images: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
