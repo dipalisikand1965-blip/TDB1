@@ -7747,9 +7747,18 @@ async def get_default_picks_for_pet(
         
         pet_name = pet.get("name", "your pet") if pet else "your pet"
         breed = (pet.get("breed") or "").lower() if pet else ""
-        allergies = pet.get("sensitivities", []) if pet else []
+        breed_title = breed.title() if breed else ""
+        allergies = pet.get("sensitivities", []) or pet.get("health_vault", {}).get("allergies", []) if pet else []
+        allergy_names = [a.get("allergen", a) if isinstance(a, dict) else a for a in allergies]
         size = pet.get("size", "medium").lower() if pet else "medium"
         soul = pet.get("soul", {}) if pet else {}
+        doggy_answers = pet.get("doggy_soul_answers", {}) if pet else {}
+        favorites = pet.get("favorites", []) if pet else []
+        love_language = soul.get("love_language", doggy_answers.get("love_language", ""))
+        energy_level = soul.get("energy_level", doggy_answers.get("energy_level", ""))
+        
+        # Build personalization context
+        allergy_text = f" (avoiding {', '.join(allergy_names[:2])})" if allergy_names else ""
         
         picks = []
         
@@ -7763,13 +7772,23 @@ async def get_default_picks_for_pet(
             for pick in admin_picks:
                 product = product_map.get(pick.get("product_id"))
                 if product:
+                    # Build intelligent reason
+                    reason = pick.get("reason")
+                    if not reason:
+                        if breed_title:
+                            reason = f"Hand-picked by our team - perfect for {breed_title}s like {pet_name}"
+                        else:
+                            reason = f"Hand-picked by our team for {pet_name}"
+                    
                     picks.append({
                         "id": product.get("id"),
+                        "name": product.get("title") or product.get("name"),
                         "title": product.get("title") or product.get("name"),
                         "price": product.get("price"),
                         "image": product.get("images", [None])[0] if product.get("images") else product.get("image"),
                         "type": "product",
-                        "reason": pick.get("reason") or f"Curated for {pet_name}",
+                        "why_reason": reason + allergy_text if allergy_names else reason,
+                        "badges": ["curated"],
                         "source": "admin_picks"
                     })
         
@@ -7793,11 +7812,13 @@ async def get_default_picks_for_pet(
                 if p.get("id") not in [pick.get("id") for pick in picks]:
                     picks.append({
                         "id": p.get("id"),
+                        "name": p.get("title") or p.get("name"),
                         "title": p.get("title") or p.get("name"),
                         "price": p.get("price"),
                         "image": p.get("images", [None])[0] if p.get("images") else p.get("image"),
                         "type": "product",
-                        "reason": f"Great for {breed.title()}s",
+                        "why_reason": f"Perfect match for {breed.title()}s like {pet_name}",
+                        "badges": ["breed_match"],
                         "source": "breed_match"
                     })
         
@@ -7817,11 +7838,13 @@ async def get_default_picks_for_pet(
                 if p.get("id") not in [pick.get("id") for pick in picks]:
                     picks.append({
                         "id": p.get("id"),
+                        "name": p.get("title") or p.get("name"),
                         "title": p.get("title") or p.get("name"),
                         "price": p.get("price"),
                         "image": p.get("images", [None])[0] if p.get("images") else p.get("image"),
                         "type": "product",
-                        "reason": f"Popular treats for {pet_name}",
+                        "why_reason": f"A favorite treat among pet parents - {pet_name} will love it!",
+                        "badges": ["trending"],
                         "source": "popular_treats"
                     })
         
@@ -7832,15 +7855,24 @@ async def get_default_picks_for_pet(
                 "is_active": {"$ne": False}
             }).limit(2).to_list(2)
             
+            pillar_reasons = {
+                "care": f"Essential care service to keep {pet_name} healthy",
+                "celebrate": f"Make {pet_name}'s special moments unforgettable",
+                "travel": f"Travel stress-free with {pet_name}"
+            }
+            
             for s in services:
+                pillar = s.get("pillar", "care")
                 picks.append({
                     "id": s.get("id") or str(s.get("_id")),
+                    "name": s.get("name") or s.get("title"),
                     "title": s.get("name") or s.get("title"),
                     "price": s.get("price") or s.get("starting_price"),
-                    "image": s.get("image") or s.get("images", [None])[0] if s.get("images") else None,
+                    "image": s.get("image") or (s.get("images", [None])[0] if s.get("images") else None),
                     "type": "service",
-                    "pillar": s.get("pillar"),
-                    "reason": f"Recommended service for {pet_name}",
+                    "pillar": pillar,
+                    "why_reason": pillar_reasons.get(pillar, f"Recommended service for {pet_name}"),
+                    "badges": ["service"],
                     "source": "service_recommendation"
                 })
         

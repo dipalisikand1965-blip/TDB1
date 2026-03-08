@@ -59,6 +59,7 @@ import ConciergeConfirmation from '../components/Mira/ConciergeConfirmation';
 import QuickReplies, { generateQuickReplies } from '../components/Mira/QuickReplies';
 import MemoryWhisper from '../components/Mira/MemoryWhisper';
 import SoulKnowledgeTicker from '../components/Mira/SoulKnowledgeTicker';
+import SoulQuestionPrompts from '../components/Mira/SoulQuestionPrompts';
 import { FormattedText, TypedText } from '../components/Mira/TextComponents';
 import { triggerCelebrationConfetti } from '../utils/confetti';
 import PetOSNavigation from '../components/Mira/PetOSNavigation';
@@ -1453,6 +1454,7 @@ const MiraDemoPage = () => {
   // QUICK SOUL QUESTIONS - Dynamic questions for this session (max 3)
   const [quickQuestions, setQuickQuestions] = useState([]);
   const [sessionQuestionsAsked, setSessionQuestionsAsked] = useState(0);
+  const [showSoulQuestionPrompts, setShowSoulQuestionPrompts] = useState(true);
   const MAX_QUESTIONS_PER_SESSION = 3;
   
   // E027: DAILY DIGEST
@@ -4387,6 +4389,32 @@ const MiraDemoPage = () => {
               token={token}
               className="mb-4"
             />
+          )}
+          
+          {/* SOUL QUESTION PROMPTS - Encourage profile completion */}
+          {showSoulQuestionPrompts && quickQuestions.length > 0 && conversationHistory.length < 3 && (
+            <div className="px-4 mb-4">
+              <SoulQuestionPrompts
+                questions={quickQuestions}
+                petId={pet?.id}
+                petName={pet?.name}
+                token={token}
+                onQuestionClick={(questionText) => {
+                  // Fill question into chat input
+                  setQuery(questionText);
+                  hapticFeedback.buttonTap();
+                }}
+                onAnswerSubmit={(questionId, answer, data) => {
+                  // Update session count
+                  setSessionQuestionsAsked(prev => prev + 1);
+                  // Remove answered question
+                  setQuickQuestions(prev => prev.filter(q => q.question_id !== questionId));
+                  // Refresh pet data to get updated soul score
+                  refreshPetData(pet?.id);
+                }}
+                onDismiss={() => setShowSoulQuestionPrompts(false)}
+              />
+            </div>
           )}
           
           {/* Welcome State - Extracted to WelcomeHero component (Stage 5) */}
