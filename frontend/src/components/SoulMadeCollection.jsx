@@ -39,8 +39,8 @@ const EMOTIONAL_COLLECTIONS = {
   celebrate: {
     name: "Birthday & Gotcha",
     collections: ["birthday", "gotcha", "celebration", "party"],
-    product_types: ["cake", "bandana", "party_hat", "frame", "keychain"],
-    exclude: ["memorial", "farewell", "remembrance"],
+    product_types: ["bandana", "party_hat", "frame", "keychain", "mug", "tote_bag"],
+    exclude: ["memorial", "farewell", "remembrance", "cake"],  // EXCLUDE CAKES - use real Doggy Bakery cakes
     emoji: "🎂",
     copy: (name) => `Celebrate ${name}'s special moments`
   },
@@ -48,7 +48,7 @@ const EMOTIONAL_COLLECTIONS = {
     name: "Dine & Treats",
     collections: ["feeding", "treats", "nutrition"],
     product_types: ["bowl", "treat_jar"],
-    exclude: [],
+    exclude: ["cake"],  // No cakes in Soul Made
     emoji: "🍖",
     copy: (name) => `${name}'s dining essentials`
   },
@@ -56,7 +56,7 @@ const EMOTIONAL_COLLECTIONS = {
     name: "At Home",
     collections: ["home", "comfort", "cozy"],
     product_types: ["blanket", "welcome_mat"],
-    exclude: [],
+    exclude: ["cake"],
     emoji: "🏠",
     copy: (name) => `${name}'s cozy corner`
   },
@@ -64,7 +64,7 @@ const EMOTIONAL_COLLECTIONS = {
     name: "Travel with Me",
     collections: ["travel", "adventure", "outdoor"],
     product_types: ["tote_bag", "collar_tag"],
-    exclude: [],
+    exclude: ["cake"],
     emoji: "✈️",
     copy: (name) => `Adventure awaits ${name}`
   },
@@ -242,22 +242,26 @@ const SoulMadeProductCard = ({ product, petName, archetype, onViewDetails }) => 
           </span>
         </div>
 
-        {/* For {Pet} tag */}
-        <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-sm">
-          <span className="text-xs font-medium text-gray-700 flex items-center gap-1">
-            <Heart className="w-3 h-3 text-pink-500" fill="currentColor" />
-            For {petName}
+        {/* For {Pet} tag - Shows this will be personalized */}
+        <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-md">
+          <span className="text-xs font-medium text-purple-700 flex items-center gap-1">
+            <Sparkles className="w-3 h-3" />
+            Add {petName}'s name
           </span>
         </div>
       </div>
 
       {/* Content */}
       <div className="p-4">
-        {/* Product Name - Personalized */}
-        <h4 className="font-semibold text-gray-900 line-clamp-2 mb-2 text-sm leading-tight">
+        {/* Product Name - Shows what it will be */}
+        <h4 className="font-semibold text-gray-900 line-clamp-2 mb-1 text-sm leading-tight">
           {personalizedName}
         </h4>
         
+        {/* Breed info */}
+        <p className="text-xs text-gray-500 mb-2">
+          {product.breed_name || 'Personalized'}
+        </p>
         {/* Price */}
         <div className="flex items-center justify-between">
           <p className="text-base font-bold text-purple-600">
