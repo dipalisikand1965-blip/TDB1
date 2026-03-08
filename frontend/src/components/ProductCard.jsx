@@ -12,6 +12,7 @@ import { Calendar } from './ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { format } from 'date-fns';
 import { API_URL } from '../utils/api';
+import { findBreedIllustration } from '../utils/breedIllustrations';
 
 // Autoship tier discount rates
 const AUTOSHIP_DISCOUNT_TIERS = [
@@ -331,8 +332,19 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
   // Fallback placeholder image
   const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop';
   
-  // Only use product image if it's a valid http URL
+  // Get valid image - with breed illustration support for breed-specific products
   const getValidImage = () => {
+    const productName = (product.name || product.title || '').toLowerCase();
+    
+    // For breed-specific cakes/products, use breed illustration
+    if (productName.includes('cake') || productName.includes('birthday')) {
+      const breedMatch = findBreedIllustration(productName);
+      if (breedMatch) {
+        return breedMatch.imageUrl;
+      }
+    }
+    
+    // Use original product image if valid
     if (product.image && product.image.startsWith('http')) {
       return product.image;
     }
@@ -497,9 +509,19 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   // miraContext is now always passed (effectiveMiraContext from parent)
   // onAddToPicks - callback for Mira picks panel (instead of cart)
   
-  // Get valid product image - same logic as ProductCard
+  // Get valid product image - with breed illustration support
   const PLACEHOLDER_IMAGE = 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579';
   const getValidProductImage = () => {
+    const productName = (product.name || product.title || '').toLowerCase();
+    
+    // For breed-specific cakes/products, use breed illustration
+    if (productName.includes('cake') || productName.includes('birthday')) {
+      const breedMatch = findBreedIllustration(productName);
+      if (breedMatch) {
+        return breedMatch.imageUrl;
+      }
+    }
+    
     if (product.image && product.image.startsWith('http')) {
       return product.image;
     }
