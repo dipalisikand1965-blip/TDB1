@@ -14,7 +14,8 @@ router = APIRouter(prefix="/api/wrapped", tags=["Pet Wrapped Delivery"])
 # MongoDB connection
 from pymongo import MongoClient
 client = MongoClient(os.environ.get("MONGO_URL"))
-db = client[os.environ.get("DB_NAME", "doggy_company")]
+db_name = os.environ.get("DB_NAME") or "test_database"
+db = client[db_name]
 
 # Gupshup WhatsApp
 GUPSHUP_API_KEY = os.environ.get("GUPSHUP_API_KEY", "")
@@ -34,10 +35,23 @@ async def trigger_welcome_wrapped(pet_id: str, background_tasks: BackgroundTasks
     2. Sends WhatsApp message (background)
     3. Sends Email with embedded card (background)
     """
-    try:
-        pet = db.pets.find_one({"_id": ObjectId(pet_id)})
-    except:
-        raise HTTPException(status_code=400, detail="Invalid pet ID")
+    # Find pet - try multiple ID formats
+    pet = None
+    
+    # First try by 'id' field (for pets with pet-XXXX format)
+    if pet_id.startswith("pet-"):
+        pet = db.pets.find_one({"id": pet_id})
+    
+    # If not found, try by _id as ObjectId
+    if not pet:
+        try:
+            pet = db.pets.find_one({"_id": ObjectId(pet_id)})
+        except:
+            pass
+    
+    # If still not found, try by _id as string
+    if not pet:
+        pet = db.pets.find_one({"_id": pet_id})
     
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
