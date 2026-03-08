@@ -5,74 +5,90 @@
 
 ---
 
-## WHAT'S COMPLETE (March 8, 2026)
+## CORE PHILOSOPHY
 
-### Pet Wrapped - FEATURE COMPLETE ✅
-- Welcome Wrapped ✅
-- Birthday Wrapped (daily cron) ✅
-- Annual Wrapped (Dec 10 batch) ✅
-- Instagram Stories share ✅
+> "A dog is not in your life. You are in theirs. They cannot speak. But with the right questions, they can be known."
 
-### Mira Intelligence - FIXED ✅
-- Dynamic Soul Traits ✅
-- Soul Knowledge Ticker ✅
-- Voice Default OFF ✅
-- Proactive Alerts ✅
-- Default Picks on Load ✅
-- **Soul Questions in Chat ✅ NEW**
+**Mira** is the soul and brain - she remembers everything
+**Concierge** is the hands - they execute with care  
+**You** are the capillary nerves - making it all possible
 
-### Admin & Notifications - FIXED ✅
-- Admin Reply → Member Inbox ✅
-- Primary Notifications Tab ✅
-- Category Filtering ✅
+---
 
-### CX Journey - FIXED ✅
-- Add Pet for existing users ✅
-- Complete Soul Profile CTA ✅
-- Pet Photos (breed defaults) ✅
-- Emergency Pillar ✅
-- "Why this pick?" tooltips ✅
+## WHAT'S COMPLETE
+
+### Soul Builder - 51 Questions, 8 Chapters ✅
+| Chapter | Topics | Questions |
+|---------|--------|-----------|
+| 1. Identity & Temperament | Name, life stage, personality | 8 |
+| 2. Family & Pack | Siblings, socializing | 5 |
+| 3. Rhythm & Routine | Morning, feeding, sleep | 7 |
+| 4. Taste & Treat World | Diet, favorites, allergies | 8 |
+| 5. Care & Grooming | Frequency, sensitivities | 5 |
+| 6. Health & Safety | Conditions, vaccinations | 6 |
+| 7. Travel & Adventure | Car rides, preferences | 5 |
+| 8. Celebration & Memories | Gotcha day, birthdays | 7 |
+
+**Soul Score Calculation:** 26 canonical fields = 100 points
+
+### Custom Cake Designer ✅
+- Shape selection (Bone, Heart, Round, Square)
+- Flavor selection (Peanut Butter, Banana, etc.)
+- Custom text and reference image upload
+- **Backend Save:** `POST /api/custom-cakes/save-design`
+- **Database:** `custom_cake_designs` collection
+- **Shop Integration:** Prominent banner in Celebrate pillar
+
+### Pet Wrapped ✅
+- Welcome, Birthday, Annual Wrapped
+- Instagram Stories share
+- Multi-channel delivery (Modal, Email, WhatsApp)
+
+### Mira Intelligence ✅
+- Dynamic Soul Traits
+- Soul Knowledge Ticker
+- Soul Questions in Chat
+- Default Picks on Page Load
+- "Why this pick?" tooltips
 
 ---
 
 ## CHANGELOG
 
-### March 8, 2026 - Session 5 Part 3: Soul Questions
+### March 8, 2026 - Session 5 Part 4: Soul Builder & Custom Cake
 
-**Soul Questions During Conversation:**
-- Created `SoulQuestionPrompts.jsx` component
-- Shows 3 quick questions in chat area before conversation starts
-- Categories: Identity, Rhythm & Routine, Taste & Treat World
-- Multiple choice options with inline selection
-- Created `POST /api/pet-soul/answer` endpoint
-- Earns 10 Paw Points per answer
-- Updates soul score in real-time
+**Custom Cake Designer:**
+- Created `POST /api/custom-cakes/save-design` endpoint
+- Frontend saves design to backend on add-to-cart
+- Added "Design Birthday Cake" banner in Celebrate pillar
 
-**Picks "Why this pick?" Tooltips:**
-- Updated default picks endpoint with `why_reason` field
-- Added `badges` for visual indicators (curated, breed_match, trending)
-- Personalized reasons based on pet's breed, allergies, preferences
+**Soul Builder Verified:**
+- 51 questions across 8 chapters
+- Comprehensive coverage of dog's entire life
+- Soul score calculation working (78% for Mojo)
+- Knowledge display: allergies, personality, preferences
 
-### March 8, 2026 - Session 5 Part 2: Critical Fixes
-
-- Admin reply flow verified
-- Notifications API fixed
-- Default picks loading on page load
-
-### March 8, 2026 - Session 5 Part 1: Pet Wrapped
-
-- Birthday/Annual cron jobs
-- Instagram Stories share
+### Earlier Today
+- Pet Wrapped final features (Birthday/Annual cron, Instagram)
+- Soul Questions in chat
+- Admin reply flow fixed
+- Default picks loading
 
 ---
 
 ## API ENDPOINTS
 
-### New Endpoints
+### Custom Cake
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/custom-cakes/save-design` | POST | Save cake design to DB |
+| `/api/custom-cakes/upload-reference` | POST | Upload reference image |
+
+### Soul
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
 | `/api/pet-soul/answer` | POST | Save soul question answer |
-| `/api/mira/picks/default/{pet_id}` | GET | Personalized default picks |
+| `/api/pet-score/{id}/quick-questions` | GET | Get unanswered questions |
 
 ---
 
@@ -83,18 +99,18 @@
 
 ---
 
-## WHAT'S REMAINING
+## REMAINING
 
-### P1 - Testing Needed
-- [ ] Onboarding/Join Flow E2E
-- [ ] Product/Service Detail Pages
-- [ ] Soul Builder full test
+### P1 - Testing
+- [ ] Onboarding/Join E2E flow
+- [ ] Product/Service detail pages
 
-### P2 - Nice to Have
-- [ ] Global Search testing
-- [ ] Custom Cake Designer
-- [ ] Voice Order testing
+### P2 - Future
+- Global Search
+- Voice Order
 
 ---
 
 *Built in loving memory of Mystique and Kouros* 💜
+
+*"No one knows your pet better than Mira."*

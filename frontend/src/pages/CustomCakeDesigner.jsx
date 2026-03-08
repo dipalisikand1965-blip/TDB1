@@ -131,8 +131,8 @@ const CustomCakeDesigner = () => {
   // Check if form is complete
   const isComplete = selectedShape && selectedFlavor;
 
-  // Add to cart
-  const handleAddToCart = () => {
+  // Add to cart AND save to backend
+  const handleAddToCart = async () => {
     if (!isComplete) return;
 
     const shape = SHAPES.find(s => s.id === selectedShape);
@@ -155,6 +155,37 @@ const CustomCakeDesigner = () => {
         weight: '500g'
       }
     };
+
+    // Save to backend for order tracking
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/custom-cakes/save-design`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          shape: shape.name,
+          shape_icon: shape.icon,
+          flavor: flavor.name,
+          flavor_icon: flavor.icon,
+          custom_text: customText || '',
+          reference_image: referenceImage,
+          price: calculatePrice(),
+          weight: '500g'
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        customCake.backendId = data.design_id;
+        console.log('[CustomCake] Design saved to backend:', data.design_id);
+      }
+    } catch (err) {
+      console.error('[CustomCake] Failed to save design:', err);
+      // Continue anyway - cart is primary
+    }
 
     addToCart(customCake, '500g', flavor.name, 1);
     setAddedToCart(true);

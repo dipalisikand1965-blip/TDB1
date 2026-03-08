@@ -3850,6 +3850,60 @@ async def upload_cake_reference(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail="Failed to save image")
 
 
+@api_router.post("/custom-cakes/save-design")
+async def save_custom_cake_design(request: Request):
+    """
+    Save a custom cake design to the database.
+    Called when user adds custom cake to cart.
+    Creates a design record for order fulfillment tracking.
+    """
+    try:
+        body = await request.json()
+        
+        # Get user email from token if available
+        user_email = None
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            try:
+                token = auth_header.split(" ")[1]
+                payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+                user_email = payload.get("email")
+            except:
+                pass
+        
+        design_id = f"cake-design-{uuid.uuid4().hex[:12]}"
+        
+        design_data = {
+            "design_id": design_id,
+            "user_email": user_email,
+            "shape": body.get("shape"),
+            "shape_icon": body.get("shape_icon"),
+            "flavor": body.get("flavor"),
+            "flavor_icon": body.get("flavor_icon"),
+            "custom_text": body.get("custom_text", ""),
+            "reference_image": body.get("reference_image"),
+            "price": body.get("price", 0),
+            "weight": body.get("weight", "500g"),
+            "status": "draft",  # draft -> ordered -> in_progress -> completed
+            "created_at": get_utc_timestamp(),
+            "updated_at": get_utc_timestamp()
+        }
+        
+        await db.custom_cake_designs.insert_one(design_data)
+        
+        logger.info(f"[CUSTOM_CAKE] Design saved: {design_id} for {user_email}")
+        
+        return {
+            "success": True,
+            "design_id": design_id,
+            "message": "Design saved successfully"
+        }
+        
+    except Exception as e:
+        logger.error(f"[CUSTOM_CAKE] Error saving design: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.post("/upload/about-image")
 async def upload_about_image(file: UploadFile = File(...)):
     """Upload an image for About page (dogs, team)"""
