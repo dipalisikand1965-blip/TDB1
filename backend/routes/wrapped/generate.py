@@ -142,16 +142,42 @@ async def generate_pet_wrapped(pet_id: str, year: Optional[int] = None):
     owner_email = pet.get("owner_email")
     
     # Count Mira conversations from multiple sources
-    convo_count = db.mira_conversations.count_documents({"pet_id": pet_id})
+    # Priority: live_conversation_threads > mira_tickets > mira_conversations > memories
+    convo_count = 0
     
-    # Also count conversation memories stored on pet
+    # 1. Count from live_conversation_threads (main conversation storage)
+    try:
+        thread_count = db.live_conversation_threads.count_documents({"pet_id": pet_id})
+        convo_count = max(convo_count, thread_count)
+    except:
+        pass
+    
+    # 2. Count from mira_tickets
+    try:
+        ticket_count = db.mira_tickets.count_documents({"pet_id": pet_id})
+        convo_count = max(convo_count, convo_count + ticket_count)  # Add tickets to conversations
+    except:
+        pass
+    
+    # 3. Count from mira_conversations (legacy)
+    try:
+        legacy_count = db.mira_conversations.count_documents({"pet_id": pet_id})
+        convo_count = max(convo_count, legacy_count)
+    except:
+        pass
+    
+    # 4. Also count conversation memories stored on pet
     conversation_memories = pet.get("conversation_memories", [])
     convo_count = max(convo_count, len(conversation_memories))
     
-    # Count from mira_sessions if available
+    # 5. Count from mira_sessions by user_email if available
     if owner_email:
-        mira_session_count = db.mira_sessions.count_documents({"user_email": owner_email})
-        convo_count = max(convo_count, mira_session_count)
+        try:
+            # Try to find sessions by user in thread collection
+            user_thread_count = db.live_conversation_threads.count_documents({"user_email": owner_email})
+            convo_count = max(convo_count, user_thread_count)
+        except:
+            pass
     
     # Count Soul Profile questions answered from doggy_soul_answers
     doggy_soul_answers = pet.get("doggy_soul_answers", {})

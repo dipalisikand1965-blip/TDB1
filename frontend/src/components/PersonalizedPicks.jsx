@@ -241,14 +241,22 @@ const PersonalizedPicks = ({
     const fetchRecommendations = async () => {
       if (!selectedPet) return;
       
+      // Clear existing recommendations immediately to prevent showing stale data
+      setRecommendations([]);
+      setRepeatSuggestions([]);
       setLoading(true);
+      
       try {
-        // Fetch personalized recommendations
+        // Fetch personalized recommendations using pet ID
+        const petId = selectedPet.id || selectedPet._id;
+        console.log(`[PersonalizedPicks] Fetching recommendations for pet: ${selectedPet.name} (${petId}), breed: ${selectedPet.breed}`);
+        
         const res = await fetch(
-          `${API_URL}/api/products/recommendations/for-pet/${selectedPet.id || selectedPet._id}?limit=${maxProducts}&pillar=${pillar}`
+          `${API_URL}/api/products/recommendations/for-pet/${petId}?limit=${maxProducts}&pillar=${pillar}`
         );
         if (res.ok) {
           const data = await res.json();
+          console.log(`[PersonalizedPicks] Got ${data.recommendations?.length || 0} recommendations for ${selectedPet.name}`);
           setRecommendations(data.recommendations || []);
         }
         
