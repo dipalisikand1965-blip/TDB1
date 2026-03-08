@@ -1097,20 +1097,20 @@ const MemberDashboard = () => {
                 )}
               </div>
               {/* Pet selector row - Mobile responsive with visible names */}
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-purple-500/50 -mx-1 px-1">
+              <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-purple-500/50 -mx-1 px-1">
                 {pets.map((pet) => (
                   <button
                     key={pet.id}
                     onClick={() => setSelectedPetId(pet.id)}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-full whitespace-nowrap transition-all shrink-0 text-sm ${
+                    className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full whitespace-nowrap transition-all shrink-0 text-sm ${
                       selectedPetId === pet.id || (!selectedPetId && pet.id === pets[0]?.id)
                         ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30' 
                         : 'bg-slate-800/50 border border-white/10 text-slate-300 hover:border-purple-500/50'
                     }`}
                     data-testid={`header-pet-selector-${pet.name?.toLowerCase()}`}
                   >
-                    <span className="text-base">{pet.species === 'cat' ? '🐱' : '🐕'}</span>
-                    <span className="font-medium truncate max-w-[80px]">{pet.name}</span>
+                    <span className="text-lg sm:text-xl flex-shrink-0">{pet.species === 'cat' ? '🐱' : '🐕'}</span>
+                    <span className="font-medium">{pet.name}</span>
                     {pet.overall_score >= 80 && <span className="text-xs">⭐</span>}
                   </button>
                 ))}
