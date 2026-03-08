@@ -3,7 +3,7 @@
  * Pops up after Soul Profile completion with confetti and shareable card
  */
 import React, { useState, useEffect } from 'react';
-import { X, Share2, MessageCircle, Mail, Download, Sparkles, Heart } from 'lucide-react';
+import { X, Share2, MessageCircle, Mail, Download, Sparkles, Heart, Instagram } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -12,6 +12,7 @@ const WelcomeWrappedModal = ({ isOpen, onClose, petId, petData }) => {
   const [loading, setLoading] = useState(true);
   const [showConfetti, setShowConfetti] = useState(true);
   const [deliveryStatus, setDeliveryStatus] = useState(null);
+  const [showInstaGuide, setShowInstaGuide] = useState(false);
 
   useEffect(() => {
     if (isOpen && petId) {
@@ -74,6 +75,22 @@ const WelcomeWrappedModal = ({ isOpen, onClose, petId, petData }) => {
     const shareUrl = `${API_URL}/api/wrapped/welcome-card/${petId}`;
     const text = `🐾 ${wrappedData?.pet_name}'s Soul Score is ${wrappedData?.soul_score}%! See their Soul Profile: ${shareUrl}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const handleInstagramShare = async () => {
+    // Log the share attempt
+    try {
+      await fetch(`${API_URL}/api/wrapped/log-share/${petId}?platform=instagram`, { method: 'POST' });
+    } catch (e) {}
+    
+    // Open Instagram Story card (optimized 1080x1920)
+    const storyUrl = `${API_URL}/api/wrapped/instagram-story/${petId}`;
+    
+    // Show instructions modal
+    setShowInstaGuide(true);
+    
+    // Open the story card in new tab
+    window.open(storyUrl, '_blank');
   };
 
   const copyToClipboard = (text) => {
@@ -191,23 +208,64 @@ const WelcomeWrappedModal = ({ isOpen, onClose, petId, petData }) => {
                   Share {wrappedData?.pet_name}'s Soul Profile
                 </button>
                 
-                <div className="flex gap-3">
+                <div className="grid grid-cols-3 gap-2">
                   <button
                     onClick={handleWhatsAppShare}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl transition"
+                    className="flex flex-col items-center justify-center gap-1 px-3 py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl transition"
                   >
-                    <MessageCircle className="w-4 h-4" />
-                    WhatsApp
+                    <MessageCircle className="w-5 h-5" />
+                    <span className="text-xs">WhatsApp</span>
+                  </button>
+                  <button
+                    onClick={handleInstagramShare}
+                    className="flex flex-col items-center justify-center gap-1 px-3 py-3 bg-gradient-to-tr from-purple-600 via-pink-500 to-orange-400 hover:opacity-90 text-white rounded-xl transition"
+                  >
+                    <Instagram className="w-5 h-5" />
+                    <span className="text-xs">IG Story</span>
                   </button>
                   <button
                     onClick={() => window.open(`${API_URL}/api/wrapped/welcome-card/${petId}`, '_blank')}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl transition"
+                    className="flex flex-col items-center justify-center gap-1 px-3 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl transition"
                   >
-                    <Download className="w-4 h-4" />
-                    View Card
+                    <Download className="w-5 h-5" />
+                    <span className="text-xs">View Card</span>
                   </button>
                 </div>
               </div>
+              
+              {/* Instagram Guide Modal */}
+              {showInstaGuide && (
+                <div className="mt-4 p-4 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-orange-400/20 border border-pink-500/30 rounded-xl text-left">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-pink-400 font-semibold flex items-center gap-2">
+                      <Instagram className="w-4 h-4" /> Share to Instagram Story
+                    </h4>
+                    <button onClick={() => setShowInstaGuide(false)} className="text-white/50 hover:text-white">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <ol className="text-white/70 text-sm space-y-2">
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-400">1.</span> Screenshot the card that just opened
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-400">2.</span> Open Instagram → Tap + → Story
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-400">3.</span> Select the screenshot from your gallery
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-400">4.</span> Add stickers, music, or text!
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-400">5.</span> Share to your Story 🎉
+                    </li>
+                  </ol>
+                  <p className="mt-3 text-xs text-amber-400/80 italic">
+                    Tag @thedoggycompany for a chance to be featured!
+                  </p>
+                </div>
+              )}
             </div>
             
             {/* Footer */}
