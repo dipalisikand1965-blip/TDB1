@@ -124,6 +124,18 @@ const MemberDirectory = () => {
   const [selectedMember, setSelectedMember] = useState(null);
   const [showProfileConsole, setShowProfileConsole] = useState(false);
   const [cities, setCities] = useState([]);
+  
+  // Pet Edit Modal State
+  const [editingPet, setEditingPet] = useState(null);
+  const [petEditForm, setPetEditForm] = useState({
+    name: '',
+    breed: '',
+    gender: '',
+    birth_date: '',
+    weight: '',
+    food_allergies: ''
+  });
+  const [savingPet, setSavingPet] = useState(false);
 
   const fetchMembers = useCallback(async () => {
     setLoading(true);
@@ -218,6 +230,59 @@ const MemberDirectory = () => {
   const openMemberProfile = (member) => {
     setSelectedMember(member);
     setShowProfileConsole(true);
+  };
+  
+  // Pet Edit Functions
+  const openPetEdit = (pet) => {
+    setEditingPet(pet);
+    setPetEditForm({
+      name: pet.name || '',
+      breed: pet.breed || '',
+      gender: pet.gender || '',
+      birth_date: pet.birth_date?.split('T')[0] || '',
+      weight: pet.weight || '',
+      food_allergies: (pet.food_allergies || []).join(', ')
+    });
+  };
+  
+  const closePetEdit = () => {
+    setEditingPet(null);
+    setPetEditForm({ name: '', breed: '', gender: '', birth_date: '', weight: '', food_allergies: '' });
+  };
+  
+  const savePetEdit = async () => {
+    if (!editingPet) return;
+    setSavingPet(true);
+    try {
+      const adminAuth = localStorage.getItem('adminAuth');
+      const payload = {
+        ...petEditForm,
+        food_allergies: petEditForm.food_allergies ? petEditForm.food_allergies.split(',').map(a => a.trim()).filter(Boolean) : []
+      };
+      
+      const response = await fetch(`${API_URL}/api/admin/pets/${editingPet.id || editingPet._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${adminAuth}`
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      if (response.ok) {
+        // Refresh member data
+        fetchMembers();
+        closePetEdit();
+        alert(`${petEditForm.name} updated successfully!`);
+      } else {
+        alert('Failed to update pet. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error saving pet:', error);
+      alert('Error saving pet. Please try again.');
+    } finally {
+      setSavingPet(false);
+    }
   };
 
   return (
@@ -1458,15 +1523,107 @@ const PetSoulTabs = ({ pets }) => {
               size="sm" 
               variant="secondary" 
               className="flex-1 bg-white/10 hover:bg-white/20 text-white border-0"
-              onClick={() => {
-                // TODO: Open edit modal for pet
-                alert(`Edit functionality coming soon for ${currentPet?.name}`);
-              }}
+              onClick={() => openPetEdit(currentPet)}
             >
               <Edit2 className="w-4 h-4 mr-1" /> Edit
             </Button>
           </div>
         </Card>
+      )}
+      
+      {/* Pet Edit Modal */}
+      {editingPet && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md bg-white rounded-xl shadow-2xl">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <PawPrint className="w-5 h-5 text-purple-600" />
+                  Edit {editingPet.name}
+                </h3>
+                <button onClick={closePetEdit} className="p-1 hover:bg-gray-100 rounded">
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <Input
+                    value={petEditForm.name}
+                    onChange={(e) => setPetEditForm(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Pet name"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Breed</label>
+                    <Input
+                      value={petEditForm.breed}
+                      onChange={(e) => setPetEditForm(prev => ({ ...prev, breed: e.target.value }))}
+                      placeholder="e.g., Labrador"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                    <select
+                      value={petEditForm.gender}
+                      onChange={(e) => setPetEditForm(prev => ({ ...prev, gender: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
+                    >
+                      <option value="">Select</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Birthday</label>
+                    <Input
+                      type="date"
+                      value={petEditForm.birth_date}
+                      onChange={(e) => setPetEditForm(prev => ({ ...prev, birth_date: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
+                    <Input
+                      type="number"
+                      value={petEditForm.weight}
+                      onChange={(e) => setPetEditForm(prev => ({ ...prev, weight: e.target.value }))}
+                      placeholder="e.g., 25"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Food Allergies</label>
+                  <Input
+                    value={petEditForm.food_allergies}
+                    onChange={(e) => setPetEditForm(prev => ({ ...prev, food_allergies: e.target.value }))}
+                    placeholder="e.g., chicken, grains (comma separated)"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-3 mt-6">
+                <Button variant="outline" onClick={closePetEdit} className="flex-1">
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={savePetEdit} 
+                  disabled={savingPet}
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  {savingPet ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
       )}
     </div>
   );
