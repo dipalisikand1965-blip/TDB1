@@ -20,21 +20,16 @@ Pet Wrapped is the viral acquisition engine - "Spotify Wrapped for Pets". It gen
 
 ## Delivery Channels
 
-### ✅ WORKING (March 8, 2026)
+### ✅ ALL WORKING (March 8, 2026)
 
 | Channel | Integration | Status |
 |---------|-------------|--------|
 | **In-App Modal** | WelcomeWrappedModal.jsx | ✅ Immediate |
 | **Email** | Resend API | ✅ Sending from woof@thedoggycompany.com |
+| **WhatsApp** | Gupshup API | ✅ WORKING (Fixed API endpoint + app name) |
 | **Service Desk** | service_desk_tickets collection | ✅ Auto-ticket created |
 | **Admin Notification** | admin_notifications collection | ✅ Real-time alert |
 | **Member Inbox** | member_notifications collection | ✅ Action link to Pet Home |
-
-### ⚠️ NEEDS FIX
-
-| Channel | Integration | Issue |
-|---------|-------------|-------|
-| **WhatsApp** | Gupshup API | 401 - API key invalid/expired |
 
 ---
 
