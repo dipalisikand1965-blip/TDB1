@@ -211,18 +211,26 @@ This is the existing **PICKS feature** - already partially built.
 - [x] Create Soul Archetype derivation logic (`/app/backend/soul_archetype_engine.py`)
 - [x] API endpoints for archetype management (`/api/soul-archetype/*`)
 - [x] Test archetype derivation with real pet data
-- [ ] Admin panel to view/manage archetypes (UI pending)
+- [x] Admin panel "Soul Products" tab with Archetypes view
 
-### Phase 2: Product Tagging System
-- [ ] Add `personalization_tier` field to products (soul_made / soul_selected / soul_gifted)
-- [ ] Tag existing Doggy Bakery products
-- [ ] Admin panel to manage product tiers
+### Phase 2: Product Tagging System ✅ COMPLETE
+- [x] Add `soul_tier` field to products (soul_made / soul_selected / soul_gifted / standard)
+- [x] API endpoints for tier management (`/api/products/soul-tier/*`)
+- [x] Admin panel "Product Tiers" tab to manage tiers
+- [x] Bulk tier update capability
+- [x] Synced 390 Shopify products with tier field
 
-### Phase 3: Personalization Preview Engine
-- [ ] Build preview component (name + illustration on product)
-- [ ] Support both art styles (watercolor / line art toggle)
-- [ ] Customization modal (text, sayings, sizes)
-- [ ] Start with Tier 1 products: Cake toppers, bowls, bandanas
+### Phase 3: Personalization Preview Engine ✅ IN PROGRESS
+- [x] Created `PersonalizationPreview.jsx` component
+- [x] Pet name overlay on product images
+- [x] Art style toggle (Watercolor / Line Art)
+- [x] Name position options (top/center/bottom)
+- [x] Download personalized preview
+- [x] Created `SoulPersonalizationContext.jsx` for app-wide personalization
+- [x] Added Soul Tier badges to ProductCard (card view + modal)
+- [x] Name overlay shows in modal when pet is selected
+- [ ] Integrate preview into main product flow
+- [ ] Generate Line Art illustrations (34 breeds)
 
 ### Phase 4: Emotional Collections
 - [ ] Create collection pages organized by life moment
