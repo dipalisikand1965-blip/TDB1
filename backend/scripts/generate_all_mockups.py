@@ -70,34 +70,28 @@ BREEDS = [
 ]
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PRODUCT TYPES (12 types matching the PRD)
+# PRODUCT TYPES - NO CAKES (use real Doggy Bakery cakes instead)
+# Prompts DO NOT include any pet name - just the breed illustration
+# Names are added as UI overlay "Personalize with your pet's name"
 # ═══════════════════════════════════════════════════════════════════════════
 
 PRODUCT_TYPES = [
-    {
-        "type": "cake",
-        "name_template": "{breed} Birthday Cake",
-        "pillar": "celebrate",
-        "price": 899,
-        "prompt": """A beautiful artisan dog birthday cake photographed on a clean white background with elegant cake stand. 
-The cake features a stunning soulful watercolor illustration of a {breed_full} dog as an edible cake topper printed on fondant. 
-The watercolor style is soft, emotional, and artistic - NOT cartoonish or cutesy. 
-The cake is decorated with dog-safe cream frosting in soft purple and white, with delicate paw print designs.
-'Happy Birthday' is written in elegant purple script icing.
-Professional food photography, celebration theme, warm lighting, premium artisan quality.
-The breed illustration is the focal point and looks like real watercolor art printed on the cake.""",
-    },
+    # NOTE: CAKES EXCLUDED - Use real Doggy Bakery cakes instead
+    # {
+    #     "type": "cake",
+    #     ...
+    # },
     {
         "type": "bandana",
         "name_template": "{breed} Bandana",
         "pillar": "celebrate",
         "price": 399,
         "prompt": """A premium white cotton pet bandana laid flat on a clean white background.
-The bandana features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED DIRECTLY ON the fabric - as if professionally screen-printed or heat-transferred.
-The watercolor illustration style is soft, emotional, and artistic - warm colors, gentle expression.
-The pet's name area is shown with elegant purple embroidered-style text.
-Professional product photography, soft fabric texture clearly visible.
-High-end pet accessory, the illustration appears as part of the fabric, NOT overlaid.""",
+The bandana features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED DIRECTLY ON the fabric center.
+The watercolor illustration style is soft, emotional, and artistic - warm earth tones, gentle soulful expression.
+NO TEXT on the bandana - just the beautiful dog portrait illustration.
+Professional product photography, soft fabric texture clearly visible, premium quality.
+The illustration appears as part of the fabric, professionally screen-printed.""",
     },
     {
         "type": "mug",
@@ -106,10 +100,10 @@ High-end pet accessory, the illustration appears as part of the fabric, NOT over
         "price": 499,
         "prompt": """A premium white ceramic coffee mug photographed on a clean white background with soft shadows.
 The mug features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED ON its curved surface.
-The illustration wraps naturally around the mug's surface as if professionally printed/sublimated onto the ceramic.
-Below the illustration, the text area shows space for a pet name in elegant purple script.
-The watercolor style is soft, emotional, artistic - NOT cartoonish.
-Professional product photography, the illustration looks like it's part of the mug, not an overlay.""",
+The illustration wraps naturally around the mug's surface as if professionally sublimated onto the ceramic.
+NO TEXT on the mug - just the beautiful watercolor dog portrait.
+The watercolor style is soft, emotional, artistic with warm earth tones.
+Professional product photography, the illustration looks like it's part of the mug.""",
     },
     {
         "type": "keychain",
@@ -117,21 +111,21 @@ Professional product photography, the illustration looks like it's part of the m
         "pillar": "celebrate",
         "price": 299,
         "prompt": """A premium silver metal keychain with a circular pendant photographed on a clean white background.
-The pendant features a beautiful soulful watercolor illustration of a {breed_full} dog face printed/engraved on its surface.
-The watercolor style is soft and emotional, visible on the metal surface as if it were a miniature art piece.
-Professional product photography, shiny metal surface with the breed art as the focal point.
-High-end pet accessory, premium gift item quality.""",
+The pendant features a beautiful soulful watercolor illustration of a {breed_full} dog face printed on its surface.
+NO TEXT or name on the keychain - just the beautiful dog portrait illustration.
+The watercolor style is soft and emotional, visible on the metal surface as a miniature art piece.
+Professional product photography, shiny metal surface, premium gift quality.""",
     },
     {
         "type": "frame",
         "name_template": "{breed} Portrait Frame",
         "pillar": "celebrate",
         "price": 799,
-        "prompt": """An elegant white or natural wood photo frame photographed against a clean wall or surface.
-Inside the frame is a beautiful soulful watercolor portrait illustration of a {breed_full} dog - warm colors, gentle soulful expression, artistic quality.
-Below the portrait is elegant calligraphy text area for the pet's name.
-The watercolor style is emotional and gift-worthy - like commissioned pet portrait art.
-Professional product photography, premium home decor item, the illustration is the art piece inside the frame.""",
+        "prompt": """An elegant white or natural wood photo frame photographed against a clean background.
+Inside the frame is a beautiful soulful watercolor portrait illustration of a {breed_full} dog.
+Warm colors, gentle soulful expression, artistic quality like commissioned pet portrait art.
+NO TEXT in the frame - just the beautiful watercolor portrait.
+Professional product photography, premium home decor item.""",
     },
     {
         "type": "welcome_mat",
@@ -139,20 +133,20 @@ Professional product photography, premium home decor item, the illustration is t
         "pillar": "stay",
         "price": 1199,
         "prompt": """A premium coir doormat photographed from above on a clean floor surface.
-The mat features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED IN the center of the mat.
+The mat features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED IN the center.
 Below the illustration is the word 'WELCOME' in elegant dark lettering.
-The watercolor illustration style is soft and artistic, appearing as if printed onto the natural coir fibers.
-Professional product photography, the illustration is integrated into the mat design, not overlaid.""",
+The watercolor style is soft and artistic, printed onto natural coir fibers.
+Professional product photography, warm inviting feel.""",
     },
     {
         "type": "bowl",
         "name_template": "{breed} Food Bowl",
         "pillar": "dine",
         "price": 599,
-        "prompt": """A premium stainless steel or ceramic pet food bowl photographed from above on a clean white background.
-The bowl features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED ON the inside bottom.
-Around the rim, there's space for a pet name in elegant lettering.
-The watercolor style is soft and emotional, visible through the bowl's surface.
+        "prompt": """A premium ceramic pet food bowl photographed from above on a clean white background.
+The bowl interior bottom features a beautiful soulful watercolor illustration of a {breed_full} dog face.
+NO TEXT on the bowl - just the beautiful watercolor dog portrait visible inside.
+The watercolor style is soft and emotional with warm earth tones.
 Professional product photography, premium pet dining accessory.""",
     },
     {
@@ -161,9 +155,9 @@ Professional product photography, premium pet dining accessory.""",
         "pillar": "celebrate",
         "price": 699,
         "prompt": """A premium natural cotton canvas tote bag photographed flat on a clean white background.
-The bag features a large, beautiful soulful watercolor illustration of a {breed_full} dog PRINTED ON the fabric.
-Below the illustration is text that reads 'Proud {breed_full} Mom' in elegant purple lettering.
-The watercolor style is soft, emotional, artistic - the illustration appears screen-printed onto the canvas.
+The bag features a large, beautiful soulful watercolor illustration of a {breed_full} dog PRINTED ON the center.
+NO TEXT on the bag - just the beautiful watercolor dog portrait.
+The watercolor style is soft, emotional, artistic with warm earth tones.
 Professional product photography, fabric texture visible, dog parent gift item.""",
     },
     {
@@ -172,9 +166,9 @@ Professional product photography, fabric texture visible, dog parent gift item."
         "pillar": "dine",
         "price": 649,
         "prompt": """A premium glass treat jar with wooden lid photographed on a clean background.
-The jar features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED ON the glass surface.
-The word 'TREATS' appears in elegant lettering.
-The watercolor style is soft and artistic, visible through the glass as if etched or printed.
+The jar features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED ON the glass.
+The word 'TREATS' appears in elegant lettering below the illustration.
+The watercolor style is soft and artistic, visible on the glass surface.
 Professional product photography, premium pet storage accessory.""",
     },
     {
@@ -183,9 +177,10 @@ Professional product photography, premium pet storage accessory.""",
         "pillar": "stay",
         "price": 999,
         "prompt": """A premium soft fleece blanket draped elegantly, photographed on a clean background.
-The blanket features a large, beautiful soulful watercolor illustration of a {breed_full} dog PRINTED ON the fabric.
-The watercolor style is warm, emotional, and artistic - the illustration appears sublimated into the fleece.
-Soft, cozy texture clearly visible, pet name area in elegant script.
+The blanket features a large, beautiful soulful watercolor illustration of a {breed_full} dog PRINTED ON the fabric center.
+NO TEXT on the blanket - just the beautiful watercolor dog portrait.
+The watercolor style is warm, emotional, artistic with soft earth tones.
+Soft cozy fleece texture clearly visible.
 Professional product photography, premium pet comfort item.""",
     },
     {
@@ -193,10 +188,10 @@ Professional product photography, premium pet comfort item.""",
         "name_template": "{breed} ID Tag",
         "pillar": "care",
         "price": 349,
-        "prompt": """A premium metal pet ID tag in bone shape photographed on a clean background.
+        "prompt": """A premium silver metal pet ID tag in bone shape photographed on a clean white background.
 The tag features a small soulful watercolor illustration of a {breed_full} dog silhouette ENGRAVED on its surface.
-Space for pet name engraving is shown in elegant font.
-Shiny metal surface with the artwork as a focal point.
+NO TEXT on the tag - just the beautiful breed silhouette.
+Shiny polished metal surface with the artwork as focal point.
 Professional product photography, premium pet accessory.""",
     },
     {
@@ -204,11 +199,11 @@ Professional product photography, premium pet accessory.""",
         "name_template": "{breed} Party Hat",
         "pillar": "celebrate",
         "price": 199,
-        "prompt": """A festive dog party hat cone photographed on a clean white background.
-The party hat features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED ON the fabric/paper.
-Colorful but elegant design with purple and gold accents, elastic chin strap visible.
-The watercolor style is soft and celebratory, appearing as part of the hat design.
-Professional product photography, celebration theme.""",
+        "prompt": """A festive dog birthday party hat cone photographed on a clean white background.
+The party hat features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED ON the fabric.
+Elegant purple and gold design accents, elastic chin strap visible.
+NO TEXT on the hat - just the beautiful watercolor illustration.
+Professional product photography, celebration theme, premium quality.""",
     },
 ]
 
