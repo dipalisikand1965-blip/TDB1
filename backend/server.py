@@ -256,6 +256,9 @@ from app.api.milestone_illustrations_routes import router as milestone_illustrat
 # Soul Archetype Routes (Personality archetype derivation)
 from app.api.archetype_routes import router as archetype_router, set_archetype_db
 
+# Soul Products Routes (Product tier management)
+from app.api.soul_products_routes import router as soul_products_router, set_soul_products_db
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -19027,6 +19030,10 @@ set_intelligence_db(db)  # Initialize Intelligence with database
 # Initialize Soul Archetype Engine
 app.include_router(archetype_router)  # Soul Archetype at /api/soul-archetype/*
 set_archetype_db(db)  # Initialize Archetype with database
+
+# Initialize Soul Products Manager
+app.include_router(soul_products_router)  # Soul Products at /api/products/*
+set_soul_products_db(db)  # Initialize Soul Products with database
 
 # Initialize Mira Structured Engine (feature-flagged)
 try:

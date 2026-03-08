@@ -401,6 +401,18 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
             onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop'; }}
           />
           <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 sm:gap-2">
+            {/* Soul Tier Badges */}
+            {product.soul_tier === 'soul_made' && (
+              <Badge className="bg-purple-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">
+                <Sparkles className="w-2.5 h-2.5 mr-0.5" /> Soul Made
+              </Badge>
+            )}
+            {product.soul_tier === 'soul_selected' && (
+              <Badge className="bg-blue-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">🎯 Picked for You</Badge>
+            )}
+            {product.soul_tier === 'soul_gifted' && (
+              <Badge className="bg-pink-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">🎁 Soul Gifted</Badge>
+            )}
             {product.isNew && <Badge className="bg-purple-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">New</Badge>}
             {product.isBestseller && <Badge className="bg-pink-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Bestseller</Badge>}
             {product.onSale && <Badge className="bg-orange-500 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Sale</Badge>}
@@ -1035,10 +1047,28 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
               className="w-full h-full object-cover"
               onError={(e) => { e.target.src = PLACEHOLDER_IMAGE; }}
             />
+            {/* Soul Tier Badge + Standard Badges */}
             <div className="absolute top-3 left-3 flex flex-col gap-2">
+              {product.soul_tier === 'soul_made' && (
+                <Badge className="bg-purple-600 text-white">
+                  <Sparkles className="w-3 h-3 mr-1" /> Soul Made
+                </Badge>
+              )}
+              {product.soul_tier === 'soul_selected' && (
+                <Badge className="bg-blue-600 text-white">🎯 Soul Selected</Badge>
+              )}
+              {product.soul_tier === 'soul_gifted' && (
+                <Badge className="bg-pink-600 text-white">🎁 Soul Gifted</Badge>
+              )}
               {product.isNew && <Badge className="bg-purple-600">New</Badge>}
               {product.isBestseller && <Badge className="bg-pink-600">Bestseller</Badge>}
             </div>
+            {/* Personalized Name Overlay for Soul Made products */}
+            {product.soul_tier === 'soul_made' && cartInput.petName && (
+              <div className="absolute bottom-3 left-3 right-3 bg-white/95 backdrop-blur-sm rounded-lg py-2 px-4 text-center shadow-lg border border-purple-200">
+                <span className="text-purple-700 font-bold text-lg">{cartInput.petName}</span>
+              </div>
+            )}
           </div>
 
           <div className="p-6">
