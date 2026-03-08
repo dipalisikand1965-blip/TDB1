@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { format } from 'date-fns';
 import { API_URL } from '../utils/api';
 import { findBreedIllustration, getBreedIllustrationByName } from '../utils/breedIllustrations';
-import ProductMockupGenerator from './ProductMockupGenerator';
+import { getProductMockup } from '../utils/productMockups';
 
 // Autoship tier discount rates
 const AUTOSHIP_DISCOUNT_TIERS = [
@@ -395,23 +395,21 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
       >
         {/* MOBILE: Larger images (h-44 = 176px vs h-40 = 160px) */}
       <div className="relative overflow-hidden aspect-[4/5] sm:aspect-square">
-          {/* Use ProductMockupGenerator for Soul Made products when pet is selected */}
-          {product.soul_tier === 'soul_made' && selectedPet?.name ? (
-            <ProductMockupGenerator
-              productImage={productImage}
-              productName={product.name}
-              petName={selectedPet.name}
-              breedIllustration={selectedPet?.breed ? getBreedIllustrationByName(selectedPet.breed) : null}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          ) : (
-            <img
-              src={productImage}
-              alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop'; }}
-            />
-          )}
+          {/* Check for pre-generated mockup first, then fall back to regular image */}
+          {(() => {
+            // Try to get a pre-generated mockup for this product + pet breed
+            const mockup = selectedPet?.breed ? getProductMockup(product, selectedPet.breed) : null;
+            const displayImage = mockup?.mockupUrl || productImage;
+            
+            return (
+              <img
+                src={displayImage}
+                alt={product.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                onError={(e) => { e.target.src = productImage || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop'; }}
+              />
+            );
+          })()}
           <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 sm:gap-2">
             {/* Soul Tier Badges */}
             {product.soul_tier === 'soul_made' && (

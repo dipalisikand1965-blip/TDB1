@@ -479,74 +479,142 @@ const SoulProductsManager = () => {
         </div>
       )}
 
-      {/* Preview Tab */}
+      {/* Preview Tab - SHOW ACTUAL PRODUCT MOCKUPS */}
       {activeSubTab === 'preview' && (
         <div className="space-y-6">
           <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Personalization Preview</h3>
+            <h3 className="text-lg font-semibold mb-4">Product Mockup Gallery</h3>
             <p className="text-sm text-gray-500 mb-6">
-              See how products will appear with Soul-Level Personalization enabled
+              Pre-generated product mockups with soulful watercolor breed illustrations ON the products
             </p>
 
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6">
-              <div className="text-center mb-6">
-                <Badge className="bg-purple-600 text-white mb-2">Preview Mode</Badge>
-                <h4 className="text-xl font-bold text-gray-900">Made for Mojo</h4>
-                <p className="text-sm text-gray-600">Inspired by Mojo's Soul Profile</p>
-              </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {/* Labrador Bandana */}
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="aspect-square bg-gray-100">
+                  <img 
+                    src="https://static.prod-images.emergentagent.com/jobs/898750e9-c1a3-473f-826c-d87207164928/images/52f9dd45e1396df1a234bf04168e038e598abd236ed34cbf59d3e7ccfacf1198.png"
+                    alt="Labrador Bandana"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-3">
+                  <Badge className="bg-purple-100 text-purple-700 text-xs mb-2">✨ Bandana</Badge>
+                  <h5 className="font-semibold text-sm">Labrador Bandana</h5>
+                </div>
+              </Card>
 
-              <div className="grid grid-cols-3 gap-4">
-                {/* Sample Soul Made Product */}
-                <Card className="overflow-hidden">
-                  <div className="aspect-square bg-gray-100 relative">
-                    <img 
-                      src="https://static.prod-images.emergentagent.com/jobs/0720440e-9740-46f1-8580-b9ea9d813e65/images/4b3623ff10f0a8026378da5d3341a1627fc9b4bff0731d0339a6681f29268246.png"
-                      alt="Sample"
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute bottom-2 left-2 right-2 bg-white/90 backdrop-blur rounded-lg p-2 text-center">
-                      <span className="font-bold text-purple-700">Mojo</span>
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <Badge className="bg-purple-100 text-purple-700 text-xs mb-2">✨ Soul Made</Badge>
-                    <h5 className="font-semibold text-sm">Pug Birthday Cake</h5>
-                    <p className="text-xs text-gray-500 mt-1">Personalized with name & breed art</p>
-                  </div>
-                </Card>
+              {/* Golden Retriever Mug */}
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="aspect-square bg-gray-100">
+                  <img 
+                    src="https://static.prod-images.emergentagent.com/jobs/898750e9-c1a3-473f-826c-d87207164928/images/5fda07d915de44befc32bfbdac210125b50d02df9f961e853ffeff772f44fffc.png"
+                    alt="Golden Retriever Mug"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-3">
+                  <Badge className="bg-amber-100 text-amber-700 text-xs mb-2">☕ Mug</Badge>
+                  <h5 className="font-semibold text-sm">Golden Retriever Mug</h5>
+                </div>
+              </Card>
 
-                {/* Sample Soul Selected Product */}
-                <Card className="overflow-hidden">
-                  <div className="aspect-square bg-gray-100">
-                    <img 
-                      src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400"
-                      alt="Sample"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-3">
-                    <Badge className="bg-blue-100 text-blue-700 text-xs mb-2">🎯 Soul Selected</Badge>
-                    <h5 className="font-semibold text-sm">Calming Anxiety Wrap</h5>
-                    <p className="text-xs text-gray-500 mt-1">Recommended for Mojo's profile</p>
-                  </div>
-                </Card>
+              {/* Beagle Keychain */}
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="aspect-square bg-gray-100">
+                  <img 
+                    src="https://static.prod-images.emergentagent.com/jobs/898750e9-c1a3-473f-826c-d87207164928/images/04829434fe81993b845c310a46f812971287759a5db4074726ce16d59f1d8e6f.png"
+                    alt="Beagle Keychain"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-3">
+                  <Badge className="bg-gray-100 text-gray-700 text-xs mb-2">🔑 Keychain</Badge>
+                  <h5 className="font-semibold text-sm">Beagle Keychain</h5>
+                </div>
+              </Card>
 
-                {/* Sample Soul Gifted Product */}
-                <Card className="overflow-hidden">
-                  <div className="aspect-square bg-gray-100 relative">
-                    <img 
-                      src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400"
-                      alt="Sample"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-3">
-                    <Badge className="bg-pink-100 text-pink-700 text-xs mb-2">🎁 Soul Gifted</Badge>
-                    <h5 className="font-semibold text-sm">Dog Parent Mug</h5>
-                    <p className="text-xs text-gray-500 mt-1">Perfect gift for Mojo's human</p>
-                  </div>
-                </Card>
-              </div>
+              {/* German Shepherd Welcome Mat */}
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="aspect-square bg-gray-100">
+                  <img 
+                    src="https://static.prod-images.emergentagent.com/jobs/898750e9-c1a3-473f-826c-d87207164928/images/c98be36b80db466eb4a345c37eefde1c46ce763368b006280587db7ac8247035.png"
+                    alt="German Shepherd Welcome Mat"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-3">
+                  <Badge className="bg-green-100 text-green-700 text-xs mb-2">🚪 Welcome Mat</Badge>
+                  <h5 className="font-semibold text-sm">German Shepherd Mat</h5>
+                </div>
+              </Card>
+
+              {/* Pug Bowl */}
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="aspect-square bg-gray-100">
+                  <img 
+                    src="https://static.prod-images.emergentagent.com/jobs/898750e9-c1a3-473f-826c-d87207164928/images/d77bbfb80c70573ef21644b98a2ad918f8e8bf0a009a1e5fcbb22e38772b4f46.png"
+                    alt="Pug Bowl"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-3">
+                  <Badge className="bg-blue-100 text-blue-700 text-xs mb-2">🥣 Bowl</Badge>
+                  <h5 className="font-semibold text-sm">Pug Food Bowl</h5>
+                </div>
+              </Card>
+
+              {/* Indie Framed Portrait */}
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="aspect-square bg-gray-100">
+                  <img 
+                    src="https://static.prod-images.emergentagent.com/jobs/898750e9-c1a3-473f-826c-d87207164928/images/73d0a0f28ceb2f4f875d211f40790c2c5ba2714f677454e1b69bb9867aec52e8.png"
+                    alt="Indie Framed Portrait"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-3">
+                  <Badge className="bg-pink-100 text-pink-700 text-xs mb-2">🖼️ Portrait</Badge>
+                  <h5 className="font-semibold text-sm">Indie Portrait "Mojo"</h5>
+                </div>
+              </Card>
+
+              {/* Husky Tote Bag */}
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="aspect-square bg-gray-100">
+                  <img 
+                    src="https://static.prod-images.emergentagent.com/jobs/898750e9-c1a3-473f-826c-d87207164928/images/0969f7cea74048859883596e3126e9883d5c1cca5f09967b7a81466e76caa123.png"
+                    alt="Husky Tote Bag"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-3">
+                  <Badge className="bg-indigo-100 text-indigo-700 text-xs mb-2">👜 Tote Bag</Badge>
+                  <h5 className="font-semibold text-sm">Husky "Dog Mom" Bag</h5>
+                </div>
+              </Card>
+
+              {/* Shih Tzu Birthday Cake */}
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="aspect-square bg-gray-100">
+                  <img 
+                    src="https://static.prod-images.emergentagent.com/jobs/898750e9-c1a3-473f-826c-d87207164928/images/4b425e629050d4582426787426b19bf7e6b234fd88bee7e1bc3d751f2461ad74.png"
+                    alt="Shih Tzu Birthday Cake"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-3">
+                  <Badge className="bg-rose-100 text-rose-700 text-xs mb-2">🎂 Birthday Cake</Badge>
+                  <h5 className="font-semibold text-sm">Shih Tzu "Luna" Cake</h5>
+                </div>
+              </Card>
+            </div>
+
+            <div className="mt-6 p-4 bg-purple-50 rounded-lg">
+              <p className="text-sm text-purple-700">
+                <strong>✨ How it works:</strong> When a customer is logged in and their pet's breed matches a product, 
+                these mockups automatically show on product cards - giving them a preview of their personalized product.
+              </p>
             </div>
           </Card>
 
