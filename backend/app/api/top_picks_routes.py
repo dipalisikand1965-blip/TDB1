@@ -30,6 +30,12 @@ def set_top_picks_db(database: AsyncIOMotorDatabase):
     logger.info("Top Picks routes initialized with database")
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# BREED EXCLUSION PATTERN - Filter out breed-specific products for OTHER breeds
+# Products like "Golden Retriever · Birthday Cake" should only show for Golden Retrievers
+# ═══════════════════════════════════════════════════════════════════════════════
+BREED_EXCLUSION_PATTERN = r"^(Labrador|Golden Retriever|German Shepherd|Beagle|Bulldog|Poodle|Rottweiler|Yorkshire|Boxer|Dachshund|Siberian Husky|Husky|Doberman|Great Dane|Shih Tzu|Pug|Chihuahua|Pomeranian|Maltese|Cocker Spaniel|Border Collie|Cavalier|French Bulldog|Indie|Indian Pariah|American Bully|Chow Chow|Dalmatian|Jack Russell|Lhasa Apso|Italian Greyhound|Scottish Terrier|St Bernard|Schnoodle|Irish Setter)\s*[·:]"
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # INTENT TO PILLAR/CATEGORY MAPPING - Mira knows what the pet needs
 # Maps LEARN intents to PICKS pillars and product categories
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1645,8 +1651,13 @@ async def get_pillar_picks(
         # Priority: exact pillar match > primary_pillar > pillars array
         # Note: in_stock may be None for some products, so we check for != False
         
+        # Normalize pet breed for matching
+        pet_breed_normalized = (pet_breed or "").lower().strip()
+        pet_breed_display = pet_breed.replace("_", " ").title() if pet_breed else ""
+        
         # First, get products with exact pillar match (highest priority)
         # IMPORTANT: Exclude cat products - we are THE DOGGY COMPANY!
+        # Also exclude breed-specific products that don't match this pet's breed
         exact_query = {
             "pillar": pillar,
             "in_stock": {"$ne": False},
@@ -1655,6 +1666,20 @@ async def get_pillar_picks(
             "name": {"$not": {"$regex": "cat|kitten|feline|meow|purr|kitty", "$options": "i"}},
             "pet_type": {"$nin": ["cat", "cats", "feline"]},
         }
+        
+        # Add breed exclusion unless the product matches pet's breed
+        if pet_breed_normalized:
+            # Include products that either:
+            # 1. Don't have breed-specific names (not matching BREED_EXCLUSION_PATTERN)
+            # 2. OR match this pet's breed
+            exact_query["$or"] = [
+                {"name": {"$not": {"$regex": BREED_EXCLUSION_PATTERN, "$options": "i"}}},
+                {"name": {"$regex": f"^{pet_breed_display}", "$options": "i"}}
+            ]
+        else:
+            # No pet breed known, exclude all breed-specific products
+            exact_query["name"]["$not"] = {"$regex": BREED_EXCLUSION_PATTERN, "$options": "i"}
+        
         cursor = db.unified_products.find(exact_query, {"_id": 0}).limit(20)
         products = await cursor.to_list(length=20)
     
@@ -1664,7 +1689,9 @@ async def get_pillar_picks(
             "primary_pillar": pillar,
             "pillar": {"$ne": pillar},  # Avoid duplicates
             "in_stock": {"$ne": False},
-            "visibility.status": {"$in": ["active", None]}
+            "visibility.status": {"$in": ["active", None]},
+            # Exclude breed-specific products for other breeds
+            "name": {"$not": {"$regex": BREED_EXCLUSION_PATTERN, "$options": "i"}}
         }
         additional = await db.unified_products.find(primary_query, {"_id": 0}).limit(10).to_list(length=10)
         products.extend(additional)
@@ -1676,7 +1703,9 @@ async def get_pillar_picks(
             "pillar": {"$ne": pillar},
             "primary_pillar": {"$ne": pillar},
             "in_stock": {"$ne": False},
-            "visibility.status": {"$in": ["active", None]}
+            "visibility.status": {"$in": ["active", None]},
+            # Exclude breed-specific products for other breeds
+            "name": {"$not": {"$regex": BREED_EXCLUSION_PATTERN, "$options": "i"}}
         }
         more = await db.unified_products.find(array_query, {"_id": 0}).limit(5).to_list(length=5)
         products.extend(more)
