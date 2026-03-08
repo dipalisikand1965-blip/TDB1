@@ -74,7 +74,13 @@ const SoulMadeProductModal = ({
     if (product) {
       setCustomName(defaultPetName);
       setSelectedSize(null);
-      setSelectedColor(null);
+      // Default to 'White' for mugs as the illustrations look best on white
+      const productType = product.product_type || '';
+      if (COLOR_OPTIONS[productType]) {
+        setSelectedColor('White'); // Default to white for mugs
+      } else {
+        setSelectedColor(null);
+      }
       setQuantity(1);
     }
   }, [product, defaultPetName]);
@@ -298,13 +304,13 @@ const SoulMadeProductModal = ({
                   Select Color *
                 </label>
                 <div className="flex gap-2 flex-wrap">
-                  {hasColors[productType]?.map((color) => (
+                  {hasColors.map((color) => (
                     <button
                       key={color}
                       onClick={() => setSelectedColor(color)}
                       className={`px-4 py-2 rounded-full border-2 transition-all ${
                         selectedColor === color
-                          ? 'border-purple-600 bg-purple-50'
+                          ? 'border-purple-600 bg-purple-50 text-purple-700 font-medium'
                           : 'border-gray-200 hover:border-purple-300'
                       }`}
                     >
