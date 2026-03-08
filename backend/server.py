@@ -19060,9 +19060,8 @@ async def force_full_sync_endpoint(password: str = Query(...)):
         # Step 5: Seed Stay products
         logger.info("[FORCE SYNC 5/8] Seeding Stay products...")
         try:
-            from stay_seeder import seed_stay_products, seed_stay_bundles
-            await seed_stay_products()
-            await seed_stay_bundles()
+            from stay_seeder import seed_stay_properties
+            await seed_stay_properties(db, force_reseed=True)
             results["steps_completed"].append("Seeded Stay products")
         except Exception as e:
             results["errors"].append(f"Stay seed: {str(e)}")
