@@ -13,6 +13,9 @@ from .welcome import router as welcome_router
 from .delivery import router as delivery_router
 from .instagram import router as instagram_router
 
+# Import cron trigger functions (for scheduler use)
+from .cron_triggers import check_birthday_wrappeds, generate_annual_wrappeds
+
 # Create combined router
 router = APIRouter()
 
@@ -26,5 +29,7 @@ __all__ = [
     "share_router",
     "welcome_router",
     "delivery_router",
-    "instagram_router"
+    "instagram_router",
+    "check_birthday_wrappeds",
+    "generate_annual_wrappeds"
 ]
