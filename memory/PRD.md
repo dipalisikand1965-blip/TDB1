@@ -1,7 +1,29 @@
 # The Doggy Company - PRD
 
-**Last Updated:** December 2025  
+**Last Updated:** March 8, 2026  
 **Status:** Production Ready + Soul-Level Personalization Phase
+
+---
+
+## SESSION 4 ACCOMPLISHMENTS (March 8, 2026)
+
+### Completed:
+1. ✅ **Product Separation Fix** - Soul Made products properly separated from Shopify products
+2. ✅ **Pet Wrapped Soul Score Fix** - Now uses same weighted scoring as dashboard (was showing old 69%, now shows correct 89%)
+3. ✅ **Pet Avatar Fix** - Custom uploaded pet images display correctly
+4. ✅ **Breed Filtering** - Mira picks show correct breed products only
+5. ✅ **Pet Switching Fix** - Soul Made section updates when switching pets (key prop added)
+6. ✅ **Mobile Dashboard Verified** - Pet selector and soul journey cards display correctly
+7. ✅ **Mockup Generation** - Resumed and running (48.6%+ complete, 254+/523)
+
+### Key Files Modified:
+- `/app/backend/routes/wrapped/generate.py` - Uses weighted scoring for Pet Wrapped
+- `/app/backend/routes/wrapped/welcome.py` - Uses weighted scoring for Welcome Wrapped
+- `/app/memory/AGENT_START_HERE.md` - Updated with session 4 fixes
+
+### Still In Progress:
+- **Mockup Generation:** 48.6%+ complete, running in background
+- **Maltese mockups:** Lola's breed still needs mockups (fallback UI working)
 
 ---
 
