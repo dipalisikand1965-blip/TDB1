@@ -597,9 +597,44 @@ const CelebratePage = () => {
         </div>
       )}
 
-      {/* Personalized Picks for User's Pet */}
-      <div className="max-w-6xl mx-auto px-4 pt-6 section-fade-in stagger-1">
-        <PersonalizedPicks pillar="celebrate" maxProducts={6} />
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 1: SOUL MADE - AI-Generated Personalized Products */}
+      {/* COMPLETELY SEPARATE from Shopify products */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {activePet && token && (
+        <div className="max-w-6xl mx-auto px-4 py-8 section-fade-in" data-testid="soul-made-section">
+          <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-white rounded-3xl p-6 sm:p-8 border border-purple-100">
+            <SoulMadeCollection
+              pillar="celebrate"
+              maxItems={12}
+              showTitle={true}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 2: THEDOGGYBAKERY - Shopify Products (Cakes, Treats) */}
+      {/* Real products from thedoggybakery.com - NOT customized mockups */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 py-8 section-fade-in" data-testid="shopify-products-section">
+        {/* TheDoggyBakery Header */}
+        <div className="text-center mb-8">
+          <Badge className="mb-3 bg-amber-100 text-amber-800 px-4 py-1">
+            🍰 Fresh from TheDoggyBakery
+          </Badge>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+            Artisan Cakes & Treats
+          </h2>
+          <p className="text-gray-600 max-w-xl mx-auto">
+            Freshly baked, dog-safe treats from our bakery. Pan India delivery available.
+          </p>
+        </div>
+
+        {/* Personalized Picks for User's Pet - Shows filtered Shopify products */}
+        <div className="mb-8">
+          <PersonalizedPicks pillar="celebrate" maxProducts={6} />
+        </div>
         
         {/* NEW: Curated Concierge Section - Dynamic picks from Intelligence Layer */}
         {activePet && token && (
@@ -679,20 +714,6 @@ const CelebratePage = () => {
                 pet={activePet}
                 token={token}
                 userEmail={user?.email}
-              />
-            </div>
-            
-            {/* ═══════════════════════════════════════════════════════════════════════ */}
-            {/* SOUL MADE COLLECTION - AI-Generated Breed-Specific Mockups */}
-            {/* Shows ONLY products matching logged-in user's pet breed */}
-            {/* Excludes memorial products from Celebrate (those go to Farewell) */}
-            {/* SEPARATE from Shopify products - pure Soul Made experience */}
-            {/* ═══════════════════════════════════════════════════════════════════════ */}
-            <div className="mt-8" data-testid="soul-made-collection-wrapper">
-              <SoulMadeCollection
-                pillar="celebrate"
-                maxItems={12}
-                showTitle={true}
               />
             </div>
             
