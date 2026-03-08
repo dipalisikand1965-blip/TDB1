@@ -252,7 +252,7 @@ const SoulMadeProductCard = ({ product, petName, archetype, onViewDetails }) => 
         <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-md">
           <span className="text-xs font-medium text-purple-700 flex items-center gap-1">
             <Sparkles className="w-3 h-3" />
-            Add {petName}'s name
+            {petName}
           </span>
         </div>
       </div>
