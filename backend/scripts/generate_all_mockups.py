@@ -255,7 +255,11 @@ async def generate_mockup_image(prompt: str, slug: str) -> Optional[str]:
 # ═══════════════════════════════════════════════════════════════════════════
 
 async def seed_all_breed_products(db) -> int:
-    """Seed all 396 breed products into database."""
+    """Seed all 396 breed products into database.
+    
+    CRITICAL: Uses $setOnInsert for mockup_url to NEVER overwrite existing mockups!
+    This was causing $500 worth of mockups to be wiped on every deployment.
+    """
     
     products_created = 0
     
@@ -267,8 +271,8 @@ async def seed_all_breed_products(db) -> int:
             # Build the prompt with breed name
             prompt = product_type["prompt"].format(breed_full=breed["name"])
             
-            product = {
-                "id": product_id,
+            # Fields that can be safely updated every time
+            updatable_fields = {
                 "name": product_name,
                 "title": product_name,
                 "category": f"breed-{product_type['type']}s",
@@ -279,22 +283,31 @@ async def seed_all_breed_products(db) -> int:
                 "product_type": product_type["type"],
                 "soul_tier": "soul_made",
                 "mockup_prompt": prompt,
-                "mockup_url": None,
                 "description": f"Beautiful {product_name} featuring soulful watercolor illustration. Personalize with your pet's name.",
                 "tags": ["breed-specific", breed["key"], product_type["type"], "personalized", "soul-made"],
                 "in_stock": True,
-                "updated_at": datetime.utcnow().isoformat(),
+                "updated_at": datetime.utcnow().isoformat()
+            }
+            
+            # Fields that should ONLY be set on first insert (never overwrite)
+            insert_only_fields = {
+                "id": product_id,
+                "mockup_url": None,  # Only set to None if product doesn't exist
                 "created_at": datetime.utcnow().isoformat()
             }
             
+            # Use $set for updates, $setOnInsert for fields we don't want to overwrite
             await db.breed_products.update_one(
                 {"id": product_id},
-                {"$set": product},
+                {
+                    "$set": updatable_fields,
+                    "$setOnInsert": insert_only_fields
+                },
                 upsert=True
             )
             products_created += 1
     
-    logger.info(f"Seeded {products_created} breed products")
+    logger.info(f"Seeded {products_created} breed products (mockup_url preserved)")
     return products_created
 
 

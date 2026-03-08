@@ -115,6 +115,18 @@ sudo supervisorctl restart backend frontend
 2. **BREED_EXCLUSION_PATTERN** in `/app/backend/app/api/top_picks_routes.py` - Filters Mira picks by pet's breed
 3. **Pet avatar check** in `/app/frontend/src/utils/petAvatar.js` - Checks `image` field for uploaded photos
 4. **Key prop** on SoulMadeCollection in CelebratePage - Forces remount on pet switch
+5. **$setOnInsert for mockup_url** in `/app/backend/scripts/generate_all_mockups.py` - CRITICAL: Prevents mockups from being wiped on deployment
+
+---
+
+## ⚠️ CRITICAL BUG FIXED (Session 4)
+
+**The $500 mockup wipe bug has been fixed!**
+
+The `seed_all_breed_products` function was using `$set` which overwrote `mockup_url` with `None` on every deployment. Now it uses `$setOnInsert` for `mockup_url` so existing mockups are NEVER overwritten.
+
+**File:** `/app/backend/scripts/generate_all_mockups.py`
+**Line:** ~257-310
 
 ---
 
