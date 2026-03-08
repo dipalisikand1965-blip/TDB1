@@ -348,7 +348,17 @@ const SoulProductsManager = () => {
             Manage Soul-Level Personalization tiers and archetypes
           </p>
         </div>
-        <Button onClick={fetchProducts} variant="outline" size="sm">
+        <Button 
+          onClick={() => {
+            fetchProducts();
+            if (activeSubTab === 'mockups') {
+              fetchMockupStats();
+              fetchBreedProducts(true);
+            }
+          }} 
+          variant="outline" 
+          size="sm"
+        >
           <RefreshCw className="w-4 h-4 mr-2" />
           Refresh
         </Button>
