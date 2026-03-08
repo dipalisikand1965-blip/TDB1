@@ -247,6 +247,9 @@ from app.api.celebration_wall_routes import router as celebration_wall_router
 # Cake Reveal Notification Routes (WhatsApp, Email, Inbox notifications)
 from app.api.cake_reveal_routes import router as cake_reveal_router
 
+# Breed Illustrations Routes (Soulful watercolor breed portraits)
+from app.api.breed_illustrations_routes import router as breed_illustrations_router
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -19235,7 +19238,8 @@ logger.info("🎁 Pet Wrapped routes initialized (Launch: May 20, 2026)")
 # ═══════════════════════════════════════════════════════════════════════════════
 app.include_router(celebration_wall_router)  # Celebration Wall at /api/celebration-wall/*
 app.include_router(cake_reveal_router)  # Cake Reveal at /api/cake-reveal/*
-logger.info("🎂 Celebration Wall & Cake Reveal routes initialized")
+app.include_router(breed_illustrations_router)  # Breed Illustrations at /api/breed-illustrations/*
+logger.info("🎂 Celebration Wall, Cake Reveal & Breed Illustrations routes initialized")
 
 @app.on_event("startup")
 async def startup_load_admin_credentials():
