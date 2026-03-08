@@ -514,7 +514,7 @@ const Admin = () => {
       }
       
       // Step 10: FORCE FULL SYNC - Clean images, update restaurants, sync everything
-      toast({ title: '🔄 Step 10/10: Force Full Sync...', description: 'Cleaning images, updating restaurants, syncing all data' });
+      toast({ title: '🔄 Step 10/11: Force Full Sync...', description: 'Cleaning images, updating restaurants, syncing all pillar data' });
       
       try {
         const forceRes = await fetch(`${API_URL}/api/admin/force-full-sync?password=lola4304`, {
@@ -524,9 +524,34 @@ const Admin = () => {
         if (forceRes.ok) {
           const data = await forceRes.json();
           console.log('[Master Sync] Force Full Sync:', data);
+          toast({ 
+            title: '✅ Force Sync Complete', 
+            description: `Steps: ${data.steps_completed?.length || 0} | Errors: ${data.errors?.length || 0}`,
+            duration: 5000
+          });
         }
       } catch (e) {
         console.log('[Master Sync] Force sync error:', e);
+      }
+      
+      // Step 11: Seed all pillar-specific data
+      toast({ title: '📦 Step 11/11: Seeding Pillar Data...', description: 'Fit, Care, Stay, Travel, Enjoy products' });
+      
+      try {
+        // Seed Fit
+        await fetch(`${API_URL}/api/fit/admin/seed`, { method: 'POST', headers: getAuthHeaders() });
+        await fetch(`${API_URL}/api/fit/admin/seed-extra`, { method: 'POST', headers: getAuthHeaders() });
+        // Seed Care
+        await fetch(`${API_URL}/api/care/admin/seed-products`, { method: 'POST', headers: getAuthHeaders() });
+        await fetch(`${API_URL}/api/care/admin/seed-comprehensive-care`, { method: 'POST', headers: getAuthHeaders() });
+        // Seed Travel
+        await fetch(`${API_URL}/api/travel/admin/seed-products`, { method: 'POST', headers: getAuthHeaders() });
+        // Seed Enjoy
+        await fetch(`${API_URL}/api/enjoy/admin/seed-products`, { method: 'POST', headers: getAuthHeaders() });
+        await fetch(`${API_URL}/api/enjoy/admin/seed`, { method: 'POST', headers: getAuthHeaders() });
+        console.log('[Master Sync] All pillars seeded');
+      } catch (e) {
+        console.log('[Master Sync] Pillar seed error:', e);
       }
       
       // Final toast
