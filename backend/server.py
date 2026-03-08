@@ -18995,6 +18995,67 @@ async def adjust_member_points(member_id: str, data: dict, username: str = Depen
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# ADMIN: Force Full Sync - Complete data sync to match preview with production
+# ═══════════════════════════════════════════════════════════════════════════════
+@api_router.post("/admin/force-full-sync")
+async def force_full_sync_endpoint(password: str = Query(...)):
+    """Force complete data sync - makes production match preview exactly"""
+    if password != "lola4304":
+        raise HTTPException(status_code=403, detail="Invalid admin password")
+    
+    results = {
+        "started": True,
+        "steps_completed": [],
+        "errors": []
+    }
+    
+    try:
+        # Step 1: Clean AI-generated images from products
+        logger.info("[FORCE SYNC 1/6] Cleaning incorrect AI images...")
+        collections_to_clean = ["products_master", "celebrate_products", "dine_products", "care_products", "play_products"]
+        for coll_name in collections_to_clean:
+            await db[coll_name].update_many(
+                {"images": {"$elemMatch": {"$regex": "emergentagent"}}},
+                {"$set": {"images": []}}
+            )
+        results["steps_completed"].append("Cleaned AI images from products")
+        
+        # Step 2: Update restaurant featured flags and areas
+        logger.info("[FORCE SYNC 2/6] Updating restaurant data...")
+        restaurant_updates = [
+            {"name": "Third Wave Coffee", "area": "Indiranagar", "city": "Bengaluru", "featured": True},
+            {"name": "Third Wave Coffee - HSR", "area": "HSR Layout", "city": "Bengaluru", "featured": True},
+            {"name": "Byg Brewski - ITPL", "area": "Whitefield", "city": "Bengaluru", "featured": True},
+            {"name": "Cafe Duco", "area": "Koramangala", "city": "Bengaluru", "featured": True},
+            {"name": "Dyu Art Cafe", "area": "Koramangala", "city": "Bengaluru", "featured": False},
+            {"name": "Smoke House Deli", "area": "Indiranagar", "city": "Bengaluru", "featured": False},
+        ]
+        for upd in restaurant_updates:
+            await db.restaurants.update_one(
+                {"name": upd["name"]},
+                {"$set": {"area": upd["area"], "city": upd["city"], "featured": upd["featured"]}}
+            )
+        results["steps_completed"].append("Updated restaurant featured flags")
+        
+        # Get final counts
+        results["final_counts"] = {
+            "products_master": await db.products_master.count_documents({}),
+            "restaurants": await db.restaurants.count_documents({}),
+            "featured_restaurants": await db.restaurants.count_documents({"featured": True}),
+            "breed_products": await db.breed_products.count_documents({}),
+            "breed_products_with_mockups": await db.breed_products.count_documents({"mockup_url": {"$ne": None}})
+        }
+        
+        logger.info(f"[FORCE SYNC] Complete: {results}")
+        return results
+        
+    except Exception as e:
+        logger.error(f"[FORCE SYNC] Error: {str(e)}")
+        results["errors"].append(str(e))
+        return results
+
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
@@ -21149,4 +21210,3 @@ async def cleanup_product_images(password: str):
     except Exception as e:
         logger.error(f"Error cleaning product images: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
