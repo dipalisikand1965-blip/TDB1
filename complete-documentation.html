@@ -553,17 +553,40 @@
         <div class="section" id="changelog">
             <h2>Recent Changelog</h2>
             
-            <h3>March 8, 2026 - Session 4 - Bug Fixes & Personalization</h3>
+            <!-- CRITICAL WARNING BOX -->
+            <div class="warning-box" style="background: #fee2e2; border-left-color: #dc2626; margin-bottom: 30px;">
+                <h3 style="color: #dc2626; margin-top: 0;">🚨 CRITICAL: DO NOT BREAK THESE!</h3>
+                <p><strong>The following code patterns MUST NOT be changed or the app will break:</strong></p>
+                <ol style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>$setOnInsert for mockup_url</strong> in <code>/app/backend/scripts/generate_all_mockups.py</code> - Prevents $1000+ mockups from being wiped on deployment</li>
+                    <li><strong>BREED_EXCLUSION_PATTERN</strong> in <code>/app/backend/server.py</code> (~line 7085) - Keeps Soul Made separate from Shopify</li>
+                    <li><strong>BREED_EXCLUSION_PATTERN</strong> in <code>/app/backend/app/api/top_picks_routes.py</code> - Filters Mira picks by pet's breed</li>
+                    <li><strong>Key prop on SoulMadeCollection</strong> in <code>CelebratePage.jsx</code> - Forces remount on pet switch</li>
+                    <li><strong>Pet avatar check</strong> in <code>/app/frontend/src/utils/petAvatar.js</code> - Checks <code>image</code> field for uploaded photos</li>
+                </ol>
+                <p style="margin-top: 15px; font-weight: bold; color: #dc2626;">⚠️ A previous bug in seed_all_breed_products used $set which wiped all mockup_url values on every deployment. This cost $1000+ in regeneration. The fix uses $setOnInsert to preserve existing mockups. NEVER CHANGE THIS!</p>
+            </div>
+
+            <h3>March 8, 2026 - Session 4 - MAJOR BUG FIX & Soul Made Complete</h3>
+            <div class="success-box">
+                <p><strong>✅ Soul Made Products Working on Production!</strong></p>
+                <ul>
+                    <li>Made for Mojo (Indie) - All 11 products with mockups</li>
+                    <li>Made for Mystique (Shih Tzu) - All 11 products with mockups</li>
+                    <li>Made for Bruno (Labrador) - All 11 products with mockups</li>
+                    <li>Made for Lola (Maltese) - All 11 products with mockups</li>
+                    <li>Made for Luna/Buddy (Golden Retriever) - All 11 products with mockups</li>
+                </ul>
+            </div>
             <ul>
-                <li><strong>Product Separation Fix:</strong> Soul Made products now properly separated from Shopify products</li>
-                <li><strong>Pet Wrapped Score Fix:</strong> Now uses same weighted scoring as dashboard (89% shows correctly)</li>
-                <li><strong>Pet Wrapped Conversation Count:</strong> Fixed to count from live_conversation_threads (156 for Mojo)</li>
-                <li><strong>Pet Avatar Fix:</strong> Custom uploaded pet images now display correctly</li>
-                <li><strong>Breed Filtering:</strong> Mira picks show correct breed products only</li>
-                <li><strong>Pet Switching Fix:</strong> Soul Made section updates when switching pets (key prop added)</li>
-                <li><strong>Mobile Dashboard Verified:</strong> Pet selector and soul journey cards display correctly</li>
-                <li><strong>Mockup Generation:</strong> 48.6% complete (254/523 breed product mockups)</li>
-                <li><strong>Purple Fallback Image:</strong> Products without images now show purple gradient with heart icon</li>
+                <li><strong style="color: #dc2626;">🔴 CRITICAL BUG FIX:</strong> <code>seed_all_breed_products</code> now uses <code>$setOnInsert</code> for mockup_url - prevents mockups from being wiped on deployment</li>
+                <li><strong>"Personalize & Add" Button:</strong> Added to all Soul Made product cards</li>
+                <li><strong>Mug Color Selection:</strong> White/Black options with White as default</li>
+                <li><strong>Product Separation Fix:</strong> Soul Made products properly separated from Shopify products</li>
+                <li><strong>Pet Wrapped Score Fix:</strong> Uses same weighted scoring as dashboard (89% for Mojo)</li>
+                <li><strong>Pet Wrapped Conversation Count:</strong> Counts from live_conversation_threads (156 for Mojo)</li>
+                <li><strong>PersonalizedPicks Fix:</strong> Key prop forces remount when pet changes</li>
+                <li><strong>Pet Avatar Fix:</strong> Custom uploaded pet images display correctly</li>
             </ul>
 
             <h3 class="warning-box">Temporarily Disabled Features (Ready in Backend)</h3>
