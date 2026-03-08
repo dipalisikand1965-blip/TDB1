@@ -1277,10 +1277,11 @@ async def seed_extra_fit_products():
         existing = await db.fit_products.find_one({"name": product["name"]})
         if not existing:
             await db.fit_products.insert_one(product)
-            # Also add to unified_products
+            # Also add to unified_products - exclude _id
+            product_for_master = {k: v for k, v in product.items() if k != "_id"}
             await db.products_master.update_one(
                 {"name": product["name"]},
-                {"$set": product},
+                {"$set": product_for_master},
                 upsert=True
             )
             inserted += 1

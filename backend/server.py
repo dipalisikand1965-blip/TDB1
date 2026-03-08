@@ -19012,8 +19012,8 @@ async def force_full_sync_endpoint(password: str = Query(...)):
     
     try:
         # Step 1: Clean AI-generated images from products
-        logger.info("[FORCE SYNC 1/6] Cleaning incorrect AI images...")
-        collections_to_clean = ["products_master", "celebrate_products", "dine_products", "care_products", "play_products"]
+        logger.info("[FORCE SYNC 1/8] Cleaning incorrect AI images...")
+        collections_to_clean = ["products_master", "celebrate_products", "dine_products", "care_products", "play_products", "fit_products"]
         for coll_name in collections_to_clean:
             await db[coll_name].update_many(
                 {"images": {"$elemMatch": {"$regex": "emergentagent"}}},
@@ -19022,7 +19022,7 @@ async def force_full_sync_endpoint(password: str = Query(...)):
         results["steps_completed"].append("Cleaned AI images from products")
         
         # Step 2: Update restaurant featured flags and areas
-        logger.info("[FORCE SYNC 2/6] Updating restaurant data...")
+        logger.info("[FORCE SYNC 2/8] Updating restaurant data...")
         restaurant_updates = [
             {"name": "Third Wave Coffee", "area": "Indiranagar", "city": "Bengaluru", "featured": True},
             {"name": "Third Wave Coffee - HSR", "area": "HSR Layout", "city": "Bengaluru", "featured": True},
@@ -19038,9 +19038,71 @@ async def force_full_sync_endpoint(password: str = Query(...)):
             )
         results["steps_completed"].append("Updated restaurant featured flags")
         
+        # Step 3: Seed Fit products
+        logger.info("[FORCE SYNC 3/8] Seeding Fit products...")
+        try:
+            from fit_routes import seed_fit_products, seed_extra_fit_products
+            await seed_fit_products()
+            await seed_extra_fit_products()
+            results["steps_completed"].append("Seeded Fit products")
+        except Exception as e:
+            results["errors"].append(f"Fit seed: {str(e)}")
+        
+        # Step 4: Seed Care products
+        logger.info("[FORCE SYNC 4/8] Seeding Care products...")
+        try:
+            from care_routes import seed_care_products
+            await seed_care_products()
+            results["steps_completed"].append("Seeded Care products")
+        except Exception as e:
+            results["errors"].append(f"Care seed: {str(e)}")
+        
+        # Step 5: Seed Stay products
+        logger.info("[FORCE SYNC 5/8] Seeding Stay products...")
+        try:
+            from stay_seeder import seed_stay_products, seed_stay_bundles
+            await seed_stay_products()
+            await seed_stay_bundles()
+            results["steps_completed"].append("Seeded Stay products")
+        except Exception as e:
+            results["errors"].append(f"Stay seed: {str(e)}")
+        
+        # Step 6: Seed Travel products
+        logger.info("[FORCE SYNC 6/8] Seeding Travel products...")
+        try:
+            from travel_routes import seed_travel_products
+            await seed_travel_products()
+            results["steps_completed"].append("Seeded Travel products")
+        except Exception as e:
+            results["errors"].append(f"Travel seed: {str(e)}")
+        
+        # Step 7: Seed Enjoy products
+        logger.info("[FORCE SYNC 7/8] Seeding Enjoy products...")
+        try:
+            from enjoy_routes import seed_enjoy_products
+            await seed_enjoy_products()
+            results["steps_completed"].append("Seeded Enjoy products")
+        except Exception as e:
+            results["errors"].append(f"Enjoy seed: {str(e)}")
+        
+        # Step 8: Seed breed products for Soul Made
+        logger.info("[FORCE SYNC 8/8] Seeding breed products...")
+        try:
+            from scripts.generate_all_mockups import seed_all_breed_products
+            existing = await db.breed_products.count_documents({})
+            if existing < 500:
+                count = await seed_all_breed_products(db)
+                results["steps_completed"].append(f"Seeded {count} breed products")
+            else:
+                results["steps_completed"].append(f"Breed products exist: {existing}")
+        except Exception as e:
+            results["errors"].append(f"Breed seed: {str(e)}")
+        
         # Get final counts
         results["final_counts"] = {
             "products_master": await db.products_master.count_documents({}),
+            "fit_products": await db.products_master.count_documents({"pillar": "fit"}),
+            "care_products": await db.products_master.count_documents({"pillar": "care"}),
             "restaurants": await db.restaurants.count_documents({}),
             "featured_restaurants": await db.restaurants.count_documents({"featured": True}),
             "breed_products": await db.breed_products.count_documents({}),
