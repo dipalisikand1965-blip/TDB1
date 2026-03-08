@@ -435,11 +435,13 @@ const SoulMadeCollection = ({
     fetchBreedProducts();
   }, [fetchBreedProducts]);
 
-  // Clear products when pet changes to prevent stale data
+  // Clear products AND error when pet changes to prevent stale data
   useEffect(() => {
-    console.log('[SoulMadeCollection] 🔄 Pet changed, clearing products');
+    console.log('[SoulMadeCollection] 🔄 Pet changed, clearing products and error');
     setProducts([]);
-  }, [currentPet?.id]);
+    setError(null);
+    setLoading(true); // Show loading state immediately
+  }, [currentPet?.id, currentPet?.name]);
 
   // Debug logging - Enhanced for breed tracking
   useEffect(() => {
