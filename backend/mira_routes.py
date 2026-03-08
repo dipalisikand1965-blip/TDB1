@@ -9,7 +9,7 @@ she performs web research and cites sources. Answers clearly separate
 confirmed facts vs variable items.
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Header, Request, Body
+from fastapi import APIRouter, HTTPException, Depends, Header, Request, Body, Query
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
@@ -7715,6 +7715,145 @@ async def create_concierge_arrange_ticket(
     except Exception as e:
         logger.error(f"[CONCIERGE_ARRANGE] Failed to create ticket: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to create service request: {str(e)}")
+
+
+@router.get("/picks/default/{pet_id}")
+async def get_default_picks_for_pet(
+    pet_id: str,
+    limit: int = Query(8, le=20),
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get default personalized picks for a pet (used on page load before conversation).
+    
+    Bible Rule: Picks tab should ALWAYS have 6-10 items.
+    This endpoint provides those default items based on:
+    1. Pet's Soul Profile (preferences, allergies)
+    2. Pet's breed
+    3. Pet's age
+    4. Recent interactions
+    
+    Returns picks in the same format as the chat picks engine.
+    """
+    db = get_db()
+    if db is None:
+        return {"picks": [], "message": "Database unavailable"}
+    
+    try:
+        # Get pet data
+        pet = await db.pets.find_one({"$or": [{"id": pet_id}, {"_id": pet_id}]})
+        if not pet:
+            pet = await db.pets.find_one({"id": {"$regex": pet_id, "$options": "i"}})
+        
+        pet_name = pet.get("name", "your pet") if pet else "your pet"
+        breed = (pet.get("breed") or "").lower() if pet else ""
+        allergies = pet.get("sensitivities", []) if pet else []
+        size = pet.get("size", "medium").lower() if pet else "medium"
+        soul = pet.get("soul", {}) if pet else {}
+        
+        picks = []
+        
+        # Strategy 1: Get admin-curated Mira Picks
+        admin_picks = await db.mira_picks.find({"is_active": True}).sort("priority", -1).limit(4).to_list(4)
+        if admin_picks:
+            product_ids = [p.get("product_id") for p in admin_picks]
+            products = await db.products_master.find({"id": {"$in": product_ids}}).to_list(10)
+            product_map = {p["id"]: p for p in products}
+            
+            for pick in admin_picks:
+                product = product_map.get(pick.get("product_id"))
+                if product:
+                    picks.append({
+                        "id": product.get("id"),
+                        "title": product.get("title") or product.get("name"),
+                        "price": product.get("price"),
+                        "image": product.get("images", [None])[0] if product.get("images") else product.get("image"),
+                        "type": "product",
+                        "reason": pick.get("reason") or f"Curated for {pet_name}",
+                        "source": "admin_picks"
+                    })
+        
+        # Strategy 2: Get breed-specific products
+        if breed and len(picks) < limit:
+            breed_query = {
+                "$or": [
+                    {"tags": {"$regex": breed, "$options": "i"}},
+                    {"title": {"$regex": breed, "$options": "i"}},
+                    {"description": {"$regex": breed, "$options": "i"}}
+                ],
+                "is_active": {"$ne": False}
+            }
+            
+            # Exclude allergens
+            if allergies:
+                breed_query["title"] = {"$not": {"$regex": "|".join(allergies), "$options": "i"}}
+            
+            breed_products = await db.products_master.find(breed_query).limit(3).to_list(3)
+            for p in breed_products:
+                if p.get("id") not in [pick.get("id") for pick in picks]:
+                    picks.append({
+                        "id": p.get("id"),
+                        "title": p.get("title") or p.get("name"),
+                        "price": p.get("price"),
+                        "image": p.get("images", [None])[0] if p.get("images") else p.get("image"),
+                        "type": "product",
+                        "reason": f"Great for {breed.title()}s",
+                        "source": "breed_match"
+                    })
+        
+        # Strategy 3: Get popular treats (everyone loves treats)
+        if len(picks) < limit:
+            treats_query = {
+                "$or": [
+                    {"category": {"$regex": "treat", "$options": "i"}},
+                    {"tags": {"$in": ["treats", "snacks", "training"]}},
+                    {"title": {"$regex": "treat", "$options": "i"}}
+                ],
+                "is_active": {"$ne": False}
+            }
+            
+            treats = await db.products_master.find(treats_query).sort("popularity", -1).limit(3).to_list(3)
+            for p in treats:
+                if p.get("id") not in [pick.get("id") for pick in picks]:
+                    picks.append({
+                        "id": p.get("id"),
+                        "title": p.get("title") or p.get("name"),
+                        "price": p.get("price"),
+                        "image": p.get("images", [None])[0] if p.get("images") else p.get("image"),
+                        "type": "product",
+                        "reason": f"Popular treats for {pet_name}",
+                        "source": "popular_treats"
+                    })
+        
+        # Strategy 4: Get top services in Care pillar
+        if len(picks) < limit:
+            services = await db.services.find({
+                "pillar": {"$in": ["care", "celebrate", "travel"]},
+                "is_active": {"$ne": False}
+            }).limit(2).to_list(2)
+            
+            for s in services:
+                picks.append({
+                    "id": s.get("id") or str(s.get("_id")),
+                    "title": s.get("name") or s.get("title"),
+                    "price": s.get("price") or s.get("starting_price"),
+                    "image": s.get("image") or s.get("images", [None])[0] if s.get("images") else None,
+                    "type": "service",
+                    "pillar": s.get("pillar"),
+                    "reason": f"Recommended service for {pet_name}",
+                    "source": "service_recommendation"
+                })
+        
+        return {
+            "picks": picks[:limit],
+            "pet_name": pet_name,
+            "total": len(picks[:limit]),
+            "message": f"Here are {len(picks[:limit])} picks curated for {pet_name}"
+        }
+        
+    except Exception as e:
+        logger.error(f"[DEFAULT_PICKS] Error: {e}")
+        return {"picks": [], "message": str(e)}
 
 
 @router.post("/tickets/sync")
@@ -23574,10 +23713,18 @@ async def get_today_panel(pet_id: str, authorization: Optional[str] = Header(Non
 async def get_notifications(
     limit: int = 20,
     unread_only: bool = False,
+    category: Optional[str] = None,
+    pet_id: Optional[str] = None,
+    archived: bool = False,
     authorization: Optional[str] = Header(None)
 ):
     """
     Get user notifications - ticket updates, reminders, system alerts
+    
+    Categories:
+    - primary: concierge_reply, approval_needed, payment_needed (action required)
+    - updates: status updates, announcements
+    - all: everything
     """
     db = get_db()
     if db is None:
@@ -23593,26 +23740,79 @@ async def get_notifications(
         
         notifications = []
         
-        # 1. Check notifications collection if it exists
+        # Build query with filters
+        query = {"user_email": user_email}
+        
+        if unread_only:
+            query["read"] = False
+        
+        if archived:
+            query["archived"] = True
+        else:
+            # By default, exclude archived
+            query["$or"] = [{"archived": {"$exists": False}}, {"archived": False}]
+        
+        if pet_id:
+            query["pet_id"] = pet_id
+        
+        # Category filtering
+        if category == "primary":
+            # Action-required notifications
+            query["type"] = {"$in": ["concierge_reply", "approval_needed", "payment_needed", "urgent_alert"]}
+        elif category == "updates":
+            # Status updates, non-urgent
+            query["type"] = {"$nin": ["concierge_reply", "approval_needed", "payment_needed", "urgent_alert"]}
+        
+        # 1. Check member_notifications collection (primary)
+        
+        notifications = []
+        
+        # 1. Check member_notifications collection (primary)
         try:
-            query = {"user_email": user_email}
-            if unread_only:
-                query["read"] = False
-            
-            db_notifications = await db.notifications.find(query).sort("created_at", -1).limit(limit).to_list(length=limit)
+            db_notifications = await db.member_notifications.find(query).sort("created_at", -1).limit(limit).to_list(length=limit)
             
             for notif in db_notifications:
                 notifications.append({
-                    "id": str(notif.get("_id")),
+                    "id": notif.get("id") or str(notif.get("_id")),
                     "type": notif.get("type", "system"),
                     "title": notif.get("title") or notif.get("message", "Notification"),
                     "message": notif.get("message") or notif.get("body", ""),
                     "read": notif.get("read", False),
-                    "created_at": notif.get("created_at"),
+                    "is_read": notif.get("read", False),
+                    "created_at": notif.get("created_at") or notif.get("timestamp"),
                     "link": notif.get("link"),
                     "pet_id": notif.get("pet_id"),
+                    "pet_name": notif.get("pet_name"),
                     "ticket_id": notif.get("ticket_id")
                 })
+        except Exception as e:
+            logger.error(f"Error fetching member_notifications: {e}")
+        
+        # 2. Also check notifications collection (legacy fallback)
+        try:
+            legacy_query = {"user_email": user_email}
+            if unread_only:
+                legacy_query["read"] = False
+            
+            legacy_notifications = await db.notifications.find(legacy_query).sort("created_at", -1).limit(limit).to_list(length=limit)
+            
+            for notif in legacy_notifications:
+                # Avoid duplicates
+                existing_ids = {n.get("id") for n in notifications}
+                notif_id = str(notif.get("_id"))
+                if notif_id not in existing_ids:
+                    notifications.append({
+                        "id": notif_id,
+                        "type": notif.get("type", "system"),
+                        "title": notif.get("title") or notif.get("message", "Notification"),
+                        "message": notif.get("message") or notif.get("body", ""),
+                        "read": notif.get("read", False),
+                        "is_read": notif.get("read", False),
+                        "created_at": notif.get("created_at"),
+                        "link": notif.get("link"),
+                        "pet_id": notif.get("pet_id"),
+                        "ticket_id": notif.get("ticket_id")
+                    })
         except Exception:
             pass  # Collection might not exist
         
