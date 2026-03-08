@@ -85,7 +85,7 @@ const MiraPage = () => {
   const recognitionRef = useRef(null);
   
   // Voice output state (TTS)
-  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [voiceEnabled, setVoiceEnabled] = useState(false); // Default OFF - user must opt-in
   const [isSpeaking, setIsSpeaking] = useState(false);
   const audioRef = useRef(null);
   
