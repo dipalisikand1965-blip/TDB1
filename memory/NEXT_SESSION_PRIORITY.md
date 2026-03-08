@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://pet-wrapped.preview.emergentagent.com
+**Preview URL:** https://mockup-engine.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
