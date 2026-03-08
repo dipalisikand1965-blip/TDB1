@@ -9,7 +9,7 @@ A comprehensive pet profile system with:
 - Auto-population from pillar reservations
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, Request
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
@@ -631,6 +631,78 @@ async def get_8_pillars_summary(pet_id: str):
             "note": "Using legacy scoring - pet_soul_config not available"
         }
 
+
+
+@pet_soul_router.post("/answer")
+async def save_soul_answer_simple(request: Request):
+    """
+    Simple endpoint to save a soul question answer.
+    Used by SoulQuestionPrompts in the chat area.
+    
+    Body: { pet_id, question_id, answer }
+    """
+    from bson import ObjectId
+    
+    try:
+        body = await request.json()
+        pet_id = body.get("pet_id")
+        question_id = body.get("question_id")
+        answer = body.get("answer")
+        
+        if not pet_id or not question_id or not answer:
+            raise HTTPException(status_code=400, detail="Missing pet_id, question_id, or answer")
+        
+        # Try to find pet by id field first, then by _id
+        pet = await db.pets.find_one({"id": pet_id})
+        if not pet:
+            pet = await db.pets.find_one({"id": {"$regex": pet_id, "$options": "i"}})
+        if not pet:
+            try:
+                pet = await db.pets.find_one({"_id": ObjectId(pet_id)})
+            except:
+                pass
+        
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet not found")
+        
+        # Use the pet's actual _id for updates
+        pet_filter = {"_id": pet["_id"]} if "_id" in pet else {"id": pet_id}
+        
+        # Update the answer
+        update_data = {
+            f"doggy_soul_answers.{question_id}": answer,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.pets.update_one(pet_filter, {"$set": update_data})
+        
+        # Recalculate scores
+        pet = await db.pets.find_one(pet_filter, {"_id": 0})
+        answers = pet.get("doggy_soul_answers", {})
+        folder_scores = {fk: calculate_folder_score(answers, fk) for fk in FOLDER_KEYS}
+        overall_score = calculate_overall_score(answers)
+        
+        # Update scores
+        await db.pets.update_one(pet_filter, {"$set": {
+            "overall_score": overall_score,
+            "folder_scores": folder_scores
+        }})
+        
+        return {
+            "success": True,
+            "message": f"Answer saved for {pet.get('name', 'pet')}",
+            "scores": {
+                "overall": overall_score,
+                "folders": folder_scores
+            },
+            "paw_points_earned": 10  # Gamification reward
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[SOUL_ANSWER] Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @pet_soul_router.post("/profile/{pet_id}/answer")
