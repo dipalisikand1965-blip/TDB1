@@ -19,6 +19,8 @@ import { getPetPhotoUrl } from '../utils/petAvatar';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { ProductDetailModal } from './ProductCard';
+import ProductMockupGenerator from './ProductMockupGenerator';
+import { getBreedIllustrationByName } from '../utils/breedIllustrations';
 
 // Category icon mapping for beautiful icon cards
 const CATEGORY_ICONS = {
@@ -441,17 +443,27 @@ const PersonalizedPicks = ({
                     <div className="relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100">
                       {/* Show real image for Shopify products, icon for PICKS */}
                       {hasRealImage && !isBreedPick ? (
-                        // Real Shopify product with image
+                        // Real Shopify product with image - use mockup generator for soul_made
                         <div className="aspect-square bg-gray-100">
-                          <img 
-                            src={productImage} 
-                            alt={product.title || product.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
-                            }}
-                          />
+                          {product.soul_tier === 'soul_made' && selectedPet?.name ? (
+                            <ProductMockupGenerator
+                              productImage={productImage}
+                              productName={product.title || product.name}
+                              petName={selectedPet.name}
+                              breedIllustration={selectedPet?.breed ? getBreedIllustrationByName(selectedPet.breed) : null}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                          ) : (
+                            <img 
+                              src={productImage} 
+                              alt={product.title || product.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
+                              }}
+                            />
+                          )}
                           <Badge className={`absolute top-2 right-2 ${config.accentBg} text-white text-[10px]`}>
                             For {selectedPet?.name}
                           </Badge>

@@ -1036,7 +1036,7 @@ const CelebratePage = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {featuredProducts.map((product) => (
               <div key={product._id || product.id} className="haptic-card">
-                <ProductCard product={product} />
+                <ProductCard product={product} pillar="celebrate" selectedPet={activePet} />
               </div>
             ))}
           </div>
