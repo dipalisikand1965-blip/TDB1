@@ -7,7 +7,25 @@ New Visitor → Awareness → Signup → Add Pet → Browse → Purchase → Ret
 
 ---
 
-## ✅ RESOLVED GAPS (March 7-8, 2026)
+## ✅ RESOLVED GAPS (March 8, 2026)
+
+### Gap: Personality Traits Same for All Pets - ✅ FIXED
+**Fix Applied**: Updated WelcomeHero.jsx and MiraDemoBackupPage.jsx
+- Now dynamically generates traits from `soul.personality_tag`, `doggy_soul_answers.general_nature`, `soul.love_language`, `doggy_soul_answers.describe_3_words`, and `soul.energy_level`
+- Falls back to "Unique soul" only if no data available
+- No more hardcoded "Glamorous soul, Elegant paws, Devoted friend"
+
+### Gap: Soul Knowledge Ticker Not Visible - ✅ FIXED
+**Fix Applied**: Added `<SoulKnowledgeTicker>` component to MiraDemoPage.jsx
+- Shows pet's soul knowledge at top of chat area
+- Displays personality, favorites, allergies, traits
+- Clickable to open full MOJO profile modal
+- Links to Soul Builder for incomplete profiles
+
+### Gap: Voice Auto-Plays Without Consent - ✅ ALREADY FIXED
+**Status**: Voice defaults to OFF in useVoice.js and useMiraShell.js
+- User must explicitly enable voice
+- Preference persists in localStorage
 
 ### Gap 1: "Add Your Pet" Button - ✅ FIXED
 **Fix Applied**: Created `/add-pet` page (AddPetPage.jsx)
