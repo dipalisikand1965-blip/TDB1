@@ -1,29 +1,77 @@
 # The Doggy Company - PRD
 
-**Last Updated:** March 8, 2026  
-**Status:** Production Ready + Soul-Level Personalization Phase
+**Last Updated:** March 8, 2026 18:45 IST  
+**Status:** Production Ready - Soul Made Products LIVE!
+
+---
+
+## 🚨 CRITICAL WARNING FOR ALL AGENTS 🚨
+
+### THE $1000 BUG - NEVER REPEAT THIS
+
+A bug in `seed_all_breed_products` used `$set` which **WIPED ALL MOCKUP IMAGES** on every deployment/seed. This cost **$1000+** in regeneration.
+
+**THE FIX (APPLIED):** Uses `$setOnInsert` for `mockup_url` field.
+
+**FILE:** `/app/backend/scripts/generate_all_mockups.py`
+
+**NEVER CHANGE THIS. EVER.**
 
 ---
 
 ## SESSION 4 ACCOMPLISHMENTS (March 8, 2026)
 
-### Completed:
-1. ✅ **Product Separation Fix** - Soul Made products properly separated from Shopify products
-2. ✅ **Pet Wrapped Soul Score Fix** - Now uses same weighted scoring as dashboard (was showing old 69%, now shows correct 89%)
-3. ✅ **Pet Avatar Fix** - Custom uploaded pet images display correctly
-4. ✅ **Breed Filtering** - Mira picks show correct breed products only
-5. ✅ **Pet Switching Fix** - Soul Made section updates when switching pets (key prop added)
-6. ✅ **Mobile Dashboard Verified** - Pet selector and soul journey cards display correctly
-7. ✅ **Mockup Generation** - Resumed and running (48.6%+ complete, 254+/523)
+### 🔴 CRITICAL BUG FIX:
+- **$setOnInsert for mockup_url** - Prevents mockups from being wiped on deployment
+- This was the bug that caused $1000+ loss
+
+### ✅ Soul Made Products - NOW LIVE ON PRODUCTION:
+- Made for Mojo (Indie) - 11/11 mockups
+- Made for Mystique (Shih Tzu) - 11/11 mockups
+- Made for Bruno (Labrador) - 11/11 mockups
+- Made for Lola (Maltese) - 11/11 mockups
+- Made for Luna/Buddy (Golden Retriever) - 11/11 mockups
+
+### ✅ Features Completed:
+1. **"Personalize & Add" Button** - Added to all Soul Made product cards
+2. **Mug Color Selection** - White/Black options, White as default
+3. **Pet Wrapped Soul Score** - Uses weighted scoring (89% for Mojo)
+4. **Pet Wrapped Conversation Count** - Counts from live_conversation_threads (156 for Mojo)
+5. **PersonalizedPicks Pet Switch** - Key prop forces remount when pet changes
+6. **Product Separation** - Soul Made separate from Shopify products
+7. **Breed Filtering** - Mira picks show correct breed only
+8. **Pet Avatar Fix** - Custom uploaded images display correctly
 
 ### Key Files Modified:
-- `/app/backend/routes/wrapped/generate.py` - Uses weighted scoring for Pet Wrapped
-- `/app/backend/routes/wrapped/welcome.py` - Uses weighted scoring for Welcome Wrapped
-- `/app/memory/AGENT_START_HERE.md` - Updated with session 4 fixes
+| File | Change |
+|------|--------|
+| `/app/backend/scripts/generate_all_mockups.py` | $setOnInsert prevents mockup wipe |
+| `/app/frontend/src/components/SoulMadeCollection.jsx` | "Personalize & Add" button |
+| `/app/frontend/src/components/SoulMadeProductModal.jsx` | White mug default |
+| `/app/backend/routes/wrapped/generate.py` | Weighted scoring, conversation count |
+| `/app/frontend/src/pages/CelebratePage.jsx` | Key prop on SoulMadeCollection |
+| `/app/frontend/src/components/PersonalizedPicks.jsx` | Key prop for pet switch |
 
-### Still In Progress:
-- **Mockup Generation:** 48.6%+ complete, running in background
-- **Maltese mockups:** Lola's breed still needs mockups (fallback UI working)
+---
+
+## DO NOT BREAK - CRITICAL CODE
+
+| # | What | File | Why |
+|---|------|------|-----|
+| 1 | **$setOnInsert for mockup_url** | `/app/backend/scripts/generate_all_mockups.py` | Prevents $1000+ mockup loss |
+| 2 | **BREED_EXCLUSION_PATTERN** | `/app/backend/server.py` (~line 7085) | Keeps Soul Made separate |
+| 3 | **BREED_EXCLUSION_PATTERN** | `/app/backend/app/api/top_picks_routes.py` | Filters by breed |
+| 4 | **Key prop on SoulMadeCollection** | `/app/frontend/src/pages/CelebratePage.jsx` | Pet switch works |
+| 5 | **Pet avatar check** | `/app/frontend/src/utils/petAvatar.js` | Custom photos work |
+
+---
+
+## TEST ACCOUNTS
+
+| User | Password | Pets |
+|------|----------|------|
+| dipali@clubconcierge.in | test123 | Mojo, Mystique, Bruno, Lola, Luna, Buddy |
+| aditya (admin) | lola4304 | Admin access |
 
 ---
 
