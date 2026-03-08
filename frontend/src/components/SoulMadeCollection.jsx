@@ -31,6 +31,7 @@ import { API_URL } from '../utils/api';
 import { usePillarContext } from '../context/PillarContext';
 import { useAuth } from '../context/AuthContext';
 import SoulMadeProductModal from './SoulMadeProductModal';
+import { useCart } from '../context/CartContext';
 import { useToast } from '../hooks/use-toast';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -293,6 +294,7 @@ const SoulMadeCollection = ({
 }) => {
   const { currentPet } = usePillarContext();
   const { token } = useAuth();
+  const { addToCart, setIsCartOpen } = useCart();
   const { toast } = useToast();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -320,11 +322,34 @@ const SoulMadeCollection = ({
   // Handle add to cart from modal
   const handleAddToCart = (cartItem) => {
     console.log('[SoulMadeCollection] Add to cart:', cartItem);
+    
+    // Convert Soul Made item to cart format
+    const cartProduct = {
+      id: cartItem.product_id,
+      name: cartItem.name,
+      price: cartItem.unit_price,
+      image: cartItem.mockup_url,
+      // Soul Made specific fields
+      isSoulMade: true,
+      customization: {
+        pet_name: cartItem.custom_name,
+        breed: cartItem.breed,
+        breed_name: cartItem.breed_name,
+        size: cartItem.size,
+        color: cartItem.color
+      }
+    };
+    
+    // Add to cart via context
+    addToCart(cartProduct, cartItem.size, cartItem.color, cartItem.quantity);
+    
     toast({
-      title: "Added to Cart",
+      title: "Added to Cart! 🎉",
       description: `${cartItem.name} has been added to your cart`,
     });
-    // TODO: Integrate with actual cart system
+    
+    // Open cart drawer
+    setIsCartOpen(true);
   };
 
   // Fetch archetype for styling
