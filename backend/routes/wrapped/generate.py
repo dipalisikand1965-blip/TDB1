@@ -29,11 +29,23 @@ async def generate_pet_wrapped(pet_id: str, year: Optional[int] = None):
     if year is None:
         year = datetime.now().year
     
-    # Get pet data
-    try:
-        pet = db.pets.find_one({"_id": ObjectId(pet_id)})
-    except:
-        raise HTTPException(status_code=400, detail="Invalid pet ID")
+    # Get pet data - try multiple ID formats
+    pet = None
+    
+    # First try by 'id' field (for pets with pet-XXXX format)
+    if pet_id.startswith("pet-"):
+        pet = db.pets.find_one({"id": pet_id})
+    
+    # If not found, try by _id as ObjectId
+    if not pet:
+        try:
+            pet = db.pets.find_one({"_id": ObjectId(pet_id)})
+        except:
+            pass
+    
+    # If still not found, try by _id as string
+    if not pet:
+        pet = db.pets.find_one({"_id": pet_id})
     
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
