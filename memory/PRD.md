@@ -28,6 +28,7 @@ Soul Builder (51 Q) → doggy_soul_answers → Mira OS + Pet Wrapped + Picks Eng
 - ⚠️ ALLERGIES (critical)
 - Love language, quirks
 - Favorite treats, with strangers, when alone
+- **REAL ORDER HISTORY** (recent purchases)
 
 ### Pet Wrapped Shows:
 - Soul Score: 78.0%
@@ -60,6 +61,15 @@ Soul Builder (51 Q) → doggy_soul_answers → Mira OS + Pet Wrapped + Picks Eng
 - Soul Questions in Chat
 - Default Picks on Load
 - "Why this pick?" tooltips
+- **Real Order History Recall** ✅ NEW
+- **Real Product/Service Recommendations** ✅ NEW
+
+### Order Flow ✅ VERIFIED
+- Orders saved to `orders` collection with orderId, customer.email, items, total, status
+- Service desk tickets auto-created (TCK-YYYY-NNNNNN format)
+- Channel intakes created for Unified Inbox
+- Pillar routing (celebrate, dine, care, etc.)
+- Paw Points awarded for orders
 
 ### Emergency Flow ✅
 - 8 emergency types (Lost Pet, Medical, Poisoning, etc.)
@@ -79,10 +89,19 @@ Soul Builder (51 Q) → doggy_soul_answers → Mira OS + Pet Wrapped + Picks Eng
 
 ---
 
+## PRODUCT CATALOGUES
+
+- **unified_products**: 321 products
+- **products_master**: 2197 products
+- Categories: Cakes, Treats, Food, Grooming, Fitness, Travel, etc.
+
+---
+
 ## TEST CREDENTIALS
 
 - **User:** `dipali@clubconcierge.in` / `test123`
 - **Admin:** `aditya` / `lola4304`
+- **Test Pet:** Mojo (pet-mojo-7327ad56)
 
 ---
 
