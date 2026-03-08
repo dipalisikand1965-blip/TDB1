@@ -694,15 +694,19 @@ const MyPets = () => {
                   }}
                 >
                   {/* Pet Header with Photo and Basic Info */}
-                  <div className="p-6 bg-gradient-to-r from-teal-50/50 to-white">
+                  <div className={`p-6 ${pet.rainbow_bridge ? 'bg-gradient-to-r from-violet-50/70 via-purple-50/50 to-pink-50/50' : 'bg-gradient-to-r from-teal-50/50 to-white'}`}>
                     <div className="flex flex-col md:flex-row gap-6">
                       {/* Pet Photo - Uses utility for consistent photos */}
                       <div className="relative flex-shrink-0 group">
-                        <div className="w-32 h-32 rounded-2xl bg-white shadow-sm overflow-hidden border-4 border-white relative">
+                        {/* Rainbow Bridge Halo Effect */}
+                        {pet.rainbow_bridge && (
+                          <div className="absolute -inset-2 rounded-3xl bg-gradient-to-r from-violet-400 via-purple-500 to-pink-500 opacity-60 blur-sm animate-pulse" />
+                        )}
+                        <div className={`w-32 h-32 rounded-2xl bg-white shadow-sm overflow-hidden relative ${pet.rainbow_bridge ? 'border-4 border-violet-300 ring-2 ring-purple-200' : 'border-4 border-white'}`}>
                           <img 
                             src={petPhoto} 
                             alt={pet.name} 
-                            className="w-full h-full object-cover"
+                            className={`w-full h-full object-cover ${pet.rainbow_bridge ? 'grayscale-[30%]' : ''}`}
                             onError={(e) => {
                               console.log('Pet photo failed to load:', petPhoto, 'for pet:', pet.name);
                               // Fall back to breed stock photo
@@ -733,9 +737,15 @@ const MyPets = () => {
                             )}
                           </button>
                         </div>
-                        <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white shadow-sm text-teal-700 border-teal-200">
-                          {personaInfo.emoji} {personaInfo.name}
-                        </Badge>
+                        {pet.rainbow_bridge ? (
+                          <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-violet-500 to-purple-600 text-white shadow-lg border-0">
+                            🌈 In Loving Memory
+                          </Badge>
+                        ) : (
+                          <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white shadow-sm text-teal-700 border-teal-200">
+                            {personaInfo.emoji} {personaInfo.name}
+                          </Badge>
+                        )}
                       </div>
                       
                       {/* Pet Details */}
@@ -749,7 +759,12 @@ const MyPets = () => {
                                 className="text-2xl font-bold h-10 w-48"
                               />
                             ) : (
-                              <h2 className="text-2xl font-bold text-gray-900">{pet.name}</h2>
+                              <div className="flex items-center gap-2">
+                                <h2 className={`text-2xl font-bold ${pet.rainbow_bridge ? 'text-purple-800' : 'text-gray-900'}`}>{pet.name}</h2>
+                                {pet.rainbow_bridge && (
+                                  <span className="text-xl" title="Forever in our hearts">🌈</span>
+                                )}
+                              </div>
                             )}
                             
                             {isEditing ? (
@@ -845,15 +860,43 @@ const MyPets = () => {
                               <p className="font-medium text-sm">{pet.gotcha_date || 'Not set'}</p>
                             )}
                           </div>
-                          <div className="bg-white/70 rounded-lg p-3">
-                            <p className="text-xs text-gray-500 mb-1">🎉 Celebrations</p>
-                            <p className="font-medium text-sm">{pet.celebrations?.length || 0} set</p>
-                          </div>
+                          {pet.rainbow_bridge ? (
+                            <div className="bg-violet-50/70 rounded-lg p-3 border border-violet-200">
+                              <p className="text-xs text-violet-600 mb-1">🌈 Crossed Rainbow Bridge</p>
+                              <p className="font-medium text-sm text-violet-700">{pet.crossing_date || pet.rainbow_bridge_date || 'Forever loved'}</p>
+                            </div>
+                          ) : (
+                            <div className="bg-white/70 rounded-lg p-3">
+                              <p className="text-xs text-gray-500 mb-1">🎉 Celebrations</p>
+                              <p className="font-medium text-sm">{pet.celebrations?.length || 0} set</p>
+                            </div>
+                          )}
                           <div className="bg-white/70 rounded-lg p-3">
                             <p className="text-xs text-gray-500 mb-1">✨ Soul Score</p>
                             <p className="font-medium text-sm text-teal-600">{Math.min(100, Math.round(pet.overall_score || 0))}%</p>
                           </div>
                         </div>
+                        
+                        {/* Rainbow Bridge Memorial Message */}
+                        {pet.rainbow_bridge && (
+                          <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Heart className="w-4 h-4 text-violet-600 fill-violet-200" />
+                              <span className="text-sm font-medium text-violet-800">Forever In Our Hearts</span>
+                            </div>
+                            <p className="text-sm text-violet-700 italic">
+                              {pet.tribute_message || `${pet.name}'s love and memories live on eternally. They will never be forgotten.`}
+                            </p>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="mt-3 border-violet-300 text-violet-700 hover:bg-violet-100"
+                              onClick={() => navigate('/farewell')}
+                            >
+                              View Memorial 🌈
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
