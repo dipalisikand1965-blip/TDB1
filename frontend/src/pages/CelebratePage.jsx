@@ -38,6 +38,8 @@ import { toast } from 'sonner';
 import { ConciergeButton } from '../components/mira-os';
 import MiraBirthdayBoxCard from '../components/celebrate/MiraBirthdayBoxCard';
 import PersonalizedItemsSection from '../components/celebrate/PersonalizedItemsSection';
+import BirthdayCountdown from '../components/celebrate/BirthdayCountdown';
+import PlanMyPartyWizard from '../components/celebrate/PlanMyPartyWizard';
 
 // Lazy load Soul Explainer for footer link
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
@@ -63,6 +65,7 @@ const CelebratePage = () => {
   const [showBoxBuilder, setShowBoxBuilder] = useState(false);
   const [boxOccasion, setBoxOccasion] = useState('birthday');
   const [showPartyWizard, setShowPartyWizard] = useState(false);
+  const [showPlanMyPartyWizard, setShowPlanMyPartyWizard] = useState(false);
   const [showConciergeModal, setShowConciergeModal] = useState(false);
   const [conciergeSubmitting, setConciergeSubmitting] = useState(false);
   const [showSoulExplainer, setShowSoulExplainer] = useState(false);
@@ -585,6 +588,23 @@ const CelebratePage = () => {
       {/* Main Content with iOS Safe Area Bottom Padding */}
       <div className="pb-24 theme-celebrate" data-testid="celebrate-page">
 
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* BIRTHDAY COUNTDOWN - Emotional anticipation builder */}
+      {/* Shows different UI based on days until birthday */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {activePet && (
+        <div className="max-w-6xl mx-auto px-4 pt-6 mb-6">
+          <BirthdayCountdown 
+            pet={activePet}
+            onPlanParty={() => setShowPlanMyPartyWizard(true)}
+            onViewCakes={() => {
+              setSearchParams({ category: 'cakes' });
+              document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          />
+        </div>
+      )}
+
       {/* Personalized Picks for User's Pet */}
       <div className="max-w-6xl mx-auto px-4 pt-6 section-fade-in stagger-1">
         <PersonalizedPicks pillar="celebrate" maxProducts={6} />
@@ -628,6 +648,34 @@ const CelebratePage = () => {
                   console.log('[CelebratePage] Birthday box request created:', data);
                 }}
               />
+            </div>
+            
+            {/* ═══════════════════════════════════════════════════════════════════════ */}
+            {/* PLAN MY PARTY CTA - Magical party planning wizard trigger */}
+            {/* ═══════════════════════════════════════════════════════════════════════ */}
+            <div className="mt-6">
+              <div 
+                onClick={() => setShowPlanMyPartyWizard(true)}
+                className="group cursor-pointer bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 p-1 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.01]"
+              >
+                <div className="bg-gradient-to-br from-slate-900 to-purple-950 rounded-xl p-5 sm:p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                      <span className="text-2xl sm:text-3xl">🎉</span>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg sm:text-xl font-bold text-white mb-1 flex items-center gap-2">
+                        Plan {activePet?.name}'s Perfect Party
+                        <Sparkles className="w-5 h-5 text-amber-400" />
+                      </h3>
+                      <p className="text-sm text-gray-300">
+                        Let Mira help you create a magical celebration in 3 easy steps
+                      </p>
+                    </div>
+                    <ChevronRight className="w-6 h-6 text-white/60 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                  </div>
+                </div>
+              </div>
             </div>
             
             {/* ═══════════════════════════════════════════════════════════════════════ */}
@@ -1337,6 +1385,19 @@ const CelebratePage = () => {
         pillar="celebrate" 
         position="bottom-right"
         showLabel
+      />
+      
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* PLAN MY PARTY WIZARD - Magical party planning experience */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <PlanMyPartyWizard
+        isOpen={showPlanMyPartyWizard}
+        onClose={() => setShowPlanMyPartyWizard(false)}
+        pet={activePet}
+        onComplete={(partyPlan) => {
+          console.log('[CelebratePage] Party plan created:', partyPlan);
+          toast.success(`${activePet?.name}'s party plan is ready! 🎉`);
+        }}
       />
       
       {/* Close the theme wrapper */}
