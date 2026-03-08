@@ -134,7 +134,7 @@ soulReason={getSoulBasedReason(activePet, 'celebrate')}  // or 'stay', 'dine', e
 ---
 
 ## PREVIEW URL
-https://mockup-engine.preview.emergentagent.com
+https://soul-made-pets.preview.emergentagent.com
 
 ---
 

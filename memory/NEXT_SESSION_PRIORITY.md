@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://mockup-engine.preview.emergentagent.com
+**Preview URL:** https://soul-made-pets.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
