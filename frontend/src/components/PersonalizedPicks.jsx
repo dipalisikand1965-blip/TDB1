@@ -225,13 +225,22 @@ const PersonalizedPicks = ({
               setSelectedPet(pet);
               const messages = config.messages(pet.name);
               setMessage(messages[Math.floor(Math.random() * messages.length)]);
+            } else {
+              // No pets - stop loading
+              setLoading(false);
             }
+          } else {
+            setLoading(false);
           }
         } catch (err) {
           console.debug('Failed to fetch pets:', err);
+          setLoading(false);
         }
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
+      // Note: Don't set loading=false here if pets were found
+      // The recommendations useEffect will handle that
     };
     fetchPets();
   }, [user, token, pillar]);
