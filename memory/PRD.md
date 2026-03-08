@@ -1,6 +1,6 @@
 # The Doggy Company - PRD
 
-**Last Updated:** March 8, 2026 18:45 IST  
+**Last Updated:** March 9, 2026 01:30 IST  
 **Status:** Production Ready - Soul Made Products LIVE!
 
 ---
@@ -16,6 +16,53 @@ A bug in `seed_all_breed_products` used `$set` which **WIPED ALL MOCKUP IMAGES**
 **FILE:** `/app/backend/scripts/generate_all_mockups.py`
 
 **NEVER CHANGE THIS. EVER.**
+
+---
+
+## SESSION 5 ACCOMPLISHMENTS (March 9, 2026)
+
+### 🔴 CRITICAL FIXES:
+
+1. **Product Card Images** - Shopify products now show REAL product images from thedoggybakery.com, not AI-generated mockups
+   - **File:** `/app/frontend/src/components/ProductCard.jsx` (line ~401)
+   - **Fix:** Only apply mockups to `soul_made` products, never to regular Shopify products
+
+2. **Breed Filtering** - Products for OTHER breeds are now EXCLUDED from recommendations
+   - **File:** `/app/backend/server.py` (~line 8430)
+   - **Fix:** Added `ALL_BREED_NAMES` list and exclusion logic to skip products with other breed names
+
+3. **Product Modal Title** - Titles no longer cut off by close button
+   - **File:** `/app/frontend/src/components/ProductCard.jsx` (line ~1105)
+   - **Fix:** Added `pr-8` padding to title
+
+4. **Soul Made Add to Cart** - Default size (M) and color (White) now pre-selected
+   - **File:** `/app/frontend/src/components/SoulMadeProductModal.jsx` (line ~76)
+   - **Fix:** Auto-select 'm' size and 'White' color on modal open
+
+5. **Dine Page Featured Restaurants** - Now shows Featured section with 2-column layout
+   - **Fix:** Updated restaurant data with `featured: true` and `area` fields
+
+6. **Refresh Button in Admin** - Now also refreshes mockup stats on AI Mockups tab
+   - **File:** `/app/frontend/src/components/admin/SoulProductsManager.jsx`
+
+7. **MASTER SYNC Enhanced** - Now includes Force Full Sync as Step 10
+   - **File:** `/app/frontend/src/pages/Admin.jsx` (line ~501)
+   - **New:** Cleans AI images, updates restaurants, seeds all pillar products
+
+### ✅ New Endpoint Created:
+- **POST /api/admin/force-full-sync?password=lola4304**
+- Syncs ALL data to make production match preview
+- Called automatically by MASTER SYNC button
+
+### Key Files Modified This Session:
+| File | Change |
+|------|--------|
+| `/app/frontend/src/components/ProductCard.jsx` | Mockups only for soul_made products |
+| `/app/backend/server.py` | Breed exclusion filter, force-full-sync endpoint |
+| `/app/frontend/src/components/SoulMadeProductModal.jsx` | Default size/color selection |
+| `/app/frontend/src/pages/Admin.jsx` | MASTER SYNC Step 10 |
+| `/app/frontend/src/components/admin/SoulProductsManager.jsx` | Refresh button fix |
+| `/app/backend/fit_routes.py` | Fixed _id error in product seeding |
 
 ---
 
