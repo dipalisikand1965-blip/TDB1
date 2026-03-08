@@ -120,7 +120,7 @@ const PRODUCT_CELEBRATION_IMAGES = [
 ];
 
 const CelebrationMemoryWall = ({ onShareStory, onViewAll, onCreateAlbum }) => {
-  const [photos, setPhotos] = useState(CELEBRATION_PHOTOS);
+  const [photos, setPhotos] = useState(DEFAULT_CELEBRATION_PHOTOS);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [likedPhotos, setLikedPhotos] = useState(new Set());
   const scrollRef = useRef(null);
