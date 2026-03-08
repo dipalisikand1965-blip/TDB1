@@ -109,6 +109,26 @@ export const BREED_ILLUSTRATIONS = {
     name: "English Bulldog",
     imageUrl: "https://static.prod-images.emergentagent.com/jobs/0720440e-9740-46f1-8580-b9ea9d813e65/images/7d9eedd105043076b80954aa20d93de8b78599ff1d0ba368770bec7e7810426a.png",
     aliases: ["bulldog", "english bulldog", "british bulldog"]
+  },
+  border_collie: {
+    name: "Border Collie",
+    imageUrl: "https://static.prod-images.emergentagent.com/jobs/0720440e-9740-46f1-8580-b9ea9d813e65/images/ac2a0ff12d9eba6f52112bc128eac414e67c2192b1a85ff8de65a5aabef6b47e.png",
+    aliases: ["border collie", "collie", "border"]
+  },
+  great_dane: {
+    name: "Great Dane",
+    imageUrl: "https://static.prod-images.emergentagent.com/jobs/0720440e-9740-46f1-8580-b9ea9d813e65/images/327320ba146b47084302174e40a2e5ab4efd6fba307cb8f9abcf620cf034884f.png",
+    aliases: ["great dane", "dane"]
+  },
+  lhasa_apso: {
+    name: "Lhasa Apso",
+    imageUrl: "https://static.prod-images.emergentagent.com/jobs/0720440e-9740-46f1-8580-b9ea9d813e65/images/966c8321dfb7e6a60ae4c6fc5c3e770be76dc45cef15a40157360667bba577ae.png",
+    aliases: ["lhasa apso", "lhasa"]
+  },
+  cavalier: {
+    name: "Cavalier King Charles Spaniel",
+    imageUrl: "https://static.prod-images.emergentagent.com/jobs/0720440e-9740-46f1-8580-b9ea9d813e65/images/8ba09f460e2b7ecc7aed6d5111a72482994e2dfc205dca454484bb75fd56ac77.png",
+    aliases: ["cavalier", "cavalier king charles", "king charles spaniel", "ckcs"]
   }
 };
 
@@ -148,15 +168,19 @@ export const findBreedIllustration = (text) => {
     pomeranian: /pom(eranian|s)?|spitz/i,
     rottweiler: /rott(ie|y|weiler)?/i,
     husky: /husk(y|ie)?|siberian/i,
-    french_bulldog: /french|frenchie|bull(dog)?/i,
-    cocker_spaniel: /cocker|spaniel/i,
+    french_bulldog: /french|frenchie/i,
+    cocker_spaniel: /cocker/i,
     doberman: /dob(erman|ie|y)?/i,
     boxer: /boxer/i,
     dachshund: /dach(shund)?|doxie|wiener|sausage/i,
     poodle: /poodl/i,
     maltese: /malt(ese)?/i,
     yorkshire: /york(ie|shire)?/i,
-    bulldog: /bulldog/i
+    bulldog: /bulldog(?!.*french)/i,
+    border_collie: /border\s*collie|collie/i,
+    great_dane: /great\s*dane|dane/i,
+    lhasa_apso: /lhasa/i,
+    cavalier: /cavalier|king\s*charles/i
   };
   
   for (const [breedKey, pattern] of Object.entries(breedPatterns)) {

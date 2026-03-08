@@ -336,12 +336,11 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
   const getValidImage = () => {
     const productName = (product.name || product.title || '').toLowerCase();
     
-    // For breed-specific cakes/products, use breed illustration
-    if (productName.includes('cake') || productName.includes('birthday')) {
-      const breedMatch = findBreedIllustration(productName);
-      if (breedMatch) {
-        return breedMatch.imageUrl;
-      }
+    // For ANY breed-specific product (cakes, accessories, keychains, hats, etc.)
+    // Use breed illustration when a breed name is detected
+    const breedMatch = findBreedIllustration(productName);
+    if (breedMatch) {
+      return breedMatch.imageUrl;
     }
     
     // Use original product image if valid
@@ -514,12 +513,10 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   const getValidProductImage = () => {
     const productName = (product.name || product.title || '').toLowerCase();
     
-    // For breed-specific cakes/products, use breed illustration
-    if (productName.includes('cake') || productName.includes('birthday')) {
-      const breedMatch = findBreedIllustration(productName);
-      if (breedMatch) {
-        return breedMatch.imageUrl;
-      }
+    // For ANY breed-specific product, use breed illustration
+    const breedMatch = findBreedIllustration(productName);
+    if (breedMatch) {
+      return breedMatch.imageUrl;
     }
     
     if (product.image && product.image.startsWith('http')) {
