@@ -1152,6 +1152,7 @@ async def sync_breed_products_to_main():
                 "price": bp.get("price", 0),
                 "compare_at_price": bp.get("compare_price"),
                 "images": bp.get("images", []),
+                "image": bp.get("primary_image", bp.get("image", "")),  # For frontend compatibility
                 "primary_image": bp.get("primary_image", ""),
                 "tags": bp.get("ai_tags", []),
                 "breed_tags": bp.get("breed_tags", []),
