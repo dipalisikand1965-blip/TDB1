@@ -8400,11 +8400,50 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
     
     # Score products based on relevance to pet
     scored_products = []
+    
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # BREED EXCLUSION LIST - Products for OTHER breeds should be excluded
+    # This prevents "Shih Tzu Cake" from showing for a Maltese dog
+    # ═══════════════════════════════════════════════════════════════════════════════
+    ALL_BREED_NAMES = [
+        "labrador", "golden retriever", "german shepherd", "beagle", "bulldog", 
+        "poodle", "rottweiler", "yorkshire", "boxer", "dachshund", "siberian husky", 
+        "husky", "doberman", "great dane", "shih tzu", "shihtzu", "pug", "chihuahua", 
+        "pomeranian", "maltese", "cocker spaniel", "border collie", "cavalier", 
+        "french bulldog", "indie", "indian pariah", "american bully", "chow chow", 
+        "dalmatian", "jack russell", "lhasa apso", "italian greyhound", "scottish terrier", 
+        "st bernard", "schnoodle", "irish setter", "toy poodle", "mutt"
+    ]
+    
     for p in products:
         score = 0
         tags = [t.lower() for t in (p.get("tags") or p.get("intelligent_tags") or [])]
         name_lower = (p.get("name") or p.get("title") or "").lower()
         category = (p.get("category") or "").lower()
+        
+        # ═══════════════════════════════════════════════════════════════════════════════
+        # CRITICAL: EXCLUDE products explicitly for OTHER breeds
+        # If product name contains a breed name that's NOT the pet's breed, SKIP it
+        # ═══════════════════════════════════════════════════════════════════════════════
+        if breed:
+            breed_lower = breed.lower().strip()
+            breed_words = breed_lower.split()
+            breed_clean = breed_lower.replace(" ", "")  # "shih tzu" -> "shihtzu"
+            
+            # Check if product name contains ANY breed name
+            product_is_for_other_breed = False
+            for other_breed in ALL_BREED_NAMES:
+                # Skip if this is the current pet's breed
+                if other_breed in breed_lower or breed_clean == other_breed.replace(" ", ""):
+                    continue
+                # Check if product name explicitly mentions this other breed
+                if other_breed in name_lower or other_breed.replace(" ", "") in name_lower.replace(" ", ""):
+                    product_is_for_other_breed = True
+                    break
+            
+            if product_is_for_other_breed:
+                # Skip products explicitly for other breeds
+                continue
         
         # Pillar match bonus
         if pillar and p.get("pillar") == pillar:
@@ -8432,11 +8471,8 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
         if age_category == "senior" and any(word in name_lower or word in tags for word in ["senior", "joint", "mobility", "gentle"]):
             score += 12
         
-        # Breed-specific bonus - only within pillar context
+        # Breed-specific bonus - only within pillar context (pet's own breed gets bonus)
         if breed:
-            breed_words = breed.lower().split()
-            breed_clean = breed.lower().replace(" ", "")  # "shih tzu" -> "shihtzu"
-            
             for bw in breed_words:
                 if bw in tags or bw in name_lower:
                     score += 15  # Moderate breed match bonus
