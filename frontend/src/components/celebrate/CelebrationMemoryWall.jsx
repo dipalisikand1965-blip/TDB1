@@ -8,9 +8,9 @@
  * and inspire them to create their own magical moments.
  * 
  * Data sources:
- * - TheDoggyBakery product images (real cakes/celebrations)
+ * - Backend API: /api/celebration-wall/photos (manageable from Admin)
+ * - TheDoggyBakery product images (fallback)
  * - User-generated content from celebrations
- * - Instagram feed integration
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -24,9 +24,9 @@ import { Card } from '../ui/card';
 import { Dialog, DialogContent } from '../ui/dialog';
 import { API_URL } from '../../utils/api';
 
-// Real celebration photos from TheDoggyBakery Shopify Store
-// These are actual product images and customer photos showing dogs with their birthday cakes
-const CELEBRATION_PHOTOS = [
+// Default/Fallback celebration photos from TheDoggyBakery Shopify Store
+// These are used if the API doesn't return any photos
+const DEFAULT_CELEBRATION_PHOTOS = [
   {
     id: 1,
     imageUrl: 'https://thedoggybakery.com/cdn/shop/files/the_doggy_bakery_do_checkout_for_more_variety_in_cakes_and_treats_._Euro_love_it_._birthdayc.jpg?v=1759753685&width=800',
@@ -127,19 +127,46 @@ const CelebrationMemoryWall = ({ onShareStory, onViewAll, onCreateAlbum }) => {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   
-  // Load real celebration photos from database
+  // Load celebration photos from backend API (manageable from Admin)
   useEffect(() => {
     const fetchCelebrations = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/celebrations/gallery?limit=12`);
+        // Try the new celebration wall API first
+        const response = await fetch(`${API_URL}/api/celebration-wall/photos?featured_only=true&limit=12`);
         if (response.ok) {
           const data = await response.json();
-          if (data.celebrations?.length > 0) {
-            setPhotos([...data.celebrations, ...CELEBRATION_PHOTOS]);
+          if (data.photos?.length > 0) {
+            // Map API response to component format
+            const formattedPhotos = data.photos.map((p, idx) => ({
+              id: p.id || idx + 1,
+              imageUrl: p.image_url || p.imageUrl,
+              petName: p.pet_name || p.petName || 'Happy Pup',
+              occasion: p.occasion || 'Birthday',
+              caption: p.caption || '',
+              likes: p.likes || Math.floor(Math.random() * 500) + 100,
+              location: p.location || 'India',
+              date: p.date || 'Recently'
+            }));
+            setPhotos(formattedPhotos);
+            return;
           }
         }
+        
+        // Fallback: try old celebrations endpoint
+        const fallbackResponse = await fetch(`${API_URL}/api/celebrations/gallery?limit=12`);
+        if (fallbackResponse.ok) {
+          const data = await fallbackResponse.json();
+          if (data.celebrations?.length > 0) {
+            setPhotos([...data.celebrations, ...DEFAULT_CELEBRATION_PHOTOS]);
+            return;
+          }
+        }
+        
+        // Use default photos if no API data
+        setPhotos(DEFAULT_CELEBRATION_PHOTOS);
       } catch (err) {
         console.log('[MemoryWall] Using default celebration photos');
+        setPhotos(DEFAULT_CELEBRATION_PHOTOS);
       }
     };
     fetchCelebrations();
