@@ -23,7 +23,9 @@ import {
   Image,
   Play,
   Square,
-  Loader2
+  Loader2,
+  Cloud,
+  Upload
 } from 'lucide-react';
 
 /**
@@ -83,6 +85,10 @@ const SoulProductsManager = () => {
   const [generationLimit, setGenerationLimit] = useState(10);
   const [selectedBreed, setSelectedBreed] = useState('');
   const [selectedProductType, setSelectedProductType] = useState('');
+  
+  // Cloud storage state
+  const [cloudStatus, setCloudStatus] = useState(null);
+  const [convertingToCloud, setConvertingToCloud] = useState(false);
 
   // Fetch products
   useEffect(() => {
@@ -267,8 +273,56 @@ const SoulProductsManager = () => {
       console.log('[SoulProducts] Mockups tab active, fetching data...');
       fetchMockupStats();
       fetchBreedProducts(true); // Fetch products with mockups
+      fetchCloudStatus(); // Check cloud storage status
     }
   }, [activeSubTab, fetchMockupStats, fetchBreedProducts]);
+
+  // Fetch cloud storage status
+  const fetchCloudStatus = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/mockups/cloud-status`);
+      if (res.ok) {
+        const data = await res.json();
+        setCloudStatus(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch cloud status:', error);
+    }
+  };
+
+  // Convert mockups to cloud storage (Cloudinary)
+  const convertToCloud = async () => {
+    setConvertingToCloud(true);
+    try {
+      const res = await fetch(`${API_URL}/api/mockups/batch-convert-to-cloud?limit=10`, {
+        method: 'POST'
+      });
+      const data = await res.json();
+      
+      if (res.ok) {
+        toast({
+          title: '☁️ Cloud Conversion',
+          description: `Converted ${data.converted} mockups. ${data.remaining} remaining.`,
+          duration: 5000
+        });
+        fetchCloudStatus();
+        fetchBreedProducts(true);
+      } else {
+        toast({
+          title: 'Error',
+          description: data.detail || 'Failed to convert',
+          variant: 'destructive'
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to convert to cloud',
+        variant: 'destructive'
+      });
+    }
+    setConvertingToCloud(false);
+  };
 
   const updateProductTier = async (productId, tier) => {
     try {
@@ -934,6 +988,45 @@ const SoulProductsManager = () => {
               <br />
               <strong>33 breeds × 11 product types = 363 total mockups (no cakes - use TheDoggyBakery)</strong>
             </div>
+            
+            {/* Cloud Storage Status */}
+            {cloudStatus && (
+              <div className={`mt-4 p-4 rounded-lg border ${cloudStatus.cloudinary_configured ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'}`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium flex items-center gap-2">
+                      <Cloud className="w-4 h-4" />
+                      Cloud Storage (Cloudinary)
+                    </h4>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {cloudStatus.cloudinary_configured 
+                        ? `Connected to ${cloudStatus.cloud_name}` 
+                        : '⚠️ Not configured - Set CLOUDINARY env vars'}
+                    </p>
+                    {cloudStatus.mockup_stats && (
+                      <div className="text-xs mt-2 space-x-4">
+                        <span className="text-blue-600">☁️ Cloud: {cloudStatus.mockup_stats.cloudinary_stored}</span>
+                        <span className="text-amber-600">📦 Base64: {cloudStatus.mockup_stats.base64_stored}</span>
+                        <span className="text-gray-600">Total: {cloudStatus.mockup_stats.total_with_mockups}</span>
+                      </div>
+                    )}
+                  </div>
+                  {cloudStatus.cloudinary_configured && cloudStatus.mockup_stats?.base64_stored > 0 && (
+                    <Button 
+                      onClick={convertToCloud}
+                      disabled={convertingToCloud}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      {convertingToCloud ? (
+                        <><RefreshCw className="w-4 h-4 mr-2 animate-spin" /> Converting...</>
+                      ) : (
+                        <><Upload className="w-4 h-4 mr-2" /> Convert to Cloud (10)</>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
           </Card>
 
           {/* Generated Mockups Gallery */}
