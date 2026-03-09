@@ -12,6 +12,7 @@ import { API_URL } from '../utils/api';
 import { createEnjoyRSVP, showUnifiedFlowSuccess, showUnifiedFlowError } from '../utils/unifiedApi';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { usePillarContext } from '../context/PillarContext';
 import { toast } from '../hooks/use-toast';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import ProductCard from '../components/ProductCard';
@@ -114,10 +115,14 @@ const HERO_IMAGES = [
 const EnjoyPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
+  const { currentPet, pets: contextPets } = usePillarContext();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const formRef = useRef(null);
   const experiencesSectionRef = useRef(null);
+  
+  // Use currentPet from context (syncs with global pet selector)
+  const activePet = currentPet;
   
   // Get type from URL query params
   const urlType = searchParams.get('type');

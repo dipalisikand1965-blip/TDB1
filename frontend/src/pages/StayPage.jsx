@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { usePillarContext } from '../context/PillarContext';
 import { toast } from '../hooks/use-toast';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
@@ -100,9 +101,13 @@ const STAY_EXPERIENCES = [
 const StayPage = () => {
   const { addToCart } = useCart();
   const { user, token } = useAuth();
+  const { currentPet, pets: contextPets } = usePillarContext();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const servicesSectionRef = useRef(null);
+  
+  // Use currentPet from context (syncs with global pet selector)
+  const activePet = currentPet;
   
   // Get stay type from URL query params
   const urlStayType = searchParams.get('type');
