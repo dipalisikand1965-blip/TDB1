@@ -148,28 +148,43 @@ const PetSelector = ({ pets, selectedPet, onPetChange }) => {
   if (!pets || pets.length <= 1) return null;
   
   return (
-    <div className="flex gap-2 overflow-x-auto pb-2 px-4 -mx-4 scrollbar-hide">
+    <div 
+      className="flex gap-2 overflow-x-auto pb-2 px-4 -mx-4 scrollbar-hide"
+      style={{
+        WebkitOverflowScrolling: 'touch',
+        scrollSnapType: 'x mandatory',
+        msOverflowStyle: 'none',
+        scrollbarWidth: 'none'
+      }}
+    >
       {pets.map(pet => {
         const isSelected = selectedPet?.id === pet.id;
         const petScore = Math.round(pet.overall_score || 0);
         
         return (
-          <button
+          <div
             key={pet.id}
+            role="button"
+            tabIndex={0}
             onClick={() => onPetChange(pet)}
             data-testid={`pet-select-${pet.name?.toLowerCase()}`}
-            className={`flex items-center gap-2 px-3 py-2 rounded-full whitespace-nowrap transition-all flex-shrink-0 ${
+            className={`flex items-center gap-2 px-3 py-2 rounded-full whitespace-nowrap transition-all flex-shrink-0 cursor-pointer ${
               isSelected 
                 ? 'bg-pink-500/20 border border-pink-500 text-white' 
                 : 'bg-slate-800 border border-slate-700 text-slate-300 hover:border-slate-600'
             }`}
+            style={{
+              scrollSnapAlign: 'start',
+              WebkitTapHighlightColor: 'transparent',
+              touchAction: 'manipulation'
+            }}
           >
             {pet.photo ? (
-              <img src={pet.photo} alt={pet.name} className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
+              <img src={pet.photo} alt={pet.name} className="w-6 h-6 rounded-full object-cover flex-shrink-0" style={{ pointerEvents: 'none' }} />
             ) : (
-              <PawPrint className="w-4 h-4 flex-shrink-0" />
+              <PawPrint className="w-4 h-4 flex-shrink-0" style={{ pointerEvents: 'none' }} />
             )}
-            <span className="text-sm font-medium truncate max-w-[80px]">{pet.name}</span>
+            <span className="text-sm font-medium truncate max-w-[80px]" style={{ pointerEvents: 'none' }}>{pet.name}</span>
             {/* Show soul score badge */}
             <span className={`text-xs px-1.5 py-0.5 rounded-full flex-shrink-0 ${
               petScore >= 50 
@@ -177,20 +192,27 @@ const PetSelector = ({ pets, selectedPet, onPetChange }) => {
                 : petScore > 0 
                   ? 'bg-amber-500/30 text-amber-300'
                   : 'bg-slate-600 text-slate-400'
-            }`}>
+            }`} style={{ pointerEvents: 'none' }}>
               {petScore}%
             </span>
-          </button>
+          </div>
         );
       })}
-      <button
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => window.location.href = '/add-pet'}
         data-testid="add-pet-selector-btn"
-        className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-800 border border-dashed border-slate-600 text-slate-400 hover:border-pink-500 hover:text-pink-400 whitespace-nowrap flex-shrink-0"
+        className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-800 border border-dashed border-slate-600 text-slate-400 hover:border-pink-500 hover:text-pink-400 whitespace-nowrap flex-shrink-0 cursor-pointer"
+        style={{
+          scrollSnapAlign: 'start',
+          WebkitTapHighlightColor: 'transparent',
+          touchAction: 'manipulation'
+        }}
       >
-        <Plus className="w-4 h-4" />
-        <span className="text-sm">Add</span>
-      </button>
+        <Plus className="w-4 h-4" style={{ pointerEvents: 'none' }} />
+        <span className="text-sm" style={{ pointerEvents: 'none' }}>Add</span>
+      </div>
     </div>
   );
 };

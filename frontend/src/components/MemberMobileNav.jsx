@@ -41,41 +41,44 @@ const MemberMobileNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
+  // Debug: Log component mount
+  console.log('[MemberMobileNav] Component rendering, pathname:', location.pathname);
+  
   // Hide only on admin, login, register pages - these have their own navigation
   const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password', '/agent'];
   const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path));
   
   // Listen for global event to open sidebar (from MobileNavBar "My Pet" button or Navbar hamburger)
   useEffect(() => {
-    const handleOpenSidebar = (e) => {
-      console.log('[MemberMobileNav] openPetSidebar event received, setting isOpen=true');
-      setIsOpen(true);
-    };
+    // Skip if we should hide
+    if (shouldHide) {
+      console.log('[MemberMobileNav] shouldHide=true, skipping event listeners');
+      return;
+    }
     
-    // Also handle touch events for iOS Safari compatibility
-    const handleTouchOpenSidebar = (e) => {
-      console.log('[MemberMobileNav] touch event for sidebar open');
+    console.log('[MemberMobileNav] Setting up event listeners');
+    
+    const handleOpenSidebar = (e) => {
+      console.log('[MemberMobileNav] openPetSidebar event received!');
       setIsOpen(true);
     };
     
     // Add listener
     window.addEventListener('openPetSidebar', handleOpenSidebar);
-    window.addEventListener('openPetSidebarTouch', handleTouchOpenSidebar);
     
     // Also expose a global function for debugging
     window.__openMemberMobileNav = () => {
-      console.log('[MemberMobileNav] __openMemberMobileNav called');
+      console.log('[MemberMobileNav] __openMemberMobileNav called!');
       setIsOpen(true);
     };
     window.__closeMemberMobileNav = () => setIsOpen(false);
     
     return () => {
       window.removeEventListener('openPetSidebar', handleOpenSidebar);
-      window.removeEventListener('openPetSidebarTouch', handleTouchOpenSidebar);
       delete window.__openMemberMobileNav;
       delete window.__closeMemberMobileNav;
     };
-  }, []);
+  }, [shouldHide]);
   
   // Close sidebar on route change
   useEffect(() => {
