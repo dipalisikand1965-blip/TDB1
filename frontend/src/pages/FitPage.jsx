@@ -17,6 +17,7 @@ import { API_URL } from '../utils/api';
 import { createFitRequest, showUnifiedFlowSuccess, showUnifiedFlowError } from '../utils/unifiedApi';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { usePillarContext } from '../context/PillarContext';
 import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
@@ -333,9 +334,13 @@ const ServiceDetailModal = ({ service, isOpen, onClose, onBook, onAskConcierge, 
 const FitPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
+  const { currentPet, pets: contextPets } = usePillarContext();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const servicesSectionRef = useRef(null);
+  
+  // Use currentPet from context (syncs with global pet selector)
+  const activePet = currentPet;
   
   // Get fitness category from URL query params
   const urlCategory = searchParams.get('type') || searchParams.get('category');
@@ -612,13 +617,18 @@ const FitPage = () => {
 
       {/* Personalized Picks for User's Pet */}
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <PersonalizedPicks pillar="fit" maxProducts={6} />
+        <PersonalizedPicks 
+          key={`fit-picks-${activePet?.id || 'guest'}`}
+          pillar="fit" 
+          maxProducts={6} 
+        />
       </div>
       
       {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
       <MiraCuratedLayer
+        key={`fit-curated-${activePet?.id || 'guest'}`}
         pillar="fit"
-        activePet={userPets?.[0]}
+        activePet={activePet || userPets?.[0]}
         token={token}
         userEmail={user?.email}
         isLoading={!userPets && !!token}
