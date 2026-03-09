@@ -63,6 +63,17 @@ A bug in `seed_all_breed_products` used `$set` which **WIPED ALL MOCKUP IMAGES**
 | Soul Made | `breed_products` | `/api/product-box/products?source=soul_made` | **Yes ✅** |
 | Manual | `products_master` | `/api/product-box/products` | Yes |
 
+### 🛒 Soul Made Product APIs (NEW):
+
+| Endpoint | Description |
+|----------|-------------|
+| `POST /api/product-box/soul-made/{id}/duplicate-to-production` | Copy to `products_master` for checkout |
+| `PUT /api/product-box/soul-made/{id}/pillars` | Assign to pillars (celebrate, fit, etc.) |
+| `PUT /api/product-box/soul-made/{id}/variants` | Set size/variant pricing |
+| `PUT /api/product-box/soul-made/{id}/sale` | Set sale price & compare_at_price |
+| `PUT /api/product-box/soul-made/{id}/stock` | Stock quantity & low stock alert |
+| `GET /api/product-box/soul-made/low-stock` | Get low stock products |
+
 ### Key Files Modified This Session:
 | File | Change |
 |------|--------|
