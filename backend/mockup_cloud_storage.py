@@ -1,0 +1,305 @@
+"""
+Mockup Cloud Storage Service
+Converts base64 mockup images to Cloudinary CDN URLs for better performance.
+
+Usage:
+1. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET in .env
+2. Call POST /api/mockups/convert-to-cloud to convert a single mockup
+3. Call POST /api/mockups/batch-convert-to-cloud to convert all mockups
+
+Benefits:
+- Reduces API response size from ~2MB to ~100 bytes per product
+- Faster page loads
+- CDN delivery with transformations
+- Persistent storage across deployments
+"""
+
+import os
+import base64
+import cloudinary
+import cloudinary.uploader
+from fastapi import APIRouter, HTTPException
+from typing import Optional
+import logging
+from datetime import datetime, timezone
+
+logger = logging.getLogger(__name__)
+
+# Initialize Cloudinary
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True
+)
+
+# Router
+mockup_cloud_router = APIRouter(prefix="/api/mockups", tags=["Mockup Cloud Storage"])
+
+# Database reference (set from server.py)
+db = None
+
+def set_db(database):
+    global db
+    db = database
+
+
+def is_cloudinary_configured():
+    """Check if Cloudinary credentials are set"""
+    return all([
+        os.getenv("CLOUDINARY_CLOUD_NAME"),
+        os.getenv("CLOUDINARY_API_KEY"),
+        os.getenv("CLOUDINARY_API_SECRET")
+    ])
+
+
+async def upload_base64_to_cloudinary(base64_data: str, product_id: str, breed: str = "unknown") -> Optional[str]:
+    """
+    Upload a base64 image to Cloudinary and return the URL.
+    
+    Args:
+        base64_data: The base64 encoded image (with or without data:image prefix)
+        product_id: Unique identifier for the product (used in public_id)
+        breed: Breed name for folder organization
+        
+    Returns:
+        Cloudinary URL or None if upload fails
+    """
+    if not is_cloudinary_configured():
+        logger.warning("Cloudinary not configured, skipping upload")
+        return None
+    
+    try:
+        # Remove data:image/png;base64, prefix if present
+        if base64_data.startswith("data:"):
+            base64_data = base64_data.split(",", 1)[1]
+        
+        # Clean the breed name for folder use
+        clean_breed = breed.lower().replace(" ", "_").replace("-", "_")[:30]
+        
+        # Create a unique public_id
+        public_id = f"doggy/mockups/{clean_breed}/{product_id}"
+        
+        # Upload to Cloudinary
+        result = cloudinary.uploader.upload(
+            f"data:image/png;base64,{base64_data}",
+            public_id=public_id,
+            overwrite=True,
+            resource_type="image",
+            folder="",  # Folder is in public_id
+            format="webp",  # Convert to webp for smaller size
+            quality="auto:good",
+            transformation=[
+                {"width": 800, "height": 800, "crop": "limit"},  # Max size
+                {"quality": "auto:good"},
+                {"fetch_format": "auto"}
+            ]
+        )
+        
+        logger.info(f"Uploaded mockup to Cloudinary: {result.get('secure_url')}")
+        return result.get("secure_url")
+        
+    except Exception as e:
+        logger.error(f"Failed to upload to Cloudinary: {e}")
+        return None
+
+
+@mockup_cloud_router.get("/cloud-status")
+async def get_cloud_storage_status():
+    """Check Cloudinary configuration and mockup stats"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    # Count mockups by storage type
+    base64_count = await db.breed_products.count_documents({
+        "mockup_url": {"$regex": "^data:image"}
+    })
+    
+    cloud_count = await db.breed_products.count_documents({
+        "mockup_url": {"$regex": "^https://res.cloudinary.com"}
+    })
+    
+    total_with_mockups = await db.breed_products.count_documents({
+        "mockup_url": {"$exists": True, "$ne": None, "$ne": ""}
+    })
+    
+    return {
+        "cloudinary_configured": is_cloudinary_configured(),
+        "cloud_name": os.getenv("CLOUDINARY_CLOUD_NAME", "not_set"),
+        "mockup_stats": {
+            "total_with_mockups": total_with_mockups,
+            "base64_stored": base64_count,
+            "cloudinary_stored": cloud_count,
+            "pending_conversion": base64_count
+        },
+        "recommendation": "Run batch conversion to improve performance" if base64_count > 0 else "All mockups are cloud-hosted!"
+    }
+
+
+@mockup_cloud_router.post("/convert-to-cloud/{product_id}")
+async def convert_single_mockup_to_cloud(product_id: str):
+    """Convert a single product's base64 mockup to Cloudinary URL"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    if not is_cloudinary_configured():
+        raise HTTPException(status_code=400, detail="Cloudinary not configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET in .env")
+    
+    # Get the product
+    product = await db.breed_products.find_one({"id": product_id})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    mockup_url = product.get("mockup_url", "")
+    
+    # Check if already on Cloudinary
+    if mockup_url.startswith("https://res.cloudinary.com"):
+        return {
+            "message": "Already on Cloudinary",
+            "url": mockup_url,
+            "converted": False
+        }
+    
+    # Check if it's base64
+    if not mockup_url.startswith("data:image"):
+        raise HTTPException(status_code=400, detail="No base64 mockup to convert")
+    
+    # Upload to Cloudinary
+    cloud_url = await upload_base64_to_cloudinary(
+        mockup_url, 
+        product_id,
+        product.get("breed", "unknown")
+    )
+    
+    if not cloud_url:
+        raise HTTPException(status_code=500, detail="Failed to upload to Cloudinary")
+    
+    # Update database
+    await db.breed_products.update_one(
+        {"id": product_id},
+        {
+            "$set": {
+                "mockup_url": cloud_url,
+                "mockup_cloud_url": cloud_url,  # Keep a reference
+                "cloud_converted_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    return {
+        "message": "Converted to Cloudinary",
+        "url": cloud_url,
+        "converted": True,
+        "product_id": product_id
+    }
+
+
+@mockup_cloud_router.post("/batch-convert-to-cloud")
+async def batch_convert_mockups_to_cloud(limit: int = 10):
+    """
+    Convert multiple base64 mockups to Cloudinary URLs.
+    Run this in batches to avoid timeouts.
+    
+    Args:
+        limit: Number of mockups to convert in this batch (default 10, max 50)
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    if not is_cloudinary_configured():
+        raise HTTPException(status_code=400, detail="Cloudinary not configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET in .env")
+    
+    limit = min(limit, 50)  # Cap at 50 to avoid timeouts
+    
+    # Find products with base64 mockups
+    products = await db.breed_products.find({
+        "mockup_url": {"$regex": "^data:image"}
+    }).limit(limit).to_list(limit)
+    
+    if not products:
+        return {
+            "message": "No base64 mockups to convert",
+            "converted": 0,
+            "remaining": 0
+        }
+    
+    converted = []
+    failed = []
+    
+    for product in products:
+        try:
+            cloud_url = await upload_base64_to_cloudinary(
+                product.get("mockup_url", ""),
+                product.get("id"),
+                product.get("breed", "unknown")
+            )
+            
+            if cloud_url:
+                await db.breed_products.update_one(
+                    {"id": product.get("id")},
+                    {
+                        "$set": {
+                            "mockup_url": cloud_url,
+                            "mockup_cloud_url": cloud_url,
+                            "cloud_converted_at": datetime.now(timezone.utc).isoformat()
+                        }
+                    }
+                )
+                converted.append({
+                    "id": product.get("id"),
+                    "name": product.get("name"),
+                    "url": cloud_url
+                })
+            else:
+                failed.append(product.get("id"))
+                
+        except Exception as e:
+            logger.error(f"Failed to convert {product.get('id')}: {e}")
+            failed.append(product.get("id"))
+    
+    # Count remaining
+    remaining = await db.breed_products.count_documents({
+        "mockup_url": {"$regex": "^data:image"}
+    })
+    
+    return {
+        "message": f"Converted {len(converted)} mockups to Cloudinary",
+        "converted": len(converted),
+        "failed": len(failed),
+        "remaining": remaining,
+        "converted_products": converted[:10],  # Show first 10
+        "failed_ids": failed
+    }
+
+
+@mockup_cloud_router.get("/cloudinary-signature")
+async def get_cloudinary_signature(folder: str = "doggy/mockups"):
+    """
+    Get a signed upload URL for frontend direct uploads to Cloudinary.
+    Use this if you want the frontend to upload directly.
+    """
+    import time
+    import cloudinary.utils
+    
+    if not is_cloudinary_configured():
+        raise HTTPException(status_code=400, detail="Cloudinary not configured")
+    
+    timestamp = int(time.time())
+    
+    params = {
+        "timestamp": timestamp,
+        "folder": folder
+    }
+    
+    signature = cloudinary.utils.api_sign_request(
+        params,
+        os.getenv("CLOUDINARY_API_SECRET")
+    )
+    
+    return {
+        "signature": signature,
+        "timestamp": timestamp,
+        "cloud_name": os.getenv("CLOUDINARY_CLOUD_NAME"),
+        "api_key": os.getenv("CLOUDINARY_API_KEY"),
+        "folder": folder
+    }
