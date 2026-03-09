@@ -262,6 +262,9 @@ from app.api.soul_products_routes import router as soul_products_router, set_sou
 # Product Mockup Routes (AI-generated personalized mockups)
 from app.api.mockup_routes import router as mockup_router, set_mockup_db
 
+# Mockup Cloud Storage (Cloudinary integration)
+from mockup_cloud_storage import mockup_cloud_router, set_db as set_mockup_cloud_db
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -19230,6 +19233,10 @@ set_soul_products_db(db)  # Initialize Soul Products with database
 # Initialize Product Mockup Generator
 app.include_router(mockup_router)  # Mockups at /api/mockups/*
 set_mockup_db(db)  # Initialize Mockups with database
+
+# Initialize Mockup Cloud Storage (Cloudinary)
+app.include_router(mockup_cloud_router)  # Cloud storage at /api/mockups/*
+set_mockup_cloud_db(db)  # Initialize cloud storage with database
 
 # Initialize Mira Structured Engine (feature-flagged)
 try:
