@@ -4,6 +4,26 @@
 
 ---
 
+## ⚠️ THE COMPLETE FLOW (Don't Skip Any Step!)
+
+```
+1. Products created in breed_products collection ✅ DONE
+         ↓
+2. Pillar assignments in `pillars` array ✅ DONE
+         ↓
+3. Mockups generated (auto-upload to Cloudinary) 🔄 RUNNING
+         ↓
+4. Products appear in UNIFIED PRODUCT BOX (Admin) ✅ WORKS
+         ↓
+5. Products filtered by BREED and PILLAR ✅ WORKS
+         ↓
+6. SYNC TO PRODUCTION (click "SYNC → PROD" button) ⚠️ DO AFTER GENERATION
+         ↓
+7. Products appear on PILLAR PAGES (requires login + pet) ✅ WORKS
+```
+
+---
+
 ## CURRENT STATE (March 9, 2026)
 
 ### Database: `pet-os-live-test_database`
