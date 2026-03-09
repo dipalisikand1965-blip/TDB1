@@ -217,10 +217,36 @@ const Navbar = () => {
   const searchRef = useRef(null);
   const dropdownTimeoutRef = useRef(null);
   const recognitionRef = useRef(null);
+  const hamburgerRef = useRef(null);
   const { getCartCount, setIsCartOpen } = useCart();
   const { user, token, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  // iOS Safari: Attach native touch/click listener to hamburger button
+  useEffect(() => {
+    const hamburger = hamburgerRef.current;
+    if (!hamburger) return;
+    
+    const openSidebar = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('[Navbar] Native hamburger event fired');
+      window.dispatchEvent(new CustomEvent('openPetSidebar'));
+      if (typeof window.__openMemberMobileNav === 'function') {
+        window.__openMemberMobileNav();
+      }
+    };
+    
+    // Add both click and touchend for iOS Safari compatibility
+    hamburger.addEventListener('click', openSidebar, { passive: false });
+    hamburger.addEventListener('touchend', openSidebar, { passive: false });
+    
+    return () => {
+      hamburger.removeEventListener('click', openSidebar);
+      hamburger.removeEventListener('touchend', openSidebar);
+    };
+  }, []);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -639,47 +665,28 @@ const Navbar = () => {
           {/* Mobile Layout: Hamburger | Logo (center) | Icons */}
           <div className="flex sm:hidden items-center justify-between h-14">
             {/* Left: Hamburger Menu - Opens Paw Sidebar on mobile */}
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('[Navbar] Hamburger clicked');
-                // Try both methods - event and direct function call
-                window.dispatchEvent(new CustomEvent('openPetSidebar'));
-                // Fallback: direct function call
-                if (typeof window.__openMemberMobileNav === 'function') {
-                  window.__openMemberMobileNav();
-                }
-              }}
-              onTouchStart={(e) => {
-                // Prevent any default touch behavior on iOS
-                e.stopPropagation();
-              }}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('[Navbar] Hamburger touchEnd');
-                window.dispatchEvent(new CustomEvent('openPetSidebar'));
-                if (typeof window.__openMemberMobileNav === 'function') {
-                  window.__openMemberMobileNav();
-                }
-              }}
-              className="p-3 -m-1 hover:bg-white/10 rounded-lg active:bg-white/20 touch-manipulation cursor-pointer select-none"
+            {/* Using ref + native event listener for iOS Safari compatibility */}
+            <div
+              ref={hamburgerRef}
+              role="button"
+              tabIndex={0}
+              className="p-3 -m-1 hover:bg-white/10 rounded-lg active:bg-white/20 cursor-pointer"
               style={{ 
-                WebkitTapHighlightColor: 'rgba(255,255,255,0.2)',
-                touchAction: 'manipulation',
-                minWidth: '44px',
-                minHeight: '44px',
+                WebkitTapHighlightColor: 'rgba(255,255,255,0.3)',
+                WebkitTouchCallout: 'none',
                 WebkitUserSelect: 'none',
-                userSelect: 'none',
-                position: 'relative',
-                zIndex: 100
+                touchAction: 'manipulation',
+                minWidth: '48px',
+                minHeight: '48px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
               data-testid="navbar-mobile-menu-btn"
               aria-label="Open navigation menu"
             >
-              <Menu className="w-6 h-6 pointer-events-none" />
-            </button>
+              <Menu className="w-6 h-6" style={{ pointerEvents: 'none' }} />
+            </div>
             
             {/* Center: Logo + Company Name */}
             <Link to={user ? "/pet-home" : "/"} className="flex items-center gap-1.5" data-testid="navbar-logo">

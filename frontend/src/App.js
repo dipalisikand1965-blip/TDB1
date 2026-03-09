@@ -350,6 +350,8 @@ function AppRouter() {
   
   return (
     <Suspense fallback={<PageLoader />}>
+      {/* MemberMobileNav at App level - Available on all routes for logged-in users */}
+      <MemberMobileNav />
       <Routes>
         {/* Embed routes - NO navbar/footer for Shopify integration */}
         <Route path="/pet-soul-embed" element={<PetProfile isEmbed={true} />} />
@@ -462,7 +464,7 @@ function MainLayout() {
       <ScrollToTop />
       <AppBadgeManager />
       {!hideNavbar && <Navbar />}
-      {!hideNavbar && <MemberMobileNav />}
+      {/* MemberMobileNav moved to AppRouter level for global availability */}
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Home is now outside MainLayout for clean landing experience */}
