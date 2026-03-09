@@ -85,6 +85,7 @@ PRODUCT_TYPES = [
         "type": "bandana",
         "name_template": "{breed} Bandana",
         "pillar": "celebrate",
+        "pillars": ["celebrate", "fit", "enjoy"],
         "price": 399,
         "prompt": """A premium white cotton pet bandana laid flat on a clean white background.
 The bandana features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED DIRECTLY ON the fabric center.
@@ -97,6 +98,7 @@ The illustration appears as part of the fabric, professionally screen-printed.""
         "type": "mug",
         "name_template": "{breed} Lover Mug",
         "pillar": "celebrate",
+        "pillars": ["celebrate", "dine"],
         "price": 499,
         "prompt": """A premium white ceramic coffee mug photographed on a clean white background with soft shadows.
 The mug features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED ON its curved surface.
@@ -109,6 +111,7 @@ Professional product photography, the illustration looks like it's part of the m
         "type": "keychain",
         "name_template": "{breed} Keychain",
         "pillar": "celebrate",
+        "pillars": ["celebrate", "fit"],
         "price": 299,
         "prompt": """A premium silver metal keychain with a circular pendant photographed on a clean white background.
 The pendant features a beautiful soulful watercolor illustration of a {breed_full} dog face printed on its surface.
@@ -120,6 +123,7 @@ Professional product photography, shiny metal surface, premium gift quality.""",
         "type": "frame",
         "name_template": "{breed} Portrait Frame",
         "pillar": "celebrate",
+        "pillars": ["celebrate", "farewell"],
         "price": 799,
         "prompt": """An elegant white or natural wood photo frame photographed against a clean background.
 Inside the frame is a beautiful soulful watercolor portrait illustration of a {breed_full} dog.
@@ -131,6 +135,7 @@ Professional product photography, premium home decor item.""",
         "type": "welcome_mat",
         "name_template": "{breed} Welcome Mat",
         "pillar": "stay",
+        "pillars": ["stay", "adopt"],
         "price": 1199,
         "prompt": """A premium coir doormat photographed from above on a clean floor surface.
 The mat features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED IN the center.
@@ -142,6 +147,7 @@ Professional product photography, warm inviting feel.""",
         "type": "bowl",
         "name_template": "{breed} Food Bowl",
         "pillar": "dine",
+        "pillars": ["dine"],
         "price": 599,
         "prompt": """A premium ceramic pet food bowl photographed from above on a clean white background.
 The bowl interior bottom features a beautiful soulful watercolor illustration of a {breed_full} dog face.
@@ -153,6 +159,7 @@ Professional product photography, premium pet dining accessory.""",
         "type": "tote_bag",
         "name_template": "{breed} Tote Bag",
         "pillar": "celebrate",
+        "pillars": ["celebrate", "fit", "travel"],
         "price": 699,
         "prompt": """A premium natural cotton canvas tote bag photographed flat on a clean white background.
 The bag features a large, beautiful soulful watercolor illustration of a {breed_full} dog PRINTED ON the center.
@@ -164,6 +171,7 @@ Professional product photography, fabric texture visible, dog parent gift item."
         "type": "treat_jar",
         "name_template": "{breed} Treat Jar",
         "pillar": "dine",
+        "pillars": ["dine", "learn"],
         "price": 649,
         "prompt": """A premium glass treat jar with wooden lid photographed on a clean background.
 The jar features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED ON the glass.
@@ -175,6 +183,7 @@ Professional product photography, premium pet storage accessory.""",
         "type": "blanket",
         "name_template": "{breed} Cozy Blanket",
         "pillar": "stay",
+        "pillars": ["stay", "care", "travel"],
         "price": 999,
         "prompt": """A premium soft fleece blanket draped elegantly, photographed on a clean background.
 The blanket features a large, beautiful soulful watercolor illustration of a {breed_full} dog PRINTED ON the fabric center.
@@ -187,6 +196,7 @@ Professional product photography, premium pet comfort item.""",
         "type": "collar_tag",
         "name_template": "{breed} ID Tag",
         "pillar": "care",
+        "pillars": ["fit", "emergency"],
         "price": 349,
         "prompt": """A premium silver metal pet ID tag in bone shape photographed on a clean white background.
 The tag features a small soulful watercolor illustration of a {breed_full} dog silhouette ENGRAVED on its surface.
@@ -198,12 +208,214 @@ Professional product photography, premium pet accessory.""",
         "type": "party_hat",
         "name_template": "{breed} Party Hat",
         "pillar": "celebrate",
+        "pillars": ["celebrate"],
         "price": 199,
         "prompt": """A festive dog birthday party hat cone photographed on a clean white background.
 The party hat features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED ON the fabric.
 Elegant purple and gold design accents, elastic chin strap visible.
 NO TEXT on the hat - just the beautiful watercolor illustration.
 Professional product photography, celebration theme, premium quality.""",
+    },
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # NEW PILLAR PRODUCTS - TRAVEL
+    # ═══════════════════════════════════════════════════════════════════════════
+    {
+        "type": "passport_holder",
+        "name_template": "{breed} Pet Passport Holder",
+        "pillar": "travel",
+        "pillars": ["travel", "paperwork"],
+        "price": 549,
+        "prompt": """A premium leather pet passport holder photographed on a clean white background.
+The passport holder features a beautiful soulful watercolor illustration of a {breed_full} dog face EMBOSSED on the cover.
+Elegant dark brown or navy leather with gold accents.
+The word 'PET PASSPORT' embossed below the illustration.
+Professional product photography, premium travel accessory for pet documents.""",
+    },
+    {
+        "type": "carrier_tag",
+        "name_template": "{breed} Carrier Tag",
+        "pillar": "travel",
+        "pillars": ["travel"],
+        "price": 299,
+        "prompt": """A premium luggage tag for pet carriers photographed on a clean white background.
+The tag features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED on plastic.
+Durable travel-ready design with clear window for contact info.
+'TRAVELING WITH ME' text below the illustration.
+Professional product photography, bright colors, travel theme.""",
+    },
+    {
+        "type": "travel_bowl",
+        "name_template": "{breed} Travel Bowl",
+        "pillar": "travel",
+        "pillars": ["travel", "dine"],
+        "price": 449,
+        "prompt": """A collapsible silicone pet travel bowl photographed on a clean white background.
+The bowl features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED on the inside.
+Bright teal or coral color, compact and portable design.
+NO TEXT on the bowl - just the beautiful watercolor portrait visible when empty.
+Professional product photography, adventure and travel theme.""",
+    },
+    {
+        "type": "luggage_tag",
+        "name_template": "{breed} Luggage Tag",
+        "pillar": "travel",
+        "pillars": ["travel"],
+        "price": 249,
+        "prompt": """A premium leather luggage tag photographed on a clean white background.
+The tag features a beautiful soulful watercolor illustration of a {breed_full} dog face EMBOSSED on leather.
+'TRAVELING WITH MY DOG' text elegantly embossed below.
+Professional product photography, tan or cognac leather, travel theme.""",
+    },
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # NEW PILLAR PRODUCTS - CARE
+    # ═══════════════════════════════════════════════════════════════════════════
+    {
+        "type": "pet_towel",
+        "name_template": "{breed} Bath Towel",
+        "pillar": "care",
+        "pillars": ["care"],
+        "price": 699,
+        "prompt": """A premium soft microfiber pet bath towel photographed on a clean white background.
+The towel features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED in the center.
+Soft pastel color (mint or lavender), ultra absorbent texture visible.
+'SPA DAY' text elegantly below the illustration.
+Professional product photography, grooming and wellness theme.""",
+    },
+    {
+        "type": "pet_robe",
+        "name_template": "{breed} Drying Robe",
+        "pillar": "care",
+        "pillars": ["care"],
+        "price": 899,
+        "prompt": """A cozy pet drying robe/wrap photographed on a clean white background.
+The robe features a beautiful soulful watercolor illustration of a {breed_full} dog face EMBROIDERED on the back.
+Soft terry cloth material in cream or light pink color.
+Hood and belt design for secure fit after bath time.
+Professional product photography, spa and grooming theme.""",
+    },
+    {
+        "type": "grooming_apron",
+        "name_template": "{breed} Grooming Apron",
+        "pillar": "care",
+        "pillars": ["care"],
+        "price": 599,
+        "prompt": """A premium grooming apron for pet parents photographed on a clean white background.
+The apron features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED on the chest.
+Waterproof material in navy or dark green with multiple pockets.
+'GROOMING MODE' text below the illustration.
+Professional product photography, practical grooming accessory.""",
+    },
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # NEW PILLAR PRODUCTS - LEARN
+    # ═══════════════════════════════════════════════════════════════════════════
+    {
+        "type": "treat_pouch",
+        "name_template": "{breed} Training Treat Pouch",
+        "pillar": "learn",
+        "pillars": ["learn", "fit"],
+        "price": 449,
+        "prompt": """A premium training treat pouch photographed on a clean white background.
+The pouch features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED on fabric.
+Durable nylon material in bright orange or teal with belt clip and magnetic closure.
+'GOOD BOY' text below the illustration.
+Professional product photography, training and rewards theme.""",
+    },
+    {
+        "type": "training_log",
+        "name_template": "{breed} Training Journal",
+        "pillar": "learn",
+        "pillars": ["learn"],
+        "price": 399,
+        "prompt": """A premium training journal/logbook photographed on a clean white background.
+The cover features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED on hardcover.
+Elegant design with 'TRAINING LOG' embossed in gold lettering.
+Professional product photography, education and progress theme.""",
+    },
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # NEW PILLAR PRODUCTS - FAREWELL
+    # ═══════════════════════════════════════════════════════════════════════════
+    {
+        "type": "memorial_ornament",
+        "name_template": "{breed} Memorial Ornament",
+        "pillar": "farewell",
+        "pillars": ["farewell"],
+        "price": 599,
+        "prompt": """A beautiful memorial Christmas ornament photographed on a soft white background.
+The ornament features a beautiful soulful watercolor illustration of a {breed_full} dog face ON the ceramic surface.
+Angel wings surrounding the portrait, soft golden halo effect.
+'Forever in Our Hearts' text delicately written below.
+Professional product photography, emotional and memorial theme, soft lighting.""",
+    },
+    {
+        "type": "paw_print_frame",
+        "name_template": "{breed} Paw Print Memorial Frame",
+        "pillar": "farewell",
+        "pillars": ["farewell"],
+        "price": 999,
+        "prompt": """A premium memorial frame with paw print impression area photographed on a clean background.
+The frame features a beautiful soulful watercolor illustration of a {breed_full} dog in the main photo area.
+Space for clay paw print impression on the side.
+'Always With Me' text elegantly engraved on the frame.
+Professional product photography, memorial keepsake theme, soft warm lighting.""",
+    },
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # NEW PILLAR PRODUCTS - EMERGENCY
+    # ═══════════════════════════════════════════════════════════════════════════
+    {
+        "type": "emergency_card",
+        "name_template": "{breed} Emergency Info Card",
+        "pillar": "emergency",
+        "pillars": ["emergency"],
+        "price": 199,
+        "prompt": """A premium wallet-sized emergency information card photographed on a clean white background.
+The card features a beautiful soulful watercolor illustration of a {breed_full} dog face in the corner.
+Red cross medical symbol, 'IN CASE OF EMERGENCY' header text.
+Space for pet info, vet contact, owner details clearly laid out.
+Professional product photography, medical alert theme.""",
+    },
+    {
+        "type": "medical_alert_tag",
+        "name_template": "{breed} Medical Alert Tag",
+        "pillar": "emergency",
+        "pillars": ["emergency", "fit"],
+        "price": 349,
+        "prompt": """A premium red medical alert pet tag photographed on a clean white background.
+The tag features a small soulful watercolor illustration of a {breed_full} dog silhouette ENGRAVED.
+Red enamel with white medical cross symbol.
+'MEDICAL ALERT' text prominently displayed.
+Professional product photography, emergency preparedness theme.""",
+    },
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # NEW PILLAR PRODUCTS - ENJOY
+    # ═══════════════════════════════════════════════════════════════════════════
+    {
+        "type": "play_bandana",
+        "name_template": "{breed} Play Date Bandana",
+        "pillar": "enjoy",
+        "pillars": ["enjoy", "fit"],
+        "price": 349,
+        "prompt": """A fun colorful pet bandana photographed on a clean white background.
+The bandana features a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED on bright fabric.
+Fun playful colors (yellow, orange, turquoise), 'READY TO PLAY' text.
+Professional product photography, social and fun theme.""",
+    },
+    {
+        "type": "playdate_card",
+        "name_template": "{breed} Play Date Card",
+        "pillar": "enjoy",
+        "pillars": ["enjoy"],
+        "price": 149,
+        "prompt": """A set of cute play date exchange cards photographed on a clean white background.
+The cards feature a beautiful soulful watercolor illustration of a {breed_full} dog face PRINTED at top.
+Space for pet name, parent contact, favorite activities.
+'Let's be friends!' header text in playful font.
+Professional product photography, social and friendly theme.""",
     },
 ]
 
@@ -271,12 +483,16 @@ async def seed_all_breed_products(db) -> int:
             # Build the prompt with breed name
             prompt = product_type["prompt"].format(breed_full=breed["name"])
             
+            # Get pillars - either from new "pillars" array or derive from singular "pillar"
+            pillars_list = product_type.get("pillars", [product_type["pillar"]])
+            
             # Fields that can be safely updated every time
             updatable_fields = {
                 "name": product_name,
                 "title": product_name,
                 "category": f"breed-{product_type['type']}s",
                 "pillar": product_type["pillar"],
+                "pillars": pillars_list,  # Array of pillar assignments
                 "price": product_type["price"],
                 "breed": breed["key"],
                 "breed_name": breed["name"],
