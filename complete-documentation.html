@@ -136,6 +136,78 @@
             </ul>
         </div>
 
+        <!-- CLOUDINARY SETUP GUIDE - CRITICAL FOR PERFORMANCE -->
+        <div class="section" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe); border: 3px solid #3b82f6;">
+            <h2 style="color: #1d4ed8; border-color: #3b82f6;">☁️ CLOUDINARY SETUP GUIDE (MUST DO!)</h2>
+            
+            <div class="warning-box" style="background: #fef3c7; border-color: #f59e0b; padding: 15px; margin: 15px 0;">
+                <strong>⚠️ WHY THIS IS CRITICAL:</strong><br>
+                AI mockup images are stored as base64 (2MB each!) making Product Box VERY slow.<br>
+                Cloudinary converts them to CDN URLs (100 bytes) = <strong>10x faster loading!</strong>
+            </div>
+
+            <h3>📋 Step-by-Step Setup:</h3>
+            
+            <div style="background: white; padding: 20px; border-radius: 8px; margin: 15px 0; border: 1px solid #e5e7eb;">
+                <h4 style="color: #1d4ed8;">Step 1: Get Your API Keys from Cloudinary</h4>
+                <ol>
+                    <li>Go to <a href="https://console.cloudinary.com" target="_blank">console.cloudinary.com</a></li>
+                    <li>Click <strong>"View API Keys"</strong> button (bottom right of dashboard)</li>
+                    <li>Copy these 3 values:
+                        <ul>
+                            <li><strong>Cloud Name:</strong> duoapcx1p (already known)</li>
+                            <li><strong>API Key:</strong> (numbers like 123456789012345)</li>
+                            <li><strong>API Secret:</strong> (click "eye" icon to reveal, copy the long string)</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div style="background: white; padding: 20px; border-radius: 8px; margin: 15px 0; border: 1px solid #e5e7eb;">
+                <h4 style="color: #1d4ed8;">Step 2: Add to Backend Environment</h4>
+                <p>Add these lines to <code>/app/backend/.env</code>:</p>
+                <pre style="background: #1e293b; color: #22d3ee; padding: 15px; border-radius: 8px; overflow-x: auto;">
+CLOUDINARY_CLOUD_NAME=duoapcx1p
+CLOUDINARY_API_KEY=your_api_key_here
+CLOUDINARY_API_SECRET=your_api_secret_here</pre>
+                <p style="color: #dc2626; font-weight: bold;">⚠️ Replace API_KEY and API_SECRET with YOUR actual values!</p>
+            </div>
+
+            <div style="background: white; padding: 20px; border-radius: 8px; margin: 15px 0; border: 1px solid #e5e7eb;">
+                <h4 style="color: #1d4ed8;">Step 3: Restart Backend</h4>
+                <pre style="background: #1e293b; color: #22d3ee; padding: 15px; border-radius: 8px;">sudo supervisorctl restart backend</pre>
+            </div>
+
+            <div style="background: white; padding: 20px; border-radius: 8px; margin: 15px 0; border: 1px solid #e5e7eb;">
+                <h4 style="color: #1d4ed8;">Step 4: Convert Existing Mockups</h4>
+                <ol>
+                    <li>Go to <strong>Admin Panel → Soul Products → Mockups tab</strong></li>
+                    <li>Look for <strong>"Cloud Storage (Cloudinary)"</strong> section</li>
+                    <li>Click <strong>"Convert to Cloud (10)"</strong> button</li>
+                    <li>Repeat until "Base64: 0" (all converted!)</li>
+                </ol>
+            </div>
+
+            <h3>🔧 Cloudinary APIs (File: /app/backend/mockup_cloud_storage.py):</h3>
+            <table>
+                <tr><th>Endpoint</th><th>Description</th></tr>
+                <tr><td><code>GET /api/mockups/cloud-status</code></td><td>Check config & see how many need converting</td></tr>
+                <tr><td><code>POST /api/mockups/batch-convert-to-cloud?limit=10</code></td><td>Convert 10 mockups at a time</td></tr>
+                <tr><td><code>POST /api/mockups/convert-to-cloud/{product_id}</code></td><td>Convert single product</td></tr>
+            </table>
+
+            <h3>📊 Current Status:</h3>
+            <ul>
+                <li><strong>Total Mockups:</strong> 363</li>
+                <li><strong>Base64 (slow):</strong> 65 ← Need converting</li>
+                <li><strong>Cloud (fast):</strong> 0</li>
+            </ul>
+
+            <div class="success-box">
+                <strong>Cloudinary Free Tier:</strong> 25GB storage, 25GB bandwidth/month - Perfect for 500+ mockups!
+            </div>
+        </div>
+
         <!-- Session 5 Updates -->
         <div class="section" style="background: linear-gradient(135deg, #dcfce7, #d1fae5); border: 2px solid #10b981;">
             <h2 style="color: #166534; border-color: #10b981;">📦 Session 5 Updates (March 9, 2026)</h2>

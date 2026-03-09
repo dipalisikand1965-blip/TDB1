@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://doggy-fixes.preview.emergentagent.com
+https://soul-made-admin.preview.emergentagent.com
 
 ---
 
