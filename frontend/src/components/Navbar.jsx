@@ -218,16 +218,20 @@ const Navbar = () => {
   const dropdownTimeoutRef = useRef(null);
   const recognitionRef = useRef(null);
   const hamburgerRef = useRef(null);
+  const userBtnRef = useRef(null);
+  const cartBtnRef = useRef(null);
   const { getCartCount, setIsCartOpen } = useCart();
   const { user, token, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
-  // iOS Safari: Attach native touch/click listener to hamburger button
+  // iOS Safari: Attach native touch/click listeners to mobile buttons
   useEffect(() => {
     const hamburger = hamburgerRef.current;
-    if (!hamburger) return;
+    const userBtn = userBtnRef.current;
+    const cartBtn = cartBtnRef.current;
     
+    // Hamburger button handler
     const openSidebar = (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -238,15 +242,57 @@ const Navbar = () => {
       }
     };
     
-    // Add both click and touchend for iOS Safari compatibility
-    hamburger.addEventListener('click', openSidebar, { passive: false });
-    hamburger.addEventListener('touchend', openSidebar, { passive: false });
+    // User button handler - go to dashboard
+    const handleUserClick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('[Navbar] Native user button event fired');
+      if (user) {
+        navigate('/dashboard');
+      } else {
+        navigate('/login');
+      }
+    };
+    
+    // Cart button handler
+    const handleCartClick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('[Navbar] Native cart button event fired');
+      setIsCartOpen(true);
+    };
+    
+    // Add event listeners
+    if (hamburger) {
+      hamburger.addEventListener('click', openSidebar, { passive: false });
+      hamburger.addEventListener('touchend', openSidebar, { passive: false });
+    }
+    
+    if (userBtn) {
+      userBtn.addEventListener('click', handleUserClick, { passive: false });
+      userBtn.addEventListener('touchend', handleUserClick, { passive: false });
+    }
+    
+    if (cartBtn) {
+      cartBtn.addEventListener('click', handleCartClick, { passive: false });
+      cartBtn.addEventListener('touchend', handleCartClick, { passive: false });
+    }
     
     return () => {
-      hamburger.removeEventListener('click', openSidebar);
-      hamburger.removeEventListener('touchend', openSidebar);
+      if (hamburger) {
+        hamburger.removeEventListener('click', openSidebar);
+        hamburger.removeEventListener('touchend', openSidebar);
+      }
+      if (userBtn) {
+        userBtn.removeEventListener('click', handleUserClick);
+        userBtn.removeEventListener('touchend', handleUserClick);
+      }
+      if (cartBtn) {
+        cartBtn.removeEventListener('click', handleCartClick);
+        cartBtn.removeEventListener('touchend', handleCartClick);
+      }
     };
-  }, []);
+  }, [user, navigate, setIsCartOpen]);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -705,29 +751,62 @@ const Navbar = () => {
             {/* Right: User + Cart */}
             <div className="flex items-center gap-1">
               {user ? (
-                <button
-                  onClick={() => setShowPetDropdown(!showPetDropdown)}
-                  className="p-2 hover:bg-white/10 rounded-lg"
+                <div
+                  ref={userBtnRef}
+                  role="button"
+                  tabIndex={0}
+                  className="p-2 hover:bg-white/10 rounded-lg cursor-pointer"
+                  style={{ 
+                    WebkitTapHighlightColor: 'rgba(255,255,255,0.3)',
+                    touchAction: 'manipulation',
+                    minWidth: '44px',
+                    minHeight: '44px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  data-testid="navbar-user-btn"
                 >
-                  <User className="w-5 h-5" />
-                </button>
+                  <User className="w-5 h-5" style={{ pointerEvents: 'none' }} />
+                </div>
               ) : (
-                <Link to="/login" className="p-2 hover:bg-white/10 rounded-lg">
-                  <User className="w-5 h-5" />
+                <Link 
+                  to="/login" 
+                  className="p-2 hover:bg-white/10 rounded-lg flex items-center justify-center"
+                  style={{ 
+                    WebkitTapHighlightColor: 'rgba(255,255,255,0.3)',
+                    touchAction: 'manipulation',
+                    minWidth: '44px',
+                    minHeight: '44px'
+                  }}
+                  data-testid="navbar-login-btn"
+                >
+                  <User className="w-5 h-5" style={{ pointerEvents: 'none' }} />
                 </Link>
               )}
-              <button
-                onClick={() => setIsCartOpen(true)}
-                className="relative p-2 hover:bg-white/10 rounded-lg"
+              <div
+                ref={cartBtnRef}
+                role="button"
+                tabIndex={0}
+                className="relative p-2 hover:bg-white/10 rounded-lg cursor-pointer"
+                style={{ 
+                  WebkitTapHighlightColor: 'rgba(255,255,255,0.3)',
+                  touchAction: 'manipulation',
+                  minWidth: '44px',
+                  minHeight: '44px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
                 data-testid="navbar-cart-btn"
               >
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingCart className="w-5 h-5" style={{ pointerEvents: 'none' }} />
                 {getCartCount() > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 bg-pink-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  <span className="absolute -top-0.5 -right-0.5 bg-pink-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center" style={{ pointerEvents: 'none' }}>
                     {getCartCount()}
                   </span>
                 )}
-              </button>
+              </div>
             </div>
           </div>
           
