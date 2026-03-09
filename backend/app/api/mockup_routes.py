@@ -458,7 +458,8 @@ async def get_breed_products(
     if product_type:
         query["product_type"] = product_type
     if pillar:
-        query["pillar"] = pillar
+        # pillars is an array field, check if pillar is in it
+        query["pillars"] = pillar
     if has_mockup is not None:
         if has_mockup:
             query["mockup_url"] = {"$ne": None}
