@@ -145,40 +145,54 @@ const SoulProductsManager = () => {
     }
   }, []);
 
-  const fetchBreedProducts = async (hasM = null) => {
+  const fetchBreedProducts = async (hasMockup = null) => {
     setLoadingMockups(true);
     try {
       let url = `${API_URL}/api/mockups/breed-products?limit=100`;
       if (selectedBreed) url += `&breed=${selectedBreed}`;
       if (selectedProductType) url += `&product_type=${selectedProductType}`;
-      if (hasM !== null) url += `&has_mockup=${hasM}`;
+      if (hasMockup !== null) url += `&has_mockup=${hasMockup}`;
       
+      console.log('[SoulProducts] Fetching breed products:', url);
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
+        console.log('[SoulProducts] Got breed products:', data.products?.length || 0);
         setBreedProducts(data.products || []);
+      } else {
+        console.error('[SoulProducts] API error:', res.status);
       }
     } catch (error) {
-      console.error('Failed to fetch breed products:', error);
+      console.error('[SoulProducts] Failed to fetch breed products:', error);
     }
     setLoadingMockups(false);
   };
 
   const seedBreedProducts = async () => {
     try {
+      console.log('[SoulProducts] Seeding breed products...');
       const res = await fetch(`${API_URL}/api/mockups/seed-products`, { method: 'POST' });
       if (res.ok) {
         const data = await res.json();
-        toast({ title: 'Products Seeded', description: `Created ${data.total} breed products` });
-        fetchMockupStats();
+        console.log('[SoulProducts] Seed result:', data);
+        toast({ title: 'Products Seeded', description: `Created ${data.total || data.seeded || 0} breed products` });
+        // Refresh both stats and products list
+        await fetchMockupStats();
+        await fetchBreedProducts(true);
+      } else {
+        const error = await res.json();
+        console.error('[SoulProducts] Seed error:', error);
+        toast({ title: 'Error', description: error.detail || 'Failed to seed products', variant: 'destructive' });
       }
     } catch (error) {
+      console.error('[SoulProducts] Seed exception:', error);
       toast({ title: 'Error', description: 'Failed to seed products', variant: 'destructive' });
     }
   };
 
   const startMockupGeneration = async () => {
     try {
+      console.log('[SoulProducts] Starting mockup generation...');
       const body = {
         limit: generationLimit > 0 ? generationLimit : null,
         breed_filter: selectedBreed || null,
@@ -193,14 +207,17 @@ const SoulProductsManager = () => {
       
       if (res.ok) {
         const data = await res.json();
-        toast({ title: 'Generation Started', description: data.message });
+        console.log('[SoulProducts] Generation started:', data);
+        toast({ title: 'Generation Started', description: data.message || 'Starting mockup generation...' });
         // Start polling for status
         pollGenerationStatus();
       } else {
         const err = await res.json();
+        console.error('[SoulProducts] Generation error:', err);
         toast({ title: 'Error', description: err.detail || 'Failed to start generation', variant: 'destructive' });
       }
     } catch (error) {
+      console.error('[SoulProducts] Generation exception:', error);
       toast({ title: 'Error', description: 'Failed to start generation', variant: 'destructive' });
     }
   };

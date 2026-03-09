@@ -116,22 +116,42 @@ const EnjoyManager = ({ getAuthHeader }) => {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [expRes, rsvpRes, partnerRes, statsRes, prodRes] = await Promise.all([
-        axios.get(`${API_URL}/api/enjoy/experiences?upcoming_only=false`),
-        axios.get(`${API_URL}/api/enjoy/rsvps`),
-        axios.get(`${API_URL}/api/enjoy/admin/partners`),
-        axios.get(`${API_URL}/api/enjoy/stats`),
-        axios.get(`${API_URL}/api/enjoy/products`)
-      ]);
+      // Fetch each endpoint separately to handle individual failures gracefully
+      let expData = [], rsvpData = [], partnerData = [], statsData = {}, prodData = [];
       
-      setExperiences(expRes.data.experiences || []);
-      setRsvps(rsvpRes.data.rsvps || []);
-      setPartners(partnerRes.data.partners || []);
-      setStats(statsRes.data || {});
-      setProducts(prodRes.data.products || []);
+      try {
+        const expRes = await axios.get(`${API_URL}/api/enjoy/experiences?upcoming_only=false`);
+        expData = expRes.data.experiences || [];
+      } catch (e) { console.log('Experiences fetch failed:', e.message); }
+      
+      try {
+        const rsvpRes = await axios.get(`${API_URL}/api/enjoy/rsvps`);
+        rsvpData = rsvpRes.data.rsvps || [];
+      } catch (e) { console.log('RSVPs fetch failed:', e.message); }
+      
+      try {
+        const partnerRes = await axios.get(`${API_URL}/api/enjoy/admin/partners`);
+        partnerData = partnerRes.data.partners || [];
+      } catch (e) { console.log('Partners fetch failed:', e.message); }
+      
+      try {
+        const statsRes = await axios.get(`${API_URL}/api/enjoy/stats`);
+        statsData = statsRes.data || {};
+      } catch (e) { console.log('Stats fetch failed:', e.message); }
+      
+      try {
+        const prodRes = await axios.get(`${API_URL}/api/enjoy/products`);
+        prodData = prodRes.data.products || [];
+      } catch (e) { console.log('Products fetch failed:', e.message); }
+      
+      setExperiences(expData);
+      setRsvps(rsvpData);
+      setPartners(partnerData);
+      setStats(statsData);
+      setProducts(prodData);
     } catch (error) {
       console.error('Error fetching enjoy data:', error);
-      toast({ title: 'Error', description: 'Failed to load enjoy data', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Failed to load some enjoy data', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
