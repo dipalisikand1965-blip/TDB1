@@ -226,7 +226,7 @@ const CelebratePage = () => {
     fetchDynamicPicks();
   }, [activePet?.name, token]);
   
-  // Read category from URL params on mount and when searchParams changes
+  // Read category from URL params on mount
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category');
     if (categoryFromUrl && CATEGORY_API_MAP[categoryFromUrl]) {
@@ -237,7 +237,8 @@ const CelebratePage = () => {
       }, 500);
     }
     setInitialCategoryLoaded(true);
-  }, [searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount - category changes are handled by handleSubcategoryChange
   
   // Update URL when category changes (for sharing/bookmarking)
   const handleSubcategoryChange = (subcatId) => {
@@ -294,13 +295,13 @@ const CelebratePage = () => {
     'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80'
   ];
 
-  // Rotate hero images
+  // Rotate hero images - use stable interval
   useEffect(() => {
     const interval = setInterval(() => {
-      setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+      setHeroIndex((prev) => (prev + 1) % 3); // Use constant 3 instead of HERO_IMAGES.length
     }, 5000);
     return () => clearInterval(interval);
-  }, [HERO_IMAGES.length]);
+  }, []); // Empty deps - only run once on mount
   
   // Fetch pets and soul data - consolidated
   useEffect(() => {
@@ -456,11 +457,13 @@ const CelebratePage = () => {
       const occasion = validOccasions.includes(buildBoxParam) ? buildBoxParam : 'birthday';
       setBoxOccasion(occasion);
       setShowBoxBuilder(true);
-      // Clear the param from URL
-      searchParams.delete('build_box');
-      setSearchParams(searchParams, { replace: true });
+      // Clear the param from URL - use a new URLSearchParams to avoid mutation
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('build_box');
+      setSearchParams(newParams, { replace: true });
     }
-  }, [searchParams, setSearchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount - not on searchParams change to avoid loops
 
   // Reset pagination when filters change - wait for URL params to be read first
   useEffect(() => {
