@@ -130,10 +130,16 @@ const ProductQuickViewModal = ({
           }`}
           onClick={e => e.stopPropagation()}
         >
-          {/* Header Image */}
+          {/* Header Image - PRIORITIZE original Shopify image */}
           <div className="relative h-48 sm:h-56 flex-shrink-0 overflow-hidden">
             <img
-              src={product.image_url || product.image || 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600&q=80'}
+              src={(() => {
+                // CRITICAL: For marketplace products, use original Shopify image
+                if (product.image && product.image.includes('shopify.com')) {
+                  return product.image;
+                }
+                return product.image_url || product.image || 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600&q=80';
+              })()}
               alt={product.name}
               className="w-full h-full object-cover"
             />

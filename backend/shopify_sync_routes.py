@@ -759,3 +759,138 @@ async def fix_untitled_products(username: str = Depends(verify_admin)):
     except Exception as e:
         logger.error(f"Fix untitled failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@shopify_admin_router.post("/fix-product-images")
+async def fix_product_images(username: str = Depends(verify_admin)):
+    """
+    Fix product images by re-syncing from Shopify.
+    This specifically targets products that have incorrect AI-generated images
+    and replaces them with the correct Shopify CDN images.
+    """
+    try:
+        logger.info(f"Admin {username} triggered product image fix...")
+        
+        # Fetch fresh data from Shopify
+        shopify_products = await fetch_shopify_products()
+        
+        fixed = 0
+        products_fixed = []
+        
+        for sp in shopify_products:
+            # Get the correct image from Shopify
+            images = sp.get("images", [])
+            correct_image_url = images[0].get("src") if images else ""
+            
+            if not correct_image_url:
+                continue
+            
+            # Find existing product in our DB
+            shopify_id = sp.get("id")
+            existing = await db.products_master.find_one({"shopify_id": shopify_id})
+            
+            if not existing:
+                continue
+            
+            # Check if image needs fixing (is AI-generated or doesn't match Shopify)
+            current_image = existing.get("image", "")
+            current_images_arr = existing.get("images", [])
+            
+            needs_fix = False
+            if "emergentagent.com" in current_image:
+                needs_fix = True
+            elif "shopify.com" not in current_image and correct_image_url:
+                needs_fix = True
+            elif current_images_arr and any("emergentagent.com" in img for img in current_images_arr if isinstance(img, str)):
+                needs_fix = True
+            
+            if needs_fix:
+                # Update image to correct Shopify image and clear bad images array
+                await db.products_master.update_one(
+                    {"shopify_id": shopify_id},
+                    {
+                        "$set": {
+                            "image": correct_image_url,
+                            "images": []  # Clear the incorrect images array
+                        }
+                    }
+                )
+                fixed += 1
+                products_fixed.append({
+                    "name": existing.get("name", "Unknown"),
+                    "old_image": current_image[:80] + "..." if len(current_image) > 80 else current_image,
+                    "new_image": correct_image_url[:80] + "..." if len(correct_image_url) > 80 else correct_image_url
+                })
+        
+        # Log the fix
+        await db.sync_logs.insert_one({
+            "type": "image_fix",
+            "triggered_by": username,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "products_fixed": fixed,
+            "status": "success"
+        })
+        
+        logger.info(f"Image fix completed: {fixed} products fixed")
+        return {
+            "message": "Product images fixed",
+            "fixed_count": fixed,
+            "products_fixed": products_fixed[:20],  # Show first 20
+            "total_shopify_products": len(shopify_products)
+        }
+        
+    except Exception as e:
+        logger.error(f"Image fix failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@shopify_admin_router.get("/image-audit")
+async def audit_product_images(username: str = Depends(verify_admin)):
+    """
+    Audit product images to find products with incorrect (AI-generated) images.
+    Returns a report of products that need image fixing.
+    """
+    try:
+        # Find products with emergentagent.com images (AI-generated)
+        ai_image_products = await db.products_master.find(
+            {
+                "$or": [
+                    {"image": {"$regex": "emergentagent.com"}},
+                    {"images": {"$elemMatch": {"$regex": "emergentagent.com"}}}
+                ],
+                "shopify_id": {"$exists": True}  # Only Shopify products
+            },
+            {"_id": 0, "id": 1, "name": 1, "shopify_id": 1, "image": 1, "images": 1, "shopify_handle": 1}
+        ).to_list(500)
+        
+        # Find products missing Shopify CDN images
+        missing_shopify_image = await db.products_master.find(
+            {
+                "shopify_id": {"$exists": True},
+                "image": {"$not": {"$regex": "shopify.com"}}
+            },
+            {"_id": 0, "id": 1, "name": 1, "shopify_id": 1, "image": 1, "shopify_handle": 1}
+        ).to_list(500)
+        
+        # Count totals
+        total_shopify_products = await db.products_master.count_documents({"shopify_id": {"$exists": True}})
+        products_with_correct_images = await db.products_master.count_documents({
+            "shopify_id": {"$exists": True},
+            "image": {"$regex": "shopify.com"}
+        })
+        
+        return {
+            "audit_summary": {
+                "total_shopify_products": total_shopify_products,
+                "products_with_correct_images": products_with_correct_images,
+                "products_with_ai_images": len(ai_image_products),
+                "products_missing_shopify_image": len(missing_shopify_image)
+            },
+            "ai_image_products": ai_image_products[:20],  # Sample
+            "missing_shopify_image": missing_shopify_image[:20]  # Sample
+        }
+        
+    except Exception as e:
+        logger.error(f"Image audit failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
