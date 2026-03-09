@@ -11,6 +11,7 @@ import { API_URL } from '../utils/api';
 import { createTravelRequest, showUnifiedFlowSuccess, showUnifiedFlowError } from '../utils/unifiedApi';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { usePillarContext } from '../context/PillarContext';
 import { toast } from '../hooks/use-toast';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import ProductCard from '../components/ProductCard';
@@ -143,10 +144,14 @@ const TRAVEL_EXPERIENCES = [
 const TravelPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
+  const { currentPet, pets: contextPets } = usePillarContext();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const formRef = useRef(null);
   const servicesSectionRef = useRef(null);
+  
+  // Use currentPet from context (syncs with global pet selector)
+  const activePet = currentPet;
   
   // Get travel type from URL query params
   const urlTravelType = searchParams.get('type');
