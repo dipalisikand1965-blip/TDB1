@@ -1,7 +1,41 @@
 # The Doggy Company - PRD
 
-**Last Updated:** March 9, 2026 18:45 IST  
-**Status:** Production Ready - Cloudinary Integration LIVE!
+**Last Updated:** March 9, 2026 19:15 IST  
+**Status:** Soul Made Products Expanded - 1,018 Total Products!
+
+---
+
+## 🚨 CRITICAL - READ FIRST 🚨
+
+### Soul Made Products Implementation Guide
+**READ THIS FILE:** `/app/memory/SOUL_MADE_IMPLEMENTATION_GUIDE.md`
+
+This file contains EVERYTHING about Soul Made products:
+- All 26 product types (11 original + 15 NEW)
+- All 33 breeds
+- Pillar assignments
+- API endpoints
+- How to generate mockups
+- Production sync instructions
+
+---
+
+## 📊 CURRENT STATE (March 9, 2026)
+
+| Metric | Count |
+|--------|-------|
+| **Total Products** | 1,018 |
+| **Original Products (11 types)** | 523 |
+| **NEW Products (15 types)** | 495 |
+| **With Mockups** | ~223 (22%) |
+| **Need Mockups** | ~795 |
+| **Breeds** | 33 |
+| **Product Types** | 26 |
+
+### Product Types
+**ORIGINAL 11:** bandana, mug, keychain, frame, tote_bag, party_hat, welcome_mat, blanket, collar_tag, treat_jar, bowl
+
+**NEW 15 (Created March 9):** passport_holder, carrier_tag, travel_bowl, luggage_tag, pet_towel, pet_robe, grooming_apron, treat_pouch, training_log, memorial_ornament, paw_print_frame, emergency_card, medical_alert_tag, play_bandana, playdate_card
 
 ---
 
@@ -16,33 +50,10 @@ CLOUDINARY_API_KEY=396757862875471
 CLOUDINARY_API_SECRET=uwvyt1zf8vPF62SMeHGFn3k3O_A
 ```
 
-**Why This Matters:**
-- Converts large base64 mockup images (~2MB each) to cloud URLs (~100 bytes)
-- Improves admin page load times dramatically
-- Images auto-converted to WebP format with smart compression
-- Persistent storage across deployments
-- NEW mockups automatically upload to Cloudinary!
-
-**Current Status (March 9, 2026):**
-- ✅ ALL 66 mockups on Cloudinary
-- ✅ 0 base64 images remaining
-- ✅ NEW mockups auto-upload to Cloudinary
-- 457 products pending mockup generation (12.6% complete)
-
-**How to Sync to Production:**
-1. In Admin Panel, find the **☁️ SYNC → PROD** button (next to MASTER SYNC)
-2. Click it to push all Cloudinary mockup URLs to production
-3. This calls the export endpoint on preview and import on production
-
-**API Endpoints:**
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/mockups/cloud-status` | GET | Check config and stats |
-| `/api/mockups/batch-convert-to-cloud?limit=10` | POST | Convert batch to cloud |
-| `/api/mockups/export-mockup-urls` | GET | Export all Cloudinary URLs for sync |
-| `/api/mockups/import-mockup-urls` | POST | Import URLs into production |
-
-**Backend File:** `/app/backend/mockup_cloud_storage.py`
+**Key Features:**
+- ✅ NEW mockups automatically upload to Cloudinary
+- ✅ "SYNC → PROD" button in Admin Panel
+- ✅ Export/Import endpoints for production sync
 
 ---
 

@@ -444,22 +444,31 @@
             </div>
 
             <div class="card">
-                <div class="card-title">NEW Products to Create (44 types)</div>
+                <div class="card-title">NEW Products to Create (15 types) - CREATED March 9, 2026</div>
                 <table style="width: 100%; margin-top: 10px;">
-                    <tr><th>Pillar</th><th>New Products</th></tr>
-                    <tr><td style="color: #e91e63;"><strong>CELEBRATE</strong></td><td>cake_topper, birthday_banner, milestone_cards</td></tr>
-                    <tr><td style="color: #ff9800;"><strong>DINE</strong></td><td>feeding_mat, snack_pouch, water_bottle</td></tr>
-                    <tr><td style="color: #9c27b0;"><strong>STAY</strong></td><td>door_sign, sitter_card, pillowcase</td></tr>
-                    <tr><td style="color: #2196f3;"><strong>TRAVEL</strong></td><td>passport_holder, carrier_tag, travel_bowl, luggage_tag, travel_blanket, car_seat_cover</td></tr>
-                    <tr><td style="color: #4caf50;"><strong>CARE</strong></td><td>pet_towel, pet_robe, grooming_apron, health_journal, first_aid_pouch</td></tr>
-                    <tr><td style="color: #00bcd4;"><strong>ENJOY</strong></td><td>play_bandana, playdate_card, photo_props, friendly_badge</td></tr>
-                    <tr><td style="color: #8bc34a;"><strong>FIT</strong></td><td>poop_bag_holder, step_tracker</td></tr>
-                    <tr><td style="color: #3f51b5;"><strong>LEARN</strong></td><td>treat_pouch, training_log, achievement_badge, clicker_holder, graduation_bandana</td></tr>
-                    <tr><td style="color: #607d8b;"><strong>PAPERWORK</strong></td><td>document_folder, vaccination_card, pet_passport, records_binder</td></tr>
-                    <tr><td style="color: #795548;"><strong>ADVISORY</strong></td><td>consultation_notes, question_journal</td></tr>
-                    <tr><td style="color: #f44336;"><strong>EMERGENCY</strong></td><td>emergency_card, medical_alert_tag, window_sticker, contact_card</td></tr>
-                    <tr><td style="color: #9e9e9e;"><strong>FAREWELL</strong></td><td>memorial_ornament, paw_print_frame, memory_book, garden_stone, rainbow_card</td></tr>
-                    <tr><td style="color: #ffeb3b;"><strong>ADOPT</strong></td><td>gotcha_card, adoption_cert, new_pet_checklist</td></tr>
+                    <tr><th>Pillar</th><th>New Products</th><th>Status</th></tr>
+                    <tr><td style="color: #2196f3;"><strong>TRAVEL</strong></td><td>passport_holder, carrier_tag, travel_bowl, luggage_tag</td><td>✅ Created, ⏳ Need Mockups</td></tr>
+                    <tr><td style="color: #4caf50;"><strong>CARE</strong></td><td>pet_towel, pet_robe, grooming_apron</td><td>✅ Created, ⏳ Need Mockups</td></tr>
+                    <tr><td style="color: #3f51b5;"><strong>LEARN</strong></td><td>treat_pouch, training_log</td><td>✅ Created, ⏳ Need Mockups</td></tr>
+                    <tr><td style="color: #9e9e9e;"><strong>FAREWELL</strong></td><td>memorial_ornament, paw_print_frame</td><td>✅ Created, ⏳ Need Mockups</td></tr>
+                    <tr><td style="color: #f44336;"><strong>EMERGENCY</strong></td><td>emergency_card, medical_alert_tag</td><td>✅ Created, ⏳ Need Mockups</td></tr>
+                    <tr><td style="color: #00bcd4;"><strong>ENJOY</strong></td><td>play_bandana, playdate_card</td><td>✅ Created, ⏳ Need Mockups</td></tr>
+                </table>
+                <p style="margin-top: 15px; font-weight: bold; color: #e91e63;">
+                    ⚠️ 495 NEW products created in database. Need to generate mockups!
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Current Stats (March 9, 2026)</div>
+                <table style="width: 100%; margin-top: 10px;">
+                    <tr><th>Metric</th><th>Count</th></tr>
+                    <tr><td>Total Products</td><td><strong>1,018</strong></td></tr>
+                    <tr><td>Original Products (11 types)</td><td>523</td></tr>
+                    <tr><td>NEW Products (15 types)</td><td>495</td></tr>
+                    <tr><td>With Mockups</td><td>~223 (22%)</td></tr>
+                    <tr><td>Need Mockups</td><td>~795</td></tr>
+                    <tr><td>Breeds</td><td>33</td></tr>
                 </table>
             </div>
 
@@ -486,6 +495,35 @@
                         <li><strong>Phase 4:</strong> Create FAREWELL products (memorial_ornament, paw_print_frame)</li>
                         <li><strong>Phase 5:</strong> Create remaining products (LEARN, EMERGENCY, PAPERWORK, etc.)</li>
                     </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">How to Generate Mockups for NEW Products</div>
+                <p style="margin-bottom: 15px;">The 495 NEW products need mockups generated. Run these commands:</p>
+                <div class="code-block">
+# Option 1: Generate by product type (recommended)
+API_URL="https://soul-made-admin.preview.emergentagent.com"
+
+# Generate all 33 breeds for each new product type:
+for type in passport_holder carrier_tag travel_bowl luggage_tag \
+            pet_towel pet_robe grooming_apron treat_pouch training_log \
+            memorial_ornament paw_print_frame emergency_card \
+            medical_alert_tag play_bandana playdate_card; do
+  echo "Generating $type..."
+  curl -X POST "$API_URL/api/mockups/generate-batch" \
+    -H "Content-Type: application/json" \
+    -d "{\"limit\": 33, \"product_type_filter\": \"$type\"}"
+  # Wait for completion before next type
+  while curl -s "$API_URL/api/mockups/status" | grep -q '"running": true'; do
+    sleep 30
+  done
+done
+                </div>
+                <div class="code-block">
+# Option 2: Check progress
+curl "$API_URL/api/mockups/stats" | python3 -m json.tool
+curl "$API_URL/api/mockups/status" | python3 -m json.tool
                 </div>
             </div>
 
@@ -601,8 +639,20 @@ curl -s "$API_URL/api/mockups/stats" | python3 -m json.tool
                     <td>/app/memory/SOUL_MADE_PRODUCT_PLAN.md</td>
                 </tr>
                 <tr>
+                    <td><strong>Soul Made Implementation Guide</strong></td>
+                    <td><strong>/app/memory/SOUL_MADE_IMPLEMENTATION_GUIDE.md</strong></td>
+                </tr>
+                <tr>
                     <td>SoulMadeCollection Component</td>
                     <td>/app/frontend/src/components/SoulMadeCollection.jsx</td>
+                </tr>
+                <tr>
+                    <td>Mockup Generator Script</td>
+                    <td>/app/backend/scripts/generate_all_mockups.py</td>
+                </tr>
+                <tr>
+                    <td>Mockup API Routes</td>
+                    <td>/app/backend/app/api/mockup_routes.py</td>
                 </tr>
             </table>
         </div>
