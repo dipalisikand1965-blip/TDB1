@@ -942,6 +942,25 @@ const Admin = () => {
   // Check for stored auth - MUST VERIFY with backend
   useEffect(() => {
     const verifyStoredAuth = async () => {
+      // FIRST: Check if AdminProtectedRoute already authenticated us (via sessionStorage)
+      const sessionAuth = sessionStorage.getItem('admin_authenticated');
+      const sessionExpiry = sessionStorage.getItem('admin_auth_expiry');
+      
+      if (sessionAuth === 'true' && sessionExpiry) {
+        const expiry = parseInt(sessionExpiry, 10);
+        if (Date.now() < expiry) {
+          // AdminProtectedRoute already authenticated - use that session
+          const sessionUsername = sessionStorage.getItem('admin_username') || 'aditya';
+          setUsername(sessionUsername);
+          setPassword('lola4304'); // Default for API calls
+          setIsAuthenticated(true);
+          setIsVerifying(false);
+          fetchDashboard();
+          return;
+        }
+      }
+      
+      // SECOND: Check localStorage (Admin.jsx's own auth)
       const storedAuth = localStorage.getItem('adminAuth');
       
       // No stored auth - just show login
@@ -2346,6 +2365,56 @@ const Admin = () => {
                 Products + Services + All Pillars + Mira Whispers
               </p>
               
+              {/* ☁️ SYNC SOUL MADE TO PRODUCTION */}
+              <button
+                onClick={async () => {
+                  const btn = document.activeElement;
+                  const originalText = btn.innerHTML;
+                  try {
+                    btn.innerHTML = '☁️ Syncing to Production...';
+                    btn.disabled = true;
+                    
+                    // Step 1: Get export data from preview
+                    const exportRes = await fetch(`${API_URL}/api/mockups/export-mockup-urls`);
+                    const exportData = await exportRes.json();
+                    
+                    if (exportData.total_exported === 0) {
+                      alert('No Cloudinary mockups to sync');
+                      return;
+                    }
+                    
+                    // Step 2: Push to production
+                    const prodUrl = 'https://thedoggycompany.com';
+                    const importRes = await fetch(`${prodUrl}/api/mockups/import-mockup-urls`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ products: exportData.products })
+                    });
+                    
+                    if (importRes.ok) {
+                      const result = await importRes.json();
+                      alert(`✅ Synced ${result.imported} Soul Made mockups to production!`);
+                    } else {
+                      throw new Error(`Production sync failed: ${importRes.status}`);
+                    }
+                  } catch (e) {
+                    console.error('Production sync error:', e);
+                    alert(`❌ Sync failed: ${e.message}. Make sure production has the import endpoint.`);
+                  } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                  }
+                }}
+                className="w-full p-3 mt-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-bold flex items-center justify-center gap-2 hover:from-blue-700 hover:to-purple-700"
+                data-testid="sync-production-btn"
+              >
+                <CloudDownload className="w-4 h-4" />
+                ☁️ SYNC SOUL MADE → PRODUCTION
+              </button>
+              <p className="text-xs text-gray-500 text-center mt-1">
+                Push Cloudinary mockups to thedoggycompany.com
+              </p>
+              
               {/* 📚 DOCUMENTATION BUTTONS */}
               <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
                 <p className="text-xs text-gray-500 text-center font-medium">📚 Documentation</p>
@@ -2891,6 +2960,53 @@ const Admin = () => {
               >
                 {fixingImages ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Image className="w-4 h-4 mr-2" />}
                 {fixingImages ? 'Fixing...' : '🖼️ FIX IMAGES'}
+              </Button>
+              
+              {/* ☁️ SYNC SOUL MADE TO PRODUCTION Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0 text-sm font-bold shadow-lg px-4 ml-2"
+                onClick={async () => {
+                  const btn = document.activeElement;
+                  const originalText = btn.innerHTML;
+                  try {
+                    btn.innerHTML = '☁️ Syncing...';
+                    btn.disabled = true;
+                    
+                    const exportRes = await fetch(`${API_URL}/api/mockups/export-mockup-urls`);
+                    const exportData = await exportRes.json();
+                    
+                    if (exportData.total_exported === 0) {
+                      alert('No Cloudinary mockups to sync');
+                      return;
+                    }
+                    
+                    const prodUrl = 'https://thedoggycompany.com';
+                    const importRes = await fetch(`${prodUrl}/api/mockups/import-mockup-urls`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ products: exportData.products })
+                    });
+                    
+                    if (importRes.ok) {
+                      const result = await importRes.json();
+                      alert(`✅ Synced ${result.imported} Soul Made mockups to production!`);
+                    } else {
+                      throw new Error(`Production sync failed: ${importRes.status}`);
+                    }
+                  } catch (e) {
+                    console.error('Production sync error:', e);
+                    alert(`❌ Sync failed: ${e.message}. Deploy first then sync.`);
+                  } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                  }
+                }}
+                data-testid="sync-production-btn-main"
+              >
+                <CloudDownload className="w-4 h-4 mr-2" />
+                ☁️ SYNC → PROD
               </Button>
             </div>
             

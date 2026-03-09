@@ -7,7 +7,7 @@
 
 ## ☁️ CLOUDINARY INTEGRATION (March 9, 2026)
 
-### Status: ✅ CONFIGURED AND WORKING
+### Status: ✅ FULLY CONFIGURED AND WORKING
 
 **Credentials (in `/app/backend/.env`):**
 ```
@@ -21,12 +21,7 @@ CLOUDINARY_API_SECRET=uwvyt1zf8vPF62SMeHGFn3k3O_A
 - Improves admin page load times dramatically
 - Images auto-converted to WebP format with smart compression
 - Persistent storage across deployments
-
-**How to Use:**
-1. Go to Admin → Soul Products → AI Mockups tab
-2. Find "Cloud Storage (Cloudinary)" section
-3. Click "Convert to Cloud (10)" button
-4. Repeat until all images converted (currently 60 pending)
+- NEW mockups automatically upload to Cloudinary!
 
 **Current Status (March 9, 2026):**
 - ✅ ALL 66 mockups on Cloudinary
@@ -34,12 +29,18 @@ CLOUDINARY_API_SECRET=uwvyt1zf8vPF62SMeHGFn3k3O_A
 - ✅ NEW mockups auto-upload to Cloudinary
 - 457 products pending mockup generation (12.6% complete)
 
+**How to Sync to Production:**
+1. In Admin Panel, find the **☁️ SYNC → PROD** button (next to MASTER SYNC)
+2. Click it to push all Cloudinary mockup URLs to production
+3. This calls the export endpoint on preview and import on production
+
 **API Endpoints:**
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/mockups/cloud-status` | GET | Check config and stats |
 | `/api/mockups/batch-convert-to-cloud?limit=10` | POST | Convert batch to cloud |
-| `/api/mockups/convert-to-cloud/{product_id}` | POST | Convert single product |
+| `/api/mockups/export-mockup-urls` | GET | Export all Cloudinary URLs for sync |
+| `/api/mockups/import-mockup-urls` | POST | Import URLs into production |
 
 **Backend File:** `/app/backend/mockup_cloud_storage.py`
 
