@@ -65,21 +65,21 @@ const OverviewTab = ({
               </Button>
             )}
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-2">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-purple-500/30" style={{ WebkitOverflowScrolling: 'touch' }}>
             {pets.map((pet) => (
               <button
                 key={pet.id}
                 onClick={() => onPetChange?.(pet.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all flex-shrink-0 ${
                   currentPet?.id === pet.id 
                     ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30' 
                     : 'bg-slate-800/50 border border-white/10 text-slate-300 hover:border-purple-500/50'
                 }`}
                 data-testid={`pet-selector-${pet.name?.toLowerCase()}`}
               >
-                <span className="text-lg">{pet.species === 'cat' ? '🐱' : '🐕'}</span>
+                <span className="text-lg flex-shrink-0" style={{ lineHeight: 1 }}>{pet.species === 'cat' ? '🐱' : '🐕'}</span>
                 <span className="font-medium">{pet.name}</span>
-                {pet.overall_score >= 80 && <span className="text-xs">⭐</span>}
+                {pet.overall_score >= 80 && <span className="text-xs flex-shrink-0" style={{ lineHeight: 1 }}>⭐</span>}
               </button>
             ))}
           </div>

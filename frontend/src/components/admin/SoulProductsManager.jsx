@@ -823,11 +823,11 @@ const SoulProductsManager = () => {
                 <div className="text-sm text-gray-600">Total Breed Products</div>
               </Card>
               <Card className="p-4 bg-gradient-to-br from-green-50 to-emerald-50">
-                <div className="text-3xl font-bold text-green-700">{mockupStats.with_mockups}</div>
+                <div className="text-3xl font-bold text-green-700">{mockupStats.products_with_mockups || 0}</div>
                 <div className="text-sm text-gray-600">With Mockups</div>
               </Card>
               <Card className="p-4 bg-gradient-to-br from-amber-50 to-orange-50">
-                <div className="text-3xl font-bold text-amber-700">{mockupStats.without_mockups}</div>
+                <div className="text-3xl font-bold text-amber-700">{mockupStats.products_without_mockups || 0}</div>
                 <div className="text-sm text-gray-600">Pending</div>
               </Card>
               <Card className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
