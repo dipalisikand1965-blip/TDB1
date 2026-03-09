@@ -620,9 +620,16 @@ const Navbar = () => {
   };
 
   return (
-    <header className={`sticky top-0 bg-white shadow-sm ${isMenuOpen ? 'z-[10000]' : 'z-50'}`}>
-      {/* Top Banner */}
-      <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 text-white py-1.5 px-4 text-center text-xs font-medium">
+    <header className={`sticky top-0 bg-white shadow-sm ${isMenuOpen ? 'z-[10000]' : 'z-50'}`} style={{ WebkitOverflowScrolling: 'touch' }}>
+      {/* Top Banner - Scrollable on iOS */}
+      <div 
+        className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 text-white py-1.5 px-4 text-center text-xs font-medium overflow-x-auto whitespace-nowrap"
+        style={{ 
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none'
+        }}
+      >
         <span>✨ The World's First Pet Life Operating System — Your Pet Concierge® </span>
       </div>
 
@@ -634,6 +641,7 @@ const Navbar = () => {
             {/* Left: Hamburger Menu - Opens Paw Sidebar on mobile */}
             <button
               onClick={(e) => {
+                e.preventDefault();
                 e.stopPropagation();
                 console.log('[Navbar] Hamburger clicked');
                 // Try both methods - event and direct function call
@@ -643,7 +651,12 @@ const Navbar = () => {
                   window.__openMemberMobileNav();
                 }
               }}
+              onTouchStart={(e) => {
+                // Prevent any default touch behavior on iOS
+                e.stopPropagation();
+              }}
               onTouchEnd={(e) => {
+                e.preventDefault();
                 e.stopPropagation();
                 console.log('[Navbar] Hamburger touchEnd');
                 window.dispatchEvent(new CustomEvent('openPetSidebar'));
@@ -656,12 +669,16 @@ const Navbar = () => {
                 WebkitTapHighlightColor: 'rgba(255,255,255,0.2)',
                 touchAction: 'manipulation',
                 minWidth: '44px',
-                minHeight: '44px'
+                minHeight: '44px',
+                WebkitUserSelect: 'none',
+                userSelect: 'none',
+                position: 'relative',
+                zIndex: 100
               }}
               data-testid="navbar-mobile-menu-btn"
               aria-label="Open navigation menu"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-6 h-6 pointer-events-none" />
             </button>
             
             {/* Center: Logo + Company Name */}
@@ -709,7 +726,7 @@ const Navbar = () => {
           
           {/* Mobile: Mira Search Bar Row (below main header) - HIDDEN on pillar pages per doctrine */}
           {!isPillarPage && (
-            <div className="sm:hidden pb-3 relative z-[100]">
+            <div className="sm:hidden pb-3 relative z-10">
               <MiraSearchPanel 
                 variant="hero"
                 placeholder={primaryPet ? `Ask Mira for ${primaryPet.name}...` : "Ask Mira anything..."}

@@ -194,6 +194,43 @@ a.btn,
 }
 
 /* ============================================
+   iOS SAFARI SPECIFIC TOUCH FIXES
+   Critical for hamburger menu & navigation
+   ============================================ */
+
+/* Ensure hamburger menu is always clickable on iOS */
+[data-testid="navbar-mobile-menu-btn"] {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  position: relative;
+  z-index: 100;
+}
+
+/* Prevent SVG icons from capturing touch events */
+[data-testid="navbar-mobile-menu-btn"] svg,
+[data-testid="navbar-mobile-menu-btn"] * {
+  pointer-events: none;
+}
+
+/* iOS Safari: Ensure sticky headers don't block scrolling */
+@supports (-webkit-touch-callout: none) {
+  header[class*="sticky"] {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  /* Ensure main content is scrollable */
+  main, [role="main"], .main-content {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+}
+
+/* ============================================
    SAFE AREA UTILITIES
    ============================================ */
 .safe-area-top {
