@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://doggy-preview.preview.emergentagent.com
+https://doggy-fixes.preview.emergentagent.com
 ```
 
 ---
