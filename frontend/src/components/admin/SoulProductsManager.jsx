@@ -145,7 +145,7 @@ const SoulProductsManager = () => {
     }
   }, []);
 
-  const fetchBreedProducts = async (hasMockup = null) => {
+  const fetchBreedProducts = useCallback(async (hasMockup = null) => {
     setLoadingMockups(true);
     try {
       let url = `${API_URL}/api/mockups/breed-products?limit=100`;
@@ -166,7 +166,7 @@ const SoulProductsManager = () => {
       console.error('[SoulProducts] Failed to fetch breed products:', error);
     }
     setLoadingMockups(false);
-  };
+  }, [selectedBreed, selectedProductType]);
 
   const seedBreedProducts = async () => {
     try {
@@ -264,10 +264,11 @@ const SoulProductsManager = () => {
   // Load mockup data when switching to mockups tab
   useEffect(() => {
     if (activeSubTab === 'mockups') {
+      console.log('[SoulProducts] Mockups tab active, fetching data...');
       fetchMockupStats();
-      fetchBreedProducts(true);
+      fetchBreedProducts(true); // Fetch products with mockups
     }
-  }, [activeSubTab, fetchMockupStats]);
+  }, [activeSubTab, fetchMockupStats, fetchBreedProducts]);
 
   const updateProductTier = async (productId, tier) => {
     try {

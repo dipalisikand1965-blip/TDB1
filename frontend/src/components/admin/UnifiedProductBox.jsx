@@ -1074,8 +1074,12 @@ const UnifiedProductBox = () => {
                             className="relative group"
                             title="Click to edit image"
                           >
-                            {product.thumbnail || product.image_url || product.images?.[0] ? (
-                              <img src={product.thumbnail || product.image_url || product.images?.[0]} alt="" className="w-10 h-10 rounded object-cover group-hover:opacity-70 transition-opacity" />
+                            {product.image || product.mockup_url || product.thumbnail || product.image_url || product.images?.[0] ? (
+                              <img 
+                                src={product.image || product.mockup_url || product.thumbnail || product.image_url || product.images?.[0]} 
+                                alt="" 
+                                className="w-10 h-10 rounded object-cover group-hover:opacity-70 transition-opacity" 
+                              />
                             ) : (
                               <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center group-hover:bg-purple-100 transition-colors">
                                 <Package className="w-5 h-5 text-gray-400 group-hover:text-purple-500" />
