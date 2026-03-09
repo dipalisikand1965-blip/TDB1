@@ -10,6 +10,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../utils/api';
 import { 
   PawPrint, 
   X, 
@@ -33,13 +35,18 @@ import {
   Music,
   HeartHandshake,
   Flower2,
-  Dog
+  Dog,
+  ChevronRight,
+  Check
 } from 'lucide-react';
 
 const MemberMobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [pets, setPets] = useState([]);
+  const [selectedPetId, setSelectedPetId] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, token } = useAuth();
   
   // Debug: Log component mount
   console.log('[MemberMobileNav] Component rendering, pathname:', location.pathname);
@@ -47,6 +54,55 @@ const MemberMobileNav = () => {
   // Hide only on admin, login, register pages - these have their own navigation
   const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password', '/agent'];
   const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path));
+  
+  // Fetch user's pets
+  useEffect(() => {
+    if (user && token) {
+      const fetchPets = async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/pets`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setPets(data.pets || []);
+            // Get stored selected pet
+            const storedPetId = localStorage.getItem('selectedPetId');
+            if (storedPetId) {
+              setSelectedPetId(storedPetId);
+            } else if (data.pets?.length > 0) {
+              setSelectedPetId(data.pets[0].id);
+            }
+          }
+        } catch (e) {
+          console.error('[MemberMobileNav] Failed to fetch pets:', e);
+        }
+      };
+      fetchPets();
+    }
+  }, [user, token]);
+  
+  // Handle pet selection
+  const handlePetSelect = (pet) => {
+    setSelectedPetId(pet.id);
+    localStorage.setItem('selectedPetId', pet.id);
+    localStorage.setItem('selectedPetName', pet.name || '');
+    localStorage.setItem('selectedPetBreed', pet.breed || '');
+    
+    // Dispatch custom event for other components
+    window.dispatchEvent(new CustomEvent('petSelectionChanged', { 
+      detail: { 
+        petId: pet.id, 
+        petName: pet.name || '', 
+        petBreed: pet.breed || '',
+        pet: pet 
+      } 
+    }));
+    
+    // Navigate to pet home with selected pet
+    navigate(`/pet-home?pet=${pet.id}`);
+    setIsOpen(false);
+  };
   
   // Listen for global event to open sidebar (from MobileNavBar "My Pet" button or Navbar hamburger)
   useEffect(() => {
@@ -249,6 +305,72 @@ const MemberMobileNav = () => {
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Pet Switcher Section - Only show if user has multiple pets */}
+        {pets.length > 1 && (
+          <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100">
+            <p className="text-xs font-bold text-purple-700 uppercase mb-3 tracking-wide flex items-center gap-2">
+              <PawPrint className="w-4 h-4" />
+              Switch Pet
+            </p>
+            <div className="space-y-2">
+              {pets.map((pet) => {
+                const isSelected = selectedPetId === pet.id;
+                return (
+                  <div
+                    key={pet.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => handlePetSelect(pet)}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      handlePetSelect(pet);
+                    }}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all touch-manipulation active:scale-95 ${
+                      isSelected 
+                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg' 
+                        : 'bg-white border border-purple-200 text-gray-800 hover:border-purple-400'
+                    }`}
+                    style={{ 
+                      WebkitTapHighlightColor: 'transparent',
+                      minHeight: '52px'
+                    }}
+                    data-testid={`switch-pet-${pet.name?.toLowerCase()}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {pet.photo ? (
+                        <img 
+                          src={pet.photo} 
+                          alt={pet.name} 
+                          className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
+                          style={{ pointerEvents: 'none' }}
+                        />
+                      ) : (
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          isSelected ? 'bg-white/20' : 'bg-purple-100'
+                        }`}>
+                          <PawPrint className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-purple-500'}`} style={{ pointerEvents: 'none' }} />
+                        </div>
+                      )}
+                      <div style={{ pointerEvents: 'none' }}>
+                        <p className={`font-semibold text-sm ${isSelected ? 'text-white' : 'text-gray-900'}`}>{pet.name}</p>
+                        <p className={`text-xs ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>{pet.breed || 'Good Pet'}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2" style={{ pointerEvents: 'none' }}>
+                      <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+                        isSelected ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-700'
+                      }`}>
+                        {Math.round(pet.overall_score || 0)}%
+                      </span>
+                      {isSelected && <Check className="w-5 h-5" />}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Navigation Sections */}
         <div className="p-4 space-y-4 pb-24" style={{ paddingBottom: 'calc(96px + env(safe-area-inset-bottom, 0px))' }}>
