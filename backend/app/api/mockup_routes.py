@@ -490,7 +490,7 @@ async def get_breed_product(product_id: str):
 
 @router.post("/seed-products")
 async def seed_breed_products():
-    """Seed all 396 breed products (33 breeds × 12 types) into database."""
+    """Seed all breed products (33 breeds × all product types) into database."""
     from scripts.generate_all_mockups import seed_all_breed_products, BREEDS, PRODUCT_TYPES
     
     db = get_db()
@@ -502,4 +502,87 @@ async def seed_breed_products():
         "breeds": len(BREEDS),
         "product_types": len(PRODUCT_TYPES),
         "total": count
+    }
+
+
+@router.post("/seed-new-products")
+async def seed_new_product_types():
+    """
+    Seed ONLY the NEW product types (Travel, Care, Learn, Farewell, Emergency, Enjoy).
+    This creates 33 breeds × 14 new product types = 462 new products.
+    Existing products are NOT affected.
+    """
+    from scripts.generate_all_mockups import BREEDS, PRODUCT_TYPES
+    from datetime import datetime
+    
+    db = get_db()
+    
+    # New product types added in this update
+    new_types = [
+        "passport_holder", "carrier_tag", "travel_bowl", "luggage_tag",
+        "pet_towel", "pet_robe", "grooming_apron",
+        "treat_pouch", "training_log",
+        "memorial_ornament", "paw_print_frame",
+        "emergency_card", "medical_alert_tag",
+        "play_bandana", "playdate_card"
+    ]
+    
+    products_created = 0
+    
+    for breed in BREEDS:
+        for product_type in PRODUCT_TYPES:
+            if product_type["type"] not in new_types:
+                continue
+                
+            product_name = product_type["name_template"].format(breed=breed["short"])
+            product_id = f"breed-{breed['key']}-{product_type['type']}"
+            
+            # Build the prompt with breed name
+            prompt = product_type["prompt"].format(breed_full=breed["name"])
+            
+            # Get pillars
+            pillars_list = product_type.get("pillars", [product_type["pillar"]])
+            
+            # Fields that can be safely updated every time
+            updatable_fields = {
+                "name": product_name,
+                "title": product_name,
+                "category": f"breed-{product_type['type']}s",
+                "pillar": product_type["pillar"],
+                "pillars": pillars_list,
+                "price": product_type["price"],
+                "breed": breed["key"],
+                "breed_name": breed["name"],
+                "product_type": product_type["type"],
+                "soul_tier": "soul_made",
+                "mockup_prompt": prompt,
+                "description": f"Beautiful {product_name} featuring soulful watercolor illustration. Personalize with your pet's name.",
+                "tags": ["breed-specific", breed["key"], product_type["type"], "personalized", "soul-made"],
+                "in_stock": True,
+                "updated_at": datetime.utcnow().isoformat()
+            }
+            
+            # Fields that should ONLY be set on first insert (never overwrite)
+            insert_only_fields = {
+                "id": product_id,
+                "mockup_url": None,
+                "created_at": datetime.utcnow().isoformat()
+            }
+            
+            # Use $set for updates, $setOnInsert for fields we don't want to overwrite
+            await db.breed_products.update_one(
+                {"id": product_id},
+                {
+                    "$set": updatable_fields,
+                    "$setOnInsert": insert_only_fields
+                },
+                upsert=True
+            )
+            products_created += 1
+    
+    return {
+        "message": f"Seeded {products_created} NEW product types",
+        "new_product_types": new_types,
+        "breeds": len(BREEDS),
+        "total_created": products_created
     }
