@@ -216,15 +216,18 @@ async def get_mockup_stats():
     db = get_db()
     
     total = await db.breed_products.count_documents({})
-    with_mockups = await db.breed_products.count_documents({"mockup_url": {"$ne": None}})
-    without_mockups = await db.breed_products.count_documents({"mockup_url": None})
+    # Count products with actual mockup URLs (not null, not empty string)
+    with_mockups = await db.breed_products.count_documents({
+        "mockup_url": {"$nin": [None, "", "null"]}
+    })
+    without_mockups = total - with_mockups
     
     # By product type
     pipeline = [
         {"$group": {
             "_id": "$product_type", 
             "count": {"$sum": 1}, 
-            "with_mockups": {"$sum": {"$cond": [{"$ne": ["$mockup_url", None]}, 1, 0]}}
+            "with_mockups": {"$sum": {"$cond": [{"$and": [{"$ne": ["$mockup_url", None]}, {"$ne": ["$mockup_url", ""]}]}, 1, 0]}}
         }}
     ]
     by_type = await db.breed_products.aggregate(pipeline).to_list(20)
@@ -234,15 +237,15 @@ async def get_mockup_stats():
         {"$group": {
             "_id": "$breed", 
             "count": {"$sum": 1}, 
-            "with_mockups": {"$sum": {"$cond": [{"$ne": ["$mockup_url", None]}, 1, 0]}}
+            "with_mockups": {"$sum": {"$cond": [{"$and": [{"$ne": ["$mockup_url", None]}, {"$ne": ["$mockup_url", ""]}]}, 1, 0]}}
         }}
     ]
     by_breed = await db.breed_products.aggregate(pipeline).to_list(40)
     
     return {
         "total_products": total,
-        "with_mockups": with_mockups,
-        "without_mockups": without_mockups,
+        "products_with_mockups": with_mockups,
+        "products_without_mockups": without_mockups,
         "completion_percentage": round((with_mockups / total * 100) if total > 0 else 0, 1),
         "by_product_type": {item["_id"]: {"total": item["count"], "with_mockups": item["with_mockups"]} for item in by_type if item["_id"]},
         "by_breed": {item["_id"]: {"total": item["count"], "with_mockups": item["with_mockups"]} for item in by_breed if item["_id"]},
