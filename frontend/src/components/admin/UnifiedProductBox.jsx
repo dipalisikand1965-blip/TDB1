@@ -18,7 +18,7 @@ import {
   Gift, Eye, EyeOff, Tag, DollarSign, Shield, Bot, Truck,
   AlertTriangle, Check, ChevronDown, ChevronRight, RefreshCw,
   PawPrint, Heart, Sparkles, ShoppingBag, Loader2, BarChart3,
-  Download, Image, ImagePlus, Upload
+  Download, Image, ImagePlus, Upload, Palette, Percent, Box, Layers
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
@@ -88,6 +88,19 @@ const UnifiedProductBox = () => {
   const [exporting, setExporting] = useState(false);
   const [seeding, setSeeding] = useState(false);
   const limit = 20;
+
+  // Soul Made Actions
+  const [soulMadeAction, setSoulMadeAction] = useState(null); // 'duplicate', 'sale', 'stock', 'pillars', 'variants'
+  const [soulMadeProduct, setSoulMadeProduct] = useState(null);
+  const [soulMadeLoading, setSoulMadeLoading] = useState(false);
+  const [saleData, setSaleData] = useState({ sale_price: '', compare_at_price: '' });
+  const [stockData, setStockData] = useState({ stock_quantity: '', low_stock_threshold: 10 });
+  const [variantsData, setVariantsData] = useState([
+    { size: 'S', price: '', stock: 50 },
+    { size: 'M', price: '', stock: 100 },
+    { size: 'L', price: '', stock: 50 }
+  ]);
+  const [pillarsData, setPillarsData] = useState([]);
 
   // Fetch products
   const fetchProducts = useCallback(async () => {
@@ -317,6 +330,171 @@ const UnifiedProductBox = () => {
     } catch (err) {
       console.error('Error archiving:', err);
       toast({ title: 'Error', description: 'Failed to archive', variant: 'destructive' });
+    }
+  };
+
+  // ==================== SOUL MADE ACTIONS ====================
+  
+  // Open Soul Made action modal
+  const openSoulMadeAction = (product, action) => {
+    setSoulMadeProduct(product);
+    setSoulMadeAction(action);
+    
+    // Initialize data based on action
+    if (action === 'sale') {
+      setSaleData({ 
+        sale_price: product.price || '', 
+        compare_at_price: product.compare_at_price || (product.price ? Math.round(product.price * 1.2) : '')
+      });
+    } else if (action === 'stock') {
+      setStockData({ 
+        stock_quantity: product.stock_quantity || 100, 
+        low_stock_threshold: product.low_stock_threshold || 10 
+      });
+    } else if (action === 'variants') {
+      setVariantsData(product.variants || [
+        { size: 'S', price: product.price || 299, stock: 50 },
+        { size: 'M', price: product.price || 299, stock: 100 },
+        { size: 'L', price: (product.price || 299) + 100, stock: 50 }
+      ]);
+    } else if (action === 'pillars') {
+      setPillarsData(product.pillars || [product.pillar || 'shop']);
+    }
+  };
+
+  // Duplicate Soul Made to Production
+  const duplicateToProduction = async () => {
+    if (!soulMadeProduct) return;
+    setSoulMadeLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/product-box/soul-made/${soulMadeProduct.id}/duplicate-to-production`, {
+        method: 'POST'
+      });
+      const data = await response.json();
+      
+      if (response.ok) {
+        if (data.already_exists) {
+          toast({ title: 'Already Exists', description: `Product already in production: ${data.product_id}` });
+        } else {
+          toast({ title: '✅ Duplicated!', description: `Created: ${data.production_product_id}`, duration: 5000 });
+        }
+        fetchProducts();
+        setSoulMadeAction(null);
+      } else {
+        throw new Error(data.detail || 'Failed to duplicate');
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setSoulMadeLoading(false);
+    }
+  };
+
+  // Update Sale Price
+  const updateSalePrice = async () => {
+    if (!soulMadeProduct) return;
+    setSoulMadeLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (saleData.sale_price) params.append('sale_price', saleData.sale_price);
+      if (saleData.compare_at_price) params.append('compare_at_price', saleData.compare_at_price);
+      
+      const response = await fetch(`${API_URL}/api/product-box/soul-made/${soulMadeProduct.id}/sale?${params}`, {
+        method: 'PUT'
+      });
+      const data = await response.json();
+      
+      if (response.ok) {
+        toast({ title: '💰 Sale Price Set!', description: `${data.discount_percentage}% off` });
+        fetchProducts();
+        setSoulMadeAction(null);
+      } else {
+        throw new Error(data.detail || 'Failed to set sale');
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setSoulMadeLoading(false);
+    }
+  };
+
+  // Update Stock
+  const updateStock = async () => {
+    if (!soulMadeProduct) return;
+    setSoulMadeLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.append('stock_quantity', stockData.stock_quantity);
+      params.append('low_stock_threshold', stockData.low_stock_threshold);
+      
+      const response = await fetch(`${API_URL}/api/product-box/soul-made/${soulMadeProduct.id}/stock?${params}`, {
+        method: 'PUT'
+      });
+      const data = await response.json();
+      
+      if (response.ok) {
+        toast({ title: '📦 Stock Updated!', description: `${data.stock_quantity} units ${data.low_stock ? '⚠️ LOW STOCK' : ''}` });
+        fetchProducts();
+        setSoulMadeAction(null);
+      } else {
+        throw new Error(data.detail || 'Failed to update stock');
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setSoulMadeLoading(false);
+    }
+  };
+
+  // Update Variants (Size Pricing)
+  const updateVariants = async () => {
+    if (!soulMadeProduct) return;
+    setSoulMadeLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/product-box/soul-made/${soulMadeProduct.id}/variants`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(variantsData)
+      });
+      const data = await response.json();
+      
+      if (response.ok) {
+        toast({ title: '📏 Variants Updated!', description: `${data.variants.length} sizes configured` });
+        fetchProducts();
+        setSoulMadeAction(null);
+      } else {
+        throw new Error(data.detail || 'Failed to update variants');
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setSoulMadeLoading(false);
+    }
+  };
+
+  // Update Pillars
+  const updatePillars = async () => {
+    if (!soulMadeProduct) return;
+    setSoulMadeLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/product-box/soul-made/${soulMadeProduct.id}/pillars`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pillarsData)
+      });
+      const data = await response.json();
+      
+      if (response.ok) {
+        toast({ title: '🏛️ Pillars Assigned!', description: pillarsData.join(', ') });
+        fetchProducts();
+        setSoulMadeAction(null);
+      } else {
+        throw new Error(data.detail || 'Failed to update pillars');
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setSoulMadeLoading(false);
     }
   };
 
@@ -1028,7 +1206,7 @@ const UnifiedProductBox = () => {
                         </Badge>
                       </td>
                       <td className="p-3">
-                        <div className="flex items-center justify-center gap-1">
+                        <div className="flex items-center justify-center gap-1 flex-wrap">
                           <Button
                             variant="ghost"
                             size="sm"
@@ -1045,6 +1223,63 @@ const UnifiedProductBox = () => {
                           >
                             <Copy className="w-4 h-4" />
                           </Button>
+                          
+                          {/* Soul Made specific actions */}
+                          {product.source === 'soul_made' && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => openSoulMadeAction(product, 'duplicate')}
+                                className="text-purple-600 hover:text-purple-800 hover:bg-purple-50"
+                                title="Duplicate to Production"
+                                data-testid={`duplicate-soul-made-${product.id}`}
+                              >
+                                <Upload className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => openSoulMadeAction(product, 'sale')}
+                                className="text-green-600 hover:text-green-800 hover:bg-green-50"
+                                title="Set Sale Price"
+                                data-testid={`sale-soul-made-${product.id}`}
+                              >
+                                <Percent className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => openSoulMadeAction(product, 'stock')}
+                                className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                                title="Manage Stock"
+                                data-testid={`stock-soul-made-${product.id}`}
+                              >
+                                <Box className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => openSoulMadeAction(product, 'variants')}
+                                className="text-amber-600 hover:text-amber-800 hover:bg-amber-50"
+                                title="Size/Variant Pricing"
+                                data-testid={`variants-soul-made-${product.id}`}
+                              >
+                                <Layers className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => openSoulMadeAction(product, 'pillars')}
+                                className="text-pink-600 hover:text-pink-800 hover:bg-pink-50"
+                                title="Assign Pillars"
+                                data-testid={`pillars-soul-made-${product.id}`}
+                              >
+                                <Palette className="w-4 h-4" />
+                              </Button>
+                            </>
+                          )}
+                          
                           <Button
                             variant="ghost"
                             size="sm"
@@ -1242,6 +1477,255 @@ const UnifiedProductBox = () => {
             <Button onClick={quickSave} disabled={quickSaving} className="bg-purple-600 hover:bg-purple-700">
               {quickSaving ? <RefreshCw className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
               Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ==================== SOUL MADE ACTION MODALS ==================== */}
+      
+      {/* Duplicate to Production Modal */}
+      <Dialog open={soulMadeAction === 'duplicate'} onOpenChange={() => setSoulMadeAction(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Upload className="w-5 h-5 text-purple-600" />
+              Duplicate to Production
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-gray-600 mb-4">
+              This will copy <strong>{soulMadeProduct?.name}</strong> from <code>breed_products</code> to <code>products_master</code> 
+              so it can be purchased through checkout.
+            </p>
+            <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
+              <p className="text-sm"><strong>Current Price:</strong> ₹{soulMadeProduct?.price}</p>
+              <p className="text-sm"><strong>Breed:</strong> {soulMadeProduct?.breed_name || soulMadeProduct?.breed}</p>
+              <p className="text-sm"><strong>Category:</strong> {soulMadeProduct?.category}</p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSoulMadeAction(null)}>Cancel</Button>
+            <Button onClick={duplicateToProduction} disabled={soulMadeLoading} className="bg-purple-600 hover:bg-purple-700">
+              {soulMadeLoading ? <RefreshCw className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
+              Duplicate to Production
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Sale Price Modal */}
+      <Dialog open={soulMadeAction === 'sale'} onOpenChange={() => setSoulMadeAction(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Percent className="w-5 h-5 text-green-600" />
+              Set Sale Price
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div>
+              <Label>Sale Price (₹)</Label>
+              <Input 
+                type="number" 
+                value={saleData.sale_price} 
+                onChange={(e) => setSaleData({...saleData, sale_price: e.target.value})}
+                placeholder="New discounted price"
+              />
+            </div>
+            <div>
+              <Label>Compare At Price (₹) - Shows as strikethrough</Label>
+              <Input 
+                type="number" 
+                value={saleData.compare_at_price} 
+                onChange={(e) => setSaleData({...saleData, compare_at_price: e.target.value})}
+                placeholder="Original price (was)"
+              />
+            </div>
+            {saleData.sale_price && saleData.compare_at_price && (
+              <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                <p className="text-lg font-bold text-green-700">
+                  {Math.round((1 - saleData.sale_price / saleData.compare_at_price) * 100)}% OFF
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="line-through">₹{saleData.compare_at_price}</span> → <strong>₹{saleData.sale_price}</strong>
+                </p>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSoulMadeAction(null)}>Cancel</Button>
+            <Button onClick={updateSalePrice} disabled={soulMadeLoading} className="bg-green-600 hover:bg-green-700">
+              {soulMadeLoading ? <RefreshCw className="w-4 h-4 animate-spin mr-2" /> : <Percent className="w-4 h-4 mr-2" />}
+              Set Sale Price
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Stock Management Modal */}
+      <Dialog open={soulMadeAction === 'stock'} onOpenChange={() => setSoulMadeAction(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Box className="w-5 h-5 text-blue-600" />
+              Stock Management
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div>
+              <Label>Stock Quantity</Label>
+              <Input 
+                type="number" 
+                value={stockData.stock_quantity} 
+                onChange={(e) => setStockData({...stockData, stock_quantity: parseInt(e.target.value) || 0})}
+                placeholder="Total units available"
+              />
+            </div>
+            <div>
+              <Label>Low Stock Threshold (alert below this)</Label>
+              <Input 
+                type="number" 
+                value={stockData.low_stock_threshold} 
+                onChange={(e) => setStockData({...stockData, low_stock_threshold: parseInt(e.target.value) || 10})}
+                placeholder="10"
+              />
+            </div>
+            {stockData.stock_quantity <= stockData.low_stock_threshold && (
+              <div className="bg-amber-50 p-3 rounded-lg border border-amber-200 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-600" />
+                <p className="text-sm text-amber-700">⚠️ Stock will be marked as LOW</p>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSoulMadeAction(null)}>Cancel</Button>
+            <Button onClick={updateStock} disabled={soulMadeLoading} className="bg-blue-600 hover:bg-blue-700">
+              {soulMadeLoading ? <RefreshCw className="w-4 h-4 animate-spin mr-2" /> : <Box className="w-4 h-4 mr-2" />}
+              Update Stock
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Size/Variant Pricing Modal */}
+      <Dialog open={soulMadeAction === 'variants'} onOpenChange={() => setSoulMadeAction(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Layers className="w-5 h-5 text-amber-600" />
+              Size/Variant Pricing
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4 space-y-3">
+            {variantsData.map((variant, index) => (
+              <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
+                <Input 
+                  value={variant.size} 
+                  onChange={(e) => {
+                    const newVariants = [...variantsData];
+                    newVariants[index].size = e.target.value;
+                    setVariantsData(newVariants);
+                  }}
+                  placeholder="Size (S/M/L)"
+                  className="w-20"
+                />
+                <span className="text-gray-500">₹</span>
+                <Input 
+                  type="number"
+                  value={variant.price} 
+                  onChange={(e) => {
+                    const newVariants = [...variantsData];
+                    newVariants[index].price = parseInt(e.target.value) || 0;
+                    setVariantsData(newVariants);
+                  }}
+                  placeholder="Price"
+                  className="w-24"
+                />
+                <span className="text-gray-500">Stock:</span>
+                <Input 
+                  type="number"
+                  value={variant.stock} 
+                  onChange={(e) => {
+                    const newVariants = [...variantsData];
+                    newVariants[index].stock = parseInt(e.target.value) || 0;
+                    setVariantsData(newVariants);
+                  }}
+                  placeholder="Stock"
+                  className="w-20"
+                />
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setVariantsData(variantsData.filter((_, i) => i !== index))}
+                  className="text-red-500"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setVariantsData([...variantsData, { size: '', price: 0, stock: 50 }])}
+              className="w-full"
+            >
+              <Plus className="w-4 h-4 mr-2" /> Add Variant
+            </Button>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSoulMadeAction(null)}>Cancel</Button>
+            <Button onClick={updateVariants} disabled={soulMadeLoading} className="bg-amber-600 hover:bg-amber-700">
+              {soulMadeLoading ? <RefreshCw className="w-4 h-4 animate-spin mr-2" /> : <Layers className="w-4 h-4 mr-2" />}
+              Save Variants
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Pillar Assignment Modal */}
+      <Dialog open={soulMadeAction === 'pillars'} onOpenChange={() => setSoulMadeAction(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Palette className="w-5 h-5 text-pink-600" />
+              Assign Pillars
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-gray-600 mb-4">Select which pillars this product should appear in:</p>
+            <div className="grid grid-cols-2 gap-2">
+              {['celebrate', 'dine', 'care', 'stay', 'travel', 'fit', 'learn', 'enjoy', 'shop', 'farewell'].map(pillar => (
+                <label 
+                  key={pillar} 
+                  className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all ${
+                    pillarsData.includes(pillar) 
+                      ? 'bg-pink-50 border-pink-300 text-pink-700' 
+                      : 'bg-gray-50 border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <input 
+                    type="checkbox" 
+                    checked={pillarsData.includes(pillar)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setPillarsData([...pillarsData, pillar]);
+                      } else {
+                        setPillarsData(pillarsData.filter(p => p !== pillar));
+                      }
+                    }}
+                    className="rounded"
+                  />
+                  <span className="capitalize text-sm font-medium">{pillar}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSoulMadeAction(null)}>Cancel</Button>
+            <Button onClick={updatePillars} disabled={soulMadeLoading || pillarsData.length === 0} className="bg-pink-600 hover:bg-pink-700">
+              {soulMadeLoading ? <RefreshCw className="w-4 h-4 animate-spin mr-2" /> : <Palette className="w-4 h-4 mr-2" />}
+              Assign Pillars
             </Button>
           </DialogFooter>
         </DialogContent>
