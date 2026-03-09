@@ -259,8 +259,8 @@ async def get_generation_status():
     return _generation_status
 
 
-async def _generate_mockup_image(prompt: str, slug: str) -> Optional[str]:
-    """Generate a single mockup image using OpenAI GPT Image 1."""
+async def _generate_mockup_image(prompt: str, slug: str, breed: str = "unknown") -> Optional[str]:
+    """Generate a single mockup image using OpenAI GPT Image 1 and upload to Cloudinary."""
     try:
         from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
         
@@ -279,7 +279,22 @@ async def _generate_mockup_image(prompt: str, slug: str) -> Optional[str]:
         
         if images and len(images) > 0:
             image_base64 = base64.b64encode(images[0]).decode('utf-8')
-            return f"data:image/png;base64,{image_base64}"
+            base64_url = f"data:image/png;base64,{image_base64}"
+            
+            # Try to upload to Cloudinary immediately if configured
+            try:
+                from mockup_cloud_storage import upload_base64_to_cloudinary, is_cloudinary_configured
+                if is_cloudinary_configured():
+                    cloud_url = await upload_base64_to_cloudinary(base64_url, slug, breed)
+                    if cloud_url:
+                        logger.info(f"✓ Uploaded {slug} directly to Cloudinary")
+                        return cloud_url
+                    else:
+                        logger.warning(f"Cloudinary upload failed for {slug}, falling back to base64")
+            except Exception as cloud_err:
+                logger.warning(f"Cloudinary not available: {cloud_err}, using base64")
+            
+            return base64_url
         
         return None
         
@@ -330,7 +345,7 @@ async def _batch_generate_mockups(db, limit: Optional[int] = None, breed_filter:
                     _generation_status["failed"] += 1
                     continue
                 
-                mockup_url = await _generate_mockup_image(prompt, slug)
+                mockup_url = await _generate_mockup_image(prompt, slug, product.get("breed", "unknown"))
                 
                 if mockup_url:
                     await db.breed_products.update_one(
