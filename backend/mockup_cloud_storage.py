@@ -303,3 +303,126 @@ async def get_cloudinary_signature(folder: str = "doggy/mockups"):
         "api_key": os.getenv("CLOUDINARY_API_KEY"),
         "folder": folder
     }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PRODUCTION SYNC ENDPOINTS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@mockup_cloud_router.get("/export-mockup-urls")
+async def export_mockup_urls():
+    """
+    Export all breed_products with Cloudinary mockup URLs for syncing to production.
+    Returns a JSON payload that can be imported into production database.
+    
+    Use this endpoint on PREVIEW to get the data, then call /import-mockup-urls on PRODUCTION.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    # Get all products with Cloudinary URLs (not base64)
+    products = await db.breed_products.find(
+        {"mockup_url": {"$regex": "^https://res.cloudinary.com"}},
+        {"_id": 0, "id": 1, "mockup_url": 1, "mockup_generated_at": 1, "name": 1, "breed": 1, "product_type": 1}
+    ).to_list(1000)
+    
+    return {
+        "total_exported": len(products),
+        "exported_at": datetime.now(timezone.utc).isoformat(),
+        "products": products
+    }
+
+
+@mockup_cloud_router.post("/import-mockup-urls")
+async def import_mockup_urls(data: dict):
+    """
+    Import mockup URLs from preview environment.
+    Call this endpoint on PRODUCTION with the data from /export-mockup-urls.
+    
+    Body: { "products": [{"id": "...", "mockup_url": "https://..."}, ...] }
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    products = data.get("products", [])
+    if not products:
+        raise HTTPException(status_code=400, detail="No products provided")
+    
+    updated = 0
+    errors = []
+    
+    for product in products:
+        product_id = product.get("id")
+        mockup_url = product.get("mockup_url")
+        
+        if not product_id or not mockup_url:
+            continue
+        
+        try:
+            result = await db.breed_products.update_one(
+                {"id": product_id},
+                {"$set": {
+                    "mockup_url": mockup_url,
+                    "mockup_generated_at": product.get("mockup_generated_at"),
+                    "synced_from_preview": True,
+                    "synced_at": datetime.now(timezone.utc).isoformat()
+                }}
+            )
+            if result.modified_count > 0:
+                updated += 1
+        except Exception as e:
+            errors.append({"id": product_id, "error": str(e)})
+    
+    return {
+        "imported": updated,
+        "total_received": len(products),
+        "errors": errors,
+        "imported_at": datetime.now(timezone.utc).isoformat()
+    }
+
+
+@mockup_cloud_router.post("/sync-to-production")
+async def sync_mockups_to_production(production_url: str):
+    """
+    Directly sync all Cloudinary mockup URLs to production environment.
+    
+    This fetches the export from this (preview) environment and pushes it to production.
+    
+    Args:
+        production_url: The production API URL (e.g., "https://your-app.emergent.com")
+    """
+    import httpx
+    
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    # Step 1: Export from this environment
+    export_data = await export_mockup_urls()
+    
+    if export_data["total_exported"] == 0:
+        return {"message": "No Cloudinary mockups to sync", "synced": 0}
+    
+    # Step 2: Push to production
+    try:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(
+                f"{production_url}/api/mockups/import-mockup-urls",
+                json={"products": export_data["products"]}
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                return {
+                    "success": True,
+                    "exported_from_preview": export_data["total_exported"],
+                    "imported_to_production": result.get("imported", 0),
+                    "production_url": production_url
+                }
+            else:
+                raise HTTPException(
+                    status_code=response.status_code,
+                    detail=f"Production import failed: {response.text}"
+                )
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"Failed to connect to production: {str(e)}")
+
