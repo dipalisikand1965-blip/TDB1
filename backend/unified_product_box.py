@@ -997,6 +997,319 @@ async def update_soul_made_product(product_id: str, updates: Dict[str, Any], adm
         raise HTTPException(status_code=500, detail=f"Failed to update: {str(e)}")
 
 
+# ==================== SOUL MADE - DUPLICATE TO PRODUCTION ====================
+
+@product_box_router.post("/soul-made/{product_id}/duplicate-to-production")
+async def duplicate_soul_made_to_production(product_id: str, admin_user: str = "system"):
+    """
+    Duplicate a Soul Made product from breed_products to products_master.
+    This makes the product available for checkout via the main product catalog.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        # Get the Soul Made product
+        soul_product = await db.breed_products.find_one({"id": product_id}, {"_id": 0})
+        if not soul_product:
+            raise HTTPException(status_code=404, detail="Soul Made product not found")
+        
+        # Check if already in production
+        existing = await db.products_master.find_one({"soul_made_source_id": product_id})
+        if existing:
+            return {
+                "message": "Product already exists in production",
+                "product_id": existing.get("id"),
+                "already_exists": True
+            }
+        
+        # Create production product from Soul Made
+        new_id = f"PROD-SM-{secrets.token_hex(6).upper()}"
+        production_product = {
+            "id": new_id,
+            "sku": f"SKU-SM-{soul_product.get('breed', 'UNK')[:3].upper()}-{secrets.token_hex(4).upper()}",
+            "name": soul_product.get("name"),
+            "description": soul_product.get("description"),
+            "price": soul_product.get("price", 0),
+            "compare_at_price": soul_product.get("compare_at_price"),
+            "product_type": "physical",
+            "soul_tier": "soul_made",
+            "soul_made_source_id": product_id,  # Link back to breed_products
+            "breed": soul_product.get("breed"),
+            "breed_name": soul_product.get("breed_name"),
+            "category": soul_product.get("category"),
+            "image": soul_product.get("mockup_url") or soul_product.get("image"),
+            "images": [soul_product.get("mockup_url")] if soul_product.get("mockup_url") else [],
+            "pillar": soul_product.get("pillar") or "shop",
+            "pillars": soul_product.get("pillars") or ["shop"],
+            "visibility": {
+                "status": "active",
+                "is_featured": False
+            },
+            "inventory": {
+                "track_inventory": True,
+                "quantity": soul_product.get("stock_quantity", 100),
+                "allow_backorder": True
+            },
+            "variants": soul_product.get("variants") or [
+                {"size": "S", "price": soul_product.get("price", 0), "stock": 50},
+                {"size": "M", "price": soul_product.get("price", 0), "stock": 50},
+                {"size": "L", "price": soul_product.get("price", 0) + 100, "stock": 50}
+            ],
+            "tags": soul_product.get("tags") or [soul_product.get("breed_name"), "soul_made", "personalized"],
+            "in_stock": True,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by": admin_user,
+            "source": "soul_made"
+        }
+        
+        await db.products_master.insert_one(production_product)
+        
+        # Update breed_products to mark as duplicated
+        await db.breed_products.update_one(
+            {"id": product_id},
+            {"$set": {
+                "duplicated_to_production": True,
+                "production_product_id": new_id,
+                "duplicated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        logger.info(f"Duplicated Soul Made {product_id} to production as {new_id}")
+        production_product.pop("_id", None)
+        
+        return {
+            "message": "Soul Made product duplicated to production",
+            "production_product_id": new_id,
+            "product": production_product
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error duplicating Soul Made to production: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== PILLAR ASSIGNMENT ====================
+
+@product_box_router.put("/soul-made/{product_id}/pillars")
+async def assign_pillars_to_soul_made(product_id: str, pillars: List[str], admin_user: str = "system"):
+    """Assign pillars to a Soul Made product"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    # Validate pillars
+    valid_pillars = ["celebrate", "dine", "care", "stay", "travel", "fit", "learn", "enjoy", "shop", 
+                    "paperwork", "advisory", "emergency", "farewell", "adopt"]
+    invalid = [p for p in pillars if p.lower() not in valid_pillars]
+    if invalid:
+        raise HTTPException(status_code=400, detail=f"Invalid pillars: {invalid}")
+    
+    try:
+        result = await db.breed_products.update_one(
+            {"id": product_id},
+            {"$set": {
+                "pillars": [p.lower() for p in pillars],
+                "pillar": pillars[0].lower() if pillars else "shop",
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "updated_by": admin_user
+            }}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Soul Made product not found")
+        
+        return {"message": f"Assigned pillars: {pillars}", "product_id": product_id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== SIZE/VARIANT PRICING ====================
+
+@product_box_router.put("/soul-made/{product_id}/variants")
+async def update_soul_made_variants(product_id: str, variants: List[Dict], admin_user: str = "system"):
+    """
+    Update size/variant pricing for a Soul Made product.
+    
+    Example variants:
+    [
+        {"size": "S", "price": 299, "stock": 50},
+        {"size": "M", "price": 349, "stock": 100},
+        {"size": "L", "price": 399, "stock": 50}
+    ]
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        # Validate variants
+        for v in variants:
+            if "size" not in v:
+                raise HTTPException(status_code=400, detail="Each variant must have a 'size' field")
+            if "price" not in v:
+                raise HTTPException(status_code=400, detail="Each variant must have a 'price' field")
+        
+        result = await db.breed_products.update_one(
+            {"id": product_id},
+            {"$set": {
+                "variants": variants,
+                "has_variants": True,
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "updated_by": admin_user
+            }}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Soul Made product not found")
+        
+        return {"message": f"Updated {len(variants)} variants", "variants": variants}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== DISCOUNT/SALE PRICE ====================
+
+@product_box_router.put("/soul-made/{product_id}/sale")
+async def set_soul_made_sale_price(
+    product_id: str, 
+    sale_price: float = None,
+    compare_at_price: float = None,
+    sale_ends_at: str = None,
+    admin_user: str = "system"
+):
+    """
+    Set sale/discount price for a Soul Made product.
+    - sale_price: The discounted selling price
+    - compare_at_price: The original "was" price (for showing strikethrough)
+    - sale_ends_at: ISO timestamp when sale ends (optional)
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        existing = await db.breed_products.find_one({"id": product_id})
+        if not existing:
+            raise HTTPException(status_code=404, detail="Soul Made product not found")
+        
+        update_data = {
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "updated_by": admin_user
+        }
+        
+        if sale_price is not None:
+            update_data["price"] = sale_price
+            update_data["on_sale"] = True
+        
+        if compare_at_price is not None:
+            update_data["compare_at_price"] = compare_at_price
+        else:
+            # If not provided, use current price as compare_at
+            update_data["compare_at_price"] = existing.get("price")
+        
+        if sale_ends_at:
+            update_data["sale_ends_at"] = sale_ends_at
+        
+        await db.breed_products.update_one({"id": product_id}, {"$set": update_data})
+        
+        discount_pct = 0
+        if compare_at_price and sale_price:
+            discount_pct = round((1 - sale_price / compare_at_price) * 100)
+        
+        return {
+            "message": "Sale price set",
+            "sale_price": sale_price,
+            "compare_at_price": update_data.get("compare_at_price"),
+            "discount_percentage": discount_pct,
+            "sale_ends_at": sale_ends_at
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== STOCK MANAGEMENT ====================
+
+@product_box_router.put("/soul-made/{product_id}/stock")
+async def update_soul_made_stock(
+    product_id: str,
+    stock_quantity: int = None,
+    in_stock: bool = None,
+    low_stock_threshold: int = 10,
+    admin_user: str = "system"
+):
+    """
+    Update stock for a Soul Made product.
+    - stock_quantity: Total available units
+    - in_stock: Manual override (True/False)
+    - low_stock_threshold: Alert when stock falls below this
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        update_data = {
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "updated_by": admin_user
+        }
+        
+        if stock_quantity is not None:
+            update_data["stock_quantity"] = stock_quantity
+            update_data["in_stock"] = stock_quantity > 0
+            update_data["low_stock"] = stock_quantity <= low_stock_threshold
+        
+        if in_stock is not None:
+            update_data["in_stock"] = in_stock
+        
+        update_data["low_stock_threshold"] = low_stock_threshold
+        
+        result = await db.breed_products.update_one({"id": product_id}, {"$set": update_data})
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Soul Made product not found")
+        
+        return {
+            "message": "Stock updated",
+            "stock_quantity": stock_quantity,
+            "in_stock": update_data.get("in_stock"),
+            "low_stock": update_data.get("low_stock", False)
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@product_box_router.get("/soul-made/low-stock")
+async def get_low_stock_soul_made_products(threshold: int = 10):
+    """Get Soul Made products with low stock"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        low_stock = await db.breed_products.find(
+            {
+                "$or": [
+                    {"stock_quantity": {"$lte": threshold}},
+                    {"low_stock": True}
+                ]
+            },
+            {"_id": 0, "id": 1, "name": 1, "breed_name": 1, "stock_quantity": 1, "price": 1}
+        ).to_list(100)
+        
+        return {
+            "threshold": threshold,
+            "count": len(low_stock),
+            "products": low_stock
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @product_box_router.post("/products/{product_id}/clone")
 async def clone_product(product_id: str, new_name: Optional[str] = None):
     """Clone a product for creating variants"""
