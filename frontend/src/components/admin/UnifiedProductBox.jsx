@@ -80,6 +80,7 @@ const UnifiedProductBox = () => {
   const [filterBreed, setFilterBreed] = useState('');
   const [filterSize, setFilterSize] = useState('');
   const [filterHasMiraHint, setFilterHasMiraHint] = useState('');
+  const [filterSource, setFilterSource] = useState('');  // NEW: shopify, soul_made, manual
   
   // Pagination
   const [page, setPage] = useState(0);
@@ -106,6 +107,7 @@ const UnifiedProductBox = () => {
       if (filterBreed) params.append('breed', filterBreed);
       if (filterSize) params.append('size', filterSize);
       if (filterHasMiraHint) params.append('has_mira_hint', filterHasMiraHint);
+      if (filterSource) params.append('source', filterSource);  // NEW: Source filter
       
       const response = await fetch(`${API_URL}/api/product-box/products?${params}`);
       const data = await response.json();
@@ -118,7 +120,7 @@ const UnifiedProductBox = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, searchTerm, filterType, filterPillar, filterStatus, filterShipping, filterRewardEligible, filterBreed, filterSize, filterHasMiraHint]);
+  }, [page, searchTerm, filterType, filterPillar, filterStatus, filterShipping, filterRewardEligible, filterBreed, filterSize, filterHasMiraHint, filterSource]);
 
   // Fetch stats
   const fetchStats = async () => {
@@ -780,6 +782,19 @@ const UnifiedProductBox = () => {
             <option value="false">No Hint</option>
           </select>
           
+          {/* Source Filter - Shopify, Soul Made, Manual */}
+          <select 
+            value={filterSource} 
+            onChange={(e) => setFilterSource(e.target.value)}
+            className="h-10 px-3 rounded-md border border-pink-200 text-sm bg-pink-50 font-medium"
+            data-testid="filter-source-select"
+          >
+            <option value="">📦 All Sources</option>
+            <option value="shopify">🛒 Shopify</option>
+            <option value="soul_made">🎨 Soul Made (AI)</option>
+            <option value="manual">✍️ Manual</option>
+          </select>
+          
           <Button variant="outline" size="sm" onClick={() => {
             setSearchTerm('');
             setFilterType('');
@@ -790,6 +805,7 @@ const UnifiedProductBox = () => {
             setFilterBreed('');
             setFilterSize('');
             setFilterHasMiraHint('');
+            setFilterSource('');
           }} data-testid="clear-product-filters-btn">
             <RefreshCw className="w-4 h-4 mr-1" /> Clear
           </Button>
@@ -907,6 +923,17 @@ const UnifiedProductBox = () => {
                         <Badge variant="outline" className="capitalize">
                           {PRODUCT_TYPES.find(t => t.id === product.product_type)?.icon} {product.product_type}
                         </Badge>
+                        {/* Source Badge */}
+                        {product.source === 'soul_made' && (
+                          <Badge className="ml-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs">
+                            🎨 Soul Made
+                          </Badge>
+                        )}
+                        {product.source === 'shopify' && (
+                          <Badge className="ml-1 bg-green-100 text-green-700 text-xs">
+                            🛒 Shopify
+                          </Badge>
+                        )}
                       </td>
                       {/* Clickable Pillars for Quick Edit */}
                       <td className="p-3">
